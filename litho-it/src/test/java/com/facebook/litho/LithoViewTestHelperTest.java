@@ -76,7 +76,6 @@ public class LithoViewTestHelperTest {
         return Column.create(c)
             .child(
                 TestDrawableComponent.create(c)
-                    .withLayout()
                     .testKey("test-drawable")
                     .widthPx(100)
                     .heightPx(100))

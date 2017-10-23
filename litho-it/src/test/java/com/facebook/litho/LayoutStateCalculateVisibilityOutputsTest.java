@@ -43,11 +43,9 @@ public class LayoutStateCalculateVisibilityOutputsTest {
                 create(c)
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout()
                             .visibleHandler(c.newEventHandler(1))))
             .child(
                 TestDrawableComponent.create(c)
-                    .withLayout()
                     .invisibleHandler(c.newEventHandler(2)))
             .child(TestDrawableComponent.create(c))
             .build();
@@ -74,11 +72,9 @@ public class LayoutStateCalculateVisibilityOutputsTest {
                 create(c)
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout()
                             .visibleHandler(c.newEventHandler(1))))
             .child(
                 TestDrawableComponent.create(c)
-                    .withLayout()
                     .fullImpressionHandler(c.newEventHandler(3)))
             .child(TestDrawableComponent.create(c))
             .build();
@@ -105,11 +101,9 @@ public class LayoutStateCalculateVisibilityOutputsTest {
                 create(c)
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout()
                             .visibleHandler(c.newEventHandler(1))))
             .child(
                 TestDrawableComponent.create(c)
-                    .withLayout()
                     .focusedHandler(c.newEventHandler(4)))
             .child(TestDrawableComponent.create(c))
             .build();
@@ -135,7 +129,6 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         return create(c)
             .child(
                 TestLayoutComponent.create(c, 0, 0, true, true, false, isDelegate)
-                    .withLayout()
                     .visibleHandler(c.newEventHandler(1)))
             .wrapInView()
             .build();
@@ -162,14 +155,12 @@ public class LayoutStateCalculateVisibilityOutputsTest {
                 create(c)
                     .child(
                         TestLayoutComponent.create(c)
-                            .withLayout()
                             .visibleHandler(c.newEventHandler(1)))
                     .invisibleHandler(c.newEventHandler(2)))
             .child(
                 create(c)
                     .child(
                         TestLayoutComponent.create(c)
-                            .withLayout()
                             .invisibleHandler(c.newEventHandler(1)))
                     .visibleHandler(c.newEventHandler(2)))
             .wrapInView()
@@ -206,7 +197,6 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         return create(c)
             .child(
                 TestDrawableComponent.create(c)
-                    .withLayout()
                     .visibleHandler(c.newEventHandler(1))
                     .wrapInView())
             .build();

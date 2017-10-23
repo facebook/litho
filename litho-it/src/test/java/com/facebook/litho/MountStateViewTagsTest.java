@@ -58,7 +58,6 @@ public class MountStateViewTagsTest {
                 .child(TestDrawableComponent.create(c))
                 .child(
                     TestDrawableComponent.create(c)
-                        .withLayout()
                         .viewTags(tags2))
                 .build();
           }

@@ -1014,7 +1014,6 @@ public class TreeDiffingTest {
           .foregroundRes(btn_default)
           .child(
               TestDrawableComponent.create(c)
-                  .withLayout()
                   .background(mChangeChildDrawable ? sRedDrawable : sBlackDrawable))
           .child(create(c).child(TestDrawableComponent.create(c)))
           .build();
@@ -1049,7 +1048,6 @@ public class TreeDiffingTest {
           .child(
               TestSizeDependentComponent.create(c)
                   .setDelegate(false)
-                  .withLayout()
                   .flexShrink(0)
                   .marginPx(ALL, 11))
           .build();
@@ -1062,7 +1060,7 @@ public class TreeDiffingTest {
       return create(c)
           .paddingPx(ALL, 2)
           .child(
-              TestSizeDependentComponent.create(c).setDelegate(true).withLayout().marginPx(ALL, 11))
+              TestSizeDependentComponent.create(c).setDelegate(true).marginPx(ALL, 11))
           .build();
     }
   }

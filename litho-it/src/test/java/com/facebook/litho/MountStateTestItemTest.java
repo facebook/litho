@@ -64,7 +64,6 @@ public class MountStateTestItemTest {
                 .child(TestDrawableComponent.create(c))
                 .child(
                     TestDrawableComponent.create(c)
-                        .withLayout()
                         .testKey(TEST_ID_2))
                 .build();
           }
@@ -92,7 +91,6 @@ public class MountStateTestItemTest {
                 .child(TestDrawableComponent.create(c))
                 .child(
                     TestDrawableComponent.create(c)
-                        .withLayout()
                         .testKey(TEST_ID_1))
                 .build();
           }
@@ -119,11 +117,9 @@ public class MountStateTestItemTest {
                 .child(TestDrawableComponent.create(c))
                 .child(
                     TestDrawableComponent.create(c)
-                        .withLayout()
                         .testKey(null))
                 .child(
                     TestDrawableComponent.create(c)
-                        .withLayout()
                         .testKey(TEST_ID_1))
                 .build();
           }
@@ -146,7 +142,6 @@ public class MountStateTestItemTest {
                 .child(
                     Text.create(c)
                         .text(MY_TEST_STRING_1)
-                        .withLayout()
                         .testKey(TEST_ID_1))
                 .build();
           }
@@ -168,12 +163,10 @@ public class MountStateTestItemTest {
                 .child(
                     Text.create(c)
                         .text(MY_TEST_STRING_1)
-                        .withLayout()
                         .testKey(TEST_ID_1))
                 .child(
                     Text.create(c)
                         .text(MY_TEST_STRING_2)
-                        .withLayout()
                         .testKey(TEST_ID_2))
                 .build();
           }
@@ -197,13 +190,11 @@ public class MountStateTestItemTest {
                 .child(
                     Text.create(c)
                         .text(MY_TEST_STRING_1)
-                        .withLayout()
                         .clickHandler(mock(EventHandler.class))
                         .testKey(TEST_ID_1))
                 .child(
                     Text.create(c)
                         .text(MY_TEST_STRING_2)
-                        .withLayout()
                         .testKey(TEST_ID_2))
                 .build();
           }

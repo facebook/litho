@@ -41,16 +41,13 @@ public class LayoutStateCalculateTopsAndBottomsTest {
                 create(c)
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout()
                             .wrapInView()
                             .heightPx(50)))
             .child(
                 TestDrawableComponent.create(c)
-                    .withLayout()
                     .heightPx(20))
             .child(
                 TestDrawableComponent.create(c)
-                    .withLayout()
                     .positionType(ABSOLUTE)
                     .positionPx(TOP, 10)
                     .positionPx(BOTTOM, 30))

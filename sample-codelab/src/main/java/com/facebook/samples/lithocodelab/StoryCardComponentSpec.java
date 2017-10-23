@@ -55,7 +55,6 @@ public class StoryCardComponentSpec {
                 .child(
                         Text.create(c, 0, R.style.message_text)
                                 .text(content)
-                                .withLayout()
                                 .paddingDip(HORIZONTAL, CARD_INSET)
                                 .paddingDip(BOTTOM, CARD_INTERNAL_PADDING))
                 .child(
@@ -68,7 +67,6 @@ public class StoryCardComponentSpec {
                                 .child(
                                         Image.create(c)
                                                 .drawableRes(R.drawable.save)
-                                                .withLayout()
                                                 .alignSelf(YogaAlign.CENTER)
                                                 .widthDip(20)
                                                 .heightDip(20)

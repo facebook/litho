@@ -50,7 +50,6 @@ public class LearningClickEventsComponentSpec {
                 .child(Text.create(c)
                         .text("First child")
                         .textSizeDip(50)
-                        .withLayout()
                         .clickHandler(LearningClickEventsComponent.onClickFirstChild(c))
                         .backgroundRes(android.R.color.holo_blue_light)
                         .alignSelf(STRETCH)
@@ -60,7 +59,6 @@ public class LearningClickEventsComponentSpec {
                         .text("Second child")
                         .textColorRes(android.R.color.holo_green_dark)
                         .textSizeSp(30)
-                        .withLayout()
                         .clickHandler(LearningClickEventsComponent.onClickSecondChild(c))
                         .backgroundRes(android.R.color.holo_red_light)
                         .alignSelf(FLEX_END)
@@ -71,7 +69,6 @@ public class LearningClickEventsComponentSpec {
                                 .backgroundRes(android.R.color.holo_blue_light)
                                 .child(Image.create(c)
                                         .drawableRes(R.drawable.save)
-                                        .withLayout()
                                         .widthDip(40)
                                         .heightDip(40)
                                         .paddingDip(START, 7)
@@ -83,7 +80,6 @@ public class LearningClickEventsComponentSpec {
                         .text("Absolutely positioned child")
                         .textColorRes(android.R.color.holo_orange_dark)
                         .textSizeSp(15)
-                        .withLayout()
                         .clickHandler(LearningClickEventsComponent.onClickAbsoluteChild(
                                 c,
                                 "Param passed in on click."))

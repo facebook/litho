@@ -313,12 +313,10 @@ public class LayoutStateCalculateTest {
                     .child(
                         Text.create(c)
                             .text("textLeft2")
-                            .withLayout()
                             .wrapInView()
                             .paddingPx(ALL, paddingSize))
                     .child(
                         TestViewComponent.create(c)
-                            .withLayout()
                             .wrapInView()))
             .build();
       }
@@ -384,7 +382,6 @@ public class LayoutStateCalculateTest {
                     .wrapInView()
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout()
                             .widthPx(10)
                             .heightPx(10)))
             .build();
@@ -449,13 +446,11 @@ public class LayoutStateCalculateTest {
                     .child(
                         Text.create(c)
                             .text("textLeft2")
-                            .withLayout()
                             .wrapInView()
                             .backgroundColor(0xFFFF0000)
                             .paddingPx(ALL, paddingSize))
                     .child(
                         TestViewComponent.create(c)
-                            .withLayout()
                             .backgroundColor(0xFFFF0000)
                             .foregroundColor(0x0000FFFF)
                             .paddingPx(ALL, paddingSize)))
@@ -551,7 +546,6 @@ public class LayoutStateCalculateTest {
                 create(c)
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout()
                             .wrapInView())
                     .child(
                         create(c)
@@ -708,7 +702,6 @@ public class LayoutStateCalculateTest {
                 create(c)
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout()
                             .wrapInView())
                     .child(
                         create(c)
@@ -749,7 +742,6 @@ public class LayoutStateCalculateTest {
                 create(c)
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout()
                             .wrapInView())
                     .child(
                         create(c)
@@ -858,7 +850,6 @@ public class LayoutStateCalculateTest {
         return Column.create(c)
             .child(
                 TestDrawableComponent.create(c)
-                    .withLayout()
                     .wrapInView())
             .child(
                 Column.create(c)
@@ -1355,7 +1346,6 @@ public class LayoutStateCalculateTest {
                 create(c)
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout()
                             .enabled(false)))
             .build();
       }
@@ -1390,7 +1380,6 @@ public class LayoutStateCalculateTest {
                 create(c)
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout()
                             .clickHandler(c.newEventHandler(1))
                             .enabled(false)))
             .build();
@@ -1427,7 +1416,6 @@ public class LayoutStateCalculateTest {
                 create(c)
                     .child(
                         TestViewComponent.create(c)
-                            .withLayout()
                             .enabled(false)))
             .build();
       }
@@ -1463,15 +1451,12 @@ public class LayoutStateCalculateTest {
                     .enabled(false)
                     .child(
                         TestViewComponent.create(c)
-                            .withLayout()
                             .enabled(true))
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout()
                             .clickHandler(c.newEventHandler(1)))
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout()
                             .enabled(false)))
             .child(
                 create(c)
@@ -1534,12 +1519,10 @@ public class LayoutStateCalculateTest {
             .contentDescription("This is root view")
             .child(
                 TestDrawableComponent.create(c)
-                    .withLayout()
                     .widthDip(30)
                     .heightDip(30))
             .child(
                 TestDrawableComponent.create(c, true, true, true, true, false)
-                    .withLayout()
                     .flex(1).flexBasisDip(0)
                     .backgroundColor(RED)
                     .marginDip(HORIZONTAL, 10))
@@ -1550,13 +1533,11 @@ public class LayoutStateCalculateTest {
                     .contentDescription("This is a container")
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout()
                             .widthDip(30)
                             .heightDip(30)
                             .contentDescription("This is an image"))
                     .child(
                         TestDrawableComponent.create(c, true, true, true, true, false)
-                            .withLayout()
                             .flex(1).flexBasisDip(0)
                             .marginDip(HORIZONTAL, 10)))
             .build();
@@ -1608,12 +1589,10 @@ public class LayoutStateCalculateTest {
             .contentDescription("This is root view")
             .child(
                 TestDrawableComponent.create(c)
-                    .withLayout()
                     .widthDip(30)
                     .heightDip(30))
             .child(
                 TestDrawableComponent.create(c, true, true, true, true, false)
-                    .withLayout()
                     .flex(1).flexBasisDip(0)
                     .backgroundColor(RED)
                     .marginDip(HORIZONTAL, 10)
@@ -1625,7 +1604,6 @@ public class LayoutStateCalculateTest {
                     .importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS)
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout()
                             .widthDip(30)
                             .heightDip(30)
                             .importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES)
@@ -1748,7 +1726,6 @@ public class LayoutStateCalculateTest {
         return create(c)
             .child(
                 TestDrawableComponent.create(c)
-                    .withLayout()
                     .wrapInView())
             .build();
       }
@@ -1810,7 +1787,6 @@ public class LayoutStateCalculateTest {
                 TestSizeDependentComponent.create(c)
                     .setFixSizes(true)
                     .setDelegate(true)
-                    .withLayout()
                     .marginPx(ALL, 11))
             .build();
       }
@@ -1850,7 +1826,6 @@ public class LayoutStateCalculateTest {
                 TestSizeDependentComponent.create(c)
                     .setFixSizes(true)
                     .setDelegate(false)
-                    .withLayout()
                     .marginPx(ALL, 11))
             .build();
       }
@@ -2331,11 +2306,9 @@ public class LayoutStateCalculateTest {
                 TestSizeDependentComponent.create(c)
                     .setFixSizes(true)
                     .setDelegate(false)
-                    .withLayout()
                     .marginPx(YogaEdge.ALL, 11))
             .child(
                 TestDrawableComponent.create(c)
-                    .withLayout()
                     .heightPx(200)
                     .widthPx(200))
             .build();
@@ -2360,7 +2333,6 @@ public class LayoutStateCalculateTest {
         return create(c)
             .child(
                 TestSizeDependentComponent.create(c)
-                    .withLayout()
                     .widthPx(100)
                     .aspectRatio(1))
             .build();
@@ -2390,7 +2362,6 @@ public class LayoutStateCalculateTest {
             .heightPx(100)
             .child(
                 TestSizeDependentComponent.create(c)
-                    .withLayout()
                     .widthPercent(50)
                     .heightPercent(50)
                     .backgroundColor(0xFFFF0000))
@@ -2424,7 +2395,6 @@ public class LayoutStateCalculateTest {
             .child(
                 TestSizeDependentComponent.create(c)
                     .setFixSizes(true)
-                    .withLayout()
                     .widthPercent(50)
                     .heightPercent(50)
                     .backgroundColor(0xFFFF0000))
@@ -2460,7 +2430,6 @@ public class LayoutStateCalculateTest {
             .child(
                 TestSizeDependentComponent.create(c)
                     .setFixSizes(true)
-                    .withLayout()
                     .paddingPercent(ALL, 10)
                     .backgroundColor(0xFFFF0000))
             .build();

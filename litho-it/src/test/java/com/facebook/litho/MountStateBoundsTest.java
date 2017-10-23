@@ -90,7 +90,6 @@ public class MountStateBoundsTest {
                         .wrapInView()
                         .child(
                             create(c)
-                                .withLayout()
                                 .widthPx(10)
                                 .heightPx(10)))
                 .build();
@@ -129,7 +128,6 @@ public class MountStateBoundsTest {
                                 .wrapInView()
                                 .child(
                                     create(c)
-                                        .withLayout()
                                         .widthPx(20)
                                         .heightPx(20)
                                         .marginPx(ALL, 20))))

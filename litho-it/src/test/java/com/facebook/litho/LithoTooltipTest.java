@@ -56,7 +56,6 @@ public class LithoTooltipTest {
                 .marginPx(YogaEdge.TOP, MARGIN_TOP)
                 .child(TestDrawableComponent.create(c)
                   .key("anchor")
-                  .withLayout()
                   .widthPx(ANCHOR_WIDTH)
                   .heightPx(ANCHOR_HEIGHT))
                 .build();

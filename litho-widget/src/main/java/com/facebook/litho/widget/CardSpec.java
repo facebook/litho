@@ -95,7 +95,6 @@ class CardSpec {
                     CardClip.create(c)
                         .clippingColor(clippingColor)
                         .cornerRadiusPx(cornerRadius)
-                        .withLayout()
                         .positionType(ABSOLUTE)
                         .positionPx(ALL, 0)))
         .child(
@@ -104,7 +103,6 @@ class CardSpec {
                 .shadowEndColor(shadowEndColor)
                 .cornerRadiusPx(cornerRadius)
                 .shadowSizePx(elevation)
-                .withLayout()
                 .positionType(ABSOLUTE)
                 .positionPx(ALL, 0))
         .build();

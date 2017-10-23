@@ -42,7 +42,6 @@ public class DecadeSeparatorSpec {
                 .text(String.valueOf(decade.year))
                 .textSizeDip(14)
                 .textColor(0xFFAAAAAA)
-                .withLayout()
                 .marginDip(YogaEdge.HORIZONTAL, 10)
                 .flex(0))
         .child(

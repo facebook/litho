@@ -62,7 +62,6 @@ public class StoryFooterComponentSpec {
                     Text.create(c)
                         .textSizeSp(16)
                         .text("Like")
-                        .withLayout()
                         .transitionKey("text_like")
                         .marginDip(YogaEdge.LEFT, 8)))
         .child(
@@ -80,7 +79,6 @@ public class StoryFooterComponentSpec {
                     Text.create(c)
                         .textSizeSp(16)
                         .text("Comment")
-                        .withLayout()
                         .marginDip(YogaEdge.LEFT, 8)))
         .child(
             Row.create(c)
@@ -97,7 +95,6 @@ public class StoryFooterComponentSpec {
                     Text.create(c)
                         .textSizeSp(16)
                         .text("Share")
-                        .withLayout()
                         .transitionKey("text_share")
                         .marginDip(YogaEdge.LEFT, 8)))
         .build()

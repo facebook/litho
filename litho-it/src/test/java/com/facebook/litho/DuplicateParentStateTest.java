@@ -49,28 +49,24 @@ public class DuplicateParentStateTest {
                     .duplicateParentState(false)
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout()
                             .duplicateParentState(true)))
             .child(
                 create(c)
                     .duplicateParentState(true)
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout()
                             .duplicateParentState(true)))
             .child(
                 create(c)
                     .clickHandler(c.newEventHandler(2))
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout()
                             .duplicateParentState(true)))
             .child(
                 create(c)
                     .clickHandler(c.newEventHandler(3))
                     .child(
                         TestDrawableComponent.create(c)
-                            .withLayout()
                             .duplicateParentState(false)))
             .child(
                 create(c)

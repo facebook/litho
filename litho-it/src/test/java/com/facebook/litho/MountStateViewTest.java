@@ -56,7 +56,6 @@ public class MountStateViewTest {
             return create(c)
                 .child(
                     TestViewComponent.create(c)
-                        .withLayout()
                         .paddingPx(LEFT, 5)
                         .paddingPx(TOP, 6)
                         .paddingPx(RIGHT, 7)

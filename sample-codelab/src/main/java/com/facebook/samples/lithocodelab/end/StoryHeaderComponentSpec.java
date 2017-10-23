@@ -53,7 +53,6 @@ public class StoryHeaderComponentSpec {
                 .child(
                         FrescoImage.create(c)
                                 .controller(Fresco.newDraweeControllerBuilder().setUri("http://placekitten.com/g/200/200").build())
-                                .withLayout()
                                 .widthDip(40)
                                 .heightDip(40)
                                 .marginDip(END, CARD_INTERNAL_PADDING)
@@ -64,17 +63,14 @@ public class StoryHeaderComponentSpec {
                                 .child(
                                         Text.create(c, 0, R.style.header_title)
                                                 .text(title)
-                                                .withLayout()
                                                 .paddingDip(BOTTOM, CARD_INTERNAL_PADDING))
                                 .child(
                                         Text.create(c, 0, R.style.header_subtitle)
                                                 .text(subtitle)
-                                                .withLayout()
                                                 .paddingDip(BOTTOM, CARD_INTERNAL_PADDING)))
                 .child(
                         Image.create(c)
                                 .drawableRes(R.drawable.menu)
-                                .withLayout()
                                 .clickHandler(StoryHeaderComponent.onClickMenuButton(c))
                                 .widthDip(15)
                                 .heightDip(15)

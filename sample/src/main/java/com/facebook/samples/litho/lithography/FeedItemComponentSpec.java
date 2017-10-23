@@ -36,12 +36,10 @@ public class FeedItemComponentSpec {
                 .child(artist.images.length == 1 ?
                     SingleImageComponent.create(c)
                         .image(artist.images[0])
-                        .imageAspectRatio(2)
-                        .withLayout() :
+                        .imageAspectRatio(2) :
                     Recycler.create(c)
                         .binder(binder)
                         .snapHelper(new PagerSnapHelper())
-                        .withLayout()
                         .aspectRatio(2))
                 .child(
                     TitleComponent.create(c)
