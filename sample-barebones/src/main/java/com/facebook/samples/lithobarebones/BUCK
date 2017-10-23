@@ -6,14 +6,16 @@
 
 include_defs("//COMPONENTS_DEFS")
 
-litho_android_library(
+android_library(
     name = "lithobarebones",
     srcs = glob(["**/*.java"]),
     annotation_processor_deps = [
         COMPONENTS_PROCESSOR_LIB_TARGET,
+        COMPONENTS_SECTIONS_PROCESSOR_LIB_TARGET,
     ],
     annotation_processors = [
         "com.facebook.litho.specmodels.processor.ComponentsProcessor",
+        "com.facebook.litho.sections.specmodels.processor.SectionsComponentProcessor",
     ],
     visibility = [
         "PUBLIC",
@@ -22,6 +24,10 @@ litho_android_library(
         COMPONENTS_ROOT_TARGET,
         COMPONENTS_WIDGET_TARGET,
         COMPONENTS_UTILS_TARGET,
+        COMPONENTS_SECTIONS_TARGET,
+        COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
+        COMPONENTS_SECTIONS_COMMON_TARGET,
+        COMPONENTS_SECTIONS_WIDGET_TARGET,
         COMPONENTS_SOLOADER_TARGET,
         COMPONENTS_ANDROIDSUPPORT_TARGET,
         COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,

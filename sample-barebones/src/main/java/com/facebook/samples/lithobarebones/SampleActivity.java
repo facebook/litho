@@ -13,18 +13,12 @@
 package com.facebook.samples.lithobarebones;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.widget.OrientationHelper;
-
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.widget.ComponentRenderInfo;
-import com.facebook.litho.widget.RenderInfo;
-import com.facebook.litho.widget.LinearLayoutInfo;
-import com.facebook.litho.widget.Recycler;
-import com.facebook.litho.widget.RecyclerBinder;
+import com.facebook.litho.sections.SectionContext;
+import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 
 public class SampleActivity extends Activity {
   @Override
@@ -33,31 +27,12 @@ public class SampleActivity extends Activity {
 
     final ComponentContext context = new ComponentContext(this);
 
-    final RecyclerBinder recyclerBinder = new RecyclerBinder.Builder()
-        .layoutInfo(new LinearLayoutInfo(this, OrientationHelper.VERTICAL, false))
-        .build(context);
 
-    final Component component = Recycler.create(context)
-            .binder(recyclerBinder)
+    final Component component =
+        RecyclerCollectionComponent.create(context)
+            .section(ListSection.create(new SectionContext(context)).build())
             .build();
 
-    addContent(recyclerBinder, context);
-
     setContentView(LithoView.create(context, component));
-  }
-
-  private static void addContent(RecyclerBinder recyclerBinder, ComponentContext context) {
-    for (int i = 0; i < 32; i++) {
-      recyclerBinder.insertItemAt(
-          i,
-          ComponentRenderInfo.create()
-              .component(
-                  ListItem.create(context)
-                      .color(i % 2 == 0 ? Color.WHITE : Color.LTGRAY)
-                      .title("Hello, world!")
-                      .subtitle("Litho tutorial")
-                      .build())
-              .build());
-    }
   }
 }
