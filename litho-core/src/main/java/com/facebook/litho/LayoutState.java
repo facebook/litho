@@ -77,6 +77,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.CheckReturnValue;
 
 /**
  * The main role of {@link LayoutState} is to hold the output of layout calculation. This includes
@@ -1889,6 +1890,7 @@ class LayoutState {
    *
    * @return The same LayoutState instance with an higher reference count.
    */
+  @CheckReturnValue
   LayoutState acquireRef() {
     if (mReferenceCount.getAndIncrement() == 0) {
       throw new IllegalStateException("Trying to use a released LayoutState");
@@ -1899,8 +1901,10 @@ class LayoutState {
 
   /**
    * Returns the state handler instance currently held by LayoutState and nulls it afterwards.
+   *
    * @return the state handler
    */
+  @CheckReturnValue
   StateHandler consumeStateHandler() {
     final StateHandler stateHandler = mStateHandler;
     mStateHandler = null;
