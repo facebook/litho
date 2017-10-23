@@ -30,8 +30,7 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
 /**
- * Class for validating that the {@link SpecMethodModel<DelegateMethod, Void>}s for a {@link SpecModel} are
- * well-formed.
+ * Class for validating that the {@link SpecMethodModel}s for a {@link SpecModel} are well-formed.
  */
 public class DelegateMethodValidation {
 
