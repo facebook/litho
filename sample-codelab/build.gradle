@@ -23,7 +23,7 @@ android {
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
-        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        targetSdkVersion rootProject.targetSdkVersion
     }
 
     // TODO(#62): Re-enable abort on error.
@@ -51,7 +51,6 @@ dependencies {
     // First-party
     implementation deps.soloader
     implementation deps.fresco
-    implementation deps.stetho
 
     // Annotations
     compileOnly deps.jsr305
@@ -60,11 +59,4 @@ dependencies {
     // Support Library
     implementation deps.supportAppCompat
     implementation deps.supportRecyclerView
-
-    // Unit test only
-    testImplementation project(':litho-testing')
-    testImplementation deps.junit
-    testImplementation deps.robolectric
-    testImplementation deps.assertjCore
-    testImplementation deps.mockitoCore
 }
