@@ -29,8 +29,8 @@ public class PureRenderValidationTest {
 
   @Before
   public void setup() {
-    DelegateMethodModel delegateMethod =
-        new DelegateMethodModel(
+    SpecMethodModel<DelegateMethod, Void> delegateMethod =
+        new SpecMethodModel<DelegateMethod, Void>(
             ImmutableList.<Annotation>of(
                 new Annotation() {
                   @Override
@@ -42,7 +42,8 @@ public class PureRenderValidationTest {
             "method",
             TypeName.BOOLEAN,
             ImmutableList.<MethodParamModel>of(),
-            mDelegateMethodRepresentedObject1);
+            mDelegateMethodRepresentedObject1,
+            null);
     when(mSpecModel.getDelegateMethods()).thenReturn(ImmutableList.of(delegateMethod));
   }
 

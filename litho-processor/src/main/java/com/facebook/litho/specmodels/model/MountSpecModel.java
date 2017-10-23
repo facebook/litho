@@ -46,7 +46,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   public MountSpecModel(
       String qualifiedSpecClassName,
       String componentClassName,
-      ImmutableList<DelegateMethodModel> delegateMethods,
+      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<EventMethodModel> eventMethods,
       ImmutableList<EventMethodModel> triggerMethods,
       ImmutableList<UpdateStateMethodModel> updateStateMethods,
@@ -115,7 +115,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public ImmutableList<DelegateMethodModel> getDelegateMethods() {
+  public ImmutableList<SpecMethodModel<DelegateMethod, Void>> getDelegateMethods() {
     return mSpecModel.getDelegateMethods();
   }
 

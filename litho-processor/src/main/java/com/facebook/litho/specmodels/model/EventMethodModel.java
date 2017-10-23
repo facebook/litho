@@ -22,13 +22,13 @@ import javax.lang.model.element.Modifier;
  */
 @Immutable
 public final class EventMethodModel {
-  public final EventDeclarationModel eventType;
   public final ImmutableList<Modifier> modifiers;
   public final CharSequence name;
   public final TypeName returnType;
   public final ImmutableList<TypeVariableName> typeVariables;
   public final ImmutableList<MethodParamModel> methodParams;
   public final Object representedObject;
+  public final EventDeclarationModel eventType;
 
   public EventMethodModel(
       EventDeclarationModel eventType,

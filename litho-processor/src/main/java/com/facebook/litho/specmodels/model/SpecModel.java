@@ -40,7 +40,7 @@ public interface SpecModel {
    * @return the list of methods defined in the spec which will be delegated to by the component
    *     that is generated from this model.
    */
-  ImmutableList<DelegateMethodModel> getDelegateMethods();
+  ImmutableList<SpecMethodModel<DelegateMethod, Void>> getDelegateMethods();
 
   /** @return the list of event methods defined by the spec. */
   ImmutableList<EventMethodModel> getEventMethods();

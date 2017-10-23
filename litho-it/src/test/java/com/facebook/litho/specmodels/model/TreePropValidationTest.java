@@ -43,8 +43,8 @@ public class TreePropValidationTest {
   public void testOnCreateTreePropMethod() {
     when(mSpecModel.getDelegateMethods())
         .thenReturn(
-            ImmutableList.<DelegateMethodModel>of(
-                new DelegateMethodModel(
+            ImmutableList.<SpecMethodModel<DelegateMethod, Void>>of(
+                new SpecMethodModel<DelegateMethod, Void>(
                     ImmutableList.<Annotation>of(
                         new OnCreateTreeProp() {
                           @Override
@@ -64,7 +64,8 @@ public class TreePropValidationTest {
                             .type(ClassNames.COMPONENT_CONTEXT)
                             .representedObject(mMethodParamObject2)
                             .build()),
-                    mDelegateMethodObject)));
+                    mDelegateMethodObject,
+                    null)));
 
     List<SpecModelValidationError> validationErrors = TreePropValidation.validate(mSpecModel);
     assertThat(validationErrors).hasSize(2);

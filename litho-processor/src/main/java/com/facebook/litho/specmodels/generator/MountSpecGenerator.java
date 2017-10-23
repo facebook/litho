@@ -14,10 +14,11 @@ import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.specmodels.model.ClassNames;
-import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MountSpecModel;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
@@ -92,7 +93,7 @@ public class MountSpecGenerator {
   public static TypeSpecDataHolder generateIsMountSizeDependent(MountSpecModel specModel) {
     TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
 
-    final DelegateMethodModel onMount =
+    final SpecMethodModel<DelegateMethod, Void> onMount =
         SpecModelUtils.getMethodModelWithAnnotation(specModel, OnMount.class);
 
     if (onMount == null) {
@@ -137,7 +138,7 @@ public class MountSpecGenerator {
 
   @Nullable
   private static ShouldUpdate getShouldUpdateAnnotation(MountSpecModel specModel) {
-    for (DelegateMethodModel delegateMethodModel : specModel.getDelegateMethods()) {
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethodModel : specModel.getDelegateMethods()) {
       for (Annotation annotation : delegateMethodModel.annotations) {
         if (annotation.annotationType().equals(ShouldUpdate.class)) {
           return (ShouldUpdate) annotation;

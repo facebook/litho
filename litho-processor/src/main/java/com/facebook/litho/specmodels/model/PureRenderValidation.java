@@ -18,7 +18,7 @@ public class PureRenderValidation {
   static <S extends SpecModel & HasPureRender> List<SpecModelValidationError> validate(
       S specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
-    final DelegateMethodModel shouldUpdateMethod =
+    final SpecMethodModel<DelegateMethod, Void> shouldUpdateMethod =
         SpecModelUtils.getMethodModelWithAnnotation(specModel, ShouldUpdate.class);
 
     if (shouldUpdateMethod != null) {

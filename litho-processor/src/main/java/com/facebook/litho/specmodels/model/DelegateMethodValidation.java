@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
 /**
- * Class for validating that the {@link DelegateMethodModel}s for a {@link SpecModel} are
+ * Class for validating that the {@link SpecMethodModel<DelegateMethod, Void>}s for a {@link SpecModel} are
  * well-formed.
  */
 public class DelegateMethodValidation {
@@ -41,9 +41,9 @@ public class DelegateMethodValidation {
     validationErrors.addAll(
         validateMethods(specModel, DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP));
 
-    final DelegateMethodModel onCreateLayoutModel =
+    final SpecMethodModel<DelegateMethod, Void> onCreateLayoutModel =
         SpecModelUtils.getMethodModelWithAnnotation(specModel, OnCreateLayout.class);
-    final DelegateMethodModel onCreateLayoutWithSizeSpecModel =
+    final SpecMethodModel<DelegateMethod, Void> onCreateLayoutWithSizeSpecModel =
         SpecModelUtils.getMethodModelWithAnnotation(specModel, OnCreateLayoutWithSizeSpec.class);
 
     if (onCreateLayoutModel == null && onCreateLayoutWithSizeSpecModel == null) {
@@ -70,7 +70,7 @@ public class DelegateMethodValidation {
     validationErrors.addAll(
         validateMethods(specModel, DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP));
 
-    final DelegateMethodModel onCreateMountContentModel =
+    final SpecMethodModel<DelegateMethod, Void> onCreateMountContentModel =
         SpecModelUtils.getMethodModelWithAnnotation(specModel, OnCreateMountContent.class);
     if (onCreateMountContentModel == null) {
       validationErrors.add(
@@ -82,7 +82,7 @@ public class DelegateMethodValidation {
       ImmutableList<Class<? extends Annotation>> methodsAcceptingMountTypeAsSecondParam =
           ImmutableList.of(OnMount.class, OnBind.class, OnUnbind.class, OnUnmount.class);
       for (Class<? extends Annotation> annotation : methodsAcceptingMountTypeAsSecondParam) {
-        final DelegateMethodModel method =
+        final SpecMethodModel<DelegateMethod, Void> method =
             SpecModelUtils.getMethodModelWithAnnotation(specModel, annotation);
         if (method != null &&
             (method.methodParams.size() < 2 ||
@@ -105,7 +105,7 @@ public class DelegateMethodValidation {
       Map<Class<? extends Annotation>, DelegateMethodDescription> delegateMethodDescriptions) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
-    for (DelegateMethodModel delegateMethod : specModel.getDelegateMethods()) {
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethod : specModel.getDelegateMethods()) {
       validationErrors.addAll(validateStatic(specModel, delegateMethod));
     }
 
@@ -114,7 +114,7 @@ public class DelegateMethodValidation {
       final Class<? extends Annotation> delegateMethodAnnotation = entry.getKey();
       final DelegateMethodDescription delegateMethodDescription = entry.getValue();
 
-      final DelegateMethodModel delegateMethod =
+      final SpecMethodModel<DelegateMethod, Void> delegateMethod =
           SpecModelUtils.getMethodModelWithAnnotation(specModel, delegateMethodAnnotation);
 
       if (delegateMethod == null) {
@@ -154,7 +154,7 @@ public class DelegateMethodValidation {
             final Class<? extends Annotation> interStageOutputMethodAnnotation =
                 DelegateMethodDescriptions.INTER_STAGE_INPUTS_MAP.get(annotation.annotationType());
 
-            final DelegateMethodModel interStageOutputMethod =
+            final SpecMethodModel<DelegateMethod, Void> interStageOutputMethod =
                 SpecModelUtils.getMethodModelWithAnnotation(
                     specModel, interStageOutputMethodAnnotation);
 
@@ -206,7 +206,7 @@ public class DelegateMethodValidation {
   }
 
   public static List<SpecModelValidationError> validateStatic(
-      SpecModel specModel, DelegateMethodModel delegateMethod) {
+      SpecModel specModel, SpecMethodModel<DelegateMethod, Void> delegateMethod) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     if (!specModel.hasInjectedDependencies()
         && specModel.getSpecElementType() == SpecElementType.JAVA_CLASS
@@ -220,7 +220,7 @@ public class DelegateMethodValidation {
   }
 
   public static List<SpecModelValidationError> validateDefinedParameterTypes(
-      DelegateMethodModel delegateMethod,
+      SpecMethodModel<DelegateMethod, Void> delegateMethod,
       Class<? extends Annotation> delegateMethodAnnotation,
       ImmutableList<TypeName> definedParameterTypes) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
@@ -299,7 +299,7 @@ public class DelegateMethodValidation {
   }
 
   private static boolean hasMatchingInterStageOutput(
-      DelegateMethodModel method, MethodParamModel interStageInput) {
+      SpecMethodModel<DelegateMethod, Void> method, MethodParamModel interStageInput) {
     for (MethodParamModel methodParam : method.methodParams) {
       if (methodParam.getName().equals(interStageInput.getName()) &&
           methodParam.getType() instanceof ParameterizedTypeName &&

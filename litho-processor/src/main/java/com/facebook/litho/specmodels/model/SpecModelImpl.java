@@ -33,7 +33,7 @@ public final class SpecModelImpl implements SpecModel {
   private final TypeName mComponentTypeName;
   private final ClassName mComponentClass;
   private final SpecElementType mSpecElementType;
-  private final ImmutableList<DelegateMethodModel> mDelegateMethods;
+  private final ImmutableList<SpecMethodModel<DelegateMethod, Void>> mDelegateMethods;
   private final ImmutableList<EventMethodModel> mEventMethods;
   private final ImmutableList<EventMethodModel> mTriggerMethods;
   private final ImmutableList<UpdateStateMethodModel> mUpdateStateMethods;
@@ -58,7 +58,7 @@ public final class SpecModelImpl implements SpecModel {
       String qualifiedSpecClassName,
       String componentClassName,
       ClassName componentClass,
-      ImmutableList<DelegateMethodModel> delegateMethods,
+      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<EventMethodModel> eventMethods,
       ImmutableList<EventMethodModel> triggerMethods,
       ImmutableList<UpdateStateMethodModel> updateStateMethods,
@@ -122,7 +122,7 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   @Override
-  public ImmutableList<DelegateMethodModel> getDelegateMethods() {
+  public ImmutableList<SpecMethodModel<DelegateMethod, Void>> getDelegateMethods() {
     return mDelegateMethods;
   }
 
@@ -307,11 +307,11 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   private static ImmutableList<PropModel> getProps(
-      ImmutableList<DelegateMethodModel> delegateMethods,
+      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<EventMethodModel> eventMethods,
       ImmutableList<UpdateStateMethodModel> updateStateMethods) {
     final Set<PropModel> props = new LinkedHashSet<>();
-    for (DelegateMethodModel delegateMethod : delegateMethods) {
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof PropModel) {
           props.add((PropModel) param);
@@ -337,7 +337,7 @@ public final class SpecModelImpl implements SpecModel {
 
     // Once we have all the props, look at the DiffPropModels. This preserves the correct
     // generics from the defined props.
-    for (DelegateMethodModel delegateMethod : delegateMethods) {
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof DiffPropModel &&
             !hasSameUnderlyingPropModel(props, (DiffPropModel) param)) {
@@ -361,11 +361,11 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   private static ImmutableList<StateParamModel> getStateValues(
-      ImmutableList<DelegateMethodModel> delegateMethods,
+      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<EventMethodModel> eventMethods,
       ImmutableList<UpdateStateMethodModel> updateStateMethods) {
     final Set<StateParamModel> stateValues = new LinkedHashSet<>();
-    for (DelegateMethodModel delegateMethod : delegateMethods) {
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof StateParamModel) {
           stateValues.add((StateParamModel) param);
@@ -389,7 +389,7 @@ public final class SpecModelImpl implements SpecModel {
       }
     }
 
-    for (DelegateMethodModel delegateMethod : delegateMethods) {
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof DiffStateParamModel &&
             !hasSameUnderlyingStateParamModel(stateValues, (DiffStateParamModel) param)) {
@@ -414,9 +414,9 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   private static ImmutableList<RenderDataDiffModel> getDiffs(
-      ImmutableList<DelegateMethodModel> delegateMethods) {
+      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods) {
     final Set<RenderDataDiffModel> diffs = new LinkedHashSet<>();
-    for (DelegateMethodModel delegateMethod : delegateMethods) {
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof RenderDataDiffModel) {
           diffs.add((RenderDataDiffModel) param);
@@ -428,11 +428,11 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   private static ImmutableList<InterStageInputParamModel> getInterStageInputs(
-      ImmutableList<DelegateMethodModel> delegateMethods,
+      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<EventMethodModel> eventMethods,
       ImmutableList<UpdateStateMethodModel> updateStateMethods) {
     final Set<InterStageInputParamModel> interStageInputs = new LinkedHashSet<>();
-    for (DelegateMethodModel delegateMethod : delegateMethods) {
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof InterStageInputParamModel) {
           interStageInputs.add((InterStageInputParamModel) param);
@@ -460,11 +460,11 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   private static ImmutableList<TreePropModel> getTreeProps(
-      ImmutableList<DelegateMethodModel> delegateMethods,
+      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<EventMethodModel> eventMethods,
       ImmutableList<UpdateStateMethodModel> updateStateMethods) {
     final Set<TreePropModel> treeProps = new LinkedHashSet<>();
-    for (DelegateMethodModel delegateMethod : delegateMethods) {
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof TreePropModel) {
           treeProps.add((TreePropModel) param);
@@ -499,7 +499,7 @@ public final class SpecModelImpl implements SpecModel {
     private String mQualifiedSpecClassName;
     private String mComponentClassName;
     private ClassName mComponentClass;
-    private ImmutableList<DelegateMethodModel> mDelegateMethodModels;
+    private ImmutableList<SpecMethodModel<DelegateMethod, Void>> mDelegateMethodModels;
     private ImmutableList<EventMethodModel> mEventMethodModels;
     private ImmutableList<EventMethodModel> mTriggerMethodModels;
     private ImmutableList<UpdateStateMethodModel> mUpdateStateMethodModels;
@@ -536,7 +536,7 @@ public final class SpecModelImpl implements SpecModel {
       return this;
     }
 
-    public Builder delegateMethods(ImmutableList<DelegateMethodModel> delegateMethodModels) {
+    public Builder delegateMethods(ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethodModels) {
       mDelegateMethodModels = delegateMethodModels;
       return this;
     }

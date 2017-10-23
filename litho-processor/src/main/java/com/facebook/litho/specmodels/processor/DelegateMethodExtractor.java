@@ -15,8 +15,10 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.model.DelegateMethod;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ import java.util.List;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 /**
@@ -40,12 +43,12 @@ public class DelegateMethodExtractor {
   }
 
   /** Get the delegate methods from the given {@link TypeElement}. */
-  public static ImmutableList<DelegateMethodModel> getDelegateMethods(
+  public static ImmutableList<SpecMethodModel<DelegateMethod, Void>> getDelegateMethods(
       TypeElement typeElement,
       List<Class<? extends Annotation>> permittedMethodAnnotations,
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
       List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels) {
-    final List<DelegateMethodModel> delegateMethods = new ArrayList<>();
+    final List<SpecMethodModel<DelegateMethod, Void>> delegateMethods = new ArrayList<>();
 
     for (Element enclosedElement : typeElement.getEnclosedElements()) {
       if (enclosedElement.getKind() != ElementKind.METHOD) {
@@ -64,14 +67,15 @@ public class DelegateMethodExtractor {
                 permittedInterStageInputAnnotations,
                 delegateMethodAnnotationsThatSkipDiffModels);
 
-        final DelegateMethodModel delegateMethod =
-            new DelegateMethodModel(
-                ImmutableList.copyOf(methodAnnotations),
-                ImmutableList.copyOf(new ArrayList<>(executableElement.getModifiers())),
+        final SpecMethodModel<DelegateMethod, Void> delegateMethod =
+            new SpecMethodModel<DelegateMethod, Void>(
+                ImmutableList.<Annotation>copyOf(methodAnnotations),
+                ImmutableList.<Modifier>copyOf(new ArrayList<>(executableElement.getModifiers())),
                 executableElement.getSimpleName(),
                 TypeName.get(executableElement.getReturnType()),
                 ImmutableList.copyOf(methodParams),
-                enclosedElement);
+                enclosedElement,
+                null);
         delegateMethods.add(delegateMethod);
       }
     }

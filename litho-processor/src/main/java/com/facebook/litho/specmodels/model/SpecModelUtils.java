@@ -60,10 +60,10 @@ public class SpecModelUtils {
   }
 
   @Nullable
-  public static DelegateMethodModel getMethodModelWithAnnotation(
+  public static SpecMethodModel<DelegateMethod, Void> getMethodModelWithAnnotation(
       SpecModel specModel,
       Class<? extends Annotation> annotationClass) {
-    for (DelegateMethodModel delegateMethodModel : specModel.getDelegateMethods()) {
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethodModel : specModel.getDelegateMethods()) {
       for (Annotation annotation : delegateMethodModel.annotations) {
         if (annotation.annotationType().equals(annotationClass)) {
           return delegateMethodModel;
@@ -74,11 +74,11 @@ public class SpecModelUtils {
     return null;
   }
 
-  public static List<DelegateMethodModel> getMethodModelsWithAnnotation(
+  public static List<SpecMethodModel<DelegateMethod, Void>> getMethodModelsWithAnnotation(
       SpecModel specModel,
       Class<? extends Annotation> annotationClass) {
-    final List<DelegateMethodModel> methodModels = new ArrayList<>();
-    for (DelegateMethodModel delegateMethodModel : specModel.getDelegateMethods()) {
+    final List<SpecMethodModel<DelegateMethod, Void>> methodModels = new ArrayList<>();
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethodModel : specModel.getDelegateMethods()) {
       for (Annotation annotation : delegateMethodModel.annotations) {
         if (annotation.annotationType().equals(annotationClass)) {
           methodModels.add(delegateMethodModel);

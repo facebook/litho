@@ -19,7 +19,8 @@ import com.facebook.litho.specmodels.generator.StateGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
-import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.model.DelegateMethod;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethodModel;
@@ -57,7 +58,7 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
   public DiffSectionSpecModel(
       String qualifiedSpecClassName,
       String componentClassName,
-      ImmutableList<DelegateMethodModel> delegateMethods,
+      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<EventMethodModel> eventMethods,
       ImmutableList<AnnotationSpec> classAnnotations,
       ImmutableList<EventMethodModel> triggerMethods,
@@ -117,7 +118,7 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
-  public ImmutableList<DelegateMethodModel> getDelegateMethods() {
+  public ImmutableList<SpecMethodModel<DelegateMethod, Void>> getDelegateMethods() {
     return mSpecModel.getDelegateMethods();
   }
 

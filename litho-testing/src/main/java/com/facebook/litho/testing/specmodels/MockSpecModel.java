@@ -11,7 +11,8 @@ package com.facebook.litho.testing.specmodels;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
-import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.model.DelegateMethod;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethodModel;
@@ -44,7 +45,7 @@ public class MockSpecModel implements SpecModel {
   private final String mComponentName;
   private final TypeName mComponentTypeName;
   private final ClassName mComponentClass;
-  private final ImmutableList<DelegateMethodModel> mDelegateMethods;
+  private final ImmutableList<SpecMethodModel<DelegateMethod, Void>> mDelegateMethods;
   private final ImmutableList<EventMethodModel> mEventMethods;
   private final ImmutableList<EventMethodModel> mTriggerMethods;
   private final ImmutableList<UpdateStateMethodModel> mUpdateStateMethods;
@@ -81,7 +82,7 @@ public class MockSpecModel implements SpecModel {
       String componentName,
       TypeName componentTypeName,
       ClassName componentClass,
-      ImmutableList<DelegateMethodModel> delegateMethods,
+      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<EventMethodModel> eventMethods,
       ImmutableList<EventMethodModel> triggerMethods,
       ImmutableList<UpdateStateMethodModel> updateStateMethods,
@@ -169,7 +170,7 @@ public class MockSpecModel implements SpecModel {
   }
 
   @Override
-  public ImmutableList<DelegateMethodModel> getDelegateMethods() {
+  public ImmutableList<SpecMethodModel<DelegateMethod, Void>> getDelegateMethods() {
     return mDelegateMethods;
   }
 
@@ -339,7 +340,7 @@ public class MockSpecModel implements SpecModel {
     private String mComponentName;
     private TypeName mComponentTypeName;
     private ClassName mComponentClass;
-    private ImmutableList<DelegateMethodModel> mDelegateMethods = ImmutableList.of();
+    private ImmutableList<SpecMethodModel<DelegateMethod, Void>> mDelegateMethods = ImmutableList.of();
     private ImmutableList<EventMethodModel> mEventMethods = ImmutableList.of();
     private ImmutableList<EventMethodModel> mTriggerMethods = ImmutableList.of();
     private ImmutableList<UpdateStateMethodModel> mUpdateStateMethods = ImmutableList.of();
@@ -395,7 +396,7 @@ public class MockSpecModel implements SpecModel {
       return this;
     }
 
-    public Builder delegateMethods(ImmutableList<DelegateMethodModel> delegateMethods) {
+    public Builder delegateMethods(ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods) {
       mDelegateMethods = delegateMethods;
       return this;
     }

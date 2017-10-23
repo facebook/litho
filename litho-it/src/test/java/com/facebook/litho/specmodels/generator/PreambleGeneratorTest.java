@@ -17,8 +17,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
 import com.squareup.javapoet.FieldSpec;
@@ -43,13 +44,13 @@ public class PreambleGeneratorTest {
   public void setUp() {
     mSpecModelWithoutDI = SpecModelImpl.newBuilder()
         .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
-        .delegateMethods(ImmutableList.<DelegateMethodModel>of())
+        .delegateMethods(ImmutableList.<SpecMethodModel<DelegateMethod, Void>>of())
         .representedObject(new Object())
         .build();
 
     mSpecModelWithDI = SpecModelImpl.newBuilder()
         .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
-        .delegateMethods(ImmutableList.<DelegateMethodModel>of())
+        .delegateMethods(ImmutableList.<SpecMethodModel<DelegateMethod, Void>>of())
         .dependencyInjectionGenerator(mDependencyInjectionHelper)
         .representedObject(new Object())
         .build();

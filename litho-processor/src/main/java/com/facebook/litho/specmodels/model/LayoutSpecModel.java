@@ -28,7 +28,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   public LayoutSpecModel(
       String qualifiedSpecClassName,
       String componentClassName,
-      ImmutableList<DelegateMethodModel> delegateMethods,
+      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<EventMethodModel> eventMethods,
       ImmutableList<EventMethodModel> triggerMethods,
       ImmutableList<UpdateStateMethodModel> updateStateMethods,
@@ -91,7 +91,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public ImmutableList<DelegateMethodModel> getDelegateMethods() {
+  public ImmutableList<SpecMethodModel<DelegateMethod, Void>> getDelegateMethods() {
     return mSpecModel.getDelegateMethods();
   }
 

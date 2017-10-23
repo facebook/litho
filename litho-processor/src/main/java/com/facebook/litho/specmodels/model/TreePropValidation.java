@@ -19,9 +19,9 @@ class TreePropValidation {
   static List<SpecModelValidationError> validate(SpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
-    final List<DelegateMethodModel> onCreateTreePropMethods =
+    final List<SpecMethodModel<DelegateMethod, Void>> onCreateTreePropMethods =
         SpecModelUtils.getMethodModelsWithAnnotation(specModel, OnCreateTreeProp.class);
-    for (DelegateMethodModel onCreateTreePropMethod : onCreateTreePropMethods) {
+    for (SpecMethodModel<DelegateMethod, Void> onCreateTreePropMethod : onCreateTreePropMethods) {
       if (onCreateTreePropMethod.returnType.equals(TypeName.VOID)) {
         validationErrors.add(
             new SpecModelValidationError(

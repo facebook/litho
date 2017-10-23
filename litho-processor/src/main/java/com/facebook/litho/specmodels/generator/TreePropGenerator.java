@@ -12,8 +12,9 @@ package com.facebook.litho.specmodels.generator;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.model.ClassNames;
-import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.MethodParamModelUtils;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.TreePropModel;
@@ -66,8 +67,7 @@ public class TreePropGenerator {
   }
 
   static TypeSpecDataHolder generateGetTreePropsForChildren(SpecModel specModel) {
-    final List<DelegateMethodModel> onCreateTreePropsMethods =
-        SpecModelUtils.getMethodModelsWithAnnotation(specModel, OnCreateTreeProp.class);
+    List<SpecMethodModel<DelegateMethod, Void>> onCreateTreePropsMethods = SpecModelUtils.getMethodModelsWithAnnotation(specModel, OnCreateTreeProp.class);
 
     if (onCreateTreePropsMethods.isEmpty()) {
       return TypeSpecDataHolder.newBuilder().build();
@@ -90,7 +90,7 @@ public class TreePropGenerator {
             ClassNames.TREE_PROPS,
             ClassNames.TREE_PROPS);
 
-    for (DelegateMethodModel onCreateTreePropsMethod : onCreateTreePropsMethods) {
+    for (SpecMethodModel<DelegateMethod, Void> onCreateTreePropsMethod : onCreateTreePropsMethods) {
       final CodeBlock.Builder block = CodeBlock.builder();
       block
           .add(

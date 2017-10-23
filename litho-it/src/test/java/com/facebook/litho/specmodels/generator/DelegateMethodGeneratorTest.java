@@ -20,11 +20,12 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DelegateMethodDescription;
 import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
-import com.facebook.litho.specmodels.model.DelegateMethodModel;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.MethodParamModelFactory;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
 import com.squareup.javapoet.AnnotationSpec;
@@ -49,12 +50,12 @@ public class DelegateMethodGeneratorTest {
   private SpecModel mSpecModelWithoutDI;
   private SpecModel mSpecModelWithDI;
 
-  private DelegateMethodModel mDelegateMethodModel;
+  private SpecMethodModel<DelegateMethod, Void> mDelegateMethodModel;
 
   @Before
   public void setUp() {
     mDelegateMethodModel =
-        new DelegateMethodModel(
+        new SpecMethodModel<>(
             ImmutableList.of(createAnnotation(OnCreateLayout.class)),
             ImmutableList.of(Modifier.PROTECTED),
             "onCreateLayout",
@@ -87,6 +88,7 @@ public class DelegateMethodGeneratorTest {
                     ImmutableList.<Class<? extends Annotation>>of(),
                     ImmutableList.<Class<? extends Annotation>>of(),
                     null)),
+            null,
             null);
 
     mSpecModelWithoutDI = SpecModelImpl.newBuilder()
@@ -210,8 +212,8 @@ public class DelegateMethodGeneratorTest {
                         TypeName.CHAR, "optionalParam", new Object())))
             .build());
 
-    DelegateMethodModel delegateMethodExpectingOptionalParameter =
-        new DelegateMethodModel(
+    SpecMethodModel<DelegateMethod, Void> delegateMethodExpectingOptionalParameter =
+        new SpecMethodModel<DelegateMethod, Void>(
             ImmutableList.of(createAnnotation(OnCreateLayout.class)),
             ImmutableList.of(Modifier.PROTECTED),
             "onCreateLayout",
@@ -237,6 +239,7 @@ public class DelegateMethodGeneratorTest {
                     ImmutableList.<Class<? extends Annotation>>of(),
                     ImmutableList.<Class<? extends Annotation>>of(),
                     null)),
+            null,
             null);
 
     SpecModel specModel =

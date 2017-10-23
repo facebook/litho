@@ -12,7 +12,8 @@ package com.facebook.litho.specmodels.model.testing;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
-import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.model.DelegateMethod;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethodModel;
@@ -47,7 +48,7 @@ public class TestSpecModel implements SpecModel, HasPureRender {
   public TestSpecModel(
       String qualifiedSpecClassName,
       String componentClassName,
-      ImmutableList<DelegateMethodModel> delegateMethods,
+      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<EventDeclarationModel> eventDeclarations,
       ImmutableList<BuilderMethodModel> builderMethodModels,
       String classJavadoc,
@@ -90,7 +91,7 @@ public class TestSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public ImmutableList<DelegateMethodModel> getDelegateMethods() {
+  public ImmutableList<SpecMethodModel<DelegateMethod, Void>> getDelegateMethods() {
     return mSpecModel.getDelegateMethods();
   }
 

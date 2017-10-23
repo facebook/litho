@@ -18,8 +18,9 @@ import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
-import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.google.testing.compile.CompilationRule;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
@@ -64,7 +65,7 @@ public class DelegateMethodExtractorTest {
         new ArrayList<>();
     permittedParamAnnotations.add(Param.class);
 
-    ImmutableList<DelegateMethodModel> delegateMethods =
+    ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods =
         DelegateMethodExtractor.getDelegateMethods(
             typeElement,
             new ArrayList<>(DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP.keySet()),
@@ -73,7 +74,7 @@ public class DelegateMethodExtractorTest {
 
     assertThat(delegateMethods).hasSize(1);
 
-    DelegateMethodModel delegateMethod = delegateMethods.iterator().next();
+    SpecMethodModel<DelegateMethod, Void> delegateMethod = delegateMethods.iterator().next();
     assertThat(delegateMethod.annotations).hasSize(1);
 
     assertThat(delegateMethod.modifiers).hasSize(1);

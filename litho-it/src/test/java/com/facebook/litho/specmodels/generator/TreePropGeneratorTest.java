@@ -18,7 +18,8 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
-import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.model.DelegateMethod;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.MethodParamModelFactory;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
@@ -37,12 +38,12 @@ import org.junit.Test;
 public class TreePropGeneratorTest {
   private final SpecModel mSpecModel = mock(SpecModel.class);
   private final TreePropModel mTreeProp = mock(TreePropModel.class);
-  private DelegateMethodModel mOnCreateTreePropMethodModel;
+  private SpecMethodModel<DelegateMethod, Void> mOnCreateTreePropMethodModel;
 
   @Before
   public void setUp() {
     mOnCreateTreePropMethodModel =
-        new DelegateMethodModel(
+        new SpecMethodModel<DelegateMethod, Void>(
             ImmutableList.<Annotation>of(
                 new OnCreateTreeProp() {
 
@@ -82,6 +83,7 @@ public class TreePropGeneratorTest {
                     new ArrayList<Class<? extends Annotation>>(),
                     new ArrayList<Class<? extends Annotation>>(),
                     null)),
+            null,
             null);
 
     when(mTreeProp.getName()).thenReturn("treeProp");

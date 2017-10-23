@@ -41,8 +41,8 @@ public class SpecModelImplTest {
   SimpleMethodParamModel mMethodParamModel = mock(SimpleMethodParamModel.class);
   TreePropModel mTreePropModel = mock(TreePropModel.class);
 
-  DelegateMethodModel mMethodModel1;
-  DelegateMethodModel mMethodModel2;
+  SpecMethodModel<DelegateMethod, Void> mMethodModel1;
+  SpecMethodModel<DelegateMethod, Void> mMethodModel2;
 
   TypeVariableName mTypeVariableName1 = TypeVariableName.get("test1");
   TypeVariableName mTypeVariableName2 = TypeVariableName.get("test2");
@@ -79,20 +79,22 @@ public class SpecModelImplTest {
     params2.add(mMethodParamModel);
 
     mMethodModel1 =
-        new DelegateMethodModel(
+        new SpecMethodModel<DelegateMethod, Void>(
             ImmutableList.<Annotation>of(),
             ImmutableList.<Modifier>of(),
             "method1",
             TypeName.BOOLEAN,
             ImmutableList.copyOf(params1),
+            null,
             null);
     mMethodModel2 =
-        new DelegateMethodModel(
+        new SpecMethodModel<DelegateMethod, Void>(
             ImmutableList.<Annotation>of(),
             ImmutableList.<Modifier>of(),
             "method2",
             TypeName.BOOLEAN,
             ImmutableList.copyOf(params2),
+            null,
             null);
 
     mTypeVariableNames.add(mTypeVariableName1);

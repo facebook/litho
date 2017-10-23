@@ -13,7 +13,8 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.model.DelegateMethod;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
 import com.squareup.javapoet.AnnotationSpec;
@@ -30,7 +31,7 @@ public class ClassAnnotationsGeneratorTest {
     final SpecModel specModel =
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName("com.example.MyComponentSpec")
-            .delegateMethods(ImmutableList.<DelegateMethodModel>of())
+            .delegateMethods(ImmutableList.<SpecMethodModel<DelegateMethod, Void>>of())
             .representedObject(new Object())
             .classAnnotations(annotations)
             .build();

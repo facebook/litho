@@ -10,7 +10,8 @@
 package com.facebook.litho.sections.specmodels.model;
 
 import com.facebook.litho.sections.annotations.OnCreateService;
-import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.model.DelegateMethod;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelFactory;
 import com.facebook.litho.specmodels.model.SpecModel;
@@ -33,7 +34,7 @@ class SectionSpecModelUtils {
 
   @Nullable
   private static TypeName extractServiceParam(SpecModel specModel) {
-    final DelegateMethodModel onCreateService =
+    final SpecMethodModel<DelegateMethod, Void> onCreateService =
         SpecModelUtils.getMethodModelWithAnnotation(specModel, OnCreateService.class);
     return onCreateService == null ? null : onCreateService.returnType;
   }

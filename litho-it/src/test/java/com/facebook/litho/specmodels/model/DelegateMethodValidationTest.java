@@ -48,7 +48,7 @@ public class DelegateMethodValidationTest {
   private final Object mMethodParamObject1 = new Object();
   private final Object mMethodParamObject2 = new Object();
   private final Object mMethodParamObject3 = new Object();
-  private DelegateMethodModel mOnCreateMountContent;
+  private SpecMethodModel<DelegateMethod, Void> mOnCreateMountContent;
   private final Object mOnCreateMountContentObject = new Object();
 
   @Before
@@ -57,7 +57,7 @@ public class DelegateMethodValidationTest {
     when(mMountSpecModel.getRepresentedObject()).thenReturn(mMountSpecObject);
 
     mOnCreateMountContent =
-        new DelegateMethodModel(
+        new SpecMethodModel<DelegateMethod, Void>(
             ImmutableList.of((Annotation) () -> OnCreateMountContent.class),
             ImmutableList.of(Modifier.STATIC),
             "onCreateMountContent",
@@ -68,7 +68,8 @@ public class DelegateMethodValidationTest {
                     .type(ClassNames.COMPONENT_CONTEXT)
                     .representedObject(new Object())
                     .build()),
-            mOnCreateMountContentObject);
+            mOnCreateMountContentObject,
+            null);
   }
 
   @Test
@@ -90,7 +91,7 @@ public class DelegateMethodValidationTest {
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
             ImmutableList.of(
-                new DelegateMethodModel(
+                new SpecMethodModel<DelegateMethod, Void>(
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
@@ -101,8 +102,9 @@ public class DelegateMethodValidationTest {
                             .type(ClassNames.COMPONENT_CONTEXT)
                             .representedObject(new Object())
                             .build()),
-                    new Object()),
-                new DelegateMethodModel(
+                    new Object(),
+                    null),
+                new SpecMethodModel<DelegateMethod, Void>(
                     ImmutableList.of((Annotation) () -> OnCreateLayoutWithSizeSpec.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
@@ -123,7 +125,8 @@ public class DelegateMethodValidationTest {
                             .type(TypeName.INT)
                             .representedObject(new Object())
                             .build()),
-                    new Object())));
+                    new Object(),
+                    null)));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
@@ -140,13 +143,14 @@ public class DelegateMethodValidationTest {
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
             ImmutableList.of(
-                new DelegateMethodModel(
+                new SpecMethodModel<DelegateMethod, Void>(
                     ImmutableList.of((Annotation) () -> OnCreateLayoutWithSizeSpec.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
                     ClassNames.COMPONENT_LAYOUT,
                     ImmutableList.of(),
-                    mDelegateMethodObject1)));
+                    mDelegateMethodObject1,
+                    null)));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
@@ -164,7 +168,7 @@ public class DelegateMethodValidationTest {
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
             ImmutableList.of(
-                new DelegateMethodModel(
+                new SpecMethodModel<DelegateMethod, Void>(
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
@@ -174,7 +178,8 @@ public class DelegateMethodValidationTest {
                             .type(TypeName.BOOLEAN)
                             .representedObject(mMethodParamObject1)
                             .build()),
-                    mDelegateMethodObject1)));
+                    mDelegateMethodObject1,
+                    null)));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
@@ -191,7 +196,7 @@ public class DelegateMethodValidationTest {
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
             ImmutableList.of(
-                new DelegateMethodModel(
+                new SpecMethodModel<DelegateMethod, Void>(
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
@@ -205,7 +210,8 @@ public class DelegateMethodValidationTest {
                             .type(TypeName.INT)
                             .representedObject(mMethodParamObject2)
                             .build()),
-                    mDelegateMethodObject1)));
+                    mDelegateMethodObject1,
+                    null)));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
@@ -222,7 +228,7 @@ public class DelegateMethodValidationTest {
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
             ImmutableList.of(
-                new DelegateMethodModel(
+                new SpecMethodModel<DelegateMethod, Void>(
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(),
                     "name",
@@ -232,7 +238,8 @@ public class DelegateMethodValidationTest {
                             .type(ClassNames.COMPONENT_CONTEXT)
                             .representedObject(mMethodParamObject1)
                             .build()),
-                    mDelegateMethodObject1)));
+                    mDelegateMethodObject1,
+                    null)));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
@@ -248,7 +255,7 @@ public class DelegateMethodValidationTest {
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
             ImmutableList.of(
-                new DelegateMethodModel(
+                new SpecMethodModel<DelegateMethod, Void>(
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(),
                     "name",
@@ -258,7 +265,8 @@ public class DelegateMethodValidationTest {
                             .type(ClassNames.COMPONENT_CONTEXT)
                             .representedObject(mMethodParamObject1)
                             .build()),
-                    mDelegateMethodObject1)));
+                    mDelegateMethodObject1,
+                    null)));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
@@ -283,7 +291,7 @@ public class DelegateMethodValidationTest {
         .thenReturn(
             ImmutableList.of(
                 mOnCreateMountContent,
-                new DelegateMethodModel(
+                new SpecMethodModel<DelegateMethod, Void>(
                     ImmutableList.of((Annotation) () -> OnMount.class),
                     ImmutableList.of(Modifier.STATIC),
                     "onMount",
@@ -297,8 +305,9 @@ public class DelegateMethodValidationTest {
                             .type(ClassNames.OBJECT)
                             .representedObject(mMethodParamObject2)
                             .build()),
-                    mDelegateMethodObject1),
-                new DelegateMethodModel(
+                    mDelegateMethodObject1,
+                    null),
+                new SpecMethodModel<DelegateMethod, Void>(
                     ImmutableList.of((Annotation) () -> OnBind.class),
                     ImmutableList.of(Modifier.STATIC),
                     "onBind",
@@ -312,7 +321,8 @@ public class DelegateMethodValidationTest {
                             .type(ClassNames.OBJECT)
                             .representedObject(mMethodParamObject2)
                             .build()),
-                    mDelegateMethodObject2)));
+                    mDelegateMethodObject2,
+                    null)));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateMountSpecModel(mMountSpecModel);
@@ -342,7 +352,7 @@ public class DelegateMethodValidationTest {
         .thenReturn(
             ImmutableList.of(
                 mOnCreateMountContent,
-                new DelegateMethodModel(
+                new SpecMethodModel<DelegateMethod, Void>(
                     ImmutableList.of((Annotation) () -> OnUnmount.class),
                     ImmutableList.of(Modifier.STATIC),
                     "onUnmount",
@@ -357,7 +367,8 @@ public class DelegateMethodValidationTest {
                             .representedObject(mMethodParamObject2)
                             .build(),
                         interStageInputParamModel),
-                    mDelegateMethodObject1)));
+                    mDelegateMethodObject1,
+                    null)));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateMountSpecModel(mMountSpecModel);
@@ -384,7 +395,7 @@ public class DelegateMethodValidationTest {
         .thenReturn(
             ImmutableList.of(
                 mOnCreateMountContent,
-                new DelegateMethodModel(
+                new SpecMethodModel<DelegateMethod, Void>(
                     ImmutableList.of((Annotation) () -> OnMount.class),
                     ImmutableList.of(Modifier.STATIC),
                     "onMount",
@@ -399,7 +410,8 @@ public class DelegateMethodValidationTest {
                             .representedObject(mMethodParamObject2)
                             .build(),
                         interStageInputParamModel),
-                    mDelegateMethodObject1)));
+                    mDelegateMethodObject1,
+                    null)));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateMountSpecModel(mMountSpecModel);
@@ -428,7 +440,7 @@ public class DelegateMethodValidationTest {
         .thenReturn(
             ImmutableList.of(
                 mOnCreateMountContent,
-                new DelegateMethodModel(
+                new SpecMethodModel<DelegateMethod, Void>(
                     ImmutableList.of((Annotation) () -> OnMount.class),
                     ImmutableList.of(Modifier.STATIC),
                     "onMount",
@@ -445,8 +457,9 @@ public class DelegateMethodValidationTest {
                             .representedObject(mMethodParamObject2)
                             .build(),
                         interStageInputParamModel),
-                    mDelegateMethodObject1),
-                new DelegateMethodModel(
+                    mDelegateMethodObject1,
+                    null),
+                new SpecMethodModel<DelegateMethod, Void>(
                     ImmutableList.of((Annotation) () -> OnPrepare.class),
                     ImmutableList.of(Modifier.STATIC),
                     "onPrepare",
@@ -457,7 +470,8 @@ public class DelegateMethodValidationTest {
                             .type(ClassNames.COMPONENT_CONTEXT)
                             .representedObject(mMethodParamObject1)
                             .build()),
-                    mDelegateMethodObject2)));
+                    mDelegateMethodObject2,
+                    null)));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateMountSpecModel(mMountSpecModel);
@@ -490,7 +504,7 @@ public class DelegateMethodValidationTest {
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
             ImmutableList.of(
-                new DelegateMethodModel(
+                new SpecMethodModel<DelegateMethod, Void>(
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
@@ -504,7 +518,8 @@ public class DelegateMethodValidationTest {
                             TypeName.INT.box(), "matched", mMethodParamObject2),
                         MethodParamModelFactory.createSimpleMethodParamModel(
                             TypeName.OBJECT, "unmatched", mMethodParamObject3)),
-                    mDelegateMethodObject1)));
+                    mDelegateMethodObject1,
+                    null)));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateMethods(mLayoutSpecModel, map);
