@@ -10,4 +10,4 @@
 
 [android]
   target = android-25
-  build_tools_version = 25.0.3
+  build_tools_version = 26.0.2
