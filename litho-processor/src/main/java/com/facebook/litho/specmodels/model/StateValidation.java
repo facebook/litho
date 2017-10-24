@@ -67,7 +67,8 @@ public class StateValidation {
 
   static List<SpecModelValidationError> validateOnUpdateStateMethods(SpecModel specModel) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
-    for (UpdateStateMethodModel updateStateMethodModel : specModel.getUpdateStateMethods()) {
+    for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel :
+        specModel.getUpdateStateMethods()) {
       validationErrors.addAll(validateOnUpdateStateMethod(specModel, updateStateMethodModel));
     }
 
@@ -76,20 +77,20 @@ public class StateValidation {
 
   /**
    * Validate that the declaration of a method annotated with {@link OnUpdateState} is correct:
+   *
    * <ul>
    *   <li>1. Method parameters annotated with {@link Param} don't have the same name as parameters
-   *    annotated with {@link State} or {@link Prop}.</li>
+   *       annotated with {@link State} or {@link Prop}.
    *   <li>2. Method parameters not annotated with {@link Param} must be of type
-   *    com.facebook.litho.StateValue.</li>
+   *       com.facebook.litho.StateValue.
    *   <li>3. Names of method parameters not annotated with {@link Param} must match the name and
-   *     type of a parameter annotated with {@link State}.</li>
+   *       type of a parameter annotated with {@link State}.
    * </ul>
    *
    * @return a list of validation errors. If the list is empty, the method is well-formed.
    */
   static List<SpecModelValidationError> validateOnUpdateStateMethod(
-      SpecModel specModel,
-      UpdateStateMethodModel updateStateMethodModel) {
+      SpecModel specModel, SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
     if (!specModel.hasInjectedDependencies() &&

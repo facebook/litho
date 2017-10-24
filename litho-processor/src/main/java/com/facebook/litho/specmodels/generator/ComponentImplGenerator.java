@@ -31,7 +31,7 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
-import com.facebook.litho.specmodels.model.UpdateStateMethodModel;
+import com.facebook.litho.specmodels.model.UpdateStateMethod;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
@@ -433,7 +433,8 @@ public class ComponentImplGenerator {
   static TypeSpecDataHolder generateOnUpdateStateMethods(SpecModel specModel) {
     TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
 
-    for (UpdateStateMethodModel updateStateMethodModel : specModel.getUpdateStateMethods()) {
+    for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel :
+        specModel.getUpdateStateMethods()) {
       final String stateUpdateClassName = getStateUpdateClassName(updateStateMethodModel);
       final List<MethodParamModel> params = getParams(updateStateMethodModel);
 
@@ -471,7 +472,7 @@ public class ComponentImplGenerator {
     final List<MethodParamModel> componentsInImpl = findComponentsInImpl(specModel);
     final ImmutableList<InterStageInputParamModel> interStageComponentVariables =
         specModel.getInterStageInputs();
-    final ImmutableList<UpdateStateMethodModel> updateStateMethodModels =
+    final ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethodModels =
         specModel.getUpdateStateMethods();
     final boolean hasDeepCopy = specModel.hasDeepCopy();
 
@@ -548,7 +549,8 @@ public class ComponentImplGenerator {
     return componentsInImpl;
   }
 
-  private static List<MethodParamModel> getParams(UpdateStateMethodModel updateStateMethodModel) {
+  private static List<MethodParamModel> getParams(
+      SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel) {
     final List<MethodParamModel> params = new ArrayList<>();
     for (MethodParamModel methodParamModel : updateStateMethodModel.methodParams) {
       for (Annotation annotation : methodParamModel.getAnnotations()) {
@@ -562,7 +564,8 @@ public class ComponentImplGenerator {
     return params;
   }
 
-  private static String getStateUpdateClassName(UpdateStateMethodModel updateStateMethodModel) {
+  private static String getStateUpdateClassName(
+      SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel) {
     String methodName = updateStateMethodModel.name.toString();
     return methodName.substring(0, 1).toUpperCase(Locale.ROOT) +
         methodName.substring(1) +

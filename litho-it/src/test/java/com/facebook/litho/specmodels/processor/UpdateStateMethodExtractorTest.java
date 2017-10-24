@@ -18,7 +18,8 @@ import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.specmodels.model.UpdateStateMethodModel;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
+import com.facebook.litho.specmodels.model.UpdateStateMethod;
 import com.google.testing.compile.CompilationRule;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
@@ -61,15 +62,13 @@ public class UpdateStateMethodExtractorTest {
 
     List<Class<? extends Annotation>> permittedParamAnnotations = new ArrayList<>();
 
-    ImmutableList<UpdateStateMethodModel> methods =
-        UpdateStateMethodExtractor.getOnUpdateStateMethods(
-            typeElement,
-            permittedParamAnnotations);
+    ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> methods =
+        UpdateStateMethodExtractor.getOnUpdateStateMethods(typeElement, permittedParamAnnotations);
 
     assertThat(methods).hasSize(1);
 
-    UpdateStateMethodModel updateStateMethod = methods.iterator().next();
-    assertThat(updateStateMethod.annotation).hasAtLeastOneElementOfType(OnUpdateState.class);
+    SpecMethodModel<UpdateStateMethod, Void> updateStateMethod = methods.iterator().next();
+    assertThat(updateStateMethod.annotations).hasAtLeastOneElementOfType(OnUpdateState.class);
 
     assertThat(updateStateMethod.modifiers).hasSize(1);
     assertThat(updateStateMethod.modifiers).contains(Modifier.PUBLIC);

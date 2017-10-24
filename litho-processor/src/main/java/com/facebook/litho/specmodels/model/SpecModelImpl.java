@@ -36,7 +36,7 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<SpecMethodModel<DelegateMethod, Void>> mDelegateMethods;
   private final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mEventMethods;
   private final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mTriggerMethods;
-  private final ImmutableList<UpdateStateMethodModel> mUpdateStateMethods;
+  private final ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethods;
   private final ImmutableList<PropModel> mProps;
   private final ImmutableList<PropDefaultModel> mPropDefaults;
   private final ImmutableList<TypeVariableName> mTypeVariables;
@@ -61,7 +61,7 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
-      ImmutableList<UpdateStateMethodModel> updateStateMethods,
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
@@ -137,7 +137,7 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   @Override
-  public ImmutableList<UpdateStateMethodModel> getUpdateStateMethods() {
+  public ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> getUpdateStateMethods() {
     return mUpdateStateMethods;
   }
 
@@ -309,7 +309,7 @@ public final class SpecModelImpl implements SpecModel {
   private static ImmutableList<PropModel> getProps(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
-      ImmutableList<UpdateStateMethodModel> updateStateMethods) {
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
     final Set<PropModel> props = new LinkedHashSet<>();
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
@@ -327,7 +327,7 @@ public final class SpecModelImpl implements SpecModel {
       }
     }
 
-    for (UpdateStateMethodModel updateStateMethod : updateStateMethods) {
+    for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod : updateStateMethods) {
       for (MethodParamModel param : updateStateMethod.methodParams) {
         if (param instanceof PropModel) {
           props.add((PropModel) param);
@@ -363,7 +363,7 @@ public final class SpecModelImpl implements SpecModel {
   private static ImmutableList<StateParamModel> getStateValues(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
-      ImmutableList<UpdateStateMethodModel> updateStateMethods) {
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
     final Set<StateParamModel> stateValues = new LinkedHashSet<>();
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
@@ -381,7 +381,7 @@ public final class SpecModelImpl implements SpecModel {
       }
     }
 
-    for (UpdateStateMethodModel updateStateMethod : updateStateMethods) {
+    for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod : updateStateMethods) {
       for (MethodParamModel param : updateStateMethod.methodParams) {
         if (param instanceof StateParamModel) {
           stateValues.add((StateParamModel) param);
@@ -430,7 +430,7 @@ public final class SpecModelImpl implements SpecModel {
   private static ImmutableList<InterStageInputParamModel> getInterStageInputs(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
-      ImmutableList<UpdateStateMethodModel> updateStateMethods) {
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
     final Set<InterStageInputParamModel> interStageInputs = new LinkedHashSet<>();
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
@@ -448,7 +448,7 @@ public final class SpecModelImpl implements SpecModel {
       }
     }
 
-    for (UpdateStateMethodModel updateStateMethod : updateStateMethods) {
+    for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod : updateStateMethods) {
       for (MethodParamModel param : updateStateMethod.methodParams) {
         if (param instanceof InterStageInputParamModel) {
           interStageInputs.add((InterStageInputParamModel) param);
@@ -462,7 +462,7 @@ public final class SpecModelImpl implements SpecModel {
   private static ImmutableList<TreePropModel> getTreeProps(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
-      ImmutableList<UpdateStateMethodModel> updateStateMethods) {
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
     final Set<TreePropModel> treeProps = new LinkedHashSet<>();
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
@@ -480,7 +480,7 @@ public final class SpecModelImpl implements SpecModel {
       }
     }
 
-    for (UpdateStateMethodModel updateStateMethod : updateStateMethods) {
+    for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod : updateStateMethods) {
       for (MethodParamModel param : updateStateMethod.methodParams) {
         if (param instanceof TreePropModel) {
           treeProps.add((TreePropModel) param);
@@ -502,7 +502,7 @@ public final class SpecModelImpl implements SpecModel {
     private ImmutableList<SpecMethodModel<DelegateMethod, Void>> mDelegateMethodModels;
     private ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mEventMethodModels;
     private ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mTriggerMethodModels;
-    private ImmutableList<UpdateStateMethodModel> mUpdateStateMethodModels;
+    private ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethodModels;
     private ImmutableList<TypeVariableName> mTypeVariableNames;
     private ImmutableList<PropDefaultModel> mPropDefaultModels;
     private ImmutableList<EventDeclarationModel> mEventDeclarations;
@@ -554,7 +554,7 @@ public final class SpecModelImpl implements SpecModel {
     }
 
     public Builder updateStateMethods(
-        ImmutableList<UpdateStateMethodModel> updateStateMethodModels) {
+        ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethodModels) {
       mUpdateStateMethodModels = updateStateMethodModels;
       return this;
     }

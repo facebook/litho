@@ -26,7 +26,7 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
-import com.facebook.litho.specmodels.model.UpdateStateMethodModel;
+import com.facebook.litho.specmodels.model.UpdateStateMethod;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
@@ -48,7 +48,7 @@ public class MockSpecModel implements SpecModel {
   private final ImmutableList<SpecMethodModel<DelegateMethod, Void>> mDelegateMethods;
   private final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mEventMethods;
   private final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mTriggerMethods;
-  private final ImmutableList<UpdateStateMethodModel> mUpdateStateMethods;
+  private final ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethods;
   private final ImmutableList<PropModel> mProps;
   private final ImmutableList<PropDefaultModel> mPropDefaults;
   private final ImmutableList<TypeVariableName> mTypeVariables;
@@ -85,7 +85,7 @@ public class MockSpecModel implements SpecModel {
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
-      ImmutableList<UpdateStateMethodModel> updateStateMethods,
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
       ImmutableList<PropModel> props,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<TypeVariableName> typeVariables,
@@ -185,7 +185,7 @@ public class MockSpecModel implements SpecModel {
   }
 
   @Override
-  public ImmutableList<UpdateStateMethodModel> getUpdateStateMethods() {
+  public ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> getUpdateStateMethods() {
     return mUpdateStateMethods;
   }
 
@@ -345,7 +345,8 @@ public class MockSpecModel implements SpecModel {
         ImmutableList.of();
     private ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mTriggerMethods =
         ImmutableList.of();
-    private ImmutableList<UpdateStateMethodModel> mUpdateStateMethods = ImmutableList.of();
+    private ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethods =
+        ImmutableList.of();
     private ImmutableList<PropModel> mProps = ImmutableList.of();
     private ImmutableList<PropDefaultModel> mPropDefaults = ImmutableList.of();
     private ImmutableList<TypeVariableName> mTypeVariables = ImmutableList.of();
@@ -415,7 +416,8 @@ public class MockSpecModel implements SpecModel {
       return this;
     }
 
-    public Builder updateStateMethods(ImmutableList<UpdateStateMethodModel> updateStateMethods) {
+    public Builder updateStateMethods(
+        ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
       mUpdateStateMethods = updateStateMethods;
       return this;
     }

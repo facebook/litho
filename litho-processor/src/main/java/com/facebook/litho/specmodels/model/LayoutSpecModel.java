@@ -31,7 +31,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
-      ImmutableList<UpdateStateMethodModel> updateStateMethods,
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
@@ -106,7 +106,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public ImmutableList<UpdateStateMethodModel> getUpdateStateMethods() {
+  public ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> getUpdateStateMethods() {
     return mSpecModel.getUpdateStateMethods();
   }
 

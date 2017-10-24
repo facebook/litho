@@ -101,8 +101,8 @@ public class StateValidationTest {
             .representedObject(mRepresentedObject2)
             .build();
 
-    UpdateStateMethodModel updateStateMethodModel =
-        new UpdateStateMethodModel(
+    SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel =
+        new SpecMethodModel<UpdateStateMethod, Void>(
             null,
             ImmutableList.of(Modifier.STATIC),
             null,
@@ -163,8 +163,8 @@ public class StateValidationTest {
             .representedObject(mRepresentedObject4)
             .build();
 
-    UpdateStateMethodModel updateStateMethodModel =
-        new UpdateStateMethodModel(
+    SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel =
+        new SpecMethodModel<UpdateStateMethod, Void>(
             null,
             ImmutableList.of(Modifier.STATIC),
             "methodName",
@@ -210,8 +210,8 @@ public class StateValidationTest {
             .representedObject(mRepresentedObject1)
             .build();
 
-    UpdateStateMethodModel updateStateMethodModel =
-        new UpdateStateMethodModel(
+    SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel =
+        new SpecMethodModel<UpdateStateMethod, Void>(
             null,
             ImmutableList.of(Modifier.STATIC),
             "methodName",
@@ -232,8 +232,8 @@ public class StateValidationTest {
 
   @Test
   public void testOnUpdateStateNotStatic() {
-    UpdateStateMethodModel updateStateMethodModel =
-        new UpdateStateMethodModel(
+    SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel =
+        new SpecMethodModel<UpdateStateMethod, Void>(
             null,
             ImmutableList.<Modifier>of(),
             "methodName",

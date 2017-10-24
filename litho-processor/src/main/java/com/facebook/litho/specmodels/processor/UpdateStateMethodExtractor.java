@@ -9,6 +9,7 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import static com.facebook.litho.specmodels.internal.ImmutableList.copyOf;
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getMethodParams;
 
 import com.facebook.litho.annotations.OnUpdateState;
@@ -18,7 +19,8 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.MethodParamModel;
-import com.facebook.litho.specmodels.model.UpdateStateMethodModel;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
+import com.facebook.litho.specmodels.model.UpdateStateMethod;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -42,13 +44,11 @@ public class UpdateStateMethodExtractor {
     METHOD_PARAM_ANNOTATIONS.add(TreeProp.class);
   }
 
-  /**
-   * Get the delegate methods from the given {@link TypeElement}.
-   */
-  public static ImmutableList<UpdateStateMethodModel> getOnUpdateStateMethods(
+  /** Get the delegate methods from the given {@link TypeElement}. */
+  public static ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> getOnUpdateStateMethods(
       TypeElement typeElement,
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
-    final List<UpdateStateMethodModel> delegateMethods = new ArrayList<>();
+    final List<SpecMethodModel<UpdateStateMethod, Void>> delegateMethods = new ArrayList<>();
 
     for (Element enclosedElement : typeElement.getEnclosedElements()) {
       if (enclosedElement.getKind() != ElementKind.METHOD) {
@@ -66,14 +66,14 @@ public class UpdateStateMethodExtractor {
                 permittedInterStageInputAnnotations,
                 ImmutableList.<Class<? extends Annotation>>of());
 
-        final UpdateStateMethodModel delegateMethod =
-            new UpdateStateMethodModel(
+        final SpecMethodModel<UpdateStateMethod, Void> delegateMethod =
+            new SpecMethodModel<UpdateStateMethod, Void>(
                 ImmutableList.<Annotation>of(onUpdateStateAnnotation),
-                ImmutableList.copyOf(new ArrayList<>(executableElement.getModifiers())),
+                copyOf(new ArrayList<>(executableElement.getModifiers())),
                 executableElement.getSimpleName(),
                 TypeName.get(executableElement.getReturnType()),
                 ImmutableList.of(),
-                ImmutableList.copyOf(methodParams),
+                copyOf(methodParams),
                 executableElement,
                 null);
         delegateMethods.add(delegateMethod);

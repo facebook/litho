@@ -15,10 +15,11 @@ import com.facebook.litho.annotations.Param;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelUtils;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.StateParamModel;
-import com.facebook.litho.specmodels.model.UpdateStateMethodModel;
+import com.facebook.litho.specmodels.model.UpdateStateMethod;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
@@ -103,7 +104,8 @@ public class StateGenerator {
 
   static TypeSpecDataHolder generateStateUpdateClasses(SpecModel specModel) {
     TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
-    for (UpdateStateMethodModel updateStateMethod : specModel.getUpdateStateMethods()) {
+    for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod :
+        specModel.getUpdateStateMethods()) {
       dataHolder.addTypeSpecDataHolder(generateStateUpdateClass(specModel, updateStateMethod));
     }
 
@@ -112,7 +114,8 @@ public class StateGenerator {
 
   static TypeSpecDataHolder generateOnStateUpdateMethods(SpecModel specModel) {
     TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
-    for (UpdateStateMethodModel updateStateMethod : specModel.getUpdateStateMethods()) {
+    for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod :
+        specModel.getUpdateStateMethods()) {
       dataHolder.addTypeSpecDataHolder(generateOnStateUpdateMethod(specModel, updateStateMethod, true));
       dataHolder.addTypeSpecDataHolder(generateOnStateUpdateMethod(specModel, updateStateMethod, false));
     }
@@ -122,7 +125,7 @@ public class StateGenerator {
 
   static TypeSpecDataHolder generateOnStateUpdateMethod(
       SpecModel specModel,
-      UpdateStateMethodModel updateStateMethod,
+      SpecMethodModel<UpdateStateMethod, Void> updateStateMethod,
       boolean isAsync) {
 
     final String name =
@@ -178,8 +181,7 @@ public class StateGenerator {
   }
 
   static TypeSpecDataHolder generateStateUpdateClass(
-      SpecModel specModel,
-      UpdateStateMethodModel updateStateMethod) {
+      SpecModel specModel, SpecMethodModel<UpdateStateMethod, Void> updateStateMethod) {
     final TypeSpec.Builder stateUpdateClassBuilder =
         TypeSpec.classBuilder(getStateUpdateClassName(updateStateMethod))
             .addModifiers(Modifier.PRIVATE)
@@ -348,7 +350,8 @@ public class StateGenerator {
     return TypeSpecDataHolder.newBuilder().addMethod(builder.build()).build();
   }
 
-  private static String getStateUpdateClassName(UpdateStateMethodModel updateMethod) {
+  private static String getStateUpdateClassName(
+      SpecMethodModel<UpdateStateMethod, Void> updateMethod) {
     String methodName = updateMethod.name.toString();
     return methodName.substring(0, 1).toUpperCase(Locale.ROOT) +
         methodName.substring(1) +
@@ -360,7 +363,8 @@ public class StateGenerator {
         methodParamModel.getName().substring(1);
   }
 
-  private static String getParamsForSpecUpdateMethodCall(UpdateStateMethodModel updateStateMethod) {
+  private static String getParamsForSpecUpdateMethodCall(
+      SpecMethodModel<UpdateStateMethod, Void> updateStateMethod) {
     StringBuilder sb = new StringBuilder();
     for (int i = 0, size = updateStateMethod.methodParams.size(); i < size; i++) {
       MethodParamModel methodParam = updateStateMethod.methodParams.get(i);
