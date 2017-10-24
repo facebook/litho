@@ -44,7 +44,6 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
   }
 
   public void mount(T drawable, DrawableMatrix matrix) {
-
     if (mDrawable == drawable) {
       return;
     }
@@ -93,34 +92,25 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
   public void bind(int width, int height) {
     mWidth = width;
     mHeight = height;
-    setInnerDrawableBounds(getBounds().left, getBounds().top);
+    setInnerDrawableBounds(mWidth, mHeight);
   }
 
   @Override
   public void setBounds(int left, int top, int right, int bottom) {
     super.setBounds(left, top, right, bottom);
-    setInnerDrawableBounds(left, top);
   }
 
   @Override
   public void setBounds(Rect bounds) {
     super.setBounds(bounds);
-    setInnerDrawableBounds(bounds.left, bounds.top);
   }
 
-  private void setInnerDrawableBounds(int left, int top) {
+  private void setInnerDrawableBounds(int width, int height) {
     if (mDrawable == null) {
       return;
     }
 
-    final int innerDrawableLeft = (mMatrix != null ? 0 : left);
-    final int innerDrawableTop = (mMatrix != null ? 0 : top);
-
-    mDrawable.setBounds(
-        innerDrawableLeft,
-        innerDrawableTop,
-        innerDrawableLeft + mWidth,
-        innerDrawableTop + mHeight);
+    mDrawable.setBounds(0, 0, width, height);
   }
 
   public void unmount() {
@@ -157,32 +147,19 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
     }
 
     final Rect bounds = getBounds();
+    final int saveCount = canvas.save();
+    canvas.translate(bounds.left, bounds.top);
+
+    if (mShouldClipRect) {
+      canvas.clipRect(0, 0, bounds.width(), bounds.height());
+    }
 
     if (mMatrix != null) {
-      final int saveCount = canvas.save();
-
-      if (mShouldClipRect) {
-        canvas.clipRect(bounds);
-      }
-
-      canvas.translate(bounds.left, bounds.top);
       canvas.concat(mMatrix);
-
-      mDrawable.draw(canvas);
-
-      canvas.restoreToCount(saveCount);
-    } else {
-      if (mShouldClipRect) {
-        canvas.save();
-        canvas.clipRect(bounds);
-      }
-
-      mDrawable.draw(canvas);
-
-      if (mShouldClipRect) {
-        canvas.restore();
-      }
     }
+
+    mDrawable.draw(canvas);
+    canvas.restoreToCount(saveCount);
   }
 
   @Override
