@@ -32,9 +32,10 @@ public class DemoListComponentTest {
 
   @Before
   public void setUp() {
-    mComponent = DemoListComponent.create(mComponentsRule.getContext())
-        .dataModels(new ArrayList<>())
-        .build();
+    mComponent =
+        DemoListComponent.create(mComponentsRule.getContext())
+            .dataModels(new ArrayList<DemoListActivity.DemoListDataModel>())
+            .build();
   }
 
   @Test

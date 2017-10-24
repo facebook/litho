@@ -46,8 +46,12 @@ dependencies {
     implementation project(':litho-stetho')
     implementation project(':litho-widget')
     implementation project(':litho-fresco')
+    implementation project(':litho-sections-core')
+    implementation project(':litho-sections-widget')
     compileOnly project(':litho-annotations')
+    compileOnly project(':litho-sections-annotations')
     annotationProcessor project(':litho-processor')
+    annotationProcessor project(':litho-sections-processor')
 
     // First-party
     implementation deps.soloader
