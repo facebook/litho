@@ -12,16 +12,15 @@
 package com.facebook.samples.lithocodelab;
 
 import android.app.Application;
-
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.soloader.SoLoader;
 
 public class LithoLabApplication extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
+  @Override
+  public void onCreate() {
+    super.onCreate();
 
-        SoLoader.init(this, false);
-        Fresco.initialize(this);
-    }
+    SoLoader.init(this, false);
+    Fresco.initialize(this);
+  }
 }

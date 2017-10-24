@@ -32,50 +32,51 @@ import com.facebook.litho.widget.Text;
 import com.facebook.samples.lithocodelab.R;
 
 /**
-* Learn the basic {@literal @}Props available on ComponentLayouts. Control the size, padding, margins,
- * backgrounds, and alignment of Components.
+ * Learn the basic {@literal @}Props available on ComponentLayouts. Control the size, padding,
+ * margins, backgrounds, and alignment of Components.
  */
 @LayoutSpec
 public class LearningLayoutPropsComponentSpec {
-    @OnCreateLayout
-    static ComponentLayout onCreateLayout(
-            ComponentContext c) {
-        return Column.create(c)
-                .alignItems(CENTER)
-                .child(Text.create(c)
-                        .text("First child")
-                        .textSizeDip(50)
-                        .backgroundRes(android.R.color.holo_blue_light)
-                        .alignSelf(STRETCH)
-                        .paddingDip(BOTTOM, 20)
-                        .paddingDip(TOP, 40))
-                .child(Text.create(c)
-                        .text("Second child")
-                        .textColorRes(android.R.color.holo_green_dark)
-                        .textSizeSp(30)
-                        .backgroundRes(R.color.pinkAccent)
-                        .alignSelf(FLEX_END)
-                        .marginPercent(RIGHT, 10))
+  @OnCreateLayout
+  static ComponentLayout onCreateLayout(ComponentContext c) {
+    return Column.create(c)
+        .alignItems(CENTER)
+        .child(
+            Text.create(c)
+                .text("First child")
+                .textSizeDip(50)
+                .backgroundRes(android.R.color.holo_blue_light)
+                .alignSelf(STRETCH)
+                .paddingDip(BOTTOM, 20)
+                .paddingDip(TOP, 40))
+        .child(
+            Text.create(c)
+                .text("Second child")
+                .textColorRes(android.R.color.holo_green_dark)
+                .textSizeSp(30)
+                .backgroundRes(R.color.pinkAccent)
+                .alignSelf(FLEX_END)
+                .marginPercent(RIGHT, 10))
+        .child(
+            Row.create(c)
+                .backgroundRes(android.R.color.holo_blue_light)
                 .child(
-                        Row.create(c)
-                                .backgroundRes(android.R.color.holo_blue_light)
-                                .child(Image.create(c)
-                                        .drawableRes(R.drawable.save)
-                                        .widthDip(40)
-                                        .heightDip(40)
-                                        .paddingDip(START, 7)
-                                        .paddingDip(END, 7))
-                                .child(Text.create(c)
-                                        .text("Third child")
-                                        .textSizeSp(30)))
-                .child(Text.create(c)
-                        .text("Absolutely positioned child")
-                        .textColorRes(android.R.color.holo_orange_dark)
-                        .textSizeSp(15)
-                        .backgroundRes(android.R.color.holo_purple)
-                        .positionType(ABSOLUTE)
-                        .positionDip(START, 10)
-                        .positionDip(TOP, 10))
-                .build();
-    }
+                    Image.create(c)
+                        .drawableRes(R.drawable.save)
+                        .widthDip(40)
+                        .heightDip(40)
+                        .paddingDip(START, 7)
+                        .paddingDip(END, 7))
+                .child(Text.create(c).text("Third child").textSizeSp(30)))
+        .child(
+            Text.create(c)
+                .text("Absolutely positioned child")
+                .textColorRes(android.R.color.holo_orange_dark)
+                .textSizeSp(15)
+                .backgroundRes(android.R.color.holo_purple)
+                .positionType(ABSOLUTE)
+                .positionDip(START, 10)
+                .positionDip(TOP, 10))
+        .build();
+  }
 }

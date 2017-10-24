@@ -85,20 +85,18 @@ public class StoryCardComponentSpec {
         .build();
   }
 
-    @OnCreateInitialState
-    static void onCreateInitialState(
-            ComponentContext c,
-            StateValue<Boolean> saved) {
-        saved.set(false);
-    }
+  @OnCreateInitialState
+  static void onCreateInitialState(ComponentContext c, StateValue<Boolean> saved) {
+    saved.set(false);
+  }
 
-    @OnUpdateState
-    static void onToggleSavedState(StateValue<Boolean> saved) {
-        saved.set(!saved.get());
-    }
+  @OnUpdateState
+  static void onToggleSavedState(StateValue<Boolean> saved) {
+    saved.set(!saved.get());
+  }
 
   @OnEvent(ClickEvent.class)
   static void onClickSave(ComponentContext c) {
     StoryCardComponent.onToggleSavedState(c);
-    }
+  }
 }

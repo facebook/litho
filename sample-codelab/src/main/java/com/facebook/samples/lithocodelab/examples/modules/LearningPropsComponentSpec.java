@@ -20,24 +20,18 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.widget.Text;
 
 /**
-* Introduction to basic {@literal @}Props usage. Make your own Component with {@literal @}Props and see what is generated.
- * and how to interact with it.
+ * Introduction to basic {@literal @}Props usage. Make your own Component with {@literal @}Props and
+ * see what is generated. and how to interact with it.
  */
 @LayoutSpec
 public class LearningPropsComponentSpec {
-    @OnCreateLayout
-    static ComponentLayout onCreateLayout(
-            ComponentContext c,
-            @Prop String text1,
-            @Prop String text2) {
-        return Column.create(c)
-                .child(Text.create(c)
-                        .text(text1)
-                        .textSizeDip(50))
-                .child(Text.create(c)
-                        .text(text2)
-                        .textColorRes(android.R.color.holo_green_dark)
-                        .textSizeSp(30))
-                .build();
-    }
+  @OnCreateLayout
+  static ComponentLayout onCreateLayout(
+      ComponentContext c, @Prop String text1, @Prop String text2) {
+    return Column.create(c)
+        .child(Text.create(c).text(text1).textSizeDip(50))
+        .child(
+            Text.create(c).text(text2).textColorRes(android.R.color.holo_green_dark).textSizeSp(30))
+        .build();
+  }
 }

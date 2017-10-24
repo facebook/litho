@@ -21,11 +21,8 @@ import com.facebook.litho.widget.Text;
 @LayoutSpec
 public class LearningLayoutSpecsComponentSpec {
 
-    @OnCreateLayout
-    static ComponentLayout onCreateLayout(ComponentContext c) {
-        return Text.create(c)
-                .text("Hello, World!")
-                .textSizeDip(50)
-                .buildWithLayout();
-    }
+  @OnCreateLayout
+  static ComponentLayout onCreateLayout(ComponentContext c) {
+    return Text.create(c).text("Hello, World!").textSizeDip(50).buildWithLayout();
+  }
 }

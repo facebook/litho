@@ -20,19 +20,19 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.widget.Text;
 
 /**
- * A simple Component for learning some common {@literal @}Props on Text Components. Also a good way to learn
- * the basics of {@literal @}Props and the builders they generate.
+ * A simple Component for learning some common {@literal @}Props on Text Components. Also a good way
+ * to learn the basics of {@literal @}Props and the builders they generate.
  */
 @LayoutSpec
 public class LearningTextWidgetComponentSpec {
 
-    @OnCreateLayout
-    static ComponentLayout onCreateLayout(ComponentContext c) {
-        return Text.create(c)
-                .text("Hello, World!")
-                .textColor(Color.RED)
-                .textSizePx(70)
-                .typeface(Typeface.DEFAULT_BOLD)
-                .buildWithLayout();
-    }
+  @OnCreateLayout
+  static ComponentLayout onCreateLayout(ComponentContext c) {
+    return Text.create(c)
+        .text("Hello, World!")
+        .textColor(Color.RED)
+        .textSizePx(70)
+        .typeface(Typeface.DEFAULT_BOLD)
+        .buildWithLayout();
+  }
 }

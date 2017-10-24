@@ -24,54 +24,52 @@ import com.facebook.litho.LithoView;
  */
 public class ExamplesLithoLabActivity extends AppCompatActivity {
 
-    private LabExampleController mLabExampleController;
+  private LabExampleController mLabExampleController;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-        final ComponentContext c = new ComponentContext(this);
+    final ComponentContext c = new ComponentContext(this);
 
-        mLabExampleController = new LabExampleController(c);
-        mLabExampleController.goToMain();
+    mLabExampleController = new LabExampleController(c);
+    mLabExampleController.goToMain();
+  }
+
+  @Override
+  public void onBackPressed() {
+    if (mLabExampleController.isMain()) {
+      super.onBackPressed();
     }
 
-    @Override
-    public void onBackPressed() {
-        if (mLabExampleController.isMain()) {
-            super.onBackPressed();
-        }
+    mLabExampleController.goToMain();
+  }
 
-        mLabExampleController.goToMain();
+  public class LabExampleController {
+    private final ComponentContext c;
+    private final Component<ExamplesActivityComponent> examplesActivityComponent;
+
+    private boolean isMain = false;
+
+    private LabExampleController(ComponentContext c) {
+      this.c = c;
+      examplesActivityComponent =
+          ExamplesActivityComponent.create(c).labExampleController(this).build();
     }
 
-    public class LabExampleController {
-        private final ComponentContext c;
-        private final Component<ExamplesActivityComponent> examplesActivityComponent;
-
-        private boolean isMain = false;
-
-        private LabExampleController(ComponentContext c) {
-            this.c = c;
-            examplesActivityComponent = ExamplesActivityComponent.create(c)
-                    .labExampleController(this)
-                    .build();
-        }
-
-        private boolean isMain() {
-            return isMain;
-        }
-
-        public void goToMain() {
-            setContentComponent(examplesActivityComponent);
-            isMain = true;
-        }
-
-        public void setContentComponent(Component component) {
-            isMain = false;
-            ExamplesLithoLabActivity.this.setContentView(LithoView.create(
-                    ExamplesLithoLabActivity.this /* context */,
-                    component));
-        }
+    private boolean isMain() {
+      return isMain;
     }
+
+    public void goToMain() {
+      setContentComponent(examplesActivityComponent);
+      isMain = true;
+    }
+
+    public void setContentComponent(Component component) {
+      isMain = false;
+      ExamplesLithoLabActivity.this.setContentView(
+          LithoView.create(ExamplesLithoLabActivity.this /* context */, component));
+    }
+  }
 }

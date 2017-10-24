@@ -11,8 +11,16 @@
  */
 package com.facebook.samples.lithocodelab.end;
 
-import android.widget.Toast;
+import static android.widget.Toast.LENGTH_SHORT;
+import static com.facebook.samples.lithocodelab.end.StoryCardComponentSpec.CARD_INSET;
+import static com.facebook.samples.lithocodelab.end.StoryCardComponentSpec.CARD_INTERNAL_PADDING;
+import static com.facebook.yoga.YogaEdge.BOTTOM;
+import static com.facebook.yoga.YogaEdge.END;
+import static com.facebook.yoga.YogaEdge.HORIZONTAL;
+import static com.facebook.yoga.YogaEdge.START;
+import static com.facebook.yoga.YogaEdge.TOP;
 
+import android.widget.Toast;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
@@ -28,15 +36,6 @@ import com.facebook.litho.widget.Image;
 import com.facebook.litho.widget.Text;
 import com.facebook.samples.lithocodelab.R;
 
-import static android.widget.Toast.LENGTH_SHORT;
-import static com.facebook.samples.lithocodelab.end.StoryCardComponentSpec.CARD_INSET;
-import static com.facebook.samples.lithocodelab.end.StoryCardComponentSpec.CARD_INTERNAL_PADDING;
-import static com.facebook.yoga.YogaEdge.BOTTOM;
-import static com.facebook.yoga.YogaEdge.END;
-import static com.facebook.yoga.YogaEdge.HORIZONTAL;
-import static com.facebook.yoga.YogaEdge.START;
-import static com.facebook.yoga.YogaEdge.TOP;
-
 /**
  * Renders a "story header" with a grey box representing an image for the author, a title, subtitle,
  * and a menu button which just Toasts to indicate that the menu button was pressed.
@@ -44,43 +43,46 @@ import static com.facebook.yoga.YogaEdge.TOP;
 @LayoutSpec
 public class StoryHeaderComponentSpec {
 
-    @OnCreateLayout
-    static ComponentLayout onCreateLayout(
-            ComponentContext c, @Prop String title, @Prop String subtitle) {
-        return Row.create(c)
-                .paddingDip(HORIZONTAL, CARD_INSET)
-                .paddingDip(TOP, CARD_INSET)
+  @OnCreateLayout
+  static ComponentLayout onCreateLayout(
+      ComponentContext c, @Prop String title, @Prop String subtitle) {
+    return Row.create(c)
+        .paddingDip(HORIZONTAL, CARD_INSET)
+        .paddingDip(TOP, CARD_INSET)
+        .child(
+            FrescoImage.create(c)
+                .controller(
+                    Fresco.newDraweeControllerBuilder()
+                        .setUri("http://placekitten.com/g/200/200")
+                        .build())
+                .widthDip(40)
+                .heightDip(40)
+                .marginDip(END, CARD_INTERNAL_PADDING)
+                .marginDip(BOTTOM, CARD_INTERNAL_PADDING))
+        .child(
+            Column.create(c)
+                .flexGrow(1f)
                 .child(
-                        FrescoImage.create(c)
-                                .controller(Fresco.newDraweeControllerBuilder().setUri("http://placekitten.com/g/200/200").build())
-                                .widthDip(40)
-                                .heightDip(40)
-                                .marginDip(END, CARD_INTERNAL_PADDING)
-                                .marginDip(BOTTOM, CARD_INTERNAL_PADDING))
+                    Text.create(c, 0, R.style.header_title)
+                        .text(title)
+                        .paddingDip(BOTTOM, CARD_INTERNAL_PADDING))
                 .child(
-                        Column.create(c)
-                                .flexGrow(1f)
-                                .child(
-                                        Text.create(c, 0, R.style.header_title)
-                                                .text(title)
-                                                .paddingDip(BOTTOM, CARD_INTERNAL_PADDING))
-                                .child(
-                                        Text.create(c, 0, R.style.header_subtitle)
-                                                .text(subtitle)
-                                                .paddingDip(BOTTOM, CARD_INTERNAL_PADDING)))
-                .child(
-                        Image.create(c)
-                                .drawableRes(R.drawable.menu)
-                                .clickHandler(StoryHeaderComponent.onClickMenuButton(c))
-                                .widthDip(15)
-                                .heightDip(15)
-                                .marginDip(START, CARD_INTERNAL_PADDING)
-                                .marginDip(BOTTOM, CARD_INTERNAL_PADDING))
-                .build();
-    }
+                    Text.create(c, 0, R.style.header_subtitle)
+                        .text(subtitle)
+                        .paddingDip(BOTTOM, CARD_INTERNAL_PADDING)))
+        .child(
+            Image.create(c)
+                .drawableRes(R.drawable.menu)
+                .clickHandler(StoryHeaderComponent.onClickMenuButton(c))
+                .widthDip(15)
+                .heightDip(15)
+                .marginDip(START, CARD_INTERNAL_PADDING)
+                .marginDip(BOTTOM, CARD_INTERNAL_PADDING))
+        .build();
+  }
 
-    @OnEvent(ClickEvent.class)
-    static void onClickMenuButton(ComponentContext c) {
-        Toast.makeText(c.getApplicationContext(), "Menu button clicked.", LENGTH_SHORT).show();
-    }
+  @OnEvent(ClickEvent.class)
+  static void onClickMenuButton(ComponentContext c) {
+    Toast.makeText(c.getApplicationContext(), "Menu button clicked.", LENGTH_SHORT).show();
+  }
 }

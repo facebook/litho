@@ -23,9 +23,8 @@ import com.facebook.litho.annotations.OnCreateLayout;
  */
 @LayoutSpec
 public class LithoLabEndComponentSpec {
-    @OnCreateLayout
-    static ComponentLayout onCreateLayout(
-            ComponentContext c) {
+  @OnCreateLayout
+  static ComponentLayout onCreateLayout(ComponentContext c) {
     return Column.create(c)
         .backgroundRes(android.R.color.darker_gray)
         .child(
@@ -36,5 +35,5 @@ public class LithoLabEndComponentSpec {
                         + "This is a story card. You can interact with the menu button "
                         + "and save button."))
         .build();
-    }
+  }
 }

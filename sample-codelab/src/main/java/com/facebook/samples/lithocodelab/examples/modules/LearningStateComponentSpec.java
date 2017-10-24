@@ -30,36 +30,31 @@ import com.facebook.litho.widget.Text;
 @LayoutSpec
 public class LearningStateComponentSpec {
 
-    @OnCreateInitialState
-    static void onCreateInitialState(
-            ComponentContext c,
-            StateValue<Integer> count) {
-        count.set(0);
-    }
+  @OnCreateInitialState
+  static void onCreateInitialState(ComponentContext c, StateValue<Integer> count) {
+    count.set(0);
+  }
 
-    @OnCreateLayout
-    static ComponentLayout onCreateLayout(
-            ComponentContext c,
-            @State Integer count) {
-        return Text.create(c)
-                .text("Clicked " + count + " times.")
-                .textSizeDip(50)
-                .clickHandler(LearningStateComponent.onClick(c))
-                .backgroundRes(android.R.color.holo_blue_light)
-                .alignSelf(STRETCH)
-                .paddingDip(BOTTOM, 20)
-                .paddingDip(TOP, 40)
-                .buildWithLayout();
-    }
+  @OnCreateLayout
+  static ComponentLayout onCreateLayout(ComponentContext c, @State Integer count) {
+    return Text.create(c)
+        .text("Clicked " + count + " times.")
+        .textSizeDip(50)
+        .clickHandler(LearningStateComponent.onClick(c))
+        .backgroundRes(android.R.color.holo_blue_light)
+        .alignSelf(STRETCH)
+        .paddingDip(BOTTOM, 20)
+        .paddingDip(TOP, 40)
+        .buildWithLayout();
+  }
 
-    @OnUpdateState
-    static void incrementClickCount(StateValue<Integer> count) {
-        count.set(count.get() + 1);
-    }
+  @OnUpdateState
+  static void incrementClickCount(StateValue<Integer> count) {
+    count.set(count.get() + 1);
+  }
 
-    @OnEvent(ClickEvent.class)
-    static void onClick(
-            ComponentContext c) {
-        LearningStateComponent.incrementClickCount(c);
-    }
+  @OnEvent(ClickEvent.class)
+  static void onClick(ComponentContext c) {
+    LearningStateComponent.incrementClickCount(c);
+  }
 }

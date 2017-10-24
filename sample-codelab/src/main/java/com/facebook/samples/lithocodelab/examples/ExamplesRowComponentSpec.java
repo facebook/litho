@@ -24,15 +24,13 @@ import com.facebook.litho.widget.Text;
 @LayoutSpec
 public class ExamplesRowComponentSpec {
 
-    @OnCreateLayout
-    static ComponentLayout onCreateLayout(
-            ComponentContext c,
-            @Prop String text,
-            @Prop EventHandler<ClickEvent> clickEventHandler) {
-        return Text.create(c)
-                .text(text)
-                .textSizeSp(25)
-                .clickHandler(clickEventHandler)
-                .buildWithLayout();
-    }
+  @OnCreateLayout
+  static ComponentLayout onCreateLayout(
+      ComponentContext c, @Prop String text, @Prop EventHandler<ClickEvent> clickEventHandler) {
+    return Text.create(c)
+        .text(text)
+        .textSizeSp(25)
+        .clickHandler(clickEventHandler)
+        .buildWithLayout();
+  }
 }

@@ -42,77 +42,72 @@ import com.facebook.samples.lithocodelab.R;
  */
 @LayoutSpec
 public class LearningClickEventsComponentSpec {
-    @OnCreateLayout
-    static ComponentLayout onCreateLayout(
-            ComponentContext c) {
-        return Column.create(c)
-                .alignItems(CENTER)
-                .child(Text.create(c)
-                        .text("First child")
-                        .textSizeDip(50)
-                        .clickHandler(LearningClickEventsComponent.onClickFirstChild(c))
-                        .backgroundRes(android.R.color.holo_blue_light)
-                        .alignSelf(STRETCH)
-                        .paddingDip(BOTTOM, 20)
-                        .paddingDip(TOP, 40))
-                .child(Text.create(c)
-                        .text("Second child")
-                        .textColorRes(android.R.color.holo_green_dark)
-                        .textSizeSp(30)
-                        .clickHandler(LearningClickEventsComponent.onClickSecondChild(c))
-                        .backgroundRes(android.R.color.holo_red_light)
-                        .alignSelf(FLEX_END)
-                        .marginPercent(RIGHT, 10))
+  @OnCreateLayout
+  static ComponentLayout onCreateLayout(ComponentContext c) {
+    return Column.create(c)
+        .alignItems(CENTER)
+        .child(
+            Text.create(c)
+                .text("First child")
+                .textSizeDip(50)
+                .clickHandler(LearningClickEventsComponent.onClickFirstChild(c))
+                .backgroundRes(android.R.color.holo_blue_light)
+                .alignSelf(STRETCH)
+                .paddingDip(BOTTOM, 20)
+                .paddingDip(TOP, 40))
+        .child(
+            Text.create(c)
+                .text("Second child")
+                .textColorRes(android.R.color.holo_green_dark)
+                .textSizeSp(30)
+                .clickHandler(LearningClickEventsComponent.onClickSecondChild(c))
+                .backgroundRes(android.R.color.holo_red_light)
+                .alignSelf(FLEX_END)
+                .marginPercent(RIGHT, 10))
+        .child(
+            Row.create(c)
+                .clickHandler(LearningClickEventsComponent.onClickThirdChild(c))
+                .backgroundRes(android.R.color.holo_blue_light)
                 .child(
-                        Row.create(c)
-                                .clickHandler(LearningClickEventsComponent.onClickThirdChild(c))
-                                .backgroundRes(android.R.color.holo_blue_light)
-                                .child(Image.create(c)
-                                        .drawableRes(R.drawable.save)
-                                        .widthDip(40)
-                                        .heightDip(40)
-                                        .paddingDip(START, 7)
-                                        .paddingDip(END, 7))
-                                .child(Text.create(c)
-                                        .text("Third child")
-                                        .textSizeSp(30)))
-                .child(Text.create(c)
-                        .text("Absolutely positioned child")
-                        .textColorRes(android.R.color.holo_orange_dark)
-                        .textSizeSp(15)
-                        .clickHandler(LearningClickEventsComponent.onClickAbsoluteChild(
-                                c,
-                                "Param passed in on click."))
-                        .backgroundRes(android.R.color.holo_purple)
-                        .positionType(ABSOLUTE)
-                        .positionDip(START, 10)
-                        .positionDip(TOP, 10))
-                .build();
-    }
+                    Image.create(c)
+                        .drawableRes(R.drawable.save)
+                        .widthDip(40)
+                        .heightDip(40)
+                        .paddingDip(START, 7)
+                        .paddingDip(END, 7))
+                .child(Text.create(c).text("Third child").textSizeSp(30)))
+        .child(
+            Text.create(c)
+                .text("Absolutely positioned child")
+                .textColorRes(android.R.color.holo_orange_dark)
+                .textSizeSp(15)
+                .clickHandler(
+                    LearningClickEventsComponent.onClickAbsoluteChild(
+                        c, "Param passed in on click."))
+                .backgroundRes(android.R.color.holo_purple)
+                .positionType(ABSOLUTE)
+                .positionDip(START, 10)
+                .positionDip(TOP, 10))
+        .build();
+  }
 
-    @OnEvent(ClickEvent.class)
-    static void onClickFirstChild(
-            ComponentContext c) {
-        Toast.makeText(c, "First child clicked!", LENGTH_SHORT).show();
-    }
+  @OnEvent(ClickEvent.class)
+  static void onClickFirstChild(ComponentContext c) {
+    Toast.makeText(c, "First child clicked!", LENGTH_SHORT).show();
+  }
 
-    @OnEvent(ClickEvent.class)
-    static void onClickSecondChild(
-            ComponentContext c,
-            @Prop String secondChildString) {
-        Toast.makeText(c, "Second child clicked: " + secondChildString, LENGTH_SHORT).show();
-    }
+  @OnEvent(ClickEvent.class)
+  static void onClickSecondChild(ComponentContext c, @Prop String secondChildString) {
+    Toast.makeText(c, "Second child clicked: " + secondChildString, LENGTH_SHORT).show();
+  }
 
-    @OnEvent(ClickEvent.class)
-    static void onClickThirdChild(
-            ComponentContext c) {
-        Toast.makeText(c, "Third child clicked!", LENGTH_SHORT).show();
-    }
+  @OnEvent(ClickEvent.class)
+  static void onClickThirdChild(ComponentContext c) {
+    Toast.makeText(c, "Third child clicked!", LENGTH_SHORT).show();
+  }
 
-    @OnEvent(ClickEvent.class)
-    static void onClickAbsoluteChild(
-            ComponentContext c,
-            @Param String absoluteParam) {
-        Toast.makeText(c, "Absolute child clicked: " + absoluteParam, LENGTH_SHORT).show();
-    }
+  @OnEvent(ClickEvent.class)
+  static void onClickAbsoluteChild(ComponentContext c, @Param String absoluteParam) {
+    Toast.makeText(c, "Absolute child clicked: " + absoluteParam, LENGTH_SHORT).show();
+  }
 }

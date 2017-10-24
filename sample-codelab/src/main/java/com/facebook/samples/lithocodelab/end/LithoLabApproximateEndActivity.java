@@ -19,16 +19,15 @@ import com.facebook.litho.LithoView;
 /** This is a simple wrapper around {@link LithoLabEndComponentSpec}. */
 public class LithoLabApproximateEndActivity extends AppCompatActivity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
 
-        final ComponentContext c = new ComponentContext(this);
+    final ComponentContext c = new ComponentContext(this);
 
-        final LithoView lithoView = LithoView.create(
-                this /* context */,
-                LithoLabEndComponent.create(c).build());
+    final LithoView lithoView =
+        LithoView.create(this /* context */, LithoLabEndComponent.create(c).build());
 
-        setContentView(lithoView);
-    }
+    setContentView(lithoView);
+  }
 }
