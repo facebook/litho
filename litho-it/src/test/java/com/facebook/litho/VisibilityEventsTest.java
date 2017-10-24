@@ -439,7 +439,7 @@ public class VisibilityEventsTest {
     assertThat(component1.getLifecycle().getDispatchedEventHandlers())
         .contains(visibleEventHandler1);
     assertThat(component1.getLifecycle().getDispatchedEventHandlers())
-        .doesNotContain(focusedEventHandler1);
+        .contains(focusedEventHandler1);
 
     final TestComponent<TestViewComponent> component2 = create(mContext).key("component2").build();
     final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(component2, 3);
@@ -466,7 +466,7 @@ public class VisibilityEventsTest {
     assertThat(component1.getLifecycle().getDispatchedEventHandlers())
         .contains(invisibleEventHandler1);
     assertThat(component1.getLifecycle().getDispatchedEventHandlers())
-        .doesNotContain(unfocusedEventHandler1);
+        .contains(unfocusedEventHandler1);
     assertThat(component2.getLifecycle().getDispatchedEventHandlers())
         .contains(visibleEventHandler2);
   }

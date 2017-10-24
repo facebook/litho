@@ -106,6 +106,8 @@ public class MountStateViewTest {
     assertThat(testComponent2.isMounted()).isTrue();
 
     final ViewGroupWithLithoViewChildren viewGroup = new ViewGroupWithLithoViewChildren(mContext);
+    removeParent(child1);
+    removeParent(child2);
     viewGroup.addView(child1);
     viewGroup.addView(child2);
 
@@ -120,6 +122,11 @@ public class MountStateViewTest {
 
     assertThat(testComponent1.isMounted()).isFalse();
     assertThat(testComponent2.isMounted()).isFalse();
+  }
+
+  private void removeParent(View child) {
+    final ViewGroup parent = (ViewGroup) child.getParent();
+    parent.removeView(child);
   }
 
   private class ViewGroupWithLithoViewChildren extends ViewGroup implements HasLithoViewChildren {

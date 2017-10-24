@@ -15,6 +15,7 @@ import static android.view.View.MeasureSpec.makeMeasureSpec;
 
 import android.graphics.Rect;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -216,6 +217,17 @@ public final class ComponentTestHelper {
       ComponentTree componentTree,
       int widthSpec,
       int heightSpec) {
+    final boolean addParent = lithoView.getParent() == null;
+    final ViewGroup parent =
+        new ViewGroup(lithoView.getContext()) {
+          @Override
+          protected void onLayout(boolean changed, int l, int t, int r, int b) {}
+        };
+
+    if (addParent) {
+      parent.addView(lithoView);
+    }
+
     lithoView.setComponentTree(componentTree);
 
     try {
@@ -225,6 +237,11 @@ public final class ComponentTestHelper {
     }
 
     lithoView.measure(widthSpec, heightSpec);
+
+    if (addParent) {
+      parent.layout(0, 0, lithoView.getMeasuredWidth(), lithoView.getMeasuredHeight());
+    }
+
     lithoView.layout(
         0,
         0,
