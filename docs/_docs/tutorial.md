@@ -5,9 +5,9 @@ layout: docs
 permalink: /docs/tutorial
 ---
 
-This tutorial assumes you've gone through the [Getting Started](getting-started) guide to set up Litho.
+This tutorial assumes you've gone through the [Getting Started](getting-started) guide to set up Litho.  Make sure you set up Litho's core libraries and Sections' libraries.
 
-In this tutorial, you'll start by building a basic "Hello World!" screen using Litho and work your way up to creating a list of "Hello World!" items on the screen. Along the way, you'll learn about the building block of Litho: [Component](/javadoc/com/facebook/litho/Component) and [LithoView](/javadoc/com/facebook/litho/LithoView). You'll learn how to set properties on components.
+In this tutorial, you'll start by building a basic "Hello World!" screen using Litho and work your way up to creating a list of "Hello World!" items on the screen. Along the way, you'll learn about the building blocks of Litho: [Component](/javadoc/com/facebook/litho/Component), and [LithoView](/javadoc/com/facebook/litho/LithoView). You will also learn hot to create lists with [Section](/javadoc/com/facebook/litho/sections/Section) and how to set properties on components.
 
 
 ## 1. Hello World
@@ -22,7 +22,7 @@ public class SampleApplication extends Application {
   @Override
   public void onCreate() {
     super.onCreate();
-    
+
     SoLoader.init(this, false);
   }
 }
@@ -61,10 +61,10 @@ Text.create(context)
     .build();
 ```
 
-`Text` is a core component defined in `com.facebook.litho.widget`.  It has a number of properties such as _text_ and _textSize_ which you can set as shown. These properties are called *props* as inspired by [React](https://facebook.github.io/react/) terminology.  
+`Text` is a core component defined in `com.facebook.litho.widget`.  It has a number of properties such as _text_ and _textSize_ which you can set as shown. These properties are called *props* as inspired by [React](https://facebook.github.io/react/) terminology.
 You'll learn how to write your own components later but it's worth noting the `Text` class is generated from a `TextSpec` class. The generated component class provides a builder API with methods to define values for the component's props.
 
-The `Text` component is added as a single child component to the `LithoView` in the example. You could instead have a single root component with several child components. You'll see how to do this in follow-on examples.
+The `Text` component is added as a single child component to the `LithoView` in the example. You could instead have a single root component with several child components. You'll see how to do this in later steps.
 
 That's it! Run the app, you should see something like this:
 
@@ -74,7 +74,7 @@ Not pretty, but this is certainly a start!
 
 ## 2. Your First Custom Component
 
-At the end of this tutorial you'll have a simple, scrollable list. This list will just display an item with a title and subtitle a whole lot of times. Exciting times!   
+At the end of this tutorial you'll have a simple, scrollable list. This list will just display an item with a title and subtitle a whole lot of times. Exciting times!
 In this part of the tutorial, you'll write a simple component that is the list item. Naturally, a real world app would define a more complicated component but you'll learn all the basics you need to do that in this example.
 
 Ready? It's time to dive in and build this component. In Litho, you write *Spec* classes to declare the layout for your components. The framework then generates the underlying component class that you use in your code to create a component instance.
@@ -87,7 +87,7 @@ public class ListItemSpec {
 
   @OnCreateLayout
   static ComponentLayout onCreateLayout(ComponentContext c) {
-  
+
     return Column.create(c)
         .paddingDip(ALL, 16)
         .backgroundColor(Color.WHITE)
@@ -109,7 +109,7 @@ You should recognize the `Text` component from the previous tutorial step. In th
 How do you render this component? In your activity, simply change the `Component` definition to:
 
 ```java
-final Component text = ListItem.create(context).build();
+final Component component = ListItem.create(context).build();
 ```
 
 **Note:** That's `ListItem` you're using, not `ListItemSpec`.
@@ -125,51 +125,51 @@ It's as simple as that. Run your app. You should see something like this:
 
 ## 3. Creating a List of Items
 
-You can handle lists in Litho using the core [Recycler](/javadoc/com/facebook/litho/widget/Recycler) component.  This component is conceptually similar to the Android `RecyclerView`.  However, with Litho, all the layout is performed in a separate thread, resulting in a substantial performance boost.
+You can create lists in Litho by using the [RecyclerCollectionComponent](/javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent) and the Sections library. `RecyclerCollectionComponent` is used for creating scrollable units in Litho and it hides some of the complexity of having to work directly with Android's `RecyclerView` and `Adapter` concepts.
 
-In this part of the tutorial, you'll use a [RecyclerBinder](/javadoc/com/facebook/litho/widget/RecyclerBinder) to provide components to a `Recycler`, in the same way that a `LayoutManager` works hand in hand with an `Adapter` to provide `View`s to a `RecyclerView`.
+With the Sections API, you group the items in your list into sections and write *GroupSectionSpec* classes to declare what each section renders and what data it uses.
 
-First, in your activity, modify the `Component` definition as follows:
-
-```java
-final RecyclerBinder recyclerBinder = new RecyclerBinder.Builder()
-    .layoutInfo(new LinearLayoutInfo(this, OrientationHelper.VERTICAL, false))
-    .build(context);
-
-final Component component = Recycler.create(context)
-    .binder(recyclerBinder)
-    .build();
-```
-
-This code constructs a `RecyclerBinder` and attaches it to a `Recycler`. A new `RecyclerBinder` takes as constructor parameters a component context and layout info. 
-
-You then create and pass in the `Recycler` component to the `LithoView`.
-
-Now turn your focus to populating the binder with list items. Define a helper function in your activity to do this:
+Ready? It's time to build this section. Your custom section will be called `ListSection` and it will render `ListItem` components. Create a class named `ListSectionSpec` with the following content:
 
 ```java
-private static void addContent(RecyclerBinder recyclerBinder, ComponentContext context) {
+@GroupSectionSpec
+public class ListSectionSpec {
+
+  @OnCreateChildren
+  static Children onCreateChildren(final SectionContext c) {
+    Children.Builder builder = Children.create();
+
     for (int i = 0; i < 32; i++) {
-      recyclerBinder.insertItemAt(
-          i,
-          ComponentRenderInfo.create()
-              .component(ListItem.create(context).build())
-              .build());
+      builder.child(
+          SingleComponentSection.create(c)
+              .key(String.valueOf(i))
+              .component(ListItem.create(c).build()));
     }
-}    
+    return builder.build();
+  }
+}
 ```
 
-In the code, a [ComponentRenderInfo](/javadoc/com/facebook/litho/widget/ComponentRenderInfo.html) is created that describes the components to be rendered by a `Recycler`. In this example, a `ListItem` is the component to be rendered.
-
-Finally, make a call to `addContent` in your activity's `onCreate` method, after the `component` definition:
+`SingleComponentSection` is a core section defined in `com.facebook.litho.sections.widget` that renders a single component.  `ListSectionSpec` describes a section that has 32 child sections, each of which is responsible for rendering a `ListItem`.  We can use this section with `RecyclerCollectionComponent` to render our list.  In your activity, change the `component` definition to:
 
 ```java
-addContent(recyclerBinder, context);
+
+final Component component =
+    RecyclerCollectionComponent.create(context)
+        .section(ListSection.create(new SectionContext(context)).build())
+        .build();
+
 ```
+
+**Note:** That's `ListSection` you're using, not `ListSectionSpec`.
+
+`ListSectionSpec` should look familiar to the `ListItemSpec` you wrote in the last step! Litho runs annotation processors over your code to find `ListSectionSpec` and generates `ListSection` just like how it finds `ListItemSpec` and generates `ListItem` in the same package as your spec.
 
 Run the app. You should see a scrollable list of 32 ListItem components:
 
+
 <img src="/static/images/barebones3.png" style="width: 300px;">
+
 
 ## 4. Defining a Component's properties
 
@@ -186,7 +186,7 @@ static ComponentLayout onCreateLayout(
     @Prop int color,
     @Prop String title,
     @Prop String subtitle) {
-    
+
   return Column.create(c)
         .paddingDip(ALL, 16)
         .backgroundColor(color)
@@ -204,22 +204,24 @@ static ComponentLayout onCreateLayout(
 
 This adds three props: `title`, `subtitle` and `color` props. Notice that the background color and the strings for the `Text` components' text are no longer hard-coded and are now based on the `onCreateLayout` method parameters.
 
-The magic happens in the `@Prop` annotations and the annotation processor.  The processor generates methods on the component builder that correspond to the props in a smart way. You can now change the binder's construction of the component to:
+The magic happens in the `@Prop` annotations and the annotation processor.  The processor generates methods on the component builder that correspond to the props in a smart way. You can now change `ListSectionSpec` to specify properties when constructing `ListItem`:
 
 ```java
-private void addContent(
-    RecyclerBinder recyclerBinder, 
-    ComponentContext context) {
+@OnCreateChildren
+static Children onCreateChildren(final SectionContext c) {
+  Children.Builder builder = Children.create();
+
   for (int i = 0; i < 32; i++) {
-    ComponentRenderInfo.Builder componentRenderInfoBuilder = ComponentRenderInfo.create();
-    componentRenderInfoBuilder.component(
-        ListItem.create(context)
-            .color(i % 2 == 0 ? Color.WHITE : Color.LTGRAY)
-            .title("Hello, world!")
-            .subtitle("Litho tutorial")
-            .build());
-    recyclerBinder.insertItemAt(i, componentRenderInfoBuilder.build());
+    builder.child(
+        SingleComponentSection.create(c)
+            .key(String.valueOf(i))
+            .component(ListItem.create(c)
+               .color(i % 2 == 0 ? Color.WHITE : Color.LTGRAY)
+               .title(i + ". Hello, world!")
+               .subtitle("Litho tutorial")
+               .build()));
   }
+  return builder.build();
 }
 ```
 
@@ -237,5 +239,11 @@ You can specify more options to the `@Prop` annotation.  For example, consider t
 
 This tells the annotation processor to construct a number of functions, such as `shadowRadiusPx`, `shadowRadiusDip`, `shadowRadiusSp` as well as `shadowRadiusRes`.
 
-Congratulations on completing this tutorial! This basic tutorial should arm you with all the building blocks to start using Litho and building your own components. You can find the predefined widget components you can use in the [com.facebook.litho.widgets](/javadoc/com/facebook/litho/widget/package-frame) package.
+## Summary
+
+Congratulations on completing this tutorial! This basic tutorial should arm you with all the building blocks to start using Litho and building your own components. You can find the predefined widget components you can use in the [com.facebook.litho.widgets](/javadoc/com/facebook/litho/widget/package-frame) and [com.facebook.litho.sections.widget](/javadoc/com/facebook/litho/sections/widget/package-frame) packages.
 You can find the [completed tutorial here](https://github.com/facebook/litho/tree/master/sample-barebones). Be sure to check out [this sample](https://github.com/facebook/litho/tree/master/sample) for more in-depth code as well as the Litho API documentation.
+
+### Looking for more?
+
+We briefly talked about Sections in this tutorial when building the list.  The Sections framework makes it easy to build complex lists in a declarative, composable way.  Learn more in an optional part 2 of this tutorial [here](/docs/sections-tutorial).
