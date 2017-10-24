@@ -33,6 +33,10 @@ import org.mockito.stubbing.Answer;
 
 /**
  * A helper for testing section components.
+ *
+ * <p>Allows testing a {@code GroupsSectionSpec}'s direct children without building the whole
+ * hieararchy. Also allows simpler State updates testing by keeping trach of a scoped section
+ * context.
  */
 public class SectionComponentTestHelper extends SectionLifecycle {
 
@@ -48,9 +52,7 @@ public class SectionComponentTestHelper extends SectionLifecycle {
     preparedSections = new HashMap<>();
   }
 
-  /**
-   * Return a generic {@link SectionContext} you can use to create sections/components.
-   */
+  /** Return a generic {@link SectionContext} you can use to create sections. */
   public SectionContext getContext() {
     return mSectionContext;
   }
@@ -63,8 +65,11 @@ public class SectionComponentTestHelper extends SectionLifecycle {
   }
 
   /**
-   * prepare section for testing.  If you've prepared a section before this will reset it to
-   * it's initial state.
+   * Prepare section for testing.
+   *
+   * <p>Prepare sets up a proper scoped {@link SectionContext} we can use to test lifecycle methods
+   * and state updates. It also prepares the given section for use by calling lifecycle methods like
+   * {@code onCreateInitialState}.
    */
   public Section prepare(Section s) {
     final SectionContext context = SectionContext.withScope(mSectionContext, s);
@@ -84,6 +89,20 @@ public class SectionComponentTestHelper extends SectionLifecycle {
         .when(spyContext)
         .updateState(any(StateUpdate.class));
 
+    doAnswer(
+            new Answer() {
+              @Override
+              @Nullable
+              public Object answer(InvocationOnMock invocation) throws Throwable {
+                final Section scope = ((SectionContext) invocation.getMock()).getSectionScope();
+                final StateUpdate stateUpdate = (StateUpdate) invocation.getArguments()[0];
+                stateUpdate.updateState(SectionLifecycleTestUtil.getStateContainer(scope), scope);
+                return null;
+              }
+            })
+        .when(spyContext)
+        .updateStateLazy(any(StateUpdate.class));
+
     doReturn(mSectionContext.getResourceCache()).when(spyContext).getResourceCache();
 
     SectionLifecycleTestUtil.setScopedContext(s, spyContext);
@@ -93,7 +112,12 @@ public class SectionComponentTestHelper extends SectionLifecycle {
     return s;
   }
 
-  /** Get child sections for the given section. */
+  /**
+   * Get child sections for the given section.
+   *
+   * @param section The section under test.
+   * @return A list of the children created by the given section.
+   */
   @Nullable
   public List<SubSection> getChildren(Section section) {
     ensurePrepared(section);
@@ -105,7 +129,14 @@ public class SectionComponentTestHelper extends SectionLifecycle {
     return getSubSections(children);
   }
 
-  /** Get subSections for the given Children. */
+  /**
+   * Get sub sections for the given Children. This is very similar to {@link #getChildren(Section)}
+   * except it gets the Children intead of calling createChildren. This is useful for testing the
+   * output of {@link com.facebook.litho.sections.common.RenderSectionEvent} handlers.
+   *
+   * @param children The Children object to extract sections from.
+   * @return A list of the sections inside the given Children object.
+   */
   @Nullable
   public static List<SubSection> getSubSections(Children children) {
     if (children == null || children.getChildren() == null) {
@@ -120,14 +151,27 @@ public class SectionComponentTestHelper extends SectionLifecycle {
     return subsection;
   }
 
-  /** Return the state container of the given section. */
+  /**
+   * Get the state container of the given section.
+   *
+   * @param section The section for which you want the state values from.
+   * @param <T> The section's StateContainer class
+   * @return the state container.
+   */
   @SuppressWarnings("unchecked")
   public <T extends StateContainer> T getStateContainer(Section<?> section) {
     return (T)
         SectionLifecycleTestUtil.getStateContainer(getScopedContext(section).getSectionScope());
   }
 
-  /** Dispatch the given event to a event handler. */
+  /**
+   * Dispatches an event to the section
+   *
+   * @param section the section under test
+   * @param eventHandler the event handler to execute
+   * @param event the event object
+   * @return the event's return value if the event expects to return anything. Otherwise null.
+   */
   public static Object dispatchEvent(
       HasEventDispatcher section, EventHandler eventHandler, Object event) {
     return section.getEventDispatcher().dispatchOnEvent(eventHandler, event);
