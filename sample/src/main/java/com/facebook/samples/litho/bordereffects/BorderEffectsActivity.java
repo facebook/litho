@@ -14,40 +14,14 @@ package com.facebook.samples.litho.bordereffects;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.OrientationHelper;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.widget.LinearLayoutInfo;
-import com.facebook.litho.widget.Recycler;
-import com.facebook.litho.widget.RecyclerBinder;
 
 public class BorderEffectsActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstance) {
     super.onCreate(savedInstance);
-    final ComponentContext componentContext = new ComponentContext(this);
-    final RecyclerBinder binder = createRecyclerBinder(componentContext);
     setContentView(
-        LithoView.create(this, Recycler.create(componentContext).binder(binder).build()));
-  }
-
-  private RecyclerBinder createRecyclerBinder(ComponentContext c) {
-    final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder()
-            .layoutInfo(new LinearLayoutInfo(c, OrientationHelper.VERTICAL, false))
-            .build(c);
-
-    recyclerBinder.appendItem(AllBorder.create(c).build());
-    recyclerBinder.appendItem(AlternateColorBorder.create(c).build());
-    recyclerBinder.appendItem(AlternateWidthBorder.create(c).build());
-    recyclerBinder.appendItem(AlternateColorWidthBorder.create(c).build());
-    recyclerBinder.appendItem(RtlColorWidthBorder.create(c).build());
-    recyclerBinder.appendItem(DashPathEffectBorder.create(c).build());
-    recyclerBinder.appendItem(VerticalDashPathEffectBorder.create(c).build());
-    recyclerBinder.appendItem(AlternateColorPathEffectBorder.create(c).build());
-    recyclerBinder.appendItem(AlternateColorCornerPathEffectBorder.create(c).build());
-    recyclerBinder.appendItem(CompositePathEffectBorder.create(c).build());
-
-    return recyclerBinder;
+        LithoView.create(this, BorderEffectsComponent.create(new ComponentContext(this)).build()));
   }
 }
