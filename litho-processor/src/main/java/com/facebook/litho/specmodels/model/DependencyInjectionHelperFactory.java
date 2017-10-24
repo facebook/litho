@@ -9,7 +9,6 @@
 
 package com.facebook.litho.specmodels.model;
 
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import javax.annotation.Nullable;
 import javax.lang.model.element.TypeElement;
 

@@ -19,7 +19,7 @@ java_library(
     deps = [
         COMPONENTS_JAVAPOET_TARGET,
         COMPONENTS_JSR_TARGET,
-        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
     ],
 )

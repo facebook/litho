@@ -19,9 +19,10 @@ import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
-import com.facebook.litho.specmodels.model.EventMethodModel;
+import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelUtils;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.squareup.javapoet.CodeBlock;
@@ -159,19 +160,17 @@ public class EventGenerator {
 
   static TypeSpecDataHolder generateEventMethods(SpecModel specModel) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
-    for (EventMethodModel eventMethod : specModel.getEventMethods()) {
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod :
+        specModel.getEventMethods()) {
       typeSpecDataHolder.addMethod(generateEventMethod(specModel, eventMethod));
     }
 
     return typeSpecDataHolder.build();
   }
 
-  /**
-   * Generate a delegate to the Spec that defines this event method.
-   */
+  /** Generate a delegate to the Spec that defines this event method. */
   static MethodSpec generateEventMethod(
-      SpecModel specModel,
-      EventMethodModel eventMethodModel) {
+      SpecModel specModel, SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
     final String implName = specModel.getComponentName() + "Impl";
     final MethodSpec.Builder methodSpec = MethodSpec.methodBuilder(eventMethodModel.name.toString())
         .addModifiers(Modifier.PRIVATE)
@@ -246,16 +245,17 @@ public class EventGenerator {
     methodBuilder.addStatement("int id = eventHandler.id");
     methodBuilder.beginControlFlow("switch ($L)", "id");
 
-    for (EventMethodModel eventMethodModel : specModel.getEventMethods()) {
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel :
+        specModel.getEventMethods()) {
       methodBuilder.beginControlFlow("case $L:", eventMethodModel.name.toString().hashCode());
 
       final String eventVariableName = "_event";
 
       methodBuilder.addStatement(
           "$T $L = ($T) $L",
-          eventMethodModel.eventType.name,
+          eventMethodModel.typeModel.name,
           eventVariableName,
-          eventMethodModel.eventType.name,
+          eventMethodModel.typeModel.name,
           "eventState");
 
       final CodeBlock.Builder eventHandlerParams = CodeBlock.builder()
@@ -302,7 +302,8 @@ public class EventGenerator {
 
   static TypeSpecDataHolder generateEventHandlerFactories(SpecModel specModel) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
-    for (EventMethodModel eventMethodModel : specModel.getEventMethods()) {
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel :
+        specModel.getEventMethods()) {
       typeSpecDataHolder.addMethod(
           generateEventHandlerFactory(eventMethodModel, specModel.getContextClass()));
     }
@@ -311,15 +312,15 @@ public class EventGenerator {
   }
 
   static MethodSpec generateEventHandlerFactory(
-      EventMethodModel eventMethodModel,
-      TypeName paramClass) {
-    final MethodSpec.Builder builder = MethodSpec.methodBuilder(eventMethodModel.name.toString())
-        .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-        .addTypeVariables(eventMethodModel.typeVariables)
-        .addParameter(paramClass, "c")
-        .returns(ParameterizedTypeName.get(
-            ClassNames.EVENT_HANDLER,
-            eventMethodModel.eventType.name));
+      SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel, TypeName paramClass) {
+    final MethodSpec.Builder builder =
+        MethodSpec.methodBuilder(eventMethodModel.name.toString())
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+            .addTypeVariables(eventMethodModel.typeVariables)
+            .addParameter(paramClass, "c")
+            .returns(
+                ParameterizedTypeName.get(
+                    ClassNames.EVENT_HANDLER, eventMethodModel.typeModel.name));
 
     final CodeBlock.Builder paramsBlock = CodeBlock.builder();
 

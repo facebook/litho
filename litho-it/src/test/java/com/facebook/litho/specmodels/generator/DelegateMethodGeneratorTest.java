@@ -60,6 +60,7 @@ public class DelegateMethodGeneratorTest {
             ImmutableList.of(Modifier.PROTECTED),
             "onCreateLayout",
             DelegateMethodDescriptions.ON_CREATE_LAYOUT.returnType,
+            ImmutableList.of(),
             ImmutableList.of(
                 MethodParamModelFactory.create(
                     mock(ExecutableElement.class),
@@ -218,6 +219,7 @@ public class DelegateMethodGeneratorTest {
             ImmutableList.of(Modifier.PROTECTED),
             "onCreateLayout",
             DelegateMethodDescriptions.ON_CREATE_LAYOUT.returnType,
+            ImmutableList.of(),
             ImmutableList.of(
                 MethodParamModelFactory.create(
                     mock(ExecutableElement.class),

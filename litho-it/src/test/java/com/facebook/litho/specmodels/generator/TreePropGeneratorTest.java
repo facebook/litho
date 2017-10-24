@@ -19,8 +19,8 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
-import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.MethodParamModelFactory;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
 import com.squareup.javapoet.AnnotationSpec;
@@ -55,6 +55,7 @@ public class TreePropGeneratorTest {
             ImmutableList.of(Modifier.PROTECTED),
             "onCreateTreeProp",
             TypeName.BOOLEAN,
+            ImmutableList.of(),
             ImmutableList.of(
                 MethodParamModelFactory.create(
                     mock(ExecutableElement.class),

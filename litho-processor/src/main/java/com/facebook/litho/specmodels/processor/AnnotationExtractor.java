@@ -8,17 +8,14 @@
  */
 package com.facebook.litho.specmodels.processor;
 
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.TypeElement;
-
+import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.squareup.javapoet.AnnotationSpec;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.facebook.litho.specmodels.internal.ImmutableList;
-
-import com.squareup.javapoet.AnnotationSpec;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.TypeElement;
 
 /** Helper for extracting annotations from a given {@link TypeElement}. */
 public class AnnotationExtractor {

@@ -21,11 +21,12 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
-import com.facebook.litho.specmodels.model.EventMethodModel;
+import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.StateParamModel;
@@ -304,7 +305,8 @@ public class ComponentImplGenerator {
   static TypeSpecDataHolder generateEventTriggers(SpecModel specModel) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
 
-    for (EventMethodModel eventMethodModel : specModel.getTriggerMethods()) {
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel :
+        specModel.getTriggerMethods()) {
       typeSpecDataHolder.addField(
           FieldSpec.builder(
                   ClassNames.EVENT_TRIGGER, getEventTriggerInstanceName(eventMethodModel.name))

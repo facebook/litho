@@ -41,6 +41,7 @@ public class PureRenderValidationTest {
             ImmutableList.<Modifier>of(),
             "method",
             TypeName.BOOLEAN,
+            ImmutableList.of(),
             ImmutableList.<MethodParamModel>of(),
             mDelegateMethodRepresentedObject1,
             null);

@@ -15,10 +15,10 @@ java_library(
     ],
     visibility = COMPONENTS_VISIBILITY,
     deps = [
+        COMPONENTS_JAVAPOET_TARGET,
+        COMPONENTS_JSR_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/generator/testing:testing"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
-        COMPONENTS_JAVAPOET_TARGET,
-        COMPONENTS_JSR_TARGET,
     ],
 )

@@ -19,9 +19,10 @@ import com.facebook.litho.annotations.FromTrigger;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
-import com.facebook.litho.specmodels.model.EventMethodModel;
+import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelUtils;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.squareup.javapoet.ArrayTypeName;
@@ -76,7 +77,8 @@ public class TriggerGenerator {
     methodBuilder.addStatement("int id = eventTrigger.mId");
     methodBuilder.beginControlFlow("switch($L)", "id");
 
-    for (EventMethodModel eventMethodModel : specModel.getTriggerMethods()) {
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel :
+        specModel.getTriggerMethods()) {
       String key =
           specModel.getComponentName()
               + ComponentImplGenerator.getEventTriggerInstanceName(eventMethodModel.name);
@@ -86,9 +88,9 @@ public class TriggerGenerator {
 
       methodBuilder.addStatement(
           "$T $L = ($T) $L",
-          eventMethodModel.eventType.name,
+          eventMethodModel.typeModel.name,
           eventVariableName,
-          eventMethodModel.eventType.name,
+          eventMethodModel.typeModel.name,
           "eventState");
 
       final CodeBlock.Builder eventTriggerParams =
@@ -124,7 +126,8 @@ public class TriggerGenerator {
 
   static TypeSpecDataHolder generateOnTriggerMethodDelegates(SpecModel specModel) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
-    for (EventMethodModel eventMethod : specModel.getTriggerMethods()) {
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod :
+        specModel.getTriggerMethods()) {
       typeSpecDataHolder.addMethod(generateOnTriggerMethodDelegate(specModel, eventMethod));
     }
 
@@ -133,7 +136,7 @@ public class TriggerGenerator {
 
   /** Generate a delegate to the Spec that defines this onTrigger method. */
   static MethodSpec generateOnTriggerMethodDelegate(
-      SpecModel specModel, EventMethodModel eventMethodModel) {
+      SpecModel specModel, SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
     final String implName = specModel.getComponentName() + "Impl";
     final MethodSpec.Builder methodSpec =
         MethodSpec.methodBuilder(eventMethodModel.name.toString())
@@ -196,7 +199,8 @@ public class TriggerGenerator {
 
   static TypeSpecDataHolder generateStaticTriggerMethods(SpecModel specModel) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
-    for (EventMethodModel eventMethodModel : specModel.getTriggerMethods()) {
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel :
+        specModel.getTriggerMethods()) {
       typeSpecDataHolder.addMethod(
           generateStaticTriggerMethodWithKey(
               specModel.getComponentName(), specModel.getContextClass(), eventMethodModel));
@@ -206,7 +210,9 @@ public class TriggerGenerator {
   }
 
   static MethodSpec generateStaticTriggerMethodWithKey(
-      String componentName, ClassName contextClassName, EventMethodModel eventMethodModel) {
+      String componentName,
+      ClassName contextClassName,
+      SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
 
     MethodSpec.Builder triggerMethod =
         MethodSpec.methodBuilder(eventMethodModel.name.toString())
@@ -226,10 +232,10 @@ public class TriggerGenerator {
 
   private static MethodSpec generateCommonStaticTriggerMethodCode(
       ClassName contextClassName,
-      EventMethodModel eventMethodModel,
+      SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel,
       MethodSpec.Builder eventTriggerMethod) {
 
-    EventDeclarationModel eventDeclaration = eventMethodModel.eventType;
+    EventDeclarationModel eventDeclaration = eventMethodModel.typeModel;
 
     eventTriggerMethod.beginControlFlow("if (trigger == null)");
     eventTriggerMethod.addStatement(

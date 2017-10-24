@@ -20,7 +20,9 @@ import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.specmodels.model.EventMethodModel;
+import com.facebook.litho.specmodels.model.EventDeclarationModel;
+import com.facebook.litho.specmodels.model.EventMethod;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.google.testing.compile.CompilationRule;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
@@ -67,14 +69,14 @@ public class TriggerMethodExtractorTest {
 
     List<Class<? extends Annotation>> permittedParamAnnotations = new ArrayList<>();
 
-    ImmutableList<EventMethodModel> methods =
+    ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> methods =
         TriggerMethodExtractor.getOnTriggerMethods(
             elements, typeElement, permittedParamAnnotations);
 
     assertThat(methods).hasSize(1);
 
-    EventMethodModel eventMethod = methods.iterator().next();
-    assertThat(eventMethod.eventType.name)
+    SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod = methods.iterator().next();
+    assertThat(eventMethod.typeModel.name)
         .isEqualTo(
             ClassName.bestGuess(
                 "com.facebook.litho.specmodels.processor.TriggerMethodExtractorTest.TestEvent"));

@@ -20,8 +20,9 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
-import com.facebook.litho.specmodels.model.EventMethodModel;
+import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
@@ -49,14 +50,14 @@ public class EventMethodExtractor {
     METHOD_PARAM_ANNOTATIONS.add(TreeProp.class);
   }
 
-  /**
-   * Get the delegate methods from the given {@link TypeElement}.
-   */
-  public static ImmutableList<EventMethodModel> getOnEventMethods(
-      Elements elements,
-      TypeElement typeElement,
-      List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
-    final List<EventMethodModel> delegateMethods = new ArrayList<>();
+  /** Get the delegate methods from the given {@link TypeElement}. */
+  public static ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>>
+      getOnEventMethods(
+          Elements elements,
+          TypeElement typeElement,
+          List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
+    final List<SpecMethodModel<EventMethod, EventDeclarationModel>> delegateMethods =
+        new ArrayList<>();
 
     for (Element enclosedElement : typeElement.getEnclosedElements()) {
       if (enclosedElement.getKind() != ElementKind.METHOD) {
@@ -81,19 +82,20 @@ public class EventMethodExtractor {
             "value");
         final Element eventClass = eventClassDeclaredType.asElement();
 
-        final EventMethodModel eventMethod =
-            new EventMethodModel(
-                new EventDeclarationModel(
-                    ClassName.bestGuess(eventClass.toString()),
-                    EventDeclarationsExtractor.getReturnType(elements, eventClass),
-                    EventDeclarationsExtractor.getFields(eventClass),
-                    eventClass),
+        final SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =
+            new SpecMethodModel<EventMethod, EventDeclarationModel>(
+                ImmutableList.<Annotation>of(),
                 ImmutableList.copyOf(new ArrayList<>(executableElement.getModifiers())),
                 executableElement.getSimpleName(),
                 TypeName.get(executableElement.getReturnType()),
                 ImmutableList.copyOf(getTypeVariables(executableElement)),
                 ImmutableList.copyOf(methodParams),
-                executableElement);
+                executableElement,
+                new EventDeclarationModel(
+                    ClassName.bestGuess(eventClass.toString()),
+                    EventDeclarationsExtractor.getReturnType(elements, eventClass),
+                    EventDeclarationsExtractor.getFields(eventClass),
+                    eventClass));
         delegateMethods.add(eventMethod);
       }
     }

@@ -29,8 +29,8 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       String qualifiedSpecClassName,
       String componentClassName,
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
-      ImmutableList<EventMethodModel> eventMethods,
-      ImmutableList<EventMethodModel> triggerMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
       ImmutableList<UpdateStateMethodModel> updateStateMethods,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
@@ -96,12 +96,12 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public ImmutableList<EventMethodModel> getEventMethods() {
+  public ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> getEventMethods() {
     return mSpecModel.getEventMethods();
   }
 
   @Override
-  public ImmutableList<EventMethodModel> getTriggerMethods() {
+  public ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> getTriggerMethods() {
     return mSpecModel.getTriggerMethods();
   }
 

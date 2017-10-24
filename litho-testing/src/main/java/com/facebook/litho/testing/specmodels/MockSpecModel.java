@@ -12,16 +12,16 @@ package com.facebook.litho.testing.specmodels;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.DelegateMethod;
-import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
-import com.facebook.litho.specmodels.model.EventMethodModel;
+import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.facebook.litho.specmodels.model.PropJavadocModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
 import com.facebook.litho.specmodels.model.SpecElementType;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.facebook.litho.specmodels.model.StateParamModel;
@@ -46,8 +46,8 @@ public class MockSpecModel implements SpecModel {
   private final TypeName mComponentTypeName;
   private final ClassName mComponentClass;
   private final ImmutableList<SpecMethodModel<DelegateMethod, Void>> mDelegateMethods;
-  private final ImmutableList<EventMethodModel> mEventMethods;
-  private final ImmutableList<EventMethodModel> mTriggerMethods;
+  private final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mEventMethods;
+  private final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mTriggerMethods;
   private final ImmutableList<UpdateStateMethodModel> mUpdateStateMethods;
   private final ImmutableList<PropModel> mProps;
   private final ImmutableList<PropDefaultModel> mPropDefaults;
@@ -83,8 +83,8 @@ public class MockSpecModel implements SpecModel {
       TypeName componentTypeName,
       ClassName componentClass,
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
-      ImmutableList<EventMethodModel> eventMethods,
-      ImmutableList<EventMethodModel> triggerMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
       ImmutableList<UpdateStateMethodModel> updateStateMethods,
       ImmutableList<PropModel> props,
       ImmutableList<PropDefaultModel> propDefaults,
@@ -175,12 +175,12 @@ public class MockSpecModel implements SpecModel {
   }
 
   @Override
-  public ImmutableList<EventMethodModel> getEventMethods() {
+  public ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> getEventMethods() {
     return mEventMethods;
   }
 
   @Override
-  public ImmutableList<EventMethodModel> getTriggerMethods() {
+  public ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> getTriggerMethods() {
     return mTriggerMethods;
   }
 
@@ -341,8 +341,10 @@ public class MockSpecModel implements SpecModel {
     private TypeName mComponentTypeName;
     private ClassName mComponentClass;
     private ImmutableList<SpecMethodModel<DelegateMethod, Void>> mDelegateMethods = ImmutableList.of();
-    private ImmutableList<EventMethodModel> mEventMethods = ImmutableList.of();
-    private ImmutableList<EventMethodModel> mTriggerMethods = ImmutableList.of();
+    private ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mEventMethods =
+        ImmutableList.of();
+    private ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mTriggerMethods =
+        ImmutableList.of();
     private ImmutableList<UpdateStateMethodModel> mUpdateStateMethods = ImmutableList.of();
     private ImmutableList<PropModel> mProps = ImmutableList.of();
     private ImmutableList<PropDefaultModel> mPropDefaults = ImmutableList.of();
@@ -401,12 +403,14 @@ public class MockSpecModel implements SpecModel {
       return this;
     }
 
-    public Builder eventMethods(ImmutableList<EventMethodModel> eventMethods) {
+    public Builder eventMethods(
+        ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods) {
       mEventMethods = eventMethods;
       return this;
     }
 
-    public Builder triggerMethods(ImmutableList<EventMethodModel> triggerMethods) {
+    public Builder triggerMethods(
+        ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods) {
       mTriggerMethods = triggerMethods;
       return this;
     }

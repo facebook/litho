@@ -43,10 +43,10 @@ public interface SpecModel {
   ImmutableList<SpecMethodModel<DelegateMethod, Void>> getDelegateMethods();
 
   /** @return the list of event methods defined by the spec. */
-  ImmutableList<EventMethodModel> getEventMethods();
+  ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> getEventMethods();
 
   /** @return the list of trigger methods defined by the spec. */
-  ImmutableList<EventMethodModel> getTriggerMethods();
+  ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> getTriggerMethods();
 
   /** @return the list of methods defined in the spec for updating state. */
   ImmutableList<UpdateStateMethodModel> getUpdateStateMethods();

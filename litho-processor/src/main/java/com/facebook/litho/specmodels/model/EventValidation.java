@@ -61,7 +61,8 @@ public class EventValidation {
   static List<SpecModelValidationError> validateOnEventMethods(SpecModel specModel) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
-    final ImmutableList<EventMethodModel> eventMethods = specModel.getEventMethods();
+    final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods =
+        specModel.getEventMethods();
 
     for (int i = 0, size = eventMethods.size(); i < size - 1; i++) {
       for (int j = i + 1; j < size; j++) {
@@ -75,7 +76,7 @@ public class EventValidation {
       }
     }
 
-    for (EventMethodModel eventMethod : eventMethods) {
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod : eventMethods) {
       if (!specModel.hasInjectedDependencies() &&
           !eventMethod.modifiers.contains(Modifier.STATIC)) {
         validationErrors.add(
@@ -84,14 +85,14 @@ public class EventValidation {
                 "Methods in a spec that doesn't have dependency injection must be static."));
       }
 
-      if (!eventMethod.returnType.box().equals(eventMethod.eventType.returnType.box())) {
+      if (!eventMethod.returnType.box().equals(eventMethod.typeModel.returnType.box())) {
         validationErrors.add(
             new SpecModelValidationError(
                 eventMethod.representedObject,
                 "Method must return "
-                    + eventMethod.eventType.returnType
+                    + eventMethod.typeModel.returnType
                     + " since that is what "
-                    + eventMethod.eventType.name
+                    + eventMethod.typeModel.name
                     + " expects."));
       }
 
@@ -105,13 +106,17 @@ public class EventValidation {
       }
 
       for (MethodParamModel methodParam : eventMethod.methodParams) {
-        if (MethodParamModelUtils.isAnnotatedWith(methodParam, FromEvent.class) &&
-            !hasMatchingField(methodParam, eventMethod.eventType.fields)) {
+        if (MethodParamModelUtils.isAnnotatedWith(methodParam, FromEvent.class)
+            && !hasMatchingField(methodParam, eventMethod.typeModel.fields)) {
           validationErrors.add(
               new SpecModelValidationError(
                   methodParam.getRepresentedObject(),
-                  "Param with name " + methodParam.getName() + " and type " +
-                      methodParam.getType() + " is not a member of " + eventMethod.eventType.name
+                  "Param with name "
+                      + methodParam.getName()
+                      + " and type "
+                      + methodParam.getType()
+                      + " is not a member of "
+                      + eventMethod.typeModel.name
                       + "."));
         }
       }

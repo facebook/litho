@@ -9,13 +9,12 @@
 
 package com.facebook.litho.specmodels.model;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
-
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import javax.lang.model.element.Modifier;
 
 /**
@@ -27,6 +26,7 @@ public final class SpecMethodModel<Phantom, A> {
   public final ImmutableList<Modifier> modifiers;
   public final CharSequence name;
   public final TypeName returnType;
+  public final ImmutableList<TypeVariableName> typeVariables;
   public final ImmutableList<MethodParamModel> methodParams;
   public final Object representedObject;
   @Nullable
@@ -37,14 +37,15 @@ public final class SpecMethodModel<Phantom, A> {
       ImmutableList<Modifier> modifiers,
       CharSequence name,
       TypeName returnType,
+      ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<MethodParamModel> methodParams,
       Object representedObject,
-      @Nullable
-      A typeModel) {
+      @Nullable A typeModel) {
     this.annotations = annotations;
     this.modifiers = modifiers;
     this.name = name;
     this.returnType = returnType;
+    this.typeVariables = typeVariables;
     this.methodParams = methodParams;
     this.representedObject = representedObject;
     this.typeModel = typeModel;

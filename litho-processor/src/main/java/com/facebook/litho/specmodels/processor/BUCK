@@ -33,8 +33,8 @@ java_library(
     name = "processor-lib",
     exported_deps = [
         ":processor-lib-bare",
-        COMPONENTS_JSR_TARGET,
         COMPONENTS_JAVAPOET_TARGET,
+        COMPONENTS_JSR_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/generator/testing:testing"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor/testing:testing"),
     ],
@@ -50,9 +50,9 @@ java_library(
     name = "processor-lib-bare",
     srcs = glob(["*.java"]),
     provided_deps = [
-        COMPONENTS_JSR_TARGET,
-        COMPONENTS_JAVAPOET_TARGET,
         COMPONENTS_JAVAC_TOOLS_TARGET,
+        COMPONENTS_JAVAPOET_TARGET,
+        COMPONENTS_JSR_TARGET,
     ],
     source = "8",
     target = "8",
@@ -60,10 +60,10 @@ java_library(
         "PUBLIC",
     ],
     deps = [
+        COMPONENTS_ANNOTATIONS_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/generator/testing:testing"),
-        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/model/testing:testing"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
-        COMPONENTS_ANNOTATIONS_TARGET,
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/model/testing:testing"),
     ],
 )

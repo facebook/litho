@@ -18,7 +18,9 @@ import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.specmodels.model.EventMethodModel;
+import com.facebook.litho.specmodels.model.EventDeclarationModel;
+import com.facebook.litho.specmodels.model.EventMethod;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.google.testing.compile.CompilationRule;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
@@ -61,16 +63,13 @@ public class EventMethodExtractorTest {
 
     List<Class<? extends Annotation>> permittedParamAnnotations = new ArrayList<>();
 
-    ImmutableList<EventMethodModel> methods =
-        EventMethodExtractor.getOnEventMethods(
-            elements,
-            typeElement,
-            permittedParamAnnotations);
+    ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> methods =
+        EventMethodExtractor.getOnEventMethods(elements, typeElement, permittedParamAnnotations);
 
     assertThat(methods).hasSize(1);
 
-    EventMethodModel eventMethod = methods.iterator().next();
-    assertThat(eventMethod.eventType.name).isEqualTo(ClassName.bestGuess("java.lang.Object"));
+    SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod = methods.iterator().next();
+    assertThat(eventMethod.typeModel.name).isEqualTo(ClassName.bestGuess("java.lang.Object"));
 
     assertThat(eventMethod.modifiers).hasSize(1);
     assertThat(eventMethod.modifiers).contains(Modifier.PUBLIC);

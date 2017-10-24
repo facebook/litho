@@ -16,7 +16,6 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.DelegateMethod;
-import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.squareup.javapoet.TypeName;
@@ -73,6 +72,7 @@ public class DelegateMethodExtractor {
                 ImmutableList.<Modifier>copyOf(new ArrayList<>(executableElement.getModifiers())),
                 executableElement.getSimpleName(),
                 TypeName.get(executableElement.getReturnType()),
+                ImmutableList.of(),
                 ImmutableList.copyOf(methodParams),
                 enclosedElement,
                 null);

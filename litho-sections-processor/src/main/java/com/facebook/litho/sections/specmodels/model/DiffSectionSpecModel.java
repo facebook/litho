@@ -20,10 +20,9 @@ import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.DelegateMethod;
-import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
-import com.facebook.litho.specmodels.model.EventMethodModel;
+import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
@@ -31,6 +30,7 @@ import com.facebook.litho.specmodels.model.PropJavadocModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
 import com.facebook.litho.specmodels.model.SpecElementType;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
@@ -59,9 +59,9 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
       String qualifiedSpecClassName,
       String componentClassName,
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
-      ImmutableList<EventMethodModel> eventMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<AnnotationSpec> classAnnotations,
-      ImmutableList<EventMethodModel> triggerMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
       ImmutableList<UpdateStateMethodModel> updateStateMethods,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
@@ -123,12 +123,12 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
-  public ImmutableList<EventMethodModel> getEventMethods() {
+  public ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> getEventMethods() {
     return mSpecModel.getEventMethods();
   }
 
   @Override
-  public ImmutableList<EventMethodModel> getTriggerMethods() {
+  public ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> getTriggerMethods() {
     return mSpecModel.getTriggerMethods();
   }
 

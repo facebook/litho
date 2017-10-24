@@ -62,6 +62,7 @@ public class DelegateMethodValidationTest {
             ImmutableList.of(Modifier.STATIC),
             "onCreateMountContent",
             ClassName.bestGuess("java.lang.MadeUpClass"),
+            ImmutableList.of(),
             ImmutableList.of(
                 MockMethodParamModel.newBuilder()
                     .name("c")
@@ -96,6 +97,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of(Modifier.STATIC),
                     "name",
                     ClassNames.COMPONENT_LAYOUT,
+                    ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
                             .name("c")
@@ -109,6 +111,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of(Modifier.STATIC),
                     "name",
                     ClassNames.COMPONENT_LAYOUT,
+                    ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
                             .name("c")
@@ -149,6 +152,7 @@ public class DelegateMethodValidationTest {
                     "name",
                     ClassNames.COMPONENT_LAYOUT,
                     ImmutableList.of(),
+                    ImmutableList.of(),
                     mDelegateMethodObject1,
                     null)));
 
@@ -173,6 +177,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of(Modifier.STATIC),
                     "name",
                     ClassNames.COMPONENT_LAYOUT,
+                    ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
                             .type(TypeName.BOOLEAN)
@@ -201,6 +206,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of(Modifier.STATIC),
                     "name",
                     ClassNames.COMPONENT_LAYOUT,
+                    ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
                             .type(ClassNames.COMPONENT_CONTEXT)
@@ -233,6 +239,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of(),
                     "name",
                     ClassNames.COMPONENT_LAYOUT,
+                    ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
                             .type(ClassNames.COMPONENT_CONTEXT)
@@ -260,6 +267,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of(),
                     "name",
                     ClassNames.COMPONENT_LAYOUT,
+                    ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
                             .type(ClassNames.COMPONENT_CONTEXT)
@@ -296,6 +304,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of(Modifier.STATIC),
                     "onMount",
                     TypeName.VOID,
+                    ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
                             .type(ClassNames.COMPONENT_CONTEXT)
@@ -312,6 +321,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of(Modifier.STATIC),
                     "onBind",
                     TypeName.VOID,
+                    ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
                             .type(ClassNames.COMPONENT_CONTEXT)
@@ -357,6 +367,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of(Modifier.STATIC),
                     "onUnmount",
                     TypeName.VOID,
+                    ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
                             .type(ClassNames.COMPONENT_CONTEXT)
@@ -400,6 +411,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of(Modifier.STATIC),
                     "onMount",
                     TypeName.VOID,
+                    ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
                             .type(ClassNames.COMPONENT_CONTEXT)
@@ -445,6 +457,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of(Modifier.STATIC),
                     "onMount",
                     TypeName.VOID,
+                    ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
                             .name("c")
@@ -464,6 +477,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of(Modifier.STATIC),
                     "onPrepare",
                     TypeName.VOID,
+                    ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
                             .name("c")
@@ -509,6 +523,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of(Modifier.STATIC),
                     "name",
                     ClassNames.COMPONENT_LAYOUT,
+                    ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
                             .type(ClassNames.COMPONENT_CONTEXT)

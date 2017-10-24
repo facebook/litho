@@ -9,9 +9,6 @@
 
 package com.facebook.litho.specmodels.model;
 
-import static com.facebook.litho.specmodels.internal.ImmutableList.copyOf;
-import static com.facebook.litho.specmodels.internal.ImmutableList.of;
-import static com.facebook.litho.specmodels.model.SpecModelImpl.newBuilder;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -84,6 +81,7 @@ public class SpecModelImplTest {
             ImmutableList.<Modifier>of(),
             "method1",
             TypeName.BOOLEAN,
+            ImmutableList.of(),
             ImmutableList.copyOf(params1),
             null,
             null);
@@ -93,6 +91,7 @@ public class SpecModelImplTest {
             ImmutableList.<Modifier>of(),
             "method2",
             TypeName.BOOLEAN,
+            ImmutableList.of(),
             ImmutableList.copyOf(params2),
             null,
             null);
@@ -103,13 +102,14 @@ public class SpecModelImplTest {
 
   @Test
   public void testCreateSpecModelImplWithoutDependencyInjection() {
-    SpecModel specModel = newBuilder()
-        .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
-        .delegateMethods(of(mMethodModel1, mMethodModel2))
-        .typeVariables(copyOf(mTypeVariableNames))
-        .propDefaults(of(mPropDefaultModel1))
-        .representedObject(new Object())
-        .build();
+    SpecModel specModel =
+        SpecModelImpl.newBuilder()
+            .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
+            .delegateMethods(ImmutableList.of(mMethodModel1, mMethodModel2))
+            .typeVariables(ImmutableList.copyOf(mTypeVariableNames))
+            .propDefaults(ImmutableList.of(mPropDefaultModel1))
+            .representedObject(new Object())
+            .build();
 
     assertThat(specModel.getSpecName()).isEqualTo("TestSpec");
     assertThat(specModel.getComponentName()).isEqualTo("Test");

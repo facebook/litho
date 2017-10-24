@@ -9,6 +9,9 @@
 
 package com.facebook.litho.specmodels.model;
 
+import static com.squareup.javapoet.ClassName.OBJECT;
+import static com.squareup.javapoet.TypeName.BOOLEAN;
+import static com.squareup.javapoet.TypeName.INT;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -20,6 +23,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
+import java.lang.annotation.Annotation;
 import java.util.List;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
@@ -38,8 +42,8 @@ public class EventValidationTest {
 
   @Before
   public void setup() {
-    when(mSpecModel.getEventMethods()).thenReturn(ImmutableList.<EventMethodModel>of());
-    when(mSpecModel.getEventDeclarations()).thenReturn(ImmutableList.<EventDeclarationModel>of());
+    when(mSpecModel.getEventMethods()).thenReturn(ImmutableList.of());
+    when(mSpecModel.getEventDeclarations()).thenReturn(ImmutableList.of());
     when(mSpecModel.getContextClass()).thenReturn(ClassNames.COMPONENT_CONTEXT);
   }
 
@@ -108,13 +112,11 @@ public class EventValidationTest {
 
   @Test
   public void testNullReturnType() {
-    when(mSpecModel.getEventDeclarations()).thenReturn(
-        ImmutableList.of(
-            new EventDeclarationModel(
-                ClassName.OBJECT,
-                null,
-                ImmutableList.<EventDeclarationModel.FieldModel>of(),
-                mRepresentedObject5)));
+    when(mSpecModel.getEventDeclarations())
+        .thenReturn(
+            ImmutableList.of(
+                new EventDeclarationModel(
+                    ClassName.OBJECT, null, ImmutableList.of(), mRepresentedObject5)));
 
     List<SpecModelValidationError> validationErrors =
         EventValidation.validate(mSpecModel);
@@ -128,30 +130,26 @@ public class EventValidationTest {
   public void testEventMethodsWithSameName() {
     MethodParamModel methodParam =
         MockMethodParamModel.newBuilder().type(ClassNames.COMPONENT_CONTEXT).build();
-    EventMethodModel eventMethod1 = new EventMethodModel(
-        new EventDeclarationModel(
-            ClassName.OBJECT,
-            TypeName.INT,
-            ImmutableList.<EventDeclarationModel.FieldModel>of(),
-            mRepresentedObject1),
-        ImmutableList.of(Modifier.STATIC),
-        "sameName",
-        TypeName.INT,
-        ImmutableList.<TypeVariableName>of(),
-        ImmutableList.of(methodParam),
-        mRepresentedObject2);
-    EventMethodModel eventMethod2 = new EventMethodModel(
-        new EventDeclarationModel(
-            ClassName.OBJECT,
-            TypeName.INT,
-            ImmutableList.<EventDeclarationModel.FieldModel>of(),
-            mRepresentedObject3),
-        ImmutableList.of(Modifier.STATIC),
-        "sameName",
-        TypeName.INT,
-        ImmutableList.<TypeVariableName>of(),
-        ImmutableList.of(methodParam),
-        mRepresentedObject4);
+    SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod1 =
+        new SpecMethodModel<>(
+            ImmutableList.of(),
+            ImmutableList.of(Modifier.STATIC),
+            "sameName",
+            INT,
+            ImmutableList.of(),
+            ImmutableList.of(methodParam),
+            mRepresentedObject2,
+            new EventDeclarationModel(OBJECT, INT, ImmutableList.of(), mRepresentedObject1));
+    SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod2 =
+        new SpecMethodModel<>(
+            ImmutableList.of(),
+            ImmutableList.of(Modifier.STATIC),
+            "sameName",
+            INT,
+            ImmutableList.of(),
+            ImmutableList.of(methodParam),
+            mRepresentedObject4,
+            new EventDeclarationModel(OBJECT, INT, ImmutableList.of(), mRepresentedObject3));
 
     when(mSpecModel.getEventMethods()).thenReturn(ImmutableList.of(eventMethod1, eventMethod2));
 
@@ -167,18 +165,16 @@ public class EventValidationTest {
   public void testEventMethodsWithWrongReturnType() {
     MethodParamModel methodParam =
         MockMethodParamModel.newBuilder().type(ClassNames.COMPONENT_CONTEXT).build();
-    EventMethodModel eventMethod = new EventMethodModel(
-        new EventDeclarationModel(
-            ClassName.OBJECT,
-            TypeName.BOOLEAN,
-            ImmutableList.<EventDeclarationModel.FieldModel>of(),
-            mRepresentedObject1),
-        ImmutableList.of(Modifier.STATIC),
-        "name",
-        TypeName.INT,
-        ImmutableList.<TypeVariableName>of(),
-        ImmutableList.of(methodParam),
-        mRepresentedObject2);
+    SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =
+        new SpecMethodModel<>(
+            ImmutableList.of(),
+            ImmutableList.of(Modifier.STATIC),
+            "name",
+            INT,
+            ImmutableList.of(),
+            ImmutableList.of(methodParam),
+            mRepresentedObject2,
+            new EventDeclarationModel(OBJECT, BOOLEAN, ImmutableList.of(), mRepresentedObject1));
 
     when(mSpecModel.getEventMethods()).thenReturn(ImmutableList.of(eventMethod));
 
@@ -194,19 +190,16 @@ public class EventValidationTest {
   public void testEventMethodsWithPrimitiveReturnType() {
     MethodParamModel methodParam =
         MockMethodParamModel.newBuilder().type(ClassNames.COMPONENT_CONTEXT).build();
-    EventMethodModel eventMethod =
-        new EventMethodModel(
-            new EventDeclarationModel(
-                ClassName.OBJECT,
-                TypeName.INT.box(),
-                ImmutableList.<EventDeclarationModel.FieldModel>of(),
-                mRepresentedObject1),
+    SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =
+        new SpecMethodModel<>(
+            ImmutableList.of(),
             ImmutableList.of(Modifier.STATIC),
             "name",
-            TypeName.INT,
-            ImmutableList.<TypeVariableName>of(),
+            INT,
+            ImmutableList.of(),
             ImmutableList.of(methodParam),
-            mRepresentedObject2);
+            mRepresentedObject2,
+            new EventDeclarationModel(OBJECT, INT.box(), ImmutableList.of(), mRepresentedObject1));
 
     when(mSpecModel.getEventMethods()).thenReturn(ImmutableList.of(eventMethod));
 
@@ -217,18 +210,16 @@ public class EventValidationTest {
   @Test
   public void testEventMethodsWithWrongFirstParam() {
     MethodParamModel methodParam = MockMethodParamModel.newBuilder().type(TypeName.BOOLEAN).build();
-    EventMethodModel eventMethod = new EventMethodModel(
-        new EventDeclarationModel(
-            ClassName.OBJECT,
-            TypeName.INT,
-            ImmutableList.<EventDeclarationModel.FieldModel>of(),
-            mRepresentedObject1),
-        ImmutableList.of(Modifier.STATIC),
-        "name",
-        TypeName.INT,
-        ImmutableList.<TypeVariableName>of(),
-        ImmutableList.of(methodParam),
-        mRepresentedObject2);
+    SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =
+        new SpecMethodModel<>(
+            ImmutableList.of(),
+            ImmutableList.of(Modifier.STATIC),
+            "name",
+            INT,
+            ImmutableList.of(),
+            ImmutableList.of(methodParam),
+            mRepresentedObject2,
+            new EventDeclarationModel(OBJECT, INT, ImmutableList.of(), mRepresentedObject1));
 
     when(mSpecModel.getEventMethods()).thenReturn(ImmutableList.of(eventMethod));
 
@@ -259,21 +250,22 @@ public class EventValidationTest {
             .name("booleanParam2")
             .representedObject(mRepresentedObject4)
             .build();
-    EventMethodModel eventMethod = new EventMethodModel(
-        new EventDeclarationModel(
-            ClassName.OBJECT,
-            TypeName.INT,
-            ImmutableList.of(
-                new EventDeclarationModel.FieldModel(
-                    FieldSpec.builder(TypeName.BOOLEAN, "booleanParam").build(),
-                mRepresentedObject5)),
-            mRepresentedObject1),
-        ImmutableList.of(Modifier.STATIC),
-        "name",
-        TypeName.INT,
-        ImmutableList.<TypeVariableName>of(),
-        ImmutableList.of(methodParam0, methodParam1, methodParam2),
-        mRepresentedObject2);
+    SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =
+        new SpecMethodModel<>(
+            ImmutableList.of(),
+            ImmutableList.of(Modifier.STATIC),
+            "name",
+            INT,
+            ImmutableList.of(),
+            ImmutableList.of(methodParam0, methodParam1, methodParam2),
+            mRepresentedObject2,
+            new EventDeclarationModel(
+                OBJECT,
+                INT,
+                ImmutableList.of(
+                    new EventDeclarationModel.FieldModel(
+                        FieldSpec.builder(BOOLEAN, "booleanParam").build(), mRepresentedObject5)),
+                mRepresentedObject1));
 
     when(mSpecModel.getEventMethods()).thenReturn(ImmutableList.of(eventMethod));
 
@@ -289,18 +281,16 @@ public class EventValidationTest {
   public void testEventMethodNotStatic() {
     MethodParamModel methodParam =
         MockMethodParamModel.newBuilder().type(ClassNames.COMPONENT_CONTEXT).build();
-    EventMethodModel eventMethod = new EventMethodModel(
-        new EventDeclarationModel(
-            ClassName.OBJECT,
-            TypeName.BOOLEAN,
-            ImmutableList.<EventDeclarationModel.FieldModel>of(),
-            mRepresentedObject1),
-        ImmutableList.<Modifier>of(),
-        "name",
-        TypeName.BOOLEAN,
-        ImmutableList.<TypeVariableName>of(),
-        ImmutableList.of(methodParam),
-        mRepresentedObject2);
+    SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =
+        new SpecMethodModel<EventMethod, EventDeclarationModel>(
+            ImmutableList.<Annotation>of(),
+            ImmutableList.<Modifier>of(),
+            "name",
+            BOOLEAN,
+            ImmutableList.<TypeVariableName>of(),
+            ImmutableList.of(methodParam),
+            mRepresentedObject2,
+            new EventDeclarationModel(OBJECT, BOOLEAN, ImmutableList.of(), mRepresentedObject1));
 
     when(mSpecModel.getEventMethods()).thenReturn(ImmutableList.of(eventMethod));
 

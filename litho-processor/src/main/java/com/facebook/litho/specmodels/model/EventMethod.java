@@ -9,5 +9,5 @@
 
 package com.facebook.litho.specmodels.model;
 
-/** Phantom type for a delegate method model. */
-public interface DelegateMethod {}
+/** Phantom type for an event method model. */
+public interface EventMethod {}
