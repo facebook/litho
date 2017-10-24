@@ -72,8 +72,10 @@ public class UpdateStateMethodExtractor {
                 ImmutableList.copyOf(new ArrayList<>(executableElement.getModifiers())),
                 executableElement.getSimpleName(),
                 TypeName.get(executableElement.getReturnType()),
+                ImmutableList.of(),
                 ImmutableList.copyOf(methodParams),
-                executableElement);
+                executableElement,
+                null);
         delegateMethods.add(delegateMethod);
       }
     }

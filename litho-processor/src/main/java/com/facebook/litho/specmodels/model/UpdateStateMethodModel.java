@@ -11,7 +11,9 @@ package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.lang.model.element.Modifier;
 
@@ -25,21 +27,27 @@ public final class UpdateStateMethodModel {
   public final ImmutableList<Modifier> modifiers;
   public final CharSequence name;
   public final TypeName returnType;
+  public final ImmutableList<TypeVariableName> typeVariables;
   public final ImmutableList<MethodParamModel> methodParams;
   public final Object representedObject;
+  @Nullable public final Object typeModel;
 
   public UpdateStateMethodModel(
       ImmutableList<Annotation> annotation,
       ImmutableList<Modifier> modifiers,
       CharSequence name,
       TypeName returnType,
+      ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<MethodParamModel> methodParams,
-      Object representedObject) {
+      Object representedObject,
+      @Nullable Object typeModel) {
     this.annotation = annotation;
     this.modifiers = modifiers;
     this.name = name;
     this.returnType = returnType;
+    this.typeVariables = typeVariables;
     this.methodParams = methodParams;
     this.representedObject = representedObject;
+    this.typeModel = typeModel;
   }
 }

@@ -107,7 +107,10 @@ public class StateValidationTest {
             ImmutableList.of(Modifier.STATIC),
             null,
             null,
-            ImmutableList.of(methodParamModel1, methodParamModel2), mRepresentedObject3);
+            ImmutableList.of(),
+            ImmutableList.of(methodParamModel1, methodParamModel2),
+            mRepresentedObject3,
+            null);
 
     when(mPropModel.getName()).thenReturn("propName");
     when(mStateParamModel.getName()).thenReturn("stateName");
@@ -166,9 +169,11 @@ public class StateValidationTest {
             ImmutableList.of(Modifier.STATIC),
             "methodName",
             null,
+            ImmutableList.of(),
             ImmutableList.of(
                 methodParamModel1, methodParamModel2, methodParamModel3, methodParamModel4),
-            mRepresentedObject5);
+            mRepresentedObject5,
+            null);
 
     List<SpecModelValidationError> validationErrors =
         StateValidation.validateOnUpdateStateMethod(mSpecModel, updateStateMethodModel);
@@ -211,8 +216,10 @@ public class StateValidationTest {
             ImmutableList.of(Modifier.STATIC),
             "methodName",
             null,
+            ImmutableList.of(),
             ImmutableList.of(methodParamModel4),
-            mRepresentedObject2);
+            mRepresentedObject2,
+            null);
 
     List<SpecModelValidationError> validationErrors =
         StateValidation.validateOnUpdateStateMethod(mSpecModel, updateStateMethodModel);
@@ -231,8 +238,10 @@ public class StateValidationTest {
             ImmutableList.<Modifier>of(),
             "methodName",
             null,
+            ImmutableList.of(),
             ImmutableList.<MethodParamModel>of(),
-            mRepresentedObject1);
+            mRepresentedObject1,
+            null);
 
     List<SpecModelValidationError> validationErrors =
         StateValidation.validateOnUpdateStateMethod(mSpecModel, updateStateMethodModel);

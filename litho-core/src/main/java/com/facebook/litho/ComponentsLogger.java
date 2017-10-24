@@ -45,7 +45,7 @@ public interface ComponentsLogger {
    * When a component key collision occurs, filenames that match the names contained in the returned
    * set will be added to the error stack trace even if they match keywords in the whitelist.
    *
-   * @see {{@link #getKeyCollisionStackTraceKeywords()}}
+   * @see #getKeyCollisionStackTraceKeywords()
    */
   Set<String> getKeyCollisionStackTraceBlacklist();
 }
