@@ -21,12 +21,14 @@ import android.support.v4.widget.ExploreByTouchHelper;
 import android.view.View;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
 import java.util.concurrent.atomic.AtomicInteger;
+
 
 /**
  * {@link ComponentLifecycle} is a stateless singleton object that defines how {@link Component}
@@ -266,6 +268,16 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
 
     node.appendComponent(component);
+    if (ComponentsConfiguration.ARE_TRANSITIONS_SUPPORTED) {
+      if (needsPreviousRenderData()) {
+        node.addComponentNeedingPreviousRenderData(component);
+      } else {
+        final Transition transition = onCreateTransition(context, component);
+        if (transition != null) {
+          node.addTransition(transition);
+        }
+      }
+    }
 
     if (!deferNestedTreeResolution) {
       onPrepare(context, component);

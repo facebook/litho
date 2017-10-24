@@ -11,7 +11,6 @@ package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.os.Build.VERSION_CODES.M;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
@@ -660,28 +659,29 @@ class LayoutState {
     }
 
     // 5. Extract the Transitions.
-    if (SDK_INT >= ICE_CREAM_SANDWICH) {
-      if (component != null) {
-        final ComponentLifecycle lifecycle = component.getLifecycle();
-        if (!lifecycle.needsPreviousRenderData()) {
-          final Transition transition =
-              component.getLifecycle().onCreateTransition(layoutState.mContext, component);
-
-          if (transition != null) {
-            layoutState.getOrCreateTransitionContext().addTransition(transition);
-            if (!layoutState.mHasLithoViewBoundsAnimation
-                && layoutState.mLayoutRoot.hasTransitionKey()) {
-              layoutState.mHasLithoViewBoundsAnimation =
-                  hasBoundsAnimation(layoutState.mLayoutRoot.getTransitionKey(), transition);
-            }
+    if (ComponentsConfiguration.ARE_TRANSITIONS_SUPPORTED) {
+      final ArrayList<Transition> transitions = node.getTransitions();
+      if (transitions != null) {
+        for (int i = 0, size = transitions.size(); i < size; i++) {
+          final Transition transition = transitions.get(i);
+          layoutState.getOrCreateTransitionContext().addTransition(transition);
+          if (!layoutState.mHasLithoViewBoundsAnimation
+              && layoutState.mLayoutRoot.hasTransitionKey()) {
+            layoutState.mHasLithoViewBoundsAnimation =
+                hasBoundsAnimation(layoutState.mLayoutRoot.getTransitionKey(), transition);
           }
-        } else {
-          if (layoutState.mComponentsNeedingPreviousRenderData == null) {
-            layoutState.mComponentsNeedingPreviousRenderData = new ArrayList<>();
-          }
-          // We'll check for animations in mount
-          layoutState.mComponentsNeedingPreviousRenderData.add(component);
         }
+      }
+
+      final ArrayList<Component> componentsNeedingPreviousRenderData =
+          node.getComponentsNeedingPreviousRenderData();
+      if (componentsNeedingPreviousRenderData != null) {
+        if (layoutState.mComponentsNeedingPreviousRenderData == null) {
+          layoutState.mComponentsNeedingPreviousRenderData = new ArrayList<>();
+        }
+        // We'll check for animations in mount
+        layoutState.mComponentsNeedingPreviousRenderData.addAll(
+            componentsNeedingPreviousRenderData);
       }
     }
 

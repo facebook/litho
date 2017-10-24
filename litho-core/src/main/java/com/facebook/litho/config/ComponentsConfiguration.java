@@ -9,6 +9,9 @@
 
 package com.facebook.litho.config;
 
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
+
 import com.facebook.litho.BuildConfig;
 import com.facebook.yoga.YogaLogger;
 
@@ -31,6 +34,9 @@ public class ComponentsConfiguration {
   /** Indicates that the incremental mount helper is required for this build. */
   public static final boolean USE_INCREMENTAL_MOUNT_HELPER =
       BuildConfig.USE_INCREMENTAL_MOUNT_HELPER;
+
+  /** Whether transitions are supported for this API version. */
+  public static final boolean ARE_TRANSITIONS_SUPPORTED = (SDK_INT >= ICE_CREAM_SANDWICH);
 
   /**
    * Option to enabled debug mode. This will save extra data asscociated with each node and allow

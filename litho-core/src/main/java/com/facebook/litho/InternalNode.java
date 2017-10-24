@@ -154,6 +154,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private float mLastMeasuredWidth = DiffNode.UNSPECIFIED;
   private float mLastMeasuredHeight = DiffNode.UNSPECIFIED;
   private DiffNode mDiffNode;
+  private @Nullable ArrayList<Transition> mTransitions;
+  private @Nullable ArrayList<Component> mComponentsNeedingPreviousRenderData;
 
   private boolean mCachedMeasuresValid;
   private TreeProps mPendingTreeProps;
@@ -1356,6 +1358,16 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return !TextUtils.isEmpty(mTransitionKey);
   }
 
+  @Nullable
+  ArrayList<Transition> getTransitions() {
+    return mTransitions;
+  }
+
+  @Nullable
+  ArrayList<Component> getComponentsNeedingPreviousRenderData() {
+    return mComponentsNeedingPreviousRenderData;
+  }
+
   /**
    * A unique identifier which may be set for retrieving a component and its bounds when testing.
    */
@@ -1548,6 +1560,20 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
         || ComponentsConfiguration.isDebugModeEnabled) {
       mComponents.add(component);
     }
+  }
+
+  void addTransition(Transition transition) {
+    if (mTransitions == null) {
+      mTransitions = new ArrayList<>(1);
+    }
+    mTransitions.add(transition);
+  }
+
+  void addComponentNeedingPreviousRenderData(Component component) {
+    if (mComponentsNeedingPreviousRenderData == null) {
+      mComponentsNeedingPreviousRenderData = new ArrayList<>(1);
+    }
+    mComponentsNeedingPreviousRenderData.add(component);
   }
 
   boolean hasNestedTree() {
@@ -1927,6 +1953,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       ComponentsPools.release(mPendingTreeProps);
       mPendingTreeProps = null;
     }
+
+    mTransitions = null;
+    mComponentsNeedingPreviousRenderData = null;
 
     ComponentsPools.release(this);
   }

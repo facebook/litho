@@ -14,6 +14,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.Transition;
 
 public abstract class InlineLayoutSpec extends Component implements Cloneable {
 
@@ -29,6 +30,11 @@ public abstract class InlineLayoutSpec extends Component implements Cloneable {
       // no-op
       return null;
     }
+
+    @Override
+    protected Transition onCreateTransition(ComponentContext c, Component<?> component) {
+      return ((InlineLayoutSpec) component).onCreateTransition(c);
+    }
   }
 
   public InlineLayoutSpec() {
@@ -42,4 +48,8 @@ public abstract class InlineLayoutSpec extends Component implements Cloneable {
   }
 
   protected abstract ComponentLayout onCreateLayout(ComponentContext c);
+
+  protected Transition onCreateTransition(ComponentContext c) {
+    return null;
+  }
 }
