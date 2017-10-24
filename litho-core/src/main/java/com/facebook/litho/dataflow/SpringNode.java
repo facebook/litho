@@ -10,6 +10,7 @@
 package com.facebook.litho.dataflow;
 
 import com.facebook.litho.dataflow.springs.Spring;
+import com.facebook.litho.dataflow.springs.SpringConfig;
 
 /**
  * A node that implements spring physics: it takes an initial value ("initial" input) and
@@ -26,7 +27,14 @@ public class SpringNode extends ValueNode implements NodeCanFinish {
   private boolean mAreParentsFinished = false;
 
   public SpringNode() {
+    this(null);
+  }
+
+  public SpringNode(SpringConfig springConfig) {
     mSpring = new Spring();
+    if (springConfig != null) {
+      mSpring.setSpringConfig(springConfig);
+    }
   }
 
   @Override

@@ -19,7 +19,9 @@ import com.facebook.litho.animation.RuntimeValue;
 import com.facebook.litho.animation.SpringTransition;
 import com.facebook.litho.animation.TimingTransition;
 import com.facebook.litho.animation.TransitionAnimationBinding;
+import com.facebook.litho.dataflow.springs.SpringConfig;
 import java.util.ArrayList;
+import javax.annotation.Nullable;
 
 /**
  * Defines how a property on a component should animate as it changes, allowing you to optionally
@@ -186,9 +188,12 @@ public abstract class Transition {
     return new SequenceTransitionSet(transitions);
   }
 
-  /**
-   * Creates a {@link TimingTransition} with the given duration.
-   */
+  /** Creates a {@link SpringTransition} with the given tension and friction. */
+  public static TransitionAnimator springWithConfig(final double tension, final double friction) {
+    return new SpringTransitionAnimator(tension, friction);
+  }
+
+  /** Creates a {@link TimingTransition} with the given duration. */
   public static TransitionAnimator timing(final int durationMs) {
     return new TimingTransitionAnimator(durationMs);
   }
@@ -423,9 +428,19 @@ public abstract class Transition {
    */
   public static class SpringTransitionAnimator implements TransitionAnimator {
 
+    @Nullable SpringConfig mSpringConfig;
+
+    public SpringTransitionAnimator() {
+      mSpringConfig = null;
+    }
+
+    public SpringTransitionAnimator(final double tension, final double friction) {
+      mSpringConfig = new SpringConfig(tension, friction);
+    }
+
     @Override
     public TransitionAnimationBinding createAnimation(PropertyAnimation propertyAnimation) {
-      return new SpringTransition(propertyAnimation);
+      return new SpringTransition(propertyAnimation, mSpringConfig);
     }
   }
 
