@@ -328,6 +328,7 @@ public class TransitionManagerAnimationCreationTest {
     final LayoutOutput layoutOutput = mock(LayoutOutput.class);
     when(layoutOutput.getTransitionKey()).thenReturn(transitionKey);
     when(layoutOutput.getBounds()).thenReturn(new Rect(x, y, 100, 100));
+    when(layoutOutput.acquireRef()).thenReturn(layoutOutput);
     return layoutOutput;
   }
 }

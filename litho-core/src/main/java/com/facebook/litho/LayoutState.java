@@ -1821,7 +1821,7 @@ class LayoutState {
       mClipChildren = true;
 
       for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
-        ComponentsPools.release(mMountableOutputs.get(i));
+        mMountableOutputs.get(i).release();
       }
       mMountableOutputs.clear();
       mMountableOutputTops.clear();

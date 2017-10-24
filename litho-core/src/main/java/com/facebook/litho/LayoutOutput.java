@@ -258,28 +258,26 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   void acquire() {
     if (mRefCount.getAndSet(1) != 0) {
       throw new RuntimeException(
-          "Tried to acquire LayoutOutput that already had a non-zero ref count!");
+          "Tried to acquire a LayoutOutput that already had a non-zero ref count!");
     }
   }
 
-  public void incrementRefCount() {
+  public LayoutOutput acquireRef() {
     if (mRefCount.getAndIncrement() < 1) {
-      throw new RuntimeException(
-          "Tried to increment ref count of a released LayoutOutput!");
+      throw new RuntimeException("Tried to acquire a reference to a released LayoutOutput!");
     }
-  }
 
-  public void decrementRefCount() {
-    if (mRefCount.decrementAndGet() < 1) {
-      throw new RuntimeException("Decremented external ref count below 1!");
-    }
+    return this;
   }
 
   void release() {
-    if (mRefCount.getAndSet(0) != 1) {
-      throw new RuntimeException(
-          "Trying to release LayoutOutput that still has external references!");
+    final int count = mRefCount.decrementAndGet();
+    if (count < 0) {
+      throw new IllegalStateException("Trying to release a recycled LayoutOutput.");
+    } else if (count > 0) {
+      return;
     }
+
     if (mComponent != null) {
       mComponent.release();
       mComponent = null;
@@ -303,5 +301,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mHostMarker = -1L;
     mUpdateState = STATE_UNKNOWN;
     mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+
+    ComponentsPools.release(this);
   }
 }

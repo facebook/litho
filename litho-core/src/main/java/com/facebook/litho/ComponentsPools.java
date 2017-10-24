@@ -559,7 +559,6 @@ public class ComponentsPools {
     if (!ComponentsConfiguration.usePooling) {
       return;
     }
-    output.release();
     sLayoutOutputPool.release(output);
   }
 

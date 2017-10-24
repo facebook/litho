@@ -368,15 +368,10 @@ public class TransitionManager {
       animationState.changeType = ChangeType.DISAPPEARED;
     }
 
-    animationState.currentLayoutOutput = currentLayoutOutput;
-    animationState.nextLayoutOutput = nextLayoutOutput;
-
-    if (animationState.currentLayoutOutput != null) {
-      animationState.currentLayoutOutput.incrementRefCount();
-    }
-    if (animationState.nextLayoutOutput != null) {
-      animationState.nextLayoutOutput.incrementRefCount();
-    }
+    animationState.currentLayoutOutput =
+        currentLayoutOutput != null ? currentLayoutOutput.acquireRef() : null;
+    animationState.nextLayoutOutput =
+        nextLayoutOutput != null ? nextLayoutOutput.acquireRef() : null;
 
     recordLastMountedValues(animationState);
 
@@ -780,11 +775,11 @@ public class TransitionManager {
 
   private static void clearLayoutOutputs(AnimationState animationState) {
     if (animationState.currentLayoutOutput != null) {
-      animationState.currentLayoutOutput.decrementRefCount();
+      animationState.currentLayoutOutput.release();
       animationState.currentLayoutOutput = null;
     }
     if (animationState.nextLayoutOutput != null) {
-      animationState.nextLayoutOutput.decrementRefCount();
+      animationState.nextLayoutOutput.release();
       animationState.nextLayoutOutput = null;
     }
   }
