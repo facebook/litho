@@ -36,8 +36,6 @@ final class ViewportManager {
   private int mCurrentFirstFullyVisiblePosition;
   private int mCurrentLastFullyVisiblePosition;
   private int mTotalItemCount;
-  private int mScrollingState;
-
   private boolean mIsDataChangedVisible;
 
   @Nullable private List<ViewportChanged> mViewportChangedListeners;
@@ -45,35 +43,34 @@ final class ViewportManager {
   private final LayoutInfo mLayoutInfo;
   private final Handler mMainThreadHandler;
   private final ViewportScrollListener mViewportScrollListener = new ViewportScrollListener();
-  private final Runnable mViewportChangedRunnable = new Runnable() {
-    @Override
-    public void run() {
-      onViewportChanged();
-    }
-  };
+  private final Runnable mViewportChangedRunnable =
+      new Runnable() {
+        @Override
+        public void run() {
+          onViewportChanged(ViewportInfo.State.DATA_CHANGES);
+        }
+      };
 
   ViewportManager(
       int currentFirstVisiblePosition,
       int currentLastVisiblePosition,
       LayoutInfo layoutInfo,
-      Handler mainThreadHandler,
-      int initialScrollingState) {
+      Handler mainThreadHandler) {
     mCurrentFirstVisiblePosition = currentFirstVisiblePosition;
     mCurrentLastVisiblePosition = currentLastVisiblePosition;
     mCurrentFirstFullyVisiblePosition = layoutInfo.findFirstFullyVisibleItemPosition();
     mCurrentLastFullyVisiblePosition = layoutInfo.findLastFullyVisibleItemPosition();
     mTotalItemCount = layoutInfo.getItemCount();
-    mScrollingState = initialScrollingState;
     mLayoutInfo = layoutInfo;
     mMainThreadHandler = mainThreadHandler;
   }
 
   /**
-   * Handles a change in viewport. This method should not be called outside of the method
-   * {@link OnScrollListener#onScrolled(RecyclerView, int, int)}
+   * Handles a change in viewport. This method should not be called outside of the method {@link
+   * OnScrollListener#onScrolled(RecyclerView, int, int)}
    */
   @UiThread
-  void onViewportChanged() {
+  void onViewportChanged(@ViewportInfo.State int state) {
     final int firstVisiblePosition = mLayoutInfo.findFirstVisibleItemPosition();
     final int lastVisiblePosition = mLayoutInfo.findLastVisibleItemPosition();
     final int firstFullyVisibleItemPosition = mLayoutInfo.findFirstFullyVisibleItemPosition();
@@ -89,7 +86,7 @@ final class ViewportManager {
         && firstFullyVisibleItemPosition == mCurrentFirstFullyVisiblePosition
         && lastFullyVisibleItemPosition == mCurrentLastFullyVisiblePosition
         && totalItemCount == mTotalItemCount
-        && !mIsDataChangedVisible) {
+        && state != ViewportInfo.State.DATA_CHANGES) {
       return;
     }
 
@@ -103,8 +100,6 @@ final class ViewportManager {
       return;
     }
 
-    final @ViewportInfo.State int state =
-        mIsDataChangedVisible ? ViewportInfo.State.DATA_CHANGES : ViewportInfo.State.SCROLLING;
 
     for (ViewportChanged viewportChangedListener : mViewportChangedListeners) {
       viewportChangedListener.viewportChanged(
@@ -119,54 +114,11 @@ final class ViewportManager {
   }
 
   @UiThread
-  void onViewportchangedAfterViewAdded(int addedPosition) {
-    if (isScrolling()) {
-      // If the RecyclerView is scrolling we do not have to handle viewport changed notification
-      return;
-    }
-
-    final boolean isRangeNotInitialised =
-        mCurrentFirstVisiblePosition <= 0 && mCurrentLastVisiblePosition <= 0;
-
-    final boolean isPositionAddedWithinRange =
-        mCurrentFirstVisiblePosition <= addedPosition
-            && addedPosition <= mCurrentLastVisiblePosition;
-
-    if (isRangeNotInitialised || isPositionAddedWithinRange) {
-      putViewportChangedRunnableToEndOfUIThreadQueue();
-    }
-  }
-
-  /**
-   * Handles a change in viewport when a View is removed from the RecyclerView.
-   * This method does nothing if the removal is due to a scrolling event
-   *
-   * @param removedPosition
-   */
-  @UiThread
-  void onViewportChangedAfterViewRemoval(int removedPosition) {
-    if (isScrolling()) {
-      // If the RecyclerView is scrolling we do not have to handle viewport changed notification
-      return;
-    }
-
-    final boolean isRangeNotInitialised = mCurrentFirstVisiblePosition <= 0
-        && mCurrentLastVisiblePosition <= 0;
-
-    final boolean isPositionRemovedWithinRange = mCurrentFirstVisiblePosition <= removedPosition
-        && removedPosition <= mCurrentLastVisiblePosition;
-
-    if (isRangeNotInitialised || isPositionRemovedWithinRange) {
-      putViewportChangedRunnableToEndOfUIThreadQueue();
-    }
-  }
-
-  @UiThread
   void setDataChangedIsVisible(boolean isUpdated) {
+    mIsDataChangedVisible = mIsDataChangedVisible || isUpdated;
     if (mIsDataChangedVisible) {
-      return;
+      putViewportChangedRunnableToEndOfUIThreadQueue();
     }
-    mIsDataChangedVisible = isUpdated;
   }
 
   @UiThread
@@ -279,20 +231,11 @@ final class ViewportManager {
     return mViewportScrollListener;
   }
 
-  private boolean isScrolling() {
-    return mScrollingState != RecyclerView.SCROLL_STATE_IDLE;
-  }
-
   private class ViewportScrollListener extends RecyclerView.OnScrollListener {
 
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-      onViewportChanged();
-    }
-
-    @Override
-    public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-      mScrollingState = newState;
+      onViewportChanged(ViewportInfo.State.SCROLLING);
     }
   }
 }

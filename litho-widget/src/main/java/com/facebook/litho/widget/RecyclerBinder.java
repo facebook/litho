@@ -262,12 +262,12 @@ public class RecyclerBinder
 
     mIsCircular = builder.isCircular;
 
-    mViewportManager = new ViewportManager(
-        mCurrentFirstVisiblePosition,
-        mCurrentLastVisiblePosition,
-        builder.layoutInfo,
-        mMainThreadHandler,
-        RecyclerView.SCROLL_STATE_IDLE);
+    mViewportManager =
+        new ViewportManager(
+            mCurrentFirstVisiblePosition,
+            mCurrentLastVisiblePosition,
+            builder.layoutInfo,
+            mMainThreadHandler);
   }
 
   /**
@@ -1383,19 +1383,6 @@ public class RecyclerBinder
       } else {
         return renderInfo.getViewType();
       }
-    }
-
-    @Override
-    public void onViewAttachedToWindow(BaseViewHolder holder) {
-      final int position = holder.getLayoutPosition();
-      mViewportManager.onViewportchangedAfterViewAdded(position);
-    }
-
-    @Override
-    public void onViewDetachedFromWindow(BaseViewHolder holder) {
-      // LayoutPosition of the detached ViewHolder is always 1 position less than
-      // the actual on screen.
-      mViewportManager.onViewportChangedAfterViewRemoval(holder.getLayoutPosition() + 1);
     }
 
     @Override

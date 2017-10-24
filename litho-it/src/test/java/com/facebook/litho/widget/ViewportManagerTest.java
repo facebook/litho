@@ -12,14 +12,12 @@ package com.facebook.litho.widget;
 import static com.facebook.litho.widget.ViewportInfo.State.DATA_CHANGES;
 import static com.facebook.litho.widget.ViewportInfo.State.SCROLLING;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import android.os.Handler;
-import android.support.v7.widget.RecyclerView;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,21 +42,21 @@ public class ViewportManagerTest {
 
   @Test
   public void testOnViewportChangedWhileScrolling() {
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_DRAGGING, 0, 0);
+    ViewportManager viewportManager = getViewportManager(0, 0);
 
     setVisibleItemPositionInMockedLayoutManager(0, 5);
     setFullyVisibleItemPositionInMockedLayoutManager(1, 4);
     setTotalItemInMockedLayoutManager(20);
 
     viewportManager.setDataChangedIsVisible(false);
-    viewportManager.onViewportChanged();
+    viewportManager.onViewportChanged(SCROLLING);
 
     verify(mViewportChangedListener).viewportChanged(0, 5, 1, 4, SCROLLING);
   }
 
   @Test
   public void testOnViewportChangedWhileScrollingWithNoItemsFullyVisible() {
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_DRAGGING, 0, 0);
+    ViewportManager viewportManager = getViewportManager(0, 0);
 
     // The second and third items are visible partially but neither is fully visible
     setVisibleItemPositionInMockedLayoutManager(1, 2);
@@ -66,21 +64,21 @@ public class ViewportManagerTest {
     setTotalItemInMockedLayoutManager(20);
 
     viewportManager.setDataChangedIsVisible(true);
-    viewportManager.onViewportChanged();
+    viewportManager.onViewportChanged(SCROLLING);
 
-    verify(mViewportChangedListener).viewportChanged(1, 2, -1, -1, DATA_CHANGES);
+    verify(mViewportChangedListener).viewportChanged(1, 2, -1, -1, SCROLLING);
   }
 
   @Test
   public void testOnViewportChangedWithoutScrolling() {
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 5, 20);
+    ViewportManager viewportManager = getViewportManager(5, 20);
 
     setVisibleItemPositionInMockedLayoutManager(5, 20);
     setFullyVisibleItemPositionInMockedLayoutManager(7, 18);
     setTotalItemInMockedLayoutManager(20);
 
     viewportManager.setDataChangedIsVisible(true);
-    viewportManager.onViewportChanged();
+    viewportManager.onViewportChanged(DATA_CHANGES);
 
     verify(mViewportChangedListener).viewportChanged(5, 20, 7, 18, DATA_CHANGES);
   }
@@ -90,74 +88,29 @@ public class ViewportManagerTest {
     setFullyVisibleItemPositionInMockedLayoutManager(7, 9);
     setTotalItemInMockedLayoutManager(13);
 
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_DRAGGING, 5, 10);
+    ViewportManager viewportManager = getViewportManager(5, 10);
 
     setVisibleItemPositionInMockedLayoutManager(5, 10);
     setFullyVisibleItemPositionInMockedLayoutManager(7, 9);
     setTotalItemInMockedLayoutManager(13);
 
-    viewportManager.onViewportChanged();
+    viewportManager.setDataChangedIsVisible(false);
+    viewportManager.onViewportChanged(SCROLLING);
 
     verifyZeroInteractions(mViewportChangedListener);
   }
 
   @Test
-  public void testNoViewportChangedWithoutScrolling() {
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 5, 10);
-
-    setVisibleItemPositionInMockedLayoutManager(5, 10);
-    setFullyVisibleItemPositionInMockedLayoutManager(7, 9);
-    setTotalItemInMockedLayoutManager(12);
-
-    viewportManager.setDataChangedIsVisible(false);
-    viewportManager.onViewportChanged();
-
-    verify(mViewportChangedListener).viewportChanged(5, 10, 7, 9, SCROLLING);
-  }
-
-  @Test
-  public void testOnViewportChangedFromRemovalWithScrolling() {
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_DRAGGING, -1, 0);
-    viewportManager.onViewportChangedAfterViewRemoval(1);
-
-    verifyZeroInteractions(mMainThreadHandler);
-  }
-
-  @Test
-  public void testOnViewportChangedFromRemovalWithoutScrolling() {
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 0, 1);
-    viewportManager.onViewportChangedAfterViewRemoval(0);
-
-    verify(mMainThreadHandler).post(any(Runnable.class));
-  }
-
-  @Test
-  public void testOnViewportChangedFromAddWithScrolling() {
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_DRAGGING, -1, 0);
-    viewportManager.onViewportchangedAfterViewAdded(1);
-
-    verifyZeroInteractions(mMainThreadHandler);
-  }
-
-  @Test
-  public void testOnViewportChangedFromAddWithoutScrolling() {
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 0, 1);
-    viewportManager.onViewportchangedAfterViewAdded(0);
-
-    verify(mMainThreadHandler).post(any(Runnable.class));
-  }
-
-  @Test
   public void testTotalItemChangedWhileVisiblePositionsRemainTheSame() {
     setTotalItemInMockedLayoutManager(13);
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 5, 10);
+    ViewportManager viewportManager = getViewportManager(5, 10);
 
     setVisibleItemPositionInMockedLayoutManager(5, 10);
     setFullyVisibleItemPositionInMockedLayoutManager(7, 9);
     setTotalItemInMockedLayoutManager(12);
 
     viewportManager.setDataChangedIsVisible(true);
-    viewportManager.onViewportChanged();
+    viewportManager.onViewportChanged(DATA_CHANGES);
 
     verify(mViewportChangedListener).viewportChanged(5, 10, 7, 9, DATA_CHANGES);
   }
@@ -165,7 +118,7 @@ public class ViewportManagerTest {
   @Test
   public void testTotalItemChangedWhileNoItemsFullyVisible() {
     setTotalItemInMockedLayoutManager(13);
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 5, 6);
+    ViewportManager viewportManager = getViewportManager(5, 6);
 
     // The seventh and eighth items are visible partially but neither is fully visible
     setVisibleItemPositionInMockedLayoutManager(6, 7);
@@ -173,85 +126,85 @@ public class ViewportManagerTest {
     setTotalItemInMockedLayoutManager(12);
 
     viewportManager.setDataChangedIsVisible(false);
-    viewportManager.onViewportChanged();
+    viewportManager.onViewportChanged(SCROLLING);
 
     verify(mViewportChangedListener).viewportChanged(6, 7, -1, -1, SCROLLING);
   }
 
   @Test
   public void testInsertInVisibleRange() {
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 1, 6);
+    ViewportManager viewportManager = getViewportManager(1, 6);
     boolean isInRange = viewportManager.isInsertInVisibleRange(7, 2, 7);
     assertThat(isInRange).isTrue();
   }
 
   @Test
   public void testInsertNotInVisibleRange() {
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 1, 6);
+    ViewportManager viewportManager = getViewportManager(1, 6);
     boolean isInRange = viewportManager.isInsertInVisibleRange(7, 2, 6);
     assertThat(isInRange).isFalse();
   }
 
   @Test
   public void testUpdateInVisibleRange() {
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 1, 6);
+    ViewportManager viewportManager = getViewportManager(1, 6);
     boolean isInRange = viewportManager.isUpdateInVisibleRange(5, 2);
     assertThat(isInRange).isTrue();
   }
 
   @Test
   public void testUpdateNotInVisibleRange() {
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 1, 6);
+    ViewportManager viewportManager = getViewportManager(1, 6);
     boolean isInRange = viewportManager.isUpdateInVisibleRange(7, 2);
     assertThat(isInRange).isFalse();
   }
 
   @Test
   public void testMoveInVisibleRange() {
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 1, 6);
+    ViewportManager viewportManager = getViewportManager(1, 6);
     boolean isInRange = viewportManager.isMoveInVisibleRange(8, 5, 6);
     assertThat(isInRange).isTrue();
 
-    viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 1, 6);
+    viewportManager = getViewportManager(1, 6);
     isInRange = viewportManager.isMoveInVisibleRange(5, 8, 6);
     assertThat(isInRange).isTrue();
   }
 
   @Test
   public void testMoveNotInVisibleRange() {
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 1, 6);
+    ViewportManager viewportManager = getViewportManager(1, 6);
     boolean isInRange = viewportManager.isMoveInVisibleRange(7, 9, 6);
     assertThat(isInRange).isFalse();
   }
 
   @Test
   public void testRemoveInVisibleRange() {
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 1, 6);
+    ViewportManager viewportManager = getViewportManager(1, 6);
     boolean isInRange = viewportManager.isRemoveInVisibleRange(6, 2);
     assertThat(isInRange).isTrue();
 
-    getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 3, 6);
+    getViewportManager(3, 6);
     isInRange = viewportManager.isRemoveInVisibleRange(2, 2);
     assertThat(isInRange).isTrue();
   }
 
   @Test
   public void testRemoveNotInVisibleRange() {
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 3, 6);
+    ViewportManager viewportManager = getViewportManager(3, 6);
     boolean isInRange = viewportManager.isRemoveInVisibleRange(2, 1);
     assertThat(isInRange).isFalse();
   }
 
   @Test
   public void testChangeSetIsVisibleForInitialisation() {
-    ViewportManager viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, -1, 2);
+    ViewportManager viewportManager = getViewportManager(-1, 2);
 
     assertThat(viewportManager.isInsertInVisibleRange(6, 2, -1)).isTrue();
     assertThat(viewportManager.isUpdateInVisibleRange(6, 2)).isTrue();
     assertThat(viewportManager.isMoveInVisibleRange(6, 2, 10)).isTrue();
     assertThat(viewportManager.isRemoveInVisibleRange(6, 2)).isTrue();
 
-    viewportManager = getViewportManager(RecyclerView.SCROLL_STATE_IDLE, 1, -1);
+    viewportManager = getViewportManager(1, -1);
 
     assertThat(viewportManager.isInsertInVisibleRange(6, 2, 10)).isTrue();
     assertThat(viewportManager.isUpdateInVisibleRange(6, 2)).isTrue();
@@ -280,15 +233,10 @@ public class ViewportManagerTest {
   }
 
   private ViewportManager getViewportManager(
-      int scrollState,
-      int firstFullyVisiblePosition,
-      int lastFullyVisiblePosition) {
-    ViewportManager viewportManager = new ViewportManager(
-        firstFullyVisiblePosition,
-        lastFullyVisiblePosition,
-        mLayoutInfo,
-        mMainThreadHandler,
-        scrollState);
+      int firstFullyVisiblePosition, int lastFullyVisiblePosition) {
+    ViewportManager viewportManager =
+        new ViewportManager(
+            firstFullyVisiblePosition, lastFullyVisiblePosition, mLayoutInfo, mMainThreadHandler);
     viewportManager.addViewportChangedListener(mViewportChangedListener);
 
     return viewportManager;
