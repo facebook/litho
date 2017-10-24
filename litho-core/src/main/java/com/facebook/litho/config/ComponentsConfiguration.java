@@ -107,4 +107,7 @@ public class ComponentsConfiguration {
    * com.facebook.litho.InternalNode} when persisting the InternalNode tree.
    */
   public static boolean persistAllComponents = false;
+
+  /** Whether the RecyclerCollectionComponent can asynchronously set the root of a SectionTree. */
+  public static boolean setRootAsyncRecyclerCollectionComponent = false;
 }
