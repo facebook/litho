@@ -44,6 +44,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.BaseLoadEventsHandler;
 import com.facebook.litho.sections.LoadEventsHandler;
 import com.facebook.litho.sections.LoadingEvent;
@@ -140,6 +141,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
       @Prop(optional = true, resType = ResType.COLOR) int refreshProgressBarColor,
+      @State(canUpdateLazily = true) boolean hasSetSectionTreeRoot,
       @State RecyclerCollectionEventsController internalEventsController,
       @State(canUpdateLazily = true) LoadingEvent.LoadingState loadingState,
       @State boolean isEmpty,
@@ -152,7 +154,14 @@ public class RecyclerCollectionComponentSpec {
             c,
             internalEventsController,
             isEmpty));
-    sectionTree.setRoot(section);
+
+    if (hasSetSectionTreeRoot && ComponentsConfiguration.setRootAsyncRecyclerCollectionComponent) {
+      sectionTree.setRootAsync(section);
+    } else {
+      RecyclerCollectionComponent.lazyUpdateHasSetSectionTreeRoot(c, true);
+      sectionTree.setRoot(section);
+    }
+
     if (internalEventsController != null) {
       internalEventsController.setSectionTree(sectionTree);
     }
