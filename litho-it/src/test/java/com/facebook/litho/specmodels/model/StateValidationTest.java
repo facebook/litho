@@ -42,6 +42,7 @@ public class StateValidationTest {
   @Before
   public void setup() {
     when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
+    when(mSpecModel.getSpecElementType()).thenReturn(SpecElementType.JAVA_CLASS);
     when(mSpecModel.getStateValues()).thenReturn(ImmutableList.<StateParamModel>of());
   }
 

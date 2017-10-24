@@ -21,7 +21,6 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.WildcardTypeName;
 import java.util.ArrayList;
 import java.util.List;
-import javax.lang.model.element.Modifier;
 
 /**
  * Class for validating that the state models within a  {@link SpecModel} are well-formed.
@@ -93,13 +92,8 @@ public class StateValidation {
       SpecModel specModel, SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
-    if (!specModel.hasInjectedDependencies() &&
-        !updateStateMethodModel.modifiers.contains(Modifier.STATIC)) {
-      validationErrors.add(
-          new SpecModelValidationError(
-              updateStateMethodModel.representedObject,
-              "Methods in a spec that doesn't have dependency injection must be static."));
-    }
+    validationErrors.addAll(
+        SpecMethodModelValidation.validateMethodIsStatic(specModel, updateStateMethodModel));
 
     for (MethodParamModel methodParam : updateStateMethodModel.methodParams) {
       if (MethodParamModelUtils.isAnnotatedWith(methodParam, Param.class)) {

@@ -9,6 +9,8 @@
 
 package com.facebook.litho.specmodels.model;
 
+import static com.facebook.litho.specmodels.model.SpecMethodModelValidation.validateMethodIsStatic;
+
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
@@ -27,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
-import javax.lang.model.element.Modifier;
 
 /**
  * Class for validating that the {@link SpecMethodModel}s for a {@link SpecModel} are well-formed.
@@ -105,7 +106,7 @@ public class DelegateMethodValidation {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : specModel.getDelegateMethods()) {
-      validationErrors.addAll(validateStatic(specModel, delegateMethod));
+      validationErrors.addAll(validateMethodIsStatic(specModel, delegateMethod));
     }
 
     for (Map.Entry<Class<? extends Annotation>, DelegateMethodDescription> entry :
@@ -201,20 +202,6 @@ public class DelegateMethodValidation {
       }
     }
 
-    return validationErrors;
-  }
-
-  public static List<SpecModelValidationError> validateStatic(
-      SpecModel specModel, SpecMethodModel<DelegateMethod, Void> delegateMethod) {
-    List<SpecModelValidationError> validationErrors = new ArrayList<>();
-    if (!specModel.hasInjectedDependencies()
-        && specModel.getSpecElementType() == SpecElementType.JAVA_CLASS
-        && !delegateMethod.modifiers.contains(Modifier.STATIC)) {
-      validationErrors.add(
-          new SpecModelValidationError(
-              delegateMethod.representedObject,
-              "Methods in a spec that doesn't have dependency injection must be static."));
-    }
     return validationErrors;
   }
 

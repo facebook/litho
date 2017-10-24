@@ -9,6 +9,8 @@
 
 package com.facebook.litho.specmodels.model;
 
+import static com.facebook.litho.specmodels.model.SpecMethodModelValidation.validateMethodIsStatic;
+
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.ClassName;
@@ -77,13 +79,7 @@ public class EventValidation {
     }
 
     for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod : eventMethods) {
-      if (!specModel.hasInjectedDependencies() &&
-          !eventMethod.modifiers.contains(Modifier.STATIC)) {
-        validationErrors.add(
-            new SpecModelValidationError(
-                eventMethod.representedObject,
-                "Methods in a spec that doesn't have dependency injection must be static."));
-      }
+      validationErrors.addAll(validateMethodIsStatic(specModel, eventMethod));
 
       if (!eventMethod.returnType.box().equals(eventMethod.typeModel.returnType.box())) {
         validationErrors.add(

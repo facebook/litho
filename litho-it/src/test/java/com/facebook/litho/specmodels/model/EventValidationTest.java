@@ -43,6 +43,7 @@ public class EventValidationTest {
   @Before
   public void setup() {
     when(mSpecModel.getEventMethods()).thenReturn(ImmutableList.of());
+    when(mSpecModel.getSpecElementType()).thenReturn(SpecElementType.JAVA_CLASS);
     when(mSpecModel.getEventDeclarations()).thenReturn(ImmutableList.of());
     when(mSpecModel.getContextClass()).thenReturn(ClassNames.COMPONENT_CONTEXT);
   }
