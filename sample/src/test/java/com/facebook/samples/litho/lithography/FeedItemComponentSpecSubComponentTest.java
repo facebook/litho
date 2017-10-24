@@ -93,7 +93,6 @@ public class FeedItemComponentSpecSubComponentTest {
     final ComponentContext c = mComponentsRule.getContext();
     return FeedItemComponent.create(c)
         .artist(new Artist("Some Name", value, 2001))
-        .binder(mock(RecyclerBinder.class))
         .build();
   }
 }

@@ -50,14 +50,9 @@ public class FeedItemCardSpecTest {
         is(true));
 
     final ComponentContext c = mComponentsRule.getContext();
-    final RecyclerBinder binder =
-        new RecyclerBinder.Builder()
-            .layoutInfo(new LinearLayoutInfo(c, OrientationHelper.HORIZONTAL, false))
-            .build(c);
 
     mComponent =
         FeedItemCard.create(c)
-            .binder(binder)
             .artist(new Artist("Sindre Sorhus", "JavaScript Rockstar", 2010))
             .build();
   }
@@ -87,7 +82,7 @@ public class FeedItemCardSpecTest {
     // required.
     assertThat(c, mComponent)
         .extractingSubComponentsDeeply(c)
-        .hasSize(14)
+        .hasSize(16)
         .has(
             new Condition<InspectableComponent>() {
               @Override

@@ -12,8 +12,9 @@
 
 package com.facebook.samples.litho.lithography;
 
-import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.widget.ComponentRenderInfo;
+import com.facebook.litho.widget.RenderInfo;
 
 public class Decade implements Datum {
   public int year;
@@ -23,9 +24,10 @@ public class Decade implements Datum {
   }
 
   @Override
-  public Component createComponent(ComponentContext c) {
-    return DecadeSeparator.create(c)
-        .decade(this)
+  public RenderInfo createComponent(ComponentContext c) {
+    return ComponentRenderInfo.create()
+        .component(DecadeSeparator.create(c).decade(this).build())
+        .isSticky(true)
         .build();
   }
 }

@@ -48,15 +48,9 @@ public class FeedItemComponentSpecTest {
         ComponentsConfiguration.IS_INTERNAL_BUILD,
         is(true));
     final ComponentContext c = mComponentsRule.getContext();
-
-    final RecyclerBinder imageRecyclerBinder =
-        new RecyclerBinder.Builder()
-            .layoutInfo(new LinearLayoutInfo(c, OrientationHelper.HORIZONTAL, false))
-            .build(c);
     mComponent =
         FeedItemComponent.create(c)
             .artist(new Artist("Sindre Sorhus", "Rockstar Developer", 2010))
-            .binder(imageRecyclerBinder)
             .build();
   }
 

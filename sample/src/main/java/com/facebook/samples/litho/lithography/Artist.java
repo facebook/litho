@@ -12,12 +12,9 @@
 
 package com.facebook.samples.litho.lithography;
 
-import android.support.v7.widget.OrientationHelper;
-import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.widget.ComponentRenderInfo;
-import com.facebook.litho.widget.LinearLayoutInfo;
-import com.facebook.litho.widget.RecyclerBinder;
+import com.facebook.litho.widget.RenderInfo;
 
 public class Artist implements Datum {
 
@@ -34,22 +31,9 @@ public class Artist implements Datum {
   }
 
   @Override
-  public Component createComponent(ComponentContext c) {
-    final RecyclerBinder imageRecyclerBinder = new RecyclerBinder.Builder()
-        .layoutInfo(new LinearLayoutInfo(c, OrientationHelper.HORIZONTAL, false))
-        .build(c);
-
-    for (String image : images) {
-      ComponentRenderInfo.Builder imageRenderInfoBuilder = ComponentRenderInfo.create();
-      imageRenderInfoBuilder.component(
-          SingleImageComponent.create(c).image(image).imageAspectRatio(2f).build());
-      imageRecyclerBinder.insertItemAt(
-          imageRecyclerBinder.getItemCount(),
-          imageRenderInfoBuilder.build());
-    }
-    return FeedItemCard.create(c)
-        .artist(this)
-        .binder(imageRecyclerBinder)
+  public RenderInfo createComponent(ComponentContext c) {
+    return ComponentRenderInfo.create()
+        .component(FeedItemCard.create(c).artist(this).build())
         .build();
   }
 }
