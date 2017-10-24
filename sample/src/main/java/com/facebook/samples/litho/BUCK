@@ -11,9 +11,11 @@ litho_android_library(
     srcs = glob(["**/*.java"]),
     annotation_processor_deps = [
         COMPONENTS_PROCESSOR_LIB_TARGET,
+        COMPONENTS_SECTIONS_PROCESSOR_LIB_TARGET,
     ],
     annotation_processors = [
         "com.facebook.litho.specmodels.processor.ComponentsProcessor",
+        "com.facebook.litho.sections.specmodels.processor.SectionsComponentProcessor",
     ],
     fblite = False,
     test_spec_srcs = [
@@ -42,5 +44,9 @@ litho_android_library(
             COMPONENTS_YOGA_TARGET,
             COMPONENTS_YOGAJNI_TARGET,
             COMPONENTS_SAMPLE_APP_TARGET,
+            COMPONENTS_SECTIONS_TARGET,
+            COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
+            COMPONENTS_SECTIONS_COMMON_TARGET,
+            COMPONENTS_SECTIONS_WIDGET_TARGET,
         ],
 )
