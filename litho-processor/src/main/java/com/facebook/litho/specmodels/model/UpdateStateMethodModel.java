@@ -21,7 +21,7 @@ import javax.lang.model.element.Modifier;
  */
 @Immutable
 public final class UpdateStateMethodModel {
-  public final Annotation annotation;
+  public final ImmutableList<Annotation> annotation;
   public final ImmutableList<Modifier> modifiers;
   public final CharSequence name;
   public final TypeName returnType;
@@ -29,7 +29,7 @@ public final class UpdateStateMethodModel {
   public final Object representedObject;
 
   public UpdateStateMethodModel(
-      Annotation annotation,
+      ImmutableList<Annotation> annotation,
       ImmutableList<Modifier> modifiers,
       CharSequence name,
       TypeName returnType,

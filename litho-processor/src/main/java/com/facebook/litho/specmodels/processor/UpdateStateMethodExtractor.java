@@ -55,7 +55,7 @@ public class UpdateStateMethodExtractor {
         continue;
       }
 
-      Annotation onUpdateStateAnnotation = enclosedElement.getAnnotation(OnUpdateState.class);
+      final Annotation onUpdateStateAnnotation = enclosedElement.getAnnotation(OnUpdateState.class);
 
       if (onUpdateStateAnnotation != null) {
         final ExecutableElement executableElement = (ExecutableElement) enclosedElement;
@@ -68,7 +68,7 @@ public class UpdateStateMethodExtractor {
 
         final UpdateStateMethodModel delegateMethod =
             new UpdateStateMethodModel(
-                onUpdateStateAnnotation,
+                ImmutableList.<Annotation>of(onUpdateStateAnnotation),
                 ImmutableList.copyOf(new ArrayList<>(executableElement.getModifiers())),
                 executableElement.getSimpleName(),
                 TypeName.get(executableElement.getReturnType()),

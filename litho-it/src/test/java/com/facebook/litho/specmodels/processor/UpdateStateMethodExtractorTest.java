@@ -69,7 +69,7 @@ public class UpdateStateMethodExtractorTest {
     assertThat(methods).hasSize(1);
 
     UpdateStateMethodModel updateStateMethod = methods.iterator().next();
-    assertThat(updateStateMethod.annotation).isInstanceOf(OnUpdateState.class);
+    assertThat(updateStateMethod.annotation).hasAtLeastOneElementOfType(OnUpdateState.class);
 
     assertThat(updateStateMethod.modifiers).hasSize(1);
     assertThat(updateStateMethod.modifiers).contains(Modifier.PUBLIC);
