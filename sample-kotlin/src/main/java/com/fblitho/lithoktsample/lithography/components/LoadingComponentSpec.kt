@@ -25,7 +25,7 @@ import com.facebook.yoga.YogaJustify.CENTER
 object LoadingComponentSpec {
 
   @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext): ComponentLayout =
+  fun onCreateLayout(c: ComponentContext) =
       Row.create(c)
           .justifyContent(CENTER)
           .child(

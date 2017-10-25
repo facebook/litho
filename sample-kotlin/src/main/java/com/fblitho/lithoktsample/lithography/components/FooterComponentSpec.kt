@@ -29,7 +29,7 @@ object FooterComponentSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop(resType = STRING) text: String): ComponentLayout =
+      @Prop(resType = STRING) text: String) =
       Column.create(c)
           .paddingDip(ALL, 8f)
           .child(

@@ -30,7 +30,7 @@ object SingleImageComponentSpec {
   fun onCreateLayout(
       c: ComponentContext,
       @Prop image: String,
-      @Prop(optional = true) imageAspectRatio: Float): ComponentLayout =
+      @Prop(optional = true) imageAspectRatio: Float) =
       Fresco.newDraweeControllerBuilder()
           .setUri(image)
           .build().let {

@@ -29,7 +29,7 @@ object DecadeSeparatorSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop decade: Decade): ComponentLayout =
+      @Prop decade: Decade) =
       Row.create(c)
           .alignItems(CENTER)
           .paddingDip(ALL, 16f)

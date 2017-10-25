@@ -17,9 +17,7 @@ import android.widget.LinearLayout.HORIZONTAL
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.ComponentLayout
 import com.facebook.litho.ComponentLifecycle
-import com.facebook.litho.Row
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
@@ -42,7 +40,7 @@ object FeedItemComponentSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop artist: Artist): ComponentLayout =
+      @Prop artist: Artist) =
       Column.create(c)
           .child(
               Column.create(c)
@@ -56,19 +54,16 @@ object FeedItemComponentSpec {
                           .positionType(YogaPositionType.ABSOLUTE)
                           .positionDip(YogaEdge.BOTTOM, 4f)
                           .positionDip(YogaEdge.LEFT, 4f)
-                          .paddingDip(YogaEdge.HORIZONTAL, 6f)
-                          .buildWithLayout())
+                          .paddingDip(YogaEdge.HORIZONTAL, 6f))
                   .child(ActionsComponent.create(c)))
           .child(FooterComponent.create(c).text(artist.biography))
           .build()
-
 
   private fun imageBlock(artist: Artist, c: ComponentContext): Component<out ComponentLifecycle> =
       when (artist.images.size) {
         1 -> singleimage(c, artist)
         else -> recycler(c, artist)
       }
-
 
   private fun recycler(c: ComponentContext, artist: Artist): Component<RecyclerCollectionComponent> =
       RecyclerCollectionComponent.create(c)
@@ -79,11 +74,9 @@ object FeedItemComponentSpec {
           .aspectRatio(2f)
           .build()
 
-
   private fun singleimage(c: ComponentContext, artist: Artist): Component<SingleImageComponent> =
       SingleImageComponent.create(c)
           .image(artist.images[0])
           .imageAspectRatio(2f)
           .build()
-
 }

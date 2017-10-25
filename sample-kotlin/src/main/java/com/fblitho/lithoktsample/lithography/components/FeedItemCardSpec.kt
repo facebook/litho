@@ -29,7 +29,7 @@ object FeedItemCardSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop artist: Artist): ComponentLayout =
+      @Prop artist: Artist) =
       Column.create(c)
           .paddingDip(VERTICAL, 8f)
           .paddingDip(HORIZONTAL, 16f)

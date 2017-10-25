@@ -28,7 +28,7 @@ object ActionsComponentSpec {
 
   @OnCreateLayout
   fun onCreateLayout(
-      c: ComponentContext): ComponentLayout =
+      c: ComponentContext) =
       Row.create(c)
           .backgroundColor(0xDDFFFFFF.toInt())
           .positionType(ABSOLUTE)

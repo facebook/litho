@@ -20,7 +20,7 @@
     <application
         android:name="com.fblitho.lithoktsample.LithoApplication"
         android:allowBackup="true"
-        android:label="Litho Kotlin Sample"
+        android:label="Litho Sample"
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         <activity android:name="com.fblitho.lithoktsample.MainActivity">
             <intent-filter>

@@ -20,7 +20,6 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentLayout
 import com.facebook.litho.Row
 import com.facebook.litho.StateValue
-import com.facebook.litho.annotations.FromEvent
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.OnEvent
@@ -33,7 +32,7 @@ object FavouriteButtonSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @State favourited: Boolean): ComponentLayout =
+      @State favourited: Boolean) =
       Row.create(c)
           .backgroundRes(if (favourited) star_on else star_off)
           .widthDip(32f)
@@ -41,11 +40,9 @@ object FavouriteButtonSpec {
           .clickHandler(FavouriteButton.onClick(c))
           .build()
 
-  @JvmStatic
   @OnUpdateState
   fun toggleFavourited(favourited: StateValue<Boolean>) = favourited.set(!favourited.get())
 
-  @JvmStatic
   @OnEvent(ClickEvent::class)
-  fun onClick(c: ComponentContext, @FromEvent view: View) = FavouriteButton.toggleFavourited(c)
+  fun onClick(c: ComponentContext): Unit = FavouriteButton.toggleFavourited(c)
 }

@@ -50,7 +50,6 @@ object DecadeSectionSpec {
           .build()
 
 
-  @JvmStatic
   @OnEvent(RenderEvent::class)
   fun render(
       c: SectionContext,
@@ -59,7 +58,6 @@ object DecadeSectionSpec {
           .component(FeedItemCard.create(c).artist(model).build())
           .build()
 
-  @JvmStatic
   @OnEvent(OnCheckIsSameItemEvent::class)
   fun isSameItem(
       c: SectionContext,

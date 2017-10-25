@@ -39,7 +39,6 @@ object ImagesSectionSpec {
           .build()
 
 
-  @JvmStatic
   @OnEvent(RenderEvent::class)
   fun onRender(
       c: SectionContext, @FromEvent model: String): RenderInfo =
