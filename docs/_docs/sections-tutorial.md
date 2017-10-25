@@ -88,6 +88,7 @@ static Children onCreateChildren(final SectionContext c) {
           SingleComponentSection.create(c)
               .component(
                   RecyclerCollectionComponent.create(c)
+                      .disablePTR(true)
                       .recyclerConfiguration(new ListRecyclerConfiguration(LinearLayoutManager.HORIZONTAL, /*reverse layout*/ false, SNAP_TO_CENTER))
                       .section(
                           DataDiffSection.create(c)

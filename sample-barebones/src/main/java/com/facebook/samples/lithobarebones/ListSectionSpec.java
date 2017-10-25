@@ -41,6 +41,7 @@ class ListSectionSpec {
             SingleComponentSection.create(c)
                 .component(
                     RecyclerCollectionComponent.create(c)
+                        .disablePTR(true)
                         .recyclerConfiguration(
                             new ListRecyclerConfiguration(
                                 LinearLayoutManager.HORIZONTAL, false, SNAP_TO_CENTER))

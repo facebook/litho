@@ -30,6 +30,7 @@ public class SampleActivity extends Activity {
 
     final Component component =
         RecyclerCollectionComponent.create(context)
+            .disablePTR(true)
             .section(ListSection.create(new SectionContext(context)).build())
             .build();
 

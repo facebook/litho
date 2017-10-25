@@ -150,12 +150,13 @@ public class ListSectionSpec {
 }
 ```
 
-`SingleComponentSection` is a core section defined in `com.facebook.litho.sections.widget` that renders a single component.  `ListSectionSpec` describes a section that has 32 child sections, each of which is responsible for rendering a `ListItem`.  We can use this section with `RecyclerCollectionComponent` to render our list.  In your activity, change the `component` definition to:
+`SingleComponentSection` is a core section defined in `com.facebook.litho.sections.widget` that renders a single component.  `ListSectionSpec` describes a section that has 32 child sections, each of which is responsible for rendering a `ListItem`.  We can use this section with `RecyclerCollectionComponent` to render our list. [RecyclerCollectionComponent](/javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent) takes a section as a prop and renders a RecyclerView containing whatever UI the section outputs.  It also manages updates and changes from the section such as refreshing data and performing tail fetches. We're not using any data fetching here so lets disable PTR (pull to refresh) for this tutorial. In your activity, change the `component` definition to:
 
 ```java
 
 final Component component =
     RecyclerCollectionComponent.create(context)
+        .disablePTR(true)
         .section(ListSection.create(new SectionContext(context)).build())
         .build();
 
@@ -166,7 +167,6 @@ final Component component =
 `ListSectionSpec` should look familiar to the `ListItemSpec` you wrote in the last step! Litho runs annotation processors over your code to find `ListSectionSpec` and generates `ListSection` just like how it finds `ListItemSpec` and generates `ListItem` in the same package as your spec.
 
 Run the app. You should see a scrollable list of 32 ListItem components:
-
 
 <img src="/static/images/barebones3.png" style="width: 300px;">
 
