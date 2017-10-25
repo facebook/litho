@@ -9,62 +9,62 @@
 
 package com.facebook.litho.sections;
 
-import com.facebook.litho.sections.logger.SectionComponentLogger;
+import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.widget.RenderInfo;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Logger implements SectionComponentLogger {
+public class Logger implements SectionsDebugLogger {
 
-  protected Set<SectionComponentLogger> mSectionComponentLoggers;
+  protected Set<SectionsDebugLogger> mSectionsDebugLoggers;
 
-  public Logger(Collection<SectionComponentLogger> sectionComponentLoggers) {
-    mSectionComponentLoggers = new HashSet<>();
-    if (sectionComponentLoggers != null) {
-      for (SectionComponentLogger sectionComponentLogger: sectionComponentLoggers) {
-        if (sectionComponentLogger != null) {
-          mSectionComponentLoggers.add(sectionComponentLogger);
+  public Logger(Collection<SectionsDebugLogger> sectionsDebugLoggers) {
+    mSectionsDebugLoggers = new HashSet<>();
+    if (sectionsDebugLoggers != null) {
+      for (SectionsDebugLogger sectionsDebugLogger : sectionsDebugLoggers) {
+        if (sectionsDebugLogger != null) {
+          mSectionsDebugLoggers.add(sectionsDebugLogger);
         }
       }
     }
   }
 
   public void logInsert(String tag, int index, RenderInfo renderInfo, String thread) {
-    for (SectionComponentLogger sectionComponentLogger : mSectionComponentLoggers) {
-      sectionComponentLogger.logInsert(tag, index, renderInfo, thread);
+    for (SectionsDebugLogger sectionsDebugLogger : mSectionsDebugLoggers) {
+      sectionsDebugLogger.logInsert(tag, index, renderInfo, thread);
     }
   }
 
   public void logUpdate(String tag, int index, RenderInfo renderInfo, String thread) {
-    for (SectionComponentLogger sectionComponentLogger : mSectionComponentLoggers) {
-      sectionComponentLogger.logUpdate(tag, index, renderInfo, thread);
+    for (SectionsDebugLogger sectionsDebugLogger : mSectionsDebugLoggers) {
+      sectionsDebugLogger.logUpdate(tag, index, renderInfo, thread);
     }
   }
 
   public void logDelete(String tag, int index, String thread) {
-    for (SectionComponentLogger sectionComponentLogger : mSectionComponentLoggers) {
-      sectionComponentLogger.logDelete(tag, index, thread);
+    for (SectionsDebugLogger sectionsDebugLogger : mSectionsDebugLoggers) {
+      sectionsDebugLogger.logDelete(tag, index, thread);
     }
   }
 
   public void logRequestFocus(String tag, int index, RenderInfo renderInfo, String thread) {
-    for (SectionComponentLogger sectionComponentLogger : mSectionComponentLoggers) {
-      sectionComponentLogger.logRequestFocus(tag, index, renderInfo, thread);
+    for (SectionsDebugLogger sectionsDebugLogger : mSectionsDebugLoggers) {
+      sectionsDebugLogger.logRequestFocus(tag, index, renderInfo, thread);
     }
   }
 
   @Override
   public void logRequestFocusWithOffset(
       String tag, int index, int offset, RenderInfo renderInfo, String thread) {
-    for (SectionComponentLogger sectionComponentLogger : mSectionComponentLoggers) {
-      sectionComponentLogger.logRequestFocusWithOffset(tag, index, offset, renderInfo, thread);
+    for (SectionsDebugLogger sectionsDebugLogger : mSectionsDebugLoggers) {
+      sectionsDebugLogger.logRequestFocusWithOffset(tag, index, offset, renderInfo, thread);
     }
   }
 
   public void logMove(String tag, int fromPosition, int toPosition, String thread) {
-    for (SectionComponentLogger sectionComponentLogger : mSectionComponentLoggers) {
-      sectionComponentLogger.logMove(tag, fromPosition, toPosition, thread);
+    for (SectionsDebugLogger sectionsDebugLogger : mSectionsDebugLoggers) {
+      sectionsDebugLogger.logMove(tag, fromPosition, toPosition, thread);
     }
   }
 
@@ -76,8 +76,8 @@ public class Logger implements SectionComponentLogger {
       String nextPrefix,
       Boolean shouldUpdate,
       String thread) {
-    for (SectionComponentLogger sectionComponentLogger : mSectionComponentLoggers) {
-      sectionComponentLogger.logShouldUpdate(
+    for (SectionsDebugLogger sectionsDebugLogger : mSectionsDebugLoggers) {
+      sectionsDebugLogger.logShouldUpdate(
           tag, previous, next, previousPrefix, nextPrefix, shouldUpdate, thread);
     }
   }

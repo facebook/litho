@@ -15,7 +15,7 @@ import static com.facebook.litho.sections.Section.releaseChildrenMap;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 import android.util.SparseArray;
-import com.facebook.litho.sections.logger.SectionComponentLogger;
+import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,15 +39,15 @@ public class ChangeSetState {
 
   /**
    * Calculate the {@link ChangeSet} for this ChangeSetState. The returned ChangeSet will be the
-   * result of merging all the changeSets for all the leafs of the tree.
-   * As a result of calculating the {@link ChangeSet} all the nodes in the new tree will be
-   * populated with the number of items in their subtree.
+   * result of merging all the changeSets for all the leafs of the tree. As a result of calculating
+   * the {@link ChangeSet} all the nodes in the new tree will be populated with the number of items
+   * in their subtree.
    */
   static ChangeSetState generateChangeSet(
       SectionContext sectionContext,
       @Nullable Section currentRoot,
       Section newRoot,
-      SectionComponentLogger sectionComponentLogger,
+      SectionsDebugLogger sectionsDebugLogger,
       String sectionTreeTag,
       String currentPrefix,
       String nextPrefix) {
@@ -60,7 +60,7 @@ public class ChangeSetState {
             currentRoot,
             newRoot,
             changeSetState.mRemovedComponents,
-            sectionComponentLogger,
+            sectionsDebugLogger,
             sectionTreeTag,
             currentPrefix,
             nextPrefix,
@@ -74,7 +74,7 @@ public class ChangeSetState {
       Section currentRoot,
       Section newRoot,
       List<Section> removedComponents,
-      SectionComponentLogger sectionComponentLogger,
+      SectionsDebugLogger sectionsDebugLogger,
       String sectionTreeTag,
       String currentPrefix,
       String newPrefix,
@@ -109,7 +109,7 @@ public class ChangeSetState {
     if (!currentRootIsNull && !lifecycle.shouldComponentUpdate(currentRoot, newRoot)) {
       final ChangeSet changeSet = ChangeSet.acquireChangeSet(currentRoot.getCount());
       newRoot.setCount(changeSet.getCount());
-      sectionComponentLogger.logShouldUpdate(
+      sectionsDebugLogger.logShouldUpdate(
           sectionTreeTag,
           currentRoot,
           newRoot,
@@ -120,7 +120,7 @@ public class ChangeSetState {
       return changeSet;
     }
 
-    sectionComponentLogger.logShouldUpdate(
+    sectionsDebugLogger.logShouldUpdate(
         sectionTreeTag, currentRoot, newRoot, updateCurrentPrefix, updateNewPrefix, true, thread);
 
     // Component(s) can generate changeSets and will generate the changeset.
@@ -197,7 +197,7 @@ public class ChangeSetState {
             currentChildrenList,
             newChildrenList,
             removedComponents,
-            sectionComponentLogger,
+            sectionsDebugLogger,
             sectionTreeTag,
             updateCurrentPrefix,
             updateNewPrefix,
@@ -235,7 +235,7 @@ public class ChangeSetState {
       List<Section> currentChildrenList,
       List<Section> newChildrenList,
       List<Section> removedComponents,
-      SectionComponentLogger sectionComponentLogger,
+      SectionsDebugLogger sectionsDebugLogger,
       String sectionTreeTag,
       String currentPrefix,
       String newPrefix,
@@ -255,7 +255,7 @@ public class ChangeSetState {
                 currentChild,
                 null,
                 removedComponents,
-                sectionComponentLogger,
+                sectionsDebugLogger,
                 sectionTreeTag,
                 currentPrefix,
                 newPrefix,
@@ -278,7 +278,7 @@ public class ChangeSetState {
                 null,
                 newChild,
                 removedComponents,
-                sectionComponentLogger,
+                sectionsDebugLogger,
                 sectionTreeTag,
                 currentPrefix,
                 newPrefix,
@@ -301,7 +301,7 @@ public class ChangeSetState {
                 currentChildrenList.get(currentChildIndex),
                 newChild,
                 removedComponents,
-                sectionComponentLogger,
+                sectionsDebugLogger,
                 sectionTreeTag,
                 currentPrefix,
                 newPrefix,

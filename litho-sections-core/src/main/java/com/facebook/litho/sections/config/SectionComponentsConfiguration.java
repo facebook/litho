@@ -9,16 +9,14 @@
 
 package com.facebook.litho.sections.config;
 
-import com.facebook.litho.sections.logger.SectionComponentLogger;
+import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import java.util.List;
 
 /** Configuration for the SectionComponents library */
 public class SectionComponentsConfiguration {
 
-  /**
-   * Loggers for the core framework
-   */
-  public static List<SectionComponentLogger> LOGGERS;
+  /** Loggers for the core framework */
+  public static List<SectionsDebugLogger> LOGGERS;
 
   /** Force all section component prop updates to be async */
   public static boolean sectionComponentsAsyncPropUpdates = false;

@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verify;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionTree.Target;
-import com.facebook.litho.sections.logger.SectionComponentLogger;
+import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RenderInfo;
@@ -37,7 +37,7 @@ import org.mockito.MockitoAnnotations;
 public class BatchedTargetTest {
 
   private Target mMockTarget;
-  private SectionComponentLogger mMockSectionComponentLogger;
+  private SectionsDebugLogger mMockSectionsDebugLogger;
   private BatchedTarget mTarget;
   private @Captor ArgumentCaptor<List<RenderInfo>> mListCaptor;
 
@@ -45,8 +45,8 @@ public class BatchedTargetTest {
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     mMockTarget = mock(Target.class);
-    mMockSectionComponentLogger = mock(SectionComponentLogger.class);
-    mTarget = new BatchedTarget(mMockTarget, mMockSectionComponentLogger, "");
+    mMockSectionsDebugLogger = mock(SectionsDebugLogger.class);
+    mTarget = new BatchedTarget(mMockTarget, mMockSectionsDebugLogger, "");
   }
 
   @Test
@@ -276,9 +276,9 @@ public class BatchedTargetTest {
     };
 
     executeOperations(ops);
-    verify(mMockSectionComponentLogger)
+    verify(mMockSectionsDebugLogger)
         .logInsert("", 0, ops[0].getRenderInfo(), Thread.currentThread().getName());
-    verify(mMockSectionComponentLogger).logDelete("", 0, Thread.currentThread().getName());
+    verify(mMockSectionsDebugLogger).logDelete("", 0, Thread.currentThread().getName());
   }
 
   @Test
@@ -299,28 +299,28 @@ public class BatchedTargetTest {
 
     executeOperations(ops);
 
-    verify(mMockSectionComponentLogger)
+    verify(mMockSectionsDebugLogger)
         .logInsert("", 0, ops[0].getRenderInfo(), Thread.currentThread().getName());
-    verify(mMockSectionComponentLogger)
+    verify(mMockSectionsDebugLogger)
         .logInsert("", 1, ops[1].getRenderInfos().get(0), Thread.currentThread().getName());
-    verify(mMockSectionComponentLogger)
+    verify(mMockSectionsDebugLogger)
         .logInsert("", 2, ops[1].getRenderInfos().get(1), Thread.currentThread().getName());
-    verify(mMockSectionComponentLogger)
+    verify(mMockSectionsDebugLogger)
         .logInsert("", 3, ops[1].getRenderInfos().get(2), Thread.currentThread().getName());
-    verify(mMockSectionComponentLogger)
+    verify(mMockSectionsDebugLogger)
         .logUpdate("", 3, ops[2].getRenderInfo(), Thread.currentThread().getName());
-    verify(mMockSectionComponentLogger)
+    verify(mMockSectionsDebugLogger)
         .logUpdate("", 2, ops[3].getRenderInfos().get(0), Thread.currentThread().getName());
-    verify(mMockSectionComponentLogger)
+    verify(mMockSectionsDebugLogger)
         .logUpdate("", 3, ops[3].getRenderInfos().get(1), Thread.currentThread().getName());
-    verify(mMockSectionComponentLogger)
+    verify(mMockSectionsDebugLogger)
         .logInsert("", 4, ops[4].getRenderInfos().get(0), Thread.currentThread().getName());
-    verify(mMockSectionComponentLogger)
+    verify(mMockSectionsDebugLogger)
         .logInsert("", 5, ops[4].getRenderInfos().get(1), Thread.currentThread().getName());
-    verify(mMockSectionComponentLogger)
+    verify(mMockSectionsDebugLogger)
         .logInsert("", 6, ops[5].getRenderInfo(), Thread.currentThread().getName());
-    verify(mMockSectionComponentLogger).logDelete("", 5, Thread.currentThread().getName());
-    verify(mMockSectionComponentLogger).logMove("", 2, 3, Thread.currentThread().getName());
+    verify(mMockSectionsDebugLogger).logDelete("", 5, Thread.currentThread().getName());
+    verify(mMockSectionsDebugLogger).logMove("", 2, 3, Thread.currentThread().getName());
   }
 
   private List<RenderInfo> dummyComponentInfos(int count) {

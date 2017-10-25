@@ -13,7 +13,7 @@ import static com.facebook.litho.sections.Change.MOVE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import com.facebook.litho.sections.logger.SectionComponentLogger;
+import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.testing.sections.TestSectionCreator;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.ComponentRenderInfo;
@@ -26,7 +26,7 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class ChangeSetStateTest {
   private SectionContext mSectionContext;
-  private SectionComponentLogger mSectionComponentLogger;
+  private SectionsDebugLogger mSectionsDebugLogger;
   private String mSectionTreeTag;
   private String mCurrentPrefix;
   private String mNextPrefix;
@@ -34,7 +34,7 @@ public class ChangeSetStateTest {
   @Before
   public void setup() {
     mSectionContext = new SectionContext(RuntimeEnvironment.application);
-    mSectionComponentLogger = mock(SectionComponentLogger.class);
+    mSectionsDebugLogger = mock(SectionsDebugLogger.class);
     mSectionTreeTag = "";
     mCurrentPrefix = "";
     mNextPrefix = "";
@@ -78,7 +78,7 @@ public class ChangeSetStateTest {
             mSectionContext,
             null,
             root,
-            mSectionComponentLogger,
+            mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
             mNextPrefix);
@@ -122,7 +122,7 @@ public class ChangeSetStateTest {
             mSectionContext,
             null,
             root,
-            mSectionComponentLogger,
+            mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
             mNextPrefix);
@@ -140,7 +140,7 @@ public class ChangeSetStateTest {
             mSectionContext,
             root,
             root,
-            mSectionComponentLogger,
+            mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
             mNextPrefix);
@@ -170,7 +170,7 @@ public class ChangeSetStateTest {
             mSectionContext,
             null,
             root,
-            mSectionComponentLogger,
+            mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
             mNextPrefix);
@@ -191,7 +191,7 @@ public class ChangeSetStateTest {
             mSectionContext,
             root,
             newRoot,
-            mSectionComponentLogger,
+            mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
             mNextPrefix);
@@ -219,7 +219,7 @@ public class ChangeSetStateTest {
         mSectionContext,
         null,
         root,
-        mSectionComponentLogger,
+        mSectionsDebugLogger,
         mSectionTreeTag,
         mCurrentPrefix,
         mNextPrefix);
@@ -238,7 +238,7 @@ public class ChangeSetStateTest {
             mSectionContext,
             root,
             newRoot,
-            mSectionComponentLogger,
+            mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
             mNextPrefix);
@@ -272,7 +272,7 @@ public class ChangeSetStateTest {
         mSectionContext,
         null,
         root,
-        mSectionComponentLogger,
+        mSectionsDebugLogger,
         mSectionTreeTag,
         mCurrentPrefix,
         mNextPrefix);
@@ -286,7 +286,7 @@ public class ChangeSetStateTest {
             mSectionContext,
             root,
             newRoot,
-            mSectionComponentLogger,
+            mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
             mNextPrefix);
@@ -325,7 +325,7 @@ public class ChangeSetStateTest {
         mSectionContext,
         null,
         root,
-        mSectionComponentLogger,
+        mSectionsDebugLogger,
         mSectionTreeTag,
         mCurrentPrefix,
         mNextPrefix);
@@ -339,7 +339,7 @@ public class ChangeSetStateTest {
             mSectionContext,
             root,
             newRoot,
-            mSectionComponentLogger,
+            mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
             mNextPrefix);
@@ -401,7 +401,7 @@ public class ChangeSetStateTest {
         mSectionContext,
         null,
         root,
-        mSectionComponentLogger,
+        mSectionsDebugLogger,
         mSectionTreeTag,
         mCurrentPrefix,
         mNextPrefix);
@@ -415,7 +415,7 @@ public class ChangeSetStateTest {
             mSectionContext,
             root,
             newRoot,
-            mSectionComponentLogger,
+            mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
             mNextPrefix);
@@ -457,7 +457,7 @@ public class ChangeSetStateTest {
         mSectionContext,
         null,
         root,
-        mSectionComponentLogger,
+        mSectionsDebugLogger,
         mSectionTreeTag,
         mCurrentPrefix,
         mNextPrefix);
@@ -471,7 +471,7 @@ public class ChangeSetStateTest {
             mSectionContext,
             root,
             newRoot,
-            mSectionComponentLogger,
+            mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
             mNextPrefix);
@@ -507,7 +507,7 @@ public class ChangeSetStateTest {
         mSectionContext,
         null,
         root,
-        mSectionComponentLogger,
+        mSectionsDebugLogger,
         mSectionTreeTag,
         mCurrentPrefix,
         mNextPrefix);
@@ -521,7 +521,7 @@ public class ChangeSetStateTest {
             mSectionContext,
             root,
             newRoot,
-            mSectionComponentLogger,
+            mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
             mNextPrefix);
@@ -569,7 +569,7 @@ public class ChangeSetStateTest {
         mSectionContext,
         null,
         root,
-        mSectionComponentLogger,
+        mSectionsDebugLogger,
         mSectionTreeTag,
         mCurrentPrefix,
         mNextPrefix);
@@ -583,7 +583,7 @@ public class ChangeSetStateTest {
             mSectionContext,
             root,
             newRoot,
-            mSectionComponentLogger,
+            mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
             mNextPrefix);
@@ -627,7 +627,7 @@ public class ChangeSetStateTest {
         mSectionContext,
         null,
         root,
-        mSectionComponentLogger,
+        mSectionsDebugLogger,
         mSectionTreeTag,
         mCurrentPrefix,
         mNextPrefix);
@@ -641,7 +641,7 @@ public class ChangeSetStateTest {
             mSectionContext,
             root,
             newRoot,
-            mSectionComponentLogger,
+            mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
             mNextPrefix);
@@ -682,7 +682,7 @@ public class ChangeSetStateTest {
         mSectionContext,
         null,
         root,
-        mSectionComponentLogger,
+        mSectionsDebugLogger,
         mSectionTreeTag,
         mCurrentPrefix,
         mNextPrefix);
@@ -696,7 +696,7 @@ public class ChangeSetStateTest {
             mSectionContext,
             root,
             newRoot,
-            mSectionComponentLogger,
+            mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
             mNextPrefix);

@@ -12,9 +12,10 @@ package com.facebook.litho.sections.logger;
 import com.facebook.litho.widget.RenderInfo;
 
 /**
- * Section component logger interface
+ * Sections logger interface. Used for debugging issues inside {@link
+ * com.facebook.litho.sections.SectionTree} if they occur.
  */
-public interface SectionComponentLogger {
+public interface SectionsDebugLogger {
 
   /**
    * fired when a component is being inserted

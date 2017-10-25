@@ -25,7 +25,7 @@ import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.sections.config.SectionComponentsConfiguration;
-import com.facebook.litho.sections.logger.SectionComponentLogger;
+import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class SectionTree {
 
   private static final String DEFAULT_CHANGESET_THREAD_NAME = "SectionChangeSetThread";
   private static final int DEFAULT_CHANGESET_THREAD_PRIORITY = Process.THREAD_PRIORITY_BACKGROUND;
-  private final SectionComponentLogger mSectionComponentLogger;
+  private final SectionsDebugLogger mSectionsDebugLogger;
   private volatile boolean mReleased;
 
   /**
@@ -206,12 +206,12 @@ public class SectionTree {
   }
 
   private SectionTree(Builder builder) {
-    mSectionComponentLogger = new Logger(SectionComponentsConfiguration.LOGGERS);
+    mSectionsDebugLogger = new Logger(SectionComponentsConfiguration.LOGGERS);
     mReleased = false;
     mAsyncStateUpdates = builder.mAsyncStateUpdates;
     mAsyncPropUpdates = builder.mAsyngPropUpdates;
     mTag = builder.mTag;
-    mTarget = new BatchedTarget(builder.mTarget, mSectionComponentLogger, mTag);
+    mTarget = new BatchedTarget(builder.mTarget, mSectionsDebugLogger, mTag);
     mContext = SectionContext.withSectionTree(builder.mContext, this);
     mPendingChangeSets = new ArrayList<>();
     mPendingStateUpdates = new HashMap<>();
@@ -704,7 +704,7 @@ public class SectionTree {
     while (nextRoot != null) {
       final ChangeSetState changeSetState =
           calculateNewChangeSet(
-              mContext, currentRoot, nextRoot, pendingStateUpdates, mSectionComponentLogger, mTag);
+              mContext, currentRoot, nextRoot, pendingStateUpdates, mSectionsDebugLogger, mTag);
 
       final boolean changeSetIsValid;
       Section oldRoot = null;
@@ -942,37 +942,26 @@ public class SectionTree {
       Section<?> currentRoot,
       Section<?> nextRoot,
       Map<String, List<StateUpdate>> pendingStateUpdates,
-      SectionComponentLogger sectionComponentLogger,
+      SectionsDebugLogger sectionsDebugLogger,
       String sectionTreeTag) {
     nextRoot.setGlobalKey(nextRoot.getKey());
     createNewTreeAndApplyStateUpdates(
-        context,
-        currentRoot,
-        nextRoot,
-        pendingStateUpdates,
-        sectionComponentLogger,
-        sectionTreeTag);
+        context, currentRoot, nextRoot, pendingStateUpdates, sectionsDebugLogger, sectionTreeTag);
 
     return ChangeSetState.generateChangeSet(
-        context,
-        currentRoot,
-        nextRoot,
-        sectionComponentLogger,
-        sectionTreeTag,
-        "",
-        "");
+        context, currentRoot, nextRoot, sectionsDebugLogger, sectionTreeTag, "", "");
   }
 
   /**
-   * Creates the new tree, transfers state/services from the current tree and applies all the
-   * state updates that have been enqueued since the last tree calculation.
+   * Creates the new tree, transfers state/services from the current tree and applies all the state
+   * updates that have been enqueued since the last tree calculation.
    */
   private static void createNewTreeAndApplyStateUpdates(
       SectionContext context,
       Section<?> currentRoot,
       Section<?> nextRoot,
       Map<String, List<StateUpdate>> pendingStateUpdates,
-      SectionComponentLogger sectionComponentLogger,
+      SectionsDebugLogger sectionsDebugLogger,
       String sectionTreeTag) {
     if (nextRoot == null) {
       throw new IllegalStateException("Can't generate a subtree with a null root");
@@ -1056,12 +1045,7 @@ public class SectionTree {
         final Section currentChild = valueAndIndex != null ? valueAndIndex.first : null;
 
         createNewTreeAndApplyStateUpdates(
-            context,
-            currentChild,
-            child,
-            pendingStateUpdates,
-            sectionComponentLogger,
-            sectionTreeTag);
+            context, currentChild, child, pendingStateUpdates, sectionsDebugLogger, sectionTreeTag);
       }
 
       releaseKeySet(keysSet);

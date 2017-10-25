@@ -11,7 +11,7 @@ package com.facebook.litho.sections;
 
 import android.util.SparseArray;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.sections.logger.SectionComponentLogger;
+import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.widget.RenderInfo;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,19 +31,16 @@ class BatchedTarget implements SectionTree.Target {
 
   private final SectionTree.Target mTarget;
   private final SparseArray<RenderInfo> mComponentInfoSparseArray = new SparseArray<>();
-  private final SectionComponentLogger mSectionComponentLogger;
+  private final SectionsDebugLogger mSectionsDebugLogger;
   private final String mSectionTreeTag;
 
   private int mLastEventType = TYPE_NONE;
   private int mLastEventPosition = -1;
   private int mLastEventCount = -1;
 
-  BatchedTarget(
-      SectionTree.Target target,
-      SectionComponentLogger sectionComponentLogger,
-      String tag) {
+  BatchedTarget(SectionTree.Target target, SectionsDebugLogger sectionsDebugLogger, String tag) {
     mTarget = target;
-    mSectionComponentLogger = sectionComponentLogger;
+    mSectionsDebugLogger = sectionsDebugLogger;
     mSectionTreeTag = tag;
   }
 
@@ -130,7 +127,7 @@ class BatchedTarget implements SectionTree.Target {
     dispatchLastEvent();
     mTarget.move(fromPosition, toPosition);
     if (ENABLE_LOGGER) {
-      mSectionComponentLogger.logMove(
+      mSectionsDebugLogger.logMove(
           mSectionTreeTag, fromPosition, toPosition, Thread.currentThread().getName());
     }
   }
@@ -139,7 +136,7 @@ class BatchedTarget implements SectionTree.Target {
   public void requestFocus(int index) {
     mTarget.requestFocus(index);
     if (ENABLE_LOGGER && mComponentInfoSparseArray.size() != 0) {
-      mSectionComponentLogger.logRequestFocus(
+      mSectionsDebugLogger.logRequestFocus(
           mSectionTreeTag,
           index,
           mComponentInfoSparseArray.get(index),
@@ -151,7 +148,7 @@ class BatchedTarget implements SectionTree.Target {
   public void requestFocusWithOffset(int index, int offset) {
     mTarget.requestFocusWithOffset(index, offset);
     if (ENABLE_LOGGER && mComponentInfoSparseArray.size() != 0) {
-      mSectionComponentLogger.logRequestFocusWithOffset(
+      mSectionsDebugLogger.logRequestFocusWithOffset(
           mSectionTreeTag,
           index,
           offset,
@@ -176,7 +173,7 @@ class BatchedTarget implements SectionTree.Target {
         } else {
           mTarget.insert(mLastEventPosition, mComponentInfoSparseArray.get(mLastEventPosition));
           if (ENABLE_LOGGER) {
-            mSectionComponentLogger.logInsert(
+            mSectionsDebugLogger.logInsert(
                 mSectionTreeTag,
                 mLastEventPosition,
                 mComponentInfoSparseArray.get(mLastEventPosition),
@@ -193,7 +190,7 @@ class BatchedTarget implements SectionTree.Target {
         } else {
           mTarget.delete(mLastEventPosition);
           if (ENABLE_LOGGER) {
-            mSectionComponentLogger.logDelete(
+            mSectionsDebugLogger.logDelete(
                 mSectionTreeTag, mLastEventPosition, Thread.currentThread().getName());
           }
         }
@@ -209,7 +206,7 @@ class BatchedTarget implements SectionTree.Target {
         } else {
           mTarget.update(mLastEventPosition, mComponentInfoSparseArray.get(mLastEventPosition));
           if (ENABLE_LOGGER) {
-            mSectionComponentLogger.logUpdate(
+            mSectionsDebugLogger.logUpdate(
                 mSectionTreeTag,
                 mLastEventPosition,
                 mComponentInfoSparseArray.get(mLastEventPosition),
@@ -245,22 +242,21 @@ class BatchedTarget implements SectionTree.Target {
 
   private void logInsertIterative(int index, List<RenderInfo> renderInfos) {
     for (int i = 0; i < renderInfos.size(); i++) {
-      mSectionComponentLogger.logInsert(
+      mSectionsDebugLogger.logInsert(
           mSectionTreeTag, index + i, renderInfos.get(i), Thread.currentThread().getName());
     }
   }
 
   private void logUpdateIterative(int index, List<RenderInfo> renderInfos) {
     for (int i = 0; i < renderInfos.size(); i++) {
-      mSectionComponentLogger.logUpdate(
+      mSectionsDebugLogger.logUpdate(
           mSectionTreeTag, index + i, renderInfos.get(i), Thread.currentThread().getName());
     }
   }
 
   private void logDeleteIterative(int index, int count) {
     for (int i = 0; i < count; i++) {
-      mSectionComponentLogger.logDelete(
-          mSectionTreeTag, index + i, Thread.currentThread().getName());
+      mSectionsDebugLogger.logDelete(mSectionTreeTag, index + i, Thread.currentThread().getName());
     }
   }
 }
