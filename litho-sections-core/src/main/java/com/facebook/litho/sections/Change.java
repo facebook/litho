@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Change represent a single operation in a Components {@link ChangeSet}. A Change can be one of
+ * A Change represent a single operation in a section's {@link ChangeSet}. A Change can be one of
  * Insert, Update or Delete. When creating a Change an index at which the Change will be applied has
  * to be specified. The index is local in the {@link DiffSectionSpec} coordinates. So to insert a
  * new item represented by a given Component in any give ChangeSetSpec at the top, a change would
@@ -129,8 +129,8 @@ public final class Change {
 
   /**
    * Creates a Change of type UPDATE_RANGE. As a result of this Change {@param count} number of
-   * components starting at {@param index} (in the context of the {@DiffSectionSpec} creating this
-   * change) will be replaces by components from {@param renderInfos}.
+   * components starting at {@param index} (in the context of the {@link DiffSectionSpec} creating
+   * this change) will be replaces by components from {@param renderInfos}.
    */
   static Change updateRange(int index, int count, List<RenderInfo> renderInfos) {
     return acquireRangedChange(UPDATE_RANGE, index, count, renderInfos);

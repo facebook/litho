@@ -19,8 +19,7 @@ import java.util.List;
 
 /**
  * Utility class that represents the children of a {@link GroupSectionSpec}. This is used to mimic
- * component's usage of the Container class in {@link com.facebook.litho.annotations.LayoutSpec}'s
- * API
+ * litho's usage of the Container class in {@link com.facebook.litho.annotations.LayoutSpec}'s API
  */
 public class Children {
 

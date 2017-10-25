@@ -158,7 +158,7 @@ public abstract class Section<L extends SectionLifecycle> implements Cloneable, 
   }
 
   /**
-   * Sets the key for this Component. This is only used for testing as the key will be set from the
+   * Sets the key for this Section. This is only used for testing as the key will be set from the
    * {@link Builder}
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -227,9 +227,7 @@ public abstract class Section<L extends SectionLifecycle> implements Cloneable, 
     }
   }
 
-  /**
-   * @return true if this LisComponent or any of its children were invalidated.
-   */
+  /** @return true if this Section or any of its children were invalidated. */
   boolean isInvalidated() {
     return mInvalidated;
   }
@@ -289,9 +287,9 @@ public abstract class Section<L extends SectionLifecycle> implements Cloneable, 
   public abstract String getSimpleName();
 
   /**
-   * Compares this component to a different one to check if they are the same
+   * Compares this section to a different one to check if they are the same
    *
-   * <p>This is used to be able to skip rendering a component again. We avoid using the {@link
+   * <p>This is used to be able to skip rendering a section again. We avoid using the {@link
    * Section#equals(Object)} so we can optimize the code better over time since we don't have to
    * adhere to the contract required for a equals method.
    *

@@ -13,7 +13,7 @@ import com.facebook.litho.annotations.Event;
 import javax.annotation.Nullable;
 
 /**
- * ListComponents should implement this method to receive events about their children loading state.
+ * Sections should implement this method to receive events about their children's loading state.
  * An example of the correct usage is:
  *
  * <pre>
@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
  * @OnEvent(LoadingEvent.class)
  * static void onLoadingStateChanged(
  *    @FromEvent LoadingState loadingState,
- *    @Param ListContext context,
+ *    @Param SectionContext context,
  *    @Prop int someProp) {
  *      context.updateLoadingState(loadingState);
  * }

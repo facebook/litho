@@ -10,9 +10,9 @@
 package com.facebook.litho.sections;
 
 /**
- * An interface used by GraphQL connection sections to interact with their data-fetching services.
- * @param <QueryParams> this is the same type as QueryParams in
- * {@link com.facebook.controller.connectioncontroller.common.ConnectionConfiguration}
+ * An interface used by sections to interact with their data-fetching services.
+ *
+ * @param <QueryParams> POJO of data to be passed to the data-fetching service.
  */
 public interface ListEventsHandler<QueryParams> {
   void onPTR(QueryParams ptrFetchParams);
