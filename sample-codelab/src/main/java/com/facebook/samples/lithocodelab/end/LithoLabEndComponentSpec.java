@@ -22,7 +22,7 @@ import com.facebook.litho.annotations.OnCreateLayout;
  * StoryCardComponent}, provides its props, and also fills the rest of the screen with gray.
  */
 @LayoutSpec
-public class LithoLabEndComponentSpec {
+class LithoLabEndComponentSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(ComponentContext c) {
     return Column.create(c)

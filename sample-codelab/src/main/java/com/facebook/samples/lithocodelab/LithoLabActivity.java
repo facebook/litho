@@ -13,7 +13,7 @@ package com.facebook.samples.lithocodelab;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import com.facebook.samples.lithocodelab.end.LithoLabApproximateEndActivity;
+import javax.annotation.Nullable;
 
 /**
  * <b>*************** START THE LAB HERE ***************</b>
@@ -21,7 +21,7 @@ import com.facebook.samples.lithocodelab.end.LithoLabApproximateEndActivity;
  * <p>
  *
  * <p>This is a simple "Hello, world." activity that renders using Views. The goal of the lab is to
- * build this into something that resembles {@link LithoLabApproximateEndActivity} using Litho.
+ * build this into something that resembles LithoLabApproximateEndActivity using Litho.
  *
  * <p>
  *
@@ -31,7 +31,7 @@ import com.facebook.samples.lithocodelab.end.LithoLabApproximateEndActivity;
 public class LithoLabActivity extends AppCompatActivity {
 
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
+  protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.hello_world);

@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import javax.annotation.Nullable;
 
 /**
  * Renders {@link ExamplesActivityComponentSpec} initially, and then handles all navigation to
@@ -27,7 +28,7 @@ public class ExamplesLithoLabActivity extends AppCompatActivity {
   private LabExampleController mLabExampleController;
 
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
+  protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
     final ComponentContext c = new ComponentContext(this);

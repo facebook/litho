@@ -29,19 +29,37 @@
         android:allowBackup="false"
         android:icon="@android:mipmap/sym_def_app_icon"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:label="LithoLab: Begin" android:name="com.facebook.samples.lithocodelab.LithoLabActivity" >
+        <activity
+            android:label="LithoLab: Begin"
+            android:name="com.facebook.samples.lithocodelab.LithoLabActivity"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:label="LithoLab: End" android:name="com.facebook.samples.lithocodelab.end.LithoLabApproximateEndActivity" >
+        <activity
+            android:label="LithoLab: Middle"
+            android:name="com.facebook.samples.lithocodelab.middle.LithoLabMiddleActivity"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:label="LithoLab: Examples" android:name="com.facebook.samples.lithocodelab.examples.ExamplesLithoLabActivity" >
+        <activity
+            android:label="LithoLab: End"
+            android:name="com.facebook.samples.lithocodelab.end.LithoLabApproximateEndActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:label="LithoLab: Examples"
+            android:name="com.facebook.samples.lithocodelab.examples.ExamplesLithoLabActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -11,66 +11,23 @@
  */
 package com.facebook.samples.lithocodelab;
 
-import static com.facebook.yoga.YogaAlign.STRETCH;
-import static com.facebook.yoga.YogaEdge.ALL;
-import static com.facebook.yoga.YogaEdge.BOTTOM;
-import static com.facebook.yoga.YogaEdge.END;
-import static com.facebook.yoga.YogaEdge.HORIZONTAL;
-import static com.facebook.yoga.YogaEdge.TOP;
-import static com.facebook.yoga.YogaJustify.CENTER;
-
-import android.graphics.Color;
-import com.facebook.litho.Border;
-import com.facebook.litho.Column;
-import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.widget.Image;
 import com.facebook.litho.widget.Text;
-import com.facebook.yoga.YogaAlign;
 
 /**
+ * <h2>End goal</h2>
  * Renders a "story card" with a header and message. You should also implement a togglable "saved"
  * state.
  */
 @LayoutSpec
-public class StoryCardComponentSpec {
-
-  static final int CARD_INSET = 12;
-  static final int CARD_INTERNAL_PADDING = 7;
+class StoryCardComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
-      ComponentContext c, @Prop Component<?> header, @Prop String content) {
-    return Column.create(c)
-        .backgroundColor(Color.WHITE)
-        .child(header)
-        .child(
-            Text.create(c, 0, R.style.message_text)
-                .text(content)
-                .paddingDip(HORIZONTAL, CARD_INSET)
-                .paddingDip(BOTTOM, CARD_INTERNAL_PADDING))
-        .child(
-            Row.create(c)
-                .alignSelf(STRETCH)
-                .paddingDip(HORIZONTAL, CARD_INSET)
-                .paddingDip(BOTTOM, CARD_INTERNAL_PADDING)
-                .paddingDip(TOP, CARD_INTERNAL_PADDING)
-                .justifyContent(CENTER)
-                .child(
-                    Image.create(c)
-                        .drawableRes(R.drawable.save)
-                        .alignSelf(YogaAlign.CENTER)
-                        .widthDip(20)
-                        .heightDip(20)
-                        .marginDip(END, CARD_INTERNAL_PADDING))
-                .child(Text.create(c, 0, R.style.save_text).text("Save"))
-                .border(Border.create(c).color(ALL, Color.BLACK).widthDip(TOP, 1).build()))
-        .border(Border.create(c).color(ALL, Color.BLACK).widthDip(ALL, 1).build())
-        .build();
+  static ComponentLayout onCreateLayout(ComponentContext c, @Prop String content) {
+    return Text.create(c, R.style.hello_world, 0).text(content).buildWithLayout();
   }
 }

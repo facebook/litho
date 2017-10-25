@@ -9,26 +9,29 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.facebook.samples.lithocodelab.end;
+package com.facebook.samples.lithocodelab.middle;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
-import javax.annotation.Nullable;
+import com.facebook.samples.lithocodelab.end.LithoLabApproximateEndActivity;
 
-/** This is a simple wrapper around {@link LithoLabEndComponentSpec}. */
-public class LithoLabApproximateEndActivity extends AppCompatActivity {
+/**
+ * This gets us one step closer to {@link LithoLabApproximateEndActivity} by displaying a component
+ * spec through a {@link LithoView}.
+ */
+public class LithoLabMiddleActivity extends AppCompatActivity {
 
   @Override
-  protected void onCreate(@Nullable Bundle savedInstanceState) {
+  protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
     final ComponentContext c = new ComponentContext(this);
+    final Component<StoryCardComponent> component =
+        StoryCardComponent.create(c).content("Hello, Litho!").build();
 
-    final LithoView lithoView =
-        LithoView.create(this /* context */, LithoLabEndComponent.create(c).build());
-
-    setContentView(lithoView);
+    setContentView(LithoView.create(c, component));
   }
 }

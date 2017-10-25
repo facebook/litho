@@ -41,7 +41,7 @@ import com.facebook.samples.lithocodelab.R;
  * and a menu button which just Toasts to indicate that the menu button was pressed.
  */
 @LayoutSpec
-public class StoryHeaderComponentSpec {
+class StoryHeaderComponentSpec {
 
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
