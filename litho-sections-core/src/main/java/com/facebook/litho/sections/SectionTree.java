@@ -57,7 +57,7 @@ public class SectionTree {
     private int totalItemsCount;
   }
 
-  private static final String DEFAULT_CHANGESET_THREAD_NAME = "ComponentChangeSetThread";
+  private static final String DEFAULT_CHANGESET_THREAD_NAME = "SectionChangeSetThread";
   private static final int DEFAULT_CHANGESET_THREAD_PRIORITY = Process.THREAD_PRIORITY_BACKGROUND;
   private final SectionComponentLogger mSectionComponentLogger;
   private volatile boolean mReleased;
@@ -106,7 +106,7 @@ public class SectionTree {
   }
 
   private static final int MESSAGE_WHAT_BACKGROUND_CHANGESET_STATE_UPDATED = 1;
-  private static final Handler sMainThreadHandler = new SectionsComponentMainThreadHandler();
+  private static final Handler sMainThreadHandler = new SectionsMainThreadHandler();
 
   @GuardedBy("ComponentTree.class")
   private static volatile Looper sDefaultChangeSetThreadLooper;
@@ -237,11 +237,10 @@ public class SectionTree {
   }
 
   /**
-   * Update the root ListComponent. This will create the new ListComponent tree and generate a
-   * {@link ChangeSet} to be applied to the UI. In response to this
-   * {@link Target#applyNewChangeSet()} will be invoked once the {@link ChangeSet} has
-   * been calculated.
-   * The generation of the ChangeSet will happen synchronously in the thread calling this method.
+   * Update the root Section. This will create the new Section tree and generate a {@link ChangeSet}
+   * to be applied to the UI. In response to this {@link Target#applyNewChangeSet()} will be invoked
+   * once the {@link ChangeSet} has been calculated. The generation of the ChangeSet will happen
+   * synchronously in the thread calling this method.
    *
    * @param section The new root.
    */
@@ -272,12 +271,10 @@ public class SectionTree {
   }
 
   /**
-   * Update the root ListComponent. This will create the new ListComponent tree and generate a
-   * {@link ChangeSet} to be applied to the UI. In response to this
-   * {@link Target#applyNewChangeSet()} will be invoked once the {@link ChangeSet} has
-   * been calculated.
-   * The generation of the ChangeSet will happen asynchronously in this ListComponentTree
-   * ChangeSetThread.
+   * Update the root Section. This will create the new Section tree and generate a {@link ChangeSet}
+   * to be applied to the UI. In response to this {@link Target#applyNewChangeSet()} will be invoked
+   * once the {@link ChangeSet} has been calculated. The generation of the ChangeSet will happen
+   * asynchronously in this SectionTree ChangeSetThread.
    *
    * @param section The new root.
    */
@@ -581,8 +578,8 @@ public class SectionTree {
   }
 
   /**
-   * Call this when to release this ListComponentTree and make sure that all the Services in the
-   * tree get destroyed.
+   * Call this when to release this SectionTree and make sure that all the Services in the tree get
+   * destroyed.
    */
   public void release() {
     final Section toDispose;
@@ -627,14 +624,13 @@ public class SectionTree {
   }
 
   /**
-   * This will be called by the framework when one of the {@link Section} in the tree
-   * requests to update its own state.
-   * The generation of the ChangeSet will happen asynchronously in this ListComponentTree
-   * ChangesetThread.
+   * This will be called by the framework when one of the {@link Section} in the tree requests to
+   * update its own state. The generation of the ChangeSet will happen asynchronously in this
+   * SectionTree ChangesetThread.
    *
    * @param key The unique key of the {@link Section} in the tree.
    * @param stateUpdate An implementation of {@link StateUpdate} that knows how to transition to the
-   *        new state.
+   *     new state.
    */
   synchronized void updateStateAsync(String key, StateUpdate stateUpdate) {
     mCalculateChangeSetRunnable.cancel();
@@ -1110,9 +1106,9 @@ public class SectionTree {
     //TODO use pools t11953296
   }
 
-  private static class SectionsComponentMainThreadHandler extends Handler {
+  private static class SectionsMainThreadHandler extends Handler {
 
-    private SectionsComponentMainThreadHandler() {
+    private SectionsMainThreadHandler() {
       super(Looper.getMainLooper());
     }
 
