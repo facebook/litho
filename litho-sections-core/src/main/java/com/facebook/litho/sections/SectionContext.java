@@ -34,11 +34,10 @@ public class SectionContext extends ComponentContext {
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public static SectionContext withSectionTree(
-      SectionContext context, SectionTree listComponentTree) {
+  public static SectionContext withSectionTree(SectionContext context, SectionTree sectionTree) {
     SectionContext sectionContext = new SectionContext(context);
-    sectionContext.mSectionTree = listComponentTree;
-    sectionContext.mTreeLoadingEventHandler = new SectionTreeLoadingEventHandler(listComponentTree);
+    sectionContext.mSectionTree = sectionTree;
+    sectionContext.mTreeLoadingEventHandler = new SectionTreeLoadingEventHandler(sectionTree);
 
     return sectionContext;
   }
