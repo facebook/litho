@@ -53,7 +53,7 @@ import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.sections.SectionTree.Target;
-import com.facebook.litho.sections.config.SectionComponentsConfiguration;
+import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.widget.Binder;
 import com.facebook.litho.widget.PTRRefreshEvent;
 import com.facebook.litho.widget.Recycler;
@@ -91,11 +91,11 @@ public class RecyclerCollectionComponentSpec {
   @PropDefault protected static final int recyclerViewId = View.NO_ID;
   @PropDefault
   protected static final boolean asyncStateUpdates =
-      SectionComponentsConfiguration.sectionComponentsAsyncStateUpdates;
+      SectionsConfiguration.sectionComponentsAsyncStateUpdates;
 
   @PropDefault
   protected static final boolean asyncPropUpdates =
-      SectionComponentsConfiguration.sectionComponentsAsyncPropUpdates;
+      SectionsConfiguration.sectionComponentsAsyncPropUpdates;
 
   @PropDefault static final boolean clipToPadding = true;
   @PropDefault static final boolean clipChildren = true;

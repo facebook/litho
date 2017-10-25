@@ -24,7 +24,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.TreeProps;
-import com.facebook.litho.sections.config.SectionComponentsConfiguration;
+import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.ViewportInfo;
@@ -206,7 +206,7 @@ public class SectionTree {
   }
 
   private SectionTree(Builder builder) {
-    mSectionsDebugLogger = new Logger(SectionComponentsConfiguration.LOGGERS);
+    mSectionsDebugLogger = new Logger(SectionsConfiguration.LOGGERS);
     mReleased = false;
     mAsyncStateUpdates = builder.mAsyncStateUpdates;
     mAsyncPropUpdates = builder.mAsyngPropUpdates;
@@ -1152,8 +1152,8 @@ public class SectionTree {
     private Builder(SectionContext componentContext, Target target) {
       mContext = componentContext;
       mTarget = target;
-      mAsyncStateUpdates = SectionComponentsConfiguration.sectionComponentsAsyncStateUpdates;
-      mAsyngPropUpdates = SectionComponentsConfiguration.sectionComponentsAsyncPropUpdates;
+      mAsyncStateUpdates = SectionsConfiguration.sectionComponentsAsyncStateUpdates;
+      mAsyngPropUpdates = SectionsConfiguration.sectionComponentsAsyncPropUpdates;
     }
 
     /**

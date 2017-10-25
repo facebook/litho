@@ -13,7 +13,7 @@ import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import java.util.List;
 
 /** Configuration for the SectionComponents library */
-public class SectionComponentsConfiguration {
+public class SectionsConfiguration {
 
   /** Loggers for the core framework */
   public static List<SectionsDebugLogger> LOGGERS;
