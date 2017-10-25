@@ -844,7 +844,7 @@ public class SectionTree {
           mLoadEventsHandler.onLoadStarted(isEmpty);
           break;
         case SUCCEEDED:
-          mLoadEventsHandler.onLoadSucceded(isEmpty);
+          mLoadEventsHandler.onLoadSucceeded(isEmpty);
           break;
       }
     }

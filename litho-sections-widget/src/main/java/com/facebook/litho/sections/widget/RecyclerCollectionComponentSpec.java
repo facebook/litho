@@ -394,7 +394,7 @@ public class RecyclerCollectionComponentSpec {
     }
 
     @Override
-    public void onLoadSucceded(boolean empty) {
+    public void onLoadSucceeded(boolean empty) {
       if (mIsEmpty || empty) {
         RecyclerCollectionComponent.updateLoadingAndEmptyAsync(mComponentContext, SUCCEEDED, empty);
       } else {
@@ -403,7 +403,7 @@ public class RecyclerCollectionComponentSpec {
 
       mRecyclerEventsController.clearRefreshing();
       if (mDelegate != null) {
-        mDelegate.onLoadSucceded(empty);
+        mDelegate.onLoadSucceeded(empty);
       }
     }
 

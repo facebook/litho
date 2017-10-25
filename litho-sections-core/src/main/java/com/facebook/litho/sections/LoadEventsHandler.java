@@ -29,9 +29,10 @@ public interface LoadEventsHandler {
 
   /**
    * Invoked every time the {@link Section} succeeds in loading new elements.
-   * @param  empty true if after this fetch the dataset is empty.
+   *
+   * @param empty true if after this fetch the dataset is empty.
    */
-  void onLoadSucceded(boolean empty);
+  void onLoadSucceeded(boolean empty);
 
   /**
    * Invoked every time the {@link Section} fails loading new elements.
