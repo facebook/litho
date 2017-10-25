@@ -22,12 +22,13 @@ import com.facebook.litho.testing.specmodels.MockSpecModel;
 import com.squareup.javapoet.TypeName;
 import org.junit.Test;
 
+
 /**
  * Tests {@link JavadocGenerator}
  */
 public class JavadocGeneratorTest {
   @Test
-  public void testGenerateJavadoc() {
+  public void testGenerateJavadocProps() {
     final MethodParamModel requiredMethodParam =
         MockMethodParamModel.newBuilder().name("propName1").type(TypeName.INT).build();
     final MethodParamModel optionalMethodParam =
@@ -47,11 +48,36 @@ public class JavadocGeneratorTest {
 
     final TypeSpecDataHolder dataHolder = JavadocGenerator.generate(specModel);
     assertThat(dataHolder.getJavadocSpecs()).hasSize(4);
-    assertThat(dataHolder.getJavadocSpecs().get(0).toString()).isEqualTo("Test Javadoc");
-    assertThat(dataHolder.getJavadocSpecs().get(1).toString()).isEqualTo("<p>\n");
-    assertThat(dataHolder.getJavadocSpecs().get(2).toString())
-        .isEqualTo("@prop-required propName1 int test prop1 javadoc\n");
-    assertThat(dataHolder.getJavadocSpecs().get(3).toString())
-        .isEqualTo("@prop-optional propName2 boolean test prop2 javadoc\n");
+
+    assertThat(getJavadocsString(dataHolder))
+        .isEqualTo(
+            "Test Javadoc<p>\n"
+                + "@prop-required propName1 int test prop1 javadoc\n"
+                + "@prop-optional propName2 boolean test prop2 javadoc\n");
+  }
+
+  @Test
+  public void testGenerateJavadocSeeReference() {
+    final SpecModel specModel =
+        MockSpecModel.newBuilder()
+            .classJavadoc("Test Javadoc")
+            // Any class with a well-known path is fine here.
+            .specTypeName(TypeName.get(TypeSpecDataHolder.class))
+            .build();
+
+    final TypeSpecDataHolder dataHolder = JavadocGenerator.generate(specModel);
+    assertThat(dataHolder.getJavadocSpecs()).hasSize(3);
+    assertThat(getJavadocsString(dataHolder))
+        .isEqualTo(
+            "Test Javadoc<p>\n"
+                + "\n"
+                + "@see com.facebook.litho.specmodels.generator.TypeSpecDataHolder\n");
+  }
+
+  private final String getJavadocsString(TypeSpecDataHolder dataHolder) {
+    return dataHolder
+        .getJavadocSpecs()
+        .stream()
+        .reduce("", (s, javadocSpec) -> s + javadocSpec, (s, s2) -> s + s2);
   }
 }

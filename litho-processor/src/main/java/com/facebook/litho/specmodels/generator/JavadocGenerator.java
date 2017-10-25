@@ -47,6 +47,11 @@ public class JavadocGenerator {
               getPropJavadocForProp(specModel, prop)));
     }
 
+    if (specModel.getSpecTypeName() != null) {
+      // Add a link back to the spec this was build from for easier jumping.
+      typeSpecDataHolder.addJavadoc(
+          new JavadocSpec("\n@see $N\n", specModel.getSpecTypeName().toString()));
+    }
     return typeSpecDataHolder.build();
   }
 
