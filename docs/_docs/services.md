@@ -8,24 +8,24 @@ metatags: noindex, follow
 # Service
 
 ## Data Flow
-Data flows through sections before being rendered on screen. Sections sits between your data source and UI to efficiently calculate the changesets you need to render your components.
+Data flows through sections before being rendered on screen. Sections sit between your data source and UI to efficiently calculate the changesets you need to render your components.
 
 For better performance, we should only do work that's required. Hence, the data should ideally be fetched whenever your sections need it. This is where services come in.
 
 ## Introduction
-Services are what sections use to control your data source imperatively. It is through the service APIs where the `SectionLifecycle` can be made known outside of the hierarchy. This allows you to know when you should start fetching your data.
+Services are what sections use to control your data source imperatively. It is through the service APIs where the [SectionLifecycle](https://fblitho.com/javadoc/com/facebook/litho/sections/SectionLifecycle.html) can be made known outside of the hierarchy. This allows you to know when you should start fetching your data.
 
 Since a service is tied to a particular section, this means it has access to all the `Prop` and `State` and interacts with them. This also means that the service is able to respond to events such as `@OnViewportChanged` and `@OnRefresh`, and call for a state update when new data arrives to allow the data to flow down the hierarchy.
 
 ## @OnCreateService
-Services are persisted across `State` updates and for however long the sections remain in the hierarchy. The first and only instance of a `Service` should be created in the lifecycle `@OnCreateService`
+Services are persisted across state updates and for however long the sections remain in the hierarchy. The first and only instance of a `Service` should be created in the lifecycle `@OnCreateService`
 
-```
+```java
 @GroupSectionSpec
 public ServiceSectionSpec {
   ...
   @OnCreateService
-  public static DataLoader onCreateServices(
+  static DataLoader onCreateServices(
     SectionContext c,
     @Prop Configuration config,
     ...) {
@@ -44,12 +44,12 @@ public ServiceSectionSpec {
 
 `@OnUnbindService` provides the callback for you to clean up and undo anything you have done in `@OnBindService`.
 
-```
+```java
 @GroupSectionSpec
-public static ServiceSectionSpec {
+public ServiceSectionSpec {
   ...
   @OnBindService
-  public void onBindService(
+  static void onBindService(
     final SectionContext c,
     final DataLoader service,
     ...) {
@@ -63,7 +63,7 @@ public static ServiceSectionSpec {
   }
 
   @OnUnbindService
-  public static void onUnbindService(
+  static void onUnbindService(
     final SectionContext c,
     final DataLoader service,
     ...) {
@@ -77,7 +77,7 @@ public static ServiceSectionSpec {
   }
 
   @OnEvent(YourData.class)
-  public static void dataLoaded(
+  static void dataLoaded(
     final SectionContext c,
     @FromEvent final Data data) {
       // Update your state with the new data
@@ -85,7 +85,7 @@ public static ServiceSectionSpec {
   }
 
   @UpdateState
-  public static void updateData(
+  static void updateData(
     final StateValue<Data> connectionData,
     @Param Data data) {
       connectionData.set(data);
@@ -96,9 +96,9 @@ public static ServiceSectionSpec {
 ## Data Fetching
 As aforementioned, services are able to respond to events such as `@OnViewportChanged` and `@OnRefresh`
 
-```
+```java
  @OnRefresh
- protected void onRefresh(
+ static void onRefresh(
    SectionContext c,
    DataLoader service,
    ...) {
@@ -106,7 +106,7 @@ As aforementioned, services are able to respond to events such as `@OnViewportCh
  }
 
  @OnViewportChanged
- protected void onViewportChanged(
+ static void onViewportChanged(
    SectionContext c,
    int firstVisibleIndex,
    int lastVisibleIndex,
