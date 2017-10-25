@@ -18,17 +18,20 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.util.SparseArrayCompat;
 import android.support.v4.view.ViewCompat;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 import java.util.List;
@@ -1291,5 +1294,32 @@ public class ComponentHost extends ViewGroup {
       traceName += "DL";
     }
     return traceName;
+  }
+
+  @Override
+  public boolean performAccessibilityAction(int action, Bundle arguments) {
+    // The view framework requires that a contentDescription be set for the
+    // getIterableTextForAccessibility method to work.  If one isn't set, all text granularity
+    // actions will be ignored.
+    if (action == AccessibilityNodeInfo.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY
+        || action == AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY) {
+      CharSequence contentDesc = null;
+      if (!TextUtils.isEmpty(getContentDescription())) {
+        contentDesc = getContentDescription();
+      } else if (getContentDescriptions().size() != 0) {
+        contentDesc = TextUtils.join(", ", getContentDescriptions());
+      } else if (getTextContent().getTextItems().size() != 0) {
+        contentDesc = TextUtils.join(", ", getTextContent().getTextItems());
+      }
+
+      if (contentDesc == null) {
+        return false;
+      }
+
+      mContentDescription = contentDesc;
+      super.setContentDescription(mContentDescription);
+    }
+
+    return super.performAccessibilityAction(action, arguments);
   }
 }

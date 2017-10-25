@@ -834,8 +834,21 @@ class TextSpec {
   @OnPopulateAccessibilityNode
   static void onPopulateAccessibilityNode(
       AccessibilityNodeInfoCompat node,
-      @Prop(resType = STRING) CharSequence text) {
+      @Prop(resType = STRING) CharSequence text,
+      @Prop(optional = true, resType = ResType.BOOL) boolean isSingleLine) {
     node.setText(text);
+    node.setContentDescription(text);
+
+    node.addAction(AccessibilityNodeInfoCompat.ACTION_NEXT_AT_MOVEMENT_GRANULARITY);
+    node.addAction(AccessibilityNodeInfoCompat.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY);
+    node.setMovementGranularities(
+        AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_CHARACTER
+            | AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_WORD
+            | AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_PARAGRAPH);
+
+    if (!isSingleLine) {
+      node.setMultiLine(true);
+    }
   }
 
   @GetExtraAccessibilityNodesCount
