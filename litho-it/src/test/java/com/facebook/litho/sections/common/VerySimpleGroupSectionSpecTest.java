@@ -14,7 +14,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.testing.sections.SectionComponentTestHelper;
+import com.facebook.litho.testing.sections.SectionsTestHelper;
 import com.facebook.litho.testing.sections.SubSection;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
@@ -28,11 +28,11 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class VerySimpleGroupSectionSpecTest {
 
-  private SectionComponentTestHelper mTester;
+  private SectionsTestHelper mTester;
 
   @Before
   public void setup() throws Exception {
-    mTester = new SectionComponentTestHelper(RuntimeEnvironment.application);
+    mTester = new SectionsTestHelper(RuntimeEnvironment.application);
   }
 
   @Test
@@ -89,7 +89,7 @@ public class VerySimpleGroupSectionSpecTest {
         mTester.prepare(
             VerySimpleGroupSection.create(mTester.getContext()).numberOfDummy(4).build());
 
-    SectionComponentTestHelper.dispatchEvent(
+    SectionsTestHelper.dispatchEvent(
         s, VerySimpleGroupSection.onImageClick(mTester.getScopedContext(s)), new ClickEvent());
 
     VerySimpleGroupSection.VerySimpleGroupSectionStateContainerImpl stateContainer =

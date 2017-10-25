@@ -38,14 +38,14 @@ import org.mockito.stubbing.Answer;
  * hieararchy. Also allows simpler State updates testing by keeping trach of a scoped section
  * context.
  */
-public class SectionComponentTestHelper extends SectionLifecycle {
+public class SectionsTestHelper extends SectionLifecycle {
 
   private final SectionContext mSectionContext;
 
   // A set of sections that are ready to be tested (createInitialState called).
   private final Map<Section, SectionContext> preparedSections;
 
-  public SectionComponentTestHelper(Context c) {
+  public SectionsTestHelper(Context c) {
     final SectionContext base = new SectionContext(c);
     final SectionTree st = SectionTree.create(base, new TestTarget()).build();
     mSectionContext = SectionContext.withSectionTree(base, st);
@@ -180,7 +180,7 @@ public class SectionComponentTestHelper extends SectionLifecycle {
   private void ensurePrepared(Section s) {
     if (!preparedSections.containsKey(s)) {
       throw new IllegalStateException(
-          "Section not prepared, did you call SectionComponentTestHelper#prepare()?");
+          "Section not prepared, did you call SectionsTestHelper#prepare()?");
     }
   }
 }
