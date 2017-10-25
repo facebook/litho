@@ -14,6 +14,7 @@ import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOU
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
 import static com.facebook.litho.specmodels.model.ClassNames.COMPONENT;
 
+import android.support.annotation.VisibleForTesting;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
@@ -137,7 +138,10 @@ public class ComponentImplGenerator {
             .addSuperinterface(specModel.getStateContainerClass());
 
     if (!specModel.hasInjectedDependencies()) {
-      stateContainerImplClassBuilder.addModifiers(Modifier.STATIC, Modifier.PRIVATE);
+      stateContainerImplClassBuilder.addAnnotation(
+          AnnotationSpec.builder(VisibleForTesting.class)
+              .addMember("otherwise", "$L", VisibleForTesting.PRIVATE).build());
+      stateContainerImplClassBuilder.addModifiers(Modifier.STATIC);
       stateContainerImplClassBuilder.addTypeVariables(specModel.getTypeVariables());
     }
 

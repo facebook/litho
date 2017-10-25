@@ -45,6 +45,7 @@ java_library(
         "PUBLIC",
     ],
     deps = [
+        COMPONENTS_ANDROIDSUPPORT_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
     ],
 )

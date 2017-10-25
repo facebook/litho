@@ -11,6 +11,7 @@ package com.facebook.litho.sections.processor.integration.resources;
 
 import android.support.annotation.AttrRes;
 import android.support.annotation.StringRes;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pools;
 import android.widget.TextView;
 import com.facebook.litho.ClickEvent;
@@ -314,7 +315,7 @@ final class FullGroupSection<T> extends SectionLifecycle {
     return childTreeProps;
   }
 
-  private static class FullGroupSectionStateContainerImpl<T> implements SectionLifecycle.StateContainer {
+  @VisibleForTesting(otherwise = 2) static class FullGroupSectionStateContainerImpl<T> implements SectionLifecycle.StateContainer {
     @State T state1;
 
     @State Object state2;

@@ -83,7 +83,10 @@ public class ComponentImplGeneratorTest {
   public void testGenerateStateContainerImpl() {
     assertThat(ComponentImplGenerator.generateStateContainerImpl(mSpecModelDI).toString())
         .isEqualTo(
-            "private static class TestStateContainerImpl implements com.facebook.litho.ComponentLifecycle.StateContainer {\n" +
+            "@android.support.annotation.VisibleForTesting(\n" +
+            "    otherwise = 2\n" +
+            ")\n" +
+            "static class TestStateContainerImpl implements com.facebook.litho.ComponentLifecycle.StateContainer {\n" +
             "  @com.facebook.litho.annotations.State\n" +
             "  int arg1;\n" +
             "}\n");

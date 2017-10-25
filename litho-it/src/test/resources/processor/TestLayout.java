@@ -10,6 +10,7 @@
 package com.facebook.litho.processor.integration.resources;
 
 import android.annotation.TargetApi;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pools;
 import android.view.View;
 import com.facebook.litho.ClickEvent;
@@ -294,7 +295,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     return builder;
   }
 
-  private static class TestLayoutStateContainerImpl<S extends View> implements ComponentLifecycle.StateContainer {
+  @VisibleForTesting(otherwise = 2) static class TestLayoutStateContainerImpl<S extends View> implements ComponentLifecycle.StateContainer {
     @State
     long state1;
 

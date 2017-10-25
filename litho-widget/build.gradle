@@ -41,6 +41,7 @@ dependencies {
 
     // Android Support Library
     implementation deps.supportCoreUi
+
 }
 
 apply from: rootProject.file('gradle/release.gradle')

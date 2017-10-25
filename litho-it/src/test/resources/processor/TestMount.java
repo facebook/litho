@@ -12,6 +12,7 @@ import android.annotation.TargetApi;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StringRes;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pools;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.View;
@@ -406,7 +407,7 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
     return builder;
   }
 
-  private static class TestMountStateContainerImpl<S extends View> implements ComponentLifecycle.StateContainer {
+  @VisibleForTesting( otherwise = 2) static class TestMountStateContainerImpl<S extends View> implements ComponentLifecycle.StateContainer {
     @State
     long state1;
 

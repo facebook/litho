@@ -9,6 +9,7 @@
 
 package com.facebook.litho.sections.processor.integration.resources;
 
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pools;
 import android.view.View;
 import com.facebook.litho.ClickEvent;
@@ -263,7 +264,7 @@ public final class FullDiffSection<T> extends SectionLifecycle {
         (int) lastFullyVisibleIndex);
   }
 
-  private static class FullDiffSectionStateContainerImpl<T> implements SectionLifecycle.StateContainer {
+  @VisibleForTesting(otherwise = 2) static class FullDiffSectionStateContainerImpl<T> implements SectionLifecycle.StateContainer {
     @State
     Object state1;
   }
