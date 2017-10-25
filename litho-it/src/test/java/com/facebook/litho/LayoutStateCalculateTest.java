@@ -122,6 +122,46 @@ public class LayoutStateCalculateTest {
   }
 
   @Test
+  public void testLayoutOutputsForSpecsWithTouchExpansion() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(TestDrawableComponent.create(c).widthPx(100).heightPx(10))
+                .child(
+                    Row.create(c)
+                        .viewTag(new Object())
+                        .child(TestDrawableComponent.create(c).widthPx(20).heightPx(90))
+                        .child(
+                            create(c)
+                                .child(TestDrawableComponent.create(c))
+                                .clickHandler(c.newEventHandler(1))
+                                .widthPx(50)
+                                .heightPx(50)
+                                .touchExpansionPx(YogaEdge.ALL, 5)))
+                .build();
+          }
+        };
+
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(6);
+
+    final ViewNodeInfo viewNodeInfo = layoutState.getMountableOutputAt(4).getViewNodeInfo();
+    assertThat(viewNodeInfo.getExpandedTouchBounds()).isEqualTo(new Rect(15, -5, 75, 55));
+
+    final NodeInfo nodeInfo = layoutState.getMountableOutputAt(4).getNodeInfo();
+    assertThat(nodeInfo).isNotNull();
+    assertThat(nodeInfo.getClickHandler()).isNotNull();
+    assertThat(nodeInfo.getLongClickHandler()).isNull();
+    assertThat(nodeInfo.getFocusChangeHandler()).isNull();
+    assertThat(nodeInfo.getTouchHandler()).isNull();
+  }
+
+  @Test
   public void testLayoutOutputsForSpecsWithClickHandling() {
     final Component component = new InlineLayoutSpec() {
       @Override

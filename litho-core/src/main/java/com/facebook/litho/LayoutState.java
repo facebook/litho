@@ -269,13 +269,20 @@ class LayoutState {
     // parent host to ensure the correct hierarchy when nesting the host views.
     layoutOutput.setHostMarker(layoutState.mCurrentHostMarker);
 
+    final int hostTranslationX;
+    final int hostTranslationY;
     if (layoutState.mCurrentHostOutputPosition >= 0) {
       final LayoutOutput hostOutput =
           layoutState.mMountableOutputs.get(layoutState.mCurrentHostOutputPosition);
 
       final Rect hostBounds = hostOutput.getBounds();
-      layoutOutput.setHostTranslationX(hostBounds.left);
-      layoutOutput.setHostTranslationY(hostBounds.top);
+      hostTranslationX = hostBounds.left;
+      hostTranslationY = hostBounds.top;
+      layoutOutput.setHostTranslationX(hostTranslationX);
+      layoutOutput.setHostTranslationY(hostTranslationY);
+    } else {
+      hostTranslationX = 0;
+      hostTranslationY = 0;
     }
 
     int flags = 0;
@@ -301,7 +308,12 @@ class LayoutState {
       final ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
       viewNodeInfo.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
       viewNodeInfo.setLayoutDirection(node.getResolvedLayoutDirection());
-      viewNodeInfo.setExpandedTouchBounds(node, l, t, r, b);
+      viewNodeInfo.setExpandedTouchBounds(
+          node,
+          l - hostTranslationX,
+          t - hostTranslationY,
+          r - hostTranslationX,
+          b - hostTranslationY);
       viewNodeInfo.setClipChildren(layoutState.mClipChildren);
       layoutOutput.setViewNodeInfo(viewNodeInfo);
       viewNodeInfo.release();
