@@ -18,7 +18,10 @@ import android.support.annotation.Nullable;
  * <p>This is useful when a single Component is to be rendered amongst a large number of candidate
  * Components or when multiple Components can potentially render some content using the same props
  * and the first one capable of rendering the content needs to be used.
+ *
+ * <p>Deprecated: Use Selector instead.
  */
+@Deprecated
 public class ComponentSelector {
 
   private ComponentContext mContext;
