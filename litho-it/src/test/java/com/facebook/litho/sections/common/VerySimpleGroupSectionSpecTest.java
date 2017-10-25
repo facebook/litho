@@ -11,6 +11,7 @@ package com.facebook.litho.sections.common;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.ClickEvent;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.sections.SectionComponentTestHelper;
@@ -35,7 +36,7 @@ public class VerySimpleGroupSectionSpecTest {
   }
 
   @Test
-  public void testInitialChildrenWithLightWeightInfra() throws Exception {
+  public void testInitialChildren() throws Exception {
 
     Section s = mTester.prepare(
         VerySimpleGroupSection.create(mTester.getContext()).numberOfDummy(4).build());
@@ -56,13 +57,44 @@ public class VerySimpleGroupSectionSpecTest {
   }
 
   @Test
-  public void testStateUpdateWithLightWeightInfra() throws Exception {
+  public void testStateUpdate() throws Exception {
 
     Section s = mTester.prepare(
         VerySimpleGroupSection.create(mTester.getContext()).numberOfDummy(4).build());
 
+    assertThat(mTester.getChildren(s).size()).isEqualTo(4);
+
     VerySimpleGroupSection.onUpdateState(mTester.getScopedContext(s), 5);
 
-    assertThat(mTester.getChildren(s).size()).isNotEqualTo(4);
+    assertThat(mTester.getChildren(s).size()).isGreaterThan(4);
+  }
+
+  @Test
+  public void testDataBound() throws Exception {
+    Section<VerySimpleGroupSection> s =
+        mTester.prepare(
+            VerySimpleGroupSection.create(mTester.getContext()).numberOfDummy(4).build());
+
+    s.getLifecycle().dataBound(mTester.getScopedContext(s), s);
+
+    VerySimpleGroupSection.VerySimpleGroupSectionStateContainerImpl stateContainer =
+        mTester.getStateContainer(s);
+
+    assertThat(stateContainer.extra).isEqualTo(-4);
+  }
+
+  @Test
+  public void testClickHandler() throws Exception {
+    Section s =
+        mTester.prepare(
+            VerySimpleGroupSection.create(mTester.getContext()).numberOfDummy(4).build());
+
+    SectionComponentTestHelper.dispatchEvent(
+        s, VerySimpleGroupSection.onImageClick(mTester.getScopedContext(s)), new ClickEvent());
+
+    VerySimpleGroupSection.VerySimpleGroupSectionStateContainerImpl stateContainer =
+        mTester.getStateContainer(s);
+
+    assertThat(stateContainer.extra).isEqualTo(3);
   }
 }

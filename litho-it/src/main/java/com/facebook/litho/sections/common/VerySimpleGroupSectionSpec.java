@@ -10,8 +10,10 @@
 package com.facebook.litho.sections.common;
 
 import android.graphics.drawable.ColorDrawable;
+import com.facebook.litho.ClickEvent;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.OnCreateInitialState;
+import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
@@ -20,6 +22,7 @@ import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnCreateChildren;
+import com.facebook.litho.sections.annotations.OnDataBound;
 import com.facebook.litho.widget.Image;
 import com.facebook.litho.widget.Text;
 
@@ -38,9 +41,7 @@ public class VerySimpleGroupSectionSpec {
 
   @OnCreateChildren
   protected static Children onCreateChildren(
-      SectionContext c,
-      @State int extra,
-      @Prop int numberOfDummy) {
+      SectionContext c, @State(canUpdateLazily = true) int extra, @Prop int numberOfDummy) {
     Children.Builder builder = Children.create();
 
     if (extra > 0) {
@@ -57,10 +58,21 @@ public class VerySimpleGroupSectionSpec {
     return builder.build();
   }
 
+  @OnDataBound
+  static void onDataBound(
+      SectionContext c, @Prop int numberOfDummy, @State(canUpdateLazily = true) int extra) {
+    VerySimpleGroupSection.lazyUpdateExtra(c, extra - numberOfDummy);
+  }
+
   @OnUpdateState
   static void onUpdateState(
       StateValue<Integer> extra,
       @Param int newExtra) {
     extra.set(newExtra);
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void onImageClick(SectionContext c) {
+    VerySimpleGroupSection.onUpdateState(c, 3);
   }
 }
