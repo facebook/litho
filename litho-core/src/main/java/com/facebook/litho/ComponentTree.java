@@ -76,8 +76,8 @@ public class ComponentTree {
   private static final int SCHEDULE_NONE = 0;
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
   private static final int SCHEDULE_LAYOUT_SYNC = 2;
-  private LithoDebugInfo mLithoDebugInfo;
   private boolean mReleased;
+  private String mReleasedComponent;
 
   @IntDef({SCHEDULE_NONE, SCHEDULE_LAYOUT_ASYNC, SCHEDULE_LAYOUT_SYNC})
   @Retention(RetentionPolicy.SOURCE)
@@ -1335,6 +1335,7 @@ public class ComponentTree {
       }
 
       mReleased = true;
+      mReleasedComponent = mRoot.getSimpleName();
       if (mLithoView != null) {
         mLithoView.setComponentTree(null);
       }
@@ -1424,6 +1425,10 @@ public class ComponentTree {
 
   public synchronized boolean isReleased() {
     return mReleased;
+  }
+
+  synchronized String getReleasedComponent() {
+    return mReleasedComponent;
   }
 
   public ComponentContext getContext() {

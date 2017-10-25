@@ -393,6 +393,12 @@ public class LithoView extends ComponentHost {
     mComponentTree = componentTree;
 
     if (mComponentTree != null) {
+      if (mComponentTree.isReleased()) {
+        throw new IllegalStateException(
+            "Setting a released ComponentTree to a LithoView, "
+                + "released component was: "
+                + mComponentTree.getReleasedComponent());
+      }
       mComponentTree.setLithoView(this);
 
       if (mIsAttached) {
