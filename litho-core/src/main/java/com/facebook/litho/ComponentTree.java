@@ -35,6 +35,7 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewParent;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -93,6 +94,9 @@ public class ComponentTree {
 
   // Helpers to track view visibility when we are incrementally
   // mounting and partially invalidating
+  private static final int[] sCurrentLocation = new int[2];
+  private static final int[] sParentLocation = new int[2];
+  private static final Rect sParentBounds = new Rect();
   @Nullable private final IncrementalMountHelper mIncrementalMountHelper;
 
   private final Runnable mCalculateLayoutRunnable = new Runnable() {
@@ -449,11 +453,45 @@ public class ComponentTree {
     // not in "depth order", this variable cannot be static.
     final Rect currentVisibleArea = ComponentsPools.acquireRect();
 
-    if (mLithoView.getLocalVisibleRect(currentVisibleArea)) {
+    if (getVisibleRect(currentVisibleArea)) {
       mountComponent(currentVisibleArea, true);
     }
     // if false: no-op, doesn't have visible area, is not ready or not attached
     ComponentsPools.release(currentVisibleArea);
+  }
+
+  private boolean getVisibleRect(Rect visibleBounds) {
+    assertMainThread();
+
+    if (ComponentsConfiguration.incrementalMountUsesLocalVisibleBounds) {
+      return mLithoView.getLocalVisibleRect(visibleBounds);
+    }
+
+    getLocationAndBoundsOnScreen(mLithoView, sCurrentLocation, visibleBounds);
+
+    final ViewParent viewParent = mLithoView.getParent();
+    if (viewParent instanceof View) {
+      View parent = (View) viewParent;
+      getLocationAndBoundsOnScreen(parent, sParentLocation, sParentBounds);
+      if (!visibleBounds.setIntersect(visibleBounds, sParentBounds)) {
+        return false;
+      }
+    }
+
+    visibleBounds.offset(-sCurrentLocation[0], -sCurrentLocation[1]);
+
+    return true;
+  }
+
+  private static void getLocationAndBoundsOnScreen(View view, int[] location, Rect bounds) {
+    assertMainThread();
+
+    view.getLocationOnScreen(location);
+    bounds.set(
+        location[0],
+        location[1],
+        location[0] + view.getWidth(),
+        location[1] + view.getHeight());
   }
 
   /** @see LayoutState#hasLithoViewBoundsAnimation() */
