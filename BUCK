@@ -5,6 +5,8 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
+import os
+
 include_defs("//COMPONENTS_DEFS")
 
 litho_android_library(
@@ -49,9 +51,15 @@ android_resource(
 android_build_config(
     name = "build_config",
     package = "com.facebook.litho",
-    values = [
-        "boolean IS_INTERNAL_BUILD = true",
-        "boolean USE_INCREMENTAL_MOUNT_HELPER = true",
-    ],
+    values_file = ":build_config_values",
     visibility = COMPONENTS_VISIBILITY,
+)
+
+genrule(
+    name = "build_config_values",
+    srcs = [
+        "config/build_config_values",
+    ],
+    out = "extra_build_config_values",
+    cmd = "SRCARR=($SRCS); cat ${SRCARR[0]} | sed 's/{{IS_DEBUG}}/%s/' > $OUT" % (os.environ.get("LITHO_IS_DEBUG", "true")),
 )
