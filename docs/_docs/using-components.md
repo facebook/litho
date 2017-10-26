@@ -9,7 +9,7 @@ Generated component classes provide a simple builder with the props you defined 
 You can assign a component to be rendered by a `LithoView` as follows:
 
 ```java
-final Component component = MyComponent.create()
+final Component component = MyComponent.create(componentContext)
     .title("My title")
     .imageUri(Uri.parse("http://example.com/myimage")
     .build();
