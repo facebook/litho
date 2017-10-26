@@ -3,7 +3,6 @@ docid: sections-view-support
 title: Sections and Views
 layout: docs
 permalink: /docs/sections-view-support
-metatags: noindex, follow
 ---
 
 Sections work best when combined with the rendering optimizations that Litho Components offer. However, the API also provides support for rendering with Views instead of Components. This makes the transition to Sections easier and you can still take advantage of the performance benefits regardless of your product's UI using traditional Views, Litho Components or a mix of the two.

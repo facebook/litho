@@ -3,7 +3,6 @@ docid: communicating-with-the-ui
 title: Communicating with the UI
 layout: docs
 permalink: /docs/communicating-with-the-ui
-metatags: noindex, follow
 ---
 ## Introduction
 Data flows through the section hierarchy before they are eventually represented on the UI by components.

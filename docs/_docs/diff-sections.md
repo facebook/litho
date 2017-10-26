@@ -3,7 +3,6 @@ docid: diff-sections
 title: DiffSection Specs
 layout: docs
 permalink: /docs/diff-sections
-metatags: noindex, follow
 ---
 
 A *diff section spec* defines a section that explicitly outputs insert, update, and remove changes on the section hierarchy.

@@ -3,7 +3,6 @@ docid: sections-building-blocks
 title: Sections Building Blocks
 layout: docs
 permalink: /docs/sections-building-blocks
-metatags: noindex, follow
 ---
 
 The Sections API provides a few built-in Sections that can be used as building blocks for almost any type of surface.

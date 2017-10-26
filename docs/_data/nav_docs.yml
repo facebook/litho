@@ -25,7 +25,6 @@
   - id: events-touch-handling
   - id: visibility-handling
 - title: Sections
-  internal: true
   items:
   - id: sections-intro
   - id: sections-tutorial

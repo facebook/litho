@@ -3,7 +3,6 @@ docid: sections-architecture
 title: Sections architecture
 layout: docs
 permalink: /docs/sections-architecture
-metatags: noindex, follow
 ---
 
 At it's core, the Sections framework is responsible for producing a [ChangeSet](javadocs/com/facebook/litho/sections/ChangeSet.java) from immutable props and a hierarchy of [Sections](javadoc/com/facebook/litho/sections/Section.java). The framework produces these `ChangeSets` by creating a new section hierarchy whenever a `SectionTree` is set with a Section with new props or whenever a Section in the hierarchy updates it's internal state and comparing the new hierarchy with the old hierarchy.

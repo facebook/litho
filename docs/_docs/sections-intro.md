@@ -3,7 +3,6 @@ docid: sections-intro
 title: What are Sections?
 layout: docs
 permalink: /docs/sections-intro
-metatags: noindex, follow
 ---
 
 Litho is primarily a rendering API, but efficient UI rendering is only part of the challenge you have to deal with to write a performant surface.

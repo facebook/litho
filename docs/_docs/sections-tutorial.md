@@ -3,7 +3,6 @@ docid: sections-intro
 title: Sections Tutorial
 layout: docs
 permalink: /docs/sections-tutorial
-metatags: noindex, follow
 ---
 
 *NOTE* This part builds on the work you did in [the litho tutorial](/docs/tutorial). Make sure you've read through that tutorial before returning to this one.

@@ -3,7 +3,6 @@ docid: group-sections
 title: GroupSection Specs
 layout: docs
 permalink: /docs/group-sections
-metatags: noindex, follow
 ---
 
 A *group section spec* is used to structure your data into a hierarchy of Sections, each responsible for rendering its own chunk of data.
