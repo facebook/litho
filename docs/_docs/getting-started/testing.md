@@ -13,7 +13,7 @@ public class MyApplication extends Application {
   @Override
   public void onCreate() {
     super.onCreate();
-    
+
     SoLoader.init(this, false);
   }
 }
@@ -31,16 +31,16 @@ public class MyActivity extends Activity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    
+
     final ComponentContext c = new ComponentContext(this);
 
     final LithoView lithoView = LithoView.create(
-    	this /* context */, 
+    	this /* context */,
     	Text.create(c)
             .text("Hello, World!")
             .textSizeDip(50)
             .build());
-    	
+
     setContentView(lithoView);
   }
 }

@@ -38,6 +38,21 @@ dependencies {
 }
 ```
 
+## Adding Sections to your Project
+
+Litho comes with an optional library called Sections for declaratively building lists. You can include Sections by adding the following additional dependencies to your `build.gradle` file:
+```groovy
+dependencies {
+
+  // Sections
+  compile 'com.facebook.litho:litho-sections-core:{{site.litho-version}}'
+  compile 'com.facebook.litho:litho-sections-widget:{{site.litho-version}}'
+  provided 'com.facebook.litho:litho-sections-annotations:{{site.litho-version}}'
+
+  annotationProcessor 'com.facebook.litho:litho-sections-processor:{{site.litho-version}}'
+}
+```
+
 ## Using Snapshot releases
 
 > IMPORTANT: This will break and may set your house on fire. Snapshots are unsigned and
