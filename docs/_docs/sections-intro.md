@@ -12,6 +12,8 @@ If you take a closer look at the apps on your device, you'll notice that a lot o
 Sections are built on top of Litho to provide a declarative and composable API for writing highly-optimized list surfaces.
 While Litho Components are used for displaying pieces of UI, Sections are a way of structuring the data and translating it into Litho Components. If you visualize your surface as being a tree of components, the nodes for the root of the tree and the subtrees are Sections, while the leaves are Litho Components that represent individual items that will be displayed on screen.
 
+<img src="/static/images/sections-intro.png" style="width: 800px;">
+
 Sections use the same declarative data model as Litho and under the hood transparently handles things like calculating minimal sets of changes for data updates and doing granular UI refreshes.
 As part of Litho, the Sections API shares the same main concepts such as annotation-based code generation, event handling, props and state updates.
 
