@@ -32,6 +32,7 @@
   - id: diff-sections
   - id: sections-building-blocks
   - id: sections-events
+  - id: sections-testing
   - id: sections-view-support
   - id: services
   - id: sections-architecture
