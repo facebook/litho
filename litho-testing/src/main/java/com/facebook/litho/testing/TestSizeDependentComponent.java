@@ -31,13 +31,11 @@ public class TestSizeDependentComponent extends TestComponent.TestComponentLifec
       Component _stateObject) {
     final State state = ((State) _stateObject);
 
-    final ComponentLayout.Builder builder1 =
+    final Component.Builder builder1 =
         TestDrawableComponent.create(c, false, true, true, false, false)
-            .withLayout()
             .flexShrink(0)
             .backgroundColor(0xFFFF0000);
-    final ComponentLayout.Builder builder2 = TestViewComponent.create(c, false, true, true, false)
-        .withLayout()
+    final Component.Builder builder2 = TestViewComponent.create(c, false, true, true, false)
         .flexShrink(0)
         .marginPx(YogaEdge.ALL, 3);
 
@@ -50,7 +48,7 @@ public class TestSizeDependentComponent extends TestComponent.TestComponentLifec
     }
 
     if (state.isDelegate) {
-      return builder1.build();
+      return builder1.buildWithLayout();
     }
 
     return Column.create(c)
