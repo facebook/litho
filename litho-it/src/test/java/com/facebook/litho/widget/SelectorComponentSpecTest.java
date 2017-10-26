@@ -11,10 +11,13 @@ package com.facebook.litho.widget;
 
 import static com.facebook.litho.testing.assertj.ComponentConditions.typeIs;
 import static com.facebook.litho.testing.assertj.SubComponentDeepExtractor.deepSubComponentWith;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assume.assumeThat;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.assertj.ComponentAssert;
 import com.facebook.litho.testing.assertj.ComponentLayoutAssert;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -41,6 +44,10 @@ public class SelectorComponentSpecTest {
 
   @Before
   public void setUp() throws Exception {
+    assumeThat(
+        "These tests can only be run in debug mode.",
+        ComponentsConfiguration.IS_INTERNAL_BUILD,
+        is(true));
     mContext = new ComponentContext(RuntimeEnvironment.application);
   }
 
