@@ -5,6 +5,7 @@ machine:
     PATH: "/home/ubuntu/buck/bin:$PATH"
     ANDROID_HOME: "/home/ubuntu/android-sdk"
     ANDROID_NDK_REPOSITORY: "/home/ubuntu/android-ndk"
+    GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
   java:
     version: 'oraclejdk8'
 
