@@ -250,7 +250,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     // therefore we shouldn't add them again here.
     if (layoutAttributes != null
         && (deferNestedTreeResolution || !Component.isLayoutSpecWithSizeSpec(component))) {
-      layoutAttributes.copyInto(node);
+      layoutAttributes.copyInto(context, node);
     }
 
     // Set component on the root node of the generated tree so that the mount calls use

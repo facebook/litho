@@ -463,6 +463,7 @@ public abstract class Component<L extends ComponentLifecycle>
       mDefStyleRes = defStyleRes;
 
       if (defStyleAttr != 0 || defStyleRes != 0) {
+        mComponent.getOrCreateLayoutAttributes().setStyle(defStyleAttr, defStyleRes);
         component.mLifecycle.loadStyle(c, defStyleAttr, defStyleRes, component);
       }
     }

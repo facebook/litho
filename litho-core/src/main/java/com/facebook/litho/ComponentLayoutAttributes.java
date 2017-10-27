@@ -12,8 +12,10 @@ package com.facebook.litho;
 
 
 import android.graphics.drawable.Drawable;
+import android.support.annotation.AttrRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
+import android.support.annotation.StyleRes;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -51,6 +53,8 @@ class ComponentLayoutAttributes {
   private Reference<? extends Drawable> mBackground;
   private String mTestKey;
   private boolean mWrapInView;
+  @AttrRes private int mDefStyleAttr;
+  @StyleRes private int mDefStyleRes;
 
   private OtherLayoutAttributes getOrCreateOtherLayoutAttributes() {
     if (mOtherLayoutAttributes == null) {
@@ -58,6 +62,21 @@ class ComponentLayoutAttributes {
     }
 
     return mOtherLayoutAttributes;
+  }
+
+  void setStyle(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+    mDefStyleAttr = defStyleAttr;
+    mDefStyleRes = defStyleRes;
+  }
+
+  @AttrRes
+  int getDefStyleAttr() {
+    return mDefStyleAttr;
+  }
+
+  @StyleRes
+  int getDefStyleRes() {
+    return mDefStyleRes;
   }
 
   void positionType(YogaPositionType positionType) {
@@ -362,7 +381,9 @@ class ComponentLayoutAttributes {
     return mNodeInfo;
   }
 
-  void copyInto(ComponentLayout.Builder node) {
+  void copyInto(ComponentContext c, InternalNode node) {
+    c.applyStyle(node, mDefStyleAttr, mDefStyleRes);
+
     if (mNodeInfo != null) {
       mNodeInfo.copyInto(node);
     }

@@ -186,7 +186,7 @@ public class ComponentLayoutAttributesTest {
     mComponentLayoutAttributes.sendAccessibilityEventUncheckedHandler(
         sendAccessibilityEventUncheckedHandler);
 
-    mComponentLayoutAttributes.copyInto(mNode);
+    mComponentLayoutAttributes.copyInto(mComponentContext, mNode);
 
     verify(mNode).layoutDirection(YogaDirection.INHERIT);
     verify(mNode).alignSelf(YogaAlign.AUTO);
