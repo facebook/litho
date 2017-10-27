@@ -3,7 +3,6 @@ docid: recycler-collection-component
 title: RecyclerCollectionComponent
 layout: docs
 permalink: /docs/recycler-collection-component
-metatags: noindex, follow
 ---
 
 [RecyclerView](https://developer.android.com/reference/android/support/v7/widget/RecyclerView.html) is one of the fundamental building blocks for any Android application that contain a scrolling list of items.
