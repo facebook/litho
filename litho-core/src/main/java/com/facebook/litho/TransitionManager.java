@@ -278,8 +278,6 @@ public class TransitionManager {
       mRootAnimationToRun.start(mResolver);
       mRootAnimationToRun = null;
     }
-
-    cleanupLayoutOutputs();
   }
 
   /**
@@ -741,13 +739,6 @@ public class TransitionManager {
     }
   }
 
-  private void cleanupLayoutOutputs() {
-    for (int i = 0; i < mAnimationStates.size(); i++) {
-      final AnimationState animationState = mAnimationStates.valueAt(i);
-      clearLayoutOutputs(animationState);
-    }
-  }
-
   private void debugLogStartingAnimations() {
     if (!AnimationsDebug.ENABLED) {
       throw new RuntimeException("Trying to debug log animations without debug flag set!");
@@ -912,7 +903,8 @@ public class TransitionManager {
             didFinish = animationState.propertyStates.isEmpty();
 
             if (animationState.mountContent != null) {
-              property.reset(animationState.mountContent);
+              property.set(
+                  animationState.mountContent, property.get(animationState.nextLayoutOutput));
             }
           }
         }

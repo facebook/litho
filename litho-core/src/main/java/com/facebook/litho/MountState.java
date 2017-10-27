@@ -1221,6 +1221,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         unsetContentDescription(view);
       }
 
+      unsetScale(view, nodeInfo);
       unsetAlpha(view, nodeInfo);
     }
 
@@ -1229,7 +1230,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     unsetFocusable(view, item);
     unsetEnabled(view, item);
-    unsetScale(view);
 
     if (item.getImportantForAccessibility() != IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
       unsetImportantForAccessibility(view);
@@ -1620,13 +1620,15 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
-  private static void unsetScale(View view) {
+  private static void unsetScale(View view, NodeInfo nodeInfo) {
     if (Build.VERSION.SDK_INT >= 11) {
-      if (view.getScaleX() != 1) {
-        view.setScaleX(1);
-      }
-      if (view.getScaleY() != 1) {
-        view.setScaleY(1);
+      if (nodeInfo.isScaleSet()) {
+        if (view.getScaleX() != 1) {
+          view.setScaleX(1);
+        }
+        if (view.getScaleY() != 1) {
+          view.setScaleY(1);
+        }
       }
     }
   }
