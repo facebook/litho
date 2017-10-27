@@ -381,7 +381,7 @@ public class RecyclerBinder
   public final void insertItemAt(int position, RenderInfo renderInfo) {
     ThreadUtils.assertMainThread();
 
-    assertNoInsertRemoveOperationIfCircular();
+    assertNoInsertOperationIfCircular();
 
     final ComponentTreeHolder holder = mComponentTreeHolderFactory.create(
         renderInfo,
@@ -458,7 +458,7 @@ public class RecyclerBinder
   public final void insertRangeAt(int position, List<RenderInfo> renderInfos) {
     ThreadUtils.assertMainThread();
 
-    assertNoInsertRemoveOperationIfCircular();
+    assertNoInsertOperationIfCircular();
 
     for (int i = 0, size = renderInfos.size(); i < size; i++) {
 
@@ -648,7 +648,7 @@ public class RecyclerBinder
   public final void removeItemAt(int position) {
     ThreadUtils.assertMainThread();
 
-    assertNoInsertRemoveOperationIfCircular();
+    assertNoRemoveOperationIfCircular(1);
 
     final ComponentTreeHolder holder;
     synchronized (this) {
@@ -671,7 +671,7 @@ public class RecyclerBinder
   public final void removeRangeAt(int position, int count) {
     ThreadUtils.assertMainThread();
 
-    assertNoInsertRemoveOperationIfCircular();
+    assertNoRemoveOperationIfCircular(count);
 
     synchronized (this) {
       for (int i = 0; i < count; i++) {
@@ -896,13 +896,26 @@ public class RecyclerBinder
   }
 
   /**
-   * Any operations that leads to resizing of items size is not supported in case of circular
-   * recycler because indexes universe gets messed.
+   * Insert operation is not supported in case of circular recycler unless it is initial insert
+   * because the indexes universe gets messed.
    */
-  private void assertNoInsertRemoveOperationIfCircular() {
+  private void assertNoInsertOperationIfCircular() {
     if (mIsCircular && !mComponentTreeHolders.isEmpty()) {
       // Initialization of a list happens using insertRangeAt() or insertAt() operations,
       // so skip this check when mComponentTreeHolders was not populated yet
+      throw new UnsupportedOperationException("Circular lists do not support insert operation");
+    }
+  }
+
+  /**
+   * Remove operation is not supported in case of circular recycler unless it's a removal if all
+   * items because indexes universe gets messed.
+   */
+  private void assertNoRemoveOperationIfCircular(int removeCount) {
+    if (mIsCircular
+        && !mComponentTreeHolders.isEmpty()
+        && mComponentTreeHolders.size() != removeCount) {
+      // Allow only removal of all elements in case on notifyDataSetChanged() call
       throw new UnsupportedOperationException("Circular lists do not support insert operation");
     }
   }
