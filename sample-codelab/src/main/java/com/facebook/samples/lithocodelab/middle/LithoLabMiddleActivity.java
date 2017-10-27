@@ -29,8 +29,7 @@ public class LithoLabMiddleActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
 
     final ComponentContext c = new ComponentContext(this);
-    final Component<StoryCardComponent> component =
-        StoryCardComponent.create(c).content("Hello, Litho!").build();
+    final Component<LithoLabMiddleComponent> component = LithoLabMiddleComponent.create(c).build();
 
     setContentView(LithoView.create(c, component));
   }
