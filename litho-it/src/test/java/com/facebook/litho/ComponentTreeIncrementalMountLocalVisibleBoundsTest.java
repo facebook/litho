@@ -14,6 +14,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -109,6 +110,11 @@ public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
 
     mComponentTree.attach();
 
+    ArgumentCaptor<Runnable> runnableArgumentCaptor = ArgumentCaptor.forClass(Runnable.class);
+    verify(viewPager).postOnAnimation(runnableArgumentCaptor.capture());
+    reset(viewPager);
+
+    runnableArgumentCaptor.getValue().run();
     ArgumentCaptor<ViewPager.OnPageChangeListener> listenerArgumentCaptor =
         ArgumentCaptor.forClass(ViewPager.OnPageChangeListener.class);
     verify(viewPager).addOnPageChangeListener(listenerArgumentCaptor.capture());
@@ -130,7 +136,6 @@ public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
 
     mComponentTree.detach();
 
-    ArgumentCaptor<Runnable> runnableArgumentCaptor = ArgumentCaptor.forClass(Runnable.class);
     verify(viewPager).postOnAnimation(runnableArgumentCaptor.capture());
 
     runnableArgumentCaptor.getValue().run();

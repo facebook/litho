@@ -41,10 +41,17 @@ class IncrementalMountHelper {
     while (viewParent != null) {
       if (ComponentsConfiguration.incrementalMountUsesLocalVisibleBounds
           && viewParent instanceof ViewPager) {
-        ViewPager viewPager = (ViewPager) viewParent;
-        IncrementalMountHelper.ViewPagerListener viewPagerListener =
+        final ViewPager viewPager = (ViewPager) viewParent;
+        final IncrementalMountHelper.ViewPagerListener viewPagerListener =
             new ViewPagerListener(mComponentTree, viewPager);
-        viewPager.addOnPageChangeListener(viewPagerListener);
+        ViewCompat.postOnAnimation(
+            viewPager,
+            new Runnable() {
+              @Override
+              public void run() {
+                viewPager.addOnPageChangeListener(viewPagerListener);
+              }
+            });
         mViewPagerListeners.add(viewPagerListener);
       }
 
