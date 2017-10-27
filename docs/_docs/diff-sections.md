@@ -9,7 +9,7 @@ A *diff section spec* defines a section that explicitly outputs insert, update, 
 
 Diff section specs explicitly manage insertions, removals, and updates that a section performs whenever its states and props change.  You will find Diff Sections at the leaves of every section tree as they are the sections that actually specify the changes to be made to a list.
 
-One example where you might want a custom diff section is if you receive the data you want to display in the form of incremental updates or diffs. This might happen if you're using something similar to [DiffUtil](https://developer.android.com/reference/android/support/v7/util/DiffUtil.html) to process your data. (If you are using `DiffUtil` though, consider using the prebuilt [DataDiffSection](/javadoc/com/facebook/litho/sections/common/DDataDiffSection) instead of rolling your own diff section.)
+One example where you might want a custom diff section is if you receive the data you want to display in the form of incremental updates or diffs. This might happen if you're using something similar to [DiffUtil](https://developer.android.com/reference/android/support/v7/util/DiffUtil.html) to process your data. (If you are using `DiffUtil` though, consider using the prebuilt [DataDiffSection](/javadoc/com/facebook/litho/sections/common/DataDiffSection) instead of rolling your own diff section.)
 
 In general, you should not need to write your own diff sections specs.  The `com.facebook.litho.sections.widget` package provides two diff sections that cover almost all use cases.
 
