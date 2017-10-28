@@ -815,10 +815,13 @@ public class SectionTree {
     for (String key : keys) {
       List<StateUpdate> completed = localMap.get(key);
       List<StateUpdate> pending = instanceMap.remove(key);
-      pending.removeAll(completed);
+      // TODO (T21644916): Investigate why pending is null here, to avoid UX issues
+      if (pending != null) {
+        pending.removeAll(completed);
 
-      if (!pending.isEmpty()) {
-        instanceMap.put(key, pending);
+        if (!pending.isEmpty()) {
+          instanceMap.put(key, pending);
+        }
       }
     }
   }
