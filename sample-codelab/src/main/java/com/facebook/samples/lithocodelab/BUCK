@@ -11,9 +11,11 @@ android_library(
     srcs = glob(["**/*.java"]),
     annotation_processor_deps = [
         COMPONENTS_PROCESSOR_LIB_TARGET,
+        COMPONENTS_SECTIONS_PROCESSOR_LIB_TARGET,
     ],
     annotation_processors = [
         "com.facebook.litho.specmodels.processor.ComponentsProcessor",
+        "com.facebook.litho.sections.specmodels.processor.SectionsComponentProcessor",
     ],
     visibility = [
         "PUBLIC",
@@ -22,11 +24,14 @@ android_library(
         COMPONENTS_FRESCO_PIPELINE_TARGET +
         COMPONENTS_FRESCO_CONTROLLER_TARGET +
         COMPONENTS_FRESCO_INTERFACES_TARGET +
-        COMPONENTS_FRESCO_TARGETS +
-        [
+        COMPONENTS_FRESCO_TARGETS + [
             COMPONENTS_ROOT_TARGET,
             COMPONENTS_RES_TARGET,
             COMPONENTS_UTILS_TARGET,
+            COMPONENTS_SECTIONS_TARGET,
+            COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
+            COMPONENTS_SECTIONS_COMMON_TARGET,
+            COMPONENTS_SECTIONS_WIDGET_TARGET,
             COMPONENTS_WIDGET_TARGET,
             COMPONENTS_SAMPLE_CODELAB_RES,
             COMPONENTS_SOLOADER_TARGET,

@@ -11,11 +11,12 @@
  */
 package com.facebook.samples.lithocodelab.end;
 
-import com.facebook.litho.Column;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.sections.SectionContext;
+import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 
 /**
  * Renders the approximate end state for the lab activity. This wraps the {@link
@@ -25,15 +26,8 @@ import com.facebook.litho.annotations.OnCreateLayout;
 class LithoLabEndComponentSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(ComponentContext c) {
-    return Column.create(c)
-        .backgroundRes(android.R.color.darker_gray)
-        .child(
-            StoryCardComponent.create(c)
-                .header(StoryHeaderComponent.create(c).title("Title").subtitle("Subtitle"))
-                .content(
-                    "This is some test content. It should fill at least one line. "
-                        + "This is a story card. You can interact with the menu button "
-                        + "and save button."))
-        .build();
+    return RecyclerCollectionComponent.create(c)
+        .section(StoryCardsWithHeaderSection.create(new SectionContext(c)).build())
+        .buildWithLayout();
   }
 }
