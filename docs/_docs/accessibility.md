@@ -55,14 +55,14 @@ Here is an overview of the supported events:
 
 | Event | AccessibilityDelegate method
 | ----- | ----------------------------
-| DispatchPopulateAccessibilityEventEvent | [dispatchPopulateAccessibilityEvent](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#dispatchPopulateAccessibilityEvent(android.view.View, android.view.accessibility.AccessibilityEvent))
-| OnInitializeAccessibilityEventEvent | [onInitializeAccessibilityEvent](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#onInitializeAccessibilityEvent(android.view.View, android.view.accessibility.AccessibilityEvent))
-| OnInitializeAccessibilityNodeInfoEvent | [onInitializeAccessibilityNodeInfo](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#onInitializeAccessibilityNodeInfo(android.view.View, android.support.v4.view.accessibility.AccessibilityNodeInfoCompat))
-| OnPopulateAccessibilityEventEvent | [onPopulateAccessibilityEvent](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#onPopulateAccessibilityEvent(android.view.View, android.view.accessibility.AccessibilityEvent))
-| OnRequestSendAccessibilityEventEvent | [onRequestSendAccessibilityEvent](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#onRequestSendAccessibilityEvent(android.view.ViewGroup, android.view.View, android.view.accessibility.AccessibilityEvent))
-| PerformAccessibilityActionEvent | [performAccessibilityAction](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#performAccessibilityAction(android.view.View, int, android.os.Bundle))
-| SendAccessibilityEventEvent | [sendAccessibilityEvent](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#sendAccessibilityEvent(android.view.View, int))
-| SendAccessibilityUncheckedEvent |  [sendAccessibilityEventUnchecked](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#sendAccessibilityEventUnchecked(android.view.View, android.view.accessibility.AccessibilityEvent))
+| DispatchPopulateAccessibilityEventEvent | [dispatchPopulateAccessibilityEvent](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#dispatchPopulateAccessibilityEvent(android.view.View, android.view.accessibility.AccessibilityEvent)
+| OnInitializeAccessibilityEventEvent | [onInitializeAccessibilityEvent](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#onInitializeAccessibilityEvent(android.view.View, android.view.accessibility.AccessibilityEvent)
+| OnInitializeAccessibilityNodeInfoEvent | [onInitializeAccessibilityNodeInfo](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#onInitializeAccessibilityNodeInfo(android.view.View, android.support.v4.view.accessibility.AccessibilityNodeInfoCompat)
+| OnPopulateAccessibilityEventEvent | [onPopulateAccessibilityEvent](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#onPopulateAccessibilityEvent(android.view.View, android.view.accessibility.AccessibilityEvent)
+| OnRequestSendAccessibilityEventEvent | [onRequestSendAccessibilityEvent](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#onRequestSendAccessibilityEvent(android.view.ViewGroup, android.view.View, android.view.accessibility.AccessibilityEvent)
+| PerformAccessibilityActionEvent | [performAccessibilityAction](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#performAccessibilityAction(android.view.View, int, android.os.Bundle)
+| SendAccessibilityEventEvent | [sendAccessibilityEvent](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#sendAccessibilityEvent(android.view.View, int)
+| SendAccessibilityUncheckedEvent |  [sendAccessibilityEventUnchecked](https://developer.android.com/reference/android/support/v4/view/AccessibilityDelegateCompat.html#sendAccessibilityEventUnchecked(android.view.View, android.view.accessibility.AccessibilityEvent)
 
 
 Setting a handler for any of these events will result in an `AccessibilityDelegate` being set on the mounted `View`, which will call your event handler when the corresponding method is called.  
