@@ -395,7 +395,7 @@ public class RecyclerBinder
     synchronized (this) {
       mComponentTreeHolders.add(position, holder);
 
-      mRenderInfoViewCreatorController.maybeUpdateViewCreatorMappingsOnItemInsert(renderInfo);
+      mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
 
       childrenWidthSpec = getActualChildrenWidthSpec(holder);
       childrenHeightSpec = getActualChildrenHeightSpec(holder);
@@ -473,7 +473,7 @@ public class RecyclerBinder
             mCanCacheDrawingDisplayLists);
 
         mComponentTreeHolders.add(position + i, holder);
-        mRenderInfoViewCreatorController.maybeUpdateViewCreatorMappingsOnItemInsert(renderInfo);
+        mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
 
         if (mIsMeasured.get() && holder.getRenderInfo().rendersComponent()) {
           if (mRange == null && !mRequiresRemeasure.get()) {
@@ -524,9 +524,7 @@ public class RecyclerBinder
       shouldComputeLayout = mRange != null && position >= mCurrentFirstVisiblePosition &&
           position < mCurrentFirstVisiblePosition + mRange.estimatedViewportCount;
 
-      final RenderInfo previousRenderInfo = holder.getRenderInfo();
-      mRenderInfoViewCreatorController.maybeUpdateViewCreatorMappingsOnItemUpdate(
-          previousRenderInfo, renderInfo);
+      mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
       holder.setRenderInfo(renderInfo);
 
       if (mRange == null && mIsMeasured.get() && renderInfo.rendersComponent()) {
@@ -570,11 +568,9 @@ public class RecyclerBinder
       synchronized (this) {
         final ComponentTreeHolder holder = mComponentTreeHolders.get(position + i);
 
-        final RenderInfo previousRenderInfo = holder.getRenderInfo();
         final RenderInfo newRenderInfo = renderInfos.get(i);
 
-        mRenderInfoViewCreatorController.maybeUpdateViewCreatorMappingsOnItemUpdate(
-            previousRenderInfo, newRenderInfo);
+        mRenderInfoViewCreatorController.maybeTrackViewCreator(newRenderInfo);
 
         holder.setRenderInfo(newRenderInfo);
 
@@ -653,8 +649,6 @@ public class RecyclerBinder
     final ComponentTreeHolder holder;
     synchronized (this) {
       holder = mComponentTreeHolders.remove(position);
-      mRenderInfoViewCreatorController.maybeUpdateViewCreatorMappingsOnItemRemove(
-          holder.getRenderInfo());
     }
     mInternalAdapter.notifyItemRemoved(position);
 
@@ -676,8 +670,6 @@ public class RecyclerBinder
     synchronized (this) {
       for (int i = 0; i < count; i++) {
         final ComponentTreeHolder holder = mComponentTreeHolders.remove(position);
-        mRenderInfoViewCreatorController.maybeUpdateViewCreatorMappingsOnItemRemove(
-            holder.getRenderInfo());
         holder.release();
       }
     }

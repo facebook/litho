@@ -1046,19 +1046,15 @@ public class RecyclerBinderTest {
         });
 
     assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(1);
-    assertThat(mRenderInfoViewCreatorController.mViewCreatorToUsageCount.size()).isEqualTo(1);
+    assertThat(mRenderInfoViewCreatorController.mViewCreatorToViewType.size()).isEqualTo(1);
 
     ViewCreator obtainedViewCreator =
-        mRenderInfoViewCreatorController.mViewCreatorToUsageCount.keyAt(0);
+        mRenderInfoViewCreatorController.mViewCreatorToViewType.keyAt(0);
     assertThat(obtainedViewCreator).isEqualTo(VIEW_CREATOR_1);
     assertThat(
             mRenderInfoViewCreatorController.mViewTypeToViewCreator.indexOfValue(
                 obtainedViewCreator))
         .isGreaterThanOrEqualTo(0);
-
-    final int usageCount =
-        mRenderInfoViewCreatorController.mViewCreatorToUsageCount.get(obtainedViewCreator);
-    assertThat(usageCount).isEqualTo(viewItems.size());
   }
 
   @Test
@@ -1081,16 +1077,13 @@ public class RecyclerBinderTest {
         });
 
     assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(4);
-    assertThat(mRenderInfoViewCreatorController.mViewCreatorToUsageCount.size()).isEqualTo(4);
+    assertThat(mRenderInfoViewCreatorController.mViewCreatorToViewType.size()).isEqualTo(4);
 
-    for (int i = 0, size = mRenderInfoViewCreatorController.mViewCreatorToUsageCount.size();
+    for (int i = 0, size = mRenderInfoViewCreatorController.mViewCreatorToViewType.size();
         i < size;
         i++) {
       final ViewCreator obtainedViewCreator =
-          mRenderInfoViewCreatorController.mViewCreatorToUsageCount.keyAt(i);
-      final int usageCount =
-          mRenderInfoViewCreatorController.mViewCreatorToUsageCount.get(obtainedViewCreator);
-      assertThat(usageCount).isEqualTo(1);
+          mRenderInfoViewCreatorController.mViewCreatorToViewType.keyAt(i);
       assertThat(
               mRenderInfoViewCreatorController.mViewTypeToViewCreator.indexOfValue(
                   obtainedViewCreator))
@@ -1110,7 +1103,7 @@ public class RecyclerBinderTest {
             .viewCreator(VIEW_CREATOR_1)
             .build());
 
-    assertThat(mRenderInfoViewCreatorController.mViewCreatorToUsageCount.size()).isEqualTo(1);
+    assertThat(mRenderInfoViewCreatorController.mViewCreatorToViewType.size()).isEqualTo(1);
     assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(1);
 
     mRecyclerBinder.insertItemAt(
@@ -1120,14 +1113,14 @@ public class RecyclerBinderTest {
             .viewCreator(VIEW_CREATOR_2)
             .build());
 
-    assertThat(mRenderInfoViewCreatorController.mViewCreatorToUsageCount.size()).isEqualTo(2);
+    assertThat(mRenderInfoViewCreatorController.mViewCreatorToViewType.size()).isEqualTo(2);
     assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(2);
 
     mRecyclerBinder.removeItemAt(1);
     mRecyclerBinder.removeItemAt(1);
 
-    assertThat(mRenderInfoViewCreatorController.mViewCreatorToUsageCount.size()).isEqualTo(0);
-    assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(0);
+    assertThat(mRenderInfoViewCreatorController.mViewCreatorToViewType.size()).isEqualTo(2);
+    assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(2);
   }
 
   @Test
@@ -1147,7 +1140,7 @@ public class RecyclerBinderTest {
             .viewCreator(VIEW_CREATOR_2)
             .build());
 
-    assertThat(mRenderInfoViewCreatorController.mViewCreatorToUsageCount.size()).isEqualTo(2);
+    assertThat(mRenderInfoViewCreatorController.mViewCreatorToViewType.size()).isEqualTo(2);
     assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(2);
 
     mRecyclerBinder.updateItemAt(
@@ -1157,8 +1150,8 @@ public class RecyclerBinderTest {
             .viewCreator(VIEW_CREATOR_2)
             .build());
 
-    assertThat(mRenderInfoViewCreatorController.mViewCreatorToUsageCount.size()).isEqualTo(1);
-    assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(1);
+    assertThat(mRenderInfoViewCreatorController.mViewCreatorToViewType.size()).isEqualTo(2);
+    assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(2);
 
     mRecyclerBinder.updateItemAt(
         2,
@@ -1166,8 +1159,8 @@ public class RecyclerBinderTest {
             .viewCreator(VIEW_CREATOR_3)
             .viewBinder(new SimpleViewBinder())
             .build());
-    assertThat(mRenderInfoViewCreatorController.mViewCreatorToUsageCount.size()).isEqualTo(2);
-    assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(2);
+    assertThat(mRenderInfoViewCreatorController.mViewCreatorToViewType.size()).isEqualTo(3);
+    assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(3);
   }
 
   @Test

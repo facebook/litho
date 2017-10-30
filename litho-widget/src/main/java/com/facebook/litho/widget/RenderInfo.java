@@ -120,7 +120,7 @@ public abstract class RenderInfo {
    * Set viewType of current {@link RenderInfo} if it was created through {@link
    * ViewRenderInfo#create()}, or otherwise it will throw {@link UnsupportedOperationException}.
    */
-  public void setViewType(int viewType) {
+  void setViewType(int viewType) {
     throw new UnsupportedOperationException();
   }
 

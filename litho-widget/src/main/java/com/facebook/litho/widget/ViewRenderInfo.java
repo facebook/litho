@@ -54,7 +54,7 @@ public class ViewRenderInfo extends RenderInfo {
   }
 
   @Override
-  public void setViewType(int viewType) {
+  void setViewType(int viewType) {
     mViewType = viewType;
   }
 
