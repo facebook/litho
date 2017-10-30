@@ -27,15 +27,15 @@ public class SampleApplication extends Application {
 
 This will enable full integration of Litho in stetho. After you have enabled Litho support, just start your app and navigate to `chrome://inspect` in your browser.
 
-![Stetho start](/static/images/stetho-start.png)
+![Stetho start](/docs/static/images/stetho-start.png)
 
 Click on the inspect link for the application you would like to inspect (we are using the Litho sample app). This opens a UI inspector where you are able to inspect the `View` and `Component` hierarchy of your application.
 
-![Stetho inspect](/static/images/stetho-inspect.png)
+![Stetho inspect](/docs/static/images/stetho-inspect.png)
 
 When inspecting a Litho component you are also given the ability to edit the contents of your UI directly from the inspector! This enables quick design iterations by tweaking margins, padding, and many other properties, without needed to re-compile or re-start the application. You can also use this to quickly test that your UI handles different lengths of text properly.
 
-![Stetho edit](/static/images/stetho-edit.png)
+![Stetho edit](/docs/static/images/stetho-edit.png)
 
 
 ## Annotation Processor
@@ -55,7 +55,7 @@ In this case we are compiling the `litho-widget` package.
 This will pause the execution during the "Starting Daemon" phase until you connect your debugger. This can be done by
 running a standard "Remote" target in IntelliJ which will look like this:
 
-![IntelliJ Remote Target](/static/images/remote-debugger.png)
+![IntelliJ Remote Target](/docs/static/images/remote-debugger.png)
 
 Now set a breakpoint at the right point, run your remote target and debug away!
 
