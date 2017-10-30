@@ -22,6 +22,7 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.DataDiffSection;
+import com.facebook.litho.sections.common.OnCheckIsSameItemEvent;
 import com.facebook.litho.sections.common.RenderEvent;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.widget.ComponentRenderInfo;
@@ -40,6 +41,7 @@ class TransitionsDemoComponentSpec {
             DataDiffSection.create(new SectionContext(c))
                 .data(generateData(20))
                 .renderEventHandler(TransitionsDemoComponent.onRender(c))
+                .onCheckIsSameItemEventHandler(TransitionsDemoComponent.isSameItem(c))
                 .build())
         .buildWithLayout();
   }
@@ -51,7 +53,7 @@ class TransitionsDemoComponentSpec {
     // Keep alternating between demos
     switch (index % numDemos) {
       case 0:
-        component = StoryFooterComponent.create(c).build();
+        component = StoryFooterComponent.create(c).key("footer").build();
         break;
       case 1:
         component = UpDownBlocksComponent.create(c).build();
@@ -71,12 +73,26 @@ class TransitionsDemoComponentSpec {
     return ComponentRenderInfo.create().component(component).build();
   }
 
+  @OnEvent(OnCheckIsSameItemEvent.class)
+  static boolean isSameItem(
+      ComponentContext c, @FromEvent Data previousItem, @FromEvent Data nextItem) {
+    return previousItem.number == nextItem.number;
+  }
+
   private static List<Object> generateData(int number) {
     List<Object> dummyData = new ArrayList<>(number);
     for (int i = 0; i < number; i++) {
-      dummyData.add(new Object());
+      dummyData.add(new Data(i));
     }
 
     return dummyData;
+  }
+
+  static class Data {
+    final int number;
+
+    public Data(int number) {
+      this.number = number;
+    }
   }
 }
