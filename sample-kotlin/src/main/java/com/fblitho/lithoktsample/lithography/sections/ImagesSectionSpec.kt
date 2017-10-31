@@ -38,12 +38,10 @@ object ImagesSectionSpec {
                   .renderEventHandler(ImagesSection.onRender(c)))
           .build()
 
-
   @OnEvent(RenderEvent::class)
   fun onRender(
       c: SectionContext, @FromEvent model: String): RenderInfo =
       ComponentRenderInfo.create()
           .component(SingleImageComponent.create(c).image(model).imageAspectRatio(2f).build())
           .build()
-
 }

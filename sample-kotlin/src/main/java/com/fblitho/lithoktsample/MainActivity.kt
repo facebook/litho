@@ -25,7 +25,6 @@ import com.fblitho.lithoktsample.lithography.data.DecadeViewModel
 import com.fblitho.lithoktsample.lithography.data.Model
 import com.fblitho.lithoktsample.lithography.sections.LithoFeedSection
 
-
 class MainActivity : AppCompatActivity() {
 
   private val sectionContext: SectionContext by lazy { SectionContext(this) }

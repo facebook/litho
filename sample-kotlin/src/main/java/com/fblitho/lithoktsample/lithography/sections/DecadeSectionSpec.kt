@@ -49,7 +49,6 @@ object DecadeSectionSpec {
                       DecadeSection.isSameItem(c)))
           .build()
 
-
   @OnEvent(RenderEvent::class)
   fun render(
       c: SectionContext,

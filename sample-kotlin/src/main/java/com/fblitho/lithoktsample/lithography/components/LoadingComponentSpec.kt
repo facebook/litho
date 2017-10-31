@@ -14,7 +14,6 @@ package com.fblitho.lithoktsample.lithography.components
 
 import android.graphics.Color
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.ComponentLayout
 import com.facebook.litho.Row
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
