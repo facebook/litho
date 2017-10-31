@@ -28,24 +28,24 @@ Then add the dependencies like this:
 dependencies {
   // ...
   // Litho
-  compile 'com.facebook.litho:litho-core:{{site.litho-version}}'
-  compile 'com.facebook.litho:litho-widget:{{site.litho-version}}'
-  provided 'com.facebook.litho:litho-annotations:{{site.litho-version}}'
+  implementation 'com.facebook.litho:litho-core:{{site.litho-version}}'
+  implementation 'com.facebook.litho:litho-widget:{{site.litho-version}}'
+  compileOnly 'com.facebook.litho:litho-annotations:{{site.litho-version}}'
 
   kapt 'com.facebook.litho:litho-processor:{{site.litho-version}}'
 
   // SoLoader
-  compile 'com.facebook.soloader:soloader:0.2.0'
+  implementation 'com.facebook.soloader:soloader:0.2.0'
 
   // Optional
   // For debugging
-  debugCompile 'com.facebook.litho:litho-stetho:{{site.litho-version}}'
+  debugImplementation 'com.facebook.litho:litho-stetho:{{site.litho-version}}'
 
   // For integration with Fresco
-  compile 'com.facebook.litho:litho-fresco:{{site.litho-version}}'
+  implementation 'com.facebook.litho:litho-fresco:{{site.litho-version}}'
 
   // For testing
-  testCompile 'com.facebook.litho:litho-testing:{{site.litho-version}}'
+  testImplementation 'com.facebook.litho:litho-testing:{{site.litho-version}}'
 }
 ```
 
@@ -56,9 +56,9 @@ Litho comes with an optional library called Sections for declaratively building 
 dependencies {
 
   // Sections
-  compile 'com.facebook.litho:litho-sections-core:{{site.litho-version}}'
-  compile 'com.facebook.litho:litho-sections-widget:{{site.litho-version}}'
-  provided 'com.facebook.litho:litho-sections-annotations:{{site.litho-version}}'
+  implementation 'com.facebook.litho:litho-sections-core:{{site.litho-version}}'
+  implementation 'com.facebook.litho:litho-sections-widget:{{site.litho-version}}'
+  compileOnly 'com.facebook.litho:litho-sections-annotations:{{site.litho-version}}'
 
   kapt 'com.facebook.litho:litho-sections-processor:{{site.litho-version}}'
 }
@@ -84,23 +84,23 @@ publish:
 dependencies {
   // ...
   // Litho
-  compile 'com.facebook.litho:litho-core:{{site.litho-snapshot-version}}'
-  compile 'com.facebook.litho:litho-widget:{{site.litho-snapshot-version}}'
-  provided 'com.facebook.litho:litho-annotations:{{site.litho-snapshot-version}}'
+  implementation 'com.facebook.litho:litho-core:{{site.litho-snapshot-version}}'
+  implementation 'com.facebook.litho:litho-widget:{{site.litho-snapshot-version}}'
+  compileOnly 'com.facebook.litho:litho-annotations:{{site.litho-snapshot-version}}'
 
   kapt 'com.facebook.litho:litho-processor:{{site.litho-snapshot-version}}'
 
   // SoLoader
-  compile 'com.facebook.soloader:soloader:0.2.0'
+  implementation 'com.facebook.soloader:soloader:0.2.0'
 
   // Optional
   // For debugging
-  debugCompile 'com.facebook.litho:litho-stetho:{{site.litho-snapshot-version}}'
+  debugImplementation 'com.facebook.litho:litho-stetho:{{site.litho-snapshot-version}}'
 
   // For integration with Fresco
-  compile 'com.facebook.litho:litho-fresco:{{site.litho-snapshot-version}}'
+  implementation 'com.facebook.litho:litho-fresco:{{site.litho-snapshot-version}}'
 
   // For testing
-  testCompile 'com.facebook.litho:litho-testing:{{site.litho-snapshot-version}}'
+  testImplementation 'com.facebook.litho:litho-testing:{{site.litho-snapshot-version}}'
 }
 ```
