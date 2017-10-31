@@ -3,8 +3,9 @@
 ## Adding Litho to your Kotlin Project
 
 > IMPORTANT: Kotlin support Litho is experimental at this point. You will
-  very likely run into bugs. Please [report them](https://github.com/facebook/litho/issues/new)
-  so we can fix them.
+  very likely run into bugs. Please see [Issue
+  #267](https://github.com/facebook/litho/issues/267) for known issues and
+  work-arounds.
   
 In order to use Litho's annotation processor, you need to opt in to the Kotlin KAPT plugin at the
 top of your application's `build.gradle` file:
