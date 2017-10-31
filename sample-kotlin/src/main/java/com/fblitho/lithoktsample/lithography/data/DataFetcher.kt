@@ -35,7 +35,7 @@ class DataFetcher(val model: MutableLiveData<Model>) : Fetcher {
   }
 }
 
-class FetchTask(val model: MutableLiveData<Model>, val lastFetchedDecade: Int) : AsyncTask<Void, Void, List<Decade>>() {
+class FetchTask(val model: MutableLiveData<Model>, private val lastFetchedDecade: Int) : AsyncTask<Void, Void, List<Decade>>() {
   override fun doInBackground(vararg params: Void?): List<Decade> {
     //Let's simulate a network call here.
     Thread.sleep(2000)
