@@ -18,7 +18,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.os.AsyncTask
 
 class DataFetcher(val model: MutableLiveData<Model>) : Fetcher {
-  var fetching = -1
+  private var fetching = -1
 
   override fun invoke(lastFetchedDecade: Int) {
     if (fetching == lastFetchedDecade + 1) {
@@ -27,21 +27,25 @@ class DataFetcher(val model: MutableLiveData<Model>) : Fetcher {
 
     fetching = lastFetchedDecade + 1
 
-    model.value = Model(model.value!!.decades, true)
-    object : AsyncTask<Void, Void, List<Decade>>() {
-      override fun doInBackground(vararg params: Void?): List<Decade> {
-        //Let's simulate a network call here.
-        Thread.sleep(2000)
-        return DataCreator.createPageOfData(lastFetchedDecade + 1)
-      }
+    model.value = model.value?.let {
+      Model(it.decades, true)
+    }
 
-      override fun onPostExecute(result: List<Decade>?) {
-        result?.let {
-          val decades = model.value?.decades ?: emptyList()
-          model.value = Model(decades + it, false)
-        }
-      }
+    FetchTask(model, lastFetchedDecade).execute()
+  }
+}
 
-    }.execute()
+class FetchTask(val model: MutableLiveData<Model>, val lastFetchedDecade: Int) : AsyncTask<Void, Void, List<Decade>>() {
+  override fun doInBackground(vararg params: Void?): List<Decade> {
+    //Let's simulate a network call here.
+    Thread.sleep(2000)
+    return DataCreator.createPageOfData(lastFetchedDecade + 1)
+  }
+
+  override fun onPostExecute(result: List<Decade>?) {
+    result?.let {
+      val decades = model.value?.decades ?: emptyList()
+      model.value = Model(decades + it, false)
+    }
   }
 }
