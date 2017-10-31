@@ -35,7 +35,7 @@ object LithoFeedSectionSpec {
       children.child(
           DecadeSection.create(c)
               .decade(it)
-              .key(it.year.toString())
+              .key("${it.year}")
               .build())
     }
 
