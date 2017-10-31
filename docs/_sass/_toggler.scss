@@ -33,6 +33,7 @@
 }
 
 .display-configuration-gradle .toggler .button-gradle,
+.display-configuration-gradle-kt .toggler .button-gradle-kt,
 .display-configuration-buck .toggler .button-buck {
   background: darken($litho-dark, 10%) !important;
   color: #fff !important;
@@ -41,6 +42,7 @@ block {
   display: none;
 }
 .display-configuration-gradle .gradle,
+.display-configuration-gradle-kt .gradle-kt,
 .display-configuration-buck .buck {
   display: block;
 }

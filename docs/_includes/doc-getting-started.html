@@ -4,11 +4,12 @@
   </header>
   <article class="post-content">
     <div class="toggler">
-      <a href="javascript:void(0);" class="button-gradle" onclick="display('configuration', 'gradle')">Gradle</a>
-      <a href="javascript:void(0);" class="button-buck" onclick="display('configuration', 'buck')">Buck</a>
+      <a href="javascript:void(0);" class="button-gradle" onclick="display('configuration', 'gradle')">Gradle/Java</a>
+      <a href="javascript:void(0);" class="button-gradle-kt" onclick="display('configuration', 'gradle-kt')">Gradle/Kotlin</a>
+      <a href="javascript:void(0);" class="button-buck" onclick="display('configuration', 'buck')">Buck/Java</a>
     </div>
     {{ content }}
-    <block class="gradle buck" />
+    <block class="gradle gradle-kt buck" />
     <p><a class="edit-page-link" href="https://github.com/{{ site.ghrepo }}/tree/master/docs/{{ page.path }}" target="_blank">Edit on GitHub</a></p>
   </article>
   {% include doc_paging.html %}
@@ -51,7 +52,9 @@ if (window.location.hash !== '' && window.location.hash !== 'content') { // cont
           var config = null;
 
           // Configuration
-          if (parent.className.indexOf('gradle') > -1) {
+          if (parent.className.indexOf('gradle-kt') > -1) {
+            config = 'gradle-kt';
+          } else if (parent.className.indexOf('gradle') > -1) {
             config = 'gradle';
           } else if (parent.className.indexOf('buck') > -1) {
             config = 'buck';
