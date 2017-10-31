@@ -17,8 +17,8 @@ package com.fblitho.lithoktsample.lithography.data
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 
-class DecadeViewModel : ViewModel() {
-
-  val model =
-      MutableLiveData<Model>().apply { value = Model(DataCreator.createPageOfData(0), false) }
-}
+data class DecadeViewModel(
+    val model: MutableLiveData<Model> = MutableLiveData<Model>().apply {
+      value = Model(DataCreator.createPageOfData(0), false)
+    }
+) : ViewModel()
