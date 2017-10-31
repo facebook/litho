@@ -50,15 +50,15 @@ public class Children {
 
     private Children mChildren;
 
-    private Builder() {
-
-    }
+    private Builder() {}
 
     private void init(Children children) {
       mChildren = children;
     }
 
     public Builder child(Section<?> section) {
+      verifyValidState();
+
       if (section != null) {
         mChildren.mSections.add(section);
       }
@@ -67,6 +67,8 @@ public class Children {
     }
 
     public Builder child(Section.Builder<?, ?> sectionBuilder) {
+      verifyValidState();
+
       if (sectionBuilder != null) {
         mChildren.mSections.add(sectionBuilder.build());
       }
@@ -75,11 +77,19 @@ public class Children {
     }
 
     public Children build() {
+      verifyValidState();
+
       Children children = mChildren;
       mChildren = null;
       sBuildersPool.release(this);
 
       return children;
+    }
+
+    private void verifyValidState() {
+      if (mChildren == null) {
+        throw new IllegalStateException(".build() call has been already made on this Builder.");
+      }
     }
   }
 }
