@@ -43,7 +43,6 @@ class MainActivity : AppCompatActivity() {
   }
 
   private fun setList(model: Model?) {
-
     model?.let {
       if (lithoView.componentTree == null) {
         lithoView.setComponent(createRecyclerComponent(it))
