@@ -101,4 +101,23 @@ public class PropDefaultModel {
     result = 47 * result + mResId;
     return result;
   }
+
+  @Override
+  public String toString() {
+    return "PropDefaultModel{"
+        + "mType="
+        + mType
+        + ", mModifiers="
+        + mModifiers
+        + ", mRepresentedObject="
+        + mRepresentedObject
+        + ", mName='"
+        + mName
+        + '\''
+        + ", mResType="
+        + mResType
+        + ", mResId="
+        + mResId
+        + '}';
+  }
 }
