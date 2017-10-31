@@ -209,8 +209,7 @@ public class RecyclerCollectionComponentSpec {
     }
     recyclerBuilder = recycler;
 
-    ComponentLayout.Builder recyclerLayoutBuilder = recyclerBuilder
-        .withLayout()
+    Component.Builder recyclerLayoutBuilder = recyclerBuilder
         .flexShrink(0)
         .touchHandler(recyclerTouchEventHandler);
 
