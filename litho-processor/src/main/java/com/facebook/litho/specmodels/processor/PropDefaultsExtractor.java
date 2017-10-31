@@ -23,6 +23,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeKind;
 
 /**
  * Extracts prop defaults from the given input.
@@ -97,7 +98,7 @@ public class PropDefaultsExtractor {
 
     // If it looks like a KAPT and quacks like a KAPT ...
     if (!methodName.endsWith("$annotations")
-        || !methodElement.getReturnType().toString().equals("void")) {
+        || methodElement.getReturnType().getKind() != TypeKind.VOID) {
       return ImmutableList.of();
     }
 
