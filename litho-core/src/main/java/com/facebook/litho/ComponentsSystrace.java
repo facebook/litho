@@ -51,9 +51,6 @@ public class ComponentsSystrace {
   }
 
   public static boolean isTracing() {
-    if (ComponentsConfiguration.isAlwaysTracingBacktestEnabled) {
-      return true;
-    }
     return getInstance().isTracing();
   }
 

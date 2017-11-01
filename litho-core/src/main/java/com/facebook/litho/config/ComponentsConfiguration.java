@@ -91,12 +91,6 @@ public class ComponentsConfiguration {
   public static boolean persistInternalNodeTree = false;
 
   /**
-   * Temporary configuration to determine the effects of gating ComponentsSystrace code with calls
-   * to isTracing.
-   */
-  public static boolean isAlwaysTracingBacktestEnabled = true;
-
-  /**
    * Whether to store the full list of Components used to create an {@link
    * com.facebook.litho.InternalNode} when persisting the InternalNode tree.
    */
