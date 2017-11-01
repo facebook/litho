@@ -31,7 +31,7 @@
   - id: group-sections
   - id: diff-sections
   - id: sections-building-blocks
-  - id: sections-events
+  - id: communicating-with-the-ui
   - id: sections-testing
   - id: sections-view-support
   - id: services
