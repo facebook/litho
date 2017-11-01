@@ -12,7 +12,6 @@ package com.facebook.litho;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.view.ViewParent;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +38,7 @@ class IncrementalMountHelper {
     // so we need to attach a listener to give us the information that we require.
     ViewParent viewParent = lithoView.getParent();
     while (viewParent != null) {
-      if (ComponentsConfiguration.incrementalMountUsesLocalVisibleBounds
-          && viewParent instanceof ViewPager) {
+      if (viewParent instanceof ViewPager) {
         final ViewPager viewPager = (ViewPager) viewParent;
         final IncrementalMountHelper.ViewPagerListener viewPagerListener =
             new ViewPagerListener(mComponentTree, viewPager);

@@ -44,7 +44,6 @@ public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
 
   @Before
   public void setup() {
-    ComponentsConfiguration.incrementalMountUsesLocalVisibleBounds = true;
     ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
     mComponentTree =
         ComponentTree.create(
@@ -68,11 +67,6 @@ public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
             })
         .when(mLithoView)
         .mount(any(LayoutState.class), any(Rect.class), eq(true));
-  }
-
-  @After
-  public void tearDown() {
-    ComponentsConfiguration.incrementalMountUsesLocalVisibleBounds = false;
   }
 
   @Test

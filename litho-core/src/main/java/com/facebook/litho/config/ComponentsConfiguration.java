@@ -85,18 +85,6 @@ public class ComponentsConfiguration {
   public static boolean deepUnmountEnabled = true;
 
   /**
-   * Whether incremental mount should use the local visible bounds of the {@link
-   * com.facebook.litho.LithoView}.
-   */
-  public static boolean incrementalMountUsesLocalVisibleBounds = false;
-
-  /**
-   * Whether incremental mount that begins in {@link com.facebook.litho.LithoView} should use the
-   * local visible bounds of the view.
-   */
-  public static boolean lithoViewIncrementalMountUsesLocalVisibleBounds = false;
-
-  /**
    * Whether to keep a reference to the InternalNode tree in LayoutState instead of immediately
    * releasing it.
    */
