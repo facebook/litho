@@ -14,8 +14,9 @@ litho_android_library(
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_JSR_TARGET,
         COMPONENTS_POWERMOCK_REFLECT_TARGET,
+        COMPONENTS_TESTING_HELPER_TARGET,
+        COMPONENTS_TESTING_SUBCOMPONENTS_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree"),
-        COMPONENTS_TESTING_TARGET,
         COMPONENTS_HAMCREST_CORE_TARGET,
     ],
 )

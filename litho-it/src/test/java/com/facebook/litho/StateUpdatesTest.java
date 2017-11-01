@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 
 import android.os.Looper;
 import com.facebook.litho.ComponentLifecycle.StateContainer;
-import com.facebook.litho.testing.ComponentTestHelper;
+import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import java.util.List;

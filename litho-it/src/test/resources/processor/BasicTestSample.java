@@ -13,8 +13,8 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ResourceResolver;
-import com.facebook.litho.testing.InspectableComponent;
 import com.facebook.litho.testing.assertj.ComponentMatcher;
+import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import javax.annotation.Nullable;
 
 /**

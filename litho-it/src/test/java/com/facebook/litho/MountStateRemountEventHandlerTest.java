@@ -14,7 +14,7 @@ import static com.facebook.litho.MountState.getComponentClickListener;
 import static com.facebook.litho.MountState.getComponentFocusChangeListener;
 import static com.facebook.litho.MountState.getComponentLongClickListener;
 import static com.facebook.litho.MountState.getComponentTouchListener;
-import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
+import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.testing.TestDrawableComponent;

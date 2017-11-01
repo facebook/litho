@@ -10,7 +10,7 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.Column.create;
-import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
+import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.LEFT;
 import static com.facebook.yoga.YogaEdge.RIGHT;
@@ -22,11 +22,11 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
-import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestComponentContextWithView;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import java.util.List;

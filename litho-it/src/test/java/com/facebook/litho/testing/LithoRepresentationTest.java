@@ -18,6 +18,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.assertj.LithoAssertions;
+import com.facebook.litho.testing.assertj.LithoRepresentation;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.widget.Text;

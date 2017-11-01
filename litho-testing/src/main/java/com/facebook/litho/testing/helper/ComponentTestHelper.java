@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho.testing;
+package com.facebook.litho.testing.helper;
 
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
@@ -27,6 +27,7 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.TestComponentTree;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.VisibleEvent;
+import com.facebook.litho.testing.subcomponents.SubComponent;
 import java.util.ArrayList;
 import java.util.List;
 import org.powermock.reflect.Whitebox;
@@ -38,6 +39,8 @@ import org.powermock.reflect.Whitebox;
  * they are in real apps.
  */
 public final class ComponentTestHelper {
+
+  private ComponentTestHelper() {}
 
   /**
    * Mount a component into a component view.

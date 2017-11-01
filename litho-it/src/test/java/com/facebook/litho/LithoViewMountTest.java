@@ -12,7 +12,7 @@ package com.facebook.litho;
 import static com.facebook.litho.ComponentTree.create;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
-import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
+import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.content.Context;

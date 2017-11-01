@@ -9,7 +9,7 @@
 
 package com.facebook.litho.testing.assertj;
 
-import com.facebook.litho.testing.InspectableComponent;
+import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import org.assertj.core.api.Condition;
 
 public abstract class ComponentMatcher extends Condition<InspectableComponent> {}

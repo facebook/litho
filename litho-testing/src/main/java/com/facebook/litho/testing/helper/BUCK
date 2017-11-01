@@ -8,25 +8,14 @@
 include_defs("//COMPONENTS_DEFS")
 
 litho_android_library(
-    name = "viewtree",
+    name = "helper",
     srcs = glob(["*.java"]),
-    exported_deps = [
-        COMPONENTS_ASSERTJ_TARGET,
-    ],
-    provided_deps = [
-        COMPONENTS_ROBOLECTRIC_TARGET,
-    ],
-    tests = [
-        make_dep_path("litho-it/src/test/java/com/facebook/litho/testing/viewtree:viewtree"),
-    ],
     visibility = [
         "PUBLIC",
     ],
     deps = [
-        COMPONENTS_DIFFUTILS_TARGET,
-        COMPONENTS_GUAVA_TARGET,
         COMPONENTS_JAVA_TARGET,
-        COMPONENTS_JSR_TARGET,
-        COMPONENTS_JUNIT_TARGET,
+        COMPONENTS_TESTING_SUBCOMPONENTS_TARGET,
+        COMPONENTS_POWERMOCK_REFLECT_TARGET,
     ],
 )

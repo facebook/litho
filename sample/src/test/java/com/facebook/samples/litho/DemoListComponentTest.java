@@ -17,7 +17,7 @@ import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import com.facebook.litho.Component;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.testing.ComponentsRule;
-import com.facebook.litho.testing.SubComponent;
+import com.facebook.litho.testing.subcomponents.SubComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.ArrayList;
 import org.junit.Before;

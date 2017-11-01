@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-package com.facebook.litho.testing;
+package com.facebook.litho.testing.subcomponents;
 
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;

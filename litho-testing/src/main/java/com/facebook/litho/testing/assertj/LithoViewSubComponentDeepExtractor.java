@@ -10,7 +10,7 @@
 package com.facebook.litho.testing.assertj;
 
 import com.facebook.litho.LithoView;
-import com.facebook.litho.testing.InspectableComponent;
+import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;

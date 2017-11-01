@@ -10,6 +10,10 @@ include_defs("//COMPONENTS_DEFS")
 litho_android_library(
     name = "testing",
     srcs = glob(["*.java"]),
+    exported_deps = [
+        COMPONENTS_TESTING_SUBCOMPONENTS_TARGET,
+        COMPONENTS_TESTING_HELPER_TARGET,
+    ],
     provided_deps = [
         COMPONENTS_ROBOLECTRIC_TARGET,
     ],
@@ -22,6 +26,7 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
+        COMPONENTS_TESTING_ASSERTJ_TARGET,
         COMPONENTS_ANDROIDSUPPORT_TARGET,
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_RES_TARGET,

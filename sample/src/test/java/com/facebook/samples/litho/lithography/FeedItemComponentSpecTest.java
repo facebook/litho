@@ -11,25 +11,22 @@
  */
 package com.facebook.samples.litho.lithography;
 
-import static com.facebook.litho.testing.SubComponent.legacySubComponent;
 import static com.facebook.litho.testing.assertj.ComponentConditions.textEquals;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static com.facebook.litho.testing.assertj.LithoViewSubComponentDeepExtractor.deepSubComponentWith;
 import static com.facebook.litho.testing.assertj.SubComponentExtractor.subComponentWith;
+import static com.facebook.litho.testing.subcomponents.SubComponent.legacySubComponent;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
 
-import android.support.v7.widget.OrientationHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.ComponentsRule;
-import com.facebook.litho.testing.SubComponent;
+import com.facebook.litho.testing.helper.ComponentTestHelper;
+import com.facebook.litho.testing.subcomponents.SubComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.widget.LinearLayoutInfo;
-import com.facebook.litho.widget.RecyclerBinder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -10,7 +10,7 @@
 package com.facebook.litho.testing.assertj;
 
 import com.facebook.litho.LithoView;
-import com.facebook.litho.testing.InspectableComponent;
+import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import java.util.List;
 import org.assertj.core.api.Condition;
 import org.assertj.core.api.iterable.Extractor;

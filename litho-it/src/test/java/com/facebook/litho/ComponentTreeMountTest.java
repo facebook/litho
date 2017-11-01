@@ -11,8 +11,8 @@ package com.facebook.litho;
 
 import static android.graphics.Color.BLACK;
 import static android.graphics.Color.YELLOW;
-import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
+import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.Shadows.shadowOf;
 

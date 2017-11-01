@@ -10,8 +10,8 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.ViewCompatComponent.get;
-import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
-import static com.facebook.litho.testing.ComponentTestHelper.unbindComponent;
+import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
+import static com.facebook.litho.testing.helper.ComponentTestHelper.unbindComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.content.Context;

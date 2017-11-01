@@ -19,16 +19,13 @@ import static org.assertj.core.data.Index.atIndex;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
 
-import android.support.v7.widget.OrientationHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
-import com.facebook.litho.testing.InspectableComponent;
+import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Card;
-import com.facebook.litho.widget.LinearLayoutInfo;
-import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.Text;
 import org.assertj.core.api.Condition;
 import org.junit.Before;

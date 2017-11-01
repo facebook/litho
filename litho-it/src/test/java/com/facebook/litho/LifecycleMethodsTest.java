@@ -9,7 +9,7 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.testing.ComponentTestHelper.measureAndLayout;
+import static com.facebook.litho.testing.helper.ComponentTestHelper.measureAndLayout;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Canvas;

@@ -12,7 +12,7 @@ package com.facebook.litho.testing.assertj;
 import static org.hamcrest.core.Is.is;
 
 import com.facebook.litho.ComponentLifecycle;
-import com.facebook.litho.testing.InspectableComponent;
+import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import org.assertj.core.api.Condition;
 import org.assertj.core.description.TextDescription;
 import org.hamcrest.Matcher;

@@ -11,8 +11,8 @@ package com.facebook.litho.processor.integration.resources;
 
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ResourceResolver;
-import com.facebook.litho.testing.InspectableComponent;
 import com.facebook.litho.testing.assertj.ComponentMatcher;
+import com.facebook.litho.testing.subcomponents.InspectableComponent;
 
 public final class SimpleTestSample implements SimpleTestSampleSpec {
   public static Matcher matcher(ComponentContext c) {

@@ -11,8 +11,8 @@ package com.facebook.litho;
 
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
 import static android.view.View.LAYOUT_DIRECTION_RTL;
-import static com.facebook.litho.testing.ComponentTestHelper.mountComponent;
 import static com.facebook.litho.testing.TestViewComponent.create;
+import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static com.facebook.yoga.YogaDirection.LTR;
 import static com.facebook.yoga.YogaDirection.RTL;
 import static com.facebook.yoga.YogaEdge.END;
