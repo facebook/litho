@@ -60,10 +60,10 @@ public final class LithoViewSubComponentDeepExtractor
 
   public static Condition<LithoView> deepSubComponentWith(
       final Condition<InspectableComponent> inner) {
-    // TODO(T20862132): Provide better error messages.
     return new Condition<LithoView>() {
       @Override
       public boolean matches(LithoView lithoView) {
+        as("deep sub component with <%s>", inner);
         for (InspectableComponent component : subComponentsDeeply().extract(lithoView)) {
           if (inner.matches(component)) {
             return true;

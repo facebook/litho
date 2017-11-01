@@ -64,8 +64,7 @@ public final class SubComponentDeepExtractor
    */
   public static Condition<? super Component> deepSubComponentWith(
       final ComponentContext c, final Condition<InspectableComponent> inner) {
-    // TODO(T20862132): Provide better error messages.
-    return new Condition<Component>(new TextDescription("Deep subcomponent with %s", inner)) {
+    return new Condition<Component>(new TextDescription("Deep subcomponent with <%s>", inner)) {
       @Override
       public boolean matches(Component value) {
         for (InspectableComponent component : subComponentsDeeply(c).extract(value)) {

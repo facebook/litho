@@ -38,7 +38,6 @@ public class SubComponentExtractor implements Extractor<Component<?>, List<Inspe
 
   public static Condition<? super Component> subComponentWith(
       final ComponentContext c, final Condition<InspectableComponent> inner) {
-    // TODO(T20862132): Provide better error messages.
     return new Condition<Component>() {
       @Override
       public boolean matches(Component value) {

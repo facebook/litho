@@ -56,10 +56,10 @@ public final class ComponentConditions {
    * that more powerful matchers can be applied like sub-string matching.
    */
   public static Condition<InspectableComponent> text(final Condition<String> condition) {
-    return new Condition<InspectableComponent>(new TextDescription("text = <%s>", condition)) {
+    return new Condition<InspectableComponent>() {
       @Override
       public boolean matches(InspectableComponent value) {
-        as("expected = <%s>, actual text = <%s>", condition, value.getTextContent());
+        as("text <%s>", condition);
         return condition.matches(value.getTextContent());
       }
     };
