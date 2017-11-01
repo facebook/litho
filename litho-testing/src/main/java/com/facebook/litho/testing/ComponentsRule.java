@@ -12,6 +12,7 @@ package com.facebook.litho.testing;
 import android.app.Activity;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.R;
+import org.assertj.core.api.Assertions;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -26,13 +27,17 @@ public class ComponentsRule implements TestRule {
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
-        final Activity activity = Robolectric.buildActivity(Activity.class)
-            .create()
-            .get();
+        final Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         mContext = new ComponentContext(activity);
         setComponentStyleableAttributes();
 
-        base.evaluate();
+        Assertions.useRepresentation(new LithoRepresentation(mContext));
+
+        try {
+          base.evaluate();
+        } finally {
+          Assertions.useDefaultRepresentation();
+        }
       }
     };
   }

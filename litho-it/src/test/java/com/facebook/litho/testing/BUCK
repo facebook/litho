@@ -16,7 +16,13 @@ components_robolectric_test(
     deps = [
         COMPONENTS_JUNIT_TARGET,
         COMPONENTS_ROBOLECTRIC_TARGET,
+        COMPONENTS_JAVA_TARGET,
+        COMPONENTS_WIDGET_TARGET,
         COMPONENTS_TESTING_TARGET,
+        COMPONENTS_BUILD_CONFIG_TARGET,
+        COMPONENTS_TESTING_ASSERTJ_TARGET,
         COMPONENTS_ASSERTJ_TARGET,
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/util:util"),
     ],
 )
