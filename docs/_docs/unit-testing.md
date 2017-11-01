@@ -22,7 +22,12 @@ import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 
 In order to use any of the testing capabilities, you need include the optional
 `litho-testing` package in your build. It is available as
-`com.facebook.litho:litho-testing:+`.
+`com.facebook.litho:litho-testing`. To include it in your gradle build, add this
+line to your `dependencies` block:
+
+```groovy
+testImplementation 'com.facebook.litho:litho-testing:{{site.litho-version}}'
+```
 
 To demonstrate the usage of these classes, below is an example of a component
 that displays a like icon and a short description.
