@@ -1163,6 +1163,11 @@ class LayoutState {
       for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
         final Component component = mMountableOutputs.get(i).getComponent();
 
+        if (ComponentsConfiguration.preallocatePerMountSpec
+            && !component.getLifecycle().canPreallocate()) {
+          continue;
+        }
+
         if (Component.isMountViewSpec(component)) {
           if (isTracing) {
             ComponentsSystrace.beginSection("preAllocateMountContent:" + component.getSimpleName());
