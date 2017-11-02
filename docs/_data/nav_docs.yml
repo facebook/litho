@@ -44,6 +44,7 @@
 - title: Testing
   items:
   - id: unit-testing
+  - id: subcomponent-testing
   - id: espresso-testing
 - title: Advanced Guides
   items:
