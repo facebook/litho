@@ -98,4 +98,11 @@ public class ComponentsConfiguration {
 
   /** Whether the RecyclerCollectionComponent can asynchronously set the root of a SectionTree. */
   public static boolean setRootAsyncRecyclerCollectionComponent = false;
+
+  /**
+   * If false, we preallocate all mount specs in a ComponentTree if it sets a preallocation handler.
+   * If true, we use {@link com.facebook.litho.annotations.MountSpec#canPreallocate()} to determine
+   * for each MountSpec if it should be preallocated or not.
+   */
+  public static boolean preallocatePerMountSpec = false;
 }
