@@ -36,8 +36,8 @@ public class OneByOneLeftRightBlocksComponentSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext c,
       @State int state) {
-    final boolean redLeft = state == 0 || state == 4 || state == 5;
-    final boolean blueLeft = state == 0 || state == 1 || state == 5;
+    final boolean redLeft   = state == 0 || state == 4 || state == 5;
+    final boolean blueLeft  = state == 0 || state == 1 || state == 5;
     final boolean greenLeft = state == 0 || state == 1 || state == 2;
     return Column.create(c)
         .child(
