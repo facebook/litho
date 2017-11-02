@@ -71,9 +71,21 @@ public class MountSpecGenerator {
         .addMethod(
             MethodSpec.methodBuilder("poolSize")
                 .addAnnotation(Override.class)
-                .addModifiers(javax.lang.model.element.Modifier.PROTECTED)
+                .addModifiers(Modifier.PROTECTED)
                 .returns(TypeName.INT)
                 .addStatement("return $L", specModel.getPoolSize())
+                .build())
+        .build();
+  }
+
+  public static TypeSpecDataHolder generateCanPreallocate(MountSpecModel specModel) {
+    return TypeSpecDataHolder.newBuilder()
+        .addMethod(
+            MethodSpec.methodBuilder("canPreallocate")
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PROTECTED)
+                .returns(TypeName.BOOLEAN)
+                .addStatement("return $L", specModel.canPreallocate())
                 .build())
         .build();
   }

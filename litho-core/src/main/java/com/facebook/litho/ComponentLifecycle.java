@@ -620,6 +620,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return DEFAULT_MAX_PREALLOCATION;
   }
 
+  /** @return true if this component can be preallocated. */
+  protected boolean canPreallocate() {
+    return false;
+  }
+
   final boolean shouldComponentUpdate(Component previous, Component next) {
     if (isPureRender()) {
       return shouldUpdate(previous, next);

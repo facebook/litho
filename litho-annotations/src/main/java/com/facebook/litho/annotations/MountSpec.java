@@ -101,9 +101,12 @@ public @interface MountSpec {
    */
   int poolSize() default 15;
 
+  /** @return whether the component generated from this MountSpec will be preallocated. */
+  boolean canPreallocate() default false;
+
   /**
    * @return List of trigger POJOs this component can dispatch. Used to generate trigger creation
-   * methods.
+   *     methods.
    */
   Class<?>[] triggers() default {};
 }

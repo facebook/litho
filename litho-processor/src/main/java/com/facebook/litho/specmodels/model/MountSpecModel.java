@@ -41,6 +41,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   private final boolean mCanMountIncrementally;
   private final boolean mShouldUseDisplayList;
   private final int mPoolSize;
+  private final boolean mCanPreallocate;
   private final TypeName mMountType;
 
   public MountSpecModel(
@@ -63,6 +64,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       boolean canMountIncrementally,
       boolean shouldUseDisplayList,
       int poolSize,
+      boolean canPreallocate,
       TypeName mountType,
       SpecElementType specElementType,
       Object representedObject) {
@@ -91,6 +93,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
     mCanMountIncrementally = canMountIncrementally;
     mShouldUseDisplayList = shouldUseDisplayList;
     mPoolSize = poolSize;
+    mCanPreallocate = canPreallocate;
     mMountType = mountType;
   }
 
@@ -296,6 +299,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
                 this, DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP))
         .addTypeSpecDataHolder(MountSpecGenerator.generateGetMountType(this))
         .addTypeSpecDataHolder(MountSpecGenerator.generatePoolSize(this))
+        .addTypeSpecDataHolder(MountSpecGenerator.generateCanPreallocate(this))
         .addTypeSpecDataHolder(MountSpecGenerator.generateCanMountIncrementally(this))
         .addTypeSpecDataHolder(MountSpecGenerator.generateShouldUseDisplayList(this))
         .addTypeSpecDataHolder(MountSpecGenerator.generateIsMountSizeDependent(this))
@@ -327,6 +331,10 @@ public class MountSpecModel implements SpecModel, HasPureRender {
 
   public int getPoolSize() {
     return mPoolSize;
+  }
+
+  public boolean canPreallocate() {
+    return mCanPreallocate;
   }
 
   public TypeName getMountType() {

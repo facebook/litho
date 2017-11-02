@@ -90,6 +90,11 @@ public final class SimpleMount extends ComponentLifecycle {
     return 15;
   }
 
+  @Override
+  protected boolean canPreallocate() {
+    return false;
+  }
+
   public static Builder create(ComponentContext context) {
     return create(context, 0, 0);
   }

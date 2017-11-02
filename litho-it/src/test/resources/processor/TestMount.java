@@ -263,6 +263,11 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
   }
 
   @Override
+  protected boolean canPreallocate() {
+    return true;
+  }
+
+  @Override
   public boolean canMountIncrementally() {
     return true;
   }

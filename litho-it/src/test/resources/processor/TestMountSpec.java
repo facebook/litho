@@ -10,6 +10,7 @@
 package com.facebook.litho.processor.integration.resources;
 
 import static com.facebook.litho.annotations.ResType.STRING;
+
 import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -53,7 +54,13 @@ import com.facebook.litho.annotations.TreeProp;
 
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-@MountSpec(events = TestEvent.class, shouldUseDisplayList = true, isPureRender = true, canMountIncrementally = true)
+@MountSpec(
+  events = TestEvent.class,
+  shouldUseDisplayList = true,
+  isPureRender = true,
+  canMountIncrementally = true,
+  canPreallocate = true
+)
 public class TestMountSpec<S extends View> {
   @PropDefault protected static final boolean prop2 = true;
 

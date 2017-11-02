@@ -99,6 +99,7 @@ public class MountSpecModelFactory implements SpecModelFactory {
         element.getAnnotation(MountSpec.class).canMountIncrementally(),
         element.getAnnotation(MountSpec.class).shouldUseDisplayList(),
         element.getAnnotation(MountSpec.class).poolSize(),
+        element.getAnnotation(MountSpec.class).canPreallocate(),
         getMountType(element),
         SpecElementTypeDeterminator.determine(element),
         element);
