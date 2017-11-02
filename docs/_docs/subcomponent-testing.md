@@ -16,8 +16,8 @@ sub-components created by your layout specs. We make heavy use of
 this should feel very familiar. If you haven't, don't worry. This guide will
 tell you everything there is to know.
 
-In a rush? Jump straight to the [Resources] at the end of this page. More code,
-fewer words. Beep boop.
+In a rush? Jump straight to the [Resources](#resources) at the end of this page.
+More code, fewer words. Beep boop.
 
 ## Prerequisites
 
