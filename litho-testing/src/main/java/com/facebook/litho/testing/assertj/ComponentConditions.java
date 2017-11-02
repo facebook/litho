@@ -11,18 +11,40 @@ package com.facebook.litho.testing.assertj;
 
 import static org.hamcrest.core.Is.is;
 
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import org.assertj.core.api.Condition;
 import org.assertj.core.description.TextDescription;
 import org.hamcrest.Matcher;
 
-/** Provides various helpers to match against {@link InspectableComponent}s. */
-// TODO(T21048805): Provide examples in the javadoc.
+/**
+ * Various helpers to match against {@link InspectableComponent}s. This is to be used with {@link
+ * SubComponentExtractor#subComponentWith(ComponentContext, Condition)} and {@link
+ * SubComponentDeepExtractor#deepSubComponentWith(ComponentContext, Condition)}.
+ */
 public final class ComponentConditions {
   private ComponentConditions() {}
 
-  /** Matcher that succeeds if a {@link InspectableComponent} type exactly matches provided one */
+  /**
+   * Matcher that succeeds if the class of an {@link InspectableComponent} exactly matches the
+   * provided component class.
+   *
+   * <p><em>Note that this won't match sub-types.</em> This should not have any real-world
+   * implications as Components are not sub-classed.
+   *
+   * <p>
+   *
+   * <h2>Example Use</h2>
+   *
+   * <pre><code>
+   * assertThat(c, mComponent)
+   *   .has(
+   *     allOf(
+   *       deepSubComponentWith(c, typeIs(Text.class)),
+   *       subComponentWith(c, typeIs(MyCustomComponent.class))));
+   * </code></pre>
+   */
   public static Condition<InspectableComponent> typeIs(
       final Class<? extends ComponentLifecycle> clazz) {
     return new Condition<InspectableComponent>(
@@ -54,6 +76,17 @@ public final class ComponentConditions {
    *
    * <p>N.B. We are implicitly casting the {@link CharSequence} to a {@link String} when matching so
    * that more powerful matchers can be applied like sub-string matching.
+   *
+   * <p>
+   *
+   * <h2>Example Use</h2>
+   *
+   * <pre><code>
+   * mComponent = MyComponent.create(c).text("Cells interlinked within cells interlinked").build();
+   * assertThat(c, mComponent)
+   *   .has(subComponentWith(c, startsWith("Cells")))
+   *   .doesNotHave(subComponentWith(c, text(containsString("A Tall White Fountain Played."))));
+   * </code></pre>
    */
   public static Condition<InspectableComponent> text(final Condition<String> condition) {
     return new Condition<InspectableComponent>() {
@@ -68,6 +101,8 @@ public final class ComponentConditions {
   /**
    * Matcher that succeeds if a {@link InspectableComponent} has text content that matches the
    * provided hamcrest matcher.
+   *
+   * <p>
    *
    * @return Wrapper around {@link #text(Condition)}
    */
