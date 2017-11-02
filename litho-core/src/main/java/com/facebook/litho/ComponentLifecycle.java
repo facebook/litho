@@ -223,7 +223,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     final TreeProps parentTreeProps = context.getTreeProps();
     context.setTreeProps(getTreePropsForChildren(context, component, parentTreeProps));
 
-    ComponentsSystrace.beginSection("createLayout:" + component.getSimpleName());
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("createLayout:" + component.getSimpleName());
+    }
+
     final InternalNode node;
     if (deferNestedTreeResolution) {
       node = ComponentsPools.acquireInternalNode(context);
@@ -238,7 +242,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       node = (InternalNode) onCreateLayout(context, component);
     }
 
-    ComponentsSystrace.endSection();
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
 
     if (node == null) {
       return ComponentContext.NULL_LAYOUT;
