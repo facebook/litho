@@ -49,8 +49,18 @@ public class RenderSectionEvent {
     DOWNLOAD_ERROR,
   }
 
+  public enum DataSource {
+    /** Returned on Initial, Downloading, or Error states */
+    UNSET,
+    /** the data for the model came from the network */
+    FROM_NETWORK,
+    /** the data for the model came from the device */
+    FROM_LOCAL_CACHE
+  }
+
   public Object model;
   public Object lastNonNullModel;
   public FetchState state;
   public Throwable error;
+  public DataSource dataSource;
 }
