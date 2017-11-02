@@ -83,6 +83,7 @@ import com.facebook.litho.utils.MeasureUtils;
  * used to help an input method decide how to let the user enter text. This prop
  * will override inputType if both are provided.
  * @prop imeOptions Type of data in the text field, reported to an IME when it has focus.
+ * @prop horizontallyScrolling whether to enable horizontally scrolling, default to true
  */
 @MountSpec(isPureRender = true, events = {TextChangedEvent.class})
 class EditTextSpec {
@@ -121,6 +122,7 @@ class EditTextSpec {
       EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
   @PropDefault protected static final int rawInputType = EditorInfo.TYPE_NULL;
   @PropDefault protected static final int imeOptions = EditorInfo.IME_NULL;
+  @PropDefault protected static final boolean horizontallyScrolling = true;
 
   @OnLoadStyle
   static void onLoadStyle(
@@ -233,7 +235,8 @@ class EditTextSpec {
       @Prop(optional = true) int selection,
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
-      @Prop(optional = true) int imeOptions) {
+      @Prop(optional = true) int imeOptions,
+      @Prop(optional = true) boolean horizontallyScrolling) {
 
     // TODO(11759579) - don't allocate a new EditText in every measure.
     final EditText editText = new EditText(c);
@@ -268,7 +271,8 @@ class EditTextSpec {
         selection,
         inputType,
         rawInputType,
-        imeOptions);
+        imeOptions,
+        horizontallyScrolling);
 
     editText.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec),
@@ -316,7 +320,8 @@ class EditTextSpec {
       @Prop(optional = true) int selection,
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
-      @Prop(optional = true) int imeOptions) {
+      @Prop(optional = true) int imeOptions,
+      @Prop(optional = true) boolean horizontallyScrolling) {
 
     initEditText(
         editText,
@@ -348,7 +353,8 @@ class EditTextSpec {
         selection,
         inputType,
         rawInputType,
-        imeOptions);
+        imeOptions,
+        horizontallyScrolling);
   }
 
   @OnBind
@@ -404,7 +410,8 @@ class EditTextSpec {
       int selection,
       int inputType,
       int rawInputType,
-      int imeOptions) {
+      int imeOptions,
+      boolean horizontallyScrolling) {
 
     editText.setSingleLine(isSingleLine);
     // We only want to change the input type if it actually needs changing, and we need to take
@@ -443,6 +450,7 @@ class EditTextSpec {
     editText.setLineSpacing(extraSpacing, spacingMultiplier);
     editText.setTypeface(typeface, textStyle);
     editText.setGravity(gravity);
+    editText.setHorizontallyScrolling(horizontallyScrolling);
 
     editText.setImeOptions(imeOptions);
     editText.setFocusable(editable);
