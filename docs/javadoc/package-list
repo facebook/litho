@@ -27,9 +27,11 @@ com.facebook.litho.testing
 com.facebook.litho.testing.assertj
 com.facebook.litho.testing.espresso
 com.facebook.litho.testing.eventhandler
+com.facebook.litho.testing.helper
 com.facebook.litho.testing.sections
 com.facebook.litho.testing.shadows
 com.facebook.litho.testing.specmodels
+com.facebook.litho.testing.subcomponents
 com.facebook.litho.testing.testrunner
 com.facebook.litho.testing.treeprop
 com.facebook.litho.testing.viewtree
