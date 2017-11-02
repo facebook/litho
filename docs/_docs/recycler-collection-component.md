@@ -102,7 +102,7 @@ final Component component =
 
 ### Loading, Empty, and error screens
 
-With the sections API you can also integrate your data fetching through [Loading events](/docs/sections-events#null__loadingstate-loadingstate) and [Services](/docs/services).  `RecyclerCollectionComponent` can listen to these [loading events](/javadoc/com/facebook/litho/sections/LoadingEvent.html) and will respond accordingly.  Through the props `loadingComponent`, `emptyComponent`, and `errorComponent`, you can specify what to show when certain things happen when fetching data:
+With the sections API you can also integrate your data fetching through [Loading events](/docs/communicating-with-the-ui#null__loadingstate-loadingstate) and [Services](/docs/services).  `RecyclerCollectionComponent` can listen to these [loading events](/javadoc/com/facebook/litho/sections/LoadingEvent.html) and will respond accordingly.  Through the props `loadingComponent`, `emptyComponent`, and `errorComponent`, you can specify what to show when certain things happen when fetching data:
  - `loadingComponent`: data is being loaded and there's nothing in the list
  - `emptyComponent`: data has finished loading and there's nothing to show.
  - `errorComponent`: data loading has failed and there's nothing in the list.
