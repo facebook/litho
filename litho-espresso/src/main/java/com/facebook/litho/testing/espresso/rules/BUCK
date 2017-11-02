@@ -1,0 +1,30 @@
+# Copyright (c) 2017-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
+
+include_defs("//COMPONENTS_DEFS")
+
+android_library(
+    name = "rules",
+    srcs = glob(["*.java"]),
+    exported_deps = [
+        COMPONENTS_ROOT + "litho-espresso/src/main/java/com/facebook/litho/testing/espresso:espresso",
+    ],
+    tests = [
+        "//instrumentation_tests/com/facebook/testing/instrumentation:instrumentation",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        COMPONENTS_ANDROIDSUPPORT_TARGET,
+        COMPONENTS_ANDROIDSUPPORT_APPCOMPAT_TARGET,
+        COMPONENTS_ANDROIDSUPPORT_TESTING_TARGET,
+        COMPONENTS_ESPRESSO_TARGET,
+        COMPONENTS_JAVA_TARGET,
+        COMPONENTS_JUNIT_TARGET,
+    ],
+)

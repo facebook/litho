@@ -30,6 +30,9 @@ dependencies {
     androidTestCompileOnly project(':litho-annotations')
     androidTestImplementation project(':litho-widget')
     androidTestAnnotationProcessor project(':litho-processor')
+
+    // Support Library
+    implementation deps.supportAppCompat
 }
 
 apply from: rootProject.file('gradle/release.gradle')
