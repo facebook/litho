@@ -14,10 +14,10 @@ package com.facebook.samples.litho.bordereffects;
 
 /** Colors that are nicer on the eyes */
 interface NiceColor {
-  int RED = 0xffee4035;
-  int ORANGE = 0xfff37736;
-  int YELLOW = 0xfffdf498;
-  int GREEN = 0xff7bc043;
-  int BLUE = 0xff0392cf;
+  int RED     = 0xffee4035;
+  int ORANGE  = 0xfff37736;
+  int YELLOW  = 0xfffdf498;
+  int GREEN   = 0xff7bc043;
+  int BLUE    = 0xff0392cf;
   int MAGENTA = 0xffba02cf;
 }
