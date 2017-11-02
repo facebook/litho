@@ -91,9 +91,6 @@ public class PropDefaultsExtractor {
       return ImmutableList.of();
     }
 
-    final ResType propDefaultResType = ((PropDefault) propDefaultAnnotation).resType();
-    final int propDefaultResId = ((PropDefault) propDefaultAnnotation).resId();
-
     final String methodName = methodElement.getSimpleName().toString();
 
     // If it looks like a KAPT and quacks like a KAPT ...
@@ -110,6 +107,9 @@ public class PropDefaultsExtractor {
             .stream()
             .filter(e -> e.getSimpleName().toString().equals(baseName))
             .findFirst();
+
+    final ResType propDefaultResType = ((PropDefault) propDefaultAnnotation).resType();
+    final int propDefaultResId = ((PropDefault) propDefaultAnnotation).resId();
 
     return element
         .map(
