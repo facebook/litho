@@ -64,6 +64,8 @@ import com.facebook.litho.utils.MeasureUtils;
  * @prop shadowDy Vertical offset of the shadow.
  * @prop shadowColor Color for the shadow underneath the text.
  * @prop isSingleLine If set, makes the text to be rendered in a single line.
+ * @Prop isSingleLineWrap If set, single line text would warp and horizontal scroll would be disabled
+ * only works when isSingleLine is set.
  * @prop textColor Color of the text.
  * @prop textColorStateList ColorStateList of the text.
  * @prop hintTextColor Hint color of the text.
@@ -83,7 +85,6 @@ import com.facebook.litho.utils.MeasureUtils;
  * used to help an input method decide how to let the user enter text. This prop
  * will override inputType if both are provided.
  * @prop imeOptions Type of data in the text field, reported to an IME when it has focus.
- * @prop horizontallyScrolling whether to enable horizontally scrolling, default to true
  */
 @MountSpec(isPureRender = true, events = {TextChangedEvent.class})
 class EditTextSpec {
@@ -122,7 +123,7 @@ class EditTextSpec {
       EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
   @PropDefault protected static final int rawInputType = EditorInfo.TYPE_NULL;
   @PropDefault protected static final int imeOptions = EditorInfo.IME_NULL;
-  @PropDefault protected static final boolean horizontallyScrolling = true;
+  @PropDefault protected static final boolean isSingleLineWrap = false;
 
   @OnLoadStyle
   static void onLoadStyle(
@@ -236,7 +237,7 @@ class EditTextSpec {
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
-      @Prop(optional = true) boolean horizontallyScrolling) {
+      @Prop(optional = true) boolean isSingleLineWrap) {
 
     // TODO(11759579) - don't allocate a new EditText in every measure.
     final EditText editText = new EditText(c);
@@ -272,7 +273,7 @@ class EditTextSpec {
         inputType,
         rawInputType,
         imeOptions,
-        horizontallyScrolling);
+        isSingleLineWrap);
 
     editText.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec),
@@ -321,7 +322,7 @@ class EditTextSpec {
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
-      @Prop(optional = true) boolean horizontallyScrolling) {
+      @Prop(optional = true) boolean isSingleLineWrap) {
 
     initEditText(
         editText,
@@ -354,7 +355,7 @@ class EditTextSpec {
         inputType,
         rawInputType,
         imeOptions,
-        horizontallyScrolling);
+        isSingleLineWrap);
   }
 
   @OnBind
@@ -411,7 +412,7 @@ class EditTextSpec {
       int inputType,
       int rawInputType,
       int imeOptions,
-      boolean horizontallyScrolling) {
+      boolean isSingleLineWrap) {
 
     editText.setSingleLine(isSingleLine);
     // We only want to change the input type if it actually needs changing, and we need to take
@@ -420,6 +421,11 @@ class EditTextSpec {
       inputType &= ~EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
     } else {
       inputType |= EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
+    }
+
+    // disable horizontally scroll in single line mode to make the text wrap.
+    if (isSingleLine && isSingleLineWrap) {
+      editText.setHorizontallyScrolling(false);
     }
 
     if (rawInputType != EditorInfo.TYPE_NULL) {
@@ -450,7 +456,6 @@ class EditTextSpec {
     editText.setLineSpacing(extraSpacing, spacingMultiplier);
     editText.setTypeface(typeface, textStyle);
     editText.setGravity(gravity);
-    editText.setHorizontallyScrolling(horizontallyScrolling);
 
     editText.setImeOptions(imeOptions);
     editText.setFocusable(editable);
