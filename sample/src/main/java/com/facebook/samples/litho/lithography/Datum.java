@@ -16,9 +16,9 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.widget.RenderInfo;
 
 /**
- * This is a interface for a piece of data that defines a component to be rendered in the feed.
- * Typically the datum would hold some intrinsic data (Strings or others) and use them to create
- * the component.
+ * This is an interface for a piece of data that defines a component to be rendered in the feed.
+ * Typically the datum would hold some intrinsic data (Strings or others) and use them to create the
+ * component.
  */
 public interface Datum {
 
