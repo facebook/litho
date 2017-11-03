@@ -787,8 +787,11 @@ class LayoutState {
         rect.bottom = rect.top + node.getHeight();
       }
       for (Component delegate : node.getComponents()) {
-        layoutState.mComponentKeyToBounds.put(delegate.getGlobalKey(), rect);
+        final Rect copyRect = ComponentsPools.acquireRect();
+        copyRect.set(rect);
+        layoutState.mComponentKeyToBounds.put(delegate.getGlobalKey(), copyRect);
       }
+      ComponentsPools.release(rect);
     }
 
     // All children for the given host have been added, restore the previous
@@ -1849,12 +1852,7 @@ class LayoutState {
       mDisplayListsToPrefetch.clear();
 
       for (Rect rect : mComponentKeyToBounds.values()) {
-        // Delegate components are using the same Rect instance as the components they create since
-        // we don't calculate a layout output for them. We need to make sure we only release it
-        // once.
-        if (!rect.isEmpty()) {
-          ComponentsPools.release(rect);
-        }
+        ComponentsPools.release(rect);
       }
       mComponentKeyToBounds.clear();
 
