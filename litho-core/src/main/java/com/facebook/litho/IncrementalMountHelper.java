@@ -53,10 +53,6 @@ class IncrementalMountHelper {
         mViewPagerListeners.add(viewPagerListener);
       }
 
-      if (viewParent instanceof LithoView && ((LithoView) viewParent).doesOwnIncrementalMount()) {
-        lithoView.setDoesOwnIncrementalMount(true);
-      }
-
       viewParent = viewParent.getParent();
     }
   }
