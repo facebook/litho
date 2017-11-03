@@ -24,4 +24,5 @@ public class ConnectionStateEvent {
   public Object connectionData;
   public boolean isEmpty;
   public Throwable fetchError;
+  public RenderSectionEvent.DataSource dataSource;
 }
