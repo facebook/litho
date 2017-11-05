@@ -22,6 +22,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.lang.ref.WeakReference;
 import java.util.Deque;
@@ -537,7 +538,19 @@ public class LithoView extends ComponentHost {
     }
 
     final Rect rect = ComponentsPools.acquireRect();
-    if (!getLocalVisibleRect(rect)) {
+    final boolean isEmpty;
+    if (ComponentsConfiguration.lithoViewIncrementalMountUsesLocalVisibleBounds) {
+      isEmpty = !getLocalVisibleRect(rect);
+    } else {
+      rect.set(
+          Math.max(0, -left),
+          Math.max(0, -top),
+          Math.min(right, parentWidth) - left,
+          Math.min(bottom, parentHeight) - top);
+      isEmpty = rect.isEmpty();
+    }
+
+    if (isEmpty) {
       // View is not visible at all, nothing to do.
       ComponentsPools.release(rect);
       return;
@@ -658,6 +671,34 @@ public class LithoView extends ComponentHost {
 
   boolean doesOwnIncrementalMount() {
     return mDoesOwnIncrementalMount;
+  }
+
+  @Deprecated
+  /**
+   * @deprecated This is being temporarily added while we experiment with other solutions for
+   *     incremental mount (see {@link
+   *     ComponentsConfiguration#incrementalMountUsesLocalVisibleBounds} and {@link
+   *     ComponentsConfiguration#lithoViewIncrementalMountUsesLocalVisibleBounds}.
+   */
+  public void setDoesOwnIncrementalMount(boolean doesOwnIncrementalMount) {
+    mDoesOwnIncrementalMount = doesOwnIncrementalMount;
+
+    setDoesOwnIncrementalMountOnChildren(this, doesOwnIncrementalMount);
+  }
+
+  private void setDoesOwnIncrementalMountOnChildren(
+      ViewGroup viewGroup, boolean doesOwnIncrementalMount) {
+    for (int i = 0, size = viewGroup.getChildCount(); i < size; i++) {
+      final View child = viewGroup.getChildAt(i);
+
+      if (child instanceof LithoView) {
+        ((LithoView) child).setDoesOwnIncrementalMount(doesOwnIncrementalMount);
+      }
+
+      if (child instanceof ViewGroup) {
+        setDoesOwnIncrementalMountOnChildren((ViewGroup) child, doesOwnIncrementalMount);
+      }
+    }
   }
 
   @DoNotStrip
