@@ -42,6 +42,9 @@ ext {
     targetCompatibilityVersion = JavaVersion.VERSION_1_7
 }
 
+ext.isRelease = { project.hasProperty('RELEASE_MODE') }
+ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
+
 ext.deps = [
         // Android support
         supportAnnotations : 'com.android.support:support-annotations:26.1.0',
@@ -81,6 +84,12 @@ ext.deps = [
         // Kotlin
         kotlinStandardLib  : "org.jetbrains.kotlin:kotlin-stdlib-jre7:${KOTLIN_VERSION}"
 ]
+
+// For releases, we want to depend on a stable version of Yoga.
+ext.deps.yoga =
+    isSnapshot()
+        ? 'com.facebook.yoga:yoga:1.6.1-SNAPSHOT'
+        : 'com.facebook.yoga:yoga:1.6.0'
 
 // This should hopefully only serve as a temporary measure until
 // we have a proper Gradle setup for Yoga and JNI.
