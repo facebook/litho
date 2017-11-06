@@ -26,6 +26,7 @@ com.facebook.litho.stetho
 com.facebook.litho.testing
 com.facebook.litho.testing.assertj
 com.facebook.litho.testing.espresso
+com.facebook.litho.testing.espresso.rules
 com.facebook.litho.testing.eventhandler
 com.facebook.litho.testing.helper
 com.facebook.litho.testing.sections
