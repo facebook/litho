@@ -24,5 +24,5 @@ elif [ "$CI_PULL_REQUEST" != "" ]; then
 elif [ "$IS_SNAPSHOT" == "" ]; then
   echo "Skipping build. Given build doesn't appear to be a SNAPSHOT release."
 else
-  "$BASEDIR/gradlew" uploadArchives -PRELEASE_MODE
+  "$BASEDIR/gradlew" uploadArchives
 fi
