@@ -10,7 +10,11 @@
 
 package com.facebook.litho.animation;
 
+import android.support.annotation.Nullable;
+import android.view.animation.Interpolator;
 import com.facebook.litho.dataflow.ConstantNode;
+import com.facebook.litho.dataflow.InterpolatorNode;
+import com.facebook.litho.dataflow.MappingNode;
 import com.facebook.litho.dataflow.TimingNode;
 import java.util.ArrayList;
 
@@ -21,10 +25,17 @@ public class TimingTransition extends TransitionAnimationBinding {
 
   private final int mDurationMs;
   private final PropertyAnimation mPropertyAnimation;
+  private final @Nullable Interpolator mInterpolator;
 
   public TimingTransition(int durationMs, PropertyAnimation propertyAnimation) {
+    this(durationMs, propertyAnimation, null);
+  }
+
+  public TimingTransition(
+      int durationMs, PropertyAnimation propertyAnimation, Interpolator interpolator) {
     mDurationMs = durationMs;
     mPropertyAnimation = propertyAnimation;
+    mInterpolator = interpolator;
   }
 
   @Override
@@ -37,9 +48,19 @@ public class TimingTransition extends TransitionAnimationBinding {
     final TimingNode timingNode = new TimingNode(mDurationMs);
     final ConstantNode initial = new ConstantNode(resolver.getCurrentState(mPropertyAnimation.getPropertyHandle()));
     final ConstantNode end = new ConstantNode(mPropertyAnimation.getTargetValue());
+    final MappingNode mappingNode = new MappingNode();
 
-    addBinding(initial, timingNode, TimingNode.INITIAL_INPUT);
-    addBinding(end, timingNode, TimingNode.END_INPUT);
-    addBinding(timingNode, resolver.getAnimatedPropertyNode(mPropertyAnimation.getPropertyHandle()));
+    if (mInterpolator != null) {
+      final InterpolatorNode interpolatorNode = new InterpolatorNode(mInterpolator);
+      addBinding(timingNode, interpolatorNode);
+      addBinding(interpolatorNode, mappingNode);
+    } else {
+      addBinding(timingNode, mappingNode);
+    }
+    addBinding(initial, mappingNode, MappingNode.INITIAL_INPUT);
+    addBinding(end, mappingNode, MappingNode.END_INPUT);
+    addBinding(
+        mappingNode, resolver.getAnimatedPropertyNode(mPropertyAnimation.getPropertyHandle()));
   }
+
 }

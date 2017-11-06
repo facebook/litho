@@ -13,6 +13,8 @@
 package com.facebook.samples.litho.transitionsdemo;
 
 import android.graphics.Color;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.BounceInterpolator;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.ComponentContext;
@@ -76,7 +78,13 @@ public class LeftRightBlocksComponentSpec {
 
   @OnCreateTransition
   static Transition onCreateTransition(ComponentContext c) {
-    return Transition.create(Transition.allKeys())
-        .animate(AnimatedProperties.X);
+    return Transition.parallel(
+        Transition.create("red")
+            .animate(AnimatedProperties.X)
+            .animator(Transition.timing(1000, new AccelerateDecelerateInterpolator())),
+        Transition.create("blue").animate(AnimatedProperties.X).animator(Transition.timing(1000)),
+        Transition.create("green")
+            .animate(AnimatedProperties.X)
+            .animator(Transition.timing(1000, new BounceInterpolator())));
   }
 }

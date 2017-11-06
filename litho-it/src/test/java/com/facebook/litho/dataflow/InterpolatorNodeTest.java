@@ -10,16 +10,16 @@
 package com.facebook.litho.dataflow;
 
 import static com.facebook.litho.dataflow.GraphBinding.create;
-import static com.facebook.litho.dataflow.MockTimingSource.FRAME_TIME_MS;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import android.view.animation.Interpolator;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(ComponentsTestRunner.class)
-public class TimingNodeTest {
+public class InterpolatorNodeTest {
 
   private MockTimingSource mTestTimingSource;
   private DataFlowGraph mDataFlowGraph;
@@ -31,31 +31,39 @@ public class TimingNodeTest {
   }
 
   @Test
-  public void testTimingNode() {
-    int durationMs = 300;
-    int numExpectedFrames = 300 / FRAME_TIME_MS + 1;
-
-    TimingNode timingNode = new TimingNode(durationMs);
+  public void testInterpolatorNode() {
+    SettableNode settableNode = new SettableNode();
+    InterpolatorNode interpolatorNode =
+        new InterpolatorNode(
+            new Interpolator() {
+              @Override
+              public float getInterpolation(float input) {
+                return input;
+              }
+            });
     SimpleNode middle = new SimpleNode();
     OutputOnlyNode destination = new OutputOnlyNode();
 
     GraphBinding binding = create(mDataFlowGraph);
-    binding.addBinding(timingNode, middle);
+    binding.addBinding(settableNode, interpolatorNode);
+    binding.addBinding(interpolatorNode, middle);
     binding.addBinding(middle, destination);
     binding.activate();
 
+    settableNode.setValue(0);
     mTestTimingSource.step(1);
 
     assertThat(destination.getValue()).isEqualTo(0f);
 
-    mTestTimingSource.step(numExpectedFrames / 2);
+    settableNode.setValue(0.5f);
+    mTestTimingSource.step(1);
 
     assertThat(destination.getValue() < 1).isTrue();
     assertThat(destination.getValue() > 0).isTrue();
 
-    mTestTimingSource.step(numExpectedFrames / 2 + 1);
+    settableNode.setValue(1.0f);
+    mTestTimingSource.step(1);
 
     assertThat(destination.getValue()).isEqualTo(1f);
   }
-
 }

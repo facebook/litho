@@ -8,6 +8,7 @@
  */
 package com.facebook.litho;
 
+import android.view.animation.Interpolator;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.animation.AnimationBinding;
@@ -196,6 +197,11 @@ public abstract class Transition {
   /** Creates a {@link TimingTransition} with the given duration. */
   public static TransitionAnimator timing(final int durationMs) {
     return new TimingTransitionAnimator(durationMs);
+  }
+
+  /** Creates a {@link TimingTransition} with the given duration and {@link Interpolator}. */
+  public static TransitionAnimator timing(final int durationMs, Interpolator interpolator) {
+    return new TimingTransitionAnimator(durationMs, interpolator);
   }
 
   public static class TransitionUnit extends Transition {
@@ -450,14 +456,20 @@ public abstract class Transition {
   public static class TimingTransitionAnimator implements Transition.TransitionAnimator {
 
     final int mDurationMs;
+    final Interpolator mInterpolator;
 
     public TimingTransitionAnimator(int durationMs) {
+      this(durationMs, null);
+    }
+
+    public TimingTransitionAnimator(int durationMs, Interpolator interpolator) {
       mDurationMs = durationMs;
+      mInterpolator = interpolator;
     }
 
     @Override
     public TransitionAnimationBinding createAnimation(PropertyAnimation propertyAnimation) {
-      return new TimingTransition(mDurationMs, propertyAnimation);
+      return new TimingTransition(mDurationMs, propertyAnimation, mInterpolator);
     }
   }
 

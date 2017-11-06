@@ -10,27 +10,19 @@
 package com.facebook.litho.dataflow;
 
 /**
- * A ValueNode that will linearly update its value from its "initial" input to its "end" input
- * over the course of the given duration.
- *
- * This node supports the "end" input changing: it will animate to that new end value over the
- * remaining duration meaning that velocity of the value may change.
- *
- * NB: If the end input changes after the end of the duration, this node will just pass through that
- * new value.
+ * A {@link ValueNode} that will linearly update its value from 0 to 1.0 over the course of the
+ * given duration.
  */
 public class TimingNode extends ValueNode implements NodeCanFinish {
 
-  public static final String INITIAL_INPUT = "initial";
-  public static final String END_INPUT = "end";
-
   private static final int MS_IN_NANOS = 1000000;
+  private static final float INITIAL_VALUE = 0.0f;
+  private static final float END_VALUE = 1.0f;
 
-  private final int mDurationMs;
+  private final long mDurationMs;
   private long mStartTimeNs = Long.MIN_VALUE;
   private long mExpectedEndTimeNs = Long.MIN_VALUE;
   private long mLastValueTimeNs = Long.MIN_VALUE;
-  private float mInitialValue;
   private boolean mAreParentsFinished = false;
   private boolean mIsFinished = false;
 
@@ -41,26 +33,19 @@ public class TimingNode extends ValueNode implements NodeCanFinish {
   @Override
   public float calculateValue(long frameTimeNanos) {
     if (mLastValueTimeNs == Long.MIN_VALUE) {
-      mInitialValue = getInput(INITIAL_INPUT).getValue();
       mStartTimeNs = frameTimeNanos;
       mLastValueTimeNs = frameTimeNanos;
       mExpectedEndTimeNs = mStartTimeNs + (mDurationMs * MS_IN_NANOS);
-      return mInitialValue;
+      return INITIAL_VALUE;
     }
 
-    float endValue = getInput(END_INPUT).getValue();
     if (frameTimeNanos >= mExpectedEndTimeNs) {
       mIsFinished = true;
-      return endValue;
+      return END_VALUE;
     }
 
-    float lastValue = getValue();
-    float desiredVelocity = (endValue - lastValue) / (mExpectedEndTimeNs - mLastValueTimeNs);
-    float increment = desiredVelocity * (frameTimeNanos - mLastValueTimeNs);
-
     mLastValueTimeNs = frameTimeNanos;
-
-    return lastValue + increment;
+    return (float) (frameTimeNanos - mStartTimeNs) / (mExpectedEndTimeNs - mStartTimeNs);
   }
 
   @Override
