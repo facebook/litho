@@ -1064,6 +1064,7 @@ class LayoutState {
     layoutState.mClipChildren = clipChildren;
 
     component.applyStateUpdates(c);
+    component.recordEventTriggers(c);
 
     final InternalNode root = createAndMeasureTreeForComponent(
         component.getScopedContext(),

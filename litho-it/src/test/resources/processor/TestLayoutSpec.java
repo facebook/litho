@@ -12,7 +12,6 @@ package com.facebook.litho.processor.integration.resources;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.view.View;
-
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -20,15 +19,16 @@ import com.facebook.litho.Diff;
 import com.facebook.litho.Output;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
-import com.facebook.litho.TransitionSet;
 import com.facebook.litho.annotations.FromEvent;
+import com.facebook.litho.annotations.FromTrigger;
 import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateTransition;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.annotations.OnCreateTransition;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnLoadStyle;
+import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
@@ -84,6 +84,9 @@ public class TestLayoutSpec<S extends View> {
       @Prop char prop5,
       @State(canUpdateLazily = true) long state1) {
   }
+
+  @OnTrigger(ClickEvent.class)
+  static void onClickEventTrigger(ComponentContext c, @FromTrigger View view) {}
 
   @OnUpdateState
   static void updateCurrentState(

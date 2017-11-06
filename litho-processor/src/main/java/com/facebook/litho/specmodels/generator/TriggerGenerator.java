@@ -42,6 +42,7 @@ public class TriggerGenerator {
   public static TypeSpecDataHolder generate(SpecModel specModel) {
     final TypeSpecDataHolder.Builder builder =
         TypeSpecDataHolder.newBuilder()
+            .addTypeSpecDataHolder(generateStaticGetTriggerMethods(specModel))
             .addTypeSpecDataHolder(generateOnTriggerMethodDelegates(specModel))
             .addTypeSpecDataHolder(generateStaticTriggerMethods(specModel));
 
@@ -197,6 +198,41 @@ public class TriggerGenerator {
     return methodSpec.build();
   }
 
+  static TypeSpecDataHolder generateStaticGetTriggerMethods(SpecModel specModel) {
+    final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel :
+        specModel.getTriggerMethods()) {
+      typeSpecDataHolder.addMethod(
+          generateStaticGetTrigger(
+              specModel.getComponentName(), specModel.getContextClass(), eventMethodModel));
+    }
+
+    return typeSpecDataHolder.build();
+  }
+
+  private static MethodSpec generateStaticGetTrigger(
+      String componentName,
+      ClassName contextClassName,
+      SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
+
+    MethodSpec.Builder triggerMethod =
+        MethodSpec.methodBuilder(
+                ComponentImplGenerator.getEventTriggerInstanceName(eventMethodModel.name))
+            .returns(ClassNames.EVENT_TRIGGER)
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
+
+    String methodId =
+        componentName + ComponentImplGenerator.getEventTriggerInstanceName(eventMethodModel.name);
+
+    triggerMethod
+        .addParameter(contextClassName, "c")
+        .addParameter(ClassNames.STRING, "key")
+        .addStatement("$T methodId = $L", TypeName.INT, methodId.hashCode())
+        .addStatement("return newEventTrigger(c, key, methodId)");
+
+    return triggerMethod.build();
+  }
+
   static TypeSpecDataHolder generateStaticTriggerMethods(SpecModel specModel) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
     for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel :
@@ -204,12 +240,16 @@ public class TriggerGenerator {
       typeSpecDataHolder.addMethod(
           generateStaticTriggerMethodWithKey(
               specModel.getComponentName(), specModel.getContextClass(), eventMethodModel));
+
+      typeSpecDataHolder.addMethod(
+          generateStaticTriggerMethodWithTriggerHandler(
+              specModel.getContextClass(), eventMethodModel));
     }
 
     return typeSpecDataHolder.build();
   }
 
-  static MethodSpec generateStaticTriggerMethodWithKey(
+  private static MethodSpec generateStaticTriggerMethodWithKey(
       String componentName,
       ClassName contextClassName,
       SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
@@ -227,6 +267,30 @@ public class TriggerGenerator {
         .addStatement("$T methodId = $L", TypeName.INT, methodId.hashCode())
         .addStatement("$T trigger = getEventTrigger(c, methodId, key)", ClassNames.EVENT_TRIGGER);
 
+    EventDeclarationModel eventDeclaration = eventMethodModel.typeModel;
+
+    triggerMethod.beginControlFlow("if (trigger == null)");
+    triggerMethod.addStatement(
+        (eventDeclaration.returnType == null || eventDeclaration.returnType.equals(TypeName.VOID))
+            ? "return"
+            : "return null");
+    triggerMethod.endControlFlow();
+
+    return generateCommonStaticTriggerMethodCode(contextClassName, eventMethodModel, triggerMethod);
+  }
+
+  private static MethodSpec generateStaticTriggerMethodWithTriggerHandler(
+      ClassName contextClassName,
+      SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
+
+    MethodSpec.Builder triggerMethod =
+        MethodSpec.methodBuilder(eventMethodModel.name.toString())
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
+
+    triggerMethod
+        .addParameter(contextClassName, "c")
+        .addParameter(ClassNames.EVENT_TRIGGER, "trigger");
+
     return generateCommonStaticTriggerMethodCode(contextClassName, eventMethodModel, triggerMethod);
   }
 
@@ -236,13 +300,6 @@ public class TriggerGenerator {
       MethodSpec.Builder eventTriggerMethod) {
 
     EventDeclarationModel eventDeclaration = eventMethodModel.typeModel;
-
-    eventTriggerMethod.beginControlFlow("if (trigger == null)");
-    eventTriggerMethod.addStatement(
-        (eventDeclaration.returnType == null || eventDeclaration.returnType.equals(TypeName.VOID))
-            ? "return"
-            : "return null");
-    eventTriggerMethod.endControlFlow();
 
     eventTriggerMethod.addStatement(
         "$T _eventState = new $T()",

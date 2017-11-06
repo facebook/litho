@@ -21,7 +21,9 @@ import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.EventTrigger;
 import com.facebook.litho.HasEventDispatcher;
+import com.facebook.litho.HasEventTrigger;
 import com.facebook.litho.Output;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
@@ -202,6 +204,54 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     }
   }
 
+  public static EventTrigger onClickEventTriggerTrigger(ComponentContext c, String key) {
+    int methodId = -1670292499;
+    return newEventTrigger(c, key, methodId);
+  }
+
+  private void onClickEventTrigger(HasEventTrigger _abstractImpl, View view) {
+    TestLayoutImpl _impl = (TestLayoutImpl) _abstractImpl;
+    TestLayoutSpec.onClickEventTrigger((ComponentContext) _impl.getScopedContext(), view);
+  }
+
+  public static void onClickEventTrigger(ComponentContext c, String key, View view) {
+    int methodId = -1670292499;
+    EventTrigger trigger = getEventTrigger(c, methodId, key);
+    if (trigger == null) {
+      return;
+    }
+    ClickEvent _eventState = new ClickEvent();
+    _eventState.view = view;
+    trigger.dispatchOnTrigger(_eventState, new Object[] {});
+  }
+
+  public static void onClickEventTrigger(ComponentContext c, EventTrigger trigger, View view) {
+    ClickEvent _eventState = new ClickEvent();
+    _eventState.view = view;
+    trigger.dispatchOnTrigger(_eventState, new Object[] {});
+  }
+
+  @Override
+  protected boolean canAcceptTrigger() {
+    return true;
+  }
+
+  @Override
+  public Object acceptTriggerEvent(
+      final EventTrigger eventTrigger, final Object eventState, final Object[] params) {
+    int id = eventTrigger.mId;
+    switch (id) {
+      case -1670292499:
+        {
+          ClickEvent _event = (ClickEvent) eventState;
+          onClickEventTrigger(eventTrigger.mTriggerTarget, _event.view);
+          return null;
+        }
+      default:
+        return null;
+    }
+  }
+
   @Override
   protected boolean hasState() {
     return true;
@@ -365,6 +415,8 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
 
     EventHandler testEventHandler;
 
+    EventTrigger onClickEventTriggerTrigger;
+
     private TestLayoutImpl() {
       super(get());
       mStateContainerImpl = new TestLayoutStateContainerImpl();
@@ -511,6 +563,28 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
 
     public Builder<S> testEventHandler(EventHandler testEventHandler) {
       this.mTestLayoutImpl.testEventHandler = testEventHandler;
+      return this;
+    }
+
+    public Builder onClickEventTriggerTrigger(EventTrigger onClickEventTriggerTrigger) {
+      onClickEventTriggerTrigger.mTriggerTarget = mTestLayoutImpl;
+      this.mTestLayoutImpl.onClickEventTriggerTrigger = onClickEventTriggerTrigger;
+      this.setEventTrigger(onClickEventTriggerTrigger);
+      return this;
+    }
+
+    private void onClickEventTriggerTrigger(String key) {
+      com.facebook.litho.EventTrigger onClickEventTriggerTrigger =
+          this.mTestLayoutImpl.onClickEventTriggerTrigger;
+      if (onClickEventTriggerTrigger == null) {
+        onClickEventTriggerTrigger = TestLayout.onClickEventTriggerTrigger(this.mContext, key);
+      }
+      onClickEventTriggerTrigger(onClickEventTriggerTrigger);
+    }
+
+    public Builder key(String key) {
+      super.key(key);
+      onClickEventTriggerTrigger(key);
       return this;
     }
 
