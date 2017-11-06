@@ -301,6 +301,7 @@ public class MountStateRemountInPlaceTest {
   public void testMountUnmountWithNoShouldUpdateAndSameMeasures() {
     final TestComponent firstComponent =
         create(mContext, 0, 0, true, true, true, false, false, true)
+            .color(Color.GRAY)
             .build();
 
     final LithoView lithoView = mountComponent(
@@ -325,6 +326,7 @@ public class MountStateRemountInPlaceTest {
 
     final TestComponent secondComponent =
         create(mContext)
+            .color(Color.RED)
             .build();
 
     lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {

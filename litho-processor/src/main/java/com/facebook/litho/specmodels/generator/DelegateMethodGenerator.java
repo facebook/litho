@@ -29,10 +29,10 @@ import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
-import static com.facebook.litho.specmodels.generator.ComponentImplGenerator.getImplAccessor;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_IMPL_PARAM_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_VARIABLE_NAME;
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getImplAccessor;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_PARAM_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.REF_VARIABLE_NAME;
 import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
 import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
@@ -100,17 +100,17 @@ public class DelegateMethodGenerator {
     final boolean shouldIncludeImpl =
         (!methodDescription.optionalParameterTypes.isEmpty() && !methodUsesDiffs) ||
             !methodDescription.optionalParameters.isEmpty();
+    final String componentName = specModel.getComponentName();
     if (shouldIncludeImpl) {
-      methodSpec.addParameter(specModel.getComponentClass(), ABSTRACT_IMPL_PARAM_NAME);
-      final String implName = ComponentImplGenerator.getImplClassName(specModel);
+      methodSpec.addParameter(specModel.getComponentClass(), ABSTRACT_PARAM_NAME);
       methodSpec.addStatement(
-          implName
+          componentName
               + " "
-              + IMPL_VARIABLE_NAME
+              + REF_VARIABLE_NAME
               + " = ("
-              + implName
+              + componentName
               + ") "
-              + ABSTRACT_IMPL_PARAM_NAME);
+              + ABSTRACT_PARAM_NAME);
     }
 
     for (TypeName exception : methodDescription.exceptions) {
@@ -122,12 +122,12 @@ public class DelegateMethodGenerator {
       methodSpec.addParameter(specModel.getComponentClass(), "_nextAbstractImpl");
       methodSpec.addStatement(
           "$L _prevImpl = ($L) _prevAbstractImpl",
-          ComponentImplGenerator.getImplClassName(specModel),
-          ComponentImplGenerator.getImplClassName(specModel));
+          componentName,
+          componentName);
       methodSpec.addStatement(
           "$L _nextImpl = ($L) _nextAbstractImpl",
-          ComponentImplGenerator.getImplClassName(specModel),
-          ComponentImplGenerator.getImplClassName(specModel));
+          componentName,
+          componentName);
     }
 
     final CodeBlock.Builder acquireStatements = CodeBlock.builder();
@@ -161,7 +161,7 @@ public class DelegateMethodGenerator {
         delegation.add(
             "($T) $L.$L",
             extraDefinedParam.getType(),
-            IMPL_VARIABLE_NAME,
+            REF_VARIABLE_NAME,
             extraDefinedParam.getName());
       } else if (methodParamModel instanceof DiffPropModel
           || methodParamModel instanceof DiffStateParamModel) {
@@ -171,8 +171,8 @@ public class DelegateMethodGenerator {
             methodParamModel.getType(),
             methodParamModel.getName(),
             ClassNames.DIFF,
-            ComponentImplGenerator.getImplAccessor(specModel, methodParamModel),
-            ComponentImplGenerator.getImplAccessor(specModel, methodParamModel));
+            ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel),
+            ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel));
         delegation.add("$L", methodParamModel.getName());
         releaseStatements.addStatement("releaseDiff($L)", methodParamModel.getName());
       } else if (isOutputType(methodParamModel.getType())) {
@@ -186,7 +186,7 @@ public class DelegateMethodGenerator {
         }
         releaseStatements.addStatement(
             "$L.$L = $L.get()",
-            IMPL_VARIABLE_NAME,
+            REF_VARIABLE_NAME,
             getImplAccessor(specModel, methodParamModel),
             methodParamModel.getName());
         if (isPropOutput) {
@@ -207,7 +207,7 @@ public class DelegateMethodGenerator {
 
         releaseStatements.addStatement(
             "$L.$L = $L.get()",
-            IMPL_VARIABLE_NAME,
+            REF_VARIABLE_NAME,
             getImplAccessor(specModel, methodParamModel),
             methodParamModel.getName());
 
@@ -223,12 +223,12 @@ public class DelegateMethodGenerator {
                 .indent()
                 .add(
                     "$L.$L == null ? null : $L.$L.$L,\n",
-                    IMPL_VARIABLE_NAME,
+                    REF_VARIABLE_NAME,
                     PREVIOUS_RENDER_DATA_FIELD_NAME,
-                    IMPL_VARIABLE_NAME,
+                    REF_VARIABLE_NAME,
                     PREVIOUS_RENDER_DATA_FIELD_NAME,
                     methodParamModel.getName())
-                .add("$L.$L);\n", IMPL_VARIABLE_NAME, getImplAccessor(specModel, methodParamModel))
+                .add("$L.$L);\n", REF_VARIABLE_NAME, getImplAccessor(specModel, methodParamModel))
                 .unindent()
                 .build();
         methodSpec.addCode(block);
@@ -238,7 +238,7 @@ public class DelegateMethodGenerator {
         delegation.add(
             "($T) $L.$L",
             methodParamModel.getType(),
-            IMPL_VARIABLE_NAME,
+            REF_VARIABLE_NAME,
             getImplAccessor(specModel, methodParamModel));
       }
 

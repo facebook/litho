@@ -9,6 +9,9 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import static com.facebook.litho.specmodels.generator.DelegateMethodGeneratorTest.createBooleanTypeMirror;
+import static com.facebook.litho.specmodels.generator.DelegateMethodGeneratorTest.createIntTypeMirror;
+import static com.facebook.litho.specmodels.generator.DelegateMethodGeneratorTest.createTypeMirror;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -29,6 +32,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.type.TypeKind;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,7 +63,7 @@ public class TreePropGeneratorTest {
             ImmutableList.of(
                 MethodParamModelFactory.create(
                     mock(ExecutableElement.class),
-                    ClassNames.COMPONENT_CONTEXT,
+                    createTypeMirror(TypeKind.OTHER, ClassNames.COMPONENT_CONTEXT),
                     "componentContext",
                     new ArrayList<Annotation>(),
                     new ArrayList<AnnotationSpec>(),
@@ -68,7 +72,7 @@ public class TreePropGeneratorTest {
                     null),
                 MethodParamModelFactory.create(
                     mock(ExecutableElement.class),
-                    TypeName.BOOLEAN,
+                    createBooleanTypeMirror(),
                     "prop",
                     ImmutableList.of(createAnnotation(Prop.class)),
                     new ArrayList<AnnotationSpec>(),
@@ -77,7 +81,7 @@ public class TreePropGeneratorTest {
                     null),
                 MethodParamModelFactory.create(
                     mock(ExecutableElement.class),
-                    TypeName.INT,
+                    createIntTypeMirror(),
                     "state",
                     ImmutableList.of(createAnnotation(State.class)),
                     new ArrayList<AnnotationSpec>(),
@@ -110,25 +114,25 @@ public class TreePropGeneratorTest {
 
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString()).isEqualTo(
         "@java.lang.Override\n" +
-            "protected void populateTreeProps(com.facebook.litho.Component _abstractImpl,\n" +
+            "protected void populateTreeProps(com.facebook.litho.Component _abstract,\n" +
             "    com.facebook.litho.TreeProps treeProps) {\n" +
             "  if (treeProps == null) {\n" +
             "    return;\n" +
             "  }\n" +
-            "  final TestImpl _impl = (TestImpl) _abstractImpl;\n" +
-            "  _impl.treeProp = treeProps.get(int.class);\n" +
+            "  final Test _ref = (Test) _abstract;\n" +
+            "  _ref.treeProp = treeProps.get(int.class);\n" +
             "}\n");
 
     assertThat(typeSpecDataHolder.getMethodSpecs().get(1).toString()).isEqualTo(
         "@java.lang.Override\n" +
         "protected com.facebook.litho.TreeProps getTreePropsForChildren(com.facebook.litho.ComponentContext c,\n" +
-        "    com.facebook.litho.Component _abstractImpl, com.facebook.litho.TreeProps parentTreeProps) {\n" +
-        "  final TestImpl _impl = (TestImpl) _abstractImpl;\n" +
+        "    com.facebook.litho.Component _abstract, com.facebook.litho.TreeProps parentTreeProps) {\n" +
+        "  final Test _ref = (Test) _abstract;\n" +
         "  final com.facebook.litho.TreeProps childTreeProps = com.facebook.litho.TreeProps.copy(parentTreeProps);\n" +
         "  childTreeProps.put(boolean.class, TestSpec.onCreateTreeProp(\n" +
         "      (com.facebook.litho.ComponentContext) c,\n" +
-        "      (boolean) _impl.prop,\n" +
-        "      (int) _impl.mStateContainerImpl.state));\n" +
+        "      (boolean) _ref.prop,\n" +
+        "      (int) _ref.mStateContainer.state));\n" +
         "  return childTreeProps;\n" +
         "}\n");
   }

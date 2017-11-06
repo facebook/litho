@@ -10,7 +10,6 @@
 package com.facebook.litho.specmodels.generator;
 
 import static com.facebook.litho.specmodels.generator.PreambleGenerator.generateConstructor;
-import static com.facebook.litho.specmodels.generator.PreambleGenerator.generateGetter;
 import static com.facebook.litho.specmodels.generator.PreambleGenerator.generateSourceDelegate;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -66,7 +65,7 @@ public class PreambleGeneratorTest {
     assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
 
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
-        .isEqualTo("private Constructor() {\n" + "}\n");
+        .isEqualTo("private Constructor() {\n  super();\n" + "}\n");
   }
 
   @Test
@@ -88,7 +87,7 @@ public class PreambleGeneratorTest {
 
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "public Constructor() {\n" + "  final Object testObject = new TestObject();\n" + "}\n");
+            "public Constructor() {\n" + "  super();\n  final Object testObject = new TestObject();\n" + "}\n");
   }
 
   @Test
@@ -121,38 +120,5 @@ public class PreambleGeneratorTest {
 
     assertThat(typeSpecDataHolder.getFieldSpecs().get(0).toString())
         .isEqualTo("private com.facebook.litho.TestSpec mSpec;\n");
-  }
-
-  @Test
-  public void testGenerateGetterWithoutDependencyInjection() {
-    TypeSpecDataHolder typeSpecDataHolder = generateGetter(mSpecModelWithoutDI);
-
-    assertThat(typeSpecDataHolder.getFieldSpecs()).hasSize(1);
-    assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(1);
-    assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
-
-    assertThat(typeSpecDataHolder.getFieldSpecs().get(0).toString()).isEqualTo(
-        "private static com.facebook.litho.Test sInstance = null;\n");
-    assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString()).isEqualTo(
-        "private static synchronized com.facebook.litho.Test get() {\n" +
-            "  if (sInstance == null) {\n" +
-            "    sInstance = new com.facebook.litho.Test();\n" +
-            "  }\n" +
-            "  return sInstance;\n" +
-            "}\n");
-  }
-
-  @Test
-  public void testGenerateGetterWithDependencyInjection() {
-    TypeSpecDataHolder typeSpecDataHolder = generateGetter(mSpecModelWithDI);
-
-    assertThat(typeSpecDataHolder.getFieldSpecs()).isEmpty();
-    assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(1);
-    assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
-
-    assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString()).isEqualTo(
-        "private com.facebook.litho.Test get() {\n" +
-            "  return this;\n" +
-            "}\n");
   }
 }

@@ -14,6 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.google.testing.compile.CompilationRule;
@@ -39,10 +40,12 @@ public class RenderDataGeneratorTest {
     when(mSpecModelWithDiff.getRenderDataDiffs())
         .thenReturn(ImmutableList.of(mRenderDataDiffModel));
     when(mSpecModelWithDiff.getComponentName()).thenReturn("WithDiffSpec");
+    when(mSpecModelWithDiff.getComponentTypeName()).thenReturn(ClassNames.COMPONENT);
 
     when(mSpecModelWithoutDiff.getRenderDataDiffs())
         .thenReturn(ImmutableList.<RenderDataDiffModel>of());
     when(mSpecModelWithoutDiff.getComponentName()).thenReturn("WithoutDiffSpec");
+    when(mSpecModelWithoutDiff.getComponentTypeName()).thenReturn(ClassNames.COMPONENT);
 
     when(mRenderDataDiffModel.getName()).thenReturn("diffParam1");
   }

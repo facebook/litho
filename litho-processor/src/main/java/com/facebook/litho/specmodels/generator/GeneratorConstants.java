@@ -14,12 +14,10 @@ package com.facebook.litho.specmodels.generator;
  */
 public interface GeneratorConstants {
   String DELEGATE_FIELD_NAME = "mSpec";
-  String SPEC_INSTANCE_NAME = "sInstance";
-  String ABSTRACT_IMPL_PARAM_NAME = "_abstractImpl";
-  String IMPL_VARIABLE_NAME = "_impl";
-  String IMPL_CLASS_NAME_SUFFIX = "Impl";
-  String STATE_CONTAINER_FIELD_NAME = "mStateContainerImpl";
+  String ABSTRACT_PARAM_NAME = "_abstract";
+  String REF_VARIABLE_NAME = "_ref";
+  String STATE_CONTAINER_FIELD_NAME = "mStateContainer";
   String PREVIOUS_RENDER_DATA_FIELD_NAME = "mPreviousRenderData";
-  String STATE_CONTAINER_IMPL_NAME_SUFFIX = "StateContainerImpl";
-  String STATE_UPDATE_IMPL_NAME_SUFFIX = "StateUpdate";
+  String STATE_CONTAINER_NAME_SUFFIX = "StateContainer";
+  String STATE_UPDATE_NAME_SUFFIX = "StateUpdate";
 }

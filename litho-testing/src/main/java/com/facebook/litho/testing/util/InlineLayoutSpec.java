@@ -12,33 +12,25 @@ package com.facebook.litho.testing.util;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Transition;
 
-public abstract class InlineLayoutSpec extends Component implements Cloneable {
+public abstract class InlineLayoutSpec extends Component<InlineLayoutSpec> {
 
-  private static class Lifecycle extends ComponentLifecycle {
-
-    @Override
-    protected ComponentLayout onCreateLayout(ComponentContext c, Component<?> component) {
-      return ((InlineLayoutSpec) component).onCreateLayout(c);
-    }
-
-    @Override
-    public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-      // no-op
-      return null;
-    }
-
-    @Override
-    protected Transition onCreateTransition(ComponentContext c, Component<?> component) {
-      return ((InlineLayoutSpec) component).onCreateTransition(c);
-    }
+  @Override
+  protected ComponentLayout onCreateLayout(ComponentContext c, Component<?> component) {
+    return ((InlineLayoutSpec) component).onCreateLayout(c);
   }
 
-  public InlineLayoutSpec() {
-    super(new Lifecycle());
+  @Override
+  public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+    // no-op
+    return null;
+  }
+
+  @Override
+  protected Transition onCreateTransition(ComponentContext c, Component<?> component) {
+    return ((InlineLayoutSpec) component).onCreateTransition(c);
   }
 
   @Override

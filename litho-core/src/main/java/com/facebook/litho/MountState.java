@@ -967,20 +967,19 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       MountItem item,
       LayoutOutput layoutOutput,
       Component previousComponent) {
-    final Component<?> component = layoutOutput.getComponent();
-    if (isHostSpec(component)) {
+    final Component<?> newComponent = layoutOutput.getComponent();
+    if (isHostSpec(newComponent)) {
       return;
     }
 
     final Object previousContent = item.getContent();
-    final ComponentLifecycle lifecycle = component.getLifecycle();
 
     // Call unmount and mount in sequence to make sure all the the resources are correctly
     // de-allocated. It's possible for previousContent to equal null - when the root is
     // interactive we create a LayoutOutput without content in order to set up click handling.
-    lifecycle.unmount(
+    previousComponent.unmount(
         getContextForComponent(previousComponent), previousContent, previousComponent);
-    lifecycle.mount(getContextForComponent(component), previousContent, component);
+    newComponent.mount(getContextForComponent(newComponent), previousContent, newComponent);
   }
 
   private void mountLayoutOutput(int index, LayoutOutput layoutOutput, LayoutState layoutState) {

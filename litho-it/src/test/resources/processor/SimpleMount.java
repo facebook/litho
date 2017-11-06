@@ -23,32 +23,71 @@ import java.util.BitSet;
  * @prop-required ratio double
  * @prop-required content com.facebook.litho.Component
  */
-public final class SimpleMount extends ComponentLifecycle {
-  private static SimpleMount sInstance = null;
-
+public final class SimpleMount extends Component<SimpleMount> {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
 
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  double ratio;
+
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  Component content;
+
   private SimpleMount() {
+    super();
   }
 
-  private static synchronized SimpleMount get() {
-    if (sInstance == null) {
-      sInstance = new SimpleMount();
+  @Override
+  public String getSimpleName() {
+    return "SimpleMount";
+  }
+
+  @Override
+  public boolean isEquivalentTo(Component<?> other) {
+    if (this == other) {
+      return true;
     }
-    return sInstance;
+    if (other == null || getClass() != other.getClass()) {
+      return false;
+    }
+    SimpleMount simpleMountRef = (SimpleMount) other;
+    if (this.getId() == simpleMountRef.getId()) {
+      return true;
+    }
+    if (Double.compare(ratio, simpleMountRef.ratio) != 0) {
+      return false;
+    }
+    if (content != null
+        ? !content.isEquivalentTo(simpleMountRef.content)
+        : simpleMountRef.content != null) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public SimpleMount makeShallowCopy() {
+    SimpleMount component = (SimpleMount) super.makeShallowCopy();
+    component.content = component.content != null ? component.content.makeShallowCopy() : null;
+    return component;
   }
 
   @Override
   protected void onMeasure(ComponentContext c, ComponentLayout layout, int widthSpec,
-      int heightSpec, Size size, Component _abstractImpl) {
-    SimpleMountImpl _impl = (SimpleMountImpl) _abstractImpl;
+      int heightSpec, Size size, Component _abstract) {
+    SimpleMount _ref = (SimpleMount) _abstract;
     SimpleMountSpec.onMeasure(
         (ComponentContext) c,
         (ComponentLayout) layout,
         (int) widthSpec,
         (int) heightSpec,
         (Size) size,
-        (double) _impl.ratio);
+        (double) _ref.ratio);
   }
 
   @Override
@@ -64,17 +103,17 @@ public final class SimpleMount extends ComponentLifecycle {
   }
 
   @Override
-  protected void onMount(ComponentContext c, Object componentView, Component _abstractImpl) {
-    SimpleMountImpl _impl = (SimpleMountImpl) _abstractImpl;
+  protected void onMount(ComponentContext c, Object componentView, Component _abstract) {
+    SimpleMount _ref = (SimpleMount) _abstract;
     SimpleMountSpec.onMount(
         (ComponentContext) c,
         (LithoView) componentView,
-        (Component) _impl.content);
+        (Component) _ref.content);
   }
 
   @Override
-  protected void onUnmount(ComponentContext c, Object mountedView, Component _abstractImpl) {
-    SimpleMountImpl _impl = (SimpleMountImpl) _abstractImpl;
+  protected void onUnmount(ComponentContext c, Object mountedView, Component _abstract) {
+    SimpleMount _ref = (SimpleMount) _abstract;
     SimpleMountSpec.onUnmount(
         (ComponentContext) c,
         (LithoView) mountedView);
@@ -104,61 +143,9 @@ public final class SimpleMount extends ComponentLifecycle {
     if (builder == null) {
       builder = new Builder();
     }
-    builder.init(context, defStyleAttr, defStyleRes, new SimpleMountImpl());
+    SimpleMount instance = new SimpleMount();
+    builder.init(context, defStyleAttr, defStyleRes, instance);
     return builder;
-  }
-
-  static class SimpleMountImpl extends Component<SimpleMount> implements Cloneable {
-    @Prop(
-        resType = ResType.NONE,
-        optional = false
-    )
-    double ratio;
-
-    @Prop(
-        resType = ResType.NONE,
-        optional = false
-    )
-    Component content;
-
-    private SimpleMountImpl() {
-      super(get());
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "SimpleMount";
-    }
-
-    @Override
-    public boolean isEquivalentTo(Component<?> other) {
-      if (this == other) {
-        return true;
-      }
-      if (other == null || getClass() != other.getClass()) {
-        return false;
-      }
-      SimpleMountImpl simpleMountImpl = (SimpleMountImpl) other;
-      if (this.getId() == simpleMountImpl.getId()) {
-        return true;
-      }
-      if (Double.compare(ratio, simpleMountImpl.ratio) != 0) {
-        return false;
-      }
-      if (content != null
-          ? !content.isEquivalentTo(simpleMountImpl.content)
-          : simpleMountImpl.content != null) {
-        return false;
-      }
-      return true;
-    }
-
-    @Override
-    public SimpleMountImpl makeShallowCopy() {
-      SimpleMountImpl component = (SimpleMountImpl) super.makeShallowCopy();
-      component.content = component.content != null ? component.content.makeShallowCopy() : null;
-      return component;
-    }
   }
 
   public static class Builder extends Component.Builder<SimpleMount, Builder> {
@@ -166,34 +153,34 @@ public final class SimpleMount extends ComponentLifecycle {
 
     private static final int REQUIRED_PROPS_COUNT = 2;
 
-    SimpleMountImpl mSimpleMountImpl;
+    SimpleMount mSimpleMount;
 
     ComponentContext mContext;
 
     private BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
     private void init(ComponentContext context, int defStyleAttr, int defStyleRes,
-        SimpleMountImpl simpleMountImpl) {
-      super.init(context, defStyleAttr, defStyleRes, simpleMountImpl);
-      mSimpleMountImpl = simpleMountImpl;
+        SimpleMount simpleMountRef) {
+      super.init(context, defStyleAttr, defStyleRes, simpleMountRef);
+      mSimpleMount = simpleMountRef;
       mContext = context;
       mRequired.clear();
     }
 
     public Builder ratio(double ratio) {
-      this.mSimpleMountImpl.ratio = ratio;
+      this.mSimpleMount.ratio = ratio;
       mRequired.set(0);
       return this;
     }
 
     public Builder content(Component content) {
-      this.mSimpleMountImpl.content = content == null ? null : content.makeShallowCopy();
+      this.mSimpleMount.content = content == null ? null : content.makeShallowCopy();
       mRequired.set(1);
       return this;
     }
 
-    public Builder content(Component.Builder<? extends ComponentLifecycle, ?> contentBuilder) {
-      this.mSimpleMountImpl.content = contentBuilder.build();
+    public Builder content(Component.Builder<? extends Component, ?> contentBuilder) {
+      this.mSimpleMount.content = contentBuilder.build();
       mRequired.set(1);
       return this;
     }
@@ -206,15 +193,15 @@ public final class SimpleMount extends ComponentLifecycle {
     @Override
     public Component<SimpleMount> build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      SimpleMountImpl simpleMountImpl = mSimpleMountImpl;
+      SimpleMount simpleMountRef = mSimpleMount;
       release();
-      return simpleMountImpl;
+      return simpleMountRef;
     }
 
     @Override
     protected void release() {
       super.release();
-      mSimpleMountImpl = null;
+      mSimpleMount = null;
       mContext = null;
       sBuilderPool.release(this);
     }

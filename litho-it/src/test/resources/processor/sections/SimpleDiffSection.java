@@ -15,22 +15,30 @@ import com.facebook.litho.sections.ChangeSet;
 import com.facebook.litho.sections.LoadingEvent;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
-import com.facebook.litho.sections.SectionLifecycle;
 
-public final class SimpleDiffSection extends SectionLifecycle {
-  private static SimpleDiffSection sInstance = null;
-
+public final class SimpleDiffSection extends Section<SimpleDiffSection> {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<Builder>(2);
 
   private SimpleDiffSection() {
+    super();
   }
 
-  private static synchronized SimpleDiffSection get() {
-    if (sInstance == null) {
-      sInstance = new SimpleDiffSection();
+  @Override
+  public String getSimpleName() {
+    return "SimpleDiffSection";
+  }
+
+  @Override
+  public boolean isEquivalentTo(Section<?> other) {
+    if (this == other) {
+      return true;
     }
-    return sInstance;
+    if (other == null || getClass() != other.getClass()) {
+      return false;
+    }
+    SimpleDiffSection simpleDiffSectionRef = (SimpleDiffSection) other;
+    return true;
   }
 
   public static Builder create(SectionContext context) {
@@ -38,15 +46,16 @@ public final class SimpleDiffSection extends SectionLifecycle {
     if (builder == null) {
       builder = new Builder();
     }
-    builder.init(context, new SimpleDiffSectionImpl());
+    SimpleDiffSection instance = new SimpleDiffSection();
+    builder.init(context, instance);
     return builder;
   }
 
   @Override
   protected void generateChangeSet(
       SectionContext c, ChangeSet changeSet, Section _prevAbstractImpl, Section _nextAbstractImpl) {
-    SimpleDiffSectionImpl _prevImpl = (SimpleDiffSectionImpl) _prevAbstractImpl;
-    SimpleDiffSectionImpl _nextImpl = (SimpleDiffSectionImpl) _nextAbstractImpl;
+    SimpleDiffSection _prevImpl = (SimpleDiffSection) _prevAbstractImpl;
+    SimpleDiffSection _nextImpl = (SimpleDiffSection) _nextAbstractImpl;
     SimpleDiffSectionSpec.onCreateChangeset((SectionContext) c, (ChangeSet) changeSet);
   }
 
@@ -55,37 +64,14 @@ public final class SimpleDiffSection extends SectionLifecycle {
     return true;
   }
 
-  static class SimpleDiffSectionImpl extends Section<SimpleDiffSection> implements Cloneable {
-    private SimpleDiffSectionImpl() {
-      super(get());
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "SimpleDiffSection";
-    }
-
-    @Override
-    public boolean isEquivalentTo(Section<?> other) {
-      if (this == other) {
-        return true;
-      }
-      if (other == null || getClass() != other.getClass()) {
-        return false;
-      }
-      SimpleDiffSectionImpl simpleDiffSectionImpl = (SimpleDiffSectionImpl) other;
-      return true;
-    }
-  }
-
   public static class Builder extends Section.Builder<SimpleDiffSection, Builder> {
-    SimpleDiffSectionImpl mSimpleDiffSectionImpl;
+    SimpleDiffSection mSimpleDiffSection;
 
     SectionContext mContext;
 
-    private void init(SectionContext context, SimpleDiffSectionImpl simpleDiffSectionImpl) {
-      super.init(context, simpleDiffSectionImpl);
-      mSimpleDiffSectionImpl = simpleDiffSectionImpl;
+    private void init(SectionContext context, SimpleDiffSection simpleDiffSectionRef) {
+      super.init(context, simpleDiffSectionRef);
+      mSimpleDiffSection = simpleDiffSectionRef;
       mContext = context;
     }
 
@@ -106,15 +92,15 @@ public final class SimpleDiffSection extends SectionLifecycle {
 
     @Override
     public Section<SimpleDiffSection> build() {
-      SimpleDiffSectionImpl simpleDiffSectionImpl = mSimpleDiffSectionImpl;
+      SimpleDiffSection simpleDiffSectionRef = mSimpleDiffSection;
       release();
-      return simpleDiffSectionImpl;
+      return simpleDiffSectionRef;
     }
 
     @Override
     protected void release() {
       super.release();
-      mSimpleDiffSectionImpl = null;
+      mSimpleDiffSection = null;
       mContext = null;
       sBuilderPool.release(this);
     }

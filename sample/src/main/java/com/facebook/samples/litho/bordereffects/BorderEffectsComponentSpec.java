@@ -16,7 +16,6 @@ package com.facebook.samples.litho.bordereffects;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -36,8 +35,8 @@ import java.util.List;
 @LayoutSpec
 class BorderEffectsComponentSpec {
 
-  private static final List<Class<? extends ComponentLifecycle>> componentsToBuild =
-      Arrays.asList(
+  private static final List<Class<? extends Component>> componentsToBuild =
+      Arrays.<Class<? extends Component>>asList(
           AlternateColorBorder.class,
           AlternateWidthBorder.class,
           AlternateColorWidthBorder.class,
@@ -53,7 +52,7 @@ class BorderEffectsComponentSpec {
     return RecyclerCollectionComponent.create(c)
         .disablePTR(true)
         .section(
-            DataDiffSection.<Class<? extends ComponentLifecycle>>create(new SectionContext(c))
+            DataDiffSection.<Class<? extends Component>>create(new SectionContext(c))
                 .data(componentsToBuild)
                 .renderEventHandler(BorderEffectsComponent.onRender(c))
                 .build())
@@ -62,7 +61,7 @@ class BorderEffectsComponentSpec {
 
   @OnEvent(RenderEvent.class)
   static RenderInfo onRender(
-      ComponentContext c, @FromEvent Class<? extends ComponentLifecycle> model) {
+      ComponentContext c, @FromEvent Class<? extends Component> model) {
 
     try {
       Method createMethod = model.getMethod("create", ComponentContext.class);

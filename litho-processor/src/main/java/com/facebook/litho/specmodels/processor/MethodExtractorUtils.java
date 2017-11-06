@@ -56,7 +56,7 @@ public class MethodExtractorUtils {
         methodParamModels.add(
             MethodParamModelFactory.create(
                 method,
-                TypeName.get(param.asType()),
+                param.asType(),
                 paramName,
                 getLibraryAnnotations(param, permittedAnnotations),
                 getExternalAnnotations(param),

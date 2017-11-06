@@ -12,26 +12,37 @@ import android.support.v4.util.Pools;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.ComponentLifecycle;
 
-public final class SimpleLayout extends ComponentLifecycle {
-  private static SimpleLayout sInstance = null;
-
+public final class SimpleLayout extends Component<SimpleLayout> {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
 
   private SimpleLayout() {
-  }
-
-  private static synchronized SimpleLayout get() {
-    if (sInstance == null) {
-      sInstance = new SimpleLayout();
-    }
-    return sInstance;
+    super();
   }
 
   @Override
-  protected ComponentLayout onCreateLayout(ComponentContext context, Component _abstractImpl) {
-    SimpleLayoutImpl _impl = (SimpleLayoutImpl) _abstractImpl;
+  public String getSimpleName() {
+    return "SimpleLayout";
+  }
+
+  @Override
+  public boolean isEquivalentTo(Component<?> other) {
+    if (this == other) {
+      return true;
+    }
+    if (other == null || getClass() != other.getClass()) {
+      return false;
+    }
+    SimpleLayout simpleLayoutRef = (SimpleLayout) other;
+    if (this.getId() == simpleLayoutRef.getId()) {
+      return true;
+    }
+    return true;
+  }
+
+  @Override
+  protected ComponentLayout onCreateLayout(ComponentContext context, Component _abstract) {
+    SimpleLayout _ref = (SimpleLayout) _abstract;
     ComponentLayout _result = (ComponentLayout) SimpleLayoutSpec.onCreateLayout(
         (ComponentContext) context);
     return _result;
@@ -46,45 +57,20 @@ public final class SimpleLayout extends ComponentLifecycle {
     if (builder == null) {
       builder = new Builder();
     }
-    builder.init(context, defStyleAttr, defStyleRes, new SimpleLayoutImpl());
+    SimpleLayout instance = new SimpleLayout();
+    builder.init(context, defStyleAttr, defStyleRes, instance);
     return builder;
   }
 
-  static class SimpleLayoutImpl extends Component<SimpleLayout> implements Cloneable {
-    private SimpleLayoutImpl() {
-      super(get());
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "SimpleLayout";
-    }
-
-    @Override
-    public boolean isEquivalentTo(Component<?> other) {
-      if (this == other) {
-        return true;
-      }
-      if (other == null || getClass() != other.getClass()) {
-        return false;
-      }
-      SimpleLayoutImpl simpleLayoutImpl = (SimpleLayoutImpl) other;
-      if (this.getId() == simpleLayoutImpl.getId()) {
-        return true;
-      }
-      return true;
-    }
-  }
-
   public static class Builder extends Component.Builder<SimpleLayout, Builder> {
-    SimpleLayoutImpl mSimpleLayoutImpl;
+    SimpleLayout mSimpleLayout;
 
     ComponentContext mContext;
 
     private void init(ComponentContext context, int defStyleAttr, int defStyleRes,
-        SimpleLayoutImpl simpleLayoutImpl) {
-      super.init(context, defStyleAttr, defStyleRes, simpleLayoutImpl);
-      mSimpleLayoutImpl = simpleLayoutImpl;
+        SimpleLayout simpleLayoutRef) {
+      super.init(context, defStyleAttr, defStyleRes, simpleLayoutRef);
+      mSimpleLayout = simpleLayoutRef;
       mContext = context;
     }
 
@@ -95,15 +81,15 @@ public final class SimpleLayout extends ComponentLifecycle {
 
     @Override
     public Component<SimpleLayout> build() {
-      SimpleLayoutImpl simpleLayoutImpl = mSimpleLayoutImpl;
+      SimpleLayout simpleLayoutRef = mSimpleLayout;
       release();
-      return simpleLayoutImpl;
+      return simpleLayoutRef;
     }
 
     @Override
     protected void release() {
       super.release();
-      mSimpleLayoutImpl = null;
+      mSimpleLayout = null;
       mContext = null;
       sBuilderPool.release(this);
     }

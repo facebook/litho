@@ -113,7 +113,7 @@ public final class DebugComponent {
    * @return A simpler canonical name for this component. Suitable to present to the user.
    */
   public String getSimpleName() {
-    return mComponentClass.getSimpleName();
+    return getComponent().getSimpleName();
   }
 
   /**
@@ -136,7 +136,6 @@ public final class DebugComponent {
     return node
         .getComponents()
         .get(componentIndex)
-        .getLifecycle()
         .getClass();
   }
 

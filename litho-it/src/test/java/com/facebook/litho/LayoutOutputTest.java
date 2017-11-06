@@ -34,9 +34,11 @@ public class LayoutOutputTest {
   private static final int MAX_LEVEL_TEST = 255;
   private static final int MAX_SEQ_TEST = 65535;
 
-  private static class TestComponent<L extends ComponentLifecycle> extends Component<L> {
-    public TestComponent(L component) {
-      super(component);
+  private static class TestComponent extends Component {
+
+    @Override
+    int getTypeId() {
+      return LIFECYCLE_TEST_ID;
     }
 
     @Override
@@ -45,17 +47,13 @@ public class LayoutOutputTest {
     }
   }
 
-  private final ComponentLifecycle mLifecycle = new ComponentLifecycle() {
-    @Override
-    int getTypeId() {
-      return LIFECYCLE_TEST_ID;
-    }
-  };
   private LayoutOutput mLayoutOutput;
+  private TestComponent mTestComponent;
 
   @Before
   public void setup() {
     mLayoutOutput = new LayoutOutput();
+    mTestComponent = new TestComponent();
   }
 
   @Test
@@ -81,16 +79,7 @@ public class LayoutOutputTest {
 
   @Test
   public void testStableIdCalculation() {
-    ComponentLifecycle lifecycle = new ComponentLifecycle() {
-      @Override
-      int getTypeId() {
-        return LIFECYCLE_TEST_ID;
-      }
-    };
-    Component component = new TestComponent(lifecycle) {
-    };
-
-    mLayoutOutput.setComponent(component);
+    mLayoutOutput.setComponent(mTestComponent);
 
     long stableId = calculateLayoutOutputId(
         mLayoutOutput,
@@ -110,16 +99,7 @@ public class LayoutOutputTest {
 
   @Test
   public void testStableIdBackgroundType() {
-    ComponentLifecycle lifecycle = new ComponentLifecycle() {
-      @Override
-      int getTypeId() {
-        return LIFECYCLE_TEST_ID;
-      }
-    };
-    Component component = new TestComponent(lifecycle) {
-    };
-
-    mLayoutOutput.setComponent(component);
+    mLayoutOutput.setComponent(mTestComponent);
     mLayoutOutput.setId(
         calculateLayoutOutputId(
             mLayoutOutput,
@@ -133,16 +113,7 @@ public class LayoutOutputTest {
 
   @Test
   public void testStableIdForegroundType() {
-    ComponentLifecycle lifecycle = new ComponentLifecycle() {
-      @Override
-      int getTypeId() {
-        return LIFECYCLE_TEST_ID;
-      }
-    };
-    Component component = new TestComponent(lifecycle) {
-    };
-
-    mLayoutOutput.setComponent(component);
+    mLayoutOutput.setComponent(mTestComponent);
     mLayoutOutput.setId(
         calculateLayoutOutputId(
             mLayoutOutput,
@@ -156,16 +127,7 @@ public class LayoutOutputTest {
 
   @Test
   public void testStableIdHostType() {
-    ComponentLifecycle lifecycle = new ComponentLifecycle() {
-      @Override
-      int getTypeId() {
-        return LIFECYCLE_TEST_ID;
-      }
-    };
-    Component component = new TestComponent(lifecycle) {
-    };
-
-    mLayoutOutput.setComponent(component);
+    mLayoutOutput.setComponent(mTestComponent);
     mLayoutOutput.setId(
         calculateLayoutOutputId(
             mLayoutOutput,
@@ -179,16 +141,7 @@ public class LayoutOutputTest {
 
   @Test
   public void testGetIdLevel() {
-    ComponentLifecycle lifecycle = new ComponentLifecycle() {
-      @Override
-      int getTypeId() {
-        return LIFECYCLE_TEST_ID;
-      }
-    };
-    Component component = new TestComponent(lifecycle) {
-    };
-
-    mLayoutOutput.setComponent(component);
+    mLayoutOutput.setComponent(mTestComponent);
     mLayoutOutput.setId(
         calculateLayoutOutputId(
             mLayoutOutput,
@@ -209,16 +162,7 @@ public class LayoutOutputTest {
 
   @Test
   public void testGetIdSequence() {
-    ComponentLifecycle lifecycle = new ComponentLifecycle() {
-      @Override
-      int getTypeId() {
-        return LIFECYCLE_TEST_ID;
-      }
-    };
-    Component component = new TestComponent(lifecycle) {
-    };
-
-    mLayoutOutput.setComponent(component);
+    mLayoutOutput.setComponent(mTestComponent);
     mLayoutOutput.setId(
         calculateLayoutOutputId(
             mLayoutOutput,
@@ -239,15 +183,7 @@ public class LayoutOutputTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void levelOutOfRangeTest() {
-    ComponentLifecycle lifecycle = new ComponentLifecycle() {
-      @Override
-      int getTypeId() {
-        return LIFECYCLE_TEST_ID;
-      }
-    };
-    Component component = new TestComponent(lifecycle) {};
-
-    mLayoutOutput.setComponent(component);
+    mLayoutOutput.setComponent(mTestComponent);
     mLayoutOutput.setId(
         LayoutStateOutputIdCalculator.calculateLayoutOutputId(
             mLayoutOutput,
@@ -258,15 +194,7 @@ public class LayoutOutputTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void sequenceOutOfRangeTest() {
-    ComponentLifecycle lifecycle = new ComponentLifecycle() {
-      @Override
-      int getTypeId() {
-        return LIFECYCLE_TEST_ID;
-      }
-    };
-    Component component = new TestComponent(lifecycle) {};
-
-    mLayoutOutput.setComponent(component);
+    mLayoutOutput.setComponent(mTestComponent);
     mLayoutOutput.setId(
         LayoutStateOutputIdCalculator.calculateLayoutOutputId(
             mLayoutOutput,

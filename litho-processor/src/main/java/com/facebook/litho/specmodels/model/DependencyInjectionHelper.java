@@ -10,6 +10,8 @@
 package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import java.util.List;
 
@@ -25,13 +27,16 @@ public interface DependencyInjectionHelper {
   List<SpecModelValidationError> validate(SpecModel specModel);
 
   /**
-   * Generate code required to make the Dependency Injection work.
+   * Whether a Spec annotation should be moved to the generated Component.
    */
-  TypeSpecDataHolder generate(SpecModel specModel);
+  boolean isValidGeneratedComponentAnnotation(AnnotationSpec annotation);
 
   /** Generate source delegate required for Dependency Injection. */
   TypeSpecDataHolder generateSourceDelegate(SpecModel specModel);
 
   /** Generate the constructor required for Dependency Injection. */
   MethodSpec generateConstructor(SpecModel specModel);
+
+  /** Generate the code needed to inject a new instance of the given SpecModel called 'instance' */
+  CodeBlock generateFactoryMethodsComponentInstance(SpecModel specModel);
 }

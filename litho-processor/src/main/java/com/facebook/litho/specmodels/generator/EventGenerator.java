@@ -9,9 +9,9 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import static com.facebook.litho.specmodels.generator.ComponentImplGenerator.getImplAccessor;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_IMPL_PARAM_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_VARIABLE_NAME;
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getImplAccessor;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_PARAM_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.REF_VARIABLE_NAME;
 import static com.facebook.litho.specmodels.model.ClassNames.EVENT_HANDLER;
 import static com.facebook.litho.specmodels.model.ClassNames.OBJECT;
 
@@ -83,11 +83,10 @@ public class EventGenerator {
                         .endControlFlow()
                         .build())
                 .addStatement(
-                    "return (($L.$L) context.$L()).$L",
+                    "return (($L) context.$L()).$L",
                     specModel.getComponentName(),
-                    ComponentImplGenerator.getImplClassName(specModel),
                     scopeMethodName,
-                    ComponentImplGenerator.getEventHandlerInstanceName(eventDeclaration.name))
+                    ComponentBodyGenerator.getEventHandlerInstanceName(eventDeclaration.name))
                 .build())
         .build();
   }
@@ -171,13 +170,17 @@ public class EventGenerator {
   /** Generate a delegate to the Spec that defines this event method. */
   static MethodSpec generateEventMethod(
       SpecModel specModel, SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
-    final String implName = specModel.getComponentName() + "Impl";
+    final String componentName = specModel.getComponentName();
     final MethodSpec.Builder methodSpec = MethodSpec.methodBuilder(eventMethodModel.name.toString())
         .addModifiers(Modifier.PRIVATE)
         .returns(eventMethodModel.returnType)
-        .addParameter(ClassNames.HAS_EVENT_DISPATCHER_CLASSNAME, ABSTRACT_IMPL_PARAM_NAME)
+        .addParameter(ClassNames.HAS_EVENT_DISPATCHER_CLASSNAME, ABSTRACT_PARAM_NAME)
         .addStatement(
-            "$L $L = ($L) $L", implName, IMPL_VARIABLE_NAME, implName, ABSTRACT_IMPL_PARAM_NAME);
+            "$L $L = ($L) $L",
+            componentName,
+            REF_VARIABLE_NAME,
+            componentName,
+            ABSTRACT_PARAM_NAME);
 
     final CodeBlock.Builder delegation = CodeBlock.builder();
 
@@ -206,7 +209,7 @@ public class EventGenerator {
         delegation.add(
             "($T) $L.$L",
             methodParamModel.getType(),
-            IMPL_VARIABLE_NAME,
+            REF_VARIABLE_NAME,
             getImplAccessor(specModel, methodParamModel));
       }
 

@@ -17,11 +17,8 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Layout;
-import java.util.ArrayList;
-import java.util.List;
 
-public class TestLayoutComponent extends TestComponent.TestComponentLifecycle {
-  private static final List<TestLayoutComponent> sInstances = new ArrayList<>();
+public class TestLayoutComponent extends TestComponent {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
@@ -29,31 +26,6 @@ public class TestLayoutComponent extends TestComponent.TestComponentLifecycle {
   private final boolean mIsPureRender;
   private final boolean mHasMountSpecChild;
   private final boolean mIsDelegate;
-
-  private static synchronized TestLayoutComponent get(
-      boolean callsShouldUpdateOnMount,
-      boolean isPureRender,
-      boolean hasMountSpecChild,
-      boolean isDelegate) {
-    for (TestLayoutComponent lifecycle : sInstances) {
-      if (lifecycle.mCallsShouldUpdateOnMount == callsShouldUpdateOnMount
-          && lifecycle.mIsPureRender == isPureRender
-          && lifecycle.mHasMountSpecChild == hasMountSpecChild
-          && lifecycle.mIsDelegate == isDelegate) {
-        return lifecycle;
-      }
-    }
-
-    final TestLayoutComponent lifecycle = new TestLayoutComponent(
-        callsShouldUpdateOnMount,
-        isPureRender,
-        hasMountSpecChild,
-        isDelegate);
-
-    sInstances.add(lifecycle);
-
-    return lifecycle;
-  }
 
   private TestLayoutComponent(
       boolean callsShouldUpdateOnMount,
@@ -126,7 +98,8 @@ public class TestLayoutComponent extends TestComponent.TestComponentLifecycle {
         context,
         defStyleAttr,
         defStyleRes,
-        new State(callsShouldUpdateOnMount, isPureRender, hasMountSpecChild, isDelegate));
+        new TestLayoutComponent(
+            callsShouldUpdateOnMount, isPureRender, hasMountSpecChild, isDelegate));
   }
 
   public static Builder create(ComponentContext context) {
@@ -144,7 +117,7 @@ public class TestLayoutComponent extends TestComponent.TestComponentLifecycle {
       ComponentContext context,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
-      State state) {
+      TestLayoutComponent state) {
     Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
@@ -153,45 +126,34 @@ public class TestLayoutComponent extends TestComponent.TestComponentLifecycle {
     return builder;
   }
 
-  public static class State extends TestComponent<TestLayoutComponent> implements Cloneable {
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
 
-    private State(
-        boolean callsShouldUpdateOnMount,
-        boolean isPureRender,
-        boolean hasMountSpecChild,
-        boolean isDelegate) {
-      super(get(callsShouldUpdateOnMount, isPureRender, hasMountSpecChild, isDelegate));
-    }
-
-    @Override
-    public int hashCode() {
-      return super.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (o == null) {
-        return false;
-      }
-      if (!super.equals(o)) {
-        return false;
-      }
-      if (o instanceof State) {
-        return true;
-      }
+  @Override
+  public boolean equals(Object o) {
+    if (o == null) {
       return false;
     }
+    if (!super.equals(o)) {
+      return false;
+    }
+    if (o instanceof TestLayoutComponent) {
+      return true;
+    }
+    return false;
   }
 
   public static class Builder
       extends com.facebook.litho.Component.Builder<TestLayoutComponent, Builder> {
-    State mState;
+    TestLayoutComponent mState;
 
     private void init(
         ComponentContext context,
         @AttrRes int defStyleAttr,
         @StyleRes int defStyleRes,
-        State state) {
+        TestLayoutComponent state) {
       super.init(context, defStyleAttr, defStyleRes, state);
       mState = state;
     }
@@ -207,8 +169,8 @@ public class TestLayoutComponent extends TestComponent.TestComponentLifecycle {
     }
 
     @Override
-    public TestComponent<TestLayoutComponent> build() {
-      State state = mState;
+    public TestComponent build() {
+      TestLayoutComponent state = mState;
       release();
       return state;
     }

@@ -18,11 +18,8 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
-import java.util.ArrayList;
-import java.util.List;
 
-public class TestViewComponent extends TestComponent.TestComponentLifecycle {
-  private static final List<TestViewComponent> sInstances = new ArrayList<>();
+public class TestViewComponent extends TestComponent<TestViewComponent> {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
@@ -30,31 +27,6 @@ public class TestViewComponent extends TestComponent.TestComponentLifecycle {
   private final boolean mIsPureRender;
   private final boolean mCanMeasure;
   private final boolean mCanMountIncrementally;
-
-  private static synchronized TestViewComponent get(
-      boolean callsShouldUpdateOnMount,
-      boolean isPureRender,
-      boolean canMeasure,
-      boolean canMountIncrementally) {
-    for (TestViewComponent lifecycle : sInstances) {
-      if (lifecycle.mCallsShouldUpdateOnMount == callsShouldUpdateOnMount &&
-          lifecycle.mIsPureRender == isPureRender &&
-          lifecycle.mCanMeasure == canMeasure &&
-          lifecycle.mCanMountIncrementally == canMountIncrementally) {
-        return lifecycle;
-      }
-    }
-
-    final TestViewComponent lifecycle = new TestViewComponent(
-        callsShouldUpdateOnMount,
-        isPureRender,
-        canMeasure,
-        canMountIncrementally);
-
-    sInstances.add(lifecycle);
-
-    return lifecycle;
-  }
 
   private TestViewComponent(
       boolean callsShouldUpdateOnMount,
@@ -67,6 +39,11 @@ public class TestViewComponent extends TestComponent.TestComponentLifecycle {
     mIsPureRender = isPureRender;
     mCanMeasure = canMeasure;
     mCanMountIncrementally = canMountIncrementally;
+  }
+
+  @Override
+  public String getSimpleName() {
+    return "TestViewComponent";
   }
 
   @Override
@@ -99,13 +76,13 @@ public class TestViewComponent extends TestComponent.TestComponentLifecycle {
 
   @Override
   protected void onMount(ComponentContext c, Object convertView, Component _stateObject) {
-    State state = (State) _stateObject;
+    TestViewComponent state = (TestViewComponent) _stateObject;
     state.onMountCalled();
   }
 
   @Override
-  protected void onUnmount(ComponentContext c, Object mountedContent, Component<?> component) {
-    State state = (State) component;
+  protected void onUnmount(ComponentContext c, Object mountedContent, Component component) {
+    TestViewComponent state = (TestViewComponent) component;
     state.onUnmountCalled();
   }
 
@@ -128,7 +105,7 @@ public class TestViewComponent extends TestComponent.TestComponentLifecycle {
     size.height = height;
     size.width = width;
 
-    State state = (State) component;
+    TestViewComponent state = (TestViewComponent) component;
     state.onMeasureCalled();
   }
 
@@ -137,19 +114,19 @@ public class TestViewComponent extends TestComponent.TestComponentLifecycle {
       ComponentContext c,
       ComponentLayout layout,
       Component<?> component) {
-    State state = (State) component;
+    TestViewComponent state = (TestViewComponent) component;
     state.onDefineBoundsCalled();
   }
 
   @Override
   protected void onBind(ComponentContext c, Object mountedContent, Component<?> component) {
-    State state = (State) component;
+    TestViewComponent state = (TestViewComponent) component;
     state.onBindCalled();
   }
 
   @Override
   protected void onUnbind(ComponentContext c, Object mountedContent, Component<?> component) {
-    State state = (State) component;
+    TestViewComponent state = (TestViewComponent) component;
     state.onUnbindCalled();
   }
 
@@ -177,7 +154,8 @@ public class TestViewComponent extends TestComponent.TestComponentLifecycle {
         context,
         defStyleAttr,
         defStyleRes,
-        new State(callsShouldUpdateOnMount, isPureRender, canMeasure, canMountIncrementally));
+        new TestViewComponent(
+            callsShouldUpdateOnMount, isPureRender, canMeasure, canMountIncrementally));
   }
 
   public static Builder create(ComponentContext context) {
@@ -204,7 +182,7 @@ public class TestViewComponent extends TestComponent.TestComponentLifecycle {
       ComponentContext context,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
-      State state) {
+      TestViewComponent state) {
     Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
@@ -213,45 +191,34 @@ public class TestViewComponent extends TestComponent.TestComponentLifecycle {
     return builder;
   }
 
-  private static class State extends TestComponent<TestViewComponent> implements Cloneable {
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
 
-    private State(
-        boolean callsShouldUpdateOnMount,
-        boolean isPureRender,
-        boolean canMeasure,
-        boolean canMountIncrementally) {
-      super(get(callsShouldUpdateOnMount, isPureRender, canMeasure, canMountIncrementally));
-    }
-
-    @Override
-    public int hashCode() {
-      return super.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (o == null) {
-        return false;
-      }
-      if (!super.equals(o)) {
-        return false;
-      }
-      if (o instanceof State) {
-        return true;
-      }
+  @Override
+  public boolean equals(Object o) {
+    if (o == null) {
       return false;
     }
+    if (!super.equals(o)) {
+      return false;
+    }
+    if (o instanceof TestViewComponent) {
+      return true;
+    }
+    return false;
   }
 
   public static class Builder
       extends com.facebook.litho.Component.Builder<TestViewComponent, Builder> {
-    State mState;
+    TestViewComponent mState;
 
     private void init(
         ComponentContext context,
         @AttrRes int defStyleAttr,
         @StyleRes int defStyleRes,
-        State state) {
+        TestViewComponent state) {
       super.init(context, defStyleAttr, defStyleRes, state);
       mState = state;
     }
@@ -262,8 +229,8 @@ public class TestViewComponent extends TestComponent.TestComponentLifecycle {
     }
 
     @Override
-    public TestComponent<TestViewComponent> build() {
-      State state = mState;
+    public TestViewComponent build() {
+      TestViewComponent state = mState;
       release();
       return state;
     }

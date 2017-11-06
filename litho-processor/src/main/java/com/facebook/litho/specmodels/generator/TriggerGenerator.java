@@ -9,9 +9,9 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import static com.facebook.litho.specmodels.generator.ComponentImplGenerator.getImplAccessor;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_IMPL_PARAM_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_VARIABLE_NAME;
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getImplAccessor;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_PARAM_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.REF_VARIABLE_NAME;
 import static com.facebook.litho.specmodels.model.ClassNames.EVENT_TRIGGER;
 import static com.facebook.litho.specmodels.model.ClassNames.OBJECT;
 
@@ -81,7 +81,7 @@ public class TriggerGenerator {
         specModel.getTriggerMethods()) {
       String key =
           specModel.getComponentName()
-              + ComponentImplGenerator.getEventTriggerInstanceName(eventMethodModel.name);
+              + ComponentBodyGenerator.getEventTriggerInstanceName(eventMethodModel.name);
       methodBuilder.beginControlFlow("case $L:", key.hashCode());
 
       final String eventVariableName = "_event";
@@ -137,18 +137,18 @@ public class TriggerGenerator {
   /** Generate a delegate to the Spec that defines this onTrigger method. */
   static MethodSpec generateOnTriggerMethodDelegate(
       SpecModel specModel, SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
-    final String implName = specModel.getComponentName() + "Impl";
+    final String componentName = specModel.getComponentName();
     final MethodSpec.Builder methodSpec =
         MethodSpec.methodBuilder(eventMethodModel.name.toString())
             .addModifiers(Modifier.PRIVATE)
             .returns(eventMethodModel.returnType)
-            .addParameter(ClassNames.HAS_EVENT_TRIGGER_CLASSNAME, ABSTRACT_IMPL_PARAM_NAME)
+            .addParameter(ClassNames.HAS_EVENT_TRIGGER_CLASSNAME, ABSTRACT_PARAM_NAME)
             .addStatement(
                 "$L $L = ($L) $L",
-                implName,
-                IMPL_VARIABLE_NAME,
-                implName,
-                ABSTRACT_IMPL_PARAM_NAME);
+                componentName,
+                REF_VARIABLE_NAME,
+                componentName,
+                ABSTRACT_PARAM_NAME);
 
     final CodeBlock.Builder delegation = CodeBlock.builder();
 
@@ -174,12 +174,12 @@ public class TriggerGenerator {
         delegation.add(methodParamModel.getName());
       } else if (methodParamModel.getType().equals(specModel.getContextClass())) {
         delegation.add(
-            "($T) $L.getScopedContext()", methodParamModel.getType(), IMPL_VARIABLE_NAME);
+            "($T) $L.getScopedContext()", methodParamModel.getType(), REF_VARIABLE_NAME);
       } else {
         delegation.add(
             "($T) $L.$L",
             methodParamModel.getType(),
-            IMPL_VARIABLE_NAME,
+            REF_VARIABLE_NAME,
             getImplAccessor(specModel, methodParamModel));
       }
 
@@ -219,7 +219,7 @@ public class TriggerGenerator {
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
 
     String methodId =
-        componentName + ComponentImplGenerator.getEventTriggerInstanceName(eventMethodModel.name);
+        componentName + ComponentBodyGenerator.getEventTriggerInstanceName(eventMethodModel.name);
 
     triggerMethod
         .addParameter(contextClassName, "c")

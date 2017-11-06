@@ -1405,7 +1405,7 @@ public class LayoutStateCalculateTest {
         .isEqualTo("HostComponent");
 
     assertThat(layoutState.getMountableOutputAt(1).getComponent().getSimpleName())
-        .isEqualTo("TestComponent");
+        .isEqualTo("TestDrawableComponent");
     assertThat(MountItem.isTouchableDisabled(layoutState.getMountableOutputAt(1).getFlags()))
         .isTrue();
   }

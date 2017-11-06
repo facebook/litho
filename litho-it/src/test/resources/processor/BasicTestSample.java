@@ -81,9 +81,9 @@ public final class BasicTestSample implements BasicTestSampleSpec {
                   com.facebook.litho.processor.integration.resources.BasicLayout.class)) {
             return false;
           }
-          final com.facebook.litho.processor.integration.resources.BasicLayout.BasicLayoutImpl
+          final com.facebook.litho.processor.integration.resources.BasicLayout
               impl =
-                  (com.facebook.litho.processor.integration.resources.BasicLayout.BasicLayoutImpl)
+                  (com.facebook.litho.processor.integration.resources.BasicLayout)
                       value.getComponent();
           if (mMyStringPropMatcher != null && !mMyStringPropMatcher.matches(impl.myStringProp)) {
             return false;

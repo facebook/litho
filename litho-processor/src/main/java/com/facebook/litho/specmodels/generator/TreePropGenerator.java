@@ -43,22 +43,23 @@ public class TreePropGenerator {
       return TypeSpecDataHolder.newBuilder().build();
     }
 
-    final MethodSpec.Builder method = MethodSpec.methodBuilder("populateTreeProps")
-        .addAnnotation(Override.class)
-        .addModifiers(Modifier.PROTECTED)
-        .addParameter(specModel.getComponentClass(), "_abstractImpl")
-        .addParameter(ClassNames.TREE_PROPS, "treeProps")
-        .beginControlFlow("if (treeProps == null)")
-        .addStatement("return")
-        .endControlFlow()
-        .addStatement(
-            "final $L _impl = ($L) _abstractImpl",
-            ComponentImplGenerator.getImplClassName(specModel),
-            ComponentImplGenerator.getImplClassName(specModel));
+    final MethodSpec.Builder method =
+        MethodSpec.methodBuilder("populateTreeProps")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PROTECTED)
+            .addParameter(specModel.getComponentClass(), "_abstract")
+            .addParameter(ClassNames.TREE_PROPS, "treeProps")
+            .beginControlFlow("if (treeProps == null)")
+            .addStatement("return")
+            .endControlFlow()
+            .addStatement(
+                "final $L _ref = ($L) _abstract",
+                specModel.getComponentName(),
+                specModel.getComponentName());
 
     for (TreePropModel treeProp : specModel.getTreeProps()) {
       method.addStatement(
-          "_impl.$L = treeProps.get($L.class)",
+          "_ref.$L = treeProps.get($L.class)",
           treeProp.getName(),
           treeProp.getType());
     }
@@ -74,21 +75,22 @@ public class TreePropGenerator {
     }
 
     final String delegateName = SpecModelUtils.getSpecAccessor(specModel);
-    final MethodSpec.Builder builder = MethodSpec.methodBuilder("getTreePropsForChildren")
-        .addAnnotation(Override.class)
-        .addModifiers(Modifier.PROTECTED)
-        .returns(ClassNames.TREE_PROPS)
-        .addParameter(specModel.getContextClass(), "c")
-        .addParameter(specModel.getComponentClass(), "_abstractImpl")
-        .addParameter(ClassNames.TREE_PROPS, "parentTreeProps")
-        .addStatement(
-            "final $L _impl = ($L) _abstractImpl",
-            ComponentImplGenerator.getImplClassName(specModel),
-            ComponentImplGenerator.getImplClassName(specModel))
-        .addStatement(
-            "final $T childTreeProps = $T.copy(parentTreeProps)",
-            ClassNames.TREE_PROPS,
-            ClassNames.TREE_PROPS);
+    final MethodSpec.Builder builder =
+        MethodSpec.methodBuilder("getTreePropsForChildren")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PROTECTED)
+            .returns(ClassNames.TREE_PROPS)
+            .addParameter(specModel.getContextClass(), "c")
+            .addParameter(specModel.getComponentClass(), "_abstract")
+            .addParameter(ClassNames.TREE_PROPS, "parentTreeProps")
+            .addStatement(
+                "final $L _ref = ($L) _abstract",
+                specModel.getComponentName(),
+                specModel.getComponentName())
+            .addStatement(
+                "final $T childTreeProps = $T.copy(parentTreeProps)",
+                ClassNames.TREE_PROPS,
+                ClassNames.TREE_PROPS);
 
     for (SpecMethodModel<DelegateMethod, Void> onCreateTreePropsMethod : onCreateTreePropsMethods) {
       final CodeBlock.Builder block = CodeBlock.builder();
@@ -107,13 +109,13 @@ public class TreePropGenerator {
         } else if (MethodParamModelUtils.isAnnotatedWith(
             onCreateTreePropsMethod.methodParams.get(i), State.class)) {
           block.add(
-              "($T) _impl.$L.$L",
+              "($T) _ref.$L.$L",
               onCreateTreePropsMethod.methodParams.get(i).getType(),
               GeneratorConstants.STATE_CONTAINER_FIELD_NAME,
               onCreateTreePropsMethod.methodParams.get(i).getName());
         } else {
           block.add(
-              "($T) _impl.$L",
+              "($T) _ref.$L",
               onCreateTreePropsMethod.methodParams.get(i).getType(),
               onCreateTreePropsMethod.methodParams.get(i).getName());
         }

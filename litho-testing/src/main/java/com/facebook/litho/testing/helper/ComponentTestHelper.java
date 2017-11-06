@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.EventHandler;
@@ -366,7 +365,7 @@ public final class ComponentTestHelper {
    * @param componentClass the class type of the requested sub component
    * @return The first instance of subComponent of type Class or null if none is present.
    */
-  public static <T extends ComponentLifecycle> Component<T> getSubComponent(
+  public static <T extends Component> Component<T> getSubComponent(
       Component.Builder component,
       Class<T> componentClass) {
     List<SubComponent> subComponents = getSubComponents(component);

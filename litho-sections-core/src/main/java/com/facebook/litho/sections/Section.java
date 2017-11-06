@@ -35,7 +35,9 @@ import javax.annotation.Nullable;
  * returns a {@link Builder} that allows you to set values for individual props.
  * {@link Section} instances are immutable after creation.
  */
-public abstract class Section<L extends SectionLifecycle> implements Cloneable, HasEventDispatcher {
+public abstract class Section<L extends Section> extends SectionLifecycle
+    implements Cloneable, HasEventDispatcher {
+
   private Section mParent;
   private boolean mInvalidated;
   private SectionContext mScopedContext;
@@ -43,7 +45,7 @@ public abstract class Section<L extends SectionLifecycle> implements Cloneable, 
 
   @Override
   public EventDispatcher getEventDispatcher() {
-    return mLifecycle;
+    return this;
   }
 
   /**
@@ -54,7 +56,7 @@ public abstract class Section<L extends SectionLifecycle> implements Cloneable, 
    * should be set every time a parent might have more children with the same {@link
    * SectionLifecycle}.
    */
-  public abstract static class Builder<L extends SectionLifecycle, T extends Builder<L, T>>
+  public abstract static class Builder<L extends Section, T extends Builder<L, T>>
       extends ResourceResolver {
 
     private Section mSection;
@@ -117,23 +119,11 @@ public abstract class Section<L extends SectionLifecycle> implements Cloneable, 
   // The total count of leaf Components this subtree added to the global list.
   private int mCount;
   private List<Section> mChildren;
-  private final L mLifecycle;
   private String mGlobalKey;
   private String mKey;
 
-  protected Section(L lifecycle) {
-    mLifecycle = lifecycle;
-
-    mKey = mLifecycle.getLogTag();
-  }
-
-  /**
-   * @return true is this {@link Section} can produce a changeSet, meaning it's a {@link Section}
-   * whose {@link SectionLifecycle} implements
-   * {@link OnDiff}.
-   */
-  boolean isDiffSectionSpec() {
-    return mLifecycle.isDiffSectionSpec();
+  protected Section() {
+    mKey = getLogTag();
   }
 
   /** @return a unique key for this {@link Section} within its tree. */
@@ -207,8 +197,9 @@ public abstract class Section<L extends SectionLifecycle> implements Cloneable, 
   /**
    * @return the {@link SectionLifecycle} for this {@link Section}.
    */
-  public final L getLifecycle() {
-    return mLifecycle;
+  @Deprecated
+  public final SectionLifecycle getLifecycle() {
+    return this;
   }
 
   /**
@@ -255,7 +246,7 @@ public abstract class Section<L extends SectionLifecycle> implements Cloneable, 
 
       return clone;
     } catch (CloneNotSupportedException e) {
-      // Subclasses implement Cloneable, so this is impossible
+      // This class implements Cloneable, so this is impossible
       throw new RuntimeException(e);
     }
   }

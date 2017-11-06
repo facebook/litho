@@ -19,11 +19,9 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
-import java.util.ArrayList;
-import java.util.List;
 
-public class TestDrawableComponent extends TestComponent.TestComponentLifecycle {
-  private static final List<TestDrawableComponent> sInstances = new ArrayList<>();
+public class TestDrawableComponent extends TestComponent<TestDrawableComponent> {
+
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
@@ -36,23 +34,14 @@ public class TestDrawableComponent extends TestComponent.TestComponentLifecycle 
 
   private final long mProperties;
 
-  private static synchronized TestDrawableComponent get(long properties) {
-    for (TestDrawableComponent lifecycle : sInstances) {
-      if (lifecycle.mProperties == properties) {
-        return lifecycle;
-      }
-    }
-
-    final TestDrawableComponent lifecycle = new TestDrawableComponent(properties);
-
-    sInstances.add(lifecycle);
-
-    return lifecycle;
-  }
-
   private TestDrawableComponent(long properties) {
     super();
     mProperties = properties;
+  }
+
+  @Override
+  public String getSimpleName() {
+    return "TestDrawableComponent";
   }
 
   @Override
@@ -92,15 +81,15 @@ public class TestDrawableComponent extends TestComponent.TestComponentLifecycle 
 
   @Override
   protected void onMount(ComponentContext c, Object convertDrawable, Component _stateObject) {
-    State state = (State) _stateObject;
+    TestDrawableComponent state = (TestDrawableComponent) _stateObject;
     ((ColorDrawable) convertDrawable).setColor(state.color);
 
     state.onMountCalled();
   }
 
   @Override
-  protected void onUnmount(ComponentContext c, Object mountedContent, Component<?> component) {
-    State state = (State) component;
+  protected void onUnmount(ComponentContext c, Object mountedContent, Component component) {
+    TestDrawableComponent state = (TestDrawableComponent) component;
     state.onUnmountCalled();
   }
 
@@ -119,7 +108,7 @@ public class TestDrawableComponent extends TestComponent.TestComponentLifecycle 
       Component<?> component) {
     int width = SizeSpec.getSize(widthSpec);
     int height = SizeSpec.getSize(heightSpec);
-    State state = (State) component;
+    TestDrawableComponent state = (TestDrawableComponent) component;
     state.onMeasureCalled();
 
     size.width = (state.measuredWidth != -1)
@@ -135,19 +124,19 @@ public class TestDrawableComponent extends TestComponent.TestComponentLifecycle 
       ComponentContext c,
       ComponentLayout layout,
       Component<?> component) {
-    State state = (State) component;
+    TestDrawableComponent state = (TestDrawableComponent) component;
     state.onDefineBoundsCalled();
   }
 
   @Override
   protected void onBind(ComponentContext c, Object mountedContent, Component<?> component) {
-    State state = (State) component;
+    TestDrawableComponent state = (TestDrawableComponent) component;
     state.onBindCalled();
   }
 
   @Override
   protected void onUnbind(ComponentContext c, Object mountedContent, Component<?> component) {
-    State state = (State) component;
+    TestDrawableComponent state = (TestDrawableComponent) component;
     state.onUnbindCalled();
   }
 
@@ -216,7 +205,7 @@ public class TestDrawableComponent extends TestComponent.TestComponentLifecycle 
       properties |= IS_MOUNT_SIZE_DEPENDENT;
     }
 
-    return newBuilder(context, defStyleAttr, defStyleRes, new State(properties));
+    return newBuilder(context, defStyleAttr, defStyleRes, new TestDrawableComponent(properties));
   }
 
   public static Builder create(ComponentContext context) {
@@ -245,7 +234,7 @@ public class TestDrawableComponent extends TestComponent.TestComponentLifecycle 
       ComponentContext context,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
-      State state) {
+      TestDrawableComponent state) {
     Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
@@ -254,80 +243,74 @@ public class TestDrawableComponent extends TestComponent.TestComponentLifecycle 
     return builder;
   }
 
-  public static class State extends TestComponent<TestDrawableComponent> implements Cloneable {
-    int color = Color.BLACK;
-    int measuredWidth = -1;
-    int measuredHeight = -1;
+  int color = Color.BLACK;
+  int measuredWidth = -1;
+  int measuredHeight = -1;
 
-    private State(long properties) {
-      super(get(properties));
-    }
+  @Override
+  public int hashCode() {
+    return super.hashCode() + color;
+  }
 
-    @Override
-    public int hashCode() {
-      return super.hashCode() + color;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (o == null) {
-        return false;
-      }
-      if (!super.equals(o)) {
-        return false;
-      }
-      if (o instanceof State) {
-        State s = (State) o;
-        return color == s.color;
-      }
+  @Override
+  public boolean equals(Object o) {
+    if (o == null) {
       return false;
     }
+    if (!super.equals(o)) {
+      return false;
+    }
+    if (o instanceof TestDrawableComponent) {
+      TestDrawableComponent s = (TestDrawableComponent) o;
+      return color == s.color;
+    }
+    return false;
   }
 
   public static class Builder
       extends com.facebook.litho.Component.Builder<TestDrawableComponent, Builder> {
-    State mState;
+    TestDrawableComponent mComponent;
 
     private void init(
         ComponentContext context,
         @AttrRes int defStyleAttr,
         @StyleRes int defStyleRes,
-        State state) {
-      super.init(context, defStyleAttr, defStyleRes, state);
-      mState = state;
+        TestDrawableComponent component) {
+      super.init(context, defStyleAttr, defStyleRes, component);
+      mComponent = component;
     }
 
     public Builder measuredWidth(int width) {
-      mState.measuredWidth = width;
+      mComponent.measuredWidth = width;
       return this;
     }
 
     public Builder measuredHeight(int height) {
-      mState.measuredHeight = height;
+      mComponent.measuredHeight = height;
       return this;
     }
 
     public Builder color(int color) {
-      mState.color = color;
+      mComponent.color = color;
       return this;
     }
 
     public Builder unique() {
-      mState.mIsUnique = true;
+      mComponent.mIsUnique = true;
       return this;
     }
 
     @Override
-    public TestComponent<TestDrawableComponent> build() {
-      State state = mState;
+    public TestDrawableComponent build() {
+      TestDrawableComponent component = mComponent;
       release();
-      return state;
+      return component;
     }
 
     @Override
     protected void release() {
       super.release();
-      mState = null;
+      mComponent = null;
       sBuilderPool.release(this);
     }
 

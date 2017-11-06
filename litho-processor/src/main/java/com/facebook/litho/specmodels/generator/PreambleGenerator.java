@@ -9,10 +9,11 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.SPEC_INSTANCE_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
 
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getStateContainerClassName;
 import com.facebook.litho.specmodels.model.SpecModel;
-import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import javax.lang.model.element.Modifier;
 
@@ -28,7 +29,6 @@ public class PreambleGenerator {
     return TypeSpecDataHolder.newBuilder()
         .addTypeSpecDataHolder(generateSourceDelegate(specModel))
         .addTypeSpecDataHolder(generateConstructor(specModel))
-        .addTypeSpecDataHolder(generateGetter(specModel))
         .build();
   }
 
@@ -51,7 +51,9 @@ public class PreambleGenerator {
    * private constructor to enforce singleton-ity.
    */
   static TypeSpecDataHolder generateConstructor(SpecModel specModel) {
-    final MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder();
+    final MethodSpec.Builder constructorBuilder =
+        MethodSpec.constructorBuilder()
+            .addStatement("super()");
 
     if (specModel.hasInjectedDependencies()) {
       final MethodSpec diConstructor =
@@ -66,46 +68,14 @@ public class PreambleGenerator {
       constructorBuilder.addModifiers(Modifier.PRIVATE);
     }
 
-    return TypeSpecDataHolder.newBuilder().addMethod(constructorBuilder.build()).build();
-  }
-
-  /**
-   * Generate a method for this component which either lazily instantiates a singleton reference or
-   * returns this depending upon whether this spec injects dependencies or not.
-   */
-  static TypeSpecDataHolder generateGetter(SpecModel specModel) {
-    final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
-    if (!specModel.hasInjectedDependencies()) {
-      typeSpecDataHolder.addField(
-          FieldSpec
-              .builder(
-                  specModel.getComponentTypeName(),
-                  SPEC_INSTANCE_NAME,
-                  Modifier.PRIVATE,
-                  Modifier.STATIC)
-              .initializer("null")
-              .build());
-
-      typeSpecDataHolder.addMethod(
-          MethodSpec.methodBuilder("get")
-              .addModifiers(Modifier.PRIVATE)
-              .addModifiers(Modifier.STATIC)
-              .addModifiers(Modifier.SYNCHRONIZED)
-              .returns(specModel.getComponentTypeName())
-              .beginControlFlow("if ($L == null)", SPEC_INSTANCE_NAME)
-              .addStatement("$L = new $T()", SPEC_INSTANCE_NAME, specModel.getComponentTypeName())
-              .endControlFlow()
-              .addStatement("return $L", SPEC_INSTANCE_NAME)
-              .build());
-    } else {
-      typeSpecDataHolder.addMethod(
-          MethodSpec.methodBuilder("get")
-              .addModifiers(Modifier.PRIVATE)
-              .returns(specModel.getComponentTypeName())
-              .addStatement("return this")
-              .build());
+    final boolean hasState = !specModel.getStateValues().isEmpty();
+    if (hasState) {
+      final ClassName stateContainerClass =
+          ClassName.bestGuess(getStateContainerClassName(specModel));
+      constructorBuilder.addStatement(
+          STATE_CONTAINER_FIELD_NAME + " = new $T()", stateContainerClass);
     }
 
-    return typeSpecDataHolder.build();
+    return TypeSpecDataHolder.newBuilder().addMethod(constructorBuilder.build()).build();
   }
 }

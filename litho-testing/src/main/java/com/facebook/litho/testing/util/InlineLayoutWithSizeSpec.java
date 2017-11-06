@@ -12,35 +12,27 @@ package com.facebook.litho.testing.util;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.EventHandler;
 
 /** Like {@link InlineLayoutSpec} but uses onCreateLayoutWithSizeSpec */
-public abstract class InlineLayoutWithSizeSpec extends Component implements Cloneable {
+public abstract class InlineLayoutWithSizeSpec extends Component {
 
-  private static class Lifecycle extends ComponentLifecycle {
-
-    @Override
-    protected ComponentLayout onCreateLayoutWithSizeSpec(
-        ComponentContext c, int widthSpec, int heightSpec, Component<?> component) {
-      return ((InlineLayoutWithSizeSpec) component)
-          .onCreateLayoutWithSizeSpec(c, widthSpec, heightSpec);
-    }
-
-    @Override
-    public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-      // no-op
-      return null;
-    }
-
-    @Override
-    protected boolean canMeasure() {
-      return true;
-    }
+  @Override
+  protected ComponentLayout onCreateLayoutWithSizeSpec(
+      ComponentContext c, int widthSpec, int heightSpec, Component<?> component) {
+    return ((InlineLayoutWithSizeSpec) component)
+        .onCreateLayoutWithSizeSpec(c, widthSpec, heightSpec);
   }
 
-  public InlineLayoutWithSizeSpec() {
-    super(new Lifecycle());
+  @Override
+  public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+    // no-op
+    return null;
+  }
+
+  @Override
+  protected boolean canMeasure() {
+    return true;
   }
 
   @Override

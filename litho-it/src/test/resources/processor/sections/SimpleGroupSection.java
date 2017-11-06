@@ -15,22 +15,30 @@ import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.LoadingEvent;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
-import com.facebook.litho.sections.SectionLifecycle;
 
-public final class SimpleGroupSection extends SectionLifecycle {
-  private static SimpleGroupSection sInstance = null;
-
+public final class SimpleGroupSection extends Section<SimpleGroupSection> {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<Builder>(2);
 
   private SimpleGroupSection() {
+    super();
   }
 
-  private static synchronized SimpleGroupSection get() {
-    if (sInstance == null) {
-      sInstance = new SimpleGroupSection();
+  @Override
+  public String getSimpleName() {
+    return "SimpleGroupSection";
+  }
+
+  @Override
+  public boolean isEquivalentTo(Section<?> other) {
+    if (this == other) {
+      return true;
     }
-    return sInstance;
+    if (other == null || getClass() != other.getClass()) {
+      return false;
+    }
+    SimpleGroupSection simpleGroupSectionRef = (SimpleGroupSection) other;
+    return true;
   }
 
   public static Builder create(SectionContext context) {
@@ -38,49 +46,26 @@ public final class SimpleGroupSection extends SectionLifecycle {
     if (builder == null) {
       builder = new Builder();
     }
-    builder.init(context, new SimpleGroupSectionImpl());
+    SimpleGroupSection instance = new SimpleGroupSection();
+    builder.init(context, instance);
     return builder;
   }
 
   @Override
-  protected Children createChildren(SectionContext c, Section _abstractImpl) {
-    SimpleGroupSectionImpl _impl = (SimpleGroupSectionImpl) _abstractImpl;
+  protected Children createChildren(SectionContext c, Section _abstract) {
+    SimpleGroupSection _ref = (SimpleGroupSection) _abstract;
     Children _result = (Children) SimpleGroupSectionSpec.onCreateChildren((SectionContext) c);
     return _result;
   }
 
-  static class SimpleGroupSectionImpl extends Section<SimpleGroupSection> implements Cloneable {
-
-    private SimpleGroupSectionImpl() {
-      super(get());
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "SimpleGroupSection";
-    }
-
-    @Override
-    public boolean isEquivalentTo(Section<?> other) {
-      if (this == other) {
-        return true;
-      }
-      if (other == null || getClass() != other.getClass()) {
-        return false;
-      }
-      SimpleGroupSectionImpl simpleGroupSectionImpl = (SimpleGroupSectionImpl) other;
-      return true;
-    }
-  }
-
   public static class Builder extends Section.Builder<SimpleGroupSection, Builder> {
-    SimpleGroupSectionImpl mSimpleGroupSectionImpl;
+    SimpleGroupSection mSimpleGroupSection;
 
     SectionContext mContext;
 
-    private void init(SectionContext context, SimpleGroupSectionImpl simpleGroupSectionImpl) {
-      super.init(context, simpleGroupSectionImpl);
-      mSimpleGroupSectionImpl = simpleGroupSectionImpl;
+    private void init(SectionContext context, SimpleGroupSection simpleGroupSectionRef) {
+      super.init(context, simpleGroupSectionRef);
+      mSimpleGroupSection = simpleGroupSectionRef;
       mContext = context;
     }
 
@@ -101,15 +86,15 @@ public final class SimpleGroupSection extends SectionLifecycle {
 
     @Override
     public Section<SimpleGroupSection> build() {
-      SimpleGroupSectionImpl simpleGroupSectionImpl = mSimpleGroupSectionImpl;
+      SimpleGroupSection simpleGroupSectionRef = mSimpleGroupSection;
       release();
-      return simpleGroupSectionImpl;
+      return simpleGroupSectionRef;
     }
 
     @Override
     protected void release() {
       super.release();
-      mSimpleGroupSectionImpl = null;
+      mSimpleGroupSection = null;
       mContext = null;
       sBuilderPool.release(this);
     }

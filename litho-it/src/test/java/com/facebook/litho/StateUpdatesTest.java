@@ -41,7 +41,29 @@ public class StateUpdatesTest {
   private int mWidthSpec;
   private int mHeightSpec;
 
-  private final ComponentLifecycle mLifecycle = new ComponentLifecycle() {
+  private static class TestStateUpdate implements StateUpdate {
+
+    @Override
+    public void updateState(StateContainer stateContainer, Component component) {
+      TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
+      TestComponent componentImpl = (TestComponent) component;
+      componentImpl.mStateContainer.mCount = stateContainerImpl.mCount + 1;
+    }
+  }
+
+  static class TestComponent extends Component {
+
+    private final TestStateContainer mStateContainer;
+    private TestComponent shallowCopy;
+    private int mId;
+    private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
+
+    public TestComponent() {
+      super();
+      mStateContainer = new TestStateContainer();
+      mId = sIdGenerator.getAndIncrement();
+    }
+
     @Override
     int getTypeId() {
       return LIFECYCLE_TEST_ID;
@@ -66,31 +88,6 @@ public class StateUpdatesTest {
       TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
       TestComponent newTestComponent = (TestComponent) component;
       newTestComponent.mStateContainer.mCount = stateContainerImpl.mCount;
-    }
-  };
-
-  private static class TestStateUpdate implements StateUpdate {
-
-    @Override
-    public void updateState(StateContainer stateContainer, Component component) {
-      TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
-      TestComponent componentImpl = (TestComponent) component;
-      componentImpl.mStateContainer.mCount = stateContainerImpl.mCount + 1;
-    }
-  }
-
-  static class TestComponent<L extends ComponentLifecycle>
-      extends Component<L> implements Cloneable {
-
-    private final TestStateContainer mStateContainer;
-    private TestComponent shallowCopy;
-    private int mId;
-    private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
-
-    public TestComponent(L component) {
-      super(component);
-      mStateContainer = new TestStateContainer();
-      mId = sIdGenerator.getAndIncrement();
     }
 
     @Override
@@ -157,7 +154,7 @@ public class StateUpdatesTest {
         (Looper) Whitebox.invokeMethod(
             ComponentTree.class,
             "getDefaultLayoutThreadLooper"));
-    mTestComponent = new TestComponent(mLifecycle);
+    mTestComponent = new TestComponent();
 
     mComponentTree = ComponentTree.create(mContext, mTestComponent)
         .incrementalMount(false)
@@ -171,9 +168,9 @@ public class StateUpdatesTest {
 
   @Test
   public void testNoCrashOnSameComponentKey() {
-    final Component child1 = new TestComponent(mLifecycle);
+    final Component child1 = new TestComponent();
     child1.setKey("key");
-    final Component child2 = new TestComponent(mLifecycle);
+    final Component child2 = new TestComponent();
     child2.setKey("key");
     final Component component = new InlineLayoutSpec() {
       @Override
@@ -196,9 +193,9 @@ public class StateUpdatesTest {
 
   @Test
   public void testNoCrashOnSameComponentKeyNestedContainers() {
-    final Component child1 = new TestComponent(mLifecycle);
+    final Component child1 = new TestComponent();
     child1.setKey("key");
-    final Component child2 = new TestComponent(mLifecycle);
+    final Component child2 = new TestComponent();
     child2.setKey("key");
     final Component component =
         new InlineLayoutSpec() {

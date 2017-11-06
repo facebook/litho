@@ -97,24 +97,24 @@ public class EventGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "private void testEventMethod1(com.facebook.litho.HasEventDispatcher _abstractImpl,\n" +
+            "private void testEventMethod1(com.facebook.litho.HasEventDispatcher _abstract,\n" +
             "    java.lang.Object arg2, T arg3) {\n" +
-            "  TestImpl _impl = (TestImpl) _abstractImpl;\n" +
+            "  Test _ref = (Test) _abstract;\n" +
             "  TestSpec.testEventMethod1(\n" +
-            "    (boolean) _impl.arg0,\n" +
-            "    (int) _impl.mStateContainerImpl.arg1,\n" +
+            "    (boolean) _ref.arg0,\n" +
+            "    (int) _ref.mStateContainer.arg1,\n" +
             "    arg2,\n" +
             "    arg3,\n" +
-            "    (long) _impl.arg4);\n" +
+            "    (long) _ref.arg4);\n" +
             "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
-            "private void testEventMethod2(com.facebook.litho.HasEventDispatcher _abstractImpl) {\n" +
-            "  TestImpl _impl = (TestImpl) _abstractImpl;\n" +
+            "private void testEventMethod2(com.facebook.litho.HasEventDispatcher _abstract) {\n" +
+            "  Test _ref = (Test) _abstract;\n" +
             "  TestSpec.testEventMethod2(\n" +
-            "    (boolean) _impl.arg0,\n" +
-            "    (int) _impl.mStateContainerImpl.arg1);\n" +
+            "    (boolean) _ref.arg0,\n" +
+            "    (int) _ref.mStateContainer.arg1);\n" +
             "}\n");
   }
 
@@ -184,7 +184,7 @@ public class EventGeneratorTest {
             "  if (context.getComponentScope() == null) {\n" +
             "    return null;\n" +
             "  }\n" +
-            "  return ((Test.TestImpl) context.getComponentScope()).objectHandler;\n" +
+            "  return ((Test) context.getComponentScope()).objectHandler;\n" +
             "}\n");
   }
 

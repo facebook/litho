@@ -34,9 +34,9 @@ public final class SimpleTestSample implements SimpleTestSampleSpec {
                   com.facebook.litho.processor.integration.resources.SimpleLayout.class)) {
             return false;
           }
-          final com.facebook.litho.processor.integration.resources.SimpleLayout.SimpleLayoutImpl
+          final com.facebook.litho.processor.integration.resources.SimpleLayout
               impl =
-                  (com.facebook.litho.processor.integration.resources.SimpleLayout.SimpleLayoutImpl)
+                  (com.facebook.litho.processor.integration.resources.SimpleLayout)
                       value.getComponent();
           return true;
         }

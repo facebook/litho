@@ -13,7 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
@@ -46,7 +45,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return new ComponentAssert(componentContext, component);
   }
 
-  public static <L extends ComponentLifecycle> ComponentAssert assertThat(
+  public static <L extends Component> ComponentAssert assertThat(
       Component.Builder<L, ?> builder) {
     // mContext is freed up during build() so we need to get a reference to it before.
     final ComponentContext context =

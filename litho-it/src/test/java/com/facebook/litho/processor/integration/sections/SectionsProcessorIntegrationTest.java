@@ -43,18 +43,7 @@ public class SectionsProcessorIntegrationTest {
         .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleGroupSection.class")
         .and()
         .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleGroupSection$1.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleGroupSection$Builder.class")
-        .and()
-        .generatesFileNamed(
             StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleGroupSectionSpec.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "SimpleGroupSection$SimpleGroupSectionImpl.class")
         .and()
         .generatesSources(expectedOutput);
   }
@@ -76,18 +65,10 @@ public class SectionsProcessorIntegrationTest {
         .and()
         .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleDiffSection.class")
         .and()
-        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleDiffSection$1.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleDiffSection$Builder.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleDiffSectionSpec.class")
-        .and()
         .generatesFileNamed(
             StandardLocation.CLASS_OUTPUT,
             RES_PACKAGE,
-            "SimpleDiffSection$SimpleDiffSectionImpl.class")
+            "SimpleDiffSectionSpec.class")
         .and()
         .generatesSources(expectedOutput);
   }
@@ -113,23 +94,16 @@ public class SectionsProcessorIntegrationTest {
         .and()
         .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullGroupSection.class")
         .and()
-        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullGroupSection$1.class")
-        .and()
         .generatesFileNamed(
             StandardLocation.CLASS_OUTPUT,
             RES_PACKAGE,
-            "FullGroupSection$FullGroupSectionStateContainerImpl.class")
+            "FullGroupSection$FullGroupSectionStateContainer.class")
         .and()
         .generatesFileNamed(
             StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullGroupSection$Builder.class")
         .and()
         .generatesFileNamed(
             StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullGroupSectionSpec.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "FullGroupSection$FullGroupSectionImpl.class")
         .and()
         .generatesSources(expectedOutput);
   }
@@ -155,20 +129,18 @@ public class SectionsProcessorIntegrationTest {
         .and()
         .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullDiffSection.class")
         .and()
-        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullDiffSection$1.class")
-        .and()
         .generatesFileNamed(
             StandardLocation.CLASS_OUTPUT,
             RES_PACKAGE,
-            "FullDiffSection$FullDiffSectionStateContainerImpl.class")
+            "FullDiffSection$FullDiffSectionStateContainer.class")
         .and()
         .generatesFileNamed(
             StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullDiffSection$Builder.class")
         .and()
-        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullDiffSectionSpec.class")
-        .and()
         .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullDiffSection$FullDiffSectionImpl.class")
+            StandardLocation.CLASS_OUTPUT,
+            RES_PACKAGE,
+            "FullDiffSectionSpec.class")
         .and()
         .generatesSources(expectedOutput);
   }

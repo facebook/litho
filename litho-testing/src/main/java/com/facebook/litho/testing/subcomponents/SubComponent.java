@@ -10,36 +10,35 @@
 package com.facebook.litho.testing.subcomponents;
 
 import com.facebook.litho.Component;
-import com.facebook.litho.ComponentLifecycle;
 import org.assertj.core.api.Condition;
 
 /**
- * Allows convenient type matching comparison for instances of {@link ComponentLifecycle}s.
+ * Allows convenient type matching comparison for instances of {@link Component}s.
  * Useful for verifying the existence of sub-components that are part of a layout.
  */
 public class SubComponent {
 
-  public static SubComponent of(Class<? extends ComponentLifecycle> componentType) {
+  public static SubComponent of(Class<? extends Component> componentType) {
     return new SubComponent(componentType, null);
   }
 
-  public static SubComponent of(Component component) {
-    return new SubComponent(component.getLifecycle().getClass(), component);
+  public static <T extends Component> SubComponent of(T component) {
+    return new SubComponent(component.getClass(), component);
   }
 
-  private final Class<? extends ComponentLifecycle> mComponentType;
+  private final Class<? extends Component> mComponentType;
   private final Component<?> mComponent;
 
-  private SubComponent(Class<? extends ComponentLifecycle> componentType, Component<?> component) {
+  private SubComponent(Class<? extends Component> componentType, Component component) {
     mComponentType = componentType;
     mComponent = component;
   }
 
-  public Component<?> getComponent() {
+  public Component getComponent() {
     return mComponent;
   }
 
-  public Class<? extends ComponentLifecycle> getComponentType() {
+  public Class<? extends Component> getComponentType() {
     return mComponentType;
   }
 

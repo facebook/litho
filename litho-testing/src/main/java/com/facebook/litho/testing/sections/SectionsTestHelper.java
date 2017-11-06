@@ -20,7 +20,6 @@ import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
-import com.facebook.litho.sections.SectionLifecycle;
 import com.facebook.litho.sections.SectionLifecycleTestUtil;
 import com.facebook.litho.sections.SectionTree;
 import java.util.ArrayList;
@@ -38,17 +37,20 @@ import org.mockito.stubbing.Answer;
  * hieararchy. Also allows simpler State updates testing by keeping trach of a scoped section
  * context.
  */
-public class SectionsTestHelper extends SectionLifecycle {
+public class SectionsTestHelper extends Section<SectionsTestHelper> {
 
+  // Keeping a reference of the SectionTree here otherwise in some tests it gets cleared.
+  private final SectionTree mSectionTree;
   private final SectionContext mSectionContext;
 
   // A set of sections that are ready to be tested (createInitialState called).
   private final Map<Section, SectionContext> preparedSections;
 
   public SectionsTestHelper(Context c) {
+    super();
     final SectionContext base = new SectionContext(c);
-    final SectionTree st = SectionTree.create(base, new TestTarget()).build();
-    mSectionContext = SectionContext.withSectionTree(base, st);
+    mSectionTree = SectionTree.create(base, new TestTarget()).build();
+    mSectionContext = SectionContext.withSectionTree(base, mSectionTree);
     preparedSections = new HashMap<>();
   }
 
@@ -182,5 +184,10 @@ public class SectionsTestHelper extends SectionLifecycle {
       throw new IllegalStateException(
           "Section not prepared, did you call SectionsTestHelper#prepare()?");
     }
+  }
+
+  @Override
+  public String getSimpleName() {
+    return "SectionComponentTestHelper";
   }
 }

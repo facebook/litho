@@ -19,6 +19,7 @@ import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeMirror;
 
 /**
  * Factory for creating {@link MethodParamModel}s.
@@ -27,24 +28,25 @@ public final class MethodParamModelFactory {
 
   public static MethodParamModel create(
       ExecutableElement method,
-      TypeName type,
+      TypeMirror typeMirror,
       String name,
       List<Annotation> annotations,
       List<AnnotationSpec> externalAnnotations,
       List<Class<? extends Annotation>> permittedInterStateInputAnnotations,
       List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels,
       Object representedObject) {
+    final TypeName typeName = TypeName.get(typeMirror);
     // We check whether we're calling ShouldUpdate here since it uses a different infrastructure to
     // track previous props/state :(
-    if (shouldCreateDiffModel(method, type, delegateMethodAnnotationsThatSkipDiffModels)) {
+    if (shouldCreateDiffModel(method, typeName, delegateMethodAnnotationsThatSkipDiffModels)) {
       return new RenderDataDiffModel(
           new SimpleMethodParamModel(
-              type, name, annotations, externalAnnotations, representedObject));
+              typeName, name, annotations, externalAnnotations, representedObject));
     }
 
     final SimpleMethodParamModel simpleMethodParamModel =
         new SimpleMethodParamModel(
-            extractDiffTypeIfNecessary(type),
+            typeMirror,
             name,
             annotations,
             externalAnnotations,
@@ -59,7 +61,7 @@ public final class MethodParamModelFactory {
                 ((Prop) annotation).resType(),
                 ((Prop) annotation).varArg());
 
-        if (isDiffType(type)) {
+        if (isDiffType(typeName)) {
           return new DiffPropModel(propModel);
         } else {
           return propModel;
@@ -70,7 +72,7 @@ public final class MethodParamModelFactory {
         StateParamModel stateParamModel =
             new StateParamModel(simpleMethodParamModel, ((State) annotation).canUpdateLazily());
 
-        if (isDiffType(type)) {
+        if (isDiffType(typeName)) {
           return new DiffStateParamModel(stateParamModel);
         } else {
           return stateParamModel;
@@ -109,7 +111,7 @@ public final class MethodParamModelFactory {
   }
 
 
-  private static TypeName extractDiffTypeIfNecessary(TypeName typeName) {
+  static TypeName extractDiffTypeIfNecessary(TypeName typeName) {
     if (!isDiffType(typeName)) {
       return typeName;
     }

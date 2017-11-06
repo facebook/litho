@@ -30,25 +30,25 @@ public class VisibilityOutputTest {
   private static final int MAX_LEVEL_TEST = 255;
   private static final int MAX_SEQ_TEST = 65535;
 
-  private final ComponentLifecycle mLifecycle = new ComponentLifecycle() {
-    @Override
-    int getTypeId() {
-      return LIFECYCLE_TEST_ID;
-    }
-  };
-  private Component<?> mComponent;
+  private Component mComponent;
   private VisibilityOutput mVisibilityOutput;
 
   @Before
   public void setup() {
     mVisibilityOutput = new VisibilityOutput();
 
-    mComponent = new Component(mLifecycle) {
-      @Override
-      public String getSimpleName() {
-        return "TestComponent";
-      }
-    };
+    mComponent =
+        new Component() {
+          @Override
+          int getTypeId() {
+            return LIFECYCLE_TEST_ID;
+          }
+
+          @Override
+          public String getSimpleName() {
+            return "TestComponent";
+          }
+        };
   }
 
   @Test

@@ -75,22 +75,12 @@ public class ProcessorIntegrationTest {
         .generatesFileNamed(
             StandardLocation.CLASS_OUTPUT,
             RES_PACKAGE,
-            "SimpleLayout$1.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
             "SimpleLayout$Builder.class")
         .and()
         .generatesFileNamed(
             StandardLocation.CLASS_OUTPUT,
             RES_PACKAGE,
             "SimpleLayoutSpec.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "SimpleLayout$SimpleLayoutImpl.class")
         .and()
         .generatesSources(expectedOutput);
   }
@@ -126,12 +116,7 @@ public class ProcessorIntegrationTest {
         .generatesFileNamed(
             StandardLocation.CLASS_OUTPUT,
             RES_PACKAGE,
-            "TestLayout$1.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "TestLayout$TestLayoutStateContainerImpl.class")
+            "TestLayout$TestLayoutStateContainer.class")
         .and()
         .generatesFileNamed(
             StandardLocation.CLASS_OUTPUT,
@@ -142,11 +127,6 @@ public class ProcessorIntegrationTest {
             StandardLocation.CLASS_OUTPUT,
             RES_PACKAGE,
             "TestLayoutSpec.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "TestLayout$TestLayoutImpl.class")
         .and()
         .generatesSources(expectedOutput);
   }
@@ -170,16 +150,6 @@ public class ProcessorIntegrationTest {
             StandardLocation.CLASS_OUTPUT,
             RES_PACKAGE,
             "SimpleMount.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "SimpleMount$1.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "SimpleMount$SimpleMountImpl.class")
         .and()
         .generatesFileNamed(
             StandardLocation.CLASS_OUTPUT,
@@ -225,17 +195,12 @@ public class ProcessorIntegrationTest {
         .generatesFileNamed(
             StandardLocation.CLASS_OUTPUT,
             RES_PACKAGE,
-            "TestMount$TestMountStateContainerImpl.class")
+            "TestMount$TestMountStateContainer.class")
         .and()
         .generatesFileNamed(
             StandardLocation.CLASS_OUTPUT,
             RES_PACKAGE,
             "TestMount$1.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "TestMount$TestMountImpl.class")
         .and()
         .generatesFileNamed(
             StandardLocation.CLASS_OUTPUT,

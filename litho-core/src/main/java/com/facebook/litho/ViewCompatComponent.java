@@ -12,57 +12,43 @@ package com.facebook.litho;
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
 
 import android.support.v4.util.Pools;
-import android.support.v4.util.SimpleArrayMap;
 import android.view.View;
 import android.view.ViewGroup;
-import com.facebook.litho.viewcompat.ViewCreator;
 import com.facebook.litho.viewcompat.ViewBinder;
+import com.facebook.litho.viewcompat.ViewCreator;
 
 /**
  * A component that can wrap a view using a {@link ViewBinder} class to bind the view
  * and a {@link ViewCreator} to create the mount contents.
  * This component will have a different recycle pool per {@link ViewCreator}.
  */
-public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
+public class ViewCompatComponent<V extends View> extends Component {
 
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
-  private static final SimpleArrayMap<ViewCreator, ViewCompatComponent> sInstances =
-      new SimpleArrayMap<>();
-
   private final ViewCreator mViewCreator;
   private final String mComponentName;
+  private ViewBinder<V> mViewBinder;
 
   public static <V extends View> ViewCompatComponent<V> get(
       ViewCreator<V> viewCreator,
       String componentName) {
-    ViewCompatComponent<V> componentLifecycle;
-
-    synchronized (sInstances) {
-      componentLifecycle = sInstances.get(viewCreator);
-      if (componentLifecycle == null) {
-        componentLifecycle = new ViewCompatComponent<>(viewCreator, componentName);
-        sInstances.put(viewCreator, componentLifecycle);
-      }
-    }
-
-    return componentLifecycle;
+    return new ViewCompatComponent<>(viewCreator, componentName);
   }
 
   public Builder<V> create(ComponentContext componentContext) {
-    ViewCompatComponentImpl impl = new ViewCompatComponentImpl(this);
     Builder<V> builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder<>();
     }
-    builder.init(componentContext, impl);
+    builder.init(componentContext, this);
 
     return builder;
   }
 
   private ViewCompatComponent(ViewCreator viewCreator, String componentName) {
-    super();
+    super(viewCreator.getClass());
     mViewCreator = viewCreator;
     mComponentName = "ViewCompatComponent_" + componentName;
   }
@@ -80,8 +66,8 @@ public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
       int heightSpec,
       Size size,
       Component<?> component) {
-    final ViewCompatComponentImpl impl = (ViewCompatComponentImpl) component;
-    final ViewBinder viewBinder = impl.mViewBinder;
+    final ViewCompatComponent viewCompatComponent = (ViewCompatComponent) component;
+    final ViewBinder viewBinder = viewCompatComponent.mViewBinder;
 
     final boolean isSafeToAllocatePool = getValidActivityForContext(c) != null;
 
@@ -112,22 +98,19 @@ public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
   }
 
   @Override
-  protected void onPrepare(ComponentContext c, Component<?> component) {
-    ViewCompatComponentImpl impl = ((ViewCompatComponentImpl) component);
-    impl.mViewBinder.prepare();
+  protected void onPrepare(ComponentContext c, Component component) {
+    mViewBinder.prepare();
   }
 
   @Override
-  void bind(ComponentContext c, Object mountedContent, Component<?> component) {
-    ViewCompatComponentImpl impl = ((ViewCompatComponentImpl) component);
-    impl.mViewBinder.bind((View) mountedContent);
+  void bind(ComponentContext c, Object mountedContent, Component component) {
+    mViewBinder.bind((V) mountedContent);
   }
 
   @Override
   void unbind(
-      ComponentContext c, Object mountedContent, Component<?> component) {
-    ViewCompatComponentImpl impl = ((ViewCompatComponentImpl) component);
-    impl.mViewBinder.unbind((View) mountedContent);
+      ComponentContext c, Object mountedContent, Component component) {
+    mViewBinder.unbind((V) mountedContent);
   }
 
   @Override
@@ -135,22 +118,8 @@ public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
     return MountType.VIEW;
   }
 
-  private static final class ViewCompatComponentImpl<V extends View>
-      extends Component<ViewCompatComponent<V>> implements Cloneable {
-
-    private ViewBinder<V> mViewBinder;
-
-    protected ViewCompatComponentImpl(ViewCompatComponent lifecycle) {
-      super(lifecycle);
-    }
-
-    @Override
-    public String getSimpleName() {
-      return getLifecycle().getSimpleName();
-    }
-  }
-
-  private String getSimpleName() {
+  @Override
+  public String getSimpleName() {
     return mComponentName;
   }
 
@@ -162,15 +131,15 @@ public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
   public static final class Builder<V extends View>
       extends Component.Builder<ViewCompatComponent<V>, Builder<V>> {
 
-    private ViewCompatComponentImpl mImpl;
+    private ViewCompatComponent mViewCompatComponent;
 
-    private void init(ComponentContext context, ViewCompatComponentImpl impl) {
-      super.init(context, 0, 0, impl);
-      mImpl = impl;
+    private void init(ComponentContext context, ViewCompatComponent component) {
+      super.init(context, 0, 0, component);
+      mViewCompatComponent = component;
     }
 
     public Builder<V> viewBinder(ViewBinder<V> viewBinder) {
-      mImpl.mViewBinder = viewBinder;
+      mViewCompatComponent.mViewBinder = viewBinder;
       return this;
     }
 
@@ -180,20 +149,20 @@ public class ViewCompatComponent<V extends View> extends ComponentLifecycle {
     }
 
     @Override
-    public Component<ViewCompatComponent<V>> build() {
-      if (mImpl.mViewBinder == null) {
+    public ViewCompatComponent<V> build() {
+      if (mViewCompatComponent.mViewBinder == null) {
         throw new IllegalStateException(
             "To create a ViewCompatComponent you must provide a ViewBinder.");
       }
-      ViewCompatComponentImpl impl = mImpl;
+      ViewCompatComponent viewCompatComponent = mViewCompatComponent;
       release();
-      return impl;
+      return viewCompatComponent;
     }
 
     @Override
     protected void release() {
       super.release();
-      mImpl = null;
+      mViewCompatComponent = null;
       sBuilderPool.release(this);
     }
   }

@@ -162,7 +162,7 @@ public class ChangeSetStateTest {
         Change.insert(1, ComponentRenderInfo.createEmpty()),
         Change.insert(2, ComponentRenderInfo.createEmpty()));
 
-    final Section root = TestSectionCreator.createSectionComponent("node1", leaf1);
+    final Section root = TestSectionCreator.createSectionComponent("node1", true, leaf1);
     TestSectionCreator.createTree(root, mSectionContext);
 
     final ChangeSetState changeSetState =
@@ -183,7 +183,7 @@ public class ChangeSetStateTest {
         Change.insert(1, ComponentRenderInfo.createEmpty()));
 
     final Section newRoot = TestSectionCreator
-        .createSectionComponent("node1", leaf1, leaf2);
+        .createSectionComponent("node1", true, leaf1, leaf2);
     TestSectionCreator.createTree(newRoot, mSectionContext);
 
     final ChangeSetState secondChangeSetState =
@@ -209,10 +209,11 @@ public class ChangeSetStateTest {
   public void testUpdateComponent() {
     final Section leaf1 = TestSectionCreator.createChangeSetComponent(
         "leaf1",
+        true,
         Change.insert(0, ComponentRenderInfo.createEmpty()),
         Change.insert(1, ComponentRenderInfo.createEmpty()));
 
-    final Section root = TestSectionCreator.createSectionComponent("node1", leaf1);
+    final Section root = TestSectionCreator.createSectionComponent("node1", true, leaf1);
     TestSectionCreator.createTree(root, mSectionContext);
 
     ChangeSetState.generateChangeSet(
@@ -265,7 +266,7 @@ public class ChangeSetStateTest {
         Change.insert(1, ComponentRenderInfo.createEmpty()));
 
     final Section root = TestSectionCreator
-        .createSectionComponent("node1", leaf1, leaf2);
+        .createSectionComponent("node1", true, leaf1, leaf2);
     TestSectionCreator.createTree(root, mSectionContext);
 
     ChangeSetState.generateChangeSet(
@@ -278,7 +279,7 @@ public class ChangeSetStateTest {
         mNextPrefix);
 
     final Section newRoot = TestSectionCreator
-        .createSectionComponent("node1", leaf1);
+        .createSectionComponent("node1", true, leaf1);
     TestSectionCreator.createTree(newRoot, mSectionContext);
 
     final ChangeSetState secondChangeSetState =
@@ -318,7 +319,7 @@ public class ChangeSetStateTest {
     final int totalNumChildren = numChildren1 + numChildren2 + numChildren3 + numChildren4;
 
     final Section root = TestSectionCreator
-        .createSectionComponent("node1", leaf1, leaf2, leaf3, leaf4);
+        .createSectionComponent("node1", true, leaf1, leaf2, leaf3, leaf4);
     TestSectionCreator.createTree(root, mSectionContext);
 
     ChangeSetState.generateChangeSet(
@@ -331,7 +332,7 @@ public class ChangeSetStateTest {
         mNextPrefix);
 
     final Section newRoot = TestSectionCreator
-        .createSectionComponent("node1", leaf4, leaf3, leaf2, leaf1);
+        .createSectionComponent("node1", true, leaf4, leaf3, leaf2, leaf1);
     TestSectionCreator.createTree(newRoot, mSectionContext);
 
     final ChangeSetState secondChangeSetState =
@@ -394,7 +395,7 @@ public class ChangeSetStateTest {
     final Section leaf6 = createChangeSetComponent("leaf6", numChildren6);
 
     final Section root = TestSectionCreator
-        .createSectionComponent("node1", leaf1, leaf2, leaf4, leaf5);
+        .createSectionComponent("node1", true, leaf1, leaf2, leaf4, leaf5);
     TestSectionCreator.createTree(root, mSectionContext);
 
     ChangeSetState.generateChangeSet(
@@ -407,7 +408,7 @@ public class ChangeSetStateTest {
         mNextPrefix);
 
     final Section newRoot = TestSectionCreator
-        .createSectionComponent("node1", leaf3, leaf4, leaf6, leaf5, leaf1);
+        .createSectionComponent("node1", true, leaf3, leaf4, leaf6, leaf5, leaf1);
     TestSectionCreator.createTree(newRoot, mSectionContext);
 
     final ChangeSetState secondChangeSetState =
@@ -500,7 +501,7 @@ public class ChangeSetStateTest {
     final int totalNumChildren = numChildren1 + numChildren2 + numChildren3 + numChildren4;
 
     final Section root = TestSectionCreator
-        .createSectionComponent("node1", leaf1, leaf2, leaf3, leaf4);
+        .createSectionComponent("node1",true, leaf1, leaf2, leaf3, leaf4);
     TestSectionCreator.createTree(root, mSectionContext);
 
     ChangeSetState.generateChangeSet(
@@ -513,7 +514,7 @@ public class ChangeSetStateTest {
         mNextPrefix);
 
     final Section newRoot = TestSectionCreator
-        .createSectionComponent("node1", leaf2, leaf1, leaf4, leaf3);
+        .createSectionComponent("node1",true, leaf2, leaf1, leaf4, leaf3);
     TestSectionCreator.createTree(newRoot, mSectionContext);
 
     final ChangeSetState secondChangeSetState =
@@ -562,7 +563,7 @@ public class ChangeSetStateTest {
     final int totalNumChildren = numChildren1 + numChildren2 + numChildren3;
 
     final Section root = TestSectionCreator
-        .createSectionComponent("node1", leaf1, leaf2, leaf3);
+        .createSectionComponent("node1", true, leaf1, leaf2, leaf3);
     TestSectionCreator.createTree(root, mSectionContext);
 
     ChangeSetState.generateChangeSet(
@@ -575,7 +576,7 @@ public class ChangeSetStateTest {
         mNextPrefix);
 
     final Section newRoot = TestSectionCreator
-        .createSectionComponent("node1", leaf2, leaf1);
+        .createSectionComponent("node1", true, leaf2, leaf1);
     TestSectionCreator.createTree(newRoot, mSectionContext);
 
     final ChangeSetState secondChangeSetState =
@@ -620,7 +621,7 @@ public class ChangeSetStateTest {
     final int totalNumChildren = numChildren1 + numChildren2 + numChildren3;
 
     final Section root = TestSectionCreator
-        .createSectionComponent("node1", leaf1, leaf2);
+        .createSectionComponent("node1", true, leaf1, leaf2);
     TestSectionCreator.createTree(root, mSectionContext);
 
     ChangeSetState.generateChangeSet(
@@ -633,7 +634,7 @@ public class ChangeSetStateTest {
         mNextPrefix);
 
     final Section newRoot = TestSectionCreator
-        .createSectionComponent("node1", leaf2, leaf3, leaf1);
+        .createSectionComponent("node1", true, leaf2, leaf3, leaf1);
     TestSectionCreator.createTree(newRoot, mSectionContext);
 
     final ChangeSetState secondChangeSetState =
@@ -675,7 +676,7 @@ public class ChangeSetStateTest {
     final Section leaf4 = createChangeSetComponent("leaf4", numChildren4);
 
     final Section root = TestSectionCreator
-        .createSectionComponent("node1", leaf1, leaf2, leaf3);
+        .createSectionComponent("node1", true, leaf1, leaf2, leaf3);
     TestSectionCreator.createTree(root, mSectionContext);
 
     ChangeSetState.generateChangeSet(
@@ -688,7 +689,7 @@ public class ChangeSetStateTest {
         mNextPrefix);
 
     final Section newRoot = TestSectionCreator
-        .createSectionComponent("node1", leaf2, leaf1, leaf4);
+        .createSectionComponent("node1", true, leaf2, leaf1, leaf4);
     TestSectionCreator.createTree(newRoot, mSectionContext);
 
     final ChangeSetState secondChangeSetState =

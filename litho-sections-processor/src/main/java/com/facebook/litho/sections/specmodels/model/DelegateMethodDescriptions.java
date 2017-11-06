@@ -9,9 +9,8 @@
 
 package com.facebook.litho.sections.specmodels.model;
 
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_IMPL_PARAM_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_CLASS_NAME_SUFFIX;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_VARIABLE_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_PARAM_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.REF_VARIABLE_NAME;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_STATE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.PROP;
@@ -260,14 +259,14 @@ public class DelegateMethodDescriptions {
       DelegateMethodDescription getOnCreateServiceDelegateMethodDescription(
           DelegateMethodDescription onCreateService, S specModel) {
     final MethodParamModel serviceParam = specModel.getServiceParam();
-    final String implClassName = specModel.getComponentName() + IMPL_CLASS_NAME_SUFFIX;
+    final String componentName = specModel.getComponentName();
     return DelegateMethodDescription.fromDelegateMethodDescription(onCreateService)
         .returnType(serviceParam.getType())
         .extraMethods(
             ImmutableList.<MethodSpec>of(
-                createService(implClassName, serviceParam.getName()),
-                transferService(implClassName, serviceParam.getName()),
-                getService(implClassName, serviceParam.getName())))
+                createService(componentName, serviceParam.getName()),
+                transferService(componentName, serviceParam.getName()),
+                getService(componentName, serviceParam.getName())))
         .build();
   }
 
@@ -277,14 +276,14 @@ public class DelegateMethodDescriptions {
         .addModifiers(Modifier.PUBLIC)
         .addParameter(ParameterSpec.builder(SectionClassNames.SECTION_CONTEXT, "context").build())
         .addParameter(
-            ParameterSpec.builder(SectionClassNames.SECTION, ABSTRACT_IMPL_PARAM_NAME).build())
+            ParameterSpec.builder(SectionClassNames.SECTION, ABSTRACT_PARAM_NAME).build())
         .addStatement(
-            "$L $L = ($L) $L", implClass, IMPL_VARIABLE_NAME, implClass, ABSTRACT_IMPL_PARAM_NAME)
+            "$L $L = ($L) $L", implClass, REF_VARIABLE_NAME, implClass, ABSTRACT_PARAM_NAME)
         .addStatement(
             "$L.$L = onCreateService(context, $L)",
-            IMPL_VARIABLE_NAME,
+            REF_VARIABLE_NAME,
             serviceInstanceName,
-            ABSTRACT_IMPL_PARAM_NAME)
+            ABSTRACT_PARAM_NAME)
         .build();
   }
 

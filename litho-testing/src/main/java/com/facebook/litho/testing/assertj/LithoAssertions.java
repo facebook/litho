@@ -12,7 +12,6 @@ package com.facebook.litho.testing.assertj;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.LithoView;
 import javax.annotation.CheckReturnValue;
 import org.assertj.core.api.Java6Assertions;
@@ -28,7 +27,7 @@ public class LithoAssertions extends Java6Assertions {
   }
 
   @CheckReturnValue
-  public static <L extends ComponentLifecycle> ComponentAssert assertThat(
+  public static <L extends Component> ComponentAssert assertThat(
       Component.Builder<L, ?> builder) {
     return ComponentAssert.assertThat(builder);
   }

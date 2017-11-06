@@ -33,10 +33,15 @@ import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVisitor;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,7 +69,7 @@ public class DelegateMethodGeneratorTest {
             ImmutableList.of(
                 MethodParamModelFactory.create(
                     mock(ExecutableElement.class),
-                    ClassNames.COMPONENT_CONTEXT,
+                    createTypeMirror(TypeKind.OTHER, ClassNames.COMPONENT_CONTEXT),
                     "c",
                     ImmutableList.<Annotation>of(),
                     new ArrayList<AnnotationSpec>(),
@@ -73,7 +78,7 @@ public class DelegateMethodGeneratorTest {
                     null),
                 MethodParamModelFactory.create(
                     mock(ExecutableElement.class),
-                    TypeName.BOOLEAN,
+                    createBooleanTypeMirror(),
                     "prop",
                     ImmutableList.of(createAnnotation(Prop.class)),
                     new ArrayList<AnnotationSpec>(),
@@ -82,7 +87,7 @@ public class DelegateMethodGeneratorTest {
                     null),
                 MethodParamModelFactory.create(
                     mock(ExecutableElement.class),
-                    TypeName.INT,
+                    createIntTypeMirror(),
                     "state",
                     ImmutableList.of(createAnnotation(State.class)),
                     new ArrayList<AnnotationSpec>(),
@@ -122,12 +127,12 @@ public class DelegateMethodGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString()).isEqualTo(
         "@java.lang.Override\n" +
             "protected com.facebook.litho.ComponentLayout onCreateLayout(com.facebook.litho.ComponentContext c,\n" +
-            "    com.facebook.litho.Component _abstractImpl) {\n" +
-            "  TestImpl _impl = (TestImpl) _abstractImpl;\n" +
+            "    com.facebook.litho.Component _abstract) {\n" +
+            "  Test _ref = (Test) _abstract;\n" +
             "  com.facebook.litho.ComponentLayout _result = (com.facebook.litho.ComponentLayout) TestSpec.onCreateLayout(\n" +
             "    (com.facebook.litho.ComponentContext) c,\n" +
-            "    (boolean) _impl.prop,\n" +
-            "    (int) _impl.state);\n" +
+            "    (boolean) _ref.prop,\n" +
+            "    (int) _ref.state);\n" +
             "  return _result;\n" +
             "}\n");
   }
@@ -147,12 +152,12 @@ public class DelegateMethodGeneratorTest {
         .isEqualTo(
             "@java.lang.Override\n"
                 + "protected com.facebook.litho.ComponentLayout onCreateLayout(com.facebook.litho.ComponentContext c,\n"
-                + "    com.facebook.litho.Component _abstractImpl) {\n"
-                + "  TestImpl _impl = (TestImpl) _abstractImpl;\n"
+                + "    com.facebook.litho.Component _abstract) {\n"
+                + "  Test _ref = (Test) _abstract;\n"
                 + "  com.facebook.litho.ComponentLayout _result = (com.facebook.litho.ComponentLayout) mSpec.onCreateLayout(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
-                + "    (boolean) _impl.prop,\n"
-                + "    (int) _impl.state);\n"
+                + "    (boolean) _ref.prop,\n"
+                + "    (int) _ref.state);\n"
                 + "  return _result;\n"
                 + "}\n");
   }
@@ -183,12 +188,12 @@ public class DelegateMethodGeneratorTest {
         .isEqualTo(
             "@java.lang.Override\n"
                 + "protected com.facebook.litho.ComponentLayout onCreateLayout(com.facebook.litho.ComponentContext c,\n"
-                + "    com.facebook.litho.Component _abstractImpl) {\n"
-                + "  TestImpl _impl = (TestImpl) _abstractImpl;\n"
+                + "    com.facebook.litho.Component _abstract) {\n"
+                + "  Test _ref = (Test) _abstract;\n"
                 + "  com.facebook.litho.ComponentLayout _result = (com.facebook.litho.ComponentLayout) mSpec.onCreateLayout(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
-                + "    (boolean) _impl.prop,\n"
-                + "    (int) _impl.state);\n"
+                + "    (boolean) _ref.prop,\n"
+                + "    (int) _ref.state);\n"
                 + "  return _result;\n"
                 + "}\n");
   }
@@ -223,7 +228,7 @@ public class DelegateMethodGeneratorTest {
             ImmutableList.of(
                 MethodParamModelFactory.create(
                     mock(ExecutableElement.class),
-                    ClassNames.COMPONENT_CONTEXT,
+                    createTypeMirror(TypeKind.OTHER, ClassNames.COMPONENT_CONTEXT),
                     "c",
                     ImmutableList.<Annotation>of(),
                     new ArrayList<AnnotationSpec>(),
@@ -234,7 +239,7 @@ public class DelegateMethodGeneratorTest {
                     TypeName.CHAR, "unimportantName", new Object()),
                 MethodParamModelFactory.create(
                     mock(ExecutableElement.class),
-                    TypeName.BOOLEAN,
+                    createBooleanTypeMirror(),
                     "prop",
                     ImmutableList.of(createAnnotation(Prop.class)),
                     new ArrayList<AnnotationSpec>(),
@@ -258,12 +263,12 @@ public class DelegateMethodGeneratorTest {
         .isEqualTo(
             "@java.lang.Override\n"
                 + "protected com.facebook.litho.ComponentLayout onCreateLayout(com.facebook.litho.ComponentContext c,\n"
-                + "    com.facebook.litho.Component _abstractImpl) {\n"
-                + "  TestImpl _impl = (TestImpl) _abstractImpl;\n"
+                + "    com.facebook.litho.Component _abstract) {\n"
+                + "  Test _ref = (Test) _abstract;\n"
                 + "  com.facebook.litho.ComponentLayout _result = (com.facebook.litho.ComponentLayout) TestSpec.onCreateLayout(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
-                + "    (char) _impl.optionalParam,\n"
-                + "    (boolean) _impl.prop);\n"
+                + "    (char) _ref.optionalParam,\n"
+                + "    (boolean) _ref.prop);\n"
                 + "  return _result;\n"
                 + "}\n");
   }
@@ -275,5 +280,73 @@ public class DelegateMethodGeneratorTest {
         return annotationClass;
       }
     };
+  }
+
+  public static TypeMirror createBooleanTypeMirror() {
+    return createTypeMirror(TypeKind.BOOLEAN, TypeName.BOOLEAN);
+  }
+
+  public static TypeMirror createIntTypeMirror() {
+    return createTypeMirror(TypeKind.INT, TypeName.INT);
+  }
+
+  public static TypeMirror createTypeMirror(TypeKind typeKind, TypeName typeName) {
+    return new CustomTypeMirror(typeKind, typeName);
+  }
+
+  private static class CustomTypeMirror implements TypeMirror {
+
+    private final TypeKind mTypeKind;
+    private final TypeName mTypeName;
+
+    CustomTypeMirror(TypeKind typeKind, TypeName typeName) {
+      mTypeKind = typeKind;
+      mTypeName = typeName;
+    }
+
+    @Override
+    public TypeKind getKind() {
+      return mTypeKind;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj == null || !(obj instanceof CustomTypeMirror)) {
+        return false;
+      }
+
+      CustomTypeMirror other = (CustomTypeMirror) obj;
+      return mTypeKind.equals(other.mTypeKind) && mTypeName.equals(other.mTypeName);
+    }
+
+    @Override
+    public int hashCode() {
+      return mTypeName.hashCode();
+    }
+
+    @Override
+    public String toString() {
+      return mTypeName.toString();
+    }
+
+    @Override
+    public <R, P> R accept(TypeVisitor<R, P> v, P p) {
+      return (R) mTypeName;
+    }
+
+    @Override
+    public List<? extends AnnotationMirror> getAnnotationMirrors() {
+      return null;
+    }
+
+    @Override
+    public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
+      return null;
+    }
+
+    @Override
+    public <A extends Annotation> A[] getAnnotationsByType(Class<A> annotationType) {
+      return null;
+    }
   }
 }

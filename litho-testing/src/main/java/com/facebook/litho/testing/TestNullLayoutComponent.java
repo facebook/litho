@@ -12,31 +12,18 @@ package com.facebook.litho.testing;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.ComponentLifecycle;
 
 public class TestNullLayoutComponent extends Component {
 
-  private static class Lifecycle extends ComponentLifecycle {
-
-    @Override
-    protected boolean canMeasure() {
-      return true;
-    }
-
-    @Override
-    protected ComponentLayout onCreateLayoutWithSizeSpec(
-        ComponentContext c,
-        int widthSpec,
-        int heightSpec,
-        Component object) {
-      return null;
-    }
+  @Override
+  protected boolean canMeasure() {
+    return true;
   }
 
-  private static final ComponentLifecycle sLifecycle = new Lifecycle();
-
-  public TestNullLayoutComponent() {
-    super(sLifecycle);
+  @Override
+  protected ComponentLayout onCreateLayoutWithSizeSpec(
+      ComponentContext c, int widthSpec, int heightSpec, Component object) {
+    return null;
   }
 
   @Override

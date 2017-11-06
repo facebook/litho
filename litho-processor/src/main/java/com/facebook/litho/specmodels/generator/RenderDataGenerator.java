@@ -9,8 +9,8 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_VARIABLE_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.REF_VARIABLE_NAME;
 
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.SpecModel;
@@ -51,26 +51,23 @@ public final class RenderDataGenerator {
 
   private static MethodSpec generateRecordRenderDataMethod(SpecModel specModel) {
     final TypeName renderInfoTypeName = ClassName.bestGuess(getRenderDataImplClassName(specModel));
-    final TypeName implTypeName = ClassName.bestGuess(specModel.getComponentName() + "Impl");
-    final CodeBlock code = CodeBlock.builder()
-        .addStatement(
-            "$T $L = ($T) $L",
-            implTypeName,
-            IMPL_VARIABLE_NAME,
-            implTypeName,
-            "previousComponent")
-        .add(
-            "$T $L = $L != null ?\n",
-            renderInfoTypeName,
-            "renderInfo",
-            "toRecycle")
-        .indent()
-        .add("($T) $L :\n", renderInfoTypeName, "toRecycle")
-        .add("new $T();\n", renderInfoTypeName)
-        .unindent()
-        .addStatement("$L.record($L)", "renderInfo", IMPL_VARIABLE_NAME)
-        .addStatement("return $L", "renderInfo")
-        .build();
+    final TypeName typeName = specModel.getComponentTypeName();
+    final CodeBlock code =
+        CodeBlock.builder()
+            .addStatement(
+                "$T $L = ($T) $L",
+                typeName,
+                REF_VARIABLE_NAME,
+                typeName,
+                "previousComponent")
+            .add("$T $L = $L != null ?\n", renderInfoTypeName, "renderInfo", "toRecycle")
+            .indent()
+            .add("($T) $L :\n", renderInfoTypeName, "toRecycle")
+            .add("new $T();\n", renderInfoTypeName)
+            .unindent()
+            .addStatement("$L.record($L)", "renderInfo", REF_VARIABLE_NAME)
+            .addStatement("return $L", "renderInfo")
+            .build();
 
     return MethodSpec.methodBuilder("recordRenderData")
         .addAnnotation(Override.class)
@@ -84,20 +81,20 @@ public final class RenderDataGenerator {
 
   private static MethodSpec generateApplyPreviousRenderDataMethod(SpecModel specModel) {
     final TypeName renderInfoTypeName = ClassName.bestGuess(getRenderDataImplClassName(specModel));
-    final TypeName implTypeName = ClassName.bestGuess(specModel.getComponentName() + "Impl");
+    final TypeName typeName = specModel.getComponentTypeName();
     final CodeBlock code =
         CodeBlock.builder()
             .addStatement(
-                "$T $L = ($T) $L", implTypeName, IMPL_VARIABLE_NAME, implTypeName, "component")
+                "$T $L = ($T) $L", typeName, REF_VARIABLE_NAME, typeName, "component")
             .beginControlFlow("if ($L == null)", "previousRenderData")
-            .addStatement("$L.$L = null", IMPL_VARIABLE_NAME, PREVIOUS_RENDER_DATA_FIELD_NAME)
+            .addStatement("$L.$L = null", REF_VARIABLE_NAME, PREVIOUS_RENDER_DATA_FIELD_NAME)
             .addStatement("return")
             .endControlFlow()
             .beginControlFlow(
-                "if ($L.$L == null)", IMPL_VARIABLE_NAME, PREVIOUS_RENDER_DATA_FIELD_NAME)
+                "if ($L.$L == null)", REF_VARIABLE_NAME, PREVIOUS_RENDER_DATA_FIELD_NAME)
             .addStatement(
                 "$L.$L = new $T()",
-                IMPL_VARIABLE_NAME,
+                REF_VARIABLE_NAME,
                 PREVIOUS_RENDER_DATA_FIELD_NAME,
                 renderInfoTypeName)
             .endControlFlow()
@@ -108,7 +105,7 @@ public final class RenderDataGenerator {
                 renderInfoTypeName,
                 "previousRenderData")
             .addStatement(
-                "$L.$L.copy($L)", IMPL_VARIABLE_NAME, PREVIOUS_RENDER_DATA_FIELD_NAME, "infoImpl")
+                "$L.$L.copy($L)", REF_VARIABLE_NAME, PREVIOUS_RENDER_DATA_FIELD_NAME, "infoImpl")
             .build();
 
     return MethodSpec.methodBuilder("applyPreviousRenderData")

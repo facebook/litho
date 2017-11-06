@@ -16,8 +16,8 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.yoga.YogaEdge;
 
-public class TestSizeDependentComponent extends TestComponent.TestComponentLifecycle {
-  public static TestSizeDependentComponent sInstance = null;
+public class TestSizeDependentComponent extends Component {
+
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
@@ -29,7 +29,7 @@ public class TestSizeDependentComponent extends TestComponent.TestComponentLifec
       int widthSpec,
       int heightSpec,
       Component _stateObject) {
-    final State state = ((State) _stateObject);
+    final TestSizeDependentComponent state = ((TestSizeDependentComponent) _stateObject);
 
     final Component.Builder builder1 =
         TestDrawableComponent.create(c, false, true, true, false, false)
@@ -68,72 +68,57 @@ public class TestSizeDependentComponent extends TestComponent.TestComponentLifec
     return MountType.NONE;
   }
 
-  public static synchronized TestSizeDependentComponent get() {
-    if (sInstance == null) {
-      sInstance = new TestSizeDependentComponent();
-    }
-
-    return sInstance;
-  }
-
   public static Builder create(ComponentContext context) {
     Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
     }
-    builder.init(context, new State());
+    builder.init(context, new TestSizeDependentComponent());
 
     return builder;
   }
 
-  public static class State extends Component<TestSizeDependentComponent> implements Cloneable {
+  boolean hasFixedSizes;
+  boolean isDelegate;
 
-    boolean hasFixedSizes;
-    boolean isDelegate;
+  @Override
+  public String getSimpleName() {
+    return "TestSizeDependentComponent";
+  }
 
-    private State() {
-      super(get());
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "TestSizeDependentComponent";
-    }
-
-    @Override
-    public boolean equals(Object other) {
-      if (this == other) {
-        return true;
-      }
-      if (other == null || getClass() != other.getClass()) {
-        return false;
-      }
-      State state = (State) other;
-      if (this.getId() == state.getId()) {
-        return true;
-      }
-
+  @Override
+  public boolean equals(Object other) {
+    if (this == other) {
       return true;
     }
+    if (other == null || getClass() != other.getClass()) {
+      return false;
+    }
+    TestSizeDependentComponent state = (TestSizeDependentComponent) other;
+    if (this.getId() == state.getId()) {
+      return true;
+    }
+
+    return true;
   }
 
   public static class Builder
       extends com.facebook.litho.Component.Builder<TestSizeDependentComponent, Builder> {
 
-    State mState;
+    TestSizeDependentComponent mTestSizeDependentComponent;
 
-    private void init(ComponentContext context, State state) {
+    private void init(ComponentContext context, TestSizeDependentComponent state) {
       super.init(context, 0, 0, state);
-      mState = state;
+      mTestSizeDependentComponent = state;
     }
 
     public Builder setFixSizes(boolean hasFixSizes) {
-      mState.hasFixedSizes = hasFixSizes;
+      mTestSizeDependentComponent.hasFixedSizes = hasFixSizes;
       return this;
     }
 
     public Builder setDelegate(boolean isDelegate) {
-      mState.isDelegate = isDelegate;
+      mTestSizeDependentComponent.isDelegate = isDelegate;
       return this;
     }
 
@@ -144,15 +129,15 @@ public class TestSizeDependentComponent extends TestComponent.TestComponentLifec
 
     @Override
     public Component<TestSizeDependentComponent> build() {
-      State state = mState;
+      TestSizeDependentComponent testSizeDependentComponent = mTestSizeDependentComponent;
       release();
-      return state;
+      return testSizeDependentComponent;
     }
 
     @Override
     protected void release() {
       super.release();
-      mState = null;
+      mTestSizeDependentComponent = null;
       sBuilderPool.release(this);
     }
   }

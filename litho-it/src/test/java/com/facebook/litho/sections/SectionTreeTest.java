@@ -62,12 +62,11 @@ public class SectionTreeTest {
 
   @Test
   public void testSetSameRoot() {
-    final Section section = TestSectionCreator.createSection(
+    final Section section = TestSectionCreator.createChangeSetSection(
         0,
         "leaf1",
-        TestSectionCreator.createChangeSetLifecycle(
-            Change.insert(0, makeComponentInfo())),
-        true);
+        true,
+        Change.insert(0, makeComponentInfo()));
 
     final TestTarget changeSetHandler = new TestTarget();
     SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
@@ -84,9 +83,12 @@ public class SectionTreeTest {
 
   @Test
   public void updateTree() {
-    final Section section = TestSectionCreator.createChangeSetComponent(
+    final Section section = TestSectionCreator.createChangeSetSection(
+        0,
         "leaf1",
-        Change.insert(0, makeComponentInfo()));
+       true,
+       Change.insert(0, makeComponentInfo()));
+
     final TestTarget changeSetHandler = new TestTarget();
     SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
         .build();
@@ -97,8 +99,10 @@ public class SectionTreeTest {
 
     assertThat(changeSetHandler.wereChangesHandled()).isFalse();
 
-    final Section secondSection = TestSectionCreator.createChangeSetComponent(
+    final Section secondSection = TestSectionCreator.createChangeSetSection(
+        0,
         "leaf1",
+        true,
         Change.update(0, makeComponentInfo()));
     tree.setRoot(secondSection);
 

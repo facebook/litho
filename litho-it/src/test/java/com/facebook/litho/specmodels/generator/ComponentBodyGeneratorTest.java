@@ -39,9 +39,9 @@ import org.junit.Rule;
 import org.junit.Test;
 
 /**
- * Tests {@link ComponentImplGenerator}
+ * Tests {@link ComponentBodyGenerator}
  */
-public class ComponentImplGeneratorTest {
+public class ComponentBodyGeneratorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 
   private final LayoutSpecModelFactory mLayoutSpecModelFactory = new LayoutSpecModelFactory();
@@ -81,37 +81,37 @@ public class ComponentImplGeneratorTest {
 
   @Test
   public void testGenerateStateContainerImpl() {
-    assertThat(ComponentImplGenerator.generateStateContainerImpl(mSpecModelDI).toString())
+    assertThat(ComponentBodyGenerator.generateStateContainer(mSpecModelDI).toString())
         .isEqualTo(
             "@android.support.annotation.VisibleForTesting(\n" +
             "    otherwise = 2\n" +
             ")\n" +
-            "static class TestStateContainerImpl implements com.facebook.litho.ComponentLifecycle.StateContainer {\n" +
+            "static class TestStateContainer implements com.facebook.litho.ComponentLifecycle.StateContainer {\n" +
             "  @com.facebook.litho.annotations.State\n" +
             "  int arg1;\n" +
             "}\n");
   }
 
   @Test
-  public void testGetStateContainerImplClassName() {
-    assertThat(ComponentImplGenerator.getStateContainerImplClassName(mSpecModelDI))
-        .isEqualTo("TestStateContainerImpl");
+  public void testGetStateContainerClassName() {
+    assertThat(ComponentBodyGenerator.getStateContainerClassName(mSpecModelDI))
+        .isEqualTo("TestStateContainer");
   }
 
   @Test
   public void testGenerateStateContainerGetter() {
-    assertThat(ComponentImplGenerator.generateStateContainerGetter(
+    assertThat(ComponentBodyGenerator.generateStateContainerGetter(
         ClassNames.STATE_CONTAINER_COMPONENT).toString())
         .isEqualTo(
             "@java.lang.Override\n" +
             "protected com.facebook.litho.ComponentLifecycle.StateContainer getStateContainer() {\n" +
-            "  return mStateContainerImpl;\n" +
+            "  return mStateContainer;\n" +
             "}\n");
   }
 
   @Test
   public void testGenerateProps() {
-    TypeSpecDataHolder dataHolder = ComponentImplGenerator.generateProps(mSpecModelDI);
+    TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateProps(mSpecModelDI);
     assertThat(dataHolder.getFieldSpecs()).hasSize(2);
     assertThat(dataHolder.getFieldSpecs().get(0).toString())
         .isEqualTo(
@@ -131,14 +131,14 @@ public class ComponentImplGeneratorTest {
 
   @Test
   public void testGenerateTreeProps() {
-    TypeSpecDataHolder dataHolder = ComponentImplGenerator.generateTreeProps(mSpecModelDI);
+    TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateTreeProps(mSpecModelDI);
     assertThat(dataHolder.getFieldSpecs()).hasSize(1);
     assertThat(dataHolder.getFieldSpecs().get(0).toString()).isEqualTo("long arg3;\n");
   }
 
   @Test
   public void testGenerateInterStageInputs() {
-    TypeSpecDataHolder dataHolder = ComponentImplGenerator.generateInterStageInputs(mSpecModelDI);
+    TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateInterStageInputs(mSpecModelDI);
     assertThat(dataHolder.getFieldSpecs()).hasSize(0);
   }
 
@@ -153,7 +153,7 @@ public class ComponentImplGeneratorTest {
                 ImmutableList.<EventDeclarationModel.FieldModel>of(),
                 null)));
 
-    TypeSpecDataHolder dataHolder = ComponentImplGenerator.generateEventHandlers(specModel);
+    TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateEventHandlers(specModel);
     assertThat(dataHolder.getFieldSpecs()).hasSize(1);
     assertThat(dataHolder.getFieldSpecs().get(0).toString())
         .isEqualTo("com.facebook.litho.EventHandler objectHandler;\n");
@@ -161,7 +161,7 @@ public class ComponentImplGeneratorTest {
 
   @Test
   public void testGenerateGetSimpleName() {
-    assertThat(ComponentImplGenerator.generateGetSimpleName(mSpecModelDI).toString())
+    assertThat(ComponentBodyGenerator.generateGetSimpleName(mSpecModelDI).toString())
         .isEqualTo(
             "@java.lang.Override\n" +
             "public java.lang.String getSimpleName() {\n" +
@@ -171,7 +171,7 @@ public class ComponentImplGeneratorTest {
 
   @Test
   public void testGenerateIsEquivalentMethod() {
-    assertThat(ComponentImplGenerator.generateIsEquivalentMethod(mSpecModelDI).toString())
+    assertThat(ComponentBodyGenerator.generateIsEquivalentMethod(mSpecModelDI).toString())
         .isEqualTo(
             "@java.lang.Override\n"
                 + "public boolean isEquivalentTo(com.facebook.litho.Component<?> other) {\n"
@@ -181,20 +181,20 @@ public class ComponentImplGeneratorTest {
                 + "  if (other == null || getClass() != other.getClass()) {\n"
                 + "    return false;\n"
                 + "  }\n"
-                + "  TestImpl testImpl = (TestImpl) other;\n"
-                + "  if (this.getId() == testImpl.getId()) {\n"
+                + "  Test testRef = (Test) other;\n"
+                + "  if (this.getId() == testRef.getId()) {\n"
                 + "    return true;\n"
                 + "  }\n"
-                + "  if (arg0 != testImpl.arg0) {\n"
+                + "  if (arg0 != testRef.arg0) {\n"
                 + "    return false;\n"
                 + "  }\n"
-                + "  if (arg4 != null ? !arg4.isEquivalentTo(testImpl.arg4) : testImpl.arg4 != null) {\n"
+                + "  if (arg4 != null ? !arg4.isEquivalentTo(testRef.arg4) : testRef.arg4 != null) {\n"
                 + "    return false;\n"
                 + "  }\n"
-                + "  if (mStateContainerImpl.arg1 != testImpl.mStateContainerImpl.arg1) {\n"
+                + "  if (mStateContainer.arg1 != testRef.mStateContainer.arg1) {\n"
                 + "    return false;\n"
                 + "  }\n"
-                + "  if (arg3 != testImpl.arg3) {\n"
+                + "  if (arg3 != testRef.arg3) {\n"
                 + "    return false;\n"
                 + "  }\n"
                 + "  return true;\n"
@@ -204,7 +204,7 @@ public class ComponentImplGeneratorTest {
   @Test
   public void testOnUpdateStateMethods() {
     TypeSpecDataHolder dataHolder =
-        ComponentImplGenerator.generateOnUpdateStateMethods(mSpecModelDI);
+        ComponentBodyGenerator.generateOnUpdateStateMethods(mSpecModelDI);
     assertThat(dataHolder.getMethodSpecs()).hasSize(1);
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
@@ -217,15 +217,15 @@ public class ComponentImplGeneratorTest {
   public void testGenerateStateParamImplAccessor() {
     StateParamModel stateParamModel = mock(StateParamModel.class);
     when(stateParamModel.getName()).thenReturn("stateParam");
-    assertThat(ComponentImplGenerator.getImplAccessor(mSpecModelDI, stateParamModel))
-        .isEqualTo("mStateContainerImpl.stateParam");
+    assertThat(ComponentBodyGenerator.getImplAccessor(mSpecModelDI, stateParamModel))
+        .isEqualTo("mStateContainer.stateParam");
   }
 
   @Test
   public void testGeneratePropParamImplAccessor() {
     PropModel propModel = mock(PropModel.class);
     when(propModel.getName()).thenReturn("propParam");
-    assertThat(ComponentImplGenerator.getImplAccessor(mSpecModelDI, propModel))
+    assertThat(ComponentBodyGenerator.getImplAccessor(mSpecModelDI, propModel))
         .isEqualTo("propParam");
   }
 }

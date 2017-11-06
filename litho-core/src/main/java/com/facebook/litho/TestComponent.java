@@ -15,12 +15,10 @@ package com.facebook.litho;
  */
 class TestComponent extends Component {
 
-  private static final ComponentLifecycle TEST_LIFECYCLE = new ComponentLifecycle() {};
-
   private final Component<?> mWrappedComponent;
 
   TestComponent(Component<?> component) {
-    super(TEST_LIFECYCLE);
+    super();
 
     mWrappedComponent = component;
   }

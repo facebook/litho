@@ -9,8 +9,6 @@
 
 package com.facebook.litho.specmodels.generator.testing;
 
-import static com.facebook.litho.specmodels.generator.ComponentImplGenerator.getImplClassName;
-
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -654,7 +652,7 @@ public final class MatcherGenerator {
 
   public static ClassName getEnclosedImplClassName(final SpecModel enclosedSpecModel) {
     final String componentTypeName = enclosedSpecModel.getComponentTypeName().toString();
-    return ClassName.bestGuess(componentTypeName + '.' + getImplClassName(enclosedSpecModel));
+    return ClassName.bestGuess(componentTypeName);
   }
 
   private static MethodSpec generateBuildMethod(final SpecModel specModel) {

@@ -46,47 +46,176 @@ import java.util.BitSet;
  * @prop-required prop5 char
  */
 @TargetApi(17)
-public final class TestMount<S extends View> extends ComponentLifecycle {
-  private static TestMount sInstance = null;
-
+public final class TestMount<S extends View> extends Component<TestMount> {
   static final Pools.SynchronizedPool<TestEvent> sTestEventPool = new Pools.SynchronizedPool<TestEvent>(2);
 
   private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
 
-  private TestMount() {
-  }
+  private TestMountStateContainer mStateContainer;
 
-  private static synchronized TestMount get() {
-    if (sInstance == null) {
-      sInstance = new TestMount();
-    }
-    return sInstance;
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  int prop1;
+
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  long prop6;
+
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  Object prop3;
+
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  char[] prop4;
+
+  @Prop(
+      resType = ResType.NONE,
+      optional = true
+  )
+  boolean prop2 = TestMountSpec.prop2;
+
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  long prop8;
+
+  @Prop(
+      resType = ResType.STRING,
+      optional = false
+  )
+  CharSequence prop7;
+
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  char prop5;
+
+  TestTreeProp treeProp;
+
+  Long measureOutput;
+
+  Integer boundsDefinedOutput;
+
+  EventHandler testEventHandler;
+
+  private TestMount() {
+    super();
+    mStateContainer = new TestMountStateContainer();
   }
 
   @Override
-  protected void populateTreeProps(Component _abstractImpl, TreeProps treeProps) {
+  protected ComponentLifecycle.StateContainer getStateContainer() {
+    return mStateContainer;
+  }
+
+  @Override
+  public String getSimpleName() {
+    return "TestMount";
+  }
+
+  @Override
+  public boolean isEquivalentTo(Component<?> other) {
+    if (this == other) {
+      return true;
+    }
+    if (other == null || getClass() != other.getClass()) {
+      return false;
+    }
+    TestMount testMountRef = (TestMount) other;
+    if (this.getId() == testMountRef.getId()) {
+      return true;
+    }
+    if (prop1 != testMountRef.prop1) {
+      return false;
+    }
+    if (prop6 != testMountRef.prop6) {
+      return false;
+    }
+    if (prop3 != null ? !prop3.equals(testMountRef.prop3) : testMountRef.prop3 != null) {
+      return false;
+    }
+    if (!Arrays.equals(prop4, testMountRef.prop4)) {
+      return false;
+    }
+    if (prop2 != testMountRef.prop2) {
+      return false;
+    }
+    if (prop8 != testMountRef.prop8) {
+      return false;
+    }
+    if (prop7 != null ? !prop7.equals(testMountRef.prop7) : testMountRef.prop7 != null) {
+      return false;
+    }
+    if (prop5 != testMountRef.prop5) {
+      return false;
+    }
+    if (mStateContainer.state1 != testMountRef.mStateContainer.state1) {
+      return false;
+    }
+    if (mStateContainer.state2 != null ? !mStateContainer.state2.equals(testMountRef.mStateContainer.state2) : testMountRef.mStateContainer.state2 != null) {
+      return false;
+    }
+    if (treeProp != null ? !treeProp.equals(testMountRef.treeProp) : testMountRef.treeProp != null) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  protected void copyInterStageImpl(Component component) {
+    TestMount testMountRef = (TestMount) component;
+    measureOutput = testMountRef.measureOutput;
+    boundsDefinedOutput = testMountRef.boundsDefinedOutput;
+  }
+
+  private UpdateCurrentStateStateUpdate createUpdateCurrentStateStateUpdate(int someParam) {
+    return new UpdateCurrentStateStateUpdate(someParam);
+  }
+
+  @Override
+  public TestMount makeShallowCopy() {
+    TestMount component = (TestMount) super.makeShallowCopy();
+    component.measureOutput = null;
+    component.boundsDefinedOutput = null;
+    component.mStateContainer = new TestMountStateContainer();
+    return component;
+  }
+
+  @Override
+  protected void populateTreeProps(Component _abstract, TreeProps treeProps) {
     if (treeProps == null) {
       return;
     }
-    final TestMountImpl _impl = (TestMountImpl) _abstractImpl;
-    _impl.treeProp = treeProps.get(com.facebook.litho.processor.integration.resources.TestTreeProp.class);
+    final TestMount _ref = (TestMount) _abstract;
+    _ref.treeProp = treeProps.get(com.facebook.litho.processor.integration.resources.TestTreeProp.class);
   }
 
   @Override
-  protected TreeProps getTreePropsForChildren(ComponentContext c, Component _abstractImpl,
+  protected TreeProps getTreePropsForChildren(ComponentContext c, Component _abstract,
       TreeProps parentTreeProps) {
-    final TestMountImpl _impl = (TestMountImpl) _abstractImpl;
+    final TestMount _ref = (TestMount) _abstract;
     final TreeProps childTreeProps = TreeProps.copy(parentTreeProps);
     childTreeProps.put(com.facebook.litho.processor.integration.resources.TestTreeProp.class, TestMountSpec.onCreateFeedPrefetcherProp(
         (ComponentContext) c,
-        (long) _impl.prop6));
+        (long) _ref.prop6));
     return childTreeProps;
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  protected void onLoadStyle(ComponentContext c, Component _abstractImpl) {
-    TestMountImpl _impl = (TestMountImpl) _abstractImpl;
+  protected void onLoadStyle(ComponentContext c, Component _abstract) {
+    TestMount _ref = (TestMount) _abstract;
     Output<Boolean> prop2 = acquireOutput();
     Output<Object> prop3 = acquireOutput();
     TestMountSpec.onLoadStyle(
@@ -94,32 +223,32 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
         prop2,
         prop3);
     if (prop2.get() != null) {
-      _impl.prop2 = prop2.get();
+      _ref.prop2 = prop2.get();
     }
     releaseOutput(prop2);
     if (prop3.get() != null) {
-      _impl.prop3 = prop3.get();
+      _ref.prop3 = prop3.get();
     }
     releaseOutput(prop3);
   }
 
   @Override
-  protected void createInitialState(ComponentContext c, Component _abstractImpl) {
-    TestMountImpl _impl = (TestMountImpl) _abstractImpl;
+  protected void createInitialState(ComponentContext c, Component _abstract) {
+    TestMount _ref = (TestMount) _abstract;
     StateValue<S> state2 = new StateValue<>();
     TestMountSpec.createInitialState(
         (ComponentContext) c,
-        (int) _impl.prop1,
+        (int) _ref.prop1,
         state2);
     if (state2.get() != null) {
-      _impl.mStateContainerImpl.state2 = state2.get();
+      _ref.mStateContainer.state2 = state2.get();
     }
   }
 
   @Override
   protected void onMeasure(ComponentContext context, ComponentLayout layout, int widthSpec,
-      int heightSpec, Size size, Component _abstractImpl) {
-    TestMountImpl _impl = (TestMountImpl) _abstractImpl;
+      int heightSpec, Size size, Component _abstract) {
+    TestMount _ref = (TestMount) _abstract;
     Output<Long> measureOutput = acquireOutput();
     TestMountSpec.onMeasure(
         (ComponentContext) context,
@@ -128,7 +257,7 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
         (int) heightSpec,
         (Size) size,
         measureOutput);
-    _impl.measureOutput = measureOutput.get();
+    _ref.measureOutput = measureOutput.get();
     releaseOutput(measureOutput);
   }
 
@@ -139,17 +268,17 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
 
   @Override
   protected void onBoundsDefined(ComponentContext c, ComponentLayout layout,
-      Component _abstractImpl) {
-    TestMountImpl _impl = (TestMountImpl) _abstractImpl;
+      Component _abstract) {
+    TestMount _ref = (TestMount) _abstract;
     Output<Integer> boundsDefinedOutput = acquireOutput();
     TestMountSpec.onBoundsDefined(
         (ComponentContext) c,
         (ComponentLayout) layout,
-        (Object) _impl.prop3,
-        (char[]) _impl.prop4,
-        (Long) _impl.measureOutput,
+        (Object) _ref.prop3,
+        (char[]) _ref.prop4,
+        (Long) _ref.measureOutput,
         boundsDefinedOutput);
-    _impl.boundsDefinedOutput = boundsDefinedOutput.get();
+    _ref.boundsDefinedOutput = boundsDefinedOutput.get();
     releaseOutput(boundsDefinedOutput);
   }
 
@@ -161,34 +290,34 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
   }
 
   @Override
-  protected void onMount(ComponentContext c, Object v, Component _abstractImpl) {
-    TestMountImpl _impl = (TestMountImpl) _abstractImpl;
+  protected void onMount(ComponentContext c, Object v, Component _abstract) {
+    TestMount _ref = (TestMount) _abstract;
     TestMountSpec.onMount(
         (ComponentContext) c,
         (Drawable) v,
-        (boolean) _impl.prop2,
-        (long) _impl.mStateContainerImpl.state1,
-        (S) _impl.mStateContainerImpl.state2,
-        (Long) _impl.measureOutput,
-        (TestTreeProp) _impl.treeProp);
+        (boolean) _ref.prop2,
+        (long) _ref.mStateContainer.state1,
+        (S) _ref.mStateContainer.state2,
+        (Long) _ref.measureOutput,
+        (TestTreeProp) _ref.treeProp);
   }
 
   @Override
-  protected void onUnmount(ComponentContext c, Object v, Component _abstractImpl) {
-    TestMountImpl _impl = (TestMountImpl) _abstractImpl;
+  protected void onUnmount(ComponentContext c, Object v, Component _abstract) {
+    TestMount _ref = (TestMount) _abstract;
     TestMountSpec.onUnmount(
         (ComponentContext) c,
         (Drawable) v,
-        (long) _impl.prop8);
+        (long) _ref.prop8);
   }
 
   @Override
   protected void onPopulateAccessibilityNode(AccessibilityNodeInfoCompat node,
-      Component _abstractImpl) {
-    TestMountImpl _impl = (TestMountImpl) _abstractImpl;
+      Component _abstract) {
+    TestMount _ref = (TestMount) _abstract;
     TestMountSpec.onPopulateAccessibilityNode(
         (AccessibilityNodeInfoCompat) node,
-        (CharSequence) _impl.prop7);
+        (CharSequence) _ref.prop7);
   }
 
   @Override
@@ -197,28 +326,28 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
   }
 
   @Override
-  protected int getExtraAccessibilityNodesCount(Component _abstractImpl) {
-    TestMountImpl _impl = (TestMountImpl) _abstractImpl;
+  protected int getExtraAccessibilityNodesCount(Component _abstract) {
+    TestMount _ref = (TestMount) _abstract;
     int _result = (int) TestMountSpec.getExtraAccessibilityNodesCount(
-        (int) _impl.prop1,
-        (CharSequence) _impl.prop7,
-        (Integer) _impl.boundsDefinedOutput);
+        (int) _ref.prop1,
+        (CharSequence) _ref.prop7,
+        (Integer) _ref.boundsDefinedOutput);
     return _result;
   }
 
   @Override
   protected void onPopulateExtraAccessibilityNode(AccessibilityNodeInfoCompat node,
       int extraNodeIndex, int componentBoundsLeft, int componentBoundsTop,
-      Component _abstractImpl) {
-    TestMountImpl _impl = (TestMountImpl) _abstractImpl;
+      Component _abstract) {
+    TestMount _ref = (TestMount) _abstract;
     TestMountSpec.onPopulateExtraAccessibilityNode(
         (AccessibilityNodeInfoCompat) node,
         (int) extraNodeIndex,
         (int) componentBoundsLeft,
         (int) componentBoundsTop,
-        (Object) _impl.prop3,
-        (CharSequence) _impl.prop7,
-        (Integer) _impl.boundsDefinedOutput);
+        (Object) _ref.prop3,
+        (CharSequence) _ref.prop7,
+        (Integer) _ref.boundsDefinedOutput);
   }
 
   @Override
@@ -227,21 +356,21 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
   }
 
   @Override
-  protected int getExtraAccessibilityNodeAt(int x, int y, Component _abstractImpl) {
-    TestMountImpl _impl = (TestMountImpl) _abstractImpl;
+  protected int getExtraAccessibilityNodeAt(int x, int y, Component _abstract) {
+    TestMount _ref = (TestMount) _abstract;
     int _result = (int) TestMountSpec.getExtraAccessibilityNodeAt(
         (int) x,
         (int) y,
-        (Object) _impl.prop3,
-        (CharSequence) _impl.prop7,
-        (Integer) _impl.boundsDefinedOutput);
+        (Object) _ref.prop3,
+        (CharSequence) _ref.prop7,
+        (Integer) _ref.boundsDefinedOutput);
     return _result;
   }
 
   @Override
   protected boolean shouldUpdate(Component _prevAbstractImpl, Component _nextAbstractImpl) {
-    TestMountImpl _prevImpl = (TestMountImpl) _prevAbstractImpl;
-    TestMountImpl _nextImpl = (TestMountImpl) _nextAbstractImpl;
+    TestMount _prevImpl = (TestMount) _prevAbstractImpl;
+    TestMount _nextImpl = (TestMount) _nextAbstractImpl;
     Diff<Integer> prop1 =
         (Diff)
             acquireDiff(
@@ -296,7 +425,7 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
     if (context.getComponentScope() == null) {
       return null;
     }
-    return ((TestMount.TestMountImpl) context.getComponentScope()).testEventHandler;
+    return ((TestMount) context.getComponentScope()).testEventHandler;
   }
 
   static void dispatchTestEvent(EventHandler _eventHandler, View view, Object object) {
@@ -313,16 +442,16 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
     sTestEventPool.release(_eventState);
   }
 
-  private void testLayoutEvent(HasEventDispatcher _abstractImpl, ComponentContext c, View view,
+  private void testLayoutEvent(HasEventDispatcher _abstract, ComponentContext c, View view,
       int param1) {
-    TestMountImpl _impl = (TestMountImpl) _abstractImpl;
+    TestMount _ref = (TestMount) _abstract;
     TestMountSpec.testLayoutEvent(
         c,
         view,
         param1,
-        (Object) _impl.prop3,
-        (char) _impl.prop5,
-        (long) _impl.mStateContainerImpl.state1);
+        (Object) _ref.prop3,
+        (char) _ref.prop5,
+        (long) _ref.mStateContainer.state1);
   }
 
   public static EventHandler<ClickEvent> testLayoutEvent(ComponentContext c, int param1) {
@@ -357,11 +486,11 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
 
   @Override
   protected void transferState(ComponentContext context,
-      ComponentLifecycle.StateContainer prevStateContainer, Component component) {
-    TestMountStateContainerImpl prevStateContainerImpl = (TestMountStateContainerImpl) prevStateContainer;
-    TestMountImpl componentImpl = (TestMountImpl) component;
-    componentImpl.mStateContainerImpl.state1 = prevStateContainerImpl.state1;
-    componentImpl.mStateContainerImpl.state2 = prevStateContainerImpl.state2;
+      ComponentLifecycle.StateContainer _prevStateContainer, Component _component) {
+    TestMountStateContainer prevStateContainer = (TestMountStateContainer) _prevStateContainer;
+    TestMount component = (TestMount) _component;
+    component.mStateContainer.state1 = prevStateContainer.state1;
+    component.mStateContainer.state2 = prevStateContainer.state2;
   }
 
   protected static void updateCurrentStateAsync(ComponentContext c, int someParam) {
@@ -369,7 +498,7 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
     if (_component == null) {
       return;
     }
-    TestMount.UpdateCurrentStateStateUpdate _stateUpdate = ((TestMount.TestMountImpl) _component).createUpdateCurrentStateStateUpdate(someParam);
+    TestMount.UpdateCurrentStateStateUpdate _stateUpdate = ((TestMount) _component).createUpdateCurrentStateStateUpdate(someParam);
     c.updateStateAsync(_stateUpdate);
   }
 
@@ -378,7 +507,7 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
     if (_component == null) {
       return;
     }
-    TestMount.UpdateCurrentStateStateUpdate _stateUpdate = ((TestMount.TestMountImpl) _component).createUpdateCurrentStateStateUpdate(someParam);
+    TestMount.UpdateCurrentStateStateUpdate _stateUpdate = ((TestMount) _component).createUpdateCurrentStateStateUpdate(someParam);
     c.updateState(_stateUpdate);
   }
 
@@ -388,12 +517,12 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
       return;
     }
     ComponentLifecycle.StateUpdate _stateUpdate = new ComponentLifecycle.StateUpdate() {
-      public void updateState(ComponentLifecycle.StateContainer stateContainer,
+      public void updateState(ComponentLifecycle.StateContainer _stateContainer,
           Component newComponent) {
-        TestMount.TestMountImpl newComponentStateUpdate = (TestMount.TestMountImpl) newComponent;
+        TestMount newComponentStateUpdate = (TestMount) newComponent;
         StateValue<Long> state1 = new StateValue<Long>();
         state1.set(lazyUpdateValue);
-        newComponentStateUpdate.mStateContainerImpl.state1 = state1.get();
+        newComponentStateUpdate.mStateContainer.state1 = state1.get();
       }
     };
     c.updateStateLazy(_stateUpdate);
@@ -408,159 +537,17 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
     if (builder == null) {
       builder = new Builder();
     }
-    builder.init(context, defStyleAttr, defStyleRes, new TestMountImpl());
+    TestMount instance = new TestMount();
+    builder.init(context, defStyleAttr, defStyleRes, instance);
     return builder;
   }
 
-  @VisibleForTesting( otherwise = 2) static class TestMountStateContainerImpl<S extends View> implements ComponentLifecycle.StateContainer {
+  @VisibleForTesting( otherwise = 2) static class TestMountStateContainer<S extends View> implements ComponentLifecycle.StateContainer {
     @State
     long state1;
 
     @State
     S state2;
-  }
-
-  static class TestMountImpl<S extends View> extends Component<TestMount> implements Cloneable {
-    TestMountStateContainerImpl mStateContainerImpl;
-
-    @Prop(
-        resType = ResType.NONE,
-        optional = false
-    )
-    int prop1;
-
-    @Prop(
-        resType = ResType.NONE,
-        optional = false
-    )
-    long prop6;
-
-    @Prop(
-        resType = ResType.NONE,
-        optional = false
-    )
-    Object prop3;
-
-    @Prop(
-        resType = ResType.NONE,
-        optional = false
-    )
-    char[] prop4;
-
-    @Prop(
-        resType = ResType.NONE,
-        optional = true
-    )
-    boolean prop2 = TestMountSpec.prop2;
-
-    @Prop(
-        resType = ResType.NONE,
-        optional = false
-    )
-    long prop8;
-
-    @Prop(
-        resType = ResType.STRING,
-        optional = false
-    )
-    CharSequence prop7;
-
-    @Prop(
-        resType = ResType.NONE,
-        optional = false
-    )
-    char prop5;
-
-    TestTreeProp treeProp;
-
-    Long measureOutput;
-
-    Integer boundsDefinedOutput;
-
-    EventHandler testEventHandler;
-
-    private TestMountImpl() {
-      super(get());
-      mStateContainerImpl = new TestMountStateContainerImpl();
-    }
-
-    @Override
-    protected ComponentLifecycle.StateContainer getStateContainer() {
-      return mStateContainerImpl;
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "TestMount";
-    }
-
-    @Override
-    public boolean isEquivalentTo(Component<?> other) {
-      if (this == other) {
-        return true;
-      }
-      if (other == null || getClass() != other.getClass()) {
-        return false;
-      }
-      TestMountImpl testMountImpl = (TestMountImpl) other;
-      if (this.getId() == testMountImpl.getId()) {
-        return true;
-      }
-      if (prop1 != testMountImpl.prop1) {
-        return false;
-      }
-      if (prop6 != testMountImpl.prop6) {
-        return false;
-      }
-      if (prop3 != null ? !prop3.equals(testMountImpl.prop3) : testMountImpl.prop3 != null) {
-        return false;
-      }
-      if (!Arrays.equals(prop4, testMountImpl.prop4)) {
-        return false;
-      }
-      if (prop2 != testMountImpl.prop2) {
-        return false;
-      }
-      if (prop8 != testMountImpl.prop8) {
-        return false;
-      }
-      if (prop7 != null ? !prop7.equals(testMountImpl.prop7) : testMountImpl.prop7 != null) {
-        return false;
-      }
-      if (prop5 != testMountImpl.prop5) {
-        return false;
-      }
-      if (mStateContainerImpl.state1 != testMountImpl.mStateContainerImpl.state1) {
-        return false;
-      }
-      if (mStateContainerImpl.state2 != null ? !mStateContainerImpl.state2.equals(testMountImpl.mStateContainerImpl.state2) : testMountImpl.mStateContainerImpl.state2 != null) {
-        return false;
-      }
-      if (treeProp != null ? !treeProp.equals(testMountImpl.treeProp) : testMountImpl.treeProp != null) {
-        return false;
-      }
-      return true;
-    }
-
-    @Override
-    protected void copyInterStageImpl(Component<TestMount> impl) {
-      TestMountImpl testMountImpl = (TestMountImpl) impl;
-      measureOutput = testMountImpl.measureOutput;
-      boundsDefinedOutput = testMountImpl.boundsDefinedOutput;
-    }
-
-    private UpdateCurrentStateStateUpdate createUpdateCurrentStateStateUpdate(int someParam) {
-      return new UpdateCurrentStateStateUpdate(someParam);
-    }
-
-    @Override
-    public TestMountImpl makeShallowCopy() {
-      TestMountImpl component = (TestMountImpl) super.makeShallowCopy();
-      component.measureOutput = null;
-      component.boundsDefinedOutput = null;
-      component.mStateContainerImpl = new TestMountStateContainerImpl();
-      return component;
-    }
   }
 
   private static class UpdateCurrentStateStateUpdate implements ComponentLifecycle.StateUpdate {
@@ -570,14 +557,14 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
       mSomeParam = someParam;
     }
 
-    public void updateState(ComponentLifecycle.StateContainer stateContainer,
+    public void updateState(ComponentLifecycle.StateContainer _stateContainer,
         Component newComponent) {
-      TestMountStateContainerImpl stateContainerImpl = (TestMountStateContainerImpl) stateContainer;
-      TestMountImpl newComponentStateUpdate = (TestMountImpl) newComponent;
+      TestMountStateContainer stateContainer = (TestMountStateContainer) _stateContainer;
+      TestMount newComponentStateUpdate = (TestMount) newComponent;
       StateValue<Long> state1 = new StateValue<Long>();
-      state1.set(stateContainerImpl.state1);
+      state1.set(stateContainer.state1);
       TestMountSpec.updateCurrentState(state1,mSomeParam);
-      newComponentStateUpdate.mStateContainerImpl.state1 = state1.get();
+      newComponentStateUpdate.mStateContainer.state1 = state1.get();
     }
   }
 
@@ -586,93 +573,93 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
 
     private static final int REQUIRED_PROPS_COUNT = 7;
 
-    TestMountImpl mTestMountImpl;
+    TestMount mTestMount;
 
     ComponentContext mContext;
 
     private BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
     private void init(ComponentContext context, int defStyleAttr, int defStyleRes,
-        TestMountImpl testMountImpl) {
-      super.init(context, defStyleAttr, defStyleRes, testMountImpl);
-      mTestMountImpl = testMountImpl;
+        TestMount testMountRef) {
+      super.init(context, defStyleAttr, defStyleRes, testMountRef);
+      mTestMount = testMountRef;
       mContext = context;
       mRequired.clear();
     }
 
     public Builder<S> prop1(int prop1) {
-      this.mTestMountImpl.prop1 = prop1;
+      this.mTestMount.prop1 = prop1;
       mRequired.set(0);
       return this;
     }
 
     public Builder<S> prop6(long prop6) {
-      this.mTestMountImpl.prop6 = prop6;
+      this.mTestMount.prop6 = prop6;
       mRequired.set(1);
       return this;
     }
 
     public Builder<S> prop3(Object prop3) {
-      this.mTestMountImpl.prop3 = prop3;
+      this.mTestMount.prop3 = prop3;
       mRequired.set(2);
       return this;
     }
 
     public Builder<S> prop4(char[] prop4) {
-      this.mTestMountImpl.prop4 = prop4;
+      this.mTestMount.prop4 = prop4;
       mRequired.set(3);
       return this;
     }
 
     public Builder<S> prop2(boolean prop2) {
-      this.mTestMountImpl.prop2 = prop2;
+      this.mTestMount.prop2 = prop2;
       return this;
     }
 
     public Builder<S> prop8(long prop8) {
-      this.mTestMountImpl.prop8 = prop8;
+      this.mTestMount.prop8 = prop8;
       mRequired.set(4);
       return this;
     }
 
     public Builder<S> prop7(CharSequence prop7) {
-      this.mTestMountImpl.prop7 = prop7;
+      this.mTestMount.prop7 = prop7;
       mRequired.set(5);
       return this;
     }
 
     public Builder<S> prop7Res(@StringRes int resId) {
-      this.mTestMountImpl.prop7 = resolveStringRes(resId);
+      this.mTestMount.prop7 = resolveStringRes(resId);
       mRequired.set(5);
       return this;
     }
 
     public Builder<S> prop7Res(@StringRes int resId, Object... formatArgs) {
-      this.mTestMountImpl.prop7 = resolveStringRes(resId, formatArgs);
+      this.mTestMount.prop7 = resolveStringRes(resId, formatArgs);
       mRequired.set(5);
       return this;
     }
 
     public Builder<S> prop7Attr(@AttrRes int attrResId, @StringRes int defResId) {
-      this.mTestMountImpl.prop7 = resolveStringAttr(attrResId, defResId);
+      this.mTestMount.prop7 = resolveStringAttr(attrResId, defResId);
       mRequired.set(5);
       return this;
     }
 
     public Builder<S> prop7Attr(@AttrRes int attrResId) {
-      this.mTestMountImpl.prop7 = resolveStringAttr(attrResId, 0);
+      this.mTestMount.prop7 = resolveStringAttr(attrResId, 0);
       mRequired.set(5);
       return this;
     }
 
     public Builder<S> prop5(char prop5) {
-      this.mTestMountImpl.prop5 = prop5;
+      this.mTestMount.prop5 = prop5;
       mRequired.set(6);
       return this;
     }
 
     public Builder<S> testEventHandler(EventHandler testEventHandler) {
-      this.mTestMountImpl.testEventHandler = testEventHandler;
+      this.mTestMount.testEventHandler = testEventHandler;
       return this;
     }
 
@@ -684,15 +671,15 @@ public final class TestMount<S extends View> extends ComponentLifecycle {
     @Override
     public Component<TestMount> build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      TestMountImpl testMountImpl = mTestMountImpl;
+      TestMount testMountRef = mTestMount;
       release();
-      return testMountImpl;
+      return testMountRef;
     }
 
     @Override
     protected void release() {
       super.release();
-      mTestMountImpl = null;
+      mTestMount = null;
       mContext = null;
       sBuilderPool.release(this);
     }

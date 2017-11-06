@@ -10,7 +10,7 @@
 package com.facebook.litho.sections.specmodels.model;
 
 import com.facebook.litho.specmodels.generator.BuilderGenerator;
-import com.facebook.litho.specmodels.generator.ComponentImplGenerator;
+import com.facebook.litho.specmodels.generator.ComponentBodyGenerator;
 import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
 import com.facebook.litho.specmodels.generator.EventGenerator;
 import com.facebook.litho.specmodels.generator.JavadocGenerator;
@@ -39,6 +39,7 @@ import com.facebook.litho.specmodels.model.TreePropModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethod;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
@@ -276,23 +277,22 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
   public TypeSpec generate() {
     final TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(getComponentName())
-            .superclass(SectionClassNames.SECTION_LIFECYCLE)
+            .superclass(
+                ParameterizedTypeName.get(SectionClassNames.SECTION, getComponentTypeName()))
             .addTypeVariables(getTypeVariables());
 
     if (isPublic()) {
       typeSpec.addModifiers(Modifier.PUBLIC);
     }
 
-    if (hasInjectedDependencies()) {
-      getDependencyInjectionHelper().generate(this).addToTypeSpec(typeSpec);
-    } else {
+    if (!hasInjectedDependencies()) {
       typeSpec.addModifiers(Modifier.FINAL);
     }
 
     TypeSpecDataHolder.newBuilder()
         .addTypeSpecDataHolder(JavadocGenerator.generate(this))
         .addTypeSpecDataHolder(PreambleGenerator.generate(this))
-        .addTypeSpecDataHolder(ComponentImplGenerator.generate(this, getServiceParam()))
+        .addTypeSpecDataHolder(ComponentBodyGenerator.generate(this, getServiceParam()))
         .addTypeSpecDataHolder(BuilderGenerator.generate(this))
         .addTypeSpecDataHolder(StateGenerator.generate(this))
         .addTypeSpecDataHolder(EventGenerator.generate(this))

@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
+import com.facebook.litho.ComponentLifecycle.MountType;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaMeasureFunction;
@@ -60,7 +61,6 @@ public class ComponentLifecycleTest {
 
   private InternalNode mNode;
   private DiffNode mDiffNode;
-  private Component mInput;
   private ComponentContext mContext;
   private Component mComponentWithNullLayout;
 
@@ -79,7 +79,6 @@ public class ComponentLifecycleTest {
     when(mDiffNode.getLastMeasuredWidth()).thenReturn(-1f);
     when(mDiffNode.getLastMeasuredHeight()).thenReturn(-1f);
     when(ComponentsPools.acquireInternalNode(any(ComponentContext.class))).thenReturn(mNode);
-    mInput = mock(Component.class);
 
     mockStatic(LayoutState.class);
     mContext = new ComponentContext(RuntimeEnvironment.application);
@@ -92,177 +91,177 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutWithNullComponentWithLayoutSpecCannotMeasure() {
-    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+    Component component = setUpSpyComponentForCreateLayout(
         false /* isMountSpec */,
         false /* canMeasure */);
-    componentLifecycle.createLayout(mContext, mComponentWithNullLayout, false);
+    component.createLayout(mContext, mComponentWithNullLayout, false);
 
-    verify(componentLifecycle).onCreateLayout(mContext, mComponentWithNullLayout);
+    verify(component).onCreateLayout(mContext, mComponentWithNullLayout);
     verify(mNode).appendComponent(mComponentWithNullLayout);
-    verify(componentLifecycle).onPrepare(mContext, mComponentWithNullLayout);
+    verify(component).onPrepare(mContext, mComponentWithNullLayout);
   }
 
   @Test
   public void testCreateLayoutWithNullComponentWithLayoutSpecCanMeasure() {
-    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+    Component component = setUpSpyComponentForCreateLayout(
         false /* isMountSpec */,
         true /* canMeasure */);
-    componentLifecycle.createLayout(mContext, mComponentWithNullLayout, false);
+    component.createLayout(mContext, mComponentWithNullLayout, false);
 
-    verify(componentLifecycle).onCreateLayout(mContext, mComponentWithNullLayout);
+    verify(component).onCreateLayout(mContext, mComponentWithNullLayout);
     verify(mNode).appendComponent(mComponentWithNullLayout);
-    verify(componentLifecycle).onPrepare(mContext, mComponentWithNullLayout);
+    verify(component).onPrepare(mContext, mComponentWithNullLayout);
   }
 
   @Test
   public void testCreateLayoutWithNullComponentWithMountSpecCannotMeasure() {
-    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+    Component component = setUpSpyComponentForCreateLayout(
         true /* isMountSpec */,
         false /* canMeasure */);
-    componentLifecycle.createLayout(mContext, mComponentWithNullLayout, false);
+    component.createLayout(mContext, mComponentWithNullLayout, false);
 
-    verify(componentLifecycle).onCreateLayout(mContext, mComponentWithNullLayout);
+    verify(component).onCreateLayout(mContext, mComponentWithNullLayout);
     verify(mNode).appendComponent(mComponentWithNullLayout);
-    verify(componentLifecycle).onPrepare(mContext, mComponentWithNullLayout);
+    verify(component).onPrepare(mContext, mComponentWithNullLayout);
   }
 
   @Test
   public void testCreateLayoutWithNullComponentWithMountSpecCanMeasure() {
-    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+    Component component = setUpSpyComponentForCreateLayout(
         true /* isMountSpec */,
         true /* canMeasure */);
-    componentLifecycle.createLayout(mContext, mComponentWithNullLayout, false);
+    component.createLayout(mContext, mComponentWithNullLayout, false);
 
-    verify(componentLifecycle).onCreateLayout(mContext, mComponentWithNullLayout);
+    verify(component).onCreateLayout(mContext, mComponentWithNullLayout);
     verify(mNode).appendComponent(mComponentWithNullLayout);
-    verify(componentLifecycle).onPrepare(mContext, mComponentWithNullLayout);
+    verify(component).onPrepare(mContext, mComponentWithNullLayout);
   }
 
   @Test
   public void testCreateLayoutAndResolveNestedTreeWithMountSpecCannotMeasure() {
-    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+    Component component = setUpSpyComponentForCreateLayout(
         true /* isMountSpec */,
         false /* canMeasure */);
-    componentLifecycle.createLayout(mContext, mInput, true);
+    component.createLayout(mContext, component, true);
 
-    verify(componentLifecycle).onCreateLayout(mContext, mInput);
-    verify(mNode).appendComponent(mInput);
+    verify(component).onCreateLayout(mContext, component);
+    verify(mNode).appendComponent(component);
     verify(mNode, never()).setMeasureFunction(any(YogaMeasureFunction.class));
-    verify(componentLifecycle).onPrepare(mContext, mInput);
+    verify(component).onPrepare(mContext, component);
   }
 
   @Test
   public void testCreateLayoutAndDontResolveNestedTreeWithMountSpecCannotMeasure() {
-    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+    Component component = setUpSpyComponentForCreateLayout(
         true /* isMountSpec */,
         false /* canMeasure */);
-    componentLifecycle.createLayout(mContext, mInput, false);
+    component.createLayout(mContext, component, false);
 
-    verify(componentLifecycle).onCreateLayout(mContext, mInput);
-    verify(mNode).appendComponent(mInput);
+    verify(component).onCreateLayout(mContext, component);
+    verify(mNode).appendComponent(component);
     verify(mNode, never()).setMeasureFunction(any(YogaMeasureFunction.class));
-    verify(componentLifecycle).onPrepare(mContext, mInput);
+    verify(component).onPrepare(mContext, component);
   }
 
   @Test
   public void testCreateLayoutAndResolveNestedTreeWithMountSpecCanMeasure() {
-    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+    Component component = setUpSpyComponentForCreateLayout(
         true /* isMountSpec */,
         true /* canMeasure */);
-    componentLifecycle.createLayout(mContext, mInput, true);
+    component.createLayout(mContext, component, true);
 
-    verify(componentLifecycle).onCreateLayout(mContext, mInput);
-    verify(mNode).appendComponent(mInput);
+    verify(component).onCreateLayout(mContext, component);
+    verify(mNode).appendComponent(component);
     verify(mNode).setMeasureFunction(any(YogaMeasureFunction.class));
-    verify(componentLifecycle).onPrepare(mContext, mInput);
+    verify(component).onPrepare(mContext, component);
   }
 
   @Test
   public void testCreateLayoutAndDontResolveNestedTreeWithMountSpecCanMeasure() {
-    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+    Component component = setUpSpyComponentForCreateLayout(
         true /* isMountSpec */,
         true /* canMeasure */);
-    componentLifecycle.createLayout(mContext, mInput, false);
+    component.createLayout(mContext, component, false);
 
-    verify(componentLifecycle).onCreateLayout(mContext, mInput);
-    verify(mNode).appendComponent(mInput);
+    verify(component).onCreateLayout(mContext, component);
+    verify(mNode).appendComponent(component);
     verify(mNode).setMeasureFunction(any(YogaMeasureFunction.class));
-    verify(componentLifecycle).onPrepare(mContext, mInput);
+    verify(component).onPrepare(mContext, component);
   }
 
   @Test
   public void testCreateLayoutAndResolveNestedTreeWithLayoutSpecCannotMeasure() {
-    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+    Component component = setUpSpyComponentForCreateLayout(
         false /* isMountSpec */,
         false /* canMeasure */);
-    componentLifecycle.createLayout(mContext, mInput, true);
+    component.createLayout(mContext, component, true);
 
-    verify(componentLifecycle).onCreateLayout(mContext, mInput);
-    verify(mNode).appendComponent(mInput);
+    verify(component).onCreateLayout(mContext, component);
+    verify(mNode).appendComponent(component);
     verify(mNode, never()).setMeasureFunction(any(YogaMeasureFunction.class));
-    verify(componentLifecycle).onPrepare(mContext, mInput);
+    verify(component).onPrepare(mContext, component);
   }
 
   @Test
   public void testCreateLayoutAndDontResolveNestedTreeWithLayoutSpecCannotMeasure() {
-    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+    Component component = setUpSpyComponentForCreateLayout(
         false /* isMountSpec */,
         false /* canMeasure */);
-    componentLifecycle.createLayout(mContext, mInput, false);
+    component.createLayout(mContext, component, false);
 
-    verify(componentLifecycle).onCreateLayout(mContext, mInput);
-    verify(mNode).appendComponent(mInput);
+    verify(component).onCreateLayout(mContext, component);
+    verify(mNode).appendComponent(component);
     verify(mNode, never()).setMeasureFunction(any(YogaMeasureFunction.class));
-    verify(componentLifecycle).onPrepare(mContext, mInput);
+    verify(component).onPrepare(mContext, component);
   }
 
   @Test
   public void testCreateLayoutAndResolveNestedTreeWithLayoutSpecCanMeasure() {
-    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+    Component component = setUpSpyComponentForCreateLayout(
         false /* isMountSpec */,
         true /* canMeasure */);
     mContext.setWidthSpec(mNestedTreeWidthSpec);
     mContext.setHeightSpec(mNestedTreeHeightSpec);
-    componentLifecycle.createLayout(mContext, mInput, true);
+    component.createLayout(mContext, component, true);
 
-    verify(componentLifecycle).onCreateLayoutWithSizeSpec(
+    verify(component).onCreateLayoutWithSizeSpec(
         mContext,
         mNestedTreeWidthSpec,
         mNestedTreeHeightSpec,
-        mInput);
-    verify(mNode).appendComponent(mInput);
+        component);
+    verify(mNode).appendComponent(component);
     verify(mNode, never()).setMeasureFunction(any(YogaMeasureFunction.class));
-    verify(componentLifecycle).onPrepare(mContext, mInput);
+    verify(component).onPrepare(mContext, component);
   }
 
   @Test
   public void testCreateLayoutAndDontResolveNestedTreeWithLayoutSpecCanMeasure() {
-    ComponentLifecycle componentLifecycle = setUpComponentForCreateLayout(
+    Component component = setUpSpyComponentForCreateLayout(
         false /* isMountSpec */,
         true /* canMeasure */);
-    componentLifecycle.createLayout(mContext, mInput, false);
+    component.createLayout(mContext, component, false);
 
     PowerMockito.verifyStatic();
     // Calling here to verify static call.
     ComponentsPools.acquireInternalNode(mContext);
-    verify(componentLifecycle, never()).onCreateLayout(
+    verify(component, never()).onCreateLayout(
         any(ComponentContext.class),
         any(Component.class));
-    verify(componentLifecycle, never()).onCreateLayoutWithSizeSpec(
+    verify(component, never()).onCreateLayoutWithSizeSpec(
         any(ComponentContext.class),
         anyInt(),
         anyInt(),
         any(Component.class));
-    verify(mNode).appendComponent(mInput);
+    verify(mNode).appendComponent(component);
     verify(mNode).setMeasureFunction(any(YogaMeasureFunction.class));
-    verify(componentLifecycle, never())
+    verify(component, never())
         .onPrepare(any(ComponentContext.class), any(Component.class));
   }
 
   @Test
   public void testOnMeasureNotOverriden() {
-    setUpComponentForCreateLayout(true, true);
-    YogaMeasureFunction measureFunction = getMeasureFunction();
+    Component component = setUpSpyComponentForCreateLayout(true, true);
+    YogaMeasureFunction measureFunction = getMeasureFunction(component);
 
     try {
       measureFunction.measure(mNode.mYogaNode, 0, EXACTLY, 0, EXACTLY);
@@ -275,10 +274,8 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testMountSpecYogaMeasureOutputNotSet() {
-    ComponentLifecycle componentLifecycle = new TestMountSpecWithEmptyOnMeasure();
-    YogaMeasureFunction measureFunction = getMeasureFunction();
-    when(mInput.getLifecycle()).thenReturn(componentLifecycle);
-    Whitebox.setInternalState(mInput, "mLifecycle", componentLifecycle);
+    Component component = new TestMountSpecWithEmptyOnMeasure(mNode);
+    YogaMeasureFunction measureFunction = getMeasureFunction(component);
 
     try {
       measureFunction.measure(mNode.mYogaNode, 0, EXACTLY, 0, EXACTLY);
@@ -291,10 +288,8 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testMountSpecYogaMeasureOutputSet() {
-    ComponentLifecycle componentLifecycle = new TestMountSpecSettingSizesInOnMeasure();
-    YogaMeasureFunction measureFunction = getMeasureFunction();
-    when(mInput.getLifecycle()).thenReturn(componentLifecycle);
-    Whitebox.setInternalState(mInput, "mLifecycle", componentLifecycle);
+    Component component = new TestMountSpecSettingSizesInOnMeasure(mNode);
+    YogaMeasureFunction measureFunction = getMeasureFunction(component);
 
     long output = measureFunction.measure(mNode.mYogaNode, 0, EXACTLY, 0, EXACTLY);
 
@@ -304,8 +299,9 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testLayoutSpecMeasureResolveNestedTree() {
-    setUpComponentForCreateLayout(false /* isMountSpec */, true /* canMeasure */);
-    YogaMeasureFunction measureFunction = getMeasureFunction();
+    Component component = setUpSpyComponentForCreateLayout(
+        false /* isMountSpec */, true /* canMeasure */);
+    YogaMeasureFunction measureFunction = getMeasureFunction(component);
 
     final int nestedTreeWidth = 20;
     final int nestedTreeHeight = 25;
@@ -324,27 +320,35 @@ public class ComponentLifecycleTest {
     assertThat(YogaMeasureOutput.getHeight(output)).isEqualTo(nestedTreeHeight);
   }
 
-  private ComponentLifecycle setUpComponentForCreateLayout(
+  private Component setUpSpyComponentForCreateLayout(
       boolean isMountSpec,
       boolean canMeasure) {
-    ComponentLifecycle componentLifecycle = spy(new TestBaseComponent());
-    when(componentLifecycle.canMeasure()).thenReturn(canMeasure);
-    when(componentLifecycle.getMountType()).thenReturn(
-        isMountSpec ? ComponentLifecycle.MountType.DRAWABLE : ComponentLifecycle.MountType.NONE);
-    when(mInput.getLifecycle()).thenReturn(componentLifecycle);
+    Component component = new TestBaseComponent(
+        canMeasure,
+        isMountSpec ? MountType.DRAWABLE : MountType.NONE,
+        mNode);
 
-    Whitebox.setInternalState(mInput, "mLifecycle", componentLifecycle);
-
-    return componentLifecycle;
+    return spy(component);
   }
 
-  private YogaMeasureFunction getMeasureFunction() {
-    when(mNode.getRootComponent()).thenReturn(mInput);
+  private YogaMeasureFunction getMeasureFunction(Component component) {
+    when(mNode.getRootComponent()).thenReturn(component);
 
     return Whitebox.getInternalState(ComponentLifecycle.class, "sMeasureFunction");
   }
 
-  private class TestBaseComponent extends ComponentLifecycle {
+  private static class TestBaseComponent extends Component<TestBaseComponent> {
+
+    private final boolean mCanMeasure;
+    private final MountType mMountType;
+    private final InternalNode mNode;
+
+    TestBaseComponent(boolean canMeasure, MountType mountType, InternalNode node) {
+      mCanMeasure = canMeasure;
+      mMountType = mountType;
+      mNode = node;
+    }
+
     @Override
     protected ComponentLayout onCreateLayout(ComponentContext c, Component<?> input) {
       return mNode;
@@ -355,18 +359,27 @@ public class ComponentLifecycleTest {
         ComponentContext c, int widthSpec, int heightSpec, Component<?> component) {
       return mNode;
     }
-  }
-
-  private class TestMountSpecWithEmptyOnMeasure extends TestBaseComponent {
-
-    @Override
-    public MountType getMountType() {
-      return MountType.DRAWABLE;
-    }
 
     @Override
     protected boolean canMeasure() {
-      return true;
+      return mCanMeasure;
+    }
+
+    @Override
+    public MountType getMountType() {
+      return mMountType;
+    }
+
+    @Override
+    public String getSimpleName() {
+      return "TestLifecycleComponentBase";
+    }
+  }
+
+  private static class TestMountSpecWithEmptyOnMeasure extends TestBaseComponent {
+
+    TestMountSpecWithEmptyOnMeasure(InternalNode node) {
+      super(true, MountType.DRAWABLE, node);
     }
 
     @Override
@@ -380,7 +393,12 @@ public class ComponentLifecycleTest {
     }
   }
 
-  private class TestMountSpecSettingSizesInOnMeasure extends TestMountSpecWithEmptyOnMeasure {
+  private static class TestMountSpecSettingSizesInOnMeasure
+      extends TestMountSpecWithEmptyOnMeasure {
+
+    TestMountSpecSettingSizesInOnMeasure(InternalNode node) {
+      super(node);
+    }
 
     @Override
     protected void onMeasure(

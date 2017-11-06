@@ -163,6 +163,7 @@ public abstract class SectionLifecycle implements EventDispatcher {
     return false;
   }
 
+
   String getLogTag() {
     return getClass().getSimpleName();
   }

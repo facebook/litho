@@ -41,100 +41,203 @@ import java.util.BitSet;
  * @prop-required prop5 char
  */
 @TargetApi(17)
-public final class TestLayout<S extends View> extends ComponentLifecycle {
-  private static TestLayout sInstance = null;
-
+public final class TestLayout<S extends View> extends Component<TestLayout> {
   static final Pools.SynchronizedPool<TestEvent> sTestEventPool = new Pools.SynchronizedPool<TestEvent>(2);
 
   private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
 
-  private TestLayout() {
-  }
+  private TestLayoutStateContainer mStateContainer;
 
-  private static synchronized TestLayout get() {
-    if (sInstance == null) {
-      sInstance = new TestLayout();
-    }
-    return sInstance;
+  private TestLayoutRenderData mPreviousRenderData;
+
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  int prop1;
+
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  long prop6;
+
+  @Prop(
+      resType = ResType.NONE,
+      optional = true
+  )
+  boolean prop2 = TestLayoutSpec.prop2;
+
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  Object prop3;
+
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  char[] prop4;
+
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  char prop5;
+
+  TestTreeProp treeProp;
+
+  EventHandler testEventHandler;
+
+  private TestLayout() {
+    super();
+    mStateContainer = new TestLayoutStateContainer();
   }
 
   @Override
-  protected void populateTreeProps(Component _abstractImpl, TreeProps treeProps) {
+  protected ComponentLifecycle.StateContainer getStateContainer() {
+    return mStateContainer;
+  }
+
+  @Override
+  public String getSimpleName() {
+    return "TestLayout";
+  }
+
+  @Override
+  public boolean isEquivalentTo(Component<?> other) {
+    if (this == other) {
+      return true;
+    }
+    if (other == null || getClass() != other.getClass()) {
+      return false;
+    }
+    TestLayout testLayoutRef = (TestLayout) other;
+    if (this.getId() == testLayoutRef.getId()) {
+      return true;
+    }
+    if (prop1 != testLayoutRef.prop1) {
+      return false;
+    }
+    if (prop6 != testLayoutRef.prop6) {
+      return false;
+    }
+    if (prop2 != testLayoutRef.prop2) {
+      return false;
+    }
+    if (prop3 != null ? !prop3.equals(testLayoutRef.prop3) : testLayoutRef.prop3 != null) {
+      return false;
+    }
+    if (!Arrays.equals(prop4, testLayoutRef.prop4)) {
+      return false;
+    }
+    if (prop5 != testLayoutRef.prop5) {
+      return false;
+    }
+    if (mStateContainer.state1 != testLayoutRef.mStateContainer.state1) {
+      return false;
+    }
+    if (mStateContainer.state2 != null ? !mStateContainer.state2.equals(testLayoutRef.mStateContainer.state2) : testLayoutRef.mStateContainer.state2 != null) {
+      return false;
+    }
+    if (mStateContainer.state3 != testLayoutRef.mStateContainer.state3) {
+      return false;
+    }
+    if (treeProp != null ? !treeProp.equals(testLayoutRef.treeProp) : testLayoutRef.treeProp != null) {
+      return false;
+    }
+    return true;
+  }
+
+  private UpdateCurrentStateStateUpdate createUpdateCurrentStateStateUpdate(int someParam) {
+    return new UpdateCurrentStateStateUpdate(someParam);
+  }
+
+  @Override
+  public TestLayout makeShallowCopy() {
+    TestLayout component = (TestLayout) super.makeShallowCopy();
+    component.mStateContainer = new TestLayoutStateContainer();
+    return component;
+  }
+
+  @Override
+  protected void populateTreeProps(Component _abstract, TreeProps treeProps) {
     if (treeProps == null) {
       return;
     }
-    final TestLayoutImpl _impl = (TestLayoutImpl) _abstractImpl;
-    _impl.treeProp = treeProps.get(com.facebook.litho.processor.integration.resources.TestTreeProp.class);
+    final TestLayout _ref = (TestLayout) _abstract;
+    _ref.treeProp = treeProps.get(com.facebook.litho.processor.integration.resources.TestTreeProp.class);
   }
 
   @Override
-  protected TreeProps getTreePropsForChildren(ComponentContext c, Component _abstractImpl,
+  protected TreeProps getTreePropsForChildren(ComponentContext c, Component _abstract,
       TreeProps parentTreeProps) {
-    final TestLayoutImpl _impl = (TestLayoutImpl) _abstractImpl;
+    final TestLayout _ref = (TestLayout) _abstract;
     final TreeProps childTreeProps = TreeProps.copy(parentTreeProps);
     childTreeProps.put(com.facebook.litho.processor.integration.resources.TestTreeProp.class, TestLayoutSpec.onCreateFeedPrefetcherProp(
         (ComponentContext) c,
-        (long) _impl.prop6));
+        (long) _ref.prop6));
     return childTreeProps;
   }
 
   @SuppressWarnings("unchecked")
   @Override
-  protected void onLoadStyle(ComponentContext c, Component _abstractImpl) {
-    TestLayoutImpl _impl = (TestLayoutImpl) _abstractImpl;
+  protected void onLoadStyle(ComponentContext c, Component _abstract) {
+    TestLayout _ref = (TestLayout) _abstract;
     Output<Boolean> prop2 = acquireOutput();
     Output<Object> prop3 = acquireOutput();
     TestLayoutSpec.onLoadStyle((ComponentContext) c, prop2, prop3);
     if (prop2.get() != null) {
-      _impl.prop2 = prop2.get();
+      _ref.prop2 = prop2.get();
     }
     releaseOutput(prop2);
     if (prop3.get() != null) {
-      _impl.prop3 = prop3.get();
+      _ref.prop3 = prop3.get();
     }
     releaseOutput(prop3);
   }
 
   @Override
-  protected void createInitialState(ComponentContext c, Component _abstractImpl) {
-    TestLayoutImpl _impl = (TestLayoutImpl) _abstractImpl;
+  protected void createInitialState(ComponentContext c, Component _abstract) {
+    TestLayout _ref = (TestLayout) _abstract;
     StateValue<S> state2 = new StateValue<>();
-    TestLayoutSpec.createInitialState((ComponentContext) c, (int) _impl.prop1, state2);
+    TestLayoutSpec.createInitialState((ComponentContext) c, (int) _ref.prop1, state2);
     if (state2.get() != null) {
-      _impl.mStateContainerImpl.state2 = state2.get();
+      _ref.mStateContainer.state2 = state2.get();
     }
   }
 
   @Override
-  protected ComponentLayout onCreateLayout(ComponentContext context, Component _abstractImpl) {
-    TestLayoutImpl _impl = (TestLayoutImpl) _abstractImpl;
+  protected ComponentLayout onCreateLayout(ComponentContext context, Component _abstract) {
+    TestLayout _ref = (TestLayout) _abstract;
     ComponentLayout _result =
         (ComponentLayout)
             TestLayoutSpec.onCreateLayout(
                 (ComponentContext) context,
-                (boolean) _impl.prop2,
-                (Object) _impl.prop3,
-                (char[]) _impl.prop4,
-                (long) _impl.mStateContainerImpl.state1,
-                (S) _impl.mStateContainerImpl.state2,
-                (int) _impl.mStateContainerImpl.state3,
-                (TestTreeProp) _impl.treeProp);
+                (boolean) _ref.prop2,
+                (Object) _ref.prop3,
+                (char[]) _ref.prop4,
+                (long) _ref.mStateContainer.state1,
+                (S) _ref.mStateContainer.state2,
+                (int) _ref.mStateContainer.state3,
+                (TestTreeProp) _ref.treeProp);
     return _result;
   }
 
   @Override
-  protected Transition onCreateTransition(ComponentContext c, Component _abstractImpl) {
-    TestLayoutImpl _impl = (TestLayoutImpl) _abstractImpl;
+  protected Transition onCreateTransition(ComponentContext c, Component _abstract) {
+    TestLayout _ref = (TestLayout) _abstract;
     Diff<Integer> _state3Diff =
         acquireDiff(
-            _impl.mPreviousRenderData == null ? null : _impl.mPreviousRenderData.state3,
-            _impl.mStateContainerImpl.state3);
+            _ref.mPreviousRenderData == null ? null : _ref.mPreviousRenderData.state3,
+            _ref.mStateContainer.state3);
     Transition _result =
         (Transition)
             TestLayoutSpec.onCreateTransition(
                 (ComponentContext) c,
-                (Object) _impl.prop3,
-                (long) _impl.mStateContainerImpl.state1,
+                (Object) _ref.prop3,
+                (long) _ref.mStateContainer.state1,
                 _state3Diff);
     releaseDiff(_state3Diff);
     return _result;
@@ -144,7 +247,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     if (context.getComponentScope() == null) {
       return null;
     }
-    return ((TestLayout.TestLayoutImpl) context.getComponentScope()).testEventHandler;
+    return ((TestLayout) context.getComponentScope()).testEventHandler;
   }
 
   static void dispatchTestEvent(EventHandler _eventHandler, View view, Object object) {
@@ -161,16 +264,16 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     sTestEventPool.release(_eventState);
   }
 
-  private void testLayoutEvent(HasEventDispatcher _abstractImpl, ComponentContext c, View view,
+  private void testLayoutEvent(HasEventDispatcher _abstract, ComponentContext c, View view,
       int param1) {
-    TestLayoutImpl _impl = (TestLayoutImpl) _abstractImpl;
+    TestLayout _ref = (TestLayout) _abstract;
     TestLayoutSpec.testLayoutEvent(
         c,
         view,
         param1,
-        (Object) _impl.prop3,
-        (char) _impl.prop5,
-        (long) _impl.mStateContainerImpl.state1);
+        (Object) _ref.prop3,
+        (char) _ref.prop5,
+        (long) _ref.mStateContainer.state1);
   }
 
   public static EventHandler<ClickEvent> testLayoutEvent(ComponentContext c, int param1) {
@@ -209,12 +312,12 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
 
   @Override
   protected void transferState(ComponentContext context,
-      ComponentLifecycle.StateContainer prevStateContainer, Component component) {
-    TestLayoutStateContainerImpl prevStateContainerImpl = (TestLayoutStateContainerImpl) prevStateContainer;
-    TestLayoutImpl componentImpl = (TestLayoutImpl) component;
-    componentImpl.mStateContainerImpl.state1 = prevStateContainerImpl.state1;
-    componentImpl.mStateContainerImpl.state2 = prevStateContainerImpl.state2;
-    componentImpl.mStateContainerImpl.state3 = prevStateContainerImpl.state3;
+      ComponentLifecycle.StateContainer _prevStateContainer, Component _component) {
+    TestLayoutStateContainer prevStateContainer = (TestLayoutStateContainer) _prevStateContainer;
+    TestLayout component = (TestLayout) _component;
+    component.mStateContainer.state1 = prevStateContainer.state1;
+    component.mStateContainer.state2 = prevStateContainer.state2;
+    component.mStateContainer.state3 = prevStateContainer.state3;
   }
 
   protected static void updateCurrentStateAsync(ComponentContext c, int someParam) {
@@ -222,7 +325,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     if (_component == null) {
       return;
     }
-    TestLayout.UpdateCurrentStateStateUpdate _stateUpdate = ((TestLayout.TestLayoutImpl) _component).createUpdateCurrentStateStateUpdate(someParam);
+    TestLayout.UpdateCurrentStateStateUpdate _stateUpdate = ((TestLayout) _component).createUpdateCurrentStateStateUpdate(someParam);
     c.updateStateAsync(_stateUpdate);
   }
 
@@ -231,7 +334,7 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     if (_component == null) {
       return;
     }
-    TestLayout.UpdateCurrentStateStateUpdate _stateUpdate = ((TestLayout.TestLayoutImpl) _component).createUpdateCurrentStateStateUpdate(someParam);
+    TestLayout.UpdateCurrentStateStateUpdate _stateUpdate = ((TestLayout) _component).createUpdateCurrentStateStateUpdate(someParam);
     c.updateState(_stateUpdate);
   }
 
@@ -241,12 +344,12 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
       return;
     }
     ComponentLifecycle.StateUpdate _stateUpdate = new ComponentLifecycle.StateUpdate() {
-      public void updateState(ComponentLifecycle.StateContainer stateContainer,
+      public void updateState(ComponentLifecycle.StateContainer _stateContainer,
           Component newComponent) {
-        TestLayout.TestLayoutImpl newComponentStateUpdate = (TestLayout.TestLayoutImpl) newComponent;
+        TestLayout newComponentStateUpdate = (TestLayout) newComponent;
         StateValue<Long> state1 = new StateValue<Long>();
         state1.set(lazyUpdateValue);
-        newComponentStateUpdate.mStateContainerImpl.state1 = state1.get();
+        newComponentStateUpdate.mStateContainer.state1 = state1.get();
       }
     };
     c.updateStateLazy(_stateUpdate);
@@ -260,26 +363,26 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
   @Override
   protected ComponentLifecycle.RenderData recordRenderData(
       Component previousComponent, ComponentLifecycle.RenderData toRecycle) {
-    TestLayoutImpl _impl = (TestLayoutImpl) previousComponent;
+    TestLayout _ref = (TestLayout) previousComponent;
     TestLayoutRenderData renderInfo =
         toRecycle != null ? (TestLayoutRenderData) toRecycle : new TestLayoutRenderData();
-    renderInfo.record(_impl);
+    renderInfo.record(_ref);
     return renderInfo;
   }
 
   @Override
   protected void applyPreviousRenderData(
       Component component, ComponentLifecycle.RenderData previousRenderData) {
-    TestLayoutImpl _impl = (TestLayoutImpl) component;
+    TestLayout _ref = (TestLayout) component;
     if (previousRenderData == null) {
-      _impl.mPreviousRenderData = null;
+      _ref.mPreviousRenderData = null;
       return;
     }
-    if (_impl.mPreviousRenderData == null) {
-      _impl.mPreviousRenderData = new TestLayoutRenderData();
+    if (_ref.mPreviousRenderData == null) {
+      _ref.mPreviousRenderData = new TestLayoutRenderData();
     }
     TestLayoutRenderData infoImpl = (TestLayoutRenderData) previousRenderData;
-    _impl.mPreviousRenderData.copy(infoImpl);
+    _ref.mPreviousRenderData.copy(infoImpl);
   }
 
   public static <S extends View> Builder<S> create(ComponentContext context) {
@@ -291,11 +394,12 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     if (builder == null) {
       builder = new Builder();
     }
-    builder.init(context, defStyleAttr, defStyleRes, new TestLayoutImpl());
+    TestLayout instance = new TestLayout();
+    builder.init(context, defStyleAttr, defStyleRes, instance);
     return builder;
   }
 
-  @VisibleForTesting(otherwise = 2) static class TestLayoutStateContainerImpl<S extends View> implements ComponentLifecycle.StateContainer {
+  @VisibleForTesting(otherwise = 2) static class TestLayoutStateContainer<S extends View> implements ComponentLifecycle.StateContainer {
     @State
     long state1;
 
@@ -315,125 +419,8 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
       state3 = info.state3;
     }
 
-    void record(TestLayoutImpl component) {
-      state3 = component.mStateContainerImpl.state3;
-    }
-  }
-
-  static class TestLayoutImpl<S extends View> extends Component<TestLayout> implements Cloneable {
-    TestLayoutStateContainerImpl mStateContainerImpl;
-
-    TestLayoutRenderData mPreviousRenderData;
-
-    @Prop(
-        resType = ResType.NONE,
-        optional = false
-    )
-    int prop1;
-
-    @Prop(
-        resType = ResType.NONE,
-        optional = false
-    )
-    long prop6;
-
-    @Prop(
-        resType = ResType.NONE,
-        optional = true
-    )
-    boolean prop2 = TestLayoutSpec.prop2;
-
-    @Prop(
-        resType = ResType.NONE,
-        optional = false
-    )
-    Object prop3;
-
-    @Prop(
-        resType = ResType.NONE,
-        optional = false
-    )
-    char[] prop4;
-
-    @Prop(
-        resType = ResType.NONE,
-        optional = false
-    )
-    char prop5;
-
-    TestTreeProp treeProp;
-
-    EventHandler testEventHandler;
-
-    private TestLayoutImpl() {
-      super(get());
-      mStateContainerImpl = new TestLayoutStateContainerImpl();
-    }
-
-    @Override
-    protected ComponentLifecycle.StateContainer getStateContainer() {
-      return mStateContainerImpl;
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "TestLayout";
-    }
-
-    @Override
-    public boolean isEquivalentTo(Component<?> other) {
-      if (this == other) {
-        return true;
-      }
-      if (other == null || getClass() != other.getClass()) {
-        return false;
-      }
-      TestLayoutImpl testLayoutImpl = (TestLayoutImpl) other;
-      if (this.getId() == testLayoutImpl.getId()) {
-        return true;
-      }
-      if (prop1 != testLayoutImpl.prop1) {
-        return false;
-      }
-      if (prop6 != testLayoutImpl.prop6) {
-        return false;
-      }
-      if (prop2 != testLayoutImpl.prop2) {
-        return false;
-      }
-      if (prop3 != null ? !prop3.equals(testLayoutImpl.prop3) : testLayoutImpl.prop3 != null) {
-        return false;
-      }
-      if (!Arrays.equals(prop4, testLayoutImpl.prop4)) {
-        return false;
-      }
-      if (prop5 != testLayoutImpl.prop5) {
-        return false;
-      }
-      if (mStateContainerImpl.state1 != testLayoutImpl.mStateContainerImpl.state1) {
-        return false;
-      }
-      if (mStateContainerImpl.state2 != null ? !mStateContainerImpl.state2.equals(testLayoutImpl.mStateContainerImpl.state2) : testLayoutImpl.mStateContainerImpl.state2 != null) {
-        return false;
-      }
-      if (mStateContainerImpl.state3 != testLayoutImpl.mStateContainerImpl.state3) {
-        return false;
-      }
-      if (treeProp != null ? !treeProp.equals(testLayoutImpl.treeProp) : testLayoutImpl.treeProp != null) {
-        return false;
-      }
-      return true;
-    }
-
-    private UpdateCurrentStateStateUpdate createUpdateCurrentStateStateUpdate(int someParam) {
-      return new UpdateCurrentStateStateUpdate(someParam);
-    }
-
-    @Override
-    public TestLayoutImpl makeShallowCopy() {
-      TestLayoutImpl component = (TestLayoutImpl) super.makeShallowCopy();
-      component.mStateContainerImpl = new TestLayoutStateContainerImpl();
-      return component;
+    void record(TestLayout component) {
+      state3 = component.mStateContainer.state3;
     }
   }
 
@@ -444,14 +431,14 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
       mSomeParam = someParam;
     }
 
-    public void updateState(ComponentLifecycle.StateContainer stateContainer,
+    public void updateState(ComponentLifecycle.StateContainer _stateContainer,
         Component newComponent) {
-      TestLayoutStateContainerImpl stateContainerImpl = (TestLayoutStateContainerImpl) stateContainer;
-      TestLayoutImpl newComponentStateUpdate = (TestLayoutImpl) newComponent;
+      TestLayoutStateContainer stateContainer = (TestLayoutStateContainer) _stateContainer;
+      TestLayout newComponentStateUpdate = (TestLayout) newComponent;
       StateValue<Long> state1 = new StateValue<Long>();
-      state1.set(stateContainerImpl.state1);
+      state1.set(stateContainer.state1);
       TestLayoutSpec.updateCurrentState(state1,mSomeParam);
-      newComponentStateUpdate.mStateContainerImpl.state1 = state1.get();
+      newComponentStateUpdate.mStateContainer.state1 = state1.get();
     }
   }
 
@@ -460,57 +447,57 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
 
     private static final int REQUIRED_PROPS_COUNT = 5;
 
-    TestLayoutImpl mTestLayoutImpl;
+    TestLayout mTestLayout;
 
     ComponentContext mContext;
 
     private BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
     private void init(ComponentContext context, int defStyleAttr, int defStyleRes,
-        TestLayoutImpl testLayoutImpl) {
-      super.init(context, defStyleAttr, defStyleRes, testLayoutImpl);
-      mTestLayoutImpl = testLayoutImpl;
+        TestLayout testLayoutRef) {
+      super.init(context, defStyleAttr, defStyleRes, testLayoutRef);
+      mTestLayout = testLayoutRef;
       mContext = context;
       mRequired.clear();
     }
 
     public Builder<S> prop1(int prop1) {
-      this.mTestLayoutImpl.prop1 = prop1;
+      this.mTestLayout.prop1 = prop1;
       mRequired.set(0);
       return this;
     }
 
     public Builder<S> prop6(long prop6) {
-      this.mTestLayoutImpl.prop6 = prop6;
+      this.mTestLayout.prop6 = prop6;
       mRequired.set(1);
       return this;
     }
 
     public Builder<S> prop2(boolean prop2) {
-      this.mTestLayoutImpl.prop2 = prop2;
+      this.mTestLayout.prop2 = prop2;
       return this;
     }
 
     public Builder<S> prop3(Object prop3) {
-      this.mTestLayoutImpl.prop3 = prop3;
+      this.mTestLayout.prop3 = prop3;
       mRequired.set(2);
       return this;
     }
 
     public Builder<S> prop4(char[] prop4) {
-      this.mTestLayoutImpl.prop4 = prop4;
+      this.mTestLayout.prop4 = prop4;
       mRequired.set(3);
       return this;
     }
 
     public Builder<S> prop5(char prop5) {
-      this.mTestLayoutImpl.prop5 = prop5;
+      this.mTestLayout.prop5 = prop5;
       mRequired.set(4);
       return this;
     }
 
     public Builder<S> testEventHandler(EventHandler testEventHandler) {
-      this.mTestLayoutImpl.testEventHandler = testEventHandler;
+      this.mTestLayout.testEventHandler = testEventHandler;
       return this;
     }
 
@@ -522,15 +509,15 @@ public final class TestLayout<S extends View> extends ComponentLifecycle {
     @Override
     public Component<TestLayout> build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      TestLayoutImpl testLayoutImpl = mTestLayoutImpl;
+      TestLayout testLayoutRef = mTestLayout;
       release();
-      return testLayoutImpl;
+      return testLayoutRef;
     }
 
     @Override
     protected void release() {
       super.release();
-      mTestLayoutImpl = null;
+      mTestLayout = null;
       mContext = null;
       sBuilderPool.release(this);
     }

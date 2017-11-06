@@ -114,12 +114,12 @@ public class TriggerGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "private java.lang.Object testTriggerMethod1(com.facebook.litho.HasEventTrigger _abstractImpl,\n"
+            "private java.lang.Object testTriggerMethod1(com.facebook.litho.HasEventTrigger _abstract,\n"
                 + "    java.lang.Object arg2, T arg3, long arg4) {\n"
-                + "  TestImpl _impl = (TestImpl) _abstractImpl;\n"
+                + "  Test _ref = (Test) _abstract;\n"
                 + "  java.lang.Object _result = (java.lang.Object) TestSpec.testTriggerMethod1(\n"
-                + "    (boolean) _impl.arg0,\n"
-                + "    (int) _impl.mStateContainerImpl.arg1,\n"
+                + "    (boolean) _ref.arg0,\n"
+                + "    (int) _ref.mStateContainer.arg1,\n"
                 + "    arg2,\n"
                 + "    arg3,\n"
                 + "    arg4);\n"
@@ -128,11 +128,11 @@ public class TriggerGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
-            "private void testTriggerMethod2(com.facebook.litho.HasEventTrigger _abstractImpl) {\n"
-                + "  TestImpl _impl = (TestImpl) _abstractImpl;\n"
+            "private void testTriggerMethod2(com.facebook.litho.HasEventTrigger _abstract) {\n"
+                + "  Test _ref = (Test) _abstract;\n"
                 + "  TestSpec.testTriggerMethod2(\n"
-                + "    (boolean) _impl.arg0,\n"
-                + "    (int) _impl.mStateContainerImpl.arg1);\n"
+                + "    (boolean) _ref.arg0,\n"
+                + "    (int) _ref.mStateContainer.arg1);\n"
                 + "}\n");
   }
 

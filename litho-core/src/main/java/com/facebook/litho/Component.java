@@ -29,8 +29,6 @@ import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
-import com.facebook.litho.ComponentLifecycle.MountType;
-import com.facebook.litho.ComponentLifecycle.StateContainer;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
@@ -48,21 +46,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 
 /**
- * Represents a unique instance of a component that is driven by its matching
- * {@link ComponentLifecycle}. To create new {@link Component} instances, use the
- * {@code create()} method in the generated {@link ComponentLifecycle} subclass which
- * returns a builder that allows you to set values for individual props. {@link Component}
- * instances are immutable after creation.
+ * Represents a unique instance of a component. To create new {@link Component} instances, use the
+ * {@code create()} method in the generated subclass which returns a builder that allows you to set
+ * values for individual props. {@link Component} instances are immutable after creation.
  */
-public abstract class Component<L extends ComponentLifecycle>
-    implements HasEventDispatcher, HasEventTrigger {
+public abstract class Component<L extends Component> extends ComponentLifecycle
+    implements Cloneable, HasEventDispatcher, HasEventTrigger {
+
   private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
   private int mId = sIdGenerator.getAndIncrement();
   private String mGlobalKey;
   private String mKey;
   private boolean mHasManualKey;
 
-  private final L mLifecycle;
   @ThreadConfined(ThreadConfined.ANY)
   private ComponentContext mScopedContext;
 
@@ -80,6 +76,24 @@ public abstract class Component<L extends ComponentLifecycle>
    * automatically generating unique global keys for all sibling components of the same type.
    */
   private Map<String, Integer> mChildCounters = new HashMap<>();
+
+  protected Component() {
+    this(null);
+  }
+
+  /**
+   * This constructor should be called only if working with a manually crafted "special" Component.
+   * This should NOT be used in general use cases. Use the standard {@link #Component()} instead.
+   */
+  protected Component(Class classType) {
+    super(classType);
+    mKey = Integer.toString(getTypeId());
+  }
+
+  @Deprecated
+  public ComponentLifecycle getLifecycle() {
+    return this;
+  }
 
   /**
    * Mostly used by logging to provide more readable messages.
@@ -244,7 +258,7 @@ public abstract class Component<L extends ComponentLifecycle>
 
       return component;
     } catch (CloneNotSupportedException e) {
-      // Subclasses implement Cloneable, so this is impossible
+      // This class implements Cloneable, so this is impossible
       throw new RuntimeException(e);
     }
   }
@@ -278,15 +292,6 @@ public abstract class Component<L extends ComponentLifecycle>
 
   void release() {
     mIsLayoutStarted = false;
-  }
-
-  protected Component(L lifecycle) {
-    mLifecycle = lifecycle;
-    mKey = Integer.toString(mLifecycle.getTypeId());
-  }
-
-  public L getLifecycle() {
-    return mLifecycle;
   }
 
   /**
@@ -323,27 +328,27 @@ public abstract class Component<L extends ComponentLifecycle>
   }
 
   static boolean isHostSpec(Component<?> component) {
-    return (component != null && component.mLifecycle instanceof HostComponent);
+    return (component instanceof HostComponent);
   }
 
   static boolean isLayoutSpec(Component<?> component) {
-    return (component != null && component.mLifecycle.getMountType() == MountType.NONE);
+    return (component != null && component.getMountType() == MountType.NONE);
   }
 
   static boolean isMountSpec(Component<?> component) {
-    return (component != null && component.mLifecycle.getMountType() != MountType.NONE);
+    return (component != null && component.getMountType() != MountType.NONE);
   }
 
   static boolean isMountDrawableSpec(Component<?> component) {
-    return (component != null && component.mLifecycle.getMountType() == MountType.DRAWABLE);
+    return (component != null && component.getMountType() == MountType.DRAWABLE);
   }
 
   static boolean isMountViewSpec(Component<?> component) {
-    return (component != null && component.mLifecycle.getMountType() == MountType.VIEW);
+    return (component != null && component.getMountType() == MountType.VIEW);
   }
 
   static boolean isLayoutSpecWithSizeSpec(Component<?> component) {
-    return (isLayoutSpec(component) && component.mLifecycle.canMeasure());
+    return (isLayoutSpec(component) && component.canMeasure());
   }
 
   static boolean isNestedTree(Component<?> component) {
@@ -426,23 +431,23 @@ public abstract class Component<L extends ComponentLifecycle>
     return mComponentLayoutAttributes;
   }
 
+  @Deprecated
   @Override
   public EventDispatcher getEventDispatcher() {
-    return mLifecycle;
+    return this;
   }
 
+  @Deprecated
   @Override
   public EventTriggerTarget getEventTriggerTarget() {
-    return mLifecycle;
+    return this;
   }
   
   /**
-   * @param <L> the {@link ComponentLifecycle} of the {@link Component} that this builder will
-   *     build.
    * @param <T> the type of this builder. Required to ensure methods defined here in the abstract
    *     class correctly return the type of the concrete subclass.
    */
-  public abstract static class Builder<L extends ComponentLifecycle, T extends Builder<L, T>>
+  public abstract static class Builder<L extends Component, T extends Builder<L, T>>
       extends ResourceResolver {
 
     private ComponentContext mContext;
@@ -464,7 +469,7 @@ public abstract class Component<L extends ComponentLifecycle>
 
       if (defStyleAttr != 0 || defStyleRes != 0) {
         mComponent.getOrCreateLayoutAttributes().setStyle(defStyleAttr, defStyleRes);
-        component.mLifecycle.loadStyle(c, defStyleAttr, defStyleRes, component);
+        component.loadStyle(c, defStyleAttr, defStyleRes, component);
       }
     }
 

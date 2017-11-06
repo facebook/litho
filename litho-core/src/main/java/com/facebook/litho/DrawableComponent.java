@@ -12,16 +12,15 @@ package com.facebook.litho;
 import android.graphics.drawable.Drawable;
 import com.facebook.litho.reference.Reference;
 
-class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
+class DrawableComponent<T extends Drawable> extends Component<DrawableComponent> {
 
-  static DrawableComponent sInstance;
+  Reference<T> mDrawable;
+  int mDrawableWidth;
+  int mDrawableHeight;
 
-  static synchronized DrawableComponent get() {
-    if (sInstance == null) {
-      sInstance = new DrawableComponent();
-    }
-
-    return sInstance;
+  private DrawableComponent(Reference drawable) {
+    super();
+    mDrawable = drawable;
   }
 
   @Override
@@ -29,10 +28,10 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
       ComponentContext c,
       ComponentLayout layout,
       Component<?> component) {
-    final State state = (State) component;
+    final DrawableComponent drawableComponent = (DrawableComponent) component;
 
-    state.setDrawableWidth(layout.getWidth());
-    state.setDrawableHeight(layout.getHeight());
+    drawableComponent.setDrawableWidth(layout.getWidth());
+    drawableComponent.setDrawableHeight(layout.getHeight());
   }
 
   @Override
@@ -46,9 +45,9 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
       Object content,
       Component component) {
     MatrixDrawable drawable = (MatrixDrawable) content;
-    final State<T> state = (State) component;
+    final DrawableComponent<T> drawableComponent = (DrawableComponent) component;
 
-    drawable.mount(Reference.acquire(context, state.getDrawable()));
+    drawable.mount(Reference.acquire(context, drawableComponent.getDrawable()));
   }
 
   @Override
@@ -57,9 +56,10 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
       Object mountedContent,
       Component<?> component) {
     final MatrixDrawable mountedDrawable = (MatrixDrawable) mountedContent;
-    final State state = (State) component;
+    final DrawableComponent drawableComponent = (DrawableComponent) component;
 
-    mountedDrawable.bind(state.getDrawableWidth(), state.getDrawableHeight());
+    mountedDrawable.bind(
+        drawableComponent.getDrawableWidth(), drawableComponent.getDrawableHeight());
   }
 
   @Override
@@ -67,10 +67,11 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
       ComponentContext context,
       Object mountedContent,
       Component<?> component) {
-    final State state = (State) component;
+    final DrawableComponent drawableComponent = (DrawableComponent) component;
 
     final MatrixDrawable matrixDrawable = (MatrixDrawable) mountedContent;
-    Reference.release(context, matrixDrawable.getMountedDrawable(), state.getDrawable());
+    Reference.release(
+        context, matrixDrawable.getMountedDrawable(), drawableComponent.getDrawable());
     matrixDrawable.unmount();
   }
 
@@ -84,68 +85,55 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
     return MountType.DRAWABLE;
   }
 
-  public static Component create(Reference<? extends Drawable> drawable) {
-    return new State<>(drawable);
+  public static DrawableComponent create(Reference<? extends Drawable> drawable) {
+    return new DrawableComponent<>(drawable);
   }
 
   @Override
   protected boolean shouldUpdate(Component previous, Component next) {
-    final Reference previousReference = ((State) previous).getDrawable();
-    final Reference nextReference = ((State) next).getDrawable();
+    final Reference previousReference = ((DrawableComponent) previous).getDrawable();
+    final Reference nextReference = ((DrawableComponent) next).getDrawable();
 
     return Reference.shouldUpdate(previousReference, nextReference);
   }
 
-private static class State<T extends Drawable> extends Component<DrawableComponent>
-    implements Cloneable {
+  @Override
+  public String getSimpleName() {
+    return mDrawable.getSimpleName();
+  }
 
-    Reference<T> mDrawable;
-    int mDrawableWidth;
-    int mDrawableHeight;
+  private Reference<T> getDrawable() {
+    return mDrawable;
+  }
 
-    protected State(Reference<T> drawable) {
-      super(get());
-      mDrawable = drawable;
+  @Override
+  public boolean isEquivalentTo(Component<?> o) {
+    if (this == o) {
+      return true;
     }
 
-    @Override
-    public String getSimpleName() {
-      return mDrawable.getSimpleName();
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
 
-    private Reference<T> getDrawable() {
-      return mDrawable;
-    }
+    DrawableComponent drawableComponent = (DrawableComponent) o;
 
-    @Override
-    public boolean isEquivalentTo(Component<?> o) {
-      if (this == o) {
-        return true;
-      }
+    return mDrawable.equals(drawableComponent.mDrawable);
+  }
 
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
+  private void setDrawableWidth(int drawableWidth) {
+    mDrawableWidth = drawableWidth;
+  }
 
-      State state = (State) o;
+  private int getDrawableWidth() {
+    return mDrawableWidth;
+  }
 
-      return mDrawable.equals(state.mDrawable);
-    }
+  private void setDrawableHeight(int drawableHeight) {
+    mDrawableHeight = drawableHeight;
+  }
 
-    private void setDrawableWidth(int drawableWidth) {
-      mDrawableWidth = drawableWidth;
-    }
-
-    private int getDrawableWidth() {
-      return mDrawableWidth;
-    }
-
-    private void setDrawableHeight(int drawableHeight) {
-      mDrawableHeight = drawableHeight;
-    }
-
-    private int getDrawableHeight() {
+  private int getDrawableHeight() {
       return mDrawableHeight;
     }
-  }
 }

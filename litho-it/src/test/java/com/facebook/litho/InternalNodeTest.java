@@ -40,16 +40,11 @@ import org.robolectric.RuntimeEnvironment;
 public class InternalNodeTest {
   private static final int LIFECYCLE_TEST_ID = 1;
 
-  private final ComponentLifecycle mLifecycle = new ComponentLifecycle() {
+  private static class TestComponent extends Component<TestComponent> {
+
     @Override
     int getTypeId() {
       return LIFECYCLE_TEST_ID;
-    }
-  };
-
-  private static class TestComponent<L extends ComponentLifecycle> extends Component<L> {
-    public TestComponent(L component) {
-      super(component);
     }
 
     @Override
@@ -314,7 +309,7 @@ public class InternalNodeTest {
 
   @Test
   public void testContextSpecificComponentAssertionFailFormatting() {
-    final Component testComponent = new TestComponent<>(mLifecycle);
+    final Component testComponent = new TestComponent();
     mNode.alignSelf(YogaAlign.AUTO);
     mNode.flex(1f);
     mNode.appendComponent(testComponent);

@@ -20,7 +20,6 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethod;
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
@@ -35,8 +34,8 @@ import javax.lang.model.element.Modifier;
  */
 public class StateGenerator {
   private static final String STATE_UPDATE_IMPL_NAME_SUFFIX = "StateUpdate";
-  private static final String STATE_CONTAINER_PARAM_NAME = "stateContainer";
-  private static final String STATE_CONTAINER_IMPL_NAME = "stateContainerImpl";
+  private static final String STATE_CONTAINER_PARAM_NAME = "_stateContainer";
+  private static final String STATE_CONTAINER_NAME = "stateContainer";
   private static final String STATE_UPDATE_NEW_COMPONENT_NAME = "newComponent";
   private static final String STATE_UPDATE_METHOD_NAME = "updateState";
   private static final String LAZY_STATE_UPDATE_VALUE_PARAM = "lazyUpdateValue";
@@ -75,25 +74,27 @@ public class StateGenerator {
       return TypeSpecDataHolder.newBuilder().build();
     }
 
-    MethodSpec.Builder methodSpec = MethodSpec.methodBuilder("transferState")
-        .addAnnotation(Override.class)
-        .addModifiers(Modifier.PROTECTED)
-        .addParameter(ParameterSpec.builder(specModel.getContextClass(), "context").build())
-        .addParameter(
-            ParameterSpec.builder(specModel.getStateContainerClass(), "prevStateContainer").build())
-        .addParameter(ParameterSpec.builder(specModel.getComponentClass(), "component").build())
-        .addStatement(
-            "$L prevStateContainerImpl = ($L) prevStateContainer",
-            ComponentImplGenerator.getStateContainerImplClassName(specModel),
-            ComponentImplGenerator.getStateContainerImplClassName(specModel))
-        .addStatement(
-            "$L componentImpl = ($L) component",
-            ComponentImplGenerator.getImplClassName(specModel),
-            ComponentImplGenerator.getImplClassName(specModel));
+    MethodSpec.Builder methodSpec =
+        MethodSpec.methodBuilder("transferState")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PROTECTED)
+            .addParameter(ParameterSpec.builder(specModel.getContextClass(), "context").build())
+            .addParameter(
+                ParameterSpec.builder(specModel.getStateContainerClass(), "_prevStateContainer")
+                    .build())
+            .addParameter(ParameterSpec.builder(specModel.getComponentClass(), "_component").build())
+            .addStatement(
+                "$L prevStateContainer = ($L) _prevStateContainer",
+                ComponentBodyGenerator.getStateContainerClassName(specModel),
+                ComponentBodyGenerator.getStateContainerClassName(specModel))
+            .addStatement(
+                "$L component = ($L) _component",
+                specModel.getComponentName(),
+                specModel.getComponentName());
 
     for (StateParamModel stateValue : specModel.getStateValues()) {
       methodSpec.addStatement(
-          "componentImpl.$L.$L = prevStateContainerImpl.$L",
+          "component.$L.$L = prevStateContainer.$L",
           STATE_CONTAINER_FIELD_NAME,
           stateValue.getName(),
           stateValue.getName());
@@ -147,11 +148,10 @@ public class StateGenerator {
     final CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
     final String componentName = specModel.getComponentName();
     codeBlockBuilder.add(
-        "$N.$N _stateUpdate = (($N.$N) _component).$N(",
+        "$N.$N _stateUpdate = (($N) _component).$N(",
         componentName,
         getStateUpdateClassName(updateStateMethod),
         componentName,
-        componentName + "Impl",
         "create" + getStateUpdateClassName(updateStateMethod));
 
     boolean isFirstParam = true;
@@ -202,15 +202,15 @@ public class StateGenerator {
             .addParameter(specModel.getComponentClass(), STATE_UPDATE_NEW_COMPONENT_NAME)
             .addStatement(
                 "$L $L = ($L) $L",
-                ComponentImplGenerator.getStateContainerImplClassName(specModel),
-                STATE_CONTAINER_IMPL_NAME,
-                ComponentImplGenerator.getStateContainerImplClassName(specModel),
+                ComponentBodyGenerator.getStateContainerClassName(specModel),
+                STATE_CONTAINER_NAME,
+                ComponentBodyGenerator.getStateContainerClassName(specModel),
                 STATE_CONTAINER_PARAM_NAME)
             .addStatement(
                 "$L $L = ($L) $L",
-                ComponentImplGenerator.getImplClassName(specModel),
+                specModel.getComponentName(),
                 newComponentImplName,
-                ComponentImplGenerator.getImplClassName(specModel),
+                specModel.getComponentName(),
                 STATE_UPDATE_NEW_COMPONENT_NAME);
 
     // Add constructor and member fields.
@@ -240,7 +240,7 @@ public class StateGenerator {
             .addStatement(
                 "$L.set($L.$L)",
                 methodParam.getName(),
-                STATE_CONTAINER_IMPL_NAME,
+                STATE_CONTAINER_NAME,
                 methodParam.getName());
       }
     }
@@ -309,31 +309,31 @@ public class StateGenerator {
                 .endControlFlow()
                 .build());
 
-    final TypeName implClass = ClassName.bestGuess(
-        specModel.getComponentName() + "." + ComponentImplGenerator.getImplClassName(specModel));
+    final TypeName compClass = specModel.getComponentTypeName();
 
-    final MethodSpec.Builder stateUpdate = MethodSpec.methodBuilder(STATE_UPDATE_METHOD_NAME)
-        .addParameter(specModel.getStateContainerClass(), STATE_CONTAINER_PARAM_NAME)
-        .addParameter(specModel.getComponentClass(), STATE_UPDATE_NEW_COMPONENT_NAME)
-        .addModifiers(Modifier.PUBLIC)
-        .addStatement(
-            "$T $L = ($T) $L",
-            implClass,
-            newComponentImplName,
-            implClass,
-            STATE_UPDATE_NEW_COMPONENT_NAME)
-        .addStatement(
-            "$T $L = new $T()",
-            ParameterizedTypeName.get(ClassNames.STATE_VALUE, stateValue.getType().box()),
-            stateValue.getName(),
-            ParameterizedTypeName.get(ClassNames.STATE_VALUE, stateValue.getType().box()))
-        .addStatement(stateValue.getName() + ".set(" + LAZY_STATE_UPDATE_VALUE_PARAM + ")")
-        .addStatement(
-            "$L.$L.$L = $L.get()",
-            newComponentImplName,
-            GeneratorConstants.STATE_CONTAINER_FIELD_NAME,
-            stateValue.getName(),
-            stateValue.getName());
+    final MethodSpec.Builder stateUpdate =
+        MethodSpec.methodBuilder(STATE_UPDATE_METHOD_NAME)
+            .addParameter(specModel.getStateContainerClass(), STATE_CONTAINER_PARAM_NAME)
+            .addParameter(specModel.getComponentClass(), STATE_UPDATE_NEW_COMPONENT_NAME)
+            .addModifiers(Modifier.PUBLIC)
+            .addStatement(
+                "$T $L = ($T) $L",
+                compClass,
+                newComponentImplName,
+                compClass,
+                STATE_UPDATE_NEW_COMPONENT_NAME)
+            .addStatement(
+                "$T $L = new $T()",
+                ParameterizedTypeName.get(ClassNames.STATE_VALUE, stateValue.getType().box()),
+                stateValue.getName(),
+                ParameterizedTypeName.get(ClassNames.STATE_VALUE, stateValue.getType().box()))
+            .addStatement(stateValue.getName() + ".set(" + LAZY_STATE_UPDATE_VALUE_PARAM + ")")
+            .addStatement(
+                "$L.$L.$L = $L.get()",
+                newComponentImplName,
+                GeneratorConstants.STATE_CONTAINER_FIELD_NAME,
+                stateValue.getName(),
+                stateValue.getName());
 
     final TypeSpec.Builder stateBuilderImpl =
         TypeSpec.anonymousClassBuilder("")

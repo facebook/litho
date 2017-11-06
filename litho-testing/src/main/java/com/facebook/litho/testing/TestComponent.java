@@ -10,7 +10,6 @@
 package com.facebook.litho.testing;
 
 import com.facebook.litho.Component;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.EventHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +19,9 @@ import java.util.List;
  *
  * @param <L>
  */
-public abstract class TestComponent<L extends TestComponent.TestComponentLifecycle>
-    extends Component<L> {
+public abstract class TestComponent<T extends TestComponent> extends Component<T> {
 
+  private final List<EventHandler<?>> mDispatchedEventHandlers = new ArrayList<>();
   private boolean mOnMountCalled;
   private boolean mMounted;
   private boolean mOnUnmountCalled;
@@ -33,8 +32,8 @@ public abstract class TestComponent<L extends TestComponent.TestComponentLifecyc
   protected boolean mIsUnique;
   private boolean mOnMeasureCalled;
 
-  protected TestComponent(L lifecycle) {
-    super(lifecycle);
+  protected TestComponent() {
+    super();
   }
 
   @Override
@@ -152,17 +151,13 @@ public abstract class TestComponent<L extends TestComponent.TestComponentLifecyc
     mOnUnmountCalled = false;
   }
 
-  public static class TestComponentLifecycle extends ComponentLifecycle {
-    private final List<EventHandler<?>> mDispatchedEventHandlers = new ArrayList<>();
+  @Override
+  public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+    mDispatchedEventHandlers.add(eventHandler);
+    return null;
+  }
 
-    @Override
-    public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-      mDispatchedEventHandlers.add(eventHandler);
-      return null;
-    }
-
-    public List<EventHandler<?>> getDispatchedEventHandlers() {
-      return mDispatchedEventHandlers;
-    }
+  public List<EventHandler<?>> getDispatchedEventHandlers() {
+    return mDispatchedEventHandlers;
   }
 }

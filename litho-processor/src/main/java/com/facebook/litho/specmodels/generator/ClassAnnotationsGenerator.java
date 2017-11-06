@@ -9,10 +9,24 @@
 package com.facebook.litho.specmodels.generator;
 
 import com.facebook.litho.specmodels.model.SpecModel;
+import com.squareup.javapoet.AnnotationSpec;
 
 /** Generates class-level annotations for a given {@link SpecModel}. */
 public class ClassAnnotationsGenerator {
   public static TypeSpecDataHolder generate(SpecModel specModel) {
-    return TypeSpecDataHolder.newBuilder().addAnnotations(specModel.getClassAnnotations()).build();
+    final TypeSpecDataHolder.Builder holder = TypeSpecDataHolder.newBuilder();
+
+    if (specModel.hasInjectedDependencies()) {
+      for (AnnotationSpec annotation : specModel.getClassAnnotations()) {
+        if (specModel.getDependencyInjectionHelper()
+            .isValidGeneratedComponentAnnotation(annotation)) {
+          holder.addAnnotation(annotation);
+        }
+      }
+    } else {
+      holder.addAnnotations(specModel.getClassAnnotations());
+    }
+
+    return holder.build();
   }
 }

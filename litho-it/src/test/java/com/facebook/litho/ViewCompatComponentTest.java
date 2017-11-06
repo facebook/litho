@@ -38,6 +38,26 @@ public class ViewCompatComponentTest {
         }
       };
 
+  private static final ViewCreator<TextView> TEXT_VIEW_CREATOR_2 =
+      new ViewCreator<TextView>() {
+        @Override
+        public TextView createView(Context c) {
+          return new TextView(c);
+        }
+      };
+
+  private static final ViewBinder<TextView> NO_OP_VIEW_BINDER =
+      new ViewBinder<TextView>() {
+        @Override
+        public void prepare() {}
+
+        @Override
+        public void bind(TextView view) {}
+
+        @Override
+        public void unbind(TextView view) {}
+      };
+
   private ComponentContext mContext;
 
   @Before
@@ -139,5 +159,28 @@ public class ViewCompatComponentTest {
     assertThat(lithoView.getMountItemCount()).isEqualTo(1);
     TextView view = (TextView) lithoView.getMountItemAt(0).getContent();
     assertThat(view.getText()).isEqualTo("");
+  }
+
+  @Test
+  public void testTypeIdForDifferentViewCreators() {
+    ViewCompatComponent compatComponent = get(TEXT_VIEW_CREATOR, "compat")
+        .create(mContext)
+        .viewBinder(NO_OP_VIEW_BINDER)
+        .build();
+    ViewCompatComponent sameCompatComponent = get(TEXT_VIEW_CREATOR, "sameCompat")
+        .create(mContext)
+        .viewBinder(NO_OP_VIEW_BINDER)
+        .build();
+    ViewCompatComponent differentCompatComponent = get(TEXT_VIEW_CREATOR_2, "differentCompat")
+        .create(mContext)
+        .viewBinder(NO_OP_VIEW_BINDER)
+        .build();
+
+    assertThat(compatComponent.getId()).isNotEqualTo(sameCompatComponent.getId());
+    assertThat(compatComponent.getId()).isNotEqualTo(differentCompatComponent.getId());
+    assertThat(sameCompatComponent.getId()).isNotEqualTo(differentCompatComponent.getId());
+
+    assertThat(compatComponent.getTypeId()).isEqualTo(sameCompatComponent.getTypeId());
+    assertThat(compatComponent.getTypeId()).isNotEqualTo(differentCompatComponent.getTypeId());
   }
 }

@@ -1015,7 +1015,7 @@ class LayoutState {
     return hostOutputPosition;
   }
 
-  static <T extends ComponentLifecycle> LayoutState calculate(
+  static <T extends Component> LayoutState calculate(
       ComponentContext c,
       Component<T> component,
       int componentTreeId,
@@ -1034,7 +1034,7 @@ class LayoutState {
         true /* clipChildren */);
   }
 
-  static <T extends ComponentLifecycle> LayoutState calculate(
+  static <T extends Component> LayoutState calculate(
       ComponentContext c,
       Component<T> component,
       int componentTreeId,
@@ -1380,7 +1380,7 @@ class LayoutState {
   }
 
   @VisibleForTesting
-  static <T extends ComponentLifecycle> InternalNode createTree(
+  static <T extends Component> InternalNode createTree(
       Component<T> component,
       ComponentContext context) {
     final ComponentsLogger logger = context.getLogger();
@@ -1733,7 +1733,7 @@ class LayoutState {
     } else if (a == null || b == null) {
       return false;
     }
-    return a.getLifecycle().getClass().equals(b.getLifecycle().getClass());
+    return a.getClass().equals(b.getClass());
   }
 
   private static boolean shouldComponentUpdate(InternalNode layoutNode, DiffNode diffNode) {
@@ -1743,7 +1743,7 @@ class LayoutState {
 
     final Component component = layoutNode.getRootComponent();
     if (component != null) {
-      return component.getLifecycle().shouldComponentUpdate(component, diffNode.getComponent());
+      return component.shouldComponentUpdate(component, diffNode.getComponent());
     }
 
     return true;

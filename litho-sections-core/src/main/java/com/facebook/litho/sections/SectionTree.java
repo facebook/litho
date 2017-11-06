@@ -977,8 +977,7 @@ public class SectionTree {
 
     final SectionLifecycle sectionLifecycle = nextRoot.getLifecycle();
     final boolean shouldTransferState =
-        currentRoot != null
-            && currentRoot.getLifecycle().getClass().equals(sectionLifecycle.getClass());
+        currentRoot != null && currentRoot.getClass().equals(nextRoot.getClass());
 
     if (currentRoot == null || !shouldTransferState) {
       sectionLifecycle.createInitialState(nextRoot.getScopedContext(), nextRoot);

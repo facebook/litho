@@ -112,12 +112,12 @@ public class StateGeneratorTest {
         .isEqualTo(
             "@java.lang.Override\n" +
             "protected void transferState(com.facebook.litho.ComponentContext context,\n" +
-            "    com.facebook.litho.ComponentLifecycle.StateContainer prevStateContainer,\n" +
-            "    com.facebook.litho.Component component) {\n" +
-            "  TestWithStateStateContainerImpl prevStateContainerImpl = (TestWithStateStateContainerImpl) prevStateContainer;\n" +
-            "  TestWithStateImpl componentImpl = (TestWithStateImpl) component;\n" +
-            "  componentImpl.mStateContainerImpl.arg1 = prevStateContainerImpl.arg1;\n" +
-            "  componentImpl.mStateContainerImpl.arg4 = prevStateContainerImpl.arg4;\n" +
+            "    com.facebook.litho.ComponentLifecycle.StateContainer _prevStateContainer,\n" +
+            "    com.facebook.litho.Component _component) {\n" +
+            "  TestWithStateStateContainer prevStateContainer = (TestWithStateStateContainer) _prevStateContainer;\n" +
+            "  TestWithState component = (TestWithState) _component;\n" +
+            "  component.mStateContainer.arg1 = prevStateContainer.arg1;\n" +
+            "  component.mStateContainer.arg4 = prevStateContainer.arg4;\n" +
             "}\n");
   }
 
@@ -142,7 +142,7 @@ public class StateGeneratorTest {
             "  if (_component == null) {\n" +
             "    return;\n" +
             "  }\n" +
-            "  TestWithState.UpdateCurrentStateStateUpdate _stateUpdate = ((TestWithState.TestWithStateImpl) _component).createUpdateCurrentStateStateUpdate();\n" +
+            "  TestWithState.UpdateCurrentStateStateUpdate _stateUpdate = ((TestWithState) _component).createUpdateCurrentStateStateUpdate();\n" +
             "  c.updateStateAsync(_stateUpdate);\n" +
             "}\n");
 
@@ -153,7 +153,7 @@ public class StateGeneratorTest {
             "  if (_component == null) {\n" +
             "    return;\n" +
             "  }\n" +
-            "  TestWithState.UpdateCurrentStateStateUpdate _stateUpdate = ((TestWithState.TestWithStateImpl) _component).createUpdateCurrentStateStateUpdate();\n" +
+            "  TestWithState.UpdateCurrentStateStateUpdate _stateUpdate = ((TestWithState) _component).createUpdateCurrentStateStateUpdate();\n" +
             "  c.updateState(_stateUpdate);\n" +
             "}\n");
   }
@@ -170,10 +170,10 @@ public class StateGeneratorTest {
             "  UpdateCurrentStateStateUpdate() {\n" +
             "  }\n" +
             "\n" +
-            "  public void updateState(com.facebook.litho.ComponentLifecycle.StateContainer stateContainer,\n" +
+            "  public void updateState(com.facebook.litho.ComponentLifecycle.StateContainer _stateContainer,\n" +
             "      com.facebook.litho.Component newComponent) {\n" +
-            "    TestWithStateStateContainerImpl stateContainerImpl = (TestWithStateStateContainerImpl) stateContainer;\n" +
-            "    TestWithStateImpl newComponentStateUpdate = (TestWithStateImpl) newComponent;\n" +
+            "    TestWithStateStateContainer stateContainer = (TestWithStateStateContainer) _stateContainer;\n" +
+            "    TestWithState newComponentStateUpdate = (TestWithState) newComponent;\n" +
             "    TestWithStateSpec.updateCurrentState();\n" +
             "  }\n" +
             "}\n");
@@ -195,12 +195,12 @@ public class StateGeneratorTest {
             "    return;\n" +
             "  }\n" +
             "  com.facebook.litho.ComponentLifecycle.StateUpdate _stateUpdate = new com.facebook.litho.ComponentLifecycle.StateUpdate() {\n" +
-            "    public void updateState(com.facebook.litho.ComponentLifecycle.StateContainer stateContainer,\n" +
+            "    public void updateState(com.facebook.litho.ComponentLifecycle.StateContainer _stateContainer,\n" +
             "        com.facebook.litho.Component newComponent) {\n" +
-            "      TestWithState.TestWithStateImpl newComponentStateUpdate = (TestWithState.TestWithStateImpl) newComponent;\n" +
+            "      com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithState newComponentStateUpdate = (com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithState) newComponent;\n" +
             "      com.facebook.litho.StateValue<java.lang.Boolean> arg4 = new com.facebook.litho.StateValue<java.lang.Boolean>();\n" +
             "      arg4.set(lazyUpdateValue);\n" +
-            "      newComponentStateUpdate.mStateContainerImpl.arg4 = arg4.get();\n" +
+            "      newComponentStateUpdate.mStateContainer.arg4 = arg4.get();\n" +
             "    }\n" +
             "  };\n" +
             "  c.updateStateLazy(_stateUpdate);\n" +

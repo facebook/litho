@@ -11,7 +11,7 @@ package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.generator.BuilderGenerator;
 import com.facebook.litho.specmodels.generator.ClassAnnotationsGenerator;
-import com.facebook.litho.specmodels.generator.ComponentImplGenerator;
+import com.facebook.litho.specmodels.generator.ComponentBodyGenerator;
 import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
 import com.facebook.litho.specmodels.generator.EventGenerator;
 import com.facebook.litho.specmodels.generator.JavadocGenerator;
@@ -26,6 +26,7 @@ import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
@@ -275,16 +276,15 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   public TypeSpec generate() {
     final TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(getComponentName())
-            .superclass(ClassNames.COMPONENT_LIFECYCLE)
+            .superclass(
+                ParameterizedTypeName.get(ClassNames.COMPONENT, mSpecModel.getComponentTypeName()))
             .addTypeVariables(getTypeVariables());
 
     if (isPublic()) {
       typeSpec.addModifiers(Modifier.PUBLIC);
     }
 
-    if (hasInjectedDependencies()) {
-      getDependencyInjectionHelper().generate(this).addToTypeSpec(typeSpec);
-    } else {
+    if (!hasInjectedDependencies()) {
       typeSpec.addModifiers(Modifier.FINAL);
     }
 
@@ -292,7 +292,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
         .addTypeSpecDataHolder(JavadocGenerator.generate(this))
         .addTypeSpecDataHolder(ClassAnnotationsGenerator.generate(this))
         .addTypeSpecDataHolder(PreambleGenerator.generate(this))
-        .addTypeSpecDataHolder(ComponentImplGenerator.generate(this, null))
+        .addTypeSpecDataHolder(ComponentBodyGenerator.generate(this, null))
         .addTypeSpecDataHolder(TreePropGenerator.generate(this))
         .addTypeSpecDataHolder(
             DelegateMethodGenerator.generateDelegates(

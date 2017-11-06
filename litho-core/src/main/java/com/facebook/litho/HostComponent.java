@@ -9,10 +9,13 @@
 
 package com.facebook.litho;
 
-class HostComponent extends ComponentLifecycle {
+class HostComponent extends Component<HostComponent> {
 
-  private static final HostComponent sInstance = new HostComponent();
   private static final int HOST_POOL_SIZE = 30;
+
+  private HostComponent() {
+    super();
+  }
 
   @Override
   protected Object onCreateMountContent(ComponentContext c) {
@@ -25,24 +28,17 @@ class HostComponent extends ComponentLifecycle {
   }
 
   static Component create() {
-    return new State();
+    return new HostComponent();
   }
 
-  private static class State extends Component<HostComponent> implements Cloneable {
+  @Override
+  public String getSimpleName() {
+    return "HostComponent";
+  }
 
-    State() {
-      super(sInstance);
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "HostComponent";
-    }
-
-    @Override
-    public boolean isEquivalentTo(Component<?> other) {
-      return this == other;
-    }
+  @Override
+  public boolean isEquivalentTo(Component<?> other) {
+    return this == other;
   }
 
   @Override
