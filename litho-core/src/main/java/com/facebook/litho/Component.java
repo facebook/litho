@@ -81,8 +81,6 @@ public abstract class Component<L extends ComponentLifecycle>
    */
   private Map<String, Integer> mChildCounters = new HashMap<>();
 
-  @Nullable private Map<String, EventTrigger> mEventTriggers;
-
   /**
    * Mostly used by logging to provide more readable messages.
    */
@@ -160,30 +158,6 @@ public abstract class Component<L extends ComponentLifecycle>
   void setKey(String key) {
     mHasManualKey = true;
     mKey = key;
-  }
-
-  /** Set the trigger to allow it to be recorded in a {@link ComponentTree} when it's ready */
-  void setEventTrigger(EventTrigger trigger) {
-    if (mEventTriggers == null) {
-      mEventTriggers = new HashMap<>();
-    }
-
-    mEventTriggers.put(trigger.mKey, trigger);
-  }
-
-  /**
-   * Keep a reference to {@link EventTrigger} in {@link ComponentTree} to allow a retrieval of the
-   * same reference with a key.
-   */
-  void recordEventTriggers(ComponentContext c) {
-    if (mEventTriggers == null) {
-      return;
-    }
-
-    ComponentTree componentTree = c.getComponentTree();
-    for (Map.Entry<String, EventTrigger> entry : mEventTriggers.entrySet()) {
-      componentTree.recordEventTrigger(entry.getKey(), entry.getValue());
-    }
   }
 
   /**
@@ -423,9 +397,21 @@ public abstract class Component<L extends ComponentLifecycle>
       keyHandler.registerKey(this);
     }
 
+    registerEventTrigger(getGlobalKey());
+
     if (getLifecycle().hasState()) {
       c.getStateHandler().applyStateUpdatesForComponent(this);
     }
+  }
+
+  private void registerEventTrigger(String globalKey) {
+    ComponentContext context = getScopedContext();
+    if (!getLifecycle().canAcceptTrigger()) {
+      context.unregisterTrigger(globalKey);
+      return;
+    }
+
+    context.registerTrigger(context.newEventTrigger(), globalKey);
   }
 
   ComponentLayoutAttributes getLayoutAttributes() {
@@ -487,11 +473,6 @@ public abstract class Component<L extends ComponentLifecycle>
     /** Set a key on the component that is local to its parent. */
     public T key(String key) {
       mComponent.setKey(key);
-      return getThis();
-    }
-
-    public T setEventTrigger(EventTrigger trigger) {
-      mComponent.setEventTrigger(trigger);
       return getThis();
     }
 

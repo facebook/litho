@@ -13,10 +13,8 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
-import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.facebook.litho.specmodels.model.PropModel;
-import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ArrayTypeName;
@@ -270,19 +268,6 @@ public class BuilderGenerator {
     for (EventDeclarationModel eventDeclaration : specModel.getEventDeclarations()) {
       propsBuilderClassBuilder.addMethod(
           generateEventDeclarationBuilderMethod(specModel, eventDeclaration));
-    }
-
-    for (SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethod :
-        specModel.getTriggerMethods()) {
-      propsBuilderClassBuilder.addMethod(
-          generateEventTriggerBuilderMethod(specModel, triggerMethod));
-
-      propsBuilderClassBuilder.addMethod(
-          generateEventTriggerChangeKeyMethod(specModel, triggerMethod));
-    }
-
-    if (!specModel.getTriggerMethods().isEmpty()) {
-      propsBuilderClassBuilder.addMethod(generateKeySetterMethod(specModel.getTriggerMethods()));
     }
 
     for (BuilderMethodModel builderMethodModel : specModel.getExtraBuilderMethods()) {
@@ -1135,49 +1120,6 @@ public class BuilderGenerator {
         .build();
   }
 
-  private static MethodSpec generateEventTriggerBuilderMethod(
-      SpecModel specModel, SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethodModel) {
-    final String eventTriggerName =
-        ComponentImplGenerator.getEventTriggerInstanceName(triggerMethodModel.name);
-    final String implMemberName = getImplMemberInstanceName(specModel);
-
-    return MethodSpec.methodBuilder(eventTriggerName)
-        .addModifiers(Modifier.PUBLIC)
-        .returns(BUILDER_CLASS_NAME)
-        .addParameter(ClassNames.EVENT_TRIGGER, eventTriggerName)
-        .addStatement("$L.mTriggerTarget = $L", eventTriggerName, implMemberName)
-        .addStatement("this.$L.$L = $L", implMemberName, eventTriggerName, eventTriggerName)
-        .addStatement("this.setEventTrigger($L)", eventTriggerName)
-        .addStatement("return this")
-        .build();
-  }
-
-  private static MethodSpec generateEventTriggerChangeKeyMethod(
-      SpecModel specModel, SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethodModel) {
-    final String eventTriggerName =
-        ComponentImplGenerator.getEventTriggerInstanceName(triggerMethodModel.name);
-    final String implMemberName = getImplMemberInstanceName(specModel);
-
-    return MethodSpec.methodBuilder(getEventTriggerKeyResetMethodName(triggerMethodModel.name))
-        .addModifiers(Modifier.PRIVATE)
-        .addParameter(ClassNames.STRING, "key")
-        .addStatement(
-            "$L $L = this.$L.$L",
-            ClassNames.EVENT_TRIGGER,
-            eventTriggerName,
-            implMemberName,
-            eventTriggerName)
-        .beginControlFlow("if ($L == null)", eventTriggerName)
-        .addStatement(
-            "$L = $L.$L(this.mContext, key)",
-            eventTriggerName,
-            specModel.getComponentName(),
-            eventTriggerName)
-        .endControlFlow()
-        .addStatement("$L($L)", eventTriggerName, eventTriggerName)
-        .build();
-  }
-
   private static MethodSpec generateGetThisMethod(SpecModel specModel) {
     return MethodSpec.methodBuilder("getThis")
         .addAnnotation(Override.class)
@@ -1185,27 +1127,6 @@ public class BuilderGenerator {
         .addStatement("return this")
         .returns(getBuilderType(specModel))
         .build();
-  }
-
-  private static MethodSpec generateKeySetterMethod(
-      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods) {
-    MethodSpec.Builder builder =
-        MethodSpec.methodBuilder("key")
-            .addModifiers(Modifier.PUBLIC)
-            .addParameter(ClassNames.STRING, "key")
-            .addStatement("super.key(key)");
-
-    for (SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethod : triggerMethods) {
-      builder.addStatement("$L(key)", getEventTriggerKeyResetMethodName(triggerMethod.name));
-    }
-
-    builder.addStatement("return this").returns(BUILDER_CLASS_NAME);
-
-    return builder.build();
-  }
-
-  private static String getEventTriggerKeyResetMethodName(CharSequence eventTriggerClassName) {
-    return ComponentImplGenerator.getEventTriggerInstanceName(eventTriggerClassName);
   }
 
   private static MethodSpec generateExtraBuilderMethod(

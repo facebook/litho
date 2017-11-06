@@ -691,23 +691,24 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return eventHandler;
   }
 
-  protected static <E> EventTrigger<E> newEventTrigger(
-      ComponentContext c, String childKey, int id) {
-    return c.newEventTrigger(childKey, id);
+  protected static <E> EventTrigger<E> newEventTrigger(ComponentContext c) {
+    return c.newEventTrigger();
   }
 
   @Nullable
-  protected static EventTrigger getEventTrigger(ComponentContext c, int id, String key) {
+  protected static EventTrigger getEventTrigger(ComponentContext c, int methodId, String key) {
     if (c.getComponentScope() == null) {
       return null;
     }
 
     EventTrigger trigger =
-        c.getComponentTree().getEventTrigger(c.getComponentScope().getGlobalKey() + id + key);
+        c.getComponentTree().getEventTrigger(c.getComponentScope().getGlobalKey() + key);
 
     if (trigger == null) {
       return null;
     }
+
+    trigger.mId = methodId;
 
     return trigger;
   }
