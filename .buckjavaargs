@@ -1,1 +1,1 @@
--Xmx512m -XX:+HeapDumpOnOutOfMemoryError
+-Xmx1024m -XX:+HeapDumpOnOutOfMemoryError

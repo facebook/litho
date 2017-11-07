@@ -1,11 +1,11 @@
 machine:
   environment:
     TERM: 'dumb'
-    ADB_INSTALL_TIMEOUT: 10
     PATH: "/home/ubuntu/buck/bin:$PATH"
-    ANDROID_HOME: "/home/ubuntu/android-sdk"
+    ANDROID_HOME: '/home/ubuntu/android-sdk'
     ANDROID_NDK_REPOSITORY: "/home/ubuntu/android-ndk"
-    GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
+    GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xms512m -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError"'
+    _JAVA_OPTIONS: '-Xms512m -Xmx1024m'
   java:
     version: 'oraclejdk8'
 
