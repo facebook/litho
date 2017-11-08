@@ -1350,28 +1350,10 @@ public class RecyclerBinder
               mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
         }
 
-        final boolean isOrientationVertical =
-            mLayoutInfo.getScrollDirection() == OrientationHelper.VERTICAL;
+        final RecyclerViewLayoutManagerOverrideParams layoutParams =
+            new RecyclerViewLayoutManagerOverrideParams(childrenWidthSpec, childrenHeightSpec);
 
-        final int width;
-        final int height;
-        if (SizeSpec.getMode(childrenWidthSpec) == SizeSpec.EXACTLY) {
-          width = SizeSpec.getSize(childrenWidthSpec);
-        } else if (isOrientationVertical) {
-          width = MATCH_PARENT;
-        } else {
-          width = WRAP_CONTENT;
-        }
-
-        if (SizeSpec.getMode(childrenHeightSpec) == SizeSpec.EXACTLY) {
-          height = SizeSpec.getSize(childrenHeightSpec);
-        } else if (isOrientationVertical) {
-          height = WRAP_CONTENT;
-        } else {
-          height = MATCH_PARENT;
-        }
-
-        lithoView.setLayoutParams(new RecyclerView.LayoutParams(width, height));
+        lithoView.setLayoutParams(layoutParams);
         lithoView.setComponentTree(componentTreeHolder.getComponentTree());
       } else {
         renderInfo.getViewBinder().bind(holder.itemView);
@@ -1416,5 +1398,28 @@ public class RecyclerBinder
    */
   private int getNormalizedPosition(int position) {
     return mIsCircular ? position % mComponentTreeHolders.size() : position;
+  }
+
+  private static class RecyclerViewLayoutManagerOverrideParams extends RecyclerView.LayoutParams
+      implements LithoView.LayoutManagerOverrideParams {
+
+    private final int mWidthMeasureSpec;
+    private final int mHeightMeasureSpec;
+
+    private RecyclerViewLayoutManagerOverrideParams(int widthMeasureSpec, int heightMeasureSpec) {
+      super(WRAP_CONTENT, WRAP_CONTENT);
+      mWidthMeasureSpec = widthMeasureSpec;
+      mHeightMeasureSpec = heightMeasureSpec;
+    }
+
+    @Override
+    public int getWidthMeasureSpec() {
+      return mWidthMeasureSpec;
+    }
+
+    @Override
+    public int getHeightMeasureSpec() {
+      return mHeightMeasureSpec;
+    }
   }
 }
