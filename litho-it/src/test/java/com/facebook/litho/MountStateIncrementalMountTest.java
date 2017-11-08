@@ -588,6 +588,7 @@ public class MountStateIncrementalMountTest {
     when(lithoView.getBottom()).thenReturn(bounds.bottom);
     when(lithoView.getWidth()).thenReturn(bounds.width());
     when(lithoView.getHeight()).thenReturn(bounds.height());
+    when(lithoView.isIncrementalMountEnabled()).thenReturn(true);
 
     return lithoView;
   }
@@ -606,6 +607,11 @@ public class MountStateIncrementalMountTest {
 
     private Rect getPreviousIncrementalMountBounds() {
       return mPreviousIncrementalMountBounds;
+    }
+
+    @Override
+    public boolean isIncrementalMountEnabled() {
+      return true;
     }
   }
 }
