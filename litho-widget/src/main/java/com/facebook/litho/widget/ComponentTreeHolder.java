@@ -16,6 +16,7 @@ import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateHandler;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -43,12 +44,23 @@ public class ComponentTreeHolder {
   private LayoutHandler mLayoutHandler;
   private boolean mCanPrefetchDisplayLists;
   private boolean mCanCacheDrawingDisplayLists;
+  private LayoutHandler mPreallocateMountContentHandler;
 
   public static ComponentTreeHolder acquire(
       RenderInfo renderInfo,
       LayoutHandler layoutHandler,
       boolean canPrefetchDisplayLists,
       boolean canCacheDrawingDisplayLists) {
+    return acquire(
+        renderInfo, layoutHandler, canPrefetchDisplayLists, canCacheDrawingDisplayLists, null);
+  }
+
+  public static ComponentTreeHolder acquire(
+      RenderInfo renderInfo,
+      LayoutHandler layoutHandler,
+      boolean canPrefetchDisplayLists,
+      boolean canCacheDrawingDisplayLists,
+      @Nullable LayoutHandler preallocateMountContentHandler) {
     ComponentTreeHolder componentTreeHolder = sComponentTreeHoldersPool.acquire();
     if (componentTreeHolder == null) {
       componentTreeHolder = new ComponentTreeHolder();
@@ -57,6 +69,7 @@ public class ComponentTreeHolder {
     componentTreeHolder.mLayoutHandler = layoutHandler;
     componentTreeHolder.mCanPrefetchDisplayLists = canPrefetchDisplayLists;
     componentTreeHolder.mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
+    componentTreeHolder.mPreallocateMountContentHandler = preallocateMountContentHandler;
     return componentTreeHolder;
   }
 
@@ -166,6 +179,7 @@ public class ComponentTreeHolder {
               .canPrefetchDisplayLists(mCanPrefetchDisplayLists)
               .canCacheDrawingDisplayLists(mCanCacheDrawingDisplayLists)
               .shouldClipChildren(clipChildren)
+              .preAllocateMountContentHandler(mPreallocateMountContentHandler)
               .build();
     }
   }
