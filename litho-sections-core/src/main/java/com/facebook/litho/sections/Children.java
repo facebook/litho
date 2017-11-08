@@ -11,6 +11,7 @@ package com.facebook.litho.sections;
 
 import static android.support.v4.util.Pools.SynchronizedPool;
 
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pools.Pool;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
@@ -56,7 +57,7 @@ public class Children {
       mChildren = children;
     }
 
-    public Builder child(Section<?> section) {
+    public Builder child(@Nullable Section<?> section) {
       verifyValidState();
 
       if (section != null) {
@@ -66,11 +67,45 @@ public class Children {
       return this;
     }
 
-    public Builder child(Section.Builder<?, ?> sectionBuilder) {
+    public Builder child(@Nullable List<Section<?>> sectionList) {
+      verifyValidState();
+
+      if (sectionList == null || sectionList.isEmpty()) {
+        return this;
+      }
+
+      for (int i = 0; i < sectionList.size(); i++) {
+        Section<?> section = sectionList.get(i);
+        if (section != null) {
+          mChildren.mSections.add(section);
+        }
+      }
+
+      return this;
+    }
+
+    public Builder child(@Nullable Section.Builder<?, ?> sectionBuilder) {
       verifyValidState();
 
       if (sectionBuilder != null) {
         mChildren.mSections.add(sectionBuilder.build());
+      }
+
+      return this;
+    }
+
+    public Builder children(@Nullable List<Section.Builder<?, ?>> sectionBuilderList) {
+      verifyValidState();
+
+      if (sectionBuilderList == null || sectionBuilderList.isEmpty()) {
+        return this;
+      }
+
+      for (int i = 0; i < sectionBuilderList.size(); i++) {
+        Section.Builder<?, ?> sectionBuilder = sectionBuilderList.get(i);
+        if (sectionBuilder != null) {
+          mChildren.mSections.add(sectionBuilder.build());
+        }
       }
 
       return this;
