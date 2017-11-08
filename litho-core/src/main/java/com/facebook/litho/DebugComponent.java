@@ -50,7 +50,6 @@ public final class DebugComponent {
   private int mComponentIndex;
   private Overrider mOverrider;
   private int mGeneration;
-  private Class mComponentClass;
 
   private DebugComponent() {}
 
@@ -67,7 +66,6 @@ public final class DebugComponent {
     debugComponent.mNode = new WeakReference<>(node);
     debugComponent.mComponentIndex = componentIndex;
     debugComponent.mGeneration = node.getGeneration();
-    debugComponent.mComponentClass = getComponentClass(node, componentIndex);
 
     return debugComponent;
   }
@@ -106,26 +104,27 @@ public final class DebugComponent {
    * @return A conanical name for this component. Suitable to present to the user.
    */
   public String getName() {
-    return mComponentClass.getName();
+    return getComponentClass().getName();
   }
 
   /**
    * @return A simpler canonical name for this component. Suitable to present to the user.
    */
   public String getSimpleName() {
-    return getComponent().getSimpleName();
+    final Component component = getComponent();
+    if (component != null) {
+      return component.getSimpleName();
+    }
+    return getComponentClass().getSimpleName();
   }
 
   /**
    * @return The class of the underlying Component.
    */
   public Class getComponentClass() {
-    return mComponentClass;
-  }
-
-  private static Class getComponentClass(InternalNode node, int componentIndex) {
-    if (node.getComponents().isEmpty()) {
-      switch (node.mYogaNode.getFlexDirection()) {
+    final Component component = getComponent();
+    if (component == null) {
+      switch (mNode.get().mYogaNode.getFlexDirection()) {
         case COLUMN: return Column.class;
         case COLUMN_REVERSE: return ColumnReverse.class;
         case ROW: return Row.class;
@@ -133,10 +132,7 @@ public final class DebugComponent {
       }
     }
 
-    return node
-        .getComponents()
-        .get(componentIndex)
-        .getClass();
+    return component.getClass();
   }
 
   public void setOverrider(Overrider overrider) {
