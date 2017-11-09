@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.Layout;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
@@ -243,5 +244,30 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   @CheckReturnValue
   public ListAssert<InspectableComponent> extractingSubComponentsDeeply(ComponentContext c) {
     return extracting(SubComponentDeepExtractor.subComponentsDeeply(c));
+  }
+
+  /**
+   * Assert that a given {@link Component} renders to null, i.e. its <code>onCreateLayout
+   * </code> method returns a {@link ComponentContext#NULL_LAYOUT}.
+   */
+  public ComponentAssert wontRender() {
+    ComponentLayoutAssert.assertThat(Layout.create(mComponentContext, actual).build()).wontRender();
+
+    return this;
+  }
+
+  /**
+   * Assert that a given {@link Component} produces a layout that's not equivalent to {@link
+   * ComponentContext#NULL_LAYOUT}.
+   */
+  public ComponentAssert willRender() {
+    ComponentLayoutAssert.assertThat(Layout.create(mComponentContext, actual).build()).willRender();
+
+    return this;
+  }
+
+  /** @see #wontRender() */
+  public ComponentAssert willNotRender() {
+    return wontRender();
   }
 }
