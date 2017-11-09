@@ -20,7 +20,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemAnimator;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.support.v7.widget.SnapHelper;
-
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Output;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -74,6 +73,7 @@ public class RecyclerSpecTest {
         null,
         scrollListeners,
         snapHelper,
+        true,
         onRefreshListener,
         oldAnimator);
 

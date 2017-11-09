@@ -193,6 +193,7 @@ public class RecyclerCollectionComponentSpec {
             .recyclerEventsController(internalEventsController)
             .refreshHandler(
                 disablePTR ? null : RecyclerCollectionComponent.onRefresh(c, sectionTree))
+            .pullToRefresh(!disablePTR)
             .itemDecoration(itemDecoration)
             .canMeasure(canMeasureRecycler)
             .horizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled)

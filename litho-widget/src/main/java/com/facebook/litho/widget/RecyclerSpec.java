@@ -73,6 +73,7 @@ class RecyclerSpec {
   @PropDefault static final int rightPadding = 0;
   @PropDefault static final int topPadding = 0;
   @PropDefault static final int bottomPadding = 0;
+  @PropDefault static final boolean pullToRefresh = true;
 
   @OnMeasure
   static void onMeasure(
@@ -179,10 +180,11 @@ class RecyclerSpec {
       @Prop(optional = true) final RecyclerEventsController recyclerEventsController,
       @Prop(optional = true, varArg = "onScrollListener") List<OnScrollListener> onScrollListeners,
       @Prop(optional = true) SnapHelper snapHelper,
+      @Prop(optional = true) boolean pullToRefresh,
       @FromPrepare OnRefreshListener onRefreshListener,
       Output<ItemAnimator> oldAnimator) {
 
-    recyclerViewWrapper.setEnabled(onRefreshListener != null);
+    recyclerViewWrapper.setEnabled(pullToRefresh && onRefreshListener != null);
     recyclerViewWrapper.setOnRefreshListener(onRefreshListener);
 
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
