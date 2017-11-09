@@ -19,7 +19,6 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.assertj.ComponentAssert;
-import com.facebook.litho.testing.assertj.ComponentLayoutAssert;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import org.junit.Before;
@@ -82,21 +81,17 @@ public class SelectorComponentSpecTest {
 
   @Test
   public void testEmpty() throws Exception {
-    ComponentLayoutAssert.assertThat(
-            SelectorComponent.create(mContext)
-                .component(NULL_SPEC)
-                .component((Component) null)
-                .buildWithLayout())
+    ComponentAssert.assertThat(
+            SelectorComponent.create(mContext).component(NULL_SPEC).component((Component) null))
         .willNotRender();
   }
 
   @Test
   public void testAllNull() throws Exception {
-    ComponentLayoutAssert.assertThat(
+    ComponentAssert.assertThat(
             SelectorComponent.create(mContext)
                 .component((Component) null)
-                .component((Component) null)
-                .buildWithLayout())
+                .component((Component) null))
         .willNotRender();
   }
 }
