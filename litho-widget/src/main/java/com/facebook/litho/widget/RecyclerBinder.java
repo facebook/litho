@@ -1400,7 +1400,7 @@ public class RecyclerBinder
     return mIsCircular ? position % mComponentTreeHolders.size() : position;
   }
 
-  private static class RecyclerViewLayoutManagerOverrideParams extends RecyclerView.LayoutParams
+  public static class RecyclerViewLayoutManagerOverrideParams extends RecyclerView.LayoutParams
       implements LithoView.LayoutManagerOverrideParams {
 
     private final int mWidthMeasureSpec;
