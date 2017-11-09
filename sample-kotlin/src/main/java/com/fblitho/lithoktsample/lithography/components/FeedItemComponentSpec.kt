@@ -61,7 +61,7 @@ object FeedItemComponentSpec {
           .child(FooterComponent.create(c).text(artist.biography))
           .build()
 
-  private fun imageBlock(artist: Artist, c: ComponentContext): Component<out ComponentLifecycle> =
+  private fun imageBlock(artist: Artist, c: ComponentContext): Component<*> =
       when (artist.images.size) {
         1 -> singleImage(c, artist)
         else -> recycler(c, artist)
