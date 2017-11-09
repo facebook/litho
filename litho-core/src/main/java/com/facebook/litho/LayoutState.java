@@ -1063,10 +1063,8 @@ class LayoutState {
     layoutState.mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
     layoutState.mClipChildren = clipChildren;
 
-    component.applyStateUpdates(c);
-
     final InternalNode root = createAndMeasureTreeForComponent(
-        component.getScopedContext(),
+        c,
         component,
         null, // nestedTreeHolder is null because this is measuring the root component tree.
         widthSpec,
@@ -1546,6 +1544,9 @@ class LayoutState {
       int widthSpec,
       int heightSpec,
       DiffNode diffTreeRoot) {
+
+    component.applyStateUpdates(c);
+    c = component.getScopedContext();
 
     final boolean isTest = "robolectric".equals(Build.FINGERPRINT);
     // Copy the context so that it can have its own set of tree props.
