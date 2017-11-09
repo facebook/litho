@@ -260,6 +260,7 @@ public class RecyclerCollectionComponentSpec {
   @OnCreateInitialState
   static <E extends Binder<RecyclerView> & Target> void createInitialState(
       final ComponentContext c,
+      @Prop Section<?> section,
       @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,
       @Prop(optional = true) RecyclerCollectionEventsController eventsController,
       @Prop(optional = true) boolean asyncPropUpdates,
@@ -280,7 +281,10 @@ public class RecyclerCollectionComponentSpec {
 
     final SectionTree sectionTreeInstance =
         SectionTree.create(sectionContext, targetBinder)
-            .tag(sectionTreeTag)
+            .tag(
+                sectionTreeTag == null || sectionTreeTag.equals("")
+                    ? section.getSimpleName()
+                    : sectionTreeTag)
             .asyncPropUpdates(asyncPropUpdates)
             .asyncStateUpdates(asyncStateUpdates)
             .build();
