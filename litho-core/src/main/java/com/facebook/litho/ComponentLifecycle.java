@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.concurrent.GuardedBy;
 
-
 /**
  * {@link ComponentLifecycle} is extended by the {@link Component} class and declare
  * methods used by a {@link Component} instances to calculate their layout bounds
@@ -258,6 +257,12 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
           context.getWidthSpec(),
           context.getHeightSpec(),
           component);
+    } else if (Component.isLayoutSpecWithExperimentalOnCreateLayout(component)) {
+      Component<?> layoutComponent = onCreateLayoutExperimental(context, component);
+      node =
+          layoutComponent == null
+              ? null
+              : (InternalNode) layoutComponent.getLifecycle().resolve(context, layoutComponent);
     } else {
       node = (InternalNode) onCreateLayout(context, component);
     }
@@ -270,10 +275,10 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       return ComponentContext.NULL_LAYOUT;
     }
 
-    final ComponentLayoutAttributes layoutAttributes = component.getLayoutAttributes();
     // If this is a layout spec with size spec, and we're not deferring the nested tree resolution,
     // then we already added the attributes earlier on (when we did defer resolution), and
     // therefore we shouldn't add them again here.
+    final ComponentLayoutAttributes layoutAttributes = component.getLayoutAttributes();
     if (layoutAttributes != null
         && (deferNestedTreeResolution || !Component.isLayoutSpecWithSizeSpec(component))) {
       layoutAttributes.copyInto(context, node);
@@ -378,12 +383,25 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return Column.create(c).build();
   }
 
+  protected Component<?> onCreateLayoutExperimental(ComponentContext c, Component<?> component) {
+    return component;
+  }
+
   protected ComponentLayout onCreateLayoutWithSizeSpec(
       ComponentContext c,
       int widthSpec,
       int heightSpec,
       Component<?> component) {
     return Column.create(c).build();
+  }
+
+  /**
+   * Currently only used for {@link Component}s that use {@link
+   * com.facebook.litho.annotations.OnCreateLayoutExperimentalDoNotUse}. Therefore this is
+   * experimental and you should not experiment to have to implement it at this stage.
+   */
+  protected ComponentLayout resolve(ComponentContext c, Component<?> component) {
+    return createLayout(c, component, false);
   }
 
   protected void onPrepare(ComponentContext c, Component<?> component) {
@@ -426,6 +444,10 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * to specific size constraints.
    */
   protected boolean canMeasure() {
+    return false;
+  }
+
+  protected boolean hasExperimentalOnCreateLayout() {
     return false;
   }
 

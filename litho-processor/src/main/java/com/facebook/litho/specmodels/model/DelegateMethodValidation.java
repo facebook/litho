@@ -13,6 +13,7 @@ import static com.facebook.litho.specmodels.model.SpecMethodModelValidation.vali
 
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.annotations.OnCreateLayoutExperimentalDoNotUse;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnMount;
@@ -45,8 +46,13 @@ public class DelegateMethodValidation {
         SpecModelUtils.getMethodModelWithAnnotation(specModel, OnCreateLayout.class);
     final SpecMethodModel<DelegateMethod, Void> onCreateLayoutWithSizeSpecModel =
         SpecModelUtils.getMethodModelWithAnnotation(specModel, OnCreateLayoutWithSizeSpec.class);
+    final SpecMethodModel<DelegateMethod, Void> onCreateLayoutExperimentalModel =
+        SpecModelUtils.getMethodModelWithAnnotation(
+            specModel, OnCreateLayoutExperimentalDoNotUse.class);
 
-    if (onCreateLayoutModel == null && onCreateLayoutWithSizeSpecModel == null) {
+    if (onCreateLayoutModel == null
+        && onCreateLayoutWithSizeSpecModel == null
+        && onCreateLayoutExperimentalModel == null) {
       validationErrors.add(
           new SpecModelValidationError(
               specModel.getRepresentedObject(),
