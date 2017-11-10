@@ -42,7 +42,7 @@ public class GridLayoutInfoTest {
   public void testLayoutManagerIsGrid() {
     final GridLayoutInfo gridLayoutInfo = createGridLayoutInfo(VERTICAL, 2);
 
-    assertThat(gridLayoutInfo.getLayoutManager()).isExactlyInstanceOf(GridLayoutManager.class);
+    assertThat(gridLayoutInfo.getLayoutManager()).isInstanceOf(GridLayoutManager.class);
   }
 
   @Test
@@ -70,10 +70,12 @@ public class GridLayoutInfoTest {
     when(renderInfo.getSpanSize()).thenReturn(2);
 
     final int heightSpec = gridLayoutInfo.getChildHeightSpec(sizeSpec, renderInfo);
-    assertThat(heightSpec).isEqualTo(SizeSpec.makeSizeSpec(0, UNSPECIFIED));
+    assertThat(SizeSpec.getMode(heightSpec)).isEqualTo(UNSPECIFIED);
 
     final int widthSpec = gridLayoutInfo.getChildWidthSpec(sizeSpec, renderInfo);
-    assertThat(widthSpec).isEqualTo(2 * SizeSpec.makeSizeSpec(200 / 3, EXACTLY));
+
+    assertThat(SizeSpec.getSize(widthSpec)).isEqualTo((200 / 3) * 2);
+    assertThat(SizeSpec.getMode(widthSpec)).isEqualTo(EXACTLY);
   }
 
   @Test
@@ -85,13 +87,14 @@ public class GridLayoutInfoTest {
     when(renderInfo.getSpanSize()).thenReturn(2);
 
     final int heightSpec = gridLayoutInfo.getChildHeightSpec(sizeSpec, renderInfo);
-    assertThat(heightSpec).isEqualTo(2 * SizeSpec.makeSizeSpec(200 / 3, EXACTLY));
+    assertThat(SizeSpec.getSize(heightSpec)).isEqualTo((200 / 3) * 2);
+    assertThat(SizeSpec.getMode(heightSpec)).isEqualTo(EXACTLY);
 
     final int widthSpec = gridLayoutInfo.getChildWidthSpec(sizeSpec, renderInfo);
-    assertThat(widthSpec).isEqualTo(SizeSpec.makeSizeSpec(0, UNSPECIFIED));
+    assertThat(SizeSpec.getMode(widthSpec)).isEqualTo(UNSPECIFIED);
   }
 
-  private static GridLayoutInfo createGridLayoutInfo(int direction,  int spanCount) {
+  private static GridLayoutInfo createGridLayoutInfo(int direction, int spanCount) {
     return new GridLayoutInfo(RuntimeEnvironment.application, spanCount, direction, false);
   }
 }

@@ -30,12 +30,16 @@ import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.view.View;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
+import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.viewcompat.SimpleViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 import java.util.ArrayList;
@@ -100,6 +104,8 @@ public class RecyclerBinderTest {
 
   @Before
   public void setup() throws NoSuchFieldException, IllegalAccessException {
+    mHoldersForComponents.clear();
+
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
 
     final RecyclerBinder.ComponentTreeHolderFactory componentTreeHolderFactory =
@@ -1367,7 +1373,7 @@ public class RecyclerBinderTest {
     int widthSpec = makeSizeSpec(100, EXACTLY);
     int heightSpec = makeSizeSpec(200, EXACTLY);
 
-    mRecyclerBinder.measure(new Size(), widthSpec, heightSpec, null);
+    mCircularRecyclerBinder.measure(new Size(), widthSpec, heightSpec, null);
 
     TestComponentTreeHolder holder = mHoldersForComponents.get(components.get(0).getComponent());
     assertThat(holder.isTreeValid()).isTrue();
@@ -1377,6 +1383,88 @@ public class RecyclerBinderTest {
       holder = mHoldersForComponents.get(components.get(i).getComponent());
       assertThat(holder.isTreeValid()).isTrue();
       assertThat(holder.mLayoutAsyncCalled).isTrue();
+    }
+  }
+
+  @Test
+  public void testCircularRecyclerMeasureExact() {
+    RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(
+                new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
+            .build(mComponentContext);
+
+    final List<RenderInfo> components = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      final Component component =
+          new InlineLayoutSpec() {
+            @Override
+            protected ComponentLayout onCreateLayout(ComponentContext c) {
+              return TestDrawableComponent.create(c).widthPx(100).heightPx(100).buildWithLayout();
+            }
+          };
+
+      components.add(ComponentRenderInfo.create().component(component).build());
+    }
+    recyclerBinder.insertRangeAt(0, components);
+
+    RecyclerView rv = new RecyclerView(RuntimeEnvironment.application);
+    recyclerBinder.mount(rv);
+    rv.measure(makeSizeSpec(200, EXACTLY), makeSizeSpec(200, EXACTLY));
+    recyclerBinder.setSize(200, 200);
+    rv.layout(0, 0, 200, 200);
+
+    assertThat(rv.getChildCount()).isGreaterThan(0);
+    for (int i = 0; i < rv.getChildCount(); i++) {
+      LithoView lv = (LithoView) rv.getChildAt(i);
+      assertThat(lv.getMeasuredWidth()).isEqualTo(100);
+      assertThat(lv.getMeasuredHeight()).isEqualTo(200);
+    }
+  }
+
+  @Test
+  public void testCircularRecyclerMeasureAtMost() {
+    RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(
+                new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false) {
+                  @Override
+                  public int getChildWidthSpec(int widthSpec, RenderInfo renderInfo) {
+                    return SizeSpec.makeSizeSpec(SizeSpec.getSize(widthSpec), AT_MOST);
+                  }
+                })
+            .build(mComponentContext);
+
+    final List<RenderInfo> components = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      final Component component =
+          new InlineLayoutSpec() {
+            @Override
+            protected ComponentLayout onCreateLayout(ComponentContext c) {
+              return TestDrawableComponent.create(c)
+                  .widthPercent(50)
+                  .heightPercent(25)
+                  .buildWithLayout();
+            }
+          };
+
+      components.add(ComponentRenderInfo.create().component(component).build());
+    }
+    recyclerBinder.insertRangeAt(0, components);
+
+    RecyclerView rv = new RecyclerView(RuntimeEnvironment.application);
+    recyclerBinder.mount(rv);
+    rv.measure(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+    recyclerBinder.setSize(100, 100);
+    rv.layout(0, 0, 100, 100);
+
+    assertThat(rv.getChildCount()).isGreaterThan(0);
+    for (int i = 0; i < rv.getChildCount(); i++) {
+      LithoView lv = (LithoView) rv.getChildAt(i);
+      assertThat(lv.getMeasuredWidth()).isEqualTo(50);
+      assertThat(lv.getMeasuredHeight()).isEqualTo(100);
     }
   }
 

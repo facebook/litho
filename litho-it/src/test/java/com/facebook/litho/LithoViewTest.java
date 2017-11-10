@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.robolectric.RuntimeEnvironment.application;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.view.ViewGroup;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.assertj.LithoViewAssert;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -77,7 +78,7 @@ public class LithoViewTest {
         mLithoView.getMeasuredHeight());
 
     // View got measured.
-    assertThat(mLithoView.getMeasuredHeight()).isGreaterThan(0);
+    assertThat(mLithoView.getMeasuredWidth()).isGreaterThan(0);
     assertThat(mLithoView.getMeasuredHeight()).isGreaterThan(0);
 
     // Attaching will automatically mount since we already have a layout fitting our size.
@@ -164,5 +165,103 @@ public class LithoViewTest {
     mLithoView.setComponentTree(mockComponentTree);
     mLithoView.requestLayout();
     mLithoView.performIncrementalMount();
+  }
+
+  /** This verifies that the width is 0 with normal layout params. */
+  @Test
+  public void measureWithLayoutParams() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c)
+                .widthPercent(100)
+                .heightPx(100)
+                .buildWithLayout();
+          }
+        };
+
+    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
+    final ComponentTree componentTree =
+        ComponentTree.create(c, component).incrementalMount(false).layoutDiffing(false).build();
+
+    mLithoView = new LithoView(RuntimeEnvironment.application);
+    mLithoView.setComponentTree(componentTree);
+
+    mLithoView.setLayoutParams(new ViewGroup.LayoutParams(0, 200));
+    mLithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(200, EXACTLY));
+    mLithoView.layout(0, 0, mLithoView.getMeasuredWidth(), mLithoView.getMeasuredHeight());
+
+    // View got measured.
+    assertThat(mLithoView.getMeasuredWidth()).isEqualTo(0);
+    assertThat(mLithoView.getMeasuredHeight()).isEqualTo(200);
+
+    // Attaching will automatically mount since we already have a layout fitting our size.
+    ShadowView shadow = shadowOf(mLithoView);
+    shadow.callOnAttachedToWindow();
+
+    assertThat(getInternalMountItems(mLithoView)).hasSize(2);
+  }
+
+  /** This verifies that the width is correct with at most layout params. */
+  @Test
+  public void measureWithAtMostLayoutParams() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c)
+                .widthPercent(50)
+                .heightPercent(10)
+                .buildWithLayout();
+          }
+        };
+
+    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
+    final ComponentTree componentTree =
+        ComponentTree.create(c, component).incrementalMount(false).layoutDiffing(false).build();
+
+    mLithoView = new LithoView(RuntimeEnvironment.application);
+    mLithoView.setComponentTree(componentTree);
+
+    mLithoView.setLayoutParams(
+        new RecyclerViewLayoutManagerOverrideParams(
+            SizeSpec.makeSizeSpec(100, SizeSpec.AT_MOST),
+            SizeSpec.makeSizeSpec(200, SizeSpec.AT_MOST)));
+    mLithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
+    mLithoView.layout(0, 0, mLithoView.getMeasuredWidth(), mLithoView.getMeasuredHeight());
+
+    // View got measured.
+    assertThat(mLithoView.getMeasuredWidth()).isEqualTo(50);
+    assertThat(mLithoView.getMeasuredHeight()).isEqualTo(20);
+
+    // Attaching will automatically mount since we already have a layout fitting our size.
+    ShadowView shadow = shadowOf(mLithoView);
+    shadow.callOnAttachedToWindow();
+
+    assertThat(getInternalMountItems(mLithoView)).hasSize(2);
+  }
+
+  private static class RecyclerViewLayoutManagerOverrideParams extends ViewGroup.LayoutParams
+      implements LithoView.LayoutManagerOverrideParams {
+
+    private final int mWidthMeasureSpec;
+    private final int mHeightMeasureSpec;
+
+    private RecyclerViewLayoutManagerOverrideParams(int widthMeasureSpec, int heightMeasureSpec) {
+      super(WRAP_CONTENT, WRAP_CONTENT);
+      mWidthMeasureSpec = widthMeasureSpec;
+      mHeightMeasureSpec = heightMeasureSpec;
+    }
+
+    @Override
+    public int getWidthMeasureSpec() {
+      return mWidthMeasureSpec;
+    }
+
+    @Override
+    public int getHeightMeasureSpec() {
+      return mHeightMeasureSpec;
+    }
   }
 }
