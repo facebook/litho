@@ -158,7 +158,12 @@ public class SectionTree {
         }
         mIsPosted = false;
       }
-      applyNewChangeSet();
+
+      try {
+        applyNewChangeSet();
+      } catch (IndexOutOfBoundsException e) {
+        throw new IndexOutOfBoundsException(getDebugInfo(SectionTree.this) + e.getMessage());
+      }
     }
   }
 
