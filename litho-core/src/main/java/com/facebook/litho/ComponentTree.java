@@ -71,6 +71,7 @@ public class ComponentTree {
   // MainThread Looper messages:
   private static final int MESSAGE_WHAT_BACKGROUND_LAYOUT_STATE_UPDATED = 1;
   private static final String DEFAULT_LAYOUT_THREAD_NAME = "ComponentLayoutThread";
+  private static final String DEFAULT_PMC_THREAD_NAME = "PreallocateMountContentThread";
   private static final int DEFAULT_LAYOUT_THREAD_PRIORITY = Process.THREAD_PRIORITY_BACKGROUND;
 
   private static final int SCHEDULE_NONE = 0;
@@ -88,6 +89,9 @@ public class ComponentTree {
   // Do not access sDefaultLayoutThreadLooper directly, use getDefaultLayoutThreadLooper().
   @GuardedBy("ComponentTree.class")
   private static volatile Looper sDefaultLayoutThreadLooper;
+
+  @GuardedBy("ComponentTree.class")
+  private static volatile Looper sDefaultPreallocateMountContentThreadLooper;
 
   private static final ThreadLocal<WeakReference<Handler>> sSyncStateUpdatesHandler =
       new ThreadLocal<>();
@@ -124,7 +128,7 @@ public class ComponentTree {
   private final boolean mCanCacheDrawingDisplayLists;
   private final boolean mShouldClipChildren;
 
-  @Nullable private final LayoutHandler mPreAllocateMountContentHandler;
+  @Nullable private LayoutHandler mPreAllocateMountContentHandler;
 
   // These variables are only accessed from the main thread.
   @ThreadConfined(ThreadConfined.UI)
@@ -218,6 +222,13 @@ public class ComponentTree {
 
     if (mLayoutThreadHandler == null) {
       mLayoutThreadHandler = new DefaultLayoutHandler(getDefaultLayoutThreadLooper());
+    }
+
+    if (mPreAllocateMountContentHandler == null
+        && ComponentsConfiguration.getDefaultPreallocateMountContentHandler()) {
+      mPreAllocateMountContentHandler =
+          new DefaultPreallocateMountContentHandler(
+              getDefaultPreallocateMountContentThreadLooper());
     }
 
     final StateHandler builderStateHandler = builder.stateHandler;
@@ -1398,6 +1409,16 @@ public class ComponentTree {
     return sDefaultLayoutThreadLooper;
   }
 
+  private static synchronized Looper getDefaultPreallocateMountContentThreadLooper() {
+    if (sDefaultPreallocateMountContentThreadLooper == null) {
+      HandlerThread defaultThread = new HandlerThread(DEFAULT_PMC_THREAD_NAME);
+      defaultThread.start();
+      sDefaultPreallocateMountContentThreadLooper = defaultThread.getLooper();
+    }
+
+    return sDefaultPreallocateMountContentThreadLooper;
+  }
+
   private static boolean isCompatibleSpec(
       LayoutState layoutState, int widthSpec, int heightSpec) {
     return layoutState != null
@@ -1503,6 +1524,13 @@ public class ComponentTree {
    */
   private static class DefaultLayoutHandler extends Handler implements LayoutHandler {
     private DefaultLayoutHandler(Looper threadLooper) {
+      super(threadLooper);
+    }
+  }
+
+  private static class DefaultPreallocateMountContentHandler extends Handler
+      implements LayoutHandler {
+    private DefaultPreallocateMountContentHandler(Looper threadLooper) {
       super(threadLooper);
     }
   }
