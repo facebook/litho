@@ -16,10 +16,7 @@ import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
-import android.view.ViewGroup;
-import com.facebook.litho.LithoView;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.widget.RecyclerBinder.RecyclerViewLayoutManagerOverrideParams;
 
 public class GridLayoutInfo implements LayoutInfo {
 
@@ -29,7 +26,7 @@ public class GridLayoutInfo implements LayoutInfo {
   private RenderInfoCollection mRenderInfoCollection;
 
   public GridLayoutInfo(Context context, int spanCount, int orientation, boolean reverseLayout) {
-    mGridLayoutManager = new LithoGridLayoutManager(context, spanCount, orientation, reverseLayout);
+    mGridLayoutManager = new GridLayoutManager(context, spanCount, orientation, reverseLayout);
     mGridSpanSizeLookup = new GridSpanSizeLookup();
     mGridLayoutManager.setSpanSizeLookup(mGridSpanSizeLookup);
   }
@@ -112,7 +109,7 @@ public class GridLayoutInfo implements LayoutInfo {
         final int spanCount = mGridLayoutManager.getSpanCount();
         final int spanSize = renderInfo.getSpanSize();
 
-        return SizeSpec.makeSizeSpec(spanSize * (SizeSpec.getSize(widthSpec) / spanCount), EXACTLY);
+        return spanSize * SizeSpec.makeSizeSpec(SizeSpec.getSize(widthSpec) / spanCount, EXACTLY);
     }
   }
 
@@ -127,8 +124,7 @@ public class GridLayoutInfo implements LayoutInfo {
         final int spanCount = mGridLayoutManager.getSpanCount();
         final int spanSize = renderInfo.getSpanSize();
 
-        return SizeSpec.makeSizeSpec(
-            spanSize * (SizeSpec.getSize(heightSpec) / spanCount), EXACTLY);
+        return spanSize * SizeSpec.makeSizeSpec(SizeSpec.getSize(heightSpec) / spanCount, EXACTLY);
       default:
         return SizeSpec.makeSizeSpec(0, UNSPECIFIED);
     }
@@ -143,46 +139,6 @@ public class GridLayoutInfo implements LayoutInfo {
       }
 
       return mRenderInfoCollection.getRenderInfoAt(position).getSpanSize();
-    }
-  }
-
-  private static class LithoGridLayoutManager extends GridLayoutManager {
-
-    public LithoGridLayoutManager(
-        Context context, int spanCount, int orientation, boolean reverseLayout) {
-      super(context, spanCount, orientation, reverseLayout);
-    }
-
-    @Override
-    public RecyclerView.LayoutParams generateLayoutParams(ViewGroup.LayoutParams lp) {
-      if (lp instanceof RecyclerViewLayoutManagerOverrideParams) {
-        return new LayoutParams((RecyclerViewLayoutManagerOverrideParams) lp);
-      } else {
-        return super.generateLayoutParams(lp);
-      }
-    }
-
-    public static class LayoutParams extends GridLayoutManager.LayoutParams
-        implements LithoView.LayoutManagerOverrideParams {
-
-      private final int mOverrideWidthMeasureSpec;
-      private final int mOverrideHeightMeasureSpec;
-
-      public LayoutParams(RecyclerViewLayoutManagerOverrideParams source) {
-        super(source);
-        mOverrideWidthMeasureSpec = source.getWidthMeasureSpec();
-        mOverrideHeightMeasureSpec = source.getHeightMeasureSpec();
-      }
-
-      @Override
-      public int getWidthMeasureSpec() {
-        return mOverrideWidthMeasureSpec;
-      }
-
-      @Override
-      public int getHeightMeasureSpec() {
-        return mOverrideHeightMeasureSpec;
-      }
     }
   }
 }

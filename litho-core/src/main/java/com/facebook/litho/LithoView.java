@@ -249,14 +249,6 @@ public class LithoView extends ComponentHost {
       }
     }
 
-    LayoutParams layoutParams = getLayoutParams();
-    if (layoutParams instanceof LayoutManagerOverrideParams) {
-      LayoutManagerOverrideParams layoutManagerOverrideParams =
-          (LayoutManagerOverrideParams) layoutParams;
-      widthMeasureSpec = layoutManagerOverrideParams.getWidthMeasureSpec();
-      heightMeasureSpec = layoutManagerOverrideParams.getHeightMeasureSpec();
-    }
-
     int width = MeasureSpec.getSize(widthMeasureSpec);
     int height = MeasureSpec.getSize(heightMeasureSpec);
 
@@ -734,24 +726,5 @@ public class LithoView extends ComponentHost {
 
       lithoView.requestLayout();
     }
-  }
-
-  /**
-   * LayoutParams that override the LayoutManager.
-   *
-   * <p>If you set LayoutParams on a LithoView that implements this interface, the view will
-   * completely ignore the layout specs given to it by its LayoutManager and use these specs
-   * instead. To use, set the LayoutParams height and width to {@link
-   * ViewGroup.LayoutParams#WRAP_CONTENT} and then provide a width and height measure spec though
-   * this interface.
-   *
-   * <p>This is helpful for implementing {@link View.MeasureSpec#AT_MOST} support since Android
-   * LayoutManagers don't support an AT_MOST concept as part of {@link ViewGroup.LayoutParams}'s
-   * special values.
-   */
-  public interface LayoutManagerOverrideParams {
-    int getWidthMeasureSpec();
-
-    int getHeightMeasureSpec();
   }
 }
