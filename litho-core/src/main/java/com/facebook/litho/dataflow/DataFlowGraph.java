@@ -10,13 +10,14 @@
 package com.facebook.litho.dataflow;
 
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.util.Pools;
 import android.support.v4.util.SimpleArrayMap;
 import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.internal.ArraySet;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.CopyOnWriteArrayList;
+import javax.annotation.concurrent.GuardedBy;
 
 /**
  * A directed acyclic graph (DAG) created from one or more {@link GraphBinding}s. These component
@@ -39,6 +40,20 @@ public class DataFlowGraph {
     return sInstance;
   }
 
+  private static final Pools.SynchronizedPool<NodeState> sNodeStatePool =
+      new Pools.SynchronizedPool<>(20);
+
+  private static class NodeState {
+
+    private boolean isFinished = false;
+    private int refCount = 0;
+
+    void reset() {
+      isFinished = false;
+      refCount = 0;
+    }
+  }
+
   /**
    * For tests, let's the testing environment explicitly provide a specific DataFlowGraph instance
    * that can, for example, have a mocked TimingSource.
@@ -55,10 +70,17 @@ public class DataFlowGraph {
     return instance;
   }
 
+  @GuardedBy("this")
   private final TimingSource mTimingSource;
-  private final CopyOnWriteArrayList<GraphBinding> mBindings = new CopyOnWriteArrayList<>();
+
+  @GuardedBy("this")
+  private final ArrayList<GraphBinding> mBindings = new ArrayList<>();
+
+  @GuardedBy("this")
   private final ArrayList<ValueNode> mSortedNodes = new ArrayList<>();
-  private final ArraySet<ValueNode> mFinishedNodes = new ArraySet<>();
+
+  @GuardedBy("this")
+  private final SimpleArrayMap<ValueNode, NodeState> mNodeStates = new SimpleArrayMap<>();
 
   private boolean mIsDirty = false;
 
@@ -70,11 +92,12 @@ public class DataFlowGraph {
    * Adds an activated {@link GraphBinding}. This means that binding's nodes are added to the
    * existing graph and data will flow through them on the next frame.
    */
-  public void register(GraphBinding binding) {
+  public synchronized void register(GraphBinding binding) {
     if (!binding.isActive()) {
       throw new RuntimeException("Expected added GraphBinding to be active: " + binding);
     }
     mBindings.add(binding);
+    registerNodes(binding);
     if (mBindings.size() == 1) {
       mTimingSource.start();
     }
@@ -85,17 +108,22 @@ public class DataFlowGraph {
    * Removes a {@link GraphBinding}. This means any nodes that only belonged to that binding will
    * be removed from the graph.
    */
-  public void unregister(GraphBinding binding) {
+  public synchronized void unregister(GraphBinding binding) {
     if (!mBindings.remove(binding)) {
       throw new RuntimeException("Tried to unregister non-existent binding");
     }
+    unregisterNodes(binding);
     if (mBindings.isEmpty()) {
       mTimingSource.stop();
+      mSortedNodes.clear();
+      if (!mNodeStates.isEmpty()) {
+        throw new RuntimeException("Failed to clean up all nodes");
+      }
     }
     mIsDirty = true;
   }
 
-  void doFrame(long frameTimeNanos) {
+  synchronized void doFrame(long frameTimeNanos) {
     if (mIsDirty) {
       regenerateSortedNodes();
     }
@@ -179,7 +207,8 @@ public class DataFlowGraph {
   private void updateFinishedNodes() {
     for (int i = 0, size = mSortedNodes.size(); i < size; i++) {
       final ValueNode node = mSortedNodes.get(i);
-      if (mFinishedNodes.contains(node) || !areInputsFinished(node)) {
+      final NodeState nodeState = mNodeStates.get(node);
+      if (nodeState.isFinished || !areInputsFinished(node)) {
         continue;
       }
 
@@ -187,14 +216,15 @@ public class DataFlowGraph {
           !(node instanceof NodeCanFinish) ||
               ((NodeCanFinish) node).isFinished();
       if (nodeIsNowFinished) {
-        mFinishedNodes.add(node);
+        nodeState.isFinished = true;
       }
     }
   }
 
   private boolean areInputsFinished(ValueNode node) {
     for (int i = 0, inputCount = node.getInputCount(); i < inputCount; i++) {
-      if (!mFinishedNodes.contains(node.getInputAt(i))) {
+      final NodeState nodeState = mNodeStates.get(node.getInputAt(i));
+      if (!nodeState.isFinished) {
         return false;
       }
     }
@@ -209,8 +239,8 @@ public class DataFlowGraph {
       boolean allAreFinished = true;
       final ArraySet<ValueNode> nodesToCheck = binding.getAllNodes();
       for (int j = 0, nodesSize = nodesToCheck.size(); j < nodesSize; j++) {
-        final ValueNode node = nodesToCheck.valueAt(j);
-        if (!mFinishedNodes.contains(node)) {
+        final NodeState nodeState = mNodeStates.get(nodesToCheck.valueAt(j));
+        if (!nodeState.isFinished) {
           allAreFinished = false;
           break;
         }
@@ -219,5 +249,50 @@ public class DataFlowGraph {
         binding.notifyNodesHaveFinished();
       }
     }
+  }
+
+  private void registerNodes(GraphBinding binding) {
+    final ArraySet<ValueNode> nodes = binding.getAllNodes();
+    for (int i = 0, size = nodes.size(); i < size; i++) {
+      final ValueNode node = nodes.valueAt(i);
+      final NodeState nodeState = mNodeStates.get(node);
+      if (nodeState != null) {
+        nodeState.refCount++;
+      } else {
+        final NodeState newState = acquireNodeState();
+        newState.refCount = 1;
+        mNodeStates.put(node, newState);
+      }
+    }
+  }
+
+  private void unregisterNodes(GraphBinding binding) {
+    final ArraySet<ValueNode> nodes = binding.getAllNodes();
+    for (int i = 0, size = nodes.size(); i < size; i++) {
+      final ValueNode node = nodes.valueAt(i);
+      final NodeState nodeState = mNodeStates.get(node);
+      nodeState.refCount--;
+      if (nodeState.refCount == 0) {
+        release(mNodeStates.remove(node));
+      }
+    }
+  }
+
+  private static NodeState acquireNodeState() {
+    final NodeState fromPool = sNodeStatePool.acquire();
+    if (fromPool != null) {
+      return fromPool;
+    }
+    return new NodeState();
+  }
+
+  private static void release(NodeState nodeState) {
+    nodeState.reset();
+    sNodeStatePool.release(nodeState);
+  }
+
+  @VisibleForTesting
+  boolean hasReferencesToNodes() {
+    return !mBindings.isEmpty() || !mSortedNodes.isEmpty() || !mNodeStates.isEmpty();
   }
 }

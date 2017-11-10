@@ -71,5 +71,7 @@ public class GraphBindingFinishesTest {
 
     assertThat(destination.getValue()).isEqualTo(1f);
     assertThat(testListener.getNumFinishCalls()).isEqualTo(1);
+
+    assertThat(mDataFlowGraph.hasReferencesToNodes()).isFalse();
   }
 }
