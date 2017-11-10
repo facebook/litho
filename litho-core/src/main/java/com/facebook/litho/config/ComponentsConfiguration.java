@@ -132,4 +132,10 @@ public class ComponentsConfiguration {
   public static boolean getDefaultPreallocateMountContentHandler() {
     return defaultPreallocateMountContentHandler && preallocatePerMountSpec;
   }
+
+  /**
+   * Don't call RecyclerView.Adapter#notifyItemChanged/notifyItemRangeChanged for rows rendered with
+   * components in sections if this is true.
+   */
+  public static boolean sectionsNoNotifyItemChanged = false;
 }

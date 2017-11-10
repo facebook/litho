@@ -39,6 +39,7 @@ import com.facebook.litho.MeasureComparisonUtils;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.utils.DisplayListUtils;
 import com.facebook.litho.viewcompat.ViewCreator;
 import java.util.ArrayList;
@@ -517,12 +518,14 @@ public class RecyclerBinder
     ThreadUtils.assertMainThread();
 
     final ComponentTreeHolder holder;
+    final boolean renderInfoWasView;
     final boolean shouldComputeLayout;
     final int childrenWidthSpec, childrenHeightSpec;
     synchronized (this) {
       holder = mComponentTreeHolders.get(position);
       shouldComputeLayout = mRange != null && position >= mCurrentFirstVisiblePosition &&
           position < mCurrentFirstVisiblePosition + mRange.estimatedViewportCount;
+      renderInfoWasView = holder.getRenderInfo().rendersView();
 
       mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
       holder.setRenderInfo(renderInfo);
@@ -543,15 +546,20 @@ public class RecyclerBinder
       childrenHeightSpec = getActualChildrenHeightSpec(holder);
     }
 
-    // If we are updating an item that is currently visible we need to calculate a layout
-    // synchronously.
-    if (shouldComputeLayout) {
-      holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
+    // If this item is rendered with a view (or was rendered with a view before now) we need to
+    // notify the RecyclerView's adapter that something changed.
+    final boolean doNotifyItemChanged =
+        !ComponentsConfiguration.sectionsNoNotifyItemChanged
+            || renderInfoWasView
+            || renderInfo.rendersView();
+    if (doNotifyItemChanged) {
+      if (shouldComputeLayout) {
+        holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
+      }
+
+      mInternalAdapter.notifyItemChanged(position);
     }
-    mInternalAdapter.notifyItemChanged(position);
-
     computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
-
     mViewportManager.setDataChangedIsVisible(mViewportManager.isUpdateInVisibleRange(position, 1));
   }
 
@@ -563,12 +571,20 @@ public class RecyclerBinder
   public final void updateRangeAt(int position, List<RenderInfo> renderInfos) {
     ThreadUtils.assertMainThread();
 
+    final boolean doNotifyItemChanged = !ComponentsConfiguration.sectionsNoNotifyItemChanged;
     for (int i = 0, size = renderInfos.size(); i < size; i++) {
 
       synchronized (this) {
         final ComponentTreeHolder holder = mComponentTreeHolders.get(position + i);
-
         final RenderInfo newRenderInfo = renderInfos.get(i);
+
+        if (!doNotifyItemChanged) {
+          // If this item is rendered with a view (or was rendered with a view before now) we still
+          // need to notify the RecyclerView's adapter that something changed.
+          if (newRenderInfo.rendersView() || holder.getRenderInfo().rendersView()) {
+            mInternalAdapter.notifyItemChanged(position + i);
+          }
+        }
 
         mRenderInfoViewCreatorController.maybeTrackViewCreator(newRenderInfo);
 
@@ -587,7 +603,10 @@ public class RecyclerBinder
         }
       }
     }
-    mInternalAdapter.notifyItemRangeChanged(position, renderInfos.size());
+
+    if (doNotifyItemChanged) {
+      mInternalAdapter.notifyItemRangeChanged(position, renderInfos.size());
+    }
 
     computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
 
