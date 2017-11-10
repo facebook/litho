@@ -586,21 +586,6 @@ public class TransitionManager {
       }
     }
 
-    final LayoutOutput layoutOutput =
-        animationState.nextLayoutOutput != null
-            ? animationState.nextLayoutOutput
-            : animationState.currentLayoutOutput;
-    final boolean isRoot = (layoutOutput.getId() == 0);
-    if (isRoot && property == AnimatedProperties.HEIGHT) {
-      // We're trying to animate the LithoView itself -- if it's not expecting it, abort
-      if (!mMountState.getLithoView().isExpectingBoundsAnimation()) {
-        if (AnimationsDebug.ENABLED) {
-          Log.d(AnimationsDebug.TAG, " - was not expecting bounds change animation");
-        }
-        return null;
-      }
-    }
-
     final float endValue;
     if (animationState.changeType != ChangeType.DISAPPEARED) {
       endValue = property.get(animationState.nextLayoutOutput);
@@ -912,9 +897,6 @@ public class TransitionManager {
         if (didFinish) {
           if (AnimationsDebug.ENABLED) {
             Log.d(AnimationsDebug.TAG, "Finished all animations for key " + key);
-          }
-          if (animationState.mountContent instanceof LithoView) {
-            ((LithoView) animationState.mountContent).endBoundsAnimation();
           }
           recursivelySetChildClipping(animationState.mountContent, true);
           if (mOnAnimationCompleteListener != null) {

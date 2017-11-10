@@ -42,7 +42,6 @@ public class LithoView extends ComponentHost {
   private boolean mIsMeasuring = false;
   private boolean mHasNewComponentTree = false;
   private int mAnimatedHeight = -1;
-  private boolean mIsExpectingBoundsAnimation = false;
 
   private final AccessibilityManager mAccessibilityManager;
 
@@ -201,35 +200,10 @@ public class LithoView extends ComponentHost {
    * Sets the height that the LithoView should take on the next measure pass and then requests a
    * layout. This should be called from animation-driving code on each frame to animate the size of
    * the LithoView.
-   *
-   * <p>NB: This method should only be called if the LithoView is expecting a bounds animation
-   * ({@link #isExpectingBoundsAnimation()}.
    */
   public void setAnimatedHeight(int height) {
-    assertExpectingBoundsAnimation();
     mAnimatedHeight = height;
     requestLayout();
-  }
-
-  /**
-   * @return whether the LithoView is in a state where it's expecting its height to be animated to
-   *     the height of its current LayoutState. This means the LithoView has seen a bounds change in
-   *     onMeasure, but kept its current bounds.
-   */
-  public boolean isExpectingBoundsAnimation() {
-    return mIsExpectingBoundsAnimation;
-  }
-
-  /** Should be called when the animation system finishes animating the bounds of this LithoView. */
-  public void endBoundsAnimation() {
-    mIsExpectingBoundsAnimation = false;
-  }
-
-  private void assertExpectingBoundsAnimation() {
-    if (!mIsExpectingBoundsAnimation) {
-      throw new IllegalStateException(
-          "Cannot call this method when not expecting to animate bounds!");
-    }
   }
 
   @Override
@@ -278,13 +252,13 @@ public class LithoView extends ComponentHost {
 
     // If we're mounting a new ComponentTree, it probably has a different height but we don't want
     // to animate it.
-    mIsExpectingBoundsAnimation =
+    final boolean isExpectingBoundsAnimation =
         height != getHeight()
             && !mHasNewComponentTree
             && mComponentTree != null
             && mComponentTree.hasLithoViewBoundsAnimation();
 
-    if (mIsExpectingBoundsAnimation) {
+    if (isExpectingBoundsAnimation) {
       setMeasuredDimension(getWidth(), getHeight());
     } else {
       setMeasuredDimension(width, height);
