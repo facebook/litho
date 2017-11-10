@@ -117,4 +117,19 @@ public class ComponentsConfiguration {
    * for each MountSpec if it should be preallocated or not.
    */
   public static boolean preallocatePerMountSpec = false;
+
+  /**
+   * If true, the ComponentTree provides a default handler for performing preallocation if none is
+   * provided. If false, the ComponentTree will not perform preallocation if no handler is provided
+   * to the ComponentTree.Builder. This is overriden to false if preallocatePerMountSpec is false.
+   */
+  private static boolean defaultPreallocateMountContentHandler;
+
+  public static void setDefaultPreallocateMountContentHandler(boolean enableDefault) {
+    defaultPreallocateMountContentHandler = enableDefault;
+  }
+
+  public static boolean getDefaultPreallocateMountContentHandler() {
+    return defaultPreallocateMountContentHandler && preallocatePerMountSpec;
+  }
 }
