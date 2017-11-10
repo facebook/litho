@@ -59,8 +59,6 @@ public class DataFlowGraph {
   private final CopyOnWriteArrayList<GraphBinding> mBindings = new CopyOnWriteArrayList<>();
   private final ArrayList<ValueNode> mSortedNodes = new ArrayList<>();
   private final ArraySet<ValueNode> mFinishedNodes = new ArraySet<>();
-  private final SimpleArrayMap<GraphBinding, ArraySet<ValueNode>> mBindingToNodes =
-      new SimpleArrayMap<>();
 
   private boolean mIsDirty = false;
 
@@ -77,7 +75,6 @@ public class DataFlowGraph {
       throw new RuntimeException("Expected added GraphBinding to be active: " + binding);
     }
     mBindings.add(binding);
-    mBindingToNodes.put(binding, binding.getAllNodes());
     if (mBindings.size() == 1) {
       mTimingSource.start();
     }
@@ -92,7 +89,6 @@ public class DataFlowGraph {
     if (!mBindings.remove(binding)) {
       throw new RuntimeException("Tried to unregister non-existent binding");
     }
-    mBindingToNodes.remove(binding);
     if (mBindings.isEmpty()) {
       mTimingSource.stop();
     }
@@ -126,8 +122,8 @@ public class DataFlowGraph {
     final ArraySet<ValueNode> leafNodes = ComponentsPools.acquireArraySet();
     final SimpleArrayMap<ValueNode, Integer> nodesToOutputsLeft = new SimpleArrayMap<>();
 
-    for (int i = 0, bindingsSize = mBindingToNodes.size(); i < bindingsSize; i++) {
-      final ArraySet<ValueNode> nodes = mBindingToNodes.valueAt(i);
+    for (int i = 0, bindingsSize = mBindings.size(); i < bindingsSize; i++) {
+      final ArraySet<ValueNode> nodes = mBindings.get(i).getAllNodes();
       for (int j = 0, nodesSize = nodes.size(); j < nodesSize; j++) {
         final ValueNode node = nodes.valueAt(j);
         final int outputCount = node.getOutputCount();
@@ -208,10 +204,10 @@ public class DataFlowGraph {
   private void notifyFinishedBindings() {
     // Iterate in reverse order since notifying that a binding is finished results in removing
     // that binding.
-    for (int i = mBindingToNodes.size() - 1; i >= 0; i--) {
-      final GraphBinding binding = mBindingToNodes.keyAt(i);
+    for (int i = mBindings.size() - 1; i >= 0; i--) {
+      final GraphBinding binding = mBindings.get(i);
       boolean allAreFinished = true;
-      final ArraySet<ValueNode> nodesToCheck = mBindingToNodes.valueAt(i);
+      final ArraySet<ValueNode> nodesToCheck = binding.getAllNodes();
       for (int j = 0, nodesSize = nodesToCheck.size(); j < nodesSize; j++) {
         final ValueNode node = nodesToCheck.valueAt(j);
         if (!mFinishedNodes.contains(node)) {
