@@ -29,8 +29,4 @@ public class SettableNode extends ValueNode implements NodeCanFinish {
   public boolean isFinished() {
     return false;
   }
-
-  @Override
-  public void onInputsFinished() {
-  }
 }

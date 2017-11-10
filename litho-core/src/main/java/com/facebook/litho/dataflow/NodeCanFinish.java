@@ -21,13 +21,10 @@ package com.facebook.litho.dataflow;
 public interface NodeCanFinish {
 
   /**
-   * Called by framework code to determine whether a node is finished.
-   * @return whether this node is finished, which should factor in whether its parents are finished.
+   * Called by framework code to determine whether a node is finished. This will only be called on
+   * this node when all of its inputs are finished.
+   *
+   * @return whether this node is finished given that its inputs are finished.
    */
   boolean isFinished();
-
-  /**
-   * Called once the first time all of this nodes inputs have finished.
-   */
-  void onInputsFinished();
 }

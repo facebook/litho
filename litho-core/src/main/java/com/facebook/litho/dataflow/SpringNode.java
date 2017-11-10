@@ -24,7 +24,6 @@ public class SpringNode extends ValueNode implements NodeCanFinish {
 
   private final Spring mSpring;
   private long mLastFrameTimeNs = Long.MIN_VALUE;
-  private boolean mAreParentsFinished = false;
 
   public SpringNode() {
     this(null);
@@ -63,11 +62,6 @@ public class SpringNode extends ValueNode implements NodeCanFinish {
 
   @Override
   public boolean isFinished() {
-    return mAreParentsFinished && mSpring.isAtRest();
-  }
-
-  @Override
-  public void onInputsFinished() {
-    mAreParentsFinished = true;
+    return mSpring.isAtRest();
   }
 }

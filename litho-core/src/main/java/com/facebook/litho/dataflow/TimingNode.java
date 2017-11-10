@@ -23,8 +23,6 @@ public class TimingNode extends ValueNode implements NodeCanFinish {
   private long mStartTimeNs = Long.MIN_VALUE;
   private long mExpectedEndTimeNs = Long.MIN_VALUE;
   private long mLastValueTimeNs = Long.MIN_VALUE;
-  private boolean mAreParentsFinished = false;
-  private boolean mIsFinished = false;
 
   public TimingNode(int durationMs) {
     mDurationMs = durationMs;
@@ -40,7 +38,7 @@ public class TimingNode extends ValueNode implements NodeCanFinish {
     }
 
     if (frameTimeNanos >= mExpectedEndTimeNs) {
-      mIsFinished = true;
+      mLastValueTimeNs = frameTimeNanos;
       return END_VALUE;
     }
 
@@ -50,12 +48,6 @@ public class TimingNode extends ValueNode implements NodeCanFinish {
 
   @Override
   public boolean isFinished() {
-    return mIsFinished && mAreParentsFinished;
-  }
-
-  @Override
-  public void onInputsFinished() {
-    mAreParentsFinished = true;
-    mIsFinished = mLastValueTimeNs >= mExpectedEndTimeNs;
+    return mLastValueTimeNs >= mExpectedEndTimeNs;
   }
 }

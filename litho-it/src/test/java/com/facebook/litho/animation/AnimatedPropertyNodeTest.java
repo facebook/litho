@@ -61,29 +61,6 @@ public class AnimatedPropertyNodeTest {
   }
 
   @Test
-  public void testViewPropertyNodeWithOutput() {
-    View view = new View(application);
-    AnimatedPropertyNode source = new AnimatedPropertyNode(view, SCALE);
-    SimpleNode middle = new SimpleNode();
-    OutputOnlyNode destination = new OutputOnlyNode();
-
-    GraphBinding binding = create(mDataFlowGraph);
-    binding.addBinding(source, middle);
-    binding.addBinding(middle, destination);
-    binding.activate();
-
-    mTestTimingSource.step(1);
-
-    assertThat(destination.getValue()).isEqualTo(1f);
-
-    view.setScaleX(101);
-    view.setScaleY(101);
-    mTestTimingSource.step(1);
-
-    assertThat(destination.getValue()).isEqualTo(101f);
-  }
-
-  @Test
   public void testViewPropertyNodeWithInputAndOutput() {
     View view = new View(application);
     SettableNode source = new SettableNode();

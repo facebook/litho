@@ -59,10 +59,8 @@ public class DataFlowGraph {
   private final CopyOnWriteArrayList<GraphBinding> mBindings = new CopyOnWriteArrayList<>();
   private final ArrayList<ValueNode> mSortedNodes = new ArrayList<>();
   private final ArraySet<ValueNode> mFinishedNodes = new ArraySet<>();
-  private final ArraySet<ValueNode> mNodesWithFinishedInputs = new ArraySet<>();
   private final SimpleArrayMap<GraphBinding, ArraySet<ValueNode>> mBindingToNodes =
       new SimpleArrayMap<>();
-  private final ArraySet<GraphBinding> mFinishedBindings = new ArraySet<>();
 
   private boolean mIsDirty = false;
 
@@ -95,7 +93,6 @@ public class DataFlowGraph {
       throw new RuntimeException("Tried to unregister non-existent binding");
     }
     mBindingToNodes.remove(binding);
-    mFinishedBindings.remove(binding);
     if (mBindings.isEmpty()) {
       mTimingSource.stop();
     }
@@ -186,16 +183,8 @@ public class DataFlowGraph {
   private void updateFinishedNodes() {
     for (int i = 0, size = mSortedNodes.size(); i < size; i++) {
       final ValueNode node = mSortedNodes.get(i);
-      if (mFinishedNodes.contains(node)) {
+      if (mFinishedNodes.contains(node) || !areInputsFinished(node)) {
         continue;
-      }
-      final boolean wereInputsFinished = mNodesWithFinishedInputs.contains(node);
-      final boolean areInputsFinished = wereInputsFinished || areInputsFinished(node);
-      if (!wereInputsFinished && areInputsFinished) {
-        mNodesWithFinishedInputs.add(node);
-        if (node instanceof NodeCanFinish) {
-          ((NodeCanFinish) node).onInputsFinished();
-        }
       }
 
       final boolean nodeIsNowFinished =
@@ -217,13 +206,10 @@ public class DataFlowGraph {
   }
 
   private void notifyFinishedBindings() {
-    // Iterate in reverse order since notifying that a binding is finished might result in removing
+    // Iterate in reverse order since notifying that a binding is finished results in removing
     // that binding.
     for (int i = mBindingToNodes.size() - 1; i >= 0; i--) {
       final GraphBinding binding = mBindingToNodes.keyAt(i);
-      if (mFinishedBindings.contains(binding)) {
-        continue;
-      }
       boolean allAreFinished = true;
       final ArraySet<ValueNode> nodesToCheck = mBindingToNodes.valueAt(i);
       for (int j = 0, nodesSize = nodesToCheck.size(); j < nodesSize; j++) {
@@ -235,7 +221,6 @@ public class DataFlowGraph {
       }
       if (allAreFinished) {
         binding.notifyNodesHaveFinished();
-        mFinishedBindings.add(binding);
       }
     }
   }

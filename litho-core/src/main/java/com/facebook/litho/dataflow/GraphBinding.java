@@ -91,6 +91,10 @@ public final class GraphBinding {
    * developer.
    */
   public void deactivate() {
+    if (!mIsActive) {
+      return;
+    }
+
     mIsActive = false;
     mDataFlowGraph.unregister(this);
     mBindings.removeBindings();
@@ -107,6 +111,7 @@ public final class GraphBinding {
     if (mListener != null) {
       mListener.onAllNodesFinished(this);
     }
+    deactivate();
   }
 
   /**
