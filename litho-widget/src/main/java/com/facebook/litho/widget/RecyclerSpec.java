@@ -24,11 +24,13 @@ import com.facebook.litho.Diff;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
+import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.FromBind;
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnBoundsDefined;
+import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnMeasure;
@@ -37,10 +39,12 @@ import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.OnUpdateState;
+import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
+import com.facebook.litho.annotations.State;
 import java.util.List;
 
 /**
@@ -61,6 +65,7 @@ import java.util.List;
  */
 @MountSpec(canMountIncrementally = true, isPureRender = true, events = {PTRRefreshEvent.class})
 class RecyclerSpec {
+
   @PropDefault static final int scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY;
   @PropDefault static final boolean hasFixedSize = true;
   @PropDefault static final boolean nestedScrollingEnabled = true;
@@ -84,6 +89,7 @@ class RecyclerSpec {
       Size measureOutput,
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) boolean canMeasure) {
+
     binder.measure(
         measureOutput,
         widthSpec,
@@ -229,7 +235,7 @@ class RecyclerSpec {
       ComponentContext context,
       RecyclerViewWrapper recyclerViewWrapper,
       @Prop Binder<RecyclerView> binder,
-      @Prop(optional =  true) RecyclerEventsController recyclerEventsController,
+      @Prop(optional = true) RecyclerEventsController recyclerEventsController,
       @Prop(optional = true, varArg = "onScrollListener") List<OnScrollListener> onScrollListeners,
       @FromBind ItemAnimator oldAnimator) {
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
@@ -299,7 +305,13 @@ class RecyclerSpec {
       @Prop(optional = true) Diff<RecyclerView.ItemDecoration> itemDecoration,
       @Prop(optional = true) Diff<Boolean> horizontalFadingEdgeEnabled,
       @Prop(optional = true) Diff<Boolean> verticalFadingEdgeEnabled,
-      @Prop(optional = true, resType = ResType.DIMEN_SIZE) Diff<Integer> fadingEdgeLength) {
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) Diff<Integer> fadingEdgeLength,
+      @State Diff<Integer> measureVersion) {
+
+    if (measureVersion.getPrevious().intValue() != measureVersion.getNext().intValue()) {
+      return true;
+    }
+
     if (binder.getPrevious() != binder.getNext()) {
       return true;
     }
@@ -357,17 +369,25 @@ class RecyclerSpec {
   }
 
   @OnEvent(ReMeasureEvent.class)
-  protected static void onRemeasure(ComponentContext c) {
-    Recycler.onUpdateMeasure(c);
+  protected static void onRemeasure(ComponentContext c, @State int measureVersion) {
+    Recycler.onUpdateMeasure(c, measureVersion + 1);
+  }
+
+  @OnCreateInitialState
+  protected static void onCreateInitialState(
+      ComponentContext c, StateValue<Integer> measureVersion) {
+    measureVersion.set(0);
   }
 
   @OnUpdateState
-  protected static void onUpdateMeasure() {
+  protected static void onUpdateMeasure(@Param int measureVer, StateValue<Integer> measureVersion) {
     // We don't really need to update a state here. This state update is only really used to force
     // a re-layout on the tree containing this Recycler.
+    measureVersion.set(measureVer);
   }
 
   public static class NoUpdateItemAnimator extends DefaultItemAnimator {
+
     public NoUpdateItemAnimator() {
       super();
       setSupportsChangeAnimations(false);
