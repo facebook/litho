@@ -7,7 +7,7 @@ permalink: /docs/tutorial
 
 This tutorial assumes you've gone through the [Getting Started](getting-started) guide to set up Litho.  Make sure you set up Litho's core libraries and Sections' libraries.
 
-In this tutorial, you'll start by building a basic "Hello World!" screen using Litho and work your way up to creating a list of "Hello World!" items on the screen. Along the way, you'll learn about the building blocks of Litho: [Component](/javadoc/com/facebook/litho/Component), and [LithoView](/javadoc/com/facebook/litho/LithoView). You will also learn hot to create lists with [Section](/javadoc/com/facebook/litho/sections/Section) and how to set properties on components.
+In this tutorial, you'll start by building a basic "Hello World!" screen using Litho and work your way up to creating a list of "Hello World!" items on the screen. Along the way, you'll learn about the building blocks of Litho: [Component](/javadoc/com/facebook/litho/Component), and [LithoView](/javadoc/com/facebook/litho/LithoView). You will also learn how to create lists with [Section](/javadoc/com/facebook/litho/sections/Section) and how to set properties on components.
 
 
 ## 1. Hello World
