@@ -254,4 +254,16 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   public boolean isPureRender() {
     return mIsPureRender;
   }
+
+  @Override
+  public String toString() {
+    return "LayoutSpecModel{"
+        + "mSpecModel="
+        + mSpecModel
+        + ", mIsPureRender="
+        + mIsPureRender
+        + ", mLayoutSpecGenerator="
+        + mLayoutSpecGenerator
+        + '}';
+  }
 }

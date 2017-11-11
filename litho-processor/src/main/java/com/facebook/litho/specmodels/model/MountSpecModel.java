@@ -340,4 +340,24 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   public TypeName getMountType() {
     return mMountType;
   }
+
+  @Override
+  public String toString() {
+    return "MountSpecModel{"
+        + "mSpecModel="
+        + mSpecModel
+        + ", mIsPureRender="
+        + mIsPureRender
+        + ", mCanMountIncrementally="
+        + mCanMountIncrementally
+        + ", mShouldUseDisplayList="
+        + mShouldUseDisplayList
+        + ", mPoolSize="
+        + mPoolSize
+        + ", mCanPreallocate="
+        + mCanPreallocate
+        + ", mMountType="
+        + mMountType
+        + '}';
+  }
 }

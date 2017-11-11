@@ -311,4 +311,14 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   public MethodParamModel getServiceParam() {
     return mServiceParam;
   }
+
+  @Override
+  public String toString() {
+    return "GroupSectionSpecModel{"
+        + "mSpecModel="
+        + mSpecModel
+        + ", mServiceParam="
+        + mServiceParam
+        + '}';
+  }
 }

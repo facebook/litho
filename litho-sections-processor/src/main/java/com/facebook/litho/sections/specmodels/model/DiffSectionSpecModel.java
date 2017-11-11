@@ -309,4 +309,14 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
   public MethodParamModel getServiceParam() {
     return mServiceParam;
   }
+
+  @Override
+  public String toString() {
+    return "DiffSectionSpecModel{"
+        + "mSpecModel="
+        + mSpecModel
+        + ", mServiceParam="
+        + mServiceParam
+        + '}';
+  }
 }
