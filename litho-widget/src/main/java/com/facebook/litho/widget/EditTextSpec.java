@@ -85,6 +85,7 @@ import com.facebook.litho.utils.MeasureUtils;
  * used to help an input method decide how to let the user enter text. This prop
  * will override inputType if both are provided.
  * @prop imeOptions Type of data in the text field, reported to an IME when it has focus.
+ * @prop requestFocus If set, attempts to give focus.
  */
 @MountSpec(isPureRender = true, events = {TextChangedEvent.class})
 class EditTextSpec {
@@ -124,6 +125,7 @@ class EditTextSpec {
   @PropDefault protected static final int rawInputType = EditorInfo.TYPE_NULL;
   @PropDefault protected static final int imeOptions = EditorInfo.IME_NULL;
   @PropDefault protected static final boolean isSingleLineWrap = false;
+  @PropDefault protected static final boolean requestFocus = false;
 
   @OnLoadStyle
   static void onLoadStyle(
@@ -237,7 +239,8 @@ class EditTextSpec {
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
-      @Prop(optional = true) boolean isSingleLineWrap) {
+      @Prop(optional = true) boolean isSingleLineWrap,
+      @Prop(optional = true) boolean requestFocus) {
 
     // TODO(11759579) - don't allocate a new EditText in every measure.
     final EditText editText = new EditText(c);
@@ -273,7 +276,8 @@ class EditTextSpec {
         inputType,
         rawInputType,
         imeOptions,
-        isSingleLineWrap);
+        isSingleLineWrap,
+        requestFocus);
 
     editText.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec),
@@ -322,7 +326,8 @@ class EditTextSpec {
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
-      @Prop(optional = true) boolean isSingleLineWrap) {
+      @Prop(optional = true) boolean isSingleLineWrap,
+      @Prop(optional = true) boolean requestFocus) {
 
     initEditText(
         editText,
@@ -355,7 +360,8 @@ class EditTextSpec {
         inputType,
         rawInputType,
         imeOptions,
-        isSingleLineWrap);
+        isSingleLineWrap,
+        requestFocus);
   }
 
   @OnBind
@@ -412,7 +418,8 @@ class EditTextSpec {
       int inputType,
       int rawInputType,
       int imeOptions,
-      boolean isSingleLineWrap) {
+      boolean isSingleLineWrap,
+      boolean requestFocus) {
 
     editText.setSingleLine(isSingleLine);
     // We only want to change the input type if it actually needs changing, and we need to take
@@ -477,6 +484,10 @@ class EditTextSpec {
       editText.setHintTextColor(hintColor);
     } else {
       editText.setHintTextColor(hintColorStateList);
+    }
+
+    if (requestFocus) {
+      editText.requestFocus();
     }
 
     switch (textAlignment) {
