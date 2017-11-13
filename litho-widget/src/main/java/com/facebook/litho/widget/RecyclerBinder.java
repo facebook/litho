@@ -127,6 +127,14 @@ public class RecyclerBinder
   final RenderInfoViewCreatorController mRenderInfoViewCreatorController =
       new RenderInfoViewCreatorController();
 
+  private Runnable mComputeRangeRunnable =
+      new Runnable() {
+        @Override
+        public void run() {
+          computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+        }
+      };
+
   interface ComponentTreeHolderFactory {
     ComponentTreeHolder create(
         RenderInfo renderInfo,
@@ -430,7 +438,7 @@ public class RecyclerBinder
     }
     mInternalAdapter.notifyItemInserted(position);
 
-    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+    maybePostComputeRange();
 
     mViewportManager.setDataChangedIsVisible(
         mViewportManager.isInsertInVisibleRange(
@@ -493,7 +501,7 @@ public class RecyclerBinder
     }
     mInternalAdapter.notifyItemRangeInserted(position, renderInfos.size());
 
-    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+    maybePostComputeRange();
 
     mViewportManager.setDataChangedIsVisible(
         mViewportManager.isInsertInVisibleRange(
@@ -1212,6 +1220,15 @@ public class RecyclerBinder
     mCurrentFirstVisiblePosition = firstVisiblePosition;
     mCurrentLastVisiblePosition = lastVisiblePosition;
     computeRange(firstVisiblePosition, lastVisiblePosition);
+  }
+
+  private void maybePostComputeRange() {
+    if (ComponentsConfiguration.insertPostAsyncLayout) {
+      mMainThreadHandler.removeCallbacks(mComputeRangeRunnable);
+      mMainThreadHandler.post(mComputeRangeRunnable);
+    } else {
+      computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+    }
   }
 
   private void computeRange(int firstVisible, int lastVisible) {
