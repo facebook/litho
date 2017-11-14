@@ -79,6 +79,24 @@ public class GridLayoutInfoTest {
   }
 
   @Test
+  public void testGetChildMeasureSpecOverride() {
+    final GridLayoutInfo gridLayoutInfo = createGridLayoutInfo(VERTICAL, 3);
+    final int sizeSpec = SizeSpec.makeSizeSpec(200, EXACTLY);
+
+    final RenderInfo renderInfo = mock(RenderInfo.class);
+    when(renderInfo.getSpanSize()).thenReturn(2);
+    when(renderInfo.getCustomAttribute(GridLayoutInfo.OVERRIDE_SIZE)).thenReturn(20);
+
+    final int heightSpec = gridLayoutInfo.getChildHeightSpec(sizeSpec, renderInfo);
+    assertThat(SizeSpec.getMode(heightSpec)).isEqualTo(UNSPECIFIED);
+
+    final int widthSpec = gridLayoutInfo.getChildWidthSpec(sizeSpec, renderInfo);
+
+    assertThat(SizeSpec.getSize(widthSpec)).isEqualTo(20);
+    assertThat(SizeSpec.getMode(widthSpec)).isEqualTo(EXACTLY);
+  }
+
+  @Test
   public void testGetChildMeasureSpecHorizontal() {
     final GridLayoutInfo gridLayoutInfo = createGridLayoutInfo(HORIZONTAL, 3);
     final int sizeSpec = SizeSpec.makeSizeSpec(200, EXACTLY);

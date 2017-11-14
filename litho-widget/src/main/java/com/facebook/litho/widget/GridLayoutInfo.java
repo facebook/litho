@@ -23,6 +23,12 @@ import com.facebook.litho.widget.RecyclerBinder.RecyclerViewLayoutManagerOverrid
 
 public class GridLayoutInfo implements LayoutInfo {
 
+  // A CUSTOM LAYOUTINFO param to override the size of an item in the grid. Since GridLayoutInfo
+  // does not support item decorations offsets on the non scrolling side natively,
+  // this can be useful to manually compute the size of an item after such decorations are taken
+  // into account.
+  public static final String OVERRIDE_SIZE = "OVERRIDE_SIZE";
+
   private final GridLayoutManager mGridLayoutManager;
   private final GridSpanSizeLookup mGridSpanSizeLookup;
 
@@ -105,14 +111,22 @@ public class GridLayoutInfo implements LayoutInfo {
    */
   @Override
   public int getChildWidthSpec(int widthSpec, RenderInfo renderInfo) {
+
     switch (mGridLayoutManager.getOrientation()) {
       case GridLayoutManager.HORIZONTAL:
         return SizeSpec.makeSizeSpec(0, UNSPECIFIED);
       default:
+        Integer overrideWidth =
+            (Integer) renderInfo.getCustomAttribute(GridLayoutInfo.OVERRIDE_SIZE);
+        if (overrideWidth != null) {
+          return SizeSpec.makeSizeSpec(overrideWidth, EXACTLY);
+        }
+
         final int spanCount = mGridLayoutManager.getSpanCount();
         final int spanSize = renderInfo.getSpanSize();
 
-        return SizeSpec.makeSizeSpec(spanSize * (SizeSpec.getSize(widthSpec) / spanCount), EXACTLY);
+        return SizeSpec.makeSizeSpec(
+            spanSize * ((SizeSpec.getSize(widthSpec)) / spanCount), EXACTLY);
     }
   }
 
@@ -124,6 +138,12 @@ public class GridLayoutInfo implements LayoutInfo {
   public int getChildHeightSpec(int heightSpec, RenderInfo renderInfo) {
     switch (mGridLayoutManager.getOrientation()) {
       case GridLayoutManager.HORIZONTAL:
+        Integer overrideHeight =
+            (Integer) renderInfo.getCustomAttribute(GridLayoutInfo.OVERRIDE_SIZE);
+        if (overrideHeight != null) {
+          return SizeSpec.makeSizeSpec(overrideHeight, EXACTLY);
+        }
+
         final int spanCount = mGridLayoutManager.getSpanCount();
         final int spanSize = renderInfo.getSpanSize();
 
