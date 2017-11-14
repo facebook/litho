@@ -19,6 +19,7 @@ import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 
 import android.support.annotation.IdRes;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemAnimator;
@@ -92,6 +93,8 @@ public class RecyclerCollectionComponentSpec {
   @PropDefault
   protected static final boolean asyncStateUpdates =
       SectionsConfiguration.sectionComponentsAsyncStateUpdates;
+
+  @PropDefault static final ItemAnimator itemAnimator = new NoUpdateItemAnimator();
 
   @PropDefault
   protected static final boolean asyncPropUpdates =
@@ -205,9 +208,11 @@ public class RecyclerCollectionComponentSpec {
             .snapHelper(snapHelper)
             .binder(binder);
 
-    if (itemAnimator != null) {
-      recycler.itemAnimator(itemAnimator);
-    }
+    recycler.itemAnimator(
+        RecyclerCollectionComponentSpec.itemAnimator == itemAnimator
+            ? new NoUpdateItemAnimator()
+            : itemAnimator);
+
     recyclerBuilder = recycler;
 
     Component.Builder recyclerLayoutBuilder = recyclerBuilder
@@ -430,6 +435,14 @@ public class RecyclerCollectionComponentSpec {
       if (mDelegate != null) {
         mDelegate.onInitialLoad();
       }
+    }
+  }
+
+  public static class NoUpdateItemAnimator extends DefaultItemAnimator {
+
+    public NoUpdateItemAnimator() {
+      super();
+      setSupportsChangeAnimations(false);
     }
   }
 }
