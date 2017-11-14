@@ -104,6 +104,9 @@ public interface ClassNames {
   ClassName HAS_EVENT_TRIGGER_CLASSNAME = ClassName.bestGuess("com.facebook.litho.HasEventTrigger");
   ClassName EVENT_TRIGGER = ClassName.bestGuess("com.facebook.litho.EventTrigger");
 
+  ClassName SECTION = ClassName.bestGuess("com.facebook.litho.sections.Section");
+  ClassName SECTION_BUILDER = ClassName.bestGuess("com.facebook.litho.sections.Section.Builder");
+
   ClassName COMPONENT_MATCHER =
       ClassName.bestGuess("com.facebook.litho.testing.assertj.ComponentMatcher");
   ClassName INSPECTABLE_COMPONENT =

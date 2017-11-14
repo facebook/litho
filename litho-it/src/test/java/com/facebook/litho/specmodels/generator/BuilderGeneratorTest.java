@@ -21,6 +21,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.sections.Section;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
@@ -49,12 +50,12 @@ public class BuilderGeneratorTest {
     @OnCreateLayout
     public void testDelegateMethod(
         @Prop boolean arg0,
+        @Prop Section<?> section,
         @State int arg1,
         @Param Object arg2,
         @Prop(optional = true) boolean arg3,
         @Prop(varArg = "name") List<String> names,
-        @Prop(optional = true) float arg5) {
-    }
+        @Prop(optional = true) float arg5) {}
 
     @OnEvent(Object.class)
     public void testEventMethod(@Prop boolean arg0) {}
@@ -127,9 +128,9 @@ public class BuilderGeneratorTest {
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
             "public static class Builder extends com.facebook.litho.Component.Builder<com.facebook.litho.specmodels.generator.BuilderGeneratorTest.Test, Builder> {\n"
-                + "  private static final java.lang.String[] REQUIRED_PROPS_NAMES = new String[] {\"arg0\", \"names\"};\n"
+                + "  private static final java.lang.String[] REQUIRED_PROPS_NAMES = new String[] {\"arg0\", \"section\", \"names\"};\n"
                 + "\n"
-                + "  private static final int REQUIRED_PROPS_COUNT = 2;\n"
+                + "  private static final int REQUIRED_PROPS_COUNT = 3;\n"
                 + "\n"
                 + "  Test mTest;\n"
                 + "\n"
@@ -156,6 +157,18 @@ public class BuilderGeneratorTest {
                 + "    return this;\n"
                 + "  }\n"
                 + "\n"
+                + "  public Builder section(com.facebook.litho.sections.Section<?> section) {\n"
+                + "    this.mTest.section = section;\n"
+                + "    mRequired.set(1);\n"
+                + "    return this;\n"
+                + "  }\n"
+                + "\n"
+                + "  public Builder section(com.facebook.litho.sections.Section.Builder<?, ?> sectionBuilder) {\n"
+                + "    this.mTest.section = sectionBuilder.build();\n"
+                + "    mRequired.set(1);\n"
+                + "    return this;\n"
+                + "  }\n"
+                + "\n"
                 + "  public Builder arg3(boolean arg3) {\n"
                 + "    this.mTest.arg3 = arg3;\n"
                 + "    return this;\n"
@@ -169,7 +182,7 @@ public class BuilderGeneratorTest {
                 + "      this.mTest.names = new java.util.ArrayList<java.lang.String>();\n"
                 + "    }\n"
                 + "    this.mTest.names.add(name);\n"
-                + "    mRequired.set(1);\n"
+                + "    mRequired.set(2);\n"
                 + "    return this;\n"
                 + "  }\n"
                 + "\n"
@@ -182,7 +195,7 @@ public class BuilderGeneratorTest {
                 + "    } else {\n"
                 + "      this.mTest.names.addAll(names);\n"
                 + "    }\n"
-                + "    mRequired.set(1);\n"
+                + "    mRequired.set(2);\n"
                 + "    return this;\n"
                 + "  }\n"
                 + "\n"

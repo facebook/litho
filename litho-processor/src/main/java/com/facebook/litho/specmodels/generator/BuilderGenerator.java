@@ -470,6 +470,11 @@ public class BuilderGenerator {
               specModel, prop, requiredIndex, ClassNames.REFERENCE_BUILDER, true));
     }
 
+    if (getRawType(prop.getType()).equals(ClassNames.SECTION)) {
+      dataHolder.addMethod(
+          builderBuilder(specModel, prop, requiredIndex, ClassNames.SECTION_BUILDER, true));
+    }
+
     return dataHolder.build();
   }
 
@@ -932,6 +937,10 @@ public class BuilderGenerator {
 
     if (builderClass.equals(ClassNames.COMPONENT_BUILDER)) {
       return new TypeName[]{typeParameter, WildcardTypeName.subtypeOf(TypeName.OBJECT)};
+    } else if (builderClass.equals(ClassNames.SECTION_BUILDER)) {
+      return new TypeName[] {
+        WildcardTypeName.subtypeOf(TypeName.OBJECT), WildcardTypeName.subtypeOf(TypeName.OBJECT)
+      };
     } else {
       return new TypeName[]{typeParameter};
     }
