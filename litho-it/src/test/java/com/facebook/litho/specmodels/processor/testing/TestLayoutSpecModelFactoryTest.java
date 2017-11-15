@@ -11,6 +11,7 @@ package com.facebook.litho.specmodels.processor.testing;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.data.Index.atIndex;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -21,10 +22,16 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.TestSpec;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.testing.TestSpecGenerator;
+import com.facebook.litho.specmodels.processor.InterStageStore;
+import com.facebook.litho.specmodels.processor.PropNameInterStageStore;
 import com.google.testing.compile.CompilationRule;
+import java.util.Optional;
+import javax.annotation.processing.Filer;
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import org.junit.Before;
@@ -69,12 +76,43 @@ public class TestLayoutSpecModelFactoryTest {
         .isEqualTo(
             "com.facebook.litho.specmodels.processor.testing.TestLayoutSpecModelFactoryTest.TestMyLayout");
 
-    assertThat(layoutSpecModel.getDelegateMethods().stream().map(m -> m.name.toString()).toArray())
-        .hasSize(1)
-        .contains("onCreateLayout", atIndex(0));
     assertThat(layoutSpecModel.getProps().stream().map(PropModel::getName).toArray())
         .hasSize(1)
         .contains("s", atIndex(0));
+  }
+
+  @Test
+  public void testCreateWithCachedProps() {
+    final TestSpecModelFactory factory = new TestSpecModelFactory();
+    final Filer mockFiler = mock(Filer.class, RETURNS_DEEP_STUBS);
+    final InterStageStore interStageStore =
+        new InterStageStore() {
+          @Override
+          public PropNameInterStageStore getPropNameInterStageStore() {
+            return new PropNameInterStageStore(mockFiler) {
+              @Override
+              public Optional<ImmutableList<String>> loadNames(Name qualifiedName) {
+                return Optional.of(ImmutableList.of("overriddenParam"));
+              }
+            };
+          }
+        };
+
+    final SpecModel layoutSpecModel =
+        factory.create(mElements, mTypeElement, null, interStageStore);
+
+    assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestMyLayoutSpec");
+    assertThat(layoutSpecModel.getComponentName()).isEqualTo("TestMyLayout");
+    assertThat(layoutSpecModel.getSpecTypeName().toString())
+        .isEqualTo(
+            "com.facebook.litho.specmodels.processor.testing.TestLayoutSpecModelFactoryTest.TestMyLayoutSpec");
+    assertThat(layoutSpecModel.getComponentTypeName().toString())
+        .isEqualTo(
+            "com.facebook.litho.specmodels.processor.testing.TestLayoutSpecModelFactoryTest.TestMyLayout");
+
+    assertThat(layoutSpecModel.getProps().stream().map(PropModel::getName).toArray())
+        .hasSize(1)
+        .contains("overriddenParam", atIndex(0));
   }
 
   @Test

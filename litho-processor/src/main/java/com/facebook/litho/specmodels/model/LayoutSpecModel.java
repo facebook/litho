@@ -32,7 +32,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
-      ImmutableList<TypeVariableName> typeVariables,
+      ImmutableList<String> cachedPropNames,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
       ImmutableList<BuilderMethodModel> builderMethodModels,
@@ -44,7 +44,8 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       boolean isPureRender,
       SpecElementType specElementType,
       Object representedObject,
-      LayoutSpecGenerator layoutSpecGenerator) {
+      LayoutSpecGenerator layoutSpecGenerator,
+      ImmutableList<TypeVariableName> typeVariables) {
     mSpecModel =
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(qualifiedSpecClassName)
@@ -54,6 +55,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
             .eventMethods(eventMethods)
             .triggerMethods(triggerMethods)
             .updateStateMethods(updateStateMethods)
+            .cachedPropNames(cachedPropNames)
             .typeVariables(typeVariables)
             .propDefaults(propDefaults)
             .eventDeclarations(eventDeclarations)

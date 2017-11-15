@@ -62,6 +62,8 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
+      ImmutableList<PropModel> props,
+      ImmutableList<String> cachedPropNames,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
@@ -82,7 +84,10 @@ public final class SpecModelImpl implements SpecModel {
     mEventMethods = eventMethods;
     mTriggerMethods = triggerMethods;
     mUpdateStateMethods = updateStateMethods;
-    mProps = getProps(delegateMethods, eventMethods, updateStateMethods);
+    mProps =
+        props.isEmpty()
+            ? getProps(delegateMethods, eventMethods, updateStateMethods, cachedPropNames)
+            : props;
     mPropDefaults = propDefaults;
     mTypeVariables = typeVariables;
     mStateValues = getStateValues(delegateMethods, eventMethods, updateStateMethods);
@@ -306,15 +311,26 @@ public final class SpecModelImpl implements SpecModel {
     return getComponentTypeName(componentClassName, qualifiedSpecClassName).simpleName();
   }
 
+  private static PropModel updatePropWithCachedName(
+      PropModel prop, @Nullable ImmutableList<String> cachedPropNames, int index) {
+    final String name =
+        cachedPropNames != null && index < cachedPropNames.size()
+            ? cachedPropNames.get(index)
+            : null;
+    return name != null ? prop.withName(name) : prop;
+  }
+
   private static ImmutableList<PropModel> getProps(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
-      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
+      ImmutableList<String> cachedPropNames) {
     final Set<PropModel> props = new LinkedHashSet<>();
+    int propIndex = 0;
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof PropModel) {
-          props.add((PropModel) param);
+          props.add(updatePropWithCachedName((PropModel) param, cachedPropNames, propIndex++));
         }
       }
     }
@@ -322,7 +338,7 @@ public final class SpecModelImpl implements SpecModel {
     for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod : eventMethods) {
       for (MethodParamModel param : eventMethod.methodParams) {
         if (param instanceof PropModel) {
-          props.add((PropModel) param);
+          props.add(updatePropWithCachedName((PropModel) param, cachedPropNames, propIndex++));
         }
       }
     }
@@ -330,7 +346,7 @@ public final class SpecModelImpl implements SpecModel {
     for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod : updateStateMethods) {
       for (MethodParamModel param : updateStateMethod.methodParams) {
         if (param instanceof PropModel) {
-          props.add((PropModel) param);
+          props.add(updatePropWithCachedName((PropModel) param, cachedPropNames, propIndex++));
         }
       }
     }
@@ -341,6 +357,7 @@ public final class SpecModelImpl implements SpecModel {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof DiffPropModel &&
             !hasSameUnderlyingPropModel(props, (DiffPropModel) param)) {
+          // TODO(T15854501): Add support for prop name caching here.
           props.add(((DiffPropModel) param).getUnderlyingPropModel());
         }
       }
@@ -503,6 +520,7 @@ public final class SpecModelImpl implements SpecModel {
     private ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mEventMethodModels;
     private ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mTriggerMethodModels;
     private ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethodModels;
+    private ImmutableList<String> mCachedPropNames;
     private ImmutableList<TypeVariableName> mTypeVariableNames;
     private ImmutableList<PropDefaultModel> mPropDefaultModels;
     private ImmutableList<EventDeclarationModel> mEventDeclarations;
@@ -514,6 +532,7 @@ public final class SpecModelImpl implements SpecModel {
     @Nullable private DependencyInjectionHelper mDependencyInjectionHelper;
     private Object mRepresentedObject;
     private SpecElementType mSpecElementType;
+    private ImmutableList<PropModel> mProps;
 
     private Builder() {}
 
@@ -559,6 +578,11 @@ public final class SpecModelImpl implements SpecModel {
       return this;
     }
 
+    public Builder cachedPropNames(ImmutableList<String> cachedPropNames) {
+      mCachedPropNames = cachedPropNames;
+      return this;
+    }
+
     public Builder typeVariables(ImmutableList<TypeVariableName> typeVariableNames) {
       mTypeVariableNames = typeVariableNames;
       return this;
@@ -599,6 +623,11 @@ public final class SpecModelImpl implements SpecModel {
       return this;
     }
 
+    public Builder props(ImmutableList<PropModel> propModels) {
+      mProps = propModels;
+      return this;
+    }
+
     public Builder dependencyInjectionGenerator(
         @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
       mDependencyInjectionHelper = dependencyInjectionHelper;
@@ -627,6 +656,8 @@ public final class SpecModelImpl implements SpecModel {
           mEventMethodModels,
           mTriggerMethodModels,
           mUpdateStateMethodModels,
+          mProps,
+          mCachedPropNames,
           mTypeVariableNames,
           mPropDefaultModels,
           mEventDeclarations,
@@ -645,8 +676,12 @@ public final class SpecModelImpl implements SpecModel {
         throw new IllegalStateException("Must specify a qualified class name");
       }
 
-      if (mDelegateMethodModels == null) {
-        throw new IllegalStateException("Must specify delegate methods");
+      if (mDelegateMethodModels == null && mProps == null) {
+        throw new IllegalStateException("Must specify delegate methods or full prop specification");
+      }
+
+      if (mDelegateMethodModels != null && mProps != null) {
+        throw new IllegalStateException("Must not provide both props and delegate methods.");
       }
 
       if (mRepresentedObject == null) {
@@ -657,6 +692,14 @@ public final class SpecModelImpl implements SpecModel {
     private void initFieldsIfNecessary() {
       if (mTypeVariableNames == null) {
         mTypeVariableNames = ImmutableList.of();
+      }
+
+      if (mProps == null) {
+        mProps = ImmutableList.of();
+      }
+
+      if (mDelegateMethodModels == null) {
+        mDelegateMethodModels = ImmutableList.of();
       }
 
       if (mPropDefaultModels == null) {

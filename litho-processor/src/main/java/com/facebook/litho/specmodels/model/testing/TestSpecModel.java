@@ -48,20 +48,18 @@ public class TestSpecModel implements SpecModel, HasPureRender {
   public TestSpecModel(
       String qualifiedSpecClassName,
       String componentClassName,
-      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
-      ImmutableList<EventDeclarationModel> eventDeclarations,
+      ImmutableList<PropModel> props,
       ImmutableList<BuilderMethodModel> builderMethodModels,
-      String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
       Object representedObject,
-      TestSpecGenerator testSpecGenerator) {
+      TestSpecGenerator testSpecGenerator,
+      String classJavadoc) {
     mSpecModel =
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(qualifiedSpecClassName)
             .componentClassName(componentClassName)
             .componentClass(ClassNames.COMPONENT)
-            .delegateMethods(delegateMethods)
-            .eventDeclarations(eventDeclarations)
+            .props(props)
             .extraBuilderMethods(builderMethodModels)
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)

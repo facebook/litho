@@ -85,7 +85,10 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
         TriggerMethodExtractor.getOnTriggerMethods(
             elements, element, INTER_STAGE_INPUT_ANNOTATIONS),
         UpdateStateMethodExtractor.getOnUpdateStateMethods(element, INTER_STAGE_INPUT_ANNOTATIONS),
-        ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
+        interStageStore == null
+            ? ImmutableList.of()
+            : CachedPropNameExtractor.getCachedPropNames(
+                interStageStore, element.getQualifiedName()),
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),
         EventDeclarationsExtractor.getEventDeclarations(elements, element, LayoutSpec.class),
         ImmutableList.<BuilderMethodModel>of(),
@@ -97,6 +100,7 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
         element.getAnnotation(LayoutSpec.class).isPureRender(),
         SpecElementTypeDeterminator.determine(element),
         element,
-        mLayoutSpecGenerator);
+        mLayoutSpecGenerator,
+        ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)));
   }
 }

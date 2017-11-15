@@ -76,13 +76,12 @@ public class TestSpecModelFactory implements SpecModelFactory {
     return new TestSpecModel(
         element.getQualifiedName().toString(),
         "",
-        enclosedSpecModel.getDelegateMethods(),
-        enclosedSpecModel.getEventDeclarations(),
+        enclosedSpecModel.getProps(),
         enclosedSpecModel.getExtraBuilderMethods(),
-        JavadocExtractor.getClassJavadoc(elements, element),
         enclosedSpecModel.getPropJavadocs(),
         enclosedSpecModel,
-        mTestSpecGenerator);
+        mTestSpecGenerator,
+        JavadocExtractor.getClassJavadoc(elements, element));
   }
 
   /** @return List of props for the original, annotated Spec. */

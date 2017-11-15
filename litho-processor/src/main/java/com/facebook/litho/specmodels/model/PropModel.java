@@ -91,6 +91,16 @@ public class PropModel implements MethodParamModel {
     return false;
   }
 
+  /** @return a new {@link PropModel} instance with the given name overridden. */
+  public PropModel withName(String name) {
+    return new PropModel(mParamModel, mIsOptional, mResType, mVarArgSingleArgName) {
+      @Override
+      public String getName() {
+        return name;
+      }
+    };
+  }
+
   @Override
   public boolean equals(Object o) {
     if (o instanceof PropModel) {
