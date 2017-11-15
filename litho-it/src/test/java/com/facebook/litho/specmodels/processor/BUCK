@@ -9,7 +9,7 @@ include_defs("//COMPONENTS_DEFS")
 
 java_test(
     name = "processor",
-    srcs = glob(["*Test.java"]),
+    srcs = glob(["*.java"]),
     provided_deps = [
         COMPONENTS_ROBOLECTRIC_TARGET,
     ],
@@ -19,11 +19,13 @@ java_test(
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_ANNOTATIONS_TARGET,
         COMPONENTS_ASSERTJ_TARGET,
+        COMPONENTS_TESTING_ASSERTJ_TARGET,
         COMPONENTS_COMPILE_TESTING_TARGET,
         COMPONENTS_JAVAC_TOOLS_TARGET,
         COMPONENTS_MOCKITO_TARGET,
         COMPONENTS_PROCESSOR_LIB_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/specmodels:specmodels"),
     ],
 )

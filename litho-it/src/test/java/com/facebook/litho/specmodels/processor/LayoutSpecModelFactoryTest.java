@@ -16,7 +16,6 @@ import static org.mockito.Mockito.when;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
-import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import org.junit.Before;
@@ -76,37 +75,4 @@ public class LayoutSpecModelFactoryTest {
         .isEqualTo("com.facebook.litho.TestComponentName");
   }
 
-  private static class MockName implements Name {
-
-    private final CharSequence mName;
-
-    public MockName(final CharSequence name) {
-      mName = name;
-    }
-
-    @Override
-    public boolean contentEquals(CharSequence cs) {
-      return mName.equals(cs);
-    }
-
-    @Override
-    public int length() {
-      return mName.length();
-    }
-
-    @Override
-    public char charAt(int index) {
-      return mName.charAt(index);
-    }
-
-    @Override
-    public CharSequence subSequence(int start, int end) {
-      return mName.subSequence(start, end);
-    }
-
-    @Override
-    public String toString() {
-      return mName.toString();
-    }
-  }
 }
