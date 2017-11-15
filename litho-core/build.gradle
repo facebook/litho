@@ -50,9 +50,11 @@ dependencies {
     compileOnly project(':litho-annotations')
     compileOnly project(':litho-stubs')
 
-    // compileOnly dependencies
+    // Annotations
     compileOnly deps.jsr305
-    compileOnly deps.inferAnnotations
+    // Infer annotations is partially class-retained and need to be part
+    // of the POM.
+    implementation deps.inferAnnotations
 
     // Android Support Library
     compileOnly deps.supportAnnotations
