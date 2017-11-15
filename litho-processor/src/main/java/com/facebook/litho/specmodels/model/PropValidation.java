@@ -182,11 +182,36 @@ public class PropValidation {
                     "layout builder. Please use another name."));
       }
 
-      if (ILLEGAL_PROP_TYPES.contains(prop.getType())) {
+      TypeName argumentType = null;
+      if (prop.hasVarArgs()) {
+        TypeName typeName = prop.getType();
+        if (typeName instanceof ParameterizedTypeName) {
+          ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) typeName;
+          if (!parameterizedTypeName.rawType.equals(ClassNames.LIST)) {
+            validationErrors.add(
+                new SpecModelValidationError(
+                    prop.getRepresentedObject(),
+                    prop.getName() + " is a variable argument, and thus should be a List<> type."));
+          }
+          argumentType = parameterizedTypeName.typeArguments.get(0);
+        } else {
+          validationErrors.add(
+              new SpecModelValidationError(
+                  prop.getRepresentedObject(),
+                  prop.getName()
+                      + " is a variable argument, and thus requires a parameterized List type."));
+        }
+      } else {
+        argumentType = prop.getType();
+      }
+
+      if (ILLEGAL_PROP_TYPES.contains(argumentType)) {
         validationErrors.add(
             new SpecModelValidationError(
                 prop.getRepresentedObject(),
-                "Props may not be declared with the following types: " + ILLEGAL_PROP_TYPES + "."));
+                "Props may not be declared with the following argument types: "
+                    + ILLEGAL_PROP_TYPES
+                    + "."));
       }
 
       if (!prop.isOptional() && prop.hasDefault(specModel.getPropDefaults())) {
@@ -215,25 +240,6 @@ public class PropValidation {
                     + ", since these annotations "
                     + "will automatically be added to the relevant builder methods in the "
                     + "generated code."));
-      }
-
-      if (prop.hasVarArgs()) {
-        TypeName typeName = prop.getType();
-        if (typeName instanceof ParameterizedTypeName) {
-          ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) typeName;
-          if (!parameterizedTypeName.rawType.equals(ClassNames.LIST)) {
-            validationErrors.add(
-                new SpecModelValidationError(
-                    prop.getRepresentedObject(),
-                    prop.getName() + " is a variable argument, and thus should be a List<> type."));
-          }
-        } else {
-          validationErrors.add(
-              new SpecModelValidationError(
-                  prop.getRepresentedObject(),
-                  prop.getName() +
-                      " is a variable argument, and thus requires a parameterized List type."));
-        }
       }
 
       validationErrors.addAll(validateResType(prop));

@@ -123,7 +123,7 @@ public class PropValidationTest {
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message).isEqualTo(
-        "Props may not be declared with the following types: " +
+        "Props may not be declared with the following argument types: " +
             "[com.facebook.litho.ComponentLayout, " +
             "com.facebook.litho.ComponentLayout.Builder, " +
             "com.facebook.litho.ComponentLayout.ContainerBuilder, " +
