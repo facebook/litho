@@ -15,12 +15,14 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.TestSpec;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.PropModel;
@@ -48,7 +50,12 @@ public class TestLayoutSpecModelFactoryTest {
   @LayoutSpec
   static class MyLayoutSpec {
     @OnCreateLayout
-    public static ComponentLayout onCreateLayout(ComponentContext c, @Prop String s) {
+    public static ComponentLayout onCreateLayout(
+        ComponentContext c,
+        @Prop String s,
+        @Prop Component<?> child,
+        @Prop(resType = ResType.DIMEN_SIZE) float size,
+        @Prop(optional = true) int i) {
       return Row.create(c).build();
     }
   }
@@ -77,8 +84,11 @@ public class TestLayoutSpecModelFactoryTest {
             "com.facebook.litho.specmodels.processor.testing.TestLayoutSpecModelFactoryTest.TestMyLayout");
 
     assertThat(layoutSpecModel.getProps().stream().map(PropModel::getName).toArray())
-        .hasSize(1)
-        .contains("s", atIndex(0));
+        .hasSize(4)
+        .contains("s", atIndex(0))
+        .contains("child", atIndex(1))
+        .contains("size", atIndex(2))
+        .contains("i", atIndex(3));
   }
 
   @Test
@@ -92,7 +102,7 @@ public class TestLayoutSpecModelFactoryTest {
             return new PropNameInterStageStore(mockFiler) {
               @Override
               public Optional<ImmutableList<String>> loadNames(Name qualifiedName) {
-                return Optional.of(ImmutableList.of("overriddenParam"));
+                return Optional.of(ImmutableList.of("a", "b", "c", "d"));
               }
             };
           }
@@ -111,8 +121,11 @@ public class TestLayoutSpecModelFactoryTest {
             "com.facebook.litho.specmodels.processor.testing.TestLayoutSpecModelFactoryTest.TestMyLayout");
 
     assertThat(layoutSpecModel.getProps().stream().map(PropModel::getName).toArray())
-        .hasSize(1)
-        .contains("overriddenParam", atIndex(0));
+        .hasSize(4)
+        .contains("a", atIndex(0))
+        .contains("b", atIndex(1))
+        .contains("c", atIndex(2))
+        .contains("d", atIndex(3));
   }
 
   @Test
