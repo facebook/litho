@@ -9,6 +9,7 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import static com.facebook.litho.specmodels.processor.ProcessorUtils.getPackageName;
 import static com.facebook.litho.specmodels.processor.ProcessorUtils.validate;
 
 import com.facebook.litho.specmodels.model.DependencyInjectionHelperFactory;
@@ -85,9 +86,5 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
         .skipJavaLangImports(true)
         .build()
         .writeTo(processingEnv.getFiler());
-  }
-
-  protected static String getPackageName(String qualifiedName) {
-    return qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
   }
 }

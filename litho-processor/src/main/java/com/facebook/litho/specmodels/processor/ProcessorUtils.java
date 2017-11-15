@@ -11,6 +11,7 @@ package com.facebook.litho.specmodels.processor;
 
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
+import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -81,5 +82,13 @@ public class ProcessorUtils {
     }
 
     throw new MultiPrintableException(printableExceptions);
+  }
+
+  public static String getPackageName(String qualifiedName) {
+    return qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
+  }
+
+  public static String getPackageName(TypeName typeName) {
+    return getPackageName(typeName.toString());
   }
 }
