@@ -46,6 +46,7 @@
   - id: unit-testing
   - id: subcomponent-testing
   - id: espresso-testing
+  - id: tests-in-android-studio
 - title: Advanced Guides
   items:
   - id: recycler-component
