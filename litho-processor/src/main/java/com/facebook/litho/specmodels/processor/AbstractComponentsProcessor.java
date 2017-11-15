@@ -31,8 +31,16 @@ import javax.tools.Diagnostic;
 public abstract class AbstractComponentsProcessor extends AbstractProcessor {
 
   @Nullable private final DependencyInjectionHelperFactory mDependencyInjectionHelperFactory;
-
   private final List<SpecModelFactory> mSpecModelFactories;
+  private PropNameInterStageStore mPropNameInterStageStore;
+
+  private final InterStageStore mInterStageStore =
+      new InterStageStore() {
+        @Override
+        public PropNameInterStageStore getPropNameInterStageStore() {
+          return mPropNameInterStageStore;
+        }
+      };
 
   protected AbstractComponentsProcessor(
       List<SpecModelFactory> specModelFactories,
@@ -46,6 +54,8 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     if (roundEnv.processingOver()) {
       return false;
     }
+    // processingEnv is not available at construction time. :(
+    mPropNameInterStageStore = new PropNameInterStageStore(processingEnv.getFiler());
 
     for (SpecModelFactory specModelFactory : mSpecModelFactories) {
       final Set<Element> elements = specModelFactory.extract(roundEnv);
@@ -58,7 +68,8 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
                   (TypeElement) element,
                   mDependencyInjectionHelperFactory == null
                       ? null
-                      : mDependencyInjectionHelperFactory.create((TypeElement) element));
+                      : mDependencyInjectionHelperFactory.create((TypeElement) element),
+                  mInterStageStore);
 
           validate(specModel);
           generate(specModel);
@@ -81,10 +92,12 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
   }
 
   protected void generate(SpecModel specModel) throws IOException {
-    JavaFile.builder(
-        getPackageName(specModel.getComponentTypeName().toString()), specModel.generate())
+    final String packageName = getPackageName(specModel.getComponentTypeName());
+    JavaFile.builder(packageName, specModel.generate())
         .skipJavaLangImports(true)
         .build()
         .writeTo(processingEnv.getFiler());
+
+    mInterStageStore.getPropNameInterStageStore().saveNames(specModel);
   }
 }

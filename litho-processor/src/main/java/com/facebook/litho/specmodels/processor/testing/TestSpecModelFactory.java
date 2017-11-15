@@ -16,6 +16,7 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.testing.DefaultTestSpecGenerator;
 import com.facebook.litho.specmodels.model.testing.TestSpecGenerator;
 import com.facebook.litho.specmodels.model.testing.TestSpecModel;
+import com.facebook.litho.specmodels.processor.InterStageStore;
 import com.facebook.litho.specmodels.processor.JavadocExtractor;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.facebook.litho.specmodels.processor.MountSpecModelFactory;
@@ -44,7 +45,8 @@ public class TestSpecModelFactory implements SpecModelFactory {
 
   /**
    * Extract the relevant Elements to work with from the round environment before they're passed on
-   * to {@link #create(Elements, TypeElement, DependencyInjectionHelper)}.
+   * to {@link SpecModelFactory#create(Elements, TypeElement, DependencyInjectionHelper,
+   * InterStageStore)}.
    */
   @Override
   public Set<Element> extract(RoundEnvironment roundEnvironment) {
@@ -59,7 +61,8 @@ public class TestSpecModelFactory implements SpecModelFactory {
   public SpecModel create(
       Elements elements,
       TypeElement element,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
+      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
+      @Nullable InterStageStore interStageStore) {
     final TypeElement valueElement = TestTargetExtractor.getTestSpecValue(element);
     if (valueElement == null) {
       throw new NullPointerException(
@@ -68,7 +71,7 @@ public class TestSpecModelFactory implements SpecModelFactory {
     }
 
     final SpecModel enclosedSpecModel =
-        getEnclosedSpecModel(elements, valueElement, dependencyInjectionHelper);
+        getEnclosedSpecModel(elements, valueElement, dependencyInjectionHelper, interStageStore);
 
     return new TestSpecModel(
         element.getQualifiedName().toString(),
@@ -87,7 +90,8 @@ public class TestSpecModelFactory implements SpecModelFactory {
   private static SpecModel getEnclosedSpecModel(
       Elements elements,
       TypeElement element,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
+      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
+      @Nullable InterStageStore interStageStore) {
     final List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
 
     for (AnnotationMirror annotationMirror : annotationMirrors) {
@@ -103,7 +107,7 @@ public class TestSpecModelFactory implements SpecModelFactory {
       }
 
       if (factory != null) {
-        return factory.create(elements, element, dependencyInjectionHelper);
+        return factory.create(elements, element, dependencyInjectionHelper, interStageStore);
       }
     }
     return null;

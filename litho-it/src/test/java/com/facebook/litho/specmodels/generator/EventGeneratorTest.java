@@ -70,7 +70,7 @@ public class EventGeneratorTest {
   public void setUp() {
     Elements elements = mCompilationRule.getElements();
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
-    mSpecModel = mLayoutSpecModelFactory.create(elements, typeElement, null);
+    mSpecModel = mLayoutSpecModelFactory.create(elements, typeElement, null, null);
     EventDeclarationModel eventDeclarationModel = new EventDeclarationModel(
         ClassName.OBJECT,
         ClassName.OBJECT,

@@ -73,7 +73,8 @@ public class MountSpecModelFactory implements SpecModelFactory {
   public MountSpecModel create(
       Elements elements,
       TypeElement element,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
+      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
+      @Nullable InterStageStore interStageStore) {
     return new MountSpecModel(
         element.getQualifiedName().toString(),
         element.getAnnotation(MountSpec.class).value(),

@@ -110,7 +110,7 @@ public class MountSpecModelFactoryTest {
         elements.getTypeElement(MountSpecModelFactoryTest.TestMountSpec.class.getCanonicalName());
 
     MountSpecModel mountSpecModel =
-        mFactory.create(elements, typeElement, mDependencyInjectionHelper);
+        mFactory.create(elements, typeElement, mDependencyInjectionHelper, null);
 
     assertThat(mountSpecModel.getSpecName()).isEqualTo("TestMountSpec");
     assertThat(mountSpecModel.getComponentName()).isEqualTo("TestMountComponentName");

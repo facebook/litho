@@ -64,7 +64,7 @@ public class TriggerGeneratorTest {
   public void setUp() {
     Elements elements = mCompilationRule.getElements();
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
-    mSpecModel = mLayoutSpecModelFactory.create(elements, typeElement, null);
+    mSpecModel = mLayoutSpecModelFactory.create(elements, typeElement, null, null);
   }
 
   @Test

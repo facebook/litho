@@ -76,7 +76,7 @@ public class ComponentBodyGeneratorTest {
   public void setUp() {
     Elements elements = mCompilationRule.getElements();
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
-    mSpecModelDI = mLayoutSpecModelFactory.create(elements, typeElement, null);
+    mSpecModelDI = mLayoutSpecModelFactory.create(elements, typeElement, null, null);
   }
 
   @Test

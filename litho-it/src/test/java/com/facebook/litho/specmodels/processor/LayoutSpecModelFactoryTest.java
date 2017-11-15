@@ -46,7 +46,7 @@ public class LayoutSpecModelFactoryTest {
   @Test
   public void testCreate() {
     LayoutSpecModel layoutSpecModel =
-        mFactory.create(mElements, mTypeElement, mDependencyInjectionHelper);
+        mFactory.create(mElements, mTypeElement, mDependencyInjectionHelper, null);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("Test");
@@ -67,7 +67,7 @@ public class LayoutSpecModelFactoryTest {
   public void testCreateWithSpecifiedName() {
     when(mLayoutSpec.value()).thenReturn("TestComponentName");
     LayoutSpecModel layoutSpecModel =
-        mFactory.create(mElements, mTypeElement, mDependencyInjectionHelper);
+        mFactory.create(mElements, mTypeElement, mDependencyInjectionHelper, null);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("TestComponentName");

@@ -71,7 +71,8 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
   public LayoutSpecModel create(
       Elements elements,
       TypeElement element,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
+      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
+      @Nullable InterStageStore interStageStore) {
     return new LayoutSpecModel(
         element.getQualifiedName().toString(),
         element.getAnnotation(LayoutSpec.class).value(),

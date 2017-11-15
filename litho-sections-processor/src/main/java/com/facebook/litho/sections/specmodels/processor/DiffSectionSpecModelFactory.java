@@ -31,6 +31,7 @@ import com.facebook.litho.specmodels.processor.AnnotationExtractor;
 import com.facebook.litho.specmodels.processor.DelegateMethodExtractor;
 import com.facebook.litho.specmodels.processor.EventDeclarationsExtractor;
 import com.facebook.litho.specmodels.processor.EventMethodExtractor;
+import com.facebook.litho.specmodels.processor.InterStageStore;
 import com.facebook.litho.specmodels.processor.JavadocExtractor;
 import com.facebook.litho.specmodels.processor.PropDefaultsExtractor;
 import com.facebook.litho.specmodels.processor.SpecElementTypeDeterminator;
@@ -84,7 +85,8 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory {
   public SpecModel create(
       Elements elements,
       TypeElement element,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
+      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
+      @Nullable InterStageStore interStageStore) {
     return createModel(elements, element, dependencyInjectionHelper);
   }
 

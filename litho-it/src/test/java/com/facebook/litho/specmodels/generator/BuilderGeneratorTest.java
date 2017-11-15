@@ -86,17 +86,17 @@ public class BuilderGeneratorTest {
     Elements elements = mCompilationRule.getElements();
 
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
-    mSpecModel = mLayoutSpecModelFactory.create(elements, typeElement, null);
+    mSpecModel = mLayoutSpecModelFactory.create(elements, typeElement, null, null);
 
     TypeElement resWithVarArgsElement =
         elements.getTypeElement(TestResTypeWithVarArgsSpec.class.getCanonicalName());
     mResTypeVarArgsSpecModel =
-        mLayoutSpecModelFactory.create(elements, resWithVarArgsElement, null);
+        mLayoutSpecModelFactory.create(elements, resWithVarArgsElement, null, null);
 
     TypeElement dimenResTypeWithBoxFloatArgElement =
         elements.getTypeElement(TestDimenResTypeWithBoxFloatArgSpec.class.getCanonicalName());
     mDimenResTypeWithBoxFloatArgSpecModel =
-        mLayoutSpecModelFactory.create(elements, dimenResTypeWithBoxFloatArgElement, null);
+        mLayoutSpecModelFactory.create(elements, dimenResTypeWithBoxFloatArgElement, null, null);
   }
 
   @Test

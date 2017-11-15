@@ -58,7 +58,7 @@ public class TestLayoutSpecModelFactoryTest {
   @Test
   public void testCreate() {
     final TestSpecModelFactory factory = new TestSpecModelFactory();
-    final SpecModel layoutSpecModel = factory.create(mElements, mTypeElement, null);
+    final SpecModel layoutSpecModel = factory.create(mElements, mTypeElement, null, null);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestMyLayoutSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("TestMyLayout");
@@ -82,7 +82,7 @@ public class TestLayoutSpecModelFactoryTest {
     final TestSpecGenerator specGenerator = mock(TestSpecGenerator.class);
     final TestSpecModelFactory factory = new TestSpecModelFactory(specGenerator);
 
-    final SpecModel layoutSpecModel = factory.create(mElements, mTypeElement, null);
+    final SpecModel layoutSpecModel = factory.create(mElements, mTypeElement, null, null);
     layoutSpecModel.generate();
 
     verify(specGenerator).generate(layoutSpecModel);

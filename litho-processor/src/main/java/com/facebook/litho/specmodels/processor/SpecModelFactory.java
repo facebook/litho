@@ -20,22 +20,24 @@ import javax.lang.model.util.Elements;
 /**
  * A factory for a {@link SpecModel}. It first performs an {@link #extract(RoundEnvironment)} step
  * in which it selects the elements it wants to process from the annotation processor's round
- * environment and then creates a {@link SpecModel} for each extracted element in
- * {@link #create(Elements, TypeElement, DependencyInjectionHelper)}.
+ * environment and then creates a {@link SpecModel} for each extracted element in {@link
+ * #create(Elements, TypeElement, DependencyInjectionHelper, InterStageStore)}.
  */
 public interface SpecModelFactory {
   /**
    * Extract the relevant Elements to work with from the round environment before they're passed on
-   * to {@link #create(Elements, TypeElement, DependencyInjectionHelper)}.
+   * to {@link #create(Elements, TypeElement, DependencyInjectionHelper, InterStageStore)}.
    */
   Set<Element> extract(RoundEnvironment roundEnvironment);
 
   /**
    * Create a {@link SpecModel} from the given {@link TypeElement} and an optional {@link
-   * DependencyInjectionHelper}.
+   * DependencyInjectionHelper}. The optional {@link InterStageStore} can be used to augment name
+   * lookups in Java 7.
    */
   SpecModel create(
       Elements elements,
       TypeElement element,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper);
+      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
+      @Nullable InterStageStore propNameInterStageStore);
 }

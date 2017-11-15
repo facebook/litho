@@ -74,11 +74,12 @@ public class StateGeneratorTest {
     Elements elements = mCompilationRule.getElements();
     TypeElement typeElementWithState =
         elements.getTypeElement(TestWithStateSpec.class.getCanonicalName());
-    mSpecModelWithState = mLayoutSpecModelFactory.create(elements, typeElementWithState, null);
+    mSpecModelWithState =
+        mLayoutSpecModelFactory.create(elements, typeElementWithState, null, null);
     TypeElement typeElementWithoutState =
         elements.getTypeElement(TestWithoutStateSpec.class.getCanonicalName());
     mSpecModelWithoutState =
-        mLayoutSpecModelFactory.create(elements, typeElementWithoutState, null);
+        mLayoutSpecModelFactory.create(elements, typeElementWithoutState, null, null);
   }
 
   @Test
