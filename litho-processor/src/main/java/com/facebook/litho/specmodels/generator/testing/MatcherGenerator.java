@@ -484,9 +484,10 @@ public final class MatcherGenerator {
     final CodeBlock codeBlock =
         CodeBlock.builder()
             .addStatement(
-                "this.$N = $L.is($L)",
+                "this.$N = $L.is(($T) $L)",
                 propMatcherName,
                 ClassNames.HAMCREST_CORE_IS,
+                prop.getType(),
                 formattedStatement)
             .build();
 

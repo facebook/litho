@@ -22,7 +22,8 @@ public class BasicLayoutSpec {
   static ComponentLayout onCreateLayout(
       ComponentContext context,
       @Prop String myStringProp,
-      @Prop(resType = ResType.COLOR) int myRequiredColorProp) {
+      @Prop(resType = ResType.COLOR) int myRequiredColorProp,
+      @Prop(resType = ResType.DIMEN_SIZE) float myDimenSizeProp) {
     return null;
   }
 }
