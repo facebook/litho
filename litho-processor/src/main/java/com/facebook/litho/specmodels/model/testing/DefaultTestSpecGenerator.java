@@ -12,6 +12,7 @@ package com.facebook.litho.specmodels.model.testing;
 import com.facebook.litho.specmodels.generator.JavadocGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.generator.testing.MatcherGenerator;
+import com.facebook.litho.specmodels.model.HasEnclosedSpecModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.TypeSpec;
 import javax.lang.model.element.Modifier;
@@ -19,7 +20,7 @@ import javax.lang.model.element.Modifier;
 public class DefaultTestSpecGenerator implements TestSpecGenerator {
 
   @Override
-  public TypeSpec generate(SpecModel specModel) {
+  public <T extends SpecModel & HasEnclosedSpecModel> TypeSpec generate(T specModel) {
     final TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(specModel.getComponentName())
             .addTypeVariables(specModel.getTypeVariables())

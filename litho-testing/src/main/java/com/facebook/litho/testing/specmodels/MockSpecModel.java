@@ -15,6 +15,8 @@ import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
+import com.facebook.litho.specmodels.model.HasEnclosedSpecModel;
+import com.facebook.litho.specmodels.model.HasPureRender;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.facebook.litho.specmodels.model.PropJavadocModel;
@@ -39,7 +41,7 @@ import javax.annotation.concurrent.Immutable;
 
 /** An implementation of SpecModel + Builder for testing purposes only. */
 @Immutable
-public class MockSpecModel implements SpecModel {
+public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecModel {
   private final String mSpecName;
   private final TypeName mSpecTypeName;
   private final String mComponentName;
@@ -75,6 +77,8 @@ public class MockSpecModel implements SpecModel {
   private final List<SpecModelValidationError> mSpecModelValidationErrors;
   private final ImmutableList<AnnotationSpec> mClassAnnotations;
   private final SpecElementType mSpecElementType;
+  private final boolean mIsPureRender;
+  private final SpecModel mEnclosedSpecModel;
 
   private MockSpecModel(
       String specName,
@@ -111,7 +115,9 @@ public class MockSpecModel implements SpecModel {
       boolean isStylingSupported,
       List<SpecModelValidationError> specModelValidationErrors,
       ImmutableList<AnnotationSpec> classAnnotations,
-      SpecElementType specElementType) {
+      SpecElementType specElementType,
+      boolean isPureRender,
+      SpecModel enclosedSpecModel) {
     mSpecName = specName;
     mSpecTypeName = specTypeName;
     mComponentName = componentName;
@@ -147,6 +153,8 @@ public class MockSpecModel implements SpecModel {
     mSpecModelValidationErrors = specModelValidationErrors;
     mClassAnnotations = classAnnotations;
     mSpecElementType = specElementType;
+    mIsPureRender = isPureRender;
+    mEnclosedSpecModel = enclosedSpecModel;
   }
 
   @Override
@@ -334,6 +342,16 @@ public class MockSpecModel implements SpecModel {
     return new Builder();
   }
 
+  @Override
+  public SpecModel getEnclosedSpecModel() {
+    return mEnclosedSpecModel;
+  }
+
+  @Override
+  public boolean isPureRender() {
+    return mIsPureRender;
+  }
+
   public static class Builder {
     private String mSpecName;
     private TypeName mSpecTypeName;
@@ -373,6 +391,8 @@ public class MockSpecModel implements SpecModel {
     private List<SpecModelValidationError> mSpecModelValidationErrors = ImmutableList.of();
     private ImmutableList<AnnotationSpec> mClassAnnotations;
     private SpecElementType mSpecElementType;
+    private boolean mIsPureRender;
+    private SpecModel mEnclosedSpecModel;
 
     public Builder specName(String specName) {
       mSpecName = specName;
@@ -556,6 +576,16 @@ public class MockSpecModel implements SpecModel {
       return this;
     }
 
+    public Builder isPureRender(boolean isPureRender) {
+      mIsPureRender = isPureRender;
+      return this;
+    }
+
+    public Builder enclosedSpecModel(SpecModel enclosedSpecModel) {
+      mEnclosedSpecModel = enclosedSpecModel;
+      return this;
+    }
+
     public MockSpecModel build() {
       return new MockSpecModel(
           mSpecName,
@@ -592,7 +622,9 @@ public class MockSpecModel implements SpecModel {
           mIsStylingSupported,
           mSpecModelValidationErrors,
           mClassAnnotations,
-          mSpecElementType);
+          mSpecElementType,
+          mIsPureRender,
+          mEnclosedSpecModel);
     }
 
     @Override
@@ -634,7 +666,9 @@ public class MockSpecModel implements SpecModel {
           && Objects.equals(mScopeMethodName, builder.mScopeMethodName)
           && Objects.equals(mSpecModelValidationErrors, builder.mSpecModelValidationErrors)
           && Objects.equals(mClassAnnotations, builder.mClassAnnotations)
-          && Objects.equals(mSpecElementType, builder.mSpecElementType);
+          && Objects.equals(mSpecElementType, builder.mSpecElementType)
+          && Objects.equals(mIsPureRender, builder.mIsPureRender)
+          && Objects.equals(mEnclosedSpecModel, builder.mEnclosedSpecModel);
     }
 
     @Override
@@ -674,7 +708,9 @@ public class MockSpecModel implements SpecModel {
           mIsStylingSupported,
           mSpecModelValidationErrors,
           mClassAnnotations,
-          mSpecElementType);
+          mSpecElementType,
+          mIsPureRender,
+          mEnclosedSpecModel);
     }
   }
 }

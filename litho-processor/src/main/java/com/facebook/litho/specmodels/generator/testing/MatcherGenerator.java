@@ -12,6 +12,7 @@ package com.facebook.litho.specmodels.generator.testing;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.HasEnclosedSpecModel;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecModel;
@@ -41,7 +42,8 @@ public final class MatcherGenerator {
 
   private MatcherGenerator() {}
 
-  public static TypeSpecDataHolder generate(final SpecModel specModel) {
+  public static <T extends SpecModel & HasEnclosedSpecModel> TypeSpecDataHolder generate(
+      T specModel) {
     return TypeSpecDataHolder.newBuilder()
         .addTypeSpecDataHolder(generateFactoryMethods(specModel))
         .addTypeSpecDataHolder(generateBuilder(specModel))
@@ -62,7 +64,8 @@ public final class MatcherGenerator {
     return dataHolder.addMethod(factoryMethod.build()).build();
   }
 
-  private static TypeSpecDataHolder generateBuilder(final SpecModel specModel) {
+  private static <T extends SpecModel & HasEnclosedSpecModel> TypeSpecDataHolder generateBuilder(
+      final T specModel) {
     final TypeSpec.Builder propsBuilderClassBuilder =
         TypeSpec.classBuilder(BUILDER)
             .addModifiers(Modifier.STATIC)
@@ -620,11 +623,11 @@ public final class MatcherGenerator {
     return builder;
   }
 
-  private static CodeBlock generateMatchMethodBody(final SpecModel specModel) {
+  private static <T extends SpecModel & HasEnclosedSpecModel> CodeBlock generateMatchMethodBody(
+      final T specModel) {
     final CodeBlock.Builder builder = CodeBlock.builder();
 
-    // TODO(21831949): Create typed field for this.
-    final SpecModel enclosedSpecModel = (SpecModel) specModel.getRepresentedObject();
+    final SpecModel enclosedSpecModel = specModel.getEnclosedSpecModel();
     builder
         .beginControlFlow(
             "if (!value.getComponentClass().isAssignableFrom($L.class))",
@@ -655,7 +658,8 @@ public final class MatcherGenerator {
     return ClassName.bestGuess(componentTypeName);
   }
 
-  private static MethodSpec generateBuildMethod(final SpecModel specModel) {
+  private static <T extends SpecModel & HasEnclosedSpecModel> MethodSpec generateBuildMethod(
+      final T specModel) {
     final MethodSpec.Builder buildMethodBuilder =
         MethodSpec.methodBuilder("build")
             .addModifiers(Modifier.PUBLIC)

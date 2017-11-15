@@ -29,6 +29,7 @@ java_test(
         COMPONENTS_SECTIONS_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/model/testing:testing"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/specmodels:specmodels"),
     ],
 )

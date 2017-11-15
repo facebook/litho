@@ -38,10 +38,10 @@ public class MatcherGeneratorTest {
 
   @Test
   public void testEmptyGenerate() {
-    final SpecModel specModel =
+    final MockSpecModel specModel =
         MockSpecModel.newBuilder()
             .contextClass(ClassName.bestGuess(DummyContext.class.getName()))
-            .representedObject(sEnclosedSpec)
+            .enclosedSpecModel(sEnclosedSpec)
             .build();
 
     final TypeSpecDataHolder holder = MatcherGenerator.generate(specModel);
@@ -63,10 +63,10 @@ public class MatcherGeneratorTest {
 
   @Test
   public void testGenerationWithProps() {
-    final SpecModel specModel =
+    final MockSpecModel specModel =
         MockSpecModel.newBuilder()
             .contextClass(ClassName.bestGuess(DummyContext.class.getName()))
-            .representedObject(sEnclosedSpec)
+            .enclosedSpecModel(sEnclosedSpec)
             .props(
                 ImmutableList.of(
                     new PropModel(

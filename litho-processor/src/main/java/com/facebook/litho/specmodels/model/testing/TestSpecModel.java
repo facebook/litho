@@ -16,7 +16,7 @@ import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
-import com.facebook.litho.specmodels.model.HasPureRender;
+import com.facebook.litho.specmodels.model.HasEnclosedSpecModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.facebook.litho.specmodels.model.PropJavadocModel;
@@ -41,9 +41,10 @@ import javax.annotation.Nullable;
 /**
  * Model that is an abstract representation of a {@link com.facebook.litho.annotations.TestSpec}.
  */
-public class TestSpecModel implements SpecModel, HasPureRender {
+public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   private final SpecModelImpl mSpecModel;
   private final TestSpecGenerator mTestSpecGenerator;
+  private final SpecModel mEnclosedSpecModel;
 
   public TestSpecModel(
       String qualifiedSpecClassName,
@@ -51,7 +52,7 @@ public class TestSpecModel implements SpecModel, HasPureRender {
       ImmutableList<PropModel> props,
       ImmutableList<BuilderMethodModel> builderMethodModels,
       ImmutableList<PropJavadocModel> propJavadocs,
-      Object representedObject,
+      SpecModel enclosedSpecModel,
       TestSpecGenerator testSpecGenerator,
       String classJavadoc) {
     mSpecModel =
@@ -63,8 +64,9 @@ public class TestSpecModel implements SpecModel, HasPureRender {
             .extraBuilderMethods(builderMethodModels)
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
-            .representedObject(representedObject)
+            .representedObject(enclosedSpecModel)
             .build();
+    mEnclosedSpecModel = enclosedSpecModel;
     mTestSpecGenerator = testSpecGenerator;
   }
 
@@ -250,7 +252,7 @@ public class TestSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public boolean isPureRender() {
-    return true;
+  public SpecModel getEnclosedSpecModel() {
+    return mEnclosedSpecModel;
   }
 }

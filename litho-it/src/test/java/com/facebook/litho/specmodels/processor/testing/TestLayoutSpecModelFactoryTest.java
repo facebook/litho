@@ -24,8 +24,8 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.TestSpec;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.PropModel;
-import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.testing.TestSpecGenerator;
+import com.facebook.litho.specmodels.model.testing.TestSpecModel;
 import com.facebook.litho.specmodels.processor.InterStageStore;
 import com.facebook.litho.specmodels.processor.PropNameInterStageStore;
 import com.google.testing.compile.CompilationRule;
@@ -65,7 +65,7 @@ public class TestLayoutSpecModelFactoryTest {
   @Test
   public void testCreate() {
     final TestSpecModelFactory factory = new TestSpecModelFactory();
-    final SpecModel layoutSpecModel = factory.create(mElements, mTypeElement, null, null);
+    final TestSpecModel layoutSpecModel = factory.create(mElements, mTypeElement, null, null);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestMyLayoutSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("TestMyLayout");
@@ -98,7 +98,7 @@ public class TestLayoutSpecModelFactoryTest {
           }
         };
 
-    final SpecModel layoutSpecModel =
+    final TestSpecModel layoutSpecModel =
         factory.create(mElements, mTypeElement, null, interStageStore);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestMyLayoutSpec");
@@ -120,7 +120,7 @@ public class TestLayoutSpecModelFactoryTest {
     final TestSpecGenerator specGenerator = mock(TestSpecGenerator.class);
     final TestSpecModelFactory factory = new TestSpecModelFactory(specGenerator);
 
-    final SpecModel layoutSpecModel = factory.create(mElements, mTypeElement, null, null);
+    final TestSpecModel layoutSpecModel = factory.create(mElements, mTypeElement, null, null);
     layoutSpecModel.generate();
 
     verify(specGenerator).generate(layoutSpecModel);

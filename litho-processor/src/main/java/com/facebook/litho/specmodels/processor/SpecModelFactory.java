@@ -23,7 +23,7 @@ import javax.lang.model.util.Elements;
  * environment and then creates a {@link SpecModel} for each extracted element in {@link
  * #create(Elements, TypeElement, DependencyInjectionHelper, InterStageStore)}.
  */
-public interface SpecModelFactory {
+public interface SpecModelFactory<T extends SpecModel> {
   /**
    * Extract the relevant Elements to work with from the round environment before they're passed on
    * to {@link #create(Elements, TypeElement, DependencyInjectionHelper, InterStageStore)}.
@@ -35,7 +35,7 @@ public interface SpecModelFactory {
    * DependencyInjectionHelper}. The optional {@link InterStageStore} can be used to augment name
    * lookups in Java 7.
    */
-  SpecModel create(
+  T create(
       Elements elements,
       TypeElement element,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,

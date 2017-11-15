@@ -9,11 +9,11 @@
 
 package com.facebook.litho.specmodels.model.testing;
 
+import com.facebook.litho.specmodels.model.HasEnclosedSpecModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.TypeSpec;
 
 /** Generates the test matchers for a {@link TestSpecModel}. */
 public interface TestSpecGenerator {
-
-  TypeSpec generate(SpecModel testSpecModel);
+  <T extends SpecModel & HasEnclosedSpecModel> TypeSpec generate(T testSpecModel);
 }

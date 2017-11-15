@@ -31,7 +31,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
-public class TestSpecModelFactory implements SpecModelFactory {
+public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
 
   private final TestSpecGenerator mTestSpecGenerator;
 
@@ -58,7 +58,7 @@ public class TestSpecModelFactory implements SpecModelFactory {
    * DependencyInjectionHelper}.
    */
   @Override
-  public SpecModel create(
+  public TestSpecModel create(
       Elements elements,
       TypeElement element,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
