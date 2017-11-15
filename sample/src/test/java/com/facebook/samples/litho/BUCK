@@ -40,7 +40,7 @@ android_library(
         "com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor",
     ],
     deps = [
-        make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho_testspecs"),
+        make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho"),
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_ANNOTATIONS_TARGET,
         COMPONENTS_ANDROIDSUPPORT_TARGET,

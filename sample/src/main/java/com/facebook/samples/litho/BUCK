@@ -18,9 +18,6 @@ litho_android_library(
         "com.facebook.litho.sections.specmodels.processor.SectionsComponentProcessor",
     ],
     fblite = False,
-    test_spec_srcs = [
-        "lithography/FooterComponentSpec.java",
-    ],
     visibility = [
         "PUBLIC",
     ],
