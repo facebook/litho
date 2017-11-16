@@ -386,6 +386,15 @@ public class ComponentTree {
 
       // ... and then we do state transfer
       toRelease = setBestMainThreadLayoutAndReturnOldLayout();
+
+      if (mRoot == null) {
+        throw new IllegalStateException(
+            "Trying to attach a ComponentTree with a null root. Is released: "
+                + mReleased
+                + ", Released Component name is: "
+                + mReleasedComponent);
+      }
+
       componentRootId = mRoot.getId();
     }
 
