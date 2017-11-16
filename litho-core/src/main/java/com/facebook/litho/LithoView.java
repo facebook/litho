@@ -32,6 +32,15 @@ import javax.annotation.Nullable;
  * A {@link ViewGroup} that can host the mounted state of a {@link Component}.
  */
 public class LithoView extends ComponentHost {
+
+  public interface OnDirtyMountListener {
+    /**
+     * Called when finishing a mount where the mount state was dirty. This indicates that there were
+     * new props/state in the tree, or the LithoView was mounting a new ComponentTree
+     */
+    void onDirtyMount(LithoView view);
+  }
+
   private ComponentTree mComponentTree;
   private final MountState mMountState;
   private boolean mIsAttached;
@@ -42,6 +51,7 @@ public class LithoView extends ComponentHost {
   private boolean mIsMeasuring = false;
   private boolean mHasNewComponentTree = false;
   private int mAnimatedHeight = -1;
+  private OnDirtyMountListener mOnDirtyMountListener = null;
 
   private final AccessibilityManager mAccessibilityManager;
 
@@ -347,6 +357,16 @@ public class LithoView extends ComponentHost {
   @Nullable
   public ComponentTree getComponentTree() {
     return mComponentTree;
+  }
+
+  public void setOnDirtyMountListener(OnDirtyMountListener onDirtyMountListener) {
+    mOnDirtyMountListener = onDirtyMountListener;
+  }
+
+  void onDirtyMountComplete() {
+    if (mOnDirtyMountListener != null) {
+      mOnDirtyMountListener.onDirtyMount(this);
+    }
   }
 
   public void setComponentTree(ComponentTree componentTree) {

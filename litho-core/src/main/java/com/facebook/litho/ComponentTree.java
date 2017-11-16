@@ -542,6 +542,10 @@ public class ComponentTree {
     }
 
     mIsMounting = false;
+
+    if (isDirtyMount) {
+      mLithoView.onDirtyMountComplete();
+    }
   }
 
   private void applyPreviousRenderData(LayoutState layoutState) {
