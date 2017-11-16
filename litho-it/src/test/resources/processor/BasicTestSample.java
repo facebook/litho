@@ -32,7 +32,7 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     return new Matcher(c);
   }
 
-  static class Matcher extends ResourceResolver {
+  public static class Matcher extends ResourceResolver {
     @Nullable
     org.hamcrest.Matcher<String> mMyStringPropMatcher;
 
@@ -134,4 +134,3 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     }
   }
 }
-

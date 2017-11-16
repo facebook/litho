@@ -66,7 +66,7 @@ public final class MatcherGenerator {
       final T specModel) {
     final TypeSpec.Builder propsBuilderClassBuilder =
         TypeSpec.classBuilder(BUILDER)
-            .addModifiers(Modifier.STATIC)
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
             .superclass(ClassNames.RESOURCE_RESOLVER);
 
     final MethodSpec constructor =
