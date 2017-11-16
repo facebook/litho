@@ -2048,7 +2048,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     final T drawable = Reference.acquire(mComponentContext, ref);
     if (drawable != null) {
       final Rect backgroundPadding = ComponentsPools.acquireRect();
-      if (drawable.getPadding(backgroundPadding)) {
+      if (getDrawablePadding(drawable, backgroundPadding)) {
         paddingPx(LEFT, backgroundPadding.left);
         paddingPx(TOP, backgroundPadding.top);
         paddingPx(RIGHT, backgroundPadding.right);
@@ -2058,5 +2058,16 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       Reference.release(mComponentContext, drawable, ref);
       ComponentsPools.release(backgroundPadding);
     }
+  }
+
+  /**
+   * This is a wrapper on top of built in {@link Drawable#getPadding(Rect)} which overrides
+   * default return value. The reason why we need this - is because on pre-L devices LayerDrawable
+   * always returns "true" even if drawable doesn't have padding (see https://goo.gl/gExcMQ).
+   * Since we heavily rely on correctness of this information, we need to check padding manually
+   */
+  private static boolean getDrawablePadding(Drawable drawable, Rect outRect) {
+    drawable.getPadding(outRect);
+    return outRect.bottom != 0 || outRect.top != 0 || outRect.left != 0 || outRect.right != 0;
   }
 }

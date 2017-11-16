@@ -9,12 +9,13 @@
 
 package com.facebook.litho;
 
-import static android.graphics.Color.GREEN;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.facebook.litho.ComponentsPools.acquireInternalNode;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static com.facebook.litho.it.R.drawable.background_with_padding;
+import static com.facebook.litho.it.R.drawable.background_without_padding;
 import static com.facebook.yoga.YogaAlign.STRETCH;
 import static com.facebook.yoga.YogaDirection.INHERIT;
 import static com.facebook.yoga.YogaDirection.RTL;
@@ -22,11 +23,11 @@ import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.powermock.reflect.Whitebox.getInternalState;
 import static org.robolectric.RuntimeEnvironment.application;
 
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
@@ -274,6 +275,28 @@ public class InternalNodeTest {
     holderNode.copyInto(nestedTree);
 
     assertThat(nestedTree.getStyleDirection()).isEqualTo(RTL);
+  }
+
+  @Test
+  public void testPaddingIsSetFromDrawable() {
+    ComponentContext context = new ComponentContext(application);
+    InternalNode node = acquireInternalNode(context);
+
+    Drawable drawable = ContextCompat.getDrawable(context, background_with_padding);
+    node.background(drawable);
+
+    assertThat(isFlagSet(node, "PFLAG_PADDING_IS_SET")).isTrue();
+  }
+
+  @Test
+  public void testPaddingIsNotSetFromDrawable() {
+    ComponentContext context = new ComponentContext(application);
+    InternalNode node = acquireInternalNode(context);
+
+    Drawable drawable = ContextCompat.getDrawable(context, background_without_padding);
+    node.background(drawable);
+
+    assertThat(isFlagSet(node, "PFLAG_PADDING_IS_SET")).isFalse();
   }
 
   @Test
