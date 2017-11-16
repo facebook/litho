@@ -172,8 +172,8 @@ public final class DebugComponent {
       children.add(getInstance(childNode, outerWrapperComponentIndex));
     }
 
-    if (node.hasNestedTree()) {
-      final InternalNode nestedTree = node.getNestedTree();
+    final InternalNode nestedTree = node.getNestedTree();
+    if (nestedTree != null) {
       for (int i = 0, count = nestedTree.getChildCount(); i < count; i++) {
         final InternalNode childNode = nestedTree.getChildAt(i);
         children.add(getInstance(childNode, Math.max(0, childNode.getComponents().size() - 1)));
