@@ -124,7 +124,14 @@ public final class DebugComponent {
   public Class getComponentClass() {
     final Component component = getComponent();
     if (component == null) {
-      switch (mNode.get().mYogaNode.getFlexDirection()) {
+      final InternalNode node = mNode.get();
+      final YogaNode yogaNode = node == null ? null : node.mYogaNode;
+      if (yogaNode == null) {
+        // Should not happen :/
+        return InternalNode.class;
+      }
+
+      switch (yogaNode.getFlexDirection()) {
         case COLUMN: return Column.class;
         case COLUMN_REVERSE: return ColumnReverse.class;
         case ROW: return Row.class;
