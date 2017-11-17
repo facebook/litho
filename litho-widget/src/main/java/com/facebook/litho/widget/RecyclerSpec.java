@@ -109,7 +109,7 @@ class RecyclerSpec {
 
   @OnCreateMountContent
   static RecyclerViewWrapper onCreateMountContent(ComponentContext c) {
-    return new RecyclerViewWrapper(c, new RecyclerView(c));
+    return new RecyclerViewWrapper(c, new LithoRecylerView(c));
   }
 
   @OnPrepare
@@ -187,13 +187,14 @@ class RecyclerSpec {
       @Prop(optional = true, varArg = "onScrollListener") List<OnScrollListener> onScrollListeners,
       @Prop(optional = true) SnapHelper snapHelper,
       @Prop(optional = true) boolean pullToRefresh,
+      @Prop(optional = true) LithoRecylerView.TouchInterceptor touchInterceptor,
       @FromPrepare OnRefreshListener onRefreshListener,
       Output<ItemAnimator> oldAnimator) {
 
     recyclerViewWrapper.setEnabled(pullToRefresh && onRefreshListener != null);
     recyclerViewWrapper.setOnRefreshListener(onRefreshListener);
 
-    final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
+    final LithoRecylerView recyclerView = (LithoRecylerView) recyclerViewWrapper.getRecyclerView();
 
     if (recyclerView == null) {
       throw new IllegalStateException(
@@ -212,6 +213,10 @@ class RecyclerSpec {
       for (OnScrollListener onScrollListener : onScrollListeners) {
         recyclerView.addOnScrollListener(onScrollListener);
       }
+    }
+
+    if (touchInterceptor != null) {
+      recyclerView.setTouchInterceptor(touchInterceptor);
     }
 
     if (snapHelper != null) {
@@ -238,7 +243,7 @@ class RecyclerSpec {
       @Prop(optional = true) RecyclerEventsController recyclerEventsController,
       @Prop(optional = true, varArg = "onScrollListener") List<OnScrollListener> onScrollListeners,
       @FromBind ItemAnimator oldAnimator) {
-    final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
+    final LithoRecylerView recyclerView = (LithoRecylerView) recyclerViewWrapper.getRecyclerView();
 
     if (recyclerView == null) {
       throw new IllegalStateException(
@@ -259,6 +264,8 @@ class RecyclerSpec {
         recyclerView.removeOnScrollListener(onScrollListener);
       }
     }
+
+    recyclerView.setTouchInterceptor(null);
 
     recyclerViewWrapper.setOnRefreshListener(null);
   }

@@ -56,6 +56,7 @@ import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.sections.SectionTree.Target;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.widget.Binder;
+import com.facebook.litho.widget.LithoRecylerView;
 import com.facebook.litho.widget.PTRRefreshEvent;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerEventsController;
@@ -144,6 +145,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
       @Prop(optional = true, resType = ResType.COLOR) int refreshProgressBarColor,
+      @Prop(optional = true) LithoRecylerView.TouchInterceptor touchInterceptor,
       @State(canUpdateLazily = true) boolean hasSetSectionTreeRoot,
       @State RecyclerCollectionEventsController internalEventsController,
       @State(canUpdateLazily = true) LoadingEvent.LoadingState loadingState,
@@ -206,6 +208,7 @@ public class RecyclerCollectionComponentSpec {
             .onScrollListeners(onScrollListeners)
             .refreshProgressBarColor(refreshProgressBarColor)
             .snapHelper(snapHelper)
+            .touchInterceptor(touchInterceptor)
             .binder(binder);
 
     recycler.itemAnimator(

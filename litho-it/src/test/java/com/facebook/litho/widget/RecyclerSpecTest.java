@@ -38,14 +38,14 @@ public class RecyclerSpecTest {
 
   private ComponentContext mComponentContext;
   private RecyclerViewWrapper mRecyclerViewWrapper;
-  private RecyclerView mRecyclerView;
+  private LithoRecylerView mRecyclerView;
   private ItemAnimator mAnimator;
 
   @Before
   public void setup() {
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
     mRecyclerViewWrapper = mock(RecyclerViewWrapper.class);
-    mRecyclerView = mock(RecyclerView.class);
+    mRecyclerView = mock(LithoRecylerView.class);
     when(mRecyclerViewWrapper.getRecyclerView()).thenReturn(mRecyclerView);
     when(mRecyclerViewWrapper.hasBeenDetachedFromWindow()).thenReturn(true);
 
@@ -65,6 +65,9 @@ public class RecyclerSpecTest {
     final int size = 3;
     List<RecyclerView.OnScrollListener> scrollListeners = createListOfScrollListeners(size);
 
+    LithoRecylerView.TouchInterceptor touchInterceptor =
+        mock(LithoRecylerView.TouchInterceptor.class);
+
     RecyclerSpec.onBind(
         mComponentContext,
         mRecyclerViewWrapper,
@@ -74,6 +77,7 @@ public class RecyclerSpecTest {
         scrollListeners,
         snapHelper,
         true,
+        touchInterceptor,
         onRefreshListener,
         oldAnimator);
 
@@ -83,6 +87,7 @@ public class RecyclerSpecTest {
     verify(oldAnimator).set(mAnimator);
     verify(mRecyclerView).setItemAnimator(any(ItemAnimator.class));
     verify(mRecyclerView, times(size)).addOnScrollListener(any(OnScrollListener.class));
+    verify(mRecyclerView).setTouchInterceptor(touchInterceptor);
     verify(binder).bind(mRecyclerView);
     verify(mRecyclerView, times(1)).requestLayout();
     verify(mRecyclerViewWrapper).setHasBeenDetachedFromWindow(false);
