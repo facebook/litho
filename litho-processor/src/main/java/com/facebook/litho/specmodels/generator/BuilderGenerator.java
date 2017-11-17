@@ -450,7 +450,12 @@ public class BuilderGenerator {
           // fall through to generate builder method for List<T>
         }
 
-        if (prop.getType().equals(specModel.getComponentClass())) {
+        final TypeName componentClass =
+            prop.getType() instanceof ParameterizedTypeName ?
+                ((ParameterizedTypeName) prop.getType()).rawType :
+                prop.getType();
+
+        if (componentClass.equals(specModel.getComponentClass())) {
           dataHolder.addMethod(componentBuilder(specModel, prop, requiredIndex));
         } else {
           dataHolder.addMethod(regularBuilder(specModel, prop, requiredIndex));

@@ -506,7 +506,7 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
     }
 
     public Builder<S> child(Component<?> child) {
-      this.mTestLayout.child = child;
+      this.mTestLayout.child = child == null ? null : child.makeShallowCopy();
       mRequired.set(4);
       return this;
     }
