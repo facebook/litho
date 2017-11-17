@@ -34,6 +34,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   private final int mNumColumns;
   private final boolean mReverseLayout;
   private final RecyclerBinderConfiguration mRecyclerBinderConfiguration;
+  private final boolean mAllowMeasureOverride;
 
   /**
    * Static factory method to create a recycler configuration
@@ -67,21 +68,34 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       int numColumns,
       boolean reverseLayout,
       RecyclerBinderConfiguration recyclerBinderConfiguration) {
+    this(orientation, numColumns, reverseLayout, recyclerBinderConfiguration, false);
+  }
+
+  public GridRecyclerConfiguration(
+      int orientation,
+      int numColumns,
+      boolean reverseLayout,
+      RecyclerBinderConfiguration recyclerBinderConfiguration,
+      boolean allowMeasureOverride) {
     mOrientation = orientation;
     mNumColumns = numColumns;
     mReverseLayout = reverseLayout;
     mRecyclerBinderConfiguration = recyclerBinderConfiguration == null
         ? RECYCLER_BINDER_CONFIGURATION
         : recyclerBinderConfiguration;
+    mAllowMeasureOverride = allowMeasureOverride;
   }
 
   @Override
   public T buildTarget(ComponentContext c) {
-    final RecyclerBinder recyclerBinder = new RecyclerBinder.Builder()
-        .rangeRatio((float) mRecyclerBinderConfiguration.getRangeRatio())
-        .layoutInfo(new GridLayoutInfo(c, mNumColumns, mOrientation, mReverseLayout))
-        .layoutHandlerFactory(mRecyclerBinderConfiguration.getLayoutHandlerFactory())
-        .build(c);
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio((float) mRecyclerBinderConfiguration.getRangeRatio())
+            .layoutInfo(
+                new GridLayoutInfo(
+                    c, mNumColumns, mOrientation, mReverseLayout, mAllowMeasureOverride))
+            .layoutHandlerFactory(mRecyclerBinderConfiguration.getLayoutHandlerFactory())
+            .build(c);
     return (T) new SectionBinderTarget(recyclerBinder);
   }
 

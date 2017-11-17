@@ -31,13 +31,27 @@ public class GridLayoutInfo implements LayoutInfo {
 
   private final GridLayoutManager mGridLayoutManager;
   private final GridSpanSizeLookup mGridSpanSizeLookup;
+  private final boolean mAllowGridMeasureOverride;
 
   private RenderInfoCollection mRenderInfoCollection;
 
-  public GridLayoutInfo(Context context, int spanCount, int orientation, boolean reverseLayout) {
-    mGridLayoutManager = new LithoGridLayoutManager(context, spanCount, orientation, reverseLayout);
+  public GridLayoutInfo(
+      Context context,
+      int spanCount,
+      int orientation,
+      boolean reverseLayout,
+      boolean allowGridMeasuresOverride) {
+    mAllowGridMeasureOverride = allowGridMeasuresOverride;
+    mGridLayoutManager =
+        mAllowGridMeasureOverride
+            ? new GridLayoutManager(context, spanCount, orientation, reverseLayout)
+            : new LithoGridLayoutManager(context, spanCount, orientation, reverseLayout);
     mGridSpanSizeLookup = new GridSpanSizeLookup();
     mGridLayoutManager.setSpanSizeLookup(mGridSpanSizeLookup);
+  }
+
+  public GridLayoutInfo(Context context, int spanCount, int orientation, boolean reverseLayout) {
+    this(context, spanCount, orientation, reverseLayout, false);
   }
 
   public GridLayoutInfo(Context context, int spanCount) {

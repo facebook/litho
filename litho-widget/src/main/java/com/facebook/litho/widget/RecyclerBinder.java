@@ -144,20 +144,17 @@ public class RecyclerBinder
   }
 
   static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
-          new ComponentTreeHolderFactory() {
-    @Override
-    public ComponentTreeHolder create(
-        RenderInfo renderInfo,
-        LayoutHandler layoutHandler,
-        boolean canPrefetchDisplayLists,
-        boolean canCacheDrawingDisplayLists) {
-      return ComponentTreeHolder.acquire(
-          renderInfo,
-          layoutHandler,
-          canPrefetchDisplayLists,
-          canCacheDrawingDisplayLists);
-    }
-  };
+      new ComponentTreeHolderFactory() {
+        @Override
+        public ComponentTreeHolder create(
+            RenderInfo renderInfo,
+            LayoutHandler layoutHandler,
+            boolean canPrefetchDisplayLists,
+            boolean canCacheDrawingDisplayLists) {
+          return ComponentTreeHolder.acquire(
+              renderInfo, layoutHandler, canPrefetchDisplayLists, canCacheDrawingDisplayLists);
+        }
+      };
 
   public static class Builder {
 
@@ -196,7 +193,6 @@ public class RecyclerBinder
     }
 
     /**
-     *
      * @param layoutHandlerFactory the RecyclerBinder will use this layoutHandlerFactory when
      * creating {@link ComponentTree}s in order to specify on which thread layout calculation
      * should happen.
@@ -813,7 +809,6 @@ public class RecyclerBinder
     mLastWidthSpec = widthSpec;
     mLastHeightSpec = heightSpec;
 
-
     // We now need to compute the size of the non scrolling side. We try to do this by using the
     // calculated range (if we have one) or computing one.
     final boolean shouldInitRange =
@@ -1031,7 +1026,7 @@ public class RecyclerBinder
     view.setAdapter(mInternalAdapter);
     view.addOnScrollListener(mRangeScrollListener);
     view.addOnScrollListener(mViewportManager.getScrollListener());
-    
+
     mLayoutInfo.setRenderInfoCollection(this);
 
     mViewportManager.addViewportChangedListener(mViewportChangedListener);
@@ -1385,9 +1380,32 @@ public class RecyclerBinder
           componentTreeHolder.computeLayoutSync(
               mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
         }
+        final boolean isOrientationVertical =
+            mLayoutInfo.getScrollDirection() == OrientationHelper.VERTICAL;
+
+        final int width;
+        final int height;
+        if (SizeSpec.getMode(childrenWidthSpec) == SizeSpec.EXACTLY) {
+          width = SizeSpec.getSize(childrenWidthSpec);
+        } else if (isOrientationVertical) {
+          width = MATCH_PARENT;
+        } else {
+          width = WRAP_CONTENT;
+        }
+
+        if (SizeSpec.getMode(childrenHeightSpec) == SizeSpec.EXACTLY) {
+          height = SizeSpec.getSize(childrenHeightSpec);
+        } else if (isOrientationVertical) {
+          height = WRAP_CONTENT;
+        } else {
+          height = MATCH_PARENT;
+        }
+
+        lithoView.setLayoutParams(new RecyclerView.LayoutParams(width, height));
 
         final RecyclerViewLayoutManagerOverrideParams layoutParams =
-            new RecyclerViewLayoutManagerOverrideParams(childrenWidthSpec, childrenHeightSpec);
+            new RecyclerViewLayoutManagerOverrideParams(
+                width, height, childrenWidthSpec, childrenHeightSpec);
 
         lithoView.setLayoutParams(layoutParams);
         lithoView.setComponentTree(componentTreeHolder.getComponentTree());
@@ -1442,10 +1460,11 @@ public class RecyclerBinder
     private final int mWidthMeasureSpec;
     private final int mHeightMeasureSpec;
 
-    private RecyclerViewLayoutManagerOverrideParams(int widthMeasureSpec, int heightMeasureSpec) {
-      super(WRAP_CONTENT, WRAP_CONTENT);
-      mWidthMeasureSpec = widthMeasureSpec;
-      mHeightMeasureSpec = heightMeasureSpec;
+    private RecyclerViewLayoutManagerOverrideParams(
+        int width, int height, int overrideWidthMeasureSpec, int overrideHeightMeasureSpec) {
+      super(width, height);
+      mWidthMeasureSpec = overrideWidthMeasureSpec;
+      mHeightMeasureSpec = overrideHeightMeasureSpec;
     }
 
     @Override
