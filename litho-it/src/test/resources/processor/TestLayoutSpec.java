@@ -14,6 +14,7 @@ import android.os.Build;
 import android.view.View;
 
 import com.facebook.litho.ClickEvent;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
@@ -71,7 +72,8 @@ public class TestLayoutSpec<S extends View> {
       @State(canUpdateLazily = true) long state1,
       @State S state2,
       @State int state3,
-      @TreeProp TestTreeProp treeProp) {
+      @TreeProp TestTreeProp treeProp,
+      @Prop Component<?> child) {
     return null;
   }
 

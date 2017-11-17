@@ -38,7 +38,10 @@ import java.util.BitSet;
  * @prop-optional prop2 boolean
  * @prop-required prop3 java.lang.Object
  * @prop-required prop4 char[]
+ * @prop-required child com.facebook.litho.Component<?>
  * @prop-required prop5 char
+ *
+ * @see com.facebook.litho.processor.integration.resources.TestLayoutSpec
  */
 @TargetApi(17)
 public final class TestLayout<S extends View> extends Component<TestLayout> {
@@ -79,6 +82,12 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
       optional = false
   )
   char[] prop4;
+
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  Component<?> child;
 
   @Prop(
       resType = ResType.NONE,
@@ -132,6 +141,9 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
     if (!Arrays.equals(prop4, testLayoutRef.prop4)) {
       return false;
     }
+    if (child != null ? !child.equals(testLayoutRef.child) : testLayoutRef.child != null) {
+      return false;
+    }
     if (prop5 != testLayoutRef.prop5) {
       return false;
     }
@@ -157,6 +169,7 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
   @Override
   public TestLayout makeShallowCopy() {
     TestLayout component = (TestLayout) super.makeShallowCopy();
+    component.child = component.child != null ? component.child.makeShallowCopy() : null;
     component.mStateContainer = new TestLayoutStateContainer();
     return component;
   }
@@ -172,7 +185,7 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
 
   @Override
   protected TreeProps getTreePropsForChildren(ComponentContext c, Component _abstract,
-      TreeProps parentTreeProps) {
+                                              TreeProps parentTreeProps) {
     final TestLayout _ref = (TestLayout) _abstract;
     final TreeProps childTreeProps = TreeProps.copy(parentTreeProps);
     childTreeProps.put(com.facebook.litho.processor.integration.resources.TestTreeProp.class, TestLayoutSpec.onCreateFeedPrefetcherProp(
@@ -187,7 +200,10 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
     TestLayout _ref = (TestLayout) _abstract;
     Output<Boolean> prop2 = acquireOutput();
     Output<Object> prop3 = acquireOutput();
-    TestLayoutSpec.onLoadStyle((ComponentContext) c, prop2, prop3);
+    TestLayoutSpec.onLoadStyle(
+        (ComponentContext) c,
+        prop2,
+        prop3);
     if (prop2.get() != null) {
       _ref.prop2 = prop2.get();
     }
@@ -202,7 +218,10 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
   protected void createInitialState(ComponentContext c, Component _abstract) {
     TestLayout _ref = (TestLayout) _abstract;
     StateValue<S> state2 = new StateValue<>();
-    TestLayoutSpec.createInitialState((ComponentContext) c, (int) _ref.prop1, state2);
+    TestLayoutSpec.createInitialState(
+        (ComponentContext) c,
+        (int) _ref.prop1,
+        state2);
     if (state2.get() != null) {
       _ref.mStateContainer.state2 = state2.get();
     }
@@ -211,34 +230,30 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
   @Override
   protected ComponentLayout onCreateLayout(ComponentContext context, Component _abstract) {
     TestLayout _ref = (TestLayout) _abstract;
-    ComponentLayout _result =
-        (ComponentLayout)
-            TestLayoutSpec.onCreateLayout(
-                (ComponentContext) context,
-                (boolean) _ref.prop2,
-                (Object) _ref.prop3,
-                (char[]) _ref.prop4,
-                (long) _ref.mStateContainer.state1,
-                (S) _ref.mStateContainer.state2,
-                (int) _ref.mStateContainer.state3,
-                (TestTreeProp) _ref.treeProp);
+    ComponentLayout _result = (ComponentLayout) TestLayoutSpec.onCreateLayout(
+        (ComponentContext) context,
+        (boolean) _ref.prop2,
+        (Object) _ref.prop3,
+        (char[]) _ref.prop4,
+        (long) _ref.mStateContainer.state1,
+        (S) _ref.mStateContainer.state2,
+        (int) _ref.mStateContainer.state3,
+        (TestTreeProp) _ref.treeProp,
+        (Component<?>) _ref.child);
     return _result;
   }
 
   @Override
   protected Transition onCreateTransition(ComponentContext c, Component _abstract) {
     TestLayout _ref = (TestLayout) _abstract;
-    Diff<Integer> _state3Diff =
-        acquireDiff(
-            _ref.mPreviousRenderData == null ? null : _ref.mPreviousRenderData.state3,
-            _ref.mStateContainer.state3);
-    Transition _result =
-        (Transition)
-            TestLayoutSpec.onCreateTransition(
-                (ComponentContext) c,
-                (Object) _ref.prop3,
-                (long) _ref.mStateContainer.state1,
-                _state3Diff);
+    Diff<Integer> _state3Diff = acquireDiff(
+        _ref.mPreviousRenderData == null ? null : _ref.mPreviousRenderData.state3,
+        _ref.mStateContainer.state3);
+    Transition _result = (Transition) TestLayoutSpec.onCreateTransition(
+        (ComponentContext) c,
+        (Object) _ref.prop3,
+        (long) _ref.mStateContainer.state1,
+        _state3Diff);
     releaseDiff(_state3Diff);
     return _result;
   }
@@ -265,7 +280,7 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
   }
 
   private void testLayoutEvent(HasEventDispatcher _abstract, ComponentContext c, View view,
-      int param1) {
+                               int param1) {
     TestLayout _ref = (TestLayout) _abstract;
     TestLayoutSpec.testLayoutEvent(
         c,
@@ -277,29 +292,25 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
   }
 
   public static EventHandler<ClickEvent> testLayoutEvent(ComponentContext c, int param1) {
-    return newEventHandler(
+    return newEventHandler(c, "testLayoutEvent", 1328162206, new Object[] {
         c,
-        "testLayoutEvent",
-        1328162206,
-        new Object[] {
-          c, param1,
-        });
+        param1,
+    });
   }
 
   @Override
   public Object dispatchOnEvent(final EventHandler eventHandler, final Object eventState) {
     int id = eventHandler.id;
     switch (id) {
-      case 1328162206:
-        {
-          ClickEvent _event = (ClickEvent) eventState;
-          testLayoutEvent(
-              eventHandler.mHasEventDispatcher,
-              (ComponentContext) eventHandler.params[0],
-              (View) _event.view,
-              (int) eventHandler.params[1]);
-          return null;
-        }
+      case 1328162206: {
+        ClickEvent _event = (ClickEvent) eventState;
+        testLayoutEvent(
+            eventHandler.mHasEventDispatcher,
+            (ComponentContext) eventHandler.params[0],
+            (View) _event.view,
+            (int) eventHandler.params[1]);
+        return null;
+      }
       default:
         return null;
     }
@@ -312,7 +323,7 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
 
   @Override
   protected void transferState(ComponentContext context,
-      ComponentLifecycle.StateContainer _prevStateContainer, Component _component) {
+                               ComponentLifecycle.StateContainer _prevStateContainer, Component _component) {
     TestLayoutStateContainer prevStateContainer = (TestLayoutStateContainer) _prevStateContainer;
     TestLayout component = (TestLayout) _component;
     component.mStateContainer.state1 = prevStateContainer.state1;
@@ -345,7 +356,7 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
     }
     ComponentLifecycle.StateUpdate _stateUpdate = new ComponentLifecycle.StateUpdate() {
       public void updateState(ComponentLifecycle.StateContainer _stateContainer,
-          Component newComponent) {
+                              Component newComponent) {
         TestLayout newComponentStateUpdate = (TestLayout) newComponent;
         StateValue<Long> state1 = new StateValue<Long>();
         state1.set(lazyUpdateValue);
@@ -361,18 +372,19 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
   }
 
   @Override
-  protected ComponentLifecycle.RenderData recordRenderData(
-      Component previousComponent, ComponentLifecycle.RenderData toRecycle) {
+  protected ComponentLifecycle.RenderData recordRenderData(Component previousComponent,
+                                                           ComponentLifecycle.RenderData toRecycle) {
     TestLayout _ref = (TestLayout) previousComponent;
-    TestLayoutRenderData renderInfo =
-        toRecycle != null ? (TestLayoutRenderData) toRecycle : new TestLayoutRenderData();
+    TestLayoutRenderData renderInfo = toRecycle != null ?
+        (TestLayoutRenderData) toRecycle :
+        new TestLayoutRenderData();
     renderInfo.record(_ref);
     return renderInfo;
   }
 
   @Override
-  protected void applyPreviousRenderData(
-      Component component, ComponentLifecycle.RenderData previousRenderData) {
+  protected void applyPreviousRenderData(Component component,
+                                         ComponentLifecycle.RenderData previousRenderData) {
     TestLayout _ref = (TestLayout) component;
     if (previousRenderData == null) {
       _ref.mPreviousRenderData = null;
@@ -389,7 +401,8 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
     return create(context, 0, 0);
   }
 
-  public static <S extends View> Builder<S> create(ComponentContext context, int defStyleAttr, int defStyleRes) {
+  public static <S extends View> Builder<S> create(ComponentContext context, int defStyleAttr,
+                                                   int defStyleRes) {
     Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
@@ -399,7 +412,10 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
     return builder;
   }
 
-  @VisibleForTesting(otherwise = 2) static class TestLayoutStateContainer<S extends View> implements ComponentLifecycle.StateContainer {
+  @VisibleForTesting(
+      otherwise = 2
+  )
+  static class TestLayoutStateContainer<S extends View> implements ComponentLifecycle.StateContainer {
     @State
     long state1;
 
@@ -410,8 +426,7 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
     int state3;
   }
 
-  private static class TestLayoutRenderData<S extends View>
-      implements ComponentLifecycle.RenderData {
+  private static class TestLayoutRenderData<S extends View> implements ComponentLifecycle.RenderData {
     @State
     int state3;
 
@@ -432,7 +447,7 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
     }
 
     public void updateState(ComponentLifecycle.StateContainer _stateContainer,
-        Component newComponent) {
+                            Component newComponent) {
       TestLayoutStateContainer stateContainer = (TestLayoutStateContainer) _stateContainer;
       TestLayout newComponentStateUpdate = (TestLayout) newComponent;
       StateValue<Long> state1 = new StateValue<Long>();
@@ -443,9 +458,9 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
   }
 
   public static class Builder<S extends View> extends Component.Builder<TestLayout, Builder<S>> {
-    private static final String[] REQUIRED_PROPS_NAMES = new String[] {"prop1", "prop6", "prop3", "prop4", "prop5"};
+    private static final String[] REQUIRED_PROPS_NAMES = new String[] {"prop1", "prop6", "prop3", "prop4", "child", "prop5"};
 
-    private static final int REQUIRED_PROPS_COUNT = 5;
+    private static final int REQUIRED_PROPS_COUNT = 6;
 
     TestLayout mTestLayout;
 
@@ -454,7 +469,7 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
     private BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
     private void init(ComponentContext context, int defStyleAttr, int defStyleRes,
-        TestLayout testLayoutRef) {
+                      TestLayout testLayoutRef) {
       super.init(context, defStyleAttr, defStyleRes, testLayoutRef);
       mTestLayout = testLayoutRef;
       mContext = context;
@@ -490,9 +505,21 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
       return this;
     }
 
+    public Builder<S> child(Component<?> child) {
+      this.mTestLayout.child = child;
+      mRequired.set(4);
+      return this;
+    }
+
+    public Builder<S> child(Component.Builder<?, ?> childBuilder) {
+      this.mTestLayout.child = childBuilder.build();
+      mRequired.set(4);
+      return this;
+    }
+
     public Builder<S> prop5(char prop5) {
       this.mTestLayout.prop5 = prop5;
-      mRequired.set(4);
+      mRequired.set(5);
       return this;
     }
 
