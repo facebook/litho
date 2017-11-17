@@ -30,7 +30,7 @@ A `DataDiffSection` is used to represent a homogeneous list of data. The minimal
 class MyGroupSection {
 
   @OnCreateChildren
-  Children onCreateChildren(
+  static Children onCreateChildren(
       SectionContext c,
       @Prop ImmutableList<MyModel> dataModel) {
       return Children.create()
@@ -41,7 +41,7 @@ class MyGroupSection {
     }
 
   @OnEvent(RenderEvent.class)
-  RenderInfo onRenderEdge(
+  static RenderInfo onRenderEdge(
       SectionContext c,
       @FromEvent MyModel model) {
       return ComponentRenderInfo.create(c)
@@ -66,14 +66,14 @@ This is how the example above would change if you provided your own item compari
 @OnCreateChildren
 Children onCreateChildren(
     SectionContext c,
-     @Prop ImmutableList<MyModel> dataModel) {
-     return Children.create()
-         .child(DataDiffSection.create(c)
-             .data(dataModel)
-             .renderEventHandler(MyGroupSection.onRenderEdge(c)))
-             .onCheckIsSameItemEventHandler(MyGroupSection.onCheckIsSameItem(c))
-             .onCheckIsSameContentEventHandler(MyGroupSection.onCheckIsSameContent(c))
-         .build();
+    @Prop ImmutableList<MyModel> dataModel) {
+  return Children.create()
+    .child(DataDiffSection.create(c)
+        .data(dataModel)
+        .renderEventHandler(MyGroupSection.onRenderEdge(c)))
+    .onCheckIsSameItemEventHandler(MyGroupSection.onCheckIsSameItem(c))
+    .onCheckIsSameContentEventHandler(MyGroupSection.onCheckIsSameContent(c))
+    .build();
 }
 
 
