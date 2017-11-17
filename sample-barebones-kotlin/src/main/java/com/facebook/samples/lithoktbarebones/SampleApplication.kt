@@ -10,17 +10,15 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.facebook.samples.lithoktbarebones;
+package com.facebook.samples.lithoktbarebones
 
-import android.app.Application;
-import com.facebook.soloader.SoLoader;
+import android.app.Application
+import com.facebook.soloader.SoLoader
 
-public class SampleApplication extends Application {
+class SampleApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
 
-  @Override
-  public void onCreate() {
-    super.onCreate();
-
-    SoLoader.init(this, false);
-  }
+        SoLoader.init(this, false)
+    }
 }

@@ -13,7 +13,7 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.facebook.samples.lithobarebones">
+          package="com.facebook.samples.lithoktbarebones">
 
   <uses-sdk android:targetSdkVersion="23"/>
 
