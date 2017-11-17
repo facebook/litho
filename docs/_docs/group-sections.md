@@ -35,21 +35,22 @@ class FooSectionSpec {
         .build();
   }
 
-@OnEvent(RenderEvent.class)
-static ComponentRenderInfo onRender(
-    SectionContext c,
-    @FromEvent String item) {
-  return ComponentRenderInfo.create(c)
-      .component(
-          Text.create(c)
-              .text(item)
-              .build())
-      .build();
-  }
+  @OnEvent(RenderEvent.class)
+  static ComponentRenderInfo onRender(
+      SectionContext c,
+      @FromEvent String item) {
+    return ComponentRenderInfo.create(c)
+        .component(
+            Text.create(c)
+                .text(item)
+                .build())
+        .build();
+    }
 }
 ```
 
 Imagine a surface that has multiple such subsections consisting of a header and list of Strings. An example could be a list of contacts grouped alphabetically, delimited by headers showing the first letter of the name. You can easily achieve that by creating a `GroupSectionSpec` that has a `FooSection` child for every letter.
+
 ```java
 @GroupSectionSpec
 class BarSectionSpec {
