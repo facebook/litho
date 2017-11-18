@@ -230,6 +230,11 @@ public final class DebugComponent {
     if (node == null) {
       return new Rect();
     }
+
+    if (isRoot()) {
+      return new Rect(0, 0, node.getWidth(), node.getHeight());
+    }
+
     final int x = getXFromRoot(node);
     final int y = getYFromRoot(node);
     return new Rect(x, y, x + node.getWidth(), y + node.getHeight());
@@ -421,6 +426,12 @@ public final class DebugComponent {
       return mNode.get().getNodeInfo().getContentDescription();
     }
     return null;
+  }
+
+  /** @return Whether this component is the root of its hierarchy */
+  public boolean isRoot() {
+    final InternalNode node = mNode.get();
+    return node != null && node.getParent() == null;
   }
 
   public void rerender() {
