@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
@@ -330,7 +332,7 @@ public final class SpecModelImpl implements SpecModel {
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof PropModel) {
-          props.add(updatePropWithCachedName((PropModel) param, cachedPropNames, propIndex++));
+          props.add((PropModel) param);
         }
       }
     }
@@ -338,7 +340,7 @@ public final class SpecModelImpl implements SpecModel {
     for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod : eventMethods) {
       for (MethodParamModel param : eventMethod.methodParams) {
         if (param instanceof PropModel) {
-          props.add(updatePropWithCachedName((PropModel) param, cachedPropNames, propIndex++));
+          props.add((PropModel) param);
         }
       }
     }
@@ -346,7 +348,7 @@ public final class SpecModelImpl implements SpecModel {
     for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod : updateStateMethods) {
       for (MethodParamModel param : updateStateMethod.methodParams) {
         if (param instanceof PropModel) {
-          props.add(updatePropWithCachedName((PropModel) param, cachedPropNames, propIndex++));
+          props.add((PropModel) param);
         }
       }
     }
@@ -357,13 +359,17 @@ public final class SpecModelImpl implements SpecModel {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof DiffPropModel &&
             !hasSameUnderlyingPropModel(props, (DiffPropModel) param)) {
-          // TODO(T15854501): Add support for prop name caching here.
           props.add(((DiffPropModel) param).getUnderlyingPropModel());
         }
       }
     }
 
-    return ImmutableList.copyOf(new ArrayList<>(props));
+    // Update props with their cached names if applicable.
+    final List<PropModel> propList = new ArrayList<>(props);
+    return ImmutableList.copyOf(
+        IntStream.range(0, propList.size())
+            .mapToObj(i -> updatePropWithCachedName(propList.get(i), cachedPropNames, i))
+            .collect(Collectors.toList()));
   }
 
   private static boolean hasSameUnderlyingPropModel(
