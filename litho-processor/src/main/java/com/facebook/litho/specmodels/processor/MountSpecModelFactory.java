@@ -87,6 +87,10 @@ public class MountSpecModelFactory implements SpecModelFactory {
         TriggerMethodExtractor.getOnTriggerMethods(
             elements, element, INTER_STAGE_INPUT_ANNOTATIONS),
         UpdateStateMethodExtractor.getOnUpdateStateMethods(element, INTER_STAGE_INPUT_ANNOTATIONS),
+        interStageStore == null
+            ? ImmutableList.of()
+            : CachedPropNameExtractor.getCachedPropNames(
+                interStageStore, element.getQualifiedName()),
         ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),
         EventDeclarationsExtractor.getEventDeclarations(elements, element, MountSpec.class),

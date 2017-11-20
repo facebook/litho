@@ -52,6 +52,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
+      ImmutableList<String> cachedPropNames,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
@@ -78,6 +79,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .eventMethods(eventMethods)
             .triggerMethods(triggerMethods)
             .updateStateMethods(updateStateMethods)
+            .cachedPropNames(cachedPropNames)
             .typeVariables(typeVariables)
             .propDefaults(propDefaults)
             .eventDeclarations(eventDeclarations)
