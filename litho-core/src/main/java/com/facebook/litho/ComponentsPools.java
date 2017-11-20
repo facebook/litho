@@ -21,6 +21,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.util.SparseArrayCompat;
 import android.util.SparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -255,6 +256,25 @@ public class ComponentsPools {
     return item;
   }
 
+  private static @Nullable DisplayListDrawable wrapDrawableIfPossible(
+      Component<?> component, Object content, LayoutOutput layoutOutput) {
+    if (!LayoutState.isEligibleForCreatingDisplayLists()) {
+      return null;
+    }
+
+    if (component == null || !component.shouldUseDisplayList()) {
+      return null;
+    }
+
+    if (content == null
+        || content instanceof DisplayListDrawable
+        || !(content instanceof Drawable)) {
+      return null;
+    }
+
+    return acquireDisplayListDrawable((Drawable) content, layoutOutput.getDisplayListContainer());
+  }
+
   static MountItem acquireMountItem(
       Component<?> component,
       ComponentHost host,
@@ -265,7 +285,12 @@ public class ComponentsPools {
       item = new MountItem();
     }
 
-    item.init(component, host, content, layoutOutput, null);
+    item.init(
+        component,
+        host,
+        content,
+        layoutOutput,
+        wrapDrawableIfPossible(component, content, layoutOutput));
     return item;
   }
 

@@ -64,7 +64,10 @@ class MountItem {
       ComponentHost host,
       Object content,
       LayoutOutput layoutOutput,
-      DisplayListDrawable displayListDrawable) {
+      @Nullable DisplayListDrawable displayListDrawable) {
+    displayListDrawable =
+        acquireDisplayListDrawableIfNeeded(
+            content, layoutOutput.getDisplayListContainer(), displayListDrawable);
     init(
         component,
         host,
@@ -72,10 +75,7 @@ class MountItem {
         layoutOutput.getNodeInfo(),
         layoutOutput.getViewNodeInfo(),
         layoutOutput.getDisplayListContainer(),
-        acquireDisplayListDrawableIfNeeded(
-            content,
-            layoutOutput.getDisplayListContainer(),
-            displayListDrawable),
+        displayListDrawable,
         layoutOutput.getFlags(),
         layoutOutput.getImportantForAccessibility());
   }
@@ -139,32 +139,35 @@ class MountItem {
 
   private @Nullable DisplayListDrawable acquireDisplayListDrawableIfNeeded(
       Object content,
-      DisplayListContainer displayListContainer,
-      DisplayListDrawable convertDisplayListDrawable) {
+      DisplayListContainer layoutOutputDisplayListContainer,
+      DisplayListDrawable mountItemDisplayListDrawable) {
 
-    if (displayListContainer == null) {
+    if (layoutOutputDisplayListContainer == null) {
       // If we do not have DisplayListContainer it would mean that we do not support generating
       // displaylists, hence this mount item should not have DisplayListDrawable.
-      if (convertDisplayListDrawable != null) {
-        ComponentsPools.release(convertDisplayListDrawable);
+      if (mountItemDisplayListDrawable != null) {
+        ComponentsPools.release(mountItemDisplayListDrawable);
       }
       return null;
     }
 
-    final DisplayList displayList = displayListContainer.getDisplayList();
-    if (convertDisplayListDrawable == null &&
-        (displayListContainer.canCacheDrawingDisplayLists() || displayList != null)) {
-      convertDisplayListDrawable = ComponentsPools.acquireDisplayListDrawable(
-            (Drawable) content, displayListContainer);
-    } else if (convertDisplayListDrawable != null) {
-      convertDisplayListDrawable.setWrappedDrawable((Drawable) content, displayListContainer);
+    final DisplayList displayList = layoutOutputDisplayListContainer.getDisplayList();
+    if (mountItemDisplayListDrawable == null
+        && (layoutOutputDisplayListContainer.canCacheDrawingDisplayLists()
+            || displayList != null)) {
+      mountItemDisplayListDrawable =
+          ComponentsPools.acquireDisplayListDrawable(
+              (Drawable) content, layoutOutputDisplayListContainer);
+    } else if (mountItemDisplayListDrawable != null) {
+      mountItemDisplayListDrawable.setWrappedDrawable(
+          (Drawable) content, layoutOutputDisplayListContainer);
     }
 
     if (displayList != null) {
-      convertDisplayListDrawable.suppressInvalidations(true);
+      mountItemDisplayListDrawable.suppressInvalidations(true);
     }
 
-    return convertDisplayListDrawable;
+    return mountItemDisplayListDrawable;
   }
 
   @Nullable
