@@ -357,10 +357,7 @@ class TextSpec {
 
     if (fontFamily != null) {
       final Integer styleValue = textStyle.get();
-      // https://github.com/facebook/litho/issues/204
-      // Typeface.create() reads from a static cache and is not thread-safe.
-      // Disable support until we can use our own cache or come up with another solution.
-      // typeface.set(Typeface.create(fontFamily, styleValue == null ? -1 : styleValue));
+      typeface.set(Typeface.create(fontFamily, styleValue == null ? -1 : styleValue));
     }
   }
 
