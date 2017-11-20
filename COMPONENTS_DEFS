@@ -25,6 +25,7 @@ COMPONENTS_TESTING_TARGET                  = make_dep_path('litho-testing/src/ma
 COMPONENTS_TESTING_ASSERTJ_TARGET          = make_dep_path('litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj')
 COMPONENTS_TESTING_HELPER_TARGET           = make_dep_path('litho-testing/src/main/java/com/facebook/litho/testing/helper:helper')
 COMPONENTS_TESTING_SUBCOMPONENTS_TARGET    = make_dep_path('litho-testing/src/main/java/com/facebook/litho/testing/subcomponents:subcomponents')
+COMPONENTS_TESTING_WIDGET_TARGET           = make_dep_path('litho-testing/src/main/java/com/facebook/litho/widget:widget')
 COMPONENTS_TEST_RES                        = make_dep_path('litho-it/src/main:res')
 COMPONENTS_SECTIONS_TARGET                 = make_dep_path('litho-sections-core/src/main/java/com/facebook/litho/sections:sections')
 COMPONENTS_SECTIONS_COMMON_TARGET          = make_dep_path('litho-sections-core/src/main/java/com/facebook/litho/sections/common:common')

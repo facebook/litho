@@ -20,6 +20,7 @@ components_robolectric_test(
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_TESTING_TARGET,
+        COMPONENTS_TESTING_WIDGET_TARGET,
         COMPONENTS_JUNIT_TARGET,
         COMPONENTS_ROBOLECTRIC_TARGET,
         COMPONENTS_ASSERTJ_TARGET,

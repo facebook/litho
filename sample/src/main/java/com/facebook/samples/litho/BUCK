@@ -6,7 +6,7 @@
 
 include_defs("//COMPONENTS_DEFS")
 
-litho_android_library(
+android_library(
     name = "litho",
     srcs = glob(["**/*.java"]),
     annotation_processor_deps = [
@@ -17,7 +17,6 @@ litho_android_library(
         "com.facebook.litho.specmodels.processor.ComponentsProcessor",
         "com.facebook.litho.sections.specmodels.processor.SectionsComponentProcessor",
     ],
-    fblite = False,
     visibility = [
         "PUBLIC",
     ],
