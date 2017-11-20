@@ -351,7 +351,7 @@ public final class DebugComponent {
   @Nullable
   public Component getComponent() {
     final InternalNode node = mNode.get();
-    if (node == null || node.getComponents().isEmpty()) {
+    if (node == null || node.getComponents().size() <= mComponentIndex) {
       return null;
     }
     return node.getComponents().get(mComponentIndex);
