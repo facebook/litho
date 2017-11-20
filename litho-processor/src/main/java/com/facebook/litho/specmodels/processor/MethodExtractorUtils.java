@@ -66,7 +66,9 @@ public class MethodExtractorUtils {
       } catch (Exception e) {
         throw new ComponentsProcessingException(
             param,
-            "Error processing this param. Are your imports set up correctly?");
+            String.format(
+                "Error processing the param '%s'. Are your imports set up correctly? The causing error was: %s",
+                param, e));
       }
     }
 
