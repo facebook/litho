@@ -80,8 +80,10 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
               .getMessager()
               .printMessage(
                   Diagnostic.Kind.ERROR,
-                  "Unexpected error thrown when generating this component spec. "
-                      + "Please report stack trace to the components team.",
+                  String.format(
+                      "Unexpected error thrown when generating this component spec. "
+                          + "Please report stack trace to the components team.\n%s",
+                      e),
                   element);
           e.printStackTrace();
         }
