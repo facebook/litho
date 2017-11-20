@@ -9,9 +9,6 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import static com.facebook.litho.specmodels.generator.DelegateMethodGeneratorTest.createBooleanTypeMirror;
-import static com.facebook.litho.specmodels.generator.DelegateMethodGeneratorTest.createIntTypeMirror;
-import static com.facebook.litho.specmodels.generator.DelegateMethodGeneratorTest.createTypeMirror;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -28,11 +25,11 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.type.TypeKind;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,11 +56,11 @@ public class TreePropGeneratorTest {
             ImmutableList.of(Modifier.PROTECTED),
             "onCreateTreeProp",
             TypeName.BOOLEAN,
-            ImmutableList.of(),
+            ImmutableList.<TypeVariableName>of(),
             ImmutableList.of(
                 MethodParamModelFactory.create(
                     mock(ExecutableElement.class),
-                    createTypeMirror(TypeKind.OTHER, ClassNames.COMPONENT_CONTEXT),
+                    ClassNames.COMPONENT_CONTEXT,
                     "componentContext",
                     new ArrayList<Annotation>(),
                     new ArrayList<AnnotationSpec>(),
@@ -72,7 +69,7 @@ public class TreePropGeneratorTest {
                     null),
                 MethodParamModelFactory.create(
                     mock(ExecutableElement.class),
-                    createBooleanTypeMirror(),
+                    TypeName.BOOLEAN,
                     "prop",
                     ImmutableList.of(createAnnotation(Prop.class)),
                     new ArrayList<AnnotationSpec>(),
@@ -81,7 +78,7 @@ public class TreePropGeneratorTest {
                     null),
                 MethodParamModelFactory.create(
                     mock(ExecutableElement.class),
-                    createIntTypeMirror(),
+                    TypeName.INT,
                     "state",
                     ImmutableList.of(createAnnotation(State.class)),
                     new ArrayList<AnnotationSpec>(),

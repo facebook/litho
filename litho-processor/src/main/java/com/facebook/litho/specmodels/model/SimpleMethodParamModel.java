@@ -14,7 +14,6 @@ import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import javax.annotation.concurrent.Immutable;
-import javax.lang.model.type.TypeMirror;
 
 /**
  * Model that is a simple base representation of a method param.
@@ -22,51 +21,18 @@ import javax.lang.model.type.TypeMirror;
 @Immutable
 public class SimpleMethodParamModel implements MethodParamModel {
   private final TypeName mTypeName;
-  private final TypeMirror mTypeMirror;
   private final String mName;
   private final List<Annotation> mAnnotations;
   private final List<AnnotationSpec> mExternalAnnotations;
   private final Object mRepresentedObject;
 
   SimpleMethodParamModel(
-      TypeMirror typeMirror,
-      String name,
-      List<Annotation> annotations,
-      List<AnnotationSpec> externalAnnotations,
-      Object representedObject) {
-    this(
-        MethodParamModelFactory.extractDiffTypeIfNecessary(TypeName.get(typeMirror)),
-        typeMirror,
-        name,
-        annotations,
-        externalAnnotations,
-        representedObject);
-  }
-
-  SimpleMethodParamModel(
       TypeName typeName,
-      String name,
-      List<Annotation> annotations,
-      List<AnnotationSpec> externalAnnotations,
-      Object representedObject) {
-    this(
-        typeName,
-        null,
-        name,
-        annotations,
-        externalAnnotations,
-        representedObject);
-  }
-
-  private SimpleMethodParamModel(
-      TypeName typeName,
-      TypeMirror typeMirror,
       String name,
       List<Annotation> annotations,
       List<AnnotationSpec> externalAnnotations,
       Object representedObject) {
     mTypeName = typeName;
-    mTypeMirror = typeMirror;
     mName = name;
     mAnnotations = annotations;
     mExternalAnnotations = externalAnnotations;

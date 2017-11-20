@@ -19,7 +19,6 @@ import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.type.TypeMirror;
 
 /**
  * Factory for creating {@link MethodParamModel}s.
@@ -28,14 +27,14 @@ public final class MethodParamModelFactory {
 
   public static MethodParamModel create(
       ExecutableElement method,
-      TypeMirror typeMirror,
+      TypeName typeName,
       String name,
       List<Annotation> annotations,
       List<AnnotationSpec> externalAnnotations,
       List<Class<? extends Annotation>> permittedInterStateInputAnnotations,
       List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels,
       Object representedObject) {
-    final TypeName typeName = TypeName.get(typeMirror);
+
     // We check whether we're calling ShouldUpdate here since it uses a different infrastructure to
     // track previous props/state :(
     if (shouldCreateDiffModel(method, typeName, delegateMethodAnnotationsThatSkipDiffModels)) {
@@ -46,7 +45,7 @@ public final class MethodParamModelFactory {
 
     final SimpleMethodParamModel simpleMethodParamModel =
         new SimpleMethodParamModel(
-            typeMirror,
+            extractDiffTypeIfNecessary(typeName),
             name,
             annotations,
             externalAnnotations,

@@ -9,9 +9,6 @@
 
 package com.facebook.litho.specmodels.model;
 
-import static com.facebook.litho.specmodels.generator.DelegateMethodGeneratorTest.createBooleanTypeMirror;
-import static com.facebook.litho.specmodels.generator.DelegateMethodGeneratorTest.createTypeMirror;
-import static javax.lang.model.type.TypeKind.OTHER;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,7 +43,7 @@ public class MethodParamModelFactoryTest {
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
             mock(ExecutableElement.class),
-            createBooleanTypeMirror(),
+            TypeName.BOOLEAN,
             "testParam",
             new ArrayList<Annotation>(),
             new ArrayList<AnnotationSpec>(),
@@ -64,7 +61,7 @@ public class MethodParamModelFactoryTest {
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
             mock(ExecutableElement.class),
-            createBooleanTypeMirror(),
+            TypeName.BOOLEAN,
             "testParam",
             annotations,
             new ArrayList<AnnotationSpec>(),
@@ -82,7 +79,7 @@ public class MethodParamModelFactoryTest {
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
             mock(ExecutableElement.class),
-            createBooleanTypeMirror(),
+            TypeName.BOOLEAN,
             "testParam",
             annotations,
             new ArrayList<AnnotationSpec>(),
@@ -106,7 +103,7 @@ public class MethodParamModelFactoryTest {
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
             mock(ExecutableElement.class),
-            createBooleanTypeMirror(),
+            TypeName.BOOLEAN,
             "testParam",
             annotations,
             new ArrayList<AnnotationSpec>(),
@@ -134,7 +131,7 @@ public class MethodParamModelFactoryTest {
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
             method,
-            createTypeMirror(OTHER, ParameterizedTypeName.get(ClassNames.DIFF, TypeName.INT.box())),
+            ParameterizedTypeName.get(ClassNames.DIFF, TypeName.INT.box()),
             "testParam",
             annotations,
             new ArrayList<AnnotationSpec>(),
@@ -172,7 +169,7 @@ public class MethodParamModelFactoryTest {
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
             method,
-            createTypeMirror(OTHER, ParameterizedTypeName.get(ClassNames.DIFF, TypeName.INT.box())),
+            ParameterizedTypeName.get(ClassNames.DIFF, TypeName.INT.box()),
             "testParam",
             annotations,
             new ArrayList<AnnotationSpec>(),
