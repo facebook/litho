@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.concurrent.GuardedBy;
 
 /**
  * Pools of recycled resources.
@@ -45,6 +46,7 @@ public class ComponentsPools {
 
   private static final int SCRAP_ARRAY_INITIAL_SIZE = 4;
 
+  @GuardedBy("sYogaConfigLock")
   private static YogaConfig sYogaConfig;
 
   private ComponentsPools() {
@@ -53,6 +55,7 @@ public class ComponentsPools {
   // FUTURE: tune pool max sizes
 
   private static final Object mountContentLock = new Object();
+  private static final Object sYogaConfigLock = new Object();
 
   static final RecyclePool<LayoutState> sLayoutStatePool =
       new RecyclePool<>("LayoutState", 64, true);
@@ -168,7 +171,7 @@ public class ComponentsPools {
     return state;
   }
 
-  static synchronized YogaNode acquireYogaNode(ComponentContext c, YogaConfig yogaConfig) {
+  static YogaNode acquireYogaNode(ComponentContext c, YogaConfig yogaConfig) {
     YogaNode node = ComponentsConfiguration.usePooling ? sYogaNodePool.acquire() : null;
     if (node == null) {
       node = new YogaNode(yogaConfig);
@@ -177,9 +180,8 @@ public class ComponentsPools {
     return node;
   }
 
-  static synchronized InternalNode acquireInternalNode(
-      ComponentContext componentContext,
-      YogaConfig yogaConfig) {
+  static InternalNode acquireInternalNode(
+      ComponentContext componentContext, YogaConfig yogaConfig) {
     InternalNode node = ComponentsConfiguration.usePooling ? sInternalNodePool.acquire() : null;
     if (node == null) {
       node = new InternalNode();
@@ -189,21 +191,27 @@ public class ComponentsPools {
     return node;
   }
 
-  static synchronized InternalNode acquireInternalNode(ComponentContext componentContext) {
+  static InternalNode acquireInternalNode(ComponentContext componentContext) {
     if (sYogaConfig == null) {
-      sYogaConfig = new YogaConfig();
-      sYogaConfig.setUseWebDefaults(true);
-      sYogaConfig.setUseLegacyStretchBehaviour(true);
+      synchronized (sYogaConfigLock) {
+        if (sYogaConfig == null) {
+          sYogaConfig = new YogaConfig();
+          sYogaConfig.setUseWebDefaults(true);
+          sYogaConfig.setUseLegacyStretchBehaviour(true);
+        }
+      }
     }
 
     if (sYogaConfig.getLogger() != ComponentsConfiguration.YOGA_LOGGER) {
-      sYogaConfig.setLogger(ComponentsConfiguration.YOGA_LOGGER);
+      synchronized (sYogaConfigLock) {
+        sYogaConfig.setLogger(ComponentsConfiguration.YOGA_LOGGER);
+      }
     }
 
     return acquireInternalNode(componentContext, sYogaConfig);
   }
 
-  static synchronized NodeInfo acquireNodeInfo() {
+  static NodeInfo acquireNodeInfo() {
     NodeInfo nodeInfo = ComponentsConfiguration.usePooling ? sNodeInfoPool.acquire() : null;
     if (nodeInfo == null) {
       nodeInfo = new NodeInfo();
@@ -212,7 +220,7 @@ public class ComponentsPools {
     return nodeInfo;
   }
 
-  static synchronized ViewNodeInfo acquireViewNodeInfo() {
+  static ViewNodeInfo acquireViewNodeInfo() {
     ViewNodeInfo viewNodeInfo =
         ComponentsConfiguration.usePooling ? sViewNodeInfoPool.acquire() : null;
     if (viewNodeInfo == null) {
