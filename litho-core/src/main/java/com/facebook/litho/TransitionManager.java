@@ -156,7 +156,7 @@ public class TransitionManager {
      * The current mount content for this animation state, if it's mounted, null otherwise. This
      * mount content can change over time.
      */
-    public Object mountContent;
+    public @Nullable Object mountContent;
 
     /**
      * Whether the last LayoutState diff that had this content in it showed the content appearing,
@@ -648,7 +648,9 @@ public class TransitionManager {
       final float value = mInitialStatesToRestore.valueAt(i);
       final AnimationState animationState = mAnimationStates.get(propertyHandle.getTransitionKey());
       final AnimatedProperty property = propertyHandle.getProperty();
-      property.set(animationState.mountContent, value);
+      if (animationState.mountContent != null) {
+        property.set(animationState.mountContent, value);
+      }
     }
 
     mInitialStatesToRestore.clear();
