@@ -9,6 +9,7 @@
 
 package com.facebook.litho.processor.integration.resources;
 
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
@@ -23,7 +24,8 @@ public class BasicLayoutSpec {
       ComponentContext context,
       @Prop String myStringProp,
       @Prop(resType = ResType.COLOR) int myRequiredColorProp,
-      @Prop(resType = ResType.DIMEN_SIZE) float myDimenSizeProp) {
+      @Prop(resType = ResType.DIMEN_SIZE) float myDimenSizeProp,
+      @Prop Component<?> child) {
     return null;
   }
 }

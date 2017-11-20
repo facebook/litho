@@ -77,14 +77,8 @@ public final class MatcherGenerator {
 
     propsBuilderClassBuilder.addMethod(constructor);
 
-    int requiredPropIndex = 0;
     for (final PropModel prop : specModel.getProps()) {
-      generatePropsBuilderMethods(specModel, prop, requiredPropIndex)
-          .addToTypeSpec(propsBuilderClassBuilder);
-
-      if (!prop.isOptional()) {
-        requiredPropIndex++;
-      }
+      generatePropsBuilderMethods(prop).addToTypeSpec(propsBuilderClassBuilder);
     }
 
     propsBuilderClassBuilder.addMethod(generateBuildMethod(specModel));
@@ -92,8 +86,7 @@ public final class MatcherGenerator {
     return TypeSpecDataHolder.newBuilder().addType(propsBuilderClassBuilder.build()).build();
   }
 
-  private static TypeSpecDataHolder generatePropsBuilderMethods(
-      final SpecModel specModel, final PropModel prop, final int requiredIndex) {
+  private static TypeSpecDataHolder generatePropsBuilderMethods(final PropModel prop) {
     final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
     dataHolder.addField(matcherFieldBuilder(prop));
     dataHolder.addMethod(matcherFieldSetterBuilder(prop));
@@ -182,11 +175,7 @@ public final class MatcherGenerator {
             attrBuilders(prop, ClassNames.DRAWABLE_RES, "resolveDrawable"));
         break;
       case NONE:
-        if (prop.getType().equals(specModel.getComponentClass())) {
-          dataHolder.addMethod(componentBuilder(prop));
-        } else {
-          dataHolder.addMethod(regularBuilder(prop));
-        }
+        dataHolder.addMethod(regularBuilder(prop));
         break;
       case DRAWABLE_REFERENCE:
         // TODO(T15854501): Implement drawable reference comparison for this and other generators.
@@ -219,16 +208,6 @@ public final class MatcherGenerator {
         .build();
   }
 
-  private static MethodSpec componentBuilder(final PropModel prop) {
-    return builder(
-        prop,
-        prop.getName(),
-        Collections.singletonList(parameter(prop, prop.getType(), prop.getName())),
-        "$L == null ? null : $L.makeShallowCopy()",
-        prop.getName(),
-        prop.getName());
-  }
-
   private static MethodSpec regularBuilder(
       final PropModel prop,
       final AnnotationSpec... extraAnnotations) {
@@ -247,7 +226,10 @@ public final class MatcherGenerator {
   }
 
   private static ParameterizedTypeName getPropMatcherType(PropModel prop) {
-    return ParameterizedTypeName.get(ClassNames.HAMCREST_MATCHER, prop.getType().box());
+    final TypeName rawType = getRawType(prop.getType());
+
+    // We can only match against unparameterized (i.e. raw) types. Thanks, Java.
+    return ParameterizedTypeName.get(ClassNames.HAMCREST_MATCHER, rawType.box());
   }
 
   static String getPropMatcherName(final PropModel prop) {
@@ -255,7 +237,7 @@ public final class MatcherGenerator {
 
     final int fst = Character.toUpperCase(name.codePointAt(0));
 
-    return "m"
+    return 'm'
         + String.copyValueOf(Character.toChars(fst))
         + name.substring(name.offsetByCodePoints(0, 1))
         + "Matcher";
@@ -487,7 +469,7 @@ public final class MatcherGenerator {
                 "this.$N = $L.is(($T) $L)",
                 propMatcherName,
                 ClassNames.HAMCREST_CORE_IS,
-                prop.getType(),
+                getRawType(prop.getType()),
                 formattedStatement)
             .build();
 

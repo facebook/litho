@@ -14,6 +14,7 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.Dimension;
 import android.support.annotation.Px;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ResourceResolver;
 import com.facebook.litho.testing.assertj.ComponentMatcher;
@@ -24,6 +25,7 @@ import javax.annotation.Nullable;
  * @prop-required myStringProp java.lang.String
  * @prop-required myRequiredColorProp int
  * @prop-required myDimenSizeProp float
+ * @prop-required child com.facebook.litho.Component<?>
  *
  * @see com.facebook.litho.processor.integration.resources.BasicTestSampleSpec
  */
@@ -41,6 +43,9 @@ public final class BasicTestSample implements BasicTestSampleSpec {
 
     @Nullable
     org.hamcrest.Matcher<Float> mMyDimenSizePropMatcher;
+
+    @Nullable
+    org.hamcrest.Matcher<Component> mChildMatcher;
 
     Matcher(ComponentContext c) {
       super.init(c, c.getResourceCache());
@@ -111,6 +116,21 @@ public final class BasicTestSample implements BasicTestSampleSpec {
       return this;
     }
 
+    public Matcher child(org.hamcrest.Matcher<Component> matcher) {
+      mChildMatcher = matcher;
+      return this;
+    }
+
+    public Matcher child(Component<?> child) {
+      this.mChildMatcher = org.hamcrest.core.Is.is((Component) child);
+      return this;
+    }
+
+    public Matcher child(Component.Builder<?, ?> childBuilder) {
+      this.mChildMatcher = org.hamcrest.core.Is.is((Component) childBuilder.build());
+      return this;
+    }
+
     public ComponentMatcher build() {
       return new ComponentMatcher() {
         @Override
@@ -126,6 +146,9 @@ public final class BasicTestSample implements BasicTestSampleSpec {
             return false;
           }
           if (mMyDimenSizePropMatcher != null && !mMyDimenSizePropMatcher.matches(impl.myDimenSizeProp)) {
+            return false;
+          }
+          if (mChildMatcher != null && !mChildMatcher.matches(impl.child)) {
             return false;
           }
           return true;
