@@ -73,6 +73,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
 
           validate(specModel);
           generate(specModel);
+          afterGenerate(specModel);
         } catch (PrintableException e) {
           e.print(processingEnv.getMessager());
         } catch (Exception e) {
@@ -99,7 +100,9 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
         .skipJavaLangImports(true)
         .build()
         .writeTo(processingEnv.getFiler());
+  }
 
+  private void afterGenerate(SpecModel specModel) throws IOException {
     mInterStageStore.getPropNameInterStageStore().saveNames(specModel);
   }
 }
