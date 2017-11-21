@@ -11,6 +11,7 @@ package com.facebook.litho;
 
 import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
 import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
+import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -709,6 +710,8 @@ public class ComponentHost extends ViewGroup {
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
+    assertMainThread();
+
     boolean handled = false;
 
     if (isEnabled()) {
@@ -1122,6 +1125,8 @@ public class ComponentHost extends ViewGroup {
   }
 
   private void mountDrawable(int index, MountItem mountItem, Rect bounds) {
+    assertMainThread();
+
     mDrawableMountItems.put(index, mountItem);
     final Drawable drawable = (Drawable) mountItem.getContent();
     final DisplayListDrawable displayListDrawable = mountItem.getDisplayListDrawable();
@@ -1139,6 +1144,8 @@ public class ComponentHost extends ViewGroup {
   }
 
   private void unmountDrawable(int index, MountItem mountItem) {
+    assertMainThread();
+
     final Drawable contentDrawable = (Drawable) mountItem.getContent();
     final Drawable drawable = mountItem.getDisplayListDrawable() == null
         ? contentDrawable
@@ -1167,6 +1174,8 @@ public class ComponentHost extends ViewGroup {
   }
 
   private void moveDrawableItem(MountItem item, int oldIndex, int newIndex) {
+    assertMainThread();
+
     // When something is already present in newIndex position we need to keep track of it.
     if (mDrawableMountItems.get(newIndex) != null) {
       ensureScrapDrawableMountItemsArray();
