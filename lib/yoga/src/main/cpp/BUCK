@@ -24,7 +24,7 @@ if COMPONENTS_IS_OSS_BUILD:
 
   cxx_library(
       name = "yoga",
-      srcs = glob(["yoga/*.c"]),
+      srcs = glob(["yoga/*.cpp"]),
       deps = [
         ":ndklog",
       ],
@@ -33,7 +33,7 @@ if COMPONENTS_IS_OSS_BUILD:
           "-fexceptions",
           "-Wall",
           "-Werror",
-          "-std=c99",
+          "-std=c++1y",
           "-O3",
       ],
       exported_headers = glob(["yoga/*.h"]),
