@@ -232,6 +232,18 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
         if (isMountable && !isMounted) {
           mountLayoutOutput(i, layoutOutput, layoutState);
+
+          if (isAnimationLocked(i)
+              && isIncrementalMountEnabled
+              && canMountIncrementally(component)) {
+            // If the component is locked for animation then we need to make sure that all the
+            // children are also mounted.
+            final Rect rect = ComponentsPools.acquireRect();
+            final View view = (View) getItemAt(i).getContent();
+            rect.set(0, 0, view.getWidth(), view.getHeight());
+            mountViewIncrementally(view, rect, processVisibilityOutputs);
+            ComponentsPools.release(rect);
+          }
         } else if (!isMountable && isMounted) {
           unmountItem(mContext, i, mHostsByMarker);
         } else if (isMounted) {
