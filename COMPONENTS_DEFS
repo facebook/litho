@@ -42,7 +42,7 @@ COMPONENTS_TEST_TARGET                     = make_dep_path('litho-it/src/test/ja
 COMPONENTS_PROGUARDANNOTATIONS_TARGET = make_dep_path('litho-annotations/src/main/java/com/facebook/proguard/annotations:annotations')
 
 # Resources
-COMPONENTS_RES_TARGET               = make_dep_path(':res')
+COMPONENTS_RES_TARGET               = make_dep_path('litho-core:res')
 
 # Libraries
 COMPONENTS_INFERANNOTATIONS_TARGET            = make_dep_path('lib/infer-annotations:infer-annotations')

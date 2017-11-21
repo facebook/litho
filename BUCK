@@ -37,17 +37,6 @@ litho_android_library(
     ],
 )
 
-android_resource(
-    name = "res",
-    package = "com.facebook.litho",
-    res = "litho-core/src/main/res",
-    visibility = [
-        "PUBLIC",
-    ],
-    deps = [
-    ],
-)
-
 android_build_config(
     name = "build_config",
     package = "com.facebook.litho",
