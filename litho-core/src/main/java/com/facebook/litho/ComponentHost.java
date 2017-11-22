@@ -11,6 +11,7 @@ package com.facebook.litho;
 
 import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
 import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
+import static com.facebook.litho.MountItem.isTouchableDisabled;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.annotation.SuppressLint;
@@ -53,9 +54,6 @@ public class ComponentHost extends ViewGroup {
 
   private final SparseArrayCompat<MountItem> mDrawableMountItems = new SparseArrayCompat<>();
   private SparseArrayCompat<MountItem> mScrapDrawableMountItems;
-
-  private final SparseArrayCompat<Touchable> mTouchables = new SparseArrayCompat<>();
-  private SparseArrayCompat<Touchable> mScrapTouchables;
 
   private final ArrayList<MountItem> mDisappearingItems = new ArrayList<>();
 
@@ -716,11 +714,15 @@ public class ComponentHost extends ViewGroup {
 
     if (isEnabled()) {
       // Iterate drawable from last to first to respect drawing order.
-      for (int size = mTouchables.size(), i = size - 1; i >= 0; i--) {
-        final Touchable t = mTouchables.valueAt(i);
-        if (t.shouldHandleTouchEvent(event) && t.onTouchEvent(event, this)) {
-          handled = true;
-          break;
+      for (int i = mDrawableMountItems.size() - 1; i >= 0; i--) {
+        final MountItem item = mDrawableMountItems.valueAt(i);
+
+        if (item.getContent() instanceof Touchable && !isTouchableDisabled(item.getFlags())) {
+          final Touchable t = (Touchable) item.getContent();
+          if (t.shouldHandleTouchEvent(event) && t.onTouchEvent(event, this)) {
+            handled = true;
+            break;
+          }
         }
       }
     }
@@ -1137,10 +1139,6 @@ public class ComponentHost extends ViewGroup {
         bounds,
         mountItem.getFlags(),
         mountItem.getNodeInfo());
-
-    if (drawable instanceof Touchable && !MountItem.isTouchableDisabled(mountItem.getFlags())) {
-      mTouchables.put(index, (Touchable) drawable);
-    }
   }
 
   private void unmountDrawable(int index, MountItem mountItem) {
@@ -1159,15 +1157,6 @@ public class ComponentHost extends ViewGroup {
 
     drawable.setCallback(null);
 
-    if (contentDrawable instanceof Touchable
-        && !MountItem.isTouchableDisabled(mountItem.getFlags())) {
-      if (ComponentHostUtils.existsScrapItemAt(index, mScrapTouchables)) {
-        mScrapTouchables.remove(index);
-      } else {
-        mTouchables.remove(index);
-      }
-    }
-
     this.invalidate(drawable.getBounds());
 
     releaseScrapDataStructuresIfNeeded();
@@ -1183,18 +1172,8 @@ public class ComponentHost extends ViewGroup {
       ComponentHostUtils.scrapItemAt(newIndex, mDrawableMountItems, mScrapDrawableMountItems);
     }
 
-    if (mTouchables.get(newIndex) != null) {
-      ensureScrapTouchablesArray();
-
-      ComponentHostUtils.scrapItemAt(newIndex, mTouchables, mScrapTouchables);
-    }
-
-    // Move the MountItem in the new position. If the mount item was a Touchable we need to reflect
-    // this change also in the Touchables SparseArray.
+    // Move the MountItem in the new position.
     ComponentHostUtils.moveItem(oldIndex, newIndex, mDrawableMountItems, mScrapDrawableMountItems);
-    if (item.getContent() instanceof Touchable) {
-      ComponentHostUtils.moveItem(oldIndex, newIndex, mTouchables, mScrapTouchables);
-    }
 
     // Drawing order changed, invalidate the whole view.
     this.invalidate();
@@ -1205,12 +1184,6 @@ public class ComponentHost extends ViewGroup {
   private void ensureScrapDrawableMountItemsArray() {
     if (mScrapDrawableMountItems == null) {
       mScrapDrawableMountItems = ComponentsPools.acquireScrapMountItemsArray();
-    }
-  }
-
-  private void ensureScrapTouchablesArray() {
-    if (mScrapTouchables == null) {
-      mScrapTouchables = ComponentsPools.acquireScrapTouchablesArray();
     }
   }
 
@@ -1226,11 +1199,6 @@ public class ComponentHost extends ViewGroup {
 
   private static void finishTemporaryDetach(View view) {
     ViewCompat.dispatchFinishTemporaryDetach(view);
-  }
-
-  @VisibleForTesting
-  SparseArrayCompat<Touchable> getHostTouchables() {
-    return mTouchables;
   }
 
   /**

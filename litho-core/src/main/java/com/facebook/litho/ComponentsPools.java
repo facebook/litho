@@ -113,9 +113,6 @@ public class ComponentsPools {
   static final RecyclePool<SparseArrayCompat<MountItem>> sMountItemScrapArrayPool =
       new RecyclePool<>("MountItemScrapArray", 8, false);
 
-  static final RecyclePool<SparseArrayCompat<Touchable>> sTouchableScrapArrayPool =
-      new RecyclePool<>("TouchableScrapArray", 4, false);
-
   static final RecyclePool<RectF> sRectFPool =
       new RecyclePool<>("RectF", 4, true);
 
@@ -737,24 +734,6 @@ public class ComponentsPools {
     sMountItemScrapArrayPool.release(sparseArray);
   }
 
-  static SparseArrayCompat<Touchable> acquireScrapTouchablesArray() {
-    SparseArrayCompat<Touchable> sparseArray =
-        ComponentsConfiguration.usePooling ? sTouchableScrapArrayPool.acquire() : null;
-    if (sparseArray == null) {
-      sparseArray = new SparseArrayCompat<>(SCRAP_ARRAY_INITIAL_SIZE);
-    }
-
-    return sparseArray;
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void releaseScrapTouchablesArray(SparseArrayCompat<Touchable> sparseArray) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
-    sTouchableScrapArrayPool.release(sparseArray);
-  }
-
   static RectF acquireRectF() {
     RectF rect = ComponentsConfiguration.usePooling ? sRectFPool.acquire() : null;
     if (rect == null) {
@@ -910,7 +889,6 @@ public class ComponentsPools {
     sTreePropsMapPool.clear();
     sLogEventPool.clear();
     sMountItemScrapArrayPool.clear();
-    sTouchableScrapArrayPool.clear();
     sRectFPool.clear();
     sEdgesPool.clear();
     sDisplayListDrawablePool.clear();

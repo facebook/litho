@@ -24,6 +24,7 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -185,27 +186,41 @@ public class ComponentHostTest {
     assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem3);
   }
 
-  @Test public void testMountTouchables() {
+  @Test
+  public void testOnTouchWithTouchables() {
     assertThat(mHost.getMountItemAt(0)).isNull();
     assertThat(mHost.getMountItemAt(1)).isNull();
     assertThat(mHost.getMountItemAt(2)).isNull();
 
+    // Touchables are traversed backwards as drawing order.
+    // The n.4 is the first parsed, and returning false means the n.2 will be parsed too.
+    TouchableDrawable touchableDrawableOnItem2 = spy(new TouchableDrawable());
+    TouchableDrawable touchableDrawableOnItem4 = spy(new TouchableDrawable());
+    when(touchableDrawableOnItem2.shouldHandleTouchEvent(any(MotionEvent.class))).thenReturn(true);
+    when(touchableDrawableOnItem4.shouldHandleTouchEvent(any(MotionEvent.class))).thenReturn(false);
+
     MountItem mountItem1 = mount(0, new ColorDrawable());
-    MountItem mountItem2 = mount(1, new TouchableDrawable());
+    MountItem mountItem2 = mount(1, touchableDrawableOnItem2);
     MountItem mountItem3 = mount(2, new View(mContext));
-    MountItem mountItem4 = mount(5, new TouchableDrawable());
+    MountItem mountItem4 = mount(5, touchableDrawableOnItem4);
 
     assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem1);
     assertThat(mHost.getMountItemAt(1)).isEqualTo(mountItem2);
     assertThat(mHost.getMountItemAt(2)).isEqualTo(mountItem3);
     assertThat(mHost.getMountItemAt(3)).isEqualTo(mountItem4);
 
-    assertThat(mHost.getHostTouchables().size()).isEqualTo(2);
-    assertThat(mHost.getHostTouchables().get(1)).isEqualTo(mountItem2.getContent());
-    assertThat(mHost.getHostTouchables().get(5)).isEqualTo(mountItem4.getContent());
+    mHost.onTouchEvent(mock(MotionEvent.class));
+
+    verify(touchableDrawableOnItem4, times(1)).shouldHandleTouchEvent(any(MotionEvent.class));
+    verify(touchableDrawableOnItem4, never()).onTouchEvent(any(MotionEvent.class), any(View.class));
+
+    verify(touchableDrawableOnItem2, times(1)).shouldHandleTouchEvent(any(MotionEvent.class));
+    verify(touchableDrawableOnItem2, times(1))
+        .onTouchEvent(any(MotionEvent.class), any(View.class));
   }
 
-  @Test public void testMountDisableTouchables() {
+  @Test
+  public void testOnTouchWithDisableTouchables() {
     assertThat(mHost.getMountItemAt(0)).isNull();
     assertThat(mHost.getMountItemAt(1)).isNull();
     assertThat(mHost.getMountItemAt(2)).isNull();
@@ -213,7 +228,7 @@ public class ComponentHostTest {
     MountItem mountItem1 = mount(0, new ColorDrawable());
     MountItem mountItem2 = mount(1, new TouchableDrawable(), MountItem.FLAG_DISABLE_TOUCHABLE);
     MountItem mountItem3 = mount(2, new View(mContext));
-    MountItem mountItem4 = mount(4, new TouchableDrawable());
+    MountItem mountItem4 = mount(4, spy(new TouchableDrawable()));
     MountItem mountItem5 = mount(5, new TouchableDrawable(), MountItem.FLAG_DISABLE_TOUCHABLE);
     MountItem mountItem6 = mount(7, new View(mContext));
     MountItem mountItem7 = mount(8, new TouchableDrawable(), MountItem.FLAG_DISABLE_TOUCHABLE);
@@ -226,13 +241,11 @@ public class ComponentHostTest {
     assertThat(mHost.getMountItemAt(5)).isEqualTo(mountItem6);
     assertThat(mHost.getMountItemAt(6)).isEqualTo(mountItem7);
 
-    assertThat(mHost.getHostTouchables().size()).isEqualTo(1);
-    assertThat(mHost.getHostTouchables().get(4)).isEqualTo(mountItem4.getContent());
+    mHost.onTouchEvent(mock(MotionEvent.class));
 
-    unmount(1, mountItem2);
-
-    assertThat(mHost.getMountItemAt(1)).isEqualTo(mountItem3);
-    assertThat(mHost.getHostTouchables().size()).isEqualTo(1);
+    TouchableDrawable touchableDrawable = (TouchableDrawable) mountItem4.getContent();
+    verify(touchableDrawable, times(1)).shouldHandleTouchEvent(any(MotionEvent.class));
+    verify(touchableDrawable, times(1)).onTouchEvent(any(MotionEvent.class), any(View.class));
   }
 
   @Test

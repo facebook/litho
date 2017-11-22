@@ -50,7 +50,6 @@ public final class LithoDebugInfo {
     pools.add(ComponentsPools.sComponentTreeBuilderPool);
     pools.add(ComponentsPools.sStateHandlerPool);
     pools.add(ComponentsPools.sMountItemScrapArrayPool);
-    pools.add(ComponentsPools.sTouchableScrapArrayPool);
     pools.add(ComponentsPools.sRectFPool);
     pools.add(ComponentsPools.sRectPool);
     pools.add(ComponentsPools.sEdgesPool);
