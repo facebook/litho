@@ -56,7 +56,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
   private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
   private int mId = sIdGenerator.getAndIncrement();
   private String mGlobalKey;
-  private String mKey;
+  @Nullable private String mKey;
   private boolean mHasManualKey;
 
   @ThreadConfined(ThreadConfined.ANY)
@@ -75,7 +75,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
    * Holds onto how many direct component children of each type this Component has. Used for
    * automatically generating unique global keys for all sibling components of the same type.
    */
-  private Map<String, Integer> mChildCounters = new HashMap<>();
+  @Nullable private Map<String, Integer> mChildCounters;
 
   protected Component() {
     this(null);
@@ -87,7 +87,10 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
    */
   protected Component(Class classType) {
     super(classType);
-    mKey = Integer.toString(getTypeId());
+    if (!ComponentsConfiguration.lazyInitializeComponent) {
+      mChildCounters = new HashMap<>();
+      mKey = Integer.toString(getTypeId());
+    }
   }
 
   @Deprecated
@@ -162,6 +165,9 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
    * @return a key that is local to the component's parent.
    */
   String getKey() {
+    if (mKey == null && !mHasManualKey) {
+      mKey = Integer.toString(getTypeId());
+    }
     return mKey;
   }
 
@@ -217,6 +223,10 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
 
     final String childType = component.getSimpleName();
 
+    if (mChildCounters == null) {
+      mChildCounters = new HashMap<>();
+    }
+
     /**
      * If the key is a duplicate, we start appending an index based on the child component's type
      * that would uniquely identify it.
@@ -253,7 +263,9 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     try {
       final Component<L> component = (Component<L>) super.clone();
       component.mIsLayoutStarted = false;
-      component.mChildCounters = new HashMap<>();
+      if (!ComponentsConfiguration.lazyInitializeComponent) {
+        component.mChildCounters = new HashMap<>();
+      }
       component.mHasManualKey = false;
 
       return component;

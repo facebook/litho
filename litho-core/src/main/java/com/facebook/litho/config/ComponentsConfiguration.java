@@ -145,4 +145,9 @@ public class ComponentsConfiguration {
    * be posted to the next frame.
    */
   public static boolean insertPostAsyncLayout = false;
+
+  /**
+   * If true, the components mKey and mChildCounters will not be initialized at construction time.
+   */
+  public static boolean lazyInitializeComponent = false;
 }
