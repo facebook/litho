@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
 @RunWith(ComponentsTestRunner.class)
 public class ComponentSelectorTest {
 
-  private static final InlineLayoutSpec NULL_SPEC =
+  private final InlineLayoutSpec NULL_SPEC =
       new InlineLayoutSpec() {
 
         @Override

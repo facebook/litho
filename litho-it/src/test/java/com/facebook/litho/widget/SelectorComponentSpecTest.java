@@ -30,7 +30,7 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class SelectorComponentSpecTest {
 
-  private static final InlineLayoutSpec NULL_SPEC =
+  private final InlineLayoutSpec NULL_SPEC =
       new InlineLayoutSpec() {
 
         @Override

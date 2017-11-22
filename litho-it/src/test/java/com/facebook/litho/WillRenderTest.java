@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
 @RunWith(ComponentsTestRunner.class)
 public class WillRenderTest {
 
-  private static final InlineLayoutSpec NULL_SPEC =
+  private final InlineLayoutSpec NULL_SPEC =
       new InlineLayoutSpec() {
 
         @Override
@@ -34,7 +34,7 @@ public class WillRenderTest {
         }
       };
 
-  private static final InlineLayoutSpec NONNULL_SPEC =
+  private final InlineLayoutSpec NONNULL_SPEC =
       new InlineLayoutSpec() {
 
         @Override
@@ -43,7 +43,7 @@ public class WillRenderTest {
         }
       };
 
-  private static final InlineLayoutWithSizeSpec LAYOUT_WITH_SIZE_SPEC =
+  private final InlineLayoutWithSizeSpec LAYOUT_WITH_SIZE_SPEC =
       new InlineLayoutWithSizeSpec() {
 
         @Override

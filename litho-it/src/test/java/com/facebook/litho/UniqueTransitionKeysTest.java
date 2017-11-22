@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 @RunWith(ComponentsTestRunner.class)
 public class UniqueTransitionKeysTest {
 
-  private static final InlineLayoutSpec HAS_NON_UNIQUE_TRANSITION_KEYS =
+  private final InlineLayoutSpec HAS_NON_UNIQUE_TRANSITION_KEYS =
       new InlineLayoutSpec() {
 
         @Override
@@ -35,7 +35,7 @@ public class UniqueTransitionKeysTest {
         }
       };
 
-  private static final InlineLayoutSpec HAS_UNIQUE_TRANSITION_KEYS =
+  private final InlineLayoutSpec HAS_UNIQUE_TRANSITION_KEYS =
       new InlineLayoutSpec() {
 
         @Override

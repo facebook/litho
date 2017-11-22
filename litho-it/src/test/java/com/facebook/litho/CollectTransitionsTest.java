@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
 @RunWith(ComponentsTestRunner.class)
 public class CollectTransitionsTest {
 
-  private static final InlineLayoutSpec WRAPPING_COMPONENT_WITH_TRANSITION =
+  private final InlineLayoutSpec WRAPPING_COMPONENT_WITH_TRANSITION =
       new InlineLayoutSpec() {
 
         @Override
@@ -39,7 +39,7 @@ public class CollectTransitionsTest {
         }
       };
 
-  private static final InlineLayoutSpec COMPONENT_WITH_TRANSITION =
+  private final InlineLayoutSpec COMPONENT_WITH_TRANSITION =
       new InlineLayoutSpec() {
 
         @Override
