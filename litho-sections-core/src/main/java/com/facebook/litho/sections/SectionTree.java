@@ -162,7 +162,7 @@ public class SectionTree {
       try {
         applyNewChangeSet();
       } catch (IndexOutOfBoundsException e) {
-        throw new IndexOutOfBoundsException(getDebugInfo(SectionTree.this) + e.getMessage());
+        throw new RuntimeException(getDebugInfo(SectionTree.this) + e.getMessage(), e);
       }
     }
   }
@@ -1111,7 +1111,7 @@ public class SectionTree {
           try {
             tree.postChangesetsToHandler();
           } catch (IndexOutOfBoundsException e) {
-            throw new IndexOutOfBoundsException(getDebugInfo(tree) + e.getMessage());
+            throw new RuntimeException(getDebugInfo(tree) + e.getMessage(), e);
           }
           break;
 
