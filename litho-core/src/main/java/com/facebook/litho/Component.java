@@ -87,10 +87,10 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
    */
   protected Component(Class classType) {
     super(classType);
-    if (!ComponentsConfiguration.lazyInitializeComponent) {
-      mChildCounters = new HashMap<>();
+    // if (!ComponentsConfiguration.lazyInitializeComponent) {
+    mChildCounters = new HashMap<>();
       mKey = Integer.toString(getTypeId());
-    }
+    // }
   }
 
   @Deprecated
