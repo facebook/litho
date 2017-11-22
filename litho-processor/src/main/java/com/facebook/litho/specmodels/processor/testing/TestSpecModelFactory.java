@@ -73,6 +73,14 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
     final SpecModel enclosedSpecModel =
         getEnclosedSpecModel(elements, valueElement, dependencyInjectionHelper, interStageStore);
 
+    if (enclosedSpecModel == null) {
+      throw new NullPointerException(
+          String.format(
+              "Failed to extract enclosed spec model: %s. "
+                  + "Please report this error to the Litho team.",
+              valueElement));
+    }
+
     return new TestSpecModel(
         element.getQualifiedName().toString(),
         "",
