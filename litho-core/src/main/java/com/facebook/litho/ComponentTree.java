@@ -914,7 +914,7 @@ public class ComponentTree {
   synchronized void bindEventHandler(Component component) {
     final String key = component.getGlobalKey();
 
-    if (!mEventHandlers.containsKey(key)) {
+    if (key == null || !mEventHandlers.containsKey(key)) {
       return;
     }
 
@@ -930,6 +930,10 @@ public class ComponentTree {
 
   synchronized void recordEventHandler(Component component, EventHandler eventHandler) {
     final String key = component.getGlobalKey();
+
+    if (key == null) {
+      return;
+    }
 
     if (!mEventHandlers.containsKey(key)) {
       List<EventHandler> list = new ArrayList<>();

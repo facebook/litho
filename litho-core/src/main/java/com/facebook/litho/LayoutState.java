@@ -789,7 +789,9 @@ class LayoutState {
       for (Component delegate : node.getComponents()) {
         final Rect copyRect = ComponentsPools.acquireRect();
         copyRect.set(rect);
-        layoutState.mComponentKeyToBounds.put(delegate.getGlobalKey(), copyRect);
+        if (delegate.getGlobalKey() != null) {
+          layoutState.mComponentKeyToBounds.put(delegate.getGlobalKey(), copyRect);
+        }
       }
       ComponentsPools.release(rect);
     }

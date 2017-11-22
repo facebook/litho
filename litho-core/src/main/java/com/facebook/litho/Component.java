@@ -402,23 +402,26 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
    * @param c component context
    */
   void applyStateUpdates(ComponentContext c) {
-    final Component<?> parentScope = c.getComponentScope();
-    final String key = getKey();
 
-    setGlobalKey(
-        parentScope == null ? key : parentScope.generateUniqueGlobalKeyForChild(this, key));
+    if (ComponentsConfiguration.useGlobalKeys) {
+      final Component<?> parentScope = c.getComponentScope();
+      final String key = getKey();
+      setGlobalKey(
+          parentScope == null ? key : parentScope.generateUniqueGlobalKeyForChild(this, key));
+    }
 
     setScopedContext(ComponentContext.withComponentScope(c, this));
 
     getLifecycle().populateTreeProps(this, getScopedContext().getTreeProps());
 
-    final KeyHandler keyHandler = getScopedContext().getKeyHandler();
-    /** This is for testing, the keyHandler should never be null here otherwise. */
-    if (keyHandler != null && !ComponentsConfiguration.isEndToEndTestRun) {
-      keyHandler.registerKey(this);
+    if (ComponentsConfiguration.useGlobalKeys) {
+      final KeyHandler keyHandler = getScopedContext().getKeyHandler();
+      /** This is for testing, the keyHandler should never be null here otherwise. */
+      if (keyHandler != null && !ComponentsConfiguration.isEndToEndTestRun) {
+        keyHandler.registerKey(this);
+      }
+      registerEventTrigger(getGlobalKey());
     }
-
-    registerEventTrigger(getGlobalKey());
 
     if (getLifecycle().hasState()) {
       c.getStateHandler().applyStateUpdatesForComponent(this);

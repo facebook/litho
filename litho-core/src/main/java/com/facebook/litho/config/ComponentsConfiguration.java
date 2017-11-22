@@ -150,4 +150,11 @@ public class ComponentsConfiguration {
    * If true, the components mKey and mChildCounters will not be initialized at construction time.
    */
   public static boolean lazyInitializeComponent = false;
+
+  /**
+   * If false, global keys will not be generated (litho level state updates won't work). It's highly
+   * discouraged to to change this to false, unless you handle all your updates outside of the litho
+   * framework
+   */
+  public static boolean useGlobalKeys = true;
 }
