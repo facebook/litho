@@ -1,0 +1,45 @@
+/*
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                className 'com.facebook.litho.testing.processor.TestingDIComponentProcessor'
+                className 'com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor'
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation project(':litho-core')
+    implementation project(':litho-testing')
+    compileOnly project(':litho-annotations')
+
+    annotationProcessor project(':litho-processor')
+    annotationProcessor project(':test-processor')
+
+    // Android Support Library
+    implementation deps.supportCoreUi
+
+    // Testing deps
+    implementation deps.junit
+    implementation deps.robolectric
+    implementation deps.jsr305
+    implementation deps.assertjCore
+    implementation deps.mockitoCore
+}
