@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 @RunWith(ComponentsTestRunner.class)
 public class UniqueTransitionKeysTest {
 
-  private final InlineLayoutSpec HAS_NON_UNIQUE_TRANSITION_KEYS =
+  private final InlineLayoutSpec mHasNonUniqueTransitionKeys =
       new InlineLayoutSpec() {
 
         @Override
@@ -35,7 +35,7 @@ public class UniqueTransitionKeysTest {
         }
       };
 
-  private final InlineLayoutSpec HAS_UNIQUE_TRANSITION_KEYS =
+  private final InlineLayoutSpec mHasUniqueTransitionKeys =
       new InlineLayoutSpec() {
 
         @Override
@@ -55,7 +55,7 @@ public class UniqueTransitionKeysTest {
     LayoutState layoutState =
         LayoutState.calculate(
             c,
-            HAS_UNIQUE_TRANSITION_KEYS,
+            mHasUniqueTransitionKeys,
             ComponentTree.generateComponentTreeId(),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY));
@@ -71,7 +71,7 @@ public class UniqueTransitionKeysTest {
     LayoutState layoutState =
         LayoutState.calculate(
             c,
-            HAS_NON_UNIQUE_TRANSITION_KEYS,
+            mHasNonUniqueTransitionKeys,
             ComponentTree.generateComponentTreeId(),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY));

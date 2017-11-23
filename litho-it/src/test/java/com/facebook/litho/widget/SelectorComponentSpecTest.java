@@ -30,7 +30,7 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class SelectorComponentSpecTest {
 
-  private final InlineLayoutSpec NULL_SPEC =
+  private final InlineLayoutSpec mNullSpec =
       new InlineLayoutSpec() {
 
         @Override
@@ -73,7 +73,7 @@ public class SelectorComponentSpecTest {
   public void testNullLayoutSkipped() throws Exception {
     ComponentAssert.assertThat(
             SelectorComponent.create(mContext)
-                .component(NULL_SPEC)
+                .component(mNullSpec)
                 .component(Image.create(mContext).drawable(null))
                 .component(Text.create(mContext).text("Hello World")))
         .has(deepSubComponentWith(mContext, typeIs(Image.class)));
@@ -82,7 +82,7 @@ public class SelectorComponentSpecTest {
   @Test
   public void testEmpty() throws Exception {
     ComponentAssert.assertThat(
-            SelectorComponent.create(mContext).component(NULL_SPEC).component((Component) null))
+            SelectorComponent.create(mContext).component(mNullSpec).component((Component) null))
         .willNotRender();
   }
 

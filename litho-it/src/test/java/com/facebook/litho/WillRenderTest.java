@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
 @RunWith(ComponentsTestRunner.class)
 public class WillRenderTest {
 
-  private final InlineLayoutSpec NULL_SPEC =
+  private final InlineLayoutSpec mNullSpec =
       new InlineLayoutSpec() {
 
         @Override
@@ -34,7 +34,7 @@ public class WillRenderTest {
         }
       };
 
-  private final InlineLayoutSpec NONNULL_SPEC =
+  private final InlineLayoutSpec mNonNullSpec =
       new InlineLayoutSpec() {
 
         @Override
@@ -43,7 +43,7 @@ public class WillRenderTest {
         }
       };
 
-  private final InlineLayoutWithSizeSpec LAYOUT_WITH_SIZE_SPEC =
+  private final InlineLayoutWithSizeSpec mLayoutWithSizeSpec =
       new InlineLayoutWithSizeSpec() {
 
         @Override
@@ -61,13 +61,13 @@ public class WillRenderTest {
   @Test
   public void testWillRenderForComponentThatReturnsNull() {
     ComponentContext c = new ComponentContext(application);
-    assertThat(create(c, NULL_SPEC).build()).wontRender();
+    assertThat(create(c, mNullSpec).build()).wontRender();
   }
 
   @Test
   public void testWillRenderForComponentThatReturnsNonNull() {
     ComponentContext c = new ComponentContext(application);
-    assertThat(create(c, NONNULL_SPEC).build()).willRender();
+    assertThat(create(c, mNonNullSpec).build()).willRender();
   }
 
   @Test
@@ -76,6 +76,6 @@ public class WillRenderTest {
     mExpectedException.expectMessage("@OnCreateLayoutWithSizeSpec");
 
     ComponentContext c = new ComponentContext(application);
-    Component.willRender(create(c, LAYOUT_WITH_SIZE_SPEC).build());
+    Component.willRender(create(c, mLayoutWithSizeSpec).build());
   }
 }

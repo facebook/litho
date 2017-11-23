@@ -25,12 +25,12 @@ import org.junit.runner.RunWith;
 @RunWith(ComponentsTestRunner.class)
 public class CollectTransitionsTest {
 
-  private final InlineLayoutSpec WRAPPING_COMPONENT_WITH_TRANSITION =
+  private final InlineLayoutSpec mWrappingContentWithTransition =
       new InlineLayoutSpec() {
 
         @Override
         protected ComponentLayout onCreateLayout(ComponentContext c) {
-          return create(c, COMPONENT_WITH_TRANSITION).build();
+          return create(c, mComponentWithTransition).build();
         }
 
         @Override
@@ -39,7 +39,7 @@ public class CollectTransitionsTest {
         }
       };
 
-  private final InlineLayoutSpec COMPONENT_WITH_TRANSITION =
+  private final InlineLayoutSpec mComponentWithTransition =
       new InlineLayoutSpec() {
 
         @Override
@@ -64,7 +64,7 @@ public class CollectTransitionsTest {
     LayoutState layoutState =
         LayoutState.calculate(
             c,
-            WRAPPING_COMPONENT_WITH_TRANSITION,
+            mWrappingContentWithTransition,
             ComponentTree.generateComponentTreeId(),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY));
