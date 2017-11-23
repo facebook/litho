@@ -23,9 +23,12 @@ public class DefaultTestSpecGenerator implements TestSpecGenerator {
   public <T extends SpecModel & HasEnclosedSpecModel> TypeSpec generate(T specModel) {
     final TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(specModel.getComponentName())
-            .addTypeVariables(specModel.getTypeVariables())
             .addSuperinterface(specModel.getSpecTypeName())
             .addModifiers(Modifier.FINAL);
+
+    if (!specModel.getTypeVariables().isEmpty()) {
+      typeSpec.addTypeVariables(specModel.getTypeVariables());
+    }
 
     if (specModel.isPublic()) {
       typeSpec.addModifiers(Modifier.PUBLIC);

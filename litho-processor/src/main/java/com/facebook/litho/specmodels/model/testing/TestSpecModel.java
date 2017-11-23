@@ -122,7 +122,7 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
 
   @Override
   public ImmutableList<TypeVariableName> getTypeVariables() {
-    return ImmutableList.of();
+    return mEnclosedSpecModel.getTypeVariables();
   }
 
   @Override

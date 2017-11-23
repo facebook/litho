@@ -53,11 +53,14 @@ public final class MatcherGenerator {
 
     final MethodSpec.Builder factoryMethod =
         MethodSpec.methodBuilder("matcher")
-            .addModifiers(Modifier.PUBLIC)
-            .addModifiers(Modifier.STATIC)
-            .returns(BUILDER_CLASS_NAME)
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+            .returns(getMatcherType(specModel))
             .addParameter(specModel.getContextClass(), "c")
             .addStatement("return new $T(c)", BUILDER_CLASS_NAME);
+
+    if (!specModel.getTypeVariables().isEmpty()) {
+      factoryMethod.addTypeVariables(specModel.getTypeVariables());
+    }
 
     return dataHolder.addMethod(factoryMethod.build()).build();
   }
@@ -69,6 +72,10 @@ public final class MatcherGenerator {
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
             .superclass(ClassNames.RESOURCE_RESOLVER);
 
+    if (!specModel.getTypeVariables().isEmpty()) {
+      propsBuilderClassBuilder.addTypeVariables(specModel.getTypeVariables());
+    }
+
     final MethodSpec constructor =
         MethodSpec.constructorBuilder()
             .addParameter(specModel.getContextClass(), "c")
@@ -78,7 +85,7 @@ public final class MatcherGenerator {
     propsBuilderClassBuilder.addMethod(constructor);
 
     for (final PropModel prop : specModel.getProps()) {
-      generatePropsBuilderMethods(prop).addToTypeSpec(propsBuilderClassBuilder);
+      generatePropsBuilderMethods(specModel, prop).addToTypeSpec(propsBuilderClassBuilder);
     }
 
     propsBuilderClassBuilder.addMethod(generateBuildMethod(specModel));
@@ -86,96 +93,105 @@ public final class MatcherGenerator {
     return TypeSpecDataHolder.newBuilder().addType(propsBuilderClassBuilder.build()).build();
   }
 
-  private static TypeSpecDataHolder generatePropsBuilderMethods(final PropModel prop) {
+  private static TypeSpecDataHolder generatePropsBuilderMethods(
+      SpecModel specModel, final PropModel prop) {
     final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
     dataHolder.addField(matcherFieldBuilder(prop));
-    dataHolder.addMethod(matcherFieldSetterBuilder(prop));
+    dataHolder.addMethod(matcherFieldSetterBuilder(specModel, prop));
 
     if (prop.hasVarArgs()) {
-      dataHolder.addMethod(varArgBuilder(prop));
+      dataHolder.addMethod(varArgBuilder(specModel, prop));
       final ParameterizedTypeName type = (ParameterizedTypeName) prop.getType();
       if (getRawType(type.typeArguments.get(0)).equals(ClassNames.COMPONENT)) {
-        dataHolder.addMethod(varArgBuilderBuilder(prop));
+        dataHolder.addMethod(varArgBuilderBuilder(specModel, prop));
       }
       // fall through to generate builder method for List<T>
     }
 
     switch (prop.getResType()) {
       case STRING:
-        dataHolder.addMethod(regularBuilder(prop));
-        dataHolder.addMethod(resBuilder(prop, ClassNames.STRING_RES, "resolveString"));
+        dataHolder.addMethod(regularBuilder(specModel, prop));
+        dataHolder.addMethod(resBuilder(specModel, prop, ClassNames.STRING_RES, "resolveString"));
         dataHolder.addMethod(
             resWithVarargsBuilder(
+                specModel,
                 prop,
                 ClassNames.STRING_RES,
                 "resolveString",
                 TypeName.OBJECT,
                 "formatArgs"));
         dataHolder.addTypeSpecDataHolder(
-            attrBuilders(prop, ClassNames.STRING_RES, "resolveString"));
+            attrBuilders(specModel, prop, ClassNames.STRING_RES, "resolveString"));
         break;
       case STRING_ARRAY:
-        dataHolder.addMethod(regularBuilder(prop));
-        dataHolder.addMethod(resBuilder(prop, ClassNames.ARRAY_RES, "resolveStringArray"));
+        dataHolder.addMethod(regularBuilder(specModel, prop));
+        dataHolder.addMethod(
+            resBuilder(specModel, prop, ClassNames.ARRAY_RES, "resolveStringArray"));
         dataHolder.addTypeSpecDataHolder(
-            attrBuilders(prop, ClassNames.ARRAY_RES, "resolveStringArray"));
+            attrBuilders(specModel, prop, ClassNames.ARRAY_RES, "resolveStringArray"));
         break;
       case INT:
-        dataHolder.addMethod(regularBuilder(prop));
-        dataHolder.addMethod(resBuilder(prop, ClassNames.INT_RES, "resolveInt"));
-        dataHolder.addTypeSpecDataHolder(attrBuilders(prop, ClassNames.INT_RES, "resolveInt"));
+        dataHolder.addMethod(regularBuilder(specModel, prop));
+        dataHolder.addMethod(resBuilder(specModel, prop, ClassNames.INT_RES, "resolveInt"));
+        dataHolder.addTypeSpecDataHolder(
+            attrBuilders(specModel, prop, ClassNames.INT_RES, "resolveInt"));
         break;
       case INT_ARRAY:
-        dataHolder.addMethod(regularBuilder(prop));
-        dataHolder.addMethod(resBuilder(prop, ClassNames.ARRAY_RES, "resolveIntArray"));
+        dataHolder.addMethod(regularBuilder(specModel, prop));
+        dataHolder.addMethod(resBuilder(specModel, prop, ClassNames.ARRAY_RES, "resolveIntArray"));
         dataHolder.addTypeSpecDataHolder(
-            attrBuilders(prop, ClassNames.ARRAY_RES, "resolveIntArray"));
+            attrBuilders(specModel, prop, ClassNames.ARRAY_RES, "resolveIntArray"));
         break;
       case BOOL:
-        dataHolder.addMethod(regularBuilder(prop));
-        dataHolder.addMethod(resBuilder(prop, ClassNames.BOOL_RES, "resolveBool"));
-        dataHolder.addTypeSpecDataHolder(attrBuilders(prop, ClassNames.BOOL_RES, "resolveBool"));
+        dataHolder.addMethod(regularBuilder(specModel, prop));
+        dataHolder.addMethod(resBuilder(specModel, prop, ClassNames.BOOL_RES, "resolveBool"));
+        dataHolder.addTypeSpecDataHolder(
+            attrBuilders(specModel, prop, ClassNames.BOOL_RES, "resolveBool"));
         break;
       case COLOR:
-        dataHolder.addMethod(regularBuilder(prop, annotation(ClassNames.COLOR_INT)));
-        dataHolder.addMethod(resBuilder(prop, ClassNames.COLOR_RES, "resolveColor"));
-        dataHolder.addTypeSpecDataHolder(attrBuilders(prop, ClassNames.COLOR_RES, "resolveColor"));
+        dataHolder.addMethod(regularBuilder(specModel, prop, annotation(ClassNames.COLOR_INT)));
+        dataHolder.addMethod(resBuilder(specModel, prop, ClassNames.COLOR_RES, "resolveColor"));
+        dataHolder.addTypeSpecDataHolder(
+            attrBuilders(specModel, prop, ClassNames.COLOR_RES, "resolveColor"));
         break;
       case DIMEN_SIZE:
-        dataHolder.addMethod(pxBuilder(prop));
-        dataHolder.addMethod(resBuilder(prop, ClassNames.DIMEN_RES, "resolveDimenSize"));
+        dataHolder.addMethod(pxBuilder(specModel, prop));
+        dataHolder.addMethod(resBuilder(specModel, prop, ClassNames.DIMEN_RES, "resolveDimenSize"));
         dataHolder.addTypeSpecDataHolder(
-            attrBuilders(prop, ClassNames.DIMEN_RES, "resolveDimenSize"));
-        dataHolder.addMethod(dipBuilder(prop));
+            attrBuilders(specModel, prop, ClassNames.DIMEN_RES, "resolveDimenSize"));
+        dataHolder.addMethod(dipBuilder(specModel, prop));
         break;
       case DIMEN_TEXT:
-        dataHolder.addMethod(pxBuilder(prop));
-        dataHolder.addMethod(resBuilder(prop, ClassNames.DIMEN_RES, "resolveDimenSize"));
+        dataHolder.addMethod(pxBuilder(specModel, prop));
+        dataHolder.addMethod(resBuilder(specModel, prop, ClassNames.DIMEN_RES, "resolveDimenSize"));
         dataHolder.addTypeSpecDataHolder(
-            attrBuilders(prop, ClassNames.DIMEN_RES, "resolveDimenSize"));
-        dataHolder.addMethod(dipBuilder(prop));
-        dataHolder.addMethod(sipBuilder(prop));
+            attrBuilders(specModel, prop, ClassNames.DIMEN_RES, "resolveDimenSize"));
+        dataHolder.addMethod(dipBuilder(specModel, prop));
+        dataHolder.addMethod(sipBuilder(specModel, prop));
         break;
       case DIMEN_OFFSET:
-        dataHolder.addMethod(pxBuilder(prop));
-        dataHolder.addMethod(resBuilder(prop, ClassNames.DIMEN_RES, "resolveDimenOffset"));
+        dataHolder.addMethod(pxBuilder(specModel, prop));
+        dataHolder.addMethod(
+            resBuilder(specModel, prop, ClassNames.DIMEN_RES, "resolveDimenOffset"));
         dataHolder.addTypeSpecDataHolder(
-            attrBuilders(prop, ClassNames.DIMEN_RES, "resolveDimenOffset"));
-        dataHolder.addMethod(dipBuilder(prop));
+            attrBuilders(specModel, prop, ClassNames.DIMEN_RES, "resolveDimenOffset"));
+        dataHolder.addMethod(dipBuilder(specModel, prop));
         break;
       case FLOAT:
-        dataHolder.addMethod(regularBuilder(prop));
-        dataHolder.addMethod(resBuilder(prop, ClassNames.DIMEN_RES, "resolveFloat"));
-        dataHolder.addTypeSpecDataHolder(attrBuilders(prop, ClassNames.DIMEN_RES, "resolveFloat"));
+        dataHolder.addMethod(regularBuilder(specModel, prop));
+        dataHolder.addMethod(resBuilder(specModel, prop, ClassNames.DIMEN_RES, "resolveFloat"));
+        dataHolder.addTypeSpecDataHolder(
+            attrBuilders(specModel, prop, ClassNames.DIMEN_RES, "resolveFloat"));
         break;
       case DRAWABLE:
-        dataHolder.addMethod(regularBuilder(prop));
-        dataHolder.addMethod(resBuilder(prop, ClassNames.DRAWABLE_RES, "resolveDrawable"));
+        dataHolder.addMethod(regularBuilder(specModel, prop));
+        dataHolder.addMethod(
+            resBuilder(specModel, prop, ClassNames.DRAWABLE_RES, "resolveDrawable"));
         dataHolder.addTypeSpecDataHolder(
-            attrBuilders(prop, ClassNames.DRAWABLE_RES, "resolveDrawable"));
+            attrBuilders(specModel, prop, ClassNames.DRAWABLE_RES, "resolveDrawable"));
         break;
       case NONE:
-        dataHolder.addMethod(regularBuilder(prop));
+        dataHolder.addMethod(regularBuilder(specModel, prop));
         break;
       case DRAWABLE_REFERENCE:
         // TODO(T15854501): Implement drawable reference comparison for this and other generators.
@@ -183,11 +199,11 @@ public final class MatcherGenerator {
     }
 
     if (getRawType(prop.getType()).equals(ClassNames.COMPONENT)) {
-      dataHolder.addMethod(builderBuilder(prop, ClassNames.COMPONENT_BUILDER));
+      dataHolder.addMethod(builderBuilder(specModel, prop, ClassNames.COMPONENT_BUILDER));
     }
 
     if (getRawType(prop.getType()).equals(ClassNames.REFERENCE)) {
-      dataHolder.addMethod(builderBuilder(prop, ClassNames.REFERENCE_BUILDER));
+      dataHolder.addMethod(builderBuilder(specModel, prop, ClassNames.REFERENCE_BUILDER));
     }
 
     return dataHolder.build();
@@ -197,21 +213,22 @@ public final class MatcherGenerator {
     return type instanceof ParameterizedTypeName ? ((ParameterizedTypeName) type).rawType : type;
   }
 
-  private static MethodSpec matcherFieldSetterBuilder(PropModel prop) {
+  private static MethodSpec matcherFieldSetterBuilder(SpecModel specModel, PropModel prop) {
     final String propMatcherName = getPropMatcherName(prop);
     final String propName = prop.getName();
 
     return getMethodSpecBuilder(
-            propName,
+            specModel,
             ImmutableList.of(ParameterSpec.builder(getPropMatcherType(prop), "matcher").build()),
-            CodeBlock.builder().addStatement("$L = matcher", propMatcherName).build())
+            CodeBlock.builder().addStatement("$L = matcher", propMatcherName).build(),
+            propName)
         .build();
   }
 
   private static MethodSpec regularBuilder(
-      final PropModel prop,
-      final AnnotationSpec... extraAnnotations) {
+      SpecModel specModel, final PropModel prop, final AnnotationSpec... extraAnnotations) {
     return builder(
+        specModel,
         prop,
         prop.getName(),
         Collections.singletonList(
@@ -243,9 +260,18 @@ public final class MatcherGenerator {
         + "Matcher";
   }
 
+  private static TypeName getMatcherType(SpecModel specModel) {
+    return (specModel.getTypeVariables().isEmpty())
+        ? BUILDER_CLASS_NAME
+        : ParameterizedTypeName.get(
+            BUILDER_CLASS_NAME,
+            specModel
+                .getTypeVariables()
+                .toArray(new TypeName[specModel.getTypeVariables().size()]));
+  }
+
   private static MethodSpec varArgBuilder(
-      final PropModel prop,
-      final AnnotationSpec... extraAnnotations) {
+      SpecModel specModel, final PropModel prop, final AnnotationSpec... extraAnnotations) {
     final ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) prop.getType();
     final TypeName singleParameterType = parameterizedTypeName.typeArguments.get(0);
     final String varArgName = prop.getVarArgsSingleName();
@@ -258,14 +284,15 @@ public final class MatcherGenerator {
             .build();
 
     return getMethodSpecBuilder(
-            varArgName,
+            specModel,
             Collections.singletonList(
                 parameter(prop, singleParameterType, varArgName, extraAnnotations)),
-            codeBlock)
+            codeBlock,
+            varArgName)
         .build();
   }
 
-  private static MethodSpec varArgBuilderBuilder(final PropModel prop) {
+  private static MethodSpec varArgBuilderBuilder(SpecModel specModel, final PropModel prop) {
     final String varArgName = prop.getVarArgsSingleName();
     final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getType();
     final TypeName internalType = varArgType.typeArguments.get(0);
@@ -278,18 +305,21 @@ public final class MatcherGenerator {
             ClassNames.COMPONENT_BUILDER,
             getBuilderGenericTypes(internalType, ClassNames.COMPONENT_BUILDER));
     return getMethodSpecBuilder(
-            varArgName,
+            specModel,
             Collections.singletonList(
                 parameter(prop, builderParameterType, varArgName + "Builder")),
-            codeBlock)
+            codeBlock,
+            varArgName)
         .build();
   }
 
   private static MethodSpec resBuilder(
+      SpecModel specModel,
       final PropModel prop,
       final ClassName annotationClassName,
       final String resolver) {
     return builder(
+        specModel,
         prop,
         prop.getName() + "Res",
         Collections.singletonList(
@@ -299,12 +329,14 @@ public final class MatcherGenerator {
   }
 
   private static MethodSpec resWithVarargsBuilder(
+      SpecModel specModel,
       final PropModel prop,
       final ClassName annotationClassName,
       final String resolver,
       final TypeName varargsType,
       final String varargsName) {
     return getMethodSpecBuilder(
+            specModel,
             prop,
             prop.getName() + "Res",
             Arrays.asList(
@@ -317,6 +349,7 @@ public final class MatcherGenerator {
   }
 
   private static TypeSpecDataHolder attrBuilders(
+      SpecModel specModel,
       final PropModel prop,
       final ClassName annotationClassName,
       final String resolver) {
@@ -324,6 +357,7 @@ public final class MatcherGenerator {
 
     dataHolder.addMethod(
         builder(
+            specModel,
             prop,
             prop.getName() + "Attr",
             Arrays.asList(
@@ -334,6 +368,7 @@ public final class MatcherGenerator {
 
     dataHolder.addMethod(
         builder(
+            specModel,
             prop,
             prop.getName() + "Attr",
             Collections.singletonList(
@@ -344,8 +379,9 @@ public final class MatcherGenerator {
     return dataHolder.build();
   }
 
-  private static MethodSpec pxBuilder(final PropModel prop) {
+  private static MethodSpec pxBuilder(SpecModel specModel, final PropModel prop) {
     return builder(
+        specModel,
         prop,
         prop.getName() + "Px",
         Collections.singletonList(
@@ -353,26 +389,28 @@ public final class MatcherGenerator {
         prop.getName());
   }
 
-  private static MethodSpec dipBuilder(final PropModel prop) {
+  private static MethodSpec dipBuilder(SpecModel specModel, final PropModel prop) {
     final AnnotationSpec dipAnnotation =
         AnnotationSpec.builder(ClassNames.DIMENSION)
             .addMember("unit", "$T.DP", ClassNames.DIMENSION)
             .build();
 
     return builder(
+        specModel,
         prop,
         prop.getName() + "Dip",
         Collections.singletonList(parameter(prop, TypeName.FLOAT, "dips", dipAnnotation)),
         "dipsToPixels(dips)");
   }
 
-  private static MethodSpec sipBuilder(final PropModel prop) {
+  private static MethodSpec sipBuilder(SpecModel specModel, final PropModel prop) {
     final AnnotationSpec spAnnotation =
         AnnotationSpec.builder(ClassNames.DIMENSION)
             .addMember("unit", "$T.SP", ClassNames.DIMENSION)
             .build();
 
     return builder(
+        specModel,
         prop,
         prop.getName() + "Sp",
         Collections.singletonList(parameter(prop, TypeName.FLOAT, "sips", spAnnotation)),
@@ -380,9 +418,9 @@ public final class MatcherGenerator {
   }
 
   private static MethodSpec builderBuilder(
-      final PropModel prop,
-      final ClassName builderClass) {
+      SpecModel specModel, final PropModel prop, final ClassName builderClass) {
     return builder(
+        specModel,
         prop,
         prop.getName(),
         Collections.singletonList(
@@ -434,15 +472,18 @@ public final class MatcherGenerator {
   }
 
   private static MethodSpec builder(
+      SpecModel specModel,
       final PropModel prop,
       final String name,
       final List<ParameterSpec> parameters,
       final String statement,
       final Object... formatObjects) {
-    return getMethodSpecBuilder(prop, name, parameters, statement, formatObjects).build();
+    return getMethodSpecBuilder(specModel, prop, name, parameters, statement, formatObjects)
+        .build();
   }
 
   private static MethodSpec.Builder getMethodSpecBuilder(
+      SpecModel specModel,
       final PropModel prop,
       final String name,
       final List<ParameterSpec> parameters,
@@ -458,7 +499,7 @@ public final class MatcherGenerator {
               .addStatement("return this")
               .endControlFlow();
 
-      return getMethodSpecBuilder(name, parameters, codeBlockBuilder.build());
+      return getMethodSpecBuilder(specModel, parameters, codeBlockBuilder.build(), name);
     }
 
     final String propMatcherName = getPropMatcherName(prop);
@@ -473,17 +514,18 @@ public final class MatcherGenerator {
                 formattedStatement)
             .build();
 
-    return getMethodSpecBuilder(name, parameters, codeBlock);
+    return getMethodSpecBuilder(specModel, parameters, codeBlock, name);
   }
 
   private static MethodSpec.Builder getMethodSpecBuilder(
-      final String name,
+      SpecModel specModel,
       final List<ParameterSpec> parameters,
-      final CodeBlock codeBlock) {
+      final CodeBlock codeBlock,
+      final String name) {
     final MethodSpec.Builder builder =
         MethodSpec.methodBuilder(name)
             .addModifiers(Modifier.PUBLIC)
-            .returns(BUILDER_CLASS_NAME)
+            .returns(getMatcherType(specModel))
             .addCode(codeBlock);
 
     for (final ParameterSpec param : parameters) {

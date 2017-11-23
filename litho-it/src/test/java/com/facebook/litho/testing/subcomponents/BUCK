@@ -1,0 +1,35 @@
+# Copyright (c) 2017-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree. An additional grant
+# of patent rights can be found in the PATENTS file in the same directory.
+
+include_defs("//COMPONENTS_DEFS")
+
+components_robolectric_test(
+    name = "testing",
+    srcs = glob(["*Test.java"]),
+    provided_deps = [
+        COMPONENTS_ROBOLECTRIC_TARGET,
+    ],
+    source = "8",
+    target = "8",
+    deps = [
+        COMPONENTS_JAVA_TARGET,
+        COMPONENTS_ANNOTATIONS_TARGET,
+        COMPONENTS_ASSERTJ_TARGET,
+        COMPONENTS_COMPILE_TESTING_TARGET,
+        COMPONENTS_JAVAC_TOOLS_TARGET,
+        COMPONENTS_MOCKITO_TARGET,
+        COMPONENTS_TESTING_TARGET,
+        COMPONENTS_PROCESSOR_LIB_TARGET,
+        COMPONENTS_BUILD_CONFIG_TARGET,
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/model/testing:testing"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
+        make_dep_path("litho-it/specs/src/main/java/com/facebook/litho/testing/specmodels:specmodels"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
+    ],
+)
