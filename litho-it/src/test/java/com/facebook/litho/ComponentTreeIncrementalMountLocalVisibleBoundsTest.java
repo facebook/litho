@@ -55,6 +55,7 @@ public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
     mLithoView = mock(TestLithoView.class);
     when(mLithoView.getMountState()).thenReturn(mock(MountState.class));
     Whitebox.setInternalState(mComponentTree, "mLithoView", mLithoView);
+    Whitebox.setInternalState(mComponentTree, "mMainThreadLayoutState", mock(LayoutState.class));
 
     // Can't use verify as the rect is reset when it is released back to the pool, which occurs
     // before we can check it.
@@ -109,6 +110,9 @@ public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
     when(mLithoView.getParent()).thenReturn(viewPager);
 
     mComponentTree.attach();
+
+    // This is set to null by mComponentTree.attach(), so set it again here.
+    Whitebox.setInternalState(mComponentTree, "mMainThreadLayoutState", mock(LayoutState.class));
 
     ArgumentCaptor<Runnable> runnableArgumentCaptor = ArgumentCaptor.forClass(Runnable.class);
     verify(viewPager).postOnAnimation(runnableArgumentCaptor.capture());

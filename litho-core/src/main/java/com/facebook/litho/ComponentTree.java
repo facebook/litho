@@ -521,6 +521,16 @@ public class ComponentTree {
   void mountComponent(Rect currentVisibleArea, boolean processVisibilityOutputs) {
     assertMainThread();
 
+    if (mMainThreadLayoutState == null) {
+      throw new IllegalStateException(
+          "mMainThreadLayoutState is null when trying to mount! Is released: "
+              + mReleased
+              + ", Released Component name is: "
+              + mReleasedComponent
+              + ", current root is: "
+              + mRoot);
+    }
+
     final boolean isDirtyMount = mLithoView.isMountStateDirty();
 
     mIsMounting = true;
