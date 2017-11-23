@@ -1,0 +1,25 @@
+/*
+ * Copyright (c) 2017-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+
+import org.gradle.internal.jvm.Jvm
+
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+    implementation project(':litho-annotations')
+    implementation project(':litho-processor')
+    implementation deps.jsr305
+    implementation deps.javapoet
+
+    compileOnly files(Jvm.current().getToolsJar())
+}

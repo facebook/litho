@@ -20,6 +20,7 @@ include ':litho-core'
 include ':litho-espresso'
 include ':litho-fresco'
 include ':litho-it'
+include ':test-processor'
 include ':litho-it-powermock'
 include ':litho-processor'
 include ':litho-sections-annotations'
@@ -42,3 +43,4 @@ include ':fbjni'
 project(':yoga').projectDir = file('lib/yoga')
 project(':yogajni').projectDir = file('lib/yogajni')
 project(':fbjni').projectDir = file('lib/fbjni')
+project(':test-processor').projectDir = file('litho-it/processor')
