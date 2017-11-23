@@ -32,128 +32,128 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
-public class ComponentLayoutAttributesTest {
+public class CommonPropsTest {
 
   private InternalNode mNode;
-  private ComponentLayoutAttributes mComponentLayoutAttributes;
+  private CommonProps mCommonProps;
   private ComponentContext mComponentContext;
 
   @Before
   public void setup() {
     mNode = mock(InternalNode.class);
     when(mNode.build()).thenReturn(mNode);
-    mComponentLayoutAttributes = new ComponentLayoutAttributes();
+    mCommonProps = new CommonProps();
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
   }
 
   @Test
-  public void testSetAttributesAndBuild() {
-    mComponentLayoutAttributes.layoutDirection(YogaDirection.INHERIT);
-    mComponentLayoutAttributes.alignSelf(YogaAlign.AUTO);
-    mComponentLayoutAttributes.positionType(YogaPositionType.ABSOLUTE);
-    mComponentLayoutAttributes.flex(2);
-    mComponentLayoutAttributes.flexGrow(3);
-    mComponentLayoutAttributes.flexShrink(4);
-    mComponentLayoutAttributes.flexBasisPx(5);
-    mComponentLayoutAttributes.flexBasisPercent(6);
+  public void testSetPropsAndBuild() {
+    mCommonProps.layoutDirection(YogaDirection.INHERIT);
+    mCommonProps.alignSelf(YogaAlign.AUTO);
+    mCommonProps.positionType(YogaPositionType.ABSOLUTE);
+    mCommonProps.flex(2);
+    mCommonProps.flexGrow(3);
+    mCommonProps.flexShrink(4);
+    mCommonProps.flexBasisPx(5);
+    mCommonProps.flexBasisPercent(6);
 
-    mComponentLayoutAttributes.importantForAccessibility(
+    mCommonProps.importantForAccessibility(
         ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
-    mComponentLayoutAttributes.duplicateParentState(false);
+    mCommonProps.duplicateParentState(false);
 
-    mComponentLayoutAttributes.marginPx(YogaEdge.ALL, 5);
-    mComponentLayoutAttributes.marginPx(YogaEdge.RIGHT, 6);
-    mComponentLayoutAttributes.marginPx(YogaEdge.LEFT, 4);
-    mComponentLayoutAttributes.marginPercent(YogaEdge.ALL, 10);
-    mComponentLayoutAttributes.marginPercent(YogaEdge.VERTICAL, 12);
-    mComponentLayoutAttributes.marginPercent(YogaEdge.RIGHT, 5);
-    mComponentLayoutAttributes.marginAuto(YogaEdge.LEFT);
-    mComponentLayoutAttributes.marginAuto(YogaEdge.TOP);
-    mComponentLayoutAttributes.marginAuto(YogaEdge.RIGHT);
-    mComponentLayoutAttributes.marginAuto(YogaEdge.BOTTOM);
+    mCommonProps.marginPx(YogaEdge.ALL, 5);
+    mCommonProps.marginPx(YogaEdge.RIGHT, 6);
+    mCommonProps.marginPx(YogaEdge.LEFT, 4);
+    mCommonProps.marginPercent(YogaEdge.ALL, 10);
+    mCommonProps.marginPercent(YogaEdge.VERTICAL, 12);
+    mCommonProps.marginPercent(YogaEdge.RIGHT, 5);
+    mCommonProps.marginAuto(YogaEdge.LEFT);
+    mCommonProps.marginAuto(YogaEdge.TOP);
+    mCommonProps.marginAuto(YogaEdge.RIGHT);
+    mCommonProps.marginAuto(YogaEdge.BOTTOM);
 
-    mComponentLayoutAttributes.paddingPx(YogaEdge.ALL, 1);
-    mComponentLayoutAttributes.paddingPx(YogaEdge.RIGHT, 2);
-    mComponentLayoutAttributes.paddingPx(YogaEdge.LEFT, 3);
-    mComponentLayoutAttributes.paddingPercent(YogaEdge.VERTICAL, 7);
-    mComponentLayoutAttributes.paddingPercent(YogaEdge.RIGHT, 6);
-    mComponentLayoutAttributes.paddingPercent(YogaEdge.ALL, 5);
+    mCommonProps.paddingPx(YogaEdge.ALL, 1);
+    mCommonProps.paddingPx(YogaEdge.RIGHT, 2);
+    mCommonProps.paddingPx(YogaEdge.LEFT, 3);
+    mCommonProps.paddingPercent(YogaEdge.VERTICAL, 7);
+    mCommonProps.paddingPercent(YogaEdge.RIGHT, 6);
+    mCommonProps.paddingPercent(YogaEdge.ALL, 5);
 
-    mComponentLayoutAttributes.border(Border.create(mComponentContext).build());
+    mCommonProps.border(Border.create(mComponentContext).build());
 
-    mComponentLayoutAttributes.positionPx(YogaEdge.ALL, 11);
-    mComponentLayoutAttributes.positionPx(YogaEdge.RIGHT, 12);
-    mComponentLayoutAttributes.positionPx(YogaEdge.LEFT, 13);
-    mComponentLayoutAttributes.positionPercent(YogaEdge.VERTICAL, 17);
-    mComponentLayoutAttributes.positionPercent(YogaEdge.RIGHT, 16);
-    mComponentLayoutAttributes.positionPercent(YogaEdge.ALL, 15);
+    mCommonProps.positionPx(YogaEdge.ALL, 11);
+    mCommonProps.positionPx(YogaEdge.RIGHT, 12);
+    mCommonProps.positionPx(YogaEdge.LEFT, 13);
+    mCommonProps.positionPercent(YogaEdge.VERTICAL, 17);
+    mCommonProps.positionPercent(YogaEdge.RIGHT, 16);
+    mCommonProps.positionPercent(YogaEdge.ALL, 15);
 
-    mComponentLayoutAttributes.widthPx(5);
-    mComponentLayoutAttributes.widthPercent(50);
-    mComponentLayoutAttributes.minWidthPx(15);
-    mComponentLayoutAttributes.minWidthPercent(100);
-    mComponentLayoutAttributes.maxWidthPx(25);
-    mComponentLayoutAttributes.maxWidthPercent(26);
+    mCommonProps.widthPx(5);
+    mCommonProps.widthPercent(50);
+    mCommonProps.minWidthPx(15);
+    mCommonProps.minWidthPercent(100);
+    mCommonProps.maxWidthPx(25);
+    mCommonProps.maxWidthPercent(26);
 
-    mComponentLayoutAttributes.heightPx(30);
-    mComponentLayoutAttributes.heightPercent(31);
-    mComponentLayoutAttributes.minHeightPx(32);
-    mComponentLayoutAttributes.minHeightPercent(33);
-    mComponentLayoutAttributes.maxHeightPx(34);
-    mComponentLayoutAttributes.maxHeightPercent(35);
+    mCommonProps.heightPx(30);
+    mCommonProps.heightPercent(31);
+    mCommonProps.minHeightPx(32);
+    mCommonProps.minHeightPercent(33);
+    mCommonProps.maxHeightPx(34);
+    mCommonProps.maxHeightPercent(35);
 
-    mComponentLayoutAttributes.aspectRatio(20);
+    mCommonProps.aspectRatio(20);
 
-    mComponentLayoutAttributes.touchExpansionPx(YogaEdge.RIGHT, 22);
-    mComponentLayoutAttributes.touchExpansionPx(YogaEdge.LEFT, 23);
-    mComponentLayoutAttributes.touchExpansionPx(YogaEdge.ALL, 21);
+    mCommonProps.touchExpansionPx(YogaEdge.RIGHT, 22);
+    mCommonProps.touchExpansionPx(YogaEdge.LEFT, 23);
+    mCommonProps.touchExpansionPx(YogaEdge.ALL, 21);
 
     Reference<Drawable> drawableReference = DrawableReference.create().build();
-    mComponentLayoutAttributes.background(drawableReference);
+    mCommonProps.background(drawableReference);
     Drawable foreground = new ColorDrawable(Color.BLACK);
-    mComponentLayoutAttributes.foreground(foreground);
+    mCommonProps.foreground(foreground);
 
-    mComponentLayoutAttributes.wrapInView();
+    mCommonProps.wrapInView();
 
     final EventHandler<ClickEvent> clickHandler = mock(EventHandler.class);
     final EventHandler<LongClickEvent> longClickHandler = mock(EventHandler.class);
     final EventHandler<TouchEvent> touchHandler = mock(EventHandler.class);
     final EventHandler<InterceptTouchEvent> interceptTouchHandler = mock(EventHandler.class);
     final EventHandler<FocusChangedEvent> focusChangedHandler = mock(EventHandler.class);
-    mComponentLayoutAttributes.clickHandler(clickHandler);
-    mComponentLayoutAttributes.focusChangeHandler(focusChangedHandler);
-    mComponentLayoutAttributes.longClickHandler(longClickHandler);
-    mComponentLayoutAttributes.touchHandler(touchHandler);
-    mComponentLayoutAttributes.interceptTouchHandler(interceptTouchHandler);
+    mCommonProps.clickHandler(clickHandler);
+    mCommonProps.focusChangeHandler(focusChangedHandler);
+    mCommonProps.longClickHandler(longClickHandler);
+    mCommonProps.touchHandler(touchHandler);
+    mCommonProps.interceptTouchHandler(interceptTouchHandler);
 
-    mComponentLayoutAttributes.focusable(true);
-    mComponentLayoutAttributes.enabled(false);
-    mComponentLayoutAttributes.visibleHeightRatio(55);
-    mComponentLayoutAttributes.visibleWidthRatio(56);
+    mCommonProps.focusable(true);
+    mCommonProps.enabled(false);
+    mCommonProps.visibleHeightRatio(55);
+    mCommonProps.visibleWidthRatio(56);
 
     final EventHandler<VisibleEvent> visibleHandler = mock(EventHandler.class);
     final EventHandler<FocusedVisibleEvent> focusedHandler = mock(EventHandler.class);
     final EventHandler<UnfocusedVisibleEvent> unfocusedHandler = mock(EventHandler.class);
     final EventHandler<FullImpressionVisibleEvent> fullImpressionHandler = mock(EventHandler.class);
     final EventHandler<InvisibleEvent> invisibleHandler = mock(EventHandler.class);
-    mComponentLayoutAttributes.visibleHandler(visibleHandler);
-    mComponentLayoutAttributes.focusedHandler(focusedHandler);
-    mComponentLayoutAttributes.unfocusedHandler(unfocusedHandler);
-    mComponentLayoutAttributes.fullImpressionHandler(fullImpressionHandler);
-    mComponentLayoutAttributes.invisibleHandler(invisibleHandler);
+    mCommonProps.visibleHandler(visibleHandler);
+    mCommonProps.focusedHandler(focusedHandler);
+    mCommonProps.unfocusedHandler(unfocusedHandler);
+    mCommonProps.fullImpressionHandler(fullImpressionHandler);
+    mCommonProps.invisibleHandler(invisibleHandler);
 
-    mComponentLayoutAttributes.contentDescription("test");
+    mCommonProps.contentDescription("test");
 
     Object viewTag = new Object();
     SparseArray<Object> viewTags = new SparseArray<>();
-    mComponentLayoutAttributes.viewTag(viewTag);
-    mComponentLayoutAttributes.viewTags(viewTags);
+    mCommonProps.viewTag(viewTag);
+    mCommonProps.viewTags(viewTags);
 
-    mComponentLayoutAttributes.shadowElevationPx(60);
+    mCommonProps.shadowElevationPx(60);
 
-    mComponentLayoutAttributes.clipToOutline(false);
-    mComponentLayoutAttributes.transitionKey("transitionKey");
-    mComponentLayoutAttributes.testKey("testKey");
+    mCommonProps.clipToOutline(false);
+    mCommonProps.transitionKey("transitionKey");
+    mCommonProps.testKey("testKey");
 
     final EventHandler<DispatchPopulateAccessibilityEventEvent>
         dispatchPopulateAccessibilityEventHandler = mock(EventHandler.class);
@@ -171,22 +171,17 @@ public class ComponentLayoutAttributesTest {
         mock(EventHandler.class);
     final EventHandler<SendAccessibilityEventUncheckedEvent>
         sendAccessibilityEventUncheckedHandler = mock(EventHandler.class);
-    mComponentLayoutAttributes.dispatchPopulateAccessibilityEventHandler(
+    mCommonProps.dispatchPopulateAccessibilityEventHandler(
         dispatchPopulateAccessibilityEventHandler);
-    mComponentLayoutAttributes.onInitializeAccessibilityEventHandler(
-        onInitializeAccessibilityEventHandler);
-    mComponentLayoutAttributes.onInitializeAccessibilityNodeInfoHandler(
-        onInitializeAccessibilityNodeInfoHandler);
-    mComponentLayoutAttributes.onPopulateAccessibilityEventHandler(
-        onPopulateAccessibilityEventHandler);
-    mComponentLayoutAttributes.onRequestSendAccessibilityEventHandler(
-        onRequestSendAccessibilityEventHandler);
-    mComponentLayoutAttributes.performAccessibilityActionHandler(performAccessibilityActionHandler);
-    mComponentLayoutAttributes.sendAccessibilityEventHandler(sendAccessibilityEventHandler);
-    mComponentLayoutAttributes.sendAccessibilityEventUncheckedHandler(
-        sendAccessibilityEventUncheckedHandler);
+    mCommonProps.onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
+    mCommonProps.onInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
+    mCommonProps.onPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
+    mCommonProps.onRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
+    mCommonProps.performAccessibilityActionHandler(performAccessibilityActionHandler);
+    mCommonProps.sendAccessibilityEventHandler(sendAccessibilityEventHandler);
+    mCommonProps.sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
 
-    mComponentLayoutAttributes.copyInto(mComponentContext, mNode);
+    mCommonProps.copyInto(mComponentContext, mNode);
 
     verify(mNode).layoutDirection(YogaDirection.INHERIT);
     verify(mNode).alignSelf(YogaAlign.AUTO);

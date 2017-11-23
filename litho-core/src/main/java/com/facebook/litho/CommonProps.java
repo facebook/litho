@@ -9,8 +9,6 @@
 
 package com.facebook.litho;
 
-
-
 import android.graphics.drawable.Drawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.Nullable;
@@ -27,11 +25,9 @@ import com.facebook.yoga.YogaPositionType;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Internal class that holds layout attributes and then copies them onto an {@link InternalNode}.
- */
+/** Internal class that holds props that are common to all {@link Component}s. */
 @ThreadConfined(ThreadConfined.ANY)
-class ComponentLayoutAttributes {
+class CommonProps {
 
   // Flags used to indicate that a certain attribute was explicitly set on the node.
   private static final byte PFLAG_POSITION_TYPE_IS_SET = 1 << 1;
@@ -41,7 +37,7 @@ class ComponentLayoutAttributes {
   private static final byte PFLAG_BACKGROUND_IS_SET = 1 << 5;
   private static final byte PFLAG_TEST_KEY_IS_SET = 1 << 6;
 
-  @Nullable private OtherLayoutAttributes mOtherLayoutAttributes;
+  @Nullable private OtherProps mOtherProps;
 
   private byte mPrivateFlags;
   @Nullable private NodeInfo mNodeInfo;
@@ -56,12 +52,12 @@ class ComponentLayoutAttributes {
   @AttrRes private int mDefStyleAttr;
   @StyleRes private int mDefStyleRes;
 
-  private OtherLayoutAttributes getOrCreateOtherLayoutAttributes() {
-    if (mOtherLayoutAttributes == null) {
-      mOtherLayoutAttributes = new OtherLayoutAttributes();
+  private OtherProps getOrCreateOtherProps() {
+    if (mOtherProps == null) {
+      mOtherProps = new OtherProps();
     }
 
-    return mOtherLayoutAttributes;
+    return mOtherProps;
   }
 
   void setStyle(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
@@ -118,119 +114,119 @@ class ComponentLayoutAttributes {
   }
 
   void layoutDirection(YogaDirection direction) {
-    getOrCreateOtherLayoutAttributes().layoutDirection(direction);
+    getOrCreateOtherProps().layoutDirection(direction);
   }
 
   void alignSelf(YogaAlign alignSelf) {
-    getOrCreateOtherLayoutAttributes().alignSelf(alignSelf);
+    getOrCreateOtherProps().alignSelf(alignSelf);
   }
 
   void flex(float flex) {
-    getOrCreateOtherLayoutAttributes().flex(flex);
+    getOrCreateOtherProps().flex(flex);
   }
 
   void flexGrow(float flexGrow) {
-    getOrCreateOtherLayoutAttributes().flexGrow(flexGrow);
+    getOrCreateOtherProps().flexGrow(flexGrow);
   }
 
   void flexShrink(float flexShrink) {
-    getOrCreateOtherLayoutAttributes().flexShrink(flexShrink);
+    getOrCreateOtherProps().flexShrink(flexShrink);
   }
 
   void flexBasisPx(@Px int flexBasis) {
-    getOrCreateOtherLayoutAttributes().flexBasisPx(flexBasis);
+    getOrCreateOtherProps().flexBasisPx(flexBasis);
   }
 
   void flexBasisPercent(float percent) {
-    getOrCreateOtherLayoutAttributes().flexBasisPercent(percent);
+    getOrCreateOtherProps().flexBasisPercent(percent);
   }
 
   void importantForAccessibility(int importantForAccessibility) {
-    getOrCreateOtherLayoutAttributes().importantForAccessibility(importantForAccessibility);
+    getOrCreateOtherProps().importantForAccessibility(importantForAccessibility);
   }
 
   void duplicateParentState(boolean duplicateParentState) {
-    getOrCreateOtherLayoutAttributes().duplicateParentState(duplicateParentState);
+    getOrCreateOtherProps().duplicateParentState(duplicateParentState);
   }
 
   void marginPx(YogaEdge edge, @Px int margin) {
-    getOrCreateOtherLayoutAttributes().marginPx(edge, margin);
+    getOrCreateOtherProps().marginPx(edge, margin);
   }
 
   void marginPercent(YogaEdge edge, float percent) {
-    getOrCreateOtherLayoutAttributes().marginPercent(edge, percent);
+    getOrCreateOtherProps().marginPercent(edge, percent);
   }
 
   void marginAuto(YogaEdge edge) {
-    getOrCreateOtherLayoutAttributes().marginAuto(edge);
+    getOrCreateOtherProps().marginAuto(edge);
   }
 
   void paddingPx(YogaEdge edge, @Px int padding) {
-    getOrCreateOtherLayoutAttributes().paddingPx(edge, padding);
+    getOrCreateOtherProps().paddingPx(edge, padding);
   }
 
   void paddingPercent(YogaEdge edge, float percent) {
-    getOrCreateOtherLayoutAttributes().paddingPercent(edge, percent);
+    getOrCreateOtherProps().paddingPercent(edge, percent);
   }
 
   void border(Border border) {
-    getOrCreateOtherLayoutAttributes().border(border);
+    getOrCreateOtherProps().border(border);
   }
 
   void positionPercent(YogaEdge edge, float percent) {
-    getOrCreateOtherLayoutAttributes().positionPercent(edge, percent);
+    getOrCreateOtherProps().positionPercent(edge, percent);
   }
 
   void widthPercent(float percent) {
-    getOrCreateOtherLayoutAttributes().widthPercent(percent);
+    getOrCreateOtherProps().widthPercent(percent);
   }
 
   void minWidthPx(@Px int minWidth) {
-    getOrCreateOtherLayoutAttributes().minWidthPx(minWidth);
+    getOrCreateOtherProps().minWidthPx(minWidth);
   }
 
   void minWidthPercent(float percent) {
-    getOrCreateOtherLayoutAttributes().minWidthPercent(percent);
+    getOrCreateOtherProps().minWidthPercent(percent);
   }
 
   void maxWidthPx(@Px int maxWidth) {
-    getOrCreateOtherLayoutAttributes().maxWidthPx(maxWidth);
+    getOrCreateOtherProps().maxWidthPx(maxWidth);
   }
 
   void maxWidthPercent(float percent) {
-    getOrCreateOtherLayoutAttributes().maxWidthPercent(percent);
+    getOrCreateOtherProps().maxWidthPercent(percent);
   }
 
   void heightPercent(float percent) {
-    getOrCreateOtherLayoutAttributes().heightPercent(percent);
+    getOrCreateOtherProps().heightPercent(percent);
   }
 
   void minHeightPx(@Px int minHeight) {
-    getOrCreateOtherLayoutAttributes().minHeightPx(minHeight);
+    getOrCreateOtherProps().minHeightPx(minHeight);
   }
 
   void minHeightPercent(float percent) {
-    getOrCreateOtherLayoutAttributes().minHeightPercent(percent);
+    getOrCreateOtherProps().minHeightPercent(percent);
   }
 
   void maxHeightPx(@Px int maxHeight) {
-    getOrCreateOtherLayoutAttributes().maxHeightPx(maxHeight);
+    getOrCreateOtherProps().maxHeightPx(maxHeight);
   }
 
   void maxHeightPercent(float percent) {
-    getOrCreateOtherLayoutAttributes().maxHeightPercent(percent);
+    getOrCreateOtherProps().maxHeightPercent(percent);
   }
 
   void aspectRatio(float aspectRatio) {
-    getOrCreateOtherLayoutAttributes().aspectRatio(aspectRatio);
+    getOrCreateOtherProps().aspectRatio(aspectRatio);
   }
 
   void touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
-    getOrCreateOtherLayoutAttributes().touchExpansionPx(edge, touchExpansion);
+    getOrCreateOtherProps().touchExpansionPx(edge, touchExpansion);
   }
 
   void foreground(Drawable foreground) {
-    getOrCreateOtherLayoutAttributes().foreground(foreground);
+    getOrCreateOtherProps().foreground(foreground);
   }
 
   void clickHandler(EventHandler<ClickEvent> clickHandler) {
@@ -262,31 +258,31 @@ class ComponentLayoutAttributes {
   }
 
   void visibleHeightRatio(float visibleHeightRatio) {
-    getOrCreateOtherLayoutAttributes().visibleHeightRatio(visibleHeightRatio);
+    getOrCreateOtherProps().visibleHeightRatio(visibleHeightRatio);
   }
 
   void visibleWidthRatio(float visibleWidthRatio) {
-    getOrCreateOtherLayoutAttributes().visibleWidthRatio(visibleWidthRatio);
+    getOrCreateOtherProps().visibleWidthRatio(visibleWidthRatio);
   }
 
   void visibleHandler(EventHandler<VisibleEvent> visibleHandler) {
-    getOrCreateOtherLayoutAttributes().visibleHandler(visibleHandler);
+    getOrCreateOtherProps().visibleHandler(visibleHandler);
   }
 
   void focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler) {
-    getOrCreateOtherLayoutAttributes().focusedHandler(focusedHandler);
+    getOrCreateOtherProps().focusedHandler(focusedHandler);
   }
 
   void unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
-    getOrCreateOtherLayoutAttributes().unfocusedHandler(unfocusedHandler);
+    getOrCreateOtherProps().unfocusedHandler(unfocusedHandler);
   }
 
   void fullImpressionHandler(EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
-    getOrCreateOtherLayoutAttributes().fullImpressionHandler(fullImpressionHandler);
+    getOrCreateOtherProps().fullImpressionHandler(fullImpressionHandler);
   }
 
   void invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
-    getOrCreateOtherLayoutAttributes().invisibleHandler(invisibleHandler);
+    getOrCreateOtherProps().invisibleHandler(invisibleHandler);
   }
 
   void contentDescription(CharSequence contentDescription) {
@@ -370,7 +366,7 @@ class ComponentLayoutAttributes {
   }
 
   void transitionKey(String key) {
-    getOrCreateOtherLayoutAttributes().transitionKey(key);
+    getOrCreateOtherProps().transitionKey(key);
   }
 
   private NodeInfo getOrCreateNodeInfo() {
@@ -413,12 +409,12 @@ class ComponentLayoutAttributes {
       node.wrapInView();
     }
 
-    if (mOtherLayoutAttributes != null) {
-      mOtherLayoutAttributes.copyInto(node);
+    if (mOtherProps != null) {
+      mOtherProps.copyInto(node);
     }
   }
 
-  private static class OtherLayoutAttributes {
+  private static class OtherProps {
     // Flags used to indicate that a certain attribute was explicitly set on the node.
     private static final long PFLAG_LAYOUT_DIRECTION_IS_SET = 1L << 0;
     private static final long PFLAG_ALIGN_SELF_IS_SET = 1L << 1;

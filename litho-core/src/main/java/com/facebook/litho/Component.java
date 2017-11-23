@@ -68,8 +68,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
   @ThreadConfined(ThreadConfined.ANY)
   private InternalNode mLastMeasuredLayout;
 
-  // Layout attributes that are set directly on the component itself.
-  @Nullable private ComponentLayoutAttributes mComponentLayoutAttributes;
+  @Nullable private CommonProps mCommonProps;
 
   /**
    * Holds onto how many direct component children of each type this Component has. Used for
@@ -438,16 +437,16 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     context.registerTrigger(context.newEventTrigger(), globalKey);
   }
 
-  ComponentLayoutAttributes getLayoutAttributes() {
-    return mComponentLayoutAttributes;
+  CommonProps getCommonProps() {
+    return mCommonProps;
   }
 
-  private ComponentLayoutAttributes getOrCreateLayoutAttributes() {
-    if (mComponentLayoutAttributes == null) {
-      mComponentLayoutAttributes = new ComponentLayoutAttributes();
+  private CommonProps getOrCreateCommonProps() {
+    if (mCommonProps == null) {
+      mCommonProps = new CommonProps();
     }
 
-    return mComponentLayoutAttributes;
+    return mCommonProps;
   }
 
   @Deprecated
@@ -487,7 +486,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
       mDefStyleRes = defStyleRes;
 
       if (defStyleAttr != 0 || defStyleRes != 0) {
-        mComponent.getOrCreateLayoutAttributes().setStyle(defStyleAttr, defStyleRes);
+        mComponent.getOrCreateCommonProps().setStyle(defStyleAttr, defStyleRes);
         component.loadStyle(c, defStyleAttr, defStyleRes, component);
       }
     }
@@ -555,42 +554,42 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     public abstract Component<L> build();
 
     public T layoutDirection(YogaDirection layoutDirection) {
-      mComponent.getOrCreateLayoutAttributes().layoutDirection(layoutDirection);
+      mComponent.getOrCreateCommonProps().layoutDirection(layoutDirection);
       return getThis();
     }
 
     public T alignSelf(YogaAlign alignSelf) {
-      mComponent.getOrCreateLayoutAttributes().alignSelf(alignSelf);
+      mComponent.getOrCreateCommonProps().alignSelf(alignSelf);
       return getThis();
     }
 
     public T positionType(YogaPositionType positionType) {
-      mComponent.getOrCreateLayoutAttributes().positionType(positionType);
+      mComponent.getOrCreateCommonProps().positionType(positionType);
       return getThis();
     }
 
     public T flex(float flex) {
-      mComponent.getOrCreateLayoutAttributes().flex(flex);
+      mComponent.getOrCreateCommonProps().flex(flex);
       return getThis();
     }
 
     public T flexGrow(float flexGrow) {
-      mComponent.getOrCreateLayoutAttributes().flexGrow(flexGrow);
+      mComponent.getOrCreateCommonProps().flexGrow(flexGrow);
       return getThis();
     }
 
     public T flexShrink(float flexShrink) {
-      mComponent.getOrCreateLayoutAttributes().flexShrink(flexShrink);
+      mComponent.getOrCreateCommonProps().flexShrink(flexShrink);
       return getThis();
     }
 
     public T flexBasisPx(@Px int flexBasis) {
-      mComponent.getOrCreateLayoutAttributes().flexBasisPx(flexBasis);
+      mComponent.getOrCreateCommonProps().flexBasisPx(flexBasis);
       return getThis();
     }
 
     public T flexBasisPercent(float percent) {
-      mComponent.getOrCreateLayoutAttributes().flexBasisPercent(percent);
+      mComponent.getOrCreateCommonProps().flexBasisPercent(percent);
       return getThis();
     }
 
@@ -611,27 +610,27 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
 
     public T importantForAccessibility(int importantForAccessibility) {
-      mComponent.getOrCreateLayoutAttributes().importantForAccessibility(importantForAccessibility);
+      mComponent.getOrCreateCommonProps().importantForAccessibility(importantForAccessibility);
       return getThis();
     }
 
     public T duplicateParentState(boolean duplicateParentState) {
-      mComponent.getOrCreateLayoutAttributes().duplicateParentState(duplicateParentState);
+      mComponent.getOrCreateCommonProps().duplicateParentState(duplicateParentState);
       return getThis();
     }
 
     public T marginPx(YogaEdge edge, @Px int margin) {
-      mComponent.getOrCreateLayoutAttributes().marginPx(edge, margin);
+      mComponent.getOrCreateCommonProps().marginPx(edge, margin);
       return getThis();
     }
 
     public T marginPercent(YogaEdge edge, float percent) {
-      mComponent.getOrCreateLayoutAttributes().marginPercent(edge, percent);
+      mComponent.getOrCreateCommonProps().marginPercent(edge, percent);
       return getThis();
     }
 
     public T marginAuto(YogaEdge edge) {
-      mComponent.getOrCreateLayoutAttributes().marginAuto(edge);
+      mComponent.getOrCreateCommonProps().marginAuto(edge);
       return getThis();
     }
 
@@ -652,12 +651,12 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
 
     public T paddingPx(YogaEdge edge, @Px int padding) {
-      mComponent.getOrCreateLayoutAttributes().paddingPx(edge, padding);
+      mComponent.getOrCreateCommonProps().paddingPx(edge, padding);
       return getThis();
     }
 
     public T paddingPercent(YogaEdge edge, float percent) {
-      mComponent.getOrCreateLayoutAttributes().paddingPercent(edge, percent);
+      mComponent.getOrCreateCommonProps().paddingPercent(edge, percent);
       return getThis();
     }
 
@@ -678,17 +677,17 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
 
     public T border(Border border) {
-      mComponent.getOrCreateLayoutAttributes().border(border);
+      mComponent.getOrCreateCommonProps().border(border);
       return getThis();
     }
 
     public T positionPx(YogaEdge edge, @Px int position) {
-      mComponent.getOrCreateLayoutAttributes().positionPx(edge, position);
+      mComponent.getOrCreateCommonProps().positionPx(edge, position);
       return getThis();
     }
 
     public T positionPercent(YogaEdge edge, float percent) {
-      mComponent.getOrCreateLayoutAttributes().positionPercent(edge, percent);
+      mComponent.getOrCreateCommonProps().positionPercent(edge, percent);
       return getThis();
     }
 
@@ -709,12 +708,12 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
 
     public T widthPx(@Px int width) {
-      mComponent.getOrCreateLayoutAttributes().widthPx(width);
+      mComponent.getOrCreateCommonProps().widthPx(width);
       return getThis();
     }
 
     public T widthPercent(float percent) {
-      mComponent.getOrCreateLayoutAttributes().widthPercent(percent);
+      mComponent.getOrCreateCommonProps().widthPercent(percent);
       return getThis();
     }
 
@@ -735,12 +734,12 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
 
     public T minWidthPx(@Px int minWidth) {
-      mComponent.getOrCreateLayoutAttributes().minWidthPx(minWidth);
+      mComponent.getOrCreateCommonProps().minWidthPx(minWidth);
       return getThis();
     }
 
     public T minWidthPercent(float percent) {
-      mComponent.getOrCreateLayoutAttributes().minWidthPercent(percent);
+      mComponent.getOrCreateCommonProps().minWidthPercent(percent);
       return getThis();
     }
 
@@ -761,12 +760,12 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
 
     public T maxWidthPx(@Px int maxWidth) {
-      mComponent.getOrCreateLayoutAttributes().maxWidthPx(maxWidth);
+      mComponent.getOrCreateCommonProps().maxWidthPx(maxWidth);
       return getThis();
     }
 
     public T maxWidthPercent(float percent) {
-      mComponent.getOrCreateLayoutAttributes().maxWidthPercent(percent);
+      mComponent.getOrCreateCommonProps().maxWidthPercent(percent);
       return getThis();
     }
 
@@ -787,12 +786,12 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
 
     public T heightPx(@Px int height) {
-      mComponent.getOrCreateLayoutAttributes().heightPx(height);
+      mComponent.getOrCreateCommonProps().heightPx(height);
       return getThis();
     }
 
     public T heightPercent(float percent) {
-      mComponent.getOrCreateLayoutAttributes().heightPercent(percent);
+      mComponent.getOrCreateCommonProps().heightPercent(percent);
       return getThis();
     }
 
@@ -813,12 +812,12 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
 
     public T minHeightPx(@Px int minHeight) {
-      mComponent.getOrCreateLayoutAttributes().minHeightPx(minHeight);
+      mComponent.getOrCreateCommonProps().minHeightPx(minHeight);
       return getThis();
     }
 
     public T minHeightPercent(float percent) {
-      mComponent.getOrCreateLayoutAttributes().minHeightPercent(percent);
+      mComponent.getOrCreateCommonProps().minHeightPercent(percent);
       return getThis();
     }
 
@@ -839,12 +838,12 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
 
     public T maxHeightPx(@Px int maxHeight) {
-      mComponent.getOrCreateLayoutAttributes().maxHeightPx(maxHeight);
+      mComponent.getOrCreateCommonProps().maxHeightPx(maxHeight);
       return getThis();
     }
 
     public T maxHeightPercent(float percent) {
-      mComponent.getOrCreateLayoutAttributes().maxHeightPercent(percent);
+      mComponent.getOrCreateCommonProps().maxHeightPercent(percent);
       return getThis();
     }
 
@@ -865,12 +864,12 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
 
     public T aspectRatio(float aspectRatio) {
-      mComponent.getOrCreateLayoutAttributes().aspectRatio(aspectRatio);
+      mComponent.getOrCreateCommonProps().aspectRatio(aspectRatio);
       return getThis();
     }
 
     public T touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
-      mComponent.getOrCreateLayoutAttributes().touchExpansionPx(edge, touchExpansion);
+      mComponent.getOrCreateCommonProps().touchExpansionPx(edge, touchExpansion);
       return getThis();
     }
 
@@ -891,7 +890,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
 
     public T background(Reference<? extends Drawable> background) {
-      mComponent.getOrCreateLayoutAttributes().background(background);
+      mComponent.getOrCreateCommonProps().background(background);
       return getThis();
     }
 
@@ -924,7 +923,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
 
     public T foreground(Drawable foreground) {
-      mComponent.getOrCreateLayoutAttributes().foreground(foreground);
+      mComponent.getOrCreateCommonProps().foreground(foreground);
       return getThis();
     }
 
@@ -949,82 +948,82 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
 
     public T wrapInView() {
-      mComponent.getOrCreateLayoutAttributes().wrapInView();
+      mComponent.getOrCreateCommonProps().wrapInView();
       return getThis();
     }
 
     public T clickHandler(EventHandler<ClickEvent> clickHandler) {
-      mComponent.getOrCreateLayoutAttributes().clickHandler(clickHandler);
+      mComponent.getOrCreateCommonProps().clickHandler(clickHandler);
       return getThis();
     }
 
     public T longClickHandler(EventHandler<LongClickEvent> longClickHandler) {
-      mComponent.getOrCreateLayoutAttributes().longClickHandler(longClickHandler);
+      mComponent.getOrCreateCommonProps().longClickHandler(longClickHandler);
       return getThis();
     }
 
     public T focusChangeHandler(EventHandler<FocusChangedEvent> focusChangeHandler) {
-      mComponent.getOrCreateLayoutAttributes().focusChangeHandler(focusChangeHandler);
+      mComponent.getOrCreateCommonProps().focusChangeHandler(focusChangeHandler);
       return getThis();
     }
 
     public T touchHandler(EventHandler<TouchEvent> touchHandler) {
-      mComponent.getOrCreateLayoutAttributes().touchHandler(touchHandler);
+      mComponent.getOrCreateCommonProps().touchHandler(touchHandler);
       return getThis();
     }
 
     public T interceptTouchHandler(EventHandler<InterceptTouchEvent> interceptTouchHandler) {
-      mComponent.getOrCreateLayoutAttributes().interceptTouchHandler(interceptTouchHandler);
+      mComponent.getOrCreateCommonProps().interceptTouchHandler(interceptTouchHandler);
       return getThis();
     }
 
     public T focusable(boolean isFocusable) {
-      mComponent.getOrCreateLayoutAttributes().focusable(isFocusable);
+      mComponent.getOrCreateCommonProps().focusable(isFocusable);
       return getThis();
     }
 
     public T enabled(boolean isEnabled) {
-      mComponent.getOrCreateLayoutAttributes().enabled(isEnabled);
+      mComponent.getOrCreateCommonProps().enabled(isEnabled);
       return getThis();
     }
 
     public T visibleHeightRatio(float visibleHeightRatio) {
-      mComponent.getOrCreateLayoutAttributes().visibleHeightRatio(visibleHeightRatio);
+      mComponent.getOrCreateCommonProps().visibleHeightRatio(visibleHeightRatio);
       return getThis();
     }
 
     public T visibleWidthRatio(float visibleWidthRatio) {
-      mComponent.getOrCreateLayoutAttributes().visibleWidthRatio(visibleWidthRatio);
+      mComponent.getOrCreateCommonProps().visibleWidthRatio(visibleWidthRatio);
       return getThis();
     }
 
     public T visibleHandler(EventHandler<VisibleEvent> visibleHandler) {
-      mComponent.getOrCreateLayoutAttributes().visibleHandler(visibleHandler);
+      mComponent.getOrCreateCommonProps().visibleHandler(visibleHandler);
       return getThis();
     }
 
     public T focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler) {
-      mComponent.getOrCreateLayoutAttributes().focusedHandler(focusedHandler);
+      mComponent.getOrCreateCommonProps().focusedHandler(focusedHandler);
       return getThis();
     }
 
     public T unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
-      mComponent.getOrCreateLayoutAttributes().unfocusedHandler(unfocusedHandler);
+      mComponent.getOrCreateCommonProps().unfocusedHandler(unfocusedHandler);
       return getThis();
     }
 
     public T fullImpressionHandler(EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
-      mComponent.getOrCreateLayoutAttributes().fullImpressionHandler(fullImpressionHandler);
+      mComponent.getOrCreateCommonProps().fullImpressionHandler(fullImpressionHandler);
       return getThis();
     }
 
     public T invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
-      mComponent.getOrCreateLayoutAttributes().invisibleHandler(invisibleHandler);
+      mComponent.getOrCreateCommonProps().invisibleHandler(invisibleHandler);
       return getThis();
     }
 
     public T contentDescription(CharSequence contentDescription) {
-      mComponent.getOrCreateLayoutAttributes().contentDescription(contentDescription);
+      mComponent.getOrCreateCommonProps().contentDescription(contentDescription);
       return getThis();
     }
 
@@ -1037,17 +1036,17 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
 
     public T viewTag(Object viewTag) {
-      mComponent.getOrCreateLayoutAttributes().viewTag(viewTag);
+      mComponent.getOrCreateCommonProps().viewTag(viewTag);
       return getThis();
     }
 
     public T viewTags(SparseArray<Object> viewTags) {
-      mComponent.getOrCreateLayoutAttributes().viewTags(viewTags);
+      mComponent.getOrCreateCommonProps().viewTags(viewTags);
       return getThis();
     }
 
     public T shadowElevationPx(float shadowElevation) {
-      mComponent.getOrCreateLayoutAttributes().shadowElevationPx(shadowElevation);
+      mComponent.getOrCreateCommonProps().shadowElevationPx(shadowElevation);
       return getThis();
     }
 
@@ -1068,17 +1067,17 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
 
     public T outlineProvider(ViewOutlineProvider outlineProvider) {
-      mComponent.getOrCreateLayoutAttributes().outlineProvider(outlineProvider);
+      mComponent.getOrCreateCommonProps().outlineProvider(outlineProvider);
       return getThis();
     }
 
     public T clipToOutline(boolean clipToOutline) {
-      mComponent.getOrCreateLayoutAttributes().clipToOutline(clipToOutline);
+      mComponent.getOrCreateCommonProps().clipToOutline(clipToOutline);
       return getThis();
     }
 
     public T testKey(String testKey) {
-      mComponent.getOrCreateLayoutAttributes().testKey(testKey);
+      mComponent.getOrCreateCommonProps().testKey(testKey);
       return getThis();
     }
 
@@ -1086,7 +1085,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
         EventHandler<DispatchPopulateAccessibilityEventEvent>
             dispatchPopulateAccessibilityEventHandler) {
       mComponent
-          .getOrCreateLayoutAttributes()
+          .getOrCreateCommonProps()
           .dispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
       return getThis();
     }
@@ -1094,7 +1093,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     public T onInitializeAccessibilityEventHandler(
         EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler) {
       mComponent
-          .getOrCreateLayoutAttributes()
+          .getOrCreateCommonProps()
           .onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
       return getThis();
     }
@@ -1103,7 +1102,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
         EventHandler<OnInitializeAccessibilityNodeInfoEvent>
             onInitializeAccessibilityNodeInfoHandler) {
       mComponent
-          .getOrCreateLayoutAttributes()
+          .getOrCreateCommonProps()
           .onInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
       return getThis();
     }
@@ -1111,7 +1110,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     public T onPopulateAccessibilityEventHandler(
         EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler) {
       mComponent
-          .getOrCreateLayoutAttributes()
+          .getOrCreateCommonProps()
           .onPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
       return getThis();
     }
@@ -1119,7 +1118,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     public T onRequestSendAccessibilityEventHandler(
         EventHandler<OnRequestSendAccessibilityEventEvent> onRequestSendAccessibilityEventHandler) {
       mComponent
-          .getOrCreateLayoutAttributes()
+          .getOrCreateCommonProps()
           .onRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
       return getThis();
     }
@@ -1127,7 +1126,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     public T performAccessibilityActionHandler(
         EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler) {
       mComponent
-          .getOrCreateLayoutAttributes()
+          .getOrCreateCommonProps()
           .performAccessibilityActionHandler(performAccessibilityActionHandler);
       return getThis();
     }
@@ -1135,7 +1134,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     public T sendAccessibilityEventHandler(
         EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler) {
       mComponent
-          .getOrCreateLayoutAttributes()
+          .getOrCreateCommonProps()
           .sendAccessibilityEventHandler(sendAccessibilityEventHandler);
       return getThis();
     }
@@ -1143,23 +1142,23 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     public T sendAccessibilityEventUncheckedHandler(
         EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler) {
       mComponent
-          .getOrCreateLayoutAttributes()
+          .getOrCreateCommonProps()
           .sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
       return getThis();
     }
 
     public T transitionKey(String key) {
-      mComponent.getOrCreateLayoutAttributes().transitionKey(key);
+      mComponent.getOrCreateCommonProps().transitionKey(key);
       return getThis();
     }
 
     public T alpha(float alpha) {
-      mComponent.getOrCreateLayoutAttributes().alpha(alpha);
+      mComponent.getOrCreateCommonProps().alpha(alpha);
       return getThis();
     }
 
     public T scale(float scale) {
-      mComponent.getOrCreateLayoutAttributes().scale(scale);
+      mComponent.getOrCreateCommonProps().scale(scale);
       return getThis();
     }
   }

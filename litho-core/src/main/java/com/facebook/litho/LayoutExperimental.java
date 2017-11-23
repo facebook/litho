@@ -61,8 +61,8 @@ public final class LayoutExperimental extends Component<LayoutExperimental> {
 
   protected ComponentLayout resolve(ComponentContext c, Component<?> component) {
     InternalNode node = (InternalNode) c.newLayoutBuilder(delegate, 0, 0);
-    if (component.getLayoutAttributes() != null) {
-      component.getLayoutAttributes().copyInto(c, node);
+    if (component.getCommonProps() != null) {
+      component.getCommonProps().copyInto(c, node);
     }
 
     if (alignItems != null) {

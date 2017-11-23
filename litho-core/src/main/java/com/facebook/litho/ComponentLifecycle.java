@@ -276,12 +276,12 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
 
     // If this is a layout spec with size spec, and we're not deferring the nested tree resolution,
-    // then we already added the attributes earlier on (when we did defer resolution), and
+    // then we already added the props earlier on (when we did defer resolution), and
     // therefore we shouldn't add them again here.
-    final ComponentLayoutAttributes layoutAttributes = component.getLayoutAttributes();
-    if (layoutAttributes != null
+    final CommonProps commonProps = component.getCommonProps();
+    if (commonProps != null
         && (deferNestedTreeResolution || !Component.isLayoutSpecWithSizeSpec(component))) {
-      layoutAttributes.copyInto(context, node);
+      commonProps.copyInto(context, node);
     }
 
     // Set component on the root node of the generated tree so that the mount calls use

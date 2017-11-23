@@ -71,8 +71,8 @@ public final class ColumnExperimental extends Component<ColumnExperimental> {
   protected ComponentLayout resolve(ComponentContext c, Component<?> component) {
     InternalNode node = c.newLayoutBuilder(0, 0).flexDirection(YogaFlexDirection.COLUMN);
 
-    if (component.getLayoutAttributes() != null) {
-      component.getLayoutAttributes().copyInto(c, node);
+    if (component.getCommonProps() != null) {
+      component.getCommonProps().copyInto(c, node);
     }
 
     if (alignItems != null) {
