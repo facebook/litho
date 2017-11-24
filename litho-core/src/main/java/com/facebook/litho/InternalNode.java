@@ -1514,7 +1514,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   /**
    * Return the list of components contributing to this InternalNode. We have no need for this in
    * production but it is useful information to have while debugging. Therefor this list will only
-   * container the root component if running in production mode.
+   * contain the root component if running in production mode.
    */
   List<Component> getComponents() {
     return mComponents;
