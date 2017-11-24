@@ -27,6 +27,7 @@ import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Card;
+import com.facebook.litho.widget.TestCard;
 import com.facebook.litho.widget.Text;
 import org.assertj.core.api.Condition;
 import org.junit.Before;
@@ -39,6 +40,7 @@ public class FeedItemCardSpecTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
 
   private Component<FeedItemCard> mComponent;
+  private static final Artist ARTIST = new Artist("Sindre Sorhus", "JavaScript Rockstar", 2010);
 
   @Before
   public void setUp() {
@@ -49,10 +51,7 @@ public class FeedItemCardSpecTest {
 
     final ComponentContext c = mComponentsRule.getContext();
 
-    mComponent =
-        FeedItemCard.create(c)
-            .artist(new Artist("Sindre Sorhus", "JavaScript Rockstar", 2010))
-            .build();
+    mComponent = FeedItemCard.create(c).artist(ARTIST).build();
   }
 
   @Test
@@ -109,5 +108,21 @@ public class FeedItemCardSpecTest {
     final ComponentContext c = mComponentsRule.getContext();
 
     assertThat(c, mComponent).has(deepSubComponentWith(c, typeIs(Text.class)));
+  }
+
+  @Test
+  public void testDeepMatcherMatching() {
+    final ComponentContext c = mComponentsRule.getContext();
+
+    // You can also test nested sub-components by passing in another Matcher where
+    // you would normally provide a Component. In this case we provide a Matcher
+    // of the FeedItemComponent to the Card Matcher's content prop.
+    assertThat(c, mComponent)
+        .has(
+            deepSubComponentWith(
+                c,
+                TestCard.matcher(c)
+                    .content(TestFeedItemComponent.matcher(c).artist(ARTIST).build())
+                    .build()));
   }
 }
