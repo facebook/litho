@@ -18,6 +18,7 @@
   - id: layout
   - id: border
   - id: recycler-collection-component
+  - id: transition-animations
   - id: glossary
 - title: Handling Events
   items:
