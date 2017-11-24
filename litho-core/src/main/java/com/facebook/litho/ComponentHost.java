@@ -34,6 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +76,7 @@ public class ComponentHost extends ViewGroup {
   private long mParentHostMarker;
   private boolean mInLayout;
 
-  private final ComponentAccessibilityDelegate mComponentAccessibilityDelegate;
+  @Nullable private ComponentAccessibilityDelegate mComponentAccessibilityDelegate;
   private boolean mIsComponentAccessibilityDelegateSet = false;
 
   private ComponentClickListener mOnClickListener;
@@ -103,7 +104,9 @@ public class ComponentHost extends ViewGroup {
     setWillNotDraw(false);
     setChildrenDrawingOrderEnabled(true);
 
-    mComponentAccessibilityDelegate = new ComponentAccessibilityDelegate(this);
+    if (!ComponentsConfiguration.lazyInitializeComponentAccessibilityDelegate) {
+      mComponentAccessibilityDelegate = new ComponentAccessibilityDelegate(this);
+    }
     refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context));
   }
 
@@ -387,8 +390,11 @@ public class ComponentHost extends ViewGroup {
   public void setTag(int key, Object tag) {
     super.setTag(key, tag);
     if (key == R.id.component_node_info && tag != null) {
-      mComponentAccessibilityDelegate.setNodeInfo((NodeInfo) tag);
       refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(getContext()));
+
+      if (mComponentAccessibilityDelegate != null) {
+        mComponentAccessibilityDelegate.setNodeInfo((NodeInfo) tag);
+      }
     }
   }
 
@@ -865,10 +871,19 @@ public class ComponentHost extends ViewGroup {
       return;
     }
 
+    if (isAccessibilityEnabled && mComponentAccessibilityDelegate == null) {
+      mComponentAccessibilityDelegate = new ComponentAccessibilityDelegate(this);
+    }
+
     ViewCompat.setAccessibilityDelegate(
         this,
         isAccessibilityEnabled ? mComponentAccessibilityDelegate : null);
     mIsComponentAccessibilityDelegateSet = isAccessibilityEnabled;
+
+    if (ComponentsConfiguration.lazyInitializeComponentAccessibilityDelegate
+        && !isAccessibilityEnabled) {
+      return;
+    }
 
     for (int i = 0, size = getChildCount(); i < size; i++) {
       final View child = getChildAt(i);
