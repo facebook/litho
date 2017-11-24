@@ -818,15 +818,17 @@ public class SectionTree {
 
     final Set<String> keys = localMap.keySet();
     for (String key : keys) {
+      if (!instanceMap.containsKey(key)) {
+        // instanceMap has been modified and since the localMap is created, so it's no longer valid.
+        // We will exit the function early
+        return;
+      }
+
       List<StateUpdate> completed = localMap.get(key);
       List<StateUpdate> pending = instanceMap.remove(key);
-      // TODO (T21644916): Investigate why pending is null here, to avoid UX issues
-      if (pending != null) {
-        pending.removeAll(completed);
-
-        if (!pending.isEmpty()) {
-          instanceMap.put(key, pending);
-        }
+      pending.removeAll(completed);
+      if (!pending.isEmpty()) {
+        instanceMap.put(key, pending);
       }
     }
   }
