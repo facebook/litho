@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
 package com.facebook.litho.processor.integration.resources;
 
 import android.support.annotation.AttrRes;
@@ -142,15 +143,19 @@ public final class BasicTestSample implements BasicTestSampleSpec {
           }
           final com.facebook.litho.processor.integration.resources.BasicLayout impl = (com.facebook.litho.processor.integration.resources.BasicLayout) value.getComponent();
           if (mMyStringPropMatcher != null && !mMyStringPropMatcher.matches(impl.myStringProp)) {
+            as(new TextDescription("%s (doesn't match %s)", mMyStringPropMatcher, impl.myStringProp));
             return false;
           }
           if (mMyRequiredColorPropMatcher != null && !mMyRequiredColorPropMatcher.matches(impl.myRequiredColorProp)) {
+            as(new TextDescription("%s (doesn't match %s)", mMyRequiredColorPropMatcher, impl.myRequiredColorProp));
             return false;
           }
           if (mMyDimenSizePropMatcher != null && !mMyDimenSizePropMatcher.matches(impl.myDimenSizeProp)) {
+            as(new TextDescription("%s (doesn't match %s)", mMyDimenSizePropMatcher, impl.myDimenSizeProp));
             return false;
           }
           if (mChildMatcher != null && !mChildMatcher.matches(impl.child)) {
+            as(new TextDescription("%s (doesn't match %s)", mChildMatcher, impl.child));
             return false;
           }
           return true;
@@ -159,3 +164,4 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     }
   }
 }
+

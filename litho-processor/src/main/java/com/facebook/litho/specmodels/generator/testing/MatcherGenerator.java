@@ -562,6 +562,7 @@ public final class MatcherGenerator {
       builder
           .beginControlFlow(
               "if ($1N != null && !$1N.matches(impl.$2L))", matcherName, prop.getName())
+          .add(generateMatchFailureStatement(matcherName, prop))
           .addStatement("return false")
           .endControlFlow();
     }
@@ -569,6 +570,14 @@ public final class MatcherGenerator {
     builder.addStatement("return true");
 
     return builder.build();
+  }
+
+  private static CodeBlock generateMatchFailureStatement(String matcherName, PropModel prop) {
+    return CodeBlock.builder()
+        .add("as(new $T(", ClassNames.ASSERTJ_TEXT_DESCRIPTION)
+        .add("\"%s (doesn't match %s)\", $N, impl.$L", matcherName, prop.getName())
+        .addStatement("))")
+        .build();
   }
 
   private static ClassName getEnclosedImplClassName(final SpecModel enclosedSpecModel) {
