@@ -113,4 +113,6 @@ public interface ClassNames {
       ClassName.bestGuess("com.facebook.litho.testing.subcomponents.InspectableComponent");
   ClassName HAMCREST_MATCHER = ClassName.bestGuess("org.hamcrest.Matcher");
   ClassName HAMCREST_CORE_IS = ClassName.bestGuess("org.hamcrest.core.Is");
+  ClassName ASSERTJ_TEXT_DESCRIPTION =
+      ClassName.bestGuess("org.assertj.core.description.TextDescription");
 }

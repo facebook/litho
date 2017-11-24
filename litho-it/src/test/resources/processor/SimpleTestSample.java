@@ -13,6 +13,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ResourceResolver;
 import com.facebook.litho.testing.assertj.ComponentMatcher;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
+import org.assertj.core.description.TextDescription;
 
 /**
  *
@@ -33,6 +34,7 @@ public final class SimpleTestSample implements SimpleTestSampleSpec {
         @Override
         public boolean matches(InspectableComponent value) {
           if (!value.getComponentClass().isAssignableFrom(com.facebook.litho.processor.integration.resources.SimpleLayout.class)) {
+            as(new TextDescription("Sub-component of type \"com.facebook.litho.processor.integration.resources.SimpleLayout\""));
             return false;
           }
           final com.facebook.litho.processor.integration.resources.SimpleLayout impl = (com.facebook.litho.processor.integration.resources.SimpleLayout) value.getComponent();

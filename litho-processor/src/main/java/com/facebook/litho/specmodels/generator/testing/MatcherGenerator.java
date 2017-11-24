@@ -546,6 +546,10 @@ public final class MatcherGenerator {
         .beginControlFlow(
             "if (!value.getComponentClass().isAssignableFrom($L.class))",
             enclosedSpecModel.getComponentTypeName())
+        .addStatement(
+            "as(new $T(\"Sub-component of type \\\"$L\\\"\"))",
+            ClassNames.ASSERTJ_TEXT_DESCRIPTION,
+            enclosedSpecModel.getComponentTypeName())
         .addStatement("return false")
         .endControlFlow();
 
