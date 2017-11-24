@@ -96,6 +96,12 @@ public final class MatcherGenerator {
   private static TypeSpecDataHolder generatePropsBuilderMethods(
       SpecModel specModel, final PropModel prop) {
     final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
+
+    if (getRawType(prop.getType()).equals(ClassNames.COMPONENT)) {
+      dataHolder.addField(matcherComponentFieldBuilder(prop));
+      dataHolder.addMethod(matcherComponentFieldSetterBuilder(specModel, prop));
+    }
+
     dataHolder.addField(matcherFieldBuilder(prop));
     dataHolder.addMethod(matcherFieldSetterBuilder(specModel, prop));
 
@@ -225,6 +231,20 @@ public final class MatcherGenerator {
         .build();
   }
 
+  private static MethodSpec matcherComponentFieldSetterBuilder(
+      SpecModel specModel, PropModel prop) {
+    final String propMatcherName = getPropComponentMatcherName(prop);
+    final String propName = prop.getName();
+
+    return getMethodSpecBuilder(
+            specModel,
+            ImmutableList.of(
+                ParameterSpec.builder(ClassNames.COMPONENT_MATCHER, "matcher").build()),
+            CodeBlock.builder().addStatement("$L = matcher", propMatcherName).build(),
+            propName)
+        .build();
+  }
+
   private static MethodSpec regularBuilder(
       SpecModel specModel, final PropModel prop, final AnnotationSpec... extraAnnotations) {
     return builder(
@@ -234,6 +254,12 @@ public final class MatcherGenerator {
         Collections.singletonList(
             parameter(prop, prop.getType(), prop.getName(), extraAnnotations)),
         prop.getName());
+  }
+
+  private static FieldSpec matcherComponentFieldBuilder(final PropModel prop) {
+    return FieldSpec.builder(ClassNames.COMPONENT_MATCHER, getPropComponentMatcherName(prop))
+        .addAnnotation(Nullable.class)
+        .build();
   }
 
   private static FieldSpec matcherFieldBuilder(final PropModel prop) {
@@ -249,7 +275,15 @@ public final class MatcherGenerator {
     return ParameterizedTypeName.get(ClassNames.HAMCREST_MATCHER, rawType.box());
   }
 
+  static String getPropComponentMatcherName(final PropModel prop) {
+    return getBasePropMatcherName(prop, "ComponentMatcher");
+  }
+
   static String getPropMatcherName(final PropModel prop) {
+    return getBasePropMatcherName(prop, "Matcher");
+  }
+
+  private static String getBasePropMatcherName(final PropModel prop, final String suffix) {
     final String name = prop.getName();
 
     final int fst = Character.toUpperCase(name.codePointAt(0));
@@ -257,7 +291,7 @@ public final class MatcherGenerator {
     return 'm'
         + String.copyValueOf(Character.toChars(fst))
         + name.substring(name.offsetByCodePoints(0, 1))
-        + "Matcher";
+        + suffix;
   }
 
   private static TypeName getMatcherType(SpecModel specModel) {
@@ -557,19 +591,42 @@ public final class MatcherGenerator {
         "final $1L impl = ($1L) value.getComponent()", getEnclosedImplClassName(enclosedSpecModel));
 
     for (PropModel prop : specModel.getProps()) {
-      final String matcherName = getPropMatcherName(prop);
+      if (getRawType(prop.getType()).equals(ClassNames.COMPONENT)) {
+        builder.add(generateComponentMatchBlock(prop));
+      }
 
-      builder
-          .beginControlFlow(
-              "if ($1N != null && !$1N.matches(impl.$2L))", matcherName, prop.getName())
-          .add(generateMatchFailureStatement(matcherName, prop))
-          .addStatement("return false")
-          .endControlFlow();
+      // We generate matchers for both components as well as nested matchers, so the fall-through
+      // here
+      // is intended.
+      builder.add(generateValuePropMatchBlock(prop));
     }
 
     builder.addStatement("return true");
 
     return builder.build();
+  }
+
+  private static CodeBlock generateComponentMatchBlock(PropModel prop) {
+    final String matcherName = getPropComponentMatcherName(prop);
+    return CodeBlock.builder()
+        .beginControlFlow(
+            "if ($1N != null && !$1N.matches(value.getNestedInstance(impl.$2L)))",
+            matcherName,
+            prop.getName())
+        .addStatement("as($N.description())", matcherName)
+        .addStatement("return false")
+        .endControlFlow()
+        .build();
+  }
+
+  private static CodeBlock generateValuePropMatchBlock(PropModel prop) {
+    final String matcherName = getPropMatcherName(prop);
+    return CodeBlock.builder()
+        .beginControlFlow("if ($1N != null && !$1N.matches(impl.$2L))", matcherName, prop.getName())
+        .add(generateMatchFailureStatement(matcherName, prop))
+        .addStatement("return false")
+        .endControlFlow()
+        .build();
   }
 
   private static CodeBlock generateMatchFailureStatement(String matcherName, PropModel prop) {

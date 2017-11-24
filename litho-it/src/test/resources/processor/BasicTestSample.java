@@ -47,6 +47,9 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     org.hamcrest.Matcher<Float> mMyDimenSizePropMatcher;
 
     @Nullable
+    ComponentMatcher mChildComponentMatcher;
+
+    @Nullable
     org.hamcrest.Matcher<Component> mChildMatcher;
 
     Matcher(ComponentContext c) {
@@ -118,6 +121,11 @@ public final class BasicTestSample implements BasicTestSampleSpec {
       return this;
     }
 
+    public Matcher child(ComponentMatcher matcher) {
+      mChildComponentMatcher = matcher;
+      return this;
+    }
+
     public Matcher child(org.hamcrest.Matcher<Component> matcher) {
       mChildMatcher = matcher;
       return this;
@@ -154,6 +162,10 @@ public final class BasicTestSample implements BasicTestSampleSpec {
             as(new TextDescription("%s (doesn't match %s)", mMyDimenSizePropMatcher, impl.myDimenSizeProp));
             return false;
           }
+          if (mChildComponentMatcher != null && !mChildComponentMatcher.matches(value.getNestedInstance(impl.child))) {
+            as(mChildComponentMatcher.description());
+            return false;
+          }
           if (mChildMatcher != null && !mChildMatcher.matches(impl.child)) {
             as(new TextDescription("%s (doesn't match %s)", mChildMatcher, impl.child));
             return false;
@@ -164,4 +176,3 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     }
   }
 }
-

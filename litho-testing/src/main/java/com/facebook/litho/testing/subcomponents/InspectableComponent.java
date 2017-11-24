@@ -22,13 +22,15 @@ import com.facebook.litho.LithoViewTestHelper;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaNode;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Wraps a {@link com.facebook.litho.DebugComponent} exposing only information that are safe to use
- * for test assertions.
+ * Wraps a {@link DebugComponent} exposing only information that are safe to use for test
+ * assertions.
  */
 @Immutable
 public class InspectableComponent {
@@ -52,7 +54,25 @@ public class InspectableComponent {
     return new InspectableComponent(rootInstance);
   }
 
-  /** @return A conanical name for this component. Suitable to present to the user. */
+  /** Obtain an instance of a Component nested inside the given inspectable Component. */
+  @Nullable
+  public InspectableComponent getNestedInstance(Component component) {
+    final Queue<DebugComponent> queue = new LinkedList<>(mComponent.getChildComponents());
+
+    while (!queue.isEmpty()) {
+      final DebugComponent childComponent = queue.remove();
+
+      if (childComponent.getComponent() == component) {
+        return new InspectableComponent(childComponent);
+      }
+
+      queue.addAll(childComponent.getChildComponents());
+    }
+
+    return null;
+  }
+
+  /** @return A canonical name for this component. Suitable to present to the user. */
   public String getName() {
     return mComponent.getName();
   }
