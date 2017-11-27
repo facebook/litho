@@ -50,8 +50,7 @@ public class ComponentsPools {
 
   private static final int SCRAP_ARRAY_INITIAL_SIZE = 4;
 
-  @GuardedBy("sYogaConfigLock")
-  private static YogaConfig sYogaConfig;
+  private static volatile YogaConfig sYogaConfig;
 
   private ComponentsPools() {
   }
