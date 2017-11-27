@@ -530,7 +530,7 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
-  static void release(Context context, MountItem item) {
+  static void release(ComponentContext context, MountItem item) {
     item.release(context);
     if (!ComponentsConfiguration.usePooling) {
       return;
@@ -617,7 +617,8 @@ public class ComponentsPools {
     sDiffPool.release(diff);
   }
 
-  static @Nullable Object acquireMountContent(Context context, ComponentLifecycle lifecycle) {
+  static @Nullable Object acquireMountContent(
+      ComponentContext context, ComponentLifecycle lifecycle) {
     final MountContentPool pool = getMountContentPoolForAcquire(context, lifecycle.getTypeId());
     if (pool == null) {
       return null;
@@ -626,7 +627,7 @@ public class ComponentsPools {
     return pool.acquire();
   }
 
-  static void release(Context context, ComponentLifecycle lifecycle, Object mountContent) {
+  static void release(ComponentContext context, ComponentLifecycle lifecycle, Object mountContent) {
     final MountContentPool pool = getMountContentPoolForRelease(context, lifecycle);
     if (pool != null) {
       pool.release(mountContent);
@@ -634,7 +635,7 @@ public class ComponentsPools {
   }
 
   private static @Nullable MountContentPool getMountContentPoolForAcquire(
-      Context wrappedContext, int typeId) {
+      ComponentContext wrappedContext, int typeId) {
     final Context context = getContextForMountPool(wrappedContext);
 
     synchronized (sMountContentLock) {
@@ -659,7 +660,7 @@ public class ComponentsPools {
   }
 
   private static @Nullable MountContentPool getMountContentPoolForRelease(
-      Context wrappedContext, ComponentLifecycle lifecycle) {
+      ComponentContext wrappedContext, ComponentLifecycle lifecycle) {
     final Context context = getContextForMountPool(wrappedContext);
     final Context rootContext = ContextUtils.getRootContext(context);
 
@@ -686,12 +687,8 @@ public class ComponentsPools {
     }
   }
 
-  private static Context getContextForMountPool(Context wrappedContext) {
-    if (!(wrappedContext instanceof ComponentContext)) {
-      return wrappedContext;
-    }
-
-    final Context innerContext = ((ComponentContext) wrappedContext).getBaseContext();
+  private static Context getContextForMountPool(ComponentContext wrappedContext) {
+    final Context innerContext = wrappedContext.getBaseContext();
     if (innerContext instanceof ComponentContext) {
       throw new IllegalStateException("Double wrapped ComponentContext.");
     }
