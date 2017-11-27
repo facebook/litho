@@ -34,6 +34,18 @@ public class ContextUtils {
     return activity;
   }
 
+  /**
+   * @return the "most base" Context of this Context, i.e. the ContextImpl backing this Context and
+   *     all its ContextWrappers.
+   */
+  static Context getRootContext(Context context) {
+    Context currentContext = context;
+    while (currentContext instanceof ContextWrapper) {
+      currentContext = ((ContextWrapper) currentContext).getBaseContext();
+    }
+    return currentContext;
+  }
+
   @Nullable
   private static Activity findActivityInContext(Context context) {
     if (context instanceof Activity) {

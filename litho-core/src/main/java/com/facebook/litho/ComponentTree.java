@@ -20,7 +20,6 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
 
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -425,17 +424,8 @@ public class ComponentTree {
     }
   }
 
-  private static boolean hasSameBaseContext(Context context1, Context context2) {
-    return getBaseContext(context1) == getBaseContext(context2);
-  }
-
-  private static Context getBaseContext(Context context) {
-    Context baseContext = context;
-    while (baseContext instanceof ContextWrapper) {
-      baseContext = ((ContextWrapper) baseContext).getBaseContext();
-    }
-
-    return baseContext;
+  private static boolean hasSameRootContext(Context context1, Context context2) {
+    return ContextUtils.getRootContext(context1) == ContextUtils.getRootContext(context2);
   }
 
   @ThreadConfined(ThreadConfined.UI)
@@ -619,7 +609,7 @@ public class ComponentTree {
       mLithoView.clearComponentTree();
     }
 
-    if (!hasSameBaseContext(view.getContext(), mContext)) {
+    if (!hasSameRootContext(view.getContext(), mContext)) {
       // This would indicate bad things happening, like leaking a context.
       throw new IllegalArgumentException(
           "Base view context differs, view context is: " + view.getContext() +
