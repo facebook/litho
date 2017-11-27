@@ -41,15 +41,9 @@ class SimpleMountSpec {
   }
 
   @OnMount
-  static void onMount(
-      ComponentContext c,
-      LithoView componentView,
-      @Prop Component content) {
-    componentView.setComponentTree(
-        ComponentTree.create(c, content)
-            .incrementalMount(false)
-            .layoutDiffing(false)
-            .build());
+  static void onMount(ComponentContext c, LithoView lithoView, @Prop Component content) {
+    lithoView.setComponentTree(
+        ComponentTree.create(c, content).incrementalMount(false).layoutDiffing(false).build());
   }
 
   @OnUnmount

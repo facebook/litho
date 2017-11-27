@@ -103,12 +103,9 @@ public final class SimpleMount extends Component<SimpleMount> {
   }
 
   @Override
-  protected void onMount(ComponentContext c, Object componentView, Component _abstract) {
+  protected void onMount(ComponentContext c, Object lithoView, Component _abstract) {
     SimpleMount _ref = (SimpleMount) _abstract;
-    SimpleMountSpec.onMount(
-        (ComponentContext) c,
-        (LithoView) componentView,
-        (Component) _ref.content);
+    SimpleMountSpec.onMount((ComponentContext) c, (LithoView) lithoView, (Component) _ref.content);
   }
 
   @Override
