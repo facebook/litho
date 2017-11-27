@@ -67,7 +67,7 @@ public class ViewCompatComponent<V extends View> extends Component {
     final ViewCompatComponent viewCompatComponent = (ViewCompatComponent) component;
     final ViewBinder viewBinder = viewCompatComponent.mViewBinder;
 
-    View toMeasure = (View) ComponentsPools.acquireMountContent(c, getTypeId());
+    View toMeasure = (View) ComponentsPools.acquireMountContent(c, this);
     if (toMeasure == null) {
       toMeasure = mViewCreator.createView(c);
     }

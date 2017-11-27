@@ -76,46 +76,45 @@ public class ComponentsPoolsTest {
 
   @Test
   public void testAcquireMountContentWithSameContext() {
-    assertThat(acquireMountContent(mContext1, mLifecycle.getTypeId())).isNull();
+    assertThat(acquireMountContent(mContext1, mLifecycle)).isNull();
 
     release(mContext1, mLifecycle, mMountContent);
 
-    assertThat(mMountContent).isSameAs(acquireMountContent(mContext1, mLifecycle.getTypeId()));
+    assertThat(mMountContent).isSameAs(acquireMountContent(mContext1, mLifecycle));
   }
 
   @Test
   public void testAcquireMountContentWithSameUnderlyingContext() {
-    assertThat(acquireMountContent(mContext1, mLifecycle.getTypeId())).isNull();
+    assertThat(acquireMountContent(mContext1, mLifecycle)).isNull();
 
     release(mContext1, mLifecycle, mMountContent);
 
-    assertThat(mMountContent).isSameAs(acquireMountContent(mContext2, mLifecycle.getTypeId()));
+    assertThat(mMountContent).isSameAs(acquireMountContent(mContext2, mLifecycle));
   }
 
   @Test
   public void testAcquireMountContentWithDifferentUnderlyingContext() {
-    assertThat(acquireMountContent(mContext1, mLifecycle.getTypeId())).isNull();
+    assertThat(acquireMountContent(mContext1, mLifecycle)).isNull();
 
     release(mContext1, mLifecycle, mMountContent);
 
-    assertThat(acquireMountContent(mContext3, mLifecycle.getTypeId())).isNull();
+    assertThat(acquireMountContent(mContext3, mLifecycle)).isNull();
   }
 
   @Test
   public void testReleaseMountContentForDestroyedContextDoesNothing() {
     // Assert pooling was working before
-    assertThat(acquireMountContent(mActivityComponentContext, mLifecycle.getTypeId())).isNull();
+    assertThat(acquireMountContent(mActivityComponentContext, mLifecycle)).isNull();
 
     release(mActivityComponentContext, mLifecycle, mMountContent);
 
-    assertThat(mMountContent)
-        .isSameAs(acquireMountContent(mActivityComponentContext, mLifecycle.getTypeId()));
+    assertThat(mMountContent).isSameAs(acquireMountContent(mActivityComponentContext, mLifecycle));
 
     // Now destroy it and assert pooling no longer works
     mActivityController.destroy();
     release(mActivityComponentContext, mLifecycle, mMountContent);
 
-    assertThat(acquireMountContent(mActivityComponentContext, mLifecycle.getTypeId())).isNull();
+    assertThat(acquireMountContent(mActivityComponentContext, mLifecycle)).isNull();
   }
 
   @Test
@@ -125,27 +124,27 @@ public class ComponentsPoolsTest {
 
     release(mContext1, mLifecycle, mMountContent);
 
-    assertThat(acquireMountContent(mContext1, mLifecycle.getTypeId())).isSameAs(mMountContent);
+    assertThat(acquireMountContent(mContext1, mLifecycle)).isSameAs(mMountContent);
   }
 
   @Test
   public void testPreallocateContent() {
-    assertThat(acquireMountContent(mContext1, mLifecycle.getTypeId())).isNull();
+    assertThat(acquireMountContent(mContext1, mLifecycle)).isNull();
 
     maybePreallocateContent(mContext1, mLifecycle);
 
-    assertThat(acquireMountContent(mContext1, mLifecycle.getTypeId())).isNotNull();
+    assertThat(acquireMountContent(mContext1, mLifecycle)).isNotNull();
   }
 
   @Test
   public void testDoNotPreallocateContentBeyondPoolSize() {
     for (int i = 0; i < POOL_SIZE; i++) {
       maybePreallocateContent(mContext1, mLifecycle);
-      acquireMountContent(mContext1, mLifecycle.getTypeId());
+      acquireMountContent(mContext1, mLifecycle);
     }
 
     maybePreallocateContent(mContext1, mLifecycle);
 
-    assertThat(acquireMountContent(mContext1, mLifecycle.getTypeId())).isNull();
+    assertThat(acquireMountContent(mContext1, mLifecycle)).isNull();
   }
 }

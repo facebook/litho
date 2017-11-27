@@ -617,8 +617,8 @@ public class ComponentsPools {
     sDiffPool.release(diff);
   }
 
-  static @Nullable Object acquireMountContent(Context context, int componentTypeId) {
-    final MountContentPool pool = getMountContentPoolForAcquire(context, componentTypeId);
+  static @Nullable Object acquireMountContent(Context context, ComponentLifecycle lifecycle) {
+    final MountContentPool pool = getMountContentPoolForAcquire(context, lifecycle.getTypeId());
     if (pool == null) {
       return null;
     }

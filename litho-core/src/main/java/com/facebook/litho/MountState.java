@@ -1102,7 +1102,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return host.recycleHost();
     }
 
-    return ComponentsPools.acquireMountContent(mContext, lifecycle.getTypeId());
+    return ComponentsPools.acquireMountContent(mContext, lifecycle);
   }
 
   private static void applyBoundsToMountContent(
