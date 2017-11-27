@@ -42,9 +42,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   private static final AtomicInteger sComponentTypeId = new AtomicInteger();
   private static final int DEFAULT_MAX_PREALLOCATION = 15;
 
-  private final Object mPreallocationLock = new Object();
-  private volatile boolean mPreallocationDone;
-
   public enum MountType {
     NONE,
     DRAWABLE,
@@ -620,27 +617,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   public Object acceptTriggerEvent(EventTrigger eventTrigger, Object eventState, Object[] params) {
     // Do nothing by default
     return null;
-  }
-
-  @ThreadSafe(enableChecks = false)
-  void preAllocateMountContent(ComponentContext context) {
-    if (mPreallocationDone) {
-      return;
-    }
-
-    if (ComponentsPools.canAddMountContentToPool(context, this)) {
-      ComponentsPools.release(
-          context,
-          this,
-          createMountContent(context));
-    } else {
-      synchronized (mPreallocationLock) {
-        if (mPreallocationDone) {
-          return;
-        }
-        mPreallocationDone = true;
-      }
-    }
   }
 
   protected boolean isPureRender() {

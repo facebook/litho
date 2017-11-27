@@ -647,6 +647,17 @@ public class ComponentsPools {
     }
   }
 
+  /**
+   * Pre-allocates mount content for this component type within the pool for this context unless the
+   * pre-allocation limit has been hit in which case we do nothing.
+   */
+  static void maybePreallocateContent(ComponentContext context, ComponentLifecycle lifecycle) {
+    final MountContentPool pool = getMountContentPoolForRelease(context, lifecycle);
+    if (pool != null) {
+      pool.maybePreallocateContent(context, lifecycle);
+    }
+  }
+
   private static @Nullable MountContentPool getMountContentPoolForRelease(
       Context wrappedContext, ComponentLifecycle lifecycle) {
     final Context context = getContextForMountPool(wrappedContext);
@@ -698,32 +709,6 @@ public class ComponentsPools {
       sActivityCallbacks = new PoolsActivityCallback();
       ((Application) context.getApplicationContext())
           .registerActivityLifecycleCallbacks(sActivityCallbacks);
-    }
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static boolean canAddMountContentToPool(Context context, ComponentLifecycle lifecycle) {
-    if (context instanceof ComponentContext) {
-      context = ((ComponentContext) context).getBaseContext();
-
-      if (context instanceof ComponentContext) {
-        throw new IllegalStateException("Double wrapped ComponentContext.");
-      }
-    }
-
-    synchronized (sMountContentLock) {
-      if (lifecycle.poolSize() == 0) {
-        return false;
-      }
-
-      final SparseArray<MountContentPool> poolsArray = sMountContentPoolsByContext.get(context);
-
-      if (poolsArray == null) {
-        return true;
-      }
-
-      final RecyclePool pool = poolsArray.get(lifecycle.getTypeId());
-      return pool == null || !pool.isFull();
     }
   }
 

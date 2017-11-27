@@ -1175,8 +1175,8 @@ class LayoutState {
           if (isTracing) {
             ComponentsSystrace.beginSection("preAllocateMountContent:" + component.getSimpleName());
           }
-          
-          component.getLifecycle().preAllocateMountContent(mContext);
+
+          ComponentsPools.maybePreallocateContent(mContext, component.getLifecycle());
 
           if (isTracing) {
             ComponentsSystrace.endSection();
