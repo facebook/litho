@@ -9,8 +9,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.ContextUtils.getValidActivityForContext;
-
 import android.support.v4.util.Pools;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,10 +67,7 @@ public class ViewCompatComponent<V extends View> extends Component {
     final ViewCompatComponent viewCompatComponent = (ViewCompatComponent) component;
     final ViewBinder viewBinder = viewCompatComponent.mViewBinder;
 
-    final boolean isSafeToAllocatePool = getValidActivityForContext(c) != null;
-
-    View toMeasure =
-        (View) ComponentsPools.acquireMountContent(c, getTypeId(), isSafeToAllocatePool);
+    View toMeasure = (View) ComponentsPools.acquireMountContent(c, getTypeId());
     if (toMeasure == null) {
       toMeasure = mViewCreator.createView(c);
     }

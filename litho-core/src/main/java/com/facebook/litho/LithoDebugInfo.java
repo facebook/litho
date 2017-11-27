@@ -9,7 +9,6 @@
 
 package com.facebook.litho;
 
-import android.util.SparseArray;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,14 +26,8 @@ public final class LithoDebugInfo {
    */
   public static List<RecyclePool> getPools() {
     List<RecyclePool> pools = new ArrayList<>();
-    
-    for (SparseArray<RecyclePool> contentPools :
-        ComponentsPools.sMountContentPoolsByContext.values()) {
-      for (int i = 0, count = contentPools.size(); i < count; i++) {
-        pools.add(contentPools.valueAt(i));
-      }
-    }
 
+    pools.addAll(ComponentsPools.getMountContentPools());
     pools.add(ComponentsPools.sLayoutStatePool);
     pools.add(ComponentsPools.sInternalNodePool);
     pools.add(ComponentsPools.sNodeInfoPool);

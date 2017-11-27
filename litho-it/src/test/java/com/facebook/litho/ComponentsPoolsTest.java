@@ -14,15 +14,19 @@ import static com.facebook.litho.ComponentsPools.canAddMountContentToPool;
 import static com.facebook.litho.ComponentsPools.release;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import android.app.Activity;
 import android.content.ContextWrapper;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.util.ActivityController;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentsPoolsTest {
@@ -42,6 +46,9 @@ public class ComponentsPoolsTest {
   private ComponentContext mContext1;
   private ComponentContext mContext2;
   private ComponentContext mContext3;
+  private ActivityController<Activity> mActivityController;
+  private Activity mActivity;
+  private ComponentContext mActivityComponentContext;
   private ColorDrawable mMountContent;
 
   @Before
@@ -49,7 +56,15 @@ public class ComponentsPoolsTest {
     mContext1 = new ComponentContext(RuntimeEnvironment.application);
     mContext2 = new ComponentContext(new ComponentContext(RuntimeEnvironment.application));
     mContext3 = new ComponentContext(new ContextWrapper(RuntimeEnvironment.application));
+    mActivityController = Robolectric.buildActivity(Activity.class).create();
+    mActivity = mActivityController.get();
+    mActivityComponentContext = new ComponentContext(mActivity);
     mMountContent = new ColorDrawable(Color.RED);
+  }
+
+  @After
+  public void tearDown() {
+    ComponentsPools.clearActivityCallbacks();
   }
 
   @Test
@@ -77,6 +92,33 @@ public class ComponentsPoolsTest {
     release(mContext1, mLifecycle, mMountContent);
 
     assertThat(acquireMountContent(mContext3, mLifecycle.getTypeId())).isNull();
+  }
+
+  @Test
+  public void testReleaseMountContentForDestroyedContextDoesNothing() {
+    // Assert pooling was working before
+    assertThat(acquireMountContent(mActivityComponentContext, mLifecycle.getTypeId())).isNull();
+
+    release(mActivityComponentContext, mLifecycle, mMountContent);
+
+    assertThat(mMountContent)
+        .isSameAs(acquireMountContent(mActivityComponentContext, mLifecycle.getTypeId()));
+
+    // Now destroy it and assert pooling no longer works
+    mActivityController.destroy();
+    release(mActivityComponentContext, mLifecycle, mMountContent);
+
+    assertThat(acquireMountContent(mActivityComponentContext, mLifecycle.getTypeId())).isNull();
+  }
+
+  @Test
+  public void testDestroyingActivityDoesNotAffectPoolingOfOtherContexts() {
+    mActivityController.destroy();
+    ComponentsPools.onContextDestroyed(mActivity);
+
+    release(mContext1, mLifecycle, mMountContent);
+
+    assertThat(acquireMountContent(mContext1, mLifecycle.getTypeId())).isSameAs(mMountContent);
   }
 
   @Test
