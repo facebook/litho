@@ -50,6 +50,24 @@ public class ComponentsPoolsTest {
         }
       };
 
+  private final ComponentLifecycle mLifecycleWithEmptyPoolSize =
+      new ComponentLifecycle() {
+        @Override
+        int getTypeId() {
+          return 2;
+        }
+
+        @Override
+        protected int poolSize() {
+          return 0;
+        }
+
+        @Override
+        public View onCreateMountContent(ComponentContext context) {
+          return new View(context);
+        }
+      };
+
   private ComponentContext mContext1;
   private ComponentContext mContext2;
   private ComponentContext mContext3;
@@ -146,5 +164,17 @@ public class ComponentsPoolsTest {
     maybePreallocateContent(mContext1, mLifecycle);
 
     assertThat(acquireMountContent(mContext1, mLifecycle)).isNull();
+  }
+
+  @Test
+  public void testReleaseAndAcquireWithNoPoolSize() {
+    release(mContext1, mLifecycleWithEmptyPoolSize, mMountContent);
+    assertThat(acquireMountContent(mContext1, mLifecycleWithEmptyPoolSize)).isNull();
+  }
+
+  @Test
+  public void testPreallocateWithEmptyPoolSize() {
+    maybePreallocateContent(mContext1, mLifecycleWithEmptyPoolSize);
+    assertThat(acquireMountContent(mContext1, mLifecycleWithEmptyPoolSize)).isNull();
   }
 }

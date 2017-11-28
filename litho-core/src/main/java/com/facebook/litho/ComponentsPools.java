@@ -618,7 +618,7 @@ public class ComponentsPools {
 
   static @Nullable Object acquireMountContent(
       ComponentContext context, ComponentLifecycle lifecycle) {
-    final MountContentPool pool = getMountContentPoolForAcquire(context, lifecycle.getTypeId());
+    final MountContentPool pool = getMountContentPoolForAcquire(context, lifecycle);
     if (pool == null) {
       return null;
     }
@@ -634,7 +634,11 @@ public class ComponentsPools {
   }
 
   private static @Nullable MountContentPool getMountContentPoolForAcquire(
-      ComponentContext wrappedContext, int typeId) {
+      ComponentContext wrappedContext, ComponentLifecycle lifecycle) {
+    if (lifecycle.poolSize() == 0) {
+      return null;
+    }
+
     final Context context = getContextForMountPool(wrappedContext);
 
     synchronized (sMountContentLock) {
@@ -643,7 +647,7 @@ public class ComponentsPools {
         return null;
       }
 
-      return poolsArray.get(typeId);
+      return poolsArray.get(lifecycle.getTypeId());
     }
   }
 
@@ -660,6 +664,10 @@ public class ComponentsPools {
 
   private static @Nullable MountContentPool getMountContentPoolForRelease(
       ComponentContext wrappedContext, ComponentLifecycle lifecycle) {
+    if (lifecycle.poolSize() == 0) {
+      return null;
+    }
+
     final Context context = getContextForMountPool(wrappedContext);
     final Context rootContext = ContextUtils.getRootContext(context);
 

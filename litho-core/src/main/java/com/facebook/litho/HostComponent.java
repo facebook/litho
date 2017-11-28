@@ -11,12 +11,6 @@ package com.facebook.litho;
 
 class HostComponent extends Component<HostComponent> {
 
-  private static final int HOST_POOL_SIZE = 30;
-
-  private HostComponent() {
-    super();
-  }
-
   @Override
   protected Object onCreateMountContent(ComponentContext c) {
     return new ComponentHost(c);
@@ -43,7 +37,8 @@ class HostComponent extends Component<HostComponent> {
 
   @Override
   protected int poolSize() {
-    return HOST_POOL_SIZE;
+    // Pooling is done via mScrapHosts in ComponentHost.
+    return 0;
   }
 
   @Override
