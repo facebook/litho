@@ -76,12 +76,17 @@ public class ComponentTree {
   private static final int SCHEDULE_NONE = 0;
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
   private static final int SCHEDULE_LAYOUT_SYNC = 2;
+  private final MeasureListener mMeasureListener;
   private boolean mReleased;
   private String mReleasedComponent;
 
   @IntDef({SCHEDULE_NONE, SCHEDULE_LAYOUT_ASYNC, SCHEDULE_LAYOUT_SYNC})
   @Retention(RetentionPolicy.SOURCE)
   private @interface PendingLayoutCalculation {}
+
+  public interface MeasureListener {
+    void onSetRootAndSizeSpec(int width, int height);
+  }
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
   private static final Handler sMainThreadHandler = new ComponentMainThreadHandler();
@@ -218,6 +223,7 @@ public class ComponentTree {
     mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
     mShouldClipChildren = builder.shouldClipChildren;
     mHasMounted = builder.hasMounted;
+    mMeasureListener = builder.mMeasureListener;
 
     if (mLayoutThreadHandler == null) {
       mLayoutThreadHandler = new DefaultLayoutHandler(getDefaultLayoutThreadLooper());
@@ -688,7 +694,6 @@ public class ComponentTree {
         if (layoutStateStateHandler != null) {
           mStateHandler.commit(layoutStateStateHandler);
         }
-
 
         for (Component layoutComponent : localLayoutState.getComponents()) {
           bindEventHandler(layoutComponent);
@@ -1287,6 +1292,12 @@ public class ComponentTree {
           for (Component component : localLayoutState.getComponents()) {
             bindEventHandler(component);
           }
+
+          if (mMeasureListener != null) {
+            mMeasureListener.onSetRootAndSizeSpec(
+                localLayoutState.getWidth(), localLayoutState.getHeight());
+          }
+
           localLayoutState.clearComponents();
         }
 
@@ -1579,6 +1590,7 @@ public class ComponentTree {
     private boolean canCacheDrawingDisplayLists = false;
     private boolean shouldClipChildren = true;
     private boolean hasMounted = false;
+    private MeasureListener mMeasureListener;
 
     protected Builder() {
     }
@@ -1751,6 +1763,11 @@ public class ComponentTree {
      */
     public Builder hasMounted(boolean hasMounted) {
       this.hasMounted = hasMounted;
+      return this;
+    }
+
+    public Builder measureListener(MeasureListener measureListener) {
+      this.mMeasureListener = measureListener;
       return this;
     }
 

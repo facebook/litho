@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.ComponentTree.MeasureListener;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.LithoView;
@@ -42,6 +43,7 @@ import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.utils.DisplayListUtils;
 import com.facebook.litho.viewcompat.ViewCreator;
+import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -95,6 +97,19 @@ public class RecyclerBinder
     }
   };
 
+  private final ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory =
+      new ComponentTreeMeasureListenerFactory() {
+        @Override
+        public MeasureListener create(final ComponentTreeHolder holder) {
+          return new MeasureListener() {
+            @Override
+            public void onSetRootAndSizeSpec(int width, int height) {
+              // to do in next diff
+            }
+          };
+        }
+      };
+
   private final boolean mIsCircular;
   private final boolean mHasDynamicItemHeight;
   private int mLastWidthSpec = UNINITIALIZED;
@@ -141,7 +156,8 @@ public class RecyclerBinder
         RenderInfo renderInfo,
         LayoutHandler layoutHandler,
         boolean canPrefetchDisplayLists,
-        boolean canCacheDrawingDisplayLists);
+        boolean canCacheDrawingDisplayLists,
+        ComponentTreeMeasureListenerFactory measureListenerFactory);
   }
 
   static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
@@ -151,9 +167,14 @@ public class RecyclerBinder
             RenderInfo renderInfo,
             LayoutHandler layoutHandler,
             boolean canPrefetchDisplayLists,
-            boolean canCacheDrawingDisplayLists) {
+            boolean canCacheDrawingDisplayLists,
+            ComponentTreeMeasureListenerFactory measureListenerFactory) {
           return ComponentTreeHolder.acquire(
-              renderInfo, layoutHandler, canPrefetchDisplayLists, canCacheDrawingDisplayLists);
+              renderInfo,
+              layoutHandler,
+              canPrefetchDisplayLists,
+              canCacheDrawingDisplayLists,
+              measureListenerFactory);
         }
       };
 
@@ -406,13 +427,7 @@ public class RecyclerBinder
 
     assertNoInsertOperationIfCircular();
 
-    final ComponentTreeHolder holder = mComponentTreeHolderFactory.create(
-        renderInfo,
-        mLayoutHandlerFactory != null ?
-            mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo) :
-            null,
-        mCanPrefetchDisplayLists,
-        mCanCacheDrawingDisplayLists);
+    final ComponentTreeHolder holder = createComponentTreeHolder(renderInfo);
     final boolean computeLayout;
     final int childrenWidthSpec, childrenHeightSpec;
     synchronized (this) {
@@ -487,13 +502,7 @@ public class RecyclerBinder
 
       synchronized (this) {
         final RenderInfo renderInfo = renderInfos.get(i);
-        final ComponentTreeHolder holder = mComponentTreeHolderFactory.create(
-            renderInfo,
-            mLayoutHandlerFactory != null ?
-                mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo) :
-                null,
-            mCanPrefetchDisplayLists,
-            mCanCacheDrawingDisplayLists);
+        final ComponentTreeHolder holder = createComponentTreeHolder(renderInfo);
 
         mComponentTreeHolders.add(position + i, holder);
         mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
@@ -1494,5 +1503,16 @@ public class RecyclerBinder
     public int getHeightMeasureSpec() {
       return mHeightMeasureSpec;
     }
+  }
+
+  private ComponentTreeHolder createComponentTreeHolder(RenderInfo renderInfo) {
+    return mComponentTreeHolderFactory.create(
+        renderInfo,
+        mLayoutHandlerFactory != null
+            ? mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo)
+            : null,
+        mCanPrefetchDisplayLists,
+        mCanCacheDrawingDisplayLists,
+        mHasDynamicItemHeight ? mComponentTreeMeasureListenerFactory : null);
   }
 }

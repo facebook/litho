@@ -42,6 +42,7 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.viewcompat.SimpleViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
+import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -115,7 +116,8 @@ public class RecyclerBinderTest {
               RenderInfo renderInfo,
               LayoutHandler layoutHandler,
               boolean canPrefetchDisplayLists,
-              boolean canCacheDrawingDisplayLists) {
+              boolean canCacheDrawingDisplayLists,
+              ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             if (renderInfo.rendersComponent()) {
               mHoldersForComponents.put(renderInfo.getComponent(), holder);

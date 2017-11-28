@@ -13,6 +13,7 @@ import android.support.v4.util.Pools;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.ComponentTree.MeasureListener;
 import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateHandler;
@@ -30,6 +31,8 @@ import javax.annotation.concurrent.ThreadSafe;
 public class ComponentTreeHolder {
   private static final Pools.SynchronizedPool<ComponentTreeHolder> sComponentTreeHoldersPool =
       new Pools.SynchronizedPool<>(8);
+  private ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
+  int mLastMeasuredHeight;
 
   @GuardedBy("this")
   private ComponentTree mComponentTree;
@@ -46,13 +49,37 @@ public class ComponentTreeHolder {
   private boolean mCanCacheDrawingDisplayLists;
   private LayoutHandler mPreallocateMountContentHandler;
 
+  interface ComponentTreeMeasureListenerFactory {
+    MeasureListener create(ComponentTreeHolder holder);
+  }
+
   public static ComponentTreeHolder acquire(
       RenderInfo renderInfo,
       LayoutHandler layoutHandler,
       boolean canPrefetchDisplayLists,
       boolean canCacheDrawingDisplayLists) {
     return acquire(
-        renderInfo, layoutHandler, canPrefetchDisplayLists, canCacheDrawingDisplayLists, null);
+        renderInfo,
+        layoutHandler,
+        canPrefetchDisplayLists,
+        canCacheDrawingDisplayLists,
+        null,
+        null);
+  }
+
+  public static ComponentTreeHolder acquire(
+      RenderInfo renderInfo,
+      LayoutHandler layoutHandler,
+      boolean canPrefetchDisplayLists,
+      boolean canCacheDrawingDisplayLists,
+      ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory) {
+    return acquire(
+        renderInfo,
+        layoutHandler,
+        canPrefetchDisplayLists,
+        canCacheDrawingDisplayLists,
+        null,
+        componentTreeMeasureListenerFactory);
   }
 
   public static ComponentTreeHolder acquire(
@@ -61,6 +88,22 @@ public class ComponentTreeHolder {
       boolean canPrefetchDisplayLists,
       boolean canCacheDrawingDisplayLists,
       @Nullable LayoutHandler preallocateMountContentHandler) {
+    return acquire(
+        renderInfo,
+        layoutHandler,
+        canPrefetchDisplayLists,
+        canCacheDrawingDisplayLists,
+        preallocateMountContentHandler,
+        null);
+  }
+
+  public static ComponentTreeHolder acquire(
+      RenderInfo renderInfo,
+      LayoutHandler layoutHandler,
+      boolean canPrefetchDisplayLists,
+      boolean canCacheDrawingDisplayLists,
+      @Nullable LayoutHandler preallocateMountContentHandler,
+      final ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory) {
     ComponentTreeHolder componentTreeHolder = sComponentTreeHoldersPool.acquire();
     if (componentTreeHolder == null) {
       componentTreeHolder = new ComponentTreeHolder();
@@ -70,6 +113,8 @@ public class ComponentTreeHolder {
     componentTreeHolder.mCanPrefetchDisplayLists = canPrefetchDisplayLists;
     componentTreeHolder.mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
     componentTreeHolder.mPreallocateMountContentHandler = preallocateMountContentHandler;
+    componentTreeHolder.mComponentTreeMeasureListenerFactory = componentTreeMeasureListenerFactory;
+
     return componentTreeHolder;
   }
 
@@ -109,6 +154,9 @@ public class ComponentTreeHolder {
     synchronized (this) {
       if (componentTree == mComponentTree && component == mRenderInfo.getComponent()) {
         mIsTreeValid = true;
+        if (size != null) {
+          mLastMeasuredHeight = size.height;
+        }
       }
     }
   }
@@ -180,6 +228,10 @@ public class ComponentTreeHolder {
               .canCacheDrawingDisplayLists(mCanCacheDrawingDisplayLists)
               .shouldClipChildren(clipChildren)
               .preAllocateMountContentHandler(mPreallocateMountContentHandler)
+              .measureListener(
+                  mComponentTreeMeasureListenerFactory == null
+                      ? null
+                      : mComponentTreeMeasureListenerFactory.create(this))
               .build();
     }
   }
