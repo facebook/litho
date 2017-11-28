@@ -24,11 +24,24 @@ litho_android_library(
 )
 
 litho_android_library(
-    name = "sections",
+    name = "sections_core",
     exported_deps = [
         ":components",
         COMPONENTS_SECTIONS_TARGET,
         COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+)
+
+android_library(
+    name = "sections",
+    exported_deps = [
+        ":sections_core",
+        COMPONENTS_SECTIONS_COMMON_TARGET,
+        COMPONENTS_SECTIONS_WIDGET_TARGET,
+        COMPONENTS_WIDGET_TARGET,
     ],
     visibility = [
         "PUBLIC",
