@@ -287,6 +287,16 @@ public class LithoView extends ComponentHost {
             "Trying to layout a LithoView holding onto a released ComponentTree");
       }
 
+      if (!ComponentsConfiguration.IS_INTERNAL_BUILD
+          && mComponentTree.getMainThreadLayoutState() == null) {
+        // Call measure so that we get a layout state that we can use for layout.
+        mComponentTree.measure(
+            MeasureSpec.makeMeasureSpec(right - left, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(bottom - top, MeasureSpec.EXACTLY),
+            new int[2],
+            false);
+      }
+
       boolean wasMountTriggered = mComponentTree.layout();
 
       final boolean isRectSame = mPreviousMountBounds != null
