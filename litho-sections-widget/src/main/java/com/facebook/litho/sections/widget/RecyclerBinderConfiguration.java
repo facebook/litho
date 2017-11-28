@@ -21,6 +21,7 @@ public class RecyclerBinderConfiguration {
   private final LayoutHandlerFactory mLayoutHandlerFactory;
   private final boolean mCanPrefetchDisplayLists;
   private final boolean mIsCircular;
+  private boolean mHasDynamicItemHeight;
 
   public RecyclerBinderConfiguration(double rangeRatio) {
     this(rangeRatio, null, false);
@@ -62,6 +63,14 @@ public class RecyclerBinderConfiguration {
     mIsCircular = isCircular;
   }
 
+  /**
+   * TODO T23919104 mihaelao Do not enable this. This is an experimental feature and your Section
+   * surface will take a perf hit if you use it. Talk to the Litho team if you think you need this.
+   */
+  public void setHasDynamicItemHeight(boolean hasDynamicItemHeight) {
+    mHasDynamicItemHeight = hasDynamicItemHeight;
+  }
+
   public double getRangeRatio() {
     return mRangeRatio;
   }
@@ -76,5 +85,9 @@ public class RecyclerBinderConfiguration {
 
   public boolean isCircular() {
     return mIsCircular;
+  }
+
+  boolean hasDynamicItemHeight() {
+    return mHasDynamicItemHeight;
   }
 }

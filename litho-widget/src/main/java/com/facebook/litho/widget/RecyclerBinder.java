@@ -96,6 +96,7 @@ public class RecyclerBinder
   };
 
   private final boolean mIsCircular;
+  private final boolean mHasDynamicItemHeight;
   private int mLastWidthSpec = UNINITIALIZED;
   private int mLastHeightSpec = UNINITIALIZED;
   private Size mMeasuredSize;
@@ -168,6 +169,7 @@ public class RecyclerBinder
     private ComponentContext componentContext;
     private LithoViewFactory lithoViewFactory;
     private boolean isCircular;
+    private boolean hasDynamicItemHeight;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -238,8 +240,23 @@ public class RecyclerBinder
     }
 
     /**
-     * @param c The {@link ComponentContext} the RecyclerBinder will use.
+     * Do not enable this. This is an experimental feature and your Section surface will take a perf
+     * hit if you use it.
+     *
+     * <p>Whether the items of this RecyclerBinder can change height after the initial measure. Only
+     * applicable to horizontally scrolling RecyclerBinders. If true, the children of this h-scroll
+     * are all measured with unspecified height. When the ComponentTree of a child is remeasured,
+     * this will cause the RecyclerBinder to remeasure in case the height of the child changed and
+     * the RecyclerView needs to have a different height to account for it. This only supports
+     * changing the height of the item that triggered the remeasuring, not the height of all items
+     * in the h-scroll.
      */
+    public Builder hasDynamicItemHeight(boolean hasDynamicItemHeight) {
+      this.hasDynamicItemHeight = hasDynamicItemHeight;
+      return this;
+    }
+
+    /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext = c;
 
@@ -266,6 +283,7 @@ public class RecyclerBinder
     mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
 
     mIsCircular = builder.isCircular;
+    mHasDynamicItemHeight = builder.hasDynamicItemHeight;
 
     mViewportManager =
         new ViewportManager(
