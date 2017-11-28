@@ -61,7 +61,6 @@ ext.deps = [
         soloader           : 'com.facebook.soloader:soloader:0.2.0',
         textlayoutbuilder  : 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.1.0',
         stetho             : 'com.facebook.stetho:stetho:1.5.0',
-        yoga               : 'com.facebook.yoga:yoga:1.7.1-SNAPSHOT',
         screenshot         : 'com.facebook.testing.screenshot:core:0.4.4',
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.1',
@@ -88,8 +87,8 @@ ext.deps = [
 // For releases, we want to depend on a stable version of Yoga.
 ext.deps.yoga =
     isSnapshot()
-        ? 'com.facebook.yoga:yoga:1.6.1-SNAPSHOT'
-        : 'com.facebook.yoga:yoga:1.6.0'
+        ? 'com.facebook.yoga:yoga:1.7.1-SNAPSHOT'
+        : 'com.facebook.yoga:yoga:1.7.0'
 
 // This should hopefully only serve as a temporary measure until
 // we have a proper Gradle setup for Yoga and JNI.
