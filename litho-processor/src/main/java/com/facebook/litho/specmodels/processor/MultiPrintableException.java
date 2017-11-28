@@ -13,14 +13,15 @@ import java.util.List;
 import javax.annotation.processing.Messager;
 
 public class MultiPrintableException extends PrintableException {
-  private final List<PrintableException> exceptions;
+  private final List<PrintableException> mExceptions;
 
-  public MultiPrintableException(List<PrintableException> exceptions) {
-    this.exceptions = exceptions;
+  MultiPrintableException(List<PrintableException> exceptions) {
+    mExceptions = exceptions;
   }
 
+  @Override
   public void print(Messager messager) {
-    for (PrintableException e : exceptions) {
+    for (PrintableException e : mExceptions) {
       e.print(messager);
     }
   }

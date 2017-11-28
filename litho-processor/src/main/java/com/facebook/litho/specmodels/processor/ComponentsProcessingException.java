@@ -14,7 +14,7 @@ import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
 
 public class ComponentsProcessingException extends PrintableException {
-  private final Element element;
+  private final Element mElement;
 
   public ComponentsProcessingException(String message) {
     this(null, message);
@@ -22,10 +22,11 @@ public class ComponentsProcessingException extends PrintableException {
 
   public ComponentsProcessingException(Element element, String message) {
     super(message);
-    this.element = element;
+    mElement = element;
   }
 
+  @Override
   public void print(Messager messager) {
-    messager.printMessage(Diagnostic.Kind.ERROR, getMessage(), element);
+    messager.printMessage(Diagnostic.Kind.ERROR, getMessage(), mElement);
   }
 }

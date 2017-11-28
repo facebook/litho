@@ -13,9 +13,7 @@ import javax.annotation.processing.Messager;
 
 public abstract class PrintableException extends RuntimeException {
 
-  PrintableException() {
-    super();
-  }
+  PrintableException() {}
 
   PrintableException(String message) {
     super(message);
