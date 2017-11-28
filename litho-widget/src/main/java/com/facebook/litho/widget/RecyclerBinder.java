@@ -101,14 +101,35 @@ public class RecyclerBinder
       new ComponentTreeMeasureListenerFactory() {
         @Override
         public MeasureListener create(final ComponentTreeHolder holder) {
-          return new MeasureListener() {
-            @Override
-            public void onSetRootAndSizeSpec(int width, int height) {
-              // to do in next diff
-            }
-          };
+          return getMeasureListener(holder);
         }
       };
+
+  private MeasureListener getMeasureListener(final ComponentTreeHolder holder) {
+    return new MeasureListener() {
+      @Override
+      public void onSetRootAndSizeSpec(int width, int height) {
+        if (holder.getMeasuredHeight() == height) {
+          return;
+        }
+
+        holder.setMeasuredHeight(height);
+
+        final RangeCalculationResult range = RecyclerBinder.this.mRange;
+
+        if (range != null
+            && holder.getMeasuredHeight() <= RecyclerBinder.this.mRange.measuredSize) {
+          return;
+        }
+
+        synchronized (RecyclerBinder.this) {
+          resetMeasuredSize(width);
+        }
+
+        requestUpdate();
+      }
+    };
+  }
 
   private final boolean mIsCircular;
   private final boolean mHasDynamicItemHeight;
@@ -304,7 +325,8 @@ public class RecyclerBinder
     mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
 
     mIsCircular = builder.isCircular;
-    mHasDynamicItemHeight = builder.hasDynamicItemHeight;
+    mHasDynamicItemHeight =
+        mLayoutInfo.getScrollDirection() == HORIZONTAL ? builder.hasDynamicItemHeight : false;
 
     mViewportManager =
         new ViewportManager(
@@ -894,14 +916,14 @@ public class RecyclerBinder
 
         if (SizeSpec.getMode(heightSpec) == SizeSpec.EXACTLY || !canMeasure) {
           outSize.height = SizeSpec.getSize(heightSpec);
-          mReMeasureEventEventHandler = null;
-          mRequiresRemeasure.set(false);
+          mReMeasureEventEventHandler = mHasDynamicItemHeight ? reMeasureEventHandler : null;
+          mRequiresRemeasure.set(mHasDynamicItemHeight);
         } else if (mRange != null
             && (SizeSpec.getMode(heightSpec) == SizeSpec.AT_MOST
             || SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED)) {
           outSize.height = mRange.measuredSize;
-          mReMeasureEventEventHandler = null;
-          mRequiresRemeasure.set(false);
+          mReMeasureEventEventHandler = mHasDynamicItemHeight ? reMeasureEventHandler : null;
+          mRequiresRemeasure.set(mHasDynamicItemHeight);
         } else {
           outSize.height = 0;
           mRequiresRemeasure.set(true);
@@ -1004,6 +1026,39 @@ public class RecyclerBinder
 
     mRange = new RangeCalculationResult();
     mRange.measuredSize = scrollDirection == HORIZONTAL ? size.height : size.width;
+    mRange.estimatedViewportCount = rangeSize;
+  }
+
+  @GuardedBy("this")
+  private void resetMeasuredSize(int width) {
+    // we will set a range anyway if it's null, no need to do this now.
+    if (mRange == null) {
+      return;
+    }
+    int maxHeight = 0;
+
+    for (int i = 0, size = mComponentTreeHolders.size(); i < size; i++) {
+      final ComponentTreeHolder holder = mComponentTreeHolders.get(i);
+      final int measuredItemHeight = holder.getMeasuredHeight();
+      if (measuredItemHeight > maxHeight) {
+        maxHeight = measuredItemHeight;
+      }
+    }
+
+    if (maxHeight == mRange.measuredSize) {
+      return;
+    }
+
+    final int rangeSize =
+        Math.max(
+            mLayoutInfo.approximateRangeSize(
+                SizeSpec.getSize(mLastWidthSpec),
+                SizeSpec.getSize(mLastHeightSpec),
+                width,
+                maxHeight),
+            1);
+
+    mRange.measuredSize = maxHeight;
     mRange.estimatedViewportCount = rangeSize;
   }
 
@@ -1335,6 +1390,10 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private int getActualChildrenHeightSpec(final ComponentTreeHolder treeHolder) {
+    if (mHasDynamicItemHeight) {
+      return SizeSpec.UNSPECIFIED;
+    }
+
     if (mIsMeasured.get() && !mRequiresRemeasure.get()) {
       return mLayoutInfo.getChildHeightSpec(
           SizeSpec.makeSizeSpec(mMeasuredSize.height, SizeSpec.EXACTLY),

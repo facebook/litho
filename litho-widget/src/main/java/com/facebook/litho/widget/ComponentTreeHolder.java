@@ -32,7 +32,9 @@ public class ComponentTreeHolder {
   private static final Pools.SynchronizedPool<ComponentTreeHolder> sComponentTreeHoldersPool =
       new Pools.SynchronizedPool<>(8);
   private ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
-  int mLastMeasuredHeight;
+
+  @GuardedBy("this")
+  private int mLastMeasuredHeight;
 
   @GuardedBy("this")
   private ComponentTree mComponentTree;
@@ -202,6 +204,14 @@ public class ComponentTreeHolder {
   public synchronized void setRenderInfo(RenderInfo renderInfo) {
     invalidateTree();
     mRenderInfo = renderInfo;
+  }
+
+  synchronized int getMeasuredHeight() {
+    return mLastMeasuredHeight;
+  }
+
+  synchronized void setMeasuredHeight(int height) {
+    mLastMeasuredHeight = height;
   }
 
   public synchronized void release() {
