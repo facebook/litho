@@ -40,7 +40,7 @@ import javax.annotation.concurrent.GuardedBy;
  */
 public abstract class ComponentLifecycle implements EventDispatcher, EventTriggerTarget {
   private static final AtomicInteger sComponentTypeId = new AtomicInteger();
-  private static final int DEFAULT_MAX_PREALLOCATION = 15;
+  private static final int DEFAULT_MAX_PREALLOCATION = 3;
 
   public enum MountType {
     NONE,
