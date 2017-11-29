@@ -1018,7 +1018,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     // 2. Generate the component's mount state (this might also be a ComponentHost View).
     final Object content =
-        isHostSpec(component)
+        (ComponentsConfiguration.scrapHostRecyclingForComponentHosts && isHostSpec(component))
             ? acquireComponentHost(mContext, lifecycle, host)
             : ComponentsPools.acquireMountContent(mContext, lifecycle);
 

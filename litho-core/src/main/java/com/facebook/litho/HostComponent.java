@@ -9,6 +9,8 @@
 
 package com.facebook.litho;
 
+import com.facebook.litho.config.ComponentsConfiguration;
+
 class HostComponent extends Component<HostComponent> {
 
   @Override
@@ -38,7 +40,9 @@ class HostComponent extends Component<HostComponent> {
   @Override
   protected int poolSize() {
     // Pooling is done via mScrapHosts in ComponentHost.
-    return 0;
+    return ComponentsConfiguration.scrapHostRecyclingForComponentHosts
+        ? 0
+        : ComponentsConfiguration.componentHostPoolSize;
   }
 
   @Override

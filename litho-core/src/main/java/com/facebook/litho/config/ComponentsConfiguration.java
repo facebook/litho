@@ -154,4 +154,19 @@ public class ComponentsConfiguration {
    * framework
    */
   public static boolean useGlobalKeys = true;
+
+  /**
+   * Whether to use special recycling for ComponentHosts or not. True (default) if we should use
+   * scrap host recycling (see ComponentHost#mScrapHosts).
+   */
+  public static boolean scrapHostRecyclingForComponentHosts = true;
+
+  /**
+   * If scrapHostRecyclingForComponentHosts is false, determines whether we try to preallocate
+   * ComponentHosts.
+   */
+  public static boolean preallocateComponentHosts = false;
+
+  /** If scrapHostRecyclingForComponentHosts is false, determines the ComponentHost pool size. */
+  public static int componentHostPoolSize = 30;
 }

@@ -68,7 +68,7 @@ public class ComponentHost extends ViewGroup {
 
   private final InterleavedDispatchDraw mDispatchDraw = new InterleavedDispatchDraw();
 
-  private final List<ComponentHost> mScrapHosts = new ArrayList<>(3);
+  private final @Nullable List<ComponentHost> mScrapHosts;
 
   private int[] mChildDrawingOrder = new int[0];
   private boolean mIsChildDrawingOrderDirty;
@@ -108,6 +108,10 @@ public class ComponentHost extends ViewGroup {
       mComponentAccessibilityDelegate = new ComponentAccessibilityDelegate(this);
     }
     refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context));
+    mScrapHosts =
+        ComponentsConfiguration.scrapHostRecyclingForComponentHosts
+            ? new ArrayList<ComponentHost>(3)
+            : null;
   }
 
   /**
@@ -275,6 +279,10 @@ public class ComponentHost extends ViewGroup {
    * @return The host view to be recycled.
    */
   ComponentHost recycleHost() {
+    if (mScrapHosts == null) {
+      return null;
+    }
+
     if (mScrapHosts.size() > 0) {
       final ComponentHost host = mScrapHosts.remove(0);
 
@@ -656,7 +664,7 @@ public class ComponentHost extends ViewGroup {
   private void unmountView(View view) {
     mIsChildDrawingOrderDirty = true;
 
-    if (view instanceof ComponentHost) {
+    if (mScrapHosts != null && view instanceof ComponentHost) {
       final ComponentHost componentHost = (ComponentHost) view;
 
       view.setVisibility(GONE);
@@ -1109,9 +1117,11 @@ public class ComponentHost extends ViewGroup {
       mChildDrawingOrder[index++] = indexOfChild(child);
     }
 
-    for (int i = 0, size = mScrapHosts.size(); i < size; i++) {
-      final View child = mScrapHosts.get(i);
-      mChildDrawingOrder[index++] = indexOfChild(child);
+    if (mScrapHosts != null) {
+      for (int i = 0, size = mScrapHosts.size(); i < size; i++) {
+        final View child = mScrapHosts.get(i);
+        mChildDrawingOrder[index++] = indexOfChild(child);
+      }
     }
 
     mIsChildDrawingOrderDirty = false;
