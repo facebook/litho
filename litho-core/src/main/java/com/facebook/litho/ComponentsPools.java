@@ -616,38 +616,19 @@ public class ComponentsPools {
     sDiffPool.release(diff);
   }
 
-  static @Nullable Object acquireMountContent(
-      ComponentContext context, ComponentLifecycle lifecycle) {
-    final MountContentPool pool = getMountContentPoolForAcquire(context, lifecycle);
+  static Object acquireMountContent(ComponentContext context, ComponentLifecycle lifecycle) {
+    final MountContentPool pool = getMountContentPool(context, lifecycle);
     if (pool == null) {
-      return null;
+      return lifecycle.createMountContent(context);
     }
 
-    return pool.acquire();
+    return pool.acquire(context, lifecycle);
   }
 
   static void release(ComponentContext context, ComponentLifecycle lifecycle, Object mountContent) {
-    final MountContentPool pool = getMountContentPoolForRelease(context, lifecycle);
+    final MountContentPool pool = getMountContentPool(context, lifecycle);
     if (pool != null) {
       pool.release(mountContent);
-    }
-  }
-
-  private static @Nullable MountContentPool getMountContentPoolForAcquire(
-      ComponentContext wrappedContext, ComponentLifecycle lifecycle) {
-    if (lifecycle.poolSize() == 0) {
-      return null;
-    }
-
-    final Context context = getContextForMountPool(wrappedContext);
-
-    synchronized (sMountContentLock) {
-      SparseArray<MountContentPool> poolsArray = sMountContentPoolsByContext.get(context);
-      if (poolsArray == null) {
-        return null;
-      }
-
-      return poolsArray.get(lifecycle.getTypeId());
     }
   }
 
@@ -656,28 +637,28 @@ public class ComponentsPools {
    * pre-allocation limit has been hit in which case we do nothing.
    */
   static void maybePreallocateContent(ComponentContext context, ComponentLifecycle lifecycle) {
-    final MountContentPool pool = getMountContentPoolForRelease(context, lifecycle);
+    final MountContentPool pool = getMountContentPool(context, lifecycle);
     if (pool != null) {
       pool.maybePreallocateContent(context, lifecycle);
     }
   }
 
-  private static @Nullable MountContentPool getMountContentPoolForRelease(
+  private static @Nullable MountContentPool getMountContentPool(
       ComponentContext wrappedContext, ComponentLifecycle lifecycle) {
     if (lifecycle.poolSize() == 0) {
       return null;
     }
 
     final Context context = getContextForMountPool(wrappedContext);
-    final Context rootContext = ContextUtils.getRootContext(context);
 
     synchronized (sMountContentLock) {
-      if (sDestroyedRootContexts.containsKey(rootContext)) {
-        return null;
-      }
-
       SparseArray<MountContentPool> poolsArray = sMountContentPoolsByContext.get(context);
       if (poolsArray == null) {
+        final Context rootContext = ContextUtils.getRootContext(context);
+        if (sDestroyedRootContexts.containsKey(rootContext)) {
+          return null;
+        }
+
         ensureActivityCallbacks(context);
         poolsArray = new SparseArray<>();
         sMountContentPoolsByContext.put(context, poolsArray);

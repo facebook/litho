@@ -46,7 +46,7 @@ public class ComponentsPoolsTest {
 
         @Override
         public View onCreateMountContent(ComponentContext context) {
-          return new View(context);
+          return mNewMountContent;
         }
       };
 
@@ -64,7 +64,7 @@ public class ComponentsPoolsTest {
 
         @Override
         public View onCreateMountContent(ComponentContext context) {
-          return new View(context);
+          return mNewMountContent;
         }
       };
 
@@ -75,6 +75,7 @@ public class ComponentsPoolsTest {
   private Activity mActivity;
   private ComponentContext mActivityComponentContext;
   private ColorDrawable mMountContent;
+  private View mNewMountContent;
 
   @Before
   public void setup() {
@@ -85,6 +86,7 @@ public class ComponentsPoolsTest {
     mActivity = mActivityController.get();
     mActivityComponentContext = new ComponentContext(mActivity);
     mMountContent = new ColorDrawable(Color.RED);
+    mNewMountContent = new View(mContext1);
   }
 
   @After
@@ -94,7 +96,7 @@ public class ComponentsPoolsTest {
 
   @Test
   public void testAcquireMountContentWithSameContext() {
-    assertThat(acquireMountContent(mContext1, mLifecycle)).isNull();
+    assertThat(acquireMountContent(mContext1, mLifecycle)).isSameAs(mNewMountContent);
 
     release(mContext1, mLifecycle, mMountContent);
 
@@ -103,7 +105,7 @@ public class ComponentsPoolsTest {
 
   @Test
   public void testAcquireMountContentWithSameUnderlyingContext() {
-    assertThat(acquireMountContent(mContext1, mLifecycle)).isNull();
+    assertThat(acquireMountContent(mContext1, mLifecycle)).isSameAs(mNewMountContent);
 
     release(mContext1, mLifecycle, mMountContent);
 
@@ -112,17 +114,18 @@ public class ComponentsPoolsTest {
 
   @Test
   public void testAcquireMountContentWithDifferentUnderlyingContext() {
-    assertThat(acquireMountContent(mContext1, mLifecycle)).isNull();
+    assertThat(acquireMountContent(mContext1, mLifecycle)).isSameAs(mNewMountContent);
 
     release(mContext1, mLifecycle, mMountContent);
 
-    assertThat(acquireMountContent(mContext3, mLifecycle)).isNull();
+    assertThat(acquireMountContent(mContext3, mLifecycle)).isSameAs(mNewMountContent);
   }
 
   @Test
   public void testReleaseMountContentForDestroyedContextDoesNothing() {
     // Assert pooling was working before
-    assertThat(acquireMountContent(mActivityComponentContext, mLifecycle)).isNull();
+    assertThat(acquireMountContent(mActivityComponentContext, mLifecycle))
+        .isSameAs(mNewMountContent);
 
     release(mActivityComponentContext, mLifecycle, mMountContent);
 
@@ -132,7 +135,8 @@ public class ComponentsPoolsTest {
     mActivityController.destroy();
     release(mActivityComponentContext, mLifecycle, mMountContent);
 
-    assertThat(acquireMountContent(mActivityComponentContext, mLifecycle)).isNull();
+    assertThat(acquireMountContent(mActivityComponentContext, mLifecycle))
+        .isSameAs(mNewMountContent);
   }
 
   @Test
@@ -147,11 +151,14 @@ public class ComponentsPoolsTest {
 
   @Test
   public void testPreallocateContent() {
-    assertThat(acquireMountContent(mContext1, mLifecycle)).isNull();
+    assertThat(acquireMountContent(mContext1, mLifecycle)).isSameAs(mNewMountContent);
 
     maybePreallocateContent(mContext1, mLifecycle);
 
-    assertThat(acquireMountContent(mContext1, mLifecycle)).isNotNull();
+    // Change the content that's returned when we create new mount content to make sure we're
+    // getting the one from preallocating above.
+    mNewMountContent = new View(mContext1);
+    assertThat(acquireMountContent(mContext1, mLifecycle)).isNotSameAs(mNewMountContent);
   }
 
   @Test
@@ -163,18 +170,20 @@ public class ComponentsPoolsTest {
 
     maybePreallocateContent(mContext1, mLifecycle);
 
-    assertThat(acquireMountContent(mContext1, mLifecycle)).isNull();
+    assertThat(acquireMountContent(mContext1, mLifecycle)).isSameAs(mNewMountContent);
   }
 
   @Test
   public void testReleaseAndAcquireWithNoPoolSize() {
     release(mContext1, mLifecycleWithEmptyPoolSize, mMountContent);
-    assertThat(acquireMountContent(mContext1, mLifecycleWithEmptyPoolSize)).isNull();
+    assertThat(acquireMountContent(mContext1, mLifecycleWithEmptyPoolSize))
+        .isSameAs(mNewMountContent);
   }
 
   @Test
   public void testPreallocateWithEmptyPoolSize() {
     maybePreallocateContent(mContext1, mLifecycleWithEmptyPoolSize);
-    assertThat(acquireMountContent(mContext1, mLifecycleWithEmptyPoolSize)).isNull();
+    assertThat(acquireMountContent(mContext1, mLifecycleWithEmptyPoolSize))
+        .isSameAs(mNewMountContent);
   }
 }

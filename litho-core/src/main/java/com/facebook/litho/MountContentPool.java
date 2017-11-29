@@ -21,6 +21,16 @@ public class MountContentPool extends RecyclePool {
     mPoolSize = maxSize;
   }
 
+  public Object acquire(ComponentContext c, ComponentLifecycle lifecycle) {
+    final Object fromPool = super.acquire();
+    return fromPool != null ? fromPool : lifecycle.createMountContent(c);
+  }
+
+  @Override
+  public Object acquire() {
+    throw new UnsupportedOperationException("Call acquire(ComponentContext, ComponentLifecycle)");
+  }
+
   /**
    * Pre-allocates one item for the given ComponentLifecycle if the preallocation count is less than
    * the pool size, otherwise does nothing.

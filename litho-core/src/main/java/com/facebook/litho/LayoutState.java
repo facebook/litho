@@ -1282,9 +1282,6 @@ class LayoutState {
     }
 
     Drawable drawable = (Drawable) ComponentsPools.acquireMountContent(context, lifecycle);
-    if (drawable == null) {
-      drawable = (Drawable) lifecycle.createMountContent(context);
-    }
 
     final LayoutOutput clickableOutput = findInteractiveRoot(this, output);
     boolean isStateEnabled = false;
