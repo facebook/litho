@@ -16,6 +16,7 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.testing.DefaultTestSpecGenerator;
 import com.facebook.litho.specmodels.model.testing.TestSpecGenerator;
 import com.facebook.litho.specmodels.model.testing.TestSpecModel;
+import com.facebook.litho.specmodels.processor.ComponentsProcessingException;
 import com.facebook.litho.specmodels.processor.InterStageStore;
 import com.facebook.litho.specmodels.processor.JavadocExtractor;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
@@ -24,10 +25,12 @@ import com.facebook.litho.specmodels.processor.SpecModelFactory;
 import com.facebook.litho.specmodels.processor.TestTargetExtractor;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
@@ -63,9 +66,14 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
       TypeElement element,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
+
+    validateElementIsInterface(element);
+    validateElementIsEmpty(element);
+
     final TypeElement valueElement = TestTargetExtractor.getTestSpecValue(element);
     if (valueElement == null) {
-      throw new NullPointerException(
+      throw new ComponentsProcessingException(
+          element,
           "Failed to extract referenced class in TestSpec. "
               + "Please report this error to the Litho team.");
     }
@@ -74,7 +82,8 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
         getEnclosedSpecModel(elements, valueElement, dependencyInjectionHelper, interStageStore);
 
     if (enclosedSpecModel == null) {
-      throw new NullPointerException(
+      throw new ComponentsProcessingException(
+          element,
           String.format(
               "Failed to extract enclosed spec model: %s. "
                   + "Please report this error to the Litho team.",
@@ -90,6 +99,38 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
         enclosedSpecModel,
         mTestSpecGenerator,
         JavadocExtractor.getClassJavadoc(elements, element));
+  }
+
+  private void validateElementIsEmpty(TypeElement element) {
+    if (!element.getEnclosedElements().isEmpty()) {
+      final String elements =
+          element
+              .getEnclosedElements()
+              .stream()
+              .map(el -> el.asType() + " " + el.getSimpleName())
+              .collect(Collectors.joining(", "));
+
+      final String decl =
+          element.getEnclosedElements().size() == 1
+              ? "this function declaration"
+              : "these function declarations";
+
+      throw new ComponentsProcessingException(
+          element,
+          String.format(
+              "TestSpec interfaces must not contain any members. Please remove %s: %s",
+              decl, elements));
+    }
+  }
+
+  private void validateElementIsInterface(TypeElement element) {
+    if (element.getKind() != ElementKind.INTERFACE) {
+      throw new ComponentsProcessingException(
+          element,
+          String.format(
+              "Specs annotated with @TestSpecs must be interfaces and cannot be of kind %s.",
+              element.getKind()));
+    }
   }
 
   /** @return List of props for the original, annotated Spec. */

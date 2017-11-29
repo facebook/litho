@@ -18,9 +18,6 @@ import com.google.testing.compile.JavaFileObjects;
 import com.google.testing.compile.JavaSourceSubjectFactory;
 import com.google.testing.compile.JavaSourcesSubjectFactory;
 import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import org.junit.Test;
@@ -31,11 +28,6 @@ public class ProcessorIntegrationTest {
 
   @Test
   public void failsToCompileWithWrongContext() throws IOException {
-    final Enumeration<URL> resources = getClass().getClassLoader().getResources("");
-    final ArrayList list = new ArrayList();
-    while (resources.hasMoreElements()) {
-      list.add(resources.nextElement());
-    }
     final JavaFileObject javaFileObject = JavaFileObjects.forResource(Resources.getResource(
         getClass(),
         RES_PREFIX + "IncorrectOnCreateLayoutArgsComponentSpec.java"));
@@ -275,5 +267,45 @@ public class ProcessorIntegrationTest {
         .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "BasicTestSampleSpec.class")
         .and()
         .generatesSources(expectedOutput);
+  }
+
+  @Test
+  public void failsToCompileClassBasedTestSpec() throws IOException {
+    final JavaFileObject javaFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "IncorrectClassBasedTestSpec.java"));
+    final JavaFileObject layoutSpecObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "BasicLayoutSpec.java"));
+
+    Truth.assertAbout(JavaSourcesSubjectFactory.javaSources())
+        .that(ImmutableList.of(javaFileObject, layoutSpecObject))
+        .processedWith(new ComponentsTestingProcessor(), new ComponentsProcessor())
+        .failsToCompile()
+        .withErrorCount(1)
+        .withErrorContaining(
+            "Specs annotated with @TestSpecs must be interfaces and cannot be of kind CLASS.")
+        .in(javaFileObject)
+        .onLine(16);
+  }
+
+  @Test
+  public void failsToCompileNonEmptyTestSpecInterface() throws IOException {
+    final JavaFileObject javaFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "IncorrectNonEmptyTestSpec.java"));
+    final JavaFileObject layoutSpecObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "BasicLayoutSpec.java"));
+
+    Truth.assertAbout(JavaSourcesSubjectFactory.javaSources())
+        .that(ImmutableList.of(javaFileObject, layoutSpecObject))
+        .processedWith(new ComponentsTestingProcessor(), new ComponentsProcessor())
+        .failsToCompile()
+        .withErrorCount(1)
+        .withErrorContaining(
+            "TestSpec interfaces must not contain any members. Please remove these function declarations: ()void test, ()java.util.List<java.lang.Integer> list")
+        .in(javaFileObject)
+        .onLine(17);
   }
 }
