@@ -86,7 +86,7 @@ public class MountStateViewTest {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
             return Column.create(c)
-                .child(Layout.create(c, testComponent1).widthPx(10).heightPx(10))
+                .child(Wrapper.create(c).delegate(testComponent1).widthPx(10).heightPx(10))
                 .build();
           }
         };
@@ -95,7 +95,7 @@ public class MountStateViewTest {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
             return Column.create(c)
-                .child(Layout.create(c, testComponent2).widthPx(10).heightPx(10))
+                .child(Wrapper.create(c).delegate(testComponent2).widthPx(10).heightPx(10))
                 .build();
           }
         };

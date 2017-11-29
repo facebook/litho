@@ -13,12 +13,11 @@ import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 
 /**
- * Utility class to create a new {@link ComponentLayout.Builder} from an existing {@link Component}.
- * This is useful for components with child components as props.
+ * Utility class for wrapping an existing {@link Component} to create a new {@link
+ * ComponentLayout.Builder}. This is useful for components with child components as props.
  */
-final class Layout {
-  private Layout() {
-  }
+public final class Wrapper {
+  private Wrapper() {}
 
   /**
    * Create a {@link ComponentLayout.Builder} from an existing {@link Component}.
@@ -29,7 +28,7 @@ final class Layout {
    * @param defStyleRes The id of the style to use for layout attributes
    * @return A layout builder
    */
-  static ComponentLayout.Builder create(
+  private static ComponentLayout.Builder create(
       ComponentContext c,
       Component<?> component,
       @AttrRes int defStyleAttr,
@@ -40,14 +39,28 @@ final class Layout {
     return c.newLayoutBuilder(component, defStyleAttr, defStyleRes);
   }
 
-  /**
-   * Create a {@link ComponentLayout.Builder} from an existing {@link Component}.
-   *
-   * @param c The context to create the layout within
-   * @param component The component to render within this layout
-   * @return A layout builder
-   */
-  static ComponentLayout.Builder create(ComponentContext c, Component<?> component) {
-    return create(c, component, 0, 0);
+  public static Builder create(ComponentContext c) {
+    return create(c, 0, 0);
+  }
+
+  public static Builder create(
+      ComponentContext c, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+    return new Builder(c, defStyleAttr, defStyleRes);
+  }
+
+  public static class Builder {
+    private final ComponentContext mContext;
+    @AttrRes private final int mDefStyleAttr;
+    @StyleRes private final int mDefStyleRes;
+
+    private Builder(ComponentContext c, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+      mContext = c;
+      mDefStyleAttr = defStyleAttr;
+      mDefStyleRes = defStyleRes;
+    }
+
+    public ComponentLayout.Builder delegate(Component<?> component) {
+      return create(mContext, component, mDefStyleAttr, mDefStyleRes);
+    }
   }
 }

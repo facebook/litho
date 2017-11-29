@@ -9,7 +9,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.Layout.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
@@ -30,7 +29,7 @@ public class CollectTransitionsTest {
 
         @Override
         protected ComponentLayout onCreateLayout(ComponentContext c) {
-          return create(c, mComponentWithTransition).build();
+          return Wrapper.create(c).delegate(mComponentWithTransition).build();
         }
 
         @Override

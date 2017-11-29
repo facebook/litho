@@ -70,23 +70,18 @@ public class MountStateIncrementalMountTest {
         .build();
     final TestComponent child2 = create(mContext)
         .build();
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .child(
-                    Layout.create(c, child1)
-                        .widthPx(10)
-                        .heightPx(10))
-                .child(
-                    Layout.create(c, child2)
-                        .widthPx(10)
-                        .heightPx(10))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
+                    .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
+                    .build();
+              }
+            });
 
     verifyLoggingAndResetLogger(2, 0);
 
@@ -122,23 +117,18 @@ public class MountStateIncrementalMountTest {
         .build();
     final TestComponent child2 = create(mContext)
         .build();
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .child(
-                    Layout.create(c, child1)
-                        .widthPx(10)
-                        .heightPx(10))
-                .child(
-                    Layout.create(c, child2)
-                        .widthPx(10)
-                        .heightPx(10))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
+                    .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
+                    .build();
+              }
+            });
 
     verifyLoggingAndResetLogger(2, 0);
 
@@ -177,23 +167,18 @@ public class MountStateIncrementalMountTest {
         .build();
     final TestComponent child2 = create(mContext)
         .build();
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Row.create(c)
-                .child(
-                    Layout.create(c, child1)
-                        .widthPx(10)
-                        .heightPx(10))
-                .child(
-                    Layout.create(c, child2)
-                        .widthPx(10)
-                        .heightPx(10))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Row.create(c)
+                    .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
+                    .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
+                    .build();
+              }
+            });
 
     verifyLoggingAndResetLogger(2, 0);
 
@@ -232,23 +217,18 @@ public class MountStateIncrementalMountTest {
         .build();
     final TestComponent child2 = TestDrawableComponent.create(mContext)
         .build();
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .child(
-                    Layout.create(c, child1)
-                        .widthPx(10)
-                        .heightPx(10))
-                .child(
-                    Layout.create(c, child2)
-                        .widthPx(10)
-                        .heightPx(10))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
+                    .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
+                    .build();
+              }
+            });
 
     verifyLoggingAndResetLogger(2, 0);
 
@@ -285,22 +265,20 @@ public class MountStateIncrementalMountTest {
   public void testIncrementalMountNestedView() {
     final TestComponent child = create(mContext)
         .build();
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .wrapInView()
-                .paddingPx(ALL, 20)
-                .child(
-                    Layout.create(c, child)
-                        .widthPx(10)
-                        .heightPx(10))
-                .child(TestDrawableComponent.create(c))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .wrapInView()
+                    .paddingPx(ALL, 20)
+                    .child(Wrapper.create(c).delegate(child).widthPx(10).heightPx(10))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
     verifyLoggingAndResetLogger(2, 0);
 
@@ -325,21 +303,23 @@ public class MountStateIncrementalMountTest {
   public void testIncrementalMountVerticalDrawableStackNegativeMargin() {
     final TestComponent child1 = TestDrawableComponent.create(mContext)
         .build();
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .child(
-                    Layout.create(c, child1)
-                        .widthPx(10)
-                        .heightPx(10)
-                        .clickHandler(c.newEventHandler(1))
-                        .marginDip(YogaEdge.TOP, -10))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        ComponentTestHelper.mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .child(
+                        Wrapper.create(c)
+                            .delegate(child1)
+                            .widthPx(10)
+                            .heightPx(10)
+                            .clickHandler(c.newEventHandler(1))
+                            .marginDip(YogaEdge.TOP, -10))
+                    .build();
+              }
+            });
 
     verifyLoggingAndResetLogger(2, 0);
 
@@ -356,30 +336,33 @@ public class MountStateIncrementalMountTest {
         .build();
     final TestComponent child2 = create(mContext)
         .build();
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .child(
-                    Layout.create(c, child1)
-                        .positionType(ABSOLUTE)
-                        .positionPx(TOP, 0)
-                        .positionPx(LEFT, 0)
-                        .widthPx(10)
-                        .heightPx(10))
-                .child(
-                    Layout.create(c, child2)
-                        .positionType(ABSOLUTE)
-                        .positionPx(TOP, 5)
-                        .positionPx(LEFT, 5)
-                        .widthPx(10)
-                        .heightPx(10))
-                .child(TestDrawableComponent.create(c))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .child(
+                        Wrapper.create(c)
+                            .delegate(child1)
+                            .positionType(ABSOLUTE)
+                            .positionPx(TOP, 0)
+                            .positionPx(LEFT, 0)
+                            .widthPx(10)
+                            .heightPx(10))
+                    .child(
+                        Wrapper.create(c)
+                            .delegate(child2)
+                            .positionType(ABSOLUTE)
+                            .positionPx(TOP, 5)
+                            .positionPx(LEFT, 5)
+                            .widthPx(10)
+                            .heightPx(10))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
     verifyLoggingAndResetLogger(3, 0);
 
@@ -415,20 +398,22 @@ public class MountStateIncrementalMountTest {
         new TestComponentContextWithView(mContext, mountedView);
     final TestComponent child2 = TestViewComponent.create(testComponentContext).build();
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        testComponentContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .child(
-                    Layout.create(c, child2)
-                        .widthPx(10)
-                        .heightPx(20)
-                        .marginPx(YogaEdge.ALL, 2))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        ComponentTestHelper.mountComponent(
+            testComponentContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .child(
+                        Wrapper.create(c)
+                            .delegate(child2)
+                            .widthPx(10)
+                            .heightPx(20)
+                            .marginPx(YogaEdge.ALL, 2))
+                    .build();
+              }
+            });
 
     for (int i = 0; i < 20; i++) {
       lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 3 + i), true);
@@ -538,19 +523,17 @@ public class MountStateIncrementalMountTest {
   public void testIncrementalMountDoesNotCauseMultipleUpdates() {
     final TestComponent child1 = create(mContext)
         .build();
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .child(
-                    Layout.create(c, child1)
-                        .widthPx(10)
-                        .heightPx(10))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
+                    .build();
+              }
+            });
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
     assertThat(child1.isMounted()).isFalse();

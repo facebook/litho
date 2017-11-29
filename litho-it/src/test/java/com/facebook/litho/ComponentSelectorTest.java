@@ -35,7 +35,7 @@ public class ComponentSelectorTest {
   public void testComponentSelectorSelectsNonNullLayout() throws Exception {
     ComponentContext c = new ComponentContext(application);
 
-    ComponentLayout nullLayout = Layout.create(c, mNullSpec).build();
+    ComponentLayout nullLayout = Wrapper.create(c).delegate(mNullSpec).build();
     ComponentLayout textLayout = Text.create(c).text("Hello World").buildWithLayout();
 
     ComponentLayout actual =
@@ -48,7 +48,7 @@ public class ComponentSelectorTest {
   public void testComponentSelectorSelectsFirstNonNullLayout() throws Exception {
     ComponentContext c = new ComponentContext(application);
 
-    ComponentLayout nullLayout = Layout.create(c, mNullSpec).build();
+    ComponentLayout nullLayout = Wrapper.create(c).delegate(mNullSpec).build();
     ComponentLayout imageLayout = Image.create(c).drawable(null).buildWithLayout();
     ComponentLayout textLayout = Text.create(c).text("Hello World").buildWithLayout();
 
@@ -66,7 +66,7 @@ public class ComponentSelectorTest {
   public void testComponentSelectorSelectsCorrectLayoutWithNullArguments() throws Exception {
     ComponentContext c = new ComponentContext(application);
 
-    ComponentLayout nullLayout = Layout.create(c, mNullSpec).build();
+    ComponentLayout nullLayout = Wrapper.create(c).delegate(mNullSpec).build();
     ComponentLayout imageLayout = Image.create(c).drawable(null).buildWithLayout();
     ComponentLayout textLayout = Text.create(c).text("Hello World").buildWithLayout();
 
@@ -88,9 +88,9 @@ public class ComponentSelectorTest {
   public void testComponentSelectorSelectsLastLayoutWhenNoneRender() throws Exception {
     ComponentContext c = new ComponentContext(application);
 
-    ComponentLayout nullLayout = Layout.create(c, mNullSpec).build();
-    ComponentLayout nullLayout2 = Layout.create(c, mNullSpec).build();
-    ComponentLayout nullLayout3 = Layout.create(c, mNullSpec).build();
+    ComponentLayout nullLayout = Wrapper.create(c).delegate(mNullSpec).build();
+    ComponentLayout nullLayout2 = Wrapper.create(c).delegate(mNullSpec).build();
+    ComponentLayout nullLayout3 = Wrapper.create(c).delegate(mNullSpec).build();
 
     ComponentLayout actual =
         ComponentSelector.create(c)

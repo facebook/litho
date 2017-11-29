@@ -312,8 +312,8 @@ public class LayoutStateCreateTreeTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(final ComponentContext c) {
-            return Layout.create(
-                    c,
+            return Wrapper.create(c)
+                .delegate(
                     new InlineLayoutSpec() {
                       @Override
                       protected ComponentLayout onCreateLayout(ComponentContext c) {
@@ -411,8 +411,8 @@ public class LayoutStateCreateTreeTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(final ComponentContext c) {
-            return Layout.create(
-                    c,
+            return Wrapper.create(c)
+                .delegate(
                     new InlineLayoutSpec() {
                       @Override
                       protected ComponentLayout onCreateLayout(ComponentContext c) {

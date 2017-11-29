@@ -11,7 +11,6 @@ package com.facebook.litho;
 
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 import static com.facebook.litho.ComponentLayout.Builder;
-import static com.facebook.litho.Layout.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
@@ -20,12 +19,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(ComponentsTestRunner.class)
-public class LayoutTest {
+public class WrapperTest {
 
   @Test
-  public void testLayoutWithNullComponentReturnsNullLayout() {
+  public void testWrapperWithNullComponentReturnsNullLayout() {
     ComponentContext c = new ComponentContext(application);
-    Builder builder = create(c, null);
+    Builder builder = Wrapper.create(c).delegate(null);
     assertThat(NULL_LAYOUT).isEqualTo(builder.build());
   }
 }

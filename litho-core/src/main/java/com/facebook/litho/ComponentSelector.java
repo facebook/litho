@@ -49,7 +49,7 @@ public class ComponentSelector {
       return this;
     }
 
-    return tryToRender(Layout.create(mContext, component).build());
+    return tryToRender(Wrapper.create(mContext).delegate(component).build());
   }
 
   public ComponentSelector tryToRender(@Nullable ComponentLayout.Builder layoutBuilder) {

@@ -32,9 +32,9 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentLayout.ContainerBuilder;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.Layout;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.TouchEvent;
+import com.facebook.litho.Wrapper;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -235,17 +235,23 @@ public class RecyclerCollectionComponentSpec {
 
     if (shouldDisplayLoading && loadingComponent != null) {
       containerBuilder.child(
-          Layout.create(c, loadingComponent).flexShrink(0)
+          Wrapper.create(c)
+              .delegate(loadingComponent)
+              .flexShrink(0)
               .positionType(ABSOLUTE)
               .positionPx(ALL, 0));
     } else if (shouldDisplayEmpty) {
       containerBuilder.child(
-          Layout.create(c, emptyComponent).flexShrink(0)
+          Wrapper.create(c)
+              .delegate(emptyComponent)
+              .flexShrink(0)
               .positionType(ABSOLUTE)
               .positionPx(ALL, 0));
     } else if (shouldDisplayError) {
       containerBuilder.child(
-          Layout.create(c, errorComponent).flexShrink(0)
+          Wrapper.create(c)
+              .delegate(errorComponent)
+              .flexShrink(0)
               .positionType(ABSOLUTE)
               .positionPx(ALL, 0));
     }

@@ -16,7 +16,7 @@ import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.Layout;
+import com.facebook.litho.Wrapper;
 
 public class TestLayoutComponent extends TestComponent {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
@@ -62,7 +62,7 @@ public class TestLayoutComponent extends TestComponent {
         TestDrawableComponent.create(c, false, true, true, false, false).build();
 
     if (mIsDelegate) {
-      return Layout.create(c, mountSpecComponent).build();
+      return Wrapper.create(c).delegate(mountSpecComponent).build();
     }
 
     ComponentLayout.ContainerBuilder containerBuilder = Column.create(c);

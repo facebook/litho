@@ -13,8 +13,8 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.Layout;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.Wrapper;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import com.facebook.litho.testing.subcomponents.SubComponent;
@@ -251,7 +251,8 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    * </code> method returns a {@link ComponentContext#NULL_LAYOUT}.
    */
   public ComponentAssert wontRender() {
-    ComponentLayoutAssert.assertThat(Layout.create(mComponentContext, actual).build()).wontRender();
+    ComponentLayoutAssert.assertThat(Wrapper.create(mComponentContext).delegate(actual).build())
+        .wontRender();
 
     return this;
   }
@@ -261,7 +262,8 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    * ComponentContext#NULL_LAYOUT}.
    */
   public ComponentAssert willRender() {
-    ComponentLayoutAssert.assertThat(Layout.create(mComponentContext, actual).build()).willRender();
+    ComponentLayoutAssert.assertThat(Wrapper.create(mComponentContext).delegate(actual).build())
+        .willRender();
 
     return this;
   }

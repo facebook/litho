@@ -84,7 +84,8 @@ class MyComponentSpec {
     final int layoutWidth = SizeSpec.getSize(widthSpec);
     final boolean textFits = (textOutputSize.width <= layoutWidth);
     
-    return Layout.create(c, textFits ? textComponent : imageComponent)
+    return Wrapper.create(c)
+        .delegate(textFits ? textComponent : imageComponent)
         .build();
   }
 }

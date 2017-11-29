@@ -105,7 +105,8 @@ class PoliteComponentWrapper {
       ComponentContext c,
       @Prop Component<?> content) {
       
-    return Layout.create(c, content)
+    return Wrapper.create(c)
+        .delegate(content)
         .onPopulateAccessibilityEventHandler(
             PoliteComponentWrapper.onPopulateAccessibilityEvent(c))
         .build();

@@ -63,7 +63,8 @@ public class VisibilityEventsTest {
               protected ComponentLayout onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
-                        Layout.create(c, content)
+                        Wrapper.create(c)
+                            .delegate(content)
                             .visibleHandler(visibleEventHandler)
                             .widthPx(10)
                             .heightPx(5)
@@ -96,7 +97,8 @@ public class VisibilityEventsTest {
               protected ComponentLayout onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
-                        Layout.create(c, content)
+                        Wrapper.create(c)
+                            .delegate(content)
                             .focusedHandler(focusedEventHandler)
                             .widthPx(10)
                             .heightPx(10))
@@ -131,7 +133,8 @@ public class VisibilityEventsTest {
               protected ComponentLayout onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
-                        Layout.create(c, content)
+                        Wrapper.create(c)
+                            .delegate(content)
                             .focusedHandler(focusedEventHandler)
                             .widthPx(10)
                             .heightPx(3))
@@ -167,7 +170,8 @@ public class VisibilityEventsTest {
               protected ComponentLayout onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
-                        Layout.create(c, content)
+                        Wrapper.create(c)
+                            .delegate(content)
                             .focusedHandler(focusedHandler)
                             .unfocusedHandler(unfocusedHandler)
                             .widthPx(10)
@@ -217,7 +221,8 @@ public class VisibilityEventsTest {
           protected ComponentLayout onCreateLayout(ComponentContext c) {
             return Column.create(c)
                 .child(
-                    Layout.create(c, content)
+                    Wrapper.create(c)
+                        .delegate(content)
                         .fullImpressionHandler(fullImpressionVisibleEvent)
                         .widthPx(10)
                         .heightPx(5)
@@ -247,7 +252,8 @@ public class VisibilityEventsTest {
               protected ComponentLayout onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
-                        Layout.create(c, content)
+                        Wrapper.create(c)
+                            .delegate(content)
                             .invisibleHandler(invisibleEventHandler)
                             .widthPx(10)
                             .heightPx(5)
@@ -281,7 +287,8 @@ public class VisibilityEventsTest {
               protected ComponentLayout onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
-                        Layout.create(c, content)
+                        Wrapper.create(c)
+                            .delegate(content)
                             .visibleHandler(visibleEventHandler)
                             .invisibleHandler(invisibleEventHandler)
                             .widthPx(10)
@@ -333,12 +340,14 @@ public class VisibilityEventsTest {
               protected ComponentLayout onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
-                        Layout.create(c, content1)
+                        Wrapper.create(c)
+                            .delegate(content1)
                             .visibleHandler(visibleEventHandler1)
                             .widthPx(10)
                             .heightPx(5))
                     .child(
-                        Layout.create(c, content2)
+                        Wrapper.create(c)
+                            .delegate(content2)
                             .visibleHandler(visibleEventHandler2)
                             .widthPx(10)
                             .heightPx(5))
@@ -388,7 +397,8 @@ public class VisibilityEventsTest {
               protected ComponentLayout onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
-                        Layout.create(c, content)
+                        Wrapper.create(c)
+                            .delegate(content)
                             .invisibleHandler(invisibleEventHandler)
                             .widthPx(10)
                             .heightPx(10))
@@ -424,7 +434,8 @@ public class VisibilityEventsTest {
               protected ComponentLayout onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
-                        Layout.create(c, component1)
+                        Wrapper.create(c)
+                            .delegate(component1)
                             .visibleHandler(visibleEventHandler1)
                             .invisibleHandler(invisibleEventHandler1)
                             .focusedHandler(focusedEventHandler1)
@@ -452,7 +463,8 @@ public class VisibilityEventsTest {
                   protected ComponentLayout onCreateLayout(ComponentContext c) {
                     return Column.create(c)
                         .child(
-                            Layout.create(c, component2)
+                            Wrapper.create(c)
+                                .delegate(component2)
                                 .visibleHandler(visibleEventHandler2)
                                 .widthPx(10)
                                 .heightPx(10))
@@ -484,7 +496,8 @@ public class VisibilityEventsTest {
               protected ComponentLayout onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
-                        Layout.create(c, content)
+                        Wrapper.create(c)
+                            .delegate(content)
                             .visibleHandler(visibleEventHandler)
                             .widthPx(10)
                             .heightPx(10))

@@ -9,7 +9,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.Layout.create;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
@@ -61,13 +60,13 @@ public class WillRenderTest {
   @Test
   public void testWillRenderForComponentThatReturnsNull() {
     ComponentContext c = new ComponentContext(application);
-    assertThat(create(c, mNullSpec).build()).wontRender();
+    assertThat(Wrapper.create(c).delegate(mNullSpec).build()).wontRender();
   }
 
   @Test
   public void testWillRenderForComponentThatReturnsNonNull() {
     ComponentContext c = new ComponentContext(application);
-    assertThat(create(c, mNonNullSpec).build()).willRender();
+    assertThat(Wrapper.create(c).delegate(mNonNullSpec).build()).willRender();
   }
 
   @Test
@@ -76,6 +75,6 @@ public class WillRenderTest {
     mExpectedException.expectMessage("@OnCreateLayoutWithSizeSpec");
 
     ComponentContext c = new ComponentContext(application);
-    Component.willRender(create(c, mLayoutWithSizeSpec).build());
+    Component.willRender(Wrapper.create(c).delegate(mLayoutWithSizeSpec).build());
   }
 }

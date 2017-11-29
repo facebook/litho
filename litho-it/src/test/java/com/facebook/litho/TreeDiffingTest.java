@@ -994,7 +994,7 @@ public class TreeDiffingTest {
     protected ComponentLayout onCreateLayout(ComponentContext c) {
       return create(c)
           .alignItems(FLEX_START)
-          .child(Layout.create(c, mComponent).heightPx(50))
+          .child(Wrapper.create(c).delegate(mComponent).heightPx(50))
           .build();
     }
   }

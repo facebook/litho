@@ -171,8 +171,8 @@ public class LithoViewMountTest {
               @Override
               protected ComponentLayout onCreateLayout(ComponentContext c) {
                 return Column.create(c)
-                    .child(Layout.create(c, child1).widthPx(10).heightPx(10))
-                    .child(Layout.create(c, child2).widthPx(10).heightPx(10))
+                    .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
+                    .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
                     .build();
               }
             },
