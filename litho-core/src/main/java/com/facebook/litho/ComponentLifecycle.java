@@ -488,9 +488,16 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /**
-   * Deploy all UI elements representing the final bounds defined in the given
-   * {@link ComponentLayout}. Return either a {@link Drawable} or a {@link View} or
-   * {@code null} to be mounted.
+   * @return the MountContentPool that should be used to recycle mount content for this mount spec.
+   */
+  protected MountContentPool onCreateMountContentPool() {
+    return new DefaultMountContentPool(getClass().getSimpleName(), poolSize(), true);
+  }
+
+  /**
+   * Deploy all UI elements representing the final bounds defined in the given {@link
+   * ComponentLayout}. Return either a {@link Drawable} or a {@link View} or {@code null} to be
+   * mounted.
    *
    * @param c The {@link ComponentContext} to mount the component into.
    * @param component The {@link Component} for this component.

@@ -33,6 +33,7 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateLayoutExperimentalDoNotUse;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnCreateMountContentPool;
 import com.facebook.litho.annotations.OnCreateTransition;
 import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnMeasure;
@@ -209,6 +210,17 @@ public final class DelegateMethodDescriptions {
           .returnType(TypeName.OBJECT)
           .name("onCreateMountContent")
           .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
+          .optionalParameterTypes(
+              ImmutableList.<DelegateMethodDescription.OptionalParameterType>of())
+          .build();
+
+  public static final DelegateMethodDescription ON_CREATE_MOUNT_CONTENT_POOL =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(ClassNames.MOUNT_CONTENT_POOL)
+          .name("onCreateMountContentPool")
+          .definedParameterTypes(ImmutableList.<TypeName>of())
           .optionalParameterTypes(
               ImmutableList.<DelegateMethodDescription.OptionalParameterType>of())
           .build();
@@ -422,6 +434,7 @@ public final class DelegateMethodDescriptions {
     mountSpecDelegateMethodsMap.put(OnMeasureBaseline.class, ON_MEASURE_BASELINE);
     mountSpecDelegateMethodsMap.put(OnBoundsDefined.class, ON_BOUNDS_DEFINED);
     mountSpecDelegateMethodsMap.put(OnCreateMountContent.class, ON_CREATE_MOUNT_CONTENT);
+    mountSpecDelegateMethodsMap.put(OnCreateMountContentPool.class, ON_CREATE_MOUNT_CONTENT_POOL);
     mountSpecDelegateMethodsMap.put(OnMount.class, ON_MOUNT);
     mountSpecDelegateMethodsMap.put(OnBind.class, ON_BIND);
     mountSpecDelegateMethodsMap.put(OnUnbind.class, ON_UNBIND);
