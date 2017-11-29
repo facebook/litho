@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** A RecyclePool specific to recycling MountContent. */
 public class MountContentPool extends RecyclePool {
 
-  private final AtomicInteger mPreallocationCount = new AtomicInteger(0);
+  private final AtomicInteger mAllocationCount = new AtomicInteger(0);
   private final int mPoolSize;
 
   public MountContentPool(String name, int maxSize, boolean sync) {
@@ -23,7 +23,12 @@ public class MountContentPool extends RecyclePool {
 
   public Object acquire(ComponentContext c, ComponentLifecycle lifecycle) {
     final Object fromPool = super.acquire();
-    return fromPool != null ? fromPool : lifecycle.createMountContent(c);
+    if (fromPool != null) {
+      return fromPool;
+    }
+
+    mAllocationCount.incrementAndGet();
+    return lifecycle.createMountContent(c);
   }
 
   @Override
@@ -50,7 +55,7 @@ public class MountContentPool extends RecyclePool {
 
     // There's a slight race between checking isFull and the actual release() but this shouldn't
     // happen much and when it does it isn't that bad.
-    if (!isFull() && mPreallocationCount.getAndIncrement() < lifecycle.poolSize()) {
+    if (!isFull() && mAllocationCount.getAndIncrement() < poolSize) {
       release(lifecycle.createMountContent(c));
     }
   }

@@ -170,6 +170,22 @@ public class ComponentsPoolsTest {
 
     maybePreallocateContent(mContext1, mLifecycle);
 
+    mNewMountContent = new View(mContext1);
+    assertThat(acquireMountContent(mContext1, mLifecycle)).isSameAs(mNewMountContent);
+  }
+
+  @Test
+  public void testAllocationsCountTowardsPreallocationLimit() {
+    for (int i = 0; i < POOL_SIZE - 1; i++) {
+      maybePreallocateContent(mContext1, mLifecycle);
+      acquireMountContent(mContext1, mLifecycle);
+    }
+    acquireMountContent(mContext1, mLifecycle);
+
+    // Allocation limit should be hit now, so we shouldn't preallocate anything
+    maybePreallocateContent(mContext1, mLifecycle);
+
+    mNewMountContent = new View(mContext1);
     assertThat(acquireMountContent(mContext1, mLifecycle)).isSameAs(mNewMountContent);
   }
 
@@ -183,6 +199,8 @@ public class ComponentsPoolsTest {
   @Test
   public void testPreallocateWithEmptyPoolSize() {
     maybePreallocateContent(mContext1, mLifecycleWithEmptyPoolSize);
+
+    mNewMountContent = new View(mContext1);
     assertThat(acquireMountContent(mContext1, mLifecycleWithEmptyPoolSize))
         .isSameAs(mNewMountContent);
   }
