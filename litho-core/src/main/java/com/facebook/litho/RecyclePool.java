@@ -17,7 +17,7 @@ import com.facebook.infer.annotation.ThreadSafe;
  * RecyclePool} will keep track of its own size so that it can be queried to debug pool sizes.
  */
 @ThreadSafe(enableChecks = false)
-public class RecyclePool<T> {
+public class RecyclePool<T> implements PoolWithDebugInfo {
   private final String mName;
   private final int mMaxSize;
   private final boolean mIsSync;
@@ -57,14 +57,17 @@ public class RecyclePool<T> {
     }
   }
 
+  @Override
   public String getName() {
     return mName;
   }
 
+  @Override
   public int getMaxSize() {
     return mMaxSize;
   }
 
+  @Override
   public int getCurrentSize() {
     return mCurrentSize;
   }

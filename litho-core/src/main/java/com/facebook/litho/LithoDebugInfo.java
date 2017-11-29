@@ -21,11 +21,9 @@ public final class LithoDebugInfo {
 
   private LithoDebugInfo() {}
 
-  /**
-   * @return A list of active recycling pools used within Litho.
-   */
-  public static List<RecyclePool> getPools() {
-    List<RecyclePool> pools = new ArrayList<>();
+  /** @return a list of active recycling pools used within Litho. */
+  public static List<PoolWithDebugInfo> getPools() {
+    List<PoolWithDebugInfo> pools = new ArrayList<>();
 
     pools.addAll(ComponentsPools.getMountContentPools());
     pools.add(ComponentsPools.sLayoutStatePool);

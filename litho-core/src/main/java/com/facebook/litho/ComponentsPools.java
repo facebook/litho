@@ -667,7 +667,8 @@ public class ComponentsPools {
       MountContentPool pool = poolsArray.get(lifecycle.getTypeId());
       if (pool == null) {
         pool =
-            new MountContentPool(lifecycle.getClass().getSimpleName(), lifecycle.poolSize(), true);
+            new DefaultMountContentPool(
+                lifecycle.getClass().getSimpleName(), lifecycle.poolSize(), true);
         poolsArray.put(lifecycle.getTypeId(), pool);
       }
 

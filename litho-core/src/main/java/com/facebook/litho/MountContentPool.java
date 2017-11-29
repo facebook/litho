@@ -8,55 +8,34 @@
  */
 package com.facebook.litho;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-/** A RecyclePool specific to recycling MountContent. */
-public class MountContentPool extends RecyclePool {
-
-  private final AtomicInteger mAllocationCount = new AtomicInteger(0);
-  private final int mPoolSize;
-
-  public MountContentPool(String name, int maxSize, boolean sync) {
-    super(name, maxSize, sync);
-    mPoolSize = maxSize;
-  }
-
-  public Object acquire(ComponentContext c, ComponentLifecycle lifecycle) {
-    final Object fromPool = super.acquire();
-    if (fromPool != null) {
-      return fromPool;
-    }
-
-    mAllocationCount.incrementAndGet();
-    return lifecycle.createMountContent(c);
-  }
-
-  @Override
-  public Object acquire() {
-    throw new UnsupportedOperationException("Call acquire(ComponentContext, ComponentLifecycle)");
-  }
+/**
+ * A pool dedicated to recycling mount content.
+ *
+ * <p>Note! This class MUST be implemented in a thread safe manner! See info in the javadocs below.
+ */
+public interface MountContentPool<T> extends PoolWithDebugInfo {
 
   /**
-   * Pre-allocates one item for the given ComponentLifecycle if the preallocation count is less than
-   * the pool size, otherwise does nothing.
+   * Return a recycled mount content, or a newly acquired mount content if there isn't one to
+   * recycle. Should not return null.
+   *
+   * <p>NB: This can be called from multiple threads, possibly at the same time!
    */
-  void maybePreallocateContent(ComponentContext c, ComponentLifecycle lifecycle) {
-    final int poolSize = lifecycle.poolSize();
-    if (poolSize != mPoolSize) {
-      throw new RuntimeException(
-          "Expected lifecycle poolSize for "
-              + lifecycle.getClass().getSimpleName()
-              + " to match poolSize of recycle pool ("
-              + poolSize
-              + " != "
-              + mPoolSize
-              + ")");
-    }
+  T acquire(ComponentContext c, ComponentLifecycle lifecycle);
 
-    // There's a slight race between checking isFull and the actual release() but this shouldn't
-    // happen much and when it does it isn't that bad.
-    if (!isFull() && mAllocationCount.getAndIncrement() < poolSize) {
-      release(lifecycle.createMountContent(c));
-    }
-  }
+  /**
+   * Release the given mount content into the pool.
+   *
+   * <p>NB: This can be called from multiple threads, possibly at the same time!
+   */
+  void release(T item);
+
+  /**
+   * Called when a LayoutState that uses this mount content type may be used in the near future. The
+   * pool is given a chance to create mount content and put it in the pool in anticipation of a
+   * acquire call.
+   *
+   * <p>NB: This can be called from multiple threads, possibly at the same time!
+   */
+  void maybePreallocateContent(ComponentContext c, ComponentLifecycle lifecycle);
 }
