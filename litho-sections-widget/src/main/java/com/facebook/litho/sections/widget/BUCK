@@ -17,12 +17,12 @@ android_library(
         COMPONENTS_PROCESSOR_TARGET,
         COMPONENTS_SECTIONS_PROCESSOR_TARGET,
     ],
-    visibility = [
-        "PUBLIC",
-    ],
     provided_deps = [
         COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
         COMPONENTS_ANNOTATIONS_TARGET,
+    ],
+    visibility = [
+        "PUBLIC",
     ],
     deps = [
         COMPONENTS_SECTIONS_TARGET,
