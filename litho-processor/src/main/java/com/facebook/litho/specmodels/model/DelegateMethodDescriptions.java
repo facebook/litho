@@ -30,7 +30,6 @@ import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.annotations.OnCreateLayoutExperimentalDoNotUse;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnCreateMountContentPool;
@@ -100,24 +99,6 @@ public final class DelegateMethodDescriptions {
                   .returns(TypeName.BOOLEAN)
                   .addStatement("return true")
                   .build()))
-          .build();
-
-  public static final DelegateMethodDescription ON_CREATE_LAYOUT_EXPERIMENTAL =
-      DelegateMethodDescription.newBuilder()
-          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
-          .accessType(Modifier.PROTECTED)
-          .returnType(ClassNames.COMPONENT)
-          .name("onCreateLayoutExperimental")
-          .definedParameterTypes(ImmutableList.of(ClassNames.COMPONENT_CONTEXT))
-          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE))
-          .extraMethods(
-              ImmutableList.of(
-                  MethodSpec.methodBuilder("hasExperimentalOnCreateLayout")
-                      .addAnnotation(Override.class)
-                      .addModifiers(Modifier.PROTECTED)
-                      .returns(TypeName.BOOLEAN)
-                      .addStatement("return true")
-                      .build()))
           .build();
 
   public static final DelegateMethodDescription ON_CREATE_INITIAL_STATE =
@@ -410,8 +391,6 @@ public final class DelegateMethodDescriptions {
     layoutSpecDelegateMethodsMap.put(OnCreateLayout.class, ON_CREATE_LAYOUT);
     layoutSpecDelegateMethodsMap.put(
         OnCreateLayoutWithSizeSpec.class, ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
-    layoutSpecDelegateMethodsMap.put(
-        OnCreateLayoutExperimentalDoNotUse.class, ON_CREATE_LAYOUT_EXPERIMENTAL);
     layoutSpecDelegateMethodsMap.put(OnCreateInitialState.class, ON_CREATE_INITIAL_STATE);
     layoutSpecDelegateMethodsMap.put(
         OnCreateTransition.class, ON_CREATE_TRANSITION);

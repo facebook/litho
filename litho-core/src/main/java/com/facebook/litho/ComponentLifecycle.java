@@ -254,12 +254,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
           context.getWidthSpec(),
           context.getHeightSpec(),
           component);
-    } else if (Component.isLayoutSpecWithExperimentalOnCreateLayout(component)) {
-      Component<?> layoutComponent = onCreateLayoutExperimental(context, component);
-      node =
-          layoutComponent == null
-              ? null
-              : (InternalNode) layoutComponent.getLifecycle().resolve(context, layoutComponent);
     } else {
       node = (InternalNode) onCreateLayout(context, component);
     }
@@ -380,25 +374,12 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return Column.create(c).build();
   }
 
-  protected Component<?> onCreateLayoutExperimental(ComponentContext c, Component<?> component) {
-    return component;
-  }
-
   protected ComponentLayout onCreateLayoutWithSizeSpec(
       ComponentContext c,
       int widthSpec,
       int heightSpec,
       Component<?> component) {
     return Column.create(c).build();
-  }
-
-  /**
-   * Currently only used for {@link Component}s that use {@link
-   * com.facebook.litho.annotations.OnCreateLayoutExperimentalDoNotUse}. Therefore this is
-   * experimental and you should not experiment to have to implement it at this stage.
-   */
-  protected ComponentLayout resolve(ComponentContext c, Component<?> component) {
-    return createLayout(c, component, false);
   }
 
   protected void onPrepare(ComponentContext c, Component<?> component) {
@@ -441,10 +422,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * to specific size constraints.
    */
   protected boolean canMeasure() {
-    return false;
-  }
-
-  protected boolean hasExperimentalOnCreateLayout() {
     return false;
   }
 

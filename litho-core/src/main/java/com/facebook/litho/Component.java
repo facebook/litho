@@ -362,10 +362,6 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     return (isLayoutSpec(component) && component.canMeasure());
   }
 
-  static boolean isLayoutSpecWithExperimentalOnCreateLayout(Component<?> component) {
-    return (isLayoutSpec(component) && component.hasExperimentalOnCreateLayout());
-  }
-
   static boolean isNestedTree(Component<?> component) {
     return (isLayoutSpecWithSizeSpec(component)
         || (component != null && component.hasCachedLayout()));

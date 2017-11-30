@@ -68,29 +68,6 @@ public class LayoutStateCreateTreeTest {
   }
 
   @Test
-  public void testSimpleExperimentalLayoutCreatesExpectedInternalNodeTree() {
-    final Component component =
-        new InlineLayoutSpecWithExperimentalOnCreateLayout() {
-          @Override
-          protected Component<?> onCreateLayoutExperimental(final ComponentContext c) {
-            return ColumnExperimental.create(c)
-                .child(ColumnExperimental.create(c).child(TestDrawableComponent.create(c)))
-                .build();
-          }
-        };
-
-    InternalNode node = LayoutState.createTree(component, mComponentContext);
-    assertThat(node.getChildCount()).isEqualTo(1);
-    assertThat(node.getRootComponent()).isEqualTo(component);
-    node = node.getChildAt(0);
-    assertThat(node.getChildCount()).isEqualTo(1);
-    assertThat(node.getRootComponent()).isInstanceOf(ColumnExperimental.class);
-    node = node.getChildAt(0);
-    assertThat(node.getChildCount()).isEqualTo(0);
-    assertThat(node.getRootComponent().getLifecycle()).isInstanceOf(TestDrawableComponent.class);
-  }
-
-  @Test
   public void testHandlersAreAppliedToCorrectInternalNodes() {
     final EventHandler<ClickEvent> clickHandler1 = mock(EventHandler.class);
     final EventHandler<ClickEvent> clickHandler2 = mock(EventHandler.class);
@@ -115,74 +92,6 @@ public class LayoutStateCreateTreeTest {
             return Column.create(c)
                 .child(
                     Column.create(c)
-                        .child(
-                            TestDrawableComponent.create(c)
-                                .clickHandler(clickHandler1)
-                                .longClickHandler(longClickHandler1)
-                                .touchHandler(touchHandler1)
-                                .interceptTouchHandler(interceptTouchHandler1)
-                                .focusChangeHandler(focusChangedHandler1))
-                        .clickHandler(clickHandler2)
-                        .longClickHandler(longClickHandler2)
-                        .touchHandler(touchHandler2)
-                        .interceptTouchHandler(interceptTouchHandler2)
-                        .focusChangeHandler(focusChangedHandler2))
-                .clickHandler(clickHandler3)
-                .longClickHandler(longClickHandler3)
-                .touchHandler(touchHandler3)
-                .interceptTouchHandler(interceptTouchHandler3)
-                .focusChangeHandler(focusChangedHandler3)
-                .build();
-          }
-        };
-
-    InternalNode node = LayoutState.createTree(component, mComponentContext);
-    assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler3);
-    assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler3);
-    assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler3);
-    assertThat(node.getNodeInfo().getInterceptTouchHandler()).isEqualTo(interceptTouchHandler3);
-    assertThat(node.getNodeInfo().getFocusChangeHandler()).isEqualTo(focusChangedHandler3);
-
-    node = node.getChildAt(0);
-    assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
-    assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler2);
-    assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler2);
-    assertThat(node.getNodeInfo().getInterceptTouchHandler()).isEqualTo(interceptTouchHandler2);
-    assertThat(node.getNodeInfo().getFocusChangeHandler()).isEqualTo(focusChangedHandler2);
-
-    node = node.getChildAt(0);
-    assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler1);
-    assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler1);
-    assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler1);
-    assertThat(node.getNodeInfo().getInterceptTouchHandler()).isEqualTo(interceptTouchHandler1);
-    assertThat(node.getNodeInfo().getFocusChangeHandler()).isEqualTo(focusChangedHandler1);
-  }
-
-  @Test
-  public void testHandlersAreAppliedToCorrectInternalNodesExperimental() {
-    final EventHandler<ClickEvent> clickHandler1 = mock(EventHandler.class);
-    final EventHandler<ClickEvent> clickHandler2 = mock(EventHandler.class);
-    final EventHandler<ClickEvent> clickHandler3 = mock(EventHandler.class);
-    final EventHandler<LongClickEvent> longClickHandler1 = mock(EventHandler.class);
-    final EventHandler<LongClickEvent> longClickHandler2 = mock(EventHandler.class);
-    final EventHandler<LongClickEvent> longClickHandler3 = mock(EventHandler.class);
-    final EventHandler<TouchEvent> touchHandler1 = mock(EventHandler.class);
-    final EventHandler<TouchEvent> touchHandler2 = mock(EventHandler.class);
-    final EventHandler<TouchEvent> touchHandler3 = mock(EventHandler.class);
-    final EventHandler<InterceptTouchEvent> interceptTouchHandler1 = mock(EventHandler.class);
-    final EventHandler<InterceptTouchEvent> interceptTouchHandler2 = mock(EventHandler.class);
-    final EventHandler<InterceptTouchEvent> interceptTouchHandler3 = mock(EventHandler.class);
-    final EventHandler<FocusChangedEvent> focusChangedHandler1 = mock(EventHandler.class);
-    final EventHandler<FocusChangedEvent> focusChangedHandler2 = mock(EventHandler.class);
-    final EventHandler<FocusChangedEvent> focusChangedHandler3 = mock(EventHandler.class);
-
-    final Component component =
-        new InlineLayoutSpecWithExperimentalOnCreateLayout() {
-          @Override
-          protected Component<?> onCreateLayoutExperimental(final ComponentContext c) {
-            return ColumnExperimental.create(c)
-                .child(
-                    ColumnExperimental.create(c)
                         .child(
                             TestDrawableComponent.create(c)
                                 .clickHandler(clickHandler1)
@@ -339,55 +248,6 @@ public class LayoutStateCreateTreeTest {
     assertThat(node.getChildCount()).isEqualTo(0);
     assertThat(node.getRootComponent().getLifecycle()).isInstanceOf(TestDrawableComponent.class);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
-    assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler2);
-    assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler2);
-    assertThat(node.getNodeInfo().getInterceptTouchHandler()).isEqualTo(interceptTouchHandler2);
-    assertThat(node.getNodeInfo().getFocusChangeHandler()).isEqualTo(focusChangedHandler2);
-  }
-
-  @Test
-  public void testOverridingHandlersExperimental() {
-    final EventHandler<ClickEvent> clickHandler1 = mock(EventHandler.class);
-    final EventHandler<ClickEvent> clickHandler2 = mock(EventHandler.class);
-    final EventHandler<LongClickEvent> longClickHandler1 = mock(EventHandler.class);
-    final EventHandler<LongClickEvent> longClickHandler2 = mock(EventHandler.class);
-    final EventHandler<TouchEvent> touchHandler1 = mock(EventHandler.class);
-    final EventHandler<TouchEvent> touchHandler2 = mock(EventHandler.class);
-    final EventHandler<InterceptTouchEvent> interceptTouchHandler1 = mock(EventHandler.class);
-    final EventHandler<InterceptTouchEvent> interceptTouchHandler2 = mock(EventHandler.class);
-    final EventHandler<FocusChangedEvent> focusChangedHandler1 = mock(EventHandler.class);
-    final EventHandler<FocusChangedEvent> focusChangedHandler2 = mock(EventHandler.class);
-
-    final Component component =
-        new InlineLayoutSpecWithExperimentalOnCreateLayout() {
-          @Override
-          protected Component<?> onCreateLayoutExperimental(final ComponentContext c) {
-            return LayoutExperimental.create(c)
-                .delegate(
-                    new InlineLayoutSpecWithExperimentalOnCreateLayout() {
-                      @Override
-                      protected Component<?> onCreateLayoutExperimental(ComponentContext c) {
-                        return TestDrawableComponent.create(c)
-                            .clickHandler(clickHandler1)
-                            .longClickHandler(longClickHandler1)
-                            .touchHandler(touchHandler1)
-                            .interceptTouchHandler(interceptTouchHandler1)
-                            .focusChangeHandler(focusChangedHandler1)
-                            .build();
-                      }
-                    })
-                .longClickHandler(longClickHandler2)
-                .touchHandler(touchHandler2)
-                .interceptTouchHandler(interceptTouchHandler2)
-                .focusChangeHandler(focusChangedHandler2)
-                .build();
-          }
-        };
-
-    InternalNode node = LayoutState.createTree(component, mComponentContext);
-    assertThat(node.getChildCount()).isEqualTo(0);
-    assertThat(node.getComponents().get(0)).isInstanceOf(TestDrawableComponent.class);
-    assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler1);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler2);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler2);
     assertThat(node.getNodeInfo().getInterceptTouchHandler()).isEqualTo(interceptTouchHandler2);
@@ -712,27 +572,5 @@ public class LayoutStateCreateTreeTest {
         return mComponent;
       }
     }
-  }
-
-  public abstract class InlineLayoutSpecWithExperimentalOnCreateLayout
-      extends Component<InlineLayoutSpecWithExperimentalOnCreateLayout> {
-
-    @Override
-    protected Component<?> onCreateLayoutExperimental(ComponentContext c, Component<?> component) {
-      return ((InlineLayoutSpecWithExperimentalOnCreateLayout) component)
-          .onCreateLayoutExperimental(c);
-    }
-
-    @Override
-    protected boolean hasExperimentalOnCreateLayout() {
-      return true;
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "InlineLayout";
-    }
-
-    protected abstract Component<?> onCreateLayoutExperimental(ComponentContext c);
   }
 }
