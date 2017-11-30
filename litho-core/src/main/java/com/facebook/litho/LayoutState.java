@@ -1161,7 +1161,7 @@ class LayoutState {
     if (isTracing) {
       ComponentsSystrace.beginSection("preAllocateMountContent:" + mComponent.getSimpleName());
     }
-
+    
     if (mMountableOutputs != null && !mMountableOutputs.isEmpty()) {
       for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
         final Component component = mMountableOutputs.get(i).getComponent();

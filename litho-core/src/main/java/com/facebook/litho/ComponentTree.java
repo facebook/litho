@@ -115,6 +115,7 @@ public class ComponentTree {
     }
   };
 
+  private final boolean mCanPreallocateOnDefaultHandler;
   private final boolean mShouldPreallocatePerMountSpec;
   private final Runnable mPreAllocateMountContentRunnable =
       new Runnable() {
@@ -222,6 +223,8 @@ public class ComponentTree {
     mLayoutThreadHandler = builder.layoutThreadHandler;
     mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
     mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
+    mCanPreallocateOnDefaultHandler = builder.canPreallocateOnDefaultHandler;
+
     mLayoutLock = builder.layoutLock;
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
     mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
@@ -234,9 +237,7 @@ public class ComponentTree {
       mLayoutThreadHandler = new DefaultLayoutHandler(getDefaultLayoutThreadLooper());
     }
 
-    if (mPreAllocateMountContentHandler == null
-        && ComponentsConfiguration.getDefaultPreallocateMountContentHandler()
-        && mShouldPreallocatePerMountSpec) {
+    if (mPreAllocateMountContentHandler == null && mCanPreallocateOnDefaultHandler) {
       mPreAllocateMountContentHandler =
           new DefaultPreallocateMountContentHandler(
               getDefaultPreallocateMountContentThreadLooper());
@@ -1598,6 +1599,7 @@ public class ComponentTree {
     private boolean hasMounted = false;
     private MeasureListener mMeasureListener;
     private boolean shouldPreallocatePerMountSpec;
+    private boolean canPreallocateOnDefaultHandler;
 
     protected Builder() {
     }
@@ -1681,6 +1683,16 @@ public class ComponentTree {
      */
     public Builder shouldPreallocateMountContentPerMountSpec(boolean preallocatePerMountSpec) {
       shouldPreallocatePerMountSpec = preallocatePerMountSpec;
+      return this;
+    }
+
+    /**
+     * If true, mount content preallocation will use a default layout handler to preallocate mount
+     * content on a background thread if no other layout handler is provided through {@link
+     * ComponentTree.Builder#preAllocateMountContentHandler(LayoutHandler)}.
+     */
+    public Builder preallocateOnDefaultHandler(boolean preallocateOnDefaultHandler) {
+      canPreallocateOnDefaultHandler = preallocateOnDefaultHandler;
       return this;
     }
 
