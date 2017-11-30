@@ -50,6 +50,8 @@ public class ComponentTreeHolder {
   private boolean mCanPrefetchDisplayLists;
   private boolean mCanCacheDrawingDisplayLists;
   private LayoutHandler mPreallocateMountContentHandler;
+  private boolean mCanPreallocateOnDefaultHandler;
+  private boolean mShouldPreallocatePerMountSpec;
 
   interface ComponentTreeMeasureListenerFactory {
     MeasureListener create(ComponentTreeHolder holder);
@@ -65,7 +67,9 @@ public class ComponentTreeHolder {
         layoutHandler,
         canPrefetchDisplayLists,
         canCacheDrawingDisplayLists,
-        null,
+        null, /* preallocateMountContentHandler */
+        false, /* canPreallocateOnDefaultHandler */
+        false, /* shouldPreallocatePerMountSpec */
         null);
   }
 
@@ -80,7 +84,9 @@ public class ComponentTreeHolder {
         layoutHandler,
         canPrefetchDisplayLists,
         canCacheDrawingDisplayLists,
-        null,
+        null, /* preallocateMountContentHandler */
+        false, /* canPreallocateOnDefaultHandler */
+        false, /* shouldPreallocatePerMountSpec */
         componentTreeMeasureListenerFactory);
   }
 
@@ -89,13 +95,17 @@ public class ComponentTreeHolder {
       LayoutHandler layoutHandler,
       boolean canPrefetchDisplayLists,
       boolean canCacheDrawingDisplayLists,
-      @Nullable LayoutHandler preallocateMountContentHandler) {
+      @Nullable LayoutHandler preallocateMountContentHandler,
+      boolean canPreallocateOnDefaultHandler,
+      boolean shouldPreallocatePerMountSpec) {
     return acquire(
         renderInfo,
         layoutHandler,
         canPrefetchDisplayLists,
         canCacheDrawingDisplayLists,
         preallocateMountContentHandler,
+        canPreallocateOnDefaultHandler,
+        shouldPreallocatePerMountSpec,
         null);
   }
 
@@ -105,6 +115,8 @@ public class ComponentTreeHolder {
       boolean canPrefetchDisplayLists,
       boolean canCacheDrawingDisplayLists,
       @Nullable LayoutHandler preallocateMountContentHandler,
+      boolean canPreallocateOnDefaultHandler,
+      boolean shouldPreallocatePerMountSpec,
       final ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory) {
     ComponentTreeHolder componentTreeHolder = sComponentTreeHoldersPool.acquire();
     if (componentTreeHolder == null) {
@@ -115,6 +127,8 @@ public class ComponentTreeHolder {
     componentTreeHolder.mCanPrefetchDisplayLists = canPrefetchDisplayLists;
     componentTreeHolder.mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
     componentTreeHolder.mPreallocateMountContentHandler = preallocateMountContentHandler;
+    componentTreeHolder.mCanPreallocateOnDefaultHandler = canPreallocateOnDefaultHandler;
+    componentTreeHolder.mShouldPreallocatePerMountSpec = shouldPreallocatePerMountSpec;
     componentTreeHolder.mComponentTreeMeasureListenerFactory = componentTreeMeasureListenerFactory;
 
     return componentTreeHolder;
@@ -221,6 +235,9 @@ public class ComponentTreeHolder {
     mLayoutHandler = null;
     mCanPrefetchDisplayLists = false;
     mCanCacheDrawingDisplayLists = false;
+    mPreallocateMountContentHandler = null;
+    mShouldPreallocatePerMountSpec = false;
+    mCanPreallocateOnDefaultHandler = false;
     sComponentTreeHoldersPool.release(this);
   }
 
@@ -229,7 +246,6 @@ public class ComponentTreeHolder {
     if (mComponentTree == null) {
       final Object clipChildrenAttr = mRenderInfo.getCustomAttribute(RenderInfo.CLIP_CHILDREN);
       final boolean clipChildren = clipChildrenAttr == null ? true : (boolean) clipChildrenAttr;
-
       mComponentTree =
           ComponentTree.create(context, mRenderInfo.getComponent())
               .layoutThreadHandler(mLayoutHandler)
@@ -238,6 +254,8 @@ public class ComponentTreeHolder {
               .canCacheDrawingDisplayLists(mCanCacheDrawingDisplayLists)
               .shouldClipChildren(clipChildren)
               .preAllocateMountContentHandler(mPreallocateMountContentHandler)
+              .preallocateOnDefaultHandler(mCanPreallocateOnDefaultHandler)
+              .shouldPreallocateMountContentPerMountSpec(mShouldPreallocatePerMountSpec)
               .measureListener(
                   mComponentTreeMeasureListenerFactory == null
                       ? null
