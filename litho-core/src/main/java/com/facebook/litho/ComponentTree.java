@@ -38,6 +38,7 @@ import android.view.ViewParent;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -113,12 +114,15 @@ public class ComponentTree {
       calculateLayout(null);
     }
   };
-  private final Runnable mPreAllocateMountContentRunnable = new Runnable() {
-    @Override
-    public void run() {
-      preAllocateMountContent();
-    }
-  };
+
+  private final boolean mShouldPreallocatePerMountSpec;
+  private final Runnable mPreAllocateMountContentRunnable =
+      new Runnable() {
+        @Override
+        public void run() {
+          preAllocateMountContent(mShouldPreallocatePerMountSpec);
+        }
+      };
 
   private final Runnable mUpdateStateSyncRunnable = new Runnable() {
     @Override
@@ -216,6 +220,7 @@ public class ComponentTree {
     mIncrementalMountEnabled = builder.incrementalMountEnabled;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mLayoutThreadHandler = builder.layoutThreadHandler;
+    mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
     mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
     mLayoutLock = builder.layoutLock;
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
@@ -777,7 +782,7 @@ public class ComponentTree {
    * created.
    */
   @ThreadSafe(enableChecks = false)
-  private void preAllocateMountContent() {
+  private void preAllocateMountContent(boolean shouldPreallocatePerMountSpec) {
     final LayoutState toPrePopulate;
 
     synchronized (this) {
@@ -799,7 +804,7 @@ public class ComponentTree {
       event.addParam(PARAM_LOG_TAG, mContext.getLogTag());
     }
 
-    toPrePopulate.preAllocateMountContent();
+    toPrePopulate.preAllocateMountContent(shouldPreallocatePerMountSpec);
 
     if (logger != null) {
       logger.log(event);
@@ -1591,6 +1596,7 @@ public class ComponentTree {
     private boolean shouldClipChildren = true;
     private boolean hasMounted = false;
     private MeasureListener mMeasureListener;
+    private boolean shouldPreallocatePerMountSpec;
 
     protected Builder() {
     }
@@ -1664,6 +1670,16 @@ public class ComponentTree {
     /** Specify the handler for to preAllocateMountContent */
     public Builder preAllocateMountContentHandler(LayoutHandler handler) {
       preAllocateMountContentHandler = handler;
+      return this;
+    }
+
+    /**
+     * If true, this ComponentTree will only preallocate mount specs that are enabled for
+     * preallocation with {@link MountSpec#canPreallocate()}. If false, it preallocates all mount
+     * content.
+     */
+    public Builder shouldPreallocateMountContentPerMountSpec(boolean preallocatePerMountSpec) {
+      shouldPreallocatePerMountSpec = preallocatePerMountSpec;
       return this;
     }
 

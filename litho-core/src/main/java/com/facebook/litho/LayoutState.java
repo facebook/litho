@@ -1156,7 +1156,7 @@ class LayoutState {
   }
 
   @ThreadSafe(enableChecks = false)
-  void preAllocateMountContent() {
+  void preAllocateMountContent(boolean shouldPreallocatePerMountSpec) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("preAllocateMountContent:" + mComponent.getSimpleName());
@@ -1166,8 +1166,7 @@ class LayoutState {
       for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
         final Component component = mMountableOutputs.get(i).getComponent();
 
-        if (ComponentsConfiguration.preallocatePerMountSpec
-            && !component.getLifecycle().canPreallocate()) {
+        if (shouldPreallocatePerMountSpec && !component.canPreallocate()) {
           continue;
         }
 
@@ -1178,7 +1177,7 @@ class LayoutState {
 
           if (ComponentsConfiguration.preallocateComponentHosts
               || !(component instanceof HostComponent)) {
-            ComponentsPools.maybePreallocateContent(mContext, component.getLifecycle());
+            ComponentsPools.maybePreallocateContent(mContext, component);
           }
 
           if (isTracing) {
