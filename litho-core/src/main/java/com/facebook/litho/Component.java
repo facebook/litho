@@ -394,21 +394,23 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     return true;
   }
 
-  /**
-   * Prepares a component for calling any pending state updates on it by setting a global key,
-   * setting the TreeProps which the component requires from its parent,
-   * setting a scoped component context and applies the pending state updates.
-   * @param c component context
-   */
-  void applyStateUpdates(ComponentContext c) {
-
+  void generateKey(ComponentContext c) {
     if (ComponentsConfiguration.useGlobalKeys) {
       final Component<?> parentScope = c.getComponentScope();
       final String key = getKey();
       setGlobalKey(
           parentScope == null ? key : parentScope.generateUniqueGlobalKeyForChild(this, key));
     }
+  }
 
+  /**
+   * Prepares a component for calling any pending state updates on it by setting the TreeProps which
+   * the component requires from its parent, setting a scoped component context and applies the
+   * pending state updates.
+   *
+   * @param c component context
+   */
+  void applyStateUpdates(ComponentContext c) {
     setScopedContext(ComponentContext.withComponentScope(c, this));
 
     getLifecycle().populateTreeProps(this, getScopedContext().getTreeProps());

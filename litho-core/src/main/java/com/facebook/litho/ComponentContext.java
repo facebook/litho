@@ -292,6 +292,7 @@ public class ComponentContext extends ContextWrapper {
       Component<?> component,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes) {
+    component.generateKey(this);
     component.applyStateUpdates(this);
 
     final InternalNode node = (InternalNode) component.getLifecycle().createLayout(

@@ -1546,6 +1546,7 @@ class LayoutState {
       int heightSpec,
       DiffNode diffTreeRoot) {
 
+    component.generateKey(c);
     component.applyStateUpdates(c);
     c = component.getScopedContext();
 
