@@ -87,7 +87,7 @@ mkFakeMavenSettings
 mkFakeMavenSettings = do
   mavenTmp <- using (mktempdir "/tmp" "fbm2")
   output (mavenTmp </> "settings.xml") $
-    "<settings>" <|> "</settings>"
+    "<settings>" <|> ("<localRepository>" <> pure (unsafeTextToLine (format fp mavenTmp)) <>  "</localRepository>") <|> "</settings>"
   return mavenTmp
 
 parseMvnArtifact :: Text -> Either Text MvnArtifact
