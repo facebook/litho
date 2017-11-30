@@ -235,7 +235,8 @@ public class ComponentTree {
     }
 
     if (mPreAllocateMountContentHandler == null
-        && ComponentsConfiguration.getDefaultPreallocateMountContentHandler()) {
+        && ComponentsConfiguration.getDefaultPreallocateMountContentHandler()
+        && mShouldPreallocatePerMountSpec) {
       mPreAllocateMountContentHandler =
           new DefaultPreallocateMountContentHandler(
               getDefaultPreallocateMountContentThreadLooper());

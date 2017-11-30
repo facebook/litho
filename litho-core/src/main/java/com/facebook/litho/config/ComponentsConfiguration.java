@@ -106,13 +106,6 @@ public class ComponentsConfiguration {
   public static boolean setRootAsyncRecyclerCollectionComponent = false;
 
   /**
-   * If false, we preallocate all mount specs in a ComponentTree if it sets a preallocation handler.
-   * If true, we use {@link com.facebook.litho.annotations.MountSpec#canPreallocate()} to determine
-   * for each MountSpec if it should be preallocated or not.
-   */
-  public static boolean preallocatePerMountSpec = false;
-
-  /**
    * If true, the ComponentTree provides a default handler for performing preallocation if none is
    * provided. If false, the ComponentTree will not perform preallocation if no handler is provided
    * to the ComponentTree.Builder. This is overriden to false if preallocatePerMountSpec is false.
@@ -124,7 +117,7 @@ public class ComponentsConfiguration {
   }
 
   public static boolean getDefaultPreallocateMountContentHandler() {
-    return defaultPreallocateMountContentHandler && preallocatePerMountSpec;
+    return defaultPreallocateMountContentHandler;
   }
 
   /**
