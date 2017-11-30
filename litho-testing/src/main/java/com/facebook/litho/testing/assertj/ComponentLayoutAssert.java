@@ -43,7 +43,7 @@ public final class ComponentLayoutAssert
    * </code> method returns a {@link ComponentContext#NULL_LAYOUT}.
    */
   public ComponentLayoutAssert wontRender() {
-    Java6Assertions.assertThat(Component.willRender(actual))
+    Java6Assertions.assertThat(Component.willRender(mContext, actual))
         .overridingErrorMessage("Expected Component to render to null, but it did not.")
         .isFalse();
 
@@ -51,7 +51,7 @@ public final class ComponentLayoutAssert
   }
 
   public ComponentLayoutAssert willRender() {
-    Java6Assertions.assertThat(Component.willRender(actual))
+    Java6Assertions.assertThat(Component.willRender(mContext, actual))
         .overridingErrorMessage("Expected Component to not render to null, but it did.")
         .isTrue();
 

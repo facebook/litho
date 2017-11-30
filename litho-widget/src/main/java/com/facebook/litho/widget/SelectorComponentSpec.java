@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * Selects the first Component that will render by calling {@link
- * com.facebook.litho.Component#willRender(ComponentLayout)} on the Components provided.
+ * Component#willRender(ComponentContext, ComponentLayout)} on the Components provided.
  *
  * <p>This is useful when a single Component is to be rendered amongst a large number of candidate
  * Components or when multiple Components can potentially render some content using the same props
@@ -39,7 +39,7 @@ class SelectorComponentSpec {
 
     for (int i = 0; i < components.size(); i++) {
       final ComponentLayout layout = Wrapper.create(c).delegate(components.get(i)).build();
-      if (Component.willRender(layout)) {
+      if (Component.willRender(c, layout)) {
         return layout;
       }
     }

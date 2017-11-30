@@ -372,7 +372,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
    *     implementation of onCreateLayout, based on its current props and state. Returns true if the
    *     component returns non-null, otherwise false.
    */
-  public static boolean willRender(ComponentLayout componentLayout) {
+  public static boolean willRender(ComponentContext c, ComponentLayout componentLayout) {
     if (componentLayout == null || ComponentContext.NULL_LAYOUT.equals(componentLayout)) {
       return false;
     }

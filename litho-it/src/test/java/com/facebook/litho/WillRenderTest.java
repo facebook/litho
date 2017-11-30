@@ -75,6 +75,6 @@ public class WillRenderTest {
     mExpectedException.expectMessage("@OnCreateLayoutWithSizeSpec");
 
     ComponentContext c = new ComponentContext(application);
-    Component.willRender(Wrapper.create(c).delegate(mLayoutWithSizeSpec).build());
+    Component.willRender(c, Wrapper.create(c).delegate(mLayoutWithSizeSpec).build());
   }
 }
