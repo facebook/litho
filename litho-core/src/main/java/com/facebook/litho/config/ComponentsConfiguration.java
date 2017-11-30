@@ -106,21 +106,6 @@ public class ComponentsConfiguration {
   public static boolean setRootAsyncRecyclerCollectionComponent = false;
 
   /**
-   * If true, the ComponentTree provides a default handler for performing preallocation if none is
-   * provided. If false, the ComponentTree will not perform preallocation if no handler is provided
-   * to the ComponentTree.Builder. This is overriden to false if preallocatePerMountSpec is false.
-   */
-  private static boolean defaultPreallocateMountContentHandler;
-
-  public static void setDefaultPreallocateMountContentHandler(boolean enableDefault) {
-    defaultPreallocateMountContentHandler = enableDefault;
-  }
-
-  public static boolean getDefaultPreallocateMountContentHandler() {
-    return defaultPreallocateMountContentHandler;
-  }
-
-  /**
    * Don't call RecyclerView.Adapter#notifyItemChanged/notifyItemRangeChanged for rows rendered with
    * components in sections if this is true.
    */
