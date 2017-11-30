@@ -60,13 +60,13 @@ public class WillRenderTest {
   @Test
   public void testWillRenderForComponentThatReturnsNull() {
     ComponentContext c = new ComponentContext(application);
-    assertThat(Wrapper.create(c).delegate(mNullSpec).build()).wontRender();
+    assertThat(c, Wrapper.create(c).delegate(mNullSpec).build()).wontRender();
   }
 
   @Test
   public void testWillRenderForComponentThatReturnsNonNull() {
     ComponentContext c = new ComponentContext(application);
-    assertThat(Wrapper.create(c).delegate(mNonNullSpec).build()).willRender();
+    assertThat(c, Wrapper.create(c).delegate(mNonNullSpec).build()).willRender();
   }
 
   @Test

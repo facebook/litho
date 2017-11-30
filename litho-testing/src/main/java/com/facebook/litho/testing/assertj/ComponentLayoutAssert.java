@@ -20,17 +20,22 @@ import org.assertj.core.api.Java6Assertions;
  *
  * <p>
  *  To create an instance of this class, invoke
- * <code>{@link ComponentLayoutAssert#assertThat(ComponentLayout)}
+ * <code>{@link ComponentLayoutAssert#assertThat(ComponentContext, ComponentLayout)}
  */
 public final class ComponentLayoutAssert
     extends AbstractAssert<ComponentLayoutAssert, ComponentLayout> {
 
-  public static ComponentLayoutAssert assertThat(ComponentLayout componentLayout) {
-    return new ComponentLayoutAssert(componentLayout);
+  private final ComponentContext mContext;
+
+  public static ComponentLayoutAssert assertThat(
+      ComponentContext c, ComponentLayout componentLayout) {
+    return new ComponentLayoutAssert(c, componentLayout);
   }
 
-  private ComponentLayoutAssert(ComponentLayout actual) {
+  private ComponentLayoutAssert(ComponentContext c, ComponentLayout actual) {
     super(actual, ComponentLayoutAssert.class);
+
+    mContext = c;
   }
 
   /**

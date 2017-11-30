@@ -251,7 +251,8 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    * </code> method returns a {@link ComponentContext#NULL_LAYOUT}.
    */
   public ComponentAssert wontRender() {
-    ComponentLayoutAssert.assertThat(Wrapper.create(mComponentContext).delegate(actual).build())
+    ComponentLayoutAssert.assertThat(
+            mComponentContext, Wrapper.create(mComponentContext).delegate(actual).build())
         .wontRender();
 
     return this;
@@ -262,7 +263,8 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    * ComponentContext#NULL_LAYOUT}.
    */
   public ComponentAssert willRender() {
-    ComponentLayoutAssert.assertThat(Wrapper.create(mComponentContext).delegate(actual).build())
+    ComponentLayoutAssert.assertThat(
+            mComponentContext, Wrapper.create(mComponentContext).delegate(actual).build())
         .willRender();
 
     return this;

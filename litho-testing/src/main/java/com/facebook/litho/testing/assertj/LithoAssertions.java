@@ -38,7 +38,8 @@ public class LithoAssertions extends Java6Assertions {
   }
 
   @CheckReturnValue
-  public static ComponentLayoutAssert assertThat(ComponentLayout componentLayout) {
-    return ComponentLayoutAssert.assertThat(componentLayout);
+  public static ComponentLayoutAssert assertThat(
+      ComponentContext c, ComponentLayout componentLayout) {
+    return ComponentLayoutAssert.assertThat(c, componentLayout);
   }
 }
