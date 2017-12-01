@@ -514,11 +514,18 @@ public class ComponentTree {
         location[0], location[1], location[0] + view.getWidth(), location[1] + view.getHeight());
   }
 
-  /** @see LayoutState#hasLithoViewBoundsAnimation() */
+  /** @see LayoutState#hasLithoViewWidthAnimation() */
   @ThreadConfined(ThreadConfined.UI)
-  boolean hasLithoViewBoundsAnimation() {
+  boolean hasLithoViewWidthAnimation() {
     assertMainThread();
-    return mMainThreadLayoutState != null && mMainThreadLayoutState.hasLithoViewBoundsAnimation();
+    return mMainThreadLayoutState != null && mMainThreadLayoutState.hasLithoViewWidthAnimation();
+  }
+
+  /** @see LayoutState#hasLithoViewHeightAnimation() */
+  @ThreadConfined(ThreadConfined.UI)
+  boolean hasLithoViewHeightAnimation() {
+    assertMainThread();
+    return mMainThreadLayoutState != null && mMainThreadLayoutState.hasLithoViewHeightAnimation();
   }
 
   void mountComponent(Rect currentVisibleArea, boolean processVisibilityOutputs) {

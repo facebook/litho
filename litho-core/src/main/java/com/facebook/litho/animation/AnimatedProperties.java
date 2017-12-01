@@ -157,7 +157,25 @@ public final class AnimatedProperties {
 
     @Override
     public void set(Object mountContent, float value) {
-      throw new UnsupportedOperationException("Setting width in animations is not supported yet.");
+      if (mountContent instanceof ComponentHost) {
+        final ComponentHost view = (ComponentHost) mountContent;
+        if (view instanceof LithoView) {
+          ((LithoView) view).setAnimatedWidth((int) value);
+        } else {
+          final int left = view.getLeft();
+          BoundsHelper.applyBoundsToView(
+              view, left, view.getTop(), (int) (left + value), view.getBottom(), false);
+        }
+
+        final Drawable animatingMountItem = view.getLinkedDrawableForAnimation();
+        if (animatingMountItem != null) {
+          BoundsHelper.applySizeToDrawableForAnimation(
+              animatingMountItem, (int) (value), view.getHeight());
+        }
+      } else {
+        throw new UnsupportedOperationException(
+            "Setting width on unsupported mount content: " + mountContent);
+      }
     }
 
     @Override

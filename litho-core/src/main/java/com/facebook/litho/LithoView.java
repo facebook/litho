@@ -50,6 +50,7 @@ public class LithoView extends ComponentHost {
   private boolean mSuppressMeasureComponentTree;
   private boolean mIsMeasuring = false;
   private boolean mHasNewComponentTree = false;
+  private int mAnimatedWidth = -1;
   private int mAnimatedHeight = -1;
   private OnDirtyMountListener mOnDirtyMountListener = null;
 
@@ -207,6 +208,16 @@ public class LithoView extends ComponentHost {
   }
 
   /**
+   * Sets the width that the LithoView should take on the next measure pass and then requests a
+   * layout. This should be called from animation-driving code on each frame to animate the size of
+   * the LithoView.
+   */
+  public void setAnimatedWidth(int width) {
+    mAnimatedWidth = width;
+    requestLayout();
+  }
+
+  /**
    * Sets the height that the LithoView should take on the next measure pass and then requests a
    * layout. This should be called from animation-driving code on each frame to animate the size of
    * the LithoView.
@@ -218,17 +229,19 @@ public class LithoView extends ComponentHost {
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    // mAnimatedHeight >= 0 if something is driving a height animation.
-    if (mAnimatedHeight != -1) {
-      final int nextHeight = mAnimatedHeight;
+    // mAnimatedWidth/mAnimatedHeight >= 0 if something is driving a width/height animation.
+    if (mAnimatedWidth != -1 || mAnimatedHeight != -1) {
+      final int nextWidth = (mAnimatedWidth != -1) ? mAnimatedWidth : getWidth();
+      final int nextHeight = (mAnimatedHeight != -1) ? mAnimatedHeight : getHeight();
+      mAnimatedWidth = -1;
       mAnimatedHeight = -1;
 
       // If the mount state is dirty, we want to ignore the current animation and calculate the
       // new LayoutState as normal below. That LayoutState has the opportunity to define its own
-      // transition to a new height from the current height of the LithoView, or if not we will
-      // jump straight to that height.
+      // transition to a new width/height from the current height of the LithoView, or if not we
+      // will jump straight to that width/height.
       if (!isMountStateDirty()) {
-        setMeasuredDimension(getWidth(), nextHeight);
+        setMeasuredDimension(nextWidth, nextHeight);
         return;
       }
     }
@@ -260,19 +273,21 @@ public class LithoView extends ComponentHost {
       height = sLayoutSize[1];
     }
 
-    // If we're mounting a new ComponentTree, it probably has a different height but we don't want
-    // to animate it.
-    final boolean isExpectingBoundsAnimation =
-        height != getHeight()
-            && !mHasNewComponentTree
-            && mComponentTree != null
-            && mComponentTree.hasLithoViewBoundsAnimation();
-
-    if (isExpectingBoundsAnimation) {
-      setMeasuredDimension(getWidth(), getHeight());
-    } else {
-      setMeasuredDimension(width, height);
+    // If we're mounting a new ComponentTree, it probably has a different width/height but we don't
+    // want to animate it.
+    if (!mHasNewComponentTree && mComponentTree != null) {
+      final boolean isExpectingWidthAnimation =
+          width != getWidth() && mComponentTree.hasLithoViewWidthAnimation();
+      if (isExpectingWidthAnimation) {
+        width = getWidth();
+      }
+      final boolean isExpectingHeightAnimation =
+          height != getHeight() && mComponentTree.hasLithoViewHeightAnimation();
+      if (isExpectingHeightAnimation) {
+        height = getHeight();
+      }
     }
+    setMeasuredDimension(width, height);
 
     mHasNewComponentTree = false;
     mIsMeasuring = false;

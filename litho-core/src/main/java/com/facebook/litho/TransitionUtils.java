@@ -8,21 +8,22 @@
  */
 package com.facebook.litho;
 
-import com.facebook.litho.animation.AnimatedProperties;
+import com.facebook.litho.animation.AnimatedProperty;
 import java.util.ArrayList;
 
 /** Utilities to interact with {@link Transition}. */
 class TransitionUtils {
 
   /**
-   * @return whether the given Transition object specifies a bounds transition on the given
+   * @return whether the given Transition object specifies an animation property on the given
    *     transition key.
    */
-  public static boolean hasBoundsAnimation(String transitionKey, Transition transition) {
+  public static boolean hasAnimationForProperty(
+      String transitionKey, Transition transition, AnimatedProperty property) {
     if (transition instanceof TransitionSet) {
       ArrayList<Transition> children = ((TransitionSet) transition).getChildren();
       for (int i = 0, size = children.size(); i < size; i++) {
-        if (hasBoundsAnimation(transitionKey, children.get(i))) {
+        if (hasAnimationForProperty(transitionKey, children.get(i), property)) {
           return true;
         }
       }
@@ -32,8 +33,7 @@ class TransitionUtils {
 
     if (transition instanceof Transition.TransitionUnit) {
       final Transition.TransitionUnit transitionUnit = (Transition.TransitionUnit) transition;
-      return transitionUnit.targetsKey(transitionKey)
-          && (transitionUnit.targetsProperty(AnimatedProperties.HEIGHT));
+      return transitionUnit.targetsKey(transitionKey) && (transitionUnit.targetsProperty(property));
     }
 
     if (transition instanceof Transition.TransitionUnitsBuilder) {
@@ -41,7 +41,7 @@ class TransitionUtils {
           (Transition.TransitionUnitsBuilder) transition;
       ArrayList<Transition.TransitionUnit> units = builder.getTransitionUnits();
       for (int i = 0, size = units.size(); i < size; i++) {
-        if (hasBoundsAnimation(transitionKey, units.get(i))) {
+        if (hasAnimationForProperty(transitionKey, units.get(i), property)) {
           return true;
         }
       }

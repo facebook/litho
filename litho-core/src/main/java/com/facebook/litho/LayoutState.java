@@ -36,7 +36,7 @@ import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.SizeSpec.EXACTLY;
-import static com.facebook.litho.TransitionUtils.hasBoundsAnimation;
+import static com.facebook.litho.TransitionUtils.hasAnimationForProperty;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -57,6 +57,7 @@ import android.view.Window;
 import android.view.accessibility.AccessibilityManager;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.displaylist.DisplayList;
 import com.facebook.litho.displaylist.DisplayListException;
@@ -182,7 +183,8 @@ class LayoutState {
   private boolean mClipChildren = true;
   private ArrayList<Component> mComponentsNeedingPreviousRenderData;
   private SimpleArrayMap<String, LayoutOutput> mTransitionKeyMapping;
-  private boolean mHasLithoViewBoundsAnimation = false;
+  private boolean mHasLithoViewWidthAnimation = false;
+  private boolean mHasLithoViewHeightAnimation = false;
 
   LayoutState() {
     mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
@@ -677,10 +679,17 @@ class LayoutState {
         for (int i = 0, size = transitions.size(); i < size; i++) {
           final Transition transition = transitions.get(i);
           layoutState.getOrCreateTransitionContext().addTransition(transition);
-          if (!layoutState.mHasLithoViewBoundsAnimation
-              && layoutState.mLayoutRoot.hasTransitionKey()) {
-            layoutState.mHasLithoViewBoundsAnimation =
-                hasBoundsAnimation(layoutState.mLayoutRoot.getTransitionKey(), transition);
+
+          if (layoutState.mLayoutRoot.hasTransitionKey()) {
+            final String transitionKey = layoutState.mLayoutRoot.getTransitionKey();
+            if (!layoutState.mHasLithoViewWidthAnimation) {
+              layoutState.mHasLithoViewWidthAnimation =
+                  hasAnimationForProperty(transitionKey, transition, AnimatedProperties.WIDTH);
+            }
+            if (!layoutState.mHasLithoViewHeightAnimation) {
+              layoutState.mHasLithoViewHeightAnimation =
+                  hasAnimationForProperty(transitionKey, transition, AnimatedProperties.HEIGHT);
+            }
           }
         }
       }
@@ -1898,7 +1907,8 @@ class LayoutState {
       }
 
       mTransitionKeyMapping = null;
-      mHasLithoViewBoundsAnimation = false;
+      mHasLithoViewWidthAnimation = false;
+      mHasLithoViewHeightAnimation = false;
 
       ComponentsPools.release(this);
     }
@@ -2058,11 +2068,19 @@ class LayoutState {
   }
 
   /**
-   * @return whether the main thread layout state defines a transition that animates the bounds of
+   * @return whether the main thread layout state defines a transition that animates the width of
    *     the root component (and thus the LithoView).
    */
-  boolean hasLithoViewBoundsAnimation() {
-    return mHasLithoViewBoundsAnimation;
+  boolean hasLithoViewWidthAnimation() {
+    return mHasLithoViewWidthAnimation;
+  }
+
+  /**
+   * @return whether the main thread layout state defines a transition that animates the height of
+   *     the root component (and thus the LithoView).
+   */
+  boolean hasLithoViewHeightAnimation() {
+    return mHasLithoViewHeightAnimation;
   }
 
   /** @return whether there are any items in the queue for Display Lists prefetching. */
