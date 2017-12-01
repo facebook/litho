@@ -123,7 +123,7 @@ public final class SimpleMount extends Component<SimpleMount> {
 
   @Override
   protected int poolSize() {
-    return 15;
+    return 3;
   }
 
   @Override

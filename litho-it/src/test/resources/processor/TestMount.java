@@ -389,7 +389,7 @@ public final class TestMount<S extends View> extends Component<TestMount> {
 
   @Override
   protected int poolSize() {
-    return 15;
+    return 3;
   }
 
   @Override

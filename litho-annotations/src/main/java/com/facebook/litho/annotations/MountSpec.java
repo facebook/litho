@@ -99,7 +99,7 @@ public @interface MountSpec {
    * @return The max number of preallocated Mount objects we want to keep in the pools for this type
    * of MountSpec
    */
-  int poolSize() default 15;
+  int poolSize() default 3;
 
   /** @return whether the component generated from this MountSpec will be preallocated. */
   boolean canPreallocate() default false;
