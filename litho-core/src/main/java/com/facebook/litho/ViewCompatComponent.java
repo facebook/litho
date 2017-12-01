@@ -114,7 +114,7 @@ public class ViewCompatComponent<V extends View> extends Component {
   }
 
   @Override
-  V createMountContent(ComponentContext c) {
+  public V createMountContent(ComponentContext c) {
     return (V) mViewCreator.createView(c);
   }
 

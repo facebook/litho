@@ -196,7 +196,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   @ThreadSafe(enableChecks = false)
-  Object createMountContent(ComponentContext c) {
+  public Object createMountContent(ComponentContext c) {
     return onCreateMountContent(c);
   }
 
