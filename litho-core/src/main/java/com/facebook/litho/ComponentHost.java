@@ -910,7 +910,7 @@ public class ComponentHost extends ViewGroup {
   }
 
   @Override
-  public void setAccessibilityDelegate(AccessibilityDelegate accessibilityDelegate) {
+  public void setAccessibilityDelegate(View.AccessibilityDelegate accessibilityDelegate) {
     super.setAccessibilityDelegate(accessibilityDelegate);
 
     // We cannot compare against mComponentAccessibilityDelegate directly, since it is not the
@@ -950,7 +950,7 @@ public class ComponentHost extends ViewGroup {
    */
   @Deprecated
   @Override
-  public void addView(View child, int index, LayoutParams params) {
+  public void addView(View child, int index, ViewGroup.LayoutParams params) {
     throw new UnsupportedOperationException(
         "Adding Views manually within LithoViews is not supported");
   }
@@ -963,7 +963,7 @@ public class ComponentHost extends ViewGroup {
   @Deprecated
   @Override
   protected boolean addViewInLayout(
-      View child, int index, LayoutParams params, boolean preventRequestLayout) {
+      View child, int index, ViewGroup.LayoutParams params, boolean preventRequestLayout) {
     throw new UnsupportedOperationException(
         "Adding Views manually within LithoViews is not supported");
   }
@@ -975,7 +975,7 @@ public class ComponentHost extends ViewGroup {
    */
   @Deprecated
   @Override
-  protected void attachViewToParent(View child, int index, LayoutParams params) {
+  protected void attachViewToParent(View child, int index, ViewGroup.LayoutParams params) {
     throw new UnsupportedOperationException(
         "Adding Views manually within LithoViews is not supported");
   }

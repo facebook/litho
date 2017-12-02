@@ -10,6 +10,7 @@ include_defs("//COMPONENTS_DEFS")
 java_library(
     name = "annotations",
     srcs = glob(["*.java"]),
+    required_for_source_only_abi = True,
     visibility = COMPONENTS_VISIBILITY,
     deps = [
     ],

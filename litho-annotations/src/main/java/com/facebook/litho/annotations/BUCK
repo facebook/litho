@@ -13,6 +13,7 @@ java_library(
     provided_deps = [
         COMPONENTS_ANDROIDSUPPORT_TARGET,
     ],
+    required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
     ],

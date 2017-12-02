@@ -28,6 +28,7 @@ litho_android_library(
         COMPONENTS_YOGA_TARGET,
         COMPONENTS_JSR_TARGET,
     ],
+    required_for_source_only_abi = True,
     tests = [
         COMPONENTS_TEST_TARGET,
     ],
