@@ -130,7 +130,6 @@ class TextSpec {
 
   private static final int[][] DEFAULT_TEXT_COLOR_STATE_LIST_STATES = {{0}};
   private static final int[] DEFAULT_TEXT_COLOR_STATE_LIST_COLORS = {Color.BLACK};
-  private static final int[] DEFAULT_TEXT_DRAWABLE_STATE = {android.R.attr.state_enabled};
 
   private static final String TAG = "TextSpec";
 
@@ -785,9 +784,6 @@ class TextSpec {
       @FromBoundsDefined ClickableSpan[] clickableSpans,
       @FromBoundsDefined ImageSpan[] imageSpans) {
 
-    //make sure we set default state to drawable because default dummy state set in Drawable
-    //matches anything which can cause wrong text color to be selected by default
-    textDrawable.setState(DEFAULT_TEXT_DRAWABLE_STATE);
     TextDrawable.TextOffsetOnTouchListener textOffsetOnTouchListener = null;
 
     if (textOffsetOnTouchHandler != null) {
