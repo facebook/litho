@@ -211,7 +211,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
         event.addParam(
             PARAM_MESSAGE,
             "The manual key "
-                + childKey
+                + key
                 + " you are setting on this "
                 + component.getSimpleName()
                 + " is a duplicate and will be changed into a unique one. "

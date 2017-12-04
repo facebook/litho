@@ -154,7 +154,6 @@ public class ComponentGlobalKeyTest {
 
     final String expectedError =
         "The manual key "
-            + component.getLifecycle().getTypeId()
             + "sameKey you are setting on "
             + "this Text is a duplicate and will be changed into a unique one. This will "
             + "result in unexpected behavior if you don't change it.";
