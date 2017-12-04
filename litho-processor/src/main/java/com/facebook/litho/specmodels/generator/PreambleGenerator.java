@@ -9,9 +9,9 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getStateContainerClassName;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
 
-import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getStateContainerClassName;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
@@ -38,7 +38,8 @@ public class PreambleGenerator {
   static TypeSpecDataHolder generateSourceDelegate(SpecModel specModel) {
     final TypeSpecDataHolder.Builder sourceDelegateBuilder = TypeSpecDataHolder.newBuilder();
 
-    if (specModel.hasInjectedDependencies()) {
+    if (specModel.hasInjectedDependencies()
+        && specModel.getDependencyInjectionHelper().hasSpecInjection()) {
       sourceDelegateBuilder.addTypeSpecDataHolder(
           specModel.getDependencyInjectionHelper().generateSourceDelegate(specModel));
     }

@@ -41,6 +41,7 @@ public class PreambleGeneratorTest {
 
   @Before
   public void setUp() {
+    when(mDependencyInjectionHelper.hasSpecInjection()).thenReturn(true);
     mSpecModelWithoutDI = SpecModelImpl.newBuilder()
         .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
         .delegateMethods(ImmutableList.<SpecMethodModel<DelegateMethod, Void>>of())

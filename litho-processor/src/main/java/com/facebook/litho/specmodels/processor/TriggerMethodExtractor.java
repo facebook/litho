@@ -15,6 +15,7 @@ import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getMe
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getTypeVariables;
 
 import com.facebook.litho.annotations.FromTrigger;
+import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
@@ -49,6 +50,7 @@ public class TriggerMethodExtractor {
     METHOD_PARAM_ANNOTATIONS.add(Prop.class);
     METHOD_PARAM_ANNOTATIONS.add(State.class);
     METHOD_PARAM_ANNOTATIONS.add(TreeProp.class);
+    METHOD_PARAM_ANNOTATIONS.add(InjectProp.class);
   }
 
   /** Get the delegate methods from the given {@link TypeElement}. */

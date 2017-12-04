@@ -14,6 +14,7 @@ import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import java.util.List;
+import java.util.Set;
 
 /**
  * An interface for generating certain methods that are required in order for Dependency
@@ -39,4 +40,13 @@ public interface DependencyInjectionHelper {
 
   /** Generate the code needed to inject a new instance of the given SpecModel called 'instance' */
   CodeBlock generateFactoryMethodsComponentInstance(SpecModel specModel);
+
+  /**
+   * Generate the necessary code to handle the {@link com.facebook.litho.annotations.InjectProp}
+   * annotation. Field with the same name of the parameter should be returned to be usable.
+   */
+  TypeSpecDataHolder generateInjectedFields(Set<MethodParamModel> injectPropParams);
+
+  /** True if the Spec has to be injected. */
+  boolean hasSpecInjection();
 }

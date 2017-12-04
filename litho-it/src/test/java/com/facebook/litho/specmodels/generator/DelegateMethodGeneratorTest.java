@@ -14,6 +14,7 @@ import static com.facebook.litho.specmodels.generator.DelegateMethodGenerator.ge
 import static com.facebook.litho.specmodels.model.DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -55,6 +56,7 @@ public class DelegateMethodGeneratorTest {
 
   @Before
   public void setUp() {
+    when(mDependencyInjectionHelper.hasSpecInjection()).thenReturn(true);
     mDelegateMethodModel =
         new SpecMethodModel<>(
             ImmutableList.of(createAnnotation(OnCreateLayout.class)),

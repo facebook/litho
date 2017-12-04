@@ -14,6 +14,7 @@ import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_C
 import static com.facebook.litho.specmodels.model.ClassNames.COMPONENT;
 
 import android.support.annotation.VisibleForTesting;
+import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
@@ -46,8 +47,10 @@ import com.squareup.javapoet.WildcardTypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
@@ -78,6 +81,7 @@ public class ComponentBodyGenerator {
     }
 
     builder
+        .addTypeSpecDataHolder(generateInjectedFields(specModel))
         .addTypeSpecDataHolder(generateProps(specModel))
         .addTypeSpecDataHolder(generateTreeProps(specModel))
         .addTypeSpecDataHolder(generateInterStageInputs(specModel))
@@ -233,6 +237,18 @@ public class ComponentBodyGenerator {
       }
 
       typeSpecDataHolder.addField(fieldBuilder.build());
+    }
+
+    return typeSpecDataHolder.build();
+  }
+
+  static TypeSpecDataHolder generateInjectedFields(SpecModel specModel) {
+    final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
+
+    if (specModel.hasInjectedDependencies()) {
+      final Set<MethodParamModel> injectedParams = extractInjectedParams(specModel);
+      typeSpecDataHolder.addTypeSpecDataHolder(
+          specModel.getDependencyInjectionHelper().generateInjectedFields(injectedParams));
     }
 
     return typeSpecDataHolder.build();
@@ -620,5 +636,27 @@ public class ComponentBodyGenerator {
     }
 
     return methodParamModel.getName();
+  }
+
+  public static Set<MethodParamModel> extractInjectedParams(SpecModel specModel) {
+    final Set<MethodParamModel> injectedParams = new LinkedHashSet<>();
+
+    for (SpecMethodModel delegateMethod : specModel.getDelegateMethods()) {
+      for (MethodParamModel param : ((List<MethodParamModel>) delegateMethod.methodParams)) {
+        if (SpecModelUtils.hasAnnotation(param, InjectProp.class)) {
+          injectedParams.add(param);
+        }
+      }
+    }
+
+    for (SpecMethodModel eventMethod : specModel.getEventMethods()) {
+      for (MethodParamModel param : ((List<MethodParamModel>) eventMethod.methodParams)) {
+        if (SpecModelUtils.hasAnnotation(param, InjectProp.class)) {
+          injectedParams.add(param);
+        }
+      }
+    }
+
+    return injectedParams;
   }
 }

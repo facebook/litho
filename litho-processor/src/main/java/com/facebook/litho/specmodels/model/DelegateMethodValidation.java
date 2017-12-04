@@ -11,6 +11,7 @@ package com.facebook.litho.specmodels.model;
 
 import static com.facebook.litho.specmodels.model.SpecMethodModelValidation.validateMethodIsStatic;
 
+import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
@@ -330,6 +331,8 @@ public class DelegateMethodValidation {
         return methodParamModel instanceof DiffStateParamModel;
       case PARAM:
         return MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class);
+      case INJECT_PROP:
+        return MethodParamModelUtils.isAnnotatedWith(methodParamModel, InjectProp.class);
       case INTER_STAGE_OUTPUT:
         return methodParamModel.getType() instanceof ParameterizedTypeName &&
             ((ParameterizedTypeName) methodParamModel.getType()).rawType.equals(ClassNames.OUTPUT);
@@ -407,6 +410,8 @@ public class DelegateMethodValidation {
         return "@State Diff<T> someStateName";
       case PARAM:
         return "@Param T someParamName";
+      case INJECT_PROP:
+        return "@InjectProp T someInjectPropName";
       case INTER_STAGE_OUTPUT:
         return "Output<T> someOutputName";
       case PROP_OUTPUT:

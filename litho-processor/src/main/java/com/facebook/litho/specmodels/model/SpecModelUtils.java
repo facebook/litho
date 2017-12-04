@@ -30,7 +30,8 @@ public class SpecModelUtils {
       return specModel.getSpecName() + ".INSTANCE";
     }
 
-    if (specModel.hasInjectedDependencies()) {
+    if (specModel.hasInjectedDependencies()
+        && specModel.getDependencyInjectionHelper().hasSpecInjection()) {
       return DELEGATE_FIELD_NAME;
     }
 
