@@ -20,8 +20,8 @@ import com.facebook.stetho.inspector.protocol.ChromeDevtoolsDomain;
 import java.util.Arrays;
 
 /**
- * @deprecated We are deprecating Stetho integration as of 0.12.0. We are looking into better
- *     solutions which will improve the litho debugging experience.
+ * @deprecated We are deprecating Stetho integration and will remove it as of 0.12.0. We are looking
+ *     into better solutions which will improve the litho debugging experience.
  */
 @Deprecated
 public class LithoWebKitInspector implements InspectorModulesProvider {
