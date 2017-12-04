@@ -30,6 +30,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.TextView;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.EventHandler;
@@ -48,6 +49,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.utils.MeasureUtils;
+import java.lang.reflect.Field;
 
 /**
  * Component that renders an {@link EditText}.
@@ -86,6 +88,7 @@ import com.facebook.litho.utils.MeasureUtils;
  * will override inputType if both are provided.
  * @prop imeOptions Type of data in the text field, reported to an IME when it has focus.
  * @prop requestFocus If set, attempts to give focus.
+ * @prop cursorDrawableRes Drawable to set for the edit texts cursor.
  */
 @MountSpec(isPureRender = true, events = {TextChangedEvent.class})
 class EditTextSpec {
@@ -126,6 +129,7 @@ class EditTextSpec {
   @PropDefault protected static final int imeOptions = EditorInfo.IME_NULL;
   @PropDefault protected static final boolean isSingleLineWrap = false;
   @PropDefault protected static final boolean requestFocus = false;
+  @PropDefault protected static final int cursorDrawableRes = -1;
 
   @OnLoadStyle
   static void onLoadStyle(
@@ -240,7 +244,8 @@ class EditTextSpec {
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
       @Prop(optional = true) boolean isSingleLineWrap,
-      @Prop(optional = true) boolean requestFocus) {
+      @Prop(optional = true) boolean requestFocus,
+      @Prop(optional = true) int cursorDrawableRes) {
 
     // TODO(11759579) - don't allocate a new EditText in every measure.
     final EditText editText = new EditText(c);
@@ -277,7 +282,8 @@ class EditTextSpec {
         rawInputType,
         imeOptions,
         isSingleLineWrap,
-        requestFocus);
+        requestFocus,
+        cursorDrawableRes);
 
     editText.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec),
@@ -327,7 +333,8 @@ class EditTextSpec {
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
       @Prop(optional = true) boolean isSingleLineWrap,
-      @Prop(optional = true) boolean requestFocus) {
+      @Prop(optional = true) boolean requestFocus,
+      @Prop(optional = true) int cursorDrawableRes) {
 
     initEditText(
         editText,
@@ -361,7 +368,8 @@ class EditTextSpec {
         rawInputType,
         imeOptions,
         isSingleLineWrap,
-        requestFocus);
+        requestFocus,
+        cursorDrawableRes);
   }
 
   @OnBind
@@ -419,7 +427,8 @@ class EditTextSpec {
       int rawInputType,
       int imeOptions,
       boolean isSingleLineWrap,
-      boolean requestFocus) {
+      boolean requestFocus,
+      int cursorDrawableRes) {
 
     editText.setSingleLine(isSingleLine);
     // We only want to change the input type if it actually needs changing, and we need to take
@@ -488,6 +497,16 @@ class EditTextSpec {
 
     if (requestFocus) {
       editText.requestFocus();
+    }
+
+    if (cursorDrawableRes != -1) {
+      try {
+        Field f = TextView.class.getDeclaredField("mCursorDrawableRes");
+        f.setAccessible(true);
+        f.set(editText, cursorDrawableRes);
+      } catch (Exception exception) {
+        // no-op don't set cursor drawable
+      }
     }
 
     switch (textAlignment) {
