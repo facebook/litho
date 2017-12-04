@@ -145,29 +145,50 @@ public final class BasicTestSample implements BasicTestSampleSpec {
       return new ComponentMatcher() {
         @Override
         public boolean matches(InspectableComponent value) {
-          if (!value.getComponentClass().isAssignableFrom(com.facebook.litho.processor.integration.resources.BasicLayout.class)) {
-            as(new TextDescription("Sub-component of type \"com.facebook.litho.processor.integration.resources.BasicLayout\""));
+          if (!value
+              .getComponentClass()
+              .isAssignableFrom(
+                  com.facebook.litho.processor.integration.resources.BasicLayout.class)) {
+            as(
+                new TextDescription(
+                    "Sub-component of type \"com.facebook.litho.processor.integration.resources.BasicLayout\""));
             return false;
           }
-          final com.facebook.litho.processor.integration.resources.BasicLayout impl = (com.facebook.litho.processor.integration.resources.BasicLayout) value.getComponent();
+          final com.facebook.litho.processor.integration.resources.BasicLayout impl =
+              (com.facebook.litho.processor.integration.resources.BasicLayout) value.getComponent();
           if (mMyStringPropMatcher != null && !mMyStringPropMatcher.matches(impl.myStringProp)) {
-            as(new TextDescription("%s (doesn't match %s)", mMyStringPropMatcher, impl.myStringProp));
+            as(
+                new TextDescription(
+                    "Sub-component of type <BasicLayout> with prop <myStringProp> %s (doesn't match %s)",
+                    mMyStringPropMatcher, impl.myStringProp));
             return false;
           }
-          if (mMyRequiredColorPropMatcher != null && !mMyRequiredColorPropMatcher.matches(impl.myRequiredColorProp)) {
-            as(new TextDescription("%s (doesn't match %s)", mMyRequiredColorPropMatcher, impl.myRequiredColorProp));
+          if (mMyRequiredColorPropMatcher != null
+              && !mMyRequiredColorPropMatcher.matches(impl.myRequiredColorProp)) {
+            as(
+                new TextDescription(
+                    "Sub-component of type <BasicLayout> with prop <myRequiredColorProp> %s (doesn't match %s)",
+                    mMyRequiredColorPropMatcher, impl.myRequiredColorProp));
             return false;
           }
-          if (mMyDimenSizePropMatcher != null && !mMyDimenSizePropMatcher.matches(impl.myDimenSizeProp)) {
-            as(new TextDescription("%s (doesn't match %s)", mMyDimenSizePropMatcher, impl.myDimenSizeProp));
+          if (mMyDimenSizePropMatcher != null
+              && !mMyDimenSizePropMatcher.matches(impl.myDimenSizeProp)) {
+            as(
+                new TextDescription(
+                    "Sub-component of type <BasicLayout> with prop <myDimenSizeProp> %s (doesn't match %s)",
+                    mMyDimenSizePropMatcher, impl.myDimenSizeProp));
             return false;
           }
-          if (mChildComponentMatcher != null && !mChildComponentMatcher.matches(value.getNestedInstance(impl.child))) {
+          if (mChildComponentMatcher != null
+              && !mChildComponentMatcher.matches(value.getNestedInstance(impl.child))) {
             as(mChildComponentMatcher.description());
             return false;
           }
           if (mChildMatcher != null && !mChildMatcher.matches(impl.child)) {
-            as(new TextDescription("%s (doesn't match %s)", mChildMatcher, impl.child));
+            as(
+                new TextDescription(
+                    "Sub-component of type <BasicLayout> with prop <child> %s (doesn't match %s)",
+                    mChildMatcher, impl.child));
             return false;
           }
           return true;

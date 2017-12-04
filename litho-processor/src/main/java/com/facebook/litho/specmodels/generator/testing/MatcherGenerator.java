@@ -596,9 +596,8 @@ public final class MatcherGenerator {
       }
 
       // We generate matchers for both components as well as nested matchers, so the fall-through
-      // here
-      // is intended.
-      builder.add(generateValuePropMatchBlock(prop));
+      // here is intended.
+      builder.add(generateValuePropMatchBlock(enclosedSpecModel, prop));
     }
 
     builder.addStatement("return true");
@@ -619,20 +618,24 @@ public final class MatcherGenerator {
         .build();
   }
 
-  private static CodeBlock generateValuePropMatchBlock(PropModel prop) {
+  private static CodeBlock generateValuePropMatchBlock(
+      SpecModel enclosedSpecModel, PropModel prop) {
     final String matcherName = getPropMatcherName(prop);
     return CodeBlock.builder()
         .beginControlFlow("if ($1N != null && !$1N.matches(impl.$2L))", matcherName, prop.getName())
-        .add(generateMatchFailureStatement(matcherName, prop))
+        .add(generateMatchFailureStatement(enclosedSpecModel, matcherName, prop))
         .addStatement("return false")
         .endControlFlow()
         .build();
   }
 
-  private static CodeBlock generateMatchFailureStatement(String matcherName, PropModel prop) {
+  private static CodeBlock generateMatchFailureStatement(
+      final SpecModel enclosedSpecModel, String matcherName, PropModel prop) {
     return CodeBlock.builder()
         .add("as(new $T(", ClassNames.ASSERTJ_TEXT_DESCRIPTION)
-        .add("\"%s (doesn't match %s)\", $N, impl.$L", matcherName, prop.getName())
+        .add(
+            "\"Sub-component of type <$T> with prop <$L> %s (doesn't match %s)\", $N, impl.$L",
+            enclosedSpecModel.getComponentTypeName(), prop.getName(), matcherName, prop.getName())
         .addStatement("))")
         .build();
   }
