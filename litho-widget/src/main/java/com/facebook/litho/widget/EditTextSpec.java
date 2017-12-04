@@ -87,6 +87,7 @@ import java.lang.reflect.Field;
  * used to help an input method decide how to let the user enter text. This prop
  * will override inputType if both are provided.
  * @prop imeOptions Type of data in the text field, reported to an IME when it has focus.
+ * @prop editorActionListener Special listener to be called when an action is performed
  * @prop requestFocus If set, attempts to give focus.
  * @prop cursorDrawableRes Drawable to set for the edit texts cursor.
  */
@@ -243,6 +244,7 @@ class EditTextSpec {
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
+      @Prop(optional = true) TextView.OnEditorActionListener editorActionListener,
       @Prop(optional = true) boolean isSingleLineWrap,
       @Prop(optional = true) boolean requestFocus,
       @Prop(optional = true) int cursorDrawableRes) {
@@ -281,6 +283,7 @@ class EditTextSpec {
         inputType,
         rawInputType,
         imeOptions,
+        editorActionListener,
         isSingleLineWrap,
         requestFocus,
         cursorDrawableRes);
@@ -332,6 +335,7 @@ class EditTextSpec {
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int rawInputType,
       @Prop(optional = true) int imeOptions,
+      @Prop(optional = true) TextView.OnEditorActionListener editorActionListener,
       @Prop(optional = true) boolean isSingleLineWrap,
       @Prop(optional = true) boolean requestFocus,
       @Prop(optional = true) int cursorDrawableRes) {
@@ -367,6 +371,7 @@ class EditTextSpec {
         inputType,
         rawInputType,
         imeOptions,
+        editorActionListener,
         isSingleLineWrap,
         requestFocus,
         cursorDrawableRes);
@@ -426,6 +431,7 @@ class EditTextSpec {
       int inputType,
       int rawInputType,
       int imeOptions,
+      TextView.OnEditorActionListener editorActionListener,
       boolean isSingleLineWrap,
       boolean requestFocus,
       int cursorDrawableRes) {
@@ -474,6 +480,8 @@ class EditTextSpec {
     editText.setGravity(gravity);
 
     editText.setImeOptions(imeOptions);
+    editText.setOnEditorActionListener(editorActionListener);
+
     editText.setFocusable(editable);
     editText.setFocusableInTouchMode(editable);
     editText.setClickable(editable);
