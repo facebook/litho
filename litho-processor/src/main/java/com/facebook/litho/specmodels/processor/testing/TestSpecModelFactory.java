@@ -82,12 +82,24 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
         getEnclosedSpecModel(elements, valueElement, dependencyInjectionHelper, interStageStore);
 
     if (enclosedSpecModel == null) {
-      throw new ComponentsProcessingException(
-          element,
-          String.format(
-              "Failed to extract enclosed spec model: %s. "
-                  + "Please report this error to the Litho team.",
-              valueElement));
+      final String error;
+      if (!valueElement.toString().endsWith("Spec")) {
+        error =
+            String.format(
+                "It looks like the class you referenced for your TestSpec is not a "
+                    + "Spec itself as '%s' doesn't end in 'Spec'. Make sure that you reference the "
+                    + "Spec and not the generated Component.",
+                valueElement);
+      } else {
+        error =
+            String.format(
+                "Failed to extract enclosed spec model: %s. "
+                    + "Please ensure that the class is a spec annotated with either @LayoutSpec or "
+                    + "@MountSpec.",
+                valueElement);
+      }
+
+      throw new ComponentsProcessingException(element, error);
     }
 
     return new TestSpecModel(
