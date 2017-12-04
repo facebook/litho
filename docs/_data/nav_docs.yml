@@ -46,6 +46,7 @@
   items:
   - id: unit-testing
   - id: subcomponent-testing
+  - id: prop-matching
   - id: espresso-testing
   - id: tests-in-android-studio
 - title: Advanced Guides
