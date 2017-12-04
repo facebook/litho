@@ -10,20 +10,26 @@
 package com.facebook.litho;
 
 /**
- * Allows the parent to communicate with its child component. The child must
- * be able to handle {@link com.facebook.litho.annotations.OnTrigger} events
- * in order to accept an EventTrigger from the parent.
+ * Allows a top-down communication with a component and its immediate parent. The component must be
+ * able to handle {@link com.facebook.litho.annotations.OnTrigger} events in order to accept an
+ * EventTrigger.
  */
 public class EventTrigger<E> {
 
-  public final HasEventTrigger mTriggerTarget;
-  public int mId;
+  public EventTriggerTarget mTriggerTarget;
+  public final int mId;
+  public final String mKey;
 
-  public EventTrigger(HasEventTrigger triggerTarget) {
-    mTriggerTarget = triggerTarget;
+  public EventTrigger(String parentKey, int id, String childKey) {
+    mId = id;
+    mKey = parentKey + id + childKey;
+  }
+
+  public Object dispatchOnTrigger(E event) {
+    return dispatchOnTrigger(event, new Object[] {});
   }
 
   public Object dispatchOnTrigger(E event, Object[] params) {
-    return mTriggerTarget.getEventTriggerTarget().acceptTriggerEvent(this, event, params);
+    return mTriggerTarget.acceptTriggerEvent(this, event, params);
   }
 }

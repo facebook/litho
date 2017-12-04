@@ -417,7 +417,6 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
       if (keyHandler != null && !ComponentsConfiguration.isEndToEndTestRun) {
         keyHandler.registerKey(this);
       }
-      registerEventTrigger(getGlobalKey());
     }
 
     if (getLifecycle().hasState()) {
@@ -425,14 +424,9 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
   }
 
-  private void registerEventTrigger(String globalKey) {
-    ComponentContext context = getScopedContext();
-    if (!getLifecycle().canAcceptTrigger()) {
-      context.unregisterTrigger(globalKey);
-      return;
-    }
-
-    context.registerTrigger(context.newEventTrigger(), globalKey);
+  @Override
+  public void recordEventTrigger(EventTriggersContainer container) {
+    // Do nothing by default
   }
 
   CommonProps getCommonProps() {
@@ -450,12 +444,6 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
   @Deprecated
   @Override
   public EventDispatcher getEventDispatcher() {
-    return this;
-  }
-
-  @Deprecated
-  @Override
-  public EventTriggerTarget getEventTriggerTarget() {
     return this;
   }
   

@@ -10,9 +10,9 @@
 package com.facebook.litho;
 
 /**
- * A class implementing this interface will expose a method to retrieve
- * an {@link EventTriggerTarget}
+ * A class implementing this interface will expose a method to record all the {@link EventTrigger}
+ * into a {@link EventTriggersContainer}
  */
 public interface HasEventTrigger {
-  EventTriggerTarget getEventTriggerTarget();
+  void recordEventTrigger(EventTriggersContainer container);
 }

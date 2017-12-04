@@ -13,18 +13,24 @@ package com.facebook.litho.specmodels.processor;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.FromMeasure;
+import com.facebook.litho.annotations.FromTrigger;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnMount;
+import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
+import com.facebook.litho.specmodels.model.EventDeclarationModel;
+import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MountSpecModel;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.google.testing.compile.CompilationRule;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
@@ -72,6 +78,11 @@ public class MountSpecModelFactoryTest {
     }
   }
 
+  @Event(returnType = String.class)
+  static class TestTriggerEvent {
+    int integer;
+  }
+
   @MountSpec(value = "TestMountComponentName", isPublic = false, isPureRender = true)
   static class TestMountSpec {
 
@@ -101,6 +112,11 @@ public class MountSpecModelFactoryTest {
 
     @OnUnmount
     static void onUnmount() {}
+
+    @OnTrigger(TestTriggerEvent.class)
+    static String testTrigger(@FromTrigger int integer, @Prop Object prop3) {
+      return "";
+    }
   }
 
   @Test
@@ -134,5 +150,11 @@ public class MountSpecModelFactoryTest {
 
     assertThat(mountSpecModel.hasInjectedDependencies()).isTrue();
     assertThat(mountSpecModel.getDependencyInjectionHelper()).isSameAs(mDependencyInjectionHelper);
+
+    assertThat(mountSpecModel.getTriggerMethods()).hasSize(1);
+    SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethodModel =
+        mountSpecModel.getTriggerMethods().get(0);
+    assertThat(triggerMethodModel.name).isEqualToIgnoringCase("testTrigger");
+    assertThat(triggerMethodModel.methodParams).hasSize(2);
   }
 }

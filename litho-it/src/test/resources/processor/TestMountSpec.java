@@ -31,6 +31,7 @@ import com.facebook.litho.Transition;
 import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.FromMeasure;
+import com.facebook.litho.annotations.FromTrigger;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodeAt;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodesCount;
 import com.facebook.litho.annotations.MountSpec;
@@ -46,6 +47,7 @@ import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnPopulateAccessibilityNode;
 import com.facebook.litho.annotations.OnPopulateExtraAccessibilityNode;
+import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Param;
@@ -174,6 +176,9 @@ public class TestMountSpec<S extends View> {
       @Prop char prop5,
       @State(canUpdateLazily = true) long state1) {
   }
+
+  @OnTrigger(ClickEvent.class)
+  static void onClickEventTrigger(ComponentContext c, @FromTrigger View view, @Prop Object prop3) {}
 
   @OnUpdateState
   static void updateCurrentState(

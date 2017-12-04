@@ -31,7 +31,6 @@ import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
@@ -200,8 +199,6 @@ public class ComponentTree {
   @PendingLayoutCalculation
   @GuardedBy("this")
   private int mScheduleLayoutAfterMeasure;
-
-  private @Nullable Map<String, EventTrigger> mEventTriggers;
 
   @GuardedBy("this")
   public Map<String, List<EventHandler>> mEventHandlers = new HashMap<>();
@@ -962,34 +959,16 @@ public class ComponentTree {
     mEventHandlers.get(key).add(eventHandler);
   }
 
-  /**
-   * Keep a referenece to {@link EventTrigger} to allow a retrieval of the same reference with a
-   * key.
-   */
-  synchronized void recordEventTrigger(String triggerKey, EventTrigger eventTrigger) {
-    if (mEventTriggers == null) {
-      mEventTriggers = new ArrayMap<>();
-    }
-
-    mEventTriggers.put(triggerKey, eventTrigger);
-  }
-
-  /** Remove a referenece of {@link EventTrigger} with the key it was registered with. */
-  synchronized void releaseEventTrigger(String triggerKey) {
-    if (mEventTriggers == null) {
-      return;
-    }
-
-    mEventTriggers.remove(triggerKey);
-  }
-
   @Nullable
   synchronized EventTrigger getEventTrigger(String triggerKey) {
-    if (mEventTriggers == null || !mEventTriggers.containsKey(triggerKey)) {
+    final LayoutState mostRecentLayoutState =
+        mBackgroundLayoutState != null ? mBackgroundLayoutState : mMainThreadLayoutState;
+
+    if (mostRecentLayoutState == null) {
       return null;
     }
 
-    return mEventTriggers.get(triggerKey);
+    return mostRecentLayoutState.getEventTrigger(triggerKey);
   }
 
   /**
