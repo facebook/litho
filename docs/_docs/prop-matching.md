@@ -11,8 +11,8 @@ permalink: /docs/prop-matching.html
 
 We have already learned about matching [sub-components in the
 hierarchy](/docs/subcomponent-testing). In this article, we will drill a bit
-deeper and explore ways to test individual props of those components, even if we
-don't know all of them.
+deeper and explore TestSpecs as a way to test individual props of those
+components, even if we don't know all of them.
 
 Not a fan of many words? Jump to the [TL;DR](#tldr) for just some sample code.
 
@@ -134,7 +134,7 @@ public void testComplexSpecIsPresent() {
 }
 ```
 
-Clearly, having this test is better than nothing. But in the same way that
+Clearly, having this test is better than nothing. In the same way that
 having some Starbucks coffee after a cross-Atlantic flight is better than no
 coffee at all ... but I digress.
 
@@ -167,94 +167,6 @@ There are a few things to note here:
 
 And that's it. Those two lines are enough to generate us a powerful matcher that
 we can use in our tests.
-
-## A Note on Buck
-
-If you use gradle, this should Just Work™ and you can skip to the next section.
-
-With Buck or Blaze/Bazel, however, you may need some additional configuration
-for the annotation processing step to work.
-
-In order to save you copy-pasting boilerplate all over your project, it is
-recommended keep a rule definition like this in a well-known place
-(e.g. `//buck_imports/litho_testspec.bzl`). You would obviously have to adjust
-the library paths to the corresponding targets in your code base.
-
-```python
-"""Provides macros for working with litho testspec."""
-
-def litho_testspec(
-    name,
-    deps=None,
-    annotation_processors=None,
-    annotation_processor_deps=None,
-    **kwargs
-):
-    """Litho testspec."""
-    deps = deps or []
-    annotation_processors = annotation_processors or []
-    annotation_processor_deps = annotation_processor_deps or []
-
-    deps.extend(
-        [
-            "//java/com/facebook/litho:litho",
-            "//third-party/android/support/v4:lib-support-v4",
-            "//libraries/components/litho-testing/src/main/java/com/facebook/litho/testing:testing",
-            "//libraries/components/litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj",
-            "//third-party/java/jsr-305:jsr-305",
-            "//third-party/java/hamcrest:hamcrest",
-            "//third-party/java/hamcrest:hamcrest-library",
-        ]
-    )
-
-    annotation_processor_deps.extend(
-        [
-            "//libraries/components/litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor-lib"
-        ]
-    )
-
-    annotation_processors.extend(
-        [
-            "com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor",
-        ]
-    )
-
-    return android_library(
-        name,
-        deps=deps,
-        annotation_processors=annotation_processors,
-        annotation_processor_deps=annotation_processor_deps,
-        **kwargs
-    )
-```
-
-In the definitions for your test suite, you can then create a separate target
-for your test specs:
-
-```python
-load("//buck_imports:litho_testspec.bzl", "litho_testspec")
-
-litho_testspec(
-    name = "testspecs",
-    srcs = glob(["*Spec.java"]),
-    deps = [
-        "//my/library/dependencies",
-        # ...
-    ],
-)
-
-robolectric_test(
-    name = "test",
-    srcs = glob(["*Test.java*"]),
-    deps = [
-        ":testspecs",
-        # ...
-    ]
-)
-```
-
-This ensures that test specs are processed by the dedicated
-`ComponentsTestingProcessor`.
 
 ## Using TestSpecs
 
@@ -368,6 +280,95 @@ public void testComplexTestSpecProps() {
 
 Notice the `TestCard` we use to declare our hierarchy here. The `litho-testing`
 package comes with TestSpecs for all standard Litho widgets.
+
+## A Note on Buck
+
+If you use gradle, this should Just Work™ and shouldn't require any additional
+setup.
+
+With Buck or Blaze/Bazel, however, you may need some additional configuration
+for the annotation processing step to work.
+
+In order to save you copy-pasting boilerplate all over your project, it is
+recommended keep a rule definition like this in a well-known place
+(e.g. `//buck_imports/litho_testspec.bzl`). You would obviously have to adjust
+the library paths to the corresponding targets in your code base.
+
+```python
+"""Provides macros for working with litho testspec."""
+
+def litho_testspec(
+    name,
+    deps=None,
+    annotation_processors=None,
+    annotation_processor_deps=None,
+    **kwargs
+):
+    """Litho testspec."""
+    deps = deps or []
+    annotation_processors = annotation_processors or []
+    annotation_processor_deps = annotation_processor_deps or []
+
+    deps.extend(
+        [
+            "//java/com/facebook/litho:litho",
+            "//third-party/android/support/v4:lib-support-v4",
+            "//libraries/components/litho-testing/src/main/java/com/facebook/litho/testing:testing",
+            "//libraries/components/litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj",
+            "//third-party/java/jsr-305:jsr-305",
+            "//third-party/java/hamcrest:hamcrest",
+            "//third-party/java/hamcrest:hamcrest-library",
+        ]
+    )
+
+    annotation_processor_deps.extend(
+        [
+            "//libraries/components/litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor-lib"
+        ]
+    )
+
+    annotation_processors.extend(
+        [
+            "com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor",
+        ]
+    )
+
+    return android_library(
+        name,
+        deps=deps,
+        annotation_processors=annotation_processors,
+        annotation_processor_deps=annotation_processor_deps,
+        **kwargs
+    )
+```
+
+In the definitions for your test suite, you can then create a separate target
+for your test specs:
+
+```python
+load("//buck_imports:litho_testspec.bzl", "litho_testspec")
+
+litho_testspec(
+    name = "testspecs",
+    srcs = glob(["*Spec.java"]),
+    deps = [
+        "//my/library/dependencies",
+        # ...
+    ],
+)
+
+robolectric_test(
+    name = "test",
+    srcs = glob(["*Test.java*"]),
+    deps = [
+        ":testspecs",
+        # ...
+    ]
+)
+```
+
+This ensures that test specs are processed by the dedicated
+`ComponentsTestingProcessor`.
 
 ## TL;DR
 
