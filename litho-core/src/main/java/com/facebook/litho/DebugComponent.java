@@ -45,7 +45,7 @@ public final class DebugComponent {
 
   private static final SimpleArrayMap<String, DebugComponent> mDebugNodes = new SimpleArrayMap<>();
 
-  private String mKey;
+  private String mGlobalKey;
   private WeakReference<InternalNode> mNode;
   private int mComponentIndex;
   private Overrider mOverrider;
@@ -62,7 +62,7 @@ public final class DebugComponent {
       mDebugNodes.put(globalKey, debugComponent);
     }
 
-    debugComponent.mKey = globalKey;
+    debugComponent.mGlobalKey = globalKey;
     debugComponent.mNode = new WeakReference<>(node);
     debugComponent.mComponentIndex = componentIndex;
     debugComponent.mGeneration = node.getGeneration();
@@ -74,8 +74,7 @@ public final class DebugComponent {
     final InternalNode node = mNode.get();
     return node != null
         && node.getGeneration() == mGeneration
-        && mKey.equals(createKey(node, mComponentIndex));
-
+        && mGlobalKey.equals(createKey(node, mComponentIndex));
   }
 
   /**
@@ -708,7 +707,7 @@ public final class DebugComponent {
   }
 
   public String getId() {
-    return mKey;
+    return mGlobalKey;
   }
 
   @Nullable
