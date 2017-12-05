@@ -15,9 +15,9 @@ package com.facebook.litho;
  */
 class TestComponent extends Component {
 
-  private final Component<?> mWrappedComponent;
+  private final Component mWrappedComponent;
 
-  TestComponent(Component<?> component) {
+  TestComponent(Component component) {
     super();
 
     mWrappedComponent = component;
@@ -28,7 +28,7 @@ class TestComponent extends Component {
     return mWrappedComponent.getSimpleName();
   }
 
-  Component<?> getWrappedComponent() {
+  Component getWrappedComponent() {
     return mWrappedComponent;
   }
 }

@@ -224,7 +224,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    * @return ListAssert for the extracted values.
    */
   @CheckReturnValue
-  public <A> ListAssert<A> extracting(Extractor<Component<?>, List<A>> extractor) {
+  public <A> ListAssert<A> extracting(Extractor<Component, List<A>> extractor) {
     final List<A> value = extractor.extract(actual);
     return new ListAssert<>(value);
   }

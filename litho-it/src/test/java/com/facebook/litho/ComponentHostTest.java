@@ -55,11 +55,11 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class ComponentHostTest {
 
-  private Component<?> mViewGroupHost;
+  private Component mViewGroupHost;
 
   private TestableComponentHost mHost;
-  private Component<?> mDrawableComponent;
-  private Component<?> mViewComponent;
+  private Component mDrawableComponent;
+  private Component mViewComponent;
   private ComponentContext mContext;
 
   @Before
@@ -745,7 +745,7 @@ public class ComponentHostTest {
   }
 
   private void testScrapHostsForComponent(
-      Component<?> component,
+      Component component,
       Class<? extends View> viewClass) {
     View view = mock(viewClass);
     MountItem mountItem = new MountItem();

@@ -240,7 +240,7 @@ public class LifecycleMethodsTest {
     }
 
     @Override
-    public Component<LifecycleMethodsComponent> makeShallowCopy() {
+    public Component makeShallowCopy() {
       return this;
     }
   }

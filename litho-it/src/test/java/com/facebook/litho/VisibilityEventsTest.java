@@ -51,7 +51,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testVisibleEvent() {
-    final TestComponent<?> content = create(mContext).build();
+    final TestComponent content = create(mContext).build();
     final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 2);
 
     final LithoView lithoView =
@@ -85,7 +85,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testFocusedOccupiesHalfViewport() {
-    final TestComponent<?> content = create(mContext).build();
+    final TestComponent content = create(mContext).build();
     final EventHandler<FocusedVisibleEvent> focusedEventHandler = new EventHandler<>(content, 2);
 
     final LithoView lithoView =
@@ -121,7 +121,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testFocusedOccupiesLessThanHalfViewport() {
-    final TestComponent<?> content = create(mContext).build();
+    final TestComponent content = create(mContext).build();
     final EventHandler<FocusedVisibleEvent> focusedEventHandler = new EventHandler<>(content, 2);
 
     final LithoView lithoView =
@@ -157,7 +157,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testMultipleFocusAndUnfocusEvents() {
-    final TestComponent<?> content = create(mContext).build();
+    final TestComponent content = create(mContext).build();
     final EventHandler<FocusedVisibleEvent> focusedHandler = new EventHandler<>(content, 2);
     final EventHandler<UnfocusedVisibleEvent> unfocusedHandler = new EventHandler<>(content, 3);
 
@@ -209,7 +209,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testFullImpressionEvent() {
-    final TestComponent<?> content = create(mContext).build();
+    final TestComponent content = create(mContext).build();
     final EventHandler<FullImpressionVisibleEvent> fullImpressionVisibleEvent =
         new EventHandler<>(content, 2);
 
@@ -240,7 +240,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testInvisibleEvent() {
-    final TestComponent<?> content = create(mContext).build();
+    final TestComponent content = create(mContext).build();
     final EventHandler<InvisibleEvent> invisibleEventHandler = new EventHandler<>(content, 2);
 
     final LithoView lithoView =
@@ -274,7 +274,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testVisibleAndInvisibleEvents() {
-    final TestComponent<?> content = create(mContext).build();
+    final TestComponent content = create(mContext).build();
     final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 1);
     final EventHandler<InvisibleEvent> invisibleEventHandler = new EventHandler<>(content, 2);
 
@@ -326,8 +326,8 @@ public class VisibilityEventsTest {
 
   @Test
   public void testMultipleVisibleEvents() {
-    final TestComponent<?> content1 = create(mContext).build();
-    final TestComponent<?> content2 = create(mContext).build();
+    final TestComponent content1 = create(mContext).build();
+    final TestComponent content2 = create(mContext).build();
     final EventHandler<VisibleEvent> visibleEventHandler1 = new EventHandler<>(content1, 1);
     final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(content2, 2);
 
@@ -386,7 +386,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testDetachWithReleasedTreeTriggersInvisibilityItems() {
-    final TestComponent<?> content = create(mContext).build();
+    final TestComponent content = create(mContext).build();
     final EventHandler<InvisibleEvent> invisibleEventHandler = new EventHandler<>(content, 2);
 
     final LithoView lithoView =
@@ -418,7 +418,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testSetComponentWithDifferentKeyGeneratesVisibilityEvents() {
-    final TestComponent<TestViewComponent> component1 = create(mContext).key("component1").build();
+    final TestComponent component1 = create(mContext).key("component1").build();
     final EventHandler<VisibleEvent> visibleEventHandler1 = new EventHandler<>(component1, 1);
     final EventHandler<InvisibleEvent> invisibleEventHandler1 = new EventHandler<>(component1, 2);
     final EventHandler<FocusedVisibleEvent> focusedEventHandler1 =
@@ -452,7 +452,7 @@ public class VisibilityEventsTest {
     assertThat(component1.getDispatchedEventHandlers())
         .contains(focusedEventHandler1);
 
-    final TestComponent<TestViewComponent> component2 = create(mContext).key("component2").build();
+    final TestComponent component2 = create(mContext).key("component2").build();
     final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(component2, 3);
 
     lithoView.setComponentTree(
@@ -485,7 +485,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testTransientStateDoesNotTriggerVisibilityEvents() {
-    final TestComponent<?> content = create(mContext).build();
+    final TestComponent content = create(mContext).build();
     final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 2);
 
     final LithoView lithoView =

@@ -848,7 +848,7 @@ public class TreeDiffingTest {
         getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
         SizeSpec.EXACTLY);
 
-    final Component<?> sizeDependentComponentSpy1 = spy(
+    final Component sizeDependentComponentSpy1 = spy(
         TestSizeDependentComponent.create(c)
             .setFixSizes(false)
             .setDelegate(false)
@@ -865,7 +865,7 @@ public class TreeDiffingTest {
         new TestSimpleContainerLayout(sizeDependentComponentSpy1, horizontalPadding);
 
 
-    final Component<?> sizeDependentComponentSpy2 = spy(
+    final Component sizeDependentComponentSpy2 = spy(
         TestSizeDependentComponent.create(c)
             .setFixSizes(false)
             .setDelegate(false)

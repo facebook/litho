@@ -58,7 +58,7 @@ public class TestLayoutComponent extends TestComponent {
   @Override
   protected ComponentLayout onCreateLayout(ComponentContext c, Component _stateObject) {
     super.onCreateLayout(c, _stateObject);
-    final Component<?> mountSpecComponent =
+    final Component mountSpecComponent =
         TestDrawableComponent.create(c, false, true, true, false, false).build();
 
     if (mIsDelegate) {

@@ -41,13 +41,13 @@ import java.util.BitSet;
  * @prop-optional prop2 boolean
  * @prop-required prop3 java.lang.Object
  * @prop-required prop4 char[]
- * @prop-required child com.facebook.litho.Component<?>
+ * @prop-required child com.facebook.litho.Component
  * @prop-required prop5 char
  *
  * @see com.facebook.litho.processor.integration.resources.TestLayoutSpec
  */
 @TargetApi(17)
-public final class TestLayout<S extends View> extends Component<TestLayout> {
+public final class TestLayout<S extends View> extends Component {
   static final Pools.SynchronizedPool<TestEvent> sTestEventPool = new Pools.SynchronizedPool<TestEvent>(2);
 
   private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
@@ -90,7 +90,7 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
       resType = ResType.NONE,
       optional = false
   )
-  Component<?> child;
+  Component child;
 
   @Prop(
       resType = ResType.NONE,
@@ -120,7 +120,7 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
   }
 
   @Override
-  public boolean isEquivalentTo(Component<?> other) {
+  public boolean isEquivalentTo(Component other) {
     if (this == other) {
       return true;
     }
@@ -146,7 +146,7 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
     if (!Arrays.equals(prop4, testLayoutRef.prop4)) {
       return false;
     }
-    if (child != null ? !child.equals(testLayoutRef.child) : testLayoutRef.child != null) {
+    if (child != null ? !child.isEquivalentTo(testLayoutRef.child) : testLayoutRef.child != null) {
       return false;
     }
     if (prop5 != testLayoutRef.prop5) {
@@ -244,7 +244,7 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
         (S) _ref.mStateContainer.state2,
         (int) _ref.mStateContainer.state3,
         (TestTreeProp) _ref.treeProp,
-        (Component<?>) _ref.child);
+        (Component) _ref.child);
     return _result;
   }
 
@@ -558,13 +558,13 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
       return this;
     }
 
-    public Builder<S> child(Component<?> child) {
+    public Builder<S> child(Component child) {
       this.mTestLayout.child = child == null ? null : child.makeShallowCopy();
       mRequired.set(4);
       return this;
     }
 
-    public Builder<S> child(Component.Builder<?, ?> childBuilder) {
+    public Builder<S> child(Component.Builder<? extends Component, ?> childBuilder) {
       this.mTestLayout.child = childBuilder.build();
       mRequired.set(4);
       return this;
@@ -609,7 +609,7 @@ public final class TestLayout<S extends View> extends Component<TestLayout> {
     }
 
     @Override
-    public Component<TestLayout> build() {
+    public TestLayout build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
       TestLayout testLayoutRef = mTestLayout;
       release();

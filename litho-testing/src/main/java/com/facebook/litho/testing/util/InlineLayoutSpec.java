@@ -15,10 +15,10 @@ import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Transition;
 
-public abstract class InlineLayoutSpec extends Component<InlineLayoutSpec> {
+public abstract class InlineLayoutSpec extends Component {
 
   @Override
-  protected ComponentLayout onCreateLayout(ComponentContext c, Component<?> component) {
+  protected ComponentLayout onCreateLayout(ComponentContext c, Component component) {
     return ((InlineLayoutSpec) component).onCreateLayout(c);
   }
 
@@ -29,7 +29,7 @@ public abstract class InlineLayoutSpec extends Component<InlineLayoutSpec> {
   }
 
   @Override
-  protected Transition onCreateTransition(ComponentContext c, Component<?> component) {
+  protected Transition onCreateTransition(ComponentContext c, Component component) {
     return ((InlineLayoutSpec) component).onCreateTransition(c);
   }
 

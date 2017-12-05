@@ -337,7 +337,7 @@ public class ComponentLifecycleTest {
     return Whitebox.getInternalState(ComponentLifecycle.class, "sMeasureFunction");
   }
 
-  private static class TestBaseComponent extends Component<TestBaseComponent> {
+  private static class TestBaseComponent extends Component {
 
     private final boolean mCanMeasure;
     private final MountType mMountType;
@@ -350,13 +350,13 @@ public class ComponentLifecycleTest {
     }
 
     @Override
-    protected ComponentLayout onCreateLayout(ComponentContext c, Component<?> input) {
+    protected ComponentLayout onCreateLayout(ComponentContext c, Component input) {
       return mNode;
     }
 
     @Override
     protected ComponentLayout onCreateLayoutWithSizeSpec(
-        ComponentContext c, int widthSpec, int heightSpec, Component<?> component) {
+        ComponentContext c, int widthSpec, int heightSpec, Component component) {
       return mNode;
     }
 
@@ -389,7 +389,7 @@ public class ComponentLifecycleTest {
         int widthSpec,
         int heightSpec,
         Size size,
-        Component<?> component) {}
+        Component component) {}
   }
 
   private static class TestMountSpecSettingSizesInOnMeasure
@@ -406,7 +406,7 @@ public class ComponentLifecycleTest {
         int widthSpec,
         int heightSpec,
         Size size,
-        Component<?> component) {
+        Component component) {
       size.width = A_WIDTH;
       size.height = A_HEIGHT;
     }

@@ -48,7 +48,7 @@ public class ExamplesLithoLabActivity extends AppCompatActivity {
 
   public class LabExampleController {
     private final ComponentContext c;
-    private final Component<ExamplesActivityComponent> examplesActivityComponent;
+    private final Component examplesActivityComponent;
 
     private boolean isMain = false;
 

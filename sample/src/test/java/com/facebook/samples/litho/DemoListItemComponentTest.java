@@ -52,7 +52,7 @@ public class DemoListItemComponentTest {
   @Test
   public void testComponentOnSyntheticEventClick() {
     final Intent intent = new Intent();
-    final Component<DemoListItemComponent> component =
+    final Component component =
         DemoListItemComponent.create(mComponentsRule.getContext())
             .name("My Component")
             .intent(intent)

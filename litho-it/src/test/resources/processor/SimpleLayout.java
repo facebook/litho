@@ -13,7 +13,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 
-public final class SimpleLayout extends Component<SimpleLayout> {
+public final class SimpleLayout extends Component {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
 
   private SimpleLayout() {
@@ -26,7 +26,7 @@ public final class SimpleLayout extends Component<SimpleLayout> {
   }
 
   @Override
-  public boolean isEquivalentTo(Component<?> other) {
+  public boolean isEquivalentTo(Component other) {
     if (this == other) {
       return true;
     }
@@ -80,7 +80,7 @@ public final class SimpleLayout extends Component<SimpleLayout> {
     }
 
     @Override
-    public Component<SimpleLayout> build() {
+    public SimpleLayout build() {
       SimpleLayout simpleLayoutRef = mSimpleLayout;
       release();
       return simpleLayoutRef;

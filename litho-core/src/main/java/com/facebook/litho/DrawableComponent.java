@@ -12,7 +12,7 @@ package com.facebook.litho;
 import android.graphics.drawable.Drawable;
 import com.facebook.litho.reference.Reference;
 
-class DrawableComponent<T extends Drawable> extends Component<DrawableComponent> {
+class DrawableComponent<T extends Drawable> extends Component {
 
   Reference<T> mDrawable;
   int mDrawableWidth;
@@ -27,7 +27,7 @@ class DrawableComponent<T extends Drawable> extends Component<DrawableComponent>
   protected void onBoundsDefined(
       ComponentContext c,
       ComponentLayout layout,
-      Component<?> component) {
+      Component component) {
     final DrawableComponent drawableComponent = (DrawableComponent) component;
 
     drawableComponent.setDrawableWidth(layout.getWidth());
@@ -54,7 +54,7 @@ class DrawableComponent<T extends Drawable> extends Component<DrawableComponent>
   protected void onBind(
       ComponentContext c,
       Object mountedContent,
-      Component<?> component) {
+      Component component) {
     final MatrixDrawable mountedDrawable = (MatrixDrawable) mountedContent;
     final DrawableComponent drawableComponent = (DrawableComponent) component;
 
@@ -66,7 +66,7 @@ class DrawableComponent<T extends Drawable> extends Component<DrawableComponent>
   protected void onUnmount(
       ComponentContext context,
       Object mountedContent,
-      Component<?> component) {
+      Component component) {
     final DrawableComponent drawableComponent = (DrawableComponent) component;
 
     final MatrixDrawable matrixDrawable = (MatrixDrawable) mountedContent;
@@ -107,7 +107,7 @@ class DrawableComponent<T extends Drawable> extends Component<DrawableComponent>
   }
 
   @Override
-  public boolean isEquivalentTo(Component<?> o) {
+  public boolean isEquivalentTo(Component o) {
     if (this == o) {
       return true;
     }

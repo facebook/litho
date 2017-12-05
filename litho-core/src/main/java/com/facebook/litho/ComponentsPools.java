@@ -232,7 +232,7 @@ public class ComponentsPools {
   }
 
   static MountItem acquireRootHostMountItem(
-      Component<?> component,
+      Component component,
       ComponentHost host,
       Object content) {
     MountItem item = ComponentsConfiguration.usePooling ? sMountItemPool.acquire() : null;
@@ -257,7 +257,7 @@ public class ComponentsPools {
   }
 
   private static @Nullable DisplayListDrawable wrapDrawableIfPossible(
-      Component<?> component, Object content, LayoutOutput layoutOutput) {
+      Component component, Object content, LayoutOutput layoutOutput) {
     if (!LayoutState.isEligibleForCreatingDisplayLists()) {
       return null;
     }
@@ -276,7 +276,7 @@ public class ComponentsPools {
   }
 
   static MountItem acquireMountItem(
-      Component<?> component,
+      Component component,
       ComponentHost host,
       Object content,
       LayoutOutput layoutOutput) {
@@ -393,7 +393,7 @@ public class ComponentsPools {
     return diff;
   }
 
-  static ComponentTree.Builder acquireComponentTreeBuilder(ComponentContext c, Component<?> root) {
+  static ComponentTree.Builder acquireComponentTreeBuilder(ComponentContext c, Component root) {
     ComponentTree.Builder componentTreeBuilder =
         ComponentsConfiguration.usePooling ? sComponentTreeBuilderPool.acquire() : null;
     if (componentTreeBuilder == null) {

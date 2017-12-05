@@ -48,7 +48,7 @@ public class ComponentStyleTest {
 
   @Test
   public void testStyleProp() {
-    Component<Text> component =
+    Component component =
         Text.create(mContext, 0, TextSizeStyle)
             .text("text")
             .build();
@@ -58,7 +58,7 @@ public class ComponentStyleTest {
 
   @Test
   public void testOverrideStyleProp() {
-    Component<Text> component =
+    Component component =
         Text.create(mContext, 0, TextSizeStyle)
             .text("text")
             .textSizePx(2 * mDimen)
@@ -90,7 +90,7 @@ public class ComponentStyleTest {
 
   @Test
   public void testAttributeStyleProp() {
-    Component<Text> component =
+    Component component =
         Text.create(mContext, testAttrLargeText, 0)
             .text("text")
             .build();
@@ -100,7 +100,7 @@ public class ComponentStyleTest {
 
   @Test
   public void testOverrideAttributeStyleProp() {
-    Component<Text> component =
+    Component component =
         Text.create(mContext, testAttrLargeText, 0)
             .text("text")
             .textSizePx(mDimen)
@@ -132,7 +132,7 @@ public class ComponentStyleTest {
 
   @Test
   public void testStyleResOverridenByAttrResForProp() {
-    Component<Text> component =
+    Component component =
         Text.create(mContext, testAttrLargeText, TextSizeStyle)
             .text("text")
             .build();

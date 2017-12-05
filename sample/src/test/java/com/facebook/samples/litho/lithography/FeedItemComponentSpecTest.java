@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
 public class FeedItemComponentSpecTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
 
-  private Component<FeedItemComponent> mComponent;
+  private Component mComponent;
 
   @Before
   public void setUp() {

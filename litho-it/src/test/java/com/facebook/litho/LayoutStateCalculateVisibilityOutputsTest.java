@@ -257,7 +257,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
   private static LayoutState calculateLayoutState(
       Context context,
-      Component<?> component,
+      Component component,
       int componentTreeId,
       int widthSpec,
       int heightSpec) {

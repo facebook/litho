@@ -48,7 +48,7 @@ public class FeedItemComponentSpecSubComponentTest {
   @Test
   public void testSubComponentWithoutProperties() {
     final ComponentContext c = mComponentsRule.getContext();
-    final Component<FeedItemComponent> component = makeComponent("Any String");
+    final Component component = makeComponent("Any String");
 
     // This will match as long as there is a FooterComponent, with any props.
     assertThat(c, component).has(subComponentWith(c, TestFooterComponent.matcher(c).build()));
@@ -57,7 +57,7 @@ public class FeedItemComponentSpecSubComponentTest {
   @Test
   public void testSubComponentWithRawText() {
     final ComponentContext c = mComponentsRule.getContext();
-    final Component<FeedItemComponent> component = makeComponent("Raw Text");
+    final Component component = makeComponent("Raw Text");
 
     // This will match if the component has exactly the specified text as property.
     assertThat(c, component)
@@ -67,7 +67,7 @@ public class FeedItemComponentSpecSubComponentTest {
   @Test
   public void testSubComponentWithMatcher() {
     final ComponentContext c = mComponentsRule.getContext();
-    final Component<FeedItemComponent> component =
+    final Component component =
         makeComponent("Long Text That We Don't Want To Match In Its Entirety");
 
     // We can pass in any of the default hamcrest matchers here.
@@ -80,7 +80,7 @@ public class FeedItemComponentSpecSubComponentTest {
   @Test
   public void testSubComponentWithRes() {
     final ComponentContext c = mComponentsRule.getContext();
-    final Component<FeedItemComponent> component = makeComponent("Cancel");
+    final Component component = makeComponent("Cancel");
 
     // You can also reference resources here directly.
     assertThat(c, component)
@@ -89,7 +89,7 @@ public class FeedItemComponentSpecSubComponentTest {
                 c, TestFooterComponent.matcher(c).textRes(android.R.string.cancel).build()));
   }
 
-  private Component<FeedItemComponent> makeComponent(String value) {
+  private Component makeComponent(String value) {
     final ComponentContext c = mComponentsRule.getContext();
     return FeedItemComponent.create(c)
         .artist(new Artist("Some Name", value, 2001))

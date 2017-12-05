@@ -54,7 +54,7 @@ class StoryCardComponentSpec {
 
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
-      ComponentContext c, @Prop Component<?> header, @Prop String content, @State Boolean saved) {
+      ComponentContext c, @Prop Component header, @Prop String content, @State Boolean saved) {
     return Column.create(c)
         .backgroundColor(Color.WHITE)
         .child(header)

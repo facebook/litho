@@ -17,7 +17,6 @@ import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import java.util.List;
 import org.assertj.core.api.Condition;
 import org.assertj.core.api.iterable.Extractor;
-import org.assertj.core.description.Description;
 
 /**
  * An extractor to be used with {@link org.assertj.core.api.Assertions#assertThat}.
@@ -25,7 +24,7 @@ import org.assertj.core.description.Description;
  * <p>In most cases you will want to use the {@link #subComponentWith(ComponentContext, Condition)}
  * combinator.
  */
-public class SubComponentExtractor implements Extractor<Component<?>, List<InspectableComponent>> {
+public class SubComponentExtractor implements Extractor<Component, List<InspectableComponent>> {
 
   private final ComponentContext mComponentContext;
 
@@ -34,7 +33,7 @@ public class SubComponentExtractor implements Extractor<Component<?>, List<Inspe
   }
 
   @Override
-  public List<InspectableComponent> extract(Component<?> input) {
+  public List<InspectableComponent> extract(Component input) {
     final LithoView lithoView = ComponentTestHelper.mountComponent(mComponentContext, input);
     return LithoViewSubComponentExtractor.subComponents().extract(lithoView);
   }
@@ -87,9 +86,6 @@ public class SubComponentExtractor implements Extractor<Component<?>, List<Inspe
         for (InspectableComponent component : subComponents(c).extract(value)) {
           if (inner.matches(component)) {
             return true;
-          } else {
-            describedAs(
-                Description.mostRelevantDescription(description(), inner.description().value()));
           }
         }
 

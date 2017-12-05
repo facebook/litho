@@ -22,7 +22,6 @@ import com.facebook.litho.specmodels.generator.StateGenerator;
 import com.facebook.litho.specmodels.generator.TreePropGenerator;
 import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
-import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
 import javax.lang.model.element.Modifier;
 
@@ -32,9 +31,7 @@ public class DefaultLayoutSpecGenerator implements LayoutSpecGenerator {
   public TypeSpec generate(LayoutSpecModel layoutSpecModel) {
     final TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(layoutSpecModel.getComponentName())
-            .superclass(
-                ParameterizedTypeName.get(
-                    ClassNames.COMPONENT, layoutSpecModel.getComponentTypeName()))
+            .superclass(ClassNames.COMPONENT)
             .addTypeVariables(layoutSpecModel.getTypeVariables());
 
     if (layoutSpecModel.isPublic()) {

@@ -53,7 +53,7 @@ public class TestLayoutSpecModelFactoryTest {
     public static ComponentLayout onCreateLayout(
         ComponentContext c,
         @Prop String s,
-        @Prop Component<?> child,
+        @Prop Component child,
         @Prop(resType = ResType.DIMEN_SIZE) float size,
         @Prop(optional = true) int i) {
       return Row.create(c).build();

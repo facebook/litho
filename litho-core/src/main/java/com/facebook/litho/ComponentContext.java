@@ -34,7 +34,7 @@ public class ComponentContext extends ContextWrapper {
 
   // Hold a reference to the component which scope we are currently within.
   @ThreadConfined(ThreadConfined.ANY)
-  private Component<?> mComponentScope;
+  private Component mComponentScope;
   @ThreadConfined(ThreadConfined.ANY)
   private final ResourceCache mResourceCache;
   @ThreadConfined(ThreadConfined.ANY)
@@ -268,7 +268,7 @@ public class ComponentContext extends ContextWrapper {
   }
 
   ComponentLayout.Builder newLayoutBuilder(
-      Component<?> component,
+      Component component,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes) {
     component.generateKey(this);

@@ -1247,9 +1247,7 @@ public class BuilderGenerator {
     final MethodSpec.Builder buildMethodBuilder = MethodSpec.methodBuilder("build")
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
-        .returns(ParameterizedTypeName.get(
-            specModel.getComponentClass(),
-            specModel.getComponentTypeName()));
+        .returns(specModel.getComponentTypeName());
 
     if (numRequiredProps > 0) {
       buildMethodBuilder

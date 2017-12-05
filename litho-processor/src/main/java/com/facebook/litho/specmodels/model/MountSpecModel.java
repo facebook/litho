@@ -26,7 +26,6 @@ import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
@@ -278,8 +277,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   public TypeSpec generate() {
     final TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(getComponentName())
-            .superclass(
-                ParameterizedTypeName.get(ClassNames.COMPONENT, mSpecModel.getComponentTypeName()))
+            .superclass(ClassNames.COMPONENT)
             .addTypeVariables(getTypeVariables());
 
     if (isPublic()) {

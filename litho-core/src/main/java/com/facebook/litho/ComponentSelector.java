@@ -44,7 +44,7 @@ public class ComponentSelector {
     return tryToRender(componentBuilder.buildWithLayout());
   }
 
-  public ComponentSelector tryToRender(@Nullable Component<?> component) {
+  public ComponentSelector tryToRender(@Nullable Component component) {
     if (component == null || mWillRender) {
       return this;
     }

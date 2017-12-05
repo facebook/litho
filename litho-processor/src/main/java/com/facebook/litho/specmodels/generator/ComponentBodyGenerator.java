@@ -340,10 +340,7 @@ public class ComponentBodyGenerator {
             .addAnnotation(Override.class)
             .addModifiers(Modifier.PUBLIC)
             .returns(TypeName.BOOLEAN)
-            .addParameter(
-                ParameterizedTypeName.get(
-                    specModel.getComponentClass(), WildcardTypeName.subtypeOf(TypeName.OBJECT)),
-                "other")
+            .addParameter(specModel.getComponentClass(), "other")
             .beginControlFlow("if (this == other)")
             .addStatement("return true")
             .endControlFlow()

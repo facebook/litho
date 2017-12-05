@@ -534,9 +534,9 @@ public class LayoutStateCreateTreeTest {
   }
 
   private static class TestDrawableComponentWithMockInternalNode
-      extends TestComponent<TestDrawableComponentWithMockInternalNode> {
+      extends TestComponent {
 
-    protected ComponentLayout onCreateLayout(ComponentContext c, Component<?> component) {
+    protected ComponentLayout onCreateLayout(ComponentContext c, Component component) {
       InternalNode internalNode = mock(InternalNode.class);
       when(internalNode.build()).thenReturn(internalNode);
       return internalNode;
@@ -560,7 +560,7 @@ public class LayoutStateCreateTreeTest {
             TestDrawableComponentWithMockInternalNode,
             TestDrawableComponentWithMockInternalNode.Builder> {
 
-      private Component<TestDrawableComponentWithMockInternalNode> mComponent;
+      private Component mComponent;
 
       @Override
       public Builder getThis() {
@@ -568,7 +568,7 @@ public class LayoutStateCreateTreeTest {
       }
 
       @Override
-      public Component<TestDrawableComponentWithMockInternalNode> build() {
+      public Component build() {
         return mComponent;
       }
     }

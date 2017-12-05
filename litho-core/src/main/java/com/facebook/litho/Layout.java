@@ -31,7 +31,7 @@ final class Layout {
    */
   static ComponentLayout.Builder create(
       ComponentContext c,
-      Component<?> component,
+      Component component,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes) {
     if (component == null) {
@@ -47,7 +47,7 @@ final class Layout {
    * @param component The component to render within this layout
    * @return A layout builder
    */
-  static ComponentLayout.Builder create(ComponentContext c, Component<?> component) {
+  static ComponentLayout.Builder create(ComponentContext c, Component component) {
     return create(c, component, 0, 0);
   }
 }

@@ -25,7 +25,7 @@ public class BasicLayoutSpec {
       @Prop String myStringProp,
       @Prop(resType = ResType.COLOR) int myRequiredColorProp,
       @Prop(resType = ResType.DIMEN_SIZE) float myDimenSizeProp,
-      @Prop Component<?> child) {
+      @Prop Component child) {
     return null;
   }
 }

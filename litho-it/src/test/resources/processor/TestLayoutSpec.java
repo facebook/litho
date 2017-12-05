@@ -73,7 +73,7 @@ public class TestLayoutSpec<S extends View> {
       @State S state2,
       @State int state3,
       @TreeProp TestTreeProp treeProp,
-      @Prop Component<?> child) {
+      @Prop Component child) {
     return null;
   }
 

@@ -513,7 +513,7 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode child(Component<?> child) {
+  public InternalNode child(Component child) {
     return this;
   }
 

@@ -51,7 +51,7 @@ import java.util.BitSet;
  * @see com.facebook.litho.processor.integration.resources.TestMountSpec
  */
 @TargetApi(17)
-public final class TestMount<S extends View> extends Component<TestMount> {
+public final class TestMount<S extends View> extends Component {
   static final Pools.SynchronizedPool<TestEvent> sTestEventPool = new Pools.SynchronizedPool<TestEvent>(2);
 
   private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
@@ -132,7 +132,7 @@ public final class TestMount<S extends View> extends Component<TestMount> {
   }
 
   @Override
-  public boolean isEquivalentTo(Component<?> other) {
+  public boolean isEquivalentTo(Component other) {
     if (this == other) {
       return true;
     }
@@ -752,7 +752,7 @@ public final class TestMount<S extends View> extends Component<TestMount> {
     }
 
     @Override
-    public Component<TestMount> build() {
+    public TestMount build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
       TestMount testMountRef = mTestMount;
       release();

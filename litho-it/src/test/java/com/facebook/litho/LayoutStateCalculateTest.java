@@ -1940,7 +1940,7 @@ public class LayoutStateCalculateTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(final ComponentContext c) {
-            final Component<TestSizeDependentComponent> nestedTreeRootComponent =
+            final Component nestedTreeRootComponent =
                 TestSizeDependentComponent.create(c).setFixSizes(true).setDelegate(false).build();
 
             return Wrapper.create(c).delegate(nestedTreeRootComponent).paddingPx(ALL, 10).build();
@@ -2059,7 +2059,7 @@ public class LayoutStateCalculateTest {
         getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
         EXACTLY);
 
-    final Component<?> componentSpy = spy(
+    final Component componentSpy = spy(
         TestLayoutComponent.create(c, 0, 0, true, true, true, false).build());
     final Size sizeOutput = new Size();
     componentSpy.measure(
@@ -2124,7 +2124,7 @@ public class LayoutStateCalculateTest {
         getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
         EXACTLY);
 
-    final Component<?> sizeDependentComponentSpy = spy(
+    final Component sizeDependentComponentSpy = spy(
         TestSizeDependentComponent.create(c)
             .setFixSizes(false)
             .setDelegate(false)
@@ -2203,7 +2203,7 @@ public class LayoutStateCalculateTest {
         getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
         EXACTLY);
 
-    final Component<?> componentSpy = spy(
+    final Component componentSpy = spy(
         TestLayoutComponent.create(c, 0, 0, true, true, true, true).build());
     final Size sizeOutput = new Size();
     componentSpy.measure(
@@ -2267,7 +2267,7 @@ public class LayoutStateCalculateTest {
         getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
         EXACTLY);
 
-    final Component<?> sizeDependentComponentSpy = spy(
+    final Component sizeDependentComponentSpy = spy(
         TestSizeDependentComponent.create(c)
             .setFixSizes(false)
             .setDelegate(true)
@@ -2594,7 +2594,7 @@ public class LayoutStateCalculateTest {
 
   private LayoutState calculateLayoutState(
       final Context context,
-      final Component<?> component,
+      final Component component,
       final int componentTreeId,
       final int widthSpec,
       final int heightSpec) {

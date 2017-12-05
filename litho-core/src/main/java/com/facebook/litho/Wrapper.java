@@ -30,7 +30,7 @@ public final class Wrapper {
    */
   private static ComponentLayout.Builder create(
       ComponentContext c,
-      Component<?> component,
+      Component component,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes) {
     if (component == null) {
@@ -59,7 +59,7 @@ public final class Wrapper {
       mDefStyleRes = defStyleRes;
     }
 
-    public ComponentLayout.Builder delegate(Component<?> component) {
+    public ComponentLayout.Builder delegate(Component component) {
       return create(mContext, component, mDefStyleAttr, mDefStyleRes);
     }
   }

@@ -831,7 +831,7 @@ public interface ComponentLayout {
     ContainerBuilder child(ComponentLayout.Builder childBuilder);
 
     @ReturnsOwnership
-    ContainerBuilder child(Component<?> component);
+    ContainerBuilder child(Component component);
 
     @ReturnsOwnership
     ContainerBuilder child(Component.Builder<?, ?> componentBuilder);

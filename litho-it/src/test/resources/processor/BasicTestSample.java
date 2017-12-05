@@ -17,6 +17,7 @@ import android.support.annotation.Dimension;
 import android.support.annotation.Px;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.ResourceResolver;
 import com.facebook.litho.testing.assertj.ComponentMatcher;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
@@ -27,7 +28,7 @@ import org.assertj.core.description.TextDescription;
  * @prop-required myStringProp java.lang.String
  * @prop-required myRequiredColorProp int
  * @prop-required myDimenSizeProp float
- * @prop-required child com.facebook.litho.Component<?>
+ * @prop-required child com.facebook.litho.Component
  *
  * @see com.facebook.litho.processor.integration.resources.BasicTestSampleSpec
  */
@@ -131,12 +132,12 @@ public final class BasicTestSample implements BasicTestSampleSpec {
       return this;
     }
 
-    public Matcher child(Component<?> child) {
+    public Matcher child(Component child) {
       this.mChildMatcher = org.hamcrest.core.Is.is((Component) child);
       return this;
     }
 
-    public Matcher child(Component.Builder<?, ?> childBuilder) {
+    public Matcher child(Component.Builder<? extends ComponentLifecycle, ?> childBuilder) {
       this.mChildMatcher = org.hamcrest.core.Is.is((Component) childBuilder.build());
       return this;
     }

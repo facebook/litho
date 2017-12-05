@@ -98,7 +98,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
             YogaMeasureMode heightMode) {
           final InternalNode node = (InternalNode) cssNode.getData();
           final DiffNode diffNode = node.areCachedMeasuresValid() ? node.getDiffNode() : null;
-          final Component<?> component = node.getRootComponent();
+          final Component component = node.getRootComponent();
           final int widthSpec;
           final int heightSpec;
           final boolean isTracing = ComponentsSystrace.isTracing();
@@ -200,23 +200,23 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return onCreateMountContent(c);
   }
 
-  void mount(ComponentContext c, Object convertContent, Component<?> component) {
+  void mount(ComponentContext c, Object convertContent, Component component) {
     c.enterNoStateUpdatesMethod("mount");
     onMount(c, convertContent, component);
     c.exitNoStateUpdatesMethod();
   }
 
-  void bind(ComponentContext c, Object mountedContent, Component<?> component) {
+  void bind(ComponentContext c, Object mountedContent, Component component) {
     c.enterNoStateUpdatesMethod("bind");
     onBind(c, mountedContent, component);
     c.exitNoStateUpdatesMethod();
   }
 
-  void unbind(ComponentContext c, Object mountedContent, Component<?> component) {
+  void unbind(ComponentContext c, Object mountedContent, Component component) {
     onUnbind(c, mountedContent, component);
   }
 
-  void unmount(ComponentContext c, Object mountedContent, Component<?> component) {
+  void unmount(ComponentContext c, Object mountedContent, Component component) {
     onUnmount(c, mountedContent, component);
   }
 
@@ -231,7 +231,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    */
   ComponentLayout createLayout(
       ComponentContext context,
-      Component<?> component,
+      Component component,
       boolean resolveNestedTree) {
     final boolean deferNestedTreeResolution =
         Component.isNestedTree(component) && !resolveNestedTree;
@@ -317,13 +317,13 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       ComponentContext c,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
-      Component<?> component) {
+      Component component) {
     c.setDefStyle(defStyleAttr, defStyleRes);
     onLoadStyle(c, component);
     c.setDefStyle(0, 0);
   }
 
-  void loadStyle(ComponentContext c, Component<?> component) {
+  void loadStyle(ComponentContext c, Component component) {
     onLoadStyle(c, component);
   }
 
@@ -349,7 +349,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * Retrieves all of the tree props used by this Component from the TreeProps map
    * and sets the tree props as fields on the ComponentImpl.
    */
-  protected void populateTreeProps(Component<?> component, TreeProps parentTreeProps) {
+  protected void populateTreeProps(Component component, TreeProps parentTreeProps) {
   }
 
   /**
@@ -357,7 +357,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    */
   protected TreeProps getTreePropsForChildren(
       ComponentContext c,
-      Component<?> component,
+      Component component,
       TreeProps previousTreeProps) {
     return previousTreeProps;
   }
@@ -370,7 +370,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @param c The {@link ComponentContext} to build a {@link ComponentLayout} tree.
    * @param component The component to create the {@link ComponentLayout} tree from.
    */
-  protected ComponentLayout onCreateLayout(ComponentContext c, Component<?> component) {
+  protected ComponentLayout onCreateLayout(ComponentContext c, Component component) {
     return Column.create(c).build();
   }
 
@@ -378,15 +378,15 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       ComponentContext c,
       int widthSpec,
       int heightSpec,
-      Component<?> component) {
+      Component component) {
     return Column.create(c).build();
   }
 
-  protected void onPrepare(ComponentContext c, Component<?> component) {
+  protected void onPrepare(ComponentContext c, Component component) {
     // do nothing, by default
   }
 
-  protected void onLoadStyle(ComponentContext c, Component<?> component) {
+  protected void onLoadStyle(ComponentContext c, Component component) {
   }
 
   /**
@@ -403,7 +403,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   protected void onBoundsDefined(
       ComponentContext c,
       ComponentLayout layout,
-      Component<?> component) {
+      Component component) {
   }
 
   /**
@@ -431,7 +431,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       int widthSpec,
       int heightSpec,
       Size size,
-      Component<?> component) {
+      Component component) {
     throw new IllegalStateException(
         "You must override onMeasure() if you return true in canMeasure(), " +
             "ComponentLifecycle is: " + component.getLifecycle());
@@ -479,7 +479,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @param c The {@link ComponentContext} to mount the component into.
    * @param component The {@link Component} for this component.
    */
-  protected void onMount(ComponentContext c, Object convertContent, Component<?> component) {
+  protected void onMount(ComponentContext c, Object convertContent, Component component) {
     // Do nothing by default.
   }
 
@@ -490,15 +490,15 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @param mountedContent The {@link Drawable} or {@link View} mounted by this component.
    * @param component The {@link Component} for this component.
    */
-  protected void onUnmount(ComponentContext c, Object mountedContent, Component<?> component) {
+  protected void onUnmount(ComponentContext c, Object mountedContent, Component component) {
     // Do nothing by default.
   }
 
-  protected void onBind(ComponentContext c, Object mountedContent, Component<?> component) {
+  protected void onBind(ComponentContext c, Object mountedContent, Component component) {
     // Do nothing by default.
   }
 
-  protected void onUnbind(ComponentContext c, Object mountedContent, Component<?> component) {
+  protected void onUnbind(ComponentContext c, Object mountedContent, Component component) {
     // Do nothing by default.
   }
 
@@ -519,7 +519,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    */
   protected void onPopulateAccessibilityNode(
       AccessibilityNodeInfoCompat accessibilityNode,
-      Component<?> component) {
+      Component component) {
   }
 
   /**
@@ -535,7 +535,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       int extraNodeIndex,
       int componentBoundsX,
       int componentBoundsY,
-      Component<?> component) {
+      Component component) {
   }
 
   /**
@@ -546,7 +546,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @return the extra virtual view id if one is found, otherwise
    *         {@code ExploreByTouchHelper#INVALID_ID}
    */
-  protected int getExtraAccessibilityNodeAt(int x, int y, Component<?> component) {
+  protected int getExtraAccessibilityNodeAt(int x, int y, Component component) {
     return ExploreByTouchHelper.INVALID_ID;
   }
 
@@ -556,7 +556,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @param component the {@link Component} for this component
    * @return the number of extra nodes
    */
-  protected int getExtraAccessibilityNodesCount(Component<?> component) {
+  protected int getExtraAccessibilityNodesCount(Component component) {
     return 0;
   }
 
@@ -586,7 +586,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       Component component) {
   }
 
-  protected void createInitialState(ComponentContext c, Component<?> component) {
+  protected void createInitialState(ComponentContext c, Component component) {
 
   }
 
@@ -658,7 +658,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @return a {@link TransitionSet} specifying how to animate this component to its new layout and
    *     props.
    */
-  protected Transition onCreateTransition(ComponentContext c, Component<?> component) {
+  protected Transition onCreateTransition(ComponentContext c, Component component) {
     return null;
   }
 
@@ -676,7 +676,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   protected static <E> EventHandler<E> newEventHandler(
-      Component<?> c,
+      Component c,
       String name,
       int id,
       Object[] params) {

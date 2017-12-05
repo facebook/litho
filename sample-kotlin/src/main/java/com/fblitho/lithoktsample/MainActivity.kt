@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  private fun createRecyclerComponent(model: Model): Component<RecyclerCollectionComponent> =
+  private fun createRecyclerComponent(model: Model): Component =
       RecyclerCollectionComponent
           .create(sectionContext)
           .section(

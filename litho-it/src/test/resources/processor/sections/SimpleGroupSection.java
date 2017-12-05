@@ -30,7 +30,7 @@ public final class SimpleGroupSection extends Section<SimpleGroupSection> {
   }
 
   @Override
-  public boolean isEquivalentTo(Section<?> other) {
+  public boolean isEquivalentTo(Section other) {
     if (this == other) {
       return true;
     }
@@ -85,7 +85,7 @@ public final class SimpleGroupSection extends Section<SimpleGroupSection> {
     }
 
     @Override
-    public Section<SimpleGroupSection> build() {
+    public SimpleGroupSection build() {
       SimpleGroupSection simpleGroupSectionRef = mSimpleGroupSection;
       release();
       return simpleGroupSectionRef;

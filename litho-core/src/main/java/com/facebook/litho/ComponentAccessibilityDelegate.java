@@ -75,7 +75,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       // Coalesce the accessible mount item's information with the
       // the root host view's as they are meant to behave as a single
       // node in the accessibility framework.
-      final Component<?> component = mountItem.getComponent();
+      final Component component = mountItem.getComponent();
       component.getLifecycle().onPopulateAccessibilityNode(node, component);
     } else {
       super.onInitializeAccessibilityNodeInfo(host, node);
@@ -89,7 +89,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return;
     }
 
-    final Component<?> component = mountItem.getComponent();
+    final Component component = mountItem.getComponent();
 
     final int extraAccessibilityNodesCount =
         component.getLifecycle().getExtraAccessibilityNodesCount(component);
@@ -119,7 +119,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     final Drawable drawable = (Drawable) mountItem.getContent();
     final Rect bounds = drawable.getBounds();
 
-    final Component<?> component = mountItem.getComponent();
+    final Component component = mountItem.getComponent();
     final ComponentLifecycle lifecycle = component.getLifecycle();
 
     node.setClassName(lifecycle.getClass().getName());
@@ -152,7 +152,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return INVALID_ID;
     }
 
-    final Component<?> component = mountItem.getComponent();
+    final Component component = mountItem.getComponent();
     final ComponentLifecycle lifecycle = component.getLifecycle();
 
     if (lifecycle.getExtraAccessibilityNodesCount(component) == 0) {

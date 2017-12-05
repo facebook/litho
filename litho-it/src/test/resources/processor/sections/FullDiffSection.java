@@ -87,7 +87,7 @@ public final class FullDiffSection<T> extends Section<FullDiffSection> {
   }
 
   @Override
-  public boolean isEquivalentTo(Section<?> other) {
+  public boolean isEquivalentTo(Section other) {
     if (this == other) {
       return true;
     }
@@ -411,7 +411,7 @@ public final class FullDiffSection<T> extends Section<FullDiffSection> {
     }
 
     @Override
-    public Section<FullDiffSection> build() {
+    public FullDiffSection build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
       FullDiffSection fullDiffSectionRef = mFullDiffSection;
       release();

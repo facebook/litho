@@ -81,7 +81,7 @@ final class FullGroupSection<T> extends Section<FullGroupSection> {
   }
 
   @Override
-  public boolean isEquivalentTo(Section<?> other) {
+  public boolean isEquivalentTo(Section other) {
     if (this == other) {
       return true;
     }
@@ -478,7 +478,7 @@ final class FullGroupSection<T> extends Section<FullGroupSection> {
     }
 
     @Override
-    public Section<FullGroupSection> build() {
+    public FullGroupSection build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
       FullGroupSection fullGroupSectionRef = mFullGroupSection;
       release();

@@ -39,7 +39,7 @@ import org.junit.runner.RunWith;
 public class FeedItemCardSpecTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
 
-  private Component<FeedItemCard> mComponent;
+  private Component mComponent;
   private static final Artist ARTIST = new Artist("Sindre Sorhus", "JavaScript Rockstar", 2010);
 
   @Before

@@ -47,7 +47,7 @@ public class GenericMatcherGenerationTest {
   @Test
   public void testGenericPropMatching() {
     final ComponentContext c = mComponentsRule.getContext();
-    final Component<MyGeneric> component =
+    final Component component =
         new MyGeneric<>(new MyGenericSpec()).create(c).genericProp(mGenericProp).build();
     final ComponentMatcher matcher = TestMyGeneric.matcher(c).genericProp(mGenericProp).build();
 

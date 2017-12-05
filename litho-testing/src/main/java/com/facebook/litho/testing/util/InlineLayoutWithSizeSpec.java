@@ -19,7 +19,7 @@ public abstract class InlineLayoutWithSizeSpec extends Component {
 
   @Override
   protected ComponentLayout onCreateLayoutWithSizeSpec(
-      ComponentContext c, int widthSpec, int heightSpec, Component<?> component) {
+      ComponentContext c, int widthSpec, int heightSpec, Component component) {
     return ((InlineLayoutWithSizeSpec) component)
         .onCreateLayoutWithSizeSpec(c, widthSpec, heightSpec);
   }

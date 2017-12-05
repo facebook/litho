@@ -71,7 +71,7 @@ class DebugDraw {
     for (int i = host.getMountItemCount() - 1; i >= 0; i--) {
       final MountItem item = host.getMountItemAt(i);
 
-      final Component<?> component = item.getComponent();
+      final Component component = item.getComponent();
       if (!isMountViewSpec(component) || isHostSpec(component)) {
         continue;
       }
@@ -118,7 +118,7 @@ class DebugDraw {
     for (int i = host.getMountItemCount() - 1; i >= 0; i--) {
       final MountItem item = host.getMountItemAt(i);
 
-      final Component<?> component = item.getComponent();
+      final Component component = item.getComponent();
       final Object content = item.getContent();
 
       if (!shouldHighlight(component)) {
@@ -205,7 +205,7 @@ class DebugDraw {
         cornerWidth);
   }
 
-  private static boolean shouldHighlight(Component<?> component) {
+  private static boolean shouldHighlight(Component component) {
     // Don't highlight bounds of background/foreground components.
     return !(component.getLifecycle() instanceof DrawableComponent);
   }
@@ -215,11 +215,11 @@ class DebugDraw {
     return (int) (dips * scale + 0.5f);
   }
 
-  private static int getBorderColor(Component<?> component) {
+  private static int getBorderColor(Component component) {
     return isHostSpec(component) ? MOUNT_BORDER_COLOR_HOST : MOUNT_BORDER_COLOR;
   }
 
-  private static int getCornerColor(Component<?> component) {
+  private static int getCornerColor(Component component) {
     return isHostSpec(component) ? MOUNT_CORNER_COLOR_HOST : MOUNT_CORNER_COLOR;
   }
 

@@ -122,9 +122,9 @@ public class RecyclerCollectionComponentSpec {
   static ComponentLayout onCreateLayout(
       final ComponentContext c,
       @Prop Section<?> section,
-      @Prop(optional = true) Component<?> loadingComponent,
-      @Prop(optional = true) Component<?> emptyComponent,
-      @Prop(optional = true) Component<?> errorComponent,
+      @Prop(optional = true) Component loadingComponent,
+      @Prop(optional = true) Component emptyComponent,
+      @Prop(optional = true) Component errorComponent,
       @Prop(optional = true, varArg = "onScrollListener") List<OnScrollListener> onScrollListeners,
       @Prop(optional = true) final LoadEventsHandler loadEventsHandler,
       @Prop(optional = true) boolean clipToPadding,

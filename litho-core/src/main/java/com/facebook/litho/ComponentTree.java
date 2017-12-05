@@ -163,7 +163,7 @@ public class ComponentTree {
   // We will need to ensure there are no background threads referencing mComponent. We'll need
   // to keep a reference count or something. :-/
   @GuardedBy("this")
-  private @Nullable Component<?> mRoot;
+  private @Nullable Component mRoot;
 
   @GuardedBy("this")
   private int mWidthSpec = SIZE_UNINITIALIZED;
@@ -207,7 +207,7 @@ public class ComponentTree {
     return create(context, root.build());
   }
 
-  public static Builder create(ComponentContext context, Component<?> root) {
+  public static Builder create(ComponentContext context, Component root) {
     return ComponentsPools.acquireComponentTreeBuilder(context, root);
   }
 
@@ -770,7 +770,7 @@ public class ComponentTree {
    * we will run a layout and then proxy a message to the main thread to cause a
    * relayout/invalidate.
    */
-  public void setRoot(Component<?> rootComponent) {
+  public void setRoot(Component rootComponent) {
     if (rootComponent == null) {
       throw new IllegalArgumentException("Root component can't be null");
     }
@@ -819,7 +819,7 @@ public class ComponentTree {
     toPrePopulate.releaseRef();
   }
 
-  public void setRootAsync(Component<?> rootComponent) {
+  public void setRootAsync(Component rootComponent) {
     if (rootComponent == null) {
       throw new IllegalArgumentException("Root component can't be null");
     }
@@ -897,7 +897,7 @@ public class ComponentTree {
 
   void updateStateInternal(boolean isAsync) {
 
-    final Component<?> root;
+    final Component root;
 
     synchronized (this) {
 
@@ -1005,7 +1005,7 @@ public class ComponentTree {
   /**
    * Compute asynchronously a new layout with the given component root and sizes
    */
-  public void setRootAndSizeSpecAsync(Component<?> root, int widthSpec, int heightSpec) {
+  public void setRootAndSizeSpecAsync(Component root, int widthSpec, int heightSpec) {
     if (root == null) {
       throw new IllegalArgumentException("Root component can't be null");
     }
@@ -1021,7 +1021,7 @@ public class ComponentTree {
   /**
    * Compute a new layout with the given component root and sizes
    */
-  public void setRootAndSizeSpec(Component<?> root, int widthSpec, int heightSpec) {
+  public void setRootAndSizeSpec(Component root, int widthSpec, int heightSpec) {
     if (root == null) {
       throw new IllegalArgumentException("Root component can't be null");
     }
@@ -1034,7 +1034,7 @@ public class ComponentTree {
         null /* output */);
   }
 
-  public void setRootAndSizeSpec(Component<?> root, int widthSpec, int heightSpec, Size output) {
+  public void setRootAndSizeSpec(Component root, int widthSpec, int heightSpec, Size output) {
     if (root == null) {
       throw new IllegalArgumentException("Root component can't be null");
     }
@@ -1111,7 +1111,7 @@ public class ComponentTree {
   }
 
   private void setRootAndSizeSpecInternal(
-      Component<?> root,
+      Component root,
       int widthSpec,
       int heightSpec,
       boolean isAsync,
@@ -1206,7 +1206,7 @@ public class ComponentTree {
   private void calculateLayout(Size output) {
     int widthSpec;
     int heightSpec;
-    Component<?> root;
+    Component root;
     LayoutState previousLayoutState = null;
 
     // Cancel any scheduled layout requests we might have in the background queue
@@ -1496,7 +1496,7 @@ public class ComponentTree {
   protected LayoutState calculateLayoutState(
       @Nullable Object lock,
       ComponentContext context,
-      Component<?> root,
+      Component root,
       int widthSpec,
       int heightSpec,
       boolean diffingEnabled,
@@ -1567,7 +1567,7 @@ public class ComponentTree {
 
     // required
     private ComponentContext context;
-    private Component<?> root;
+    private Component root;
 
     // optional
     private boolean incrementalMountEnabled = true;
@@ -1590,11 +1590,11 @@ public class ComponentTree {
     protected Builder() {
     }
 
-    protected Builder(ComponentContext context, Component<?> root) {
+    protected Builder(ComponentContext context, Component root) {
       init(context, root);
     }
 
-    protected void init(ComponentContext context, Component<?> root) {
+    protected void init(ComponentContext context, Component root) {
       this.context = context;
       this.root = root;
     }

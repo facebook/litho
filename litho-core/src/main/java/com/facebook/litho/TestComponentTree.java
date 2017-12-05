@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class TestComponentTree extends ComponentTree {
 
-  public static Builder create(ComponentContext context, Component<?> root) {
+  public static Builder create(ComponentContext context, Component root) {
     return new Builder(context, root);
   }
 
@@ -37,7 +37,7 @@ public class TestComponentTree extends ComponentTree {
   protected LayoutState calculateLayoutState(
       @Nullable Object lock,
       ComponentContext context,
-      Component<?> root,
+      Component root,
       int widthSpec,
       int heightSpec,
       boolean diffingEnabled,
@@ -82,7 +82,7 @@ public class TestComponentTree extends ComponentTree {
 
   public static class Builder extends ComponentTree.Builder {
 
-    private Builder(ComponentContext context, Component<?> root) {
+    private Builder(ComponentContext context, Component root) {
       super(context, root);
     }
 

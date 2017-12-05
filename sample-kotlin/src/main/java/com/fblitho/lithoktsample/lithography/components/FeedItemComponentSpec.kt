@@ -61,13 +61,13 @@ object FeedItemComponentSpec {
           .child(FooterComponent.create(c).text(artist.biography))
           .build()
 
-  private fun imageBlock(artist: Artist, c: ComponentContext): Component<*> =
+  private fun imageBlock(artist: Artist, c: ComponentContext): Component =
       when (artist.images.size) {
         1 -> singleImage(c, artist)
         else -> recycler(c, artist)
       }
 
-  private fun recycler(c: ComponentContext, artist: Artist): Component<RecyclerCollectionComponent> =
+  private fun recycler(c: ComponentContext, artist: Artist): Component =
       RecyclerCollectionComponent.create(c)
           .recyclerConfiguration(recyclerConfiguration)
           .section(
@@ -77,7 +77,7 @@ object FeedItemComponentSpec {
           .aspectRatio(2f)
           .build()
 
-  private fun singleImage(c: ComponentContext, artist: Artist): Component<SingleImageComponent> =
+  private fun singleImage(c: ComponentContext, artist: Artist): Component =
       SingleImageComponent.create(c)
           .image(artist.images[0])
           .imageAspectRatio(2f)

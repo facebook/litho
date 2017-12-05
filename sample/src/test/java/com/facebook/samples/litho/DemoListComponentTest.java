@@ -28,7 +28,7 @@ import org.junit.runner.RunWith;
 @RunWith(ComponentsTestRunner.class)
 public class DemoListComponentTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
-  private Component<DemoListComponent> mComponent;
+  private Component mComponent;
 
   @Before
   public void setUp() {

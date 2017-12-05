@@ -30,7 +30,7 @@ public final class SimpleDiffSection extends Section<SimpleDiffSection> {
   }
 
   @Override
-  public boolean isEquivalentTo(Section<?> other) {
+  public boolean isEquivalentTo(Section other) {
     if (this == other) {
       return true;
     }
@@ -91,7 +91,7 @@ public final class SimpleDiffSection extends Section<SimpleDiffSection> {
     }
 
     @Override
-    public Section<SimpleDiffSection> build() {
+    public SimpleDiffSection build() {
       SimpleDiffSection simpleDiffSectionRef = mSimpleDiffSection;
       release();
       return simpleDiffSectionRef;

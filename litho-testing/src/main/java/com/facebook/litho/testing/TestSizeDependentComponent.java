@@ -128,7 +128,7 @@ public class TestSizeDependentComponent extends Component {
     }
 
     @Override
-    public Component<TestSizeDependentComponent> build() {
+    public Component build() {
       TestSizeDependentComponent testSizeDependentComponent = mTestSizeDependentComponent;
       release();
       return testSizeDependentComponent;

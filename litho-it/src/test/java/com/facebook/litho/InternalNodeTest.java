@@ -41,7 +41,7 @@ import org.robolectric.RuntimeEnvironment;
 public class InternalNodeTest {
   private static final int LIFECYCLE_TEST_ID = 1;
 
-  private static class TestComponent extends Component<TestComponent> {
+  private static class TestComponent extends Component {
 
     @Override
     int getTypeId() {
@@ -304,7 +304,7 @@ public class InternalNodeTest {
     final ComponentContext c = new ComponentContext(application);
     final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
     final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
-    final Component<Text> textComponent = Text.create(c)
+    final Component textComponent = Text.create(c)
         .textSizePx(16)
         .text("test")
         .build();

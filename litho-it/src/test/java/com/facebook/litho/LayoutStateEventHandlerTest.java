@@ -29,7 +29,7 @@ public class LayoutStateEventHandlerTest {
   private static void assertCorrectEventHandler(
       EventHandler eventHandler,
       int expectedId,
-      Component<?> expectedInput) {
+      Component expectedInput) {
     assertThat(eventHandler.mHasEventDispatcher).isEqualTo(expectedInput);
     assertThat(eventHandler.id).isEqualTo(expectedId);
   }

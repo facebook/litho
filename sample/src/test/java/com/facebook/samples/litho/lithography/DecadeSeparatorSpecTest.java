@@ -38,7 +38,7 @@ import org.junit.runner.RunWith;
 public class DecadeSeparatorSpecTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
 
-  private Component<DecadeSeparator> mComponent;
+  private Component mComponent;
 
   @Before
   public void setUp() {

@@ -55,7 +55,7 @@ public class VerticalScrollSpec {
   @OnPrepare
   static void onPrepare(
       ComponentContext context,
-      @Prop Component<?> childComponent,
+      @Prop Component childComponent,
       Output<ComponentTree> childComponentTree) {
       childComponentTree.set(
           ComponentTree.create(context,childComponent).build());

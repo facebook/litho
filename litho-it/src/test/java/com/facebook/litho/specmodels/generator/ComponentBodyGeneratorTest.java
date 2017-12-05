@@ -174,7 +174,7 @@ public class ComponentBodyGeneratorTest {
     assertThat(ComponentBodyGenerator.generateIsEquivalentMethod(mSpecModelDI).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "public boolean isEquivalentTo(com.facebook.litho.Component<?> other) {\n"
+                + "public boolean isEquivalentTo(com.facebook.litho.Component other) {\n"
                 + "  if (this == other) {\n"
                 + "    return true;\n"
                 + "  }\n"

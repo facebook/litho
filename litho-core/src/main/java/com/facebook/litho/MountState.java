@@ -616,7 +616,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       // mount content that was animating since those disappearing animations belong to the old
       // ComponentTree
       if (mLastMountedComponentTreeId != componentTreeId) {
-        final Component<?> component = currentMountItem.getComponent();
+        final Component component = currentMountItem.getComponent();
 
         if (isHostSpec(component)) {
           final ComponentHost componentHost = (ComponentHost) currentMountItem.getContent();
@@ -979,7 +979,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       MountItem item,
       LayoutOutput layoutOutput,
       Component previousComponent) {
-    final Component<?> newComponent = layoutOutput.getComponent();
+    final Component newComponent = layoutOutput.getComponent();
     if (isHostSpec(newComponent)) {
       return;
     }
@@ -1013,7 +1013,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       host = resolveComponentHost(layoutOutput, mHostsByMarker);
     }
 
-    final Component<?> component = layoutOutput.getComponent();
+    final Component component = layoutOutput.getComponent();
     final ComponentLifecycle lifecycle = component.getLifecycle();
 
     // 2. Generate the component's mount state (this might also be a ComponentHost View).
@@ -1065,7 +1065,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   // (the very first LayoutOutput).
   private MountItem mountContent(
       int index,
-      Component<?> component,
+      Component component,
       Object content,
       ComponentHost host,
       LayoutOutput layoutOutput) {
@@ -1119,7 +1119,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
-  private static boolean canMountIncrementally(Component<?> component) {
+  private static boolean canMountIncrementally(Component component) {
     return component.getLifecycle().canMountIncrementally();
   }
 
@@ -1136,7 +1136,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static void setViewAttributes(MountItem item) {
-    final Component<?> component = item.getComponent();
+    final Component component = item.getComponent();
     if (!isMountViewSpec(component)) {
       return;
     }
@@ -1188,7 +1188,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static void unsetViewAttributes(MountItem item) {
-    final Component<?> component = item.getComponent();
+    final Component component = item.getComponent();
     if (!isMountViewSpec(component)) {
       return;
     }
@@ -1772,7 +1772,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   private static void mountItemIncrementally(
       MountItem item, Rect itemBounds, Rect localVisibleRect, boolean processVisibilityOutputs) {
-    final Component<?> component = item.getComponent();
+    final Component component = item.getComponent();
 
     if (!isMountViewSpec(component)) {
       return;
@@ -1933,7 +1933,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     unsetViewAttributes(item);
 
-    final Component<?> component = item.getComponent();
+    final Component component = item.getComponent();
 
     if (isHostSpec(component)) {
       final ComponentHost componentHost = (ComponentHost) content;

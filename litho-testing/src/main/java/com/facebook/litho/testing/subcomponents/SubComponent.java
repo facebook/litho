@@ -27,7 +27,7 @@ public class SubComponent {
   }
 
   private final Class<? extends Component> mComponentType;
-  private final Component<?> mComponent;
+  private final Component mComponent;
 
   private SubComponent(Class<? extends Component> componentType, Component component) {
     mComponentType = componentType;
@@ -66,7 +66,7 @@ public class SubComponent {
    * For testing purposes, props are only compared if both subcomponents supply them. Otherwise,
    * just ignore them.
    */
-  private static boolean arePropsEqual(Component<?> thatComponent, Component<?> thisComponent) {
+  private static boolean arePropsEqual(Component thatComponent, Component thisComponent) {
     return thatComponent == null ||
         thisComponent == null ||
         thatComponent.isEquivalentTo(thisComponent);

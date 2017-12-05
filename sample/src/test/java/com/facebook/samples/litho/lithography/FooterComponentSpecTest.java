@@ -42,7 +42,7 @@ public class FooterComponentSpecTest {
   @Test
   public void testSubComponentWithMatcher() {
     final ComponentContext c = mComponentsRule.getContext();
-    final Component<FooterComponent> component =
+    final Component component =
         FooterComponent.create(c).text("I hate Mumunmununsdays").build();
 
     assertThat(c, component)

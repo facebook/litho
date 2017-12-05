@@ -135,7 +135,7 @@ class LayoutState {
   private volatile ComponentContext mContext;
   private TransitionContext mTransitionContext;
 
-  private Component<?> mComponent;
+  private Component mComponent;
 
   private int mWidthSpec;
   private int mHeightSpec;
@@ -208,7 +208,7 @@ class LayoutState {
   private static LayoutOutput createGenericLayoutOutput(
       InternalNode node,
       LayoutState layoutState) {
-    final Component<?> component = node.getRootComponent();
+    final Component component = node.getRootComponent();
 
     // Skip empty nodes and layout specs because they don't mount anything.
     if (component == null || component.getLifecycle().getMountType() == NONE) {
@@ -242,7 +242,7 @@ class LayoutState {
   }
 
   private static LayoutOutput createDrawableLayoutOutput(
-      Component<?> component,
+      Component component,
       LayoutState layoutState,
       InternalNode node) {
     return createLayoutOutput(
@@ -256,7 +256,7 @@ class LayoutState {
   }
 
   private static LayoutOutput createLayoutOutput(
-      Component<?> component,
+      Component component,
       LayoutState layoutState,
       InternalNode node,
       boolean useNodePadding,
@@ -433,7 +433,7 @@ class LayoutState {
    * @see #needsHostView(InternalNode, LayoutState)
    */
   private static boolean hasViewContent(InternalNode node, LayoutState layoutState) {
-    final Component<?> component = node.getRootComponent();
+    final Component component = node.getRootComponent();
     final NodeInfo nodeInfo = node.getNodeInfo();
 
     final boolean implementsAccessibility =
@@ -522,7 +522,7 @@ class LayoutState {
     if (node.hasNewLayout()) {
       node.markLayoutSeen();
     }
-    final Component<?> component = node.getRootComponent();
+    final Component component = node.getRootComponent();
 
     // Early return if collecting results of a node holding a nested tree.
     if (node.isNestedTreeHolder()) {
@@ -860,7 +860,7 @@ class LayoutState {
       LayoutOutput recycle,
       Reference<? extends Drawable> reference,
       @LayoutOutput.LayoutOutputType int type) {
-    final Component<DrawableComponent> drawableComponent = DrawableComponent.create(reference);
+    final Component drawableComponent = DrawableComponent.create(reference);
     drawableComponent.setScopedContext(
         ComponentContext.withComponentScope(node.getContext(), drawableComponent));
     final boolean isOutputUpdated;
@@ -926,7 +926,7 @@ class LayoutState {
   }
 
   private static LayoutOutput addDrawableLayoutOutput(
-      Component<DrawableComponent> drawableComponent,
+      Component drawableComponent,
       LayoutState layoutState,
       InternalNode node,
       @LayoutOutput.LayoutOutputType int layoutOutputType,
@@ -995,7 +995,7 @@ class LayoutState {
       InternalNode node,
       LayoutState layoutState,
       DiffNode diffNode) {
-    final Component<?> component = node.getRootComponent();
+    final Component component = node.getRootComponent();
 
     // Only the root host is allowed to wrap view mount specs as a layout output
     // is unconditionally added for it.
@@ -1031,7 +1031,7 @@ class LayoutState {
 
   static <T extends Component> LayoutState calculate(
       ComponentContext c,
-      Component<T> component,
+      Component component,
       int componentTreeId,
       int widthSpec,
       int heightSpec) {
@@ -1050,7 +1050,7 @@ class LayoutState {
 
   static <T extends Component> LayoutState calculate(
       ComponentContext c,
-      Component<T> component,
+      Component component,
       int componentTreeId,
       int widthSpec,
       int heightSpec,
@@ -1391,7 +1391,7 @@ class LayoutState {
 
   @VisibleForTesting
   static <T extends Component> InternalNode createTree(
-      Component<T> component,
+      Component component,
       ComponentContext context) {
     final ComponentsLogger logger = context.getLogger();
 
@@ -1474,7 +1474,7 @@ class LayoutState {
       int widthSpec,
       int heightSpec) {
     final ComponentContext context = nestedTreeHolder.getContext();
-    final Component<?> component = nestedTreeHolder.getRootComponent();
+    final Component component = nestedTreeHolder.getRootComponent();
 
     InternalNode nestedTree = nestedTreeHolder.getNestedTree();
 

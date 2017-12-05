@@ -19,7 +19,7 @@ import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 
-public class TestViewComponent extends TestComponent<TestViewComponent> {
+public class TestViewComponent extends TestComponent {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
@@ -98,7 +98,7 @@ public class TestViewComponent extends TestComponent<TestViewComponent> {
       int widthSpec,
       int heightSpec,
       Size size,
-      Component<?> component) {
+      Component component) {
     int width = SizeSpec.getSize(widthSpec);
     int height = SizeSpec.getSize(heightSpec);
 
@@ -113,19 +113,19 @@ public class TestViewComponent extends TestComponent<TestViewComponent> {
   protected void onBoundsDefined(
       ComponentContext c,
       ComponentLayout layout,
-      Component<?> component) {
+      Component component) {
     TestViewComponent state = (TestViewComponent) component;
     state.onDefineBoundsCalled();
   }
 
   @Override
-  protected void onBind(ComponentContext c, Object mountedContent, Component<?> component) {
+  protected void onBind(ComponentContext c, Object mountedContent, Component component) {
     TestViewComponent state = (TestViewComponent) component;
     state.onBindCalled();
   }
 
   @Override
-  protected void onUnbind(ComponentContext c, Object mountedContent, Component<?> component) {
+  protected void onUnbind(ComponentContext c, Object mountedContent, Component component) {
     TestViewComponent state = (TestViewComponent) component;
     state.onUnbindCalled();
   }

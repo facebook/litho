@@ -63,7 +63,7 @@ public class ViewCompatComponent<V extends View> extends Component {
       int widthSpec,
       int heightSpec,
       Size size,
-      Component<?> component) {
+      Component component) {
     final ViewCompatComponent viewCompatComponent = (ViewCompatComponent) component;
     final ViewBinder viewBinder = viewCompatComponent.mViewBinder;
     final View toMeasure = (View) ComponentsPools.acquireMountContent(c, this);

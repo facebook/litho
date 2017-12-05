@@ -61,7 +61,7 @@ class CardSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       ComponentContext c,
-      @Prop Component<?> content,
+      @Prop Component content,
       @Prop(optional = true, resType = ResType.COLOR) int cardBackgroundColor,
       @Prop(optional = true, resType = ResType.COLOR) int clippingColor,
       @Prop(optional = true, resType = ResType.COLOR) int shadowStartColor,

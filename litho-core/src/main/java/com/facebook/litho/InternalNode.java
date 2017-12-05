@@ -967,7 +967,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   @Override
-  public InternalNode child(Component<?> child) {
+  public InternalNode child(Component child) {
     if (child != null) {
       child(Layout.create(mComponentContext, child));
     }

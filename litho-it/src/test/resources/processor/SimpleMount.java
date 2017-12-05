@@ -23,7 +23,7 @@ import java.util.BitSet;
  * @prop-required ratio double
  * @prop-required content com.facebook.litho.Component
  */
-public final class SimpleMount extends Component<SimpleMount> {
+public final class SimpleMount extends Component {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
 
   @Prop(
@@ -48,7 +48,7 @@ public final class SimpleMount extends Component<SimpleMount> {
   }
 
   @Override
-  public boolean isEquivalentTo(Component<?> other) {
+  public boolean isEquivalentTo(Component other) {
     if (this == other) {
       return true;
     }
@@ -188,7 +188,7 @@ public final class SimpleMount extends Component<SimpleMount> {
     }
 
     @Override
-    public Component<SimpleMount> build() {
+    public SimpleMount build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
       SimpleMount simpleMountRef = mSimpleMount;
       release();

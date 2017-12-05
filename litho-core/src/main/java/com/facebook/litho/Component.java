@@ -50,7 +50,7 @@ import javax.annotation.Nullable;
  * {@code create()} method in the generated subclass which returns a builder that allows you to set
  * values for individual props. {@link Component} instances are immutable after creation.
  */
-public abstract class Component<L extends Component> extends ComponentLifecycle
+public abstract class Component extends ComponentLifecycle
     implements Cloneable, HasEventDispatcher, HasEventTrigger {
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
@@ -112,7 +112,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
    * @param other the component to compare to
    * @return true if the components are of the same type and have the same props
    */
-  public boolean isEquivalentTo(Component<?> other) {
+  public boolean isEquivalentTo(Component other) {
     return this == other;
   }
 
@@ -248,9 +248,9 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     return uniqueKey;
   }
 
-  Component<L> makeCopyWithNullContext() {
+  Component makeCopyWithNullContext() {
     try {
-      final Component<L> component = (Component<L>) super.clone();
+      final Component component = (Component) super.clone();
       component.mScopedContext = null;
       return component;
     } catch (CloneNotSupportedException e) {
@@ -258,9 +258,9 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
   }
 
-  public Component<L> makeShallowCopy() {
+  public Component makeShallowCopy() {
     try {
-      final Component<L> component = (Component<L>) super.clone();
+      final Component component = (Component) super.clone();
       component.mIsLayoutStarted = false;
       if (!ComponentsConfiguration.lazyInitializeComponent) {
         component.mChildCounters = new HashMap<>();
@@ -274,8 +274,8 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
   }
 
-  Component<L> makeShallowCopyWithNewId() {
-    final Component<L> component = makeShallowCopy();
+  Component makeShallowCopyWithNewId() {
+    final Component component = makeShallowCopy();
     component.mId = sIdGenerator.incrementAndGet();
     return component;
   }
@@ -334,35 +334,35 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     outputSize.height = mLastMeasuredLayout.getHeight();
   }
 
-  protected void copyInterStageImpl(Component<L> component) {
+  protected void copyInterStageImpl(Component component) {
 
   }
 
-  static boolean isHostSpec(Component<?> component) {
+  static boolean isHostSpec(Component component) {
     return (component instanceof HostComponent);
   }
 
-  static boolean isLayoutSpec(Component<?> component) {
+  static boolean isLayoutSpec(Component component) {
     return (component != null && component.getMountType() == MountType.NONE);
   }
 
-  static boolean isMountSpec(Component<?> component) {
+  static boolean isMountSpec(Component component) {
     return (component != null && component.getMountType() != MountType.NONE);
   }
 
-  static boolean isMountDrawableSpec(Component<?> component) {
+  static boolean isMountDrawableSpec(Component component) {
     return (component != null && component.getMountType() == MountType.DRAWABLE);
   }
 
-  static boolean isMountViewSpec(Component<?> component) {
+  static boolean isMountViewSpec(Component component) {
     return (component != null && component.getMountType() == MountType.VIEW);
   }
 
-  static boolean isLayoutSpecWithSizeSpec(Component<?> component) {
+  static boolean isLayoutSpecWithSizeSpec(Component component) {
     return (isLayoutSpec(component) && component.canMeasure());
   }
 
-  static boolean isNestedTree(Component<?> component) {
+  static boolean isNestedTree(Component component) {
     return (isLayoutSpecWithSizeSpec(component)
         || (component != null && component.hasCachedLayout()));
   }
@@ -392,7 +392,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
 
   void generateKey(ComponentContext c) {
     if (ComponentsConfiguration.useGlobalKeys) {
-      final Component<?> parentScope = c.getComponentScope();
+      final Component parentScope = c.getComponentScope();
       final String key = getKey();
       setGlobalKey(
           parentScope == null ? key : parentScope.generateUniqueGlobalKeyForChild(this, key));
@@ -463,7 +463,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
         ComponentContext c,
         @AttrRes int defStyleAttr,
         @StyleRes int defStyleRes,
-        Component<L> component) {
+        Component component) {
       super.init(c, c.getResourceCache());
 
       mComponent = component;
@@ -537,7 +537,7 @@ public abstract class Component<L extends Component> extends ComponentLifecycle
     }
 
     @ReturnsOwnership
-    public abstract Component<L> build();
+    public abstract Component build();
 
     public T layoutDirection(YogaDirection layoutDirection) {
       mComponent.getOrCreateCommonProps().layoutDirection(layoutDirection);

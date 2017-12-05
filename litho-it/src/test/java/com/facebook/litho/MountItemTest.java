@@ -31,7 +31,7 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class MountItemTest {
   private MountItem mMountItem;
-  private Component<?> mComponent;
+  private Component mComponent;
   private ComponentHost mComponentHost;
   private Object mContent;
   private CharSequence mContentDescription;

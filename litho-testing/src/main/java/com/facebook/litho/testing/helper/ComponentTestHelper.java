@@ -365,14 +365,14 @@ public final class ComponentTestHelper {
    * @param componentClass the class type of the requested sub component
    * @return The first instance of subComponent of type Class or null if none is present.
    */
-  public static <T extends Component> Component<T> getSubComponent(
+  public static <T extends Component> Component getSubComponent(
       Component.Builder component,
       Class<T> componentClass) {
     List<SubComponent> subComponents = getSubComponents(component);
 
     for (SubComponent subComponent : subComponents) {
       if (subComponent.getComponentType().equals(componentClass)) {
-        return (Component<T>) subComponent.getComponent();
+        return (Component) subComponent.getComponent();
       }
     }
 

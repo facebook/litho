@@ -51,7 +51,7 @@ public class LithoViewMatchersTest {
 
     final ComponentContext mComponentContext = new ComponentContext(
         InstrumentationRegistry.getTargetContext());
-    final Component<MyComponent> mTextComponent = MyComponent.create(mComponentContext)
+    final Component mTextComponent = MyComponent.create(mComponentContext)
         .text("foobar")
         .build();
     mView = LithoView.create(InstrumentationRegistry.getTargetContext(), mTextComponent);

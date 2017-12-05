@@ -29,7 +29,7 @@ class TestComponentContext extends ComponentContext {
 
   @Override
   public ComponentLayout.Builder newLayoutBuilder(
-      Component<?> component, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+      Component component, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     final InternalNode node = ComponentsPools.acquireInternalNode(this);
     component.generateKey(this);
     component.applyStateUpdates(this);

@@ -45,7 +45,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private @Nullable NodeInfo mNodeInfo;
   private ViewNodeInfo mViewNodeInfo;
   private long mId;
-  private Component<?> mComponent;
+  private Component mComponent;
   private final Rect mBounds = new Rect();
   private int mHostTranslationX;
   private int mHostTranslationY;
@@ -63,11 +63,11 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mHostMarker = -1L;
   }
 
-  Component<?> getComponent() {
+  Component getComponent() {
     return mComponent;
   }
 
-  void setComponent(Component<?> component) {
+  void setComponent(Component component) {
     mComponent = component;
   }
 

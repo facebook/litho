@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @param <L>
  */
-public abstract class TestComponent<T extends TestComponent> extends Component<T> {
+public abstract class TestComponent extends Component {
 
   private final List<EventHandler<?>> mDispatchedEventHandlers = new ArrayList<>();
   private boolean mOnMountCalled;

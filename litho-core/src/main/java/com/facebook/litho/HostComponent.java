@@ -11,7 +11,7 @@ package com.facebook.litho;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 
-class HostComponent extends Component<HostComponent> {
+class HostComponent extends Component {
 
   @Override
   protected Object onCreateMountContent(ComponentContext c) {
@@ -33,7 +33,7 @@ class HostComponent extends Component<HostComponent> {
   }
 
   @Override
-  public boolean isEquivalentTo(Component<?> other) {
+  public boolean isEquivalentTo(Component other) {
     return this == other;
   }
 

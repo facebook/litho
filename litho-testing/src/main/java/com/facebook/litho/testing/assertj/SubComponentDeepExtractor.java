@@ -32,7 +32,7 @@ import org.assertj.core.description.TextDescription;
  * Condition)} combinator.
  */
 public final class SubComponentDeepExtractor
-    implements Extractor<Component<?>, List<InspectableComponent>> {
+    implements Extractor<Component, List<InspectableComponent>> {
 
   private final ComponentContext mComponentContext;
 
@@ -41,7 +41,7 @@ public final class SubComponentDeepExtractor
   }
 
   @Override
-  public List<InspectableComponent> extract(Component<?> input) {
+  public List<InspectableComponent> extract(Component input) {
     final LithoView lithoView = ComponentTestHelper.mountComponent(mComponentContext, input);
 
     return LithoViewSubComponentDeepExtractor.subComponentsDeeply().extract(lithoView);

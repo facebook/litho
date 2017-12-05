@@ -19,7 +19,7 @@ import android.graphics.Rect;
 class VisibilityOutput {
 
   private long mId;
-  private Component<?> mComponent;
+  private Component mComponent;
   private final Rect mBounds = new Rect();
   private float mVisibleHeightRatio;
   private float mVisibleWidthRatio;
@@ -37,11 +37,11 @@ class VisibilityOutput {
     mId = id;
   }
 
-  Component<?> getComponent() {
+  Component getComponent() {
     return mComponent;
   }
 
-  void setComponent(Component<?> component) {
+  void setComponent(Component component) {
     mComponent = component;
   }
 

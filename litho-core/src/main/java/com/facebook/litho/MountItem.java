@@ -35,7 +35,7 @@ class MountItem {
 
   private NodeInfo mNodeInfo;
   private ViewNodeInfo mViewNodeInfo;
-  private Component<?> mComponent;
+  private Component mComponent;
   private Object mContent;
   private ComponentHost mHost;
   private boolean mIsBound;
@@ -48,7 +48,7 @@ class MountItem {
   private int mFlags;
 
   void init(
-      Component<?> component,
+      Component component,
       MountItem mountItem,
       LayoutOutput layoutOutput) {
     init(
@@ -60,7 +60,7 @@ class MountItem {
   }
 
   void init(
-      Component<?> component,
+      Component component,
       ComponentHost host,
       Object content,
       LayoutOutput layoutOutput,
@@ -81,7 +81,7 @@ class MountItem {
   }
 
   void init(
-      Component<?> component,
+      Component component,
       ComponentHost host,
       Object content,
       NodeInfo nodeInfo,
@@ -171,7 +171,7 @@ class MountItem {
   }
 
   @Nullable
-  Component<?> getComponent() {
+  Component getComponent() {
     return mComponent;
   }
 
