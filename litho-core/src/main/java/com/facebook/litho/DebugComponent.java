@@ -22,10 +22,8 @@ import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +45,7 @@ public final class DebugComponent {
   private static final Map<String, Overrider> sOverriders = new HashMap<>();
 
   private String mGlobalKey;
-  private WeakReference<InternalNode> mNode;
+  private InternalNode mNode;
   private int mComponentIndex;
   private Overrider mOverrider;
 
@@ -56,7 +54,7 @@ public final class DebugComponent {
   static synchronized DebugComponent getInstance(InternalNode node, int componentIndex) {
     final DebugComponent debugComponent = new DebugComponent();
     debugComponent.mGlobalKey = createKey(node, componentIndex);
-    debugComponent.mNode = new WeakReference<>(node);
+    debugComponent.mNode = node;
     debugComponent.mComponentIndex = componentIndex;
     debugComponent.mOverrider = sOverriders.get(debugComponent.mGlobalKey);
 
@@ -109,8 +107,7 @@ public final class DebugComponent {
   public Class getComponentClass() {
     final Component component = getComponent();
     if (component == null) {
-      final InternalNode node = mNode.get();
-      final YogaNode yogaNode = node == null ? null : node.mYogaNode;
+      final YogaNode yogaNode = mNode.mYogaNode;
       if (yogaNode == null) {
         // Should not happen :/
         return InternalNode.class;
@@ -140,25 +137,20 @@ public final class DebugComponent {
    * @return A list of child components.
    */
   public List<DebugComponent> getChildComponents() {
-    final InternalNode node = mNode.get();
-    if (node == null) {
-      return Collections.EMPTY_LIST;
-    }
-
     if (mComponentIndex > 0) {
       final int wrappedComponentIndex = mComponentIndex - 1;
-      return Arrays.asList(getInstance(node, wrappedComponentIndex));
+      return Arrays.asList(getInstance(mNode, wrappedComponentIndex));
     }
 
     final ArrayList<DebugComponent> children = new ArrayList<>();
 
-    for (int i = 0, count = node.getChildCount(); i < count; i++) {
-      final InternalNode childNode = node.getChildAt(i);
+    for (int i = 0, count = mNode.getChildCount(); i < count; i++) {
+      final InternalNode childNode = mNode.getChildAt(i);
       final int outerWrapperComponentIndex = Math.max(0, childNode.getComponents().size() - 1);
       children.add(getInstance(childNode, outerWrapperComponentIndex));
     }
 
-    final InternalNode nestedTree = node.getNestedTree();
+    final InternalNode nestedTree = mNode.getNestedTree();
     if (nestedTree != null) {
       for (int i = 0, count = nestedTree.getChildCount(); i < count; i++) {
         final InternalNode childNode = nestedTree.getChildAt(i);
@@ -174,8 +166,7 @@ public final class DebugComponent {
    */
   @Nullable
   public View getMountedView() {
-    final InternalNode node = mNode.get();
-    final Component component = node == null ? null : node.getRootComponent();
+    final Component component = mNode.getRootComponent();
     if (component != null && Component.isMountViewSpec(component)) {
       return (View) getMountedContent();
     }
@@ -188,8 +179,7 @@ public final class DebugComponent {
    */
   @Nullable
   public Drawable getMountedDrawable() {
-    final InternalNode node = mNode.get();
-    final Component component = node == null ? null : node.getRootComponent();
+    final Component component = mNode.getRootComponent();
     if (component != null && Component.isMountDrawableSpec(component)) {
       return (Drawable) getMountedContent();
     }
@@ -202,8 +192,7 @@ public final class DebugComponent {
    */
   @Nullable
   public LithoView getLithoView() {
-    final InternalNode node = mNode.get();
-    final ComponentContext c = node == null ? null : node.getContext();
+    final ComponentContext c = mNode.getContext();
     final ComponentTree tree = c == null ? null : c.getComponentTree();
     return tree == null ? null : tree.getLithoView();
   }
@@ -212,46 +201,36 @@ public final class DebugComponent {
    * @return The bounds of this component relative to its hosting {@link LithoView}.
    */
   public Rect getBoundsInLithoView() {
-    final InternalNode node = mNode.get();
-    if (node == null) {
-      return new Rect();
-    }
-
     if (isRoot()) {
-      return new Rect(0, 0, node.getWidth(), node.getHeight());
+      return new Rect(0, 0, mNode.getWidth(), mNode.getHeight());
     }
 
-    final int x = getXFromRoot(node);
-    final int y = getYFromRoot(node);
-    return new Rect(x, y, x + node.getWidth(), y + node.getHeight());
+    final int x = getXFromRoot(mNode);
+    final int y = getYFromRoot(mNode);
+    return new Rect(x, y, x + mNode.getWidth(), y + mNode.getHeight());
   }
 
   /**
    * @return The bounds of this component relative to its parent.
    */
   public Rect getBounds() {
-    final InternalNode node = mNode.get();
-    if (node == null) {
-      return new Rect();
-    }
-    final int x = node.getX();
-    final int y = node.getY();
-    return new Rect(x, y, x + node.getWidth(), y + node.getHeight());
+    final int x = mNode.getX();
+    final int y = mNode.getY();
+    return new Rect(x, y, x + mNode.getWidth(), y + mNode.getHeight());
   }
 
   /**
    * @return the {@link ComponentContext} for this component.
    */
   public ComponentContext getContext() {
-    return mNode.get().getContext();
+    return mNode.getContext();
   }
 
   /**
    * @return True if this not has layout information attached to it (backed by a Yoga node)
    */
   public boolean isLayoutNode() {
-    final InternalNode node = mNode.get();
-    return node != null && (node.getComponents().isEmpty() || mComponentIndex == 0);
+    return mNode.getComponents().isEmpty() || mComponentIndex == 0;
   }
 
   /**
@@ -259,7 +238,7 @@ public final class DebugComponent {
    */
   @Nullable
   public String getTestKey() {
-    return isLayoutNode() ? mNode.get().getTestKey() : null;
+    return isLayoutNode() ? mNode.getTestKey() : null;
   }
 
   /**
@@ -323,9 +302,8 @@ public final class DebugComponent {
    */
   @Nullable
   public String getKey() {
-    final InternalNode node = mNode.get();
-    if (node != null && !node.getComponents().isEmpty()) {
-      final Component component = node.getComponents().get(mComponentIndex);
+    if (!mNode.getComponents().isEmpty()) {
+      final Component component = mNode.getComponents().get(mComponentIndex);
       return component == null ? null : component.getKey();
     }
     return null;
@@ -336,11 +314,10 @@ public final class DebugComponent {
    */
   @Nullable
   public Component getComponent() {
-    final InternalNode node = mNode.get();
-    if (node == null || node.getComponents().size() <= mComponentIndex) {
+    if (mNode.getComponents().size() <= mComponentIndex) {
       return null;
     }
-    return node.getComponents().get(mComponentIndex);
+    return mNode.getComponents().get(mComponentIndex);
   }
 
   /**
@@ -348,12 +325,11 @@ public final class DebugComponent {
    */
   @Nullable
   public YogaNode getYogaNode() {
-    final InternalNode node = mNode.get();
-    if (node == null || !isLayoutNode()) {
+    if (!isLayoutNode()) {
       return null;
     }
 
-    return node.mYogaNode;
+    return mNode.mYogaNode;
   }
 
   /**
@@ -361,12 +337,11 @@ public final class DebugComponent {
    */
   @Nullable
   public Drawable getForeground() {
-    final InternalNode node = mNode.get();
-    if (node == null || !isLayoutNode()) {
+    if (!isLayoutNode()) {
       return null;
     }
 
-    return node.getForeground();
+    return mNode.getForeground();
   }
 
   /**
@@ -374,12 +349,11 @@ public final class DebugComponent {
    */
   @Nullable
   public Reference<? extends Drawable> getBackground() {
-    final InternalNode node = mNode.get();
-    if (node == null || !isLayoutNode()) {
+    if (!isLayoutNode()) {
       return null;
     }
 
-    return node.getBackground();
+    return mNode.getBackground();
   }
 
   /**
@@ -387,15 +361,14 @@ public final class DebugComponent {
    */
   @Nullable
   public Integer getImportantForAccessibility() {
-    final InternalNode node = mNode.get();
-    return node == null ? null : node.getImportantForAccessibility();
+    return mNode.getImportantForAccessibility();
   }
 
   /**
    * @return The boolean value of the focusable property on this debug component.
    */
   public boolean getFocusable() {
-    final NodeInfo nodeInfo = mNode.get().getNodeInfo();
+    final NodeInfo nodeInfo = mNode.getNodeInfo();
     if (nodeInfo != null) {
       return nodeInfo.getFocusState() == NodeInfo.FOCUS_SET_TRUE;
     }
@@ -407,17 +380,16 @@ public final class DebugComponent {
    */
   @Nullable
   public CharSequence getContentDescription() {
-    final NodeInfo nodeInfo = mNode.get().getNodeInfo();
+    final NodeInfo nodeInfo = mNode.getNodeInfo();
     if (nodeInfo != null) {
-      return mNode.get().getNodeInfo().getContentDescription();
+      return nodeInfo.getContentDescription();
     }
     return null;
   }
 
   /** @return Whether this component is the root of its hierarchy */
   public boolean isRoot() {
-    final InternalNode node = mNode.get();
-    return node != null && node.getParent() == null;
+    return mNode.getParent() == null;
   }
 
   public void rerender() {
@@ -428,60 +400,60 @@ public final class DebugComponent {
   }
 
   public void setBackgroundColor(int color) {
-    mNode.get().backgroundColor(color);
+    mNode.backgroundColor(color);
   }
 
   public void setForegroundColor(int color) {
-    mNode.get().foregroundColor(color);
+    mNode.foregroundColor(color);
   }
 
   public void setLayoutDirection(YogaDirection yogaDirection) {
-    mNode.get().layoutDirection(yogaDirection);
+    mNode.layoutDirection(yogaDirection);
   }
 
   public void setFlexDirection(YogaFlexDirection direction) {
-    mNode.get().flexDirection(direction);
+    mNode.flexDirection(direction);
   }
 
   public void setJustifyContent(YogaJustify yogaJustify) {
-    mNode.get().justifyContent(yogaJustify);
+    mNode.justifyContent(yogaJustify);
   }
 
   public void setAlignItems(YogaAlign yogaAlign) {
-    mNode.get().alignItems(yogaAlign);
+    mNode.alignItems(yogaAlign);
   }
 
   public void setAlignSelf(YogaAlign yogaAlign) {
-    mNode.get().alignSelf(yogaAlign);
+    mNode.alignSelf(yogaAlign);
   }
 
   public void setAlignContent(YogaAlign yogaAlign) {
-    mNode.get().alignContent(yogaAlign);
+    mNode.alignContent(yogaAlign);
   }
 
   public void setPositionType(YogaPositionType yogaPositionType) {
-    mNode.get().positionType(yogaPositionType);
+    mNode.positionType(yogaPositionType);
   }
 
   public void setFlexGrow(float value) {
-    mNode.get().flexGrow(value);
+    mNode.flexGrow(value);
   }
 
   public void setFlexShrink(float value) {
-    mNode.get().flexShrink(value);
+    mNode.flexShrink(value);
   }
 
   public void setFlexBasis(YogaValue value) {
     switch (value.unit) {
       case UNDEFINED:
       case AUTO:
-        mNode.get().flexBasisAuto();
+        mNode.flexBasisAuto();
         break;
       case PERCENT:
-        mNode.get().flexBasisPercent(value.value);
+        mNode.flexBasisPercent(value.value);
         break;
       case POINT:
-        mNode.get().flexBasisPx((int) value.value);
+        mNode.flexBasisPx((int) value.value);
         break;
     }
   }
@@ -490,13 +462,13 @@ public final class DebugComponent {
     switch (value.unit) {
       case UNDEFINED:
       case AUTO:
-        mNode.get().widthAuto();
+        mNode.widthAuto();
         break;
       case PERCENT:
-        mNode.get().widthPercent(value.value);
+        mNode.widthPercent(value.value);
         break;
       case POINT:
-        mNode.get().widthPx((int) value.value);
+        mNode.widthPx((int) value.value);
         break;
     }
   }
@@ -505,13 +477,13 @@ public final class DebugComponent {
     switch (value.unit) {
       case UNDEFINED:
       case AUTO:
-        mNode.get().minWidthPx(Integer.MIN_VALUE);
+        mNode.minWidthPx(Integer.MIN_VALUE);
         break;
       case PERCENT:
-        mNode.get().minWidthPercent(value.value);
+        mNode.minWidthPercent(value.value);
         break;
       case POINT:
-        mNode.get().minWidthPx((int) value.value);
+        mNode.minWidthPx((int) value.value);
         break;
     }
   }
@@ -520,13 +492,13 @@ public final class DebugComponent {
     switch (value.unit) {
       case UNDEFINED:
       case AUTO:
-        mNode.get().maxWidthPx(Integer.MAX_VALUE);
+        mNode.maxWidthPx(Integer.MAX_VALUE);
         break;
       case PERCENT:
-        mNode.get().maxWidthPercent(value.value);
+        mNode.maxWidthPercent(value.value);
         break;
       case POINT:
-        mNode.get().maxWidthPx((int) value.value);
+        mNode.maxWidthPx((int) value.value);
         break;
     }
   }
@@ -535,13 +507,13 @@ public final class DebugComponent {
     switch (value.unit) {
       case UNDEFINED:
       case AUTO:
-        mNode.get().heightAuto();
+        mNode.heightAuto();
         break;
       case PERCENT:
-        mNode.get().heightPercent(value.value);
+        mNode.heightPercent(value.value);
         break;
       case POINT:
-        mNode.get().heightPx((int) value.value);
+        mNode.heightPx((int) value.value);
         break;
     }
   }
@@ -550,13 +522,13 @@ public final class DebugComponent {
     switch (value.unit) {
       case UNDEFINED:
       case AUTO:
-        mNode.get().minHeightPx(Integer.MIN_VALUE);
+        mNode.minHeightPx(Integer.MIN_VALUE);
         break;
       case PERCENT:
-        mNode.get().minHeightPercent(value.value);
+        mNode.minHeightPercent(value.value);
         break;
       case POINT:
-        mNode.get().minHeightPx((int) value.value);
+        mNode.minHeightPx((int) value.value);
         break;
     }
   }
@@ -565,34 +537,34 @@ public final class DebugComponent {
     switch (value.unit) {
       case UNDEFINED:
       case AUTO:
-        mNode.get().maxHeightPx(Integer.MAX_VALUE);
+        mNode.maxHeightPx(Integer.MAX_VALUE);
         break;
       case PERCENT:
-        mNode.get().maxHeightPercent(value.value);
+        mNode.maxHeightPercent(value.value);
         break;
       case POINT:
-        mNode.get().maxHeightPx((int) value.value);
+        mNode.maxHeightPx((int) value.value);
         break;
     }
   }
 
   public void setAspectRatio(float aspectRatio) {
-    mNode.get().aspectRatio(aspectRatio);
+    mNode.aspectRatio(aspectRatio);
   }
 
   public void setMargin(YogaEdge edge, YogaValue value) {
     switch (value.unit) {
       case UNDEFINED:
-        mNode.get().marginPx(edge, 0);
+        mNode.marginPx(edge, 0);
         break;
       case AUTO:
-        mNode.get().marginAuto(edge);
+        mNode.marginAuto(edge);
         break;
       case PERCENT:
-        mNode.get().marginPercent(edge, value.value);
+        mNode.marginPercent(edge, value.value);
         break;
       case POINT:
-        mNode.get().marginPx(edge, (int) value.value);
+        mNode.marginPx(edge, (int) value.value);
         break;
     }
   }
@@ -601,13 +573,13 @@ public final class DebugComponent {
     switch (value.unit) {
       case UNDEFINED:
       case AUTO:
-        mNode.get().paddingPx(edge, 0);
+        mNode.paddingPx(edge, 0);
         break;
       case PERCENT:
-        mNode.get().paddingPercent(edge, value.value);
+        mNode.paddingPercent(edge, value.value);
         break;
       case POINT:
-        mNode.get().paddingPx(edge, (int) value.value);
+        mNode.paddingPx(edge, (int) value.value);
         break;
     }
   }
@@ -616,31 +588,31 @@ public final class DebugComponent {
     switch (value.unit) {
       case UNDEFINED:
       case AUTO:
-        mNode.get().positionPercent(edge, YogaConstants.UNDEFINED);
+        mNode.positionPercent(edge, YogaConstants.UNDEFINED);
         break;
       case PERCENT:
-        mNode.get().positionPercent(edge, value.value);
+        mNode.positionPercent(edge, value.value);
         break;
       case POINT:
-        mNode.get().positionPx(edge, (int) value.value);
+        mNode.positionPx(edge, (int) value.value);
         break;
     }
   }
 
   public void setBorderWidth(YogaEdge edge, float value) {
-    mNode.get().setBorderWidth(edge, (int) value);
+    mNode.setBorderWidth(edge, (int) value);
   }
 
   public void setContentDescription(CharSequence contentDescription) {
-    mNode.get().contentDescription(contentDescription);
+    mNode.contentDescription(contentDescription);
   }
 
   public void setImportantForAccessibility(int importantForAccessibility) {
-    mNode.get().importantForAccessibility(importantForAccessibility);
+    mNode.importantForAccessibility(importantForAccessibility);
   }
 
   public void setFocusable(boolean focusable) {
-    mNode.get().focusable(focusable);
+    mNode.focusable(focusable);
   }
 
   @Nullable
@@ -650,25 +622,24 @@ public final class DebugComponent {
   }
 
   void applyOverrides() {
-    final InternalNode node = mNode.get();
-    if (node != null && mOverrider != null) {
+    if (mOverrider != null) {
       mOverrider.applyOverrides(this);
     }
   }
 
-  private InternalNode parent(InternalNode node) {
+  private static InternalNode parent(InternalNode node) {
     final InternalNode parent = node.getParent();
     return parent != null ? parent : node.getNestedTreeHolder();
   }
 
-  private int getXFromRoot(InternalNode node) {
+  private static int getXFromRoot(InternalNode node) {
     if (node == null) {
       return 0;
     }
     return node.getX() + getXFromRoot(parent(node));
   }
 
-  private int getYFromRoot(InternalNode node) {
+  private static int getYFromRoot(InternalNode node) {
     if (node == null) {
       return 0;
     }
@@ -703,12 +674,7 @@ public final class DebugComponent {
       return null;
     }
 
-    final InternalNode node = mNode.get();
-    if (node == null) {
-      return null;
-    }
-
-    return node.getClickHandler();
+    return mNode.getClickHandler();
   }
 
   @Nullable
@@ -717,8 +683,7 @@ public final class DebugComponent {
       return null;
     }
 
-    final InternalNode node = mNode.get();
-    final ComponentContext context = node == null ? null : node.getContext();
+    final ComponentContext context = mNode.getContext();
     final ComponentTree tree = context == null ? null : context.getComponentTree();
     final LithoView view = tree == null ? null : tree.getLithoView();
     final MountState mountState = view == null ? null : view.getMountState();
@@ -728,8 +693,7 @@ public final class DebugComponent {
         final MountItem mountItem = mountState.getItemAt(i);
         final Component component = mountItem == null ? null : mountItem.getComponent();
 
-        if (component != null &&
-            component == node.getRootComponent()) {
+        if (component != null && component == mNode.getRootComponent()) {
           return mountItem.getContent();
         }
       }
