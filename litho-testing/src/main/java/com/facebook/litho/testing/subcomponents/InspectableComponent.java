@@ -209,7 +209,7 @@ public class InspectableComponent {
   }
 
   public String getId() {
-    return mComponent.getId();
+    return mComponent.getGlobalKey();
   }
 
   @Nullable

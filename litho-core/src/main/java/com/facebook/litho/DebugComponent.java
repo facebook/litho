@@ -693,7 +693,7 @@ public final class DebugComponent {
     return key + "(" + componentIndex + ")";
   }
 
-  public String getId() {
+  public String getGlobalKey() {
     return mGlobalKey;
   }
 
