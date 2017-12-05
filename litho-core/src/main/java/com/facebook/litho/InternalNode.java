@@ -61,8 +61,10 @@ import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
 
 /**
@@ -159,6 +161,11 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   private boolean mCachedMeasuresValid;
   private TreeProps mPendingTreeProps;
+
+  // Hold onto DebugComponents which reference InternalNode to tie there Vm lifecycles together.
+  // DebugComponents are supposed to be help onto as weak references and have we want to ensure they
+  // live exactly as long as InternalNodes.
+  private Set<DebugComponent> mDebugComponents = new HashSet<>();
 
   void init(YogaNode yogaNode, ComponentContext componentContext) {
     yogaNode.setData(this);
@@ -1439,6 +1446,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mYogaNode.getChildCount();
   }
 
+  void registerDebugComponent(DebugComponent debugComponent) {
+    mDebugComponents.add(debugComponent);
+  }
+
   com.facebook.yoga.YogaDirection getStyleDirection() {
     return mYogaNode.getStyleDirection();
   }
@@ -1879,6 +1890,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
     ComponentsPools.release(mYogaNode);
     mYogaNode = null;
+
+    mDebugComponents.clear();
 
     mResourceResolver.internalRelease();
 

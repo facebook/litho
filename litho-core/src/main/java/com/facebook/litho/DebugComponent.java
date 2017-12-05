@@ -57,6 +57,7 @@ public final class DebugComponent {
     debugComponent.mNode = node;
     debugComponent.mComponentIndex = componentIndex;
     debugComponent.mOverrider = sOverriders.get(debugComponent.mGlobalKey);
+    node.registerDebugComponent(debugComponent);
 
     return debugComponent;
   }
