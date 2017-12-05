@@ -207,7 +207,7 @@ class DebugDraw {
 
   private static boolean shouldHighlight(Component component) {
     // Don't highlight bounds of background/foreground components.
-    return !(component.getLifecycle() instanceof DrawableComponent);
+    return !(component instanceof DrawableComponent);
   }
 
   private static int dipToPixels(Resources res, int dips) {

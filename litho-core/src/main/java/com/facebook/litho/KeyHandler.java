@@ -58,7 +58,7 @@ public class KeyHandler {
           "Found another " + component.getSimpleName() + " Component with the same key.";
       final String errorMessage = mLogger == null ? message : getDuplicateKeyMessage();
 
-      if (component.getLifecycle().hasState()) {
+      if (component.hasState()) {
         throw new RuntimeException(message + "\n" + errorMessage);
       }
 

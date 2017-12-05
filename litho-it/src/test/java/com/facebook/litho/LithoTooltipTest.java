@@ -66,7 +66,7 @@ public class LithoTooltipTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    Whitebox.setInternalState(mComponent, "mGlobalKey", mComponent.getLifecycle().getTypeId()+"");
+    Whitebox.setInternalState(mComponent, "mGlobalKey", mComponent.getTypeId() + "");
     mContext = ComponentContext.withComponentTree(mContext, mComponentTree);
     mContext = ComponentContext.withComponentScope(mContext, mComponent);
     mLithoView = getLithoView(mComponentTree);

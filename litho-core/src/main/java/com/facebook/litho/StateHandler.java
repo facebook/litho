@@ -16,10 +16,8 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentLifecycle.StateContainer;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
@@ -100,7 +98,7 @@ public class StateHandler {
   void applyStateUpdatesForComponent(Component component) {
     maybeInitStateContainers();
 
-    final ComponentLifecycle lifecycle = component.getLifecycle();
+    final ComponentLifecycle lifecycle = component;
     if (!lifecycle.hasState()) {
       return;
     }

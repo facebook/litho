@@ -211,7 +211,7 @@ class LayoutState {
     final Component component = node.getRootComponent();
 
     // Skip empty nodes and layout specs because they don't mount anything.
-    if (component == null || component.getLifecycle().getMountType() == NONE) {
+    if (component == null || component.getMountType() == NONE) {
       return null;
     }
 
@@ -344,7 +344,7 @@ class LayoutState {
 
     layoutOutput.setFlags(flags);
 
-    final ComponentLifecycle lifecycle = component.getLifecycle();
+    final ComponentLifecycle lifecycle = component;
     if (isEligibleForCreatingDisplayLists() && lifecycle.shouldUseDisplayList()) {
       layoutOutput.initDisplayListContainer(
         lifecycle.getClass().getSimpleName(),
@@ -438,7 +438,7 @@ class LayoutState {
 
     final boolean implementsAccessibility =
         (nodeInfo != null && nodeInfo.hasAccessibilityHandlers())
-        || (component != null && component.getLifecycle().implementsAccessibility());
+            || (component != null && component.implementsAccessibility());
 
     final int importantForAccessibility = node.getImportantForAccessibility();
 
@@ -644,7 +644,7 @@ class LayoutState {
     // 3. Now add the MountSpec (either View or Drawable) to the Outputs.
     if (isMountSpec(component)) {
       // Notify component about its final size.
-      component.getLifecycle().onBoundsDefined(layoutState.mContext, node, component);
+      component.onBoundsDefined(layoutState.mContext, node, component);
 
       addMountableOutput(layoutState, layoutOutput);
       addLayoutOutputIdToPositionsMap(
@@ -865,9 +865,8 @@ class LayoutState {
         ComponentContext.withComponentScope(node.getContext(), drawableComponent));
     final boolean isOutputUpdated;
     if (recycle != null) {
-      isOutputUpdated = !drawableComponent.getLifecycle().shouldComponentUpdate(
-          recycle.getComponent(),
-          drawableComponent);
+      isOutputUpdated =
+          !drawableComponent.shouldComponentUpdate(recycle.getComponent(), drawableComponent);
     } else {
       isOutputUpdated = false;
     }
@@ -933,10 +932,7 @@ class LayoutState {
       long previousId,
       boolean isCachedOutputUpdated) {
 
-    drawableComponent.getLifecycle().onBoundsDefined(
-        layoutState.mContext,
-        node,
-        drawableComponent);
+    drawableComponent.onBoundsDefined(layoutState.mContext, node, drawableComponent);
 
     final LayoutOutput drawableLayoutOutput = createDrawableLayoutOutput(
         drawableComponent,
@@ -1226,7 +1222,7 @@ class LayoutState {
 
   private static boolean shouldCreateDisplayList(LayoutOutput output, Rect rect) {
     final Component component = output.getComponent();
-    final ComponentLifecycle lifecycle = component.getLifecycle();
+    final ComponentLifecycle lifecycle = component;
 
     if (!lifecycle.shouldUseDisplayList()) {
       return false;
@@ -1286,7 +1282,7 @@ class LayoutState {
       ComponentsSystrace.beginSection("createDisplayList: " + component.getSimpleName());
     }
 
-    final ComponentLifecycle lifecycle = component.getLifecycle();
+    final ComponentLifecycle lifecycle = component;
     final DisplayList displayList = DisplayList.createDisplayList(
         lifecycle.getClass().getSimpleName());
 
@@ -1402,10 +1398,8 @@ class LayoutState {
       createLayoutEvent.addParam(PARAM_COMPONENT, component.getSimpleName());
     }
 
-    final InternalNode root = (InternalNode) component.getLifecycle().createLayout(
-        context,
-        component,
-        true /* resolveNestedTree */);
+    final InternalNode root =
+        (InternalNode) component.createLayout(context, component, true /* resolveNestedTree */);
 
     if (logger != null) {
       logger.log(createLayoutEvent);

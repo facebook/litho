@@ -632,10 +632,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     // 3. We will re-bind this later in 7 regardless so let's make sure it's currently unbound.
     if (currentMountItem.isBound()) {
-      itemComponent.getLifecycle().onUnbind(
-          getContextForComponent(itemComponent),
-          currentMountItem.getContent(),
-          itemComponent);
+      itemComponent.onUnbind(
+          getContextForComponent(itemComponent), currentMountItem.getContent(), itemComponent);
       currentMountItem.setIsBound(false);
     }
 
@@ -654,10 +652,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final Object currentContent = currentMountItem.getContent();
 
     // 6. Set the mounted content on the Component and call the bind callback.
-    layoutOutputComponent.getLifecycle().bind(
-        getContextForComponent(layoutOutputComponent),
-        currentContent,
-        layoutOutputComponent);
+    layoutOutputComponent.bind(
+        getContextForComponent(layoutOutputComponent), currentContent, layoutOutputComponent);
     currentMountItem.setIsBound(true);
 
     // 7. Update the bounds of the mounted content. This needs to be done regardless of whether
@@ -696,9 +692,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       ComponentsLogger logger) {
     @LayoutOutput.UpdateState final int updateState = layoutOutput.getUpdateState();
     final Component currentComponent = currentMountItem.getComponent();
-    final ComponentLifecycle currentLifecycle = currentComponent.getLifecycle();
+    final ComponentLifecycle currentLifecycle = currentComponent;
     final Component nextComponent = layoutOutput.getComponent();
-    final ComponentLifecycle nextLifecycle = nextComponent.getLifecycle();
+    final ComponentLifecycle nextLifecycle = nextComponent;
 
     // If the two components have different sizes and the mounted content depends on the size we
     // just return true immediately.
@@ -1014,7 +1010,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     final Component component = layoutOutput.getComponent();
-    final ComponentLifecycle lifecycle = component.getLifecycle();
+    final ComponentLifecycle lifecycle = component;
 
     // 2. Generate the component's mount state (this might also be a ComponentHost View).
     final Object content =
@@ -1080,7 +1076,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     // that sets the root host interactions.
     mIndexToItemMap.put(mLayoutOutputsIds[index], item);
 
-    if (component.getLifecycle().canMountIncrementally()) {
+    if (component.canMountIncrementally()) {
       mCanMountIncrementallyMountItems.put(mLayoutOutputsIds[index], item);
     }
 
@@ -1120,7 +1116,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static boolean canMountIncrementally(Component component) {
-    return component.getLifecycle().canMountIncrementally();
+    return component.canMountIncrementally();
   }
 
   /**
@@ -1854,7 +1850,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     unbindAndUnmountLifecycle(context, item);
 
-    if (item.getComponent().getLifecycle().canMountIncrementally()) {
+    if (item.getComponent().canMountIncrementally()) {
       final int index = mCanMountIncrementallyMountItems.indexOfValue(item);
       if (index > 0) {
         mCanMountIncrementallyMountItems.removeAt(index);
@@ -1946,7 +1942,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     mIndexToItemMap.remove(mLayoutOutputsIds[index]);
     maybeUpdateAnimatingMountContent(item, null);
 
-    if (component.getLifecycle().canMountIncrementally()) {
+    if (component.canMountIncrementally()) {
       mCanMountIncrementallyMountItems.delete(mLayoutOutputsIds[index]);
     }
 
@@ -1960,7 +1956,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       MountItem item) {
     final Component component = item.getComponent();
     final Object content = item.getContent();
-    final ComponentLifecycle lifecycle = component.getLifecycle();
+    final ComponentLifecycle lifecycle = component;
 
     // Call the component's unmount() method.
     if (item.isBound()) {
@@ -2010,7 +2006,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     unbindAndUnmountLifecycle(mContext, item);
 
-    if (item.getComponent().getLifecycle().canMountIncrementally()) {
+    if (item.getComponent().canMountIncrementally()) {
       final int index = mCanMountIncrementallyMountItems.indexOfValue(item);
       if (index > 0) {
         mCanMountIncrementallyMountItems.removeAt(index);
@@ -2314,7 +2310,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
       final Component component = mountItem.getComponent();
       component
-          .getLifecycle()
+          
           .unbind(getContextForComponent(component), mountItem.getContent(), component);
       mountItem.setIsBound(false);
     }
@@ -2345,7 +2341,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       final Component component = mountItem.getComponent();
       final Object content = mountItem.getContent();
 
-      component.getLifecycle().bind(getContextForComponent(component), content, component);
+      component.bind(getContextForComponent(component), content, component);
       mountItem.setIsBound(true);
 
       if (content instanceof View &&
@@ -2515,7 +2511,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     for (int i = 0, size = componentsNeedingPreviousRenderData.size(); i < size; i++) {
       final Component component = componentsNeedingPreviousRenderData.get(i);
       final Transition transition =
-          component.getLifecycle().onCreateTransition(component.getScopedContext(), component);
+          component.onCreateTransition(component.getScopedContext(), component);
 
       if (transition != null) {
         if (result == null) {

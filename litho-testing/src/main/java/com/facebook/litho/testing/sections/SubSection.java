@@ -23,7 +23,7 @@ public class SubSection {
   }
 
   public static SubSection of(Section section) {
-    return new SubSection(section.getLifecycle().getClass(), section);
+    return new SubSection(section.getClass(), section);
   }
 
   private final Class<? extends SectionLifecycle> mSectionType;

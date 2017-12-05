@@ -45,7 +45,7 @@ public class RenderState {
   }
 
   private void recordRenderData(Component component) {
-    final ComponentLifecycle lifecycle = component.getLifecycle();
+    final ComponentLifecycle lifecycle = component;
     if (!lifecycle.needsPreviousRenderData()) {
       throw new RuntimeException(
           "Trying to record previous render data for component that doesn't support it");
@@ -72,7 +72,7 @@ public class RenderState {
   }
 
   private void applyPreviousRenderData(Component component) {
-    final ComponentLifecycle lifecycle = component.getLifecycle();
+    final ComponentLifecycle lifecycle = component;
     if (!lifecycle.needsPreviousRenderData()) {
       throw new RuntimeException(
           "Trying to apply previous render data to component that doesn't support it");

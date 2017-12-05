@@ -108,7 +108,7 @@ public class SectionsTestHelper extends Section<SectionsTestHelper> {
     doReturn(mSectionContext.getResourceCache()).when(spyContext).getResourceCache();
 
     SectionLifecycleTestUtil.setScopedContext(s, spyContext);
-    SectionLifecycleTestUtil.createInitialState(s.getLifecycle(), spyContext, s);
+    SectionLifecycleTestUtil.createInitialState(s, spyContext, s);
     s.setGlobalKey("globalKey");
     preparedSections.put(s, spyContext);
     return s;
@@ -125,9 +125,7 @@ public class SectionsTestHelper extends Section<SectionsTestHelper> {
     ensurePrepared(section);
     final Children children =
         SectionLifecycleTestUtil.createChildren(
-            section.getLifecycle(),
-            SectionContext.withScope(getScopedContext(section), section),
-            section);
+            section, SectionContext.withScope(getScopedContext(section), section), section);
     return getSubSections(children);
   }
 

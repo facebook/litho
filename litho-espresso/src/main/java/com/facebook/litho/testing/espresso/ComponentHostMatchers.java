@@ -69,6 +69,7 @@ public class ComponentHostMatchers {
       final Matcher<? extends ComponentLifecycle> lifecycleMatcher) {
     return new BaseMatcher<ComponentHost>() {
       private StringBuilder mTypes = new StringBuilder();
+
       @Override
       public boolean matches(Object item) {
         mTypes = new StringBuilder();
@@ -79,8 +80,8 @@ public class ComponentHostMatchers {
 
           ComponentHost host = (ComponentHost) item;
           Method getMountItemCount = ComponentHost.class.getDeclaredMethod("getMountItemCount");
-          Method getMountItemAt = ComponentHost.class
-              .getDeclaredMethod("getMountItemAt", int.class);
+          Method getMountItemAt =
+              ComponentHost.class.getDeclaredMethod("getMountItemAt", int.class);
 
           getMountItemCount.setAccessible(true);
           getMountItemAt.setAccessible(true);
@@ -91,14 +92,14 @@ public class ComponentHostMatchers {
             Method getComponent = mountItem.getClass().getDeclaredMethod("getComponent");
             getComponent.setAccessible(true);
             Component component = (Component) getComponent.invoke(mountItem);
-            if (lifecycleMatcher.matches(component.getLifecycle())) {
+            if (lifecycleMatcher.matches(component)) {
               return true;
             }
-            mTypes.append(" " + component.getLifecycle().getClass().getName());
+            mTypes.append(" " + component.getClass().getName());
           }
 
           return false;
-        } catch (IllegalAccessException|NoSuchMethodException|InvocationTargetException e) {
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
           throw new RuntimeException(e);
         }
       }

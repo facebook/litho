@@ -611,8 +611,7 @@ public class ComponentHost extends ViewGroup {
 
   private boolean implementsVirtualViews() {
     MountItem item = getAccessibleMountItem();
-    return item != null
-      && item.getComponent().getLifecycle().implementsExtraAccessibilityNodes();
+    return item != null && item.getComponent().implementsExtraAccessibilityNodes();
   }
 
   public List<CharSequence> getContentDescriptions() {

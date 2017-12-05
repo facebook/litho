@@ -76,7 +76,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       // the root host view's as they are meant to behave as a single
       // node in the accessibility framework.
       final Component component = mountItem.getComponent();
-      component.getLifecycle().onPopulateAccessibilityNode(node, component);
+      component.onPopulateAccessibilityNode(node, component);
     } else {
       super.onInitializeAccessibilityNodeInfo(host, node);
     }
@@ -91,8 +91,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
 
     final Component component = mountItem.getComponent();
 
-    final int extraAccessibilityNodesCount =
-        component.getLifecycle().getExtraAccessibilityNodesCount(component);
+    final int extraAccessibilityNodesCount = component.getExtraAccessibilityNodesCount(component);
 
     // Expose extra accessibility nodes declared by the component to the
     // accessibility framework. The actual nodes will be populated in
@@ -120,7 +119,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     final Rect bounds = drawable.getBounds();
 
     final Component component = mountItem.getComponent();
-    final ComponentLifecycle lifecycle = component.getLifecycle();
+    final ComponentLifecycle lifecycle = component;
 
     node.setClassName(lifecycle.getClass().getName());
 
@@ -153,7 +152,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     }
 
     final Component component = mountItem.getComponent();
-    final ComponentLifecycle lifecycle = component.getLifecycle();
+    final ComponentLifecycle lifecycle = component;
 
     if (lifecycle.getExtraAccessibilityNodesCount(component) == 0) {
       return INVALID_ID;
@@ -196,8 +195,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   @Override
   public AccessibilityNodeProviderCompat getAccessibilityNodeProvider(View host) {
     final MountItem mountItem = getAccessibleMountItem(mView);
-    if (mountItem != null
-        && mountItem.getComponent().getLifecycle().implementsExtraAccessibilityNodes()) {
+    if (mountItem != null && mountItem.getComponent().implementsExtraAccessibilityNodes()) {
       return super.getAccessibilityNodeProvider(host);
     }
 

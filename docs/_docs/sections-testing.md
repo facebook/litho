@@ -155,7 +155,7 @@ Testing other lifecycle methods is as simple as calling the lifecycle method wit
     Section<VerySimpleGroupSection> s = mTester.prepare(
         VerySimpleGroupSection.create(mTester.getContext()).numberOfDummy(4).build());
 
-    s.getLifecycle().dataBound(mTester.getScopedContext(s), s);
+    s.dataBound(mTester.getScopedContext(s), s);
 
     VerySimpleGroupSection.VerySimpleGroupSectionStateContainerImpl stateContainer =
         mTester.getStateContainer(s);

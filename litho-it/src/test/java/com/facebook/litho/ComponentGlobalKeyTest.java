@@ -52,7 +52,7 @@ public class ComponentGlobalKeyTest {
   @Test
   public void testComponentKey() {
     Component component = TestDrawableComponent.create(mContext).build();
-    Assert.assertEquals(component.getKey(), component.getLifecycle().getTypeId() + "");
+    Assert.assertEquals(component.getKey(), component.getTypeId() + "");
     Assert.assertNull(component.getGlobalKey());
   }
 
@@ -94,7 +94,7 @@ public class ComponentGlobalKeyTest {
   public void testMultipleChildrenComponentKey() {
     final Component component = getMultipleChildrenComponent();
 
-    int layoutSpecId = component.getLifecycle().getTypeId();
+    int layoutSpecId = component.getTypeId();
     int nestedLayoutSpecId = layoutSpecId - 1;
 
     final ComponentTree componentTree =
@@ -177,9 +177,9 @@ public class ComponentGlobalKeyTest {
           }
         };
 
-    final int layoutSpecId = component.getLifecycle().getTypeId();
+    final int layoutSpecId = component.getTypeId();
     final Component text = Text.create(mContext).text("").build();
-    final int textSpecId = text.getLifecycle().getTypeId();
+    final int textSpecId = text.getTypeId();
 
     final ComponentTree componentTree =
         ComponentTree.create(mContext, component)
@@ -221,11 +221,11 @@ public class ComponentGlobalKeyTest {
           }
         };
 
-    final int layoutSpecId = root.getLifecycle().getTypeId();
-    final int nestedLayoutSpecId = component.getLifecycle().getTypeId();
+    final int layoutSpecId = root.getTypeId();
+    final int nestedLayoutSpecId = component.getTypeId();
     final Component text = Text.create(mContext).text("").build();
     ;
-    final int textSpecId = text.getLifecycle().getTypeId();
+    final int textSpecId = text.getTypeId();
 
     final ComponentTree componentTree =
         ComponentTree.create(mContext, root).incrementalMount(false).layoutDiffing(false).build();

@@ -62,7 +62,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     public float baseline(YogaNode cssNode, float width, float height) {
       final InternalNode node = (InternalNode) cssNode.getData();
       return node.getRootComponent()
-          .getLifecycle()
+          
           .onMeasureBaseline(node.getContext(), (int) width, (int) height);
     }
   };
@@ -131,13 +131,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
             final Size size = acquireSize(Integer.MIN_VALUE /* initialValue */);
 
             try {
-              component
-                  .getLifecycle()
-                  .onMeasure(node.getContext(), node, widthSpec, heightSpec, size, component);
+              component.onMeasure(node.getContext(), node, widthSpec, heightSpec, size, component);
 
               if (size.width < 0 || size.height < 0) {
                 throw new IllegalStateException(
-                    "MeasureOutput not set, ComponentLifecycle is: " + component.getLifecycle());
+                    "MeasureOutput not set, ComponentLifecycle is: " + component);
               }
 
               outputWidth = size.width;
@@ -433,8 +431,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       Size size,
       Component component) {
     throw new IllegalStateException(
-        "You must override onMeasure() if you return true in canMeasure(), " +
-            "ComponentLifecycle is: " + component.getLifecycle());
+        "You must override onMeasure() if you return true in canMeasure(), "
+            + "ComponentLifecycle is: "
+            + component);
   }
 
   /**

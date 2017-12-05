@@ -101,7 +101,7 @@ public class ChangeSetState {
       return changeSet;
     }
 
-    final SectionLifecycle lifecycle = newRoot.getLifecycle();
+    final SectionLifecycle lifecycle = newRoot;
     final String updateCurrentPrefix = updatePrefix(currentRoot, currentPrefix);
     final String updateNewPrefix = updatePrefix(newRoot, newPrefix);
 

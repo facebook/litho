@@ -186,9 +186,8 @@ class LayoutStateOutputIdCalculator {
           "Level must be non-negative and no greater than " + MAX_LEVEL + " actual level " + level);
     }
 
-    long componentId = layoutOutput.getComponent() != null ?
-        layoutOutput.getComponent().getLifecycle().getTypeId() :
-        0L;
+    long componentId =
+        layoutOutput.getComponent() != null ? layoutOutput.getComponent().getTypeId() : 0L;
 
     long componentShifted = componentId << COMPONENT_ID_SHIFT;
     long levelShifted = ((long) level) << LEVEL_SHIFT;
@@ -209,9 +208,8 @@ class LayoutStateOutputIdCalculator {
           "Level must be non-negative and no greater than " + MAX_LEVEL + " actual level " + level);
     }
 
-    final long componentId = visibilityOutput.getComponent() != null ?
-        visibilityOutput.getComponent().getLifecycle().getTypeId() :
-        0L;
+    final long componentId =
+        visibilityOutput.getComponent() != null ? visibilityOutput.getComponent().getTypeId() : 0L;
 
     final long componentShifted = componentId << COMPONENT_ID_SHIFT;
     final long levelShifted = ((long) level) << LEVEL_SHIFT;

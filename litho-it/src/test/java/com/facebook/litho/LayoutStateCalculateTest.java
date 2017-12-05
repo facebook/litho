@@ -949,7 +949,7 @@ public class LayoutStateCalculateTest {
   }
 
   private static ComponentLifecycle getComponentAt(final LayoutState layoutState, final int index) {
-    return layoutState.getMountableOutputAt(index).getComponent().getLifecycle();
+    return layoutState.getMountableOutputAt(index).getComponent();
   }
 
   private static CharSequence getTextFromTextComponent(final LayoutState layoutState, final int index) {
@@ -1434,10 +1434,10 @@ public class LayoutStateCalculateTest {
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
 
     assertThat(layoutState.getMountableOutputAt(0).getNodeInfo()).isNull();
-    assertThat(layoutState.getMountableOutputAt(0).getComponent().getLifecycle())
+    assertThat(layoutState.getMountableOutputAt(0).getComponent())
         .isInstanceOf(HostComponent.class);
 
-    assertThat(layoutState.getMountableOutputAt(1).getComponent().getLifecycle())
+    assertThat(layoutState.getMountableOutputAt(1).getComponent())
         .isInstanceOf(TestDrawableComponent.class);
     assertThat(MountItem.isTouchableDisabled(layoutState.getMountableOutputAt(1).getFlags()))
         .isTrue();
@@ -1468,10 +1468,10 @@ public class LayoutStateCalculateTest {
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
 
     assertThat(layoutState.getMountableOutputAt(0).getNodeInfo()).isNull();
-    assertThat(layoutState.getMountableOutputAt(0).getComponent().getLifecycle())
+    assertThat(layoutState.getMountableOutputAt(0).getComponent())
         .isInstanceOf(HostComponent.class);
 
-    assertThat(layoutState.getMountableOutputAt(1).getComponent().getLifecycle())
+    assertThat(layoutState.getMountableOutputAt(1).getComponent())
         .isInstanceOf(TestViewComponent.class);
     assertThat(layoutState.getMountableOutputAt(1).getNodeInfo().getEnabledState())
         .isEqualTo(ENABLED_SET_FALSE);
@@ -1513,30 +1513,30 @@ public class LayoutStateCalculateTest {
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(6);
 
     assertThat(layoutState.getMountableOutputAt(0).getNodeInfo()).isNull();
-    assertThat(layoutState.getMountableOutputAt(0).getComponent().getLifecycle())
+    assertThat(layoutState.getMountableOutputAt(0).getComponent())
         .isInstanceOf(HostComponent.class);
 
-    assertThat(layoutState.getMountableOutputAt(1).getComponent().getLifecycle())
+    assertThat(layoutState.getMountableOutputAt(1).getComponent())
         .isInstanceOf(TestViewComponent.class);
     assertThat(layoutState.getMountableOutputAt(1).getNodeInfo().getEnabledState())
         .isEqualTo(ENABLED_SET_FALSE);
 
-    assertThat(layoutState.getMountableOutputAt(2).getComponent().getLifecycle())
+    assertThat(layoutState.getMountableOutputAt(2).getComponent())
         .isInstanceOf(TestDrawableComponent.class);
     assertThat(layoutState.getMountableOutputAt(2).getNodeInfo()).isNull();
     assertThat(MountItem.isTouchableDisabled(layoutState.getMountableOutputAt(2).getFlags()))
         .isTrue();
 
-    assertThat(layoutState.getMountableOutputAt(3).getComponent().getLifecycle())
+    assertThat(layoutState.getMountableOutputAt(3).getComponent())
         .isInstanceOf(TestDrawableComponent.class);
     assertThat(layoutState.getMountableOutputAt(3).getNodeInfo()).isNull();
     assertThat(MountItem.isTouchableDisabled(layoutState.getMountableOutputAt(3).getFlags()))
         .isTrue();
 
-    assertThat(layoutState.getMountableOutputAt(4).getComponent().getLifecycle())
+    assertThat(layoutState.getMountableOutputAt(4).getComponent())
         .isInstanceOf(TestViewComponent.class);
     assertThat(layoutState.getMountableOutputAt(4).getNodeInfo()).isNull();
-    assertThat(layoutState.getMountableOutputAt(5).getComponent().getLifecycle())
+    assertThat(layoutState.getMountableOutputAt(5).getComponent())
         .isInstanceOf(TestDrawableComponent.class);
     assertThat(layoutState.getMountableOutputAt(5).getNodeInfo()).isNull();
     assertThat(MountItem.isTouchableDisabled(layoutState.getMountableOutputAt(5).getFlags()))
@@ -2075,8 +2075,8 @@ public class LayoutStateCalculateTest {
     assertThat(componentSpy.hasCachedLayout()).isTrue();
     final InternalNode cachedLayout = componentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(1);
-    assertThat(((InternalNode) cachedLayout.getChildAt(0))
-        .getRootComponent().getLifecycle()).isInstanceOf(TestDrawableComponent.class);
+    assertThat(((InternalNode) cachedLayout.getChildAt(0)).getRootComponent())
+        .isInstanceOf(TestDrawableComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.
     final Component rootContainer = new InlineLayoutSpec() {
@@ -2143,10 +2143,10 @@ public class LayoutStateCalculateTest {
     assertThat(sizeDependentComponentSpy.hasCachedLayout()).isTrue();
     final InternalNode cachedLayout = sizeDependentComponentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(2);
-    assertThat(((InternalNode) cachedLayout.getChildAt(0))
-        .getRootComponent().getLifecycle()).isInstanceOf(TestDrawableComponent.class);
-    assertThat(((InternalNode) cachedLayout.getChildAt(1))
-        .getRootComponent().getLifecycle()).isInstanceOf(TestViewComponent.class);
+    assertThat(((InternalNode) cachedLayout.getChildAt(0)).getRootComponent())
+        .isInstanceOf(TestDrawableComponent.class);
+    assertThat(((InternalNode) cachedLayout.getChildAt(1)).getRootComponent())
+        .isInstanceOf(TestViewComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.
     final Component rootContainer =
@@ -2219,7 +2219,7 @@ public class LayoutStateCalculateTest {
     assertThat(componentSpy.hasCachedLayout()).isTrue();
     final InternalNode cachedLayout = componentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(0);
-    assertThat(cachedLayout.getRootComponent().getLifecycle()).isInstanceOf(TestDrawableComponent.class);
+    assertThat(cachedLayout.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.
     final Component rootContainer = new InlineLayoutSpec() {
@@ -2286,7 +2286,7 @@ public class LayoutStateCalculateTest {
     assertThat(sizeDependentComponentSpy.hasCachedLayout()).isTrue();
     final InternalNode cachedLayout = sizeDependentComponentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(0);
-    assertThat(cachedLayout.getRootComponent().getLifecycle()).isInstanceOf(TestDrawableComponent.class);
+    assertThat(cachedLayout.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.
     final Component rootContainer = new InlineLayoutSpec() {

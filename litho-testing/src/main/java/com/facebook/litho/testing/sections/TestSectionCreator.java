@@ -165,9 +165,8 @@ public class TestSectionCreator {
   }
 
   public static void createTree(Section section, SectionContext listContext) {
-    if (!SectionLifecycleTestUtil.isDiffSectionSpec(section.getLifecycle())) {
-      section.setChildren(
-          SectionLifecycleTestUtil.createChildren(section.getLifecycle(), listContext, section));
+    if (!SectionLifecycleTestUtil.isDiffSectionSpec(section)) {
+      section.setChildren(SectionLifecycleTestUtil.createChildren(section, listContext, section));
       for (int i = 0, size = section.getChildren().size(); i < size; i++) {
         createTree((Section) section.getChildren().get(i), listContext);
       }

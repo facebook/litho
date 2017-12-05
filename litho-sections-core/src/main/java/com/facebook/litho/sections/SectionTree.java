@@ -335,7 +335,7 @@ public class SectionTree {
   }
 
   private void refreshRecursive(Section section) {
-    section.getLifecycle().refresh(section.getScopedContext(), section);
+    section.refresh(section.getScopedContext(), section);
 
     if (!section.isDiffSectionSpec()) {
       final List<Section> children = section.getChildren();
@@ -363,7 +363,7 @@ public class SectionTree {
 
   private void dataBoundRecursive(Section section) {
 
-    section.getLifecycle().dataBound(section.getScopedContext(), section);
+    section.dataBound(section.getScopedContext(), section);
 
     if (section.isDiffSectionSpec()) {
       return;
@@ -468,7 +468,7 @@ public class SectionTree {
     currentRange.lastFullyVisibleIndex = lastFullyVisibleIndex;
     currentRange.totalItemsCount = totalItemsCount;
 
-    section.getLifecycle().viewportChanged(
+    section.viewportChanged(
         section.getScopedContext(),
         firstVisibleIndex,
         lastVisibleIndex,
@@ -857,7 +857,7 @@ public class SectionTree {
   }
 
   private void bindNewComponent(Section<?> section) {
-    section.getLifecycle().bindService(section.getScopedContext(), section);
+    section.bindService(section.getScopedContext(), section);
     bindEventHandlers(section);
 
     if (!section.isDiffSectionSpec()) {
@@ -869,7 +869,7 @@ public class SectionTree {
   }
 
   private void unbindOldComponent(Section<?> section) {
-    section.getLifecycle().unbindService(section.getScopedContext(), section);
+    section.unbindService(section.getScopedContext(), section);
 
     if (!section.isDiffSectionSpec()) {
       final List<Section> children = section.getChildren();
@@ -982,7 +982,7 @@ public class SectionTree {
       nextRoot.setCount(currentRoot.getCount());
     }
 
-    final SectionLifecycle sectionLifecycle = nextRoot.getLifecycle();
+    final SectionLifecycle sectionLifecycle = nextRoot;
     final boolean shouldTransferState =
         currentRoot != null && currentRoot.getClass().equals(nextRoot.getClass());
 
@@ -1032,14 +1032,16 @@ public class SectionTree {
         final String childKey = child.getKey();
         final String globalKey = nextRoot.getGlobalKey() + childKey;
         if (TextUtils.isEmpty(childKey) || keysSet.contains(globalKey)) {
-          final String errorMessage = TextUtils.isEmpty(childKey)
-              ? ("Your Section " +
-              child.getLifecycle().getClass().getSimpleName() +
-              " has an empty key. Please specify a key.")
-              : ("You have two Sections with the same key: " + child.getKey() +
-              ", as children of " +
-              nextRoot.getLifecycle().getClass().getSimpleName() +
-              ". Please specify different keys.");
+          final String errorMessage =
+              TextUtils.isEmpty(childKey)
+                  ? ("Your Section "
+                      + child.getClass().getSimpleName()
+                      + " has an empty key. Please specify a key.")
+                  : ("You have two Sections with the same key: "
+                      + child.getKey()
+                      + ", as children of "
+                      + nextRoot.getClass().getSimpleName()
+                      + ". Please specify different keys.");
 
           throw new IllegalStateException(errorMessage);
         }

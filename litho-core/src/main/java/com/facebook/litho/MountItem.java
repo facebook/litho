@@ -209,14 +209,14 @@ class MountItem {
     }
 
     return (mNodeInfo != null && mNodeInfo.hasAccessibilityHandlers())
-        || mComponent.getLifecycle().implementsAccessibility();
+        || mComponent.implementsAccessibility();
   }
 
   void release(ComponentContext context) {
     // Component hosts are recycled within other hosts instead of the global pool.
     if (!ComponentsConfiguration.scrapHostRecyclingForComponentHosts
         || !(mContent instanceof ComponentHost)) {
-      ComponentsPools.release(context, mComponent.getLifecycle(), mContent);
+      ComponentsPools.release(context, mComponent, mContent);
     }
 
     if (mDisplayListDrawable != null) {

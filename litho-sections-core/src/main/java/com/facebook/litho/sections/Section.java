@@ -195,14 +195,6 @@ public abstract class Section<L extends Section> extends SectionLifecycle
   }
 
   /**
-   * @return the {@link SectionLifecycle} for this {@link Section}.
-   */
-  @Deprecated
-  public final SectionLifecycle getLifecycle() {
-    return this;
-  }
-
-  /**
    * Invalidates The subtree having its root in this {@link Section}. When a subtree is invalidated,
    * the {@link OnDiff} will be invoked
    * regardless of whether the {@link com.facebook.litho.annotations.Prop}s changed or not.

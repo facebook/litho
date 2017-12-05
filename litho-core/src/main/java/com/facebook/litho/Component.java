@@ -92,11 +92,6 @@ public abstract class Component extends ComponentLifecycle
     }
   }
 
-  @Deprecated
-  public ComponentLifecycle getLifecycle() {
-    return this;
-  }
-
   /**
    * Mostly used by logging to provide more readable messages.
    */
@@ -409,7 +404,7 @@ public abstract class Component extends ComponentLifecycle
   void applyStateUpdates(ComponentContext c) {
     setScopedContext(ComponentContext.withComponentScope(c, this));
 
-    getLifecycle().populateTreeProps(this, getScopedContext().getTreeProps());
+    populateTreeProps(this, getScopedContext().getTreeProps());
 
     if (ComponentsConfiguration.useGlobalKeys) {
       final KeyHandler keyHandler = getScopedContext().getKeyHandler();
@@ -419,7 +414,7 @@ public abstract class Component extends ComponentLifecycle
       }
     }
 
-    if (getLifecycle().hasState()) {
+    if (hasState()) {
       c.getStateHandler().applyStateUpdatesForComponent(this);
     }
   }

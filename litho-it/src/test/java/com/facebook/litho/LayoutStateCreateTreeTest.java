@@ -64,7 +64,7 @@ public class LayoutStateCreateTreeTest {
     assertThat(node.getRootComponent()).isNull();
     node = node.getChildAt(0);
     assertThat(node.getChildCount()).isEqualTo(0);
-    assertThat(node.getRootComponent().getLifecycle()).isInstanceOf(TestDrawableComponent.class);
+    assertThat(node.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
   }
 
   @Test
@@ -246,7 +246,7 @@ public class LayoutStateCreateTreeTest {
 
     InternalNode node = LayoutState.createTree(component, mComponentContext);
     assertThat(node.getChildCount()).isEqualTo(0);
-    assertThat(node.getRootComponent().getLifecycle()).isInstanceOf(TestDrawableComponent.class);
+    assertThat(node.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler2);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler2);
@@ -296,8 +296,7 @@ public class LayoutStateCreateTreeTest {
 
     InternalNode node = LayoutState.createTree(component, mComponentContext);
     assertThat(node.getChildCount()).isEqualTo(0);
-    assertThat(node.getRootComponent().getLifecycle())
-        .isInstanceOf(TestSizeDependentComponent.class);
+    assertThat(node.getRootComponent()).isInstanceOf(TestSizeDependentComponent.class);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler2);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler2);
