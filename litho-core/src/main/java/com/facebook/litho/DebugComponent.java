@@ -11,7 +11,6 @@ package com.facebook.litho;
 
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.support.v4.util.SimpleArrayMap;
 import android.view.View;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
@@ -27,7 +26,9 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
@@ -43,38 +44,23 @@ public final class DebugComponent {
     void applyOverrides(DebugComponent node);
   }
 
-  private static final SimpleArrayMap<String, DebugComponent> mDebugNodes = new SimpleArrayMap<>();
+  private static final Map<String, Overrider> sOverriders = new HashMap<>();
 
   private String mGlobalKey;
   private WeakReference<InternalNode> mNode;
   private int mComponentIndex;
   private Overrider mOverrider;
-  private int mGeneration;
 
   private DebugComponent() {}
 
   static synchronized DebugComponent getInstance(InternalNode node, int componentIndex) {
-    final String globalKey = createKey(node, componentIndex);
-    DebugComponent debugComponent = mDebugNodes.get(globalKey);
-
-    if (debugComponent == null) {
-      debugComponent = new DebugComponent();
-      mDebugNodes.put(globalKey, debugComponent);
-    }
-
-    debugComponent.mGlobalKey = globalKey;
+    final DebugComponent debugComponent = new DebugComponent();
+    debugComponent.mGlobalKey = createKey(node, componentIndex);
     debugComponent.mNode = new WeakReference<>(node);
     debugComponent.mComponentIndex = componentIndex;
-    debugComponent.mGeneration = node.getGeneration();
+    debugComponent.mOverrider = sOverriders.get(debugComponent.mGlobalKey);
 
     return debugComponent;
-  }
-
-  public boolean isValidInstance() {
-    final InternalNode node = mNode.get();
-    return node != null
-        && node.getGeneration() == mGeneration
-        && mGlobalKey.equals(createKey(node, mComponentIndex));
   }
 
   /**
@@ -143,6 +129,7 @@ public final class DebugComponent {
 
   public void setOverrider(Overrider overrider) {
     mOverrider = overrider;
+    sOverriders.put(mGlobalKey, overrider);
   }
 
   /**
