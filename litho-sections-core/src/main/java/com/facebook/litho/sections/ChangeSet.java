@@ -124,10 +124,9 @@ public final class ChangeSet {
     return mFinalCount;
   }
 
-  /**
-   * @return an empty ChangeSet.
-   */
-  static ChangeSet acquireChangeSet() {
+  /** @return an empty ChangeSet. */
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public static ChangeSet acquireChangeSet() {
     return acquireChangeSet(0);
   }
 

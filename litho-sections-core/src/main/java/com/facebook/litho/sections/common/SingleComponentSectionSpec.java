@@ -29,33 +29,52 @@ public class SingleComponentSectionSpec {
       @Prop(optional = true) Diff<Boolean> sticky,
       @Prop(optional = true) Diff<Integer> spanSize) {
 
-    boolean isSticky = false;
-    if (sticky != null && sticky.getNext() != null) {
-      isSticky = sticky.getNext();
-    }
-
-    int spanSizeVal = 1;
-    if (spanSize != null && spanSize.getNext() != null) {
-      spanSizeVal = spanSize.getNext();
-    }
-
     if (component.getNext() == null) {
       changeSet.delete(0);
-    } else if (component.getPrevious() == null) {
+      return;
+    }
+
+    boolean isNextSticky = false;
+    if (sticky != null && sticky.getNext() != null) {
+      isNextSticky = sticky.getNext();
+    }
+
+    int nextSpanSize = 1;
+    if (spanSize != null && spanSize.getNext() != null) {
+      nextSpanSize = spanSize.getNext();
+    }
+
+    if (component.getPrevious() == null) {
       changeSet.insert(
           0,
           ComponentRenderInfo.create()
               .component(component.getNext())
-              .isSticky(isSticky)
-              .spanSize(spanSizeVal)
+              .isSticky(isNextSticky)
+              .spanSize(nextSpanSize)
               .build());
-    } else {
+      return;
+    }
+
+    // Check if update is required.
+    boolean isPrevSticky = false;
+    if (sticky != null && sticky.getPrevious() != null) {
+      isPrevSticky = sticky.getPrevious();
+    }
+
+    int prevSpanSize = 1;
+    if (spanSize != null && spanSize.getPrevious() != null) {
+      prevSpanSize = spanSize.getPrevious();
+    }
+
+    if (isPrevSticky != isNextSticky
+        || prevSpanSize != nextSpanSize
+        || !component.getPrevious().isEquivalentTo(component.getNext())) {
       changeSet.update(
           0,
           ComponentRenderInfo.create()
               .component(component.getNext())
-              .isSticky(isSticky)
-              .spanSize(spanSizeVal)
+              .isSticky(isNextSticky)
+              .spanSize(nextSpanSize)
               .build());
     }
   }

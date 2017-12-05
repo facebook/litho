@@ -33,13 +33,13 @@ import java.util.List;
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 public final class Change {
 
-  static final int INSERT = 1;        // INSERT(index, component)
-  static final int INSERT_RANGE = -1; // INSERT_RANGE(index, count, [components])
-  static final int UPDATE = 2;        // UPDATE(index, component)
-  static final int UPDATE_RANGE = -2; // UPDATE_RANGE(index, count, [components])
-  static final int DELETE = 3;        // DELETE(index)
-  static final int DELETE_RANGE = -3; // DELETE_RANGE(index, count)
-  static final int MOVE = 0;          // MOVE(index, toIndex, component)
+  public static final int INSERT = 1; // INSERT(index, component)
+  public static final int INSERT_RANGE = -1; // INSERT_RANGE(index, count, [components])
+  public static final int UPDATE = 2; // UPDATE(index, component)
+  public static final int UPDATE_RANGE = -2; // UPDATE_RANGE(index, count, [components])
+  public static final int DELETE = 3; // DELETE(index)
+  public static final int DELETE_RANGE = -3; // DELETE_RANGE(index, count)
+  public static final int MOVE = 0; // MOVE(index, toIndex, component)
 
   /** Describes how a {@link Section} count will change once the Change is applied. */
   @IntDef({INSERT, UPDATE, DELETE, MOVE, INSERT_RANGE, UPDATE_RANGE, DELETE_RANGE})
@@ -162,11 +162,9 @@ public final class Change {
     return acquireMoveChange(fromIndex, toIndex);
   }
 
-  /**
-   * @return the type of this Change.
-   */
+  /** @return the type of this Change. */
   @Type
-  int getType() {
+  public int getType() {
     return mType;
   }
 
@@ -193,9 +191,10 @@ public final class Change {
 
   /**
    * @return the Component that will render this Change (if this Change is either an INSERT or an
-   * UPDATE).
+   *     UPDATE).
    */
-  RenderInfo getRenderInfo() {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public RenderInfo getRenderInfo() {
     return mRenderInfo;
   }
 

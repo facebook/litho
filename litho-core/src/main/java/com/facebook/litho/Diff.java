@@ -9,6 +9,7 @@
 
 package com.facebook.litho;
 
+import android.support.annotation.VisibleForTesting;
 import com.facebook.litho.annotations.ShouldUpdate;
 
 /**
@@ -33,7 +34,8 @@ public class Diff<T> {
     return mNext;
   }
 
-  void init(T previous, T next) {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public void init(T previous, T next) {
     mPrevious = previous;
     mNext = next;
   }
