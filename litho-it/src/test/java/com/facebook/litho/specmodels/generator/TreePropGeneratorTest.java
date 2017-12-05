@@ -24,6 +24,7 @@ import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
 import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
@@ -38,8 +39,11 @@ import org.junit.Test;
  */
 public class TreePropGeneratorTest {
   private final SpecModel mSpecModel = mock(SpecModel.class);
+  private final SpecModel mGenericSpecModel = mock(SpecModel.class);
   private final TreePropModel mTreeProp = mock(TreePropModel.class);
+  private final TreePropModel mGenericTreeProp = mock(TreePropModel.class);
   private SpecMethodModel<DelegateMethod, Void> mOnCreateTreePropMethodModel;
+  private SpecMethodModel<DelegateMethod, Void> mGenericOnCreateTreePropMethodModel;
 
   @Before
   public void setUp() {
@@ -98,6 +102,55 @@ public class TreePropGeneratorTest {
     when(mSpecModel.getDelegateMethods())
         .thenReturn(ImmutableList.of(mOnCreateTreePropMethodModel));
     when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.of(mTreeProp));
+
+    mGenericOnCreateTreePropMethodModel =
+        new SpecMethodModel<DelegateMethod, Void>(
+            ImmutableList.<Annotation>of(
+                new OnCreateTreeProp() {
+
+                  @Override
+                  public Class<? extends Annotation> annotationType() {
+                    return OnCreateTreeProp.class;
+                  }
+                }),
+            ImmutableList.of(Modifier.PROTECTED),
+            "onCreateTreeProp",
+            ParameterizedTypeName.get(GenericObject.class, Integer.class),
+            ImmutableList.<TypeVariableName>of(),
+            ImmutableList.of(
+                MethodParamModelFactory.create(
+                    mock(ExecutableElement.class),
+                    ClassNames.COMPONENT_CONTEXT,
+                    "componentContext",
+                    new ArrayList<Annotation>(),
+                    new ArrayList<AnnotationSpec>(),
+                    new ArrayList<Class<? extends Annotation>>(),
+                    new ArrayList<Class<? extends Annotation>>(),
+                    null),
+                MethodParamModelFactory.create(
+                    mock(ExecutableElement.class),
+                    ParameterizedTypeName.get(GenericObject.class, Integer.class),
+                    "prop",
+                    ImmutableList.of(createAnnotation(Prop.class)),
+                    new ArrayList<AnnotationSpec>(),
+                    new ArrayList<Class<? extends Annotation>>(),
+                    new ArrayList<Class<? extends Annotation>>(),
+                    null)),
+            null,
+            null);
+
+    when(mGenericTreeProp.getName()).thenReturn("genericTreeProp");
+    when(mGenericTreeProp.getType())
+        .thenReturn(ParameterizedTypeName.get(GenericObject.class, Boolean.class));
+
+    when(mGenericSpecModel.getContextClass()).thenReturn(ClassNames.COMPONENT_CONTEXT);
+    when(mGenericSpecModel.getComponentClass()).thenReturn(ClassNames.COMPONENT);
+    when(mGenericSpecModel.getComponentName()).thenReturn("Test");
+    when(mGenericSpecModel.getSpecName()).thenReturn("TestSpec");
+    when(mGenericSpecModel.getDelegateMethods())
+        .thenReturn(ImmutableList.of(mGenericOnCreateTreePropMethodModel));
+    when(mGenericSpecModel.getTreeProps())
+        .thenReturn(ImmutableList.of(mGenericTreeProp, mTreeProp));
   }
 
   @Test
@@ -134,6 +187,41 @@ public class TreePropGeneratorTest {
         "}\n");
   }
 
+  @Test
+  public void testGenericGenerate() {
+    TypeSpecDataHolder typeSpecDataHolder = TreePropGenerator.generate(mGenericSpecModel);
+
+    assertThat(typeSpecDataHolder.getFieldSpecs()).isEmpty();
+    assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(2);
+    assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
+
+    assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "@java.lang.Override\n"
+                + "protected void populateTreeProps(com.facebook.litho.Component _abstract,\n"
+                + "    com.facebook.litho.TreeProps treeProps) {\n"
+                + "  if (treeProps == null) {\n"
+                + "    return;\n"
+                + "  }\n"
+                + "  final Test _ref = (Test) _abstract;\n"
+                + "  _ref.genericTreeProp = treeProps.get(com.facebook.litho.specmodels.generator.TreePropGeneratorTest.GenericObject.class);\n"
+                + "  _ref.treeProp = treeProps.get(int.class);\n"
+                + "}\n");
+
+    assertThat(typeSpecDataHolder.getMethodSpecs().get(1).toString())
+        .isEqualTo(
+            "@java.lang.Override\n"
+                + "protected com.facebook.litho.TreeProps getTreePropsForChildren(com.facebook.litho.ComponentContext c,\n"
+                + "    com.facebook.litho.Component _abstract, com.facebook.litho.TreeProps parentTreeProps) {\n"
+                + "  final Test _ref = (Test) _abstract;\n"
+                + "  final com.facebook.litho.TreeProps childTreeProps = com.facebook.litho.TreeProps.copy(parentTreeProps);\n"
+                + "  childTreeProps.put(com.facebook.litho.specmodels.generator.TreePropGeneratorTest.GenericObject.class, TestSpec.onCreateTreeProp(\n"
+                + "      (com.facebook.litho.ComponentContext) c,\n"
+                + "      (com.facebook.litho.specmodels.generator.TreePropGeneratorTest.GenericObject<java.lang.Integer>) _ref.prop));\n"
+                + "  return childTreeProps;\n"
+                + "}\n");
+  }
+
   private static Annotation createAnnotation(final Class<? extends Annotation> annotationClass) {
     return new Annotation() {
       @Override
@@ -141,5 +229,9 @@ public class TreePropGeneratorTest {
         return annotationClass;
       }
     };
+  }
+
+  private static class GenericObject<T> {
+    T value;
   }
 }

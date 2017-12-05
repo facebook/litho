@@ -20,6 +20,8 @@ import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.TreePropModel;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
 import java.util.List;
 import javax.lang.model.element.Modifier;
 
@@ -61,7 +63,7 @@ public class TreePropGenerator {
       method.addStatement(
           "_ref.$L = treeProps.get($L.class)",
           treeProp.getName(),
-          treeProp.getType());
+          findTypeByTypeName(treeProp.getType()));
     }
 
     return TypeSpecDataHolder.newBuilder().addMethod(method.build()).build();
@@ -97,7 +99,7 @@ public class TreePropGenerator {
       block
           .add(
               "childTreeProps.put($L.class, $L.$L(\n",
-              onCreateTreePropsMethod.returnType,
+              findTypeByTypeName(onCreateTreePropsMethod.returnType),
               delegateName,
               onCreateTreePropsMethod.name)
           .indent()
@@ -134,5 +136,12 @@ public class TreePropGenerator {
     builder.addStatement("return childTreeProps");
 
     return TypeSpecDataHolder.newBuilder().addMethod(builder.build()).build();
+  }
+
+  private static TypeName findTypeByTypeName(final TypeName typeName) {
+    if (typeName instanceof ParameterizedTypeName) {
+      return ((ParameterizedTypeName) typeName).rawType;
+    }
+    return typeName;
   }
 }
