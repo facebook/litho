@@ -23,10 +23,8 @@ public interface FrameworkLogEvents {
   int EVENT_MOUNT = 6;
   int EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH = 7;
   int EVENT_PRE_ALLOCATE_MOUNT_CONTENT = 8;
-  int EVENT_STETHO_UPDATE_COMPONENT = 9;
-  int EVENT_STETHO_INSPECT_COMPONENT = 10;
-  int EVENT_ERROR = 11;
-  int EVENT_WARNING = 12;
+  int EVENT_ERROR = 9;
+  int EVENT_WARNING = 10;
 
   String PARAM_COMPONENT = "component";
   String PARAM_LOG_TAG = "log_tag";

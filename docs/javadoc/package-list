@@ -22,7 +22,6 @@ com.facebook.litho.specmodels.model
 com.facebook.litho.specmodels.model.testing
 com.facebook.litho.specmodels.processor
 com.facebook.litho.specmodels.processor.testing
-com.facebook.litho.stetho
 com.facebook.litho.testing
 com.facebook.litho.testing.assertj
 com.facebook.litho.testing.espresso

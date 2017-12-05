@@ -38,10 +38,6 @@ dependencies {
   // SoLoader
   implementation 'com.facebook.soloader:soloader:0.2.0'
 
-  // Optional
-  // For debugging
-  debugImplementation 'com.facebook.litho:litho-stetho:{{site.litho-version}}'
-
   // For integration with Fresco
   implementation 'com.facebook.litho:litho-fresco:{{site.litho-version}}'
 
@@ -93,10 +89,6 @@ dependencies {
 
   // SoLoader
   implementation 'com.facebook.soloader:soloader:0.2.0'
-
-  // Optional
-  // For debugging
-  debugImplementation 'com.facebook.litho:litho-stetho:{{site.litho-snapshot-version}}'
 
   // For integration with Fresco
   implementation 'com.facebook.litho:litho-fresco:{{site.litho-snapshot-version}}'

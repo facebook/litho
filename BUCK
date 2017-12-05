@@ -10,7 +10,6 @@ include_defs("//COMPONENTS_DEFS")
 litho_android_library(
     name = "components",
     exported_deps = [
-        COMPONENTS_STETHO_JAVA_TARGET,
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_ANDROIDSUPPORT_TARGET,
         COMPONENTS_YOGA_TARGET,

@@ -28,7 +28,6 @@ android {
 
 dependencies {
     implementation project(':litho-core')
-    implementation project(':litho-stetho')
     implementation project(':litho-widget')
     implementation project(':litho-fresco')
     implementation project(':litho-sections-core')

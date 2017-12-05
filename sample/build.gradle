@@ -43,7 +43,6 @@ android {
 
 dependencies {
     implementation project(':litho-core')
-    implementation project(':litho-stetho')
     implementation project(':litho-widget')
     implementation project(':litho-fresco')
     implementation project(':litho-sections-core')
@@ -56,7 +55,6 @@ dependencies {
     // First-party
     implementation deps.soloader
     implementation deps.fresco
-    implementation deps.stetho
 
     // Annotations
     compileOnly deps.jsr305

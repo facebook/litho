@@ -12,7 +12,6 @@ COMPONENTS_ROOT_TARGET = make_dep_path(":components")
 
 # Java source
 COMPONENTS_JAVA_TARGET                     = make_dep_path('litho-core/src/main/java/com/facebook/litho:components')
-COMPONENTS_STETHO_JAVA_TARGET              = make_dep_path('litho-stetho/src/main/java/com/facebook/litho/stetho:stetho')
 COMPONENTS_ANNOTATIONS_TARGET              = make_dep_path('litho-annotations/src/main/java/com/facebook/litho/annotations:annotations')
 COMPONENTS_CONFIG_TARGET                   = make_dep_path('litho-core/src/main/java/com/facebook/litho/config:config')
 COMPONENTS_DISPLAYLISTSTUBS_TARGET         = make_dep_path('litho-stubs:stubs')
@@ -54,7 +53,6 @@ COMPONENTS_ANDROIDSUPPORT_TESTING_TARGET      = make_dep_path('lib/android-suppo
 COMPONENTS_YOGA_TARGET                        = make_dep_path('lib/yoga:yoga')
 COMPONENTS_YOGAJNI_TARGET                     = make_dep_path('lib/yogajni:jni')
 COMPONENTS_BUILD_CONFIG_TARGET                = make_dep_path(':build_config')
-COMPONENTS_STETHO_TARGET                      = make_dep_path('lib/stetho:stetho')
 COMPONENTS_COMMONS_CLI_TARGET                 = make_dep_path('lib/commons-cli:commons-cli')
 COMPONENTS_TEXTLAYOUTBUILDER_TARGET           = make_dep_path('lib/textlayoutbuilder:textlayoutbuilder')
 COMPONENTS_JAVAPOET_TARGET                    = make_dep_path('lib/javapoet:javapoet')

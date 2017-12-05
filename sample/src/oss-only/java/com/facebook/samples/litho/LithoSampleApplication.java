@@ -14,9 +14,7 @@ package com.facebook.samples.litho;
 
 import android.app.Application;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.litho.stetho.LithoWebKitInspector;
 import com.facebook.soloader.SoLoader;
-import com.facebook.stetho.Stetho;
 
 public class LithoSampleApplication extends Application {
 
@@ -26,9 +24,5 @@ public class LithoSampleApplication extends Application {
 
     Fresco.initialize(this);
     SoLoader.init(this, false);
-    Stetho.initialize(
-        Stetho.newInitializerBuilder(this)
-            .enableWebKitInspector(new LithoWebKitInspector(this))
-            .build());
   }
 }

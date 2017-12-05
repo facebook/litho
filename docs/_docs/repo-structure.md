@@ -49,7 +49,6 @@ parts of the framework they want to use. The available projects are as follows:
  * `litho-it` contains integration tests for the framework. It is necessary to have a separate project for this as it to avoid circular dependencies.
  * `litho-it-powermock` contains integration tests for the framework that utilize PowerMock. Check out the README inside to learn more.
  * `litho-processor` contains the stand-alone annotation processor.
- * `litho-stetho` contains Stetho integrations for easier debugging and development.
  * `litho-stubs` contains stubbed out Android framework classes that are needed for some display list magic in `litho-core`.
  * `litho-testing` contains utilities to test Litho components.
  * `litho-widget` contains several mount specs for commonly used Android widgets.
