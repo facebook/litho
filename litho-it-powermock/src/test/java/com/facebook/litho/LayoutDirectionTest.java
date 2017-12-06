@@ -62,26 +62,21 @@ public class LayoutDirectionTest {
         create(mContext, true, true, true, false)
             .build();
 
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Row.create(c)
-                .layoutDirection(LTR)
-                .child(
-                    Layout.create(c, child1)
-                        .widthPx(10)
-                        .heightPx(10))
-                .child(
-                    Layout.create(c, child2)
-                        .widthPx(10)
-                        .heightPx(10))
-                .build();
-          }
-        },
-        20,
-        10);
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Row.create(c)
+                    .layoutDirection(LTR)
+                    .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
+                    .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
+                    .build();
+              }
+            },
+            20,
+            10);
 
     View view1 = lithoView.getChildAt(0);
     View view2 = lithoView.getChildAt(1);
@@ -106,14 +101,8 @@ public class LayoutDirectionTest {
           protected ComponentLayout onCreateLayout(ComponentContext c) {
             return Row.create(c)
                 .layoutDirection(RTL)
-                .child(
-                    Layout.create(c, child1)
-                        .widthPx(10)
-                        .heightPx(10))
-                .child(
-                    Layout.create(c, child2)
-                        .widthPx(10)
-                        .heightPx(10))
+                .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
+                .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
                 .build();
           }
         },
@@ -147,26 +136,21 @@ public class LayoutDirectionTest {
     final TestComponent child2 = TestDrawableComponent.create(mContext)
         .build();
 
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Row.create(c)
-                .layoutDirection(LTR)
-                .child(
-                    Layout.create(c, child1)
-                        .widthPx(10)
-                        .heightPx(10))
-                .child(
-                    Layout.create(c, child2)
-                        .widthPx(10)
-                        .heightPx(10))
-                .build();
-          }
-        },
-        20,
-        10);
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Row.create(c)
+                    .layoutDirection(LTR)
+                    .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
+                    .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
+                    .build();
+              }
+            },
+            20,
+            10);
 
     Drawable drawable1 = lithoView.getDrawables().get(0);
     Drawable drawable2 = lithoView.getDrawables().get(1);
@@ -182,14 +166,8 @@ public class LayoutDirectionTest {
           protected ComponentLayout onCreateLayout(ComponentContext c) {
             return Row.create(c)
                 .layoutDirection(RTL)
-                .child(
-                    Layout.create(c, child1)
-                        .widthPx(10)
-                        .heightPx(10))
-                .child(
-                    Layout.create(c, child2)
-                        .widthPx(10)
-                        .heightPx(10))
+                .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
+                .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
                 .build();
           }
         },
@@ -214,29 +192,24 @@ public class LayoutDirectionTest {
     final TestComponent child2 = TestDrawableComponent.create(mContext)
         .build();
 
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Row.create(c)
-                .layoutDirection(RTL)
-                .child(
-                    Row.create(c)
-                        .wrapInView()
-                        .child(
-                            Layout.create(c, child1)
-                                .widthPx(10)
-                                .heightPx(10))
-                        .child(
-                            Layout.create(c, child2)
-                                .widthPx(10)
-                                .heightPx(10)))
-                .build();
-          }
-        },
-        20,
-        10);
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Row.create(c)
+                    .layoutDirection(RTL)
+                    .child(
+                        Row.create(c)
+                            .wrapInView()
+                            .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
+                            .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10)))
+                    .build();
+              }
+            },
+            20,
+            10);
 
     final ComponentHost host = (ComponentHost) lithoView.getChildAt(0);
     final Drawable drawable1 = host.getDrawables().get(0);
@@ -257,30 +230,25 @@ public class LayoutDirectionTest {
     final TestComponent child2 = TestDrawableComponent.create(mContext)
         .build();
 
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Row.create(c)
-                .layoutDirection(RTL)
-                .child(
-                    Row.create(c)
-                        .layoutDirection(LTR)
-                        .wrapInView()
-                        .child(
-                            Layout.create(c, child1)
-                                .widthPx(10)
-                                .heightPx(10))
-                        .child(
-                            Layout.create(c, child2)
-                                .widthPx(10)
-                                .heightPx(10)))
-                .build();
-          }
-        },
-        20,
-        10);
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Row.create(c)
+                    .layoutDirection(RTL)
+                    .child(
+                        Row.create(c)
+                            .layoutDirection(LTR)
+                            .wrapInView()
+                            .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
+                            .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10)))
+                    .build();
+              }
+            },
+            20,
+            10);
 
     final ComponentHost host = (ComponentHost) lithoView.getChildAt(0);
     final Drawable drawable1 = host.getDrawables().get(0);
@@ -299,24 +267,26 @@ public class LayoutDirectionTest {
     final TestComponent child = TestDrawableComponent.create(mContext)
         .build();
 
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .layoutDirection(LTR)
-                .child(
-                    Layout.create(c, child)
-                        .widthPx(10)
-                        .heightPx(10)
-                        .marginPx(START, 10)
-                        .marginPx(END, 20))
-                .build();
-          }
-        },
-        40,
-        10);
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .layoutDirection(LTR)
+                    .child(
+                        Wrapper.create(c)
+                            .delegate(child)
+                            .widthPx(10)
+                            .heightPx(10)
+                            .marginPx(START, 10)
+                            .marginPx(END, 20))
+                    .build();
+              }
+            },
+            40,
+            10);
 
     Drawable drawable = lithoView.getDrawables().get(0);
     assertThat(drawable.getBounds()).isEqualTo(new Rect(10, 0, 20, 10));
@@ -330,7 +300,8 @@ public class LayoutDirectionTest {
             return Column.create(c)
                 .layoutDirection(RTL)
                 .child(
-                    Layout.create(c, child)
+                    Wrapper.create(c)
+                        .delegate(child)
                         .widthPx(10)
                         .heightPx(10)
                         .marginPx(START, 10)
@@ -354,24 +325,22 @@ public class LayoutDirectionTest {
     final TestComponent child = TestDrawableComponent.create(mContext)
         .build();
 
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .layoutDirection(LTR)
-                .paddingPx(START, 10)
-                .paddingPx(END, 20)
-                .child(
-                    Layout.create(c, child)
-                        .widthPx(10)
-                        .heightPx(10))
-                .build();
-          }
-        },
-        40,
-        10);
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected ComponentLayout onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .layoutDirection(LTR)
+                    .paddingPx(START, 10)
+                    .paddingPx(END, 20)
+                    .child(Wrapper.create(c).delegate(child).widthPx(10).heightPx(10))
+                    .build();
+              }
+            },
+            40,
+            10);
 
     Drawable drawable = lithoView.getDrawables().get(0);
     assertThat(drawable.getBounds()).isEqualTo(new Rect(10, 0, 20, 10));
@@ -386,10 +355,7 @@ public class LayoutDirectionTest {
                 .layoutDirection(RTL)
                 .paddingPx(START, 10)
                 .paddingPx(END, 20)
-                .child(
-                    Layout.create(c, child)
-                        .widthPx(10)
-                        .heightPx(10))
+                .child(Wrapper.create(c).delegate(child).widthPx(10).heightPx(10))
                 .build();
           }
         },
