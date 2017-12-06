@@ -102,8 +102,7 @@ public class TestSizeDependentComponent extends Component {
     return true;
   }
 
-  public static class Builder
-      extends com.facebook.litho.Component.Builder<TestSizeDependentComponent, Builder> {
+  public static class Builder extends com.facebook.litho.Component.Builder<Builder> {
 
     TestSizeDependentComponent mTestSizeDependentComponent;
 

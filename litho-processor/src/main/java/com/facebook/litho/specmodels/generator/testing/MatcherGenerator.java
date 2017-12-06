@@ -480,7 +480,7 @@ public final class MatcherGenerator {
             : WildcardTypeName.subtypeOf(ClassNames.COMPONENT_LIFECYCLE);
 
     if (builderClass.equals(ClassNames.COMPONENT_BUILDER)) {
-      return new TypeName[] {typeParameter, WildcardTypeName.subtypeOf(TypeName.OBJECT)};
+      return new TypeName[] {WildcardTypeName.subtypeOf(TypeName.OBJECT)};
     } else {
       return new TypeName[] {typeParameter};
     }

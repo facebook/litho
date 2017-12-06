@@ -62,7 +62,7 @@ public final class SimpleLayout extends Component {
     return builder;
   }
 
-  public static class Builder extends Component.Builder<SimpleLayout, Builder> {
+  public static class Builder extends Component.Builder<Builder> {
     SimpleLayout mSimpleLayout;
 
     ComponentContext mContext;

@@ -629,7 +629,7 @@ public final class TestMount<S extends View> extends Component {
     }
   }
 
-  public static class Builder<S extends View> extends Component.Builder<TestMount, Builder<S>> {
+  public static class Builder<S extends View> extends Component.Builder<Builder<S>> {
     private static final String[] REQUIRED_PROPS_NAMES = new String[] {"prop1", "prop6", "prop3", "prop4", "prop8", "prop7", "prop5"};
 
     private static final int REQUIRED_PROPS_COUNT = 7;

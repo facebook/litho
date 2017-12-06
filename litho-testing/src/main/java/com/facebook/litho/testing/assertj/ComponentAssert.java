@@ -46,8 +46,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return new ComponentAssert(componentContext, component);
   }
 
-  public static <L extends Component> ComponentAssert assertThat(
-      Component.Builder<L, ?> builder) {
+  public static ComponentAssert assertThat(Component.Builder<?> builder) {
     // mContext is freed up during build() so we need to get a reference to it before.
     final ComponentContext context =
         Whitebox.getInternalState(builder, "mContext");

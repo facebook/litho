@@ -441,13 +441,12 @@ public abstract class Component extends ComponentLifecycle
   public EventDispatcher getEventDispatcher() {
     return this;
   }
-  
+
   /**
    * @param <T> the type of this builder. Required to ensure methods defined here in the abstract
    *     class correctly return the type of the concrete subclass.
    */
-  public abstract static class Builder<L extends Component, T extends Builder<L, T>>
-      extends ResourceResolver {
+  public abstract static class Builder<T extends Builder<T>> extends ResourceResolver {
 
     private ComponentContext mContext;
     @AttrRes private int mDefStyleAttr;

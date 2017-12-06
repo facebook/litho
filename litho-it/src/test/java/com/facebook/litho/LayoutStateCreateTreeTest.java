@@ -556,7 +556,6 @@ public class LayoutStateCreateTreeTest {
 
     public static class Builder
         extends com.facebook.litho.Component.Builder<
-            TestDrawableComponentWithMockInternalNode,
             TestDrawableComponentWithMockInternalNode.Builder> {
 
       private Component mComponent;

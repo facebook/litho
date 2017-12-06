@@ -64,7 +64,7 @@ public final class SimpleDiffSection extends Section<SimpleDiffSection> {
     return true;
   }
 
-  public static class Builder extends Section.Builder<SimpleDiffSection, Builder> {
+  public static class Builder extends Section.Builder<Builder> {
     SimpleDiffSection mSimpleDiffSection;
 
     SectionContext mContext;

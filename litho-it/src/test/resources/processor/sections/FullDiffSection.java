@@ -343,7 +343,7 @@ public final class FullDiffSection<T> extends Section<FullDiffSection> {
     Object state1;
   }
 
-  public static class Builder<T> extends Section.Builder<FullDiffSection, Builder<T>> {
+  public static class Builder<T> extends Section.Builder<Builder<T>> {
     private static final String[] REQUIRED_PROPS_NAMES = new String[] {"prop1", "data", "prop3"};
 
     private static final int REQUIRED_PROPS_COUNT = 3;
@@ -384,7 +384,7 @@ public final class FullDiffSection<T> extends Section<FullDiffSection> {
       return this;
     }
 
-    public Builder<T> prop3(Component.Builder<? extends Component, ?> prop3Builder) {
+    public Builder<T> prop3(Component.Builder<?> prop3Builder) {
       this.mFullDiffSection.prop3 = prop3Builder.build();
       mRequired.set(2);
       return this;

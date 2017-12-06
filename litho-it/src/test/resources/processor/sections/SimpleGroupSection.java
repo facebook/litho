@@ -58,7 +58,7 @@ public final class SimpleGroupSection extends Section<SimpleGroupSection> {
     return _result;
   }
 
-  public static class Builder extends Section.Builder<SimpleGroupSection, Builder> {
+  public static class Builder extends Section.Builder<Builder> {
     SimpleGroupSection mSimpleGroupSection;
 
     SectionContext mContext;

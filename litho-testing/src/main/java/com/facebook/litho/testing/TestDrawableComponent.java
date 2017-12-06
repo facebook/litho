@@ -267,8 +267,7 @@ public class TestDrawableComponent extends TestComponent {
     return false;
   }
 
-  public static class Builder
-      extends com.facebook.litho.Component.Builder<TestDrawableComponent, Builder> {
+  public static class Builder extends com.facebook.litho.Component.Builder<Builder> {
     TestDrawableComponent mComponent;
 
     private void init(

@@ -510,7 +510,7 @@ public final class TestLayout<S extends View> extends Component {
     }
   }
 
-  public static class Builder<S extends View> extends Component.Builder<TestLayout, Builder<S>> {
+  public static class Builder<S extends View> extends Component.Builder<Builder<S>> {
     private static final String[] REQUIRED_PROPS_NAMES = new String[] {"prop1", "prop6", "prop3", "prop4", "child", "prop5"};
 
     private static final int REQUIRED_PROPS_COUNT = 6;
@@ -564,7 +564,7 @@ public final class TestLayout<S extends View> extends Component {
       return this;
     }
 
-    public Builder<S> child(Component.Builder<? extends Component, ?> childBuilder) {
+    public Builder<S> child(Component.Builder<?> childBuilder) {
       this.mTestLayout.child = childBuilder.build();
       mRequired.set(4);
       return this;

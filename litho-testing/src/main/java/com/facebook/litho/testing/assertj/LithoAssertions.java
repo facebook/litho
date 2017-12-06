@@ -27,8 +27,7 @@ public class LithoAssertions extends Java6Assertions {
   }
 
   @CheckReturnValue
-  public static <L extends Component> ComponentAssert assertThat(
-      Component.Builder<L, ?> builder) {
+  public static ComponentAssert assertThat(Component.Builder<?> builder) {
     return ComponentAssert.assertThat(builder);
   }
 

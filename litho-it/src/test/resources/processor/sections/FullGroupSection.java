@@ -31,6 +31,7 @@ import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionLifecycle;
 import java.util.BitSet;
+
 /**
  * Comment to be copied in generated section
  *
@@ -386,7 +387,7 @@ final class FullGroupSection<T> extends Section<FullGroupSection> {
     @State Object state2;
   }
 
-  public static class Builder<T> extends Section.Builder<FullGroupSection, Builder<T>> {
+  public static class Builder<T> extends Section.Builder<Builder<T>> {
     private static final String[] REQUIRED_PROPS_NAMES = new String[] {"prop1", "prop3", "prop4"};
 
     private static final int REQUIRED_PROPS_COUNT = 3;
@@ -421,7 +422,7 @@ final class FullGroupSection<T> extends Section<FullGroupSection> {
       return this;
     }
 
-    public Builder<T> prop3(Component.Builder<? extends Component, ?> prop3Builder) {
+    public Builder<T> prop3(Component.Builder<?> prop3Builder) {
       this.mFullGroupSection.prop3 = prop3Builder.build();
       mRequired.set(1);
       return this;

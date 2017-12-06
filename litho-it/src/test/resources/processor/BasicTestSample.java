@@ -17,7 +17,6 @@ import android.support.annotation.Dimension;
 import android.support.annotation.Px;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.ResourceResolver;
 import com.facebook.litho.testing.assertj.ComponentMatcher;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
@@ -137,7 +136,7 @@ public final class BasicTestSample implements BasicTestSampleSpec {
       return this;
     }
 
-    public Matcher child(Component.Builder<? extends ComponentLifecycle, ?> childBuilder) {
+    public Matcher child(Component.Builder<?> childBuilder) {
       this.mChildMatcher = org.hamcrest.core.Is.is((Component) childBuilder.build());
       return this;
     }

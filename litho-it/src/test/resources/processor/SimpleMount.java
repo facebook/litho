@@ -145,7 +145,7 @@ public final class SimpleMount extends Component {
     return builder;
   }
 
-  public static class Builder extends Component.Builder<SimpleMount, Builder> {
+  public static class Builder extends Component.Builder<Builder> {
     private static final String[] REQUIRED_PROPS_NAMES = new String[] {"ratio", "content"};
 
     private static final int REQUIRED_PROPS_COUNT = 2;
@@ -176,7 +176,7 @@ public final class SimpleMount extends Component {
       return this;
     }
 
-    public Builder content(Component.Builder<? extends Component, ?> contentBuilder) {
+    public Builder content(Component.Builder<?> contentBuilder) {
       this.mSimpleMount.content = contentBuilder.build();
       mRequired.set(1);
       return this;

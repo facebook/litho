@@ -127,7 +127,7 @@ public class BuilderGeneratorTest {
     assertThat(dataHolder.getTypeSpecs()).hasSize(1);
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
-            "public static class Builder extends com.facebook.litho.Component.Builder<com.facebook.litho.specmodels.generator.BuilderGeneratorTest.Test, Builder> {\n"
+            "public static class Builder extends com.facebook.litho.Component.Builder<Builder> {\n"
                 + "  private static final java.lang.String[] REQUIRED_PROPS_NAMES = new String[] {\"arg0\", \"section\", \"names\"};\n"
                 + "\n"
                 + "  private static final int REQUIRED_PROPS_COUNT = 3;\n"
@@ -163,7 +163,7 @@ public class BuilderGeneratorTest {
                 + "    return this;\n"
                 + "  }\n"
                 + "\n"
-                + "  public Builder section(com.facebook.litho.sections.Section.Builder<?, ?> sectionBuilder) {\n"
+                + "  public Builder section(com.facebook.litho.sections.Section.Builder<?> sectionBuilder) {\n"
                 + "    this.mTest.section = sectionBuilder.build();\n"
                 + "    mRequired.set(1);\n"
                 + "    return this;\n"
@@ -233,7 +233,7 @@ public class BuilderGeneratorTest {
     assertThat(dataHolder.getTypeSpecs()).hasSize(1);
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
-            "public static class Builder extends com.facebook.litho.Component.Builder<com.facebook.litho.specmodels.generator.BuilderGeneratorTest.TestResTypeWithVarArgs, Builder> {\n"
+            "public static class Builder extends com.facebook.litho.Component.Builder<Builder> {\n"
                 + "  private static final java.lang.String[] REQUIRED_PROPS_NAMES = new String[] {\"sizes\"};\n"
                 + "\n"
                 + "  private static final int REQUIRED_PROPS_COUNT = 1;\n"
@@ -434,7 +434,7 @@ public class BuilderGeneratorTest {
     assertThat(dataHolder.getTypeSpecs()).hasSize(1);
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
-            "public static class Builder extends com.facebook.litho.Component.Builder<com.facebook.litho.specmodels.generator.BuilderGeneratorTest.TestDimenResTypeWithBoxFloatArg, Builder> {\n"
+            "public static class Builder extends com.facebook.litho.Component.Builder<Builder> {\n"
                 + "  private static final java.lang.String[] REQUIRED_PROPS_NAMES = new String[] {\"size\"};\n"
                 + "\n"
                 + "  private static final int REQUIRED_PROPS_COUNT = 1;\n"

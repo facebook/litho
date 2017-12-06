@@ -210,8 +210,7 @@ public class TestViewComponent extends TestComponent {
     return false;
   }
 
-  public static class Builder
-      extends com.facebook.litho.Component.Builder<TestViewComponent, Builder> {
+  public static class Builder extends com.facebook.litho.Component.Builder<Builder> {
     TestViewComponent mState;
 
     private void init(

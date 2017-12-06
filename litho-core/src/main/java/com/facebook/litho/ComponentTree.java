@@ -203,7 +203,7 @@ public class ComponentTree {
   @GuardedBy("this")
   public Map<String, List<EventHandler>> mEventHandlers = new HashMap<>();
 
-  public static Builder create(ComponentContext context, Component.Builder<?, ?> root) {
+  public static Builder create(ComponentContext context, Component.Builder<?> root) {
     return create(context, root.build());
   }
 

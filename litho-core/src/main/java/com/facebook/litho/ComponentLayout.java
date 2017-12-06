@@ -834,7 +834,7 @@ public interface ComponentLayout {
     ContainerBuilder child(Component component);
 
     @ReturnsOwnership
-    ContainerBuilder child(Component.Builder<?, ?> componentBuilder);
+    ContainerBuilder child(Component.Builder<?> componentBuilder);
 
     /** @deprecated just use {@link #background(Drawable)} instead. */
     @Deprecated

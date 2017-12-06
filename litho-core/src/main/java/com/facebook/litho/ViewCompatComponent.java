@@ -118,8 +118,7 @@ public class ViewCompatComponent<V extends View> extends Component {
     return (V) mViewCreator.createView(c);
   }
 
-  public static final class Builder<V extends View>
-      extends Component.Builder<ViewCompatComponent<V>, Builder<V>> {
+  public static final class Builder<V extends View> extends Component.Builder<Builder<V>> {
 
     private ViewCompatComponent mViewCompatComponent;
 

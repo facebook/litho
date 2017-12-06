@@ -15,7 +15,6 @@ import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.ResourceResolver;
-import com.facebook.litho.sections.SectionLifecycle.StateContainer;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnDiff;
@@ -56,8 +55,7 @@ public abstract class Section<L extends Section> extends SectionLifecycle
    * should be set every time a parent might have more children with the same {@link
    * SectionLifecycle}.
    */
-  public abstract static class Builder<L extends Section, T extends Builder<L, T>>
-      extends ResourceResolver {
+  public abstract static class Builder<T extends Builder<T>> extends ResourceResolver {
 
     private Section mSection;
 

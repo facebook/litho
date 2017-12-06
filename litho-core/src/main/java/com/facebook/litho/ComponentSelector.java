@@ -36,7 +36,7 @@ public class ComponentSelector {
     return new ComponentSelector(context);
   }
 
-  public ComponentSelector tryToRender(@Nullable Component.Builder<?, ?> componentBuilder) {
+  public ComponentSelector tryToRender(@Nullable Component.Builder<?> componentBuilder) {
     if (componentBuilder == null || mWillRender) {
       return this;
     }
