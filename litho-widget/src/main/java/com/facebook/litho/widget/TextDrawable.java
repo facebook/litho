@@ -28,7 +28,6 @@ import android.text.Layout;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
-import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -48,8 +47,6 @@ import javax.annotation.Nullable;
  */
 public class TextDrawable extends Drawable implements Touchable, TextContent, Drawable.Callback {
 
-  private static final float DEFAULT_TOUCH_RADIUS_IN_SP = 18f;
-
   private Layout mLayout;
   private float mLayoutTranslationY;
   private boolean mShouldHandleTouch;
@@ -67,6 +64,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   private boolean mSelectionPathNeedsUpdate;
   private Paint mHighlightPaint;
   private TextOffsetOnTouchListener mTextOffsetOnTouchListener;
+  private float mClickableSpanExpandedOffset;
   private boolean mLongClickActivated;
   private @Nullable Handler mLongClickHandler;
   private @Nullable LongClickRunnable mLongClickRunnable;
@@ -145,15 +143,10 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     final int x = (int) event.getX() - bounds.left;
     final int y = (int) event.getY() - bounds.top;
 
-    float touchRadius = TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_SP,
-        DEFAULT_TOUCH_RADIUS_IN_SP,
-        view.getResources().getDisplayMetrics());
-
     ClickableSpan clickedSpan = getClickableSpanInCoords(x, y);
 
-    if (clickedSpan == null) {
-      clickedSpan = getClickableSpanInProximityToClick(x, y, touchRadius);
+    if (clickedSpan == null && mClickableSpanExpandedOffset > 0) {
+      clickedSpan = getClickableSpanInProximityToClick(x, y, mClickableSpanExpandedOffset);
     }
 
     if (clickedSpan != null) {
@@ -248,11 +241,11 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       Layout layout,
       int userColor,
       ClickableSpan[] clickableSpans) {
-    mount(text, layout, 0, null, userColor, 0, clickableSpans, null, null, -1, -1);
+    mount(text, layout, 0, null, userColor, 0, clickableSpans, null, null, -1, -1, 0f);
   }
 
   public void mount(CharSequence text, Layout layout, int userColor, int highlightColor) {
-    mount(text, layout, 0, null, userColor, highlightColor, null, null, null, -1, -1);
+    mount(text, layout, 0, null, userColor, highlightColor, null, null, null, -1, -1, 0f);
   }
 
   public void mount(
@@ -263,7 +256,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       int userColor,
       int highlightColor,
       ClickableSpan[] clickableSpans) {
-    mount(text, layout, 0, null, userColor, highlightColor, clickableSpans, null, null, -1, -1);
+    mount(text, layout, 0, null, userColor, highlightColor, clickableSpans, null, null, -1, -1, 0f);
   }
 
   public void mount(
@@ -277,7 +270,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       ImageSpan[] imageSpans,
       TextOffsetOnTouchListener textOffsetOnTouchListener,
       int highlightStartOffset,
-      int highlightEndOffset) {
+      int highlightEndOffset,
+      float clickableSpanExpandedOffset) {
     mLayout = layout;
     mLayoutTranslationY = layoutTranslationY;
     mText = text;
@@ -288,6 +282,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     mTextOffsetOnTouchListener = textOffsetOnTouchListener;
     mShouldHandleTouch = (clickableSpans != null && clickableSpans.length > 0);
     mHighlightColor = highlightColor;
+    mClickableSpanExpandedOffset = clickableSpanExpandedOffset;
     if (userColor != 0) {
       mColorStateList = null;
       mUserColor = userColor;
@@ -442,7 +437,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       float x,
       float y,
       float tapRadius) {
-    final Region touchAreaRegion= new Region();
+    final Region touchAreaRegion = new Region();
     final Region clipBoundsRegion = new Region();
 
     if (mTouchAreaPath == null) {

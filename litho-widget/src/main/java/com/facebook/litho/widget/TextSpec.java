@@ -9,7 +9,6 @@
 
 package com.facebook.litho.widget;
 
-
 import static android.support.v4.widget.ExploreByTouchHelper.INVALID_ID;
 import static android.text.Layout.Alignment.ALIGN_CENTER;
 import static android.text.Layout.Alignment.ALIGN_NORMAL;
@@ -109,12 +108,17 @@ import com.facebook.yoga.YogaDirection;
  * @prop textDirection Heuristic to use to determine the direction of the text.
  * @prop shouldIncludeFontPadding If set, uses extra padding for ascenders and descenders.
  * @prop verticalGravity Vertical gravity for the text within its container.
+ * @prop clickableSpanExpandedOffset Click offset amount to determine how far off the ClickableSpan
+ *     bounds user can click to be able to trigger ClickableSpan's click action. This could be
+ *     useful in a densely lined text with links like 'Continue reading ...' in NewsFeed to be able
+ *     to click that easily.
  */
 @MountSpec(
-    isPureRender = true,
-    shouldUseDisplayList = true,
-    poolSize = 30,
-    events = {TextOffsetOnTouchEvent.class})
+  isPureRender = true,
+  shouldUseDisplayList = true,
+  poolSize = 30,
+  events = {TextOffsetOnTouchEvent.class}
+)
 class TextSpec {
   static {
     SynchronizedTypefaceHelper.setupSynchronizedTypeface();
@@ -779,6 +783,7 @@ class TextSpec {
       @Prop(optional = true) final EventHandler textOffsetOnTouchHandler,
       @Prop(optional = true) int highlightStartOffset,
       @Prop(optional = true) int highlightEndOffset,
+      @Prop(optional = true, resType = ResType.DIMEN_TEXT) float clickableSpanExpandedOffset,
       @FromBoundsDefined Layout textLayout,
       @FromBoundsDefined Float textLayoutTranslationY,
       @FromBoundsDefined ClickableSpan[] clickableSpans,
@@ -805,7 +810,8 @@ class TextSpec {
         imageSpans,
         textOffsetOnTouchListener,
         highlightStartOffset,
-        highlightEndOffset);
+        highlightEndOffset,
+        clickableSpanExpandedOffset);
 
     if (text instanceof MountableCharSequence) {
       ((MountableCharSequence) text).onMount(textDrawable);
