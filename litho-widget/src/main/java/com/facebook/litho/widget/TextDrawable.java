@@ -149,24 +149,24 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       clickedSpan = getClickableSpanInProximityToClick(x, y, mClickableSpanExpandedOffset);
     }
 
-    if (clickedSpan != null) {
-      if (action == ACTION_UP) {
-        clearSelection();
-        if (clickActivationAllowed) {
-          clickedSpan.onClick(view);
-        }
-      } else if (action == ACTION_DOWN) {
-        if (clickedSpan instanceof LongClickableSpan) {
-          registerForLongClick((LongClickableSpan) clickedSpan);
-        }
-        setSelection(clickedSpan);
-      }
-
-      return true;
+    if (clickedSpan == null) {
+      clearSelection();
+      return false;
     }
 
-    clearSelection();
-    return false;
+    if (action == ACTION_UP) {
+      clearSelection();
+      if (clickActivationAllowed) {
+        clickedSpan.onClick(view);
+      }
+    } else if (action == ACTION_DOWN) {
+      if (clickedSpan instanceof LongClickableSpan) {
+        registerForLongClick((LongClickableSpan) clickedSpan);
+      }
+      setSelection(clickedSpan);
+    }
+
+    return true;
   }
 
   private void resetLongClick() {
@@ -202,7 +202,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
 
   private boolean shouldHandleTouchForClickableSpan(MotionEvent event) {
     final int action = event.getActionMasked();
-    boolean isUpOrDown = action == ACTION_UP || action == ACTION_DOWN;
+    final boolean isUpOrDown = action == ACTION_UP || action == ACTION_DOWN;
     return (mShouldHandleTouch && isWithinBounds(getBounds(), event) && isUpOrDown)
         || action == ACTION_CANCEL;
   }
