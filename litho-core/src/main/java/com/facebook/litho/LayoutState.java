@@ -890,6 +890,7 @@ class LayoutState {
 
     final YogaNode yogaNode = node.mYogaNode;
     final boolean isRtl = resolveLayoutDirection(yogaNode) == YogaDirection.RTL;
+    final float[] borderRadius = node.getBorderRadius();
     final int[] borderColors = node.getBorderColors();
     final YogaEdge leftEdge = isRtl ? YogaEdge.RIGHT : YogaEdge.LEFT;
     final YogaEdge rightEdge = isRtl ? YogaEdge.LEFT : YogaEdge.RIGHT;
@@ -904,6 +905,7 @@ class LayoutState {
         .borderTopWidth(FastMath.round(yogaNode.getLayoutBorder(YogaEdge.TOP)))
         .borderRightWidth(FastMath.round(yogaNode.getLayoutBorder(rightEdge)))
         .borderBottomWidth(FastMath.round(yogaNode.getLayoutBorder(YogaEdge.BOTTOM)))
+        .borderRadius(borderRadius)
         .build();
   }
 

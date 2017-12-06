@@ -176,16 +176,13 @@ public class BorderTest {
     border = Border.create(c).discreteEffect(1f, 0f).build();
     assertThat(border.mPathEffect).isInstanceOf(DiscretePathEffect.class);
 
-    border = Border.create(c).cornerEffect(1f).build();
-    assertThat(border.mPathEffect).isInstanceOf(CornerPathEffect.class);
-
     border =
         Border.create(c)
             .pathDashEffect(new Path(), 0f, 0f, PathDashPathEffect.Style.ROTATE)
             .build();
     assertThat(border.mPathEffect).isInstanceOf(PathDashPathEffect.class);
 
-    border = Border.create(c).cornerEffect(1f).dashEffect(new float[] {1f, 2f}, 1f).build();
+    border = Border.create(c).discreteEffect(1f, 1f).dashEffect(new float[] {1f, 2f}, 1f).build();
     assertThat(border.mPathEffect).isInstanceOf(ComposePathEffect.class);
   }
 
@@ -193,7 +190,7 @@ public class BorderTest {
   public void testTooManyEffectsThrows() {
     final ComponentContext c = new ComponentContext(application);
     Border.create(c)
-        .cornerEffect(1f)
+        .pathDashEffect(new Path(), 1f, 1f, PathDashPathEffect.Style.MORPH)
         .dashEffect(new float[] {1f, 2f}, 1f)
         .discreteEffect(1f, 2f)
         .build();
@@ -202,6 +199,10 @@ public class BorderTest {
   @Test(expected = IllegalArgumentException.class)
   public void testDifferentWidthWithEffectThrows() {
     final ComponentContext c = new ComponentContext(application);
-    Border.create(c).widthPx(YogaEdge.ALL, 10).widthPx(YogaEdge.LEFT, 5).cornerEffect(1f).build();
+    Border.create(c)
+        .widthPx(YogaEdge.ALL, 10)
+        .widthPx(YogaEdge.LEFT, 5)
+        .discreteEffect(1f, 1f)
+        .build();
   }
 }

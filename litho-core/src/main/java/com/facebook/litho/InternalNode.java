@@ -126,6 +126,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private Reference<? extends Drawable> mBackground;
   private Drawable mForeground;
   private final int[] mBorderColors = new int[Border.EDGE_COUNT];
+  private final float[] mBorderRadius = new float[Border.RADIUS_COUNT];
   private @Nullable PathEffect mBorderPathEffect;
 
   private NodeInfo mNodeInfo;
@@ -584,6 +585,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       setBorderWidth(Border.edgeFromIndex(i), border.mEdgeWidths[i]);
     }
     System.arraycopy(border.mEdgeColors, 0, mBorderColors, 0, mBorderColors.length);
+    System.arraycopy(border.mRadius, 0, mBorderRadius, 0, mBorderRadius.length);
     mBorderPathEffect = border.mPathEffect;
     return this;
   }
@@ -1537,6 +1539,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mBorderColors;
   }
 
+  float[] getBorderRadius() {
+    return mBorderRadius;
+  }
+
   @Nullable
   PathEffect getBorderPathEffect() {
     return mBorderPathEffect;
@@ -1737,6 +1743,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       yogaNode.setBorder(END, mNestedTreeBorderWidth.getRaw(YogaEdge.END));
       yogaNode.setBorder(ALL, mNestedTreeBorderWidth.getRaw(YogaEdge.ALL));
       System.arraycopy(mBorderColors, 0, node.mBorderColors, 0, mBorderColors.length);
+      System.arraycopy(mBorderRadius, 0, node.mBorderRadius, 0, mBorderRadius.length);
     }
     if ((mPrivateFlags & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
       node.mTransitionKey = mTransitionKey;
@@ -1927,6 +1934,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mPrivateFlags = 0L;
     mTransitionKey = null;
     Arrays.fill(mBorderColors, Color.TRANSPARENT);
+    Arrays.fill(mBorderRadius, 0f);
     mIsPaddingPercent = null;
 
     if (mTouchExpansion != null) {

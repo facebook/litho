@@ -17,6 +17,9 @@ import android.support.v4.util.Pools;
 import com.facebook.litho.BorderColorDrawable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsPools;
+
+import java.util.Arrays;
+
 import javax.annotation.Nullable;
 
 /** A Reference for {@link com.facebook.litho.BorderColorDrawable}. */
@@ -72,7 +75,8 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
         state.mBorderLeftColor,
         state.mBorderTopColor,
         state.mBorderRightColor,
-        state.mBorderBottomColor);
+        state.mBorderBottomColor,
+        state.mBorderRadius);
 
     return drawable;
   }
@@ -97,6 +101,8 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
     int mBorderRightWidth;
     int mBorderBottomWidth;
 
+    float[] mBorderRadius;
+
     @Override
     public String getSimpleName() {
       return "BorderColorDrawableReference";
@@ -116,6 +122,7 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
       result = 31 * result + mBorderTopWidth;
       result = 31 * result + mBorderRightWidth;
       result = 31 * result + mBorderBottomWidth;
+      result = 31 * result + Arrays.hashCode(mBorderRadius);
       result = 31 * result + (mPathEffect != null ? mPathEffect.hashCode() : 0);
       return result;
     }
@@ -140,6 +147,7 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
           && mBorderTopWidth == state.mBorderTopWidth
           && mBorderRightWidth == state.mBorderRightWidth
           && mBorderBottomWidth == state.mBorderBottomWidth
+          && Arrays.equals(mBorderRadius, state.mBorderRadius)
           && (mPathEffect == state.mPathEffect
               || (mPathEffect != null && mPathEffect.equals(state.mPathEffect)));
     }
@@ -204,6 +212,11 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
 
     public BorderColorDrawableReference.PropsBuilder borderBottomWidth(@Px int borderBottom) {
       mState.mBorderBottomWidth = borderBottom;
+      return this;
+    }
+
+    public BorderColorDrawableReference.PropsBuilder borderRadius(float[] radius) {
+      mState.mBorderRadius = radius;
       return this;
     }
 

@@ -12,7 +12,6 @@ package com.facebook.litho;
 import static android.support.annotation.Dimension.DP;
 
 import android.graphics.ComposePathEffect;
-import android.graphics.CornerPathEffect;
 import android.graphics.DashPathEffect;
 import android.graphics.DiscretePathEffect;
 import android.graphics.Path;
@@ -37,6 +36,11 @@ public class Border {
   static final int EDGE_BOTTOM = 3;
   static final int EDGE_COUNT = 4;
 
+  static final int DIM_X = 0;
+  static final int DIM_Y = 1;
+  static final int RADIUS_COUNT = 2;
+
+  final float[] mRadius = new float[RADIUS_COUNT];
   final int[] mEdgeWidths = new int[EDGE_COUNT];
   final int[] mEdgeColors = new int[EDGE_COUNT];
 
@@ -267,9 +271,11 @@ public class Border {
      * @param radius The amount to round sharp angles when drawing the border
      */
     public Builder cornerEffect(float radius) {
-      checkNotBuilt();
-      checkEffectCount();
-      mPathEffects[mNumPathEffects++] = new CornerPathEffect(radius);
+      if (radius < 0f) {
+        throw new IllegalArgumentException("Can't have a negative radius value");
+      }
+      mBorder.mRadius[DIM_X] = radius;
+      mBorder.mRadius[DIM_Y] = radius;
       return this;
     }
 
