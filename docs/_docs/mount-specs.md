@@ -140,7 +140,7 @@ public boolean shouldUpdate(Diff<String> someStringProp) {
 ```
 The parameters taken from `shouldUpdate` are [Diffs](/javadoc/com/facebook/litho/Diff) of Props or State. A Diff is an object containing the value of a `@Prop` or a `@State` in the old components hierarchy and the value of the same `@Prop` or `@State` in the new components hierarchy.
 In this example this component was defining **someStringProp** as a String `@Prop`. `shouldUpdate` will receive a `Diff<String>` to be able to compare the old and new value of this `@Prop`.  
-`shouldUpdate` has to take into consideration any prop and any states that are used at `@OnMount` time. It can safely ignore props and states that are only used at '@OnMount/@OnUnbind` time as these two methods will be executed regardless.
+`shouldUpdate` has to take into consideration any prop and any states that are used at `@OnMount` time. It can safely ignore props and states that are only used at `@OnMount`/`@OnUnbind` time as these two methods will be executed regardless.
 
 The `onMount` attribute on the `@ShouldUpdate` annotation controls whether this `shouldUpdate` check can happen at mount time. By default, Litho will try to do this reconciliation at layout time, but if layout diffing is turned off it might be useful to set onMount to true in order to execute this check at mount time instead. The `onMount` attribute is set to false by default as the equality check might be heavy itself and make mount performances worse.
 
