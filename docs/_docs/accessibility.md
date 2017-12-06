@@ -103,7 +103,7 @@ class PoliteComponentWrapper {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       ComponentContext c,
-      @Prop Component<?> content) {
+      @Prop Component content) {
       
     return Wrapper.create(c)
         .delegate(content)
