@@ -42,6 +42,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   private static final AtomicInteger sComponentTypeId = new AtomicInteger();
   private static final int DEFAULT_MAX_PREALLOCATION = 3;
 
+  private final Object mPreallocationLock = new Object();
+  private volatile boolean mPreallocationDone;
+
   public enum MountType {
     NONE,
     DRAWABLE,
@@ -464,16 +467,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /**
-   * @return the MountContentPool that should be used to recycle mount content for this mount spec.
-   */
-  protected MountContentPool onCreateMountContentPool() {
-    return new DefaultMountContentPool(getClass().getSimpleName(), poolSize(), true);
-  }
-
-  /**
-   * Deploy all UI elements representing the final bounds defined in the given {@link
-   * ComponentLayout}. Return either a {@link Drawable} or a {@link View} or {@code null} to be
-   * mounted.
+   * Deploy all UI elements representing the final bounds defined in the given
+   * {@link ComponentLayout}. Return either a {@link Drawable} or a {@link View} or
+   * {@code null} to be mounted.
    *
    * @param c The {@link ComponentContext} to mount the component into.
    * @param component The {@link Component} for this component.
@@ -600,6 +596,27 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   public Object acceptTriggerEvent(EventTrigger eventTrigger, Object eventState, Object[] params) {
     // Do nothing by default
     return null;
+  }
+
+  @ThreadSafe(enableChecks = false)
+  void preAllocateMountContent(ComponentContext context) {
+    if (mPreallocationDone) {
+      return;
+    }
+
+    if (ComponentsPools.canAddMountContentToPool(context, this)) {
+      ComponentsPools.release(
+          context,
+          this,
+          createMountContent(context));
+    } else {
+      synchronized (mPreallocationLock) {
+        if (mPreallocationDone) {
+          return;
+        }
+        mPreallocationDone = true;
+      }
+    }
   }
 
   protected boolean isPureRender() {

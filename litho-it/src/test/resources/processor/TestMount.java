@@ -28,7 +28,6 @@ import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggerTarget;
 import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.HasEventDispatcher;
-import com.facebook.litho.MountContentPool;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateValue;
@@ -48,7 +47,6 @@ import java.util.BitSet;
  * @prop-required prop8 long
  * @prop-required prop7 java.lang.CharSequence
  * @prop-required prop5 char
- * @see com.facebook.litho.processor.integration.resources.TestMountSpec
  */
 @TargetApi(17)
 public final class TestMount<S extends View> extends Component {
@@ -225,7 +223,10 @@ public final class TestMount<S extends View> extends Component {
     TestMount _ref = (TestMount) _abstract;
     Output<Boolean> prop2 = acquireOutput();
     Output<Object> prop3 = acquireOutput();
-    TestMountSpec.onLoadStyle((ComponentContext) c, prop2, prop3);
+    TestMountSpec.onLoadStyle(
+        (ComponentContext) c,
+        prop2,
+        prop3);
     if (prop2.get() != null) {
       _ref.prop2 = prop2.get();
     }
@@ -240,7 +241,10 @@ public final class TestMount<S extends View> extends Component {
   protected void createInitialState(ComponentContext c, Component _abstract) {
     TestMount _ref = (TestMount) _abstract;
     StateValue<S> state2 = new StateValue<>();
-    TestMountSpec.createInitialState((ComponentContext) c, (int) _ref.prop1, state2);
+    TestMountSpec.createInitialState(
+        (ComponentContext) c,
+        (int) _ref.prop1,
+        state2);
     if (state2.get() != null) {
       _ref.mStateContainer.state2 = state2.get();
     }
@@ -268,7 +272,8 @@ public final class TestMount<S extends View> extends Component {
   }
 
   @Override
-  protected void onBoundsDefined(ComponentContext c, ComponentLayout layout, Component _abstract) {
+  protected void onBoundsDefined(ComponentContext c, ComponentLayout layout,
+      Component _abstract) {
     TestMount _ref = (TestMount) _abstract;
     Output<Integer> boundsDefinedOutput = acquireOutput();
     TestMountSpec.onBoundsDefined(
@@ -284,7 +289,8 @@ public final class TestMount<S extends View> extends Component {
 
   @Override
   protected Object onCreateMountContent(ComponentContext c) {
-    Object _result = (Object) TestMountSpec.onCreateMountContent((ComponentContext) c);
+    Object _result = (Object) TestMountSpec.onCreateMountContent(
+        (ComponentContext) c);
     return _result;
   }
 
@@ -304,7 +310,10 @@ public final class TestMount<S extends View> extends Component {
   @Override
   protected void onUnmount(ComponentContext c, Object v, Component _abstract) {
     TestMount _ref = (TestMount) _abstract;
-    TestMountSpec.onUnmount((ComponentContext) c, (Drawable) v, (long) _ref.prop8);
+    TestMountSpec.onUnmount(
+        (ComponentContext) c,
+        (Drawable) v,
+        (long) _ref.prop8);
   }
 
   @Override
@@ -312,7 +321,8 @@ public final class TestMount<S extends View> extends Component {
       Component _abstract) {
     TestMount _ref = (TestMount) _abstract;
     TestMountSpec.onPopulateAccessibilityNode(
-        (AccessibilityNodeInfoCompat) node, (CharSequence) _ref.prop7);
+        (AccessibilityNodeInfoCompat) node,
+        (CharSequence) _ref.prop7);
   }
 
   @Override
@@ -323,19 +333,16 @@ public final class TestMount<S extends View> extends Component {
   @Override
   protected int getExtraAccessibilityNodesCount(Component _abstract) {
     TestMount _ref = (TestMount) _abstract;
-    int _result =
-        (int)
-            TestMountSpec.getExtraAccessibilityNodesCount(
-                (int) _ref.prop1, (CharSequence) _ref.prop7, (Integer) _ref.boundsDefinedOutput);
+    int _result = (int) TestMountSpec.getExtraAccessibilityNodesCount(
+        (int) _ref.prop1,
+        (CharSequence) _ref.prop7,
+        (Integer) _ref.boundsDefinedOutput);
     return _result;
   }
 
   @Override
-  protected void onPopulateExtraAccessibilityNode(
-      AccessibilityNodeInfoCompat node,
-      int extraNodeIndex,
-      int componentBoundsLeft,
-      int componentBoundsTop,
+  protected void onPopulateExtraAccessibilityNode(AccessibilityNodeInfoCompat node,
+      int extraNodeIndex, int componentBoundsLeft, int componentBoundsTop,
       Component _abstract) {
     TestMount _ref = (TestMount) _abstract;
     TestMountSpec.onPopulateExtraAccessibilityNode(
@@ -356,14 +363,12 @@ public final class TestMount<S extends View> extends Component {
   @Override
   protected int getExtraAccessibilityNodeAt(int x, int y, Component _abstract) {
     TestMount _ref = (TestMount) _abstract;
-    int _result =
-        (int)
-            TestMountSpec.getExtraAccessibilityNodeAt(
-                (int) x,
-                (int) y,
-                (Object) _ref.prop3,
-                (CharSequence) _ref.prop7,
-                (Integer) _ref.boundsDefinedOutput);
+    int _result = (int) TestMountSpec.getExtraAccessibilityNodeAt(
+        (int) x,
+        (int) y,
+        (Object) _ref.prop3,
+        (CharSequence) _ref.prop7,
+        (Integer) _ref.boundsDefinedOutput);
     return _result;
   }
 
@@ -378,12 +383,6 @@ public final class TestMount<S extends View> extends Component {
                 _nextImpl == null ? null : _nextImpl.prop1);
     boolean _result = (boolean) TestMountSpec.shouldUpdate(prop1);
     releaseDiff(prop1);
-    return _result;
-  }
-
-  @Override
-  protected MountContentPool onCreateMountContentPool() {
-    MountContentPool _result = (MountContentPool) TestMountSpec.onCreateMountContentPool();
     return _result;
   }
 
@@ -461,13 +460,10 @@ public final class TestMount<S extends View> extends Component {
   }
 
   public static EventHandler<ClickEvent> testLayoutEvent(ComponentContext c, int param1) {
-    return newEventHandler(
+    return newEventHandler(c, "testLayoutEvent", 1328162206, new Object[] {
         c,
-        "testLayoutEvent",
-        1328162206,
-        new Object[] {
-          c, param1,
-        });
+        param1,
+    });
   }
 
   @Override
@@ -476,11 +472,11 @@ public final class TestMount<S extends View> extends Component {
     switch (id) {
       case 1328162206: {
         ClickEvent _event = (ClickEvent) eventState;
-          testLayoutEvent(
-              eventHandler.mHasEventDispatcher,
-              (ComponentContext) eventHandler.params[0],
-              (View) _event.view,
-              (int) eventHandler.params[1]);
+        testLayoutEvent(
+            eventHandler.mHasEventDispatcher,
+            (ComponentContext) eventHandler.params[0],
+            (View) _event.view,
+            (int) eventHandler.params[1]);
         return null;
       }
       default:
@@ -590,8 +586,7 @@ public final class TestMount<S extends View> extends Component {
     return create(context, 0, 0);
   }
 
-  public static <S extends View> Builder<S> create(
-      ComponentContext context, int defStyleAttr, int defStyleRes) {
+  public static <S extends View> Builder<S> create(ComponentContext context, int defStyleAttr, int defStyleRes) {
     Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
@@ -601,9 +596,7 @@ public final class TestMount<S extends View> extends Component {
     return builder;
   }
 
-  @VisibleForTesting(otherwise = 2)
-  static class TestMountStateContainer<S extends View>
-      implements ComponentLifecycle.StateContainer {
+  @VisibleForTesting( otherwise = 2) static class TestMountStateContainer<S extends View> implements ComponentLifecycle.StateContainer {
     @State
     long state1;
 

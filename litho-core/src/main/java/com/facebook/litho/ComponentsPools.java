@@ -22,7 +22,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.SparseArrayCompat;
 import android.util.SparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -33,11 +32,9 @@ import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaNode;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
@@ -57,7 +54,7 @@ public class ComponentsPools {
 
   // FUTURE: tune pool max sizes
 
-  private static final Object sMountContentLock = new Object();
+  private static final Object mountContentLock = new Object();
   private static final Object sYogaConfigLock = new Object();
 
   static final RecyclePool<LayoutState> sLayoutStatePool =
@@ -78,9 +75,8 @@ public class ComponentsPools {
   static final RecyclePool<MountItem> sMountItemPool =
       new RecyclePool<>("MountItem", 256, true);
 
-  @GuardedBy("sMountContentLock")
-  private static final Map<Context, SparseArray<MountContentPool>> sMountContentPoolsByContext =
-      new HashMap<>(4);
+  static final Map<Context, SparseArray<RecyclePool>> sMountContentPoolsByContext =
+      new ConcurrentHashMap<>(4);
 
   static final RecyclePool<LayoutOutput> sLayoutOutputPool =
       new RecyclePool<>("LayoutOutput", 256, true);
@@ -152,11 +148,6 @@ public class ComponentsPools {
   // Lazily initialized when acquired first time, as this is not a common use case.
   static RecyclePool<BorderColorDrawable> sBorderColorDrawablePool = null;
 
-  // This Map is used as a set and the values are ignored.
-  @GuardedBy("sMountContentLock")
-  private static final WeakHashMap<Context, Boolean> sDestroyedRootContexts = new WeakHashMap<>();
-
-  @GuardedBy("sMountContentLock")
   private static PoolsActivityCallback sActivityCallbacks;
 
   /**
@@ -292,6 +283,56 @@ public class ComponentsPools {
         layoutOutput,
         wrapDrawableIfPossible(component, content, layoutOutput));
     return item;
+  }
+
+  static Object acquireMountContent(Context context, int componentId, boolean allocatePool) {
+    if (context instanceof ComponentContext) {
+      context = ((ComponentContext) context).getBaseContext();
+
+      if (context instanceof ComponentContext) {
+        throw new IllegalStateException("Double wrapped ComponentContext.");
+      }
+    }
+
+    final RecyclePool<Object> pool;
+
+    synchronized (mountContentLock) {
+
+      if (allocatePool) {
+        if (sActivityCallbacks == null && !sIsManualCallbacks) {
+          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            throw new RuntimeException(
+                "Activity callbacks must be invoked manually below ICS (API level 14)");
+          }
+          sActivityCallbacks = new PoolsActivityCallback();
+          ((Application) context.getApplicationContext())
+              .registerActivityLifecycleCallbacks(sActivityCallbacks);
+        }
+      }
+
+      SparseArray<RecyclePool> poolsArray =
+          sMountContentPoolsByContext.get(context);
+
+      if (poolsArray == null) {
+        if (allocatePool) {
+          // The context is created here because we are sure the Activity is alive at this point in
+          // contrast of the release call where the Activity might by gone.
+          sMountContentPoolsByContext.put(context, new SparseArray<RecyclePool>());
+        }
+        return null;
+      }
+
+      pool = poolsArray.get(componentId);
+      if (pool == null) {
+        return null;
+      }
+    }
+
+    return pool.acquire();
+  }
+
+  static Object acquireMountContent(Context context, int componentId) {
+    return acquireMountContent(context, componentId, true);
   }
 
   static LayoutOutput acquireLayoutOutput() {
@@ -529,7 +570,7 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
-  static void release(ComponentContext context, MountItem item) {
+  static void release(Context context, MountItem item) {
     item.release(context);
     if (!ComponentsConfiguration.usePooling) {
       return;
@@ -616,83 +657,61 @@ public class ComponentsPools {
     sDiffPool.release(diff);
   }
 
-  static Object acquireMountContent(ComponentContext context, ComponentLifecycle lifecycle) {
-    final MountContentPool pool = getMountContentPool(context, lifecycle);
-    if (pool == null) {
-      return lifecycle.createMountContent(context);
+  @ThreadSafe(enableChecks = false)
+  static void release(Context context, ComponentLifecycle lifecycle, Object mountContent) {
+    if (context instanceof ComponentContext) {
+      context = ((ComponentContext) context).getBaseContext();
+
+      if (context instanceof ComponentContext) {
+        throw new IllegalStateException("Double wrapped ComponentContext.");
+      }
     }
 
-    return pool.acquire(context, lifecycle);
-  }
+    RecyclePool pool = null;
 
-  static void release(ComponentContext context, ComponentLifecycle lifecycle, Object mountContent) {
-    final MountContentPool pool = getMountContentPool(context, lifecycle);
-    if (pool != null) {
-      pool.release(mountContent);
-    }
-  }
-
-  /**
-   * Pre-allocates mount content for this component type within the pool for this context unless the
-   * pre-allocation limit has been hit in which case we do nothing.
-   */
-  static void maybePreallocateContent(ComponentContext context, ComponentLifecycle lifecycle) {
-    final MountContentPool pool = getMountContentPool(context, lifecycle);
-    if (pool != null) {
-      pool.maybePreallocateContent(context, lifecycle);
-    }
-  }
-
-  private static @Nullable MountContentPool getMountContentPool(
-      ComponentContext wrappedContext, ComponentLifecycle lifecycle) {
-    if (lifecycle.poolSize() == 0) {
-      return null;
-    }
-
-    final Context context = getContextForMountPool(wrappedContext);
-
-    synchronized (sMountContentLock) {
-      SparseArray<MountContentPool> poolsArray = sMountContentPoolsByContext.get(context);
-      if (poolsArray == null) {
-        final Context rootContext = ContextUtils.getRootContext(context);
-        if (sDestroyedRootContexts.containsKey(rootContext)) {
-          return null;
+    synchronized (mountContentLock) {
+      SparseArray<RecyclePool> poolsArray =
+          sMountContentPoolsByContext.get(context);
+      if (poolsArray != null) {
+        pool = poolsArray.get(lifecycle.getTypeId());
+        if (pool == null) {
+          pool = new RecyclePool(
+              "MountContent - " + lifecycle.getClass().getSimpleName(),
+              lifecycle.poolSize(),
+              true);
+          poolsArray.put(lifecycle.getTypeId(), pool);
         }
-
-        ensureActivityCallbacks(context);
-        poolsArray = new SparseArray<>();
-        sMountContentPoolsByContext.put(context, poolsArray);
       }
 
-      MountContentPool pool = poolsArray.get(lifecycle.getTypeId());
-      if (pool == null) {
-        pool = lifecycle.onCreateMountContentPool();
-        poolsArray.put(lifecycle.getTypeId(), pool);
+      if (pool != null) {
+        pool.release(mountContent);
       }
-
-      return pool;
     }
   }
 
-  private static Context getContextForMountPool(ComponentContext wrappedContext) {
-    final Context innerContext = wrappedContext.getBaseContext();
-    if (innerContext instanceof ComponentContext) {
-      throw new IllegalStateException("Double wrapped ComponentContext.");
+  @ThreadSafe(enableChecks = false)
+  static boolean canAddMountContentToPool(Context context, ComponentLifecycle lifecycle) {
+    if (context instanceof ComponentContext) {
+      context = ((ComponentContext) context).getBaseContext();
+
+      if (context instanceof ComponentContext) {
+        throw new IllegalStateException("Double wrapped ComponentContext.");
+      }
     }
 
-    return innerContext;
-  }
-
-  @GuardedBy("sMountContentLock")
-  private static void ensureActivityCallbacks(Context context) {
-    if (sActivityCallbacks == null && !sIsManualCallbacks) {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-        throw new RuntimeException(
-            "Activity callbacks must be invoked manually below ICS (API level 14)");
+    synchronized (mountContentLock) {
+      if (lifecycle.poolSize() == 0) {
+        return false;
       }
-      sActivityCallbacks = new PoolsActivityCallback();
-      ((Application) context.getApplicationContext())
-          .registerActivityLifecycleCallbacks(sActivityCallbacks);
+
+      final SparseArray<RecyclePool> poolsArray = sMountContentPoolsByContext.get(context);
+
+      if (poolsArray == null) {
+        return true;
+      }
+
+      final RecyclePool pool = poolsArray.get(lifecycle.getTypeId());
+      return pool == null || !pool.isFull();
     }
   }
 
@@ -812,30 +831,24 @@ public class ComponentsPools {
   }
 
   static void onContextCreated(Context context) {
-    synchronized (sMountContentLock) {
-      if (sMountContentPoolsByContext.containsKey(context)) {
-        throw new IllegalStateException(
-            "The MountContentPools has a reference to an activity that has just been created");
-      }
+    if (sMountContentPoolsByContext.containsKey(context)) {
+      throw new IllegalStateException("The MountContentPools has a reference to an activity" +
+          "that has just been created");
     }
   }
 
   static void onContextDestroyed(Context context) {
-    synchronized (sMountContentLock) {
-      sMountContentPoolsByContext.remove(context);
+    sMountContentPoolsByContext.remove(context);
 
-      // Clear any context wrappers holding a reference to this activity.
-      final Iterator<Map.Entry<Context, SparseArray<MountContentPool>>> it =
-          sMountContentPoolsByContext.entrySet().iterator();
+    // Clear any context wrappers holding a reference to this activity.
+    final Iterator<Map.Entry<Context, SparseArray<RecyclePool>>> it =
+        sMountContentPoolsByContext.entrySet().iterator();
 
-      while (it.hasNext()) {
-        final Context contextKey = it.next().getKey();
-        if (isContextWrapper(contextKey, context)) {
-          it.remove();
-        }
+    while (it.hasNext()) {
+      final Context contextKey = it.next().getKey();
+      if (isContextWrapper(contextKey, context)) {
+        it.remove();
       }
-
-      sDestroyedRootContexts.put(ContextUtils.getRootContext(context), true);
     }
   }
 
@@ -843,9 +856,7 @@ public class ComponentsPools {
    * Call from tests to clear external references.
    */
   public static void clearMountContentPools() {
-    synchronized (sMountContentLock) {
-      sMountContentPoolsByContext.clear();
-    }
+    sMountContentPoolsByContext.clear();
   }
 
   /**
@@ -1036,23 +1047,5 @@ public class ComponentsPools {
 
     arrayList.clear();
     sLithoViewArrayListPool.release(arrayList);
-  }
-
-  static List<MountContentPool> getMountContentPools() {
-    final ArrayList<MountContentPool> pools = new ArrayList<>();
-    synchronized (sMountContentLock) {
-      for (SparseArray<MountContentPool> contentPools :
-          ComponentsPools.sMountContentPoolsByContext.values()) {
-        for (int i = 0, count = contentPools.size(); i < count; i++) {
-          pools.add(contentPools.valueAt(i));
-        }
-      }
-    }
-    return pools;
-  }
-
-  @VisibleForTesting
-  static void clearActivityCallbacks() {
-    sActivityCallbacks = null;
   }
 }

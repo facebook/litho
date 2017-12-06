@@ -19,7 +19,6 @@ import com.facebook.litho.testing.util.InlineLayoutSpec;
 import java.lang.reflect.Field;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -57,7 +56,6 @@ public class LayoutStateRecyclingTest {
     setFinalStatic(ComponentsPools.class, "sInternalNodePool", mOriginalInternalNodePool);
   }
 
-  @Ignore("t23857601")
   @Test
   public void testNodeRecycling() throws Exception {
     // We want to verify that we never recycle a node with a non-null parent, since that would

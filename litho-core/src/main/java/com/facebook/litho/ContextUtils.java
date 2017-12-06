@@ -13,8 +13,6 @@ import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 
 import android.app.Activity;
-import android.app.Application;
-import android.app.Service;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.support.annotation.Nullable;
@@ -37,26 +35,14 @@ public class ContextUtils {
   }
 
   /**
-   * @return the "most base" Context of this Context, i.e. the Activity, Application, or Service
-   *     backing this Context and all its ContextWrappers. In some cases, e.g. instrumentation
-   *     tests or other places we don't wrap a standard Context, this root Context may instead be a
-   *     raw ContextImpl.
+   * @return the "most base" Context of this Context, i.e. the ContextImpl backing this Context and
+   *     all its ContextWrappers.
    */
   static Context getRootContext(Context context) {
     Context currentContext = context;
-
-    // Common case is there is exactly one wrapping ComponentContext
-    if (currentContext instanceof ComponentContext) {
-      currentContext = ((ComponentContext) currentContext).getBaseContext();
-    }
-
-    while (currentContext instanceof ContextWrapper
-        && !(currentContext instanceof Activity)
-        && !(currentContext instanceof Application)
-        && !(currentContext instanceof Service)) {
+    while (currentContext instanceof ContextWrapper) {
       currentContext = ((ContextWrapper) currentContext).getBaseContext();
     }
-
     return currentContext;
   }
 

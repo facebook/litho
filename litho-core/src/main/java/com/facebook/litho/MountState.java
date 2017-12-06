@@ -1010,15 +1010,15 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     final Component component = layoutOutput.getComponent();
+    final ComponentContext context = getContextForComponent(component);
     final ComponentLifecycle lifecycle = component;
 
     // 2. Generate the component's mount state (this might also be a ComponentHost View).
-    final Object content =
-        (ComponentsConfiguration.scrapHostRecyclingForComponentHosts && isHostSpec(component))
-            ? acquireComponentHost(mContext, lifecycle, host)
-            : ComponentsPools.acquireMountContent(mContext, lifecycle);
+    Object content = acquireMountContent(component, host);
+    if (content == null) {
+      content = lifecycle.createMountContent(mContext);
+    }
 
-    final ComponentContext context = getContextForComponent(component);
     lifecycle.mount(
         context,
         content,
@@ -1091,10 +1091,12 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     return item;
   }
 
-  private static Object acquireComponentHost(
-      ComponentContext context, ComponentLifecycle hostLifecycle, ComponentHost host) {
-    final ComponentHost recycled = host.recycleHost();
-    return recycled != null ? recycled : hostLifecycle.createMountContent(context);
+  private Object acquireMountContent(Component component, ComponentHost host) {
+    if (isHostSpec(component)) {
+      return host.recycleHost();
+    }
+
+    return ComponentsPools.acquireMountContent(mContext, component.getTypeId());
   }
 
   private static void applyBoundsToMountContent(

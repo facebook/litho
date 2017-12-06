@@ -42,7 +42,6 @@ public interface ClassNames {
 
   ClassName SYNCHRONIZED_POOL =
       ClassName.bestGuess("android.support.v4.util.Pools.SynchronizedPool");
-  ClassName MOUNT_CONTENT_POOL = ClassName.bestGuess("com.facebook.litho.MountContentPool");
 
   ClassName LAYOUT_SPEC = ClassName.bestGuess("com.facebook.litho.annotations.LayoutSpec");
   ClassName MOUNT_SPEC = ClassName.bestGuess("com.facebook.litho.annotations.MountSpec");
@@ -55,6 +54,9 @@ public interface ClassNames {
   ClassName RESOURCE_RESOLVER = ClassName.bestGuess("com.facebook.litho.ResourceResolver");
 
   ClassName TRANSITION = ClassName.bestGuess("com.facebook.litho.Transition");
+
+  ClassName COMPONENTS_CONFIGURATION =
+      ClassName.bestGuess("com.facebook.litho.config.ComponentsConfiguration");
 
   ClassName COMPONENT_CONTEXT = ClassName.bestGuess("com.facebook.litho.ComponentContext");
   ClassName COMPONENT_LAYOUT = ClassName.bestGuess("com.facebook.litho.ComponentLayout");
