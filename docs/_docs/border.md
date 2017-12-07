@@ -117,11 +117,51 @@ Row.create(c)
   .build();
 ```
 
+## Border Radius
+
+![Border Radius](/static/images/border-radius-xy.png)
+
+```java
+Row.create(c)
+  .child(
+    Text.create(c)
+      .text("Hello Litho")
+      .textSizeSp(16))
+  .border(
+    Border.create(c)
+      .widthDip(YogaEdge.ALL, 5)
+      .color(YogaEdge.ALL, 0xfff36b7f)
+      // We set a border radius of 10 dip here
+      .radiusDip(10f)
+      .build())
+  .build();
+```
+
+You may also set a separate radius value per the X and Y dimensions:
+
+![Varying Border Radii](/static/images/border-radius-separate.png)
+
+```java
+Row.create(c)
+  .child(
+    Text.create(c)
+      .text("Hello Litho")
+      .textSizeSp(16))
+  .border(
+    Border.create(c)
+      .widthDip(YogaEdge.ALL, 5)
+      .color(YogaEdge.ALL, 0xfff36b7f)
+      // We set a border X radius of 10 dip and Y radius of 30
+      .radiusXDip(10f)
+      .radiusYDip(30f)
+      .build())
+  .build();
+```
+
 ## Border Effects
 
 Border effects are powerful tools to help you stylize your borders even further. The following effects are currently available:
 - [Dash](#dash)
-- [Corner](#corner)
 - [Discrete](#discrete)
 - [Path Dash](#path-dash)
 - [Composition](#composition)
@@ -151,28 +191,6 @@ Row.create(c)
       // We want "on" segments of length 10, "off" of length 5
       // We also specify 0 for the phase as we do not want to offset the start
       .dashEffect(new float[] {10f, 5f}, 0f)
-      .build())
-  .build();
-```
-
-### Corner
-
-A corner effect will round any sharp angles in your border. This typically means it will produce rounded corners for your border. This effect utilizes [CornerPathEffect](https://developer.android.com/reference/android/graphics/CornerPathEffect.html) internally.
-
-![Corner Effect](/static/images/border-corner-effect.png)
-
-```java
-Row.create(c)
-  .child(
-    Text.create(c)
-      .text("Hello Litho")
-      .textSizeSp(16))
-  .border(
-    Border.create(c)
-      .widthDip(YogaEdge.ALL, 5)
-      .color(YogaEdge.ALL, 0xfff36b7f)
-      // We set a corner radius of 10 here
-      .cornerEffect(10f)
       .build())
   .build();
 ```
@@ -244,9 +262,9 @@ Row.create(c)
       .widthDip(YogaEdge.ALL, 5)
       .color(YogaEdge.ALL, 0xfff36b7f)
       // The effects below will be composed together
-      // resulting in a rounded corner, dashed border
+      // resulting in a discrete, dashed border
       .dashEffect(new float[] {10f, 5f}, 0f)
-      .cornerEffect(10f)
+      .discreteEffect(20f, 10f)
       .build())
   .build();
 ```
