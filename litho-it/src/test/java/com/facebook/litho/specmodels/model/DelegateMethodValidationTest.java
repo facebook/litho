@@ -282,34 +282,6 @@ public class DelegateMethodValidationTest {
   }
 
   @Test
-  public void testDelegateMethodHasIncorrectReturnType() {
-    when(mLayoutSpecModel.getDelegateMethods())
-        .thenReturn(
-            ImmutableList.of(
-                new SpecMethodModel<DelegateMethod, Void>(
-                    ImmutableList.of((Annotation) () -> OnCreateLayout.class),
-                    ImmutableList.of(Modifier.STATIC),
-                    "name",
-                    ClassNames.COMPONENT,
-                    ImmutableList.of(),
-                    ImmutableList.of(
-                        MockMethodParamModel.newBuilder()
-                            .type(ClassNames.COMPONENT_CONTEXT)
-                            .representedObject(mMethodParamObject1)
-                            .build()),
-                    mDelegateMethodObject1,
-                    null)));
-
-    final List<SpecModelValidationError> validationErrors =
-        DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
-    assertThat(validationErrors).hasSize(1);
-    assertThat(validationErrors.get(0).element).isEqualTo(mDelegateMethodObject1);
-    assertThat(validationErrors.get(0).message)
-        .isEqualTo(
-            "A method annotated with @OnCreateLayout needs to return com.facebook.litho.ComponentLayout");
-  }
-
-  @Test
   public void testMountSpecHasOnCreateMountContent() {
     when(mMountSpecModel.getDelegateMethods()).thenReturn(ImmutableList.of());
 

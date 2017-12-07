@@ -128,9 +128,6 @@ public class DelegateMethodValidation {
           validateDefinedParameterTypes(
               delegateMethod, delegateMethodAnnotation, definedParameterTypes));
 
-      validationErrors.addAll(
-          validateReturnType(delegateMethod, delegateMethodAnnotation, delegateMethodDescription));
-
       for (int i = definedParameterTypes.size(), size = delegateMethod.methodParams.size();
           i < size;
           i++) {
@@ -255,25 +252,6 @@ public class DelegateMethodValidation {
       }
     }
 
-    return validationErrors;
-  }
-
-  private static List<SpecModelValidationError> validateReturnType(
-      SpecMethodModel<DelegateMethod, Void> delegateMethod,
-      Class<? extends Annotation> delegateMethodAnnotation,
-      DelegateMethodDescription delegateMethodDescription) {
-    final List<SpecModelValidationError> validationErrors = new ArrayList<>();
-
-    if (!delegateMethodDescription.returnType.equals(TypeName.OBJECT)
-        && !delegateMethodDescription.returnType.equals(delegateMethod.returnType)) {
-      validationErrors.add(
-          new SpecModelValidationError(
-              delegateMethod.representedObject,
-              "A method annotated with @"
-                  + delegateMethodAnnotation.getSimpleName()
-                  + " needs to return "
-                  + delegateMethodDescription.returnType));
-    }
     return validationErrors;
   }
 
