@@ -13,7 +13,6 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
 import android.graphics.ComposePathEffect;
-import android.graphics.CornerPathEffect;
 import android.graphics.DashPathEffect;
 import android.graphics.DiscretePathEffect;
 import android.graphics.Path;
@@ -165,6 +164,22 @@ public class BorderTest {
     assertThat(border.mEdgeWidths[Border.EDGE_TOP]).isEqualTo(2);
     assertThat(border.mEdgeWidths[Border.EDGE_RIGHT]).isEqualTo(3);
     assertThat(border.mEdgeWidths[Border.EDGE_BOTTOM]).isEqualTo(4);
+  }
+
+  @Test
+  public void testBothRadiiSetting() {
+    final ComponentContext c = new ComponentContext(application);
+    Border border = Border.create(c).radiusPx(1337).build();
+    assertThat(border.mRadius[Border.DIM_X]).isEqualTo(1337);
+    assertThat(border.mRadius[Border.DIM_Y]).isEqualTo(1337);
+  }
+
+  @Test
+  public void testIndividualRadiiSetting() {
+    final ComponentContext c = new ComponentContext(application);
+    Border border = Border.create(c).radiusXPx(1337).radiusYPx(7331).build();
+    assertThat(border.mRadius[Border.DIM_X]).isEqualTo(1337);
+    assertThat(border.mRadius[Border.DIM_Y]).isEqualTo(7331);
   }
 
   @Test
