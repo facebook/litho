@@ -18,9 +18,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.View;
+import com.facebook.litho.ActualComponentLayout;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
@@ -53,7 +53,6 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
-
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 @MountSpec(
@@ -90,22 +89,20 @@ public class TestMountSpec<S extends View> {
   @OnMeasure
   static void onMeasure(
       ComponentContext context,
-      ComponentLayout layout,
+      ActualComponentLayout layout,
       int widthSpec,
       int heightSpec,
       Size size,
-      Output<Long> measureOutput) {
-  }
+      Output<Long> measureOutput) {}
 
   @OnBoundsDefined
   static void onBoundsDefined(
       ComponentContext c,
-      ComponentLayout layout,
+      ActualComponentLayout layout,
       @Prop Object prop3,
       @Prop char[] prop4,
       @FromMeasure Long measureOutput,
-      Output<Integer> boundsDefinedOutput) {
-  }
+      Output<Integer> boundsDefinedOutput) {}
 
   @OnCreateMountContent
   static Drawable onCreateMountContent(ComponentContext c) {

@@ -16,10 +16,10 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pools;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.View;
+import com.facebook.litho.ActualComponentLayout;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventDispatcher;
@@ -251,13 +251,18 @@ public final class TestMount<S extends View> extends Component {
   }
 
   @Override
-  protected void onMeasure(ComponentContext context, ComponentLayout layout, int widthSpec,
-      int heightSpec, Size size, Component _abstract) {
+  protected void onMeasure(
+      ComponentContext context,
+      ActualComponentLayout layout,
+      int widthSpec,
+      int heightSpec,
+      Size size,
+      Component _abstract) {
     TestMount _ref = (TestMount) _abstract;
     Output<Long> measureOutput = acquireOutput();
     TestMountSpec.onMeasure(
         (ComponentContext) context,
-        (ComponentLayout) layout,
+        (ActualComponentLayout) layout,
         (int) widthSpec,
         (int) heightSpec,
         (Size) size,
@@ -272,13 +277,13 @@ public final class TestMount<S extends View> extends Component {
   }
 
   @Override
-  protected void onBoundsDefined(ComponentContext c, ComponentLayout layout,
-      Component _abstract) {
+  protected void onBoundsDefined(
+      ComponentContext c, ActualComponentLayout layout, Component _abstract) {
     TestMount _ref = (TestMount) _abstract;
     Output<Integer> boundsDefinedOutput = acquireOutput();
     TestMountSpec.onBoundsDefined(
         (ComponentContext) c,
-        (ComponentLayout) layout,
+        (ActualComponentLayout) layout,
         (Object) _ref.prop3,
         (char[]) _ref.prop4,
         (Long) _ref.measureOutput,

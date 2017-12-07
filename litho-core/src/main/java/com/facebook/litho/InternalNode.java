@@ -72,7 +72,7 @@ import javax.annotation.Nullable;
  * com.facebook.litho.ComponentLayout.ContainerBuilder}.
  */
 @ThreadConfined(ThreadConfined.ANY)
-class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder {
+class InternalNode implements ActualComponentLayout, ComponentLayout.ContainerBuilder {
 
   // Used to check whether or not the framework can use style IDs for
   // paddingStart/paddingEnd due to a bug in some Android devices.

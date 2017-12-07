@@ -14,9 +14,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 import android.support.v4.util.Pools;
+import com.facebook.litho.ActualComponentLayout;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 
@@ -101,7 +101,7 @@ public class TestDrawableComponent extends TestComponent {
   @Override
   protected void onMeasure(
       ComponentContext c,
-      ComponentLayout layout,
+      ActualComponentLayout layout,
       int widthSpec,
       int heightSpec,
       Size size,
@@ -121,9 +121,7 @@ public class TestDrawableComponent extends TestComponent {
 
   @Override
   protected void onBoundsDefined(
-      ComponentContext c,
-      ComponentLayout layout,
-      Component component) {
+      ComponentContext c, ActualComponentLayout layout, Component component) {
     TestDrawableComponent state = (TestDrawableComponent) component;
     state.onDefineBoundsCalled();
   }

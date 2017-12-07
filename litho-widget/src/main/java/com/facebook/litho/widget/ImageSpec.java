@@ -14,8 +14,8 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView.ScaleType;
+import com.facebook.litho.ActualComponentLayout;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
 import com.facebook.litho.DrawableMatrix;
 import com.facebook.litho.MatrixDrawable;
@@ -74,7 +74,7 @@ class ImageSpec {
   @OnMeasure
   static void onMeasure(
       ComponentContext c,
-      ComponentLayout layout,
+      ActualComponentLayout layout,
       int widthSpec,
       int heightSpec,
       Size size,
@@ -110,7 +110,7 @@ class ImageSpec {
   @OnBoundsDefined
   static void onBoundsDefined(
       ComponentContext c,
-      ComponentLayout layout,
+      ActualComponentLayout layout,
       @Prop(resType = ResType.DRAWABLE) Drawable drawable,
       @Prop(optional = true) ScaleType scaleType,
       Output<DrawableMatrix> drawableMatrix,

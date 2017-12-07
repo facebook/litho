@@ -16,8 +16,8 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.widget.ProgressBar;
+import com.facebook.litho.ActualComponentLayout;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Output;
 import com.facebook.litho.R;
 import com.facebook.litho.Size;
@@ -72,11 +72,7 @@ class ProgressSpec {
 
   @OnMeasure
   static void onMeasure(
-      ComponentContext c,
-      ComponentLayout layout,
-      int widthSpec,
-      int heightSpec,
-      Size size) {
+      ComponentContext c, ActualComponentLayout layout, int widthSpec, int heightSpec, Size size) {
     if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED &&
         SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
       size.width = DEFAULT_SIZE;

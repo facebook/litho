@@ -49,8 +49,8 @@ import android.view.Gravity;
 import android.view.View;
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
+import com.facebook.litho.ActualComponentLayout;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LogEvent;
@@ -367,7 +367,7 @@ class TextSpec {
   @OnMeasure
   static void onMeasure(
       ComponentContext context,
-      ComponentLayout layout,
+      ActualComponentLayout layout,
       int widthSpec,
       int heightSpec,
       Size size,
@@ -659,7 +659,7 @@ class TextSpec {
   @OnBoundsDefined
   static void onBoundsDefined(
       ComponentContext c,
-      ComponentLayout layout,
+      ActualComponentLayout layout,
       @Prop(resType = ResType.STRING) CharSequence text,
       @Prop(optional = true) TruncateAt ellipsize,
       @Prop(optional = true, resType = ResType.BOOL) boolean shouldIncludeFontPadding,

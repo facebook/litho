@@ -142,7 +142,7 @@ public final class DelegateMethodDescriptions {
           .definedParameterTypes(
               ImmutableList.of(
                   ClassNames.COMPONENT_CONTEXT,
-                  ClassNames.COMPONENT_LAYOUT,
+                  ClassNames.ACTUAL_COMPONENT_LAYOUT,
                   TypeName.INT,
                   TypeName.INT,
                   ClassNames.SIZE))
@@ -181,7 +181,8 @@ public final class DelegateMethodDescriptions {
           .returnType(TypeName.VOID)
           .name("onBoundsDefined")
           .definedParameterTypes(
-              ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT, ClassNames.COMPONENT_LAYOUT))
+              ImmutableList.<TypeName>of(
+                  ClassNames.COMPONENT_CONTEXT, ClassNames.ACTUAL_COMPONENT_LAYOUT))
           .optionalParameterTypes(
               ImmutableList.of(PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP))
           .interStageInputAnnotations(

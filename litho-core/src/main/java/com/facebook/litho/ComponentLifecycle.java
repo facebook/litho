@@ -391,21 +391,17 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /**
-   * Called after the layout calculation is finished and the given {@link ComponentLayout}
-   * has its bounds defined. You can use {@link ComponentLayout#getX()},
-   * {@link ComponentLayout#getY()}, {@link ComponentLayout#getWidth()}, and
-   * {@link ComponentLayout#getHeight()} to get the size and position of the component
-   * in the layout tree.
+   * Called after the layout calculation is finished and the given {@link ComponentLayout} has its
+   * bounds defined. You can use {@link ComponentLayout#getX()}, {@link ComponentLayout#getY()},
+   * {@link ComponentLayout#getWidth()}, and {@link ComponentLayout#getHeight()} to get the size and
+   * position of the component in the layout tree.
    *
    * @param c The {@link Context} used by this component.
    * @param layout The {@link ComponentLayout} with defined position and size.
    * @param component The {@link Component} for this component.
    */
   protected void onBoundsDefined(
-      ComponentContext c,
-      ComponentLayout layout,
-      Component component) {
-  }
+      ComponentContext c, ActualComponentLayout layout, Component component) {}
 
   /**
    * Called during layout calculation to determine the baseline of a component.
@@ -428,7 +424,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   protected void onMeasure(
       ComponentContext c,
-      ComponentLayout layout,
+      ActualComponentLayout layout,
       int widthSpec,
       int heightSpec,
       Size size,

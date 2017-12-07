@@ -385,7 +385,7 @@ public class ComponentLifecycleTest {
     @Override
     protected void onMeasure(
         ComponentContext c,
-        ComponentLayout layout,
+        ActualComponentLayout layout,
         int widthSpec,
         int heightSpec,
         Size size,
@@ -402,7 +402,7 @@ public class ComponentLifecycleTest {
     @Override
     protected void onMeasure(
         ComponentContext context,
-        ComponentLayout layout,
+        ActualComponentLayout layout,
         int widthSpec,
         int heightSpec,
         Size size,

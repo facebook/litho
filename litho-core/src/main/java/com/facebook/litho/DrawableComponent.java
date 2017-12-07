@@ -25,9 +25,7 @@ class DrawableComponent<T extends Drawable> extends Component {
 
   @Override
   protected void onBoundsDefined(
-      ComponentContext c,
-      ComponentLayout layout,
-      Component component) {
+      ComponentContext c, ActualComponentLayout layout, Component component) {
     final DrawableComponent drawableComponent = (DrawableComponent) component;
 
     drawableComponent.setDrawableWidth(layout.getWidth());

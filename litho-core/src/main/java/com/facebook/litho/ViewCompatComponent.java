@@ -61,7 +61,7 @@ public class ViewCompatComponent<V extends View> extends Component {
   @Override
   protected void onMeasure(
       ComponentContext c,
-      ComponentLayout layout,
+      ActualComponentLayout layout,
       int widthSpec,
       int heightSpec,
       Size size,
