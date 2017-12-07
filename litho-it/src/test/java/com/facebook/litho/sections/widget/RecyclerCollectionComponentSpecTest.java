@@ -15,12 +15,10 @@ import static com.facebook.litho.sections.LoadingEvent.LoadingState.SUCCEEDED;
 import static com.facebook.litho.sections.widget.ListRecyclerConfiguration.SNAP_NONE;
 import static com.facebook.litho.testing.viewtree.ViewTreeAssert.assertThat;
 
-import android.os.Looper;
 import android.support.v7.widget.LinearLayoutManager;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
@@ -33,10 +31,7 @@ import com.facebook.litho.widget.Text;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.Shadows;
-import org.robolectric.shadows.ShadowLooper;
 
 /**
  * Tests {@link RecyclerCollectionComponentSpec}
@@ -49,7 +44,6 @@ public class RecyclerCollectionComponentSpecTest {
   private Component mEmptyComponent;
   private Component mErrorComponent;
   private Component mRecyclerCollectionComponent;
-  private ShadowLooper mLayoutThreadShadowLooper;
   private Component mContentComponent;
 
   @Before
@@ -112,11 +106,6 @@ public class RecyclerCollectionComponentSpecTest {
                 .component(mContentComponent)
                 .build())
         .build();
-
-    mLayoutThreadShadowLooper = Shadows.shadowOf(
-        (Looper) Whitebox.invokeMethod(
-            ComponentTree.class,
-            "getDefaultLayoutThreadLooper"));
   }
 
   @Test
@@ -131,16 +120,16 @@ public class RecyclerCollectionComponentSpecTest {
                 .build())
         .build();
 
-    LithoView view = StateUpdatesTestHelper.getViewAfterStateUpdate(
-        mComponentContext,
-        mRecyclerCollectionComponent,
-        new StateUpdatesTestHelper.StateUpdater() {
-          @Override
-          public void performStateUpdate(ComponentContext context) {
-            RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, SUCCEEDED, true);
-          }
-        },
-        mLayoutThreadShadowLooper);
+    LithoView view =
+        StateUpdatesTestHelper.getViewAfterStateUpdate(
+            mComponentContext,
+            mRecyclerCollectionComponent,
+            new StateUpdatesTestHelper.StateUpdater() {
+              @Override
+              public void performStateUpdate(ComponentContext context) {
+                RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, SUCCEEDED, true);
+              }
+            });
 
     assertThat(ViewTree.of(view))
         .doesNotHaveVisibleText("loading")
@@ -151,16 +140,16 @@ public class RecyclerCollectionComponentSpecTest {
 
   @Test
   public void testNoEmptySucceeded() throws Exception {
-    LithoView view = StateUpdatesTestHelper.getViewAfterStateUpdate(
-        mComponentContext,
-        mRecyclerCollectionComponent,
-        new StateUpdatesTestHelper.StateUpdater() {
-          @Override
-          public void performStateUpdate(ComponentContext context) {
-            RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, SUCCEEDED, false);
-          }
-        },
-        mLayoutThreadShadowLooper);
+    LithoView view =
+        StateUpdatesTestHelper.getViewAfterStateUpdate(
+            mComponentContext,
+            mRecyclerCollectionComponent,
+            new StateUpdatesTestHelper.StateUpdater() {
+              @Override
+              public void performStateUpdate(ComponentContext context) {
+                RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, SUCCEEDED, false);
+              }
+            });
 
     assertThat(ViewTree.of(view))
         .doesNotHaveVisibleText("loading")
@@ -171,16 +160,16 @@ public class RecyclerCollectionComponentSpecTest {
 
   @Test
   public void testEmptySucceeded() throws Exception {
-    LithoView view = StateUpdatesTestHelper.getViewAfterStateUpdate(
-        mComponentContext,
-        mRecyclerCollectionComponent,
-        new StateUpdatesTestHelper.StateUpdater() {
-          @Override
-          public void performStateUpdate(ComponentContext context) {
-            RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, SUCCEEDED, true);
-          }
-        },
-        mLayoutThreadShadowLooper);
+    LithoView view =
+        StateUpdatesTestHelper.getViewAfterStateUpdate(
+            mComponentContext,
+            mRecyclerCollectionComponent,
+            new StateUpdatesTestHelper.StateUpdater() {
+              @Override
+              public void performStateUpdate(ComponentContext context) {
+                RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, SUCCEEDED, true);
+              }
+            });
 
     assertThat(ViewTree.of(view))
         .doesNotHaveVisibleText("loading")
@@ -191,16 +180,16 @@ public class RecyclerCollectionComponentSpecTest {
 
   @Test
   public void testNoEmptyError() throws Exception {
-    LithoView view = StateUpdatesTestHelper.getViewAfterStateUpdate(
-        mComponentContext,
-        mRecyclerCollectionComponent,
-        new StateUpdatesTestHelper.StateUpdater() {
-          @Override
-          public void performStateUpdate(ComponentContext context) {
-            RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, FAILED, false);
-          }
-        },
-        mLayoutThreadShadowLooper);
+    LithoView view =
+        StateUpdatesTestHelper.getViewAfterStateUpdate(
+            mComponentContext,
+            mRecyclerCollectionComponent,
+            new StateUpdatesTestHelper.StateUpdater() {
+              @Override
+              public void performStateUpdate(ComponentContext context) {
+                RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, FAILED, false);
+              }
+            });
 
     assertThat(ViewTree.of(view))
         .doesNotHaveVisibleText("loading")
@@ -211,16 +200,16 @@ public class RecyclerCollectionComponentSpecTest {
 
   @Test
   public void testEmptyError() throws Exception {
-    LithoView view = StateUpdatesTestHelper.getViewAfterStateUpdate(
-        mComponentContext,
-        mRecyclerCollectionComponent,
-        new StateUpdatesTestHelper.StateUpdater() {
-          @Override
-          public void performStateUpdate(ComponentContext context) {
-            RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, FAILED, true);
-          }
-        },
-        mLayoutThreadShadowLooper);
+    LithoView view =
+        StateUpdatesTestHelper.getViewAfterStateUpdate(
+            mComponentContext,
+            mRecyclerCollectionComponent,
+            new StateUpdatesTestHelper.StateUpdater() {
+              @Override
+              public void performStateUpdate(ComponentContext context) {
+                RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, FAILED, true);
+              }
+            });
 
     assertThat(ViewTree.of(view))
         .doesNotHaveVisibleText("loading")
@@ -231,16 +220,16 @@ public class RecyclerCollectionComponentSpecTest {
 
   @Test
   public void testNoEmptyLoading() throws Exception {
-    LithoView view = StateUpdatesTestHelper.getViewAfterStateUpdate(
-        mComponentContext,
-        mRecyclerCollectionComponent,
-        new StateUpdatesTestHelper.StateUpdater() {
-          @Override
-          public void performStateUpdate(ComponentContext context) {
-            RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, LOADING, false);
-          }
-        },
-        mLayoutThreadShadowLooper);
+    LithoView view =
+        StateUpdatesTestHelper.getViewAfterStateUpdate(
+            mComponentContext,
+            mRecyclerCollectionComponent,
+            new StateUpdatesTestHelper.StateUpdater() {
+              @Override
+              public void performStateUpdate(ComponentContext context) {
+                RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, LOADING, false);
+              }
+            });
 
     assertThat(ViewTree.of(view))
         .doesNotHaveVisibleText("loading")
@@ -251,16 +240,16 @@ public class RecyclerCollectionComponentSpecTest {
 
   @Test
   public void testEmptyLoading() throws Exception {
-    LithoView view = StateUpdatesTestHelper.getViewAfterStateUpdate(
-        mComponentContext,
-        mRecyclerCollectionComponent,
-        new StateUpdatesTestHelper.StateUpdater() {
-          @Override
-          public void performStateUpdate(ComponentContext context) {
-            RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, LOADING, true);
-          }
-        },
-        mLayoutThreadShadowLooper);
+    LithoView view =
+        StateUpdatesTestHelper.getViewAfterStateUpdate(
+            mComponentContext,
+            mRecyclerCollectionComponent,
+            new StateUpdatesTestHelper.StateUpdater() {
+              @Override
+              public void performStateUpdate(ComponentContext context) {
+                RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, LOADING, true);
+              }
+            });
 
     assertThat(ViewTree.of(view))
         .hasVisibleText("loading")

@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-load("//:COMPONENTS_DEFS", "COMPONENTS_JAVA_TARGET", "COMPONENTS_POWERMOCK_REFLECT_TARGET", "COMPONENTS_TESTING_SUBCOMPONENTS_TARGET", "litho_android_library")
+load("//:COMPONENTS_DEFS", "COMPONENTS_ANDROIDSUPPORT_TARGET", "COMPONENTS_ROBOLECTRIC_TARGET", "COMPONENTS_JAVA_TARGET", "COMPONENTS_POWERMOCK_REFLECT_TARGET", "COMPONENTS_TESTING_SUBCOMPONENTS_TARGET", "litho_android_library")
 
 litho_android_library(
     name = "helper",
@@ -13,9 +13,13 @@ litho_android_library(
     visibility = [
         "PUBLIC",
     ],
+    provided_deps = [
+        COMPONENTS_ROBOLECTRIC_TARGET,
+    ],
     deps = [
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_TESTING_SUBCOMPONENTS_TARGET,
         COMPONENTS_POWERMOCK_REFLECT_TARGET,
+        COMPONENTS_ANDROIDSUPPORT_TARGET,
     ],
 )

@@ -30,6 +30,7 @@ import android.support.annotation.IntDef;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 import android.view.View;
@@ -1419,9 +1420,10 @@ public class ComponentTree {
         && mHeightSpec != SIZE_UNINITIALIZED;
   }
 
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   private static synchronized Looper getDefaultLayoutThreadLooper() {
     if (sDefaultLayoutThreadLooper == null) {
-      HandlerThread defaultThread =
+      final HandlerThread defaultThread =
           new HandlerThread(DEFAULT_LAYOUT_THREAD_NAME, DEFAULT_LAYOUT_THREAD_PRIORITY);
       defaultThread.start();
       sDefaultLayoutThreadLooper = defaultThread.getLooper();

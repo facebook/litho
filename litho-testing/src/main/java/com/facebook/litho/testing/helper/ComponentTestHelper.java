@@ -12,8 +12,11 @@ package com.facebook.litho.testing.helper;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.graphics.Rect;
+import android.os.Looper;
+import android.support.annotation.RestrictTo;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -30,6 +33,7 @@ import com.facebook.litho.testing.subcomponents.SubComponent;
 import java.util.ArrayList;
 import java.util.List;
 import org.powermock.reflect.Whitebox;
+import org.robolectric.shadows.ShadowLooper;
 
 /**
  * Helper class to simplify testing of components.
@@ -452,5 +456,17 @@ public final class ComponentTestHelper {
       throw new RuntimeException(e);
     }
     treeProps.put(propClass, prop);
+  }
+
+  /** Access the default layout thread looper for testing purposes only. */
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  public static Looper getDefaultLayoutThreadLooper() throws Exception {
+    return (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper");
+  }
+
+  /** Access the shadow of the default layout thread looper for testing purposes only. */
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  public static ShadowLooper getDefaultLayoutThreadShadowLooper() throws Exception {
+    return shadowOf(getDefaultLayoutThreadLooper());
   }
 }

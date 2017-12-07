@@ -17,10 +17,10 @@ import com.facebook.litho.testing.helper.ComponentTestHelper;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.shadows.ShadowLooper;
 
-/**
- * Helper for writing state update unit tests.
- */
-public class StateUpdatesTestHelper {
+/** Helper for writing state update unit tests. */
+public final class StateUpdatesTestHelper {
+
+  private StateUpdatesTestHelper() {}
 
   public interface StateUpdater {
     void performStateUpdate(ComponentContext context);
@@ -50,7 +50,51 @@ public class StateUpdatesTestHelper {
 
   /**
    * Call a state update as specified in {@link StateUpdater#performStateUpdate(ComponentContext)}
-   *   on the component and return the updated view with the option to incrementally mount.
+   * on the component and return the updated view.
+   *
+   * @param context context
+   * @param component the component to update
+   * @param stateUpdater implementation of {@link StateUpdater} that triggers the state update
+   * @return the updated LithoView after the state update was applied
+   */
+  public static LithoView getViewAfterStateUpdate(
+      ComponentContext context, Component component, StateUpdater stateUpdater) throws Exception {
+    return getViewAfterStateUpdate(
+        context,
+        component,
+        stateUpdater,
+        ComponentTestHelper.getDefaultLayoutThreadShadowLooper(),
+        false);
+  }
+
+  /**
+   * Call a state update as specified in {@link StateUpdater#performStateUpdate(ComponentContext)}
+   * on the component and return the updated view with the option to incrementally mount.
+   *
+   * @param context context
+   * @param component the component to update
+   * @param stateUpdater implementation of {@link StateUpdater} that triggers the state update
+   * @param incrementalMountEnabled whether or not to enable incremental mount for the component
+   * @return the updated LithoView after the state update was applied
+   */
+  public static LithoView getViewAfterStateUpdate(
+      ComponentContext context,
+      Component component,
+      StateUpdater stateUpdater,
+      boolean incrementalMountEnabled)
+      throws Exception {
+    return getViewAfterStateUpdate(
+        context,
+        component,
+        stateUpdater,
+        new ShadowLooper[] {ComponentTestHelper.getDefaultLayoutThreadShadowLooper()},
+        incrementalMountEnabled);
+  }
+
+  /**
+   * Call a state update as specified in {@link StateUpdater#performStateUpdate(ComponentContext)}
+   * on the component and return the updated view with the option to incrementally mount.
+   *
    * @param context context
    * @param component the component to update
    * @param stateUpdater implementation of {@link StateUpdater} that triggers the state update
@@ -63,7 +107,8 @@ public class StateUpdatesTestHelper {
       Component component,
       StateUpdater stateUpdater,
       ShadowLooper layoutThreadShadowLooper,
-      boolean incrementalMountEnabled) throws Exception {
+      boolean incrementalMountEnabled)
+      throws Exception {
     return getViewAfterStateUpdate(
         context,
         component,
