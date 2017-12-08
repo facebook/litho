@@ -118,4 +118,6 @@ public interface ClassNames {
   ClassName HAMCREST_CORE_IS = ClassName.bestGuess("org.hamcrest.core.Is");
   ClassName ASSERTJ_TEXT_DESCRIPTION =
       ClassName.bestGuess("org.assertj.core.description.TextDescription");
+
+  ClassName NON_EXISTENT_CLASS = ClassName.bestGuess("error.NonExistentClass");
 }

@@ -128,6 +128,9 @@ public class DelegateMethodValidation {
           validateDefinedParameterTypes(
               delegateMethod, delegateMethodAnnotation, definedParameterTypes));
 
+      validationErrors.addAll(
+          validateReturnType(delegateMethod, delegateMethodAnnotation, delegateMethodDescription));
+
       for (int i = definedParameterTypes.size(), size = delegateMethod.methodParams.size();
           i < size;
           i++) {
@@ -252,6 +255,27 @@ public class DelegateMethodValidation {
       }
     }
 
+    return validationErrors;
+  }
+
+  private static List<SpecModelValidationError> validateReturnType(
+      SpecMethodModel<DelegateMethod, Void> delegateMethod,
+      Class<? extends Annotation> delegateMethodAnnotation,
+      DelegateMethodDescription delegateMethodDescription) {
+    final List<SpecModelValidationError> validationErrors = new ArrayList<>();
+
+    // When using Kotlin, we get incorrect return type "error.NonExistentClass". Just ignore it.
+    if (!delegateMethod.returnType.equals(ClassNames.NON_EXISTENT_CLASS)
+        && !delegateMethodDescription.returnType.equals(TypeName.OBJECT)
+        && !delegateMethodDescription.returnType.equals(delegateMethod.returnType)) {
+      validationErrors.add(
+          new SpecModelValidationError(
+              delegateMethod.representedObject,
+              "A method annotated with @"
+                  + delegateMethodAnnotation.getSimpleName()
+                  + " needs to return "
+                  + delegateMethodDescription.returnType));
+    }
     return validationErrors;
   }
 
