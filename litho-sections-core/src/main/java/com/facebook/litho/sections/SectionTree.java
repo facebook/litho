@@ -168,10 +168,10 @@ public class SectionTree {
   }
 
   @GuardedBy("this")
-  private @Nullable Section<?> mCurrentSection;
+  private @Nullable Section mCurrentSection;
 
   @GuardedBy("this")
-  private @Nullable Section<?> mNextSection;
+  private @Nullable Section mNextSection;
 
   @GuardedBy("this")
   private Map<String, List<StateUpdate>> mPendingStateUpdates;
@@ -689,8 +689,8 @@ public class SectionTree {
   }
 
   private void applyNewChangeSet() {
-    Section<?> currentRoot;
-    Section<?> nextRoot;
+    Section currentRoot;
+    Section nextRoot;
     Map<String, List<StateUpdate>> pendingStateUpdates = acquireUpdatesMap();
 
     synchronized (this) {
@@ -856,7 +856,7 @@ public class SectionTree {
     }
   }
 
-  private void bindNewComponent(Section<?> section) {
+  private void bindNewComponent(Section section) {
     section.bindService(section.getScopedContext(), section);
     bindEventHandlers(section);
 
@@ -868,7 +868,7 @@ public class SectionTree {
     }
   }
 
-  private void unbindOldComponent(Section<?> section) {
+  private void unbindOldComponent(Section section) {
     section.unbindService(section.getScopedContext(), section);
 
     if (!section.isDiffSectionSpec()) {
@@ -949,8 +949,8 @@ public class SectionTree {
 
   private static ChangeSetState calculateNewChangeSet(
       SectionContext context,
-      Section<?> currentRoot,
-      Section<?> nextRoot,
+      Section currentRoot,
+      Section nextRoot,
       Map<String, List<StateUpdate>> pendingStateUpdates,
       SectionsDebugLogger sectionsDebugLogger,
       String sectionTreeTag) {
@@ -968,8 +968,8 @@ public class SectionTree {
    */
   private static void createNewTreeAndApplyStateUpdates(
       SectionContext context,
-      Section<?> currentRoot,
-      Section<?> nextRoot,
+      Section currentRoot,
+      Section nextRoot,
       Map<String, List<StateUpdate>> pendingStateUpdates,
       SectionsDebugLogger sectionsDebugLogger,
       String sectionTreeTag) {

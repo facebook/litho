@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
  * returns a {@link Builder} that allows you to set values for individual props.
  * {@link Section} instances are immutable after creation.
  */
-public abstract class Section<L extends Section> extends SectionLifecycle
+public abstract class Section extends SectionLifecycle
     implements Cloneable, HasEventDispatcher {
 
   private Section mParent;
@@ -222,9 +222,9 @@ public abstract class Section<L extends Section> extends SectionLifecycle
    * if deepCopy is false the clone won't contain any children or count as it will
    * be returned in a pre - ChangeSet generation state.
    */
-  public Section<L> makeShallowCopy(boolean deepCopy) {
+  public Section makeShallowCopy(boolean deepCopy) {
     try {
-      final Section<L> clone = (Section<L>) super.clone();
+      final Section clone = (Section) super.clone();
 
       if (!deepCopy) {
         if (clone.mChildren != null) {
@@ -241,7 +241,7 @@ public abstract class Section<L extends Section> extends SectionLifecycle
     }
   }
 
-  public Section<L> makeShallowCopy() {
+  public Section makeShallowCopy() {
     return makeShallowCopy(false);
   }
 
@@ -277,7 +277,7 @@ public abstract class Section<L extends Section> extends SectionLifecycle
    * @param other the component to compare to
    * @return true if the components are of the same type and have the same props
    */
-  public boolean isEquivalentTo(Section<?> other) {
+  public boolean isEquivalentTo(Section other) {
     return this.equals(other);
   }
 

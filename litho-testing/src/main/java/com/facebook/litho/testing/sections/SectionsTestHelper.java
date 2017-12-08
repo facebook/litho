@@ -37,7 +37,7 @@ import org.mockito.stubbing.Answer;
  * hieararchy. Also allows simpler State updates testing by keeping trach of a scoped section
  * context.
  */
-public class SectionsTestHelper extends Section<SectionsTestHelper> {
+public class SectionsTestHelper extends Section {
 
   // Keeping a reference of the SectionTree here otherwise in some tests it gets cleared.
   private final SectionTree mSectionTree;
@@ -159,7 +159,7 @@ public class SectionsTestHelper extends Section<SectionsTestHelper> {
    * @return the state container.
    */
   @SuppressWarnings("unchecked")
-  public <T extends StateContainer> T getStateContainer(Section<?> section) {
+  public <T extends StateContainer> T getStateContainer(Section section) {
     return (T)
         SectionLifecycleTestUtil.getStateContainer(getScopedContext(section).getSectionScope());
   }

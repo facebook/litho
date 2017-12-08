@@ -180,7 +180,7 @@ public abstract class SectionLifecycle implements EventDispatcher {
   }
 
   protected static <E> EventHandler<E> newEventHandler(
-      Section<?> c,
+      Section c,
       String name,
       int id,
       Object[] params) {

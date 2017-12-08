@@ -16,7 +16,7 @@ import com.facebook.litho.sections.LoadingEvent;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 
-public final class SimpleDiffSection extends Section<SimpleDiffSection> {
+public final class SimpleDiffSection extends Section {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<Builder>(2);
 

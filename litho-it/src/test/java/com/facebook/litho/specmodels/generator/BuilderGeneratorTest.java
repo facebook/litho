@@ -50,7 +50,7 @@ public class BuilderGeneratorTest {
     @OnCreateLayout
     public void testDelegateMethod(
         @Prop boolean arg0,
-        @Prop Section<?> section,
+        @Prop Section section,
         @State int arg1,
         @Param Object arg2,
         @Prop(optional = true) boolean arg3,
@@ -157,7 +157,7 @@ public class BuilderGeneratorTest {
                 + "    return this;\n"
                 + "  }\n"
                 + "\n"
-                + "  public Builder section(com.facebook.litho.sections.Section<?> section) {\n"
+                + "  public Builder section(com.facebook.litho.sections.Section section) {\n"
                 + "    this.mTest.section = section;\n"
                 + "    mRequired.set(1);\n"
                 + "    return this;\n"

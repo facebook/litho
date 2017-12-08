@@ -277,8 +277,7 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
   public TypeSpec generate() {
     final TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(getComponentName())
-            .superclass(
-                ParameterizedTypeName.get(SectionClassNames.SECTION, getComponentTypeName()))
+            .superclass(SectionClassNames.SECTION)
             .addTypeVariables(getTypeVariables());
 
     if (isPublic()) {

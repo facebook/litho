@@ -36,7 +36,7 @@ import java.util.List;
  * @prop-required data java.util.List<T>
  * @prop-required prop3 com.facebook.litho.Component
  */
-public final class FullDiffSection<T> extends Section<FullDiffSection> {
+public final class FullDiffSection<T> extends Section {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
 
   static final Pools.SynchronizedPool<TestEvent> sTestEventPool = new Pools.SynchronizedPool<TestEvent>(2);

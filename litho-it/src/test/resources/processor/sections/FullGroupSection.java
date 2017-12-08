@@ -40,7 +40,7 @@ import java.util.BitSet;
  * @prop-required prop3 com.facebook.litho.Component
  * @prop-required prop4 java.lang.String
  */
-final class FullGroupSection<T> extends Section<FullGroupSection> {
+final class FullGroupSection<T> extends Section {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<Builder>(2);
 

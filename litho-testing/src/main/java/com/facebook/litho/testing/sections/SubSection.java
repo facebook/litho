@@ -67,7 +67,7 @@ public class SubSection {
    * For testing purposes, props are only compared if both subSections supply them. Otherwise,
    * just ignore them.
    */
-  private static boolean arePropsEqual(Section<?> thatSection, Section<?> thisSection) {
+  private static boolean arePropsEqual(Section thatSection, Section thisSection) {
     return thatSection == null || thisSection == null || thatSection.isEquivalentTo(thisSection);
   }
 }

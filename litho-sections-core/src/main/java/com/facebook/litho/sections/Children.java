@@ -57,7 +57,7 @@ public class Children {
       mChildren = children;
     }
 
-    public Builder child(@Nullable Section<?> section) {
+    public Builder child(@Nullable Section section) {
       verifyValidState();
 
       if (section != null) {
@@ -67,7 +67,7 @@ public class Children {
       return this;
     }
 
-    public Builder child(@Nullable List<Section<?>> sectionList) {
+    public Builder child(@Nullable List<Section> sectionList) {
       verifyValidState();
 
       if (sectionList == null || sectionList.isEmpty()) {
@@ -75,7 +75,7 @@ public class Children {
       }
 
       for (int i = 0; i < sectionList.size(); i++) {
-        Section<?> section = sectionList.get(i);
+        Section section = sectionList.get(i);
         if (section != null) {
           mChildren.mSections.add(section);
         }

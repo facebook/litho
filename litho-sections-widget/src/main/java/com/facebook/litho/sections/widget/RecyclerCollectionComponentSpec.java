@@ -121,7 +121,7 @@ public class RecyclerCollectionComponentSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(
       final ComponentContext c,
-      @Prop Section<?> section,
+      @Prop Section section,
       @Prop(optional = true) Component loadingComponent,
       @Prop(optional = true) Component emptyComponent,
       @Prop(optional = true) Component errorComponent,
@@ -274,7 +274,7 @@ public class RecyclerCollectionComponentSpec {
   @OnCreateInitialState
   static <E extends Binder<RecyclerView> & Target> void createInitialState(
       final ComponentContext c,
-      @Prop Section<?> section,
+      @Prop Section section,
       @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,
       @Prop(optional = true) RecyclerCollectionEventsController eventsController,
       @Prop(optional = true) boolean asyncPropUpdates,
