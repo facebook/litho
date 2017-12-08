@@ -681,7 +681,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       Object[] params) {
     final EventHandler<E> eventHandler = c.newEventHandler(name, id, params);
     if (c.getComponentTree() != null) {
-      c.getComponentTree().recordEventHandler(c.getComponentScope(), eventHandler);
+      // c.getComponentTree().recordEventHandler(c.getComponentScope(), eventHandler);
     }
 
     return eventHandler;
@@ -694,7 +694,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       Object[] params) {
     final EventHandler<E> eventHandler = new EventHandler<>(c, name, id, params);
     if (c.getScopedContext() != null && c.getScopedContext().getComponentTree() != null) {
-      c.getScopedContext().getComponentTree().recordEventHandler(c, eventHandler);
+      // c.getScopedContext().getComponentTree().recordEventHandler(c, eventHandler);
     }
 
     return eventHandler;
