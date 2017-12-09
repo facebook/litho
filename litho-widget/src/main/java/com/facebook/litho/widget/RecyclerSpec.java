@@ -71,6 +71,7 @@ class RecyclerSpec {
   @PropDefault static final boolean nestedScrollingEnabled = true;
   @PropDefault static final ItemAnimator itemAnimator = new NoUpdateItemAnimator();
   @PropDefault static final int recyclerViewId = View.NO_ID;
+  @PropDefault static final int overScrollMode = View.OVER_SCROLL_ALWAYS;
   @PropDefault static final int refreshProgressBarColor = Color.BLACK;
   @PropDefault static final boolean clipToPadding = true;
   @PropDefault static final boolean clipChildren = true;
@@ -144,7 +145,8 @@ class RecyclerSpec {
       @Prop(optional = true) boolean horizontalFadingEdgeEnabled,
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
-      @Prop(optional = true) @IdRes int recyclerViewId) {
+      @Prop(optional = true) @IdRes int recyclerViewId,
+      @Prop(optional = true) int overScrollMode) {
     final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
 
     if (recyclerView == null) {
@@ -167,6 +169,7 @@ class RecyclerSpec {
     recyclerView.setFadingEdgeLength(fadingEdgeLength);
     // TODO (t14949498) determine if this is necessary
     recyclerView.setId(recyclerViewId);
+    recyclerView.setOverScrollMode(overScrollMode);
 
     if (itemDecoration != null) {
       recyclerView.addItemDecoration(itemDecoration);

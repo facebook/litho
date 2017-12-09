@@ -91,6 +91,8 @@ public class RecyclerCollectionComponentSpec {
   @PropDefault protected static final boolean nestedScrollingEnabled = true;
   @PropDefault protected static final int scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY;
   @PropDefault protected static final int recyclerViewId = View.NO_ID;
+  @PropDefault protected static final int overScrollMode = View.OVER_SCROLL_ALWAYS;
+
   @PropDefault
   protected static final boolean asyncStateUpdates =
       SectionsConfiguration.sectionComponentsAsyncStateUpdates;
@@ -135,6 +137,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) ItemAnimator itemAnimator,
       @Prop(optional = true) boolean disablePTR,
       @Prop(optional = true) @IdRes int recyclerViewId,
+      @Prop(optional = true) int overScrollMode,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int leftPadding,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int rightPadding,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int topPadding,
@@ -195,6 +198,7 @@ public class RecyclerCollectionComponentSpec {
             .nestedScrollingEnabled(nestedScrollingEnabled)
             .scrollBarStyle(scrollBarStyle)
             .recyclerViewId(recyclerViewId)
+            .overScrollMode(overScrollMode)
             .recyclerEventsController(internalEventsController)
             .refreshHandler(
                 disablePTR ? null : RecyclerCollectionComponent.onRefresh(c, sectionTree))
