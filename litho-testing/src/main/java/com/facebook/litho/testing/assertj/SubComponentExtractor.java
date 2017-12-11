@@ -17,6 +17,7 @@ import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import java.util.List;
 import org.assertj.core.api.Condition;
 import org.assertj.core.api.iterable.Extractor;
+import org.hamcrest.Matcher;
 
 /**
  * An extractor to be used with {@link org.assertj.core.api.Assertions#assertThat}.
@@ -90,6 +91,25 @@ public class SubComponentExtractor implements Extractor<Component, List<Inspecta
         }
 
         return false;
+      }
+    };
+  }
+
+  /**
+   * This combinator allows you to make an assertion on the number of sub-components directly spun
+   * up by the component under test.
+   *
+   * @param c The ComponentContext used to create the tree.
+   * @param matcher The Matcher that verifies the number of sub-components against a condition
+   */
+  public static Condition<? super Component> numOfSubComponents(
+      final ComponentContext c, final Matcher<Integer> matcher) {
+    return new Condition<Component>() {
+      @Override
+      public boolean matches(Component component) {
+        as("number of sub components %s", matcher.toString());
+        final int numOfSubComponents = subComponents(c).extract(component).size();
+        return matcher.matches(numOfSubComponents);
       }
     };
   }

@@ -18,6 +18,7 @@ components_robolectric_test(
         make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
+        COMPONENTS_HAMCREST_LIBRARY_TARGET,
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_TESTING_TARGET,
         COMPONENTS_TESTING_WIDGET_TARGET,

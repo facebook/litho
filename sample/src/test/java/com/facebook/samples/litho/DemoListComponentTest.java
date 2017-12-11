@@ -13,6 +13,9 @@
 package com.facebook.samples.litho;
 
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
+import static com.facebook.litho.testing.assertj.SubComponentExtractor.numOfSubComponents;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.core.Is.is;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
@@ -42,5 +45,14 @@ public class DemoListComponentTest {
   public void testSubComponents() {
     assertThat(mComponentsRule.getContext(), mComponent)
         .containsOnlySubComponents(SubComponent.of(RecyclerCollectionComponent.class));
+  }
+
+  @Test
+  public void testNumOfSubComponents() {
+    assertThat(mComponentsRule.getContext(), mComponent)
+        .has(numOfSubComponents(mComponentsRule.getContext(), is(1)));
+
+    assertThat(mComponentsRule.getContext(), mComponent)
+        .has(numOfSubComponents(mComponentsRule.getContext(), greaterThan(0)));
   }
 }
