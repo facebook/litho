@@ -10,11 +10,11 @@ load("//:COMPONENTS_DEFS", "COMPONENTS_ANDROIDSUPPORT_TARGET", "COMPONENTS_ROBOL
 litho_android_library(
     name = "helper",
     srcs = glob(["*.java"]),
-    visibility = [
-        "PUBLIC",
-    ],
     provided_deps = [
         COMPONENTS_ROBOLECTRIC_TARGET,
+    ],
+    visibility = [
+        "PUBLIC",
     ],
     deps = [
         COMPONENTS_JAVA_TARGET,
