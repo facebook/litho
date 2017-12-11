@@ -13,7 +13,72 @@ import android.view.View;
 import android.widget.PopupWindow;
 
 public class LithoTooltipController {
-  /** Show the given tooltip on the component with the given anchorKey in the specified position. */
+
+  /**
+   * Show the given tooltip with the specified offsets from the bottom-left corner of the component
+   * with the given anchorKey.
+   */
+  public static void showTooltip(
+      ComponentContext c,
+      final PopupWindow popupWindow,
+      String anchorKey,
+      int xOffset,
+      int yOffset) {
+    showTooltip(
+        c,
+        new LithoTooltip() {
+          @Override
+          public void showLithoTooltip(
+              View container, Rect anchorBounds, int xOffset, int yOffset) {
+            popupWindow.showAsDropDown(
+                container, anchorBounds.left + xOffset, anchorBounds.bottom + yOffset);
+          }
+        },
+        anchorKey,
+        xOffset,
+        yOffset);
+  }
+
+  /**
+   * Show the given tooltip on the component with the given anchorKey.
+   *
+   * @param c
+   * @param lithoTooltip A {@link LithoTooltip} implementation to be shown on the anchor.
+   * @param anchorKey key of the Litho Component that will be used as anchor
+   */
+  public static void showTooltip(ComponentContext c, LithoTooltip lithoTooltip, String anchorKey) {
+    showTooltip(c, lithoTooltip, anchorKey, 0, 0);
+  }
+
+  /**
+   * Show the given tooltip on the component with the given anchorKey.
+   *
+   * @param c
+   * @param lithoTooltip A {@link LithoTooltip} implementation to be shown on the anchor.
+   * @param anchorKey key of the Litho Component that will be used as anchor
+   * @param xOffset horizontal offset from default position where the tooltip shows.
+   * @param yOffset vertical offset from default position where the tooltip shows.
+   */
+  public static void showTooltip(
+      ComponentContext c, LithoTooltip lithoTooltip, String anchorKey, int xOffset, int yOffset) {
+    final ComponentTree componentTree = c.getComponentTree();
+    final Component rootComponent = c.getComponentScope();
+
+    if (componentTree == null) {
+      return;
+    }
+
+    final String anchorGlobalKey =
+        rootComponent == null ? anchorKey : rootComponent.getGlobalKey() + anchorKey;
+
+    componentTree.showTooltip(lithoTooltip, anchorGlobalKey, xOffset, yOffset);
+  }
+
+  /**
+   * Show the given tooltip on the component with the given anchorKey in the specified position.
+   *
+   * @deprecated @see {#show}
+   */
   @Deprecated
   public static void showTooltip(
       ComponentContext c,
@@ -23,7 +88,11 @@ public class LithoTooltipController {
     showTooltip(c, tooltip, anchorKey, tooltipPosition, 0, 0);
   }
 
-  /** Show the given tooltip on the component with the given anchorKey in the specified position. */
+  /**
+   * Show the given tooltip on the component with the given anchorKey in the specified position.
+   *
+   * @deprecated @see {@link #showTooltip(ComponentContext, PopupWindow, String, int, int)}
+   */
   @Deprecated
   public static void showTooltip(
       ComponentContext c,
@@ -36,6 +105,8 @@ public class LithoTooltipController {
   /**
    * Show the given tooltip on the component with the given anchorKey with the specified offsets
    * from the given position.
+   *
+   * @deprecated @see {@link #showTooltip(ComponentContext, PopupWindow, String, int, int)}
    */
   @Deprecated
   public static void showTooltip(
@@ -62,6 +133,9 @@ public class LithoTooltipController {
   /**
    * Show the given tooltip on the component with the given anchorKey with the specified offsets
    * from the given position.
+   *
+   * @deprecated
+   * @see {{@link #showTooltip(ComponentContext, LithoTooltip, String, int, int)}}
    */
   @Deprecated
   public static void showTooltip(
