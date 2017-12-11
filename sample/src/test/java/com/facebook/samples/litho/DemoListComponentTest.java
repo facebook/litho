@@ -16,8 +16,10 @@ import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static com.facebook.litho.testing.assertj.SubComponentExtractor.numOfSubComponents;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assume.assumeThat;
 
 import com.facebook.litho.Component;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.subcomponents.SubComponent;
@@ -32,6 +34,14 @@ import org.junit.runner.RunWith;
 public class DemoListComponentTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
   private Component mComponent;
+
+  @Before
+  public void assumeDebug() {
+    assumeThat(
+        "These tests can only be run in debug mode.",
+        ComponentsConfiguration.IS_INTERNAL_BUILD,
+        is(true));
+  }
 
   @Before
   public void setUp() {

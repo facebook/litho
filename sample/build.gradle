@@ -76,6 +76,7 @@ dependencies {
     testCompileOnly deps.jsr305
     testAnnotationProcessor project(':litho-processor')
     testImplementation deps.junit
+    testImplementation deps.hamcrestLibrary
     testImplementation deps.robolectric
     testImplementation deps.assertjCore
     testImplementation deps.mockitoCore
