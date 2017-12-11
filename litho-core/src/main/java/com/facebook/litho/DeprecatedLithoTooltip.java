@@ -14,7 +14,7 @@ import android.view.View;
  * Defines a tooltip that can be passed to the ComponentTree to be anchored to a component. The
  * framework takes care of finding the position where the tooltip needs to anchored.
  */
-public interface LithoTooltip {
+public interface DeprecatedLithoTooltip {
 
   /**
    * Display the content view in a popup window anchored to the bottom-left corner of the anchor

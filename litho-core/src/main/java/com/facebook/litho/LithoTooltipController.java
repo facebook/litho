@@ -14,12 +14,17 @@ import android.widget.PopupWindow;
 
 public class LithoTooltipController {
   /** Show the given tooltip on the component with the given anchorKey in the specified position. */
+  @Deprecated
   public static void showTooltip(
-      ComponentContext c, LithoTooltip tooltip, String anchorKey, TooltipPosition tooltipPosition) {
+      ComponentContext c,
+      DeprecatedLithoTooltip tooltip,
+      String anchorKey,
+      TooltipPosition tooltipPosition) {
     showTooltip(c, tooltip, anchorKey, tooltipPosition, 0, 0);
   }
 
   /** Show the given tooltip on the component with the given anchorKey in the specified position. */
+  @Deprecated
   public static void showTooltip(
       ComponentContext c,
       final PopupWindow popupWindow,
@@ -32,6 +37,7 @@ public class LithoTooltipController {
    * Show the given tooltip on the component with the given anchorKey with the specified offsets
    * from the given position.
    */
+  @Deprecated
   public static void showTooltip(
       ComponentContext c,
       final PopupWindow popupWindow,
@@ -41,7 +47,7 @@ public class LithoTooltipController {
       int yOffset) {
     showTooltip(
         c,
-        new LithoTooltip() {
+        new DeprecatedLithoTooltip() {
           @Override
           public void showBottomLeft(View anchor, int xOffset, int yOffset) {
             popupWindow.showAsDropDown(anchor, xOffset, yOffset);
@@ -57,9 +63,10 @@ public class LithoTooltipController {
    * Show the given tooltip on the component with the given anchorKey with the specified offsets
    * from the given position.
    */
+  @Deprecated
   public static void showTooltip(
       ComponentContext c,
-      LithoTooltip tooltip,
+      DeprecatedLithoTooltip tooltip,
       String anchorKey,
       TooltipPosition tooltipPosition,
       int xOffset,
@@ -78,8 +85,9 @@ public class LithoTooltipController {
     componentTree.showTooltip(tooltip, anchorGlobalKey, tooltipPosition, xOffset, yOffset);
   }
 
+  @Deprecated
   static void showOnAnchor(
-      LithoTooltip tooltip,
+      DeprecatedLithoTooltip tooltip,
       Rect anchorBounds,
       View hostView,
       TooltipPosition tooltipPosition,

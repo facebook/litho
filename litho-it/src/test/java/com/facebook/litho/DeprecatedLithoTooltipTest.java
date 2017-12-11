@@ -26,7 +26,7 @@ import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
-public class LithoTooltipTest {
+public class DeprecatedLithoTooltipTest {
 
   private static final int HOST_WIDTH = 400;
   private static final int HOST_HEIGHT = 300;
@@ -37,7 +37,7 @@ public class LithoTooltipTest {
 
   private ComponentContext mContext;
   private Component mComponent;
-  @Mock public LithoTooltip mLithoTooltip;
+  @Mock public DeprecatedLithoTooltip mLithoTooltip;
   private ComponentTree mComponentTree;
   private LithoView mLithoView;
 
@@ -54,10 +54,11 @@ public class LithoTooltipTest {
             return Row.create(c)
                 .marginPx(YogaEdge.LEFT, MARGIN_LEFT)
                 .marginPx(YogaEdge.TOP, MARGIN_TOP)
-                .child(TestDrawableComponent.create(c)
-                  .key("anchor")
-                  .widthPx(ANCHOR_WIDTH)
-                  .heightPx(ANCHOR_HEIGHT))
+                .child(
+                    TestDrawableComponent.create(c)
+                        .key("anchor")
+                        .widthPx(ANCHOR_WIDTH)
+                        .heightPx(ANCHOR_HEIGHT))
                 .build();
           }
         };

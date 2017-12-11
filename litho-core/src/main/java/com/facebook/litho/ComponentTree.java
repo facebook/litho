@@ -1083,7 +1083,7 @@ public class ComponentTree {
   }
 
   void showTooltip(
-      LithoTooltip tooltip,
+      DeprecatedLithoTooltip tooltip,
       String anchorGlobalKey,
       TooltipPosition tooltipPosition,
       int xOffset,
