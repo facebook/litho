@@ -13,22 +13,31 @@ import static com.facebook.litho.sections.LoadingEvent.LoadingState.FAILED;
 import static com.facebook.litho.sections.LoadingEvent.LoadingState.LOADING;
 import static com.facebook.litho.sections.LoadingEvent.LoadingState.SUCCEEDED;
 import static com.facebook.litho.sections.widget.ListRecyclerConfiguration.SNAP_NONE;
-import static com.facebook.litho.testing.viewtree.ViewTreeAssert.assertThat;
+import static com.facebook.litho.testing.assertj.ComponentConditions.textEquals;
+import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
+import static com.facebook.litho.testing.assertj.LithoViewSubComponentDeepExtractor.deepSubComponentWith;
+import static org.assertj.core.condition.AnyOf.anyOf;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assume.assumeThat;
 
 import android.support.v7.widget.LinearLayoutManager;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
+import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.StateUpdatesTestHelper;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.testing.viewtree.ViewTree;
+import com.facebook.litho.testing.viewtree.ViewTreeAssert;
 import com.facebook.litho.widget.Text;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
@@ -39,12 +48,20 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class RecyclerCollectionComponentSpecTest {
 
+  @Rule public ComponentsRule componentsRule = new ComponentsRule();
+
   private ComponentContext mComponentContext;
   private Component mLoadingComponent;
   private Component mEmptyComponent;
   private Component mErrorComponent;
   private Component mRecyclerCollectionComponent;
   private Component mContentComponent;
+
+  @Before
+  public void assumeDebug() {
+    assumeThat("These tests can only be run in debug mode.",
+        ComponentsConfiguration.IS_INTERNAL_BUILD, is(true));
+  }
 
   @Before
   public void setup() throws Exception {
@@ -131,11 +148,14 @@ public class RecyclerCollectionComponentSpecTest {
               }
             });
 
-    assertThat(ViewTree.of(view))
-        .doesNotHaveVisibleText("loading")
-        .doesNotHaveVisibleText("content")
-        .doesNotHaveVisibleText("empty")
-        .doesNotHaveVisibleText("error");
+    assertThat(view)
+        .doesNotHave(
+            deepSubComponentWith(
+                anyOf(
+                    textEquals("loading"),
+                    textEquals("content"),
+                    textEquals("empty"),
+                    textEquals("error"))));
   }
 
   @Test
@@ -151,7 +171,7 @@ public class RecyclerCollectionComponentSpecTest {
               }
             });
 
-    assertThat(ViewTree.of(view))
+    ViewTreeAssert.assertThat(ViewTree.of(view))
         .doesNotHaveVisibleText("loading")
         .hasVisibleText("content")
         .doesNotHaveVisibleText("empty")
@@ -171,7 +191,7 @@ public class RecyclerCollectionComponentSpecTest {
               }
             });
 
-    assertThat(ViewTree.of(view))
+    ViewTreeAssert.assertThat(ViewTree.of(view))
         .doesNotHaveVisibleText("loading")
         .hasVisibleText("content")
         .hasVisibleText("empty")
@@ -191,7 +211,7 @@ public class RecyclerCollectionComponentSpecTest {
               }
             });
 
-    assertThat(ViewTree.of(view))
+    ViewTreeAssert.assertThat(ViewTree.of(view))
         .doesNotHaveVisibleText("loading")
         .hasVisibleText("content")
         .doesNotHaveVisibleText("empty")
@@ -211,7 +231,7 @@ public class RecyclerCollectionComponentSpecTest {
               }
             });
 
-    assertThat(ViewTree.of(view))
+    ViewTreeAssert.assertThat(ViewTree.of(view))
         .doesNotHaveVisibleText("loading")
         .hasVisibleText("content")
         .doesNotHaveVisibleText("empty")
@@ -231,7 +251,7 @@ public class RecyclerCollectionComponentSpecTest {
               }
             });
 
-    assertThat(ViewTree.of(view))
+    ViewTreeAssert.assertThat(ViewTree.of(view))
         .doesNotHaveVisibleText("loading")
         .hasVisibleText("content")
         .doesNotHaveVisibleText("empty")
@@ -251,7 +271,7 @@ public class RecyclerCollectionComponentSpecTest {
               }
             });
 
-    assertThat(ViewTree.of(view))
+    ViewTreeAssert.assertThat(ViewTree.of(view))
         .hasVisibleText("loading")
         .hasVisibleText("content")
         .doesNotHaveVisibleText("empty")
@@ -264,7 +284,7 @@ public class RecyclerCollectionComponentSpecTest {
         mComponentContext,
         mRecyclerCollectionComponent);
 
-    assertThat(ViewTree.of(view))
+    ViewTreeAssert.assertThat(ViewTree.of(view))
         .hasVisibleText("loading")
         .hasVisibleText("content")
         .doesNotHaveVisibleText("empty")

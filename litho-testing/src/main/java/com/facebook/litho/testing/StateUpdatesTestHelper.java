@@ -13,6 +13,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.LithoViewTestHelper;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.shadows.ShadowLooper;
@@ -22,6 +23,7 @@ public final class StateUpdatesTestHelper {
 
   private StateUpdatesTestHelper() {}
 
+  @FunctionalInterface
   public interface StateUpdater {
     void performStateUpdate(ComponentContext context);
   }
@@ -151,12 +153,20 @@ public final class StateUpdatesTestHelper {
     Whitebox.setInternalState(context, "mComponentScope", component);
     Whitebox.setInternalState(context, "mComponentTree", componentTree);
 
+    final Object mainThreadLayoutState =
+        Whitebox.invokeMethod(componentTree, "getMainThreadLayoutState");
+    // Bump the internal refcount by one, so we avoid releasing the InternalNode.
+    Whitebox.invokeMethod(mainThreadLayoutState, "acquireRef");
+
+    final LithoViewTestHelper.InternalNodeRef rootLayoutNode =
+        LithoViewTestHelper.getRootLayoutRef(lithoView);
+
     stateUpdater.performStateUpdate(context);
     for (ShadowLooper looper : loopers) {
       looper.runToEndOfTasks();
     }
 
-    ComponentTestHelper.mountComponent(lithoView, componentTree);
-    return lithoView;
+    LithoViewTestHelper.setRootLayoutRef(lithoView, rootLayoutNode);
+    return ComponentTestHelper.mountComponent(lithoView, componentTree);
   }
 }

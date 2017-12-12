@@ -12,7 +12,9 @@ package com.facebook.litho;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 import android.text.TextUtils;
+import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.Deque;
@@ -26,11 +28,21 @@ import java.util.Deque;
 public class LithoViewTestHelper {
 
   /**
+   * Holds an opaque reference to an {@link InternalNode} without giving the holder any access to
+   * it.
+   */
+  public static final class InternalNodeRef {
+    private final InternalNode mInternalNodeRef;
+
+    private InternalNodeRef(InternalNode node) {
+      this.mInternalNodeRef = node;
+    }
+  }
+
+  /**
    * @see #findTestItems(LithoView, String)
-   *
-   * <strong>Note:</strong> If there is more than one element mounted under the given key,
-   * the last one to render will be returned.
-   *
+   *     <p><strong>Note:</strong> If there is more than one element mounted under the given key,
+   *     the last one to render will be returned.
    * @param lithoView The component view the component is mounted to.
    * @param testKey The unique identifier the component was constructed with.
    * @return Test item if found, null otherwise.
@@ -139,5 +151,39 @@ public class LithoViewTestHelper {
     }
 
     return sb.toString();
+  }
+
+  /**
+   * Obtain a reference to a LithoView's internal layout root, if present. This is used to restore a
+   * view's root after it has been freed for testing purposes.
+   *
+   * @see #setRootLayoutRef(LithoView, InternalNodeRef)
+   */
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  @ThreadConfined(ThreadConfined.UI)
+  @Nullable
+  public static InternalNodeRef getRootLayoutRef(final LithoView view) {
+    final ComponentTree componentTree = view.getComponentTree();
+    final LayoutState mainThreadLayoutState =
+        componentTree != null ? componentTree.getMainThreadLayoutState() : null;
+    return mainThreadLayoutState != null
+        ? new InternalNodeRef(mainThreadLayoutState.getLayoutRoot())
+        : null;
+  }
+
+  /**
+   * Restore a previously saved root layout reference.
+   *
+   * @see #getRootLayoutRef(LithoView)
+   */
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+  @ThreadConfined(ThreadConfined.UI)
+  public static void setRootLayoutRef(final LithoView view, final InternalNodeRef rootLayoutNode) {
+    final ComponentTree componentTree = view.getComponentTree();
+    final LayoutState mainThreadLayoutState =
+        componentTree != null ? componentTree.getMainThreadLayoutState() : null;
+    if (mainThreadLayoutState != null) {
+      mainThreadLayoutState.mLayoutRoot = rootLayoutNode.mInternalNodeRef;
+    }
   }
 }
