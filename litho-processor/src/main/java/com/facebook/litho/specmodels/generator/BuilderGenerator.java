@@ -612,9 +612,13 @@ public class BuilderGenerator {
     String varArgName = prop.getVarArgsSingleName();
     final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getType();
     final TypeName internalType = varArgType.typeArguments.get(0);
-    CodeBlock codeBlock = CodeBlock.builder()
-        .addStatement("$L($L.build())", varArgName, varArgName + "Builder")
-        .build();
+    CodeBlock codeBlock =
+        CodeBlock.builder()
+            .beginControlFlow("if ($L == null)", varArgName + "Builder")
+            .addStatement("return this")
+            .endControlFlow()
+            .addStatement("$L($L.build())", varArgName, varArgName + "Builder")
+            .build();
     TypeName builderParameterType = ParameterizedTypeName.get(
         ClassNames.COMPONENT_BUILDER,
         getBuilderGenericTypes(internalType, ClassNames.COMPONENT_BUILDER));
