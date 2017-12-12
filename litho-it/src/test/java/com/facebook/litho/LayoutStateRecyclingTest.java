@@ -10,7 +10,7 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.testing.ReflectionHelper.setFinalStatic;
-import static junit.framework.Assert.assertNull;
+import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 
@@ -38,6 +38,7 @@ public class LayoutStateRecyclingTest {
   private RecyclePool<InternalNode> mInternalNodePool;
   private RecyclePool<InternalNode> mOriginalInternalNodePool;
 
+  @SuppressWarnings("unchecked")
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
@@ -46,8 +47,6 @@ public class LayoutStateRecyclingTest {
 
     final Field declaredField = ComponentsPools.class.getDeclaredField("sInternalNodePool");
     mOriginalInternalNodePool = (RecyclePool<InternalNode>) declaredField.get(null);
-
-    final Field internalNodePoolField = ComponentsPools.class.getDeclaredField("sInternalNodePool");
     setFinalStatic(ComponentsPools.class, "sInternalNodePool", mInternalNodePool);
   }
 
@@ -61,35 +60,38 @@ public class LayoutStateRecyclingTest {
     // We want to verify that we never recycle a node with a non-null parent, since that would
     // mean that the parent retains a dangling reference to a recycled node.
     Mockito.doAnswer(
-        new Answer<Void>() {
-          @Override
-          public Void answer(InvocationOnMock invocation) throws Throwable {
-            InternalNode node = (InternalNode) invocation.getArguments()[0];
-            assertNull("Internal node parent must be null before releasing", node.getParent());
-            return null;
-          }
-        }).when(mInternalNodePool).release(Matchers.<InternalNode>any());
+            new Answer() {
+              @Override
+              public Object answer(InvocationOnMock invocation) throws Throwable {
+                final InternalNode node = (InternalNode) invocation.getArguments()[0];
+                assertThat(node.getParent())
+                    .overridingErrorMessage("Internal node parent must be null before releasing")
+                    .isNull();
+                return null;
+              }
+            })
+        .when(mInternalNodePool)
+        .release(Matchers.any());
 
     // Create a layout state and release it.
-    final Component input = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-            .child(
-                Column.create(c))
-            .build();
-      }
-    };
+    final Component input =
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return Column.create(c).child(Column.create(c)).build();
+          }
+        };
 
-    LayoutState layoutState = LayoutState.calculate(
-        new ComponentContext(RuntimeEnvironment.application),
-        input,
-        -1,
-        mUnspecifiedSizeSpec,
-        mUnspecifiedSizeSpec);
+    final LayoutState layoutState =
+        LayoutState.calculate(
+            new ComponentContext(RuntimeEnvironment.application),
+            input,
+            -1,
+            mUnspecifiedSizeSpec,
+            mUnspecifiedSizeSpec);
     layoutState.releaseRef();
 
     // Verify that the nodes did get recycled
-    verify(mInternalNodePool, atLeast(2)).release(Matchers.<InternalNode>any());
+    verify(mInternalNodePool, atLeast(2)).release(Matchers.any());
   }
 }
