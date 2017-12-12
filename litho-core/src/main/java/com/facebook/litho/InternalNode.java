@@ -1563,12 +1563,6 @@ class InternalNode implements ActualComponentLayout, ComponentLayout.ContainerBu
             || mYogaNode.getLayoutBorder(BOTTOM) != 0);
   }
 
-  /**
-   * Set the root component associated with this internal node. This is the component which created
-   * this internal node. If we are in debug mode we also keep track of any delegate components which
-   * may have altered anything about this internal node. This is useful when understanding the
-   * hierarchy of components in the debugger as well as in stetho.
-   */
   void appendComponent(Component component) {
     mComponents.add(component);
   }
