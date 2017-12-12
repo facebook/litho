@@ -26,6 +26,6 @@ prebuilt_jar(
 
 remote_file(
     name = "compile-testing.jar",
-    sha1 = "b4c935fbb20788d462fbad7235fc9f94314d964b",
-    url = "mvn:com.google.testing.compile:compile-testing:jar:0.12",
+    sha1 = "3d9e885e2dfe4e6ceabc4402419abf3879c7429e",
+    url = "mvn:com.google.testing.compile:compile-testing:jar:0.14",
 )
