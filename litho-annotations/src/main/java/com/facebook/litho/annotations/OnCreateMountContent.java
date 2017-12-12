@@ -13,11 +13,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * The method annotated with this annotation will be called to instantiate the mount content for
- * the {@link MountSpec}. The onCreateMountContent method can only take a
+ * The method annotated with this annotation will be called to instantiate the mount content for the
+ * {@link MountSpec}. The onCreateMountContent method can only take a
  * com.facebook.litho.ComponentContext as parameter. No props are allowed here.
  */
-@Retention(RetentionPolicy.SOURCE)
-public @interface OnCreateMountContent {
-
-}
+@Retention(RetentionPolicy.CLASS)
+public @interface OnCreateMountContent {}
