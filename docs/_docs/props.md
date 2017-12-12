@@ -5,7 +5,7 @@ layout: docs
 permalink: /docs/props
 ---
 
-Litho uses a unidirectional data flow with immutable inputs. Following the name established by [React](https://facebook.github.io/react/), the inputs that a `Component` takes are known as *props*.
+Litho uses a unidirectional data flow with immutable inputs. Following the name established by [React](https://reactjs.org/docs/components-and-props.html), the inputs that a `Component` takes are known as *props*.
 
 ## Defining and using Props
 
@@ -27,13 +27,13 @@ class MyComponentSpec {
   }
 
   @OnMount
-  static SomeDrawable onMount(
+  static void onMount(
       ComponentContext c,
       SomeDrawable convertDrawable,
       @Prop(optional = true) String prop1,
       @Prop int prop2) {
     if (prop1 != null) {
-    	...
+      ...
     }
   }
 }
