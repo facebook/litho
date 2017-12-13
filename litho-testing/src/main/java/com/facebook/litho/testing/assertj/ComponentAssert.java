@@ -16,6 +16,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Wrapper;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
+import com.facebook.litho.testing.state.StateUpdatesTestHelper;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import java.util.List;
@@ -51,6 +52,12 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     final ComponentContext context =
         Whitebox.getInternalState(builder, "mContext");
     return new ComponentAssert(context, builder.build());
+  }
+
+  public LithoViewAssert withStateUpdate(final StateUpdatesTestHelper.StateUpdater updater)
+      throws Exception {
+    return LithoViewAssert.assertThat(
+        StateUpdatesTestHelper.getViewAfterStateUpdate(mComponentContext, actual, updater));
   }
 
   private ComponentAssert(ComponentContext c, Component actual) {

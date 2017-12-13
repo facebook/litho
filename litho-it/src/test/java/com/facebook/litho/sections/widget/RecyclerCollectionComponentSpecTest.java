@@ -137,18 +137,14 @@ public class RecyclerCollectionComponentSpecTest {
                 .build())
         .build();
 
-    LithoView view =
-        StateUpdatesTestHelper.getViewAfterStateUpdate(
-            mComponentContext,
-            mRecyclerCollectionComponent,
+    assertThat(mComponentContext, mRecyclerCollectionComponent)
+        .withStateUpdate(
             new StateUpdatesTestHelper.StateUpdater() {
               @Override
-              public void performStateUpdate(ComponentContext context) {
-                RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, SUCCEEDED, true);
+              public void performStateUpdate(ComponentContext c) {
+                RecyclerCollectionComponent.updateLoadingAndEmptyAsync(c, SUCCEEDED, true);
               }
-            });
-
-    assertThat(view)
+            })
         .doesNotHave(
             deepSubComponentWith(
                 anyOf(
