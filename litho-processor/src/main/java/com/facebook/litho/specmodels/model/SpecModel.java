@@ -51,11 +51,6 @@ public interface SpecModel {
   /** @return the list of methods defined in the spec for updating state. */
   ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> getUpdateStateMethods();
 
-  /**
-   * @return the list of props without taking deduplication or name cache adjustments into account.
-   */
-  ImmutableList<PropModel> getRawProps();
-
   /** @return the set of props that are defined by the spec. */
   ImmutableList<PropModel> getProps();
 

@@ -36,13 +36,14 @@ import java.util.Arrays;
 import java.util.BitSet;
 
 /**
- * @prop-required child com.facebook.litho.Component
  * @prop-required prop1 int
+ * @prop-required prop6 long
  * @prop-optional prop2 boolean
  * @prop-required prop3 java.lang.Object
  * @prop-required prop4 char[]
+ * @prop-required child com.facebook.litho.Component
  * @prop-required prop5 char
- * @prop-required prop6 long
+ *
  * @see com.facebook.litho.processor.integration.resources.TestLayoutSpec
  */
 @TargetApi(17)
@@ -55,11 +56,17 @@ public final class TestLayout<S extends View> extends Component {
 
   private TestLayoutRenderData mPreviousRenderData;
 
-  @Prop(resType = ResType.NONE, optional = false)
-  Component child;
-
-  @Prop(resType = ResType.NONE, optional = false)
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
   int prop1;
+
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  long prop6;
 
   @Prop(
       resType = ResType.NONE,
@@ -79,11 +86,17 @@ public final class TestLayout<S extends View> extends Component {
   )
   char[] prop4;
 
-  @Prop(resType = ResType.NONE, optional = false)
-  char prop5;
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  Component child;
 
-  @Prop(resType = ResType.NONE, optional = false)
-  long prop6;
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
+  char prop5;
 
   TestTreeProp treeProp;
 
@@ -118,10 +131,10 @@ public final class TestLayout<S extends View> extends Component {
     if (this.getId() == testLayoutRef.getId()) {
       return true;
     }
-    if (child != null ? !child.isEquivalentTo(testLayoutRef.child) : testLayoutRef.child != null) {
+    if (prop1 != testLayoutRef.prop1) {
       return false;
     }
-    if (prop1 != testLayoutRef.prop1) {
+    if (prop6 != testLayoutRef.prop6) {
       return false;
     }
     if (prop2 != testLayoutRef.prop2) {
@@ -133,10 +146,10 @@ public final class TestLayout<S extends View> extends Component {
     if (!Arrays.equals(prop4, testLayoutRef.prop4)) {
       return false;
     }
-    if (prop5 != testLayoutRef.prop5) {
+    if (child != null ? !child.isEquivalentTo(testLayoutRef.child) : testLayoutRef.child != null) {
       return false;
     }
-    if (prop6 != testLayoutRef.prop6) {
+    if (prop5 != testLayoutRef.prop5) {
       return false;
     }
     if (mStateContainer.state1 != testLayoutRef.mStateContainer.state1) {
@@ -176,8 +189,8 @@ public final class TestLayout<S extends View> extends Component {
   }
 
   @Override
-  protected TreeProps getTreePropsForChildren(
-      ComponentContext c, Component _abstract, TreeProps parentTreeProps) {
+  protected TreeProps getTreePropsForChildren(ComponentContext c, Component _abstract,
+                                              TreeProps parentTreeProps) {
     final TestLayout _ref = (TestLayout) _abstract;
     final TreeProps childTreeProps = TreeProps.copy(parentTreeProps);
     childTreeProps.put(com.facebook.litho.processor.integration.resources.TestTreeProp.class, TestLayoutSpec.onCreateFeedPrefetcherProp(
@@ -271,8 +284,8 @@ public final class TestLayout<S extends View> extends Component {
     sTestEventPool.release(_eventState);
   }
 
-  private void testLayoutEvent(
-      HasEventDispatcher _abstract, ComponentContext c, View view, int param1) {
+  private void testLayoutEvent(HasEventDispatcher _abstract, ComponentContext c, View view,
+                               int param1) {
     TestLayout _ref = (TestLayout) _abstract;
     TestLayoutSpec.testLayoutEvent(
         c,
@@ -362,10 +375,8 @@ public final class TestLayout<S extends View> extends Component {
   }
 
   @Override
-  protected void transferState(
-      ComponentContext context,
-      ComponentLifecycle.StateContainer _prevStateContainer,
-      Component _component) {
+  protected void transferState(ComponentContext context,
+                               ComponentLifecycle.StateContainer _prevStateContainer, Component _component) {
     TestLayoutStateContainer prevStateContainer = (TestLayoutStateContainer) _prevStateContainer;
     TestLayout component = (TestLayout) _component;
     component.mStateContainer.state1 = prevStateContainer.state1;
@@ -396,16 +407,15 @@ public final class TestLayout<S extends View> extends Component {
     if (_component == null) {
       return;
     }
-    ComponentLifecycle.StateUpdate _stateUpdate =
-        new ComponentLifecycle.StateUpdate() {
-          public void updateState(
-              ComponentLifecycle.StateContainer _stateContainer, Component newComponent) {
-            TestLayout newComponentStateUpdate = (TestLayout) newComponent;
-            StateValue<Long> state1 = new StateValue<Long>();
-            state1.set(lazyUpdateValue);
-            newComponentStateUpdate.mStateContainer.state1 = state1.get();
-          }
-        };
+    ComponentLifecycle.StateUpdate _stateUpdate = new ComponentLifecycle.StateUpdate() {
+      public void updateState(ComponentLifecycle.StateContainer _stateContainer,
+                              Component newComponent) {
+        TestLayout newComponentStateUpdate = (TestLayout) newComponent;
+        StateValue<Long> state1 = new StateValue<Long>();
+        state1.set(lazyUpdateValue);
+        newComponentStateUpdate.mStateContainer.state1 = state1.get();
+      }
+    };
     c.updateStateLazy(_stateUpdate);
   }
 
@@ -415,8 +425,8 @@ public final class TestLayout<S extends View> extends Component {
   }
 
   @Override
-  protected ComponentLifecycle.RenderData recordRenderData(
-      Component previousComponent, ComponentLifecycle.RenderData toRecycle) {
+  protected ComponentLifecycle.RenderData recordRenderData(Component previousComponent,
+                                                           ComponentLifecycle.RenderData toRecycle) {
     TestLayout _ref = (TestLayout) previousComponent;
     TestLayoutRenderData renderInfo = toRecycle != null ?
         (TestLayoutRenderData) toRecycle :
@@ -426,8 +436,8 @@ public final class TestLayout<S extends View> extends Component {
   }
 
   @Override
-  protected void applyPreviousRenderData(
-      Component component, ComponentLifecycle.RenderData previousRenderData) {
+  protected void applyPreviousRenderData(Component component,
+                                         ComponentLifecycle.RenderData previousRenderData) {
     TestLayout _ref = (TestLayout) component;
     if (previousRenderData == null) {
       _ref.mPreviousRenderData = null;
@@ -444,8 +454,8 @@ public final class TestLayout<S extends View> extends Component {
     return create(context, 0, 0);
   }
 
-  public static <S extends View> Builder<S> create(
-      ComponentContext context, int defStyleAttr, int defStyleRes) {
+  public static <S extends View> Builder<S> create(ComponentContext context, int defStyleAttr,
+                                                   int defStyleRes) {
     Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
@@ -489,8 +499,8 @@ public final class TestLayout<S extends View> extends Component {
       mSomeParam = someParam;
     }
 
-    public void updateState(
-        ComponentLifecycle.StateContainer _stateContainer, Component newComponent) {
+    public void updateState(ComponentLifecycle.StateContainer _stateContainer,
+                            Component newComponent) {
       TestLayoutStateContainer stateContainer = (TestLayoutStateContainer) _stateContainer;
       TestLayout newComponentStateUpdate = (TestLayout) newComponent;
       StateValue<Long> state1 = new StateValue<Long>();
@@ -501,8 +511,7 @@ public final class TestLayout<S extends View> extends Component {
   }
 
   public static class Builder<S extends View> extends Component.Builder<Builder<S>> {
-    private static final String[] REQUIRED_PROPS_NAMES =
-        new String[] {"child", "prop1", "prop3", "prop4", "prop5", "prop6"};
+    private static final String[] REQUIRED_PROPS_NAMES = new String[] {"prop1", "prop6", "prop3", "prop4", "child", "prop5"};
 
     private static final int REQUIRED_PROPS_COUNT = 6;
 
@@ -512,28 +521,22 @@ public final class TestLayout<S extends View> extends Component {
 
     private BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
-    private void init(
-        ComponentContext context, int defStyleAttr, int defStyleRes, TestLayout testLayoutRef) {
+    private void init(ComponentContext context, int defStyleAttr, int defStyleRes,
+                      TestLayout testLayoutRef) {
       super.init(context, defStyleAttr, defStyleRes, testLayoutRef);
       mTestLayout = testLayoutRef;
       mContext = context;
       mRequired.clear();
     }
 
-    public Builder<S> child(Component child) {
-      this.mTestLayout.child = child == null ? null : child.makeShallowCopy();
-      mRequired.set(0);
-      return this;
-    }
-
-    public Builder<S> child(Component.Builder<?> childBuilder) {
-      this.mTestLayout.child = childBuilder.build();
-      mRequired.set(0);
-      return this;
-    }
-
     public Builder<S> prop1(int prop1) {
       this.mTestLayout.prop1 = prop1;
+      mRequired.set(0);
+      return this;
+    }
+
+    public Builder<S> prop6(long prop6) {
+      this.mTestLayout.prop6 = prop6;
       mRequired.set(1);
       return this;
     }
@@ -555,14 +558,20 @@ public final class TestLayout<S extends View> extends Component {
       return this;
     }
 
-    public Builder<S> prop5(char prop5) {
-      this.mTestLayout.prop5 = prop5;
+    public Builder<S> child(Component child) {
+      this.mTestLayout.child = child == null ? null : child.makeShallowCopy();
       mRequired.set(4);
       return this;
     }
 
-    public Builder<S> prop6(long prop6) {
-      this.mTestLayout.prop6 = prop6;
+    public Builder<S> child(Component.Builder<?> childBuilder) {
+      this.mTestLayout.child = childBuilder.build();
+      mRequired.set(4);
+      return this;
+    }
+
+    public Builder<S> prop5(char prop5) {
+      this.mTestLayout.prop5 = prop5;
       mRequired.set(5);
       return this;
     }

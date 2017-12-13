@@ -25,7 +25,6 @@ import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
-import com.facebook.litho.specmodels.model.MethodParamModelUtils;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
@@ -44,13 +43,14 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.WildcardTypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.TreeSet;
 import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
@@ -636,8 +636,7 @@ public class ComponentBodyGenerator {
   }
 
   public static Set<MethodParamModel> extractInjectedParams(SpecModel specModel) {
-    final Set<MethodParamModel> injectedParams =
-        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
+    final Set<MethodParamModel> injectedParams = new LinkedHashSet<>();
 
     for (SpecMethodModel delegateMethod : specModel.getDelegateMethods()) {
       for (MethodParamModel param : ((List<MethodParamModel>) delegateMethod.methodParams)) {

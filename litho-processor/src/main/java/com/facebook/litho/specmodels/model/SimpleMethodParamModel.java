@@ -70,9 +70,7 @@ public class SimpleMethodParamModel implements MethodParamModel {
       final SimpleMethodParamModel p = (SimpleMethodParamModel) o;
       return mTypeName.equals(p.mTypeName)
           && mName.equals(p.mName)
-          && mAnnotations.equals(p.mAnnotations)
-          && mExternalAnnotations.equals(p.mExternalAnnotations)
-          && mRepresentedObject.equals(p.mRepresentedObject);
+          && mAnnotations.equals(p.mAnnotations);
     }
 
     return false;
@@ -81,10 +79,8 @@ public class SimpleMethodParamModel implements MethodParamModel {
   @Override
   public int hashCode() {
     int result = mTypeName.hashCode();
-    result = 31 * result + mName.hashCode();
+    result = 17 * result + mName.hashCode();
     result = 31 * result + mAnnotations.hashCode();
-    result = 31 * result + mExternalAnnotations.hashCode();
-    result = 31 * result + mRepresentedObject.hashCode();
     return result;
   }
 }

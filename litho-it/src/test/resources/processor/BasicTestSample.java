@@ -24,10 +24,11 @@ import javax.annotation.Nullable;
 import org.assertj.core.description.TextDescription;
 
 /**
- * @prop-required child com.facebook.litho.Component
- * @prop-required myDimenSizeProp float
- * @prop-required myRequiredColorProp int
  * @prop-required myStringProp java.lang.String
+ * @prop-required myRequiredColorProp int
+ * @prop-required myDimenSizeProp float
+ * @prop-required child com.facebook.litho.Component
+ *
  * @see com.facebook.litho.processor.integration.resources.BasicTestSampleSpec
  */
 public final class BasicTestSample implements BasicTestSampleSpec {
@@ -36,38 +37,57 @@ public final class BasicTestSample implements BasicTestSampleSpec {
   }
 
   public static class Matcher extends ResourceResolver {
-    @Nullable ComponentMatcher mChildComponentMatcher;
-
-    @Nullable org.hamcrest.Matcher<Component> mChildMatcher;
-
-    @Nullable org.hamcrest.Matcher<Float> mMyDimenSizePropMatcher;
+    @Nullable
+    org.hamcrest.Matcher<String> mMyStringPropMatcher;
 
     @Nullable
     org.hamcrest.Matcher<Integer> mMyRequiredColorPropMatcher;
 
-    @Nullable org.hamcrest.Matcher<String> mMyStringPropMatcher;
+    @Nullable
+    org.hamcrest.Matcher<Float> mMyDimenSizePropMatcher;
+
+    @Nullable
+    ComponentMatcher mChildComponentMatcher;
+
+    @Nullable
+    org.hamcrest.Matcher<Component> mChildMatcher;
 
     Matcher(ComponentContext c) {
       super.init(c, c.getResourceCache());
     }
 
-    public Matcher child(ComponentMatcher matcher) {
-      mChildComponentMatcher = matcher;
+    public Matcher myStringProp(org.hamcrest.Matcher<String> matcher) {
+      mMyStringPropMatcher = matcher;
       return this;
     }
 
-    public Matcher child(org.hamcrest.Matcher<Component> matcher) {
-      mChildMatcher = matcher;
+    public Matcher myStringProp(String myStringProp) {
+      this.mMyStringPropMatcher = org.hamcrest.core.Is.is((String) myStringProp);
       return this;
     }
 
-    public Matcher child(Component child) {
-      this.mChildMatcher = org.hamcrest.core.Is.is((Component) child);
+    public Matcher myRequiredColorProp(org.hamcrest.Matcher<Integer> matcher) {
+      mMyRequiredColorPropMatcher = matcher;
       return this;
     }
 
-    public Matcher child(Component.Builder<?> childBuilder) {
-      this.mChildMatcher = org.hamcrest.core.Is.is((Component) childBuilder.build());
+    public Matcher myRequiredColorProp(@ColorInt int myRequiredColorProp) {
+      this.mMyRequiredColorPropMatcher = org.hamcrest.core.Is.is((int) myRequiredColorProp);
+      return this;
+    }
+
+    public Matcher myRequiredColorPropRes(@ColorRes int resId) {
+      this.mMyRequiredColorPropMatcher = org.hamcrest.core.Is.is((int) resolveColorRes(resId));
+      return this;
+    }
+
+    public Matcher myRequiredColorPropAttr(@AttrRes int attrResId, @ColorRes int defResId) {
+      this.mMyRequiredColorPropMatcher = org.hamcrest.core.Is.is((int) resolveColorAttr(attrResId, defResId));
+      return this;
+    }
+
+    public Matcher myRequiredColorPropAttr(@AttrRes int attrResId) {
+      this.mMyRequiredColorPropMatcher = org.hamcrest.core.Is.is((int) resolveColorAttr(attrResId, 0));
       return this;
     }
 
@@ -101,40 +121,23 @@ public final class BasicTestSample implements BasicTestSampleSpec {
       return this;
     }
 
-    public Matcher myRequiredColorProp(org.hamcrest.Matcher<Integer> matcher) {
-      mMyRequiredColorPropMatcher = matcher;
+    public Matcher child(ComponentMatcher matcher) {
+      mChildComponentMatcher = matcher;
       return this;
     }
 
-    public Matcher myRequiredColorProp(@ColorInt int myRequiredColorProp) {
-      this.mMyRequiredColorPropMatcher = org.hamcrest.core.Is.is((int) myRequiredColorProp);
+    public Matcher child(org.hamcrest.Matcher<Component> matcher) {
+      mChildMatcher = matcher;
       return this;
     }
 
-    public Matcher myRequiredColorPropRes(@ColorRes int resId) {
-      this.mMyRequiredColorPropMatcher = org.hamcrest.core.Is.is((int) resolveColorRes(resId));
+    public Matcher child(Component child) {
+      this.mChildMatcher = org.hamcrest.core.Is.is((Component) child);
       return this;
     }
 
-    public Matcher myRequiredColorPropAttr(@AttrRes int attrResId, @ColorRes int defResId) {
-      this.mMyRequiredColorPropMatcher =
-          org.hamcrest.core.Is.is((int) resolveColorAttr(attrResId, defResId));
-      return this;
-    }
-
-    public Matcher myRequiredColorPropAttr(@AttrRes int attrResId) {
-      this.mMyRequiredColorPropMatcher =
-          org.hamcrest.core.Is.is((int) resolveColorAttr(attrResId, 0));
-      return this;
-    }
-
-    public Matcher myStringProp(org.hamcrest.Matcher<String> matcher) {
-      mMyStringPropMatcher = matcher;
-      return this;
-    }
-
-    public Matcher myStringProp(String myStringProp) {
-      this.mMyStringPropMatcher = org.hamcrest.core.Is.is((String) myStringProp);
+    public Matcher child(Component.Builder<?> childBuilder) {
+      this.mChildMatcher = org.hamcrest.core.Is.is((Component) childBuilder.build());
       return this;
     }
 
@@ -153,6 +156,29 @@ public final class BasicTestSample implements BasicTestSampleSpec {
           }
           final com.facebook.litho.processor.integration.resources.BasicLayout impl =
               (com.facebook.litho.processor.integration.resources.BasicLayout) value.getComponent();
+          if (mMyStringPropMatcher != null && !mMyStringPropMatcher.matches(impl.myStringProp)) {
+            as(
+                new TextDescription(
+                    "Sub-component of type <BasicLayout> with prop <myStringProp> %s (doesn't match %s)",
+                    mMyStringPropMatcher, impl.myStringProp));
+            return false;
+          }
+          if (mMyRequiredColorPropMatcher != null
+              && !mMyRequiredColorPropMatcher.matches(impl.myRequiredColorProp)) {
+            as(
+                new TextDescription(
+                    "Sub-component of type <BasicLayout> with prop <myRequiredColorProp> %s (doesn't match %s)",
+                    mMyRequiredColorPropMatcher, impl.myRequiredColorProp));
+            return false;
+          }
+          if (mMyDimenSizePropMatcher != null
+              && !mMyDimenSizePropMatcher.matches(impl.myDimenSizeProp)) {
+            as(
+                new TextDescription(
+                    "Sub-component of type <BasicLayout> with prop <myDimenSizeProp> %s (doesn't match %s)",
+                    mMyDimenSizePropMatcher, impl.myDimenSizeProp));
+            return false;
+          }
           if (mChildComponentMatcher != null
               && !mChildComponentMatcher.matches(value.getNestedInstance(impl.child))) {
             as(mChildComponentMatcher.description());
@@ -165,34 +191,9 @@ public final class BasicTestSample implements BasicTestSampleSpec {
                     mChildMatcher, impl.child));
             return false;
           }
-          if (mMyDimenSizePropMatcher != null
-              && !mMyDimenSizePropMatcher.matches(impl.myDimenSizeProp)) {
-            as(
-                new TextDescription(
-                    "Sub-component of type <BasicLayout> with prop <myDimenSizeProp> %s (doesn't match %s)",
-                    mMyDimenSizePropMatcher, impl.myDimenSizeProp));
-            return false;
-          }
-          if (mMyRequiredColorPropMatcher != null
-              && !mMyRequiredColorPropMatcher.matches(impl.myRequiredColorProp)) {
-            as(
-                new TextDescription(
-                    "Sub-component of type <BasicLayout> with prop <myRequiredColorProp> %s (doesn't match %s)",
-                    mMyRequiredColorPropMatcher, impl.myRequiredColorProp));
-            return false;
-          }
-          if (mMyStringPropMatcher != null && !mMyStringPropMatcher.matches(impl.myStringProp)) {
-            as(
-                new TextDescription(
-                    "Sub-component of type <BasicLayout> with prop <myStringProp> %s (doesn't match %s)",
-                    mMyStringPropMatcher, impl.myStringProp));
-            return false;
-          }
           return true;
         }
       };
     }
   }
 }
-
-

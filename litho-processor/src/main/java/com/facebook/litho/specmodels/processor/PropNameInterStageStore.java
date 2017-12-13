@@ -77,7 +77,7 @@ public class PropNameInterStageStore {
   public void saveNames(SpecModel specModel) throws IOException {
     // This is quite important, because we must not open resources without writing to them
     // due to a bug in the Buck caching layer.
-    if (specModel.getRawProps().isEmpty()) {
+    if (specModel.getProps().isEmpty()) {
       return;
     }
 
@@ -87,7 +87,7 @@ public class PropNameInterStageStore {
 
     try (Writer writer =
         new BufferedWriter(new OutputStreamWriter(outputFile.openOutputStream()))) {
-      for (final PropModel propModel : specModel.getRawProps()) {
+      for (final PropModel propModel : specModel.getProps()) {
         writer.write(propModel.getName() + "\n");
       }
     }

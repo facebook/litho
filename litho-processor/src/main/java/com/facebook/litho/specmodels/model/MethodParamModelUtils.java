@@ -15,7 +15,6 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -79,12 +78,5 @@ public class MethodParamModelUtils {
     }
 
     return typeVariables;
-  }
-
-  /** Compares two {@link MethodParamModel}s based on name and annotations only. */
-  public static Comparator<MethodParamModel> shallowParamComparator() {
-    return Comparator.nullsLast(
-        Comparator.comparing(MethodParamModel::getName)
-            .thenComparing((a, b) -> a.getAnnotations().equals(b.getAnnotations()) ? 0 : -1));
   }
 }

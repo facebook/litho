@@ -85,10 +85,10 @@ public class TestLayoutSpecModelFactoryTest {
 
     assertThat(layoutSpecModel.getProps().stream().map(PropModel::getName).toArray())
         .hasSize(4)
-        .contains("child", atIndex(0))
-        .contains("i", atIndex(1))
-        .contains("s", atIndex(2))
-        .contains("size", atIndex(3));
+        .contains("s", atIndex(0))
+        .contains("child", atIndex(1))
+        .contains("size", atIndex(2))
+        .contains("i", atIndex(3));
   }
 
   @Test

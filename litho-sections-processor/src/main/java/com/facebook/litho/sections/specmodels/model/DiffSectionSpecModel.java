@@ -39,6 +39,7 @@ import com.facebook.litho.specmodels.model.TreePropModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethod;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
@@ -135,11 +136,6 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
   @Override
   public ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> getUpdateStateMethods() {
     return mSpecModel.getUpdateStateMethods();
-  }
-
-  @Override
-  public ImmutableList<PropModel> getRawProps() {
-    return mSpecModel.getRawProps();
   }
 
   @Override
