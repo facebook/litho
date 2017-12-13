@@ -111,6 +111,11 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   }
 
   @Override
+  public ImmutableList<PropModel> getRawProps() {
+    return mSpecModel.getRawProps();
+  }
+
+  @Override
   public ImmutableList<PropModel> getProps() {
     return mSpecModel.getProps();
   }

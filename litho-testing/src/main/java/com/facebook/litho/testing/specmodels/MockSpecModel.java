@@ -52,6 +52,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   private final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mTriggerMethods;
   private final ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethods;
   private final ImmutableList<PropModel> mProps;
+  private final ImmutableList<PropModel> mRawProps;
   private final ImmutableList<PropDefaultModel> mPropDefaults;
   private final ImmutableList<TypeVariableName> mTypeVariables;
   private final ImmutableList<StateParamModel> mStateValues;
@@ -90,6 +91,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
+      ImmutableList<PropModel> rawProps,
       ImmutableList<PropModel> props,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<TypeVariableName> typeVariables,
@@ -127,6 +129,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     mEventMethods = eventMethods;
     mTriggerMethods = triggerMethods;
     mUpdateStateMethods = updateStateMethods;
+    mRawProps = rawProps;
     mProps = props;
     mPropDefaults = propDefaults;
     mTypeVariables = typeVariables;
@@ -195,6 +198,11 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   @Override
   public ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> getUpdateStateMethods() {
     return mUpdateStateMethods;
+  }
+
+  @Override
+  public ImmutableList<PropModel> getRawProps() {
+    return mRawProps;
   }
 
   @Override
@@ -365,6 +373,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
         ImmutableList.of();
     private ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethods =
         ImmutableList.of();
+    private ImmutableList<PropModel> mRawProps;
     private ImmutableList<PropModel> mProps = ImmutableList.of();
     private ImmutableList<PropDefaultModel> mPropDefaults = ImmutableList.of();
     private ImmutableList<TypeVariableName> mTypeVariables = ImmutableList.of();
@@ -439,6 +448,11 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     public Builder updateStateMethods(
         ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
       mUpdateStateMethods = updateStateMethods;
+      return this;
+    }
+
+    public Builder rawProps(ImmutableList<PropModel> rawProps) {
+      mRawProps = rawProps;
       return this;
     }
 
@@ -597,6 +611,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mEventMethods,
           mTriggerMethods,
           mUpdateStateMethods,
+          mRawProps,
           mProps,
           mPropDefaults,
           mTypeVariables,
@@ -646,6 +661,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           && Objects.equals(mEventMethods, builder.mEventMethods)
           && Objects.equals(mTriggerMethods, builder.mTriggerMethods)
           && Objects.equals(mUpdateStateMethods, builder.mUpdateStateMethods)
+          && Objects.equals(mRawProps, builder.mRawProps)
           && Objects.equals(mProps, builder.mProps)
           && Objects.equals(mPropDefaults, builder.mPropDefaults)
           && Objects.equals(mTypeVariables, builder.mTypeVariables)

@@ -40,6 +40,7 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mEventMethods;
   private final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mTriggerMethods;
   private final ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethods;
+  private final ImmutableList<PropModel> mRawProps;
   private final ImmutableList<PropModel> mProps;
   private final ImmutableList<PropDefaultModel> mPropDefaults;
   private final ImmutableList<TypeVariableName> mTypeVariables;
@@ -87,10 +88,8 @@ public final class SpecModelImpl implements SpecModel {
     mEventMethods = eventMethods;
     mTriggerMethods = triggerMethods;
     mUpdateStateMethods = updateStateMethods;
-    mProps =
-        props.isEmpty()
-            ? getProps(delegateMethods, eventMethods, updateStateMethods, cachedPropNames)
-            : props;
+    mRawProps = getRawProps(delegateMethods, eventMethods, updateStateMethods);
+    mProps = props.isEmpty() ? getProps(mRawProps, cachedPropNames) : props;
     mPropDefaults = propDefaults;
     mTypeVariables = typeVariables;
     mStateValues = getStateValues(delegateMethods, eventMethods, updateStateMethods);
@@ -147,6 +146,11 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> getUpdateStateMethods() {
     return mUpdateStateMethods;
+  }
+
+  @Override
+  public ImmutableList<PropModel> getRawProps() {
+    return mRawProps;
   }
 
   @Override
@@ -323,13 +327,12 @@ public final class SpecModelImpl implements SpecModel {
     return name != null ? prop.withName(name) : prop;
   }
 
-  private static ImmutableList<PropModel> getProps(
+  /** Extract props without taking deduplication and name caching into account. */
+  private static ImmutableList<PropModel> getRawProps(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
-      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
-      ImmutableList<String> cachedPropNames) {
-    final SortedSet<PropModel> props =
-        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
+    final List<PropModel> props = new ArrayList<>();
 
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
@@ -366,16 +369,28 @@ public final class SpecModelImpl implements SpecModel {
       }
     }
 
-    // Update props with their cached names if applicable.
-    final List<PropModel> propList = new ArrayList<>(props);
-    return ImmutableList.copyOf(
-        IntStream.range(0, propList.size())
-            .mapToObj(i -> updatePropWithCachedName(propList.get(i), cachedPropNames, i))
-            .collect(Collectors.toList()));
+    return ImmutableList.copyOf(props);
+  }
+
+  private static ImmutableList<PropModel> getProps(
+      ImmutableList<PropModel> rawProps, ImmutableList<String> cachedPropNames) {
+
+    // Update names from cache.
+    final List<PropModel> renamedProps =
+        IntStream.range(0, rawProps.size())
+            .mapToObj(i -> updatePropWithCachedName(rawProps.get(i), cachedPropNames, i))
+            .collect(Collectors.toList());
+
+    // Deduplicate the props using a custom-ordered TreeSet.
+    final SortedSet<PropModel> props =
+        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
+    props.addAll(renamedProps);
+
+    return ImmutableList.copyOf(new ArrayList<>(props));
   }
 
   private static boolean hasSameUnderlyingPropModel(
-      Set<PropModel> props, DiffPropModel diffPropModel) {
+      Iterable<PropModel> props, DiffPropModel diffPropModel) {
     for (PropModel existingPropModel : props) {
       if (diffPropModel.isSameUnderlyingPropModel(existingPropModel)) {
         return true;
