@@ -31,10 +31,8 @@ import javax.lang.model.util.Elements;
 
 /** Factory for creating {@link LayoutSpecModel}s. */
 public class LayoutSpecModelFactory implements SpecModelFactory {
-  private static final List<Class<? extends Annotation>> INTER_STAGE_INPUT_ANNOTATIONS =
-      new ArrayList<>();
-  private static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS =
-      new ArrayList<>();
+  static final List<Class<? extends Annotation>> INTER_STAGE_INPUT_ANNOTATIONS = new ArrayList<>();
+  static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS = new ArrayList<>();
 
   static {
     DELEGATE_METHOD_ANNOTATIONS.addAll(

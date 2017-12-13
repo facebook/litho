@@ -32,7 +32,7 @@ import javax.lang.model.element.VariableElement;
  * Extracts methods from the given input.
  */
 public class MethodExtractorUtils {
-  private static final String COMPONENTS_PACKAGE = "com.facebook.litho";
+  static final String COMPONENTS_PACKAGE = "com.facebook.litho";
 
   /** @return a list of params for a method. */
   static List<MethodParamModel> getMethodParams(
