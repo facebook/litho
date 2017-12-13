@@ -12,6 +12,7 @@ package com.facebook.litho.specmodels.model;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.TypeName;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.lang.model.element.Modifier;
 
@@ -25,7 +26,7 @@ public class PropDefaultModel {
   public final ImmutableList<Modifier> mModifiers;
   public final Object mRepresentedObject;
   public final String mName;
-  private ResType mResType;
+  @Nullable private ResType mResType;
   private int mResId;
 
   public PropDefaultModel(
@@ -58,6 +59,7 @@ public class PropDefaultModel {
     return mName;
   }
 
+  @Nullable
   public ResType getResType() {
     return mResType;
   }
@@ -85,7 +87,7 @@ public class PropDefaultModel {
       return mType.equals(p.mType)
           && mName.equals(p.mName)
           && mModifiers.equals(p.mModifiers)
-          && mResType.equals(p.mResType)
+          && mResType == p.mResType
           && mResId == p.mResId;
     }
 
@@ -97,7 +99,7 @@ public class PropDefaultModel {
     int result = mType.hashCode();
     result = 17 * result + mName.hashCode();
     result = 31 * result + mModifiers.hashCode();
-    result = 43 * result + mResType.hashCode();
+    result = mResType == null ? result : 43 * result + mResType.hashCode();
     result = 47 * result + mResId;
     return result;
   }

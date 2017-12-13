@@ -107,7 +107,7 @@ public class PropModel implements MethodParamModel {
       final PropModel p = (PropModel) o;
       return mParamModel.equals(p.mParamModel)
           && mIsOptional == p.mIsOptional
-          && mResType.equals(p.mResType)
+          && mResType == p.mResType
           && mVarArgSingleArgName.equals(p.getVarArgsSingleName());
     }
 
@@ -118,7 +118,7 @@ public class PropModel implements MethodParamModel {
   public int hashCode() {
     int result = mParamModel.hashCode();
     result = 17 * result + (mIsOptional ? 1 : 0);
-    result = 31 * result + mResType.hashCode();
+    result = mResType == null ? result : 31 * result + mResType.hashCode();
     result = 43 * result + mVarArgSingleArgName.hashCode();
     return result;
   }

@@ -11,9 +11,9 @@ package com.facebook.litho.specmodels.model;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.testing.specmodels.MockMethodParamModel;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
@@ -30,13 +30,13 @@ public class SpecModelImplTest {
   private static final String TEST_QUALIFIED_SPEC_NAME = "com.facebook.litho.TestSpec";
   private static final String TEST_QUALIFIED_COMPONENT_NAME = "com.facebook.litho.Test";
 
-  PropModel mPropModel1 = mock(PropModel.class);
-  PropModel mPropModel2 = mock(PropModel.class);
-  PropModel mPropModel3 = mock(PropModel.class);
-  PropModel mUnderlyingPropModel1 = mock(PropModel.class);
-  PropModel mUnderlyingPropModel2 = mock(PropModel.class);
-  SimpleMethodParamModel mMethodParamModel = mock(SimpleMethodParamModel.class);
-  TreePropModel mTreePropModel = mock(TreePropModel.class);
+  PropModel mPropModel1;
+  PropModel mPropModel2;
+  PropModel mPropModel3;
+  PropModel mUnderlyingPropModel1;
+  PropModel mUnderlyingPropModel2;
+  SimpleMethodParamModel mMethodParamModel;
+  TreePropModel mTreePropModel;
 
   SpecMethodModel<DelegateMethod, Void> mMethodModel1;
   SpecMethodModel<DelegateMethod, Void> mMethodModel2;
@@ -45,24 +45,48 @@ public class SpecModelImplTest {
   TypeVariableName mTypeVariableName2 = TypeVariableName.get("test2");
   List<TypeVariableName> mTypeVariableNames = new ArrayList<>(2);
 
-  PropDefaultModel mPropDefaultModel1 = mock(PropDefaultModel.class);
+  PropDefaultModel mPropDefaultModel1;
 
   @Before
   public void setUp() {
-    when(mPropModel1.getName()).thenReturn("propModel1");
-    when(mPropModel2.getName()).thenReturn("propModel2");
-    when(mPropModel3.getName()).thenReturn("propModel3");
-    when(mPropModel1.getType()).thenReturn(TypeName.BOOLEAN);
-    when(mPropModel2.getType()).thenReturn(TypeName.INT.box());
-    when(mPropModel3.getType()).thenReturn(TypeName.LONG);
-    when(mPropModel1.getVarArgsSingleName()).thenReturn("");
-    when(mPropModel2.getVarArgsSingleName()).thenReturn("");
-    when(mPropModel3.getVarArgsSingleName()).thenReturn("");
+    mPropModel1 =
+        new PropModel(
+            MockMethodParamModel.newBuilder().name("propModel1").type(TypeName.BOOLEAN).build(),
+            false,
+            null,
+            "");
+    mPropModel2 =
+        new PropModel(
+            MockMethodParamModel.newBuilder().name("propModel2").type(TypeName.INT).build(),
+            false,
+            null,
+            "");
+    mPropModel3 =
+        new PropModel(
+            MockMethodParamModel.newBuilder().name("propModel3").type(TypeName.LONG).build(),
+            false,
+            null,
+            "");
 
-    when(mUnderlyingPropModel1.getName()).thenReturn("propModel1");
-    when(mUnderlyingPropModel1.getType()).thenReturn(TypeName.BOOLEAN.box());
-    when(mUnderlyingPropModel1.getVarArgsSingleName()).thenReturn("");
-    when(mUnderlyingPropModel2.getName()).thenReturn("differentName");
+    mUnderlyingPropModel1 =
+        new PropModel(
+            MockMethodParamModel.newBuilder()
+                .name("propModel1")
+                .type(TypeName.BOOLEAN.box())
+                .build(),
+            false,
+            null,
+            "");
+    mUnderlyingPropModel2 =
+        new PropModel(
+            MockMethodParamModel.newBuilder().name("differentName").build(), false, null, "");
+
+    mTreePropModel = new TreePropModel(MockMethodParamModel.newBuilder().name("treeprop").build());
+    mMethodParamModel =
+        new SimpleMethodParamModel(
+            TypeName.INT, "methodparam", ImmutableList.of(), ImmutableList.of(), new Object());
+    mPropDefaultModel1 =
+        new PropDefaultModel(TypeName.INT, "propdefault", ImmutableList.of(), new Object());
 
     List<MethodParamModel> params1 = new ArrayList<>();
     params1.add(mPropModel1);
