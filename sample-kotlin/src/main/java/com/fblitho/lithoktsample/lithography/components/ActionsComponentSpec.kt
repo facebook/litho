@@ -13,6 +13,7 @@
 package com.fblitho.lithoktsample.lithography.components
 
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.ComponentLayout
 import com.facebook.litho.Row
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
@@ -25,7 +26,7 @@ import com.facebook.yoga.YogaPositionType.ABSOLUTE
 object ActionsComponentSpec {
 
   @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext) =
+  fun onCreateLayout(c: ComponentContext): ComponentLayout =
       Row.create(c)
           .backgroundColor(0xDDFFFFFF.toInt())
           .positionType(ABSOLUTE)

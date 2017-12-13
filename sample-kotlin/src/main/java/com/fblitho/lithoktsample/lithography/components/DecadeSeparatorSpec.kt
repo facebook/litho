@@ -13,6 +13,7 @@
 package com.fblitho.lithoktsample.lithography.components
 
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.ComponentLayout
 import com.facebook.litho.Row
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
@@ -28,7 +29,7 @@ object DecadeSeparatorSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop decade: Decade) =
+      @Prop decade: Decade): ComponentLayout =
       Row.create(c)
           .alignItems(CENTER)
           .paddingDip(ALL, 16f)

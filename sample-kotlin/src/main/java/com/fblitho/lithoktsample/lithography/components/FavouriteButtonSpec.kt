@@ -16,6 +16,7 @@ import android.R.drawable.star_off
 import android.R.drawable.star_on
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.ComponentLayout
 import com.facebook.litho.Row
 import com.facebook.litho.StateValue
 import com.facebook.litho.annotations.LayoutSpec
@@ -30,7 +31,7 @@ object FavouriteButtonSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @State favourited: Boolean) =
+      @State favourited: Boolean): ComponentLayout =
       Row.create(c)
           .backgroundRes(if (favourited) star_on else star_off)
           .widthDip(32f)
