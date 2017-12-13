@@ -20,23 +20,18 @@ import com.facebook.litho.annotations.ResType;
 import java.util.BitSet;
 
 /**
- * @prop-required ratio double
  * @prop-required content com.facebook.litho.Component
+ * @prop-required ratio double
+ * @see com.facebook.litho.processor.integration.resources.SimpleMountSpec
  */
 public final class SimpleMount extends Component {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
-  double ratio;
-
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
   Component content;
+
+  @Prop(resType = ResType.NONE, optional = false)
+  double ratio;
 
   private SimpleMount() {
     super();
@@ -59,12 +54,12 @@ public final class SimpleMount extends Component {
     if (this.getId() == simpleMountRef.getId()) {
       return true;
     }
-    if (Double.compare(ratio, simpleMountRef.ratio) != 0) {
-      return false;
-    }
     if (content != null
         ? !content.isEquivalentTo(simpleMountRef.content)
         : simpleMountRef.content != null) {
+      return false;
+    }
+    if (Double.compare(ratio, simpleMountRef.ratio) != 0) {
       return false;
     }
     return true;
@@ -151,7 +146,7 @@ public final class SimpleMount extends Component {
   }
 
   public static class Builder extends Component.Builder<Builder> {
-    private static final String[] REQUIRED_PROPS_NAMES = new String[] {"ratio", "content"};
+    private static final String[] REQUIRED_PROPS_NAMES = new String[] {"content", "ratio"};
 
     private static final int REQUIRED_PROPS_COUNT = 2;
 
@@ -169,20 +164,20 @@ public final class SimpleMount extends Component {
       mRequired.clear();
     }
 
-    public Builder ratio(double ratio) {
-      this.mSimpleMount.ratio = ratio;
-      mRequired.set(0);
-      return this;
-    }
-
     public Builder content(Component content) {
       this.mSimpleMount.content = content == null ? null : content.makeShallowCopy();
-      mRequired.set(1);
+      mRequired.set(0);
       return this;
     }
 
     public Builder content(Component.Builder<?> contentBuilder) {
       this.mSimpleMount.content = contentBuilder.build();
+      mRequired.set(0);
+      return this;
+    }
+
+    public Builder ratio(double ratio) {
+      this.mSimpleMount.ratio = ratio;
       mRequired.set(1);
       return this;
     }
@@ -209,3 +204,5 @@ public final class SimpleMount extends Component {
     }
   }
 }
+
+

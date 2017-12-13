@@ -16,9 +16,10 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
@@ -327,8 +328,9 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
       ImmutableList<String> cachedPropNames) {
-    final Set<PropModel> props = new LinkedHashSet<>();
-    int propIndex = 0;
+    final SortedSet<PropModel> props =
+        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
+
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof PropModel) {
@@ -387,7 +389,8 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
-    final Set<StateParamModel> stateValues = new LinkedHashSet<>();
+    final Set<StateParamModel> stateValues =
+        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof StateParamModel) {
@@ -438,7 +441,8 @@ public final class SpecModelImpl implements SpecModel {
 
   private static ImmutableList<RenderDataDiffModel> getDiffs(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods) {
-    final Set<RenderDataDiffModel> diffs = new LinkedHashSet<>();
+    final Set<RenderDataDiffModel> diffs =
+        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof RenderDataDiffModel) {
@@ -454,7 +458,8 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
-    final Set<InterStageInputParamModel> interStageInputs = new LinkedHashSet<>();
+    final Set<InterStageInputParamModel> interStageInputs =
+        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof InterStageInputParamModel) {
@@ -486,7 +491,8 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
-    final Set<TreePropModel> treeProps = new LinkedHashSet<>();
+    final Set<TreePropModel> treeProps =
+        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof TreePropModel) {

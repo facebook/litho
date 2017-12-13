@@ -40,13 +40,14 @@ import java.util.BitSet;
 
 /**
  * @prop-required prop1 int
- * @prop-required prop6 long
+ * @prop-optional prop2 boolean
  * @prop-required prop3 java.lang.Object
  * @prop-required prop4 char[]
- * @prop-optional prop2 boolean
- * @prop-required prop8 long
- * @prop-required prop7 java.lang.CharSequence
  * @prop-required prop5 char
+ * @prop-required prop6 long
+ * @prop-required prop7 java.lang.CharSequence
+ * @prop-required prop8 long
+ * @see com.facebook.litho.processor.integration.resources.TestMountSpec
  */
 @TargetApi(17)
 public final class TestMount<S extends View> extends Component {
@@ -62,11 +63,8 @@ public final class TestMount<S extends View> extends Component {
   )
   int prop1;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
-  long prop6;
+  @Prop(resType = ResType.NONE, optional = true)
+  boolean prop2 = TestMountSpec.prop2;
 
   @Prop(
       resType = ResType.NONE,
@@ -80,17 +78,11 @@ public final class TestMount<S extends View> extends Component {
   )
   char[] prop4;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = true
-  )
-  boolean prop2 = TestMountSpec.prop2;
+  @Prop(resType = ResType.NONE, optional = false)
+  char prop5;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
-  long prop8;
+  @Prop(resType = ResType.NONE, optional = false)
+  long prop6;
 
   @Prop(
       resType = ResType.STRING,
@@ -98,17 +90,14 @@ public final class TestMount<S extends View> extends Component {
   )
   CharSequence prop7;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
-  char prop5;
+  @Prop(resType = ResType.NONE, optional = false)
+  long prop8;
 
   TestTreeProp treeProp;
 
-  Long measureOutput;
-
   Integer boundsDefinedOutput;
+
+  Long measureOutput;
 
   EventHandler testEventHandler;
 
@@ -144,7 +133,7 @@ public final class TestMount<S extends View> extends Component {
     if (prop1 != testMountRef.prop1) {
       return false;
     }
-    if (prop6 != testMountRef.prop6) {
+    if (prop2 != testMountRef.prop2) {
       return false;
     }
     if (prop3 != null ? !prop3.equals(testMountRef.prop3) : testMountRef.prop3 != null) {
@@ -153,16 +142,16 @@ public final class TestMount<S extends View> extends Component {
     if (!Arrays.equals(prop4, testMountRef.prop4)) {
       return false;
     }
-    if (prop2 != testMountRef.prop2) {
+    if (prop5 != testMountRef.prop5) {
       return false;
     }
-    if (prop8 != testMountRef.prop8) {
+    if (prop6 != testMountRef.prop6) {
       return false;
     }
     if (prop7 != null ? !prop7.equals(testMountRef.prop7) : testMountRef.prop7 != null) {
       return false;
     }
-    if (prop5 != testMountRef.prop5) {
+    if (prop8 != testMountRef.prop8) {
       return false;
     }
     if (mStateContainer.state1 != testMountRef.mStateContainer.state1) {
@@ -180,8 +169,8 @@ public final class TestMount<S extends View> extends Component {
   @Override
   protected void copyInterStageImpl(Component component) {
     TestMount testMountRef = (TestMount) component;
-    measureOutput = testMountRef.measureOutput;
     boundsDefinedOutput = testMountRef.boundsDefinedOutput;
+    measureOutput = testMountRef.measureOutput;
   }
 
   private UpdateCurrentStateStateUpdate createUpdateCurrentStateStateUpdate(int someParam) {
@@ -191,8 +180,8 @@ public final class TestMount<S extends View> extends Component {
   @Override
   public TestMount makeShallowCopy() {
     TestMount component = (TestMount) super.makeShallowCopy();
-    component.measureOutput = null;
     component.boundsDefinedOutput = null;
+    component.measureOutput = null;
     component.mStateContainer = new TestMountStateContainer();
     return component;
   }
@@ -346,8 +335,11 @@ public final class TestMount<S extends View> extends Component {
   }
 
   @Override
-  protected void onPopulateExtraAccessibilityNode(AccessibilityNodeInfoCompat node,
-      int extraNodeIndex, int componentBoundsLeft, int componentBoundsTop,
+  protected void onPopulateExtraAccessibilityNode(
+      AccessibilityNodeInfoCompat node,
+      int extraNodeIndex,
+      int componentBoundsLeft,
+      int componentBoundsTop,
       Component _abstract) {
     TestMount _ref = (TestMount) _abstract;
     TestMountSpec.onPopulateExtraAccessibilityNode(
@@ -591,7 +583,8 @@ public final class TestMount<S extends View> extends Component {
     return create(context, 0, 0);
   }
 
-  public static <S extends View> Builder<S> create(ComponentContext context, int defStyleAttr, int defStyleRes) {
+  public static <S extends View> Builder<S> create(
+      ComponentContext context, int defStyleAttr, int defStyleRes) {
     Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
@@ -601,7 +594,9 @@ public final class TestMount<S extends View> extends Component {
     return builder;
   }
 
-  @VisibleForTesting( otherwise = 2) static class TestMountStateContainer<S extends View> implements ComponentLifecycle.StateContainer {
+  @VisibleForTesting(otherwise = 2)
+  static class TestMountStateContainer<S extends View>
+      implements ComponentLifecycle.StateContainer {
     @State
     long state1;
 
@@ -628,7 +623,8 @@ public final class TestMount<S extends View> extends Component {
   }
 
   public static class Builder<S extends View> extends Component.Builder<Builder<S>> {
-    private static final String[] REQUIRED_PROPS_NAMES = new String[] {"prop1", "prop6", "prop3", "prop4", "prop8", "prop7", "prop5"};
+    private static final String[] REQUIRED_PROPS_NAMES =
+        new String[] {"prop1", "prop3", "prop4", "prop5", "prop6", "prop7", "prop8"};
 
     private static final int REQUIRED_PROPS_COUNT = 7;
 
@@ -652,31 +648,31 @@ public final class TestMount<S extends View> extends Component {
       return this;
     }
 
-    public Builder<S> prop6(long prop6) {
-      this.mTestMount.prop6 = prop6;
-      mRequired.set(1);
-      return this;
-    }
-
-    public Builder<S> prop3(Object prop3) {
-      this.mTestMount.prop3 = prop3;
-      mRequired.set(2);
-      return this;
-    }
-
-    public Builder<S> prop4(char[] prop4) {
-      this.mTestMount.prop4 = prop4;
-      mRequired.set(3);
-      return this;
-    }
-
     public Builder<S> prop2(boolean prop2) {
       this.mTestMount.prop2 = prop2;
       return this;
     }
 
-    public Builder<S> prop8(long prop8) {
-      this.mTestMount.prop8 = prop8;
+    public Builder<S> prop3(Object prop3) {
+      this.mTestMount.prop3 = prop3;
+      mRequired.set(1);
+      return this;
+    }
+
+    public Builder<S> prop4(char[] prop4) {
+      this.mTestMount.prop4 = prop4;
+      mRequired.set(2);
+      return this;
+    }
+
+    public Builder<S> prop5(char prop5) {
+      this.mTestMount.prop5 = prop5;
+      mRequired.set(3);
+      return this;
+    }
+
+    public Builder<S> prop6(long prop6) {
+      this.mTestMount.prop6 = prop6;
       mRequired.set(4);
       return this;
     }
@@ -711,8 +707,8 @@ public final class TestMount<S extends View> extends Component {
       return this;
     }
 
-    public Builder<S> prop5(char prop5) {
-      this.mTestMount.prop5 = prop5;
+    public Builder<S> prop8(long prop8) {
+      this.mTestMount.prop8 = prop8;
       mRequired.set(6);
       return this;
     }
