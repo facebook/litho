@@ -13,6 +13,7 @@ litho_android_library(
     exported_deps = [
         COMPONENTS_TESTING_SUBCOMPONENTS_TARGET,
         COMPONENTS_TESTING_HELPER_TARGET,
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/state:state"),
     ],
     provided_deps = [
         COMPONENTS_ROBOLECTRIC_TARGET,
