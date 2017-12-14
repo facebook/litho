@@ -68,6 +68,8 @@ public interface ActualComponentLayout {
   @Px
   int getPaddingLeft();
 
+  Reference<? extends Drawable> getBackground();
+
   YogaDirection getResolvedLayoutDirection();
 
   interface Builder {

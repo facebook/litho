@@ -243,6 +243,7 @@ class InternalNode implements ActualComponentLayout, ActualComponentLayout.Conta
     return FastMath.round(mYogaNode.getLayoutPadding(BOTTOM));
   }
 
+  @Override
   public Reference<? extends Drawable> getBackground() {
     return mBackground;
   }

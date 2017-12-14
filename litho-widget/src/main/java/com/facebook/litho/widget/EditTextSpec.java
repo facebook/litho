@@ -20,7 +20,10 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Layout;
@@ -48,6 +51,7 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
+import com.facebook.litho.reference.Reference;
 import com.facebook.litho.utils.MeasureUtils;
 import java.lang.reflect.Field;
 
@@ -287,6 +291,26 @@ class EditTextSpec {
         isSingleLineWrap,
         requestFocus,
         cursorDrawableRes);
+
+    Reference<Drawable> backgroundRef = (Reference<Drawable>) layout.getBackground();
+    Drawable background = backgroundRef != null ? Reference.acquire(c, backgroundRef) : null;
+    if (background != null) {
+      Rect rect = new Rect();
+      background.getPadding(rect);
+      Reference.release(c, background, backgroundRef);
+
+      if (rect.left != 0 || rect.top != 0 || rect.right != 0 || rect.bottom != 0) {
+        // Padding from the background will be added to the layout separately, so does not need to
+        // be a part of this measurement.
+        editText.setPadding(0, 0, 0, 0);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+          editText.setBackgroundDrawable(null);
+        } else {
+          editText.setBackground(null);
+        }
+      }
+    }
 
     editText.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec),
