@@ -38,6 +38,6 @@ object SingleImageComponentSpec {
         FrescoImage.create(c)
             .controller(it)
             .imageAspectRatio(imageAspectRatio)
-            .buildWithLayout()
+            .build()
       }
 }

@@ -47,7 +47,7 @@ public class FeedImageComponentSpec {
   @OnCreateLayout
   static ComponentLayout onCreateLayout(ComponentContext c, @Prop final String[] images) {
     return images.length == 1
-        ? createImageComponent(c, images[0]).buildWithLayout()
+        ? createImageComponent(c, images[0]).build()
         : RecyclerCollectionComponent.create(c)
             .disablePTR(true)
             .recyclerConfiguration(LIST_CONFIGURATION)
@@ -58,7 +58,7 @@ public class FeedImageComponentSpec {
                     .build())
             .canMeasureRecycler(true)
             .aspectRatio(2)
-            .buildWithLayout();
+            .build();
   }
 
   @OnEvent(RenderEvent.class)

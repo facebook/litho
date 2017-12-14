@@ -49,7 +49,7 @@ public class LithoRepresentationTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Text.create(c).text("Hello, World!").buildWithLayout();
+            return Text.create(c).text("Hello, World!").build();
           }
         };
 

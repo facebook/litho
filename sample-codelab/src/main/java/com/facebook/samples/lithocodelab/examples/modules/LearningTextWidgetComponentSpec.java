@@ -33,6 +33,6 @@ public class LearningTextWidgetComponentSpec {
         .textColor(Color.RED)
         .textSizePx(70)
         .typeface(Typeface.DEFAULT_BOLD)
-        .buildWithLayout();
+        .build();
   }
 }

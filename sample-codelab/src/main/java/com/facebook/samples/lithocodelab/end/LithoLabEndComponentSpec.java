@@ -28,6 +28,6 @@ class LithoLabEndComponentSpec {
   static ComponentLayout onCreateLayout(ComponentContext c) {
     return RecyclerCollectionComponent.create(c)
         .section(StoryCardsWithHeaderSection.create(new SectionContext(c)).build())
-        .buildWithLayout();
+        .build();
   }
 }

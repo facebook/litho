@@ -69,7 +69,7 @@ public class ComponentStyleTest {
 
   @Test
   public void testStyleLayout() {
-    Component component = Text.create(mContext, 0, PaddingStyle).text("text").buildWithLayout();
+    Component component = Text.create(mContext, 0, PaddingStyle).text("text").build();
     InternalNode node = (InternalNode) component.resolve(mContext, component);
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(mDimen);
@@ -81,7 +81,7 @@ public class ComponentStyleTest {
         Text.create(mContext, 0, PaddingStyle)
             .text("text")
             .paddingPx(ALL, mDimen * 2)
-            .buildWithLayout();
+            .build();
     InternalNode node = (InternalNode) component.resolve(mContext, component);
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(2 * mDimen);
@@ -111,7 +111,7 @@ public class ComponentStyleTest {
   @Test
   public void testAttributeStyleLayout() {
     Component component =
-        Text.create(mContext, testAttrLargePadding, 0).text("text").buildWithLayout();
+        Text.create(mContext, testAttrLargePadding, 0).text("text").build();
     InternalNode node = (InternalNode) component.resolve(mContext, component);
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(mLargeDimen);
@@ -123,7 +123,7 @@ public class ComponentStyleTest {
         Text.create(mContext, testAttrLargePadding, 0)
             .text("text")
             .paddingPx(ALL, mDimen * 2)
-            .buildWithLayout();
+            .build();
     InternalNode node = (InternalNode) component.resolve(mContext, component);
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(2 * mDimen);
@@ -142,7 +142,7 @@ public class ComponentStyleTest {
   @Test
   public void testStyleResOverridenByAttrResForLayout() {
     Component component =
-        Text.create(mContext, testAttrLargePadding, PaddingStyle).text("text").buildWithLayout();
+        Text.create(mContext, testAttrLargePadding, PaddingStyle).text("text").build();
     InternalNode node = (InternalNode) component.resolve(mContext, component);
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(mLargeDimen);

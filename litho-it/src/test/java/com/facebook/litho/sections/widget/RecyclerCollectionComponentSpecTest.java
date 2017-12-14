@@ -74,7 +74,7 @@ public class RecyclerCollectionComponentSpecTest {
             .text("loading")
             .heightPx(100)
             .widthPx(100)
-            .buildWithLayout();
+            .build();
       }
     };
 
@@ -85,7 +85,7 @@ public class RecyclerCollectionComponentSpecTest {
             .text("empty")
             .heightPx(100)
             .widthPx(100)
-            .buildWithLayout();
+            .build();
       }
     };
     mErrorComponent = new InlineLayoutSpec() {
@@ -95,7 +95,7 @@ public class RecyclerCollectionComponentSpecTest {
             .text("error")
             .heightPx(100)
             .widthPx(100)
-            .buildWithLayout();
+            .build();
       }
     };
     mContentComponent = new InlineLayoutSpec() {
@@ -105,7 +105,7 @@ public class RecyclerCollectionComponentSpecTest {
             .text("content")
             .heightPx(100)
             .widthPx(100)
-            .buildWithLayout();
+            .build();
       }
     };
 

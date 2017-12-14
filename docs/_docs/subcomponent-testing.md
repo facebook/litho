@@ -41,7 +41,7 @@ class TruncatingComponentSpec {
   static ComponentLayout onCreateLayout(ComponentContext c, @Prop String text) {
     // A unicode-aware implementation is left as an exercise to the reader.
     final String s = text.length() > 16 ? text.substring(0, 16) + "..." : text;
-    return Text.create(c).text(s).buildWithLayout();
+    return Text.create(c).text(s).build();
   }
 }
 ```

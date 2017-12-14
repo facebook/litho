@@ -32,7 +32,7 @@ public class ParentComponentSpec {
 
     return ChildComponent.create(c)
         .imageUri(imageUri)
-        .buildWithLayout();
+        .build();
   }
 }
 ```

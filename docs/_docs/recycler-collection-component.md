@@ -18,7 +18,7 @@ static ComponentLayout onCreateLayout(
     final ComponentContext c) {
   return RecyclerCollectionComponent.create(c)
       .section(createSection())
-      .buildWithLayout();
+      .build();
 }
 ```
 

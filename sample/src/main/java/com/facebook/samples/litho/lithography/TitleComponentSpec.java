@@ -40,6 +40,6 @@ public class TitleComponentSpec {
         .positionDip(YogaEdge.BOTTOM, 4)
         .positionDip(YogaEdge.LEFT, 4)
         .paddingDip(YogaEdge.HORIZONTAL, 6)
-        .buildWithLayout();
+        .build();
   }
 }

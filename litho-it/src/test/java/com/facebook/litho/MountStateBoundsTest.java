@@ -46,7 +46,7 @@ public class MountStateBoundsTest {
             return create(c)
                 .widthPx(10)
                 .heightPx(10)
-                .buildWithLayout();
+                .build();
           }
         });
 
@@ -63,7 +63,7 @@ public class MountStateBoundsTest {
             return TestViewComponent.create(c)
                 .widthPx(10)
                 .heightPx(10)
-                .buildWithLayout();
+                .build();
           }
         });
 

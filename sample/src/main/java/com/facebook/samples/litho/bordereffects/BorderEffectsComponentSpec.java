@@ -56,7 +56,7 @@ class BorderEffectsComponentSpec {
                 .data(componentsToBuild)
                 .renderEventHandler(BorderEffectsComponent.onRender(c))
                 .build())
-        .buildWithLayout();
+        .build();
   }
 
   @OnEvent(RenderEvent.class)

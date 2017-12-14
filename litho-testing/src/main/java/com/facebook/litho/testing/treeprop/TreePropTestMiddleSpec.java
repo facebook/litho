@@ -38,6 +38,6 @@ public class TreePropTestMiddleSpec {
     return TreePropTestLeaf.create(c)
         .resultPropA(resultPropALeaf1)
         .resultPropB(resultPropBLeaf1)
-        .buildWithLayout();
+        .build();
   }
 }

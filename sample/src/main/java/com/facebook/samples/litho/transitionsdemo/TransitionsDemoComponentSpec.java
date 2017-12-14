@@ -43,7 +43,7 @@ class TransitionsDemoComponentSpec {
                 .renderEventHandler(TransitionsDemoComponent.onRender(c))
                 .onCheckIsSameItemEventHandler(TransitionsDemoComponent.isSameItem(c))
                 .build())
-        .buildWithLayout();
+        .build();
   }
 
   @OnEvent(RenderEvent.class)

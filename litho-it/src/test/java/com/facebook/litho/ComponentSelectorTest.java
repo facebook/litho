@@ -36,7 +36,7 @@ public class ComponentSelectorTest {
     ComponentContext c = new ComponentContext(application);
 
     ComponentLayout nullLayout = Wrapper.create(c).delegate(mNullSpec).build();
-    ComponentLayout textLayout = Text.create(c).text("Hello World").buildWithLayout();
+    ComponentLayout textLayout = Text.create(c).text("Hello World").build();
 
     ComponentLayout actual =
         ComponentSelector.create(c).tryToRender(nullLayout).tryToRender(textLayout).build();
@@ -49,8 +49,8 @@ public class ComponentSelectorTest {
     ComponentContext c = new ComponentContext(application);
 
     ComponentLayout nullLayout = Wrapper.create(c).delegate(mNullSpec).build();
-    ComponentLayout imageLayout = Image.create(c).drawable(null).buildWithLayout();
-    ComponentLayout textLayout = Text.create(c).text("Hello World").buildWithLayout();
+    ComponentLayout imageLayout = Image.create(c).drawable(null).build();
+    ComponentLayout textLayout = Text.create(c).text("Hello World").build();
 
     ComponentLayout actual =
         ComponentSelector.create(c)
@@ -67,8 +67,8 @@ public class ComponentSelectorTest {
     ComponentContext c = new ComponentContext(application);
 
     ComponentLayout nullLayout = Wrapper.create(c).delegate(mNullSpec).build();
-    ComponentLayout imageLayout = Image.create(c).drawable(null).buildWithLayout();
-    ComponentLayout textLayout = Text.create(c).text("Hello World").buildWithLayout();
+    ComponentLayout imageLayout = Image.create(c).drawable(null).build();
+    ComponentLayout textLayout = Text.create(c).text("Hello World").build();
 
     ComponentLayout actual =
         ComponentSelector.create(c)

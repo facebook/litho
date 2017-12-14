@@ -45,7 +45,7 @@ public class LearningStateComponentSpec {
         .alignSelf(STRETCH)
         .paddingDip(BOTTOM, 20)
         .paddingDip(TOP, 40)
-        .buildWithLayout();
+        .build();
   }
 
   @OnUpdateState

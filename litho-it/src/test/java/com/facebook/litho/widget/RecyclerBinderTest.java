@@ -1403,7 +1403,7 @@ public class RecyclerBinderTest {
           new InlineLayoutSpec() {
             @Override
             protected ComponentLayout onCreateLayout(ComponentContext c) {
-              return TestDrawableComponent.create(c).widthPx(100).heightPx(100).buildWithLayout();
+              return TestDrawableComponent.create(c).widthPx(100).heightPx(100).build();
             }
           };
 
@@ -1448,7 +1448,7 @@ public class RecyclerBinderTest {
               return TestDrawableComponent.create(c)
                   .widthPercent(50)
                   .heightPercent(25)
-                  .buildWithLayout();
+                  .build();
             }
           };
 

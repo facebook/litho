@@ -22,7 +22,7 @@ static ComponentLayout onCreateLayout(
     
   return Recycler.create(c)
       .binder(recyclerBinder)
-      .buildWithLayout();
+      .build();
 }
 ```
 This code will render a `Recycler` component that will display the content of `recyclerBinder`.

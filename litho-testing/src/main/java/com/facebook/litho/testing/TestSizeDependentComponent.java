@@ -48,7 +48,7 @@ public class TestSizeDependentComponent extends Component {
     }
 
     if (state.isDelegate) {
-      return builder1.buildWithLayout();
+      return builder1.build();
     }
 
     return Column.create(c)

@@ -45,7 +45,7 @@ public class LithoViewTestHelperTest {
         return TestDrawableComponent.create(c)
             .widthPx(100)
             .heightPx(100)
-            .buildWithLayout();
+            .build();
       }
     };
 

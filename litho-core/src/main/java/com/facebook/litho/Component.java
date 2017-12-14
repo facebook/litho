@@ -537,6 +537,8 @@ public abstract class Component extends ComponentLifecycle
       }
     }
 
+    /** @deprecated Use {@link Builder#build() directly} */
+    @Deprecated
     public final Component buildWithLayout() {
       return this.build();
     }

@@ -28,6 +28,6 @@ public class MyComponentSpec {
           .contentDescription("foobar2")
           .viewTag(customViewTag)
           .testKey("my_test_key")
-          .buildWithLayout();
+          .build();
   }
 }

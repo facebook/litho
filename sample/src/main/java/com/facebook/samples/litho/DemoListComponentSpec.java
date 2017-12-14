@@ -47,7 +47,7 @@ class DemoListComponentSpec {
                 .build())
         .disablePTR(true)
         .testKey(MAIN_SCREEN)
-        .buildWithLayout();
+        .build();
   }
 
   @OnEvent(RenderEvent.class)

@@ -52,7 +52,7 @@ public class LithoViewTest {
         return TestDrawableComponent.create(c)
             .widthPx(100)
             .heightPx(100)
-            .buildWithLayout();
+            .build();
       }
     };
 
@@ -177,7 +177,7 @@ public class LithoViewTest {
             return TestDrawableComponent.create(c)
                 .widthPercent(100)
                 .heightPx(100)
-                .buildWithLayout();
+                .build();
           }
         };
 
@@ -213,7 +213,7 @@ public class LithoViewTest {
             return TestDrawableComponent.create(c)
                 .widthPercent(50)
                 .heightPercent(10)
-                .buildWithLayout();
+                .build();
           }
         };
 

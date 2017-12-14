@@ -1903,7 +1903,7 @@ public class LayoutStateCalculateTest {
         return TestSizeDependentComponent.create(c)
             .setFixSizes(true)
             .setDelegate(false)
-            .buildWithLayout();
+            .build();
       }
     };
 

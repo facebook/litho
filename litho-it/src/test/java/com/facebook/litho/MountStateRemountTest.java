@@ -112,7 +112,7 @@ public class MountStateRemountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return TestViewComponent.create(c).buildWithLayout();
+            return TestViewComponent.create(c).build();
           }
         });
 
@@ -122,7 +122,7 @@ public class MountStateRemountTest {
         new InlineLayoutSpec() {
           @Override
           protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return TestDrawableComponent.create(c).buildWithLayout();
+            return TestDrawableComponent.create(c).build();
           }
         });
   }

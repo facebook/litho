@@ -231,7 +231,7 @@ public class LayoutStateCreateTreeTest {
                             .touchHandler(touchHandler1)
                             .interceptTouchHandler(interceptTouchHandler1)
                             .focusChangeHandler(focusChangedHandler1)
-                            .buildWithLayout();
+                            .build();
                       }
                     })
                 .clickHandler(clickHandler2)
@@ -281,7 +281,7 @@ public class LayoutStateCreateTreeTest {
                             .touchHandler(touchHandler1)
                             .interceptTouchHandler(interceptTouchHandler1)
                             .focusChangeHandler(focusChangedHandler1)
-                            .buildWithLayout();
+                            .build();
                       }
                     })
                 .clickHandler(clickHandler2)
@@ -423,7 +423,7 @@ public class LayoutStateCreateTreeTest {
                 .performAccessibilityActionHandler(performAccessibilityActionHandler)
                 .sendAccessibilityEventHandler(sendAccessibilityEventHandler)
                 .sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler)
-                .buildWithLayout();
+                .build();
           }
         };
 

@@ -35,6 +35,6 @@ class SolidColorSpec {
     return Image.create(c)
         .scaleType(FIT_XY)
         .drawable(new ColorDrawable(color))
-        .buildWithLayout();
+        .build();
   }
 }

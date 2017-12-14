@@ -23,6 +23,6 @@ public class LearningLayoutSpecsComponentSpec {
 
   @OnCreateLayout
   static ComponentLayout onCreateLayout(ComponentContext c) {
-    return Text.create(c).text("Hello, World!").textSizeDip(50).buildWithLayout();
+    return Text.create(c).text("Hello, World!").textSizeDip(50).build();
   }
 }

@@ -38,6 +38,6 @@ public class LearningRecyclerBinderComponentSpec {
           i, LearningPropsComponent.create(c).text1("Item: " + i).text2("Item: " + i).build());
     }
 
-    return Recycler.create(c).binder(recyclerBinder).buildWithLayout();
+    return Recycler.create(c).binder(recyclerBinder).build();
   }
 }

@@ -47,7 +47,7 @@ public class LayoutStateEventHandlerTest {
             Wrapper.create(c).delegate(mNestedComponent).build();
             assertCorrectEventHandler(c.newEventHandler(3), 3, mRootComponent);
 
-            return TestLayoutComponent.create(c).buildWithLayout();
+            return TestLayoutComponent.create(c).build();
           }
         };
     mNestedComponent = new InlineLayoutSpec() {
@@ -56,7 +56,7 @@ public class LayoutStateEventHandlerTest {
         assertCorrectEventHandler(c.newEventHandler(1), 1, mNestedComponent);
 
         return TestLayoutComponent.create(c)
-            .buildWithLayout();
+            .build();
       }
     };
   }
