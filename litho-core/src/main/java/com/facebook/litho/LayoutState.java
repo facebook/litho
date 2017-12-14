@@ -1187,7 +1187,11 @@ class LayoutState {
           if (isTracing) {
             ComponentsSystrace.beginSection("preAllocateMountContent:" + component.getSimpleName());
           }
-          component.preAllocateMountContent(mContext);
+
+          if (ComponentsConfiguration.preallocateComponentHosts
+              || !(component instanceof HostComponent)) {
+            ComponentsPools.maybePreallocateContent(mContext, component);
+          }
 
           if (isTracing) {
             ComponentsSystrace.endSection();
@@ -1292,11 +1296,7 @@ class LayoutState {
       return;
     }
 
-    Drawable drawable =
-        (Drawable) ComponentsPools.acquireMountContent(context, lifecycle.getTypeId());
-    if (drawable == null) {
-      drawable = (Drawable) lifecycle.createMountContent(context);
-    }
+    Drawable drawable = (Drawable) ComponentsPools.acquireMountContent(context, lifecycle);
 
     final LayoutOutput clickableOutput = findInteractiveRoot(this, output);
     boolean isStateEnabled = false;

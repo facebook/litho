@@ -21,7 +21,9 @@ import android.view.View;
 import com.facebook.litho.ActualComponentLayout;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.DefaultMountContentPool;
 import com.facebook.litho.Diff;
+import com.facebook.litho.MountContentPool;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateValue;
@@ -36,6 +38,7 @@ import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnCreateMountContentPool;
 import com.facebook.litho.annotations.OnCreateTransition;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnEvent;
@@ -193,5 +196,10 @@ public class TestMountSpec<S extends View> {
   @ShouldUpdate(onMount = true)
   static boolean shouldUpdate(@Prop Diff<Integer> prop1) {
     return true;
+  }
+
+  @OnCreateMountContentPool
+  static MountContentPool onCreateMountContentPool() {
+    return new DefaultMountContentPool("MyCustomPool", 3, true);
   }
 }
