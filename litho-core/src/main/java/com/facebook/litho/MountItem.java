@@ -214,8 +214,12 @@ class MountItem {
 
   void release(ComponentContext context) {
     // Component hosts are recycled within other hosts instead of the global pool.
-    if (!ComponentsConfiguration.scrapHostRecyclingForComponentHosts
-        || !(mContent instanceof ComponentHost)) {
+    // For the scrapHostRecyclingForComponentHosts experiment: if the switch gets flipped while the
+    // app is running, this ComponentHost could be only temporarily detached, so don't recycle it
+    // if so.
+    if (!(mContent instanceof ComponentHost)
+        || (!ComponentsConfiguration.scrapHostRecyclingForComponentHosts
+            && ((ComponentHost) mContent).getParent() == null)) {
       ComponentsPools.release(context, mComponent, mContent);
     }
 
