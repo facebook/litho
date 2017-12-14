@@ -51,7 +51,7 @@ import javax.annotation.Nullable;
  * values for individual props. {@link Component} instances are immutable after creation.
  */
 public abstract class Component extends ComponentLifecycle
-    implements Cloneable, HasEventDispatcher, HasEventTrigger {
+    implements Cloneable, HasEventDispatcher, HasEventTrigger, ComponentLayout {
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
   private int mId = sIdGenerator.getAndIncrement();
@@ -75,6 +75,10 @@ public abstract class Component extends ComponentLifecycle
    * automatically generating unique global keys for all sibling components of the same type.
    */
   @Nullable private Map<String, Integer> mChildCounters;
+
+  // Keep hold of the layout that we resolved during will render in order to use it again in
+  // createLayout.
+  @Nullable ActualComponentLayout mLayoutCreatedInWillRender;
 
   protected Component() {
     this(null);
@@ -363,11 +367,24 @@ public abstract class Component extends ComponentLifecycle
   }
 
   /**
-   * @return whether the given component will render because it returns non-null from its
-   *     implementation of onCreateLayout, based on its current props and state. Returns true if the
-   *     component returns non-null, otherwise false.
+   * @return whether the given component will render because it returns non-null from its resolved
+   *     onCreateLayout, based on its current props and state. Returns true if the resolved layout
+   *     is non-null, otherwise false.
    */
+  public static boolean willRender(ComponentContext c, Component component) {
+    if (component == null) {
+      return false;
+    }
+
+    component.mLayoutCreatedInWillRender = Layout.create(c, component).build();
+    return willRender(component.mLayoutCreatedInWillRender);
+  }
+
   public static boolean willRender(ComponentContext c, ComponentLayout componentLayout) {
+    return componentLayout != null && willRender(c, ((Component) componentLayout));
+  }
+
+  private static boolean willRender(ActualComponentLayout componentLayout) {
     if (componentLayout == null || ComponentContext.NULL_LAYOUT.equals(componentLayout)) {
       return false;
     }
@@ -442,11 +459,20 @@ public abstract class Component extends ComponentLifecycle
     return this;
   }
 
+  static boolean isInternalComponent(Component component) {
+    return component instanceof Column
+        || component instanceof Row
+        || component instanceof Wrapper
+        || component instanceof ColumnReverse
+        || component instanceof RowReverse;
+  }
+
   /**
    * @param <T> the type of this builder. Required to ensure methods defined here in the abstract
    *     class correctly return the type of the concrete subclass.
    */
-  public abstract static class Builder<T extends Builder<T>> extends ResourceResolver {
+  public abstract static class Builder<T extends Builder<T>> extends ResourceResolver
+      implements ComponentLayout.Builder {
 
     private ComponentContext mContext;
     @AttrRes private int mDefStyleAttr;
@@ -511,23 +537,8 @@ public abstract class Component extends ComponentLifecycle
       }
     }
 
-    public final ComponentLayout buildWithLayout() {
-      return this.withLayout().build();
-    }
-
-    /**
-     * @deprecated You no longer need to use this method in order to add layout attributes, you can
-     *     just add them directly to the component.
-     */
-    @Deprecated
-    public final ComponentLayout.Builder withLayout() {
-      // calling build() which will release this builder setting these members to null/0.
-      // We must capture their value before that happens.
-      final ComponentContext context = mContext;
-      final int defStyleAttr = mDefStyleAttr;
-      final int defStyleRes = mDefStyleRes;
-
-      return Layout.create(context, build(), defStyleAttr, defStyleRes);
+    public final Component buildWithLayout() {
+      return this.build();
     }
 
     @ReturnsOwnership

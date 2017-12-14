@@ -13,7 +13,7 @@ import android.support.annotation.Nullable;
 
 /**
  * A utility that selects the first Component that will render by calling {@link
- * Component#willRender(ComponentContext, ComponentLayout)} on the Components provided.
+ * Component#willRender(ComponentContext, ActualComponentLayout)} on the Components provided.
  *
  * <p>This is useful when a single Component is to be rendered amongst a large number of candidate
  * Components or when multiple Components can potentially render some content using the same props
@@ -25,7 +25,7 @@ import android.support.annotation.Nullable;
 public class ComponentSelector {
 
   private ComponentContext mContext;
-  private ComponentLayout mLayout;
+  private Component mComponent;
   private boolean mWillRender;
 
   private ComponentSelector(ComponentContext context) {
@@ -41,7 +41,7 @@ public class ComponentSelector {
       return this;
     }
 
-    return tryToRender(componentBuilder.buildWithLayout());
+    return tryToRender(componentBuilder.build());
   }
 
   public ComponentSelector tryToRender(@Nullable Component component) {
@@ -49,28 +49,28 @@ public class ComponentSelector {
       return this;
     }
 
-    return tryToRender(Wrapper.create(mContext).delegate(component).build());
-  }
-
-  public ComponentSelector tryToRender(@Nullable ComponentLayout.Builder layoutBuilder) {
-    if (layoutBuilder == null || mWillRender) {
-      return this;
-    }
-
-    return tryToRender(layoutBuilder.build());
-  }
-
-  public ComponentSelector tryToRender(@Nullable ComponentLayout layout) {
-    if (mWillRender) {
-      return this;
-    }
-
-    mLayout = layout;
-    mWillRender = Component.willRender(mContext, layout);
+    mComponent = component;
+    mWillRender = Component.willRender(mContext, component);
     return this;
   }
 
-  public @Nullable ComponentLayout build() {
-    return mLayout;
+  public ComponentSelector tryToRender(@Nullable ComponentLayout componentLayout) {
+    if (componentLayout == null || mWillRender) {
+      return this;
+    }
+
+    return tryToRender((Component) componentLayout);
+  }
+
+  public ComponentSelector tryToRender(@Nullable ComponentLayout.Builder componentLayout) {
+    if (componentLayout == null || mWillRender) {
+      return this;
+    }
+
+    return tryToRender(componentLayout.build());
+  }
+
+  public @Nullable Component build() {
+    return mComponent;
   }
 }

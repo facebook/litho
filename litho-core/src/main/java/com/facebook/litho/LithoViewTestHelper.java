@@ -57,28 +57,29 @@ public class LithoViewTestHelper {
   }
 
   /**
-   * Finds a {@link TestItem} given a {@link LithoView} based on the test key it was
-   * assigned during construction.
+   * Finds a {@link TestItem} given a {@link LithoView} based on the test key it was assigned during
+   * construction.
    *
-   * <strong>Example use:</strong>
+   * <p><strong>Example use:</strong>
+   *
    * <pre>{@code
-   *  final LithoView lithoView = ComponentTestHelper.mountComponent(
-   *      mContext,
-   *      new InlineLayoutSpec() {
-   *        @Override
-   *        protected ComponentLayout onCreateLayout(ComponentContext c) {
-   *          return Column.create(c)
-   *              .child(
-   *                  Column.create(c)
-   *                      .child(TestDrawableComponent.create(c))
-   *                      .child(TestDrawableComponent.create(c))
-   *                      .testKey("mytestkey"))
-   *              .build();
-   *        }
-   *      });
-   *  final TestItem testItem = LithoViewTestHelper.findTestItem(lithoView, "mytestkey");
-   *  }
-   * </pre>
+   * final LithoView lithoView = ComponentTestHelper.mountComponent(
+   *     mContext,
+   *     new InlineLayoutSpec() {
+   *       @Override
+   *       protected ActualComponentLayout onCreateLayout(ComponentContext c) {
+   *         return Column.create(c)
+   *             .child(
+   *                 Column.create(c)
+   *                     .child(TestDrawableComponent.create(c))
+   *                     .child(TestDrawableComponent.create(c))
+   *                     .testKey("mytestkey"))
+   *             .build();
+   *       }
+   *     });
+   * final TestItem testItem = LithoViewTestHelper.findTestItem(lithoView, "mytestkey");
+   *
+   * }</pre>
    *
    * @param lithoView The component view the component is mounted to.
    * @param testKey The unique identifier the component was constructed with.

@@ -9,7 +9,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.Column.create;
 import static com.facebook.litho.it.R.attr.testAttrDimen;
 import static com.facebook.litho.it.R.attr.testAttrDrawable;
 import static com.facebook.litho.it.R.attr.undefinedAttrDimen;
@@ -43,9 +42,9 @@ public class ResolveAttributeTest {
 
   @Test
   public void testResolveDrawableAttribute() {
-    InternalNode node = (InternalNode) create(mContext)
-        .backgroundAttr(testAttrDrawable, 0)
-        .build();
+    Column column = Column.create(mContext).backgroundAttr(testAttrDrawable, 0).build();
+
+    InternalNode node = (InternalNode) column.resolve(mContext, column);
 
     Drawable d = mContext.getResources().getDrawable(test_bg);
     assertThat(acquire(mContext, node.getBackground())).isEqualTo(d);
@@ -53,9 +52,9 @@ public class ResolveAttributeTest {
 
   @Test
   public void testResolveDimenAttribute() {
-    InternalNode node = (InternalNode) create(mContext)
-        .widthAttr(testAttrDimen, default_dimen)
-        .build();
+    Column column = Column.create(mContext).widthAttr(testAttrDimen, default_dimen).build();
+
+    InternalNode node = (InternalNode) column.resolve(mContext, column);
     node.calculateLayout();
 
     int dimen =
@@ -65,9 +64,9 @@ public class ResolveAttributeTest {
 
   @Test
   public void testDefaultDrawableAttribute() {
-    InternalNode node = (InternalNode) create(mContext)
-        .backgroundAttr(undefinedAttrDrawable, test_bg)
-        .build();
+    Column column = Column.create(mContext).backgroundAttr(undefinedAttrDrawable, test_bg).build();
+
+    InternalNode node = (InternalNode) column.resolve(mContext, column);
 
     Drawable d = mContext.getResources().getDrawable(test_bg);
     assertThat(acquire(mContext, node.getBackground())).isEqualTo(d);
@@ -75,9 +74,9 @@ public class ResolveAttributeTest {
 
   @Test
   public void testDefaultDimenAttribute() {
-    InternalNode node = (InternalNode) create(mContext)
-        .widthAttr(undefinedAttrDimen, test_dimen)
-        .build();
+    Column column = Column.create(mContext).widthAttr(undefinedAttrDimen, test_dimen).build();
+
+    InternalNode node = (InternalNode) column.resolve(mContext, column);
     node.calculateLayout();
 
     int dimen =
@@ -87,9 +86,9 @@ public class ResolveAttributeTest {
 
   @Test
   public void testFloatDimenWidthAttribute() {
-    InternalNode node = (InternalNode) create(mContext)
-        .widthAttr(undefinedAttrDimen, test_dimen_float)
-        .build();
+    Column column = Column.create(mContext).widthAttr(undefinedAttrDimen, test_dimen_float).build();
+
+    InternalNode node = (InternalNode) column.resolve(mContext, column);
     node.calculateLayout();
 
     int dimen =
@@ -99,9 +98,10 @@ public class ResolveAttributeTest {
 
   @Test
   public void testFloatDimenPaddingAttribute() {
-    InternalNode node = (InternalNode) create(mContext)
-        .paddingAttr(LEFT, undefinedAttrDimen, test_dimen_float)
-        .build();
+    Column column =
+        Column.create(mContext).paddingAttr(LEFT, undefinedAttrDimen, test_dimen_float).build();
+
+    InternalNode node = (InternalNode) column.resolve(mContext, column);
     node.calculateLayout();
 
     int dimen =

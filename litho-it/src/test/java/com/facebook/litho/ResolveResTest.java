@@ -9,7 +9,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.Column.create;
 import static com.facebook.litho.it.R.dimen.test_dimen;
 import static com.facebook.litho.it.R.dimen.test_dimen_float;
 import static com.facebook.yoga.YogaEdge.LEFT;
@@ -42,49 +41,45 @@ public class ResolveResTest {
 
   @Test
   public void testDefaultDimenWidthRes() {
-    InternalNode node = (InternalNode) create(mContext)
-        .widthRes(test_dimen)
-        .build();
+    Column column = Column.create(mContext).widthRes(test_dimen).build();
+
+    InternalNode node = (InternalNode) column.resolve(mContext, column);
     node.calculateLayout();
 
-    int dimen =
-        mContext.getResources().getDimensionPixelSize(test_dimen);
+    int dimen = mContext.getResources().getDimensionPixelSize(test_dimen);
     assertThat(node.getWidth()).isEqualTo(dimen);
   }
 
   @Test
   public void testDefaultDimenPaddingRes() {
-    InternalNode node = (InternalNode) create(mContext)
-        .paddingRes(LEFT, test_dimen)
-        .build();
+    Column column = Column.create(mContext).paddingRes(LEFT, test_dimen).build();
+
+    InternalNode node = (InternalNode) column.resolve(mContext, column);
     node.calculateLayout();
 
-    int dimen =
-        mContext.getResources().getDimensionPixelSize(test_dimen);
+    int dimen = mContext.getResources().getDimensionPixelSize(test_dimen);
     assertThat(node.getWidth()).isEqualTo(dimen);
   }
 
   @Test
   public void testFloatDimenWidthRes() {
-    InternalNode node = (InternalNode) create(mContext)
-        .widthRes(test_dimen_float)
-        .build();
+    Column column = Column.create(mContext).widthRes(test_dimen_float).build();
+
+    InternalNode node = (InternalNode) column.resolve(mContext, column);
     node.calculateLayout();
 
-    int dimen =
-        mContext.getResources().getDimensionPixelSize(test_dimen_float);
+    int dimen = mContext.getResources().getDimensionPixelSize(test_dimen_float);
     assertThat(node.getWidth()).isEqualTo(dimen);
   }
 
   @Test
   public void testFloatDimenPaddingRes() {
-    InternalNode node = (InternalNode) create(mContext)
-        .paddingRes(LEFT , test_dimen_float)
-        .build();
+    Column column = Column.create(mContext).paddingRes(LEFT, test_dimen_float).build();
+
+    InternalNode node = (InternalNode) column.resolve(mContext, column);
     node.calculateLayout();
 
-    int dimen =
-        mContext.getResources().getDimensionPixelSize(test_dimen_float);
+    int dimen = mContext.getResources().getDimensionPixelSize(test_dimen_float);
     assertThat(node.getPaddingLeft()).isEqualTo(dimen);
   }
 }

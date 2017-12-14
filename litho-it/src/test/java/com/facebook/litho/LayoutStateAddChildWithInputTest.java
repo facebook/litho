@@ -9,7 +9,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.Column.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.testing.TestLayoutComponent;
@@ -30,10 +29,13 @@ public class LayoutStateAddChildWithInputTest {
 
   @Test
   public void testNewEmptyLayout() {
-    InternalNode node = (InternalNode) create(mContext)
-        .child(TestLayoutComponent.create(mContext))
-        .child(TestLayoutComponent.create(mContext))
-        .build();
+    Column component =
+        Column.create(mContext)
+            .child(TestLayoutComponent.create(mContext))
+            .child(TestLayoutComponent.create(mContext))
+            .build();
+
+    InternalNode node = (InternalNode) component.resolve(mContext, component);
 
     assertThat(node.getChildCount()).isEqualTo(2);
     assertThat(node.getChildAt(0).getChildCount()).isEqualTo(0);

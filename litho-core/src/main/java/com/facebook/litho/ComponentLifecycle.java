@@ -224,13 +224,17 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @param context ComponentContext associated with the current ComponentTree.
    * @param component Component to process the layout for.
    * @param resolveNestedTree if the component's layout tree should be resolved as part of this
-   *                          call.
+   *     call.
    * @return New InternalNode associated with the given component.
    */
-  ComponentLayout createLayout(
-      ComponentContext context,
-      Component component,
-      boolean resolveNestedTree) {
+  ActualComponentLayout createLayout(
+      ComponentContext context, Component component, boolean resolveNestedTree) {
+    if (component.mLayoutCreatedInWillRender != null) {
+      ActualComponentLayout layout = component.mLayoutCreatedInWillRender;
+      component.mLayoutCreatedInWillRender = null;
+      return layout;
+    }
+
     final boolean deferNestedTreeResolution =
         Component.isNestedTree(component) && !resolveNestedTree;
 
@@ -246,14 +250,44 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     if (deferNestedTreeResolution) {
       node = ComponentsPools.acquireInternalNode(context);
       node.markIsNestedTreeHolder(context.getTreeProps());
-    } else if (Component.isLayoutSpecWithSizeSpec(component)) {
-      node = (InternalNode) onCreateLayoutWithSizeSpec(
-          context,
-          context.getWidthSpec(),
-          context.getHeightSpec(),
-          component);
     } else {
-      node = (InternalNode) onCreateLayout(context, component);
+      final ComponentLayout componentLayout;
+      if (Component.isLayoutSpecWithSizeSpec(component)) {
+        componentLayout =
+            onCreateLayoutWithSizeSpec(
+                context, context.getWidthSpec(), context.getHeightSpec(), component);
+      } else {
+        componentLayout = onCreateLayout(context, component);
+      }
+
+      if (componentLayout == null || !(componentLayout instanceof Component)) {
+        node = null;
+      } else {
+        Component layoutComponent = (Component) componentLayout;
+        // If the layoutComponent to be resolved was passed into this method, then we have already
+        // generated a key for it (in ComponentContext.newLayoutBuilder). Otherwise, generate one
+        // now.
+        if (layoutComponent != component) {
+          layoutComponent.generateKey(context);
+          layoutComponent.applyStateUpdates(context);
+        }
+
+        // TODO tT24211349 - tidy this up.
+        if (context instanceof TestComponentContext
+            && !Component.isInternalComponent(layoutComponent)) {
+          node = ComponentsPools.acquireInternalNode(context);
+          node.appendComponent(new TestComponent(layoutComponent));
+          return node;
+        }
+
+        node =
+            (InternalNode)
+                layoutComponent.resolve(layoutComponent.getScopedContext(), layoutComponent);
+
+        if (layoutComponent != component) {
+          layoutComponent.getScopedContext().setTreeProps(null);
+        }
+      }
     }
 
     if (isTracing) {
@@ -361,12 +395,12 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /**
-   * Generate a tree of {@link ComponentLayout} representing the layout structure of
-   * the {@link Component} and its sub-components. You should use
-   * {@link ComponentContext#newLayoutBuilder} to build the layout tree.
+   * Generate a tree of {@link ActualComponentLayout} representing the layout structure of the
+   * {@link Component} and its sub-components. You should use {@link
+   * ComponentContext#newLayoutBuilder} to build the layout tree.
    *
-   * @param c The {@link ComponentContext} to build a {@link ComponentLayout} tree.
-   * @param component The component to create the {@link ComponentLayout} tree from.
+   * @param c The {@link ComponentContext} to build a {@link ActualComponentLayout} tree.
+   * @param component The component to create the {@link ActualComponentLayout} tree from.
    */
   protected ComponentLayout onCreateLayout(ComponentContext c, Component component) {
     return Column.create(c).build();
@@ -380,6 +414,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return Column.create(c).build();
   }
 
+  /** Resolves the {@link ActualComponentLayout} for the given {@link Component}. */
+  protected ActualComponentLayout resolve(ComponentContext c, Component component) {
+    return createLayout(c, component, false);
+  }
+
   protected void onPrepare(ComponentContext c, Component component) {
     // do nothing, by default
   }
@@ -388,13 +427,14 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /**
-   * Called after the layout calculation is finished and the given {@link ComponentLayout} has its
-   * bounds defined. You can use {@link ComponentLayout#getX()}, {@link ComponentLayout#getY()},
-   * {@link ComponentLayout#getWidth()}, and {@link ComponentLayout#getHeight()} to get the size and
-   * position of the component in the layout tree.
+   * Called after the layout calculation is finished and the given {@link ActualComponentLayout} has
+   * its bounds defined. You can use {@link ActualComponentLayout#getX()}, {@link
+   * ActualComponentLayout#getY()}, {@link ActualComponentLayout#getWidth()}, and {@link
+   * ActualComponentLayout#getHeight()} to get the size and position of the component in the layout
+   * tree.
    *
    * @param c The {@link Context} used by this component.
-   * @param layout The {@link ComponentLayout} with defined position and size.
+   * @param layout The {@link ActualComponentLayout} with defined position and size.
    * @param component The {@link Component} for this component.
    */
   protected void onBoundsDefined(

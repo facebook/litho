@@ -703,7 +703,7 @@ class CommonProps {
       mTransitionKey = key;
     }
 
-    void copyInto(ComponentLayout.Builder node) {
+    void copyInto(ActualComponentLayout.Builder node) {
       if ((mPrivateFlags & PFLAG_LAYOUT_DIRECTION_IS_SET) != 0L) {
         node.layoutDirection(mLayoutDirection);
       }

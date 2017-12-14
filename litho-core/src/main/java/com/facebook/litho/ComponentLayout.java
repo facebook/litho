@@ -22,7 +22,6 @@ import android.support.annotation.StringRes;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ReturnsOwnership;
-import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
@@ -33,42 +32,11 @@ import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
 
 /**
- * Represents a {@link Component}'s computed layout state. The computed bounds will be used by the
- * framework to define the size and position of the component's mounted {@link android.view.View}s
- * and {@link android.graphics.drawable.Drawable}s returned. by {@link
- * ComponentLifecycle#mount(ComponentContext, Object, Component)}.
- *
- * @see ComponentLifecycle#createLayout(ComponentContext, Component, boolean)
- * @see ComponentLifecycle#mount(ComponentContext, Object, Component)
+ * This is a temporary state for converting {@link
+ * ComponentLifecycle#onCreateLayout(ComponentContext, Component)} to return a {@link Component}. We
+ * make this extend {@link Component} so that we don't have to change every callsite at once.
  */
-@ThreadConfined(ThreadConfined.ANY)
 public interface ComponentLayout {
-
-  @Px
-  int getX();
-
-  @Px
-  int getY();
-
-  @Px
-  int getWidth();
-
-  @Px
-  int getHeight();
-
-  @Px
-  int getPaddingTop();
-
-  @Px
-  int getPaddingRight();
-
-  @Px
-  int getPaddingBottom();
-
-  @Px
-  int getPaddingLeft();
-
-  YogaDirection getResolvedLayoutDirection();
 
   interface Builder {
 
@@ -474,7 +442,7 @@ public interface ComponentLayout {
     Builder alpha(float alpha);
 
     @ReturnsOwnership
-    ComponentLayout build();
+    Component build();
   }
 
   /**
@@ -826,13 +794,10 @@ public interface ComponentLayout {
 
     @ReturnsOwnership
     ContainerBuilder child(ComponentLayout child);
-
     @ReturnsOwnership
     ContainerBuilder child(ComponentLayout.Builder childBuilder);
-
     @ReturnsOwnership
     ContainerBuilder child(Component component);
-
     @ReturnsOwnership
     ContainerBuilder child(Component.Builder<?> componentBuilder);
 

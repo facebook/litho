@@ -267,10 +267,8 @@ public class ComponentContext extends ContextWrapper {
     return node;
   }
 
-  ComponentLayout.Builder newLayoutBuilder(
-      Component component,
-      @AttrRes int defStyleAttr,
-      @StyleRes int defStyleRes) {
+  ActualComponentLayout.Builder newLayoutBuilder(
+      Component component, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     component.generateKey(this);
     component.applyStateUpdates(this);
 

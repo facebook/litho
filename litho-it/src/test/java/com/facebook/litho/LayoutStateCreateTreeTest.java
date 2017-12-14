@@ -12,7 +12,6 @@ package com.facebook.litho;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -61,7 +60,7 @@ public class LayoutStateCreateTreeTest {
     assertThat(node.getRootComponent()).isEqualTo(component);
     node = node.getChildAt(0);
     assertThat(node.getChildCount()).isEqualTo(1);
-    assertThat(node.getRootComponent()).isNull();
+    assertThat(node.getRootComponent()).isInstanceOf(Column.class);
     node = node.getChildAt(0);
     assertThat(node.getChildCount()).isEqualTo(0);
     assertThat(node.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
@@ -535,10 +534,11 @@ public class LayoutStateCreateTreeTest {
   private static class TestDrawableComponentWithMockInternalNode
       extends TestComponent {
 
-    protected ComponentLayout onCreateLayout(ComponentContext c, Component component) {
-      InternalNode internalNode = mock(InternalNode.class);
-      when(internalNode.build()).thenReturn(internalNode);
-      return internalNode;
+    protected ActualComponentLayout resolve(ComponentContext c, Component component) {
+      InternalNode node = mock(InternalNode.class);
+      component.getCommonProps().copyInto(c, node);
+
+      return node;
     }
 
     public static TestDrawableComponentWithMockInternalNode.Builder create(ComponentContext c) {

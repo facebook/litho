@@ -351,12 +351,17 @@ public class ComponentLifecycleTest {
 
     @Override
     protected ComponentLayout onCreateLayout(ComponentContext c, Component input) {
-      return mNode;
+      return this;
     }
 
     @Override
     protected ComponentLayout onCreateLayoutWithSizeSpec(
         ComponentContext c, int widthSpec, int heightSpec, Component component) {
+      return this;
+    }
+
+    @Override
+    protected ActualComponentLayout resolve(ComponentContext c, Component component) {
       return mNode;
     }
 

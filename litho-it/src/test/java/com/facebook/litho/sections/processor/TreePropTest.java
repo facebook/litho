@@ -9,10 +9,15 @@
 
 package com.facebook.litho.sections.processor;
 
+import static android.view.View.MeasureSpec.EXACTLY;
+import static android.view.View.MeasureSpec.UNSPECIFIED;
+import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.app.Activity;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.treeprop.TreePropNumberType;
 import com.facebook.litho.testing.treeprop.TreePropStringType;
@@ -49,14 +54,19 @@ public class TreePropTest {
     final TreePropStringType treePropB = new TreePropStringType("propB");
     final TreePropStringType treePropBChanged = new TreePropStringType("propB_changed");
 
-    TreePropTestParent.create(mContext)
-        .propA(treePropA)
-        .propB(treePropB)
-        .resultPropALeaf1(propALeaf1)
-        .resultPropBLeaf1(propBLeaf1)
-        .resultPropBLeaf2(probBLeaf2)
-        .resultPropAMount(propAMount)
-        .buildWithLayout();
+    Component component =
+        TreePropTestParent.create(mContext)
+            .propA(treePropA)
+            .propB(treePropB)
+            .resultPropALeaf1(propALeaf1)
+            .resultPropBLeaf1(propBLeaf1)
+            .resultPropBLeaf2(probBLeaf2)
+            .resultPropAMount(propAMount)
+            .build();
+
+    LithoView lithoView = new LithoView(mContext);
+    lithoView.setComponent(component);
+    lithoView.measure(makeMeasureSpec(1000, EXACTLY), makeMeasureSpec(0, UNSPECIFIED));
 
     assertThat(propALeaf1.mProp).isEqualTo(treePropA);
     // TreePropTestMiddleSpec modifies "propB".

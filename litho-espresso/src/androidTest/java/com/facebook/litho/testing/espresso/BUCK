@@ -38,6 +38,7 @@ android_library(
     deps = [
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_WIDGET_TARGET,
+        COMPONENTS_YOGA_TARGET,
     ],
 )
 

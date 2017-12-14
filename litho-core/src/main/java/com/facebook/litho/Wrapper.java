@@ -9,58 +9,116 @@
 
 package com.facebook.litho;
 
-import android.support.annotation.AttrRes;
-import android.support.annotation.StyleRes;
+import android.support.v4.util.Pools;
+import com.facebook.litho.annotations.Prop;
+import java.util.BitSet;
+import javax.annotation.Nullable;
 
 /**
- * Utility class for wrapping an existing {@link Component} to create a new {@link
- * ComponentLayout.Builder}. This is useful for components with child components as props.
+ * Utility class for wrapping an existing {@link Component}. This is useful for adding further
+ * {@link CommonProps} to an already created component.
  */
-public final class Wrapper {
+public final class Wrapper extends Component {
+
+  @Nullable @Prop Component delegate;
+
+  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
+      new Pools.SynchronizedPool<Builder>(2);
+
   private Wrapper() {}
 
-  /**
-   * Create a {@link ComponentLayout.Builder} from an existing {@link Component}.
-   *
-   * @param c The context to create the layout within
-   * @param component The component to render within this layout
-   * @param defStyleAttr The id of the attribute to use for default style attributes
-   * @param defStyleRes The id of the style to use for layout attributes
-   * @return A layout builder
-   */
-  private static ComponentLayout.Builder create(
-      ComponentContext c,
-      Component component,
-      @AttrRes int defStyleAttr,
-      @StyleRes int defStyleRes) {
-    if (component == null) {
+  @Override
+  public String getSimpleName() {
+    return "Wrapper";
+  }
+
+  public static Builder create(ComponentContext context) {
+    return create(context, 0, 0);
+  }
+
+  public static Builder create(ComponentContext context, int defStyleAttr, int defStyleRes) {
+    Builder builder = sBuilderPool.acquire();
+    if (builder == null) {
+      builder = new Builder();
+    }
+    builder.init(context, defStyleAttr, defStyleRes, new Wrapper());
+    return builder;
+  }
+
+  @Override
+  protected ComponentLayout onCreateLayout(ComponentContext c, Component component) {
+    return component;
+  }
+
+  @Override
+  protected ActualComponentLayout resolve(ComponentContext c, Component component) {
+    if (delegate == null) {
       return ComponentContext.NULL_LAYOUT;
     }
-    return c.newLayoutBuilder(component, defStyleAttr, defStyleRes);
-  }
 
-  public static Builder create(ComponentContext c) {
-    return create(c, 0, 0);
-  }
-
-  public static Builder create(
-      ComponentContext c, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-    return new Builder(c, defStyleAttr, defStyleRes);
-  }
-
-  public static class Builder {
-    private final ComponentContext mContext;
-    @AttrRes private final int mDefStyleAttr;
-    @StyleRes private final int mDefStyleRes;
-
-    private Builder(ComponentContext c, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-      mContext = c;
-      mDefStyleAttr = defStyleAttr;
-      mDefStyleRes = defStyleRes;
+    InternalNode node = (InternalNode) c.newLayoutBuilder(delegate, 0, 0);
+    if (component.getCommonProps() != null) {
+      component.getCommonProps().copyInto(c, node);
     }
 
-    public ComponentLayout.Builder delegate(Component component) {
-      return create(mContext, component, mDefStyleAttr, mDefStyleRes);
+    return node;
+  }
+
+  @Override
+  public boolean isEquivalentTo(Component other) {
+    if (this == other) {
+      return true;
+    }
+    if (other == null || getClass() != other.getClass()) {
+      return false;
+    }
+    Wrapper wrapper = (Wrapper) other;
+    if (this.getId() == wrapper.getId()) {
+      return true;
+    }
+    if (delegate != null ? !delegate.equals(wrapper.delegate) : wrapper.delegate != null) {
+      return false;
+    }
+    return true;
+  }
+
+  public static class Builder extends Component.Builder<Builder> {
+    private static final String[] REQUIRED_PROPS_NAMES = new String[] {"delegate"};
+    private static final int REQUIRED_PROPS_COUNT = 1;
+
+    private final BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
+    private Wrapper mWrapper;
+
+    private void init(
+        ComponentContext context, int defStyleAttr, int defStyleRes, Wrapper wrapper) {
+      super.init(context, defStyleAttr, defStyleRes, wrapper);
+      mWrapper = wrapper;
+    }
+
+    public Builder delegate(Component delegate) {
+      mRequired.set(0);
+      this.mWrapper.delegate = delegate;
+      return this;
+    }
+
+    @Override
+    public Builder getThis() {
+      return this;
+    }
+
+    @Override
+    public Wrapper build() {
+      checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
+      Wrapper wrapper = mWrapper;
+      release();
+      return wrapper;
+    }
+
+    @Override
+    protected void release() {
+      super.release();
+      mWrapper = null;
+      sBuilderPool.release(this);
     }
   }
 }

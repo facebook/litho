@@ -69,21 +69,20 @@ public class ComponentStyleTest {
 
   @Test
   public void testStyleLayout() {
-    InternalNode node = (InternalNode)
-        Text.create(mContext, 0, PaddingStyle)
-            .text("text")
-            .buildWithLayout();
+    Component component = Text.create(mContext, 0, PaddingStyle).text("text").buildWithLayout();
+    InternalNode node = (InternalNode) component.resolve(mContext, component);
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(mDimen);
   }
 
   @Test
   public void testOverrideStyleLayout() {
-    InternalNode node = (InternalNode)
+    Component component =
         Text.create(mContext, 0, PaddingStyle)
             .text("text")
             .paddingPx(ALL, mDimen * 2)
             .buildWithLayout();
+    InternalNode node = (InternalNode) component.resolve(mContext, component);
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(2 * mDimen);
   }
@@ -111,21 +110,21 @@ public class ComponentStyleTest {
 
   @Test
   public void testAttributeStyleLayout() {
-    InternalNode node = (InternalNode)
-        Text.create(mContext, testAttrLargePadding, 0)
-            .text("text")
-            .buildWithLayout();
+    Component component =
+        Text.create(mContext, testAttrLargePadding, 0).text("text").buildWithLayout();
+    InternalNode node = (InternalNode) component.resolve(mContext, component);
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(mLargeDimen);
   }
 
   @Test
   public void testOverrideAttributeStyleLayout() {
-    InternalNode node = (InternalNode)
+    Component component =
         Text.create(mContext, testAttrLargePadding, 0)
             .text("text")
             .paddingPx(ALL, mDimen * 2)
             .buildWithLayout();
+    InternalNode node = (InternalNode) component.resolve(mContext, component);
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(2 * mDimen);
   }
@@ -142,10 +141,9 @@ public class ComponentStyleTest {
 
   @Test
   public void testStyleResOverridenByAttrResForLayout() {
-    InternalNode node = (InternalNode)
-        Text.create(mContext, testAttrLargePadding, PaddingStyle)
-            .text("text")
-            .buildWithLayout();
+    Component component =
+        Text.create(mContext, testAttrLargePadding, PaddingStyle).text("text").buildWithLayout();
+    InternalNode node = (InternalNode) component.resolve(mContext, component);
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(mLargeDimen);
   }

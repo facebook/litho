@@ -28,8 +28,12 @@ class TestComponentContext extends ComponentContext {
   }
 
   @Override
-  public ComponentLayout.Builder newLayoutBuilder(
+  public ActualComponentLayout.Builder newLayoutBuilder(
       Component component, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+    if (Component.isInternalComponent(component)) {
+      return super.newLayoutBuilder(component, defStyleAttr, defStyleRes);
+    }
+
     final InternalNode node = ComponentsPools.acquireInternalNode(this);
     component.generateKey(this);
     component.applyStateUpdates(this);

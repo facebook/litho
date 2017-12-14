@@ -12,7 +12,6 @@ package com.facebook.litho.widget;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.Wrapper;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -38,9 +37,9 @@ class SelectorComponentSpec {
     }
 
     for (int i = 0; i < components.size(); i++) {
-      final ComponentLayout layout = Wrapper.create(c).delegate(components.get(i)).build();
-      if (Component.willRender(c, layout)) {
-        return layout;
+      final Component component = components.get(i);
+      if (Component.willRender(c, component)) {
+        return component;
       }
     }
 

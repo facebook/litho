@@ -33,8 +33,8 @@ import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
 
 /**
- * Class representing an empty InternalNode with a null ComponentLayout. All methods
- * have been overridden so no actions are performed, and no exceptions are thrown.
+ * Class representing an empty InternalNode with a null ActualComponentLayout. All methods have been
+ * overridden so no actions are performed, and no exceptions are thrown.
  */
 class NoOpInternalNode extends InternalNode {
 
@@ -499,16 +499,6 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode maxHeightPercent(float percent) {
-    return this;
-  }
-
-  @Override
-  public InternalNode child(ComponentLayout child) {
-    return this;
-  }
-
-  @Override
-  public InternalNode child(ComponentLayout.Builder child) {
     return this;
   }
 
