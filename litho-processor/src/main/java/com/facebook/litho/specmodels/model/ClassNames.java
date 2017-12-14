@@ -18,6 +18,7 @@ import java.util.List;
 public interface ClassNames {
   ClassName OBJECT = ClassName.bestGuess("java.lang.Object");
   ClassName STRING = ClassName.bestGuess("java.lang.String");
+  ClassName EXCEPTION = ClassName.bestGuess("java.lang.Exception");
 
   ClassName VIEW = ClassName.bestGuess("android.view.View");
   ClassName DRAWABLE =
