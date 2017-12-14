@@ -55,13 +55,12 @@ public class MethodExtractorUtils {
       try {
         methodParamModels.add(
             MethodParamModelFactory.create(
-                method,
                 TypeName.get(param.asType()),
                 paramName,
                 getLibraryAnnotations(param, permittedAnnotations),
                 getExternalAnnotations(param),
                 permittedInterStageInputAnnotations,
-                delegateMethodAnnotationsThatSkipDiffModels,
+                canCreateDiffModels(method, delegateMethodAnnotationsThatSkipDiffModels),
                 param));
       } catch (Exception e) {
         throw new ComponentsProcessingException(
@@ -73,6 +72,19 @@ public class MethodExtractorUtils {
     }
 
     return methodParamModels;
+  }
+
+  private static boolean canCreateDiffModels(
+      ExecutableElement method,
+      List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels) {
+
+    for (Class<? extends Annotation> delegate : delegateMethodAnnotationsThatSkipDiffModels) {
+      if (method.getAnnotation(delegate) != null) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**

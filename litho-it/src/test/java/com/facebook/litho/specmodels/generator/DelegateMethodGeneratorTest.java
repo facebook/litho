@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.TreeMap;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,31 +65,28 @@ public class DelegateMethodGeneratorTest {
             ImmutableList.<TypeVariableName>of(),
             ImmutableList.of(
                 MethodParamModelFactory.create(
-                    mock(ExecutableElement.class),
                     ClassNames.COMPONENT_CONTEXT,
                     "c",
                     ImmutableList.<Annotation>of(),
                     new ArrayList<AnnotationSpec>(),
                     ImmutableList.<Class<? extends Annotation>>of(),
-                    ImmutableList.<Class<? extends Annotation>>of(),
+                    true,
                     null),
                 MethodParamModelFactory.create(
-                    mock(ExecutableElement.class),
                     TypeName.BOOLEAN,
                     "prop",
                     ImmutableList.of(createAnnotation(Prop.class)),
                     new ArrayList<AnnotationSpec>(),
                     ImmutableList.<Class<? extends Annotation>>of(),
-                    ImmutableList.<Class<? extends Annotation>>of(),
+                    true,
                     null),
                 MethodParamModelFactory.create(
-                    mock(ExecutableElement.class),
                     TypeName.INT,
                     "state",
                     ImmutableList.of(createAnnotation(State.class)),
                     new ArrayList<AnnotationSpec>(),
                     ImmutableList.<Class<? extends Annotation>>of(),
-                    ImmutableList.<Class<? extends Annotation>>of(),
+                    true,
                     null)),
             null,
             null);
@@ -225,24 +221,22 @@ public class DelegateMethodGeneratorTest {
             ImmutableList.<TypeVariableName>of(),
             ImmutableList.of(
                 MethodParamModelFactory.create(
-                    mock(ExecutableElement.class),
                     ClassNames.COMPONENT_CONTEXT,
                     "c",
                     ImmutableList.<Annotation>of(),
                     new ArrayList<AnnotationSpec>(),
                     ImmutableList.<Class<? extends Annotation>>of(),
-                    ImmutableList.<Class<? extends Annotation>>of(),
+                    true,
                     null),
                 MethodParamModelFactory.createSimpleMethodParamModel(
                     TypeName.CHAR, "unimportantName", new Object()),
                 MethodParamModelFactory.create(
-                    mock(ExecutableElement.class),
                     TypeName.BOOLEAN,
                     "prop",
                     ImmutableList.of(createAnnotation(Prop.class)),
                     new ArrayList<AnnotationSpec>(),
                     ImmutableList.<Class<? extends Annotation>>of(),
-                    ImmutableList.<Class<? extends Annotation>>of(),
+                    true,
                     null)),
             null,
             null);

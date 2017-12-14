@@ -11,7 +11,6 @@ package com.facebook.litho.specmodels.model;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.OnCreateTransition;
@@ -25,7 +24,6 @@ import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
-import javax.lang.model.element.ExecutableElement;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,13 +40,12 @@ public class MethodParamModelFactoryTest {
   public void testCreateSimpleMethodParamModel() {
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
-            mock(ExecutableElement.class),
             TypeName.BOOLEAN,
             "testParam",
             new ArrayList<Annotation>(),
             new ArrayList<AnnotationSpec>(),
             ImmutableList.<Class<? extends Annotation>>of(),
-            ImmutableList.<Class<? extends Annotation>>of(),
+            true,
             null);
 
     assertThat(methodParamModel).isInstanceOf(SimpleMethodParamModel.class);
@@ -60,13 +57,12 @@ public class MethodParamModelFactoryTest {
     annotations.add(mock(Prop.class));
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
-            mock(ExecutableElement.class),
             TypeName.BOOLEAN,
             "testParam",
             annotations,
             new ArrayList<AnnotationSpec>(),
             ImmutableList.<Class<? extends Annotation>>of(),
-            ImmutableList.<Class<? extends Annotation>>of(),
+            true,
             null);
 
     assertThat(methodParamModel).isInstanceOf(PropModel.class);
@@ -78,13 +74,12 @@ public class MethodParamModelFactoryTest {
     annotations.add(mock(State.class));
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
-            mock(ExecutableElement.class),
             TypeName.BOOLEAN,
             "testParam",
             annotations,
             new ArrayList<AnnotationSpec>(),
             ImmutableList.<Class<? extends Annotation>>of(),
-            ImmutableList.<Class<? extends Annotation>>of(),
+            true,
             null);
 
     assertThat(methodParamModel).isInstanceOf(StateParamModel.class);
@@ -102,13 +97,12 @@ public class MethodParamModelFactoryTest {
     annotations.add(fromPrepare);
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
-            mock(ExecutableElement.class),
             TypeName.BOOLEAN,
             "testParam",
             annotations,
             new ArrayList<AnnotationSpec>(),
             ImmutableList.<Class<? extends Annotation>>of(FromPrepare.class),
-            ImmutableList.<Class<? extends Annotation>>of(),
+            true,
             null);
 
     assertThat(methodParamModel).isInstanceOf(InterStageInputParamModel.class);
@@ -125,18 +119,14 @@ public class MethodParamModelFactoryTest {
     };
     annotations.add(annotation);
 
-    ExecutableElement method = mock(ExecutableElement.class);
-    when(method.getAnnotation(ShouldUpdate.class)).thenReturn(null);
-
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
-            method,
             ParameterizedTypeName.get(ClassNames.DIFF, TypeName.INT.box()),
             "testParam",
             annotations,
             new ArrayList<AnnotationSpec>(),
-            ImmutableList.<Class<? extends Annotation>>of(OnCreateTransition.class),
             ImmutableList.<Class<? extends Annotation>>of(),
+            true,
             null);
 
     assertThat(methodParamModel).isInstanceOf(RenderDataDiffModel.class);
@@ -153,28 +143,14 @@ public class MethodParamModelFactoryTest {
     };
     annotations.add(annotation);
 
-    ExecutableElement method = mock(ExecutableElement.class);
-    when(method.getAnnotation(ShouldUpdate.class)).thenReturn(new ShouldUpdate() {
-      @Override
-      public Class<? extends Annotation> annotationType() {
-        return ShouldUpdate.class;
-      }
-
-      @Override
-      public boolean onMount() {
-        return false;
-      }
-    });
-
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
-            method,
             ParameterizedTypeName.get(ClassNames.DIFF, TypeName.INT.box()),
             "testParam",
             annotations,
             new ArrayList<AnnotationSpec>(),
-            ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class),
-            ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class),
+            ImmutableList.<Class<? extends Annotation>>of(),
+            false,
             null);
 
     assertThat(methodParamModel).isNotInstanceOf(RenderDataDiffModel.class);

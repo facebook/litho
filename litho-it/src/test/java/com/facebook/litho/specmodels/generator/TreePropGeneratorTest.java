@@ -29,7 +29,6 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,31 +62,28 @@ public class TreePropGeneratorTest {
             ImmutableList.<TypeVariableName>of(),
             ImmutableList.of(
                 MethodParamModelFactory.create(
-                    mock(ExecutableElement.class),
                     ClassNames.COMPONENT_CONTEXT,
                     "componentContext",
                     new ArrayList<Annotation>(),
                     new ArrayList<AnnotationSpec>(),
                     new ArrayList<Class<? extends Annotation>>(),
-                    new ArrayList<Class<? extends Annotation>>(),
+                    true,
                     null),
                 MethodParamModelFactory.create(
-                    mock(ExecutableElement.class),
                     TypeName.BOOLEAN,
                     "prop",
                     ImmutableList.of(createAnnotation(Prop.class)),
                     new ArrayList<AnnotationSpec>(),
                     new ArrayList<Class<? extends Annotation>>(),
-                    new ArrayList<Class<? extends Annotation>>(),
+                    true,
                     null),
                 MethodParamModelFactory.create(
-                    mock(ExecutableElement.class),
                     TypeName.INT,
                     "state",
                     ImmutableList.of(createAnnotation(State.class)),
                     new ArrayList<AnnotationSpec>(),
                     new ArrayList<Class<? extends Annotation>>(),
-                    new ArrayList<Class<? extends Annotation>>(),
+                    true,
                     null)),
             null,
             null);
@@ -119,22 +115,20 @@ public class TreePropGeneratorTest {
             ImmutableList.<TypeVariableName>of(),
             ImmutableList.of(
                 MethodParamModelFactory.create(
-                    mock(ExecutableElement.class),
                     ClassNames.COMPONENT_CONTEXT,
                     "componentContext",
                     new ArrayList<Annotation>(),
                     new ArrayList<AnnotationSpec>(),
                     new ArrayList<Class<? extends Annotation>>(),
-                    new ArrayList<Class<? extends Annotation>>(),
+                    true,
                     null),
                 MethodParamModelFactory.create(
-                    mock(ExecutableElement.class),
                     ParameterizedTypeName.get(GenericObject.class, Integer.class),
                     "prop",
                     ImmutableList.of(createAnnotation(Prop.class)),
                     new ArrayList<AnnotationSpec>(),
                     new ArrayList<Class<? extends Annotation>>(),
-                    new ArrayList<Class<? extends Annotation>>(),
+                    true,
                     null)),
             null,
             null);
