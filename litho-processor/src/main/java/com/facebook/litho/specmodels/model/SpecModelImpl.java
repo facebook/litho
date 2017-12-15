@@ -16,9 +16,11 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
@@ -39,6 +41,7 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mEventMethods;
   private final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mTriggerMethods;
   private final ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethods;
+  private final ImmutableList<PropModel> mRawProps;
   private final ImmutableList<PropModel> mProps;
   private final ImmutableList<PropDefaultModel> mPropDefaults;
   private final ImmutableList<TypeVariableName> mTypeVariables;
@@ -86,10 +89,8 @@ public final class SpecModelImpl implements SpecModel {
     mEventMethods = eventMethods;
     mTriggerMethods = triggerMethods;
     mUpdateStateMethods = updateStateMethods;
-    mProps =
-        props.isEmpty()
-            ? getProps(delegateMethods, eventMethods, updateStateMethods, cachedPropNames)
-            : props;
+    mRawProps = getRawProps(delegateMethods, eventMethods, updateStateMethods);
+    mProps = props.isEmpty() ? getProps(mRawProps, cachedPropNames, delegateMethods) : props;
     mPropDefaults = propDefaults;
     mTypeVariables = typeVariables;
     mStateValues = getStateValues(delegateMethods, eventMethods, updateStateMethods);
@@ -146,6 +147,11 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> getUpdateStateMethods() {
     return mUpdateStateMethods;
+  }
+
+  @Override
+  public ImmutableList<PropModel> getRawProps() {
+    return mRawProps;
   }
 
   @Override
@@ -314,7 +320,7 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   private static PropModel updatePropWithCachedName(
-      PropModel prop, @Nullable ImmutableList<String> cachedPropNames, int index) {
+      PropModel prop, @Nullable List<String> cachedPropNames, int index) {
     final String name =
         cachedPropNames != null && index < cachedPropNames.size()
             ? cachedPropNames.get(index)
@@ -322,13 +328,13 @@ public final class SpecModelImpl implements SpecModel {
     return name != null ? prop.withName(name) : prop;
   }
 
-  private static ImmutableList<PropModel> getProps(
+  /** Extract props without taking deduplication and name caching into account. */
+  private static ImmutableList<PropModel> getRawProps(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
-      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
-      ImmutableList<String> cachedPropNames) {
-    final Set<PropModel> props = new LinkedHashSet<>();
-    int propIndex = 0;
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
+    final List<PropModel> props = new ArrayList<>();
+
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof PropModel) {
@@ -353,41 +359,86 @@ public final class SpecModelImpl implements SpecModel {
       }
     }
 
-    // Once we have all the props, look at the DiffPropModels. This preserves the correct
-    // generics from the defined props.
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
-        if (param instanceof DiffPropModel &&
-            !hasSameUnderlyingPropModel(props, (DiffPropModel) param)) {
+        if (param instanceof DiffPropModel) {
           props.add(((DiffPropModel) param).getUnderlyingPropModel());
         }
       }
     }
 
-    // Update props with their cached names if applicable.
-    final List<PropModel> propList = new ArrayList<>(props);
-    return ImmutableList.copyOf(
-        IntStream.range(0, propList.size())
-            .mapToObj(i -> updatePropWithCachedName(propList.get(i), cachedPropNames, i))
-            .collect(Collectors.toList()));
+    return ImmutableList.copyOf(props);
   }
 
-  private static boolean hasSameUnderlyingPropModel(
-      Set<PropModel> props, DiffPropModel diffPropModel) {
-    for (PropModel existingPropModel : props) {
-      if (diffPropModel.isSameUnderlyingPropModel(existingPropModel)) {
-        return true;
-      }
-    }
+  private static ImmutableList<PropModel> getProps(
+      ImmutableList<PropModel> rawProps,
+      ImmutableList<String> cachedPropNames,
+      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods) {
 
-    return false;
+    // Extract diff models first as they need special handling and need to be removed
+    // from our raw props.
+    final List<DiffPropModel> diffPropModels =
+        delegateMethods
+            .stream()
+            .flatMap(f -> f.methodParams.stream())
+            .filter(f -> f instanceof DiffPropModel)
+            .map(f -> (DiffPropModel) f)
+            .collect(Collectors.toList());
+
+    // Get list of props without potential diffProps.
+    final int basePropsSize = rawProps.size() - diffPropModels.size();
+    final List<PropModel> baseProps = rawProps.subList(0, basePropsSize);
+
+    // Update names from cache.
+    final List<PropModel> renamedBaseProps =
+        IntStream.range(0, baseProps.size())
+            .mapToObj(i -> updatePropWithCachedName(baseProps.get(i), cachedPropNames, i))
+            .collect(Collectors.toList());
+
+    // Deduplicate the props using a custom-ordered TreeSet.
+    final SortedSet<PropModel> props =
+        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
+    props.addAll(renamedBaseProps);
+
+    // Once we have all the props, look at the DiffPropModels. This preserves the correct
+    // generics from the defined props.
+    final List<PropModel> additionalProps =
+        IntStream.range(baseProps.size(), baseProps.size() + diffPropModels.size())
+            .mapToObj(
+                i -> {
+                  final String cachedDiffPropName =
+                      i < cachedPropNames.size() ? cachedPropNames.get(i) : null;
+
+                  if (props
+                      .stream()
+                      .noneMatch(
+                          prop ->
+                              diffPropModels
+                                  .get(i - basePropsSize)
+                                  .isSameUnderlyingPropModel(prop, cachedDiffPropName))) {
+                    return updatePropWithCachedName(
+                        diffPropModels.get(i - basePropsSize).getUnderlyingPropModel(),
+                        cachedPropNames,
+                        i);
+                  }
+
+                  return null;
+                })
+            .filter(Predicate.isEqual(null).negate())
+            .collect(Collectors.toList());
+
+    // Add any diff props we've collected before.
+    props.addAll(additionalProps);
+
+    return ImmutableList.copyOf(new ArrayList<>(props));
   }
 
   private static ImmutableList<StateParamModel> getStateValues(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
-    final Set<StateParamModel> stateValues = new LinkedHashSet<>();
+    final Set<StateParamModel> stateValues =
+        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof StateParamModel) {
@@ -438,7 +489,8 @@ public final class SpecModelImpl implements SpecModel {
 
   private static ImmutableList<RenderDataDiffModel> getDiffs(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods) {
-    final Set<RenderDataDiffModel> diffs = new LinkedHashSet<>();
+    final Set<RenderDataDiffModel> diffs =
+        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof RenderDataDiffModel) {
@@ -454,7 +506,8 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
-    final Set<InterStageInputParamModel> interStageInputs = new LinkedHashSet<>();
+    final Set<InterStageInputParamModel> interStageInputs =
+        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof InterStageInputParamModel) {
@@ -486,7 +539,8 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
-    final Set<TreePropModel> treeProps = new LinkedHashSet<>();
+    final Set<TreePropModel> treeProps =
+        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof TreePropModel) {
@@ -710,6 +764,10 @@ public final class SpecModelImpl implements SpecModel {
 
       if (mPropDefaultModels == null) {
         mPropDefaultModels = ImmutableList.of();
+      }
+
+      if (mCachedPropNames == null) {
+        mCachedPropNames = ImmutableList.of();
       }
 
       if (mEventMethodModels == null) {

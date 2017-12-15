@@ -15,6 +15,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.List;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -89,11 +90,15 @@ public class DiffPropModel implements MethodParamModel {
     return mUnderlyingPropModel.hashCode();
   }
 
-  public boolean isSameUnderlyingPropModel(PropModel propModel) {
-    return propModel.getName().equals(getName()) &&
-        propModel.getType().box().equals(mUnderlyingPropModel.getType().box()) &&
-        propModel.isOptional() == isOptional() &&
-        propModel.getResType() == getResType() &&
-        propModel.getVarArgsSingleName().equals(getVarArgsSingleName());
+  /**
+   * Compare a given {@link PropModel} to the underlying propmodel of this instance. If a cached
+   * name is provided, it will override the check with the underlying model.
+   */
+  public boolean isSameUnderlyingPropModel(PropModel propModel, @Nullable String cachedName) {
+    return (propModel.getName().equals(getName()) || propModel.getName().equals(cachedName))
+        && propModel.getType().box().equals(mUnderlyingPropModel.getType().box())
+        && propModel.isOptional() == isOptional()
+        && propModel.getResType() == getResType()
+        && propModel.getVarArgsSingleName().equals(getVarArgsSingleName());
   }
 }

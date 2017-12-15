@@ -113,6 +113,11 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public ImmutableList<PropModel> getRawProps() {
+    return mSpecModel.getRawProps();
+  }
+
+  @Override
   public ImmutableList<PropModel> getProps() {
     return mSpecModel.getProps();
   }

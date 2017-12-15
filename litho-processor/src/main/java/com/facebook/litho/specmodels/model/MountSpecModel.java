@@ -139,6 +139,14 @@ public class MountSpecModel implements SpecModel, HasPureRender {
     return mSpecModel.getUpdateStateMethods();
   }
 
+  /**
+   * @return the list of props without taking deduplication or name cache adjustments into account.
+   */
+  @Override
+  public ImmutableList<PropModel> getRawProps() {
+    return mSpecModel.getRawProps();
+  }
+
   @Override
   public ImmutableList<PropModel> getProps() {
     return mSpecModel.getProps();

@@ -68,7 +68,7 @@ public class PropNameInterStageStoreTest {
 
     final MockSpecModel specModel =
         MockSpecModel.newBuilder()
-            .props(ImmutableList.of(makePropModel("param0"), makePropModel("param1")))
+            .rawProps(ImmutableList.of(makePropModel("param0"), makePropModel("param1")))
             .specTypeName(ClassName.get(MyTestSpec.class))
             .build();
     store.saveNames(specModel);

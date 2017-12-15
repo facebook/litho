@@ -31,10 +31,11 @@ import java.util.BitSet;
 import java.util.List;
 
 /**
+ * @prop-required data java.util.List<T>
  * @prop-required prop1 java.lang.Integer
  * @prop-optional prop2 java.lang.String
- * @prop-required data java.util.List<T>
  * @prop-required prop3 com.facebook.litho.Component
+ * @see com.facebook.litho.sections.processor.integration.resources.FullDiffSectionSpec
  */
 public final class FullDiffSection<T> extends Section {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
@@ -43,10 +44,10 @@ public final class FullDiffSection<T> extends Section {
 
   private FullDiffSectionStateContainer mStateContainer;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  List<T> data;
+
+  @Prop(resType = ResType.NONE, optional = false)
   Integer prop1;
 
   @Prop(
@@ -54,12 +55,6 @@ public final class FullDiffSection<T> extends Section {
       optional = true
   )
   String prop2;
-
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
-  List<T> data;
 
   @Prop(
       resType = ResType.NONE,
@@ -95,13 +90,13 @@ public final class FullDiffSection<T> extends Section {
       return false;
     }
     FullDiffSection fullDiffSectionRef = (FullDiffSection) other;
+    if (data != null ? !data.equals(fullDiffSectionRef.data) : fullDiffSectionRef.data != null) {
+      return false;
+    }
     if (prop1 != null ? !prop1.equals(fullDiffSectionRef.prop1) : fullDiffSectionRef.prop1 != null) {
       return false;
     }
     if (prop2 != null ? !prop2.equals(fullDiffSectionRef.prop2) : fullDiffSectionRef.prop2 != null) {
-      return false;
-    }
-    if (data != null ? !data.equals(fullDiffSectionRef.data) : fullDiffSectionRef.data != null) {
       return false;
     }
     if (prop3 != null ? !prop3.isEquivalentTo(fullDiffSectionRef.prop3) : fullDiffSectionRef.prop3 != null) {
@@ -126,7 +121,7 @@ public final class FullDiffSection<T> extends Section {
     }
     return component;
   }
-  
+
   public static <T> Builder<T> create(SectionContext context) {
     Builder builder = sBuilderPool.acquire();
     if (builder == null) {
@@ -185,8 +180,7 @@ public final class FullDiffSection<T> extends Section {
     return result;
   }
 
-  private void testEvent(HasEventDispatcher _abstract, SectionContext c, View view,
-      int someParam) {
+  private void testEvent(HasEventDispatcher _abstract, SectionContext c, View view, int someParam) {
     FullDiffSection _ref = (FullDiffSection) _abstract;
     FullDiffSectionSpec.testEvent(
         c,
@@ -327,13 +321,14 @@ public final class FullDiffSection<T> extends Section {
         (int) lastFullyVisibleIndex);
   }
 
-  @VisibleForTesting(otherwise = 2) static class FullDiffSectionStateContainer<T> implements SectionLifecycle.StateContainer {
+  @VisibleForTesting(otherwise = 2)
+  static class FullDiffSectionStateContainer<T> implements SectionLifecycle.StateContainer {
     @State
     Object state1;
   }
 
   public static class Builder<T> extends Section.Builder<Builder<T>> {
-    private static final String[] REQUIRED_PROPS_NAMES = new String[] {"prop1", "data", "prop3"};
+    private static final String[] REQUIRED_PROPS_NAMES = new String[] {"data", "prop1", "prop3"};
 
     private static final int REQUIRED_PROPS_COUNT = 3;
 
@@ -350,20 +345,20 @@ public final class FullDiffSection<T> extends Section {
       mRequired.clear();
     }
 
+    public Builder<T> data(List<T> data) {
+      this.mFullDiffSection.data = data;
+      mRequired.set(0);
+      return this;
+    }
+
     public Builder<T> prop1(Integer prop1) {
       this.mFullDiffSection.prop1 = prop1;
-      mRequired.set(0);
+      mRequired.set(1);
       return this;
     }
 
     public Builder<T> prop2(String prop2) {
       this.mFullDiffSection.prop2 = prop2;
-      return this;
-    }
-
-    public Builder<T> data(List<T> data) {
-      this.mFullDiffSection.data = data;
-      mRequired.set(1);
       return this;
     }
 
@@ -433,5 +428,3 @@ public final class FullDiffSection<T> extends Section {
     }
   }
 }
-
-
