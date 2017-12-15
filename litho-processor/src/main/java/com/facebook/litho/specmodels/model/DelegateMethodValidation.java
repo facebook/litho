@@ -128,8 +128,9 @@ public class DelegateMethodValidation {
           validateDefinedParameterTypes(
               delegateMethod, delegateMethodAnnotation, definedParameterTypes));
 
-      validationErrors.addAll(
-          validateReturnType(delegateMethod, delegateMethodAnnotation, delegateMethodDescription));
+      // TODO T24454792 turn this back on
+//      validationErrors.addAll(
+//          validateReturnType(delegateMethod, delegateMethodAnnotation, delegateMethodDescription));
 
       for (int i = definedParameterTypes.size(), size = delegateMethod.methodParams.size();
           i < size;

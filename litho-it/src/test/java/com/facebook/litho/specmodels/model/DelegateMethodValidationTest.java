@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -282,6 +283,7 @@ public class DelegateMethodValidationTest {
   }
 
   @Test
+  @Ignore("T24454792")
   public void testDelegateMethodHasIncorrectReturnType() {
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
