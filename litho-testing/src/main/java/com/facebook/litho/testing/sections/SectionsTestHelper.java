@@ -89,7 +89,7 @@ public class SectionsTestHelper extends Section {
               }
             })
         .when(spyContext)
-        .updateState(any(StateUpdate.class));
+        .updateStateSync(any(StateUpdate.class));
 
     doAnswer(
             new Answer() {

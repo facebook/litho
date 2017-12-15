@@ -54,9 +54,10 @@ public class SectionContext extends ComponentContext {
 
   /**
    * Notify the {@link SectionTree} that it needs to synchronously perform a state update.
+   *
    * @param stateUpdate state update to perform
    */
-  public void updateState(StateUpdate stateUpdate) {
+  public void updateStateSync(StateUpdate stateUpdate) {
     final Section section = mScope.get();
     final SectionTree sectionTree = mSectionTree;
     if (sectionTree == null || section == null) {

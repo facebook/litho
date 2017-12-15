@@ -153,16 +153,17 @@ public class ComponentContext extends ContextWrapper {
 
   /**
    * Notify the Component Tree that it needs to synchronously perform a state update.
+   *
    * @param stateUpdate state update to perform
    */
-  public void updateState(ComponentLifecycle.StateUpdate stateUpdate) {
+  public void updateStateSync(ComponentLifecycle.StateUpdate stateUpdate) {
     checkIfNoStateUpdatesMethod();
 
     if (mComponentTree == null) {
       return;
     }
 
-    mComponentTree.updateState(mComponentScope.getGlobalKey(), stateUpdate);
+    mComponentTree.updateStateSync(mComponentScope.getGlobalKey(), stateUpdate);
   }
 
   /**

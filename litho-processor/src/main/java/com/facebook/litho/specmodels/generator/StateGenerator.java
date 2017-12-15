@@ -169,7 +169,7 @@ public class StateGenerator {
     if (isAsync) {
       builder.addStatement("c.updateStateAsync(_stateUpdate)");
     } else {
-      builder.addStatement("c.updateState(_stateUpdate)");
+      builder.addStatement("c.updateStateSync(_stateUpdate)");
     }
 
     return TypeSpecDataHolder.newBuilder().addMethod(builder.build()).build();

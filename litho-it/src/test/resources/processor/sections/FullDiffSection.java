@@ -162,7 +162,7 @@ public final class FullDiffSection<T> extends Section {
       return;
     }
     FullDiffSection.UpdateStateStateUpdate _stateUpdate = ((FullDiffSection) _component).createUpdateStateStateUpdate(param);
-    c.updateState(_stateUpdate);
+    c.updateStateSync(_stateUpdate);
   }
 
   public static EventHandler getTestEventHandler(SectionContext context) {

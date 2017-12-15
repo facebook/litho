@@ -147,14 +147,14 @@ public class StateGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
-            "protected static void updateCurrentState(com.facebook.litho.ComponentContext c) {\n" +
-            "  com.facebook.litho.Component _component = c.getComponentScope();\n" +
-            "  if (_component == null) {\n" +
-            "    return;\n" +
-            "  }\n" +
-            "  TestWithState.UpdateCurrentStateStateUpdate _stateUpdate = ((TestWithState) _component).createUpdateCurrentStateStateUpdate();\n" +
-            "  c.updateState(_stateUpdate);\n" +
-            "}\n");
+            "protected static void updateCurrentState(com.facebook.litho.ComponentContext c) {\n"
+                + "  com.facebook.litho.Component _component = c.getComponentScope();\n"
+                + "  if (_component == null) {\n"
+                + "    return;\n"
+                + "  }\n"
+                + "  TestWithState.UpdateCurrentStateStateUpdate _stateUpdate = ((TestWithState) _component).createUpdateCurrentStateStateUpdate();\n"
+                + "  c.updateStateSync(_stateUpdate);\n"
+                + "}\n");
   }
 
   @Test

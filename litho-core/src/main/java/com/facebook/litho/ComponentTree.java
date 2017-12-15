@@ -841,7 +841,7 @@ public class ComponentTree {
     mStateHandler.queueStateUpdate(componentKey, stateUpdate);
   }
 
-  void updateState(String componentKey, StateUpdate stateUpdate) {
+  void updateStateSync(String componentKey, StateUpdate stateUpdate) {
 
     synchronized (this) {
       if (mRoot == null) {

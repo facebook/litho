@@ -552,7 +552,7 @@ public final class TestMount<S extends View> extends Component {
       return;
     }
     TestMount.UpdateCurrentStateStateUpdate _stateUpdate = ((TestMount) _component).createUpdateCurrentStateStateUpdate(someParam);
-    c.updateState(_stateUpdate);
+    c.updateStateSync(_stateUpdate);
   }
 
   protected static void lazyUpdateState1(ComponentContext c, final long lazyUpdateValue) {
@@ -754,3 +754,4 @@ public final class TestMount<S extends View> extends Component {
     }
   }
 }
+

@@ -162,7 +162,7 @@ final class FullGroupSection<T> extends Section {
       return;
     }
     FullGroupSection.UpdateStateStateUpdate _stateUpdate = ((FullGroupSection) _component).createUpdateStateStateUpdate(param);
-    c.updateState(_stateUpdate);
+    c.updateStateSync(_stateUpdate);
   }
 
   protected static void lazyUpdateState2(SectionContext c, final Object lazyUpdateValue) {
