@@ -51,12 +51,13 @@ public class MountItemTest {
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mMountItem = new MountItem();
 
-    mComponent = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return TestDrawableComponent.create(c).buildWithLayout();
-      }
-    };
+    mComponent =
+        new InlineLayoutSpec() {
+          @Override
+          protected ComponentLayout onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).build();
+          }
+        };
     mComponentHost = new ComponentHost(RuntimeEnvironment.application);
     mContent = new View(RuntimeEnvironment.application);
     mContentDescription = "contentDescription";
