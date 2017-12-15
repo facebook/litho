@@ -45,8 +45,7 @@ public class RenderState {
   }
 
   private void recordRenderData(Component component) {
-    final ComponentLifecycle lifecycle = component;
-    if (!lifecycle.needsPreviousRenderData()) {
+    if (!component.needsPreviousRenderData()) {
       throw new RuntimeException(
           "Trying to record previous render data for component that doesn't support it");
     }
@@ -66,21 +65,20 @@ public class RenderState {
 
     final ComponentLifecycle.RenderData existingInfo = mRenderData.get(key);
     final ComponentLifecycle.RenderData newInfo =
-        lifecycle.recordRenderData(component, existingInfo);
+        component.recordRenderData(existingInfo);
 
     mRenderData.put(key, newInfo);
   }
 
   private void applyPreviousRenderData(Component component) {
-    final ComponentLifecycle lifecycle = component;
-    if (!lifecycle.needsPreviousRenderData()) {
+    if (!component.needsPreviousRenderData()) {
       throw new RuntimeException(
           "Trying to apply previous render data to component that doesn't support it");
     }
 
     final String key = component.getGlobalKey();
     ComponentLifecycle.RenderData previousRenderData = mRenderData.get(key);
-    lifecycle.applyPreviousRenderData(component, previousRenderData);
+    component.applyPreviousRenderData(previousRenderData);
   }
 
   void reset() {

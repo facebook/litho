@@ -740,11 +740,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return false;
   }
 
-  protected RenderData recordRenderData(Component component, RenderData toRecycle) {
+  protected RenderData recordRenderData(RenderData toRecycle) {
     return null;
   }
 
-  protected void applyPreviousRenderData(Component component, RenderData previousRenderData) {}
+  protected void applyPreviousRenderData(RenderData previousRenderData) {}
 
   public interface StateUpdate {
     void updateState(StateContainer stateContainer, Component newComponent);

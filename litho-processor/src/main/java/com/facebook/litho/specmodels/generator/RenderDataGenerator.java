@@ -51,28 +51,20 @@ public final class RenderDataGenerator {
 
   private static MethodSpec generateRecordRenderDataMethod(SpecModel specModel) {
     final TypeName renderInfoTypeName = ClassName.bestGuess(getRenderDataImplClassName(specModel));
-    final TypeName typeName = specModel.getComponentTypeName();
     final CodeBlock code =
         CodeBlock.builder()
-            .addStatement(
-                "$T $L = ($T) $L",
-                typeName,
-                REF_VARIABLE_NAME,
-                typeName,
-                "previousComponent")
             .add("$T $L = $L != null ?\n", renderInfoTypeName, "renderInfo", "toRecycle")
             .indent()
             .add("($T) $L :\n", renderInfoTypeName, "toRecycle")
             .add("new $T();\n", renderInfoTypeName)
             .unindent()
-            .addStatement("$L.record($L)", "renderInfo", REF_VARIABLE_NAME)
+            .addStatement("$L.record(this)", "renderInfo")
             .addStatement("return $L", "renderInfo")
             .build();
 
     return MethodSpec.methodBuilder("recordRenderData")
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PROTECTED)
-        .addParameter(ClassNames.COMPONENT, "previousComponent")
         .addParameter(ClassNames.RENDER_DATA, "toRecycle")
         .returns(ClassNames.RENDER_DATA)
         .addCode(code)
@@ -81,20 +73,16 @@ public final class RenderDataGenerator {
 
   private static MethodSpec generateApplyPreviousRenderDataMethod(SpecModel specModel) {
     final TypeName renderInfoTypeName = ClassName.bestGuess(getRenderDataImplClassName(specModel));
-    final TypeName typeName = specModel.getComponentTypeName();
     final CodeBlock code =
         CodeBlock.builder()
-            .addStatement(
-                "$T $L = ($T) $L", typeName, REF_VARIABLE_NAME, typeName, "component")
             .beginControlFlow("if ($L == null)", "previousRenderData")
-            .addStatement("$L.$L = null", REF_VARIABLE_NAME, PREVIOUS_RENDER_DATA_FIELD_NAME)
+            .addStatement("$L = null", PREVIOUS_RENDER_DATA_FIELD_NAME)
             .addStatement("return")
             .endControlFlow()
             .beginControlFlow(
-                "if ($L.$L == null)", REF_VARIABLE_NAME, PREVIOUS_RENDER_DATA_FIELD_NAME)
+                "if ($L == null)", PREVIOUS_RENDER_DATA_FIELD_NAME)
             .addStatement(
-                "$L.$L = new $T()",
-                REF_VARIABLE_NAME,
+                "$L = new $T()",
                 PREVIOUS_RENDER_DATA_FIELD_NAME,
                 renderInfoTypeName)
             .endControlFlow()
@@ -105,13 +93,12 @@ public final class RenderDataGenerator {
                 renderInfoTypeName,
                 "previousRenderData")
             .addStatement(
-                "$L.$L.copy($L)", REF_VARIABLE_NAME, PREVIOUS_RENDER_DATA_FIELD_NAME, "infoImpl")
+                "$L.copy($L)", PREVIOUS_RENDER_DATA_FIELD_NAME, "infoImpl")
             .build();
 
     return MethodSpec.methodBuilder("applyPreviousRenderData")
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PROTECTED)
-        .addParameter(ClassNames.COMPONENT, "component")
         .addParameter(ClassNames.RENDER_DATA, "previousRenderData")
         .addCode(code)
         .build();

@@ -417,29 +417,25 @@ public final class TestLayout<S extends View> extends Component {
   }
 
   @Override
-  protected ComponentLifecycle.RenderData recordRenderData(Component previousComponent,
-                                                           ComponentLifecycle.RenderData toRecycle) {
-    TestLayout _ref = (TestLayout) previousComponent;
+  protected ComponentLifecycle.RenderData recordRenderData(ComponentLifecycle.RenderData toRecycle) {
     TestLayoutRenderData renderInfo = toRecycle != null ?
         (TestLayoutRenderData) toRecycle :
         new TestLayoutRenderData();
-    renderInfo.record(_ref);
+    renderInfo.record(this);
     return renderInfo;
   }
 
   @Override
-  protected void applyPreviousRenderData(Component component,
-                                         ComponentLifecycle.RenderData previousRenderData) {
-    TestLayout _ref = (TestLayout) component;
+  protected void applyPreviousRenderData(ComponentLifecycle.RenderData previousRenderData) {
     if (previousRenderData == null) {
-      _ref.mPreviousRenderData = null;
+      mPreviousRenderData = null;
       return;
     }
-    if (_ref.mPreviousRenderData == null) {
-      _ref.mPreviousRenderData = new TestLayoutRenderData();
+    if (mPreviousRenderData == null) {
+      mPreviousRenderData = new TestLayoutRenderData();
     }
     TestLayoutRenderData infoImpl = (TestLayoutRenderData) previousRenderData;
-    _ref.mPreviousRenderData.copy(infoImpl);
+    mPreviousRenderData.copy(infoImpl);
   }
 
   public static <S extends View> Builder<S> create(ComponentContext context) {
