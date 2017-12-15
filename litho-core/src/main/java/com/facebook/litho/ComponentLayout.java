@@ -35,7 +35,10 @@ import com.facebook.yoga.YogaWrap;
  * This is a temporary state for converting {@link
  * ComponentLifecycle#onCreateLayout(ComponentContext, Component)} to return a {@link Component}. We
  * make this extend {@link Component} so that we don't have to change every callsite at once.
+ *
+ * @deprecated Use {@link Component} directly
  */
+@Deprecated
 public interface ComponentLayout {
 
   interface Builder {
