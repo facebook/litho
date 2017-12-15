@@ -15,6 +15,6 @@ android_prebuilt_aar(
 
 remote_file(
     name = "textlayoutbuilder-aar",
-    sha1 = "297030029bbe61bd2504323e850b5fb33e0a5cf3",
-    url = "mvn:com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:aar:1.1.0",
+    sha1 = "7c302ff22430e2d5a1ce37b3731df29e1a8d1170",
+    url = "mvn:com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:aar:1.2.0",
 )

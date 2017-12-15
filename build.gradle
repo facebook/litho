@@ -59,7 +59,7 @@ ext.deps = [
         // First-party
         fresco             : 'com.facebook.fresco:fresco:1.5.0',
         soloader           : 'com.facebook.soloader:soloader:0.2.0',
-        textlayoutbuilder  : 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.1.0',
+        textlayoutbuilder  : 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.2.0',
         screenshot         : 'com.facebook.testing.screenshot:core:0.4.4',
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.1',
