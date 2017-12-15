@@ -140,12 +140,10 @@ public final class FullDiffSection<T> extends Section {
   @Override
   protected void transferState(
       SectionContext context,
-      SectionLifecycle.StateContainer _prevStateContainer,
-      Section _component) {
+      SectionLifecycle.StateContainer _prevStateContainer) {
     FullDiffSectionStateContainer prevStateContainer =
         (FullDiffSectionStateContainer) _prevStateContainer;
-    FullDiffSection component = (FullDiffSection) _component;
-    component.mStateContainer.state1 = prevStateContainer.state1;
+    mStateContainer.state1 = prevStateContainer.state1;
   }
 
   protected static void updateStateAsync(SectionContext c, Object param) {
@@ -222,14 +220,13 @@ public final class FullDiffSection<T> extends Section {
   }
 
   @Override
-  protected void createInitialState(SectionContext c, Section _abstract) {
-    FullDiffSection _ref = (FullDiffSection) _abstract;
+  protected void createInitialState(SectionContext c) {
     StateValue<Object> state1 = new StateValue<>();
     FullDiffSectionSpec.onCreateInitialState(
         (SectionContext) c,
-        (Integer) _ref.prop1,
+        (Integer) prop1,
         state1);
-    _ref.mStateContainer.state1 = state1.get();
+    mStateContainer.state1 = state1.get();
   }
 
   @Override
@@ -256,18 +253,16 @@ public final class FullDiffSection<T> extends Section {
     return true;
   }
 
-  private String onCreateService(SectionContext c, Section _abstract) {
-    FullDiffSection _ref = (FullDiffSection) _abstract;
+  private String onCreateService(SectionContext c) {
     String _result = (String) FullDiffSectionSpec.onCreateService(
         (SectionContext) c,
-        (String) _ref.prop2);
+        (String) prop2);
     return _result;
   }
 
   @Override
-  public void createService(SectionContext context, Section _abstract) {
-    FullDiffSection _ref = (FullDiffSection) _abstract;
-    _ref._service = onCreateService(context, _abstract);
+  public void createService(SectionContext context) {
+    _service = onCreateService(context);
   }
 
   @Override
@@ -283,32 +278,28 @@ public final class FullDiffSection<T> extends Section {
   }
 
   @Override
-  protected void bindService(SectionContext c, Section _abstract) {
-    FullDiffSection _ref = (FullDiffSection) _abstract;
+  protected void bindService(SectionContext c) {
     FullDiffSectionSpec.bindService(
         (SectionContext) c,
-        (String) _ref._service);
+        _service);
   }
 
   @Override
-  protected void unbindService(SectionContext c, Section _abstract) {
-    FullDiffSection _ref = (FullDiffSection) _abstract;
+  protected void unbindService(SectionContext c) {
     FullDiffSectionSpec.unbindService(
         (SectionContext) c,
-        (String) _ref._service);
+        _service);
   }
 
   @Override
-  protected void refresh(SectionContext c, Section _abstract) {
-    FullDiffSection _ref = (FullDiffSection) _abstract;
+  protected void refresh(SectionContext c) {
     FullDiffSectionSpec.onRefresh(
         (SectionContext) c,
-        (String) _ref._service);
+        _service);
   }
 
   @Override
-  protected void dataBound(SectionContext c, Section _abstract) {
-    FullDiffSection _ref = (FullDiffSection) _abstract;
+  protected void dataBound(SectionContext c) {
     FullDiffSectionSpec.onDataBound(
         (SectionContext) c);
   }
@@ -326,9 +317,7 @@ public final class FullDiffSection<T> extends Section {
 
   @Override
   protected void viewportChanged(SectionContext c, int firstVisibleIndex, int lastVisibleIndex,
-      int totalCount, int firstFullyVisibleIndex, int lastFullyVisibleIndex,
-      Section _abstract) {
-    FullDiffSection _ref = (FullDiffSection) _abstract;
+      int totalCount, int firstFullyVisibleIndex, int lastFullyVisibleIndex) {
     FullDiffSectionSpec.onViewportChanged(
         (SectionContext) c,
         (int) firstVisibleIndex,

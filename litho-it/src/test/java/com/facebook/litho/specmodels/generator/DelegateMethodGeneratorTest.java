@@ -120,13 +120,11 @@ public class DelegateMethodGeneratorTest {
 
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString()).isEqualTo(
         "@java.lang.Override\n" +
-            "protected com.facebook.litho.ComponentLayout onCreateLayout(com.facebook.litho.ComponentContext c,\n" +
-            "    com.facebook.litho.Component _abstract) {\n" +
-            "  Test _ref = (Test) _abstract;\n" +
+            "protected com.facebook.litho.ComponentLayout onCreateLayout(com.facebook.litho.ComponentContext c) {\n" +
             "  com.facebook.litho.ComponentLayout _result = (com.facebook.litho.ComponentLayout) TestSpec.onCreateLayout(\n" +
             "    (com.facebook.litho.ComponentContext) c,\n" +
-            "    (boolean) _ref.prop,\n" +
-            "    (int) _ref.state);\n" +
+            "    (boolean) prop,\n" +
+            "    (int) state);\n" +
             "  return _result;\n" +
             "}\n");
   }
@@ -145,13 +143,11 @@ public class DelegateMethodGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected com.facebook.litho.ComponentLayout onCreateLayout(com.facebook.litho.ComponentContext c,\n"
-                + "    com.facebook.litho.Component _abstract) {\n"
-                + "  Test _ref = (Test) _abstract;\n"
+                + "protected com.facebook.litho.ComponentLayout onCreateLayout(com.facebook.litho.ComponentContext c) {\n"
                 + "  com.facebook.litho.ComponentLayout _result = (com.facebook.litho.ComponentLayout) mSpec.onCreateLayout(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
-                + "    (boolean) _ref.prop,\n"
-                + "    (int) _ref.state);\n"
+                + "    (boolean) prop,\n"
+                + "    (int) state);\n"
                 + "  return _result;\n"
                 + "}\n");
   }
@@ -181,13 +177,11 @@ public class DelegateMethodGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected com.facebook.litho.ComponentLayout onCreateLayout(com.facebook.litho.ComponentContext c,\n"
-                + "    com.facebook.litho.Component _abstract) {\n"
-                + "  Test _ref = (Test) _abstract;\n"
+                + "protected com.facebook.litho.ComponentLayout onCreateLayout(com.facebook.litho.ComponentContext c) {\n"
                 + "  com.facebook.litho.ComponentLayout _result = (com.facebook.litho.ComponentLayout) mSpec.onCreateLayout(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
-                + "    (boolean) _ref.prop,\n"
-                + "    (int) _ref.state);\n"
+                + "    (boolean) prop,\n"
+                + "    (int) state);\n"
                 + "  return _result;\n"
                 + "}\n");
   }
@@ -254,13 +248,11 @@ public class DelegateMethodGeneratorTest {
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected com.facebook.litho.ComponentLayout onCreateLayout(com.facebook.litho.ComponentContext c,\n"
-                + "    com.facebook.litho.Component _abstract) {\n"
-                + "  Test _ref = (Test) _abstract;\n"
+                + "protected com.facebook.litho.ComponentLayout onCreateLayout(com.facebook.litho.ComponentContext c) {\n"
                 + "  com.facebook.litho.ComponentLayout _result = (com.facebook.litho.ComponentLayout) TestSpec.onCreateLayout(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
-                + "    (char) _ref.optionalParam,\n"
-                + "    (boolean) _ref.prop);\n"
+                + "    optionalParam,\n"
+                + "    (boolean) prop);\n"
                 + "  return _result;\n"
                 + "}\n");
   }

@@ -80,17 +80,15 @@ public class TestDrawableComponent extends TestComponent {
   }
 
   @Override
-  protected void onMount(ComponentContext c, Object convertDrawable, Component _stateObject) {
-    TestDrawableComponent state = (TestDrawableComponent) _stateObject;
-    ((ColorDrawable) convertDrawable).setColor(state.color);
+  protected void onMount(ComponentContext c, Object convertDrawable) {
+    ((ColorDrawable) convertDrawable).setColor(color);
 
-    state.onMountCalled();
+    onMountCalled();
   }
 
   @Override
-  protected void onUnmount(ComponentContext c, Object mountedContent, Component component) {
-    TestDrawableComponent state = (TestDrawableComponent) component;
-    state.onUnmountCalled();
+  protected void onUnmount(ComponentContext c, Object mountedContent) {
+    onUnmountCalled();
   }
 
   @Override
@@ -104,38 +102,34 @@ public class TestDrawableComponent extends TestComponent {
       ActualComponentLayout layout,
       int widthSpec,
       int heightSpec,
-      Size size,
-      Component component) {
+      Size size) {
     int width = SizeSpec.getSize(widthSpec);
     int height = SizeSpec.getSize(heightSpec);
-    TestDrawableComponent state = (TestDrawableComponent) component;
-    state.onMeasureCalled();
+    onMeasureCalled();
 
-    size.width = (state.measuredWidth != -1)
-        ? SizeSpec.resolveSize(widthSpec, state.measuredWidth)
+    size.width = (measuredWidth != -1)
+        ? SizeSpec.resolveSize(widthSpec, measuredWidth)
         : width;
-    size.height = (state.measuredHeight != -1)
-        ? SizeSpec.resolveSize(heightSpec, state.measuredHeight)
+    size.height = (measuredHeight != -1)
+        ? SizeSpec.resolveSize(heightSpec, measuredHeight)
         : height;
   }
 
   @Override
   protected void onBoundsDefined(
-      ComponentContext c, ActualComponentLayout layout, Component component) {
-    TestDrawableComponent state = (TestDrawableComponent) component;
-    state.onDefineBoundsCalled();
+      ComponentContext c,
+      ActualComponentLayout layout) {
+    onDefineBoundsCalled();
   }
 
   @Override
-  protected void onBind(ComponentContext c, Object mountedContent, Component component) {
-    TestDrawableComponent state = (TestDrawableComponent) component;
-    state.onBindCalled();
+  protected void onBind(ComponentContext c, Object mountedContent) {
+    onBindCalled();
   }
 
   @Override
-  protected void onUnbind(ComponentContext c, Object mountedContent, Component component) {
-    TestDrawableComponent state = (TestDrawableComponent) component;
-    state.onUnbindCalled();
+  protected void onUnbind(ComponentContext c, Object mountedContent) {
+    onUnbindCalled();
   }
 
   @Override

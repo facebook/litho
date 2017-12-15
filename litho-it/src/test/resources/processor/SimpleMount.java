@@ -83,16 +83,14 @@ public final class SimpleMount extends Component {
       ActualComponentLayout layout,
       int widthSpec,
       int heightSpec,
-      Size size,
-      Component _abstract) {
-    SimpleMount _ref = (SimpleMount) _abstract;
+      Size size) {
     SimpleMountSpec.onMeasure(
         (ComponentContext) c,
         (ActualComponentLayout) layout,
         (int) widthSpec,
         (int) heightSpec,
         (Size) size,
-        (double) _ref.ratio);
+        (double) ratio);
   }
 
   @Override
@@ -108,14 +106,12 @@ public final class SimpleMount extends Component {
   }
 
   @Override
-  protected void onMount(ComponentContext c, Object lithoView, Component _abstract) {
-    SimpleMount _ref = (SimpleMount) _abstract;
-    SimpleMountSpec.onMount((ComponentContext) c, (LithoView) lithoView, (Component) _ref.content);
+  protected void onMount(ComponentContext c, Object lithoView) {
+    SimpleMountSpec.onMount((ComponentContext) c, (LithoView) lithoView, (Component) content);
   }
 
   @Override
-  protected void onUnmount(ComponentContext c, Object mountedView, Component _abstract) {
-    SimpleMount _ref = (SimpleMount) _abstract;
+  protected void onUnmount(ComponentContext c, Object mountedView) {
     SimpleMountSpec.onUnmount(
         (ComponentContext) c,
         (LithoView) mountedView);

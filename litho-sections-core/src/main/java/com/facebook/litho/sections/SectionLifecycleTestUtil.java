@@ -25,11 +25,11 @@ public final class SectionLifecycleTestUtil {
 
   public static Children createChildren(
       SectionLifecycle sectionLifecycle, SectionContext c, Section component) {
-    return sectionLifecycle.createChildren(c, component);
+    return sectionLifecycle.createChildren(c);
   }
 
   public static void createInitialState(SectionLifecycle lifecycle, SectionContext c, Section s) {
-    lifecycle.createInitialState(c, s);
+    lifecycle.createInitialState(c);
   }
 
   public static SectionLifecycle.StateContainer getStateContainer(Section section) {

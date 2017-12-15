@@ -141,12 +141,10 @@ final class FullGroupSection<T> extends Section {
   @Override
   protected void transferState(
       SectionContext context,
-      SectionLifecycle.StateContainer _prevStateContainer,
-      Section _component) {
+      SectionLifecycle.StateContainer _prevStateContainer) {
     FullGroupSectionStateContainer prevStateContainer = (FullGroupSectionStateContainer) _prevStateContainer;
-    FullGroupSection component = (FullGroupSection) _component;
-    component.mStateContainer.state1 = prevStateContainer.state1;
-    component.mStateContainer.state2 = prevStateContainer.state2;
+    mStateContainer.state1 = prevStateContainer.state1;
+    mStateContainer.state2 = prevStateContainer.state2;
   }
 
   protected static void updateStateAsync(SectionContext c, Object param) {
@@ -240,27 +238,24 @@ final class FullGroupSection<T> extends Section {
   }
 
   @Override
-  protected void createInitialState(SectionContext c, Section _abstract) {
-    FullGroupSection _ref = (FullGroupSection) _abstract;
+  protected void createInitialState(SectionContext c) {
     StateValue<T> state1 = new StateValue<>();
     StateValue<Object> state2 = new StateValue<>();
     FullGroupSectionSpec.onCreateInitialState(
-        (SectionContext) c, (int) _ref.prop1, state1, state2);
-    _ref.mStateContainer.state1 = state1.get();
-    _ref.mStateContainer.state2 = state2.get();
+        (SectionContext) c, (int) prop1, state1, state2);
+    mStateContainer.state1 = state1.get();
+    mStateContainer.state2 = state2.get();
   }
 
-  private String onCreateService(SectionContext c, Section _abstract) {
-    FullGroupSection _ref = (FullGroupSection) _abstract;
+  private String onCreateService(SectionContext c) {
     String _result =
-        (String) FullGroupSectionSpec.onCreateService((SectionContext) c, (String) _ref.prop2);
+        (String) FullGroupSectionSpec.onCreateService((SectionContext) c, (String) prop2);
     return _result;
   }
 
   @Override
-  public void createService(SectionContext context, Section _abstract) {
-    FullGroupSection _ref = (FullGroupSection) _abstract;
-    _ref._service = onCreateService(context, _abstract);
+  public void createService(SectionContext context) {
+    _service = onCreateService(context);
   }
 
   @Override
@@ -276,50 +271,45 @@ final class FullGroupSection<T> extends Section {
   }
 
   @Override
-  protected Children createChildren(SectionContext c, Section _abstract) {
-    FullGroupSection _ref = (FullGroupSection) _abstract;
+  protected Children createChildren(SectionContext c) {
     Children _result =
         (Children)
             FullGroupSectionSpec.onCreateChildren(
                 (SectionContext) c,
-                (Component) _ref.prop3,
-                (String) _ref.prop4,
-                (T) _ref.mStateContainer.state1);
+                (Component) prop3,
+                (String) prop4,
+                (T) mStateContainer.state1);
     return _result;
   }
 
   @Override
-  protected void bindService(SectionContext c, Section _abstract) {
-    FullGroupSection _ref = (FullGroupSection) _abstract;
+  protected void bindService(SectionContext c) {
     FullGroupSectionSpec.bindService(
         (SectionContext) c,
-        (String) _ref._service,
-        (int) _ref.prop1,
-        (Object) _ref.mStateContainer.state2);
+        _service,
+        (int) prop1,
+        (Object) mStateContainer.state2);
   }
 
   @Override
-  protected void unbindService(SectionContext c, Section _abstract) {
-    FullGroupSection _ref = (FullGroupSection) _abstract;
+  protected void unbindService(SectionContext c) {
     FullGroupSectionSpec.unbindService(
         (SectionContext) c,
-        (String) _ref._service,
-        (int) _ref.prop1,
-        (Object) _ref.mStateContainer.state2);
+        _service,
+        (int) prop1,
+        (Object) mStateContainer.state2);
   }
 
   @Override
-  protected void refresh(SectionContext c, Section _abstract) {
-    FullGroupSection _ref = (FullGroupSection) _abstract;
+  protected void refresh(SectionContext c) {
     FullGroupSectionSpec.onRefresh(
-        (SectionContext) c, (String) _ref._service, (String) _ref.prop2);
+        (SectionContext) c, _service, (String) prop2);
   }
 
   @Override
-  protected void dataBound(SectionContext c, Section _abstract) {
-    FullGroupSection _ref = (FullGroupSection) _abstract;
+  protected void dataBound(SectionContext c) {
     FullGroupSectionSpec.onDataBound(
-        (SectionContext) c, (Component) _ref.prop3, (Object) _ref.mStateContainer.state2);
+        (SectionContext) c, (Component) prop3, (Object) mStateContainer.state2);
   }
 
   @Override
@@ -339,9 +329,7 @@ final class FullGroupSection<T> extends Section {
       int lastVisibleIndex,
       int totalCount,
       int firstFullyVisibleIndex,
-      int lastFullyVisibleIndex,
-      Section _abstract) {
-    FullGroupSection _ref = (FullGroupSection) _abstract;
+      int lastFullyVisibleIndex) {
     FullGroupSectionSpec.onViewportChanged(
         (SectionContext) c,
         (int) firstVisibleIndex,
@@ -349,11 +337,11 @@ final class FullGroupSection<T> extends Section {
         (int) totalCount,
         (int) firstFullyVisibleIndex,
         (int) lastFullyVisibleIndex,
-        (T) _ref.mStateContainer.state1,
-        (Object) _ref.mStateContainer.state2,
-        (int) _ref.prop1,
-        (String) _ref.prop2,
-        (Component) _ref.prop3);
+        (T) mStateContainer.state1,
+        (Object) mStateContainer.state2,
+        (int) prop1,
+        (String) prop2,
+        (Component) prop3);
   }
 
   @Override

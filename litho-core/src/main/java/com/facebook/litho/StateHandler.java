@@ -98,8 +98,7 @@ public class StateHandler {
   void applyStateUpdatesForComponent(Component component) {
     maybeInitStateContainers();
 
-    final ComponentLifecycle lifecycle = component;
-    if (!lifecycle.hasState()) {
+    if (!component.hasState()) {
       return;
     }
 
@@ -112,13 +111,12 @@ public class StateHandler {
     }
 
     if (currentStateContainer != null) {
-      lifecycle.transferState(
+      component.transferState(
           component.getScopedContext(),
-          currentStateContainer,
-          component);
+          currentStateContainer);
       previousStateContainer = currentStateContainer;
     } else {
-      lifecycle.createInitialState(component.getScopedContext(), component);
+      component.createInitialState(component.getScopedContext());
       previousStateContainer = component.getStateContainer();
     }
 

@@ -201,63 +201,59 @@ public final class TestLayout<S extends View> extends Component {
 
   @SuppressWarnings("unchecked")
   @Override
-  protected void onLoadStyle(ComponentContext c, Component _abstract) {
-    TestLayout _ref = (TestLayout) _abstract;
-    Output<Boolean> prop2 = acquireOutput();
-    Output<Object> prop3 = acquireOutput();
+  protected void onLoadStyle(ComponentContext c) {
+    Output<Boolean> prop2Tmp = acquireOutput();
+    Output<Object> prop3Tmp = acquireOutput();
     TestLayoutSpec.onLoadStyle(
         (ComponentContext) c,
-        prop2,
-        prop3);
-    if (prop2.get() != null) {
-      _ref.prop2 = prop2.get();
+        prop2Tmp,
+        prop3Tmp);
+    if (prop2Tmp.get() != null) {
+      prop2 = prop2Tmp.get();
     }
-    releaseOutput(prop2);
-    if (prop3.get() != null) {
-      _ref.prop3 = prop3.get();
+    releaseOutput(prop2Tmp);
+    if (prop3Tmp.get() != null) {
+      prop3 = prop3Tmp.get();
     }
-    releaseOutput(prop3);
+    releaseOutput(prop3Tmp);
   }
 
   @Override
-  protected void createInitialState(ComponentContext c, Component _abstract) {
-    TestLayout _ref = (TestLayout) _abstract;
+  protected void createInitialState(ComponentContext c) {
     StateValue<S> state2 = new StateValue<>();
     TestLayoutSpec.createInitialState(
         (ComponentContext) c,
-        (int) _ref.prop1,
+        (int) prop1,
         state2);
     if (state2.get() != null) {
-      _ref.mStateContainer.state2 = state2.get();
+      mStateContainer.state2 = state2.get();
     }
   }
 
   @Override
-  protected ComponentLayout onCreateLayout(ComponentContext context, Component _abstract) {
-    TestLayout _ref = (TestLayout) _abstract;
+  protected ComponentLayout onCreateLayout(ComponentContext context) {
     ComponentLayout _result = (ComponentLayout) TestLayoutSpec.onCreateLayout(
         (ComponentContext) context,
-        (boolean) _ref.prop2,
-        (Object) _ref.prop3,
-        (char[]) _ref.prop4,
-        (long) _ref.mStateContainer.state1,
-        (S) _ref.mStateContainer.state2,
-        (int) _ref.mStateContainer.state3,
-        (TestTreeProp) _ref.treeProp,
-        (Component) _ref.child);
+        (boolean) prop2,
+        (Object) prop3,
+        (char[]) prop4,
+        (long) mStateContainer.state1,
+        (S) mStateContainer.state2,
+        (int) mStateContainer.state3,
+        (TestTreeProp) treeProp,
+        (Component) child);
     return _result;
   }
 
   @Override
-  protected Transition onCreateTransition(ComponentContext c, Component _abstract) {
-    TestLayout _ref = (TestLayout) _abstract;
+  protected Transition onCreateTransition(ComponentContext c) {
     Diff<Integer> _state3Diff = acquireDiff(
-        _ref.mPreviousRenderData == null ? null : _ref.mPreviousRenderData.state3,
-        _ref.mStateContainer.state3);
+        mPreviousRenderData == null ? null : mPreviousRenderData.state3,
+        mStateContainer.state3);
     Transition _result = (Transition) TestLayoutSpec.onCreateTransition(
         (ComponentContext) c,
-        (Object) _ref.prop3,
-        (long) _ref.mStateContainer.state1,
+        (Object) prop3,
+        (long) mStateContainer.state1,
         _state3Diff);
     releaseDiff(_state3Diff);
     return _result;
@@ -376,12 +372,11 @@ public final class TestLayout<S extends View> extends Component {
 
   @Override
   protected void transferState(ComponentContext context,
-                               ComponentLifecycle.StateContainer _prevStateContainer, Component _component) {
+                               ComponentLifecycle.StateContainer _prevStateContainer) {
     TestLayoutStateContainer prevStateContainer = (TestLayoutStateContainer) _prevStateContainer;
-    TestLayout component = (TestLayout) _component;
-    component.mStateContainer.state1 = prevStateContainer.state1;
-    component.mStateContainer.state2 = prevStateContainer.state2;
-    component.mStateContainer.state3 = prevStateContainer.state3;
+    mStateContainer.state1 = prevStateContainer.state1;
+    mStateContainer.state2 = prevStateContainer.state2;
+    mStateContainer.state3 = prevStateContainer.state3;
   }
 
   protected static void updateCurrentStateAsync(ComponentContext c, int someParam) {

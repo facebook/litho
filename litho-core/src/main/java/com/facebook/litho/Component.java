@@ -495,7 +495,7 @@ public abstract class Component extends ComponentLifecycle
 
       if (defStyleAttr != 0 || defStyleRes != 0) {
         mComponent.getOrCreateCommonProps().setStyle(defStyleAttr, defStyleRes);
-        component.loadStyle(c, defStyleAttr, defStyleRes, component);
+        component.loadStyle(c, defStyleAttr, defStyleRes);
       }
     }
 

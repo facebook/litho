@@ -83,14 +83,14 @@ public class LifecycleMethodsTest {
   private static class LifecycleMethodsComponent extends Component {
 
     @Override
-    protected ComponentLayout onCreateLayout(ComponentContext c, Component component) {
+    protected ComponentLayout onCreateLayout(ComponentContext c) {
       setCurrentStep(LifecycleStep.ON_CREATE_LAYOUT);
 
-      return super.onCreateLayout(c, component);
+      return super.onCreateLayout(c);
     }
 
     @Override
-    protected void onPrepare(ComponentContext c, Component component) {
+    protected void onPrepare(ComponentContext c) {
       setCurrentStep(LifecycleStep.ON_PREPARE);
     }
 
@@ -105,8 +105,7 @@ public class LifecycleMethodsTest {
         ActualComponentLayout layout,
         int widthSpec,
         int heightSpec,
-        Size size,
-        Component component) {
+        Size size) {
       setCurrentStep(LifecycleStep.ON_MEASURE);
 
       size.width = mSize;
@@ -115,7 +114,7 @@ public class LifecycleMethodsTest {
 
     @Override
     protected void onBoundsDefined(
-        ComponentContext c, ActualComponentLayout layout, Component component) {
+        ComponentContext c, ActualComponentLayout layout) {
       setCurrentStep(LifecycleStep.ON_BOUNDS_DEFINED);
     }
 
@@ -129,8 +128,7 @@ public class LifecycleMethodsTest {
     @Override
     protected void onMount(
         ComponentContext c,
-        Object convertContent,
-        Component component) {
+        Object convertContent) {
       setCurrentStep(LifecycleStep.ON_MOUNT);
       final LifecycleMethodsDrawable d = (LifecycleMethodsDrawable) convertContent;
 
@@ -140,24 +138,21 @@ public class LifecycleMethodsTest {
     @Override
     protected void onUnmount(
         ComponentContext c,
-        Object mountedContent,
-        Component component) {
+        Object mountedContent) {
       setCurrentStep(LifecycleStep.ON_UNMOUNT);
     }
 
     @Override
     protected void onBind(
         ComponentContext c,
-        Object mountedContent,
-        Component component) {
+        Object mountedContent) {
       setCurrentStep(LifecycleStep.ON_BIND);
     }
 
     @Override
     protected void onUnbind(
         ComponentContext c,
-        Object mountedContent,
-        Component component) {
+        Object mountedContent) {
       setCurrentStep(LifecycleStep.ON_UNBIND);
     }
 

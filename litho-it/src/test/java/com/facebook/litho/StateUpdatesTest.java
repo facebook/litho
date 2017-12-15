@@ -75,19 +75,16 @@ public class StateUpdatesTest {
     }
 
     @Override
-    protected void createInitialState(ComponentContext c, Component component) {
-      TestComponent testComponent = (TestComponent) component;
-      testComponent.mStateContainer.mCount = INITIAL_COUNT_STATE_VALUE;
+    protected void createInitialState(ComponentContext c) {
+      mStateContainer.mCount = INITIAL_COUNT_STATE_VALUE;
     }
 
     @Override
     protected void transferState(
         ComponentContext c,
-        StateContainer stateContainer,
-        Component component) {
+        StateContainer stateContainer) {
       TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
-      TestComponent newTestComponent = (TestComponent) component;
-      newTestComponent.mStateContainer.mCount = stateContainerImpl.mCount;
+      mStateContainer.mCount = stateContainerImpl.mCount;
     }
 
     @Override

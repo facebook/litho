@@ -22,7 +22,7 @@ public class TestNullLayoutComponent extends Component {
 
   @Override
   protected ComponentLayout onCreateLayoutWithSizeSpec(
-      ComponentContext c, int widthSpec, int heightSpec, Component object) {
+      ComponentContext c, int widthSpec, int heightSpec) {
     return null;
   }
 

@@ -335,7 +335,7 @@ public class SectionTree {
   }
 
   private void refreshRecursive(Section section) {
-    section.refresh(section.getScopedContext(), section);
+    section.refresh(section.getScopedContext());
 
     if (!section.isDiffSectionSpec()) {
       final List<Section> children = section.getChildren();
@@ -363,7 +363,7 @@ public class SectionTree {
 
   private void dataBoundRecursive(Section section) {
 
-    section.dataBound(section.getScopedContext(), section);
+    section.dataBound(section.getScopedContext());
 
     if (section.isDiffSectionSpec()) {
       return;
@@ -474,8 +474,7 @@ public class SectionTree {
         lastVisibleIndex,
         totalItemsCount,
         firstFullyVisibleIndex,
-        lastFullyVisibleIndex,
-        section);
+        lastFullyVisibleIndex);
 
     if (section.isDiffSectionSpec()) {
       return;
@@ -857,7 +856,7 @@ public class SectionTree {
   }
 
   private void bindNewComponent(Section section) {
-    section.bindService(section.getScopedContext(), section);
+    section.bindService(section.getScopedContext());
     bindEventHandlers(section);
 
     if (!section.isDiffSectionSpec()) {
@@ -869,7 +868,7 @@ public class SectionTree {
   }
 
   private void unbindOldComponent(Section section) {
-    section.unbindService(section.getScopedContext(), section);
+    section.unbindService(section.getScopedContext());
 
     if (!section.isDiffSectionSpec()) {
       final List<Section> children = section.getChildren();
@@ -982,19 +981,17 @@ public class SectionTree {
       nextRoot.setCount(currentRoot.getCount());
     }
 
-    final SectionLifecycle sectionLifecycle = nextRoot;
     final boolean shouldTransferState =
         currentRoot != null && currentRoot.getClass().equals(nextRoot.getClass());
 
     if (currentRoot == null || !shouldTransferState) {
-      sectionLifecycle.createInitialState(nextRoot.getScopedContext(), nextRoot);
-      sectionLifecycle.createService(nextRoot.getScopedContext(), nextRoot);
+      nextRoot.createInitialState(nextRoot.getScopedContext());
+      nextRoot.createService(nextRoot.getScopedContext());
     } else {
-      sectionLifecycle.transferService(nextRoot.getScopedContext(), currentRoot, nextRoot);
-      sectionLifecycle.transferState(
+      nextRoot.transferService(nextRoot.getScopedContext(), currentRoot, nextRoot);
+      nextRoot.transferState(
           nextRoot.getScopedContext(),
-          currentRoot.getStateContainer(),
-          nextRoot);
+          currentRoot.getStateContainer());
     }
 
     // TODO: t18544409 Make sure this is absolutely the best solution as this is an anti-pattern
@@ -1004,24 +1001,23 @@ public class SectionTree {
         stateUpdates.get(i).updateState(nextRoot.getStateContainer(), nextRoot);
       }
 
-      if (sectionLifecycle.shouldComponentUpdate(currentRoot, nextRoot)) {
+      if (nextRoot.shouldComponentUpdate(currentRoot, nextRoot)) {
         nextRoot.invalidate();
       }
     }
 
-    if (!sectionLifecycle.isDiffSectionSpec()) {
+    if (!nextRoot.isDiffSectionSpec()) {
       final Map<String, Pair<Section, Integer>> currentComponentChildren = currentRoot == null ?
           null :
           Section.acquireChildrenMap(currentRoot);
 
       final TreeProps parentTreeProps = context.getTreeProps();
-      sectionLifecycle.populateTreeProps(nextRoot, parentTreeProps);
+      nextRoot.populateTreeProps(nextRoot, parentTreeProps);
       context.setTreeProps(
-          sectionLifecycle.getTreePropsForChildren(context, nextRoot, parentTreeProps));
+          nextRoot.getTreePropsForChildren(context, nextRoot, parentTreeProps));
 
-      nextRoot.setChildren(sectionLifecycle.createChildren(
-          nextRoot.getScopedContext(),
-          nextRoot));
+      nextRoot.setChildren(nextRoot.createChildren(
+          nextRoot.getScopedContext()));
 
       final List<Section> nextRootChildren = nextRoot.getChildren();
 

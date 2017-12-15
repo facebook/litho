@@ -534,9 +534,9 @@ public class LayoutStateCreateTreeTest {
   private static class TestDrawableComponentWithMockInternalNode
       extends TestComponent {
 
-    protected ActualComponentLayout resolve(ComponentContext c, Component component) {
+    protected ActualComponentLayout resolve(ComponentContext c) {
       InternalNode node = mock(InternalNode.class);
-      component.getCommonProps().copyInto(c, node);
+      ((Component) this).getCommonProps().copyInto(c, node);
 
       return node;
     }

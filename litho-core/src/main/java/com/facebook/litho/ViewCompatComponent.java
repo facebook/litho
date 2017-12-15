@@ -62,15 +62,12 @@ public class ViewCompatComponent<V extends View> extends Component {
       ActualComponentLayout layout,
       int widthSpec,
       int heightSpec,
-      Size size,
-      Component component) {
-    final ViewCompatComponent viewCompatComponent = (ViewCompatComponent) component;
-    final ViewBinder viewBinder = viewCompatComponent.mViewBinder;
-    final View toMeasure = (View) ComponentsPools.acquireMountContent(c, this);
+      Size size) {
+    final V toMeasure = (V) ComponentsPools.acquireMountContent(c, this);
     final ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(size.width, size.height);
 
     toMeasure.setLayoutParams(layoutParams);
-    viewBinder.bind(toMeasure);
+    mViewBinder.bind(toMeasure);
 
     if (toMeasure.getVisibility() == View.GONE) {
       // No need to measure the view if binding it caused its visibility to become GONE.
@@ -82,24 +79,24 @@ public class ViewCompatComponent<V extends View> extends Component {
       size.height = toMeasure.getMeasuredHeight();
     }
 
-    viewBinder.unbind(toMeasure);
+    mViewBinder.unbind(toMeasure);
 
     ComponentsPools.release(c, this, toMeasure);
   }
 
   @Override
-  protected void onPrepare(ComponentContext c, Component component) {
+  protected void onPrepare(ComponentContext c) {
     mViewBinder.prepare();
   }
 
   @Override
-  void bind(ComponentContext c, Object mountedContent, Component component) {
+  void bind(ComponentContext c, Object mountedContent) {
     mViewBinder.bind((V) mountedContent);
   }
 
   @Override
   void unbind(
-      ComponentContext c, Object mountedContent, Component component) {
+      ComponentContext c, Object mountedContent) {
     mViewBinder.unbind((V) mountedContent);
   }
 

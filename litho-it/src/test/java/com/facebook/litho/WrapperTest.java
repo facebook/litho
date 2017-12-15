@@ -24,6 +24,6 @@ public class WrapperTest {
   public void testWrapperWithNullComponentReturnsNullLayout() {
     ComponentContext c = new ComponentContext(application);
     Wrapper wrapper = Wrapper.create(c).delegate(null).build();
-    assertThat(NULL_LAYOUT).isEqualTo(wrapper.resolve(c, wrapper));
+    assertThat(NULL_LAYOUT).isEqualTo(wrapper.resolve(c));
   }
 }

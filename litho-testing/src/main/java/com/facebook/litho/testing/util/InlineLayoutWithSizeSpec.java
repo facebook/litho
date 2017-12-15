@@ -18,13 +18,6 @@ import com.facebook.litho.EventHandler;
 public abstract class InlineLayoutWithSizeSpec extends Component {
 
   @Override
-  protected ComponentLayout onCreateLayoutWithSizeSpec(
-      ComponentContext c, int widthSpec, int heightSpec, Component component) {
-    return ((InlineLayoutWithSizeSpec) component)
-        .onCreateLayoutWithSizeSpec(c, widthSpec, heightSpec);
-  }
-
-  @Override
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
     // no-op
     return null;
@@ -40,7 +33,4 @@ public abstract class InlineLayoutWithSizeSpec extends Component {
     // You may want to override this in your inline spec, but it's not required.
     return "InlineLayoutWithSize";
   }
-
-  protected abstract ComponentLayout onCreateLayoutWithSizeSpec(
-      ComponentContext c, int widthSpec, int heightSpec);
 }

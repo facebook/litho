@@ -41,8 +41,7 @@ public final class SimpleLayout extends Component {
   }
 
   @Override
-  protected ComponentLayout onCreateLayout(ComponentContext context, Component _abstract) {
-    SimpleLayout _ref = (SimpleLayout) _abstract;
+  protected ComponentLayout onCreateLayout(ComponentContext context) {
     ComponentLayout _result = (ComponentLayout) SimpleLayoutSpec.onCreateLayout(
         (ComponentContext) context);
     return _result;

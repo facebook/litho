@@ -75,15 +75,13 @@ public class TestViewComponent extends TestComponent {
   }
 
   @Override
-  protected void onMount(ComponentContext c, Object convertView, Component _stateObject) {
-    TestViewComponent state = (TestViewComponent) _stateObject;
-    state.onMountCalled();
+  protected void onMount(ComponentContext c, Object convertView) {
+    onMountCalled();
   }
 
   @Override
-  protected void onUnmount(ComponentContext c, Object mountedContent, Component component) {
-    TestViewComponent state = (TestViewComponent) component;
-    state.onUnmountCalled();
+  protected void onUnmount(ComponentContext c, Object mountedContent) {
+    onUnmountCalled();
   }
 
   @Override
@@ -97,35 +95,31 @@ public class TestViewComponent extends TestComponent {
       ActualComponentLayout layout,
       int widthSpec,
       int heightSpec,
-      Size size,
-      Component component) {
+      Size size) {
     int width = SizeSpec.getSize(widthSpec);
     int height = SizeSpec.getSize(heightSpec);
 
     size.height = height;
     size.width = width;
 
-    TestViewComponent state = (TestViewComponent) component;
-    state.onMeasureCalled();
+    onMeasureCalled();
   }
 
   @Override
   protected void onBoundsDefined(
-      ComponentContext c, ActualComponentLayout layout, Component component) {
-    TestViewComponent state = (TestViewComponent) component;
-    state.onDefineBoundsCalled();
+      ComponentContext c,
+    ActualComponentLayout layout) {
+    onDefineBoundsCalled();
   }
 
   @Override
-  protected void onBind(ComponentContext c, Object mountedContent, Component component) {
-    TestViewComponent state = (TestViewComponent) component;
-    state.onBindCalled();
+  protected void onBind(ComponentContext c, Object mountedContent) {
+    onBindCalled();
   }
 
   @Override
-  protected void onUnbind(ComponentContext c, Object mountedContent, Component component) {
-    TestViewComponent state = (TestViewComponent) component;
-    state.onUnbindCalled();
+  protected void onUnbind(ComponentContext c, Object mountedContent) {
+    onUnbindCalled();
   }
 
   @Override

@@ -66,16 +66,16 @@ public final class Column extends Component {
   }
 
   @Override
-  protected ComponentLayout onCreateLayout(ComponentContext c, Component component) {
-    return component;
+  protected ComponentLayout onCreateLayout(ComponentContext c) {
+    return this;
   }
 
   @Override
-  protected ActualComponentLayout resolve(ComponentContext c, Component component) {
+  protected ActualComponentLayout resolve(ComponentContext c) {
     InternalNode node = c.newLayoutBuilder(0, 0).flexDirection(YogaFlexDirection.COLUMN);
 
-    if (component.getCommonProps() != null) {
-      component.getCommonProps().copyInto(c, node);
+    if (getCommonProps() != null) {
+      getCommonProps().copyInto(c, node);
     }
 
     if (alignItems != null) {
@@ -94,8 +94,8 @@ public final class Column extends Component {
       node.wrap(wrap);
     }
 
-    if (((Column) component).children != null) {
-      for (Component child : ((Column) component).children) {
+    if (children != null) {
+      for (Component child : children) {
         node.child(child);
       }
     }

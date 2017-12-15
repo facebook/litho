@@ -73,7 +73,7 @@ public class VerySimpleGroupSectionSpecTest {
         (VerySimpleGroupSection) mTester.prepare(
             VerySimpleGroupSection.create(mTester.getContext()).numberOfDummy(4).build());
 
-    s.dataBound(mTester.getScopedContext(s), s);
+    s.dataBound(mTester.getScopedContext(s));
 
     VerySimpleGroupSection.VerySimpleGroupSectionStateContainer stateContainer =
         mTester.getStateContainer(s);

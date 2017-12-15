@@ -647,7 +647,7 @@ class LayoutState {
     // 3. Now add the MountSpec (either View or Drawable) to the Outputs.
     if (isMountSpec(component)) {
       // Notify component about its final size.
-      component.onBoundsDefined(layoutState.mContext, node, component);
+      component.onBoundsDefined(layoutState.mContext, node);
 
       addMountableOutput(layoutState, layoutOutput);
       addLayoutOutputIdToPositionsMap(
@@ -937,7 +937,7 @@ class LayoutState {
       long previousId,
       boolean isCachedOutputUpdated) {
 
-    drawableComponent.onBoundsDefined(layoutState.mContext, node, drawableComponent);
+    drawableComponent.onBoundsDefined(layoutState.mContext, node);
 
     final LayoutOutput drawableLayoutOutput = createDrawableLayoutOutput(
         drawableComponent,
@@ -1317,9 +1317,8 @@ class LayoutState {
 
     lifecycle.mount(
         component.getScopedContext() != null ? component.getScopedContext() : context,
-        drawable,
-        component);
-    lifecycle.bind(context, drawable, component);
+        drawable);
+    lifecycle.bind(context, drawable);
 
     final Rect rect = mDisplayListCreateRect;
 
@@ -1340,8 +1339,8 @@ class LayoutState {
       output.setDisplayList(null);
     }
 
-    lifecycle.unbind(context, drawable, component);
-    lifecycle.unmount(context, drawable, component);
+    lifecycle.unbind(context, drawable);
+    lifecycle.unmount(context, drawable);
     ComponentsPools.release(context, lifecycle, drawable);
 
     if (isTracing) {
@@ -1404,7 +1403,7 @@ class LayoutState {
     }
 
     final InternalNode root =
-        (InternalNode) component.createLayout(context, component, true /* resolveNestedTree */);
+        (InternalNode) component.createLayout(context, true /* resolveNestedTree */);
 
     if (logger != null) {
       logger.log(createLayoutEvent);

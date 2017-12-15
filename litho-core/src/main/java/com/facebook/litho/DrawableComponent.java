@@ -24,12 +24,9 @@ class DrawableComponent<T extends Drawable> extends Component {
   }
 
   @Override
-  protected void onBoundsDefined(
-      ComponentContext c, ActualComponentLayout layout, Component component) {
-    final DrawableComponent drawableComponent = (DrawableComponent) component;
-
-    drawableComponent.setDrawableWidth(layout.getWidth());
-    drawableComponent.setDrawableHeight(layout.getHeight());
+  protected void onBoundsDefined(ComponentContext c, ActualComponentLayout layout) {
+    setDrawableWidth(layout.getWidth());
+    setDrawableHeight(layout.getHeight());
   }
 
   @Override
@@ -40,36 +37,27 @@ class DrawableComponent<T extends Drawable> extends Component {
   @Override
   protected void onMount(
       ComponentContext context,
-      Object content,
-      Component component) {
+      Object content) {
     MatrixDrawable drawable = (MatrixDrawable) content;
-    final DrawableComponent<T> drawableComponent = (DrawableComponent) component;
 
-    drawable.mount(Reference.acquire(context, drawableComponent.getDrawable()));
+    drawable.mount(Reference.acquire(context, getDrawable()));
   }
 
   @Override
   protected void onBind(
       ComponentContext c,
-      Object mountedContent,
-      Component component) {
+      Object mountedContent) {
     final MatrixDrawable mountedDrawable = (MatrixDrawable) mountedContent;
-    final DrawableComponent drawableComponent = (DrawableComponent) component;
 
-    mountedDrawable.bind(
-        drawableComponent.getDrawableWidth(), drawableComponent.getDrawableHeight());
+    mountedDrawable.bind(getDrawableWidth(), getDrawableHeight());
   }
 
   @Override
   protected void onUnmount(
       ComponentContext context,
-      Object mountedContent,
-      Component component) {
-    final DrawableComponent drawableComponent = (DrawableComponent) component;
-
-    final MatrixDrawable matrixDrawable = (MatrixDrawable) mountedContent;
-    Reference.release(
-        context, matrixDrawable.getMountedDrawable(), drawableComponent.getDrawable());
+      Object mountedContent) {
+    final MatrixDrawable<T> matrixDrawable = (MatrixDrawable<T>) mountedContent;
+    Reference.release(context, matrixDrawable.getMountedDrawable(), getDrawable());
     matrixDrawable.unmount();
   }
 

@@ -97,21 +97,7 @@ public class DelegateMethodGenerator {
     final boolean methodUsesDiffs =
         methodDescription.optionalParameterTypes.contains(DIFF_PROP)
             || methodDescription.optionalParameterTypes.contains(DIFF_STATE);
-    final boolean shouldIncludeImpl =
-        (!methodDescription.optionalParameterTypes.isEmpty() && !methodUsesDiffs) ||
-            !methodDescription.optionalParameters.isEmpty();
     final String componentName = specModel.getComponentName();
-    if (shouldIncludeImpl) {
-      methodSpec.addParameter(specModel.getComponentClass(), ABSTRACT_PARAM_NAME);
-      methodSpec.addStatement(
-          componentName
-              + " "
-              + REF_VARIABLE_NAME
-              + " = ("
-              + componentName
-              + ") "
-              + ABSTRACT_PARAM_NAME);
-    }
 
     for (TypeName exception : methodDescription.exceptions) {
       methodSpec.addException(exception);
@@ -158,11 +144,7 @@ public class DelegateMethodGenerator {
               methodDescription.optionalParameters.get(i - definedParameterTypesSize))) {
         final MethodParamModel extraDefinedParam =
             methodDescription.optionalParameters.get(i - definedParameterTypesSize);
-        delegation.add(
-            "($T) $L.$L",
-            extraDefinedParam.getType(),
-            REF_VARIABLE_NAME,
-            extraDefinedParam.getName());
+        delegation.add("$L", extraDefinedParam.getName());
       } else if (methodParamModel instanceof DiffPropModel
           || methodParamModel instanceof DiffStateParamModel) {
         acquireStatements.addStatement(
@@ -176,23 +158,23 @@ public class DelegateMethodGenerator {
         delegation.add("$L", methodParamModel.getName());
         releaseStatements.addStatement("releaseDiff($L)", methodParamModel.getName());
       } else if (isOutputType(methodParamModel.getType())) {
+        String localOutputName = methodParamModel.getName() + "Tmp";
         acquireStatements.add(
-            "$T $L = acquireOutput();\n", methodParamModel.getType(), methodParamModel.getName());
-        delegation.add("$L", methodParamModel.getName());
+            "$T $L = acquireOutput();\n", methodParamModel.getType(), localOutputName);
+        delegation.add("$L", localOutputName);
 
         final boolean isPropOutput = SpecModelUtils.isPropOutput(specModel, methodParamModel);
         if (isPropOutput) {
-          releaseStatements.beginControlFlow("if ($L.get() != null)", methodParamModel.getName());
+          releaseStatements.beginControlFlow("if ($L.get() != null)", localOutputName);
         }
         releaseStatements.addStatement(
-            "$L.$L = $L.get()",
-            REF_VARIABLE_NAME,
+            "$L = $L.get()",
             getImplAccessor(specModel, methodParamModel),
-            methodParamModel.getName());
+            localOutputName);
         if (isPropOutput) {
           releaseStatements.endControlFlow();
         }
-        releaseStatements.addStatement("releaseOutput($L)", methodParamModel.getName());
+        releaseStatements.addStatement("releaseOutput($L)", localOutputName);
       } else if (isStateValueType(methodParamModel.getType())) {
         acquireStatements.add(
             "$T $L = new StateValue<>();\n",
@@ -206,8 +188,7 @@ public class DelegateMethodGenerator {
         }
 
         releaseStatements.addStatement(
-            "$L.$L = $L.get()",
-            REF_VARIABLE_NAME,
+            "$L = $L.get()",
             getImplAccessor(specModel, methodParamModel),
             methodParamModel.getName());
 
@@ -222,13 +203,11 @@ public class DelegateMethodGenerator {
                 .add("$T $L = acquireDiff(\n", methodParamModel.getType(), diffName)
                 .indent()
                 .add(
-                    "$L.$L == null ? null : $L.$L.$L,\n",
-                    REF_VARIABLE_NAME,
+                    "$L == null ? null : $L.$L,\n",
                     PREVIOUS_RENDER_DATA_FIELD_NAME,
-                    REF_VARIABLE_NAME,
                     PREVIOUS_RENDER_DATA_FIELD_NAME,
                     methodParamModel.getName())
-                .add("$L.$L);\n", REF_VARIABLE_NAME, getImplAccessor(specModel, methodParamModel))
+                .add("$L);\n", getImplAccessor(specModel, methodParamModel))
                 .unindent()
                 .build();
         methodSpec.addCode(block);
@@ -236,9 +215,8 @@ public class DelegateMethodGenerator {
         delegation.add("$L", diffName);
       } else {
         delegation.add(
-            "($T) $L.$L",
+            "($T) $L",
             methodParamModel.getType(),
-            REF_VARIABLE_NAME,
             getImplAccessor(specModel, methodParamModel));
       }
 

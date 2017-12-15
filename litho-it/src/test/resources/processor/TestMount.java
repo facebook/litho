@@ -221,28 +221,26 @@ public final class TestMount<S extends View> extends Component {
 
   @SuppressWarnings("unchecked")
   @Override
-  protected void onLoadStyle(ComponentContext c, Component _abstract) {
-    TestMount _ref = (TestMount) _abstract;
-    Output<Boolean> prop2 = acquireOutput();
-    Output<Object> prop3 = acquireOutput();
-    TestMountSpec.onLoadStyle((ComponentContext) c, prop2, prop3);
-    if (prop2.get() != null) {
-      _ref.prop2 = prop2.get();
+  protected void onLoadStyle(ComponentContext c) {
+    Output<Boolean> prop2Tmp = acquireOutput();
+    Output<Object> prop3Tmp = acquireOutput();
+    TestMountSpec.onLoadStyle((ComponentContext) c, prop2Tmp, prop3Tmp);
+    if (prop2Tmp.get() != null) {
+      prop2 = prop2Tmp.get();
     }
-    releaseOutput(prop2);
-    if (prop3.get() != null) {
-      _ref.prop3 = prop3.get();
+    releaseOutput(prop2Tmp);
+    if (prop3Tmp.get() != null) {
+      prop3 = prop3Tmp.get();
     }
-    releaseOutput(prop3);
+    releaseOutput(prop3Tmp);
   }
 
   @Override
-  protected void createInitialState(ComponentContext c, Component _abstract) {
-    TestMount _ref = (TestMount) _abstract;
+  protected void createInitialState(ComponentContext c) {
     StateValue<S> state2 = new StateValue<>();
-    TestMountSpec.createInitialState((ComponentContext) c, (int) _ref.prop1, state2);
+    TestMountSpec.createInitialState((ComponentContext) c, (int) prop1, state2);
     if (state2.get() != null) {
-      _ref.mStateContainer.state2 = state2.get();
+      mStateContainer.state2 = state2.get();
     }
   }
 
@@ -252,19 +250,17 @@ public final class TestMount<S extends View> extends Component {
       ActualComponentLayout layout,
       int widthSpec,
       int heightSpec,
-      Size size,
-      Component _abstract) {
-    TestMount _ref = (TestMount) _abstract;
-    Output<Long> measureOutput = acquireOutput();
+      Size size) {
+    Output<Long> measureOutputTmp = acquireOutput();
     TestMountSpec.onMeasure(
         (ComponentContext) context,
         (ActualComponentLayout) layout,
         (int) widthSpec,
         (int) heightSpec,
         (Size) size,
-        measureOutput);
-    _ref.measureOutput = measureOutput.get();
-    releaseOutput(measureOutput);
+        measureOutputTmp);
+    measureOutput = measureOutputTmp.get();
+    releaseOutput(measureOutputTmp);
   }
 
   @Override
@@ -273,19 +269,17 @@ public final class TestMount<S extends View> extends Component {
   }
 
   @Override
-  protected void onBoundsDefined(
-      ComponentContext c, ActualComponentLayout layout, Component _abstract) {
-    TestMount _ref = (TestMount) _abstract;
-    Output<Integer> boundsDefinedOutput = acquireOutput();
+  protected void onBoundsDefined(ComponentContext c, ActualComponentLayout layout) {
+    Output<Integer> boundsDefinedOutputTmp = acquireOutput();
     TestMountSpec.onBoundsDefined(
         (ComponentContext) c,
         (ActualComponentLayout) layout,
-        (Object) _ref.prop3,
-        (char[]) _ref.prop4,
-        (Long) _ref.measureOutput,
-        boundsDefinedOutput);
-    _ref.boundsDefinedOutput = boundsDefinedOutput.get();
-    releaseOutput(boundsDefinedOutput);
+        (Object) prop3,
+        (char[]) prop4,
+        (Long) measureOutput,
+        boundsDefinedOutputTmp);
+    boundsDefinedOutput = boundsDefinedOutputTmp.get();
+    releaseOutput(boundsDefinedOutputTmp);
   }
 
   @Override
@@ -295,30 +289,26 @@ public final class TestMount<S extends View> extends Component {
   }
 
   @Override
-  protected void onMount(ComponentContext c, Object v, Component _abstract) {
-    TestMount _ref = (TestMount) _abstract;
+  protected void onMount(ComponentContext c, Object v) {
     TestMountSpec.onMount(
         (ComponentContext) c,
         (Drawable) v,
-        (boolean) _ref.prop2,
-        (long) _ref.mStateContainer.state1,
-        (S) _ref.mStateContainer.state2,
-        (Long) _ref.measureOutput,
-        (TestTreeProp) _ref.treeProp);
+        (boolean) prop2,
+        (long) mStateContainer.state1,
+        (S) mStateContainer.state2,
+        (Long) measureOutput,
+        (TestTreeProp) treeProp);
   }
 
   @Override
-  protected void onUnmount(ComponentContext c, Object v, Component _abstract) {
-    TestMount _ref = (TestMount) _abstract;
-    TestMountSpec.onUnmount((ComponentContext) c, (Drawable) v, (long) _ref.prop8);
+  protected void onUnmount(ComponentContext c, Object v) {
+    TestMountSpec.onUnmount((ComponentContext) c, (Drawable) v, (long) prop8);
   }
 
   @Override
-  protected void onPopulateAccessibilityNode(AccessibilityNodeInfoCompat node,
-      Component _abstract) {
-    TestMount _ref = (TestMount) _abstract;
+  protected void onPopulateAccessibilityNode(AccessibilityNodeInfoCompat node) {
     TestMountSpec.onPopulateAccessibilityNode(
-        (AccessibilityNodeInfoCompat) node, (CharSequence) _ref.prop7);
+        (AccessibilityNodeInfoCompat) node, (CharSequence) prop7);
   }
 
   @Override
@@ -327,12 +317,11 @@ public final class TestMount<S extends View> extends Component {
   }
 
   @Override
-  protected int getExtraAccessibilityNodesCount(Component _abstract) {
-    TestMount _ref = (TestMount) _abstract;
-    int _result =
-        (int)
-            TestMountSpec.getExtraAccessibilityNodesCount(
-                (int) _ref.prop1, (CharSequence) _ref.prop7, (Integer) _ref.boundsDefinedOutput);
+  protected int getExtraAccessibilityNodesCount() {
+    int _result = (int) TestMountSpec.getExtraAccessibilityNodesCount(
+        (int) prop1,
+        (CharSequence) prop7,
+        (Integer) boundsDefinedOutput);
     return _result;
   }
 
@@ -341,17 +330,15 @@ public final class TestMount<S extends View> extends Component {
       AccessibilityNodeInfoCompat node,
       int extraNodeIndex,
       int componentBoundsLeft,
-      int componentBoundsTop,
-      Component _abstract) {
-    TestMount _ref = (TestMount) _abstract;
+      int componentBoundsTop) {
     TestMountSpec.onPopulateExtraAccessibilityNode(
         (AccessibilityNodeInfoCompat) node,
         (int) extraNodeIndex,
         (int) componentBoundsLeft,
         (int) componentBoundsTop,
-        (Object) _ref.prop3,
-        (CharSequence) _ref.prop7,
-        (Integer) _ref.boundsDefinedOutput);
+        (Object) prop3,
+        (CharSequence) prop7,
+        (Integer) boundsDefinedOutput);
   }
 
   @Override
@@ -360,16 +347,13 @@ public final class TestMount<S extends View> extends Component {
   }
 
   @Override
-  protected int getExtraAccessibilityNodeAt(int x, int y, Component _abstract) {
-    TestMount _ref = (TestMount) _abstract;
-    int _result =
-        (int)
-            TestMountSpec.getExtraAccessibilityNodeAt(
-                (int) x,
-                (int) y,
-                (Object) _ref.prop3,
-                (CharSequence) _ref.prop7,
-                (Integer) _ref.boundsDefinedOutput);
+  protected int getExtraAccessibilityNodeAt(int x, int y) {
+    int _result = (int) TestMountSpec.getExtraAccessibilityNodeAt(
+        (int) x,
+        (int) y,
+        (Object) prop3,
+        (CharSequence) prop7,
+        (Integer) boundsDefinedOutput);
     return _result;
   }
 
@@ -550,11 +534,10 @@ public final class TestMount<S extends View> extends Component {
 
   @Override
   protected void transferState(ComponentContext context,
-      ComponentLifecycle.StateContainer _prevStateContainer, Component _component) {
+      ComponentLifecycle.StateContainer _prevStateContainer) {
     TestMountStateContainer prevStateContainer = (TestMountStateContainer) _prevStateContainer;
-    TestMount component = (TestMount) _component;
-    component.mStateContainer.state1 = prevStateContainer.state1;
-    component.mStateContainer.state2 = prevStateContainer.state2;
+    mStateContainer.state1 = prevStateContainer.state1;
+    mStateContainer.state2 = prevStateContainer.state2;
   }
 
   protected static void updateCurrentStateAsync(ComponentContext c, int someParam) {

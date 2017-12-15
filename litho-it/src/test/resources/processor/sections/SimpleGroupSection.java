@@ -52,8 +52,7 @@ public final class SimpleGroupSection extends Section {
   }
 
   @Override
-  protected Children createChildren(SectionContext c, Section _abstract) {
-    SimpleGroupSection _ref = (SimpleGroupSection) _abstract;
+  protected Children createChildren(SectionContext c) {
     Children _result = (Children) SimpleGroupSectionSpec.onCreateChildren((SectionContext) c);
     return _result;
   }

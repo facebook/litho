@@ -82,19 +82,14 @@ public class StateGenerator {
             .addParameter(
                 ParameterSpec.builder(specModel.getStateContainerClass(), "_prevStateContainer")
                     .build())
-            .addParameter(ParameterSpec.builder(specModel.getComponentClass(), "_component").build())
             .addStatement(
                 "$L prevStateContainer = ($L) _prevStateContainer",
                 ComponentBodyGenerator.getStateContainerClassName(specModel),
-                ComponentBodyGenerator.getStateContainerClassName(specModel))
-            .addStatement(
-                "$L component = ($L) _component",
-                specModel.getComponentName(),
-                specModel.getComponentName());
+                ComponentBodyGenerator.getStateContainerClassName(specModel));
 
     for (StateParamModel stateValue : specModel.getStateValues()) {
       methodSpec.addStatement(
-          "component.$L.$L = prevStateContainer.$L",
+          "$L.$L = prevStateContainer.$L",
           STATE_CONTAINER_FIELD_NAME,
           stateValue.getName(),
           stateValue.getName());

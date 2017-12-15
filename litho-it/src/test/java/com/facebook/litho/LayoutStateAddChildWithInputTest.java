@@ -35,7 +35,7 @@ public class LayoutStateAddChildWithInputTest {
             .child(TestLayoutComponent.create(mContext))
             .build();
 
-    InternalNode node = (InternalNode) component.resolve(mContext, component);
+    InternalNode node = (InternalNode) component.resolve(mContext);
 
     assertThat(node.getChildCount()).isEqualTo(2);
     assertThat(node.getChildAt(0).getChildCount()).isEqualTo(0);

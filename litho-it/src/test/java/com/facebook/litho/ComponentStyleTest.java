@@ -70,7 +70,7 @@ public class ComponentStyleTest {
   @Test
   public void testStyleLayout() {
     Component component = Text.create(mContext, 0, PaddingStyle).text("text").build();
-    InternalNode node = (InternalNode) component.resolve(mContext, component);
+    InternalNode node = (InternalNode) component.resolve(mContext);
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(mDimen);
   }
@@ -82,7 +82,7 @@ public class ComponentStyleTest {
             .text("text")
             .paddingPx(ALL, mDimen * 2)
             .build();
-    InternalNode node = (InternalNode) component.resolve(mContext, component);
+    InternalNode node = (InternalNode) component.resolve(mContext);
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(2 * mDimen);
   }
@@ -112,7 +112,7 @@ public class ComponentStyleTest {
   public void testAttributeStyleLayout() {
     Component component =
         Text.create(mContext, testAttrLargePadding, 0).text("text").build();
-    InternalNode node = (InternalNode) component.resolve(mContext, component);
+    InternalNode node = (InternalNode) component.resolve(mContext);
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(mLargeDimen);
   }
@@ -124,7 +124,7 @@ public class ComponentStyleTest {
             .text("text")
             .paddingPx(ALL, mDimen * 2)
             .build();
-    InternalNode node = (InternalNode) component.resolve(mContext, component);
+    InternalNode node = (InternalNode) component.resolve(mContext);
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(2 * mDimen);
   }
@@ -143,7 +143,7 @@ public class ComponentStyleTest {
   public void testStyleResOverridenByAttrResForLayout() {
     Component component =
         Text.create(mContext, testAttrLargePadding, PaddingStyle).text("text").build();
-    InternalNode node = (InternalNode) component.resolve(mContext, component);
+    InternalNode node = (InternalNode) component.resolve(mContext);
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(mLargeDimen);
   }

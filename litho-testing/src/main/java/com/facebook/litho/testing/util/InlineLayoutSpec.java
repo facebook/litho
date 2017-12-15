@@ -18,30 +18,19 @@ import com.facebook.litho.Transition;
 public abstract class InlineLayoutSpec extends Component {
 
   @Override
-  protected ComponentLayout onCreateLayout(ComponentContext c, Component component) {
-    return ((InlineLayoutSpec) component).onCreateLayout(c);
-  }
-
-  @Override
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
     // no-op
     return null;
   }
 
   @Override
-  protected Transition onCreateTransition(ComponentContext c, Component component) {
-    return ((InlineLayoutSpec) component).onCreateTransition(c);
+  protected Transition onCreateTransition(ComponentContext c) {
+    return null;
   }
 
   @Override
   public String getSimpleName() {
     // You may want to override this in your inline spec, but it's not required.
     return "InlineLayout";
-  }
-
-  protected abstract ComponentLayout onCreateLayout(ComponentContext c);
-
-  protected Transition onCreateTransition(ComponentContext c) {
-    return null;
   }
 }

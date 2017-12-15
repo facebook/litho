@@ -27,9 +27,7 @@ public class TestSizeDependentComponent extends Component {
   protected ComponentLayout onCreateLayoutWithSizeSpec(
       ComponentContext c,
       int widthSpec,
-      int heightSpec,
-      Component _stateObject) {
-    final TestSizeDependentComponent state = ((TestSizeDependentComponent) _stateObject);
+      int heightSpec) {
 
     final Component.Builder builder1 =
         TestDrawableComponent.create(c, false, true, true, false, false)
@@ -39,7 +37,7 @@ public class TestSizeDependentComponent extends Component {
         .flexShrink(0)
         .marginPx(YogaEdge.ALL, 3);
 
-    if (state.hasFixedSizes) {
+    if (hasFixedSizes) {
       builder1
           .widthPx(50)
           .heightPx(50);
@@ -47,7 +45,7 @@ public class TestSizeDependentComponent extends Component {
           .heightPx(20);
     }
 
-    if (state.isDelegate) {
+    if (isDelegate) {
       return builder1.build();
     }
 

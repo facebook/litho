@@ -77,8 +77,7 @@ public class TestSectionCreator {
     }
 
     @Override
-    protected Children createChildren(
-        SectionContext c, Section component) {
+    protected Children createChildren(SectionContext c) {
       Children.Builder builder = Children.create();
       if (mChildren != null) {
         for (Section child : mChildren) {
@@ -90,9 +89,8 @@ public class TestSectionCreator {
     }
 
     @Override
-    protected void refresh(
-        SectionContext listContext, Section section) {
-      ((TestSection) section).refreshCalled = true;
+    protected void refresh(SectionContext listContext) {
+      refreshCalled = true;
     }
 
     @Override
@@ -102,12 +100,11 @@ public class TestSectionCreator {
         int lastVisibleItem,
         int totalItemsCount,
         int firstFullyVisibleItem,
-        int lastFullyVisibleItem,
-        Section section) {
-      ((TestSection) section).firstVisibleIndex = firstVisibleItem;
-      ((TestSection) section).lastVisibleIndex = lastVisibleItem;
-      ((TestSection) section).firstFullyVisibleIndex = firstFullyVisibleItem;
-      ((TestSection) section).lastFullyVisibleIndex = lastFullyVisibleItem;
+        int lastFullyVisibleItem) {
+      firstVisibleIndex = firstVisibleItem;
+      lastVisibleIndex = lastVisibleItem;
+      firstFullyVisibleIndex = firstFullyVisibleItem;
+      lastFullyVisibleIndex = lastFullyVisibleItem;
     }
   }
 
@@ -138,9 +135,8 @@ public class TestSectionCreator {
     }
 
     @Override
-    protected void refresh(
-        SectionContext listContext, Section section) {
-      ((TestSection) section).refreshCalled = true;
+    protected void refresh(SectionContext listContext) {
+      refreshCalled = true;
     }
 
     @Override
@@ -155,12 +151,11 @@ public class TestSectionCreator {
         int lastVisibleItem,
         int totalItemsCount,
         int firstFullyVisibleItem,
-        int lastFullyVisibleItem,
-        Section section) {
-      ((TestSection) section).firstVisibleIndex = firstVisibleItem;
-      ((TestSection) section).lastVisibleIndex = lastVisibleItem;
-      ((TestSection) section).firstFullyVisibleIndex = firstFullyVisibleItem;
-      ((TestSection) section).lastFullyVisibleIndex = lastFullyVisibleItem;
+        int lastFullyVisibleItem) {
+      firstVisibleIndex = firstVisibleItem;
+      lastVisibleIndex = lastVisibleItem;
+      firstFullyVisibleIndex = firstFullyVisibleItem;
+      lastFullyVisibleIndex = lastFullyVisibleItem;
     }
   }
 

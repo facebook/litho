@@ -10,7 +10,6 @@
 package com.facebook.litho.sections.specmodels.model;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_PARAM_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.REF_VARIABLE_NAME;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_STATE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.INJECT_PROP;
@@ -265,26 +264,19 @@ public class DelegateMethodDescriptions {
         .returnType(serviceParam.getType())
         .extraMethods(
             ImmutableList.<MethodSpec>of(
-                createService(componentName, serviceParam.getName()),
+                createService(serviceParam.getName()),
                 transferService(componentName, serviceParam.getName()),
                 getService(componentName, serviceParam.getName())))
         .build();
   }
 
-  private static MethodSpec createService(String implClass, String serviceInstanceName) {
+  private static MethodSpec createService(String serviceInstanceName) {
     return MethodSpec.methodBuilder("createService")
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
         .addParameter(ParameterSpec.builder(SectionClassNames.SECTION_CONTEXT, "context").build())
-        .addParameter(
-            ParameterSpec.builder(SectionClassNames.SECTION, ABSTRACT_PARAM_NAME).build())
         .addStatement(
-            "$L $L = ($L) $L", implClass, REF_VARIABLE_NAME, implClass, ABSTRACT_PARAM_NAME)
-        .addStatement(
-            "$L.$L = onCreateService(context, $L)",
-            REF_VARIABLE_NAME,
-            serviceInstanceName,
-            ABSTRACT_PARAM_NAME)
+            "$L = onCreateService(context)", serviceInstanceName)
         .build();
   }
 

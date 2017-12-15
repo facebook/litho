@@ -46,19 +46,19 @@ public final class Wrapper extends Component {
   }
 
   @Override
-  protected ComponentLayout onCreateLayout(ComponentContext c, Component component) {
-    return component;
+  protected ComponentLayout onCreateLayout(ComponentContext c) {
+    return this;
   }
 
   @Override
-  protected ActualComponentLayout resolve(ComponentContext c, Component component) {
+  protected ActualComponentLayout resolve(ComponentContext c) {
     if (delegate == null) {
       return ComponentContext.NULL_LAYOUT;
     }
 
     InternalNode node = (InternalNode) c.newLayoutBuilder(delegate, 0, 0);
-    if (component.getCommonProps() != null) {
-      component.getCommonProps().copyInto(c, node);
+    if (getCommonProps() != null) {
+      getCommonProps().copyInto(c, node);
     }
 
     return node;

@@ -76,7 +76,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       // the root host view's as they are meant to behave as a single
       // node in the accessibility framework.
       final Component component = mountItem.getComponent();
-      component.onPopulateAccessibilityNode(node, component);
+      component.onPopulateAccessibilityNode(node);
     } else {
       super.onInitializeAccessibilityNodeInfo(host, node);
     }
@@ -91,7 +91,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
 
     final Component component = mountItem.getComponent();
 
-    final int extraAccessibilityNodesCount = component.getExtraAccessibilityNodesCount(component);
+    final int extraAccessibilityNodesCount = component.getExtraAccessibilityNodesCount();
 
     // Expose extra accessibility nodes declared by the component to the
     // accessibility framework. The actual nodes will be populated in
@@ -123,7 +123,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
 
     node.setClassName(lifecycle.getClass().getName());
 
-    if (virtualViewId >= lifecycle.getExtraAccessibilityNodesCount(component)) {
+    if (virtualViewId >= lifecycle.getExtraAccessibilityNodesCount()) {
       Log.e(TAG, "Received unrecognized virtual view id: " + virtualViewId);
 
       // ExploreByTouchHelper insists that we set something.
@@ -136,8 +136,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
         node,
         virtualViewId,
         bounds.left,
-        bounds.top,
-        component);
+        bounds.top);
   }
 
   /**
@@ -154,7 +153,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     final Component component = mountItem.getComponent();
     final ComponentLifecycle lifecycle = component;
 
-    if (lifecycle.getExtraAccessibilityNodesCount(component) == 0) {
+    if (lifecycle.getExtraAccessibilityNodesCount() == 0) {
       return INVALID_ID;
     }
 
@@ -165,8 +164,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     // the given coordinates.
     final int virtualViewId = lifecycle.getExtraAccessibilityNodeAt(
         (int) x - bounds.left,
-        (int) y - bounds.top,
-        component);
+        (int) y - bounds.top);
 
     return (virtualViewId >= 0 ? virtualViewId : INVALID_ID);
   }

@@ -113,12 +113,10 @@ public class StateGeneratorTest {
         .isEqualTo(
             "@java.lang.Override\n" +
             "protected void transferState(com.facebook.litho.ComponentContext context,\n" +
-            "    com.facebook.litho.ComponentLifecycle.StateContainer _prevStateContainer,\n" +
-            "    com.facebook.litho.Component _component) {\n" +
+            "    com.facebook.litho.ComponentLifecycle.StateContainer _prevStateContainer) {\n" +
             "  TestWithStateStateContainer prevStateContainer = (TestWithStateStateContainer) _prevStateContainer;\n" +
-            "  TestWithState component = (TestWithState) _component;\n" +
-            "  component.mStateContainer.arg1 = prevStateContainer.arg1;\n" +
-            "  component.mStateContainer.arg4 = prevStateContainer.arg4;\n" +
+            "  mStateContainer.arg1 = prevStateContainer.arg1;\n" +
+            "  mStateContainer.arg4 = prevStateContainer.arg4;\n" +
             "}\n");
   }
 

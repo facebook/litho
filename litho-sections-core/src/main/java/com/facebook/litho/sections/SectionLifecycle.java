@@ -30,8 +30,7 @@ public abstract class SectionLifecycle implements EventDispatcher {
    * method annotated with {@link com.facebook.litho.sections.annotations.OnCreateChildren}
    */
   protected Children createChildren(
-      SectionContext c,
-      Section component) {
+      SectionContext c) {
     return null;
   }
 
@@ -49,23 +48,23 @@ public abstract class SectionLifecycle implements EventDispatcher {
   /**
    * This method will delegate to the {@link Section}Spec method annotated with {@link OnDataBound}
    */
-  protected void dataBound(SectionContext c, Section section) {
+  protected void dataBound(SectionContext c) {
 
   }
 
-  protected void bindService(SectionContext c, Section section) {
+  protected void bindService(SectionContext c) {
 
   }
 
-  protected void unbindService(SectionContext c, Section section) {
+  protected void unbindService(SectionContext c) {
 
   }
 
-  protected void createInitialState(SectionContext c, Section section) {
+  protected void createInitialState(SectionContext c) {
 
   }
 
-  protected void createService(SectionContext c, Section section) {
+  protected void createService(SectionContext c) {
 
   }
 
@@ -80,14 +79,11 @@ public abstract class SectionLifecycle implements EventDispatcher {
       int lastVisibleItem,
       int totalItemsCount,
       int firstFullyVisibleItem,
-      int lastFullyVisibleItem,
-      Section section) {
+      int lastFullyVisibleItem) {
 
   }
 
-  protected void refresh(
-      SectionContext sectionContext,
-      Section section) {
+  protected void refresh(SectionContext sectionContext) {
 
   }
 
@@ -97,8 +93,7 @@ public abstract class SectionLifecycle implements EventDispatcher {
    */
   protected void transferState(
       SectionContext c,
-      StateContainer stateContainer,
-      Section section) {
+      StateContainer stateContainer) {
   }
 
   /**
