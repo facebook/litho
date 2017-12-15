@@ -14,7 +14,6 @@ import android.support.annotation.DrawableRes;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.Wrapper;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.state.StateUpdatesTestHelper;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
@@ -254,12 +253,12 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
 
   /**
    * Assert that a given {@link Component} renders to null, i.e. its <code>onCreateLayout
-   * </code> method returns a {@link ComponentContext#NULL_LAYOUT}.
+   * </code> method resolves to a {@link ComponentContext#NULL_LAYOUT}.
    */
   public ComponentAssert wontRender() {
-    ComponentLayoutAssert.assertThat(
-            mComponentContext, Wrapper.create(mComponentContext).delegate(actual).build())
-        .wontRender();
+    Java6Assertions.assertThat(Component.willRender(mComponentContext, actual))
+        .overridingErrorMessage("Expected Component to render to null, but it did not.")
+        .isFalse();
 
     return this;
   }
@@ -269,9 +268,9 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    * ComponentContext#NULL_LAYOUT}.
    */
   public ComponentAssert willRender() {
-    ComponentLayoutAssert.assertThat(
-            mComponentContext, Wrapper.create(mComponentContext).delegate(actual).build())
-        .willRender();
+    Java6Assertions.assertThat(Component.willRender(mComponentContext, actual))
+        .overridingErrorMessage("Expected Component to not render to null, but it did.")
+        .isTrue();
 
     return this;
   }
