@@ -138,7 +138,7 @@ public final class ColumnReverse extends Component {
     return true;
   }
 
-  public static class Builder extends Component.Builder<Builder>
+  public static class Builder extends Component.ContainerBuilder<Builder>
       implements ComponentLayout.ContainerBuilder {
     ColumnReverse mColumnReverse;
     ComponentContext mContext;
@@ -150,6 +150,7 @@ public final class ColumnReverse extends Component {
       mContext = context;
     }
 
+    @Override
     public Builder child(Component child) {
       if (child == null) {
         return this;
@@ -163,6 +164,7 @@ public final class ColumnReverse extends Component {
       return this;
     }
 
+    @Override
     public Builder child(Component.Builder<?> child) {
       if (child == null) {
         return this;
@@ -170,6 +172,7 @@ public final class ColumnReverse extends Component {
       return child(child.build());
     }
 
+    @Override
     public Builder child(ComponentLayout child) {
       if (child == null) {
         return this;
@@ -178,6 +181,7 @@ public final class ColumnReverse extends Component {
       return child((Component) child);
     }
 
+    @Override
     public Builder child(ComponentLayout.Builder child) {
       if (child == null) {
         return this;
@@ -186,21 +190,25 @@ public final class ColumnReverse extends Component {
       return child(child.build());
     }
 
+    @Override
     public Builder alignContent(YogaAlign alignContent) {
       this.mColumnReverse.alignContent = alignContent;
       return this;
     }
 
+    @Override
     public Builder alignItems(YogaAlign alignItems) {
       this.mColumnReverse.alignItems = alignItems;
       return this;
     }
 
+    @Override
     public Builder justifyContent(YogaJustify justifyContent) {
       this.mColumnReverse.justifyContent = justifyContent;
       return this;
     }
 
+    @Override
     public Builder wrap(YogaWrap wrap) {
       this.mColumnReverse.wrap = wrap;
       return this;

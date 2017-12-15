@@ -35,7 +35,9 @@ import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaPositionType;
+import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -1154,5 +1156,23 @@ public abstract class Component extends ComponentLifecycle
       mComponent.getOrCreateCommonProps().scale(scale);
       return getThis();
     }
+  }
+
+  public abstract static class ContainerBuilder<T extends ContainerBuilder<T>> extends Builder<T> {
+    public abstract T child(Component child);
+
+    public abstract T child(Component.Builder<?> child);
+
+    public abstract T child(ComponentLayout child);
+
+    public abstract T child(ComponentLayout.Builder child);
+
+    public abstract T alignContent(YogaAlign alignContent);
+
+    public abstract T alignItems(YogaAlign alignItems);
+
+    public abstract T justifyContent(YogaJustify justifyContent);
+
+    public abstract T wrap(YogaWrap wrap);
   }
 }
