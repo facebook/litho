@@ -52,6 +52,11 @@ public final class ColumnReverse extends Component {
     return "ColumnReverse";
   }
 
+  @Override
+  boolean isInternalComponent() {
+    return true;
+  }
+
   public static Builder create(ComponentContext context) {
     return create(context, 0, 0);
   }

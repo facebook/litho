@@ -274,8 +274,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
         }
 
         // TODO tT24211349 - tidy this up.
-        if (context instanceof TestComponentContext
-            && !Component.isInternalComponent(layoutComponent)) {
+        if (context instanceof TestComponentContext && !layoutComponent.isInternalComponent()) {
           node = ComponentsPools.acquireInternalNode(context);
           node.appendComponent(new TestComponent(layoutComponent));
           return node;

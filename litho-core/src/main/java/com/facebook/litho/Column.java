@@ -52,6 +52,11 @@ public final class Column extends Component {
     return "Column";
   }
 
+  @Override
+  boolean isInternalComponent() {
+    return true;
+  }
+
   public static Builder create(ComponentContext context) {
     return create(context, 0, 0);
   }

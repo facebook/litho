@@ -443,6 +443,10 @@ public abstract class Component extends ComponentLifecycle
     // Do nothing by default
   }
 
+  boolean isInternalComponent() {
+    return false;
+  }
+
   CommonProps getCommonProps() {
     return mCommonProps;
   }
