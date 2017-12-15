@@ -200,22 +200,19 @@ public final class TestMount<S extends View> extends Component {
   }
 
   @Override
-  protected void populateTreeProps(Component _abstract, TreeProps treeProps) {
+  protected void populateTreeProps(TreeProps treeProps) {
     if (treeProps == null) {
       return;
     }
-    final TestMount _ref = (TestMount) _abstract;
-    _ref.treeProp = treeProps.get(com.facebook.litho.processor.integration.resources.TestTreeProp.class);
+    treeProp = treeProps.get(com.facebook.litho.processor.integration.resources.TestTreeProp.class);
   }
 
   @Override
-  protected TreeProps getTreePropsForChildren(ComponentContext c, Component _abstract,
-      TreeProps parentTreeProps) {
-    final TestMount _ref = (TestMount) _abstract;
+  protected TreeProps getTreePropsForChildren(ComponentContext c, TreeProps parentTreeProps) {
     final TreeProps childTreeProps = TreeProps.copy(parentTreeProps);
     childTreeProps.put(com.facebook.litho.processor.integration.resources.TestTreeProp.class, TestMountSpec.onCreateFeedPrefetcherProp(
         (ComponentContext) c,
-        (long) _ref.prop6));
+        prop6));
     return childTreeProps;
   }
 

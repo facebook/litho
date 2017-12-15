@@ -49,19 +49,14 @@ public class TreePropGenerator {
         MethodSpec.methodBuilder("populateTreeProps")
             .addAnnotation(Override.class)
             .addModifiers(Modifier.PROTECTED)
-            .addParameter(specModel.getComponentClass(), "_abstract")
             .addParameter(ClassNames.TREE_PROPS, "treeProps")
             .beginControlFlow("if (treeProps == null)")
             .addStatement("return")
-            .endControlFlow()
-            .addStatement(
-                "final $L _ref = ($L) _abstract",
-                specModel.getComponentName(),
-                specModel.getComponentName());
+            .endControlFlow();
 
     for (TreePropModel treeProp : specModel.getTreeProps()) {
       method.addStatement(
-          "_ref.$L = treeProps.get($L.class)",
+          "$L = treeProps.get($L.class)",
           treeProp.getName(),
           findTypeByTypeName(treeProp.getType()));
     }
@@ -83,12 +78,7 @@ public class TreePropGenerator {
             .addModifiers(Modifier.PROTECTED)
             .returns(ClassNames.TREE_PROPS)
             .addParameter(specModel.getContextClass(), "c")
-            .addParameter(specModel.getComponentClass(), "_abstract")
             .addParameter(ClassNames.TREE_PROPS, "parentTreeProps")
-            .addStatement(
-                "final $L _ref = ($L) _abstract",
-                specModel.getComponentName(),
-                specModel.getComponentName())
             .addStatement(
                 "final $T childTreeProps = $T.copy(parentTreeProps)",
                 ClassNames.TREE_PROPS,
@@ -111,14 +101,12 @@ public class TreePropGenerator {
         } else if (MethodParamModelUtils.isAnnotatedWith(
             onCreateTreePropsMethod.methodParams.get(i), State.class)) {
           block.add(
-              "($T) _ref.$L.$L",
-              onCreateTreePropsMethod.methodParams.get(i).getType(),
+              "$L.$L",
               GeneratorConstants.STATE_CONTAINER_FIELD_NAME,
               onCreateTreePropsMethod.methodParams.get(i).getName());
         } else {
           block.add(
-              "($T) _ref.$L",
-              onCreateTreePropsMethod.methodParams.get(i).getType(),
+              "$L",
               onCreateTreePropsMethod.methodParams.get(i).getName());
         }
 

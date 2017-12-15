@@ -1012,9 +1012,9 @@ public class SectionTree {
           Section.acquireChildrenMap(currentRoot);
 
       final TreeProps parentTreeProps = context.getTreeProps();
-      nextRoot.populateTreeProps(nextRoot, parentTreeProps);
+      nextRoot.populateTreeProps(parentTreeProps);
       context.setTreeProps(
-          nextRoot.getTreePropsForChildren(context, nextRoot, parentTreeProps));
+          nextRoot.getTreePropsForChildren(context, parentTreeProps));
 
       nextRoot.setChildren(nextRoot.createChildren(
           nextRoot.getScopedContext()));

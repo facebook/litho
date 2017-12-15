@@ -345,12 +345,11 @@ final class FullGroupSection<T> extends Section {
   }
 
   @Override
-  protected void populateTreeProps(Section _abstract, TreeProps treeProps) {
+  protected void populateTreeProps(TreeProps treeProps) {
     if (treeProps == null) {
       return;
     }
-    final FullGroupSection _ref = (FullGroupSection) _abstract;
-    _ref.treeProp =
+    treeProp =
         treeProps.get(
             com.facebook.litho.sections.processor.integration.resources.FullGroupSectionSpec
                 .TreePropWrapper.class);
@@ -358,14 +357,13 @@ final class FullGroupSection<T> extends Section {
 
   @Override
   protected TreeProps getTreePropsForChildren(
-      SectionContext c, Section _abstract, TreeProps parentTreeProps) {
-    final FullGroupSection _ref = (FullGroupSection) _abstract;
+      SectionContext c, TreeProps parentTreeProps) {
     final TreeProps childTreeProps = TreeProps.copy(parentTreeProps);
     childTreeProps.put(
         com.facebook.litho.sections.processor.integration.resources.FullGroupSectionSpec
             .TreePropWrapper.class,
         FullGroupSectionSpec.onCreateTreeProp(
-            (SectionContext) c, (FullGroupSectionSpec.TreePropWrapper) _ref.treeProp));
+            (SectionContext) c, treeProp));
     return childTreeProps;
   }
 

@@ -423,7 +423,7 @@ public abstract class Component extends ComponentLifecycle
   void applyStateUpdates(ComponentContext c) {
     setScopedContext(ComponentContext.withComponentScope(c, this));
 
-    populateTreeProps(this, getScopedContext().getTreeProps());
+    populateTreeProps(getScopedContext().getTreeProps());
 
     if (ComponentsConfiguration.useGlobalKeys) {
       final KeyHandler keyHandler = getScopedContext().getKeyHandler();

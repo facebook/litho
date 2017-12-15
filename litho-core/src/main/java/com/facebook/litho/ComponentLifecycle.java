@@ -240,7 +240,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
         Component.isNestedTree((Component) this) && !resolveNestedTree;
 
     final TreeProps parentTreeProps = context.getTreeProps();
-    context.setTreeProps(getTreePropsForChildren(context, (Component) this, parentTreeProps));
+    context.setTreeProps(getTreePropsForChildren(context, parentTreeProps));
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
@@ -380,7 +380,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * Retrieves all of the tree props used by this Component from the TreeProps map
    * and sets the tree props as fields on the ComponentImpl.
    */
-  protected void populateTreeProps(Component component, TreeProps parentTreeProps) {
+  protected void populateTreeProps(TreeProps parentTreeProps) {
   }
 
   /**
@@ -388,7 +388,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    */
   protected TreeProps getTreePropsForChildren(
       ComponentContext c,
-      Component component,
       TreeProps previousTreeProps) {
     return previousTreeProps;
   }

@@ -197,7 +197,7 @@ public abstract class SectionLifecycle implements EventDispatcher {
    * Retrieves all of the tree props used by this Section from the TreeProps map
    * and sets the tree props as fields on the ComponentImpl.
    */
-  protected void populateTreeProps(Section section, TreeProps parentTreeProps) {
+  protected void populateTreeProps(TreeProps parentTreeProps) {
   }
 
   /**
@@ -205,7 +205,6 @@ public abstract class SectionLifecycle implements EventDispatcher {
    */
   protected TreeProps getTreePropsForChildren(
       SectionContext c,
-      Section section,
       TreeProps previousTreeProps) {
     return previousTreeProps;
   }
