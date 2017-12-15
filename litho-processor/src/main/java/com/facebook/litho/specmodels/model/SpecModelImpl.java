@@ -785,6 +785,10 @@ public final class SpecModelImpl implements SpecModel {
       if (mClassAnnotations == null) {
         mClassAnnotations = ImmutableList.of();
       }
+
+      if (mBuilderMethodModels == null) {
+        mBuilderMethodModels = ImmutableList.of();
+      }
     }
   }
 }

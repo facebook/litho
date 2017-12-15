@@ -19,7 +19,6 @@ import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
@@ -94,7 +93,6 @@ public class MountSpecModelFactory implements SpecModelFactory {
         ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),
         EventDeclarationsExtractor.getEventDeclarations(elements, element, MountSpec.class),
-        ImmutableList.<BuilderMethodModel>of(),
         JavadocExtractor.getClassJavadoc(elements, element),
         AnnotationExtractor.extractValidAnnotations(element),
         JavadocExtractor.getPropJavadocs(elements, element),

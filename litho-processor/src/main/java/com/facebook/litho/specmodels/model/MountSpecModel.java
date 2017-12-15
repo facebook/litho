@@ -55,7 +55,6 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
-      ImmutableList<BuilderMethodModel> builderMethodModels,
       String classJavadoc,
       ImmutableList<AnnotationSpec> classAnnotations,
       ImmutableList<PropJavadocModel> propJavadocs,
@@ -82,7 +81,6 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .typeVariables(typeVariables)
             .propDefaults(propDefaults)
             .eventDeclarations(eventDeclarations)
-            .extraBuilderMethods(builderMethodModels)
             .classAnnotations(classAnnotations)
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)

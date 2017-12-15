@@ -35,7 +35,6 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       ImmutableList<String> cachedPropNames,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
-      ImmutableList<BuilderMethodModel> builderMethodModels,
       ImmutableList<AnnotationSpec> classAnnotations,
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
@@ -59,7 +58,6 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
             .typeVariables(typeVariables)
             .propDefaults(propDefaults)
             .eventDeclarations(eventDeclarations)
-            .extraBuilderMethods(builderMethodModels)
             .classAnnotations(classAnnotations)
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
