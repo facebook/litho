@@ -10,7 +10,7 @@
 package com.facebook.litho;
 
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-import static com.facebook.litho.ComponentsPools.acquireInternalNode;
+import static com.facebook.litho.LayoutState.createAndMeasureTreeForComponent;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
@@ -31,7 +31,6 @@ import android.support.v4.content.ContextCompat;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
@@ -54,195 +53,218 @@ public class InternalNodeTest {
     }
   }
 
-  private InternalNode mNode;
-
-  @Before
-  public void setup() {
-    mNode =
-        ComponentsPools.acquireInternalNode(new ComponentContext(RuntimeEnvironment.application));
+  private static InternalNode acquireInternalNode() {
+    final ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
+    return createAndMeasureTreeForComponent(
+        context,
+        Column.create(context).build(),
+        makeSizeSpec(0, UNSPECIFIED),
+        makeSizeSpec(0, UNSPECIFIED));
   }
 
   @Test
   public void testLayoutDirectionFlag() {
-    mNode.layoutDirection(INHERIT);
-    assertThat(isFlagSet(mNode, "PFLAG_LAYOUT_DIRECTION_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_LAYOUT_DIRECTION_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.layoutDirection(INHERIT);
+    assertThat(isFlagSet(node, "PFLAG_LAYOUT_DIRECTION_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_LAYOUT_DIRECTION_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testAlignSelfFlag() {
-    mNode.alignSelf(STRETCH);
-    assertThat(isFlagSet(mNode, "PFLAG_ALIGN_SELF_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_ALIGN_SELF_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.alignSelf(STRETCH);
+    assertThat(isFlagSet(node, "PFLAG_ALIGN_SELF_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_ALIGN_SELF_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testPositionTypeFlag() {
-    mNode.positionType(ABSOLUTE);
-    assertThat(isFlagSet(mNode, "PFLAG_POSITION_TYPE_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_POSITION_TYPE_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.positionType(ABSOLUTE);
+    assertThat(isFlagSet(node, "PFLAG_POSITION_TYPE_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_POSITION_TYPE_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testFlexFlag() {
-    mNode.flex(1.5f);
-    assertThat(isFlagSet(mNode, "PFLAG_FLEX_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_FLEX_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.flex(1.5f);
+    assertThat(isFlagSet(node, "PFLAG_FLEX_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_FLEX_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testFlexGrowFlag() {
-    mNode.flexGrow(1.5f);
-    assertThat(isFlagSet(mNode, "PFLAG_FLEX_GROW_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_FLEX_GROW_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.flexGrow(1.5f);
+    assertThat(isFlagSet(node, "PFLAG_FLEX_GROW_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_FLEX_GROW_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testFlexShrinkFlag() {
-    mNode.flexShrink(1.5f);
-    assertThat(isFlagSet(mNode, "PFLAG_FLEX_SHRINK_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_FLEX_SHRINK_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.flexShrink(1.5f);
+    assertThat(isFlagSet(node, "PFLAG_FLEX_SHRINK_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_FLEX_SHRINK_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testFlexBasisFlag() {
-    mNode.flexBasisPx(1);
-    assertThat(isFlagSet(mNode, "PFLAG_FLEX_BASIS_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_FLEX_BASIS_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.flexBasisPx(1);
+    assertThat(isFlagSet(node, "PFLAG_FLEX_BASIS_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_FLEX_BASIS_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testImportantForAccessibilityFlag() {
-    mNode.importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_AUTO);
-    assertThat(isFlagSet(mNode, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+    assertThat(isFlagSet(node, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testDuplicateParentStateFlag() {
-    mNode.duplicateParentState(false);
-    assertThat(isFlagSet(mNode, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.duplicateParentState(false);
+    assertThat(isFlagSet(node, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testMarginFlag() {
-    mNode.marginPx(ALL, 3);
-    assertThat(isFlagSet(mNode, "PFLAG_MARGIN_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_MARGIN_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.marginPx(ALL, 3);
+    assertThat(isFlagSet(node, "PFLAG_MARGIN_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_MARGIN_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testPaddingFlag() {
-    mNode.paddingPx(ALL, 3);
-    assertThat(isFlagSet(mNode, "PFLAG_PADDING_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_PADDING_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.paddingPx(ALL, 3);
+    assertThat(isFlagSet(node, "PFLAG_PADDING_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_PADDING_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testPositionFlag() {
-    mNode.positionPx(ALL, 3);
-    assertThat(isFlagSet(mNode, "PFLAG_POSITION_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_POSITION_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.positionPx(ALL, 3);
+    assertThat(isFlagSet(node, "PFLAG_POSITION_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_POSITION_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testWidthFlag() {
-    mNode.widthPx(4);
-    assertThat(isFlagSet(mNode, "PFLAG_WIDTH_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_WIDTH_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.widthPx(4);
+    assertThat(isFlagSet(node, "PFLAG_WIDTH_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_WIDTH_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testMinWidthFlag() {
-    mNode.minWidthPx(4);
-    assertThat(isFlagSet(mNode, "PFLAG_MIN_WIDTH_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_MIN_WIDTH_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.minWidthPx(4);
+    assertThat(isFlagSet(node, "PFLAG_MIN_WIDTH_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_MIN_WIDTH_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testMaxWidthFlag() {
-    mNode.maxWidthPx(4);
-    assertThat(isFlagSet(mNode, "PFLAG_MAX_WIDTH_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_MAX_WIDTH_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.maxWidthPx(4);
+    assertThat(isFlagSet(node, "PFLAG_MAX_WIDTH_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_MAX_WIDTH_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testHeightFlag() {
-    mNode.heightPx(4);
-    assertThat(isFlagSet(mNode, "PFLAG_HEIGHT_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_HEIGHT_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.heightPx(4);
+    assertThat(isFlagSet(node, "PFLAG_HEIGHT_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_HEIGHT_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testMinHeightFlag() {
-    mNode.minHeightPx(4);
-    assertThat(isFlagSet(mNode, "PFLAG_MIN_HEIGHT_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_MIN_HEIGHT_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.minHeightPx(4);
+    assertThat(isFlagSet(node, "PFLAG_MIN_HEIGHT_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_MIN_HEIGHT_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testMaxHeightFlag() {
-    mNode.maxHeightPx(4);
-    assertThat(isFlagSet(mNode, "PFLAG_MAX_HEIGHT_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_MAX_HEIGHT_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.maxHeightPx(4);
+    assertThat(isFlagSet(node, "PFLAG_MAX_HEIGHT_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_MAX_HEIGHT_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testBackgroundFlag() {
-    mNode.backgroundColor(0xFFFF0000);
-    assertThat(isFlagSet(mNode, "PFLAG_BACKGROUND_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_BACKGROUND_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.backgroundColor(0xFFFF0000);
+    assertThat(isFlagSet(node, "PFLAG_BACKGROUND_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_BACKGROUND_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testForegroundFlag() {
-    mNode.foregroundColor(0xFFFF0000);
-    assertThat(isFlagSet(mNode, "PFLAG_FOREGROUND_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_FOREGROUND_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.foregroundColor(0xFFFF0000);
+    assertThat(isFlagSet(node, "PFLAG_FOREGROUND_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_FOREGROUND_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testAspectRatioFlag() {
-    mNode.aspectRatio(1);
-    assertThat(isFlagSet(mNode, "PFLAG_ASPECT_RATIO_IS_SET")).isTrue();
-    clearFlag(mNode, "PFLAG_ASPECT_RATIO_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.aspectRatio(1);
+    assertThat(isFlagSet(node, "PFLAG_ASPECT_RATIO_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_ASPECT_RATIO_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testTransitionKeyFlag() {
-    mNode.transitionKey("key");
-    assertThat(isFlagSet(mNode, "PFLAG_TRANSITION_KEY_IS_SET")).isTrue();
-    assertThat(mNode.isForceViewWrapping()).isTrue();
-    clearFlag(mNode, "PFLAG_TRANSITION_KEY_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.transitionKey("key");
+    assertThat(isFlagSet(node, "PFLAG_TRANSITION_KEY_IS_SET")).isTrue();
+    assertThat(node.isForceViewWrapping()).isTrue();
+    clearFlag(node, "PFLAG_TRANSITION_KEY_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void setNestedTreeDoesntTransferLayoutDirectionIfExplicitlySetOnNestedNode() {
-    InternalNode holderNode = acquireInternalNode(new ComponentContext(application));
-    InternalNode nestedTree = acquireInternalNode(new ComponentContext(application));
+    InternalNode holderNode = acquireInternalNode();
+    InternalNode nestedTree = acquireInternalNode();
 
     nestedTree.layoutDirection(RTL);
     holderNode.calculateLayout();
@@ -255,8 +277,8 @@ public class InternalNodeTest {
 
   @Test
   public void testCopyIntoTrasferLayoutDirectionIfNotSetOnTheHolderOrOnTheNestedTree() {
-    InternalNode holderNode = acquireInternalNode(new ComponentContext(application));
-    InternalNode nestedTree = acquireInternalNode(new ComponentContext(application));
+    InternalNode holderNode = acquireInternalNode();
+    InternalNode nestedTree = acquireInternalNode();
 
     holderNode.calculateLayout();
     holderNode.copyInto(nestedTree);
@@ -267,8 +289,8 @@ public class InternalNodeTest {
 
   @Test
   public void testCopyIntoNestedTreeTransferLayoutDirectionIfExplicitlySetOnHolderNode() {
-    InternalNode holderNode = acquireInternalNode(new ComponentContext(application));
-    InternalNode nestedTree = acquireInternalNode(new ComponentContext(application));
+    InternalNode holderNode = acquireInternalNode();
+    InternalNode nestedTree = acquireInternalNode();
 
     holderNode.layoutDirection(RTL);
     holderNode.calculateLayout();
@@ -279,10 +301,9 @@ public class InternalNodeTest {
 
   @Test
   public void testPaddingIsSetFromDrawable() {
-    ComponentContext context = new ComponentContext(application);
-    InternalNode node = acquireInternalNode(context);
+    InternalNode node = acquireInternalNode();
 
-    Drawable drawable = ContextCompat.getDrawable(context, background_with_padding);
+    Drawable drawable = ContextCompat.getDrawable(node.getContext(), background_with_padding);
     node.background(drawable);
 
     assertThat(isFlagSet(node, "PFLAG_PADDING_IS_SET")).isTrue();
@@ -290,10 +311,9 @@ public class InternalNodeTest {
 
   @Test
   public void testPaddingIsNotSetFromDrawable() {
-    ComponentContext context = new ComponentContext(application);
-    InternalNode node = acquireInternalNode(context);
+    InternalNode node = acquireInternalNode();
 
-    Drawable drawable = ContextCompat.getDrawable(context, background_without_padding);
+    Drawable drawable = ContextCompat.getDrawable(node.getContext(), background_without_padding);
     node.background(drawable);
 
     assertThat(isFlagSet(node, "PFLAG_PADDING_IS_SET")).isFalse();
@@ -327,19 +347,20 @@ public class InternalNodeTest {
 
   @Test
   public void testContextSpecificComponentAssertionPasses() {
-    InternalNode.assertContextSpecificStyleNotSet(mNode);
+    InternalNode.assertContextSpecificStyleNotSet(acquireInternalNode());
   }
 
   @Test
   public void testContextSpecificComponentAssertionFailFormatting() {
     final Component testComponent = new TestComponent();
-    mNode.alignSelf(YogaAlign.AUTO);
-    mNode.flex(1f);
-    mNode.appendComponent(testComponent);
+    InternalNode node = acquireInternalNode();
+    node.alignSelf(YogaAlign.AUTO);
+    node.flex(1f);
+    node.appendComponent(testComponent);
 
     String error = "";
     try {
-      InternalNode.assertContextSpecificStyleNotSet(mNode);
+      InternalNode.assertContextSpecificStyleNotSet(node);
     } catch (IllegalStateException e) {
       error = e.getMessage();
     }

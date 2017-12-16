@@ -118,7 +118,7 @@ public class LithoViewTestHelper {
       sb.append("  ");
     }
 
-    sb.append(debugComponent.getSimpleName());
+    sb.append(debugComponent.getComponent().getSimpleName());
 
     final Rect bounds = debugComponent.getBounds();
     sb.append('{');

@@ -74,19 +74,19 @@ public class InspectableComponent {
 
   /** @return A canonical name for this component. Suitable to present to the user. */
   public String getName() {
-    return mComponent.getName();
+    return mComponent.getComponent().getClass().getName();
   }
 
   /** @return A simpler canonical name for this component. Suitable to present to the user. */
   public String getSimpleName() {
-    return mComponent.getSimpleName();
+    return mComponent.getComponent().getSimpleName();
   }
 
   /**
    * @return The class of the underlying Component.
    */
   public Class getComponentClass() {
-    return mComponent.getComponentClass();
+    return mComponent.getComponent().getClass();
   }
 
   /**
@@ -163,7 +163,6 @@ public class InspectableComponent {
   }
 
   /** @return The Component instance this debug component wraps. */
-  @Nullable
   public Component getComponent() {
     return mComponent.getComponent();
   }

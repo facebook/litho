@@ -84,45 +84,11 @@ public final class DebugComponent {
     return null;
   }
 
-  /**
-   * @return A conanical name for this component. Suitable to present to the user.
-   */
-  public String getName() {
-    return getComponentClass().getName();
-  }
-
-  /**
-   * @return A simpler canonical name for this component. Suitable to present to the user.
-   */
-  public String getSimpleName() {
-    final Component component = getComponent();
-    if (component != null) {
-      return component.getSimpleName();
-    }
-    return getComponentClass().getSimpleName();
-  }
-
-  /**
-   * @return The class of the underlying Component.
-   */
-  public Class getComponentClass() {
-    final Component component = getComponent();
-    if (component == null) {
-      final YogaNode yogaNode = mNode.mYogaNode;
-      if (yogaNode == null) {
-        // Should not happen :/
-        return InternalNode.class;
-      }
-
-      switch (yogaNode.getFlexDirection()) {
-        case COLUMN: return Column.class;
-        case COLUMN_REVERSE: return ColumnReverse.class;
-        case ROW: return Row.class;
-        case ROW_REVERSE: return RowReverse.class;
-      }
-    }
-
-    return component.getClass();
+  private static String createKey(InternalNode node, int componentIndex) {
+    final ComponentContext context = node.getContext();
+    final ComponentTree tree = context.getComponentTree();
+    final String componentKey = node.getComponents().get(componentIndex).getGlobalKey();
+    return System.identityHashCode(tree) + componentKey;
   }
 
   public void setOverrider(Overrider overrider) {
@@ -138,9 +104,9 @@ public final class DebugComponent {
    * @return A list of child components.
    */
   public List<DebugComponent> getChildComponents() {
-    if (mComponentIndex > 0) {
-      final int wrappedComponentIndex = mComponentIndex - 1;
-      return Arrays.asList(getInstance(mNode, wrappedComponentIndex));
+    if (!isLayoutNode()) {
+      final int nextComponentIndex = mComponentIndex - 1;
+      return Arrays.asList(getInstance(mNode, nextComponentIndex));
     }
 
     final ArrayList<DebugComponent> children = new ArrayList<>();
@@ -231,7 +197,7 @@ public final class DebugComponent {
    * @return True if this not has layout information attached to it (backed by a Yoga node)
    */
   public boolean isLayoutNode() {
-    return mNode.getComponents().isEmpty() || mComponentIndex == 0;
+    return mComponentIndex == 0;
   }
 
   /**
@@ -303,21 +269,13 @@ public final class DebugComponent {
    */
   @Nullable
   public String getKey() {
-    if (!mNode.getComponents().isEmpty()) {
-      final Component component = mNode.getComponents().get(mComponentIndex);
-      return component == null ? null : component.getKey();
-    }
-    return null;
+    return mNode.getComponents().get(mComponentIndex).getKey();
   }
 
   /**
    * @return The Component instance this debug component wraps.
    */
-  @Nullable
   public Component getComponent() {
-    if (mNode.getComponents().size() <= mComponentIndex) {
-      return null;
-    }
     return mNode.getComponents().get(mComponentIndex);
   }
 
@@ -618,8 +576,7 @@ public final class DebugComponent {
 
   @Nullable
   public ComponentLifecycle.StateContainer getStateContainer() {
-    final Component component = getComponent();
-    return component == null ? null : component.getStateContainer();
+    return getComponent().getStateContainer();
   }
 
   void applyOverrides() {
@@ -647,31 +604,13 @@ public final class DebugComponent {
     return node.getY() + getYFromRoot(parent(node));
   }
 
-  private static String createKey(InternalNode node, int componentIndex) {
-    final InternalNode parent = node.getParent();
-    final InternalNode nestedTreeHolder = node.getNestedTreeHolder();
-
-    String key;
-    if (parent != null) {
-      key = createKey(parent, 0) + "." + parent.getChildIndex(node);
-    } else if (nestedTreeHolder != null) {
-      key = createKey(nestedTreeHolder, 0) + ".nested";
-    } else {
-      final ComponentContext c = node.getContext();
-      final ComponentTree tree = c == null ? null : c.getComponentTree();
-      key = Integer.toString(System.identityHashCode(tree));
-    }
-
-    return key + "(" + componentIndex + ")";
-  }
-
   public String getGlobalKey() {
     return mGlobalKey;
   }
 
   @Nullable
   public EventHandler getClickHandler() {
-    if (mComponentIndex > 0) {
+    if (!isLayoutNode()) {
       return null;
     }
 
@@ -680,7 +619,7 @@ public final class DebugComponent {
 
   @Nullable
   private Object getMountedContent() {
-    if (mComponentIndex > 0) {
+    if (!isLayoutNode()) {
       return null;
     }
 

@@ -9,6 +9,9 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.LayoutState.createAndMeasureTreeForComponent;
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.yoga.YogaDirection.LTR;
 import static com.facebook.yoga.YogaDirection.RTL;
 import static com.facebook.yoga.YogaEdge.END;
@@ -30,8 +33,13 @@ public class InternalNodeResolvedPaddingTest {
 
   @Before
   public void setup() {
+    final ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
     mInternalNode =
-        ComponentsPools.acquireInternalNode(new ComponentContext(RuntimeEnvironment.application));
+        createAndMeasureTreeForComponent(
+            context,
+            Column.create(context).build(),
+            makeSizeSpec(0, UNSPECIFIED),
+            makeSizeSpec(0, UNSPECIFIED));
   }
 
   private static void setDirection(InternalNode node, YogaDirection direction) {
