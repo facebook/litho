@@ -16,11 +16,11 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentHost;
 import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.DebugComponent;
+import com.facebook.litho.DebugLayoutNode;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoViewTestHelper;
 import com.facebook.litho.reference.Reference;
-import com.facebook.yoga.YogaNode;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -167,39 +167,38 @@ public class InspectableComponent {
     return mComponent.getComponent();
   }
 
-  /** @return The Yoga node asscociated with this debug component. May be null. */
-  @Nullable
-  public YogaNode getYogaNode() {
-    return mComponent.getYogaNode();
-  }
-
   /** @return The foreground drawable asscociated with this debug component. May be null. */
   @Nullable
   public Drawable getForeground() {
-    return mComponent.getForeground();
+    final DebugLayoutNode layout = mComponent.getLayoutNode();
+    return layout == null ? null : layout.getForeground();
   }
 
   /** @return The background drawable asscociated with this debug component. May be null. */
   @Nullable
   public Reference<? extends Drawable> getBackground() {
-    return mComponent.getBackground();
+    final DebugLayoutNode layout = mComponent.getLayoutNode();
+    return layout == null ? null : layout.getBackground();
   }
 
   /** @return The int value of the importantForAccessibility property on this debug component. */
   @Nullable
   public Integer getImportantForAccessibility() {
-    return mComponent.getImportantForAccessibility();
+    final DebugLayoutNode layout = mComponent.getLayoutNode();
+    return layout == null ? null : layout.getImportantForAccessibility();
   }
 
   /** @return The boolean value of the focusable property on this debug component. */
   public boolean getFocusable() {
-    return mComponent.getFocusable();
+    final DebugLayoutNode layout = mComponent.getLayoutNode();
+    return layout == null ? false : layout.getFocusable();
   }
 
   /** @return The content description CharSequence on this debug component. May be null. */
   @Nullable
   public CharSequence getContentDescription() {
-    return mComponent.getContentDescription();
+    final DebugLayoutNode layout = mComponent.getLayoutNode();
+    return layout == null ? null : layout.getContentDescription();
   }
 
   @Nullable
@@ -213,7 +212,8 @@ public class InspectableComponent {
 
   @Nullable
   public EventHandler getClickHandler() {
-    return mComponent.getClickHandler();
+    final DebugLayoutNode layout = mComponent.getLayoutNode();
+    return layout == null ? null : layout.getClickHandler();
   }
 
   @Override

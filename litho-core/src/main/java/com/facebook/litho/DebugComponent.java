@@ -12,16 +12,6 @@ package com.facebook.litho;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
-import com.facebook.litho.reference.Reference;
-import com.facebook.yoga.YogaAlign;
-import com.facebook.yoga.YogaConstants;
-import com.facebook.yoga.YogaDirection;
-import com.facebook.yoga.YogaEdge;
-import com.facebook.yoga.YogaFlexDirection;
-import com.facebook.yoga.YogaJustify;
-import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaPositionType;
-import com.facebook.yoga.YogaValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,7 +29,11 @@ import javax.annotation.Nullable;
 public final class DebugComponent {
 
   public interface Overrider {
-    void applyOverrides(DebugComponent node);
+    void applyComponentOverrides(String key, Component component);
+
+    void applyStateOverrides(String key, ComponentLifecycle.StateContainer state);
+
+    void applyLayoutOverrides(String key, DebugLayoutNode node);
   }
 
   private static final Map<String, Overrider> sOverriders = new HashMap<>();
@@ -47,16 +41,17 @@ public final class DebugComponent {
   private String mGlobalKey;
   private InternalNode mNode;
   private int mComponentIndex;
-  private Overrider mOverrider;
 
   private DebugComponent() {}
 
   static synchronized DebugComponent getInstance(InternalNode node, int componentIndex) {
     final DebugComponent debugComponent = new DebugComponent();
-    debugComponent.mGlobalKey = createKey(node, componentIndex);
+    final ComponentContext context = node.getContext();
+    final Component component = node.getComponents().get(componentIndex);
+
+    debugComponent.mGlobalKey = generateGlobalKey(context, component);
     debugComponent.mNode = node;
     debugComponent.mComponentIndex = componentIndex;
-    debugComponent.mOverrider = sOverriders.get(debugComponent.mGlobalKey);
     node.registerDebugComponent(debugComponent);
 
     return debugComponent;
@@ -84,15 +79,30 @@ public final class DebugComponent {
     return null;
   }
 
-  private static String createKey(InternalNode node, int componentIndex) {
-    final ComponentContext context = node.getContext();
+  private static String generateGlobalKey(ComponentContext context, Component component) {
     final ComponentTree tree = context.getComponentTree();
-    final String componentKey = node.getComponents().get(componentIndex).getGlobalKey();
+    final String componentKey = component.getGlobalKey();
     return System.identityHashCode(tree) + componentKey;
   }
 
+  static void applyOverrides(ComponentContext context, Component component) {
+    final String key = generateGlobalKey(context, component);
+    final Overrider overrider = sOverriders.get(key);
+    if (overrider != null) {
+      overrider.applyComponentOverrides(key, component);
+      overrider.applyStateOverrides(key, component.getStateContainer());
+    }
+  }
+
+  static void applyOverrides(ComponentContext context, InternalNode node) {
+    final String key = generateGlobalKey(context, node.getComponents().get(0));
+    final Overrider overrider = sOverriders.get(key);
+    if (overrider != null) {
+      overrider.applyLayoutOverrides(key, new DebugLayoutNode(node));
+    }
+  }
+
   public void setOverrider(Overrider overrider) {
-    mOverrider = overrider;
     sOverriders.put(mGlobalKey, overrider);
   }
 
@@ -193,6 +203,10 @@ public final class DebugComponent {
     return mNode.getContext();
   }
 
+  public boolean isInternalComponent() {
+    return getComponent().isInternalComponent();
+  }
+
   /**
    * @return True if this not has layout information attached to it (backed by a Yoga node)
    */
@@ -217,7 +231,7 @@ public final class DebugComponent {
     final LithoView lithoView = getLithoView();
     final Component component = getComponent();
 
-    if (lithoView == null || component == null) {
+    if (lithoView == null) {
       return null;
     }
 
@@ -249,7 +263,7 @@ public final class DebugComponent {
     final LithoView lithoView = getLithoView();
     final Component component = getComponent();
 
-    if (lithoView == null || component == null) {
+    if (lithoView == null) {
       return null;
     }
 
@@ -279,76 +293,13 @@ public final class DebugComponent {
     return mNode.getComponents().get(mComponentIndex);
   }
 
-  /**
-   * @return The Yoga node asscociated with this debug component. May be null.
-   */
+  /** @return If this debug component represents a layout node, return it. */
   @Nullable
-  public YogaNode getYogaNode() {
-    if (!isLayoutNode()) {
-      return null;
-    }
-
-    return mNode.mYogaNode;
-  }
-
-  /**
-   * @return The foreground drawable asscociated with this debug component. May be null.
-   */
-  @Nullable
-  public Drawable getForeground() {
-    if (!isLayoutNode()) {
-      return null;
-    }
-
-    return mNode.getForeground();
-  }
-
-  /**
-   * @return The background drawable asscociated with this debug component. May be null.
-   */
-  @Nullable
-  public Reference<? extends Drawable> getBackground() {
-    if (!isLayoutNode()) {
-      return null;
-    }
-
-    return mNode.getBackground();
-  }
-
-  /**
-   * @return The int value of the importantForAccessibility property on this debug component.
-   */
-  @Nullable
-  public Integer getImportantForAccessibility() {
-    return mNode.getImportantForAccessibility();
-  }
-
-  /**
-   * @return The boolean value of the focusable property on this debug component.
-   */
-  public boolean getFocusable() {
-    final NodeInfo nodeInfo = mNode.getNodeInfo();
-    if (nodeInfo != null) {
-      return nodeInfo.getFocusState() == NodeInfo.FOCUS_SET_TRUE;
-    }
-    return false;
-  }
-
-  /**
-   * @return The content description CharSequence on this debug component.  May be null.
-   */
-  @Nullable
-  public CharSequence getContentDescription() {
-    final NodeInfo nodeInfo = mNode.getNodeInfo();
-    if (nodeInfo != null) {
-      return nodeInfo.getContentDescription();
+  public DebugLayoutNode getLayoutNode() {
+    if (isLayoutNode()) {
+      return new DebugLayoutNode(mNode);
     }
     return null;
-  }
-
-  /** @return Whether this component is the root of its hierarchy */
-  public boolean isRoot() {
-    return mNode.getParent() == null;
   }
 
   public void rerender() {
@@ -358,231 +309,9 @@ public final class DebugComponent {
     }
   }
 
-  public void setBackgroundColor(int color) {
-    mNode.backgroundColor(color);
-  }
-
-  public void setForegroundColor(int color) {
-    mNode.foregroundColor(color);
-  }
-
-  public void setLayoutDirection(YogaDirection yogaDirection) {
-    mNode.layoutDirection(yogaDirection);
-  }
-
-  public void setFlexDirection(YogaFlexDirection direction) {
-    mNode.flexDirection(direction);
-  }
-
-  public void setJustifyContent(YogaJustify yogaJustify) {
-    mNode.justifyContent(yogaJustify);
-  }
-
-  public void setAlignItems(YogaAlign yogaAlign) {
-    mNode.alignItems(yogaAlign);
-  }
-
-  public void setAlignSelf(YogaAlign yogaAlign) {
-    mNode.alignSelf(yogaAlign);
-  }
-
-  public void setAlignContent(YogaAlign yogaAlign) {
-    mNode.alignContent(yogaAlign);
-  }
-
-  public void setPositionType(YogaPositionType yogaPositionType) {
-    mNode.positionType(yogaPositionType);
-  }
-
-  public void setFlexGrow(float value) {
-    mNode.flexGrow(value);
-  }
-
-  public void setFlexShrink(float value) {
-    mNode.flexShrink(value);
-  }
-
-  public void setFlexBasis(YogaValue value) {
-    switch (value.unit) {
-      case UNDEFINED:
-      case AUTO:
-        mNode.flexBasisAuto();
-        break;
-      case PERCENT:
-        mNode.flexBasisPercent(value.value);
-        break;
-      case POINT:
-        mNode.flexBasisPx((int) value.value);
-        break;
-    }
-  }
-
-  public void setWidth(YogaValue value) {
-    switch (value.unit) {
-      case UNDEFINED:
-      case AUTO:
-        mNode.widthAuto();
-        break;
-      case PERCENT:
-        mNode.widthPercent(value.value);
-        break;
-      case POINT:
-        mNode.widthPx((int) value.value);
-        break;
-    }
-  }
-
-  public void setMinWidth(YogaValue value) {
-    switch (value.unit) {
-      case UNDEFINED:
-      case AUTO:
-        mNode.minWidthPx(Integer.MIN_VALUE);
-        break;
-      case PERCENT:
-        mNode.minWidthPercent(value.value);
-        break;
-      case POINT:
-        mNode.minWidthPx((int) value.value);
-        break;
-    }
-  }
-
-  public void setMaxWidth(YogaValue value) {
-    switch (value.unit) {
-      case UNDEFINED:
-      case AUTO:
-        mNode.maxWidthPx(Integer.MAX_VALUE);
-        break;
-      case PERCENT:
-        mNode.maxWidthPercent(value.value);
-        break;
-      case POINT:
-        mNode.maxWidthPx((int) value.value);
-        break;
-    }
-  }
-
-  public void setHeight(YogaValue value) {
-    switch (value.unit) {
-      case UNDEFINED:
-      case AUTO:
-        mNode.heightAuto();
-        break;
-      case PERCENT:
-        mNode.heightPercent(value.value);
-        break;
-      case POINT:
-        mNode.heightPx((int) value.value);
-        break;
-    }
-  }
-
-  public void setMinHeight(YogaValue value) {
-    switch (value.unit) {
-      case UNDEFINED:
-      case AUTO:
-        mNode.minHeightPx(Integer.MIN_VALUE);
-        break;
-      case PERCENT:
-        mNode.minHeightPercent(value.value);
-        break;
-      case POINT:
-        mNode.minHeightPx((int) value.value);
-        break;
-    }
-  }
-
-  public void setMaxHeight(YogaValue value) {
-    switch (value.unit) {
-      case UNDEFINED:
-      case AUTO:
-        mNode.maxHeightPx(Integer.MAX_VALUE);
-        break;
-      case PERCENT:
-        mNode.maxHeightPercent(value.value);
-        break;
-      case POINT:
-        mNode.maxHeightPx((int) value.value);
-        break;
-    }
-  }
-
-  public void setAspectRatio(float aspectRatio) {
-    mNode.aspectRatio(aspectRatio);
-  }
-
-  public void setMargin(YogaEdge edge, YogaValue value) {
-    switch (value.unit) {
-      case UNDEFINED:
-        mNode.marginPx(edge, 0);
-        break;
-      case AUTO:
-        mNode.marginAuto(edge);
-        break;
-      case PERCENT:
-        mNode.marginPercent(edge, value.value);
-        break;
-      case POINT:
-        mNode.marginPx(edge, (int) value.value);
-        break;
-    }
-  }
-
-  public void setPadding(YogaEdge edge, YogaValue value) {
-    switch (value.unit) {
-      case UNDEFINED:
-      case AUTO:
-        mNode.paddingPx(edge, 0);
-        break;
-      case PERCENT:
-        mNode.paddingPercent(edge, value.value);
-        break;
-      case POINT:
-        mNode.paddingPx(edge, (int) value.value);
-        break;
-    }
-  }
-
-  public void setPosition(YogaEdge edge, YogaValue value) {
-    switch (value.unit) {
-      case UNDEFINED:
-      case AUTO:
-        mNode.positionPercent(edge, YogaConstants.UNDEFINED);
-        break;
-      case PERCENT:
-        mNode.positionPercent(edge, value.value);
-        break;
-      case POINT:
-        mNode.positionPx(edge, (int) value.value);
-        break;
-    }
-  }
-
-  public void setBorderWidth(YogaEdge edge, float value) {
-    mNode.setBorderWidth(edge, (int) value);
-  }
-
-  public void setContentDescription(CharSequence contentDescription) {
-    mNode.contentDescription(contentDescription);
-  }
-
-  public void setImportantForAccessibility(int importantForAccessibility) {
-    mNode.importantForAccessibility(importantForAccessibility);
-  }
-
-  public void setFocusable(boolean focusable) {
-    mNode.focusable(focusable);
-  }
-
   @Nullable
   public ComponentLifecycle.StateContainer getStateContainer() {
     return getComponent().getStateContainer();
-  }
-
-  void applyOverrides() {
-    if (mOverrider != null) {
-      mOverrider.applyOverrides(this);
-    }
   }
 
   private static InternalNode parent(InternalNode node) {
@@ -608,13 +337,8 @@ public final class DebugComponent {
     return mGlobalKey;
   }
 
-  @Nullable
-  public EventHandler getClickHandler() {
-    if (!isLayoutNode()) {
-      return null;
-    }
-
-    return mNode.getClickHandler();
+  public boolean isRoot() {
+    return mComponentIndex == 0 && mNode.getParent() == null;
   }
 
   @Nullable

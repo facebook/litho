@@ -271,6 +271,10 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
         if (layoutComponent != component) {
           layoutComponent.generateKey(context);
           layoutComponent.applyStateUpdates(context);
+
+          if (ComponentsConfiguration.isDebugModeEnabled) {
+            DebugComponent.applyOverrides(context, layoutComponent);
+          }
         }
 
         // TODO tT24211349 - tidy this up.

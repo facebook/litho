@@ -1411,25 +1411,26 @@ class InternalNode implements ActualComponentLayout, ActualComponentLayout.Conta
   }
 
   void calculateLayout(float width, float height) {
-    if (ComponentsConfiguration.isDebugModeEnabled) {
-      applyOverridesRecursive(this);
-    }
-
+    applyOverridesRecursive(this);
     mYogaNode.calculateLayout(width, height);
-  }
-
-  private static void applyOverridesRecursive(InternalNode node) {
-    DebugComponent.getInstance(node, 0).applyOverrides();
-    for (int i = 0, count = node.getChildCount(); i < count; i++) {
-      applyOverridesRecursive(node.getChildAt(i));
-    }
-    if (node.hasNestedTree()) {
-      applyOverridesRecursive(node.getNestedTree());
-    }
   }
 
   void calculateLayout() {
     calculateLayout(YogaConstants.UNDEFINED, YogaConstants.UNDEFINED);
+  }
+
+  private void applyOverridesRecursive(InternalNode node) {
+    if (ComponentsConfiguration.isDebugModeEnabled) {
+      DebugComponent.applyOverrides(mComponentContext, node);
+
+      for (int i = 0, count = node.getChildCount(); i < count; i++) {
+        applyOverridesRecursive(node.getChildAt(i));
+      }
+
+      if (node.hasNestedTree()) {
+        applyOverridesRecursive(node.getNestedTree());
+      }
+    }
   }
 
   int getChildCount() {

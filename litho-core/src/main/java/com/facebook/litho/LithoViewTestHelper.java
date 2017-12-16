@@ -141,7 +141,8 @@ public class LithoViewTestHelper {
       sb.append(String.format(" text=\"%s\"", textContent));
     }
 
-    if (debugComponent.getClickHandler() != null) {
+    final DebugLayoutNode layout = debugComponent.getLayoutNode();
+    if (layout != null && layout.getClickHandler() != null) {
       sb.append(" [clickable]");
     }
 

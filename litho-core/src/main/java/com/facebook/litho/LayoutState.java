@@ -1557,6 +1557,11 @@ class LayoutState {
 
     component.generateKey(c);
     component.applyStateUpdates(c);
+
+    if (ComponentsConfiguration.isDebugModeEnabled) {
+      DebugComponent.applyOverrides(c, component);
+    }
+
     c = component.getScopedContext();
 
     final boolean isTest = "robolectric".equals(Build.FINGERPRINT);

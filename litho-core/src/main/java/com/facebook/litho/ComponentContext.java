@@ -17,6 +17,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
  * A Context subclass for use within the Components framework. Contains extra bookkeeping
@@ -272,6 +273,10 @@ public class ComponentContext extends ContextWrapper {
       Component component, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     component.generateKey(this);
     component.applyStateUpdates(this);
+
+    if (ComponentsConfiguration.isDebugModeEnabled) {
+      DebugComponent.applyOverrides(this, component);
+    }
 
     final InternalNode node =
         (InternalNode) component.createLayout(component.getScopedContext(), false);
