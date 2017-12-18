@@ -434,6 +434,7 @@ class TextSpec {
             maxEms,
             minTextWidth,
             maxTextWidth,
+            context.getResources().getDisplayMetrics().density,
             textDirection);
 
     measureLayout.set(newLayout);
@@ -496,6 +497,7 @@ class TextSpec {
       int maxEms,
       int minTextWidth,
       int maxTextWidth,
+      float density,
       TextDirectionHeuristicCompat textDirection) {
     Layout newLayout;
 
@@ -521,15 +523,14 @@ class TextSpec {
     }
 
     layoutBuilder
+        .setDensity(density)
         .setEllipsize(ellipsize)
         .setMaxLines(maxLines)
         .setShadowLayer(shadowRadius, shadowDx, shadowDy, shadowColor)
         .setSingleLine(isSingleLine)
         .setText(text)
         .setTextSize(textSize)
-        .setWidth(
-            SizeSpec.getSize(widthSpec),
-            textMeasureMode);
+        .setWidth(SizeSpec.getSize(widthSpec), textMeasureMode);
 
     if (minEms != DEFAULT_EMS) {
       layoutBuilder.setMinEms(minEms);
@@ -741,6 +742,7 @@ class TextSpec {
               maxEms,
               minTextWidth,
               maxTextWidth,
+              c.getResources().getDisplayMetrics().density,
               textDirection));
     }
 
