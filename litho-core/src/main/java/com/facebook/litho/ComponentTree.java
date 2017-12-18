@@ -201,7 +201,7 @@ public class ComponentTree {
   @GuardedBy("this")
   private int mScheduleLayoutAfterMeasure;
 
-  @GuardedBy("this")
+  @GuardedBy("mEventHandlers")
   public Map<String, List<EventHandler>> mEventHandlers = new HashMap<>();
 
   public static Builder create(ComponentContext context, Component.Builder<?> root) {
@@ -702,18 +702,19 @@ public class ComponentTree {
 
       final StateHandler layoutStateStateHandler =
           localLayoutState.consumeStateHandler();
+      final List<Component> components = new ArrayList<>(localLayoutState.getComponents());
       synchronized (this) {
         if (layoutStateStateHandler != null) {
           mStateHandler.commit(layoutStateStateHandler);
         }
 
-        for (Component layoutComponent : localLayoutState.getComponents()) {
-          bindEventHandler(layoutComponent);
-        }
         localLayoutState.clearComponents();
-
         mMainThreadLayoutState = localLayoutState;
         localLayoutState = null;
+      }
+
+      for (Component layoutComponent : components) {
+        bindEventHandler(layoutComponent);
       }
 
       // We need to force remount on layout
@@ -928,36 +929,43 @@ public class ComponentTree {
         null /*output */);
   }
 
-  synchronized void bindEventHandler(Component component) {
-    final String key = component.getGlobalKey();
-
-    if (key == null || !mEventHandlers.containsKey(key)) {
-      return;
-    }
-
-    for (EventHandler eventHandler : mEventHandlers.get(key)) {
-      eventHandler.mHasEventDispatcher = component;
-
-      // Params should only be null for tests
-      if (eventHandler.params != null) {
-        eventHandler.params[0] = component.getScopedContext();
-      }
-    }
-  }
-
-  synchronized void recordEventHandler(Component component, EventHandler eventHandler) {
+  void bindEventHandler(Component component) {
     final String key = component.getGlobalKey();
 
     if (key == null) {
       return;
     }
 
-    if (!mEventHandlers.containsKey(key)) {
-      List<EventHandler> list = new ArrayList<>();
-      mEventHandlers.put(key, list);
+    synchronized (mEventHandlers) {
+      if (!mEventHandlers.containsKey(key)) {
+        return;
+      }
+
+      for (EventHandler eventHandler : mEventHandlers.get(key)) {
+        eventHandler.mHasEventDispatcher = component;
+
+        // Params should only be null for tests
+        if (eventHandler.params != null) {
+          eventHandler.params[0] = component.getScopedContext();
+        }
+      }
+    }
+  }
+
+  void recordEventHandler(Component component, EventHandler eventHandler) {
+    final String key = component.getGlobalKey();
+
+    if (key == null) {
+      return;
     }
 
-    mEventHandlers.get(key).add(eventHandler);
+    synchronized (mEventHandlers) {
+      if (!mEventHandlers.containsKey(key)) {
+        mEventHandlers.put(key, new ArrayList<EventHandler>());
+      }
+
+      mEventHandlers.get(key).add(eventHandler);
+    }
   }
 
   @Nullable
@@ -1290,6 +1298,8 @@ public class ComponentTree {
       previousLayoutState = null;
     }
 
+    List<Component> components = null;
+
     boolean layoutStateUpdated = false;
     synchronized (this) {
       // Make sure some other thread hasn't computed a compatible layout in the meantime.
@@ -1305,15 +1315,12 @@ public class ComponentTree {
             }
           }
 
-          for (Component component : localLayoutState.getComponents()) {
-            bindEventHandler(component);
-          }
-
           if (mMeasureListener != null) {
             mMeasureListener.onSetRootAndSizeSpec(
                 localLayoutState.getWidth(), localLayoutState.getHeight());
           }
 
+          components = new ArrayList<>(localLayoutState.getComponents());
           localLayoutState.clearComponents();
         }
 
@@ -1323,6 +1330,12 @@ public class ComponentTree {
         mBackgroundLayoutState = localLayoutState;
         localLayoutState = tmp;
         layoutStateUpdated = true;
+      }
+    }
+
+    if (components != null) {
+      for (Component component : components) {
+        bindEventHandler(component);
       }
     }
 
