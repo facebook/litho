@@ -9,12 +9,14 @@
 
 package com.facebook.litho;
 
+import javax.annotation.Nullable;
+
 public class EventHandler<E> {
 
   public HasEventDispatcher mHasEventDispatcher;
   public final String name;
   public final int id;
-  public final Object[] params;
+  public final @Nullable Object[] params;
 
   protected EventHandler(HasEventDispatcher hasEventDispatcher, int id) {
     this(hasEventDispatcher, null, id, null);

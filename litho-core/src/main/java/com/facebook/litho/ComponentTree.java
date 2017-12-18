@@ -44,7 +44,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -202,7 +203,7 @@ public class ComponentTree {
   private int mScheduleLayoutAfterMeasure;
 
   @GuardedBy("mEventHandlers")
-  public Map<String, List<EventHandler>> mEventHandlers = new HashMap<>();
+  public Map<String, EventHandlersWrapper> mEventHandlers = new LinkedHashMap<>();
 
   public static Builder create(ComponentContext context, Component.Builder<?> root) {
     return create(context, root.build());
@@ -717,6 +718,8 @@ public class ComponentTree {
         bindEventHandler(layoutComponent);
       }
 
+      clearUnusedEventHandlers();
+
       // We need to force remount on layout
       mLithoView.setMountStateDirty();
     }
@@ -929,7 +932,7 @@ public class ComponentTree {
         null /*output */);
   }
 
-  void bindEventHandler(Component component) {
+  private void bindEventHandler(Component component) {
     final String key = component.getGlobalKey();
 
     if (key == null) {
@@ -937,16 +940,24 @@ public class ComponentTree {
     }
 
     synchronized (mEventHandlers) {
-      if (!mEventHandlers.containsKey(key)) {
+      final EventHandlersWrapper eventHandlers = mEventHandlers.get(key);
+
+      if (eventHandlers == null) {
         return;
       }
 
-      for (EventHandler eventHandler : mEventHandlers.get(key)) {
-        eventHandler.mHasEventDispatcher = component;
+      // Mark that the list of event handlers for this component is still needed.
+      eventHandlers.boundInCurrentLayout = true;
+      eventHandlers.bindToDispatcherComponent(component);
+    }
+  }
 
-        // Params should only be null for tests
-        if (eventHandler.params != null) {
-          eventHandler.params[0] = component.getScopedContext();
+  private void clearUnusedEventHandlers() {
+    synchronized (mEventHandlers) {
+      final Iterator iterator = mEventHandlers.keySet().iterator();
+      while (iterator.hasNext()) {
+        if (!mEventHandlers.get(iterator.next()).boundInCurrentLayout) {
+          iterator.remove();
         }
       }
     }
@@ -960,11 +971,14 @@ public class ComponentTree {
     }
 
     synchronized (mEventHandlers) {
-      if (!mEventHandlers.containsKey(key)) {
-        mEventHandlers.put(key, new ArrayList<EventHandler>());
+      EventHandlersWrapper eventHandlers = mEventHandlers.get(key);
+
+      if (eventHandlers == null) {
+        eventHandlers = new EventHandlersWrapper();
+        mEventHandlers.put(key, eventHandlers);
       }
 
-      mEventHandlers.get(key).add(eventHandler);
+      eventHandlers.addEventHandler(eventHandler);
     }
   }
 
@@ -1337,6 +1351,8 @@ public class ComponentTree {
       for (Component component : components) {
         bindEventHandler(component);
       }
+
+      clearUnusedEventHandlers();
     }
 
     if (localLayoutState != null) {
