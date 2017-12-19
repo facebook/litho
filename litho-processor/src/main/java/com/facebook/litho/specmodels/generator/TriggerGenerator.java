@@ -126,9 +126,12 @@ public class TriggerGenerator {
 
     for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel :
         specModel.getTriggerMethods()) {
-      methodBuilder.addStatement(
-          "container.recordEventTrigger($L)",
-          ComponentBodyGenerator.getEventTriggerInstanceName(eventMethodModel.name));
+      String trigger = ComponentBodyGenerator.getEventTriggerInstanceName(eventMethodModel.name);
+      methodBuilder
+          .beginControlFlow("if ($L != null)", trigger)
+          .addStatement("$L.mTriggerTarget = this", trigger)
+          .addStatement("container.recordEventTrigger($L)", trigger)
+          .endControlFlow();
     }
 
     return methodBuilder.build();

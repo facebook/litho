@@ -509,7 +509,10 @@ public final class TestMount<S extends View> extends Component {
 
   @Override
   public void recordEventTrigger(EventTriggersContainer container) {
-    container.recordEventTrigger(onClickEventTriggerTrigger);
+    if (onClickEventTriggerTrigger != null) {
+      onClickEventTriggerTrigger.mTriggerTarget = this;
+      container.recordEventTrigger(onClickEventTriggerTrigger);
+    }
   }
 
   @Override
@@ -700,7 +703,6 @@ public final class TestMount<S extends View> extends Component {
     }
 
     public Builder<S> onClickEventTriggerTrigger(EventTrigger onClickEventTriggerTrigger) {
-      onClickEventTriggerTrigger.mTriggerTarget = mTestMount;
       this.mTestMount.onClickEventTriggerTrigger = onClickEventTriggerTrigger;
       return this;
     }

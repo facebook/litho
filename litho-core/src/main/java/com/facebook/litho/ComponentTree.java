@@ -205,6 +205,9 @@ public class ComponentTree {
   @GuardedBy("mEventHandlers")
   public Map<String, EventHandlersWrapper> mEventHandlers = new LinkedHashMap<>();
 
+  @GuardedBy("mEventTriggersContainer")
+  private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
+
   public static Builder create(ComponentContext context, Component.Builder<?> root) {
     return create(context, root.build());
   }
@@ -714,8 +717,11 @@ public class ComponentTree {
         localLayoutState = null;
       }
 
+      clearUnusedTriggerHandlers();
+
       for (Component layoutComponent : components) {
         bindEventHandler(layoutComponent);
+        bindTriggerHandler(layoutComponent);
       }
 
       clearUnusedEventHandlers();
@@ -982,16 +988,23 @@ public class ComponentTree {
     }
   }
 
-  @Nullable
-  synchronized EventTrigger getEventTrigger(String triggerKey) {
-    final LayoutState mostRecentLayoutState =
-        mBackgroundLayoutState != null ? mBackgroundLayoutState : mMainThreadLayoutState;
-
-    if (mostRecentLayoutState == null) {
-      return null;
+  private void bindTriggerHandler(Component component) {
+    synchronized (mEventTriggersContainer) {
+      component.recordEventTrigger(mEventTriggersContainer);
     }
+  }
 
-    return mostRecentLayoutState.getEventTrigger(triggerKey);
+  private void clearUnusedTriggerHandlers() {
+    synchronized (mEventTriggersContainer) {
+      mEventTriggersContainer.clear();
+    }
+  }
+
+  @Nullable
+  EventTrigger getEventTrigger(String triggerKey) {
+    synchronized (mEventTriggersContainer) {
+      return mEventTriggersContainer.getEventTrigger(triggerKey);
+    }
   }
 
   /**
@@ -1348,8 +1361,12 @@ public class ComponentTree {
     }
 
     if (components != null) {
+
+      clearUnusedTriggerHandlers();
+
       for (Component component : components) {
         bindEventHandler(component);
+        bindTriggerHandler(component);
       }
 
       clearUnusedEventHandlers();
@@ -1446,6 +1463,10 @@ public class ComponentTree {
     if (backgroundLayoutState != null) {
       backgroundLayoutState.releaseRef();
       backgroundLayoutState = null;
+    }
+
+    synchronized (mEventTriggersContainer) {
+      clearUnusedTriggerHandlers();
     }
   }
 

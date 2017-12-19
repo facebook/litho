@@ -363,7 +363,10 @@ public final class TestLayout<S extends View> extends Component {
 
   @Override
   public void recordEventTrigger(EventTriggersContainer container) {
-    container.recordEventTrigger(onClickEventTriggerTrigger);
+    if (onClickEventTriggerTrigger != null) {
+      onClickEventTriggerTrigger.mTriggerTarget = this;
+      container.recordEventTrigger(onClickEventTriggerTrigger);
+    }
   }
 
   @Override
@@ -574,7 +577,6 @@ public final class TestLayout<S extends View> extends Component {
     }
 
     public Builder<S> onClickEventTriggerTrigger(EventTrigger onClickEventTriggerTrigger) {
-      onClickEventTriggerTrigger.mTriggerTarget = mTestLayout;
       this.mTestLayout.onClickEventTriggerTrigger = onClickEventTriggerTrigger;
       return this;
     }

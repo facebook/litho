@@ -188,11 +188,9 @@ class LayoutState {
   private SimpleArrayMap<String, LayoutOutput> mTransitionKeyMapping;
   private boolean mHasLithoViewWidthAnimation = false;
   private boolean mHasLithoViewHeightAnimation = false;
-  private final EventTriggersContainer mEventTriggersContainer;
 
   LayoutState() {
     mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
-    mEventTriggersContainer = new EventTriggersContainer();
   }
 
   void init(ComponentContext context) {
@@ -788,7 +786,6 @@ class LayoutState {
         && component.getScopedContext() != null
         && component.getScopedContext().getComponentTree() != null) {
       layoutState.mComponents.add(component);
-      component.recordEventTrigger(layoutState.mEventTriggersContainer);
     }
 
     if (component != null) {
@@ -1916,8 +1913,6 @@ class LayoutState {
       mHasLithoViewWidthAnimation = false;
       mHasLithoViewHeightAnimation = false;
 
-      mEventTriggersContainer.clear();
-
       ComponentsPools.release(this);
     }
   }
@@ -2060,11 +2055,6 @@ class LayoutState {
 
   LayoutOutput getLayoutOutputForTransitionKey(String transitionKey) {
     return getTransitionKeyMapping().get(transitionKey);
-  }
-
-  @Nullable
-  EventTrigger getEventTrigger(String triggerKey) {
-    return mEventTriggersContainer.getEventTrigger(triggerKey);
   }
 
   private static void addMountableOutput(LayoutState layoutState, LayoutOutput layoutOutput) {

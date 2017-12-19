@@ -1166,7 +1166,6 @@ public class BuilderGenerator {
         .addModifiers(Modifier.PUBLIC)
         .returns(getBuilderType(specModel))
         .addParameter(ClassNames.EVENT_TRIGGER, eventTriggerName)
-        .addStatement("$L.mTriggerTarget = $L", eventTriggerName, implMemberName)
         .addStatement("this.$L.$L = $L", implMemberName, eventTriggerName, eventTriggerName)
         .addStatement("return this")
         .build();
