@@ -15,6 +15,9 @@ import static android.text.Layout.Alignment.ALIGN_NORMAL;
 import static android.view.View.TEXT_ALIGNMENT_CENTER;
 import static android.view.View.TEXT_ALIGNMENT_TEXT_END;
 import static android.view.View.TEXT_ALIGNMENT_TEXT_START;
+import static com.facebook.litho.widget.EditTextStateUpdatePolicy.NO_UPDATES;
+import static com.facebook.litho.widget.EditTextStateUpdatePolicy.UPDATE_ON_LINE_COUNT_CHANGE;
+import static com.facebook.litho.widget.EditTextStateUpdatePolicy.UPDATE_ON_TEXT_CHANGE;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -40,6 +43,7 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.Output;
 import com.facebook.litho.R;
 import com.facebook.litho.Size;
+import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnCreateMountContent;
@@ -48,9 +52,12 @@ import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
+import com.facebook.litho.annotations.OnUpdateState;
+import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
+import com.facebook.litho.annotations.State;
 import com.facebook.litho.reference.Reference;
 import com.facebook.litho.utils.MeasureUtils;
 import java.lang.reflect.Field;
@@ -59,7 +66,7 @@ import java.lang.reflect.Field;
  * Component that renders an {@link EditText}.
  *
  * @uidocs
- * @prop text Text to display.
+ * @prop text Initial text to display.
  * @prop hint Hint text to display.
  * @prop ellipsize If sets, specifies the position of the text to be ellispized.
  * @prop minLines Minimum number of lines to show.
@@ -70,8 +77,8 @@ import java.lang.reflect.Field;
  * @prop shadowDy Vertical offset of the shadow.
  * @prop shadowColor Color for the shadow underneath the text.
  * @prop isSingleLine If set, makes the text to be rendered in a single line.
- * @Prop isSingleLineWrap If set, single line text would warp and horizontal scroll would be disabled
- * only works when isSingleLine is set.
+ * @prop isSingleLineWrap If set, single line text would warp and horizontal scroll would be
+ *     disabled only works when isSingleLine is set.
  * @prop textColor Color of the text.
  * @prop textColorStateList ColorStateList of the text.
  * @prop hintTextColor Hint color of the text.
@@ -85,17 +92,22 @@ import java.lang.reflect.Field;
  * @prop gravity Gravity for the text within its container.
  * @prop editable If set, allows the text to be editable.
  * @prop selection Moves the cursor to the selection index.
- * @prop inputType Type of data being placed in a text field,
- * used to help an input method decide how to let the user enter text.
- * @prop rawInputType Type of data being placed in a text field,
- * used to help an input method decide how to let the user enter text. This prop
- * will override inputType if both are provided.
+ * @prop inputType Type of data being placed in a text field, used to help an input method decide
+ *     how to let the user enter text.
+ * @prop rawInputType Type of data being placed in a text field, used to help an input method decide
+ *     how to let the user enter text. This prop will override inputType if both are provided.
  * @prop imeOptions Type of data in the text field, reported to an IME when it has focus.
  * @prop editorActionListener Special listener to be called when an action is performed
  * @prop requestFocus If set, attempts to give focus.
  * @prop cursorDrawableRes Drawable to set for the edit texts cursor.
+ * @prop stateUpdatePolicy A policy describing when and how internal state should be updated. This
+ *     does violate encapsulation, but is essential for optimization, so costly state updates, which
+ *     trigger relayout, happen only when is really needed.
  */
-@MountSpec(isPureRender = true, events = {TextChangedEvent.class})
+@MountSpec(
+  isPureRender = true,
+  events = {TextChangedEvent.class}
+)
 class EditTextSpec {
 
   private static final Layout.Alignment[] ALIGNMENT = Layout.Alignment.values();
@@ -135,6 +147,7 @@ class EditTextSpec {
   @PropDefault protected static final boolean isSingleLineWrap = false;
   @PropDefault protected static final boolean requestFocus = false;
   @PropDefault protected static final int cursorDrawableRes = -1;
+  @PropDefault protected static final EditTextStateUpdatePolicy stateUpdatePolicy = NO_UPDATES;
 
   @OnLoadStyle
   static void onLoadStyle(
@@ -251,14 +264,15 @@ class EditTextSpec {
       @Prop(optional = true) TextView.OnEditorActionListener editorActionListener,
       @Prop(optional = true) boolean isSingleLineWrap,
       @Prop(optional = true) boolean requestFocus,
-      @Prop(optional = true) int cursorDrawableRes) {
+      @Prop(optional = true) int cursorDrawableRes,
+      @State(canUpdateLazily = true) String input) {
 
     // TODO(11759579) - don't allocate a new EditText in every measure.
     final EditText editText = new EditText(c);
 
     initEditText(
         editText,
-        text,
+        input == null ? text : input,
         hint,
         ellipsize,
         minLines,
@@ -321,15 +335,14 @@ class EditTextSpec {
   }
 
   @OnCreateMountContent
-  protected static EditTextTextTextChangedEventHandler onCreateMountContent(
-      ComponentContext c) {
-    return new EditTextTextTextChangedEventHandler(c);
+  protected static EditTextTextChangedEventHandler onCreateMountContent(ComponentContext c) {
+    return new EditTextTextChangedEventHandler(c);
   }
 
   @OnMount
   static void onMount(
       final ComponentContext c,
-      EditTextTextTextChangedEventHandler editText,
+      EditTextTextChangedEventHandler editText,
       @Prop(optional = true, resType = ResType.STRING) CharSequence text,
       @Prop(optional = true, resType = ResType.STRING) CharSequence hint,
       @Prop(optional = true) TextUtils.TruncateAt ellipsize,
@@ -362,11 +375,12 @@ class EditTextSpec {
       @Prop(optional = true) TextView.OnEditorActionListener editorActionListener,
       @Prop(optional = true) boolean isSingleLineWrap,
       @Prop(optional = true) boolean requestFocus,
-      @Prop(optional = true) int cursorDrawableRes) {
+      @Prop(optional = true) int cursorDrawableRes,
+      @State(canUpdateLazily = true) String input) {
 
     initEditText(
         editText,
-        text,
+        input == null ? text : input,
         hint,
         ellipsize,
         minLines,
@@ -404,24 +418,27 @@ class EditTextSpec {
   @OnBind
   static void onBind(
       ComponentContext c,
-      EditTextTextTextChangedEventHandler editText) {
+      EditTextTextChangedEventHandler editText,
+      @Prop(optional = true) EditTextStateUpdatePolicy stateUpdatePolicy) {
+    editText.setComponentContext(c);
     editText.setEventHandler(
         com.facebook.litho.widget.EditText.getTextChangedEventHandler(c));
+    editText.setStateUpdatePolicy(stateUpdatePolicy);
     editText.attachWatcher();
   }
 
   @OnUnbind
-  static void onUnbind(
-      ComponentContext c,
-      EditTextTextTextChangedEventHandler editText) {
-    editText.setEventHandler(null);
+  static void onUnbind(ComponentContext c, EditTextTextChangedEventHandler editText) {
     editText.detachWatcher();
+    editText.clear();
   }
 
   @OnUnmount
-  static void onUnmount(
-      ComponentContext c,
-      EditTextTextTextChangedEventHandler editText) {
+  static void onUnmount(ComponentContext c, EditTextTextChangedEventHandler editText) {}
+
+  @OnUpdateState
+  static void updateInput(StateValue<String> input, @Param String newInput) {
+    input.set(newInput);
   }
 
   private static void initEditText(
@@ -568,28 +585,63 @@ class EditTextSpec {
     }
   }
 
-  static class EditTextTextTextChangedEventHandler extends EditText {
+  static class EditTextTextChangedEventHandler extends EditText {
     private final TextWatcher mTextWatcher;
+    private ComponentContext mComponentContext;
+    private EditTextStateUpdatePolicy mStateUpdatePolicy;
     private EventHandler mEventHandler;
 
-    EditTextTextTextChangedEventHandler(Context context) {
+    EditTextTextChangedEventHandler(Context context) {
       super(context);
-      this.mTextWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+      this.mTextWatcher =
+          new TextWatcher() {
+            int mPrevLineCount;
 
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+              // Only need the previous line count when state update policy is ON_LINE_COUNT_CHANGE
+              if (mStateUpdatePolicy == UPDATE_ON_LINE_COUNT_CHANGE) {
+                mPrevLineCount = getLineCount();
+              }
+            }
 
-        @Override
-        public void afterTextChanged(Editable s) {
-          if (mEventHandler != null) {
-            com.facebook.litho.widget.EditText.dispatchTextChangedEvent(
-                mEventHandler,
-                s.toString());
-          }
-        }
-      };
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+              if ((mStateUpdatePolicy == UPDATE_ON_LINE_COUNT_CHANGE
+                      && mPrevLineCount != getLineCount())
+                  || mStateUpdatePolicy == UPDATE_ON_TEXT_CHANGE) {
+                com.facebook.litho.widget.EditText.updateInput(mComponentContext, s.toString());
+              } else if (mStateUpdatePolicy != NO_UPDATES) {
+                com.facebook.litho.widget.EditText.lazyUpdateInput(mComponentContext, s.toString());
+              }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+              if (mEventHandler != null) {
+                com.facebook.litho.widget.EditText.dispatchTextChangedEvent(
+                    mEventHandler, s.toString());
+              }
+            }
+          };
+    }
+
+    void setStateUpdatePolicy(EditTextStateUpdatePolicy stateUpdatePolicy) {
+      mStateUpdatePolicy = stateUpdatePolicy;
+    }
+
+    void setComponentContext(ComponentContext componentContext) {
+      mComponentContext = componentContext;
+    }
+
+    void setEventHandler(EventHandler eventHandler) {
+      mEventHandler = eventHandler;
+    }
+
+    void clear() {
+      mStateUpdatePolicy = stateUpdatePolicy;
+      mComponentContext = null;
+      mEventHandler = null;
     }
 
     void attachWatcher() {
@@ -598,10 +650,6 @@ class EditTextSpec {
 
     void detachWatcher() {
       removeTextChangedListener(mTextWatcher);
-    }
-
-    public void setEventHandler(EventHandler eventHandler) {
-      mEventHandler = eventHandler;
     }
   }
 }
