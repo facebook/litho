@@ -41,6 +41,8 @@
     <attr name="android:inputType" />
     <attr name="android:fontFamily" />
     <attr name="android:imeOptions" />
+    <attr name="android:breakStrategy" />
+    <attr name="android:hyphenationFrequency" />
   </declare-styleable>
 
   <declare-styleable name="Image">

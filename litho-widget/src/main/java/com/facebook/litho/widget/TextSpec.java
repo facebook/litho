@@ -104,6 +104,8 @@ import com.facebook.yoga.YogaDirection;
  * @prop textStyle Style (bold, italic, bolditalic) for the text.
  * @prop typeface Typeface for the text.
  * @prop textAlignment Alignment of the text within its container.
+ * @prop breakStrategy Break strategy to use for multi-line text.
+ * @prop hyphenationFrequency How frequently to hyphenate text.
  * @prop glyphWarming If set, pre-renders the text to an off-screen Canvas to boost performance.
  * @prop textDirection Heuristic to use to determine the direction of the text.
  * @prop shouldIncludeFontPadding If set, uses extra padding for ascenders and descenders.
@@ -131,6 +133,8 @@ class TextSpec {
   private static final int DEFAULT_EMS = -1;
   private static final int DEFAULT_MIN_WIDTH = 0;
   private static final int DEFAULT_MAX_WIDTH = Integer.MAX_VALUE;
+  private static final int DEFAULT_BREAK_STRATEGY = -1;
+  private static final int DEFAULT_HYPHENATION_FREQUENCY = -1;
 
   private static final int[][] DEFAULT_TEXT_COLOR_STATE_LIST_STATES = {{0}};
   private static final int[] DEFAULT_TEXT_COLOR_STATE_LIST_COLORS = {Color.BLACK};
@@ -157,6 +161,8 @@ class TextSpec {
   @PropDefault protected static final boolean glyphWarming = false;
   @PropDefault protected static final boolean shouldIncludeFontPadding = true;
   @PropDefault protected static final Alignment textAlignment = ALIGN_NORMAL;
+  @PropDefault protected static final int breakStrategy = DEFAULT_BREAK_STRATEGY;
+  @PropDefault protected static final int hyphenationFrequency = DEFAULT_HYPHENATION_FREQUENCY;
   @PropDefault protected static final int highlightStartOffset = -1;
   @PropDefault protected static final int highlightEndOffset = -1;
 
@@ -186,6 +192,8 @@ class TextSpec {
       Output<Integer> highlightColor,
       Output<Integer> textSize,
       Output<Alignment> textAlignment,
+      Output<Integer> breakStrategy,
+      Output<Integer> hyphenationFrequency,
       Output<Integer> textStyle,
       Output<Float> shadowRadius,
       Output<Float> shadowDx,
@@ -226,6 +234,8 @@ class TextSpec {
           highlightColor,
           textSize,
           textAlignment,
+          breakStrategy,
+          hyphenationFrequency,
           textStyle,
           shadowRadius,
           shadowDx,
@@ -258,6 +268,8 @@ class TextSpec {
         highlightColor,
         textSize,
         textAlignment,
+        breakStrategy,
+        hyphenationFrequency,
         textStyle,
         shadowRadius,
         shadowDx,
@@ -287,14 +299,15 @@ class TextSpec {
       Output<Integer> highlightColor,
       Output<Integer> textSize,
       Output<Alignment> textAlignment,
+      Output<Integer> breakStrategy,
+      Output<Integer> hyphenationFrequency,
       Output<Integer> textStyle,
       Output<Float> shadowRadius,
       Output<Float> shadowDx,
       Output<Float> shadowDy,
       Output<Integer> shadowColor,
       Output<VerticalGravity> verticalGravity,
-      Output<Typeface> typeface
-  ) {
+      Output<Typeface> typeface) {
     int viewTextAlignment = View.TEXT_ALIGNMENT_GRAVITY;
     int gravity = Gravity.NO_GRAVITY;
     String fontFamily = null;
@@ -355,6 +368,12 @@ class TextSpec {
         maxTextWidth.set(a.getDimensionPixelSize(attr, DEFAULT_MAX_WIDTH));
       } else if (attr == R.styleable.Text_android_fontFamily) {
         fontFamily = a.getString(attr);
+      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+          && attr == R.styleable.Text_android_breakStrategy) {
+        breakStrategy.set(a.getInt(attr, DEFAULT_BREAK_STRATEGY));
+      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+          && attr == R.styleable.Text_android_hyphenationFrequency) {
+        hyphenationFrequency.set(a.getInt(attr, DEFAULT_HYPHENATION_FREQUENCY));
       }
     }
 
@@ -394,6 +413,8 @@ class TextSpec {
       @Prop(optional = true) int textStyle,
       @Prop(optional = true) Typeface typeface,
       @Prop(optional = true) Alignment textAlignment,
+      @Prop(optional = true) int breakStrategy,
+      @Prop(optional = true) int hyphenationFrequency,
       @Prop(optional = true) boolean glyphWarming,
       @Prop(optional = true) TextDirectionHeuristicCompat textDirection,
       Output<Layout> measureLayout,
@@ -435,6 +456,8 @@ class TextSpec {
             minTextWidth,
             maxTextWidth,
             context.getResources().getDisplayMetrics().density,
+            breakStrategy,
+            hyphenationFrequency,
             textDirection);
 
     measureLayout.set(newLayout);
@@ -498,6 +521,8 @@ class TextSpec {
       int minTextWidth,
       int maxTextWidth,
       float density,
+      int breakStrategy,
+      int hyphenationFrequency,
       TextDirectionHeuristicCompat textDirection) {
     Layout newLayout;
 
@@ -530,7 +555,20 @@ class TextSpec {
         .setSingleLine(isSingleLine)
         .setText(text)
         .setTextSize(textSize)
-        .setWidth(SizeSpec.getSize(widthSpec), textMeasureMode);
+        .setWidth(SizeSpec.getSize(widthSpec), textMeasureMode)
+        .setIncludeFontPadding(shouldIncludeFontPadding)
+        .setTextSpacingExtra(extraSpacing)
+        .setTextSpacingMultiplier(spacingMultiplier)
+        .setAlignment(textAlignment)
+        .setLinkColor(linkColor);
+
+    if (breakStrategy != DEFAULT_BREAK_STRATEGY) {
+      layoutBuilder.setBreakStrategy(breakStrategy);
+    }
+
+    if (hyphenationFrequency != DEFAULT_HYPHENATION_FREQUENCY) {
+      layoutBuilder.setHyphenationFrequency(hyphenationFrequency);
+    }
 
     if (minEms != DEFAULT_EMS) {
       layoutBuilder.setMinEms(minEms);
@@ -563,12 +601,6 @@ class TextSpec {
           ? TextDirectionHeuristicsCompat.FIRSTSTRONG_RTL
           : TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR);
     }
-
-    layoutBuilder.setIncludeFontPadding(shouldIncludeFontPadding);
-    layoutBuilder.setTextSpacingExtra(extraSpacing);
-    layoutBuilder.setTextSpacingMultiplier(spacingMultiplier);
-    layoutBuilder.setAlignment(textAlignment);
-    layoutBuilder.setLinkColor(linkColor);
 
     newLayout = layoutBuilder.build();
 
@@ -684,6 +716,8 @@ class TextSpec {
       @Prop(optional = true) int textStyle,
       @Prop(optional = true) Typeface typeface,
       @Prop(optional = true) Alignment textAlignment,
+      @Prop(optional = true) int breakStrategy,
+      @Prop(optional = true) int hyphenationFrequency,
       @Prop(optional = true) boolean glyphWarming,
       @Prop(optional = true) TextDirectionHeuristicCompat textDirection,
       @FromMeasure Layout measureLayout,
@@ -743,6 +777,8 @@ class TextSpec {
               minTextWidth,
               maxTextWidth,
               c.getResources().getDisplayMetrics().density,
+              breakStrategy,
+              hyphenationFrequency,
               textDirection));
     }
 
