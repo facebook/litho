@@ -7,7 +7,7 @@
 
 include_defs("//COMPONENTS_DEFS")
 
-java_test(
+fb_java_test(
     name = "sections",
     srcs = glob(["*Test.java"]),
     source = "1.8",
