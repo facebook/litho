@@ -18,6 +18,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
+import android.support.annotation.UiThread;
 import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import com.facebook.litho.Component;
@@ -106,6 +107,7 @@ public class SectionTree {
   }
 
   private static final int MESSAGE_WHAT_BACKGROUND_CHANGESET_STATE_UPDATED = 1;
+  private static final int MESSAGE_FOCUS_REQUEST = 2;
   private static final Handler sMainThreadHandler = new SectionsMainThreadHandler();
 
   @GuardedBy("ComponentTree.class")
@@ -117,9 +119,12 @@ public class SectionTree {
   private final boolean mAsyncPropUpdates;
   private final String mTag;
   private final Map<String, Range> mLastRanges = new HashMap<>();
+
   // Holds a Pair where the first item is a section's global starting index
   // and the second is the count.
+  @GuardedBy("ui-thread")
   private Map<String, Pair<Integer, Integer>> mSectionPositionInfo;
+
   private LoadEventsHandler mLoadEventsHandler;
 
   private final CalculateChangeSetRunnable mCalculateChangeSetOnMainThreadRunnable;
@@ -345,6 +350,7 @@ public class SectionTree {
     }
   }
 
+  @UiThread
   private void dataBound() {
     final Section currentSection;
     synchronized (this) {
@@ -361,6 +367,7 @@ public class SectionTree {
     }
   }
 
+  @UiThread
   private void dataBoundRecursive(Section section) {
 
     section.dataBound(section.getScopedContext());
@@ -375,9 +382,8 @@ public class SectionTree {
     }
   }
 
-  /**
-   * Calculates the global starting index for each section in the hierarchy.
-   */
+  /** Calculates the global starting index for each section in the hierarchy. */
+  @UiThread
   private void calculateRequestFocusDataRecursive(Section root, int prevChildrenCount) {
     if (root == null) {
       return;
@@ -518,6 +524,19 @@ public class SectionTree {
     }
   }
 
+  public void requestFocusOnRoot(int index) {
+    final String sectionKey;
+    synchronized (this) {
+      if (mCurrentSection == null) {
+        return;
+      }
+
+      sectionKey = mCurrentSection.getGlobalKey();
+    }
+
+    requestFocus(sectionKey, index);
+  }
+
   void requestFocus(Section section, int index) {
     requestFocus(section.getGlobalKey(), index);
   }
@@ -526,23 +545,31 @@ public class SectionTree {
     requestFocus(sectionKey, 0);
   }
 
-  void requestFocusEnd(String sectionKey) {
-    requestFocus(sectionKey, mSectionPositionInfo.get(sectionKey).second -1);
+  void requestFocusEnd(final String sectionKey) {
+    focusRequestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            if (mSectionPositionInfo == null) {
+              throw new IllegalStateException(
+                  "You cannot call requestFocusWithOffset() before dataBound() is called.");
+            }
+
+            mTarget.requestFocus(
+                getGlobalIndex(sectionKey, mSectionPositionInfo.get(sectionKey).second - 1));
+          }
+        });
   }
 
-  private void requestFocus(String sectionKey, int index) {
-    if (mSectionPositionInfo == null) {
-      throw new IllegalStateException(
-          "You cannot call requestFocus() before dataBound() is called.");
-    }
-
-    if (index >= mSectionPositionInfo.get(sectionKey).second) {
-      throw new IllegalStateException(
-          "You are trying to request focus on an index that is out of bounds: requested " +
-              index + " , total " + mSectionPositionInfo.get(sectionKey).second);
-    }
-
-    mTarget.requestFocus(getGlobalIndex(sectionKey, index));
+  private void requestFocus(final String sectionKey, final int index) {
+    focusRequestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            checkFocusValidity(sectionKey, index);
+            mTarget.requestFocus(getGlobalIndex(sectionKey, index));
+          }
+        });
   }
 
   void requestFocusWithOffset(Section section, int index, int offset) {
@@ -553,7 +580,19 @@ public class SectionTree {
     requestFocusWithOffset(sectionKey, 0, offset);
   }
 
-  private void requestFocusWithOffset(String sectionKey, int index, int offset) {
+  private void requestFocusWithOffset(final String sectionKey, final int index, final int offset) {
+    focusRequestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            checkFocusValidity(sectionKey, index);
+            mTarget.requestFocusWithOffset(getGlobalIndex(sectionKey, index), offset);
+          }
+        });
+  }
+
+  @UiThread
+  private void checkFocusValidity(String sectionKey, int index) {
     if (mSectionPositionInfo == null) {
       throw new IllegalStateException(
           "You cannot call requestFocusWithOffset() before dataBound() is called.");
@@ -564,8 +603,14 @@ public class SectionTree {
           "You are trying to request focus with offset on an index that is out of bounds: " +
               "requested " + index + " , total " + mSectionPositionInfo.get(sectionKey).second);
     }
+  }
 
-    mTarget.requestFocusWithOffset(getGlobalIndex(sectionKey, index), offset);
+  private static void focusRequestOnUiThread(Runnable runnable) {
+    if (isMainThread()) {
+      runnable.run();
+    } else {
+      sMainThreadHandler.obtainMessage(MESSAGE_FOCUS_REQUEST, runnable).sendToTarget();
+    }
   }
 
   private int getGlobalIndex(String sectionKey, int localIndex) {
@@ -887,6 +932,7 @@ public class SectionTree {
     }
   }
 
+  @UiThread
   private void postChangesetsToHandler() {
     assertMainThread();
 
@@ -1114,7 +1160,10 @@ public class SectionTree {
             throw new RuntimeException(getDebugInfo(tree) + e.getMessage(), e);
           }
           break;
-
+        case MESSAGE_FOCUS_REQUEST:
+          Runnable focusRequest = (Runnable) msg.obj;
+          focusRequest.run();
+          break;
         default:
           throw new IllegalArgumentException();
       }

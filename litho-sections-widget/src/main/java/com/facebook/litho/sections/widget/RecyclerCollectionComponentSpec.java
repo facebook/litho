@@ -35,10 +35,12 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.TouchEvent;
 import com.facebook.litho.Wrapper;
+import com.facebook.litho.annotations.FromTrigger;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
+import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
@@ -356,6 +358,15 @@ public class RecyclerCollectionComponentSpec {
   @OnEvent(PTRRefreshEvent.class)
   protected static void onRefresh(ComponentContext c, @Param SectionTree sectionTree) {
     sectionTree.refresh();
+  }
+
+  @OnTrigger(ScrollEvent.class)
+  static void onScroll(
+      ComponentContext c,
+      @FromTrigger int position,
+      @FromTrigger boolean animate,
+      @State SectionTree sectionTree) {
+    sectionTree.requestFocusOnRoot(position);
   }
 
   private static class RecyclerCollectionOnScrollListener extends OnScrollListener {
