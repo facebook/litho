@@ -147,3 +147,8 @@ def litho_android_library(name, srcs=None, *args, **kwargs):
   android_library(name, srcs=srcs, *args, **kwargs)
 
 components_robolectric_powermock_test = components_robolectric_test
+
+
+def fb_xplat_cxx_library(*args, **kwargs):
+    """Delegates to cxx_library for OSS project."""
+    cxx_library(*args, **kwargs)

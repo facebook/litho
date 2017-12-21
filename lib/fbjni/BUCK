@@ -21,7 +21,7 @@ if COMPONENTS_IS_OSS_BUILD:
       visibility = COMPONENTS_VISIBILITY,
   )
 
-  cxx_library(
+  fb_xplat_cxx_library(
     name = 'jni',
     soname = 'libfb.$(ext)',
     srcs = glob(['src/main/cpp/*.cpp', 'src/main/cpp/jni/*.cpp', 'src/main/cpp/lyra/*.cpp']),

@@ -5,9 +5,9 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-load("//:COMPONENTS_DEFS", "COMPONENTS_VISIBILITY")
+load("//:COMPONENTS_DEFS", "COMPONENTS_VISIBILITY", "fb_xplat_cxx_library")
 
-cxx_library(
+fb_xplat_cxx_library(
     name = "jni-hack",
     header_namespace = "",
     exported_headers = [
