@@ -108,6 +108,7 @@ public class SectionTree {
 
   private static final int MESSAGE_WHAT_BACKGROUND_CHANGESET_STATE_UPDATED = 1;
   private static final int MESSAGE_FOCUS_REQUEST = 2;
+  private static final int MESSAGE_FOCUS_DISPATCHER_LOADING_STATE_UPDATE = 3;
   private static final Handler sMainThreadHandler = new SectionsMainThreadHandler();
 
   @GuardedBy("ComponentTree.class")
@@ -115,6 +116,7 @@ public class SectionTree {
 
   private final SectionContext mContext;
   private final BatchedTarget mTarget;
+  private final FocusDispatcher mFocusDispatcher;
   private final boolean mAsyncStateUpdates;
   private final boolean mAsyncPropUpdates;
   private final String mTag;
@@ -222,6 +224,7 @@ public class SectionTree {
     mAsyncPropUpdates = builder.mAsyngPropUpdates;
     mTag = builder.mTag;
     mTarget = new BatchedTarget(builder.mTarget, mSectionsDebugLogger, mTag);
+    mFocusDispatcher = new FocusDispatcher(mTarget);
     mContext = SectionContext.withSectionTree(builder.mContext, this);
     mPendingChangeSets = new ArrayList<>();
     mPendingStateUpdates = new HashMap<>();
@@ -555,7 +558,7 @@ public class SectionTree {
                   "You cannot call requestFocusWithOffset() before dataBound() is called.");
             }
 
-            mTarget.requestFocus(
+            mFocusDispatcher.requestFocus(
                 getGlobalIndex(sectionKey, mSectionPositionInfo.get(sectionKey).second - 1));
           }
         });
@@ -567,7 +570,7 @@ public class SectionTree {
           @Override
           public void run() {
             checkFocusValidity(sectionKey, index);
-            mTarget.requestFocus(getGlobalIndex(sectionKey, index));
+            mFocusDispatcher.requestFocus(getGlobalIndex(sectionKey, index));
           }
         });
   }
@@ -586,7 +589,7 @@ public class SectionTree {
           @Override
           public void run() {
             checkFocusValidity(sectionKey, index);
-            mTarget.requestFocusWithOffset(getGlobalIndex(sectionKey, index), offset);
+            mFocusDispatcher.requestFocusWithOffset(getGlobalIndex(sectionKey, index), offset);
           }
         });
   }
@@ -877,10 +880,9 @@ public class SectionTree {
     }
   }
 
-  void dispatchLoadingEvent(
-      LoadingEvent event) {
+  void dispatchLoadingEvent(LoadingEvent event) {
+    final LoadingEvent.LoadingState loadingState = event.loadingState;
     if (mLoadEventsHandler != null) {
-      final LoadingEvent.LoadingState loadingState = event.loadingState;
       final boolean isEmpty = event.isEmpty;
 
       switch (loadingState) {
@@ -898,6 +900,40 @@ public class SectionTree {
           break;
       }
     }
+
+    postLoadingStateToFocusDispatch(loadingState);
+  }
+
+  private void postLoadingStateToFocusDispatch(final LoadingEvent.LoadingState loadingState) {
+    if (isMainThread()) {
+      setLoadingStateToFocusDispatch(loadingState);
+    } else {
+      sMainThreadHandler
+          .obtainMessage(
+              MESSAGE_FOCUS_DISPATCHER_LOADING_STATE_UPDATE,
+              new Runnable() {
+                @Override
+                public void run() {
+                  setLoadingStateToFocusDispatch(loadingState);
+                }
+              })
+          .sendToTarget();
+    }
+  }
+
+  private void setLoadingStateToFocusDispatch(final LoadingEvent.LoadingState loadingState) {
+    if (loadingState == LoadingEvent.LoadingState.INITIAL_LOAD
+        || loadingState == LoadingEvent.LoadingState.LOADING
+        || loadingState == LoadingEvent.LoadingState.REFRESH_LOADING) {
+      mFocusDispatcher.waitForDataBound(true);
+    }
+
+    if (loadingState == LoadingEvent.LoadingState.FAILED) {
+      mFocusDispatcher.waitForDataBound(false);
+    }
+
+    mFocusDispatcher.setLoadingState(loadingState);
+    mFocusDispatcher.maybeDispatchFocusRequests();
   }
 
   private void bindNewComponent(Section section) {
@@ -989,6 +1025,11 @@ public class SectionTree {
 
     if (appliedChanges) {
       dataBound();
+    }
+
+    if (mFocusDispatcher.isLoadingCompleted()) {
+      mFocusDispatcher.waitForDataBound(false);
+      mFocusDispatcher.maybeDispatchFocusRequests();
     }
   }
 
@@ -1161,6 +1202,7 @@ public class SectionTree {
           }
           break;
         case MESSAGE_FOCUS_REQUEST:
+        case MESSAGE_FOCUS_DISPATCHER_LOADING_STATE_UPDATE:
           Runnable focusRequest = (Runnable) msg.obj;
           focusRequest.run();
           break;
