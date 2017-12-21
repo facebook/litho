@@ -30,7 +30,13 @@ import javax.annotation.Nullable;
  */
 @Event
 public class LoadingEvent {
-  public enum LoadingState {INITIAL_LOAD, LOADING, SUCCEEDED, FAILED}
+  public enum LoadingState {
+    INITIAL_LOAD,
+    LOADING,
+    REFRESH_LOADING,
+    SUCCEEDED,
+    FAILED
+  }
 
   //Whether after this loading event the dataset is still empty
   public boolean isEmpty;

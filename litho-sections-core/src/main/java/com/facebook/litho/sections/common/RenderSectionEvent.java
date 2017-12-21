@@ -58,9 +58,19 @@ public class RenderSectionEvent {
     FROM_LOCAL_CACHE
   }
 
+  public enum FetchType {
+    /** Data refresh fetch */
+    REFRESH_FETCH,
+    /** Data head fetch for more data */
+    HEAD_FETCH,
+    /** Data tail fetch for more data */
+    TAIL_FETCH,
+  }
+
   public Object model;
   public Object lastNonNullModel;
   public FetchState state;
   public Throwable error;
   public DataSource dataSource;
+  public FetchType fetchType;
 }

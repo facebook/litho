@@ -25,4 +25,5 @@ public class ConnectionStateEvent {
   public boolean isEmpty;
   public Throwable fetchError;
   public RenderSectionEvent.DataSource dataSource;
+  public RenderSectionEvent.FetchType fetchType;
 }
