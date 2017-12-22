@@ -13,8 +13,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
 
     targetCompatibility = targetCompatibilityVersion
     sourceCompatibility = sourceCompatibilityVersion
@@ -38,6 +38,7 @@ dependencies {
     compileOnly project(':litho-sections-annotations')
     annotationProcessor project(':litho-processor')
     annotationProcessor project(':litho-sections-processor')
+
     implementation deps.soloader
     implementation deps.supportRecyclerView
 }
