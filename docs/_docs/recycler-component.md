@@ -16,7 +16,7 @@ You can use `Recycler` as you would use any other component in the framework by 
 
 ``` java
 @OnCreateLayout
-static ComponentLayout onCreateLayout(
+static Component onCreateLayout(
     final ComponentContext c,
     @Prop RecyclerBinder recyclerBinder) {
     

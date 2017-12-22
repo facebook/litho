@@ -101,7 +101,7 @@ One of the best features of `AccessibilityDelegate`s in general is their reusabi
 class PoliteComponentWrapper {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext c,
       @Prop Component content) {
       
@@ -128,7 +128,7 @@ Now you can replace any usages of your component with `PoliteComponentWrapper`
 
 ```java
 @OnCreateLayout
-static ComponentLayout onCreateLayout(
+static Component onCreateLayout(
     ComponentContext c,
     @Prop CharSequence text) {
     

@@ -26,7 +26,7 @@ Here is some sample code with our styling guidelines:
 class MyComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext c,
       @Prop(resType = STRING) String title,
       @Prop(optional = true) Drawable image) {

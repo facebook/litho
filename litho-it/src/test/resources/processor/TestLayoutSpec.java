@@ -15,7 +15,6 @@ import android.view.View;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
 import com.facebook.litho.Output;
 import com.facebook.litho.StateValue;
@@ -64,7 +63,7 @@ public class TestLayoutSpec<S extends View> {
   }
 
   @OnCreateLayout
-  static <S extends View> ComponentLayout onCreateLayout(
+  static <S extends View> Component onCreateLayout(
       ComponentContext context,
       @Prop(optional = true) boolean prop2,
       @Prop Object prop3,

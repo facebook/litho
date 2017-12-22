@@ -20,7 +20,7 @@ hierarchy describing your user interface.
 class HelloComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext c,
       @Prop String name) {
 

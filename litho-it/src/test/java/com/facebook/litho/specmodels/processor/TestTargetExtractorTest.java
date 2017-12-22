@@ -11,8 +11,8 @@ package com.facebook.litho.specmodels.processor;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -28,7 +28,7 @@ public class TestTargetExtractorTest {
   @LayoutSpec
   static class MyLayoutSpec {
     @OnCreateLayout
-    public ComponentLayout onCreateLayout(ComponentContext c, @Prop String s) {
+    public Component onCreateLayout(ComponentContext c, @Prop String s) {
       return null;
     }
   }

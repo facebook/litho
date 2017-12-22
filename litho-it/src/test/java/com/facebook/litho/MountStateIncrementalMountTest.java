@@ -75,7 +75,7 @@ public class MountStateIncrementalMountTest {
             mContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
                     .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
@@ -122,7 +122,7 @@ public class MountStateIncrementalMountTest {
             mContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
                     .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
@@ -172,7 +172,7 @@ public class MountStateIncrementalMountTest {
             mContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Row.create(c)
                     .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
                     .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
@@ -222,7 +222,7 @@ public class MountStateIncrementalMountTest {
             mContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
                     .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
@@ -270,7 +270,7 @@ public class MountStateIncrementalMountTest {
             mContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .wrapInView()
                     .paddingPx(ALL, 20)
@@ -308,7 +308,7 @@ public class MountStateIncrementalMountTest {
             mContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
                         Wrapper.create(c)
@@ -341,7 +341,7 @@ public class MountStateIncrementalMountTest {
             mContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
                         Wrapper.create(c)
@@ -403,7 +403,7 @@ public class MountStateIncrementalMountTest {
             testComponentContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
                         Wrapper.create(c)
@@ -528,7 +528,7 @@ public class MountStateIncrementalMountTest {
             mContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
                     .build();

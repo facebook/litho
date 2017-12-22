@@ -18,8 +18,8 @@ import android.content.Intent;
 import android.view.View;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -31,9 +31,7 @@ import com.facebook.litho.widget.Text;
 public class DemoListItemComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
-      ComponentContext c,
-      @Prop final String name) {
+  static Component onCreateLayout(ComponentContext c, @Prop final String name) {
     return Column.create(c)
         .paddingDip(ALL, 16)
         .child(

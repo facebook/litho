@@ -34,19 +34,20 @@ public class MountStateViewClickTest {
 
   @Test
   public void testInnerComponentHostClickable() {
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return create(c)
-                .child(
-                    create(c)
-                        .clickHandler(c.newEventHandler(1))
-                        .child(TestViewComponent.create(c)))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .child(
+                        create(c)
+                            .clickHandler(c.newEventHandler(1))
+                            .child(TestViewComponent.create(c)))
+                    .build();
+              }
+            });
 
     assertThat(lithoView.getChildCount()).isEqualTo(1);
     assertThat(lithoView.isClickable()).isFalse();
@@ -57,19 +58,20 @@ public class MountStateViewClickTest {
 
   @Test
   public void testInnerComponentHostClickableWithLongClickHandler() {
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return create(c)
-                .child(
-                    create(c)
-                        .longClickHandler(c.newEventHandler(1))
-                        .child(TestViewComponent.create(c)))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .child(
+                        create(c)
+                            .longClickHandler(c.newEventHandler(1))
+                            .child(TestViewComponent.create(c)))
+                    .build();
+              }
+            });
 
     assertThat(lithoView.getChildCount()).isEqualTo(1);
     assertThat(lithoView.isClickable()).isFalse();
@@ -80,17 +82,18 @@ public class MountStateViewClickTest {
 
   @Test
   public void testRootHostClickable() {
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return create(c)
-                .clickHandler(c.newEventHandler(1))
-                .child(TestDrawableComponent.create(c))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .clickHandler(c.newEventHandler(1))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
     assertThat(lithoView.getChildCount()).isEqualTo(0);
     assertThat(lithoView.isClickable()).isTrue();
@@ -98,17 +101,18 @@ public class MountStateViewClickTest {
 
   @Test
   public void testRootHostClickableWithLongClickHandler() {
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return create(c)
-                .longClickHandler(c.newEventHandler(1))
-                .child(TestDrawableComponent.create(c))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .longClickHandler(c.newEventHandler(1))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
     assertThat(lithoView.getChildCount()).isEqualTo(0);
     assertThat(lithoView.isLongClickable()).isTrue();

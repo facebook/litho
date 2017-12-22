@@ -22,7 +22,7 @@ Defining state elements is enabled on the lifecycle methods of Layout Specs and 
 public class CheckboxSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext c,
       @State boolean isChecked) {
 
@@ -130,7 +130,7 @@ Here's how you would call the state update method to update your checkbox when a
 public class CheckboxSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext c,
       @State boolean isChecked) {
 
@@ -182,11 +182,11 @@ The most common case when you must manually define keys for your components is c
 
 ```java
 @OnCreateLayout
-static ComponentLayout onCreateLayout(
+static Component onCreateLayout(
     ComponentContext c,
     @State boolean isChecked) {
 
-  final ComponentLayout.Builder parent = Column.create(c);
+  final Component.Builder parent = Column.create(c);
   for (int i = 0; i < 10; i++) {
     parent.child(Text.create(c).key("key" +i));
   }
@@ -208,7 +208,7 @@ Let's look at an example:
 
 ```java
 @OnCreateLayout
-static ComponentLayout onCreateLayout(
+static Component onCreateLayout(
     final ComponentContext c,
     @State(canUpdateLazily = true) String foo) {
 

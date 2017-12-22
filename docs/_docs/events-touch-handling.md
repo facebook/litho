@@ -16,7 +16,7 @@ For example, setting a click handler on any component is as simple as:
 class MyComponentSpec {
 
 	@OnCreateLayout
-	static ComponentLayout onCreateLayout(
+	static Component onCreateLayout(
 	    ComponentContext c,
 	    @Prop String title) {
 	    

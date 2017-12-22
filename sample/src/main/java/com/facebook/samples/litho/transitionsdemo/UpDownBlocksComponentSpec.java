@@ -14,8 +14,8 @@ package com.facebook.samples.litho.transitionsdemo;
 
 import android.graphics.Color;
 import com.facebook.litho.ClickEvent;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
@@ -32,9 +32,7 @@ import com.facebook.yoga.YogaAlign;
 public class UpDownBlocksComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
-      ComponentContext c,
-      @State boolean top) {
+  static Component onCreateLayout(ComponentContext c, @State boolean top) {
     return Row.create(c)
         .heightDip(200)
         .alignItems(top ? YogaAlign.FLEX_START : YogaAlign.FLEX_END)

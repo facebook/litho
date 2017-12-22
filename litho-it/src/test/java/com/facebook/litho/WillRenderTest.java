@@ -28,7 +28,7 @@ public class WillRenderTest {
       new InlineLayoutSpec() {
 
         @Override
-        protected ComponentLayout onCreateLayout(ComponentContext c) {
+        protected Component onCreateLayout(ComponentContext c) {
           return null;
         }
       };
@@ -37,7 +37,7 @@ public class WillRenderTest {
       new InlineLayoutSpec() {
 
         @Override
-        protected ComponentLayout onCreateLayout(ComponentContext c) {
+        protected Component onCreateLayout(ComponentContext c) {
           return Row.create(c).build();
         }
       };
@@ -46,7 +46,7 @@ public class WillRenderTest {
       new InlineLayoutWithSizeSpec() {
 
         @Override
-        protected ComponentLayout onCreateLayoutWithSizeSpec(
+        protected Component onCreateLayoutWithSizeSpec(
             ComponentContext c, int widthSpec, int heightSpec) {
           return Row.create(c)
               .widthDip(View.MeasureSpec.getSize(widthSpec))

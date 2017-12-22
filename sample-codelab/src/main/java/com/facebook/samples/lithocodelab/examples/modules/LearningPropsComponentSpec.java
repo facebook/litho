@@ -12,8 +12,8 @@
 package com.facebook.samples.lithocodelab.examples.modules;
 
 import com.facebook.litho.Column;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -26,8 +26,7 @@ import com.facebook.litho.widget.Text;
 @LayoutSpec
 public class LearningPropsComponentSpec {
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
-      ComponentContext c, @Prop String text1, @Prop String text2) {
+  static Component onCreateLayout(ComponentContext c, @Prop String text1, @Prop String text2) {
     return Column.create(c)
         .child(Text.create(c).text(text1).textSizeDip(50))
         .child(

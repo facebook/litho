@@ -11,7 +11,6 @@ package com.facebook.litho.testing.assertj;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.LithoView;
 import javax.annotation.CheckReturnValue;
 import org.assertj.core.api.Java6Assertions;

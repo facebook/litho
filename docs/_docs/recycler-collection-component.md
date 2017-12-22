@@ -14,7 +14,7 @@ You can use `RecyclerCollectionComponent` as you would use any other component i
 
 ```java
 @OnCreateLayout
-static ComponentLayout onCreateLayout(
+static Component onCreateLayout(
     final ComponentContext c) {
   return RecyclerCollectionComponent.create(c)
       .section(createSection())

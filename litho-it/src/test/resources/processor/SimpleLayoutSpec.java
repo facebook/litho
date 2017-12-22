@@ -9,16 +9,15 @@
 
 package com.facebook.litho.processor.integration.resources;
 
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 
 @LayoutSpec
 public class SimpleLayoutSpec {
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
-      ComponentContext context) {
+  static Component onCreateLayout(ComponentContext context) {
     return null;
   }
 }

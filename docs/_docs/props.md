@@ -90,7 +90,7 @@ Let's consider a simple example:
 public class MyComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       LayoutContext context,
       @Prop CharSequence someString,
       @Prop int someSize,
@@ -118,7 +118,7 @@ The framework allows you to annotate props with resource types so that your comp
 public class MyComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       LayoutContext context,
       @Prop(resType = ResType.STRING) CharSequence someString,
       @Prop(resType = ResType.DIMEN_SIZE) int someSize,
@@ -152,7 +152,7 @@ parameter aims to makes this a little easier.
 public class MyComponentSpec {
 
    @OnCreateLayout
-   static ComponentLayout onCreateLayout(
+   static Component onCreateLayout(
       LayoutContext context,
       @Prop(varArg = "name") List<String> names) {
       ...
@@ -177,7 +177,7 @@ Component like this:
 public class MyComponent2Spec {
 
    @OnCreateLayout
-   static ComponentLayout onCreateLayout(
+   static Component onCreateLayout(
       LayoutContext context,
       @Prop(varArg = "sizes", resType = ResType.DIMEN_TEXT) List<Float> sizes) {
       ...

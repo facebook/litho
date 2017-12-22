@@ -9,8 +9,8 @@
 
 package com.facebook.litho.testing.espresso;
 
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -19,10 +19,8 @@ import com.facebook.litho.widget.Text;
 @LayoutSpec
 public class MyComponentSpec {
   @OnCreateLayout
-  public static ComponentLayout onCreateLayout(
-      ComponentContext c,
-      @Prop String text,
-      @Prop(optional=true) Object customViewTag) {
+  public static Component onCreateLayout(
+      ComponentContext c, @Prop String text, @Prop(optional = true) Object customViewTag) {
     return Text.create(c)
           .text(text)
           .contentDescription("foobar2")

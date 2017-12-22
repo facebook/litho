@@ -50,7 +50,7 @@ public class DeprecatedLithoTooltipTest {
         new InlineLayoutSpec() {
           @Override
           @OnCreateLayout
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Row.create(c)
                 .marginPx(YogaEdge.LEFT, MARGIN_LEFT)
                 .marginPx(YogaEdge.TOP, MARGIN_TOP)

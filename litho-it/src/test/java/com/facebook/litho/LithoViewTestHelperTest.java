@@ -39,15 +39,13 @@ public class LithoViewTestHelperTest {
 
   @Test
   public void testBasicViewToString() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return TestDrawableComponent.create(c)
-            .widthPx(100)
-            .heightPx(100)
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).widthPx(100).heightPx(100).build();
+          }
+        };
 
     final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
     final ComponentTree componentTree = ComponentTree.create(c, component)
@@ -69,20 +67,20 @@ public class LithoViewTestHelperTest {
 
   @Test
   public void testViewToStringWithText() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-            .child(
-                TestDrawableComponent.create(c)
-                    .testKey("test-drawable")
-                    .widthPx(100)
-                    .heightPx(100))
-            .child(
-                Text.create(c)
-                    .text("Hello, World")).build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return Column.create(c)
+                .child(
+                    TestDrawableComponent.create(c)
+                        .testKey("test-drawable")
+                        .widthPx(100)
+                        .heightPx(100))
+                .child(Text.create(c).text("Hello, World"))
+                .build();
+          }
+        };
 
     final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
     final ComponentTree componentTree = ComponentTree.create(c, component)

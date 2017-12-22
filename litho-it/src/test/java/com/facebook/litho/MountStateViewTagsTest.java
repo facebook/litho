@@ -44,24 +44,23 @@ public class MountStateViewTagsTest {
     final SparseArray<Object> tags2 = new SparseArray<>(1);
     tags2.put(DUMMY_ID, tag2);
 
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return create(c)
-                .child(
-                    create(c)
-                        .viewTags(tags1)
-                        .child(TestDrawableComponent.create(c))
-                        .child(TestDrawableComponent.create(c)))
-                .child(TestDrawableComponent.create(c))
-                .child(
-                    TestDrawableComponent.create(c)
-                        .viewTags(tags2))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .child(
+                        create(c)
+                            .viewTags(tags1)
+                            .child(TestDrawableComponent.create(c))
+                            .child(TestDrawableComponent.create(c)))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c).viewTags(tags2))
+                    .build();
+              }
+            });
 
     final View innerHost1 = lithoView.getChildAt(0);
     final View innerHost2 = lithoView.getChildAt(1);
@@ -76,18 +75,19 @@ public class MountStateViewTagsTest {
     final SparseArray<Object> tags = new SparseArray<>(1);
     tags.put(DUMMY_ID, tag);
 
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return create(c)
-                .viewTags(tags)
-                .child(TestDrawableComponent.create(c))
-                .child(TestDrawableComponent.create(c))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .viewTags(tags)
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
     assertThat(lithoView.getTag(DUMMY_ID)).isEqualTo(tag);
   }

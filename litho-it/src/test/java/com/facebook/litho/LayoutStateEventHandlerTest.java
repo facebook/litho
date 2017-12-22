@@ -40,7 +40,7 @@ public class LayoutStateEventHandlerTest {
     mRootComponent =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             assertCorrectEventHandler(c.newEventHandler(1), 1, mRootComponent);
             Wrapper.create(c).delegate(mNestedComponent).build();
             assertCorrectEventHandler(c.newEventHandler(2), 2, mRootComponent);
@@ -50,15 +50,15 @@ public class LayoutStateEventHandlerTest {
             return TestLayoutComponent.create(c).build();
           }
         };
-    mNestedComponent = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        assertCorrectEventHandler(c.newEventHandler(1), 1, mNestedComponent);
+    mNestedComponent =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            assertCorrectEventHandler(c.newEventHandler(1), 1, mNestedComponent);
 
-        return TestLayoutComponent.create(c)
-            .build();
-      }
-    };
+            return TestLayoutComponent.create(c).build();
+          }
+        };
   }
 
   @Test

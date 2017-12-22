@@ -15,7 +15,6 @@ package com.facebook.samples.litho.bordereffects;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -48,7 +47,7 @@ class BorderEffectsComponentSpec {
           CompositePathEffectBorder.class);
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(ComponentContext c) {
+  static Component onCreateLayout(ComponentContext c) {
     return RecyclerCollectionComponent.create(c)
         .disablePTR(true)
         .section(

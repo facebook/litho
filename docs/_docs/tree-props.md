@@ -26,7 +26,7 @@ public class ParentComponentSpec {
   }
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext c,
       @Prop Uri imageUri) {
 
@@ -47,7 +47,7 @@ The child component can access the TreeProp value through a param annotated with
 @LayoutSpec
 class ChildComponentSpec {
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext context,
       @TreeProp Prefetcher prefetcher,
       @Prop Uri imageUri) {
@@ -88,7 +88,7 @@ And now `ImportantHelper` instance is accessible as `@State` as usual:
 
 ```java
 @OnCreateLayout
-static ComponentLayout onCreateLayout(
+static Component onCreateLayout(
     ComponentContext c,
     @State ImportantHelper helper) {
 

@@ -28,9 +28,8 @@ import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.support.v7.widget.SnapHelper;
 import android.view.View;
 import com.facebook.litho.Component;
+import com.facebook.litho.Component.ContainerBuilder;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.ComponentLayout.ContainerBuilder;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.TouchEvent;
@@ -123,7 +122,7 @@ public class RecyclerCollectionComponentSpec {
   }
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       final ComponentContext c,
       @Prop Section section,
       @Prop(optional = true) Component loadingComponent,

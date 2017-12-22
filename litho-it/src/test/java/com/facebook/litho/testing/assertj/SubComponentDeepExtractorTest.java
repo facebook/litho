@@ -18,7 +18,6 @@ import static org.junit.Assume.assumeThat;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -46,7 +45,7 @@ public class SubComponentDeepExtractorTest {
     mComponent =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
                 .child(Card.create(c).content(Text.create(c).text("test")))
                 .build();

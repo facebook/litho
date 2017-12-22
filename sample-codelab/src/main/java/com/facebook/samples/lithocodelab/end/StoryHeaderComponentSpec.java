@@ -24,8 +24,8 @@ import android.widget.Toast;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -44,8 +44,7 @@ import com.facebook.samples.lithocodelab.R;
 class StoryHeaderComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
-      ComponentContext c, @Prop String title, @Prop String subtitle) {
+  static Component onCreateLayout(ComponentContext c, @Prop String title, @Prop String subtitle) {
     return Row.create(c)
         .paddingDip(HORIZONTAL, CARD_INSET)
         .paddingDip(TOP, CARD_INSET)

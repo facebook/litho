@@ -35,22 +35,20 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
   @Test
   public void testNoUnnecessaryVisibilityOutputs() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(
-                        TestDrawableComponent.create(c)
-                            .visibleHandler(c.newEventHandler(1))))
-            .child(
-                TestDrawableComponent.create(c)
-                    .invisibleHandler(c.newEventHandler(2)))
-            .child(TestDrawableComponent.create(c))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return create(c)
+                .child(
+                    create(c)
+                        .child(
+                            TestDrawableComponent.create(c).visibleHandler(c.newEventHandler(1))))
+                .child(TestDrawableComponent.create(c).invisibleHandler(c.newEventHandler(2)))
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        };
 
     LayoutState layoutState = calculateLayoutState(
         application,
@@ -64,22 +62,20 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
   @Test
   public void testNoUnnecessaryVisibilityOutputsWithFullImpression() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(
-                        TestDrawableComponent.create(c)
-                            .visibleHandler(c.newEventHandler(1))))
-            .child(
-                TestDrawableComponent.create(c)
-                    .fullImpressionHandler(c.newEventHandler(3)))
-            .child(TestDrawableComponent.create(c))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return create(c)
+                .child(
+                    create(c)
+                        .child(
+                            TestDrawableComponent.create(c).visibleHandler(c.newEventHandler(1))))
+                .child(TestDrawableComponent.create(c).fullImpressionHandler(c.newEventHandler(3)))
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        };
 
     LayoutState layoutState = calculateLayoutState(
         application,
@@ -93,22 +89,20 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
   @Test
   public void testNoUnnecessaryVisibilityOutputsWithFocused() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(
-                        TestDrawableComponent.create(c)
-                            .visibleHandler(c.newEventHandler(1))))
-            .child(
-                TestDrawableComponent.create(c)
-                    .focusedHandler(c.newEventHandler(4)))
-            .child(TestDrawableComponent.create(c))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return create(c)
+                .child(
+                    create(c)
+                        .child(
+                            TestDrawableComponent.create(c).visibleHandler(c.newEventHandler(1))))
+                .child(TestDrawableComponent.create(c).focusedHandler(c.newEventHandler(4)))
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        };
 
     LayoutState layoutState = calculateLayoutState(
         application,
@@ -123,17 +117,18 @@ public class LayoutStateCalculateVisibilityOutputsTest {
   @Test
   public void testVisibilityOutputsForDelegateComponents() {
     final boolean isDelegate = true;
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .child(
-                TestLayoutComponent.create(c, 0, 0, true, true, false, isDelegate)
-                    .visibleHandler(c.newEventHandler(1)))
-            .wrapInView()
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return create(c)
+                .child(
+                    TestLayoutComponent.create(c, 0, 0, true, true, false, isDelegate)
+                        .visibleHandler(c.newEventHandler(1)))
+                .wrapInView()
+                .build();
+          }
+        };
 
     LayoutState layoutState = calculateLayoutState(
         application,
@@ -147,26 +142,23 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
   @Test
   public void testLayoutOutputsForDeepLayoutSpecs() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(
-                        TestLayoutComponent.create(c)
-                            .visibleHandler(c.newEventHandler(1)))
-                    .invisibleHandler(c.newEventHandler(2)))
-            .child(
-                create(c)
-                    .child(
-                        TestLayoutComponent.create(c)
-                            .invisibleHandler(c.newEventHandler(1)))
-                    .visibleHandler(c.newEventHandler(2)))
-            .wrapInView()
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return create(c)
+                .child(
+                    create(c)
+                        .child(TestLayoutComponent.create(c).visibleHandler(c.newEventHandler(1)))
+                        .invisibleHandler(c.newEventHandler(2)))
+                .child(
+                    create(c)
+                        .child(TestLayoutComponent.create(c).invisibleHandler(c.newEventHandler(1)))
+                        .visibleHandler(c.newEventHandler(2)))
+                .wrapInView()
+                .build();
+          }
+        };
 
     LayoutState layoutState = calculateLayoutState(
         application,
@@ -191,17 +183,18 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
   @Test
   public void testLayoutOutputsForForceWrappedComponent() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .child(
-                TestDrawableComponent.create(c)
-                    .visibleHandler(c.newEventHandler(1))
-                    .wrapInView())
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return create(c)
+                .child(
+                    TestDrawableComponent.create(c)
+                        .visibleHandler(c.newEventHandler(1))
+                        .wrapInView())
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -215,12 +208,13 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
   @Test
   public void testLayoutOutputForRootWithNullLayout() {
-    final Component componentWithNullLayout = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return null;
-      }
-    };
+    final Component componentWithNullLayout =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return null;
+          }
+        };
 
     LayoutState layoutState = calculateLayoutState(
         application,
@@ -234,16 +228,17 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
   @Test
   public void testLayoutComponentForNestedTreeChildWithNullLayout() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .paddingPx(ALL, 2)
-            .child(new TestNullLayoutComponent())
-            .invisibleHandler(c.newEventHandler(2))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return create(c)
+                .paddingPx(ALL, 2)
+                .child(new TestNullLayoutComponent())
+                .invisibleHandler(c.newEventHandler(2))
+                .build();
+          }
+        };
 
     LayoutState layoutState = calculateLayoutState(
         application,

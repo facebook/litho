@@ -26,7 +26,7 @@ public class ComponentSelectorTest {
       new InlineLayoutSpec() {
 
         @Override
-        protected ComponentLayout onCreateLayout(ComponentContext c) {
+        protected Component onCreateLayout(ComponentContext c) {
           return null;
         }
       };
@@ -35,10 +35,10 @@ public class ComponentSelectorTest {
   public void testComponentSelectorSelectsNonNullLayout() throws Exception {
     ComponentContext c = new ComponentContext(application);
 
-    ComponentLayout nullLayout = Wrapper.create(c).delegate(mNullSpec).build();
-    ComponentLayout textLayout = Text.create(c).text("Hello World").build();
+    Component nullLayout = Wrapper.create(c).delegate(mNullSpec).build();
+    Component textLayout = Text.create(c).text("Hello World").build();
 
-    ComponentLayout actual =
+    Component actual =
         ComponentSelector.create(c).tryToRender(nullLayout).tryToRender(textLayout).build();
 
     assertThat(actual).isEqualTo(textLayout);
@@ -48,11 +48,11 @@ public class ComponentSelectorTest {
   public void testComponentSelectorSelectsFirstNonNullLayout() throws Exception {
     ComponentContext c = new ComponentContext(application);
 
-    ComponentLayout nullLayout = Wrapper.create(c).delegate(mNullSpec).build();
-    ComponentLayout imageLayout = Image.create(c).drawable(null).build();
-    ComponentLayout textLayout = Text.create(c).text("Hello World").build();
+    Component nullLayout = Wrapper.create(c).delegate(mNullSpec).build();
+    Component imageLayout = Image.create(c).drawable(null).build();
+    Component textLayout = Text.create(c).text("Hello World").build();
 
-    ComponentLayout actual =
+    Component actual =
         ComponentSelector.create(c)
             .tryToRender(nullLayout)
             .tryToRender(imageLayout)
@@ -66,11 +66,11 @@ public class ComponentSelectorTest {
   public void testComponentSelectorSelectsCorrectLayoutWithNullArguments() throws Exception {
     ComponentContext c = new ComponentContext(application);
 
-    ComponentLayout nullLayout = Wrapper.create(c).delegate(mNullSpec).build();
-    ComponentLayout imageLayout = Image.create(c).drawable(null).build();
-    ComponentLayout textLayout = Text.create(c).text("Hello World").build();
+    Component nullLayout = Wrapper.create(c).delegate(mNullSpec).build();
+    Component imageLayout = Image.create(c).drawable(null).build();
+    Component textLayout = Text.create(c).text("Hello World").build();
 
-    ComponentLayout actual =
+    Component actual =
         ComponentSelector.create(c)
             .tryToRender(getNullLayout())
             .tryToRender(getNullLayoutBuilder())
@@ -88,11 +88,11 @@ public class ComponentSelectorTest {
   public void testComponentSelectorSelectsLastLayoutWhenNoneRender() throws Exception {
     ComponentContext c = new ComponentContext(application);
 
-    ComponentLayout nullLayout = Wrapper.create(c).delegate(mNullSpec).build();
-    ComponentLayout nullLayout2 = Wrapper.create(c).delegate(mNullSpec).build();
-    ComponentLayout nullLayout3 = Wrapper.create(c).delegate(mNullSpec).build();
+    Component nullLayout = Wrapper.create(c).delegate(mNullSpec).build();
+    Component nullLayout2 = Wrapper.create(c).delegate(mNullSpec).build();
+    Component nullLayout3 = Wrapper.create(c).delegate(mNullSpec).build();
 
-    ComponentLayout actual =
+    Component actual =
         ComponentSelector.create(c)
             .tryToRender(nullLayout)
             .tryToRender(nullLayout2)
@@ -109,16 +109,16 @@ public class ComponentSelectorTest {
   public void testComponentSelectorWithNoArgumentsReturnsNull() throws Exception {
     ComponentContext c = new ComponentContext(application);
 
-    ComponentLayout actual = ComponentSelector.create(c).build();
+    Component actual = ComponentSelector.create(c).build();
 
     assertThat(actual).isNull();
   }
 
-  private static ComponentLayout getNullLayout() {
+  private static Component getNullLayout() {
     return null;
   }
 
-  private static ComponentLayout.Builder getNullLayoutBuilder() {
+  private static Component.Builder getNullLayoutBuilder() {
     return null;
   }
 

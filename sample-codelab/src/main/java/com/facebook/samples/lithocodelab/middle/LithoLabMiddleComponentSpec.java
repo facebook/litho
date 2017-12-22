@@ -12,15 +12,15 @@
 package com.facebook.samples.lithocodelab.middle;
 
 import com.facebook.litho.Column;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 
 @LayoutSpec
 class LithoLabMiddleComponentSpec {
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(ComponentContext c) {
+  static Component onCreateLayout(ComponentContext c) {
     return Column.create(c)
         .backgroundRes(android.R.color.darker_gray)
         .child(

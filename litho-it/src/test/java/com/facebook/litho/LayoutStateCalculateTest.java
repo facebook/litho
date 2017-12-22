@@ -78,16 +78,15 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testNoUnnecessaryLayoutOutputsForLayoutSpecs() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return Column.create(c)
-            .child(
-                Column.create(c)
-                    .child(TestDrawableComponent.create(c)))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return Column.create(c)
+                .child(Column.create(c).child(TestDrawableComponent.create(c)))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         RuntimeEnvironment.application,
@@ -101,15 +100,13 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForRootInteractiveLayoutSpecs() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(TestDrawableComponent.create(c))
-            .wrapInView()
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c).child(TestDrawableComponent.create(c)).wrapInView().build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -126,7 +123,7 @@ public class LayoutStateCalculateTest {
     final Component component =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+          protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
                 .child(TestDrawableComponent.create(c).widthPx(100).heightPx(10))
                 .child(
@@ -163,17 +160,18 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForSpecsWithClickHandling() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .clickHandler(c.newEventHandler(1)))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .clickHandler(c.newEventHandler(1)))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -194,17 +192,18 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForSpecsWithLongClickHandling() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .longClickHandler(c.newEventHandler(1)))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .longClickHandler(c.newEventHandler(1)))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -225,17 +224,18 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForSpecsWithFocusChangeHandling() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .focusChangeHandler(c.newEventHandler(1)))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .focusChangeHandler(c.newEventHandler(1)))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -256,17 +256,18 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForSpecsWithInterceptTouchHandling() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .interceptTouchHandler(c.newEventHandler(1)))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .interceptTouchHandler(c.newEventHandler(1)))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -287,17 +288,18 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForSpecsWithTouchHandling() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .touchHandler(c.newEventHandler(1)))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .touchHandler(c.newEventHandler(1)))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -319,48 +321,43 @@ public class LayoutStateCalculateTest {
   @Test
   public void testLayoutOutputsForDeepLayoutSpecs() {
     final int paddingSize = 5;
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .backgroundColor(0xFFFF0000)
-            .child(
-                Row.create(c)
-                    .justifyContent(SPACE_AROUND)
-                    .alignItems(CENTER)
-                    .positionType(ABSOLUTE)
-                    .positionPx(LEFT, 50)
-                    .positionPx(TOP, 50)
-                    .positionPx(RIGHT, 200)
-                    .positionPx(BOTTOM, 50)
-                    .child(
-                        Text.create(c)
-                            .text("textLeft1"))
-                    .child(
-                        Text.create(c)
-                            .text("textRight1"))
-                    .paddingPx(ALL, paddingSize)
-                    .wrapInView())
-            .child(
-                Row.create(c)
-                    .justifyContent(SPACE_AROUND)
-                    .alignItems(CENTER)
-                    .positionType(ABSOLUTE)
-                    .positionPx(LEFT, 200)
-                    .positionPx(TOP, 50)
-                    .positionPx(RIGHT, 50)
-                    .positionPx(BOTTOM, 50)
-                    .child(
-                        Text.create(c)
-                            .text("textLeft2")
-                            .wrapInView()
-                            .paddingPx(ALL, paddingSize))
-                    .child(
-                        TestViewComponent.create(c)
-                            .wrapInView()))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .backgroundColor(0xFFFF0000)
+                .child(
+                    Row.create(c)
+                        .justifyContent(SPACE_AROUND)
+                        .alignItems(CENTER)
+                        .positionType(ABSOLUTE)
+                        .positionPx(LEFT, 50)
+                        .positionPx(TOP, 50)
+                        .positionPx(RIGHT, 200)
+                        .positionPx(BOTTOM, 50)
+                        .child(Text.create(c).text("textLeft1"))
+                        .child(Text.create(c).text("textRight1"))
+                        .paddingPx(ALL, paddingSize)
+                        .wrapInView())
+                .child(
+                    Row.create(c)
+                        .justifyContent(SPACE_AROUND)
+                        .alignItems(CENTER)
+                        .positionType(ABSOLUTE)
+                        .positionPx(LEFT, 200)
+                        .positionPx(TOP, 50)
+                        .positionPx(RIGHT, 50)
+                        .positionPx(BOTTOM, 50)
+                        .child(
+                            Text.create(c)
+                                .text("textLeft2")
+                                .wrapInView()
+                                .paddingPx(ALL, paddingSize))
+                        .child(TestViewComponent.create(c).wrapInView()))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -407,26 +404,24 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputMountBounds() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .widthPx(30)
-            .heightPx(30)
-            .wrapInView()
-            .child(
-                create(c)
-                    .widthPx(10)
-                    .heightPx(10)
-                    .marginPx(ALL, 10)
-                    .wrapInView()
-                    .child(
-                        TestDrawableComponent.create(c)
-                            .widthPx(10)
-                            .heightPx(10)))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .widthPx(30)
+                .heightPx(30)
+                .wrapInView()
+                .child(
+                    create(c)
+                        .widthPx(10)
+                        .heightPx(10)
+                        .marginPx(ALL, 10)
+                        .wrapInView()
+                        .child(TestDrawableComponent.create(c).widthPx(10).heightPx(10)))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -450,53 +445,50 @@ public class LayoutStateCalculateTest {
   @Test
   public void testLayoutOutputsForDeepLayoutSpecsWithBackground() {
     final int paddingSize = 5;
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .backgroundColor(0xFFFF0000)
-            .child(
-                Row.create(c)
-                    .justifyContent(SPACE_AROUND)
-                    .alignItems(CENTER)
-                    .positionType(ABSOLUTE)
-                    .positionPx(LEFT, 50)
-                    .positionPx(TOP, 50)
-                    .positionPx(RIGHT, 200)
-                    .positionPx(BOTTOM, 50)
-                    .child(
-                        Text.create(c)
-                            .text("textLeft1"))
-                    .child(
-                        Text.create(c)
-                            .text("textRight1"))
-                    .backgroundColor(0xFFFF0000)
-                    .foregroundColor(0xFFFF0000)
-                    .paddingPx(ALL, paddingSize)
-                    .wrapInView())
-            .child(
-                Row.create(c)
-                    .justifyContent(SPACE_AROUND)
-                    .alignItems(CENTER)
-                    .positionType(ABSOLUTE)
-                    .positionPx(LEFT, 200)
-                    .positionPx(TOP, 50)
-                    .positionPx(RIGHT, 50)
-                    .positionPx(BOTTOM, 50)
-                    .child(
-                        Text.create(c)
-                            .text("textLeft2")
-                            .wrapInView()
-                            .backgroundColor(0xFFFF0000)
-                            .paddingPx(ALL, paddingSize))
-                    .child(
-                        TestViewComponent.create(c)
-                            .backgroundColor(0xFFFF0000)
-                            .foregroundColor(0x0000FFFF)
-                            .paddingPx(ALL, paddingSize)))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .backgroundColor(0xFFFF0000)
+                .child(
+                    Row.create(c)
+                        .justifyContent(SPACE_AROUND)
+                        .alignItems(CENTER)
+                        .positionType(ABSOLUTE)
+                        .positionPx(LEFT, 50)
+                        .positionPx(TOP, 50)
+                        .positionPx(RIGHT, 200)
+                        .positionPx(BOTTOM, 50)
+                        .child(Text.create(c).text("textLeft1"))
+                        .child(Text.create(c).text("textRight1"))
+                        .backgroundColor(0xFFFF0000)
+                        .foregroundColor(0xFFFF0000)
+                        .paddingPx(ALL, paddingSize)
+                        .wrapInView())
+                .child(
+                    Row.create(c)
+                        .justifyContent(SPACE_AROUND)
+                        .alignItems(CENTER)
+                        .positionType(ABSOLUTE)
+                        .positionPx(LEFT, 200)
+                        .positionPx(TOP, 50)
+                        .positionPx(RIGHT, 50)
+                        .positionPx(BOTTOM, 50)
+                        .child(
+                            Text.create(c)
+                                .text("textLeft2")
+                                .wrapInView()
+                                .backgroundColor(0xFFFF0000)
+                                .paddingPx(ALL, paddingSize))
+                        .child(
+                            TestViewComponent.create(c)
+                                .backgroundColor(0xFFFF0000)
+                                .foregroundColor(0x0000FFFF)
+                                .paddingPx(ALL, paddingSize)))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -573,45 +565,44 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForMegaDeepLayoutSpecs() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
-                    .wrapInView())
-            .child(
-                create(c)
-                    .child(
-                        TestDrawableComponent.create(c)
-                            .wrapInView())
-                    .child(
-                        create(c)
-                            .child(TestDrawableComponent.create(c))
-                            .child(TestDrawableComponent.create(c))
-                            .wrapInView())
-                    .wrapInView())
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(
-                        create(c)
-                            .child(TestDrawableComponent.create(c))
-                            .child(TestDrawableComponent.create(c)))
-                    .wrapInView())
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(
-                        create(c)
-                            .child(TestDrawableComponent.create(c))
-                            .child(TestViewComponent.create(c)))
-                    .wrapInView())
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(TestDrawableComponent.create(c))
+                        .wrapInView())
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c).wrapInView())
+                        .child(
+                            create(c)
+                                .child(TestDrawableComponent.create(c))
+                                .child(TestDrawableComponent.create(c))
+                                .wrapInView())
+                        .wrapInView())
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(
+                            create(c)
+                                .child(TestDrawableComponent.create(c))
+                                .child(TestDrawableComponent.create(c)))
+                        .wrapInView())
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(
+                            create(c)
+                                .child(TestDrawableComponent.create(c))
+                                .child(TestViewComponent.create(c)))
+                        .wrapInView())
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -663,48 +654,44 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputStableIds() {
-    final Component component1 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .contentDescription("cd0"))
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
-                    .contentDescription("cd1"))
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestViewComponent.create(c))
-                    .contentDescription("cd2"))
-            .build();
-      }
-    };
-    final Component component2 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .contentDescription("cd0"))
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
-                    .contentDescription("cd1"))
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestViewComponent.create(c))
-                    .contentDescription("cd2"))
-            .build();
-      }
-    };
+    final Component component1 =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(create(c).child(TestDrawableComponent.create(c)).contentDescription("cd0"))
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(TestDrawableComponent.create(c))
+                        .contentDescription("cd1"))
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(TestViewComponent.create(c))
+                        .contentDescription("cd2"))
+                .build();
+          }
+        };
+    final Component component2 =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(create(c).child(TestDrawableComponent.create(c)).contentDescription("cd0"))
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(TestDrawableComponent.create(c))
+                        .contentDescription("cd1"))
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(TestViewComponent.create(c))
+                        .contentDescription("cd2"))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -729,85 +716,83 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputStableIdsForMegaDeepComponent() {
-    final Component component1 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
-                    .wrapInView())
-            .child(
-                create(c)
-                    .child(
-                        TestDrawableComponent.create(c)
-                            .wrapInView())
-                    .child(
-                        create(c)
-                            .child(TestDrawableComponent.create(c))
-                            .child(TestDrawableComponent.create(c))
-                            .wrapInView())
-                    .wrapInView())
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(
-                        create(c)
-                            .child(TestDrawableComponent.create(c))
-                            .child(TestDrawableComponent.create(c)))
-                    .wrapInView())
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(
-                        create(c)
-                            .child(TestDrawableComponent.create(c))
-                            .child(TestViewComponent.create(c)))
-                    .wrapInView())
-            .build();
-      }
-    };
+    final Component component1 =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(TestDrawableComponent.create(c))
+                        .wrapInView())
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c).wrapInView())
+                        .child(
+                            create(c)
+                                .child(TestDrawableComponent.create(c))
+                                .child(TestDrawableComponent.create(c))
+                                .wrapInView())
+                        .wrapInView())
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(
+                            create(c)
+                                .child(TestDrawableComponent.create(c))
+                                .child(TestDrawableComponent.create(c)))
+                        .wrapInView())
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(
+                            create(c)
+                                .child(TestDrawableComponent.create(c))
+                                .child(TestViewComponent.create(c)))
+                        .wrapInView())
+                .build();
+          }
+        };
 
-    final Component component2 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
-                    .wrapInView())
-            .child(
-                create(c)
-                    .child(
-                        TestDrawableComponent.create(c)
-                            .wrapInView())
-                    .child(
-                        create(c)
-                            .child(TestDrawableComponent.create(c))
-                            .child(TestDrawableComponent.create(c))
-                            .wrapInView())
-                    .wrapInView())
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(
-                        create(c)
-                            .child(TestDrawableComponent.create(c))
-                            .child(TestDrawableComponent.create(c)))
-                    .wrapInView())
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(
-                        create(c)
-                            .child(TestDrawableComponent.create(c))
-                            .child(TestViewComponent.create(c)))
-                    .wrapInView())
-            .build();
-      }
-    };
+    final Component component2 =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(TestDrawableComponent.create(c))
+                        .wrapInView())
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c).wrapInView())
+                        .child(
+                            create(c)
+                                .child(TestDrawableComponent.create(c))
+                                .child(TestDrawableComponent.create(c))
+                                .wrapInView())
+                        .wrapInView())
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(
+                            create(c)
+                                .child(TestDrawableComponent.create(c))
+                                .child(TestDrawableComponent.create(c)))
+                        .wrapInView())
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(
+                            create(c)
+                                .child(TestDrawableComponent.create(c))
+                                .child(TestViewComponent.create(c)))
+                        .wrapInView())
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -831,27 +816,29 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testPartiallyStableIds() {
-    final Component component1 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(TestDrawableComponent.create(c))
-            .child(TestDrawableComponent.create(c))
-            .build();
-      }
-    };
-    final Component component2 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(TestDrawableComponent.create(c))
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c)))
-            .build();
-      }
-    };
+    final Component component1 =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(TestDrawableComponent.create(c))
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        };
+    final Component component2 =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(TestDrawableComponent.create(c))
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(TestDrawableComponent.create(c)))
+                .build();
+          }
+        };
 
     final LayoutState layoutState1 = calculateLayoutState(
         application,
@@ -875,30 +862,30 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testDifferentIds() {
-    final Component component1 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return Column.create(c)
-            .child(TestDrawableComponent.create(c))
-            .child(TestDrawableComponent.create(c))
-            .build();
-      }
-    };
-    final Component component2 = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return Column.create(c)
-            .child(
-                TestDrawableComponent.create(c)
-                    .wrapInView())
-            .child(
-                Column.create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
-                    .wrapInView())
-            .build();
-      }
-    };
+    final Component component1 =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return Column.create(c)
+                .child(TestDrawableComponent.create(c))
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        };
+    final Component component2 =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return Column.create(c)
+                .child(TestDrawableComponent.create(c).wrapInView())
+                .child(
+                    Column.create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(TestDrawableComponent.create(c))
+                        .wrapInView())
+                .build();
+          }
+        };
 
     final LayoutState layoutState1 = calculateLayoutState(
         RuntimeEnvironment.application,
@@ -920,18 +907,16 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsWithInteractiveLayoutSpecAsLeafs() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(TestDrawableComponent.create(c))
-            .child(
-                create(c)
-                    .child(TestLayoutComponent.create(c))
-                    .wrapInView())
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(TestDrawableComponent.create(c))
+                .child(create(c).child(TestLayoutComponent.create(c)).wrapInView())
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -986,7 +971,7 @@ public class LayoutStateCalculateTest {
     final Component component =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+          protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
                 .child(Wrapper.create(c).delegate(innerComponent).widthPx(100).heightPx(100))
                 .build();
@@ -1029,7 +1014,7 @@ public class LayoutStateCalculateTest {
     final Component component =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+          protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
                 .child(Wrapper.create(c).delegate(innerComponent).widthPx(100).heightPx(100))
                 .build();
@@ -1069,14 +1054,13 @@ public class LayoutStateCalculateTest {
 
     innerComponent.resetInteractions();
 
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(innerComponent)
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c).child(innerComponent).build();
+          }
+        };
 
     calculateLayoutState(
         application,
@@ -1114,7 +1098,7 @@ public class LayoutStateCalculateTest {
     final Component component =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+          protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
                 .child(Wrapper.create(c).delegate(innerComponent).flexShrink(0))
                 .build();
@@ -1133,27 +1117,20 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForTwiceNestedComponent() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(
-                        create(c)
-                            .child(TestDrawableComponent.create(c)))
-                    .wrapInView())
-            .child(
-                create(c)
-                    .child(
-                        create(c)
-                            .child(TestDrawableComponent.create(c)))
-                    .child(
-                        create(c)
-                            .child(TestDrawableComponent.create(c))))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(
+                    create(c).child(create(c).child(TestDrawableComponent.create(c))).wrapInView())
+                .child(
+                    create(c)
+                        .child(create(c).child(TestDrawableComponent.create(c)))
+                        .child(create(c).child(TestDrawableComponent.create(c))))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1180,16 +1157,17 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForComponentWithBackgrounds() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .backgroundColor(0xFFFF0000)
-            .foregroundColor(0xFFFF0000)
-            .child(TestDrawableComponent.create(c))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .backgroundColor(0xFFFF0000)
+                .foregroundColor(0xFFFF0000)
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1207,27 +1185,25 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForNonComponentClickableNode() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .wrapInView())
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
-                    .wrapInView())
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestViewComponent.create(c))
-                    .wrapInView())
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(create(c).child(TestDrawableComponent.create(c)).wrapInView())
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(TestDrawableComponent.create(c))
+                        .wrapInView())
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(TestViewComponent.create(c))
+                        .wrapInView())
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1264,27 +1240,25 @@ public class LayoutStateCalculateTest {
   public void testLayoutOutputsForNonComponentContentDescriptionNode() {
     enableAccessibility();
 
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .contentDescription("cd0"))
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
-                    .contentDescription("cd1"))
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestViewComponent.create(c))
-                    .contentDescription("cd2"))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(create(c).child(TestDrawableComponent.create(c)).contentDescription("cd0"))
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(TestDrawableComponent.create(c))
+                        .contentDescription("cd1"))
+                .child(
+                    create(c)
+                        .child(TestDrawableComponent.create(c))
+                        .child(TestViewComponent.create(c))
+                        .contentDescription("cd2"))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1319,15 +1293,13 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForFocusableOnRoot() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(TestDrawableComponent.create(c))
-            .focusable(true)
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c).child(TestDrawableComponent.create(c)).focusable(true).build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1349,17 +1321,15 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForFocusable() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .focusable(true))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(create(c).child(TestDrawableComponent.create(c)).focusable(true))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1375,18 +1345,15 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForEnabledFalseDoesntWrap() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(
-                        TestDrawableComponent.create(c)
-                            .enabled(false)))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(create(c).child(TestDrawableComponent.create(c).enabled(false)))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1409,19 +1376,20 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForEnabledFalseInInnerWrappedComponentDrawable() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(
-                        TestDrawableComponent.create(c)
-                            .clickHandler(c.newEventHandler(1))
-                            .enabled(false)))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(
+                    create(c)
+                        .child(
+                            TestDrawableComponent.create(c)
+                                .clickHandler(c.newEventHandler(1))
+                                .enabled(false)))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1445,18 +1413,15 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForEnabledFalseInInnerComponentView() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(
-                        TestViewComponent.create(c)
-                            .enabled(false)))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(create(c).child(TestViewComponent.create(c).enabled(false)))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1479,29 +1444,24 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForEnabledFalseApplyToDescendent() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .enabled(false)
-                    .child(
-                        TestViewComponent.create(c)
-                            .enabled(true))
-                    .child(
-                        TestDrawableComponent.create(c)
-                            .clickHandler(c.newEventHandler(1)))
-                    .child(
-                        TestDrawableComponent.create(c)
-                            .enabled(false)))
-            .child(
-                create(c)
-                    .child(TestViewComponent.create(c))
-                    .child(TestDrawableComponent.create(c)))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(
+                    create(c)
+                        .enabled(false)
+                        .child(TestViewComponent.create(c).enabled(true))
+                        .child(TestDrawableComponent.create(c).clickHandler(c.newEventHandler(1)))
+                        .child(TestDrawableComponent.create(c).enabled(false)))
+                .child(
+                    create(c)
+                        .child(TestViewComponent.create(c))
+                        .child(TestDrawableComponent.create(c)))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1547,39 +1507,39 @@ public class LayoutStateCalculateTest {
   public void testLayoutOutputsForAccessibilityEnabled() {
     enableAccessibility();
 
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return Row.create(c)
-            .alignItems(CENTER)
-            .paddingDip(ALL, 10)
-            .contentDescription("This is root view")
-            .child(
-                TestDrawableComponent.create(c)
-                    .widthDip(30)
-                    .heightDip(30))
-            .child(
-                TestDrawableComponent.create(c, true, true, true, true, false)
-                    .flex(1).flexBasisDip(0)
-                    .backgroundColor(RED)
-                    .marginDip(HORIZONTAL, 10))
-            .child(
-                Row.create(c)
-                    .alignItems(CENTER)
-                    .paddingDip(ALL, 10)
-                    .contentDescription("This is a container")
-                    .child(
-                        TestDrawableComponent.create(c)
-                            .widthDip(30)
-                            .heightDip(30)
-                            .contentDescription("This is an image"))
-                    .child(
-                        TestDrawableComponent.create(c, true, true, true, true, false)
-                            .flex(1).flexBasisDip(0)
-                            .marginDip(HORIZONTAL, 10)))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return Row.create(c)
+                .alignItems(CENTER)
+                .paddingDip(ALL, 10)
+                .contentDescription("This is root view")
+                .child(TestDrawableComponent.create(c).widthDip(30).heightDip(30))
+                .child(
+                    TestDrawableComponent.create(c, true, true, true, true, false)
+                        .flex(1)
+                        .flexBasisDip(0)
+                        .backgroundColor(RED)
+                        .marginDip(HORIZONTAL, 10))
+                .child(
+                    Row.create(c)
+                        .alignItems(CENTER)
+                        .paddingDip(ALL, 10)
+                        .contentDescription("This is a container")
+                        .child(
+                            TestDrawableComponent.create(c)
+                                .widthDip(30)
+                                .heightDip(30)
+                                .contentDescription("This is an image"))
+                        .child(
+                            TestDrawableComponent.create(c, true, true, true, true, false)
+                                .flex(1)
+                                .flexBasisDip(0)
+                                .marginDip(HORIZONTAL, 10)))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1619,35 +1579,34 @@ public class LayoutStateCalculateTest {
   public void testLayoutOutputsWithImportantForAccessibility() {
     enableAccessibility();
 
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .contentDescription("This is root view")
-            .child(
-                TestDrawableComponent.create(c)
-                    .widthDip(30)
-                    .heightDip(30))
-            .child(
-                TestDrawableComponent.create(c, true, true, true, true, false)
-                    .flex(1).flexBasisDip(0)
-                    .backgroundColor(RED)
-                    .marginDip(HORIZONTAL, 10)
-                    .importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO))
-            .child(
-                Row.create(c)
-                    .alignItems(CENTER)
-                    .paddingDip(ALL, 10)
-                    .importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS)
-                    .child(
-                        TestDrawableComponent.create(c)
-                            .widthDip(30)
-                            .heightDip(30)
-                            .importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES)
-                            .contentDescription("This is an image")))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .contentDescription("This is root view")
+                .child(TestDrawableComponent.create(c).widthDip(30).heightDip(30))
+                .child(
+                    TestDrawableComponent.create(c, true, true, true, true, false)
+                        .flex(1)
+                        .flexBasisDip(0)
+                        .backgroundColor(RED)
+                        .marginDip(HORIZONTAL, 10)
+                        .importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO))
+                .child(
+                    Row.create(c)
+                        .alignItems(CENTER)
+                        .paddingDip(ALL, 10)
+                        .importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS)
+                        .child(
+                            TestDrawableComponent.create(c)
+                                .widthDip(30)
+                                .heightDip(30)
+                                .importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES)
+                                .contentDescription("This is an image")))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1688,16 +1647,17 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForClickHandlerAndViewTagsOnRoot() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(TestDrawableComponent.create(c))
-            .clickHandler(c.newEventHandler(1))
-            .viewTags(new SparseArray<>())
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(TestDrawableComponent.create(c))
+                .clickHandler(c.newEventHandler(1))
+                .viewTags(new SparseArray<>())
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1723,16 +1683,17 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForLongClickHandlerAndViewTagsOnRoot() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(TestDrawableComponent.create(c))
-            .longClickHandler(c.newEventHandler(1))
-            .viewTags(new SparseArray<>())
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(TestDrawableComponent.create(c))
+                .longClickHandler(c.newEventHandler(1))
+                .viewTags(new SparseArray<>())
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1757,16 +1718,13 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForForceWrappedComponent() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                TestDrawableComponent.create(c)
-                    .wrapInView())
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c).child(TestDrawableComponent.create(c).wrapInView()).build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1815,19 +1773,20 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputForDelegateNestedTreeComponentDelegate() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .paddingPx(ALL, 2)
-            .child(
-                TestSizeDependentComponent.create(c)
-                    .setFixSizes(true)
-                    .setDelegate(true)
-                    .marginPx(ALL, 11))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .paddingPx(ALL, 2)
+                .child(
+                    TestSizeDependentComponent.create(c)
+                        .setFixSizes(true)
+                        .setDelegate(true)
+                        .marginPx(ALL, 11))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1854,19 +1813,20 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputForDelegateNestedTreeComponent() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .paddingPx(ALL, 2)
-            .child(
-                TestSizeDependentComponent.create(c)
-                    .setFixSizes(true)
-                    .setDelegate(false)
-                    .marginPx(ALL, 11))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .paddingPx(ALL, 2)
+                .child(
+                    TestSizeDependentComponent.create(c)
+                        .setFixSizes(true)
+                        .setDelegate(false)
+                        .marginPx(ALL, 11))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1897,15 +1857,16 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputForRootWithDelegateNestedTreeComponent() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return TestSizeDependentComponent.create(c)
-            .setFixSizes(true)
-            .setDelegate(false)
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return TestSizeDependentComponent.create(c)
+                .setFixSizes(true)
+                .setDelegate(false)
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1939,7 +1900,7 @@ public class LayoutStateCalculateTest {
     final Component component =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+          protected Component onCreateLayout(final ComponentContext c) {
             final Component nestedTreeRootComponent =
                 TestSizeDependentComponent.create(c).setFixSizes(true).setDelegate(false).build();
 
@@ -1976,12 +1937,13 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputForRootWithNullLayout() {
-    final Component componentWithNullLayout = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return null;
-      }
-    };
+    final Component componentWithNullLayout =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return null;
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -1995,15 +1957,13 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutComponentForNestedTreeChildWithNullLayout() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .paddingPx(ALL, 2)
-            .child(new TestNullLayoutComponent())
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c).paddingPx(ALL, 2).child(new TestNullLayoutComponent()).build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -2024,17 +1984,15 @@ public class LayoutStateCalculateTest {
     final int width = 50;
     final int height = 30;
     final ComponentContext c = new ComponentContext(application);
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                TestDrawableComponent.create(c)
-                    .measuredWidth(width)
-                    .measuredHeight(height))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(TestDrawableComponent.create(c).measuredWidth(width).measuredHeight(height))
+                .build();
+          }
+        };
 
     final InternalNode node = createAndMeasureTreeForComponent(
         c,
@@ -2079,15 +2037,13 @@ public class LayoutStateCalculateTest {
         .isInstanceOf(TestDrawableComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.
-    final Component rootContainer = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .paddingPx(HORIZONTAL, horizontalPadding)
-            .child(componentSpy)
-            .build();
-      }
-    };
+    final Component rootContainer =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c).paddingPx(HORIZONTAL, horizontalPadding).child(componentSpy).build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -2152,7 +2108,7 @@ public class LayoutStateCalculateTest {
     final Component rootContainer =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+          protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
                 .flexShrink(0)
                 .paddingPx(HORIZONTAL, horizontalPadding)
@@ -2222,15 +2178,13 @@ public class LayoutStateCalculateTest {
     assertThat(cachedLayout.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.
-    final Component rootContainer = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .paddingPx(HORIZONTAL, horizontalPadding)
-            .child(componentSpy)
-            .build();
-      }
-    };
+    final Component rootContainer =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c).paddingPx(HORIZONTAL, horizontalPadding).child(componentSpy).build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -2289,15 +2243,16 @@ public class LayoutStateCalculateTest {
     assertThat(cachedLayout.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.
-    final Component rootContainer = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .paddingPx(HORIZONTAL, horizontalPadding)
-            .child(sizeDependentComponentSpy)
-            .build();
-      }
-    };
+    final Component rootContainer =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .paddingPx(HORIZONTAL, horizontalPadding)
+                .child(sizeDependentComponentSpy)
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -2330,24 +2285,22 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testNestedTreeComponentWithDoubleMeasurementsDoesntThrow() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return Row.create(c)
-            .alignItems(YogaAlign.STRETCH)
-            .paddingPx(YogaEdge.ALL, 2)
-            .child(
-                TestSizeDependentComponent.create(c)
-                    .setFixSizes(true)
-                    .setDelegate(false)
-                    .marginPx(YogaEdge.ALL, 11))
-            .child(
-                TestDrawableComponent.create(c)
-                    .heightPx(200)
-                    .widthPx(200))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return Row.create(c)
+                .alignItems(YogaAlign.STRETCH)
+                .paddingPx(YogaEdge.ALL, 2)
+                .child(
+                    TestSizeDependentComponent.create(c)
+                        .setFixSizes(true)
+                        .setDelegate(false)
+                        .marginPx(YogaEdge.ALL, 11))
+                .child(TestDrawableComponent.create(c).heightPx(200).widthPx(200))
+                .build();
+          }
+        };
 
     calculateLayoutState(
         RuntimeEnvironment.application,
@@ -2361,17 +2314,15 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputForRootNestedTreeComponentWithAspectRatio() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .child(
-                TestSizeDependentComponent.create(c)
-                    .widthPx(100)
-                    .aspectRatio(1))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(TestSizeDependentComponent.create(c).widthPx(100).aspectRatio(1))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -2387,21 +2338,22 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputForRootNestedTreeComponentWithPercentParentSizeDefined() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .alignItems(FLEX_START)
-            .widthPx(100)
-            .heightPx(100)
-            .child(
-                TestSizeDependentComponent.create(c)
-                    .widthPercent(50)
-                    .heightPercent(50)
-                    .backgroundColor(0xFFFF0000))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .alignItems(FLEX_START)
+                .widthPx(100)
+                .heightPx(100)
+                .child(
+                    TestSizeDependentComponent.create(c)
+                        .widthPercent(50)
+                        .heightPercent(50)
+                        .backgroundColor(0xFFFF0000))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -2421,20 +2373,21 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputForRootNestedTreeComponentWithPercent() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .alignItems(FLEX_START)
-            .child(
-                TestSizeDependentComponent.create(c)
-                    .setFixSizes(true)
-                    .widthPercent(50)
-                    .heightPercent(50)
-                    .backgroundColor(0xFFFF0000))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .alignItems(FLEX_START)
+                .child(
+                    TestSizeDependentComponent.create(c)
+                        .setFixSizes(true)
+                        .widthPercent(50)
+                        .heightPercent(50)
+                        .backgroundColor(0xFFFF0000))
+                .build();
+          }
+        };
 
     final LayoutState layoutState = calculateLayoutState(
         application,
@@ -2454,21 +2407,22 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputForRootNestedTreeComponentWithPercentPadding() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(final ComponentContext c) {
-        return create(c)
-            .alignItems(FLEX_START)
-            .widthPx(50)
-            .heightPx(50)
-            .child(
-                TestSizeDependentComponent.create(c)
-                    .setFixSizes(true)
-                    .paddingPercent(ALL, 10)
-                    .backgroundColor(0xFFFF0000))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .alignItems(FLEX_START)
+                .widthPx(50)
+                .heightPx(50)
+                .child(
+                    TestSizeDependentComponent.create(c)
+                        .setFixSizes(true)
+                        .paddingPercent(ALL, 10)
+                        .backgroundColor(0xFFFF0000))
+                .build();
+          }
+        };
 
     final InternalNode root = createAndMeasureTreeForComponent(
         new ComponentContext(application),
@@ -2487,7 +2441,7 @@ public class LayoutStateCalculateTest {
     final Component component =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+          protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
                 .child(TestDrawableComponent.create(c))
                 .border(Border.create(c).color(ALL, GREEN).build())
@@ -2512,7 +2466,7 @@ public class LayoutStateCalculateTest {
     final Component component =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+          protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
                 .child(TestDrawableComponent.create(c))
                 .border(Border.create(c).widthPx(ALL, 10).build())
@@ -2537,7 +2491,7 @@ public class LayoutStateCalculateTest {
     final Component component =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+          protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
                 .child(TestDrawableComponent.create(c))
                 .border(Border.create(c).widthPx(ALL, 10).color(ALL, GREEN).build())
@@ -2563,7 +2517,7 @@ public class LayoutStateCalculateTest {
     final Component component =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+          protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
                 .child(TestDrawableComponent.create(c))
                 .border(Border.create(c).widthPx(TOP, 10).color(TOP, GREEN).build())

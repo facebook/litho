@@ -48,22 +48,23 @@ public class MountStateViewTest {
   @Test
   public void testViewPaddingAndBackground() {
     final int color = 0xFFFF0000;
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return create(c)
-                .child(
-                    TestViewComponent.create(c)
-                        .paddingPx(LEFT, 5)
-                        .paddingPx(TOP, 6)
-                        .paddingPx(RIGHT, 7)
-                        .paddingPx(BOTTOM, 8)
-                        .backgroundColor(color))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .child(
+                        TestViewComponent.create(c)
+                            .paddingPx(LEFT, 5)
+                            .paddingPx(TOP, 6)
+                            .paddingPx(RIGHT, 7)
+                            .paddingPx(BOTTOM, 8)
+                            .backgroundColor(color))
+                    .build();
+              }
+            });
 
     final View child = lithoView.getChildAt(0);
     final Drawable background = child.getBackground();
@@ -84,7 +85,7 @@ public class MountStateViewTest {
     final Component mountedTestComponent1 =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
                 .child(Wrapper.create(c).delegate(testComponent1).widthPx(10).heightPx(10))
                 .build();
@@ -93,7 +94,7 @@ public class MountStateViewTest {
     final Component mountedTestComponent2 =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
                 .child(Wrapper.create(c).delegate(testComponent2).widthPx(10).heightPx(10))
                 .build();

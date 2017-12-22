@@ -25,7 +25,6 @@ import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.LayoutSpec;
@@ -53,7 +52,7 @@ class StoryCardComponentSpec {
   static final float CARD_INTERNAL_PADDING = 7.0f;
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext c, @Prop Component header, @Prop String content, @State Boolean saved) {
     return Column.create(c)
         .backgroundColor(Color.WHITE)

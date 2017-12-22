@@ -79,7 +79,7 @@ public class LayoutStateRecyclingTest {
     final Component input =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c).child(Column.create(c)).build();
           }
         };

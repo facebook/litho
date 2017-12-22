@@ -36,19 +36,17 @@ public class MountStateFocusableTest {
 
   @Test
   public void testInnerComponentHostFocusable() {
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return create(c)
-                .child(
-                    create(c)
-                        .focusable(true)
-                        .child(TestViewComponent.create(c)))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .child(create(c).focusable(true).child(TestViewComponent.create(c)))
+                    .build();
+              }
+            });
 
     assertThat(lithoView.getChildCount()).isEqualTo(1);
     // TODO(T16959291): The default varies between internal and external test runs, which indicates
@@ -62,17 +60,15 @@ public class MountStateFocusableTest {
 
   @Test
   public void testRootHostFocusable() {
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return create(c)
-                .focusable(true)
-                .child(TestDrawableComponent.create(c))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c).focusable(true).child(TestDrawableComponent.create(c)).build();
+              }
+            });
 
     assertThat(lithoView.getChildCount()).isEqualTo(0);
     assertThat(lithoView.isFocusable()).isTrue();

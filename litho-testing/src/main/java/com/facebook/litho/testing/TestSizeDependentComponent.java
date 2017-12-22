@@ -13,7 +13,6 @@ import android.support.v4.util.Pools;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.yoga.YogaEdge;
 
 public class TestSizeDependentComponent extends Component {
@@ -24,10 +23,8 @@ public class TestSizeDependentComponent extends Component {
   private TestSizeDependentComponent() {}
 
   @Override
-  protected ComponentLayout onCreateLayoutWithSizeSpec(
-      ComponentContext c,
-      int widthSpec,
-      int heightSpec) {
+  protected Component onCreateLayoutWithSizeSpec(
+      ComponentContext c, int widthSpec, int heightSpec) {
 
     final Component.Builder builder1 =
         TestDrawableComponent.create(c, false, true, true, false, false)

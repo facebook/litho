@@ -48,7 +48,7 @@ public class LayoutStateCreateTreeTest {
     final Component component =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+          protected Component onCreateLayout(final ComponentContext c) {
             return Column.create(c)
                 .child(Column.create(c).child(TestDrawableComponent.create(c)))
                 .build();
@@ -87,7 +87,7 @@ public class LayoutStateCreateTreeTest {
     final Component component =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+          protected Component onCreateLayout(final ComponentContext c) {
             return Column.create(c)
                 .child(
                     Column.create(c)
@@ -155,7 +155,7 @@ public class LayoutStateCreateTreeTest {
     final Component component =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+          protected Component onCreateLayout(final ComponentContext c) {
             return Column.create(c)
                 .child(
                     Column.create(c)
@@ -219,12 +219,12 @@ public class LayoutStateCreateTreeTest {
     final Component component =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+          protected Component onCreateLayout(final ComponentContext c) {
             return Wrapper.create(c)
                 .delegate(
                     new InlineLayoutSpec() {
                       @Override
-                      protected ComponentLayout onCreateLayout(ComponentContext c) {
+                      protected Component onCreateLayout(ComponentContext c) {
                         return TestDrawableComponent.create(c)
                             .clickHandler(clickHandler1)
                             .longClickHandler(longClickHandler1)
@@ -269,12 +269,12 @@ public class LayoutStateCreateTreeTest {
     final Component component =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(final ComponentContext c) {
+          protected Component onCreateLayout(final ComponentContext c) {
             return Wrapper.create(c)
                 .delegate(
                     new InlineLayoutSpec() {
                       @Override
-                      protected ComponentLayout onCreateLayout(ComponentContext c) {
+                      protected Component onCreateLayout(ComponentContext c) {
                         return TestSizeDependentComponent.create(c)
                             .clickHandler(clickHandler1)
                             .longClickHandler(longClickHandler1)
@@ -339,7 +339,7 @@ public class LayoutStateCreateTreeTest {
     final Component component =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return TestDrawableComponentWithMockInternalNode.create(c)
                 .layoutDirection(YogaDirection.INHERIT)
                 .alignSelf(YogaAlign.AUTO)

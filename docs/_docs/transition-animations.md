@@ -29,7 +29,7 @@ The code for this might look something like this:
 
 ```java
 @OnCreateLayout
-static ComponentLayout onCreateLayout(
+static Component onCreateLayout(
     ComponentContext c,
     @Prop boolean left) {
   return Row.create(c)

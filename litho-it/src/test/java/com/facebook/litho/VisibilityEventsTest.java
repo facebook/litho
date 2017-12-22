@@ -18,7 +18,6 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.graphics.Rect;
 import android.widget.FrameLayout;
 import com.facebook.litho.testing.TestComponent;
-import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaEdge;
@@ -60,7 +59,7 @@ public class VisibilityEventsTest {
             mLithoView,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
                         Wrapper.create(c)
@@ -94,7 +93,7 @@ public class VisibilityEventsTest {
             mLithoView,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
                         Wrapper.create(c)
@@ -130,7 +129,7 @@ public class VisibilityEventsTest {
             mLithoView,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
                         Wrapper.create(c)
@@ -167,7 +166,7 @@ public class VisibilityEventsTest {
             mLithoView,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
                         Wrapper.create(c)
@@ -218,7 +217,7 @@ public class VisibilityEventsTest {
         mLithoView,
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
                 .child(
                     Wrapper.create(c)
@@ -249,7 +248,7 @@ public class VisibilityEventsTest {
             mLithoView,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
                         Wrapper.create(c)
@@ -284,7 +283,7 @@ public class VisibilityEventsTest {
             mLithoView,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
                         Wrapper.create(c)
@@ -337,7 +336,7 @@ public class VisibilityEventsTest {
             mLithoView,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
                         Wrapper.create(c)
@@ -394,7 +393,7 @@ public class VisibilityEventsTest {
             mContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
                         Wrapper.create(c)
@@ -431,7 +430,7 @@ public class VisibilityEventsTest {
             mContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
                         Wrapper.create(c)
@@ -460,7 +459,7 @@ public class VisibilityEventsTest {
                 mContext,
                 new InlineLayoutSpec() {
                   @Override
-                  protected ComponentLayout onCreateLayout(ComponentContext c) {
+                  protected Component onCreateLayout(ComponentContext c) {
                     return Column.create(c)
                         .child(
                             Wrapper.create(c)
@@ -493,7 +492,7 @@ public class VisibilityEventsTest {
             mContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(
                         Wrapper.create(c)

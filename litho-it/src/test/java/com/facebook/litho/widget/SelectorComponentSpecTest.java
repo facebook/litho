@@ -16,7 +16,6 @@ import static org.junit.Assume.assumeThat;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.assertj.ComponentAssert;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -34,7 +33,7 @@ public class SelectorComponentSpecTest {
       new InlineLayoutSpec() {
 
         @Override
-        protected ComponentLayout onCreateLayout(ComponentContext c) {
+        protected Component onCreateLayout(ComponentContext c) {
           return null;
         }
       };

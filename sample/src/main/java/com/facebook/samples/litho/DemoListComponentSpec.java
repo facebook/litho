@@ -12,8 +12,8 @@
 
 package com.facebook.samples.litho;
 
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -35,7 +35,7 @@ class DemoListComponentSpec {
   private static final String MAIN_SCREEN = "main_screen";
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext c, @Prop List<DemoListActivity.DemoListDataModel> dataModels) {
     return RecyclerCollectionComponent.create(c)
         .section(

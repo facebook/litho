@@ -12,8 +12,8 @@
 
 package com.facebook.samples.litho.lithography;
 
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -26,9 +26,7 @@ import com.facebook.yoga.YogaEdge;
 public class DecadeSeparatorSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
-      ComponentContext c,
-      @Prop final Decade decade) {
+  static Component onCreateLayout(ComponentContext c, @Prop final Decade decade) {
     return Row.create(c)
         .alignItems(YogaAlign.CENTER)
         .paddingDip(YogaEdge.ALL, 16)

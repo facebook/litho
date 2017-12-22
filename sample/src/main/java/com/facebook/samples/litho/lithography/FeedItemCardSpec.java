@@ -16,8 +16,8 @@ import static com.facebook.yoga.YogaEdge.HORIZONTAL;
 import static com.facebook.yoga.YogaEdge.VERTICAL;
 
 import com.facebook.litho.Column;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -27,7 +27,7 @@ import com.facebook.litho.widget.Card;
 public class FeedItemCardSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(ComponentContext c, @Prop final Artist artist) {
+  static Component onCreateLayout(ComponentContext c, @Prop final Artist artist) {
     return Column.create(c)
         .paddingDip(VERTICAL, 8)
         .paddingDip(HORIZONTAL, 16)

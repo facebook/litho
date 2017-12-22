@@ -23,7 +23,6 @@ import static org.junit.Assume.assumeThat;
 import android.support.v7.widget.LinearLayoutManager;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionContext;
@@ -67,47 +66,35 @@ public class RecyclerCollectionComponentSpecTest {
   public void setup() throws Exception {
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
 
-    mLoadingComponent = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Text.create(c)
-            .text("loading")
-            .heightPx(100)
-            .widthPx(100)
-            .build();
-      }
-    };
+    mLoadingComponent =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return Text.create(c).text("loading").heightPx(100).widthPx(100).build();
+          }
+        };
 
-    mEmptyComponent = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Text.create(c)
-            .text("empty")
-            .heightPx(100)
-            .widthPx(100)
-            .build();
-      }
-    };
-    mErrorComponent = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Text.create(c)
-            .text("error")
-            .heightPx(100)
-            .widthPx(100)
-            .build();
-      }
-    };
-    mContentComponent = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Text.create(c)
-            .text("content")
-            .heightPx(100)
-            .widthPx(100)
-            .build();
-      }
-    };
+    mEmptyComponent =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return Text.create(c).text("empty").heightPx(100).widthPx(100).build();
+          }
+        };
+    mErrorComponent =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return Text.create(c).text("error").heightPx(100).widthPx(100).build();
+          }
+        };
+    mContentComponent =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return Text.create(c).text("content").heightPx(100).widthPx(100).build();
+          }
+        };
 
     mRecyclerCollectionComponent = RecyclerCollectionComponent.create(mComponentContext)
         .emptyComponent(mEmptyComponent)

@@ -11,8 +11,8 @@
  */
 package com.facebook.samples.lithocodelab.end;
 
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.sections.SectionContext;
@@ -25,7 +25,7 @@ import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 @LayoutSpec
 class LithoLabEndComponentSpec {
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(ComponentContext c) {
+  static Component onCreateLayout(ComponentContext c) {
     return RecyclerCollectionComponent.create(c)
         .section(StoryCardsWithHeaderSection.create(new SectionContext(c)).build())
         .build();

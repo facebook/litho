@@ -43,7 +43,7 @@ For this example, let's consider this LayoutSpec:
 @LayoutSpec
 public class ComplexComponentSpec {
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext c,
       @Prop StoryProps<ComplexAttachment> storyProps,
       @Prop ImageRequest imageRequest,

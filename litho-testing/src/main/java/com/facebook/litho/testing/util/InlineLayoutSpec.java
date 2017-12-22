@@ -11,7 +11,6 @@ package com.facebook.litho.testing.util;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Transition;
 

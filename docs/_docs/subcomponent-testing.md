@@ -38,7 +38,7 @@ at an arbitrary length and appends an ellipsis.
 @LayoutSpec
 class TruncatingComponentSpec {
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(ComponentContext c, @Prop String text) {
+  static Component onCreateLayout(ComponentContext c, @Prop String text) {
     // A unicode-aware implementation is left as an exercise to the reader.
     final String s = text.length() > 16 ? text.substring(0, 16) + "..." : text;
     return Text.create(c).text(s).build();
@@ -161,7 +161,7 @@ and a Card.
 @LayoutSpec
 public class WrappingComponentSpec {
   @OnCreateLayout
-  public static ComponentLayout onCreateLayout(ComponentContext c, @Prop String text) {
+  public static Component onCreateLayout(ComponentContext c, @Prop String text) {
     final String s = text.length() > 16 ? text.substring(0, 16) + "..." : text;
     return Column.create(c)
         .backgroundColor(Color.GRAY)

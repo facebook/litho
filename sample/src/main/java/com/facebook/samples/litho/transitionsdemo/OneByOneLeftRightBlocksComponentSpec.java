@@ -13,11 +13,10 @@
 package com.facebook.samples.litho.transitionsdemo;
 
 import android.graphics.Color;
-
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
@@ -33,9 +32,7 @@ import com.facebook.yoga.YogaAlign;
 public class OneByOneLeftRightBlocksComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
-      ComponentContext c,
-      @State int state) {
+  static Component onCreateLayout(ComponentContext c, @State int state) {
     final boolean redLeft = state == 0 || state == 4 || state == 5;
     final boolean blueLeft = state == 0 || state == 1 || state == 5;
     final boolean greenLeft = state == 0 || state == 1 || state == 2;

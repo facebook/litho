@@ -13,8 +13,8 @@
 package com.facebook.samples.litho.bordereffects;
 
 import com.facebook.litho.Border;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -24,7 +24,7 @@ import com.facebook.yoga.YogaEdge;
 @LayoutSpec
 public class VerticalDashPathEffectBorderSpec {
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(ComponentContext c) {
+  static Component onCreateLayout(ComponentContext c) {
     return Row.create(c)
         .child(
             Text.create(c)

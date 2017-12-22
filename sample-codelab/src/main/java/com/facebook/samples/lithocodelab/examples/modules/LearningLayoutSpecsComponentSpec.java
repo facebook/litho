@@ -11,8 +11,8 @@
  */
 package com.facebook.samples.lithocodelab.examples.modules;
 
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.widget.Text;
@@ -22,7 +22,7 @@ import com.facebook.litho.widget.Text;
 public class LearningLayoutSpecsComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(ComponentContext c) {
+  static Component onCreateLayout(ComponentContext c) {
     return Text.create(c).text("Hello, World!").textSizeDip(50).build();
   }
 }

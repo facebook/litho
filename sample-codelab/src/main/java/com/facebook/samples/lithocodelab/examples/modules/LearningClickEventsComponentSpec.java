@@ -25,8 +25,8 @@ import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import android.widget.Toast;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -37,13 +37,11 @@ import com.facebook.litho.widget.Image;
 import com.facebook.litho.widget.Text;
 import com.facebook.samples.lithocodelab.R;
 
-/**
- * Learn how to handle clicks in Components. Turns out, they're just like @Props on ComponentLayouts
- */
+/** Learn how to handle clicks in Components. Turns out, they're just like @Props on Components */
 @LayoutSpec
 public class LearningClickEventsComponentSpec {
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(ComponentContext c) {
+  static Component onCreateLayout(ComponentContext c) {
     return Column.create(c)
         .alignItems(CENTER)
         .child(

@@ -15,8 +15,8 @@ package com.facebook.samples.lithoktbarebones
 import com.facebook.yoga.YogaEdge.ALL
 
 import com.facebook.litho.Column
+import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.ComponentLayout
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
@@ -29,7 +29,7 @@ object ListItemSpec {
       c: ComponentContext,
       @Prop color: Int,
       @Prop title: String,
-      @Prop subtitle: String): ComponentLayout {
+      @Prop subtitle: String): Component {
     return Column.create(c)
         .paddingDip(ALL, 16f)
         .backgroundColor(color)

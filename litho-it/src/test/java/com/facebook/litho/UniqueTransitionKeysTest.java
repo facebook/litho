@@ -27,7 +27,7 @@ public class UniqueTransitionKeysTest {
       new InlineLayoutSpec() {
 
         @Override
-        protected ComponentLayout onCreateLayout(ComponentContext c) {
+        protected Component onCreateLayout(ComponentContext c) {
           return Row.create(c)
               .child(Row.create(c).transitionKey("test"))
               .child(Row.create(c).transitionKey("test"))
@@ -39,7 +39,7 @@ public class UniqueTransitionKeysTest {
       new InlineLayoutSpec() {
 
         @Override
-        protected ComponentLayout onCreateLayout(ComponentContext c) {
+        protected Component onCreateLayout(ComponentContext c) {
           return Row.create(c)
               .child(Row.create(c).transitionKey("test"))
               .child(Row.create(c).transitionKey("test2"))

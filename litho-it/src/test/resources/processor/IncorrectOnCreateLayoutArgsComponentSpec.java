@@ -10,15 +10,14 @@
 package com.facebook.litho.processor.integration.resources;
 
 import android.content.Context;
-
-import com.facebook.litho.ComponentLayout;
+import com.facebook.litho.Component;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 
 @LayoutSpec
 public class IncorrectOnCreateLayoutArgsComponentSpec {
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       Context context /* error: Expected com.facebook.litho.ComponentContext */) {
     return null;
   }

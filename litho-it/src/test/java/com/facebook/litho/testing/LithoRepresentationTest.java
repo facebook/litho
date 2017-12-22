@@ -14,8 +14,8 @@ import static com.facebook.litho.testing.assertj.SubComponentExtractor.subCompon
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
 
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.assertj.LithoAssertions;
 import com.facebook.litho.testing.assertj.LithoRepresentation;
@@ -48,7 +48,7 @@ public class LithoRepresentationTest {
     final InlineLayoutSpec layout =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Text.create(c).text("Hello, World!").build();
           }
         };

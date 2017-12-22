@@ -12,8 +12,8 @@
 package com.facebook.samples.lithocodelab.examples;
 
 import com.facebook.litho.ClickEvent;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -25,7 +25,7 @@ import com.facebook.litho.widget.Text;
 public class ExamplesRowComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext c, @Prop String text, @Prop EventHandler<ClickEvent> clickEventHandler) {
     return Text.create(c)
         .text(text)

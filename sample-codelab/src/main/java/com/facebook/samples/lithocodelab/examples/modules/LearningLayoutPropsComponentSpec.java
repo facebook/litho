@@ -22,8 +22,8 @@ import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 
 import com.facebook.litho.Column;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -32,13 +32,13 @@ import com.facebook.litho.widget.Text;
 import com.facebook.samples.lithocodelab.R;
 
 /**
- * Learn the basic {@literal @}Props available on ComponentLayouts. Control the size, padding,
- * margins, backgrounds, and alignment of Components.
+ * Learn the basic {@literal @}Props available on Components. Control the size, padding, margins,
+ * backgrounds, and alignment of Components.
  */
 @LayoutSpec
 public class LearningLayoutPropsComponentSpec {
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(ComponentContext c) {
+  static Component onCreateLayout(ComponentContext c) {
     return Column.create(c)
         .alignItems(CENTER)
         .child(

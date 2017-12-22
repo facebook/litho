@@ -22,8 +22,8 @@ import static com.facebook.yoga.YogaJustify.CENTER;
 import android.graphics.Color;
 import com.facebook.litho.Border;
 import com.facebook.litho.Column;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -44,7 +44,7 @@ class StoryCardComponentSpec {
   private static final float CARD_INTERNAL_PADDING = 7.0f;
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(ComponentContext c, @Prop String content) {
+  static Component onCreateLayout(ComponentContext c, @Prop String content) {
     return Column.create(c)
         .backgroundColor(Color.WHITE)
         .child(

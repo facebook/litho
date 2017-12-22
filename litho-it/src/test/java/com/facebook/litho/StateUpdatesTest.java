@@ -169,15 +169,13 @@ public class StateUpdatesTest {
     child1.setKey("key");
     final Component child2 = new TestComponent();
     child2.setKey("key");
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c)
-            .child(child1)
-            .child(child2)
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return Column.create(c).child(child1).child(child2).build();
+          }
+        };
     final ComponentTree componentTree = ComponentTree.create(mContext, component)
         .incrementalMount(false)
         .layoutDiffing(false)
@@ -197,7 +195,7 @@ public class StateUpdatesTest {
     final Component component =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
                 .child(Column.create(c).child(child1))
                 .child(Column.create(c).child(child2))

@@ -17,8 +17,8 @@ import static android.graphics.Typeface.ITALIC;
 import static com.facebook.litho.annotations.ResType.STRING;
 
 import com.facebook.litho.Column;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -29,9 +29,7 @@ import com.facebook.yoga.YogaEdge;
 public class FooterComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
-      ComponentContext c,
-      @Prop(resType = STRING) String text) {
+  static Component onCreateLayout(ComponentContext c, @Prop(resType = STRING) String text) {
     return Column.create(c)
         .paddingDip(YogaEdge.ALL, 8)
         .child(

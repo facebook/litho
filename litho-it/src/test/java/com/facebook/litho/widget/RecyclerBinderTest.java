@@ -30,7 +30,6 @@ import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.view.View;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
@@ -1402,7 +1401,7 @@ public class RecyclerBinderTest {
       final Component component =
           new InlineLayoutSpec() {
             @Override
-            protected ComponentLayout onCreateLayout(ComponentContext c) {
+            protected Component onCreateLayout(ComponentContext c) {
               return TestDrawableComponent.create(c).widthPx(100).heightPx(100).build();
             }
           };
@@ -1444,11 +1443,8 @@ public class RecyclerBinderTest {
       final Component component =
           new InlineLayoutSpec() {
             @Override
-            protected ComponentLayout onCreateLayout(ComponentContext c) {
-              return TestDrawableComponent.create(c)
-                  .widthPercent(50)
-                  .heightPercent(25)
-                  .build();
+            protected Component onCreateLayout(ComponentContext c) {
+              return TestDrawableComponent.create(c).widthPercent(50).heightPercent(25).build();
             }
           };
 

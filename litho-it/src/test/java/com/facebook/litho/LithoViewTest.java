@@ -46,15 +46,13 @@ public class LithoViewTest {
 
   @Before
   public void setup() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return TestDrawableComponent.create(c)
-            .widthPx(100)
-            .heightPx(100)
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).widthPx(100).heightPx(100).build();
+          }
+        };
 
     final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
     final ComponentTree componentTree = ComponentTree.create(c, component)
@@ -95,12 +93,13 @@ public class LithoViewTest {
 
   @Test
   public void testNullLithoViewDimensions() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return null;
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return null;
+          }
+        };
 
     LithoView nullLithoView = new LithoView(application);
     nullLithoView.setComponentTree(
@@ -173,11 +172,8 @@ public class LithoViewTest {
     final Component component =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return TestDrawableComponent.create(c)
-                .widthPercent(100)
-                .heightPx(100)
-                .build();
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).widthPercent(100).heightPx(100).build();
           }
         };
 
@@ -209,11 +205,8 @@ public class LithoViewTest {
     final Component component =
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return TestDrawableComponent.create(c)
-                .widthPercent(50)
-                .heightPercent(10)
-                .build();
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).widthPercent(50).heightPercent(10).build();
           }
         };
 

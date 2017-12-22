@@ -49,17 +49,15 @@ public class MountStateRemountTest {
     final TestComponent component4 = create(mContext)
         .build();
 
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .child(component1)
-                .child(component2)
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return Column.create(c).child(component1).child(component2).build();
+              }
+            });
 
     assertThat(component1.isMounted()).isTrue();
     assertThat(component2.isMounted()).isTrue();
@@ -69,11 +67,8 @@ public class MountStateRemountTest {
         lithoView,
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .child(component3)
-                .child(component4)
-                .build();
+          protected Component onCreateLayout(ComponentContext c) {
+            return Column.create(c).child(component3).child(component4).build();
           }
         });
 
@@ -107,21 +102,22 @@ public class MountStateRemountTest {
     clearPool("sLayoutOutputPool");
     clearPool("sViewNodeInfoPool");
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return TestViewComponent.create(c).build();
-          }
-        });
+    final LithoView lithoView =
+        ComponentTestHelper.mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return TestViewComponent.create(c).build();
+              }
+            });
 
     ComponentTestHelper.mountComponent(
         mContext,
         lithoView,
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return TestDrawableComponent.create(c).build();
           }
         });
@@ -142,17 +138,15 @@ public class MountStateRemountTest {
         .unique()
         .build();
 
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .child(component1)
-                .child(component2)
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return Column.create(c).child(component1).child(component2).build();
+              }
+            });
 
     assertThat(component1.isMounted()).isTrue();
     assertThat(component2.isMounted()).isTrue();
@@ -162,11 +156,8 @@ public class MountStateRemountTest {
         lithoView,
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .child(component3)
-                .child(component4)
-                .build();
+          protected Component onCreateLayout(ComponentContext c) {
+            return Column.create(c).child(component3).child(component4).build();
           }
         });
 
@@ -187,17 +178,15 @@ public class MountStateRemountTest {
     final TestComponent component4 = create(mContext)
         .build();
 
-    final LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .child(component1)
-                .child(component2)
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return Column.create(c).child(component1).child(component2).build();
+              }
+            });
 
     assertThat(component1.isMounted()).isTrue();
     assertThat(component2.isMounted()).isTrue();
@@ -207,13 +196,10 @@ public class MountStateRemountTest {
         lithoView,
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
                 .child(component3)
-                .child(
-                    Column.create(c)
-                        .wrapInView()
-                        .child(component4))
+                .child(Column.create(c).wrapInView().child(component4))
                 .build();
           }
         });

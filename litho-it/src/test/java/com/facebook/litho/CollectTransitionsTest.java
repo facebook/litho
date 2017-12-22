@@ -28,7 +28,7 @@ public class CollectTransitionsTest {
       new InlineLayoutSpec() {
 
         @Override
-        protected ComponentLayout onCreateLayout(ComponentContext c) {
+        protected Component onCreateLayout(ComponentContext c) {
           return Wrapper.create(c).delegate(mComponentWithTransition).build();
         }
 
@@ -42,7 +42,7 @@ public class CollectTransitionsTest {
       new InlineLayoutSpec() {
 
         @Override
-        protected ComponentLayout onCreateLayout(ComponentContext c) {
+        protected Component onCreateLayout(ComponentContext c) {
           return Row.create(c)
               .child(Row.create(c).transitionKey("test"))
               .child(Row.create(c).transitionKey("test2"))

@@ -84,7 +84,7 @@ Your custom component will be called `ListItem` and it will display a title with
 public class ListItemSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(ComponentContext c) {
+  static Component onCreateLayout(ComponentContext c) {
 
     return Column.create(c)
         .paddingDip(ALL, 16)
@@ -179,7 +179,7 @@ Modify `ListItemSpec` as follows:
 
 ```java
 @OnCreateLayout
-static ComponentLayout onCreateLayout(
+static Component onCreateLayout(
     ComponentContext c,
     @Prop int color,
     @Prop String title,

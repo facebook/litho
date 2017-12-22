@@ -11,8 +11,8 @@
  */
 package com.facebook.samples.lithocodelab;
 
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.widget.Text;
@@ -26,7 +26,7 @@ import com.facebook.litho.widget.Text;
 class StoryCardComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(ComponentContext c) {
+  static Component onCreateLayout(ComponentContext c) {
     return Text.create(c, 0, R.style.hello_world).textRes(R.string.hello_world).build();
   }
 }

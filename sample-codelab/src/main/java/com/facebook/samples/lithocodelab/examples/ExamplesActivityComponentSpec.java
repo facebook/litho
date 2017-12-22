@@ -13,8 +13,8 @@ package com.facebook.samples.lithocodelab.examples;
 
 import android.support.v7.widget.OrientationHelper;
 import com.facebook.litho.ClickEvent;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -77,7 +77,7 @@ class ExamplesActivityComponentSpec {
   }
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(ComponentContext c) {
+  static Component onCreateLayout(ComponentContext c) {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
             .layoutInfo(new LinearLayoutInfo(c, OrientationHelper.VERTICAL, false))

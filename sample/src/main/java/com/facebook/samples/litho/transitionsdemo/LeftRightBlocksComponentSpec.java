@@ -17,8 +17,8 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.BounceInterpolator;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
@@ -35,9 +35,7 @@ import com.facebook.yoga.YogaAlign;
 public class LeftRightBlocksComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
-      ComponentContext c,
-      @State boolean left) {
+  static Component onCreateLayout(ComponentContext c, @State boolean left) {
     return Column.create(c)
         .alignItems(left ? YogaAlign.FLEX_START : YogaAlign.FLEX_END)
         .child(

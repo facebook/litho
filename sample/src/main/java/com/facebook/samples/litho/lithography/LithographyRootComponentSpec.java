@@ -12,8 +12,8 @@
 
 package com.facebook.samples.litho.lithography;
 
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -33,7 +33,7 @@ public class LithographyRootComponentSpec {
   private static final String MAIN_SCREEN = "main_screen";
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(ComponentContext c, @Prop List<Datum> dataModels) {
+  static Component onCreateLayout(ComponentContext c, @Prop List<Datum> dataModels) {
 
     return RecyclerCollectionComponent.create(c)
         .disablePTR(true)

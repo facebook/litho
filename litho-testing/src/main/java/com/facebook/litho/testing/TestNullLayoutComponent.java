@@ -11,7 +11,6 @@ package com.facebook.litho.testing;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 
 public class TestNullLayoutComponent extends Component {
 
@@ -21,7 +20,7 @@ public class TestNullLayoutComponent extends Component {
   }
 
   @Override
-  protected ComponentLayout onCreateLayoutWithSizeSpec(
+  protected Component onCreateLayoutWithSizeSpec(
       ComponentContext c, int widthSpec, int heightSpec) {
     return null;
   }

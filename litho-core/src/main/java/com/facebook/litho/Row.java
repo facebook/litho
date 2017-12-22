@@ -71,7 +71,7 @@ public final class Row extends Component {
   }
 
   @Override
-  protected ComponentLayout onCreateLayout(ComponentContext c) {
+  protected Component onCreateLayout(ComponentContext c) {
     return this;
   }
 

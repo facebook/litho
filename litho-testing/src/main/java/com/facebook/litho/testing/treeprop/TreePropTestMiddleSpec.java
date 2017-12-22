@@ -9,8 +9,8 @@
 
 package com.facebook.litho.testing.treeprop;
 
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateTreeProp;
@@ -31,7 +31,7 @@ public class TreePropTestMiddleSpec {
   }
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext c,
       @Prop TreePropTestResult resultPropALeaf1,
       @Prop TreePropTestResult resultPropBLeaf1) {

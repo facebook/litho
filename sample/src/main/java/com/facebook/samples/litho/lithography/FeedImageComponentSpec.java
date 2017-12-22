@@ -20,7 +20,6 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -45,7 +44,7 @@ public class FeedImageComponentSpec {
           LinearLayoutManager.HORIZONTAL, /*reverseLayout*/ false, SNAP_TO_START);
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(ComponentContext c, @Prop final String[] images) {
+  static Component onCreateLayout(ComponentContext c, @Prop final String[] images) {
     return images.length == 1
         ? createImageComponent(c, images[0]).build()
         : RecyclerCollectionComponent.create(c)

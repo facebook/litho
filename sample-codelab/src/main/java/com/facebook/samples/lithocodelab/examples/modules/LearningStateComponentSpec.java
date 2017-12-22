@@ -16,8 +16,8 @@ import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.TOP;
 
 import com.facebook.litho.ClickEvent;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateInitialState;
@@ -36,7 +36,7 @@ public class LearningStateComponentSpec {
   }
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(ComponentContext c, @State Integer count) {
+  static Component onCreateLayout(ComponentContext c, @State Integer count) {
     return Text.create(c)
         .text("Clicked " + count + " times.")
         .textSizeDip(50)

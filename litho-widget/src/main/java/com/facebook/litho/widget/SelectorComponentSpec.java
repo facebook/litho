@@ -11,7 +11,6 @@ package com.facebook.litho.widget;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -19,7 +18,7 @@ import java.util.List;
 
 /**
  * Selects the first Component that will render by calling {@link
- * Component#willRender(ComponentContext, ComponentLayout)} on the Components provided.
+ * Component#willRender(ComponentContext, Component)} on the Components provided.
  *
  * <p>This is useful when a single Component is to be rendered amongst a large number of candidate
  * Components or when multiple Components can potentially render some content using the same props
@@ -29,7 +28,7 @@ import java.util.List;
 class SelectorComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       final ComponentContext c,
       final @Prop(varArg = "component", optional = true) List<Component> components) {
     if (components == null) {

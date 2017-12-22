@@ -43,7 +43,7 @@ that displays a like icon and a short description.
 class LikersComponentSpec {
 
   @OnCreateLayout
-  protected static ComponentLayout onCreateLayout(
+  protected static Component onCreateLayout(
       ComponentContext c,
       @Prop List<User> likers) {
 

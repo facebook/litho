@@ -11,7 +11,6 @@ package com.facebook.litho.processor.integration.resources;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -20,7 +19,7 @@ import com.facebook.litho.annotations.ResType;
 @LayoutSpec
 public class BasicLayoutSpec {
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext context,
       @Prop String myStringProp,
       @Prop(resType = ResType.COLOR) int myRequiredColorProp,

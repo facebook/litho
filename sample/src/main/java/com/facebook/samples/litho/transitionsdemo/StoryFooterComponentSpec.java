@@ -15,8 +15,8 @@ package com.facebook.samples.litho.transitionsdemo;
 import android.graphics.Color;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateValue;
@@ -38,9 +38,7 @@ import com.facebook.yoga.YogaJustify;
 public class StoryFooterComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
-      ComponentContext c,
-      @State boolean commentText) {
+  static Component onCreateLayout(ComponentContext c, @State boolean commentText) {
     return !commentText
         ? Row.create(c)
         .backgroundColor(Color.WHITE)

@@ -33,27 +33,21 @@ public class LayoutStateCalculateTopsAndBottomsTest {
 
   @Test
   public void testCalculateTopsAndBottoms() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return create(c)
-            .child(
-                create(c)
-                    .child(
-                        TestDrawableComponent.create(c)
-                            .wrapInView()
-                            .heightPx(50)))
-            .child(
-                TestDrawableComponent.create(c)
-                    .heightPx(20))
-            .child(
-                TestDrawableComponent.create(c)
-                    .positionType(ABSOLUTE)
-                    .positionPx(TOP, 10)
-                    .positionPx(BOTTOM, 30))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return create(c)
+                .child(create(c).child(TestDrawableComponent.create(c).wrapInView().heightPx(50)))
+                .child(TestDrawableComponent.create(c).heightPx(20))
+                .child(
+                    TestDrawableComponent.create(c)
+                        .positionType(ABSOLUTE)
+                        .positionPx(TOP, 10)
+                        .positionPx(BOTTOM, 30))
+                .build();
+          }
+        };
 
     LayoutState layoutState = calculateLayoutState(
         application,

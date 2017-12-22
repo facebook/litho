@@ -15,7 +15,6 @@ import android.support.v4.util.Pools;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Wrapper;
 
 public class TestLayoutComponent extends TestComponent {
@@ -56,7 +55,7 @@ public class TestLayoutComponent extends TestComponent {
   }
 
   @Override
-  protected ComponentLayout onCreateLayout(ComponentContext c) {
+  protected Component onCreateLayout(ComponentContext c) {
     super.onCreateLayout(c);
     final Component mountSpecComponent =
         TestDrawableComponent.create(c, false, true, true, false, false).build();
@@ -65,7 +64,7 @@ public class TestLayoutComponent extends TestComponent {
       return Wrapper.create(c).delegate(mountSpecComponent).build();
     }
 
-    ComponentLayout.ContainerBuilder containerBuilder = Column.create(c);
+    Component.ContainerBuilder<?> containerBuilder = Column.create(c);
 
     if (mHasMountSpecChild) {
       containerBuilder.child(mountSpecComponent);

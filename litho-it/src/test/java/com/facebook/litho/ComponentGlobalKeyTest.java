@@ -153,7 +153,7 @@ public class ComponentGlobalKeyTest {
         new InlineLayoutSpec() {
           @Override
           @OnCreateLayout
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
                 .child(Text.create(c).text("").key("sameKey"))
                 .child(Text.create(c).text("").key("sameKey"))
@@ -187,7 +187,7 @@ public class ComponentGlobalKeyTest {
         new InlineLayoutSpec() {
           @Override
           @OnCreateLayout
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
                 .child(Column.create(c).key("sameKey"))
                 .child(Column.create(c).key("sameKey"))
@@ -221,7 +221,7 @@ public class ComponentGlobalKeyTest {
         new InlineLayoutSpec() {
           @Override
           @OnCreateLayout
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
                 .child(Text.create(mContext).text(""))
                 .child(Text.create(mContext).text(""))
@@ -255,7 +255,7 @@ public class ComponentGlobalKeyTest {
         new InlineLayoutSpec() {
           @Override
           @OnCreateLayout
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
                 .child(Column.create(mContext).child(Text.create(c).text("")))
                 .child(Column.create(mContext).child(Text.create(c).text("")))
@@ -290,7 +290,7 @@ public class ComponentGlobalKeyTest {
         new InlineLayoutSpec() {
           @Override
           @OnCreateLayout
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
                 .child(Text.create(mContext).text(""))
                 .child(Text.create(mContext).text(""))
@@ -302,7 +302,7 @@ public class ComponentGlobalKeyTest {
         new InlineLayoutSpec() {
           @Override
           @OnCreateLayout
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
                 .child(component)
                 .child(Text.create(mContext).text(""))
@@ -362,42 +362,42 @@ public class ComponentGlobalKeyTest {
 
   private static Component getMultipleChildrenComponent() {
     final int color = 0xFFFF0000;
-    final Component testGlobalKeyChildComponent = new InlineLayoutSpec() {
+    final Component testGlobalKeyChildComponent =
+        new InlineLayoutSpec() {
 
-      @Override
-      @OnCreateLayout
-      protected ComponentLayout onCreateLayout(
-          ComponentContext c) {
+          @Override
+          @OnCreateLayout
+          protected Component onCreateLayout(ComponentContext c) {
 
-        return Column.create(c)
-            .child(TestViewComponent.create(c).key("[TestViewComponent1]"))
-            .child(
-                Column.create(c)
-                    .backgroundColor(color)
-                    .child(CardClip.create(c).key("[CardClip1]")))
-            .child(Text.create(c).text("Test").key("[Text1]"))
-            .build();
-      }
-    };
+            return Column.create(c)
+                .child(TestViewComponent.create(c).key("[TestViewComponent1]"))
+                .child(
+                    Column.create(c)
+                        .backgroundColor(color)
+                        .child(CardClip.create(c).key("[CardClip1]")))
+                .child(Text.create(c).text("Test").key("[Text1]"))
+                .build();
+          }
+        };
 
-    final Component testGlobalKeyChild = new InlineLayoutSpec() {
+    final Component testGlobalKeyChild =
+        new InlineLayoutSpec() {
 
-      @Override
-      @OnCreateLayout
-      protected ComponentLayout onCreateLayout(
-          ComponentContext c) {
+          @Override
+          @OnCreateLayout
+          protected Component onCreateLayout(ComponentContext c) {
 
-        return Column.create(c)
-            .child(Text.create(c).text("test").key("[Text2]"))
-            .child(testGlobalKeyChildComponent)
-            .child(
-                Column.create(c)
-                    .backgroundColor(color)
-                    .child(CardClip.create(c).key("[CardClip2]")))
-            .child(TestViewComponent.create(c).key("[TestViewComponent2]"))
-            .build();
-      }
-    };
+            return Column.create(c)
+                .child(Text.create(c).text("test").key("[Text2]"))
+                .child(testGlobalKeyChildComponent)
+                .child(
+                    Column.create(c)
+                        .backgroundColor(color)
+                        .child(CardClip.create(c).key("[CardClip2]")))
+                .child(TestViewComponent.create(c).key("[TestViewComponent2]"))
+                .build();
+          }
+        };
 
     return testGlobalKeyChild;
   }

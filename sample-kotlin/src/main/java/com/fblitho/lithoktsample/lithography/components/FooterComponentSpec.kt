@@ -15,8 +15,8 @@ package com.fblitho.lithoktsample.lithography.components
 import android.graphics.Color.GRAY
 import android.graphics.Typeface.ITALIC
 import com.facebook.litho.Column
+import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.ComponentLayout
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
@@ -29,7 +29,7 @@ object FooterComponentSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop(resType = STRING) text: String): ComponentLayout =
+      @Prop(resType = STRING) text: String): Component =
       Column.create(c)
           .paddingDip(ALL, 8f)
           .child(

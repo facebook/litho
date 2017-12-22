@@ -15,8 +15,8 @@ package com.facebook.samples.litho.lithography;
 import static android.graphics.Typeface.BOLD;
 import static com.facebook.litho.annotations.ResType.STRING;
 
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -28,9 +28,7 @@ import com.facebook.yoga.YogaPositionType;
 public class TitleComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
-      ComponentContext c,
-      @Prop(resType = STRING) String title) {
+  static Component onCreateLayout(ComponentContext c, @Prop(resType = STRING) String title) {
     return Text.create(c)
         .text(title)
         .textStyle(BOLD)

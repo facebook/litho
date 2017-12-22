@@ -27,7 +27,7 @@ Here is an example:
 class MyLayoutSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(ComponentContext c) {
+  static Component onCreateLayout(ComponentContext c) {
 
     return Column.create(c)
         .alignItems(YogaAlign.STRETCH)

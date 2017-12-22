@@ -17,7 +17,6 @@ import static org.mockito.Mockito.verify;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -50,7 +49,7 @@ public class TestLayoutSpecModelFactoryTest {
   @LayoutSpec
   static class MyLayoutSpec {
     @OnCreateLayout
-    public static ComponentLayout onCreateLayout(
+    public static Component onCreateLayout(
         ComponentContext c,
         @Prop String s,
         @Prop Component child,

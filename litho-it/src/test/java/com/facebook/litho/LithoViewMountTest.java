@@ -44,15 +44,13 @@ public class LithoViewMountTest {
     mContext = new ComponentContext(RuntimeEnvironment.application);
 
     mLithoView = new TestLithoView(mContext);
-    mComponent = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return TestDrawableComponent.create(c)
-            .widthPx(100)
-            .heightPx(100)
-            .build();
-      }
-    };
+    mComponent =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).widthPx(100).heightPx(100).build();
+          }
+        };
 
     mComponentTree = ComponentTree.create(mContext, mComponent)
         .incrementalMount(false)
@@ -169,7 +167,7 @@ public class LithoViewMountTest {
             mContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
                     .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
