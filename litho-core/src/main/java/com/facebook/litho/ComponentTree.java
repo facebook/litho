@@ -534,13 +534,8 @@ public class ComponentTree {
     assertMainThread();
 
     if (mMainThreadLayoutState == null) {
-      throw new IllegalStateException(
-          "mMainThreadLayoutState is null when trying to mount! Is released: "
-              + mReleased
-              + ", Released Component name is: "
-              + mReleasedComponent
-              + ", current root is: "
-              + mRoot);
+      Log.w(TAG, "Main Thread Layout state is not found");
+      return;
     }
 
     final boolean isDirtyMount = mLithoView.isMountStateDirty();
