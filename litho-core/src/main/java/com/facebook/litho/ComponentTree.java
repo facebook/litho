@@ -1123,22 +1123,26 @@ public class ComponentTree {
    */
   @Deprecated
   void showTooltip(
+      ComponentContext c,
       DeprecatedLithoTooltip tooltip,
-      String anchorGlobalKey,
+      String anchorKey,
       TooltipPosition tooltipPosition,
       int xOffset,
       int yOffset) {
     assertMainThread();
 
+    final String anchorGlobalKey =
+        ComponentKeyUtils.getBestGlobalKeyForComponentKey(c.getComponentScope(), anchorKey);
+
+    if (anchorGlobalKey == null) {
+      throw new IllegalArgumentException(
+          "Cannot find a component with key " + anchorGlobalKey + " to use as anchor.");
+    }
+
     final Map<String, Rect> componentKeysToBounds;
     synchronized (this) {
       componentKeysToBounds =
           mMainThreadLayoutState.getComponentKeyToBounds();
-    }
-
-    if (!componentKeysToBounds.containsKey(anchorGlobalKey)) {
-      throw new IllegalArgumentException(
-          "Cannot find a component with key " + anchorGlobalKey + " to use as anchor.");
     }
 
     final Rect anchorBounds = componentKeysToBounds.get(anchorGlobalKey);
@@ -1151,8 +1155,17 @@ public class ComponentTree {
         yOffset);
   }
 
-  void showTooltip(LithoTooltip lithoTooltip, String anchorGlobalKey, int xOffset, int yOffset) {
+  void showTooltip(
+      ComponentContext c, LithoTooltip lithoTooltip, String anchorKey, int xOffset, int yOffset) {
     assertMainThread();
+
+    final String anchorGlobalKey =
+        ComponentKeyUtils.getBestGlobalKeyForComponentKey(c.getComponentScope(), anchorKey);
+
+    if (anchorGlobalKey == null) {
+      throw new IllegalArgumentException(
+          "Cannot find a component with key " + anchorGlobalKey + " to use as anchor.");
+    }
 
     final Map<String, Rect> componentKeysToBounds;
     synchronized (this) {
