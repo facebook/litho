@@ -69,7 +69,7 @@ dependencies {
     androidTestImplementation deps.supportEspresso
     androidTestImplementation deps.supportEspressoIntents
     androidTestImplementation deps.junit
-    
+
     // Unit test only
     testImplementation project(':litho-testing')
     testImplementation project(':litho-annotations')
