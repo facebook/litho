@@ -13,8 +13,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion rootProject.compileSdkVersion
-    buildToolsVersion rootProject.buildToolsVersion
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
 
     useLibrary 'org.apache.http.legacy'
 
@@ -51,25 +51,20 @@ dependencies {
     compileOnly project(':litho-sections-annotations')
     annotationProcessor project(':litho-processor')
     annotationProcessor project(':litho-sections-processor')
-
     // First-party
     implementation deps.soloader
     implementation deps.fresco
-
     // Annotations
     compileOnly deps.jsr305
     compileOnly deps.inferAnnotations
-
     // Support Library
     implementation deps.supportAppCompat
     implementation deps.supportRecyclerView
-
     // Integration test only
     androidTestImplementation project(':litho-espresso')
     androidTestImplementation deps.supportEspresso
     androidTestImplementation deps.supportEspressoIntents
     androidTestImplementation deps.junit
-
     // Unit test only
     testImplementation project(':litho-testing')
     testImplementation project(':litho-annotations')
