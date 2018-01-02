@@ -131,7 +131,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
             final Size size = acquireSize(Integer.MIN_VALUE /* initialValue */);
 
             try {
-              component.onMeasure(node.getContext(), node, widthSpec, heightSpec, size);
+              component.onMeasure(component.getScopedContext(), node, widthSpec, heightSpec, size);
 
               if (size.width < 0 || size.height < 0) {
                 throw new IllegalStateException(
