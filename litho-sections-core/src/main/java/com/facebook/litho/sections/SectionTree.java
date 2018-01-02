@@ -923,8 +923,7 @@ public class SectionTree {
 
   private void setLoadingStateToFocusDispatch(final LoadingEvent.LoadingState loadingState) {
     if (loadingState == LoadingEvent.LoadingState.INITIAL_LOAD
-        || loadingState == LoadingEvent.LoadingState.LOADING
-        || loadingState == LoadingEvent.LoadingState.REFRESH_LOADING) {
+        || loadingState == LoadingEvent.LoadingState.LOADING) {
       mFocusDispatcher.waitForDataBound(true);
     }
 
