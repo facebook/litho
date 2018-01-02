@@ -67,7 +67,7 @@ public class LayoutDirectionTest {
             mContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Row.create(c)
                     .layoutDirection(LTR)
                     .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
@@ -98,7 +98,7 @@ public class LayoutDirectionTest {
         lithoView,
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Row.create(c)
                 .layoutDirection(RTL)
                 .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
@@ -141,7 +141,7 @@ public class LayoutDirectionTest {
             mContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Row.create(c)
                     .layoutDirection(LTR)
                     .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
@@ -163,7 +163,7 @@ public class LayoutDirectionTest {
         lithoView,
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Row.create(c)
                 .layoutDirection(RTL)
                 .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
@@ -197,7 +197,7 @@ public class LayoutDirectionTest {
             mContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Row.create(c)
                     .layoutDirection(RTL)
                     .child(
@@ -235,7 +235,7 @@ public class LayoutDirectionTest {
             mContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Row.create(c)
                     .layoutDirection(RTL)
                     .child(
@@ -272,7 +272,7 @@ public class LayoutDirectionTest {
             mContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .layoutDirection(LTR)
                     .child(
@@ -296,7 +296,7 @@ public class LayoutDirectionTest {
         lithoView,
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
                 .layoutDirection(RTL)
                 .child(
@@ -330,7 +330,7 @@ public class LayoutDirectionTest {
             mContext,
             new InlineLayoutSpec() {
               @Override
-              protected ComponentLayout onCreateLayout(ComponentContext c) {
+              protected Component onCreateLayout(ComponentContext c) {
                 return Column.create(c)
                     .layoutDirection(LTR)
                     .paddingPx(START, 10)
@@ -350,7 +350,7 @@ public class LayoutDirectionTest {
         lithoView,
         new InlineLayoutSpec() {
           @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
+          protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
                 .layoutDirection(RTL)
                 .paddingPx(START, 10)
@@ -375,17 +375,15 @@ public class LayoutDirectionTest {
     final TestComponent child = create(mContext)
         .build();
 
-    LithoView lithoView = mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .layoutDirection(RTL)
-                .child(child)
-                .build();
-          }
-        });
+    LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return Column.create(c).layoutDirection(RTL).child(child).build();
+              }
+            });
 
     final View childView = lithoView.getChildAt(0);
     assertThat(childView.getLayoutDirection()).isEqualTo(LAYOUT_DIRECTION_RTL);

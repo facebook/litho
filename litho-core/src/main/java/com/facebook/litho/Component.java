@@ -53,9 +53,9 @@ import javax.annotation.Nullable;
  * values for individual props. {@link Component} instances are immutable after creation.
  */
 public abstract class Component extends ComponentLifecycle
-    implements Cloneable, HasEventDispatcher, HasEventTrigger, ComponentLayout {
+    implements Cloneable, HasEventDispatcher, HasEventTrigger {
 
-  private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
+  private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private int mId = sIdGenerator.getAndIncrement();
   private String mGlobalKey;
   @Nullable private String mKey;
@@ -396,10 +396,6 @@ public abstract class Component extends ComponentLifecycle
     return willRender(component.mLayoutCreatedInWillRender);
   }
 
-  public static boolean willRender(ComponentContext c, ComponentLayout componentLayout) {
-    return componentLayout != null && willRender(c, ((Component) componentLayout));
-  }
-
   private static boolean willRender(ActualComponentLayout componentLayout) {
     if (componentLayout == null || ComponentContext.NULL_LAYOUT.equals(componentLayout)) {
       return false;
@@ -491,8 +487,7 @@ public abstract class Component extends ComponentLifecycle
    * @param <T> the type of this builder. Required to ensure methods defined here in the abstract
    *     class correctly return the type of the concrete subclass.
    */
-  public abstract static class Builder<T extends Builder<T>> extends ResourceResolver
-      implements ComponentLayout.Builder {
+  public abstract static class Builder<T extends Builder<T>> extends ResourceResolver {
 
     private ComponentContext mContext;
     @AttrRes private int mDefStyleAttr;
@@ -1174,10 +1169,6 @@ public abstract class Component extends ComponentLifecycle
     public abstract T child(Component child);
 
     public abstract T child(Component.Builder<?> child);
-
-    public abstract T child(ComponentLayout child);
-
-    public abstract T child(ComponentLayout.Builder child);
 
     public abstract T alignContent(YogaAlign alignContent);
 

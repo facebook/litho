@@ -15,7 +15,6 @@ import android.view.View;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventDispatcher;
@@ -227,17 +226,19 @@ public final class TestLayout<S extends View> extends Component {
   }
 
   @Override
-  protected ComponentLayout onCreateLayout(ComponentContext context) {
-    ComponentLayout _result = (ComponentLayout) TestLayoutSpec.onCreateLayout(
-      (ComponentContext) context,
-      (boolean) prop2,
-      (Object) prop3,
-      (char[]) prop4,
-      (long) mStateContainer.state1,
-      (S) mStateContainer.state2,
-      (int) mStateContainer.state3,
-      (TestTreeProp) treeProp,
-      (Component) child);
+  protected Component onCreateLayout(ComponentContext context) {
+    Component _result =
+        (Component)
+            TestLayoutSpec.onCreateLayout(
+                (ComponentContext) context,
+                (boolean) prop2,
+                (Object) prop3,
+                (char[]) prop4,
+                (long) mStateContainer.state1,
+                (S) mStateContainer.state2,
+                (int) mStateContainer.state3,
+                (TestTreeProp) treeProp,
+                (Component) child);
     return _result;
   }
 

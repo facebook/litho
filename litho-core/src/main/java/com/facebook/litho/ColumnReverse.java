@@ -143,8 +143,7 @@ public final class ColumnReverse extends Component {
     return true;
   }
 
-  public static class Builder extends Component.ContainerBuilder<Builder>
-      implements ComponentLayout.ContainerBuilder {
+  public static class Builder extends Component.ContainerBuilder<Builder> {
     ColumnReverse mColumnReverse;
     ComponentContext mContext;
 
@@ -174,24 +173,6 @@ public final class ColumnReverse extends Component {
       if (child == null) {
         return this;
       }
-      return child(child.build());
-    }
-
-    @Override
-    public Builder child(ComponentLayout child) {
-      if (child == null) {
-        return this;
-      }
-
-      return child((Component) child);
-    }
-
-    @Override
-    public Builder child(ComponentLayout.Builder child) {
-      if (child == null) {
-        return this;
-      }
-
       return child(child.build());
     }
 

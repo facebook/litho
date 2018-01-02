@@ -252,19 +252,17 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       node = ComponentsPools.acquireInternalNode(context);
       node.markIsNestedTreeHolder(context.getTreeProps());
     } else {
-      final ComponentLayout componentLayout;
+      final Component layoutComponent;
       if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
-        componentLayout =
-            onCreateLayoutWithSizeSpec(
-                context, context.getWidthSpec(), context.getHeightSpec());
+        layoutComponent =
+            onCreateLayoutWithSizeSpec(context, context.getWidthSpec(), context.getHeightSpec());
       } else {
-        componentLayout = onCreateLayout(context);
+        layoutComponent = onCreateLayout(context);
       }
 
-      if (componentLayout == null || !(componentLayout instanceof Component)) {
+      if (layoutComponent == null || layoutComponent.getId() <= 0) {
         node = null;
       } else {
-        Component layoutComponent = (Component) componentLayout;
         // If the layoutComponent to be resolved was passed into this method, then we have already
         // generated a key for it (in ComponentContext.newLayoutBuilder). Otherwise, generate one
         // now.
@@ -402,14 +400,12 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    *
    * @param c The {@link ComponentContext} to build a {@link ActualComponentLayout} tree.
    */
-  protected ComponentLayout onCreateLayout(ComponentContext c) {
+  protected Component onCreateLayout(ComponentContext c) {
     return Column.create(c).build();
   }
 
-  protected ComponentLayout onCreateLayoutWithSizeSpec(
-      ComponentContext c,
-      int widthSpec,
-      int heightSpec) {
+  protected Component onCreateLayoutWithSizeSpec(
+      ComponentContext c, int widthSpec, int heightSpec) {
     return Column.create(c).build();
   }
 

@@ -54,22 +54,6 @@ public class ComponentSelector {
     return this;
   }
 
-  public ComponentSelector tryToRender(@Nullable ComponentLayout componentLayout) {
-    if (componentLayout == null || mWillRender) {
-      return this;
-    }
-
-    return tryToRender((Component) componentLayout);
-  }
-
-  public ComponentSelector tryToRender(@Nullable ComponentLayout.Builder componentLayout) {
-    if (componentLayout == null || mWillRender) {
-      return this;
-    }
-
-    return tryToRender(componentLayout.build());
-  }
-
   public @Nullable Component build() {
     return mComponent;
   }

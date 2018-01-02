@@ -83,7 +83,7 @@ public class LifecycleMethodsTest {
   private static class LifecycleMethodsComponent extends Component {
 
     @Override
-    protected ComponentLayout onCreateLayout(ComponentContext c) {
+    protected Component onCreateLayout(ComponentContext c) {
       setCurrentStep(LifecycleStep.ON_CREATE_LAYOUT);
 
       return super.onCreateLayout(c);

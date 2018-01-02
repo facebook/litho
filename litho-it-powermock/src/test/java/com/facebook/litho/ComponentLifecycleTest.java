@@ -24,7 +24,6 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import com.facebook.litho.ComponentLifecycle.MountType;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
@@ -340,12 +339,12 @@ public class ComponentLifecycleTest {
     }
 
     @Override
-    protected ComponentLayout onCreateLayout(ComponentContext c) {
+    protected Component onCreateLayout(ComponentContext c) {
       return this;
     }
 
     @Override
-    protected ComponentLayout onCreateLayoutWithSizeSpec(
+    protected Component onCreateLayoutWithSizeSpec(
         ComponentContext c, int widthSpec, int heightSpec) {
       return this;
     }

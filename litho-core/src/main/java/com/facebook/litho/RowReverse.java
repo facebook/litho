@@ -141,8 +141,7 @@ public final class RowReverse extends Component {
     return true;
   }
 
-  public static class Builder extends Component.ContainerBuilder<Builder>
-      implements ComponentLayout.ContainerBuilder {
+  public static class Builder extends Component.ContainerBuilder<Builder> {
     RowReverse mRowReverse;
     ComponentContext mContext;
 
@@ -151,24 +150,6 @@ public final class RowReverse extends Component {
       super.init(context, defStyleAttr, defStyleRes, rowReverse);
       mRowReverse = rowReverse;
       mContext = context;
-    }
-
-    @Override
-    public Builder child(ComponentLayout child) {
-      if (child == null) {
-        return this;
-      }
-
-      return child((Component) child);
-    }
-
-    @Override
-    public Builder child(ComponentLayout.Builder child) {
-      if (child == null) {
-        return this;
-      }
-
-      return child(child.build());
     }
 
     @Override

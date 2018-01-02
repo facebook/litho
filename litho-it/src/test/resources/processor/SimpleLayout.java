@@ -11,7 +11,6 @@ package com.facebook.litho.processor.integration.resources;
 import android.support.v4.util.Pools;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 
 public final class SimpleLayout extends Component {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
@@ -41,9 +40,8 @@ public final class SimpleLayout extends Component {
   }
 
   @Override
-  protected ComponentLayout onCreateLayout(ComponentContext context) {
-    ComponentLayout _result = (ComponentLayout) SimpleLayoutSpec.onCreateLayout(
-        (ComponentContext) context);
+  protected Component onCreateLayout(ComponentContext context) {
+    Component _result = (Component) SimpleLayoutSpec.onCreateLayout((ComponentContext) context);
     return _result;
   }
 
