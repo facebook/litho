@@ -30,7 +30,6 @@ import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -809,6 +808,8 @@ public class SectionTree {
       }
 
       synchronized (this) {
+        SectionsPools.release(pendingStateUpdates);
+
         if (mReleased) {
           return;
         }
@@ -825,12 +826,13 @@ public class SectionTree {
   @GuardedBy("this")
   private Map<String, List<StateUpdate>> copyPendingStateUpdatesAndResetNonLazyFlag() {
     mHasNonLazyUpdate = false;
+    Map<String, List<StateUpdate>> clonedPendingStateUpdated =
+        SectionsPools.acquireStateUpdatesMap();
 
     if (mPendingStateUpdates.isEmpty()) {
-      return Collections.emptyMap();
+      return clonedPendingStateUpdated;
     }
 
-    Map<String, List<StateUpdate>> clonedPendingStateUpdated = acquireUpdatesMap();
     final Set<String> keys = mPendingStateUpdates.keySet();
     for (String key : keys) {
       clonedPendingStateUpdated.put(key, new ArrayList<>(mPendingStateUpdates.get(key)));
@@ -1162,10 +1164,6 @@ public class SectionTree {
     }
 
     return sDefaultChangeSetThreadLooper;
-  }
-
-  private Map<String, List<StateUpdate>> acquireUpdatesMap() {
-    return new HashMap<>();
   }
 
   private static List<StateUpdate> acquireUpdatesList() {
