@@ -33,7 +33,7 @@ import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
 
 /**
- * Class representing an empty InternalNode with a null ActualComponentLayout. All methods have been
+ * Class representing an empty InternalNode with a null ComponentLayout. All methods have been
  * overridden so no actions are performed, and no exceptions are thrown.
  */
 class NoOpInternalNode extends InternalNode {

@@ -68,11 +68,11 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 /**
- * Internal class representing both a {@link ActualComponentLayout} and a {@link
+ * Internal class representing both a {@link ComponentLayout} and a {@link
  * com.facebook.litho.ComponentLayout.ContainerBuilder}.
  */
 @ThreadConfined(ThreadConfined.ANY)
-class InternalNode implements ActualComponentLayout, ActualComponentLayout.ContainerBuilder {
+class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder {
 
   // Used to check whether or not the framework can use style IDs for
   // paddingStart/paddingEnd due to a bug in some Android devices.
@@ -961,7 +961,7 @@ class InternalNode implements ActualComponentLayout, ActualComponentLayout.Conta
   @Override
   public InternalNode child(Component child) {
     if (child != null) {
-      final ActualComponentLayout layout = Layout.create(mComponentContext, child).build();
+      final ComponentLayout layout = Layout.create(mComponentContext, child).build();
       if (layout != NULL_LAYOUT) {
         addChildAt((InternalNode) layout, mYogaNode.getChildCount());
       }
@@ -1477,7 +1477,7 @@ class InternalNode implements ActualComponentLayout, ActualComponentLayout.Conta
   }
 
   @Override
-  public ActualComponentLayout build() {
+  public ComponentLayout build() {
     return this;
   }
 

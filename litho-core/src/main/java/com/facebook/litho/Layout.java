@@ -29,7 +29,7 @@ final class Layout {
    * @param defStyleRes The id of the style to use for layout attributes
    * @return A layout builder
    */
-  static ActualComponentLayout.Builder create(
+  static ComponentLayout.Builder create(
       ComponentContext c,
       Component component,
       @AttrRes int defStyleAttr,
@@ -47,7 +47,7 @@ final class Layout {
    * @param component The component to render within this layout
    * @return A layout builder
    */
-  static ActualComponentLayout.Builder create(ComponentContext c, Component component) {
+  static ComponentLayout.Builder create(ComponentContext c, Component component) {
     return create(c, component, 0, 0);
   }
 }

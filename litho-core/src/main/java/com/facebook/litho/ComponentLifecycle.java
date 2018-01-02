@@ -226,12 +226,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    *     call.
    * @return New InternalNode associated with the given component.
    */
-  ActualComponentLayout createLayout(
-      ComponentContext context, boolean resolveNestedTree) {
+  ComponentLayout createLayout(ComponentContext context, boolean resolveNestedTree) {
     Component component = (Component) this;
 
     if (component.mLayoutCreatedInWillRender != null) {
-      ActualComponentLayout layout = component.mLayoutCreatedInWillRender;
+      ComponentLayout layout = component.mLayoutCreatedInWillRender;
       component.mLayoutCreatedInWillRender = null;
       return layout;
     }
@@ -394,11 +393,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /**
-   * Generate a tree of {@link ActualComponentLayout} representing the layout structure of the
-   * {@link Component} and its sub-components. You should use {@link
-   * ComponentContext#newLayoutBuilder} to build the layout tree.
+   * Generate a tree of {@link ComponentLayout} representing the layout structure of the {@link
+   * Component} and its sub-components. You should use {@link ComponentContext#newLayoutBuilder} to
+   * build the layout tree.
    *
-   * @param c The {@link ComponentContext} to build a {@link ActualComponentLayout} tree.
+   * @param c The {@link ComponentContext} to build a {@link ComponentLayout} tree.
    */
   protected Component onCreateLayout(ComponentContext c) {
     return Column.create(c).build();
@@ -409,8 +408,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return Column.create(c).build();
   }
 
-  /** Resolves the {@link ActualComponentLayout} for the given {@link Component}. */
-  protected ActualComponentLayout resolve(ComponentContext c) {
+  /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
+  protected ComponentLayout resolve(ComponentContext c) {
     return createLayout(c, false);
   }
 
@@ -422,18 +421,16 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /**
-   * Called after the layout calculation is finished and the given {@link ActualComponentLayout} has
-   * its bounds defined. You can use {@link ActualComponentLayout#getX()}, {@link
-   * ActualComponentLayout#getY()}, {@link ActualComponentLayout#getWidth()}, and {@link
-   * ActualComponentLayout#getHeight()} to get the size and position of the component in the layout
-   * tree.
+   * Called after the layout calculation is finished and the given {@link ComponentLayout} has its
+   * bounds defined. You can use {@link ComponentLayout#getX()}, {@link ComponentLayout#getY()},
+   * {@link ComponentLayout#getWidth()}, and {@link ComponentLayout#getHeight()} to get the size and
+   * position of the component in the layout tree.
    *
    * @param c The {@link Context} used by this component.
-   * @param layout The {@link ActualComponentLayout} with defined position and size.
+   * @param layout The {@link ComponentLayout} with defined position and size.
    * @param component The {@link Component} for this component.
    */
-  protected void onBoundsDefined(
-      ComponentContext c, ActualComponentLayout layout) {}
+  protected void onBoundsDefined(ComponentContext c, ComponentLayout layout) {}
 
   /**
    * Called during layout calculation to determine the baseline of a component.
@@ -455,11 +452,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   protected void onMeasure(
-      ComponentContext c,
-      ActualComponentLayout layout,
-      int widthSpec,
-      int heightSpec,
-      Size size) {
+      ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
     throw new IllegalStateException(
         "You must override onMeasure() if you return true in canMeasure(), "
             + "ComponentLifecycle is: "

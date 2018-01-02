@@ -22,8 +22,8 @@ import javax.annotation.Nullable;
 /**
  * A DebugComponent represents a node in Litho's component hierarchy. DebugComponent removes the
  * need to worry about implementation details of whether a node is represented by a {@link
- * Component} or a {@link ActualComponentLayout}. The purpose of this class is for tools such as
- * Stetho's UI inspector to be able to easily visualize a component hierarchy without worrying about
+ * Component} or a {@link ComponentLayout}. The purpose of this class is for tools such as Stetho's
+ * UI inspector to be able to easily visualize a component hierarchy without worrying about
  * implementation details of Litho.
  */
 public final class DebugComponent {

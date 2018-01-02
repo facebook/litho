@@ -81,7 +81,7 @@ public abstract class Component extends ComponentLifecycle
 
   // Keep hold of the layout that we resolved during will render in order to use it again in
   // createLayout.
-  @Nullable ActualComponentLayout mLayoutCreatedInWillRender;
+  @Nullable ComponentLayout mLayoutCreatedInWillRender;
 
   protected Component() {
     this(null);
@@ -396,7 +396,7 @@ public abstract class Component extends ComponentLifecycle
     return willRender(component.mLayoutCreatedInWillRender);
   }
 
-  private static boolean willRender(ActualComponentLayout componentLayout) {
+  private static boolean willRender(ComponentLayout componentLayout) {
     if (componentLayout == null || ComponentContext.NULL_LAYOUT.equals(componentLayout)) {
       return false;
     }

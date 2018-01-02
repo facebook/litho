@@ -9,9 +9,9 @@
 
 package com.facebook.litho.processor.integration.resources;
 
-import com.facebook.litho.ActualComponentLayout;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Size;
@@ -28,7 +28,7 @@ class SimpleMountSpec {
   @OnMeasure
   static void onMeasure(
       ComponentContext c,
-      ActualComponentLayout layout,
+      ComponentLayout layout,
       int widthSpec,
       int heightSpec,
       Size size,

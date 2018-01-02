@@ -13,7 +13,7 @@ import android.support.annotation.Nullable;
 
 /**
  * A utility that selects the first Component that will render by calling {@link
- * Component#willRender(ComponentContext, ActualComponentLayout)} on the Components provided.
+ * Component#willRender(ComponentContext, ComponentLayout)} on the Components provided.
  *
  * <p>This is useful when a single Component is to be rendered amongst a large number of candidate
  * Components or when multiple Components can potentially render some content using the same props

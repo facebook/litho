@@ -18,9 +18,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.View;
-import com.facebook.litho.ActualComponentLayout;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.DefaultMountContentPool;
 import com.facebook.litho.Diff;
 import com.facebook.litho.MountContentPool;
@@ -92,7 +92,7 @@ public class TestMountSpec<S extends View> {
   @OnMeasure
   static void onMeasure(
       ComponentContext context,
-      ActualComponentLayout layout,
+      ComponentLayout layout,
       int widthSpec,
       int heightSpec,
       Size size,
@@ -101,7 +101,7 @@ public class TestMountSpec<S extends View> {
   @OnBoundsDefined
   static void onBoundsDefined(
       ComponentContext c,
-      ActualComponentLayout layout,
+      ComponentLayout layout,
       @Prop Object prop3,
       @Prop char[] prop4,
       @FromMeasure Long measureOutput,

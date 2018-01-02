@@ -350,7 +350,7 @@ public class ComponentLifecycleTest {
     }
 
     @Override
-    protected ActualComponentLayout resolve(ComponentContext c) {
+    protected ComponentLayout resolve(ComponentContext c) {
       return mNode;
     }
 
@@ -378,11 +378,7 @@ public class ComponentLifecycleTest {
 
     @Override
     protected void onMeasure(
-        ComponentContext c,
-        ActualComponentLayout layout,
-        int widthSpec,
-        int heightSpec,
-        Size size) {}
+        ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {}
   }
 
   private static class TestMountSpecSettingSizesInOnMeasure
@@ -395,7 +391,7 @@ public class ComponentLifecycleTest {
     @Override
     protected void onMeasure(
         ComponentContext context,
-        ActualComponentLayout layout,
+        ComponentLayout layout,
         int widthSpec,
         int heightSpec,
         Size size) {

@@ -449,7 +449,7 @@ class NodeInfo {
     }
   }
 
-  void copyInto(ActualComponentLayout.Builder layout) {
+  void copyInto(ComponentLayout.Builder layout) {
     if ((mPrivateFlags & PFLAG_CLICK_HANDLER_IS_SET) != 0) {
       layout.clickHandler(mClickHandler);
     }

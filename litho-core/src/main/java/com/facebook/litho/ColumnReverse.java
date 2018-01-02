@@ -76,7 +76,7 @@ public final class ColumnReverse extends Component {
   }
 
   @Override
-  protected ActualComponentLayout resolve(ComponentContext c) {
+  protected ComponentLayout resolve(ComponentContext c) {
     InternalNode node = c.newLayoutBuilder(0, 0).flexDirection(YogaFlexDirection.COLUMN_REVERSE);
 
     if (getCommonProps() != null) {

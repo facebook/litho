@@ -58,11 +58,7 @@ public class ViewCompatComponent<V extends View> extends Component {
 
   @Override
   protected void onMeasure(
-      ComponentContext c,
-      ActualComponentLayout layout,
-      int widthSpec,
-      int heightSpec,
-      Size size) {
+      ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
     final V toMeasure = (V) ComponentsPools.acquireMountContent(c, this);
     final ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(size.width, size.height);
 

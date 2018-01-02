@@ -9,9 +9,9 @@
 package com.facebook.litho.processor.integration.resources;
 
 import android.support.v4.util.Pools;
-import com.facebook.litho.ActualComponentLayout;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Size;
@@ -74,14 +74,10 @@ public final class SimpleMount extends Component {
 
   @Override
   protected void onMeasure(
-      ComponentContext c,
-      ActualComponentLayout layout,
-      int widthSpec,
-      int heightSpec,
-      Size size) {
+      ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
     SimpleMountSpec.onMeasure(
         (ComponentContext) c,
-        (ActualComponentLayout) layout,
+        (ComponentLayout) layout,
         (int) widthSpec,
         (int) heightSpec,
         (Size) size,

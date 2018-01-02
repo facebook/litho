@@ -18,8 +18,8 @@ import android.support.v7.widget.RecyclerView.ItemAnimator;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.support.v7.widget.SnapHelper;
 import android.view.View;
-import com.facebook.litho.ActualComponentLayout;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Output;
@@ -84,7 +84,7 @@ class RecyclerSpec {
   @OnMeasure
   static void onMeasure(
       ComponentContext c,
-      ActualComponentLayout layout,
+      ComponentLayout layout,
       int widthSpec,
       int heightSpec,
       Size measureOutput,
@@ -100,7 +100,7 @@ class RecyclerSpec {
 
   @OnBoundsDefined
   static void onBoundsDefined(
-      ComponentContext context, ActualComponentLayout layout, @Prop Binder<RecyclerView> binder) {
+      ComponentContext context, ComponentLayout layout, @Prop Binder<RecyclerView> binder) {
     binder.setSize(
         layout.getWidth(),
         layout.getHeight());

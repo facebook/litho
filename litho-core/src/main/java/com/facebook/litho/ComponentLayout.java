@@ -42,7 +42,7 @@ import com.facebook.yoga.YogaWrap;
  * ComponentLifecycle#mount(ComponentContext, Object, Component)}.
  */
 @ThreadConfined(ThreadConfined.ANY)
-public interface ActualComponentLayout {
+public interface ComponentLayout {
 
   @Px
   int getX();
@@ -476,7 +476,7 @@ public interface ActualComponentLayout {
     Builder alpha(float alpha);
 
     @ReturnsOwnership
-    ActualComponentLayout build();
+    ComponentLayout build();
   }
 
   /**

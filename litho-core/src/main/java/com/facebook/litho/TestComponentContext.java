@@ -28,7 +28,7 @@ class TestComponentContext extends ComponentContext {
   }
 
   @Override
-  public ActualComponentLayout.Builder newLayoutBuilder(
+  public ComponentLayout.Builder newLayoutBuilder(
       Component component, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     if (Component.isInternalComponent(component)) {
       return super.newLayoutBuilder(component, defStyleAttr, defStyleRes);

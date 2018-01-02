@@ -17,9 +17,9 @@ import android.content.res.TypedArray;
 import android.support.v4.util.Pools.SynchronizedPool;
 import android.view.ViewTreeObserver;
 import android.widget.HorizontalScrollView;
-import com.facebook.litho.ActualComponentLayout;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Output;
@@ -92,7 +92,7 @@ class HorizontalScrollSpec {
   @OnMeasure
   static void onMeasure(
       ComponentContext context,
-      ActualComponentLayout layout,
+      ComponentLayout layout,
       int widthSpec,
       int heightSpec,
       Size size,
@@ -132,7 +132,7 @@ class HorizontalScrollSpec {
   @OnBoundsDefined
   static void onBoundsDefined(
       ComponentContext context,
-      ActualComponentLayout layout,
+      ComponentLayout layout,
       @FromPrepare ComponentTree contentComponent,
       @FromMeasure Integer measuredComponentWidth,
       @FromMeasure Integer measuredComponentHeight,

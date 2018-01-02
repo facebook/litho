@@ -67,7 +67,7 @@ public class LithoViewTestHelper {
    *     mContext,
    *     new InlineLayoutSpec() {
    *       @Override
-   *       protected ActualComponentLayout onCreateLayout(ComponentContext c) {
+   *       protected ComponentLayout onCreateLayout(ComponentContext c) {
    *         return Column.create(c)
    *             .child(
    *                 Column.create(c)

@@ -101,11 +101,7 @@ public class LifecycleMethodsTest {
 
     @Override
     protected void onMeasure(
-        ComponentContext c,
-        ActualComponentLayout layout,
-        int widthSpec,
-        int heightSpec,
-        Size size) {
+        ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
       setCurrentStep(LifecycleStep.ON_MEASURE);
 
       size.width = mSize;
@@ -113,8 +109,7 @@ public class LifecycleMethodsTest {
     }
 
     @Override
-    protected void onBoundsDefined(
-        ComponentContext c, ActualComponentLayout layout) {
+    protected void onBoundsDefined(ComponentContext c, ComponentLayout layout) {
       setCurrentStep(LifecycleStep.ON_BOUNDS_DEFINED);
     }
 

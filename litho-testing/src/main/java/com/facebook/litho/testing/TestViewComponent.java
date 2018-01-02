@@ -13,9 +13,9 @@ import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 import android.support.v4.util.Pools;
 import android.view.View;
-import com.facebook.litho.ActualComponentLayout;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 
@@ -91,11 +91,7 @@ public class TestViewComponent extends TestComponent {
 
   @Override
   protected void onMeasure(
-      ComponentContext c,
-      ActualComponentLayout layout,
-      int widthSpec,
-      int heightSpec,
-      Size size) {
+      ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
     int width = SizeSpec.getSize(widthSpec);
     int height = SizeSpec.getSize(heightSpec);
 
@@ -106,9 +102,7 @@ public class TestViewComponent extends TestComponent {
   }
 
   @Override
-  protected void onBoundsDefined(
-      ComponentContext c,
-    ActualComponentLayout layout) {
+  protected void onBoundsDefined(ComponentContext c, ComponentLayout layout) {
     onDefineBoundsCalled();
   }
 

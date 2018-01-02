@@ -37,8 +37,8 @@ import android.view.Gravity;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
-import com.facebook.litho.ActualComponentLayout;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Output;
 import com.facebook.litho.R;
@@ -228,7 +228,7 @@ class EditTextSpec {
   @OnMeasure
   static void onMeasure(
       ComponentContext c,
-      ActualComponentLayout layout,
+      ComponentLayout layout,
       int widthSpec,
       int heightSpec,
       Size size,

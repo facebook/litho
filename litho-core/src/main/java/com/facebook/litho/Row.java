@@ -76,7 +76,7 @@ public final class Row extends Component {
   }
 
   @Override
-  protected ActualComponentLayout resolve(ComponentContext c) {
+  protected ComponentLayout resolve(ComponentContext c) {
     InternalNode node = c.newLayoutBuilder(0, 0).flexDirection(YogaFlexDirection.ROW);
 
     if (getCommonProps() != null) {
