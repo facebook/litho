@@ -30,6 +30,7 @@ import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -738,7 +739,7 @@ public class SectionTree {
   private void applyNewChangeSet() {
     Section currentRoot;
     Section nextRoot;
-    Map<String, List<StateUpdate>> pendingStateUpdates = acquireUpdatesMap();
+    Map<String, List<StateUpdate>> pendingStateUpdates;
 
     synchronized (this) {
       if (mReleased) {
@@ -747,8 +748,7 @@ public class SectionTree {
 
       currentRoot = copy(mCurrentSection, true);
       nextRoot = copy(mNextSection, false);
-      clonePendingStateUpdatesFromInstanceToLocal(mPendingStateUpdates, pendingStateUpdates);
-      mHasNonLazyUpdate = false;
+      pendingStateUpdates = copyPendingStateUpdatesAndResetNonLazyFlag();
     }
 
     // Checking nextRoot is enough here since whenever we enqueue a new state update we also
@@ -786,7 +786,7 @@ public class SectionTree {
 
           mCurrentSection = newRoot;
           mNextSection = null;
-          removeCompletedStateUpdatesFromInstance(mPendingStateUpdates, pendingStateUpdates);
+          removeCompletedStateUpdatesFromInstance(pendingStateUpdates);
           mPendingChangeSets.add(changeSetState.getChangeSet());
 
           if (oldRoot != null) {
@@ -816,11 +816,27 @@ public class SectionTree {
         currentRoot = copy(mCurrentSection, true);
         nextRoot = copy(mNextSection, false);
         if (nextRoot != null) {
-          clonePendingStateUpdatesFromInstanceToLocal(mPendingStateUpdates, pendingStateUpdates);
-          mHasNonLazyUpdate = false;
+          pendingStateUpdates = copyPendingStateUpdatesAndResetNonLazyFlag();
         }
       }
     }
+  }
+
+  @GuardedBy("this")
+  private Map<String, List<StateUpdate>> copyPendingStateUpdatesAndResetNonLazyFlag() {
+    mHasNonLazyUpdate = false;
+
+    if (mPendingStateUpdates.isEmpty()) {
+      return Collections.emptyMap();
+    }
+
+    Map<String, List<StateUpdate>> clonedPendingStateUpdated = acquireUpdatesMap();
+    final Set<String> keys = mPendingStateUpdates.keySet();
+    for (String key : keys) {
+      clonedPendingStateUpdated.put(key, new ArrayList<>(mPendingStateUpdates.get(key)));
+    }
+
+    return clonedPendingStateUpdated;
   }
 
   /**
@@ -836,46 +852,24 @@ public class SectionTree {
   }
 
   @GuardedBy("this")
-  private static void clonePendingStateUpdatesFromInstanceToLocal(
-      Map<String, List<StateUpdate>> instanceMap,
-      Map<String, List<StateUpdate>> localMap) {
-    if (localMap == null) {
-      throw new IllegalArgumentException("Provide a local variable Map for state update transfer");
-    }
-
-    localMap.clear();
-
-    if (instanceMap.isEmpty()) {
-      return;
-    }
-
-    final Set<String> keys = instanceMap.keySet();
-    for (String key : keys) {
-      localMap.put(key, new ArrayList<>(instanceMap.get(key)));
-    }
-  }
-
-  @GuardedBy("this")
-  private static void removeCompletedStateUpdatesFromInstance(
-      Map<String, List<StateUpdate>> instanceMap,
-      Map<String, List<StateUpdate>> localMap) {
+  private void removeCompletedStateUpdatesFromInstance(Map<String, List<StateUpdate>> localMap) {
     if (localMap.isEmpty()) {
       return;
     }
 
     final Set<String> keys = localMap.keySet();
     for (String key : keys) {
-      if (!instanceMap.containsKey(key)) {
+      if (!mPendingStateUpdates.containsKey(key)) {
         // instanceMap has been modified and since the localMap is created, so it's no longer valid.
         // We will exit the function early
         return;
       }
 
       List<StateUpdate> completed = localMap.get(key);
-      List<StateUpdate> pending = instanceMap.remove(key);
+      List<StateUpdate> pending = mPendingStateUpdates.remove(key);
       pending.removeAll(completed);
       if (!pending.isEmpty()) {
-        instanceMap.put(key, pending);
+        mPendingStateUpdates.put(key, pending);
       }
     }
   }
