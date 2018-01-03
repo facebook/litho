@@ -182,26 +182,6 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode flexBasisAttr(@AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode flexBasisRes(@DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode flexBasisDip(@Dimension(unit = DP) float flexBasis) {
-    return this;
-  }
-
-  @Override
   public InternalNode flexBasisPercent(float percent) {
     return this;
   }
@@ -218,29 +198,6 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode marginPx(YogaEdge edge, @Px int margin) {
-    return this;
-  }
-
-  @Override
-  public InternalNode marginAttr(
-      YogaEdge edge,
-      @AttrRes int resId,
-      @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode marginAttr(YogaEdge edge, @AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode marginRes(YogaEdge edge, @DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode marginDip(YogaEdge edge, @Dimension(unit = DP) float margin) {
     return this;
   }
 
@@ -265,55 +222,12 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode paddingAttr(
-      YogaEdge edge,
-      @AttrRes int resId,
-      @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode paddingAttr(YogaEdge edge, @AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode paddingRes(YogaEdge edge,@DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode paddingDip(YogaEdge edge, @Dimension(unit = DP) float padding) {
-    return this;
-  }
-
-  @Override
   public InternalNode paddingPercent(YogaEdge edge, float percent) {
     return this;
   }
 
   @Override
   public InternalNode positionPx(YogaEdge edge, @Px int position) {
-    return this;
-  }
-
-  @Override
-  public InternalNode positionAttr(
-      YogaEdge edge,
-      @AttrRes int resId,
-      @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode positionRes(YogaEdge edge, @DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode positionDip(
-      YogaEdge edge,
-      @Dimension(unit = DP) float position) {
     return this;
   }
 
@@ -328,52 +242,12 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode widthRes(@DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode widthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode widthAttr(@AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode widthDip(@Dimension(unit = DP) float width) {
-    return this;
-  }
-
-  @Override
   public InternalNode widthPercent(float percent) {
     return this;
   }
 
   @Override
   public InternalNode minWidthPx(@Px int minWidth) {
-    return this;
-  }
-
-  @Override
-  public InternalNode minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode minWidthAttr(@AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode minWidthRes(@DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode minWidthDip(@Dimension(unit = DP) float minWidth) {
     return this;
   }
 
@@ -388,52 +262,12 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode maxWidthAttr(@AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode maxWidthRes(@DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode maxWidthDip(@Dimension(unit = DP) float maxWidth) {
-    return this;
-  }
-
-  @Override
   public InternalNode maxWidthPercent(float percent) {
     return this;
   }
 
   @Override
   public InternalNode heightPx(@Px int height) {
-    return this;
-  }
-
-  @Override
-  public InternalNode heightRes(@DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode heightAttr(@DimenRes int resId, @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode heightAttr(@AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode heightDip(@Dimension(unit = DP) float height) {
     return this;
   }
 
@@ -448,52 +282,12 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode minHeightAttr(@AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode minHeightRes(@DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode minHeightDip(@Dimension(unit = DP) float minHeight) {
-    return this;
-  }
-
-  @Override
   public InternalNode minHeightPercent(float percent) {
     return this;
   }
 
   @Override
   public InternalNode maxHeightPx(@Px int maxHeight) {
-    return this;
-  }
-
-  @Override
-  public InternalNode maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode maxHeightAttr(@AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode maxHeightRes(@DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode maxHeightDip(@Dimension(unit = DP) float maxHeight) {
     return this;
   }
 
@@ -518,57 +312,7 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode background(Reference.Builder<? extends Drawable> builder) {
-    return this;
-  }
-
-  @Override
-  public InternalNode background(Drawable background) {
-    return this;
-  }
-
-  @Override
-  public InternalNode backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode backgroundAttr(@AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode backgroundRes(@DrawableRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode backgroundColor(@ColorInt int backgroundColor) {
-    return this;
-  }
-
-  @Override
   public InternalNode foreground(Drawable foreground) {
-    return this;
-  }
-
-  @Override
-  public InternalNode foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode foregroundAttr(@AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode foregroundRes(@DrawableRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode foregroundColor(@ColorInt int foregroundColor) {
     return this;
   }
 
@@ -620,16 +364,6 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode contentDescription(CharSequence contentDescription) {
-    return this;
-  }
-
-  @Override
-  public InternalNode contentDescription(@StringRes int stringId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode contentDescription(@StringRes int stringId, Object... formatArgs) {
     return this;
   }
 

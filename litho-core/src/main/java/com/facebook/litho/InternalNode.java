@@ -13,7 +13,6 @@ import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
-import static android.support.annotation.Dimension.DP;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
@@ -25,20 +24,15 @@ import static com.facebook.yoga.YogaEdge.START;
 import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaEdge.VERTICAL;
 
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PathEffect;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.AttrRes;
 import android.support.annotation.ColorInt;
-import android.support.annotation.DimenRes;
-import android.support.annotation.Dimension;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Px;
-import android.support.annotation.StringRes;
 import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
@@ -106,11 +100,8 @@ class InternalNode implements ComponentLayout {
   private static final long PFLAG_TRANSITION_KEY_IS_SET = 1L << 27;
   private static final long PFLAG_BORDER_IS_SET = 1L << 28;
 
-  private final ResourceResolver mResourceResolver = new ResourceResolver();
-
   YogaNode mYogaNode;
   private ComponentContext mComponentContext;
-  private Resources mResources;
   @ThreadConfined(ThreadConfined.ANY)
   private final List<Component> mComponents = new ArrayList<>(1);
   private int mImportantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
@@ -170,10 +161,6 @@ class InternalNode implements ComponentLayout {
     mYogaNode = yogaNode;
 
     mComponentContext = componentContext;
-    mResources = componentContext.getResources();
-    mResourceResolver.init(
-        mComponentContext,
-        componentContext.getResourceCache());
   }
 
   @Px
@@ -423,22 +410,6 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
-  InternalNode flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return flexBasisPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  InternalNode flexBasisAttr(@AttrRes int resId) {
-    return flexBasisAttr(resId, 0);
-  }
-
-  InternalNode flexBasisRes(@DimenRes int resId) {
-    return flexBasisPx(mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  InternalNode flexBasisDip(@Dimension(unit = DP) float flexBasis) {
-    return flexBasisPx(mResourceResolver.dipsToPixels(flexBasis));
-  }
-
   InternalNode importantForAccessibility(int importantForAccessibility) {
     mPrivateFlags |= PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET;
     mImportantForAccessibility = importantForAccessibility;
@@ -467,22 +438,6 @@ class InternalNode implements ComponentLayout {
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMarginAuto(edge);
     return this;
-  }
-
-  InternalNode marginAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
-    return marginPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  InternalNode marginAttr(YogaEdge edge, @AttrRes int resId) {
-    return marginAttr(edge, resId, 0);
-  }
-
-  InternalNode marginRes(YogaEdge edge, @DimenRes int resId) {
-    return marginPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  InternalNode marginDip(YogaEdge edge, @Dimension(unit = DP) float margin) {
-    return marginPx(edge, mResourceResolver.dipsToPixels(margin));
   }
 
   @ReturnsOwnership
@@ -517,22 +472,6 @@ class InternalNode implements ComponentLayout {
     }
 
     return this;
-  }
-
-  InternalNode paddingAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
-    return paddingPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  InternalNode paddingAttr(YogaEdge edge, @AttrRes int resId) {
-    return paddingAttr(edge, resId, 0);
-  }
-
-  InternalNode paddingRes(YogaEdge edge, @DimenRes int resId) {
-    return paddingPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  InternalNode paddingDip(YogaEdge edge, @Dimension(unit = DP) float padding) {
-    return paddingPx(edge, mResourceResolver.dipsToPixels(padding));
   }
 
   InternalNode border(Border border) {
@@ -570,22 +509,6 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
-  InternalNode positionAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
-    return positionPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  InternalNode positionAttr(YogaEdge edge, @AttrRes int resId) {
-    return positionAttr(edge, resId, 0);
-  }
-
-  InternalNode positionRes(YogaEdge edge, @DimenRes int resId) {
-    return positionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  InternalNode positionDip(YogaEdge edge, @Dimension(unit = DP) float position) {
-    return positionPx(edge, mResourceResolver.dipsToPixels(position));
-  }
-
   InternalNode widthPx(@Px int width) {
     mPrivateFlags |= PFLAG_WIDTH_IS_SET;
     mYogaNode.setWidth(width);
@@ -604,22 +527,6 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
-  InternalNode widthRes(@DimenRes int resId) {
-    return widthPx(mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  InternalNode widthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return widthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  InternalNode widthAttr(@AttrRes int resId) {
-    return widthAttr(resId, 0);
-  }
-
-  InternalNode widthDip(@Dimension(unit = DP) float width) {
-    return widthPx(mResourceResolver.dipsToPixels(width));
-  }
-
   InternalNode minWidthPx(@Px int minWidth) {
     mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
     mYogaNode.setMinWidth(minWidth);
@@ -632,22 +539,6 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
-  InternalNode minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return minWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  InternalNode minWidthAttr(@AttrRes int resId) {
-    return minWidthAttr(resId, 0);
-  }
-
-  InternalNode minWidthRes(@DimenRes int resId) {
-    return minWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  InternalNode minWidthDip(@Dimension(unit = DP) float minWidth) {
-    return minWidthPx(mResourceResolver.dipsToPixels(minWidth));
-  }
-
   InternalNode maxWidthPx(@Px int maxWidth) {
     mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
     mYogaNode.setMaxWidth(maxWidth);
@@ -658,22 +549,6 @@ class InternalNode implements ComponentLayout {
     mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
     mYogaNode.setMaxWidthPercent(percent);
     return this;
-  }
-
-  InternalNode maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return maxWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  InternalNode maxWidthAttr(@AttrRes int resId) {
-    return maxWidthAttr(resId, 0);
-  }
-
-  InternalNode maxWidthRes(@DimenRes int resId) {
-    return maxWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  InternalNode maxWidthDip(@Dimension(unit = DP) float maxWidth) {
-    return maxWidthPx(mResourceResolver.dipsToPixels(maxWidth));
   }
 
   InternalNode heightPx(@Px int height) {
@@ -694,22 +569,6 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
-  InternalNode heightRes(@DimenRes int resId) {
-    return heightPx(mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  InternalNode heightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return heightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  InternalNode heightAttr(@AttrRes int resId) {
-    return heightAttr(resId, 0);
-  }
-
-  InternalNode heightDip(@Dimension(unit = DP) float height) {
-    return heightPx(mResourceResolver.dipsToPixels(height));
-  }
-
   InternalNode minHeightPx(@Px int minHeight) {
     mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
     mYogaNode.setMinHeight(minHeight);
@@ -722,22 +581,6 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
-  InternalNode minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return minHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  InternalNode minHeightAttr(@AttrRes int resId) {
-    return minHeightAttr(resId, 0);
-  }
-
-  InternalNode minHeightRes(@DimenRes int resId) {
-    return minHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  InternalNode minHeightDip(@Dimension(unit = DP) float minHeight) {
-    return minHeightPx(mResourceResolver.dipsToPixels(minHeight));
-  }
-
   InternalNode maxHeightPx(@Px int maxHeight) {
     mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
     mYogaNode.setMaxHeight(maxHeight);
@@ -748,22 +591,6 @@ class InternalNode implements ComponentLayout {
     mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
     mYogaNode.setMaxHeightPercent(percent);
     return this;
-  }
-
-  InternalNode maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return maxHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  InternalNode maxHeightAttr(@AttrRes int resId) {
-    return maxHeightAttr(resId, 0);
-  }
-
-  InternalNode maxHeightRes(@DimenRes int resId) {
-    return maxHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  InternalNode maxHeightDip(@Dimension(unit = DP) float maxHeight) {
-    return maxHeightPx(mResourceResolver.dipsToPixels(maxHeight));
   }
 
   InternalNode aspectRatio(float aspectRatio) {
@@ -835,24 +662,6 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
-  InternalNode touchExpansionAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
-    return touchExpansionPx(
-        edge,
-        mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  InternalNode touchExpansionAttr(YogaEdge edge, @AttrRes int resId) {
-    return touchExpansionAttr(edge, resId, 0);
-  }
-
-  InternalNode touchExpansionRes(YogaEdge edge, @DimenRes int resId) {
-    return touchExpansionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  InternalNode touchExpansionDip(YogaEdge edge, @Dimension(unit = DP) float touchExpansion) {
-    return touchExpansionPx(edge, mResourceResolver.dipsToPixels(touchExpansion));
-  }
-
   InternalNode child(Component child) {
     if (child != null) {
       final InternalNode layout = Layout.create(mComponentContext, child);
@@ -877,20 +686,8 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
-  InternalNode background(Reference.Builder<? extends Drawable> builder) {
-    return background(builder.build());
-  }
-
   InternalNode background(Drawable background) {
-    return background(DrawableReference.create().drawable(background));
-  }
-
-  InternalNode backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
-    return backgroundRes(mResourceResolver.resolveResIdAttr(resId, defaultResId));
-  }
-
-  InternalNode backgroundAttr(@AttrRes int resId) {
-    return backgroundAttr(resId, 0);
+    return background(DrawableReference.create().drawable(background).build());
   }
 
   InternalNode backgroundRes(@DrawableRes int resId) {
@@ -911,20 +708,12 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
-  InternalNode foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
-    return foregroundRes(mResourceResolver.resolveResIdAttr(resId, defaultResId));
-  }
-
-  InternalNode foregroundAttr(@AttrRes int resId) {
-    return foregroundAttr(resId, 0);
-  }
-
   InternalNode foregroundRes(@DrawableRes int resId) {
     if (resId == 0) {
       return foreground(null);
     }
 
-    return foreground(mResources.getDrawable(resId));
+    return foreground(mComponentContext.getResources().getDrawable(resId));
   }
 
   InternalNode foregroundColor(@ColorInt int foregroundColor) {
@@ -1053,14 +842,6 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
-  InternalNode contentDescription(@StringRes int stringId) {
-    return contentDescription(mResources.getString(stringId));
-  }
-
-  InternalNode contentDescription(@StringRes int stringId, Object... formatArgs) {
-    return contentDescription(mResources.getString(stringId, formatArgs));
-  }
-
   InternalNode viewTag(Object viewTag) {
     getOrCreateNodeInfo().setViewTag(viewTag);
     return this;
@@ -1074,22 +855,6 @@ class InternalNode implements ComponentLayout {
   InternalNode shadowElevationPx(float shadowElevation) {
     getOrCreateNodeInfo().setShadowElevation(shadowElevation);
     return this;
-  }
-
-  InternalNode shadowElevationAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return shadowElevationPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  InternalNode shadowElevationAttr(@AttrRes int resId) {
-    return shadowElevationAttr(resId, 0);
-  }
-
-  InternalNode shadowElevationRes(@DimenRes int resId) {
-    return shadowElevationPx(mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  InternalNode shadowElevationDip(@Dimension(unit = DP) float shadowElevation) {
-    return shadowElevationPx(mResourceResolver.dipsToPixels(shadowElevation));
   }
 
   InternalNode outlineProvider(ViewOutlineProvider outlineProvider) {
@@ -1720,8 +1485,6 @@ class InternalNode implements ComponentLayout {
 
     mDebugComponents.clear();
 
-    mResourceResolver.internalRelease();
-
     mResolvedTouchExpansionLeft = YogaConstants.UNDEFINED;
     mResolvedTouchExpansionRight = YogaConstants.UNDEFINED;
     mResolvedX = YogaConstants.UNDEFINED;
@@ -1730,7 +1493,6 @@ class InternalNode implements ComponentLayout {
     mResolvedHeight = YogaConstants.UNDEFINED;
 
     mComponentContext = null;
-    mResources = null;
     mComponents.clear();
     mNestedTree = null;
     mNestedTreeHolder = null;
