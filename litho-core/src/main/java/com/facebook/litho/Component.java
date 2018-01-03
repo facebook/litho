@@ -1290,5 +1290,8 @@ public abstract class Component extends ComponentLifecycle
      * <p>Default: {@link YogaWrap#NO_WRAP}
      */
     public abstract T wrap(YogaWrap wrap);
+
+    /** Set this to true if you want the container to be laid out in reverse. */
+    public abstract T reverse(boolean reverse);
   }
 }

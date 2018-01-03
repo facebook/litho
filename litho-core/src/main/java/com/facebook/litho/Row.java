@@ -42,6 +42,9 @@ public final class Row extends Component {
   @Prop(optional = true)
   private YogaWrap wrap;
 
+  @Prop(optional = true)
+  private boolean reverse;
+
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
@@ -77,7 +80,9 @@ public final class Row extends Component {
 
   @Override
   protected ComponentLayout resolve(ComponentContext c) {
-    InternalNode node = c.newLayoutBuilder(0, 0).flexDirection(YogaFlexDirection.ROW);
+    InternalNode node =
+        c.newLayoutBuilder(0, 0)
+            .flexDirection(reverse ? YogaFlexDirection.ROW_REVERSE : YogaFlexDirection.ROW);
 
     if (getCommonProps() != null) {
       getCommonProps().copyInto(c, node);
@@ -132,6 +137,9 @@ public final class Row extends Component {
     if (justifyContent != null
         ? !justifyContent.equals(row.justifyContent)
         : row.justifyContent != null) {
+      return false;
+    }
+    if (reverse != row.reverse) {
       return false;
     }
     return true;
@@ -190,6 +198,12 @@ public final class Row extends Component {
     @Override
     public Builder wrap(YogaWrap wrap) {
       this.mRow.wrap = wrap;
+      return this;
+    }
+
+    @Override
+    public Builder reverse(boolean reverse) {
+      this.mRow.reverse = reverse;
       return this;
     }
 

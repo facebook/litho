@@ -42,6 +42,9 @@ public final class Column extends Component {
   @Prop(optional = true)
   private YogaWrap wrap;
 
+  @Prop(optional = true)
+  private boolean reverse;
+
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
@@ -77,7 +80,9 @@ public final class Column extends Component {
 
   @Override
   protected ComponentLayout resolve(ComponentContext c) {
-    InternalNode node = c.newLayoutBuilder(0, 0).flexDirection(YogaFlexDirection.COLUMN);
+    InternalNode node =
+        c.newLayoutBuilder(0, 0)
+            .flexDirection(reverse ? YogaFlexDirection.COLUMN_REVERSE : YogaFlexDirection.COLUMN);
 
     if (getCommonProps() != null) {
       getCommonProps().copyInto(c, node);
@@ -136,6 +141,9 @@ public final class Column extends Component {
         : column.justifyContent != null) {
       return false;
     }
+    if (reverse != column.reverse) {
+      return false;
+    }
     return true;
   }
 
@@ -192,6 +200,12 @@ public final class Column extends Component {
     @Override
     public Builder wrap(YogaWrap wrap) {
       this.mColumn.wrap = wrap;
+      return this;
+    }
+
+    @Override
+    public Builder reverse(boolean reverse) {
+      this.mColumn.reverse = reverse;
       return this;
     }
 
