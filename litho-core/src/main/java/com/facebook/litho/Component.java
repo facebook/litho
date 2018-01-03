@@ -474,14 +474,6 @@ public abstract class Component extends ComponentLifecycle
     return this;
   }
 
-  static boolean isInternalComponent(Component component) {
-    return component instanceof Column
-        || component instanceof Row
-        || component instanceof Wrapper
-        || component instanceof ColumnReverse
-        || component instanceof RowReverse;
-  }
-
   /**
    * @param <T> the type of this builder. Required to ensure methods defined here in the abstract
    *     class correctly return the type of the concrete subclass.

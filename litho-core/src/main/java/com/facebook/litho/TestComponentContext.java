@@ -30,7 +30,7 @@ class TestComponentContext extends ComponentContext {
   @Override
   public InternalNode newLayoutBuilder(
       Component component, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-    if (Component.isInternalComponent(component)) {
+    if (component.isInternalComponent()) {
       return super.newLayoutBuilder(component, defStyleAttr, defStyleRes);
     }
 
