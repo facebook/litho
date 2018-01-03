@@ -19,7 +19,7 @@ import com.facebook.yoga.YogaDirection;
  * <p>Represents a {@link Component}'s computed layout state. The computed bounds will be used by
  * the framework to define the size and position of the component's mounted {@link
  * android.view.View}s and {@link android.graphics.drawable.Drawable}s returned. by {@link
- * ComponentLifecycle#mount(ComponentContext, Object, Component)}.
+ * ComponentLifecycle#mount(ComponentContext, Object)}.
  */
 @ThreadConfined(ThreadConfined.ANY)
 public interface ComponentLayout {
