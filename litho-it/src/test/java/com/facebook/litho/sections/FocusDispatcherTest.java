@@ -38,9 +38,6 @@ public class FocusDispatcherTest {
     mFocusDispatcher.setLoadingState(LoadingEvent.LoadingState.LOADING);
     assertThat(mFocusDispatcher.isLoadingCompleted()).isFalse();
 
-    mFocusDispatcher.setLoadingState(LoadingEvent.LoadingState.REFRESH_LOADING);
-    assertThat(mFocusDispatcher.isLoadingCompleted()).isFalse();
-
     mFocusDispatcher.setLoadingState(LoadingEvent.LoadingState.FAILED);
     assertThat(mFocusDispatcher.isLoadingCompleted()).isTrue();
 
@@ -72,7 +69,7 @@ public class FocusDispatcherTest {
 
   @Test
   public void testDispatchFocusRequestWithLoadSuccess() {
-    mFocusDispatcher.setLoadingState(LoadingEvent.LoadingState.REFRESH_LOADING);
+    mFocusDispatcher.setLoadingState(LoadingEvent.LoadingState.LOADING);
     mFocusDispatcher.waitForDataBound(true);
 
     int index = 1;

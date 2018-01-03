@@ -33,7 +33,6 @@ public class LoadingEvent {
   public enum LoadingState {
     INITIAL_LOAD,
     LOADING,
-    REFRESH_LOADING,
     SUCCEEDED,
     FAILED
   }
