@@ -59,16 +59,9 @@ public interface ClassNames {
 
   ClassName COMPONENT_CONTEXT = ClassName.bestGuess("com.facebook.litho.ComponentContext");
   ClassName COMPONENT_LAYOUT = ClassName.bestGuess("com.facebook.litho.ComponentLayout");
-  ClassName ACTUAL_COMPONENT_LAYOUT = ClassName.bestGuess("com.facebook.litho.ComponentLayout");
-  ClassName COMPONENT_LAYOUT_BUILDER =
-      ClassName.bestGuess("com.facebook.litho.ComponentLayout.Builder");
-  ClassName COMPONENT_LAYOUT_CONTAINER_BUILDER =
-      ClassName.bestGuess("com.facebook.litho.ComponentLayout.ContainerBuilder");
 
   ClassName COMPONENT = ClassName.bestGuess("com.facebook.litho.Component");
   ClassName COMPONENT_BUILDER = ClassName.bestGuess("com.facebook.litho.Component.Builder");
-  ClassName COMPONENT_BUILDER_WITH_LAYOUT =
-      ClassName.bestGuess("com.facebook.litho.Component.BuilderWithLayout");
   ClassName COMPONENT_LIFECYCLE = ClassName.bestGuess("com.facebook.litho.ComponentLifecycle");
   ClassName COMPONENT_LIFECYCLE_MOUNT_TYPE =
       ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.MountType");

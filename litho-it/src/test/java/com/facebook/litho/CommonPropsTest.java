@@ -41,7 +41,6 @@ public class CommonPropsTest {
   @Before
   public void setup() {
     mNode = mock(InternalNode.class);
-    when(mNode.build()).thenReturn(mNode);
     mCommonProps = new CommonProps();
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
   }

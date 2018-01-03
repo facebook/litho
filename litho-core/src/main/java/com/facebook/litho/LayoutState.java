@@ -1399,8 +1399,7 @@ class LayoutState {
       createLayoutEvent.addParam(PARAM_COMPONENT, component.getSimpleName());
     }
 
-    final InternalNode root =
-        (InternalNode) component.createLayout(context, true /* resolveNestedTree */);
+    final InternalNode root = component.createLayout(context, true /* resolveNestedTree */);
 
     if (logger != null) {
       logger.log(createLayoutEvent);

@@ -269,7 +269,7 @@ public class ComponentContext extends ContextWrapper {
     return node;
   }
 
-  ComponentLayout.Builder newLayoutBuilder(
+  InternalNode newLayoutBuilder(
       Component component, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     component.generateKey(this);
     component.applyStateUpdates(this);
@@ -278,8 +278,7 @@ public class ComponentContext extends ContextWrapper {
       DebugComponent.applyOverrides(this, component);
     }
 
-    final InternalNode node =
-        (InternalNode) component.createLayout(component.getScopedContext(), false);
+    final InternalNode node = component.createLayout(component.getScopedContext(), false);
     component.getScopedContext().setTreeProps(null);
 
     if (node != NULL_LAYOUT) {

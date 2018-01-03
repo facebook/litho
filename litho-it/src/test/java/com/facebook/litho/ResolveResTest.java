@@ -9,9 +9,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.LayoutState.createAndMeasureTreeForComponent;
-import static com.facebook.litho.SizeSpec.UNSPECIFIED;
-import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.it.R.dimen.test_dimen;
 import static com.facebook.litho.it.R.dimen.test_dimen_float;
 import static com.facebook.yoga.YogaEdge.LEFT;
@@ -46,7 +43,7 @@ public class ResolveResTest {
   public void testDefaultDimenWidthRes() {
     Column column = Column.create(mContext).widthRes(test_dimen).build();
 
-    InternalNode node = (InternalNode) Layout.create(mContext, column).build();
+    InternalNode node = Layout.create(mContext, column);
     node.calculateLayout();
 
     int dimen = mContext.getResources().getDimensionPixelSize(test_dimen);
@@ -57,7 +54,7 @@ public class ResolveResTest {
   public void testDefaultDimenPaddingRes() {
     Column column = Column.create(mContext).paddingRes(LEFT, test_dimen).build();
 
-    InternalNode node = (InternalNode) Layout.create(mContext, column).build();
+    InternalNode node = Layout.create(mContext, column);
     node.calculateLayout();
 
     int dimen = mContext.getResources().getDimensionPixelSize(test_dimen);
@@ -68,7 +65,7 @@ public class ResolveResTest {
   public void testFloatDimenWidthRes() {
     Column column = Column.create(mContext).widthRes(test_dimen_float).build();
 
-    InternalNode node = (InternalNode) Layout.create(mContext, column).build();
+    InternalNode node = Layout.create(mContext, column);
     node.calculateLayout();
 
     int dimen = mContext.getResources().getDimensionPixelSize(test_dimen_float);
@@ -79,7 +76,7 @@ public class ResolveResTest {
   public void testFloatDimenPaddingRes() {
     Column column = Column.create(mContext).paddingRes(LEFT, test_dimen_float).build();
 
-    InternalNode node = (InternalNode) Layout.create(mContext, column).build();
+    InternalNode node = Layout.create(mContext, column);
     node.calculateLayout();
 
     int dimen = mContext.getResources().getDimensionPixelSize(test_dimen_float);

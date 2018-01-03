@@ -92,7 +92,7 @@ class FacePileComponentSpec {
   static Component onCreateLayout(
       LayoutContext c,
       @Prop Uri[] faces) {
-    ComponentLayout.Builder builder = Column.create(c);
+    Component.Builder builder = Column.create(c);
     for (Uri face : avatarUrls) {
       builder.child(
           FrescoImage.create(c)

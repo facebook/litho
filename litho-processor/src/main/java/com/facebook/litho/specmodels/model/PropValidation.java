@@ -149,10 +149,7 @@ public class PropValidation {
 
   private static final List<TypeName> ILLEGAL_PROP_TYPES = Arrays.<TypeName>asList(
       ClassNames.COMPONENT_LAYOUT,
-      ClassNames.COMPONENT_LAYOUT_BUILDER,
-      ClassNames.COMPONENT_LAYOUT_CONTAINER_BUILDER,
       ClassNames.COMPONENT_BUILDER,
-      ClassNames.COMPONENT_BUILDER_WITH_LAYOUT,
       ClassNames.REFERENCE_BUILDER);
 
   static List<SpecModelValidationError> validate(

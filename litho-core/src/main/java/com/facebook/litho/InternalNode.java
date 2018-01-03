@@ -67,12 +67,9 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
 
-/**
- * Internal class representing both a {@link ComponentLayout} and a {@link
- * com.facebook.litho.ComponentLayout.ContainerBuilder}.
- */
+/** Internal class representing a {@link ComponentLayout}. */
 @ThreadConfined(ThreadConfined.ANY)
-class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder {
+class InternalNode implements ComponentLayout {
 
   // Used to check whether or not the framework can use style IDs for
   // paddingStart/paddingEnd due to a bug in some Android devices.
@@ -347,8 +344,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mYogaNode.getLayoutDirection();
   }
 
-  @Override
-  public InternalNode layoutDirection(YogaDirection direction) {
+  InternalNode layoutDirection(YogaDirection direction) {
     mPrivateFlags |= PFLAG_LAYOUT_DIRECTION_IS_SET;
     mYogaNode.setDirection(direction);
     return this;
@@ -359,67 +355,57 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode wrap(YogaWrap wrap) {
+  InternalNode wrap(YogaWrap wrap) {
     mYogaNode.setWrap(wrap);
     return this;
   }
 
-  @Override
-  public InternalNode justifyContent(YogaJustify justifyContent) {
+  InternalNode justifyContent(YogaJustify justifyContent) {
     mYogaNode.setJustifyContent(justifyContent);
     return this;
   }
 
-  @Override
-  public InternalNode alignItems(YogaAlign alignItems) {
+  InternalNode alignItems(YogaAlign alignItems) {
     mYogaNode.setAlignItems(alignItems);
     return this;
   }
 
-  @Override
-  public InternalNode alignContent(YogaAlign alignContent) {
+  InternalNode alignContent(YogaAlign alignContent) {
     mYogaNode.setAlignContent(alignContent);
     return this;
   }
 
-  @Override
-  public InternalNode alignSelf(YogaAlign alignSelf) {
+  InternalNode alignSelf(YogaAlign alignSelf) {
     mPrivateFlags |= PFLAG_ALIGN_SELF_IS_SET;
     mYogaNode.setAlignSelf(alignSelf);
     return this;
   }
 
-  @Override
-  public InternalNode positionType(YogaPositionType positionType) {
+  InternalNode positionType(YogaPositionType positionType) {
     mPrivateFlags |= PFLAG_POSITION_TYPE_IS_SET;
     mYogaNode.setPositionType(positionType);
     return this;
   }
 
-  @Override
-  public InternalNode flex(float flex) {
+  InternalNode flex(float flex) {
     mPrivateFlags |= PFLAG_FLEX_IS_SET;
     mYogaNode.setFlex(flex);
     return this;
   }
 
-  @Override
-  public InternalNode flexGrow(float flexGrow) {
+  InternalNode flexGrow(float flexGrow) {
     mPrivateFlags |= PFLAG_FLEX_GROW_IS_SET;
     mYogaNode.setFlexGrow(flexGrow);
     return this;
   }
 
-  @Override
-  public InternalNode flexShrink(float flexShrink) {
+  InternalNode flexShrink(float flexShrink) {
     mPrivateFlags |= PFLAG_FLEX_SHRINK_IS_SET;
     mYogaNode.setFlexShrink(flexShrink);
     return this;
   }
 
-  @Override
-  public InternalNode flexBasisPx(@Px int flexBasis) {
+  InternalNode flexBasisPx(@Px int flexBasis) {
     mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
     mYogaNode.setFlexBasis(flexBasis);
     return this;
@@ -431,90 +417,71 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode flexBasisPercent(float percent) {
+  InternalNode flexBasisPercent(float percent) {
     mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
     mYogaNode.setFlexBasisPercent(percent);
     return this;
   }
 
-  @Override
-  public InternalNode flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+  InternalNode flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
     return flexBasisPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
-  @Override
-  public InternalNode flexBasisAttr(@AttrRes int resId) {
+  InternalNode flexBasisAttr(@AttrRes int resId) {
     return flexBasisAttr(resId, 0);
   }
 
-  @Override
-  public InternalNode flexBasisRes(@DimenRes int resId) {
+  InternalNode flexBasisRes(@DimenRes int resId) {
     return flexBasisPx(mResourceResolver.resolveDimenSizeRes(resId));
   }
 
-  @Override
-  public InternalNode flexBasisDip(@Dimension(unit = DP) float flexBasis) {
+  InternalNode flexBasisDip(@Dimension(unit = DP) float flexBasis) {
     return flexBasisPx(mResourceResolver.dipsToPixels(flexBasis));
   }
 
-  @Override
-  public InternalNode importantForAccessibility(int importantForAccessibility) {
+  InternalNode importantForAccessibility(int importantForAccessibility) {
     mPrivateFlags |= PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET;
     mImportantForAccessibility = importantForAccessibility;
     return this;
   }
 
-  @Override
-  public InternalNode duplicateParentState(boolean duplicateParentState) {
+  InternalNode duplicateParentState(boolean duplicateParentState) {
     mPrivateFlags |= PFLAG_DUPLICATE_PARENT_STATE_IS_SET;
     mDuplicateParentState = duplicateParentState;
     return this;
   }
 
-  @Override
-  public InternalNode marginPx(YogaEdge edge, @Px int margin) {
+  InternalNode marginPx(YogaEdge edge, @Px int margin) {
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMargin(edge, margin);
     return this;
   }
 
-  @Override
-  public InternalNode marginPercent(YogaEdge edge, float percent) {
+  InternalNode marginPercent(YogaEdge edge, float percent) {
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMarginPercent(edge, percent);
     return this;
   }
 
-  @Override
-  public InternalNode marginAuto(YogaEdge edge) {
+  InternalNode marginAuto(YogaEdge edge) {
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMarginAuto(edge);
     return this;
   }
 
-  @Override
-  public InternalNode marginAttr(
-      YogaEdge edge,
-      @AttrRes int resId,
-      @DimenRes int defaultResId) {
+  InternalNode marginAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
     return marginPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
-  @Override
-  public InternalNode marginAttr(
-      YogaEdge edge,
-      @AttrRes int resId) {
+  InternalNode marginAttr(YogaEdge edge, @AttrRes int resId) {
     return marginAttr(edge, resId, 0);
   }
 
-  @Override
-  public InternalNode marginRes(YogaEdge edge, @DimenRes int resId) {
+  InternalNode marginRes(YogaEdge edge, @DimenRes int resId) {
     return marginPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
   }
 
-  @Override
-  public InternalNode marginDip(YogaEdge edge, @Dimension(unit = DP) float margin) {
+  InternalNode marginDip(YogaEdge edge, @Dimension(unit = DP) float margin) {
     return marginPx(edge, mResourceResolver.dipsToPixels(margin));
   }
 
@@ -526,8 +493,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mNestedTreePadding;
   }
 
-  @Override
-  public InternalNode paddingPx(YogaEdge edge, @Px int padding) {
+  InternalNode paddingPx(YogaEdge edge, @Px int padding) {
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
 
     if (mIsNestedTreeHolder) {
@@ -540,8 +506,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode paddingPercent(YogaEdge edge, float percent) {
+  InternalNode paddingPercent(YogaEdge edge, float percent) {
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
 
     if (mIsNestedTreeHolder) {
@@ -554,33 +519,23 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode paddingAttr(
-      YogaEdge edge,
-      @AttrRes int resId,
-      @DimenRes int defaultResId) {
+  InternalNode paddingAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
     return paddingPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
-  @Override
-  public InternalNode paddingAttr(
-      YogaEdge edge,
-      @AttrRes int resId) {
+  InternalNode paddingAttr(YogaEdge edge, @AttrRes int resId) {
     return paddingAttr(edge, resId, 0);
   }
 
-  @Override
-  public InternalNode paddingRes(YogaEdge edge, @DimenRes int resId) {
+  InternalNode paddingRes(YogaEdge edge, @DimenRes int resId) {
     return paddingPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
   }
 
-  @Override
-  public InternalNode paddingDip(YogaEdge edge, @Dimension(unit = DP) float padding) {
+  InternalNode paddingDip(YogaEdge edge, @Dimension(unit = DP) float padding) {
     return paddingPx(edge, mResourceResolver.dipsToPixels(padding));
   }
 
-  @Override
-  public InternalNode border(Border border) {
+  InternalNode border(Border border) {
     mPrivateFlags |= PFLAG_BORDER_IS_SET;
     for (int i = 0, length = border.mEdgeWidths.length; i < length; ++i) {
       setBorderWidth(Border.edgeFromIndex(i), border.mEdgeWidths[i]);
@@ -603,47 +558,35 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     }
   }
 
-  @Override
-  public InternalNode positionPx(YogaEdge edge, @Px int position) {
+  InternalNode positionPx(YogaEdge edge, @Px int position) {
     mPrivateFlags |= PFLAG_POSITION_IS_SET;
     mYogaNode.setPosition(edge, position);
     return this;
   }
 
-  @Override
-  public InternalNode positionPercent(YogaEdge edge, float percent) {
+  InternalNode positionPercent(YogaEdge edge, float percent) {
     mPrivateFlags |= PFLAG_POSITION_IS_SET;
     mYogaNode.setPositionPercent(edge, percent);
     return this;
   }
 
-  @Override
-  public InternalNode positionAttr(
-      YogaEdge edge,
-      @AttrRes int resId,
-      @DimenRes int defaultResId) {
+  InternalNode positionAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
     return positionPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
-  @Override
-  public InternalNode positionAttr(YogaEdge edge, @AttrRes int resId) {
+  InternalNode positionAttr(YogaEdge edge, @AttrRes int resId) {
     return positionAttr(edge, resId, 0);
   }
 
-  @Override
-  public InternalNode positionRes(YogaEdge edge, @DimenRes int resId) {
+  InternalNode positionRes(YogaEdge edge, @DimenRes int resId) {
     return positionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
   }
 
-  @Override
-  public InternalNode positionDip(
-      YogaEdge edge,
-      @Dimension(unit = DP) float position) {
+  InternalNode positionDip(YogaEdge edge, @Dimension(unit = DP) float position) {
     return positionPx(edge, mResourceResolver.dipsToPixels(position));
   }
 
-  @Override
-  public InternalNode widthPx(@Px int width) {
+  InternalNode widthPx(@Px int width) {
     mPrivateFlags |= PFLAG_WIDTH_IS_SET;
     mYogaNode.setWidth(width);
     return this;
@@ -655,103 +598,85 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode widthPercent(float percent) {
+  InternalNode widthPercent(float percent) {
     mPrivateFlags |= PFLAG_WIDTH_IS_SET;
     mYogaNode.setWidthPercent(percent);
     return this;
   }
 
-  @Override
-  public InternalNode widthRes(@DimenRes int resId) {
+  InternalNode widthRes(@DimenRes int resId) {
     return widthPx(mResourceResolver.resolveDimenSizeRes(resId));
   }
 
-  @Override
-  public InternalNode widthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+  InternalNode widthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
     return widthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
-  @Override
-  public InternalNode widthAttr(@AttrRes int resId) {
+  InternalNode widthAttr(@AttrRes int resId) {
     return widthAttr(resId, 0);
   }
 
-  @Override
-  public InternalNode widthDip(@Dimension(unit = DP) float width) {
+  InternalNode widthDip(@Dimension(unit = DP) float width) {
     return widthPx(mResourceResolver.dipsToPixels(width));
   }
 
-  @Override
-  public InternalNode minWidthPx(@Px int minWidth) {
+  InternalNode minWidthPx(@Px int minWidth) {
     mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
     mYogaNode.setMinWidth(minWidth);
     return this;
   }
 
-  @Override
-  public InternalNode minWidthPercent(float percent) {
+  InternalNode minWidthPercent(float percent) {
     mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
     mYogaNode.setMinWidthPercent(percent);
     return this;
   }
 
-  @Override
-  public InternalNode minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+  InternalNode minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
     return minWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
-  @Override
-  public InternalNode minWidthAttr(@AttrRes int resId) {
+  InternalNode minWidthAttr(@AttrRes int resId) {
     return minWidthAttr(resId, 0);
   }
 
-  @Override
-  public InternalNode minWidthRes(@DimenRes int resId) {
+  InternalNode minWidthRes(@DimenRes int resId) {
     return minWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
   }
 
-  @Override
-  public InternalNode minWidthDip(@Dimension(unit = DP) float minWidth) {
+  InternalNode minWidthDip(@Dimension(unit = DP) float minWidth) {
     return minWidthPx(mResourceResolver.dipsToPixels(minWidth));
   }
 
-  @Override
-  public InternalNode maxWidthPx(@Px int maxWidth) {
+  InternalNode maxWidthPx(@Px int maxWidth) {
     mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
     mYogaNode.setMaxWidth(maxWidth);
     return this;
   }
 
-  @Override
-  public InternalNode maxWidthPercent(float percent) {
+  InternalNode maxWidthPercent(float percent) {
     mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
     mYogaNode.setMaxWidthPercent(percent);
     return this;
   }
 
-  @Override
-  public InternalNode maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+  InternalNode maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
     return maxWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
-  @Override
-  public InternalNode maxWidthAttr(@AttrRes int resId) {
+  InternalNode maxWidthAttr(@AttrRes int resId) {
     return maxWidthAttr(resId, 0);
   }
 
-  @Override
-  public InternalNode maxWidthRes(@DimenRes int resId) {
+  InternalNode maxWidthRes(@DimenRes int resId) {
     return maxWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
   }
 
-  @Override
-  public InternalNode maxWidthDip(@Dimension(unit = DP) float maxWidth) {
+  InternalNode maxWidthDip(@Dimension(unit = DP) float maxWidth) {
     return maxWidthPx(mResourceResolver.dipsToPixels(maxWidth));
   }
 
-  @Override
-  public InternalNode heightPx(@Px int height) {
+  InternalNode heightPx(@Px int height) {
     mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
     mYogaNode.setHeight(height);
     return this;
@@ -763,103 +688,85 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode heightPercent(float percent) {
+  InternalNode heightPercent(float percent) {
     mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
     mYogaNode.setHeightPercent(percent);
     return this;
   }
 
-  @Override
-  public InternalNode heightRes(@DimenRes int resId) {
+  InternalNode heightRes(@DimenRes int resId) {
     return heightPx(mResourceResolver.resolveDimenSizeRes(resId));
   }
 
-  @Override
-  public InternalNode heightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+  InternalNode heightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
     return heightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
-  @Override
-  public InternalNode heightAttr(@AttrRes int resId) {
+  InternalNode heightAttr(@AttrRes int resId) {
     return heightAttr(resId, 0);
   }
 
-  @Override
-  public InternalNode heightDip(@Dimension(unit = DP) float height) {
+  InternalNode heightDip(@Dimension(unit = DP) float height) {
     return heightPx(mResourceResolver.dipsToPixels(height));
   }
 
-  @Override
-  public InternalNode minHeightPx(@Px int minHeight) {
+  InternalNode minHeightPx(@Px int minHeight) {
     mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
     mYogaNode.setMinHeight(minHeight);
     return this;
   }
 
-  @Override
-  public InternalNode minHeightPercent(float percent) {
+  InternalNode minHeightPercent(float percent) {
     mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
     mYogaNode.setMinHeightPercent(percent);
     return this;
   }
 
-  @Override
-  public InternalNode minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+  InternalNode minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
     return minHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
-  @Override
-  public InternalNode minHeightAttr(@AttrRes int resId) {
+  InternalNode minHeightAttr(@AttrRes int resId) {
     return minHeightAttr(resId, 0);
   }
 
-  @Override
-  public InternalNode minHeightRes(@DimenRes int resId) {
+  InternalNode minHeightRes(@DimenRes int resId) {
     return minHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
   }
 
-  @Override
-  public InternalNode minHeightDip(@Dimension(unit = DP) float minHeight) {
+  InternalNode minHeightDip(@Dimension(unit = DP) float minHeight) {
     return minHeightPx(mResourceResolver.dipsToPixels(minHeight));
   }
 
-  @Override
-  public InternalNode maxHeightPx(@Px int maxHeight) {
+  InternalNode maxHeightPx(@Px int maxHeight) {
     mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
     mYogaNode.setMaxHeight(maxHeight);
     return this;
   }
 
-  @Override
-  public InternalNode maxHeightPercent(float percent) {
+  InternalNode maxHeightPercent(float percent) {
     mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
     mYogaNode.setMaxHeightPercent(percent);
     return this;
   }
 
-  @Override
-  public InternalNode maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+  InternalNode maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
     return maxHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
-  @Override
-  public InternalNode maxHeightAttr(@AttrRes int resId) {
+  InternalNode maxHeightAttr(@AttrRes int resId) {
     return maxHeightAttr(resId, 0);
   }
 
-  @Override
-  public InternalNode maxHeightRes(@DimenRes int resId) {
+  InternalNode maxHeightRes(@DimenRes int resId) {
     return maxHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
   }
 
-  @Override
-  public InternalNode maxHeightDip(@Dimension(unit = DP) float maxHeight) {
+  InternalNode maxHeightDip(@Dimension(unit = DP) float maxHeight) {
     return maxHeightPx(mResourceResolver.dipsToPixels(maxHeight));
   }
 
-  @Override
-  public InternalNode aspectRatio(float aspectRatio) {
+  InternalNode aspectRatio(float aspectRatio) {
     mPrivateFlags |= PFLAG_ASPECT_RATIO_IS_SET;
     mYogaNode.setAspectRatio(aspectRatio);
     return this;
@@ -917,8 +824,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return FastMath.round(mTouchExpansion.get(YogaEdge.BOTTOM));
   }
 
-  @Override
-  public InternalNode touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
+  InternalNode touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
     if (mTouchExpansion == null) {
       mTouchExpansion = ComponentsPools.acquireEdges();
     }
@@ -929,84 +835,65 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode touchExpansionAttr(
-      YogaEdge edge,
-      @AttrRes int resId,
-      @DimenRes int defaultResId) {
+  InternalNode touchExpansionAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
     return touchExpansionPx(
         edge,
         mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
-  @Override
-  public InternalNode touchExpansionAttr(
-      YogaEdge edge,
-      @AttrRes int resId) {
+  InternalNode touchExpansionAttr(YogaEdge edge, @AttrRes int resId) {
     return touchExpansionAttr(edge, resId, 0);
   }
 
-  @Override
-  public InternalNode touchExpansionRes(YogaEdge edge, @DimenRes int resId) {
+  InternalNode touchExpansionRes(YogaEdge edge, @DimenRes int resId) {
     return touchExpansionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
   }
 
-  @Override
-  public InternalNode touchExpansionDip(
-      YogaEdge edge,
-      @Dimension(unit = DP) float touchExpansion) {
+  InternalNode touchExpansionDip(YogaEdge edge, @Dimension(unit = DP) float touchExpansion) {
     return touchExpansionPx(edge, mResourceResolver.dipsToPixels(touchExpansion));
   }
 
-  @Override
-  public InternalNode child(Component child) {
+  InternalNode child(Component child) {
     if (child != null) {
-      final ComponentLayout layout = Layout.create(mComponentContext, child).build();
+      final InternalNode layout = Layout.create(mComponentContext, child);
       if (layout != NULL_LAYOUT) {
-        addChildAt((InternalNode) layout, mYogaNode.getChildCount());
+        addChildAt(layout, mYogaNode.getChildCount());
       }
     }
     return this;
   }
 
-  @Override
-  public InternalNode child(Component.Builder<?> child) {
+  InternalNode child(Component.Builder<?> child) {
     if (child != null) {
       child(child.build());
     }
     return this;
   }
 
-  @Override
-  public InternalNode background(Reference<? extends Drawable> background) {
+  InternalNode background(Reference<? extends Drawable> background) {
     mPrivateFlags |= PFLAG_BACKGROUND_IS_SET;
     mBackground = background;
     setPaddingFromDrawableReference(background);
     return this;
   }
 
-  @Override
-  public InternalNode background(Reference.Builder<? extends Drawable> builder) {
+  InternalNode background(Reference.Builder<? extends Drawable> builder) {
     return background(builder.build());
   }
 
-  @Override
-  public InternalNode background(Drawable background) {
+  InternalNode background(Drawable background) {
     return background(DrawableReference.create().drawable(background));
   }
 
-  @Override
-  public InternalNode backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
+  InternalNode backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
     return backgroundRes(mResourceResolver.resolveResIdAttr(resId, defaultResId));
   }
 
-  @Override
-  public InternalNode backgroundAttr(@AttrRes int resId) {
+  InternalNode backgroundAttr(@AttrRes int resId) {
     return backgroundAttr(resId, 0);
   }
 
-  @Override
-  public InternalNode backgroundRes(@DrawableRes int resId) {
+  InternalNode backgroundRes(@DrawableRes int resId) {
     if (resId == 0) {
       return background((Reference<? extends Drawable>) null);
     }
@@ -1014,30 +901,25 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return background(mComponentContext.getResources().getDrawable(resId));
   }
 
-  @Override
-  public InternalNode backgroundColor(@ColorInt int backgroundColor) {
+  InternalNode backgroundColor(@ColorInt int backgroundColor) {
     return background(new ColorDrawable(backgroundColor));
   }
 
-  @Override
-  public InternalNode foreground(Drawable foreground) {
+  InternalNode foreground(Drawable foreground) {
     mPrivateFlags |= PFLAG_FOREGROUND_IS_SET;
     mForeground = foreground;
     return this;
   }
 
-  @Override
-  public InternalNode foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
+  InternalNode foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
     return foregroundRes(mResourceResolver.resolveResIdAttr(resId, defaultResId));
   }
 
-  @Override
-  public InternalNode foregroundAttr(@AttrRes int resId) {
+  InternalNode foregroundAttr(@AttrRes int resId) {
     return foregroundAttr(resId, 0);
   }
 
-  @Override
-  public InternalNode foregroundRes(@DrawableRes int resId) {
+  InternalNode foregroundRes(@DrawableRes int resId) {
     if (resId == 0) {
       return foreground(null);
     }
@@ -1045,13 +927,11 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return foreground(mResources.getDrawable(resId));
   }
 
-  @Override
-  public InternalNode foregroundColor(@ColorInt int foregroundColor) {
+  InternalNode foregroundColor(@ColorInt int foregroundColor) {
     return foreground(new ColorDrawable(foregroundColor));
   }
 
-  @Override
-  public InternalNode wrapInView() {
+  InternalNode wrapInView() {
     mForceViewWrapping = true;
     return this;
   }
@@ -1064,50 +944,42 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return getOrCreateNodeInfo().getClickHandler();
   }
 
-  @Override
-  public InternalNode clickHandler(EventHandler<ClickEvent> clickHandler) {
+  InternalNode clickHandler(EventHandler<ClickEvent> clickHandler) {
     getOrCreateNodeInfo().setClickHandler(clickHandler);
     return this;
   }
 
-  @Override
-  public InternalNode longClickHandler(EventHandler<LongClickEvent> longClickHandler) {
+  InternalNode longClickHandler(EventHandler<LongClickEvent> longClickHandler) {
     getOrCreateNodeInfo().setLongClickHandler(longClickHandler);
     return this;
   }
 
-  @Override
-  public InternalNode focusChangeHandler(EventHandler<FocusChangedEvent> focusChangeHandler) {
+  InternalNode focusChangeHandler(EventHandler<FocusChangedEvent> focusChangeHandler) {
     getOrCreateNodeInfo().setFocusChangeHandler(focusChangeHandler);
     return this;
   }
 
-  @Override
-  public InternalNode touchHandler(EventHandler<TouchEvent> touchHandler) {
+  InternalNode touchHandler(EventHandler<TouchEvent> touchHandler) {
     getOrCreateNodeInfo().setTouchHandler(touchHandler);
     return this;
   }
 
-  @Override
-  public InternalNode interceptTouchHandler(EventHandler interceptTouchHandler) {
+  InternalNode interceptTouchHandler(EventHandler interceptTouchHandler) {
     getOrCreateNodeInfo().setInterceptTouchHandler(interceptTouchHandler);
     return this;
   }
 
-  @Override
-  public ContainerBuilder focusable(boolean isFocusable) {
+  InternalNode focusable(boolean isFocusable) {
     getOrCreateNodeInfo().setFocusable(isFocusable);
     return this;
   }
 
-  @Override
-  public ContainerBuilder enabled(boolean isEnabled) {
+  InternalNode enabled(boolean isEnabled) {
     getOrCreateNodeInfo().setEnabled(isEnabled);
     return this;
   }
 
-  @Override
-  public ContainerBuilder visibleHeightRatio(float visibleHeightRatio) {
+  InternalNode visibleHeightRatio(float visibleHeightRatio) {
     mVisibleHeightRatio = visibleHeightRatio;
     return this;
   }
@@ -1116,8 +988,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mVisibleHeightRatio;
   }
 
-  @Override
-  public ContainerBuilder visibleWidthRatio(float visibleWidthRatio) {
+  InternalNode visibleWidthRatio(float visibleWidthRatio) {
     mVisibleWidthRatio = visibleWidthRatio;
     return this;
   }
@@ -1126,8 +997,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mVisibleWidthRatio;
   }
 
-  @Override
-  public InternalNode visibleHandler(EventHandler<VisibleEvent> visibleHandler) {
+  InternalNode visibleHandler(EventHandler<VisibleEvent> visibleHandler) {
     mPrivateFlags |= PFLAG_VISIBLE_HANDLER_IS_SET;
     mVisibleHandler = visibleHandler;
     return this;
@@ -1137,8 +1007,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mVisibleHandler;
   }
 
-  @Override
-  public InternalNode focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler) {
+  InternalNode focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler) {
     mPrivateFlags |= PFLAG_FOCUSED_HANDLER_IS_SET;
     mFocusedHandler = focusedHandler;
     return this;
@@ -1148,8 +1017,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mFocusedHandler;
   }
 
-  @Override
-  public InternalNode unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
+  InternalNode unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
     mPrivateFlags |= PFLAG_UNFOCUSED_HANDLER_IS_SET;
     mUnfocusedHandler = unfocusedHandler;
     return this;
@@ -1159,8 +1027,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mUnfocusedHandler;
   }
 
-  @Override
-  public InternalNode fullImpressionHandler(
+  InternalNode fullImpressionHandler(
       EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
     mPrivateFlags |= PFLAG_FULL_IMPRESSION_HANDLER_IS_SET;
     mFullImpressionHandler = fullImpressionHandler;
@@ -1171,8 +1038,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mFullImpressionHandler;
   }
 
-  @Override
-  public InternalNode invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
+  InternalNode invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
     mPrivateFlags |= PFLAG_INVISIBLE_HANDLER_IS_SET;
     mInvisibleHandler = invisibleHandler;
     return this;
@@ -1182,96 +1048,80 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mInvisibleHandler;
   }
 
-  @Override
-  public InternalNode contentDescription(CharSequence contentDescription) {
+  InternalNode contentDescription(CharSequence contentDescription) {
     getOrCreateNodeInfo().setContentDescription(contentDescription);
     return this;
   }
 
-  @Override
-  public InternalNode contentDescription(@StringRes int stringId) {
+  InternalNode contentDescription(@StringRes int stringId) {
     return contentDescription(mResources.getString(stringId));
   }
 
-  @Override
-  public InternalNode contentDescription(@StringRes int stringId, Object... formatArgs) {
+  InternalNode contentDescription(@StringRes int stringId, Object... formatArgs) {
     return contentDescription(mResources.getString(stringId, formatArgs));
   }
 
-  @Override
-  public InternalNode viewTag(Object viewTag) {
+  InternalNode viewTag(Object viewTag) {
     getOrCreateNodeInfo().setViewTag(viewTag);
     return this;
   }
 
-  @Override
-  public InternalNode viewTags(SparseArray<Object> viewTags) {
+  InternalNode viewTags(SparseArray<Object> viewTags) {
     getOrCreateNodeInfo().setViewTags(viewTags);
     return this;
   }
 
-  @Override
-  public ContainerBuilder shadowElevationPx(float shadowElevation) {
+  InternalNode shadowElevationPx(float shadowElevation) {
     getOrCreateNodeInfo().setShadowElevation(shadowElevation);
     return this;
   }
 
-  @Override
-  public ContainerBuilder shadowElevationAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+  InternalNode shadowElevationAttr(@AttrRes int resId, @DimenRes int defaultResId) {
     return shadowElevationPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
   }
 
-  @Override
-  public ContainerBuilder shadowElevationAttr(@AttrRes int resId) {
+  InternalNode shadowElevationAttr(@AttrRes int resId) {
     return shadowElevationAttr(resId, 0);
   }
 
-  @Override
-  public ContainerBuilder shadowElevationRes(@DimenRes int resId) {
+  InternalNode shadowElevationRes(@DimenRes int resId) {
     return shadowElevationPx(mResourceResolver.resolveDimenSizeRes(resId));
   }
 
-  @Override
-  public ContainerBuilder shadowElevationDip(@Dimension(unit = DP) float shadowElevation) {
+  InternalNode shadowElevationDip(@Dimension(unit = DP) float shadowElevation) {
     return shadowElevationPx(mResourceResolver.dipsToPixels(shadowElevation));
   }
 
-  @Override
-  public ContainerBuilder outlineProvider(ViewOutlineProvider outlineProvider) {
+  InternalNode outlineProvider(ViewOutlineProvider outlineProvider) {
     getOrCreateNodeInfo().setOutlineProvider(outlineProvider);
     return this;
   }
 
-  @Override
-  public ContainerBuilder clipToOutline(boolean clipToOutline) {
+  InternalNode clipToOutline(boolean clipToOutline) {
     getOrCreateNodeInfo().setClipToOutline(clipToOutline);
     return this;
   }
 
-  @Override
-  public InternalNode testKey(String testKey) {
+  InternalNode testKey(String testKey) {
     mTestKey = testKey;
     return this;
   }
 
-  @Override
-  public ContainerBuilder scale(float scale) {
+  InternalNode scale(float scale) {
     wrapInView();
 
     getOrCreateNodeInfo().setScale(scale);
     return this;
   }
 
-  @Override
-  public ContainerBuilder alpha(float alpha) {
+  InternalNode alpha(float alpha) {
     wrapInView();
 
     getOrCreateNodeInfo().setAlpha(alpha);
     return this;
   }
 
-  @Override
-  public InternalNode dispatchPopulateAccessibilityEventHandler(
+  InternalNode dispatchPopulateAccessibilityEventHandler(
       EventHandler<DispatchPopulateAccessibilityEventEvent>
           dispatchPopulateAccessibilityEventHandler) {
     getOrCreateNodeInfo().setDispatchPopulateAccessibilityEventHandler(
@@ -1279,16 +1129,14 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode onInitializeAccessibilityEventHandler(
+  InternalNode onInitializeAccessibilityEventHandler(
       EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler) {
     getOrCreateNodeInfo().setOnInitializeAccessibilityEventHandler(
         onInitializeAccessibilityEventHandler);
     return this;
   }
 
-  @Override
-  public InternalNode onInitializeAccessibilityNodeInfoHandler(
+  InternalNode onInitializeAccessibilityNodeInfoHandler(
       EventHandler<OnInitializeAccessibilityNodeInfoEvent>
           onInitializeAccessibilityNodeInfoHandler) {
     getOrCreateNodeInfo().setOnInitializeAccessibilityNodeInfoHandler(
@@ -1296,46 +1144,40 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode onPopulateAccessibilityEventHandler(
+  InternalNode onPopulateAccessibilityEventHandler(
       EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler) {
     getOrCreateNodeInfo().setOnPopulateAccessibilityEventHandler(
         onPopulateAccessibilityEventHandler);
     return this;
   }
 
-  @Override
-  public InternalNode onRequestSendAccessibilityEventHandler(
+  InternalNode onRequestSendAccessibilityEventHandler(
       EventHandler<OnRequestSendAccessibilityEventEvent> onRequestSendAccessibilityEventHandler) {
     getOrCreateNodeInfo().setOnRequestSendAccessibilityEventHandler(
         onRequestSendAccessibilityEventHandler);
     return this;
   }
 
-  @Override
-  public InternalNode performAccessibilityActionHandler(
+  InternalNode performAccessibilityActionHandler(
       EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler) {
     getOrCreateNodeInfo().setPerformAccessibilityActionHandler(performAccessibilityActionHandler);
     return this;
   }
 
-  @Override
-  public InternalNode sendAccessibilityEventHandler(
+  InternalNode sendAccessibilityEventHandler(
       EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler) {
     getOrCreateNodeInfo().setSendAccessibilityEventHandler(sendAccessibilityEventHandler);
     return this;
   }
 
-  @Override
-  public InternalNode sendAccessibilityEventUncheckedHandler(
+  InternalNode sendAccessibilityEventUncheckedHandler(
       EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler) {
     getOrCreateNodeInfo().setSendAccessibilityEventUncheckedHandler(
         sendAccessibilityEventUncheckedHandler);
     return this;
   }
 
-  @Override
-  public ContainerBuilder transitionKey(String key) {
+  InternalNode transitionKey(String key) {
     if (SDK_INT >= ICE_CREAM_SANDWICH && !TextUtils.isEmpty(key)) {
       mPrivateFlags |= PFLAG_TRANSITION_KEY_IS_SET;
       mTransitionKey = key;
@@ -1474,11 +1316,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   InternalNode removeChildAt(int index) {
     return (InternalNode) mYogaNode.removeChildAt(index).getData();
-  }
-
-  @Override
-  public ComponentLayout build() {
-    return this;
   }
 
   private float resolveHorizontalEdges(Edges spacing, YogaEdge edge) {

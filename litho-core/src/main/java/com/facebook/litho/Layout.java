@@ -13,15 +13,15 @@ import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 
 /**
- * Utility class to create a new {@link ComponentLayout.Builder} from an existing {@link Component}.
- * This is useful for components with child components as props.
+ * Utility class to create a new {@link InternalNode} from an existing {@link Component}. This is
+ * useful for components with child components as props.
  */
 final class Layout {
   private Layout() {
   }
 
   /**
-   * Create a {@link ComponentLayout.Builder} from an existing {@link Component}.
+   * Create a {@link InternalNode} from an existing {@link Component}.
    *
    * @param c The context to create the layout within
    * @param component The component to render within this layout
@@ -29,7 +29,7 @@ final class Layout {
    * @param defStyleRes The id of the style to use for layout attributes
    * @return A layout builder
    */
-  static ComponentLayout.Builder create(
+  static InternalNode create(
       ComponentContext c,
       Component component,
       @AttrRes int defStyleAttr,
@@ -41,13 +41,13 @@ final class Layout {
   }
 
   /**
-   * Create a {@link ComponentLayout.Builder} from an existing {@link Component}.
+   * Create a {@link InternalNode} from an existing {@link Component}.
    *
    * @param c The context to create the layout within
    * @param component The component to render within this layout
    * @return A layout builder
    */
-  static ComponentLayout.Builder create(ComponentContext c, Component component) {
+  static InternalNode create(ComponentContext c, Component component) {
     return create(c, component, 0, 0);
   }
 }

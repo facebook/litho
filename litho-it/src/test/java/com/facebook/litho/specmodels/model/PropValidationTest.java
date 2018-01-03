@@ -125,10 +125,7 @@ public class PropValidationTest {
     assertThat(validationErrors.get(0).message).isEqualTo(
         "Props may not be declared with the following argument types: " +
             "[com.facebook.litho.ComponentLayout, " +
-            "com.facebook.litho.ComponentLayout.Builder, " +
-            "com.facebook.litho.ComponentLayout.ContainerBuilder, " +
             "com.facebook.litho.Component.Builder, " +
-            "com.facebook.litho.Component.BuilderWithLayout, " +
             "com.facebook.litho.reference.Reference.Builder].");
   }
 
