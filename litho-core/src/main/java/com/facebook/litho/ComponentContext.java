@@ -288,6 +288,10 @@ public class ComponentContext extends ContextWrapper {
     return node;
   }
 
+  InternalNode resolveComponent(Component component) {
+    return (InternalNode) component.resolve(this);
+  }
+
   int getWidthSpec() {
     return mWidthSpec;
   }

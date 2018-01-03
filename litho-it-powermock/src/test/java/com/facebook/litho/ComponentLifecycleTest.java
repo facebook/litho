@@ -86,7 +86,7 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutWithNullComponentWithLayoutSpecCannotMeasure() {
-    Component component = setUpSpyLayoutSpefWithNullLayout();
+    Component component = setUpSpyLayoutSpecWithNullLayout();
     component.createLayout(mContext, false);
 
     verify(component).onCreateLayout(mContext);
@@ -95,7 +95,7 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutWithNullComponentWithLayoutSpecCanMeasure() {
-    Component component = setUpSpyLayoutSpefWithNullLayout();
+    Component component = setUpSpyLayoutSpecWithNullLayout();
     component.createLayout(mContext, false);
 
     verify(component).onCreateLayout(mContext);
@@ -104,7 +104,7 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutWithNullComponentWithMountSpecCannotMeasure() {
-    Component component = setUpSpyLayoutSpefWithNullLayout();
+    Component component = setUpSpyLayoutSpecWithNullLayout();
     component.createLayout(mContext, false);
 
     verify(component).onCreateLayout(mContext);
@@ -113,7 +113,7 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutWithNullComponentWithMountSpecCanMeasure() {
-    Component component = setUpSpyLayoutSpefWithNullLayout();
+    Component component = setUpSpyLayoutSpecWithNullLayout();
     component.createLayout(mContext, false);
 
     verify(component).onCreateLayout(mContext);
@@ -303,21 +303,22 @@ public class ComponentLifecycleTest {
   private Component setUpSpyComponentForCreateLayout(
       boolean isMountSpec,
       boolean canMeasure) {
-    Component component = new TestBaseComponent(
-        canMeasure,
-        isMountSpec ? MountType.DRAWABLE : MountType.NONE,
-        mNode);
+    Component component =
+        spy(
+            new TestBaseComponent(
+                canMeasure, isMountSpec ? MountType.DRAWABLE : MountType.NONE, mNode));
 
-    return spy(component);
+    when(component.getScopedContext()).thenReturn(mContext);
+
+    return component;
   }
 
-  private Component setUpSpyLayoutSpefWithNullLayout() {
-    Component component = new TestBaseComponent(
-        false,
-        MountType.NONE,
-        null);
+  private Component setUpSpyLayoutSpecWithNullLayout() {
+    Component component = spy(new TestBaseComponent(false, MountType.NONE, null));
 
-    return spy(component);
+    when(component.getScopedContext()).thenReturn(mContext);
+
+    return component;
   }
 
   private YogaMeasureFunction getMeasureFunction(Component component) {

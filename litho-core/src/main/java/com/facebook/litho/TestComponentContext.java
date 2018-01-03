@@ -44,6 +44,17 @@ class TestComponentContext extends ComponentContext {
   }
 
   @Override
+  InternalNode resolveComponent(Component component) {
+    if (component.isInternalComponent()) {
+      return super.resolveComponent(component);
+    }
+
+    InternalNode node = ComponentsPools.acquireInternalNode(this);
+    node.appendComponent(new TestComponent(component));
+    return node;
+  }
+
+  @Override
   TestComponentContext makeNewCopy() {
     return new TestComponentContext(this);
   }
