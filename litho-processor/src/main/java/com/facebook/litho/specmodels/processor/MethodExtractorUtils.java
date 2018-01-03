@@ -96,7 +96,14 @@ public class MethodExtractorUtils {
   private static List<Name> getSavedParameterNames(ExecutableElement method) {
     if (method instanceof Symbol.MethodSymbol) {
       final Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) method;
-      return methodSymbol.savedParameterNames;
+      try {
+        return methodSymbol.savedParameterNames;
+      } catch (NoSuchFieldError ignored) {
+        // This can happen on JVM versions >= 10. However, we need to keep this workaround for JVM
+        // versions < 8 which do not provide the '-parameters' javac option which is the Right Way
+        // to achieve this.
+        return null;
+      }
     }
     return null;
   }
