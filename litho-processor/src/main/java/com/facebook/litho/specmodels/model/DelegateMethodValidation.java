@@ -128,9 +128,8 @@ public class DelegateMethodValidation {
           validateDefinedParameterTypes(
               delegateMethod, delegateMethodAnnotation, definedParameterTypes));
 
-      // TODO T24454792 turn this back on
-//      validationErrors.addAll(
-//          validateReturnType(delegateMethod, delegateMethodAnnotation, delegateMethodDescription));
+      validationErrors.addAll(
+          validateReturnType(delegateMethod, delegateMethodAnnotation, delegateMethodDescription));
 
       for (int i = definedParameterTypes.size(), size = delegateMethod.methodParams.size();
           i < size;
@@ -275,7 +274,12 @@ public class DelegateMethodValidation {
               "A method annotated with @"
                   + delegateMethodAnnotation.getSimpleName()
                   + " needs to return "
-                  + delegateMethodDescription.returnType));
+                  + delegateMethodDescription.returnType
+                  + ". Note that even if your return value is a subclass of "
+                  + delegateMethodDescription.returnType
+                  + ", you should still use "
+                  + delegateMethodDescription.returnType
+                  + " as the return type."));
     }
     return validationErrors;
   }

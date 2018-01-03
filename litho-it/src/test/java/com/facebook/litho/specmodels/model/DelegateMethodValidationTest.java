@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -97,7 +96,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
-                    ClassNames.COMPONENT_LAYOUT,
+                    ClassNames.COMPONENT,
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -111,7 +110,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnCreateLayoutWithSizeSpec.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
-                    ClassNames.COMPONENT_LAYOUT,
+                    ClassNames.COMPONENT,
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -151,7 +150,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnCreateLayoutWithSizeSpec.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
-                    ClassNames.COMPONENT_LAYOUT,
+                    ClassNames.COMPONENT,
                     ImmutableList.of(),
                     ImmutableList.of(),
                     mDelegateMethodObject1,
@@ -177,7 +176,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
-                    ClassNames.COMPONENT_LAYOUT,
+                    ClassNames.COMPONENT,
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -206,7 +205,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
-                    ClassNames.COMPONENT_LAYOUT,
+                    ClassNames.COMPONENT,
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -239,7 +238,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(),
                     "name",
-                    ClassNames.COMPONENT_LAYOUT,
+                    ClassNames.COMPONENT,
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -267,7 +266,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(),
                     "name",
-                    ClassNames.COMPONENT_LAYOUT,
+                    ClassNames.COMPONENT,
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -283,7 +282,6 @@ public class DelegateMethodValidationTest {
   }
 
   @Test
-  @Ignore("T24454792")
   public void testDelegateMethodHasIncorrectReturnType() {
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
@@ -292,7 +290,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
-                    ClassNames.COMPONENT,
+                    ClassNames.COMPONENT_LAYOUT,
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -308,7 +306,10 @@ public class DelegateMethodValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mDelegateMethodObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "A method annotated with @OnCreateLayout needs to return com.facebook.litho.ComponentLayout");
+            "A method annotated with @OnCreateLayout needs to return "
+                + "com.facebook.litho.Component. Note that even if your return value is a "
+                + "subclass of com.facebook.litho.Component, you should still use "
+                + "com.facebook.litho.Component as the return type.");
   }
 
   @Test
@@ -552,7 +553,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
-                    ClassNames.COMPONENT_LAYOUT,
+                    ClassNames.COMPONENT,
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
