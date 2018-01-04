@@ -477,7 +477,6 @@ class EditTextSpec {
       boolean requestFocus,
       int cursorDrawableRes) {
 
-    editText.setSingleLine(isSingleLine);
     // We only want to change the input type if it actually needs changing, and we need to take
     // isSingleLine into account so that we get the correct input type.
     if (isSingleLine) {
@@ -486,16 +485,19 @@ class EditTextSpec {
       inputType |= EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
     }
 
+    if (rawInputType != EditorInfo.TYPE_NULL) {
+      editText.setSingleLine(isSingleLine);
+      editText.setRawInputType(rawInputType);
+    } else if (inputType != editText.getInputType()) {
+      editText.setSingleLine(isSingleLine);
+      // Needs to be set before min/max lines. Also calling setSingleLine() affects inputType, thus
+      // we should re-set input type every time we call setSingleLine()
+      editText.setInputType(inputType);
+    }
+
     // disable horizontally scroll in single line mode to make the text wrap.
     if (isSingleLine && isSingleLineWrap) {
       editText.setHorizontallyScrolling(false);
-    }
-
-    if (rawInputType != EditorInfo.TYPE_NULL) {
-      editText.setRawInputType(rawInputType);
-    } else if (inputType != editText.getInputType()) {
-      // Needs to be set before min/max lines.
-      editText.setInputType(inputType);
     }
 
     // Needs to be set before the text so it would apply to the current text
