@@ -80,7 +80,7 @@ public class TriggerMethodExtractor {
 
         final DeclaredType eventClassDeclaredType =
             ProcessorUtils.getAnnotationParameter(
-                elements, executableElement, OnTrigger.class, "value");
+                elements, executableElement, OnTrigger.class, "value", DeclaredType.class);
         final Element eventClass = eventClassDeclaredType.asElement();
 
         // Reuse EventMethodModel and EventDeclarationModel because we are capturing the same info

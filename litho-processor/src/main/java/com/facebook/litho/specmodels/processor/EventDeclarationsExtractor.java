@@ -39,7 +39,8 @@ public class EventDeclarationsExtractor {
       TypeElement element,
       Class<?> annotationType) {
     final List<AnnotationValue> eventTypes =
-        ProcessorUtils.getAnnotationParameter(elements, element, annotationType, "events");
+        ProcessorUtils.getAnnotationParameter(
+            elements, element, annotationType, "events", List.class);
 
     final List<EventDeclarationModel> eventDeclarations;
     if (eventTypes != null) {
@@ -62,11 +63,9 @@ public class EventDeclarationsExtractor {
 
   @Nullable
   static TypeName getReturnType(Elements elements, Element typeElement) {
-    TypeMirror typeMirror = ProcessorUtils.getAnnotationParameter(
-        elements,
-        typeElement,
-        Event.class,
-        "returnType");
+    TypeMirror typeMirror =
+        ProcessorUtils.getAnnotationParameter(
+            elements, typeElement, Event.class, "returnType", TypeMirror.class);
 
     return typeMirror != null ? TypeName.get(typeMirror) : null;
   }
