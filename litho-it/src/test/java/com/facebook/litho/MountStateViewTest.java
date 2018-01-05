@@ -11,6 +11,7 @@ package com.facebook.litho;
 
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
+import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.LEFT;
 import static com.facebook.yoga.YogaEdge.RIGHT;
@@ -20,8 +21,10 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
+import com.facebook.litho.it.R;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestComponentContextWithView;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -75,6 +78,42 @@ public class MountStateViewTest {
     assertThat(child.getPaddingBottom()).isEqualTo(8);
     assertThat(background).isInstanceOf(ColorDrawable.class);
     assertThat(((ColorDrawable) background).getColor()).isEqualTo(color);
+  }
+
+  @Test
+  public void testSettingZeroPaddingOverridesDefaultBackgroundPadding() {
+    final ComponentContext c =
+        new ComponentContext(
+            new ContextThemeWrapper(
+                RuntimeEnvironment.application, R.style.TestTheme_BackgroundWithPadding));
+
+    final LithoView lithoView =
+        mountComponent(c, TestViewComponent.create(c).paddingPx(ALL, 0).build());
+
+    final View child = lithoView.getChildAt(0);
+
+    assertThat(child.getPaddingLeft()).isZero();
+    assertThat(child.getPaddingTop()).isZero();
+    assertThat(child.getPaddingRight()).isZero();
+    assertThat(child.getPaddingBottom()).isZero();
+  }
+
+  @Test
+  public void testSettingOneSidePaddingClearsTheRest() {
+    final ComponentContext c =
+        new ComponentContext(
+            new ContextThemeWrapper(
+                RuntimeEnvironment.application, R.style.TestTheme_BackgroundWithPadding));
+
+    final LithoView lithoView =
+        mountComponent(c, TestViewComponent.create(c).paddingPx(LEFT, 12).build());
+
+    final View child = lithoView.getChildAt(0);
+
+    assertThat(child.getPaddingLeft()).isEqualTo(12);
+    assertThat(child.getPaddingTop()).isZero();
+    assertThat(child.getPaddingRight()).isZero();
+    assertThat(child.getPaddingBottom()).isZero();
   }
 
   @Test

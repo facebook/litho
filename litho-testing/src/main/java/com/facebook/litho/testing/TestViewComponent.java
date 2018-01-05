@@ -71,7 +71,7 @@ public class TestViewComponent extends TestComponent {
     if (c instanceof TestComponentContextWithView) {
       return ((TestComponentContextWithView) c).getTestView();
     }
-    return new View(c);
+    return new View(c, null);
   }
 
   @Override

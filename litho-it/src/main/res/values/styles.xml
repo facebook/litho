@@ -15,6 +15,10 @@
         <item name="attr/testAttrLargePadding">@style/PaddingStyleLarge</item>
     </style>
 
+    <style name="TestTheme.BackgroundWithPadding">
+        <item name="android:background">@drawable/background_with_padding</item>
+    </style>
+
     <style name="TextLargeSizeStyle">
         <item name="android:textSize">@dimen/test_large_dimen</item>
     </style>

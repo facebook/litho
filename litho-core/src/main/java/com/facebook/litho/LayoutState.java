@@ -311,7 +311,9 @@ class LayoutState {
       layoutOutput.setNodeInfo(node.getNodeInfo());
       // Acquire a ViewNodeInfo, set it up and release it after passing it to the LayoutOutput.
       final ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
-      viewNodeInfo.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+      if (useNodePadding && node.isPaddingSet()) {
+        viewNodeInfo.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+      }
       viewNodeInfo.setLayoutDirection(node.getResolvedLayoutDirection());
       viewNodeInfo.setExpandedTouchBounds(
           node,

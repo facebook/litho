@@ -48,6 +48,8 @@ public interface ComponentLayout {
   @Px
   int getPaddingLeft();
 
+  boolean isPaddingSet();
+
   Reference<? extends Drawable> getBackground();
 
   YogaDirection getResolvedLayoutDirection();

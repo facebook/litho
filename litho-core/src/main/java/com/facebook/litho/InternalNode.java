@@ -228,6 +228,11 @@ class InternalNode implements ComponentLayout {
   }
 
   @Override
+  public boolean isPaddingSet() {
+    return (mPrivateFlags & PFLAG_PADDING_IS_SET) != 0L;
+  }
+
+  @Override
   public Reference<? extends Drawable> getBackground() {
     return mBackground;
   }
