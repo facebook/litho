@@ -72,6 +72,7 @@ class BarSectionSpec {
       return build.build();
   }
 }
+```
 
 Below is a representation of the tree of Sections that has the root in `BarSection`. Each node in the tree is a Section, and the leaves are Components that can be rendered on screen.
 Each one of the sections in the tree acts as a data source. Its responsibilities are to describe what data it needs and how that data should be rendered.
