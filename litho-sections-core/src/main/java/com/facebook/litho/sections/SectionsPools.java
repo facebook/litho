@@ -20,7 +20,7 @@ import java.util.Map;
 public class SectionsPools {
 
   private static final RecyclePool<Map<String, List<StateUpdate>>> sStateUpdatesMapPool =
-      new RecyclePool<>("", 4, false);
+      new RecyclePool<>("StateUpdateMap", 4, true);
 
   static Map<String, List<StateUpdate>> acquireStateUpdatesMap() {
     Map<String, List<StateUpdate>> map = sStateUpdatesMapPool.acquire();
