@@ -60,7 +60,6 @@ public abstract class Component extends ComponentLifecycle
   private String mGlobalKey;
   @Nullable private String mKey;
   private boolean mHasManualKey;
-  private List<Component> mChildren;
 
   @ThreadConfined(ThreadConfined.ANY)
   private ComponentContext mScopedContext;
@@ -74,7 +73,7 @@ public abstract class Component extends ComponentLifecycle
   @Nullable private CommonProps mCommonProps;
 
   /**
-   * Holds onto how many direct component mChildren of each type this Component has. Used for
+   * Holds onto how many direct component children of each type this Component has. Used for
    * automatically generating unique global keys for all sibling components of the same type.
    */
   @Nullable private Map<String, Integer> mChildCounters;
@@ -96,7 +95,6 @@ public abstract class Component extends ComponentLifecycle
     if (!ComponentsConfiguration.lazyInitializeComponent) {
       mChildCounters = new HashMap<>();
       mKey = Integer.toString(getTypeId());
-      mChildren = new ArrayList<>();
     }
   }
 
@@ -151,10 +149,6 @@ public abstract class Component extends ComponentLifecycle
     return mGlobalKey;
   }
 
-  List<Component> getChildren() {
-    return mChildren;
-  }
-
   /**
    * Set a key for this component that is unique within its tree.
    * @param key
@@ -188,19 +182,15 @@ public abstract class Component extends ComponentLifecycle
 
   /**
    * Generate a global key for the given component that is unique among all of this component's
-   * mChildren of the same type. If a manual key has been set on the child component using the
-   * .key() method, return the manual key.
+   * children of the same type. If a manual key has been set on the child component using the .key()
+   * method, return the manual key.
    *
    * @param component the child component for which we're finding a unique global key
    * @param key the key of the child component as determined by its lifecycle id or manual setting
    * @return a unique global key for this component relative to its siblings.
    */
   private String generateUniqueGlobalKeyForChild(Component component, String key) {
-    if (mChildren == null) {
-      mChildren = new ArrayList<>();
-    }
 
-    mChildren.add(component);
     final String childKey = getGlobalKey() + key;
     final KeyHandler keyHandler = mScopedContext.getKeyHandler();
 
@@ -275,10 +265,6 @@ public abstract class Component extends ComponentLifecycle
       component.mIsLayoutStarted = false;
       if (!ComponentsConfiguration.lazyInitializeComponent) {
         component.mChildCounters = new HashMap<>();
-        component.mChildren = new ArrayList<>();
-      } else {
-        component.mChildCounters = null;
-        component.mChildren = null;
       }
       component.mHasManualKey = false;
 

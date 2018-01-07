@@ -16,8 +16,7 @@ public class LithoTooltipController {
 
   /**
    * Show the given tooltip with the specified offsets from the bottom-left corner of the component
-   * with the given anchorKey. If there are multiple components with this key, the tooltip will be
-   * shown on the first one that is found in a breath-first order.
+   * with the given anchorKey.
    */
   public static void showTooltip(
       ComponentContext c,
@@ -41,9 +40,7 @@ public class LithoTooltipController {
   }
 
   /**
-   * Show the given tooltip on the component with the given anchorKey. If there are multiple
-   * components with this key, the tooltip will be shown on the first one that is found in a
-   * breath-first order.
+   * Show the given tooltip on the component with the given anchorKey.
    *
    * @param c
    * @param lithoTooltip A {@link LithoTooltip} implementation to be shown on the anchor.
@@ -65,18 +62,20 @@ public class LithoTooltipController {
   public static void showTooltip(
       ComponentContext c, LithoTooltip lithoTooltip, String anchorKey, int xOffset, int yOffset) {
     final ComponentTree componentTree = c.getComponentTree();
+    final Component rootComponent = c.getComponentScope();
 
     if (componentTree == null) {
       return;
     }
 
-    componentTree.showTooltip(c, lithoTooltip, anchorKey, xOffset, yOffset);
+    final String anchorGlobalKey =
+        rootComponent == null ? anchorKey : rootComponent.getGlobalKey() + anchorKey;
+
+    componentTree.showTooltip(lithoTooltip, anchorGlobalKey, xOffset, yOffset);
   }
 
   /**
-   * Show the given tooltip on the component with the given anchorKey in the specified position. If
-   * there are multiple components with this key, the tooltip will be shown on the first one that is
-   * found in a breath-first order.
+   * Show the given tooltip on the component with the given anchorKey in the specified position.
    *
    * @deprecated @see {#show}
    */
@@ -90,9 +89,7 @@ public class LithoTooltipController {
   }
 
   /**
-   * Show the given tooltip on the component with the given anchorKey in the specified position. If
-   * there are multiple components with this key, the tooltip will be shown on the first one that is
-   * found in a breath-first order.
+   * Show the given tooltip on the component with the given anchorKey in the specified position.
    *
    * @deprecated @see {@link #showTooltip(ComponentContext, PopupWindow, String, int, int)}
    */
@@ -107,8 +104,7 @@ public class LithoTooltipController {
 
   /**
    * Show the given tooltip on the component with the given anchorKey with the specified offsets
-   * from the given position. If there are multiple components with this key, the tooltip will be
-   * shown on the first one that is found in a breath-first order.
+   * from the given position.
    *
    * @deprecated @see {@link #showTooltip(ComponentContext, PopupWindow, String, int, int)}
    */
@@ -136,8 +132,7 @@ public class LithoTooltipController {
 
   /**
    * Show the given tooltip on the component with the given anchorKey with the specified offsets
-   * from the given position. If there are multiple components with this key, the tooltip will be
-   * shown on the first one that is found in a breath-first order.
+   * from the given position.
    *
    * @deprecated
    * @see {{@link #showTooltip(ComponentContext, LithoTooltip, String, int, int)}}
@@ -151,12 +146,16 @@ public class LithoTooltipController {
       int xOffset,
       int yOffset) {
     final ComponentTree componentTree = c.getComponentTree();
+    final Component rootComponent = c.getComponentScope();
 
     if (componentTree == null) {
       return;
     }
 
-    componentTree.showTooltip(c, tooltip, anchorKey, tooltipPosition, xOffset, yOffset);
+    final String anchorGlobalKey =
+        rootComponent == null ? anchorKey : rootComponent.getGlobalKey() + anchorKey;
+
+    componentTree.showTooltip(tooltip, anchorGlobalKey, tooltipPosition, xOffset, yOffset);
   }
 
   @Deprecated

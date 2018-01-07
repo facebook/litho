@@ -17,8 +17,6 @@ import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaEdge;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,13 +46,6 @@ public class DeprecatedLithoTooltipTest {
     MockitoAnnotations.initMocks(this);
     mContext = new ComponentContext(RuntimeEnvironment.application);
 
-    final Component child =
-        TestDrawableComponent.create(mContext)
-            .key("anchor")
-            .widthPx(ANCHOR_WIDTH)
-            .heightPx(ANCHOR_HEIGHT)
-            .build();
-
     mComponent =
         new InlineLayoutSpec() {
           @Override
@@ -63,7 +54,11 @@ public class DeprecatedLithoTooltipTest {
             return Row.create(c)
                 .marginPx(YogaEdge.LEFT, MARGIN_LEFT)
                 .marginPx(YogaEdge.TOP, MARGIN_TOP)
-                .child(child)
+                .child(
+                    TestDrawableComponent.create(c)
+                        .key("anchor")
+                        .widthPx(ANCHOR_WIDTH)
+                        .heightPx(ANCHOR_HEIGHT))
                 .build();
           }
         };
@@ -77,11 +72,6 @@ public class DeprecatedLithoTooltipTest {
         mComponent,
         "mGlobalKey",
         mComponent.getTypeId() + "" + Row.create(mContext).build().getTypeId());
-
-    List<Component> children = new ArrayList<>();
-    children.add(child);
-
-    Whitebox.setInternalState(mComponent, "mChildren", children);
     mContext = ComponentContext.withComponentTree(mContext, mComponentTree);
     mContext = ComponentContext.withComponentScope(mContext, mComponent);
     mLithoView = getLithoView(mComponentTree);
