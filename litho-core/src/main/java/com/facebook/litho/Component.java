@@ -944,6 +944,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     /** @deprecated just use {@link #background(Drawable)} instead. */
+    @Deprecated
     public T background(Reference<? extends Drawable> background) {
       mComponent.getOrCreateCommonProps().background(background);
       return getThis();
