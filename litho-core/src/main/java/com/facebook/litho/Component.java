@@ -400,7 +400,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   void generateKey(ComponentContext c) {
-    if (ComponentsConfiguration.useGlobalKeys) {
+    if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
       final Component parentScope = c.getComponentScope();
       final String key = getKey();
       setGlobalKey(
@@ -420,7 +420,7 @@ public abstract class Component extends ComponentLifecycle
 
     populateTreeProps(getScopedContext().getTreeProps());
 
-    if (ComponentsConfiguration.useGlobalKeys) {
+    if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
       final KeyHandler keyHandler = getScopedContext().getKeyHandler();
       /** This is for testing, the keyHandler should never be null here otherwise. */
       if (keyHandler != null && !ComponentsConfiguration.isEndToEndTestRun) {
