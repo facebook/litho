@@ -47,7 +47,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
-import android.support.annotation.RestrictTo;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LongSparseArray;
 import android.support.v4.util.SimpleArrayMap;
@@ -151,7 +150,6 @@ class LayoutState {
 
   private List<TestOutput> mTestOutputs;
 
-  @RestrictTo(RestrictTo.Scope.LIBRARY)
   InternalNode mLayoutRoot;
 
   private DiffNode mDiffTreeRoot;

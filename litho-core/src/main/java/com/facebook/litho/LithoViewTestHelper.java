@@ -12,7 +12,6 @@ package com.facebook.litho;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RestrictTo;
 import android.text.TextUtils;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -161,7 +160,6 @@ public class LithoViewTestHelper {
    *
    * @see #setRootLayoutRef(LithoView, InternalNodeRef)
    */
-  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   @ThreadConfined(ThreadConfined.UI)
   @Nullable
   public static InternalNodeRef getRootLayoutRef(final LithoView view) {
@@ -178,7 +176,6 @@ public class LithoViewTestHelper {
    *
    * @see #getRootLayoutRef(LithoView)
    */
-  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   @ThreadConfined(ThreadConfined.UI)
   public static void setRootLayoutRef(final LithoView view, final InternalNodeRef rootLayoutNode) {
     final ComponentTree componentTree = view.getComponentTree();

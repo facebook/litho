@@ -16,7 +16,6 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.graphics.Rect;
 import android.os.Looper;
-import android.support.annotation.RestrictTo;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -459,13 +458,11 @@ public final class ComponentTestHelper {
   }
 
   /** Access the default layout thread looper for testing purposes only. */
-  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   public static Looper getDefaultLayoutThreadLooper() throws Exception {
     return (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper");
   }
 
   /** Access the shadow of the default layout thread looper for testing purposes only. */
-  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   public static ShadowLooper getDefaultLayoutThreadShadowLooper() throws Exception {
     return shadowOf(getDefaultLayoutThreadLooper());
   }
