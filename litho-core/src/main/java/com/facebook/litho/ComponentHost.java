@@ -103,10 +103,6 @@ public class ComponentHost extends ViewGroup {
     super(context, attrs);
     setWillNotDraw(false);
     setChildrenDrawingOrderEnabled(true);
-
-    if (!ComponentsConfiguration.lazyInitializeComponentAccessibilityDelegate) {
-      mComponentAccessibilityDelegate = new ComponentAccessibilityDelegate(this);
-    }
     refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context));
     mScrapHosts =
         ComponentsConfiguration.scrapHostRecyclingForComponentHosts
@@ -887,22 +883,20 @@ public class ComponentHost extends ViewGroup {
         isAccessibilityEnabled ? mComponentAccessibilityDelegate : null);
     mIsComponentAccessibilityDelegateSet = isAccessibilityEnabled;
 
-    if (ComponentsConfiguration.lazyInitializeComponentAccessibilityDelegate
-        && !isAccessibilityEnabled) {
+    if (!isAccessibilityEnabled) {
       return;
     }
 
     for (int i = 0, size = getChildCount(); i < size; i++) {
       final View child = getChildAt(i);
       if (child instanceof ComponentHost) {
-        ((ComponentHost) child).refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled);
+        ((ComponentHost) child).refreshAccessibilityDelegatesIfNeeded(true);
       } else {
         final NodeInfo nodeInfo =
             (NodeInfo) child.getTag(R.id.component_node_info);
         if (nodeInfo != null) {
           ViewCompat.setAccessibilityDelegate(
-              child,
-              isAccessibilityEnabled ? new ComponentAccessibilityDelegate(child, nodeInfo) : null);
+              child, new ComponentAccessibilityDelegate(child, nodeInfo));
         }
       }
     }

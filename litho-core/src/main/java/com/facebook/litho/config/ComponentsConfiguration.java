@@ -123,9 +123,6 @@ public class ComponentsConfiguration {
    */
   public static boolean lazyInitializeComponent = false;
 
-  /** If true, the ComponentsAccessibilityDelegate will be lazily initialized. */
-  public static boolean lazyInitializeComponentAccessibilityDelegate = false;
-
   /**
    * If false, global keys will not be generated (litho level state updates won't work). It's highly
    * discouraged to to change this to false, unless you handle all your updates outside of the litho
