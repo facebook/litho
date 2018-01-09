@@ -407,8 +407,28 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
 
   private int getTextOffsetAt(int x, int y) {
     final int line = mLayout.getLineForVertical(y);
+
+    /**
+     * We use {@link Layout#getPrimaryHorizontal} on specific characters here because the functions
+     * of {@link Layout} that return line bounds or width have problems when used with indented
+     * lines. For instance, {@link Layout#getLineLeft} ignores indentation for left-aligned text,
+     * {@link Layout#getLineMax} includes leading margin and offers no way to subtract it, and
+     * {@link Layout#getParagraphLeft} is naturally only accurate at the paragraph level.
+     */
     float start = mLayout.getPrimaryHorizontal(mLayout.getLineStart(line));
-    float end = mLayout.getPrimaryHorizontal(mLayout.getLineVisibleEnd(line));
+
+    /**
+     * {@link Layout#getLineVisibleEnd} finds either the first trailing whitespace character of the
+     * line or the first character of the next line. To handle both cases, we locate the end of the
+     * line at the edge of the previous character opposite its primary horizontal position.
+     */
+    final int endOffset = mLayout.getLineVisibleEnd(line) - 1;
+    final float[] endWidth = new float[1];
+    mLayout.getPaint().getTextWidths(mText, endOffset, endOffset + 1, endWidth);
+    float end =
+        mLayout.getPrimaryHorizontal(endOffset)
+            + (mLayout.isRtlCharAt(endOffset) ? -1 : 1) * endWidth[0];
+
     if (start > end) {
       // In RTL scenario
       float temp = start;
