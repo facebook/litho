@@ -1413,7 +1413,7 @@ public class RecyclerBinder
     }
   }
 
-  private class BaseViewHolder extends RecyclerView.ViewHolder {
+  private static class BaseViewHolder extends RecyclerView.ViewHolder {
 
     private final boolean isLithoViewType;
 

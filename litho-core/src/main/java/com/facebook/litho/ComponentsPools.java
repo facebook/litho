@@ -1052,6 +1052,7 @@ public class ComponentsPools {
   }
 
   @VisibleForTesting
+  @GuardedBy("sMountContentLock")
   static void clearActivityCallbacks() {
     sActivityCallbacks = null;
   }

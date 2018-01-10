@@ -202,7 +202,7 @@ public class ComponentTree {
   private int mScheduleLayoutAfterMeasure;
 
   @GuardedBy("mEventHandlers")
-  public Map<String, EventHandlersWrapper> mEventHandlers = new LinkedHashMap<>();
+  public final Map<String, EventHandlersWrapper> mEventHandlers = new LinkedHashMap<>();
 
   @GuardedBy("mEventTriggersContainer")
   private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
@@ -272,18 +272,20 @@ public class ComponentTree {
   }
 
   @VisibleForTesting
+  @GuardedBy("this")
   protected LayoutState getBackgroundLayoutState() {
     return mBackgroundLayoutState;
   }
 
   /**
-   * Picks the best LayoutState and sets it in mMainThreadLayoutState. The return value
-   * is a LayoutState that must be released (after the lock is released). This
-   * awkward contract is necessary to ensure thread-safety.
+   * Picks the best LayoutState and sets it in mMainThreadLayoutState. The return value is a
+   * LayoutState that must be released (after the lock is released). This awkward contract is
+   * necessary to ensure thread-safety.
    */
   @CheckReturnValue
   @ReturnsOwnership
   @ThreadConfined(ThreadConfined.UI)
+  @GuardedBy("this")
   private LayoutState setBestMainThreadLayoutAndReturnOldLayout() {
     assertHoldsLock(this);
 
@@ -308,7 +310,7 @@ public class ComponentTree {
       // We don't want to hold onto mBackgroundLayoutState since it's unlikely
       // to ever be used again. We return mBackgroundLayoutState to indicate it
       // should be released after exiting the lock.
-      LayoutState toRelease = mBackgroundLayoutState;
+      final LayoutState toRelease = mBackgroundLayoutState;
       mBackgroundLayoutState = null;
       return toRelease;
     } else {
@@ -317,7 +319,7 @@ public class ComponentTree {
         mLithoView.setMountStateDirty();
       }
 
-      LayoutState toRelease = mMainThreadLayoutState;
+      final LayoutState toRelease = mMainThreadLayoutState;
       mMainThreadLayoutState = mBackgroundLayoutState;
       mBackgroundLayoutState = null;
 
@@ -1464,6 +1466,7 @@ public class ComponentTree {
     }
   }
 
+  @GuardedBy("this")
   private boolean isCompatibleComponentAndSpec(LayoutState layoutState) {
     assertHoldsLock(this);
 
@@ -1472,6 +1475,7 @@ public class ComponentTree {
   }
 
   // Either the MainThreadLayout or the BackgroundThreadLayout is compatible with the current state.
+  @GuardedBy("this")
   private boolean hasCompatibleComponentAndSpec() {
     assertHoldsLock(this);
 
@@ -1479,6 +1483,7 @@ public class ComponentTree {
         || isCompatibleComponentAndSpec(mBackgroundLayoutState);
   }
 
+  @GuardedBy("this")
   private boolean hasSizeSpec() {
     assertHoldsLock(this);
 

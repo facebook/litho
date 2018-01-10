@@ -132,6 +132,7 @@ public class DataFlowGraph {
     updateFinishedStates();
   }
 
+  @GuardedBy("this")
   private void propagate(long frameTimeNanos) {
     final int size = mSortedNodes.size();
     for (int i = 0; i < size; i++) {
@@ -140,6 +141,7 @@ public class DataFlowGraph {
     }
   }
 
+  @GuardedBy("this")
   private void regenerateSortedNodes() {
     mSortedNodes.clear();
 
@@ -199,11 +201,13 @@ public class DataFlowGraph {
     ComponentsPools.release(leafNodes);
   }
 
+  @GuardedBy("this")
   private void updateFinishedStates() {
     updateFinishedNodes();
     notifyFinishedBindings();
   }
 
+  @GuardedBy("this")
   private void updateFinishedNodes() {
     for (int i = 0, size = mSortedNodes.size(); i < size; i++) {
       final ValueNode node = mSortedNodes.get(i);
@@ -221,6 +225,7 @@ public class DataFlowGraph {
     }
   }
 
+  @GuardedBy("this")
   private boolean areInputsFinished(ValueNode node) {
     for (int i = 0, inputCount = node.getInputCount(); i < inputCount; i++) {
       final NodeState nodeState = mNodeStates.get(node.getInputAt(i));
@@ -231,6 +236,7 @@ public class DataFlowGraph {
     return true;
   }
 
+  @GuardedBy("this")
   private void notifyFinishedBindings() {
     // Iterate in reverse order since notifying that a binding is finished results in removing
     // that binding.
@@ -251,6 +257,7 @@ public class DataFlowGraph {
     }
   }
 
+  @GuardedBy("this")
   private void registerNodes(GraphBinding binding) {
     final ArraySet<ValueNode> nodes = binding.getAllNodes();
     for (int i = 0, size = nodes.size(); i < size; i++) {
@@ -266,6 +273,7 @@ public class DataFlowGraph {
     }
   }
 
+  @GuardedBy("this")
   private void unregisterNodes(GraphBinding binding) {
     final ArraySet<ValueNode> nodes = binding.getAllNodes();
     for (int i = 0, size = nodes.size(); i < size; i++) {
@@ -292,6 +300,7 @@ public class DataFlowGraph {
   }
 
   @VisibleForTesting
+  @GuardedBy("this")
   boolean hasReferencesToNodes() {
     return !mBindings.isEmpty() || !mSortedNodes.isEmpty() || !mNodeStates.isEmpty();
   }

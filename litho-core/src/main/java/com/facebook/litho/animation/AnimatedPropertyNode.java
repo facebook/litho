@@ -40,6 +40,7 @@ public class AnimatedPropertyNode extends ValueNode {
     }
   }
 
+  @Override
   public void setValue(float value) {
     super.setValue(value);
     final Object mountContent = mMountContent.get();

@@ -75,6 +75,7 @@ public class DimensionValue implements RuntimeValue {
     mValue = value;
   }
 
+  @Override
   public float resolve(Resolver resolver, PropertyHandle propertyHandle) {
     final float currentValue = resolver.getCurrentState(propertyHandle);
     switch (mType) {
