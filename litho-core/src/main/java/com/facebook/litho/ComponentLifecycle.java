@@ -421,7 +421,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    *
    * @param c The {@link Context} used by this component.
    * @param layout The {@link ComponentLayout} with defined position and size.
-   * @param component The {@link Component} for this component.
    */
   protected void onBoundsDefined(ComponentContext c, ComponentLayout layout) {}
 
@@ -492,7 +491,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * mounted.
    *
    * @param c The {@link ComponentContext} to mount the component into.
-   * @param component The {@link Component} for this component.
    */
   protected void onMount(ComponentContext c, Object convertContent) {
     // Do nothing by default.
@@ -503,7 +501,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    *
    * @param c The {@link Context} for this mount operation.
    * @param mountedContent The {@link Drawable} or {@link View} mounted by this component.
-   * @param component The {@link Component} for this component.
    */
   protected void onUnmount(ComponentContext c, Object mountedContent) {
     // Do nothing by default.
@@ -530,7 +527,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   /**
    * Populate an accessibility node with information about the component.
    * @param accessibilityNode node to populate
-   * @param component The {@link Component} for this component.
    */
   protected void onPopulateAccessibilityNode(
       AccessibilityNodeInfoCompat accessibilityNode) {
@@ -542,7 +538,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @param extraNodeIndex index of extra node
    * @param componentBoundsX left bound of the mounted component
    * @param componentBoundsY top bound of the mounted component
-   * @param component The {@link Component} for this component.
    */
   protected void onPopulateExtraAccessibilityNode(
       AccessibilityNodeInfoCompat accessibilityNode,
@@ -555,7 +550,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * Get extra accessibility node id at a given point within the component.
    * @param x x co-ordinate within the mounted component
    * @param y y co-ordinate within the mounted component
-   * @param component the {@link Component} for this component
    * @return the extra virtual view id if one is found, otherwise
    *         {@code ExploreByTouchHelper#INVALID_ID}
    */
@@ -566,7 +560,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   /**
    * The number of extra accessibility nodes that this component wishes to provides to the
    * accessibility system.
-   * @param component the {@link Component} for this component
    * @return the number of extra nodes
    */
   protected int getExtraAccessibilityNodesCount() {
