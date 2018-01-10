@@ -174,12 +174,14 @@ public class ComponentTree {
 
   // This is written to only by the main thread with the lock held, read from the main thread with
   // no lock held, or read from any other thread with the lock held.
+  @Nullable
   private LayoutState mMainThreadLayoutState;
 
   // The semantics here are tricky. Whenever you transfer mBackgroundLayoutState to a local that
   // will be accessed outside of the lock, you must set mBackgroundLayoutState to null to ensure
   // that the current thread alone has access to the LayoutState, which is single-threaded.
   @GuardedBy("this")
+  @Nullable
   private LayoutState mBackgroundLayoutState;
 
   @GuardedBy("this")
@@ -800,16 +802,13 @@ public class ComponentTree {
 
     synchronized (this) {
       if (mMainThreadLayoutState != null) {
-        toPrePopulate = mMainThreadLayoutState;
+        toPrePopulate = mMainThreadLayoutState.acquireRef();
+      } else if (mBackgroundLayoutState != null) {
+        toPrePopulate = mBackgroundLayoutState.acquireRef();
       } else {
-        toPrePopulate = mBackgroundLayoutState;
+        return;
       }
     }
-    if (toPrePopulate == null) {
-      return;
-    }
-    toPrePopulate.acquireRef();
-
     final ComponentsLogger logger = mContext.getLogger();
     LogEvent event = null;
     if (logger != null) {
