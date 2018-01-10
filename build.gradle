@@ -15,6 +15,10 @@ buildscript {
     }
 }
 
+plugins {
+    id 'net.ltgt.errorprone' version '0.0.13' apply false
+}
+
 apply plugin: 'com.github.ben-manes.versions'
 
 subprojects {
@@ -31,6 +35,8 @@ subprojects {
             environment 'DYLD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
         }
     }
+
+    apply plugin: 'net.ltgt.errorprone'
 }
 
 ext {

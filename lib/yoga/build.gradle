@@ -18,6 +18,10 @@ dependencies {
     compileOnly project(':litho-annotations')
 }
 
+tasks.withType(JavaCompile) {
+  options.compilerArgs += [ '-Xep:ImmutableEnumChecker:WARN' ]
+}
+
 // Our current NDK setup only gets us half-way there to a way to run Yoga
 // locally for unit tests. We're reusing the buck builds for now and hopefully
 // someone (maybe you!) will fix this and get CMake to help us out.
