@@ -30,24 +30,28 @@ public class Logger implements SectionsDebugLogger {
     }
   }
 
+  @Override
   public void logInsert(String tag, int index, RenderInfo renderInfo, String thread) {
     for (SectionsDebugLogger sectionsDebugLogger : mSectionsDebugLoggers) {
       sectionsDebugLogger.logInsert(tag, index, renderInfo, thread);
     }
   }
 
+  @Override
   public void logUpdate(String tag, int index, RenderInfo renderInfo, String thread) {
     for (SectionsDebugLogger sectionsDebugLogger : mSectionsDebugLoggers) {
       sectionsDebugLogger.logUpdate(tag, index, renderInfo, thread);
     }
   }
 
+  @Override
   public void logDelete(String tag, int index, String thread) {
     for (SectionsDebugLogger sectionsDebugLogger : mSectionsDebugLoggers) {
       sectionsDebugLogger.logDelete(tag, index, thread);
     }
   }
 
+  @Override
   public void logRequestFocus(String tag, int index, RenderInfo renderInfo, String thread) {
     for (SectionsDebugLogger sectionsDebugLogger : mSectionsDebugLoggers) {
       sectionsDebugLogger.logRequestFocus(tag, index, renderInfo, thread);
@@ -62,12 +66,14 @@ public class Logger implements SectionsDebugLogger {
     }
   }
 
+  @Override
   public void logMove(String tag, int fromPosition, int toPosition, String thread) {
     for (SectionsDebugLogger sectionsDebugLogger : mSectionsDebugLoggers) {
       sectionsDebugLogger.logMove(tag, fromPosition, toPosition, thread);
     }
   }
 
+  @Override
   public void logShouldUpdate(
       String tag,
       Object previous,
