@@ -78,13 +78,6 @@ public class ComponentsConfiguration {
   public static volatile boolean usePooling = true;
 
   /**
-   * Whether we unmount children of the views implementing {@link
-   * com.facebook.litho.HasLithoViewChildren} when unmounting those views themselves. This is for
-   * experimentation purposes to see the impact of this change on different product surfaces.
-   */
-  public static boolean deepUnmountEnabled = true;
-
-  /**
    * Whether incremental mount should use the local visible bounds of the {@link
    * com.facebook.litho.LithoView}.
    */

@@ -1908,7 +1908,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
      * this MountState. If that content contains other LithoViews, we need to unmount them as well,
      * so that their contents are recycled and reused next time.
      */
-    if (ComponentsConfiguration.deepUnmountEnabled && content instanceof HasLithoViewChildren) {
+    if (content instanceof HasLithoViewChildren) {
       final ArrayList<LithoView> lithoViews = ComponentsPools.acquireLithoViewArrayList();
       ((HasLithoViewChildren) content).obtainLithoViewChildren(lithoViews);
 
