@@ -65,12 +65,6 @@ public class ComponentsConfiguration {
   public static boolean isEndToEndTestRun = System.getProperty("IS_TESTING") != null;
 
   /**
-   * Use the new bootstrap ranges code instead of initializing all the items when the binder view is
-   * measured (t12986103).
-   */
-  public static boolean bootstrapBinderItems = false;
-
-  /**
    * Whether to use Object pooling via {@link com.facebook.litho.ComponentsPools}. This is switch
    * because we are experimenting with turning off pooling to get a sense of what its impact is in
    * production.
