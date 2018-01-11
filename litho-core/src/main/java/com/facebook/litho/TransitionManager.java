@@ -916,8 +916,7 @@ public class TransitionManager {
       }
       for (int i = 0, size = animationState.propertyStates.size(); i < size; i++) {
         final PropertyState propertyState = animationState.propertyStates.valueAt(i);
-        final AnimationBinding animation = propertyState.animation;
-        if (propertyState.numPendingAnimations > 0 || (animation != null && animation.isActive())) {
+        if (propertyState.numPendingAnimations > 0) {
           return false;
         }
       }
