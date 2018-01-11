@@ -189,6 +189,7 @@ public class ComponentTreeIncrementalMountTest {
       super(context);
     }
 
+    @Override
     protected void mount(
         LayoutState layoutState, Rect currentVisibleArea, boolean processVisibilityOutputs) {
       super.mount(layoutState, currentVisibleArea, processVisibilityOutputs);

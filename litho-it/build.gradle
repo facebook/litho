@@ -84,6 +84,10 @@ dependencies {
     testImplementation files(Jvm.current().getToolsJar())
 }
 
+tasks.withType(JavaCompile) {
+    options.compilerArgs += [ '-Xep:GuardedBy:OFF', '-Xep:CheckReturnValue:OFF' ]
+}
+
 // Source - https://github.com/nenick/AndroidStudioAndRobolectric/blob/master/app/build.workaround-missing-resource.gradle
 // Workaround for missing test resources when running unit tests within android studio.
 // This copies the test resources next to the test classes for each variant.
