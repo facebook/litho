@@ -97,8 +97,10 @@ public class MethodExtractorUtils {
     if (method instanceof Symbol.MethodSymbol) {
       final Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) method;
       try {
-        return methodSymbol.savedParameterNames;
-      } catch (NoSuchFieldError ignored) {
+        //noinspection unchecked
+        return (List<Name>)
+            Symbol.MethodSymbol.class.getField("savedParameterNames").get(methodSymbol);
+      } catch (NoSuchFieldError | IllegalAccessException | NoSuchFieldException ignored) {
         // This can happen on JVM versions >= 10. However, we need to keep this workaround for JVM
         // versions < 8 which do not provide the '-parameters' javac option which is the Right Way
         // to achieve this.
