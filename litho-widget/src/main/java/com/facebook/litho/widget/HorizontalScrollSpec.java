@@ -43,7 +43,6 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
-import com.facebook.yoga.YogaDirection;
 
 /**
  * A component that wraps another component and allow it to be horizontally scrollable. It's
@@ -134,7 +133,6 @@ class HorizontalScrollSpec {
   static void onBoundsDefined(
       ComponentContext context,
       ComponentLayout layout,
-      @State final ScrollPosition lastScrollPosition,
       @FromPrepare ComponentTree contentComponent,
       @FromMeasure Integer measuredComponentWidth,
       @FromMeasure Integer measuredComponentHeight,
@@ -146,8 +144,6 @@ class HorizontalScrollSpec {
     if (measuredComponentWidth != null && measuredComponentHeight != null) {
       componentWidth.set(measuredComponentWidth);
       componentHeight.set(measuredComponentHeight);
-      lastScrollPosition.x =
-          layout.getResolvedLayoutDirection() == YogaDirection.RTL ? measuredComponentWidth : 0;
     } else {
       final int measuredWidth;
       final int measuredHeight;
