@@ -40,16 +40,30 @@ public class RecyclerEventsController {
 
   /**
    * Send the Recycler a request to scroll the content to a specific item in the binder.
+   *
    * @param animated if animated is set to true the scroll will happen with an animation.
    */
-  public void requestScrollToPosition(int position, boolean animated) {
-    if (mRecyclerViewWrapper != null) {
-      if (animated) {
-        mRecyclerViewWrapper.getRecyclerView().smoothScrollToPosition(position);
-      } else {
-        mRecyclerViewWrapper.getRecyclerView().scrollToPosition(position);
-      }
+  public void requestScrollToPosition(final int position, final boolean animated) {
+    if (mRecyclerViewWrapper == null) {
+      return;
     }
+
+    mRecyclerViewWrapper.post(
+        new Runnable() {
+          @Override
+          public void run() {
+            if (mRecyclerViewWrapper == null) {
+              return;
+            }
+
+            if (animated) {
+              mRecyclerViewWrapper.getRecyclerView().smoothScrollToPosition(position);
+              return;
+            }
+
+            mRecyclerViewWrapper.getRecyclerView().scrollToPosition(position);
+          }
+        });
   }
 
   public void clearRefreshing() {
