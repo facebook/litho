@@ -51,7 +51,7 @@ class LikersComponentSpec {
         .alignItems(FLEX_START)
         .child(
             Image.create(c)
-                 .srcRes(R.drawable.like))
+                 .drawableRes(R.drawable.like))
         .child(
             Text.create(c)
                 .text(formatLikers(likers))

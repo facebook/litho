@@ -28,7 +28,7 @@ public class CheckboxSpec {
 
     return Column.create(c)
         .child(Image.create(c)
-            .srcRes(isChecked
+            .drawableRes(isChecked
                 ? R.drawable.is_checked
                 : R.drawable.is_unchecked))
         .child(Text.create(c)
@@ -136,7 +136,7 @@ public class CheckboxSpec {
 
     return Column.create(c)
         .child(Image.create(c)
-        .srcRes(isChecked
+        .drawableRes(isChecked
             ? R.drawable.is_checked
             : R.drawable.is_unchecked))
         .clickHandler(Checkbox.onCheckboxClicked(c)))

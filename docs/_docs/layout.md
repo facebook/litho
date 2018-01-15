@@ -46,7 +46,7 @@ If you would like to overlay one view on top of the other -- similar to a `Frame
 Column.create(c)
     .child(
         Image.create(c)
-            .srcRes(R.drawable.some_big_image)
+            .drawableRes(R.drawable.some_big_image)
             .widthDip(100)
             .heightDip(100))
     .child(

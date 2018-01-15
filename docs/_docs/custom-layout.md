@@ -77,7 +77,7 @@ class MyComponentSpec {
     // Small component to use in case textComponent doesn’t fit within
     // the current layout.
     final Component<Image> imageComponent = Image.create(c)
-        .srcRes(R.drawable.some_icon)
+        .drawableRes(R.drawable.some_icon)
         .build();
 
     // Assuming SizeSpec.getMode(widthSpec) == EXACTLY or AT_MOST.
