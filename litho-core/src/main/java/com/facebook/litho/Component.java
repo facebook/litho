@@ -191,7 +191,7 @@ public abstract class Component extends ComponentLifecycle
    */
   private String generateUniqueGlobalKeyForChild(Component component, String key) {
 
-    final String childKey = getGlobalKey() + key;
+    final String childKey = ComponentKeyUtils.getKeyWithSeparator(getGlobalKey(), key);
     final KeyHandler keyHandler = mScopedContext.getKeyHandler();
 
     /** Null check is for testing only, the keyHandler should never be null here otherwise. */
@@ -228,21 +228,12 @@ public abstract class Component extends ComponentLifecycle
     }
 
     /**
-     * If the key is a duplicate, we start appending an index based on the child component's type
-     * that would uniquely identify it.
+     * If the key is a duplicate, we append an index based on the child component's type that would
+     * uniquely identify it.
      */
     int childIndex = mChildCounters.containsKey(childType) ? mChildCounters.get(childType) : 0;
 
-    /**
-     * Specs that implement {@link com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec} will
-     * call onCreateLayout more than once, so we might record a key in the key handler that doesn't
-     * end up being used in the valid layout output. We'll need to try increasing the index until we
-     * hit a unique key.
-     */
-    String uniqueKey = childKey + childIndex;
-    while (keyHandler.hasKey(uniqueKey)) {
-      uniqueKey = childKey + (childIndex++);
-    }
+    String uniqueKey = ComponentKeyUtils.getKeyForChildPosition(childKey, childIndex);
 
     mChildCounters.put(childType, childIndex + 1);
 

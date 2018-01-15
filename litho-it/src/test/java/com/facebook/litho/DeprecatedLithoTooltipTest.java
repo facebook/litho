@@ -71,7 +71,8 @@ public class DeprecatedLithoTooltipTest {
     Whitebox.setInternalState(
         mComponent,
         "mGlobalKey",
-        mComponent.getTypeId() + "" + Row.create(mContext).build().getTypeId());
+        ComponentKeyUtils.getKeyWithSeparator(
+            mComponent.getTypeId(), Row.create(mContext).build().getTypeId()));
     mContext = ComponentContext.withComponentTree(mContext, mComponentTree);
     mContext = ComponentContext.withComponentScope(mContext, mComponent);
     mLithoView = getLithoView(mComponentTree);

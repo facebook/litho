@@ -109,41 +109,40 @@ public class ComponentGlobalKeyTest {
 
     // Text
     Assert.assertEquals(
-        "" + layoutSpecId + columnSpecId + "[Text2]", getComponentAt(lithoView, 0).getGlobalKey());
+        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "[Text2]"),
+        getComponentAt(lithoView, 0).getGlobalKey());
     // TestViewComponent in child layout
     Assert.assertEquals(
-        layoutSpecId
-            + ""
-            + columnSpecId
-            + nestedLayoutSpecId
-            + columnSpecId
-            + "[TestViewComponent1]",
+        ComponentKeyUtils.getKeyWithSeparator(
+            layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "[TestViewComponent1]"),
         getComponentAt(lithoView, 1).getGlobalKey());
     //background in child
     Assert.assertNull(getComponentAt(lithoView, 2).getGlobalKey());
     // CardClip in child
     Assert.assertEquals(
-        layoutSpecId
-            + ""
-            + columnSpecId
-            + nestedLayoutSpecId
-            + columnSpecId
-            + columnSpecId
-            + "[CardClip1]",
+        ComponentKeyUtils.getKeyWithSeparator(
+            layoutSpecId,
+            columnSpecId,
+            nestedLayoutSpecId,
+            columnSpecId,
+            columnSpecId,
+            "[CardClip1]"),
         getComponentAt(lithoView, 3).getGlobalKey());
     // Text in child
     Assert.assertEquals(
-        layoutSpecId + "" + columnSpecId + nestedLayoutSpecId + columnSpecId + "[Text1]",
+        ComponentKeyUtils.getKeyWithSeparator(
+            layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "[Text1]"),
         getComponentAt(lithoView, 4).getGlobalKey());
     // background
     Assert.assertNull(getComponentAt(lithoView, 5).getGlobalKey());
     // CardClip
     Assert.assertEquals(
-        "" + layoutSpecId + columnSpecId + columnSpecId + "[CardClip2]",
+        ComponentKeyUtils.getKeyWithSeparator(
+            layoutSpecId, columnSpecId, columnSpecId, "[CardClip2]"),
         getComponentAt(lithoView, 6).getGlobalKey());
     // TestViewComponent
     Assert.assertEquals(
-        "" + layoutSpecId + columnSpecId + "[TestViewComponent2]",
+        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "[TestViewComponent2]"),
         getComponentAt(lithoView, 7).getGlobalKey());
   }
 
@@ -243,9 +242,10 @@ public class ComponentGlobalKeyTest {
     final LithoView lithoView = getLithoView(componentTree);
 
     Assert.assertEquals(
-        layoutSpecId + "" + columnTypeId + textSpecId, getComponentAt(lithoView, 0).getGlobalKey());
+        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId),
+        getComponentAt(lithoView, 0).getGlobalKey());
     Assert.assertEquals(
-        layoutSpecId + "" + columnTypeId + textSpecId + "0",
+        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId + "!0"),
         getComponentAt(lithoView, 1).getGlobalKey());
   }
 
@@ -277,10 +277,11 @@ public class ComponentGlobalKeyTest {
     final LithoView lithoView = getLithoView(componentTree);
 
     Assert.assertEquals(
-        layoutSpecId + "" + columnTypeId + columnTypeId + textSpecId,
+        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, columnTypeId, textSpecId),
         getComponentAt(lithoView, 0).getGlobalKey());
     Assert.assertEquals(
-        layoutSpecId + "" + columnTypeId + columnTypeId + "0" + textSpecId,
+        ComponentKeyUtils.getKeyWithSeparator(
+            layoutSpecId, columnTypeId, columnTypeId + "!0", textSpecId),
         getComponentAt(lithoView, 1).getGlobalKey());
   }
 
@@ -323,22 +324,18 @@ public class ComponentGlobalKeyTest {
     LithoView lithoView = getLithoView(componentTree);
 
     Assert.assertEquals(
-        layoutSpecId + "" + columnTypeId + nestedLayoutSpecId + columnTypeId + textSpecId,
+        ComponentKeyUtils.getKeyWithSeparator(
+            layoutSpecId, columnTypeId, nestedLayoutSpecId, columnTypeId, textSpecId),
         getComponentAt(lithoView, 0).getGlobalKey());
     Assert.assertEquals(
-        layoutSpecId
-            + ""
-            + columnTypeId
-            + nestedLayoutSpecId
-            + columnTypeId
-            + ""
-            + textSpecId
-            + "0",
+        ComponentKeyUtils.getKeyWithSeparator(
+            layoutSpecId, columnTypeId, nestedLayoutSpecId, columnTypeId, textSpecId + "!0"),
         getComponentAt(lithoView, 1).getGlobalKey());
     Assert.assertEquals(
-        layoutSpecId + "" + columnTypeId + textSpecId, getComponentAt(lithoView, 2).getGlobalKey());
+        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId),
+        getComponentAt(lithoView, 2).getGlobalKey());
     Assert.assertEquals(
-        layoutSpecId + "" + columnTypeId + textSpecId + "0",
+        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId + "!0"),
         getComponentAt(lithoView, 3).getGlobalKey());
   }
 

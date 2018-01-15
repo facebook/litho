@@ -69,7 +69,9 @@ public class LithoTooltipController {
     }
 
     final String anchorGlobalKey =
-        rootComponent == null ? anchorKey : rootComponent.getGlobalKey() + anchorKey;
+        rootComponent == null
+            ? anchorKey
+            : ComponentKeyUtils.getKeyWithSeparator(rootComponent.getGlobalKey(), anchorKey);
 
     componentTree.showTooltip(lithoTooltip, anchorGlobalKey, xOffset, yOffset);
   }
@@ -153,7 +155,9 @@ public class LithoTooltipController {
     }
 
     final String anchorGlobalKey =
-        rootComponent == null ? anchorKey : rootComponent.getGlobalKey() + anchorKey;
+        rootComponent == null
+            ? anchorKey
+            : ComponentKeyUtils.getKeyWithSeparator(rootComponent.getGlobalKey(), anchorKey);
 
     componentTree.showTooltip(tooltip, anchorGlobalKey, tooltipPosition, xOffset, yOffset);
   }
