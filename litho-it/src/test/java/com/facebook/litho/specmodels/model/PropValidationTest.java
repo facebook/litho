@@ -39,8 +39,8 @@ public class PropValidationTest {
   public void setup() {
     when(mPropModel1.getName()).thenReturn("name1");
     when(mPropModel2.getName()).thenReturn("name2");
-    when(mPropModel1.getType()).thenReturn(TypeName.BOOLEAN);
-    when(mPropModel2.getType()).thenReturn(TypeName.INT);
+    when(mPropModel1.getTypeName()).thenReturn(TypeName.BOOLEAN);
+    when(mPropModel2.getTypeName()).thenReturn(TypeName.INT);
     when(mPropModel1.isOptional()).thenReturn(false);
     when(mPropModel2.isOptional()).thenReturn(false);
     when(mPropModel1.getResType()).thenReturn(ResType.NONE);
@@ -55,8 +55,8 @@ public class PropValidationTest {
   public void testTwoPropsWithSameNameButDifferentType() {
     when(mPropModel1.getName()).thenReturn("sameName");
     when(mPropModel2.getName()).thenReturn("sameName");
-    when(mPropModel1.getType()).thenReturn(TypeName.BOOLEAN);
-    when(mPropModel2.getType()).thenReturn(TypeName.INT);
+    when(mPropModel1.getTypeName()).thenReturn(TypeName.BOOLEAN);
+    when(mPropModel2.getTypeName()).thenReturn(TypeName.INT);
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(mSpecModel, PropValidation.RESERVED_PROP_NAMES);
@@ -72,8 +72,8 @@ public class PropValidationTest {
   public void testTwoPropsWithSameNameButDifferentIsOptional() {
     when(mPropModel1.getName()).thenReturn("sameName");
     when(mPropModel2.getName()).thenReturn("sameName");
-    when(mPropModel1.getType()).thenReturn(TypeName.INT);
-    when(mPropModel2.getType()).thenReturn(TypeName.INT);
+    when(mPropModel1.getTypeName()).thenReturn(TypeName.INT);
+    when(mPropModel2.getTypeName()).thenReturn(TypeName.INT);
     when(mPropModel1.isOptional()).thenReturn(true);
 
     List<SpecModelValidationError> validationErrors =
@@ -90,8 +90,8 @@ public class PropValidationTest {
   public void testTwoPropsWithSameNameButDifferentResType() {
     when(mPropModel1.getName()).thenReturn("sameName");
     when(mPropModel2.getName()).thenReturn("sameName");
-    when(mPropModel1.getType()).thenReturn(TypeName.INT);
-    when(mPropModel2.getType()).thenReturn(TypeName.INT);
+    when(mPropModel1.getTypeName()).thenReturn(TypeName.INT);
+    when(mPropModel2.getTypeName()).thenReturn(TypeName.INT);
     when(mPropModel1.getResType()).thenReturn(ResType.INT);
 
     List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel, PropValidation.RESERVED_PROP_NAMES);
@@ -117,7 +117,7 @@ public class PropValidationTest {
 
   @Test
   public void testPropWithReservedType() {
-    when(mPropModel1.getType()).thenReturn(ClassNames.COMPONENT_LAYOUT);
+    when(mPropModel1.getTypeName()).thenReturn(ClassNames.COMPONENT_LAYOUT);
 
     List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel, PropValidation.RESERVED_PROP_NAMES);
     assertThat(validationErrors).hasSize(1);
@@ -144,7 +144,7 @@ public class PropValidationTest {
   @Test
   public void testIncorrectTypeForResType() {
     when(mPropModel1.getResType()).thenReturn(ResType.BOOL);
-    when(mPropModel1.getType()).thenReturn(TypeName.INT);
+    when(mPropModel1.getTypeName()).thenReturn(TypeName.INT);
 
     List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel, PropValidation.RESERVED_PROP_NAMES);
     assertThat(validationErrors).hasSize(1);
@@ -182,7 +182,7 @@ public class PropValidationTest {
     when(mPropModel1.getResType()).thenReturn(ResType.NONE);
     when(mPropModel1.getVarArgsSingleName()).thenReturn("test");
     when(mPropModel1.hasVarArgs()).thenReturn(true);
-    when(mPropModel1.getType()).thenReturn(TypeName.get(String.class));
+    when(mPropModel1.getTypeName()).thenReturn(TypeName.get(String.class));
 
     List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel, PropValidation.RESERVED_PROP_NAMES);
     assertThat(validationErrors).hasSize(1);
@@ -196,7 +196,7 @@ public class PropValidationTest {
     when(mPropModel1.getResType()).thenReturn(ResType.NONE);
     when(mPropModel1.getVarArgsSingleName()).thenReturn("test");
     when(mPropModel1.hasVarArgs()).thenReturn(true);
-    when(mPropModel1.getType())
+    when(mPropModel1.getTypeName())
         .thenReturn(ParameterizedTypeName.get(ArrayList.class, String.class));
 
     List<SpecModelValidationError> validationErrors = PropValidation.validate(mSpecModel, PropValidation.RESERVED_PROP_NAMES);
@@ -210,7 +210,7 @@ public class PropValidationTest {
   public void testIncorrectTypeForResTypeWithVarArg() {
     when(mPropModel1.getResType()).thenReturn(ResType.BOOL);
     when(mPropModel1.hasVarArgs()).thenReturn(true);
-    when(mPropModel1.getType())
+    when(mPropModel1.getTypeName())
         .thenReturn(ParameterizedTypeName.get(ClassNames.LIST, TypeName.INT.box()));
 
     List<SpecModelValidationError> validationErrors =
@@ -226,12 +226,12 @@ public class PropValidationTest {
   @Test
   public void testResTypeDimenMustNotHavePxOrDimensionAnnotations() {
     when(mPropModel1.getResType()).thenReturn(ResType.DIMEN_OFFSET);
-    when(mPropModel1.getType()).thenReturn(TypeName.INT);
+    when(mPropModel1.getTypeName()).thenReturn(TypeName.INT);
     when(mPropModel1.getExternalAnnotations())
         .thenReturn(ImmutableList.of(AnnotationSpec.builder(ClassNames.PX).build()));
 
     when(mPropModel2.getResType()).thenReturn(ResType.DIMEN_SIZE);
-    when(mPropModel2.getType()).thenReturn(TypeName.INT);
+    when(mPropModel2.getTypeName()).thenReturn(TypeName.INT);
     when(mPropModel2.getExternalAnnotations())
         .thenReturn(ImmutableList.of(AnnotationSpec.builder(ClassNames.DIMENSION).build()));
 

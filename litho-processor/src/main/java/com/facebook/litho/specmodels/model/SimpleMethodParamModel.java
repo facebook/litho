@@ -40,7 +40,7 @@ public class SimpleMethodParamModel implements MethodParamModel {
   }
 
   @Override
-  public TypeName getType() {
+  public TypeName getTypeName() {
     return mTypeName;
   }
 

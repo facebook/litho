@@ -81,15 +81,15 @@ public class EventMethodExtractorTest {
     assertThat(eventMethod.methodParams).hasSize(3);
 
     assertThat(eventMethod.methodParams.get(0).getName()).isEqualTo("testProp");
-    assertThat(eventMethod.methodParams.get(0).getType()).isEqualTo(TypeName.BOOLEAN);
+    assertThat(eventMethod.methodParams.get(0).getTypeName()).isEqualTo(TypeName.BOOLEAN);
     assertThat(eventMethod.methodParams.get(0).getAnnotations()).hasSize(1);
 
     assertThat(eventMethod.methodParams.get(1).getName()).isEqualTo("testState");
-    assertThat(eventMethod.methodParams.get(1).getType()).isEqualTo(TypeName.INT);
+    assertThat(eventMethod.methodParams.get(1).getTypeName()).isEqualTo(TypeName.INT);
     assertThat(eventMethod.methodParams.get(1).getAnnotations()).hasSize(1);
 
     assertThat(eventMethod.methodParams.get(2).getName()).isEqualTo("testPermittedAnnotation");
-    assertThat(eventMethod.methodParams.get(2).getType())
+    assertThat(eventMethod.methodParams.get(2).getTypeName())
         .isEqualTo(ClassName.bestGuess("java.lang.Object"));
     assertThat(eventMethod.methodParams.get(2).getAnnotations()).hasSize(1);
   }

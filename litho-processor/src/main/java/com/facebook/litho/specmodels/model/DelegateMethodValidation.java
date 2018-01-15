@@ -87,7 +87,7 @@ public class DelegateMethodValidation {
             SpecModelUtils.getMethodModelWithAnnotation(specModel, annotation);
         if (method != null &&
             (method.methodParams.size() < 2 ||
-                !method.methodParams.get(1).getType().equals(mountType))) {
+                !method.methodParams.get(1).getTypeName().equals(mountType))) {
           validationErrors.add(
               new SpecModelValidationError(
                   method.representedObject,
@@ -175,7 +175,7 @@ public class DelegateMethodValidation {
                           + interStageOutputMethodAnnotation
                           + " that has a param "
                           + "Output<"
-                          + delegateMethodParam.getType().box()
+                          + delegateMethodParam.getTypeName().box()
                           + "> "
                           + delegateMethodParam.getName()));
             } else if (!hasMatchingInterStageOutput(interStageOutputMethod, delegateMethodParam)) {
@@ -191,7 +191,7 @@ public class DelegateMethodValidation {
                           + interStageOutputMethodAnnotation
                           + " must have a param "
                           + "Output<"
-                          + delegateMethodParam.getType().box()
+                          + delegateMethodParam.getTypeName().box()
                           + "> "
                           + delegateMethodParam.getName()));
             }
@@ -240,7 +240,7 @@ public class DelegateMethodValidation {
 
       if (i < definedParameterTypes.size()) {
         if (!definedParameterTypes.get(i).equals(ClassNames.OBJECT)
-            && !delegateMethodParam.getType().equals(definedParameterTypes.get(i))) {
+            && !delegateMethodParam.getTypeName().equals(definedParameterTypes.get(i))) {
           validationErrors.add(
               new SpecModelValidationError(
                   delegateMethodParam.getRepresentedObject(),
@@ -292,7 +292,7 @@ public class DelegateMethodValidation {
       MethodParamModel methodParamModel, ImmutableList<MethodParamModel> extraOptionalParameters) {
     for (MethodParamModel extraOptionalParameter : extraOptionalParameters) {
       if (methodParamModel instanceof SimpleMethodParamModel
-          && methodParamModel.getType().equals(extraOptionalParameter.getType())
+          && methodParamModel.getTypeName().equals(extraOptionalParameter.getTypeName())
           && methodParamModel.getAnnotations().isEmpty()) {
         return true;
       }
@@ -318,11 +318,11 @@ public class DelegateMethodValidation {
       SpecMethodModel<DelegateMethod, Void> method, MethodParamModel interStageInput) {
     for (MethodParamModel methodParam : method.methodParams) {
       if (methodParam.getName().equals(interStageInput.getName()) &&
-          methodParam.getType() instanceof ParameterizedTypeName &&
-          ((ParameterizedTypeName) methodParam.getType()).rawType.equals(ClassNames.OUTPUT) &&
-          ((ParameterizedTypeName) methodParam.getType()).typeArguments.size() == 1 &&
-          ((ParameterizedTypeName) methodParam.getType()).typeArguments.get(0).equals(
-              interStageInput.getType().box())) {
+          methodParam.getTypeName() instanceof ParameterizedTypeName &&
+          ((ParameterizedTypeName) methodParam.getTypeName()).rawType.equals(ClassNames.OUTPUT) &&
+          ((ParameterizedTypeName) methodParam.getTypeName()).typeArguments.size() == 1 &&
+          ((ParameterizedTypeName) methodParam.getTypeName()).typeArguments.get(0).equals(
+              interStageInput.getTypeName().box())) {
         return true;
       }
     }
@@ -363,8 +363,8 @@ public class DelegateMethodValidation {
       case INJECT_PROP:
         return MethodParamModelUtils.isAnnotatedWith(methodParamModel, InjectProp.class);
       case INTER_STAGE_OUTPUT:
-        return methodParamModel.getType() instanceof ParameterizedTypeName &&
-            ((ParameterizedTypeName) methodParamModel.getType()).rawType.equals(ClassNames.OUTPUT);
+        return methodParamModel.getTypeName() instanceof ParameterizedTypeName &&
+            ((ParameterizedTypeName) methodParamModel.getTypeName()).rawType.equals(ClassNames.OUTPUT);
       case PROP_OUTPUT:
         return SpecModelUtils.isPropOutput(specModel, methodParamModel);
       case STATE_OUTPUT:
@@ -415,7 +415,7 @@ public class DelegateMethodValidation {
     final StringBuilder stringBuilder = new StringBuilder();
     for (MethodParamModel optionalParameter : optionalParameters) {
       stringBuilder
-          .append(optionalParameter.getType())
+          .append(optionalParameter.getTypeName())
           .append(" ")
           .append(optionalParameter.getName())
           .append(". ");

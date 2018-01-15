@@ -93,34 +93,34 @@ public class SpecModelUtils {
   public static boolean isPropOutput(SpecModel specModel, MethodParamModel methodParamModel) {
     final PropModel prop = getPropWithName(specModel, methodParamModel.getName());
     return prop != null &&
-        methodParamModel.getType() instanceof ParameterizedTypeName &&
-        ((ParameterizedTypeName) methodParamModel.getType()).rawType.equals(OUTPUT) &&
-        ((ParameterizedTypeName) methodParamModel.getType()).typeArguments.size() == 1 &&
-        ((ParameterizedTypeName) methodParamModel.getType()).typeArguments.get(0)
-            .equals(prop.getType().box());
+        methodParamModel.getTypeName() instanceof ParameterizedTypeName &&
+        ((ParameterizedTypeName) methodParamModel.getTypeName()).rawType.equals(OUTPUT) &&
+        ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.size() == 1 &&
+        ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.get(0)
+            .equals(prop.getTypeName().box());
   }
 
   public static boolean isStateOutput(SpecModel specModel, MethodParamModel methodParamModel) {
     final StateParamModel stateValue =
         SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName());
     return stateValue != null &&
-        methodParamModel.getType() instanceof ParameterizedTypeName &&
-        ((ParameterizedTypeName) methodParamModel.getType()).rawType.equals(OUTPUT) &&
-        ((ParameterizedTypeName) methodParamModel.getType()).typeArguments.size() == 1 &&
-        ((ParameterizedTypeName) methodParamModel.getType()).typeArguments.get(0)
-            .equals(stateValue.getType().box());
+        methodParamModel.getTypeName() instanceof ParameterizedTypeName &&
+        ((ParameterizedTypeName) methodParamModel.getTypeName()).rawType.equals(OUTPUT) &&
+        ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.size() == 1 &&
+        ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.get(0)
+            .equals(stateValue.getTypeName().box());
   }
 
   public static boolean isStateValue(SpecModel specModel, MethodParamModel methodParamModel) {
     final StateParamModel stateValue =
         SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName());
     return stateValue != null &&
-        methodParamModel.getType() instanceof ParameterizedTypeName &&
-        ((ParameterizedTypeName) methodParamModel.getType()).rawType
+        methodParamModel.getTypeName() instanceof ParameterizedTypeName &&
+        ((ParameterizedTypeName) methodParamModel.getTypeName()).rawType
             .equals(ClassNames.STATE_VALUE) &&
-        ((ParameterizedTypeName) methodParamModel.getType()).typeArguments.size() == 1 &&
-        ((ParameterizedTypeName) methodParamModel.getType()).typeArguments.get(0)
-            .equals(stateValue.getType().box());
+        ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.size() == 1 &&
+        ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.get(0)
+            .equals(stateValue.getTypeName().box());
   }
 
   /** @return the model for state/prop that this Diff is refering to. */

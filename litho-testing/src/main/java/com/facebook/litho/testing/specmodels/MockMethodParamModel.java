@@ -42,7 +42,7 @@ public class MockMethodParamModel implements MethodParamModel {
   }
 
   @Override
-  public TypeName getType() {
+  public TypeName getTypeName() {
     return mType;
   }
 

@@ -20,9 +20,9 @@ import java.util.List;
 public interface MethodParamModel {
 
   /**
-   * @return the type of the param.
+   * @return the typeName of the param.
    */
-  TypeName getType();
+  TypeName getTypeName();
 
   /**
    * @return the name of the param.

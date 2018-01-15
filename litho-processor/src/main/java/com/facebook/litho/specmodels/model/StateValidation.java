@@ -45,7 +45,7 @@ public class StateValidation {
         final StateParamModel thatStateValue = stateValues.get(j);
 
         if (thisStateValue.getName().equals(thatStateValue.getName())) {
-          if (!thisStateValue.getType().box().equals(thatStateValue.getType().box())) {
+          if (!thisStateValue.getTypeName().box().equals(thatStateValue.getTypeName().box())) {
             validationErrors.add(new SpecModelValidationError(
                 thatStateValue.getRepresentedObject(),
                 "State values with the same name must have the same type."));
@@ -118,17 +118,17 @@ public class StateValidation {
         }
       } else {
         // Check #2
-        if (!(methodParam.getType() instanceof ParameterizedTypeName) ||
-            !(((ParameterizedTypeName) methodParam.getType()).rawType.equals(STATE_VALUE))) {
+        if (!(methodParam.getTypeName() instanceof ParameterizedTypeName) ||
+            !(((ParameterizedTypeName) methodParam.getTypeName()).rawType.equals(STATE_VALUE))) {
           validationErrors.add(
               new SpecModelValidationError(
                   methodParam.getRepresentedObject(),
                   "Only state parameters and parameters annotated with @Param are permitted in " +
                       "@OnUpdateState method, and all state parameters must be of type " +
                       "com.facebook.litho.StateValue, but " + methodParam.getName() +
-                      " is of type " + methodParam.getType() + "."));
-        } else if (((ParameterizedTypeName) methodParam.getType()).typeArguments.size() != 1 ||
-            ((ParameterizedTypeName) methodParam.getType()).typeArguments.get(0)
+                      " is of type " + methodParam.getTypeName() + "."));
+        } else if (((ParameterizedTypeName) methodParam.getTypeName()).typeArguments.size() != 1 ||
+            ((ParameterizedTypeName) methodParam.getTypeName()).typeArguments.get(0)
                 instanceof WildcardTypeName) {
           validationErrors.add(
               new SpecModelValidationError(
@@ -139,7 +139,7 @@ public class StateValidation {
         } else if (!definesStateValue(
             specModel,
             methodParam.getName(),
-            ((ParameterizedTypeName) methodParam.getType()).typeArguments.get(0))) {
+            ((ParameterizedTypeName) methodParam.getTypeName()).typeArguments.get(0))) {
           // Check #3
           validationErrors.add(
               new SpecModelValidationError(
@@ -156,7 +156,7 @@ public class StateValidation {
   private static boolean definesStateValue(SpecModel specModel, String name, TypeName type) {
     for (StateParamModel stateValue : specModel.getStateValues()) {
       if (stateValue.getName().equals(name) &&
-          stateValue.getType().box().equals(type.box())) {
+          stateValue.getTypeName().box().equals(type.box())) {
         return true;
       }
     }

@@ -181,7 +181,7 @@ public class PropValidation {
 
       TypeName argumentType = null;
       if (prop.hasVarArgs()) {
-        TypeName typeName = prop.getType();
+        TypeName typeName = prop.getTypeName();
         if (typeName instanceof ParameterizedTypeName) {
           ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) typeName;
           if (!parameterizedTypeName.rawType.equals(ClassNames.LIST)) {
@@ -199,7 +199,7 @@ public class PropValidation {
                       + " is a variable argument, and thus requires a parameterized List type."));
         }
       } else {
-        argumentType = prop.getType();
+        argumentType = prop.getTypeName();
       }
 
       if (ILLEGAL_PROP_TYPES.contains(argumentType)) {
@@ -250,12 +250,12 @@ public class PropValidation {
                 propDefault.mRepresentedObject,
                 "PropDefault " + propDefault.mName + " of type " + propDefault.mType +
                     " does not correspond to any defined prop"));
-      } else if (!(propDefault.mType.box()).equals(prop.getType().box())) {
+      } else if (!(propDefault.mType.box()).equals(prop.getTypeName().box())) {
         validationErrors.add(
             new SpecModelValidationError(
                 propDefault.mRepresentedObject,
                 "PropDefault " + propDefault.mName + " of type " + propDefault.mType +
-                    " should be of type " + prop.getType()));
+                    " should be of type " + prop.getTypeName()));
       }
     }
 
@@ -341,7 +341,7 @@ public class PropValidation {
         break;
     }
 
-    if (!validResTypes.contains(prop.getType())) {
+    if (!validResTypes.contains(prop.getTypeName())) {
       validationErrors.add(
           new SpecModelValidationError(
               prop.getRepresentedObject(),

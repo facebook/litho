@@ -28,8 +28,8 @@ public class TreePropModel implements MethodParamModel {
   }
 
   @Override
-  public TypeName getType() {
-    return mParamModel.getType();
+  public TypeName getTypeName() {
+    return mParamModel.getTypeName();
   }
 
   @Override

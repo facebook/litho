@@ -36,8 +36,8 @@ public class PropModel implements MethodParamModel {
   }
 
   @Override
-  public TypeName getType() {
-    return mParamModel.getType();
+  public TypeName getTypeName() {
+    return mParamModel.getTypeName();
   }
 
   @Override
@@ -82,7 +82,7 @@ public class PropModel implements MethodParamModel {
    */
   public boolean hasDefault(ImmutableList<PropDefaultModel> propDefaults) {
     for (PropDefaultModel propDefault : propDefaults) {
-      if (propDefault.mType.equals(mParamModel.getType())
+      if (propDefault.mType.equals(mParamModel.getTypeName())
           && propDefault.mName.equals(mParamModel.getName())) {
         return true;
       }

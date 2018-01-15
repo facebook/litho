@@ -41,7 +41,7 @@ class TreePropValidation {
       }
 
       if (onCreateTreePropMethod.methodParams.isEmpty() ||
-          !onCreateTreePropMethod.methodParams.get(0).getType()
+          !onCreateTreePropMethod.methodParams.get(0).getTypeName()
               .equals(specModel.getContextClass())) {
         validationErrors.add(
             new SpecModelValidationError(

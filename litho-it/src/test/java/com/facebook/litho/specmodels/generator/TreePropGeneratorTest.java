@@ -89,7 +89,7 @@ public class TreePropGeneratorTest {
             null);
 
     when(mTreeProp.getName()).thenReturn("treeProp");
-    when(mTreeProp.getType()).thenReturn(TypeName.INT);
+    when(mTreeProp.getTypeName()).thenReturn(TypeName.INT);
 
     when(mSpecModel.getContextClass()).thenReturn(ClassNames.COMPONENT_CONTEXT);
     when(mSpecModel.getComponentClass()).thenReturn(ClassNames.COMPONENT);
@@ -134,7 +134,7 @@ public class TreePropGeneratorTest {
             null);
 
     when(mGenericTreeProp.getName()).thenReturn("genericTreeProp");
-    when(mGenericTreeProp.getType())
+    when(mGenericTreeProp.getTypeName())
         .thenReturn(ParameterizedTypeName.get(GenericObject.class, Boolean.class));
 
     when(mGenericSpecModel.getContextClass()).thenReturn(ClassNames.COMPONENT_CONTEXT);

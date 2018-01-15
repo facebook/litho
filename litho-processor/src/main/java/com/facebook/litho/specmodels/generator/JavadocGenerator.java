@@ -43,7 +43,7 @@ public class JavadocGenerator {
               "$L $L $L $L\n",
               propTag,
               prop.getName(),
-              prop.getType(),
+              prop.getTypeName(),
               getPropJavadocForProp(specModel, prop)));
     }
 

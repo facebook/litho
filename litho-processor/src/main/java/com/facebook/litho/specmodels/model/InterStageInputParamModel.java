@@ -27,8 +27,8 @@ public class InterStageInputParamModel implements MethodParamModel {
   }
 
   @Override
-  public TypeName getType() {
-    return mParamModel.getType().box();
+  public TypeName getTypeName() {
+    return mParamModel.getTypeName().box();
   }
 
   @Override

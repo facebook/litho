@@ -52,8 +52,8 @@ public class StateValidationTest {
     StateParamModel stateValue2 = mock(StateParamModel.class);
     when(stateValue1.getName()).thenReturn("sameName");
     when(stateValue2.getName()).thenReturn("sameName");
-    when(stateValue1.getType()).thenReturn(TypeName.BOOLEAN);
-    when(stateValue2.getType()).thenReturn(TypeName.INT);
+    when(stateValue1.getTypeName()).thenReturn(TypeName.BOOLEAN);
+    when(stateValue2.getTypeName()).thenReturn(TypeName.INT);
     when(stateValue2.getRepresentedObject()).thenReturn(mRepresentedObject2);
     when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue1, stateValue2));
 
@@ -71,8 +71,8 @@ public class StateValidationTest {
     StateParamModel stateValue2 = mock(StateParamModel.class);
     when(stateValue1.getName()).thenReturn("sameName");
     when(stateValue2.getName()).thenReturn("sameName");
-    when(stateValue1.getType()).thenReturn(TypeName.BOOLEAN);
-    when(stateValue2.getType()).thenReturn(TypeName.BOOLEAN);
+    when(stateValue1.getTypeName()).thenReturn(TypeName.BOOLEAN);
+    when(stateValue2.getTypeName()).thenReturn(TypeName.BOOLEAN);
     when(stateValue1.canUpdateLazily()).thenReturn(false);
     when(stateValue1.canUpdateLazily()).thenReturn(true);
     when(stateValue2.getRepresentedObject()).thenReturn(mRepresentedObject2);

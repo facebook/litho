@@ -29,8 +29,8 @@ public class DiffStateParamModel implements MethodParamModel {
   }
 
   @Override
-  public TypeName getType() {
-    return ParameterizedTypeName.get(ClassNames.DIFF, mUnderlyingStateParamModel.getType().box());
+  public TypeName getTypeName() {
+    return ParameterizedTypeName.get(ClassNames.DIFF, mUnderlyingStateParamModel.getTypeName().box());
   }
 
   @Override
@@ -77,7 +77,7 @@ public class DiffStateParamModel implements MethodParamModel {
 
   public boolean isSameUnderlyingStateValueModel(StateParamModel stateParamModel) {
     return stateParamModel.getName().equals(getName()) &&
-        stateParamModel.getType().box().equals(mUnderlyingStateParamModel.getType().box()) &&
+        stateParamModel.getTypeName().box().equals(mUnderlyingStateParamModel.getTypeName().box()) &&
         stateParamModel.canUpdateLazily() == canUpdateLazily();
   }
 }

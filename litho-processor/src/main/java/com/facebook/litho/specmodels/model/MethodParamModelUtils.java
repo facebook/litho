@@ -48,8 +48,8 @@ public class MethodParamModelUtils {
   }
 
   public static boolean isDiffType(MethodParamModel methodParam) {
-    return methodParam.getType() instanceof ParameterizedTypeName
-        && ((ParameterizedTypeName) methodParam.getType()).rawType.equals(ClassNames.DIFF);
+    return methodParam.getTypeName() instanceof ParameterizedTypeName
+        && ((ParameterizedTypeName) methodParam.getTypeName()).rawType.equals(ClassNames.DIFF);
   }
 
   public static @Nullable Annotation getAnnotation(
@@ -64,7 +64,7 @@ public class MethodParamModelUtils {
   }
 
   public static List<TypeVariableName> getTypeVariables(MethodParamModel methodParam) {
-    return getTypeVariables(methodParam.getType());
+    return getTypeVariables(methodParam.getTypeName());
   }
 
   public static List<TypeVariableName> getTypeVariables(TypeName typeName) {

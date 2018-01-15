@@ -97,7 +97,7 @@ public class TriggerGenerator {
         }
 
         if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
-          eventTriggerParams.add(",\n($T) params[$L]", methodParamModel.getType(), paramIndex++);
+          eventTriggerParams.add(",\n($T) params[$L]", methodParamModel.getTypeName(), paramIndex++);
         }
       }
 
@@ -183,15 +183,15 @@ public class TriggerGenerator {
 
       if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromTrigger.class)
           || MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
-        methodSpec.addParameter(methodParamModel.getType(), methodParamModel.getName());
+        methodSpec.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
         delegation.add(methodParamModel.getName());
-      } else if (methodParamModel.getType().equals(specModel.getContextClass())) {
+      } else if (methodParamModel.getTypeName().equals(specModel.getContextClass())) {
         delegation.add(
-            "($T) $L.getScopedContext()", methodParamModel.getType(), REF_VARIABLE_NAME);
+            "($T) $L.getScopedContext()", methodParamModel.getTypeName(), REF_VARIABLE_NAME);
       } else {
         delegation.add(
             "($T) $L.$L",
-            methodParamModel.getType(),
+            methodParamModel.getTypeName(),
             REF_VARIABLE_NAME,
             getImplAccessor(specModel, methodParamModel));
       }
@@ -323,21 +323,21 @@ public class TriggerGenerator {
     for (int i = 0, size = eventMethodModel.methodParams.size(); i < size; i++) {
       final MethodParamModel methodParamModel = eventMethodModel.methodParams.get(i);
 
-      if (methodParamModel.getType().equals(contextClassName)) {
+      if (methodParamModel.getTypeName().equals(contextClassName)) {
         continue;
       }
 
       if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromTrigger.class)) {
-        eventTriggerMethod.addParameter(methodParamModel.getType(), methodParamModel.getName());
+        eventTriggerMethod.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
         eventTriggerMethod.addStatement(
             "_eventState.$L = $L", methodParamModel.getName(), methodParamModel.getName());
       }
 
       if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
         paramsBlock.add("$L,\n", methodParamModel.getName());
-        eventTriggerMethod.addParameter(methodParamModel.getType(), methodParamModel.getName());
-        if (methodParamModel.getType() instanceof TypeVariableName) {
-          eventTriggerMethod.addTypeVariable((TypeVariableName) methodParamModel.getType());
+        eventTriggerMethod.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
+        if (methodParamModel.getTypeName() instanceof TypeVariableName) {
+          eventTriggerMethod.addTypeVariable((TypeVariableName) methodParamModel.getTypeName());
         }
       }
     }

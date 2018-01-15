@@ -9,7 +9,6 @@
 
 package com.facebook.litho.sections.specmodels.model;
 
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_PARAM_NAME;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_STATE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.INJECT_PROP;
@@ -261,7 +260,7 @@ public class DelegateMethodDescriptions {
     final MethodParamModel serviceParam = specModel.getServiceParam();
     final String componentName = specModel.getComponentName();
     return DelegateMethodDescription.fromDelegateMethodDescription(onCreateService)
-        .returnType(serviceParam.getType())
+        .returnType(serviceParam.getTypeName())
         .extraMethods(
             ImmutableList.<MethodSpec>of(
                 createService(serviceParam.getName()),

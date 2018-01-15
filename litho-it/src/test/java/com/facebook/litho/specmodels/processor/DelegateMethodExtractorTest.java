@@ -87,15 +87,15 @@ public class DelegateMethodExtractorTest {
     assertThat(delegateMethod.methodParams).hasSize(3);
 
     assertThat(delegateMethod.methodParams.get(0).getName()).isEqualTo("testProp");
-    assertThat(delegateMethod.methodParams.get(0).getType()).isEqualTo(TypeName.BOOLEAN);
+    assertThat(delegateMethod.methodParams.get(0).getTypeName()).isEqualTo(TypeName.BOOLEAN);
     assertThat(delegateMethod.methodParams.get(0).getAnnotations()).hasSize(1);
 
     assertThat(delegateMethod.methodParams.get(1).getName()).isEqualTo("testState");
-    assertThat(delegateMethod.methodParams.get(1).getType()).isEqualTo(TypeName.INT);
+    assertThat(delegateMethod.methodParams.get(1).getTypeName()).isEqualTo(TypeName.INT);
     assertThat(delegateMethod.methodParams.get(1).getAnnotations()).hasSize(1);
 
     assertThat(delegateMethod.methodParams.get(2).getName()).isEqualTo("testPermittedAnnotation");
-    assertThat(delegateMethod.methodParams.get(2).getType())
+    assertThat(delegateMethod.methodParams.get(2).getTypeName())
         .isEqualTo(ClassName.bestGuess("java.lang.Object"));
     assertThat(delegateMethod.methodParams.get(2).getAnnotations()).hasSize(1);
   }

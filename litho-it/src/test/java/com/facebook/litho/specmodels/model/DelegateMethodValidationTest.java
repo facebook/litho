@@ -431,7 +431,7 @@ public class DelegateMethodValidationTest {
     when(interStageInputParamModel.getAnnotations())
         .thenReturn(ImmutableList.of((Annotation) () -> FromPrepare.class));
     when(interStageInputParamModel.getName()).thenReturn("interStageInput");
-    when(interStageInputParamModel.getType()).thenReturn(TypeName.INT);
+    when(interStageInputParamModel.getTypeName()).thenReturn(TypeName.INT);
     when(interStageInputParamModel.getRepresentedObject()).thenReturn(mMethodParamObject3);
     when(mMountSpecModel.getDelegateMethods())
         .thenReturn(
@@ -477,7 +477,7 @@ public class DelegateMethodValidationTest {
     when(interStageInputParamModel.getAnnotations())
         .thenReturn(ImmutableList.of((Annotation) () -> FromPrepare.class));
     when(interStageInputParamModel.getName()).thenReturn("interStageInput");
-    when(interStageInputParamModel.getType()).thenReturn(TypeName.INT);
+    when(interStageInputParamModel.getTypeName()).thenReturn(TypeName.INT);
     when(interStageInputParamModel.getRepresentedObject()).thenReturn(mMethodParamObject3);
     when(mMountSpecModel.getDelegateMethods())
         .thenReturn(

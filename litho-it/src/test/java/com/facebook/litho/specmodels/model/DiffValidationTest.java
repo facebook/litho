@@ -49,13 +49,13 @@ public class DiffValidationTest {
     when(mSpecModel.getRenderDataDiffs()).thenReturn(ImmutableList.of(mDiffModel));
 
     when(mStateModel.getName()).thenReturn("stateName");
-    when(mStateModel.getType()).thenReturn(TypeName.INT);
+    when(mStateModel.getTypeName()).thenReturn(TypeName.INT);
 
     when(mPropModel.getName()).thenReturn("propName");
-    when(mPropModel.getType()).thenReturn(TypeName.INT);
+    when(mPropModel.getTypeName()).thenReturn(TypeName.INT);
 
     when(mDiffModel.getName()).thenReturn("stateName");
-    when(mDiffModel.getType()).thenReturn(
+    when(mDiffModel.getTypeName()).thenReturn(
         ParameterizedTypeName.get(ClassNames.DIFF, TypeName.INT.box())
             .annotated(AnnotationSpec.builder(State.class).build()));
     when(mDiffModel.getRepresentedObject()).thenReturn(mDiffRepresentedObject);
@@ -72,7 +72,7 @@ public class DiffValidationTest {
 
   @Test
   public void testDiffModelHasNoTypeParameter() {
-    when(mDiffModel.getType()).thenReturn(
+    when(mDiffModel.getTypeName()).thenReturn(
         ClassNames.DIFF.annotated(AnnotationSpec.builder(State.class).build()));
 
     List<SpecModelValidationError> validationErrors = DiffValidation.validate(mSpecModel);
@@ -81,7 +81,7 @@ public class DiffValidationTest {
 
   @Test
   public void testDiffModelHasDifferentParameterFromState() {
-    when(mDiffModel.getType()).thenReturn(
+    when(mDiffModel.getTypeName()).thenReturn(
         ParameterizedTypeName.get(ClassNames.DIFF, TypeName.BOOLEAN.box())
             .annotated(AnnotationSpec.builder(State.class).build()));
 
@@ -92,7 +92,7 @@ public class DiffValidationTest {
   @Test
   public void testDiffModelHasDifferentParameterFromProp() {
     when(mDiffModel.getName()).thenReturn("propName");
-    when(mDiffModel.getType()).thenReturn(
+    when(mDiffModel.getTypeName()).thenReturn(
         ParameterizedTypeName.get(ClassNames.DIFF, TypeName.BOOLEAN.box())
             .annotated(AnnotationSpec.builder(Prop.class).build()));
     when(mDiffModel.getAnnotations()).thenReturn(ImmutableList.of(annotation(Prop.class)));
@@ -110,7 +110,7 @@ public class DiffValidationTest {
   @Test
   public void testNoErrorProp() {
     when(mDiffModel.getName()).thenReturn("propName");
-    when(mDiffModel.getType()).thenReturn(
+    when(mDiffModel.getTypeName()).thenReturn(
         ParameterizedTypeName.get(ClassNames.DIFF, TypeName.INT.box())
             .annotated(AnnotationSpec.builder(Prop.class).build()));
     when(mDiffModel.getAnnotations()).thenReturn(ImmutableList.of(annotation(Prop.class)));

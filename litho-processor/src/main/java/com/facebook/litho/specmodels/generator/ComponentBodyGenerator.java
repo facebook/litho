@@ -113,7 +113,7 @@ public class ComponentBodyGenerator {
     }
 
     typeSpecDataHolder.addField(
-        FieldSpec.builder(optionalField.getType(), optionalField.getName()).build());
+        FieldSpec.builder(optionalField.getTypeName(), optionalField.getName()).build());
     return typeSpecDataHolder.build();
   }
 
@@ -132,7 +132,7 @@ public class ComponentBodyGenerator {
 
     for (StateParamModel stateValue : specModel.getStateValues()) {
       stateContainerClassBuilder.addField(FieldSpec.builder(
-          stateValue.getType(),
+          stateValue.getTypeName(),
           stateValue.getName()).addAnnotation(State.class).build());
     }
 
@@ -177,11 +177,11 @@ public class ComponentBodyGenerator {
       final String name = modelToDiff.getName();
       if (modelToDiff instanceof PropModel) {
         renderInfoClassBuilder.addField(FieldSpec.builder(
-            modelToDiff.getType(),
+            modelToDiff.getTypeName(),
             name).addAnnotation(Prop.class).build());
       } else {
         renderInfoClassBuilder.addField(FieldSpec.builder(
-            modelToDiff.getType(),
+            modelToDiff.getTypeName(),
             modelToDiff.getName()).addAnnotation(State.class).build());
       }
 
@@ -226,7 +226,7 @@ public class ComponentBodyGenerator {
     final ImmutableList<PropModel> props = specModel.getProps();
 
     for (PropModel prop : props) {
-      final FieldSpec.Builder fieldBuilder = FieldSpec.builder(prop.getType(), prop.getName())
+      final FieldSpec.Builder fieldBuilder = FieldSpec.builder(prop.getTypeName(), prop.getName())
           .addAnnotation(
               AnnotationSpec.builder(Prop.class)
                   .addMember("resType", "$T.$L", ResType.class, prop.getResType())
@@ -260,7 +260,7 @@ public class ComponentBodyGenerator {
 
     for (TreePropModel treeProp : treeProps) {
       typeSpecDataHolder.addField(
-          FieldSpec.builder(treeProp.getType(), treeProp.getName()).build());
+          FieldSpec.builder(treeProp.getTypeName(), treeProp.getName()).build());
     }
 
     return typeSpecDataHolder.build();
@@ -273,7 +273,7 @@ public class ComponentBodyGenerator {
 
     for (InterStageInputParamModel interStageInput : interStageInputs) {
       typeSpecDataHolder.addField(
-          FieldSpec.builder(interStageInput.getType(), interStageInput.getName()).build());
+          FieldSpec.builder(interStageInput.getTypeName(), interStageInput.getName()).build());
     }
 
     return typeSpecDataHolder.build();
@@ -423,7 +423,7 @@ public class ComponentBodyGenerator {
 
       for (MethodParamModel param : params) {
         methodSpecBuilder
-            .addParameter(ParameterSpec.builder(param.getType(), param.getName()).build());
+            .addParameter(ParameterSpec.builder(param.getTypeName(), param.getName()).build());
       }
 
       final CodeBlock.Builder constructor = CodeBlock.builder();
@@ -513,7 +513,7 @@ public class ComponentBodyGenerator {
     final List<MethodParamModel> componentsInImpl = new ArrayList<>();
 
     for (PropModel prop : specModel.getProps()) {
-      final TypeName typeName = prop.getType();
+      final TypeName typeName = prop.getTypeName();
       if (typeName.equals(ClassNames.COMPONENT) ||
           (typeName instanceof ParameterizedTypeName &&
               ((ParameterizedTypeName) typeName).rawType.equals(COMPONENT))) {
@@ -554,7 +554,7 @@ public class ComponentBodyGenerator {
     final CodeBlock.Builder codeBlock = CodeBlock.builder();
 
     final String implAccessor = getImplAccessor(specModel, field);
-    if (field.getType() == TypeName.FLOAT) {
+    if (field.getTypeName() == TypeName.FLOAT) {
       codeBlock
           .beginControlFlow(
               "if (Float.compare($L, $L.$L) != 0)",
@@ -563,7 +563,7 @@ public class ComponentBodyGenerator {
               implAccessor)
           .addStatement("return false")
           .endControlFlow();
-    } else if (field.getType() == TypeName.DOUBLE) {
+    } else if (field.getTypeName() == TypeName.DOUBLE) {
       codeBlock
           .beginControlFlow(
               "if (Double.compare($L, $L.$L) != 0)",
@@ -572,7 +572,7 @@ public class ComponentBodyGenerator {
               implAccessor)
           .addStatement("return false")
           .endControlFlow();
-    } else if (field.getType() instanceof ArrayTypeName) {
+    } else if (field.getTypeName() instanceof ArrayTypeName) {
       codeBlock
           .beginControlFlow(
               "if (!$T.equals($L, $L.$L))",
@@ -582,7 +582,7 @@ public class ComponentBodyGenerator {
               implAccessor)
           .addStatement("return false")
           .endControlFlow();
-    } else if (field.getType().isPrimitive()) {
+    } else if (field.getTypeName().isPrimitive()) {
       codeBlock
           .beginControlFlow(
               "if ($L != $L.$L)",
@@ -591,7 +591,7 @@ public class ComponentBodyGenerator {
               implAccessor)
           .addStatement("return false")
           .endControlFlow();
-    } else if (field.getType().equals(ClassNames.REFERENCE)) {
+    } else if (field.getTypeName().equals(ClassNames.REFERENCE)) {
       codeBlock
           .beginControlFlow(
               "if (Reference.shouldUpdate($L != $L.$L))",
@@ -622,8 +622,8 @@ public class ComponentBodyGenerator {
   }
 
   private static boolean shouldUseIsEquivalentTo(SpecModel specModel, MethodParamModel field) {
-    return (field.getType().equals(ClassNames.COMPONENT)
-        || field.getType().equals(specModel.getComponentClass()));
+    return (field.getTypeName().equals(ClassNames.COMPONENT)
+        || field.getTypeName().equals(specModel.getComponentClass()));
   }
 
   static String getImplAccessor(SpecModel specModel, MethodParamModel methodParamModel) {

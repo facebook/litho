@@ -97,7 +97,7 @@ public final class MatcherGenerator {
       SpecModel specModel, final PropModel prop) {
     final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
 
-    if (getRawType(prop.getType()).equals(ClassNames.COMPONENT)) {
+    if (getRawType(prop.getTypeName()).equals(ClassNames.COMPONENT)) {
       dataHolder.addField(matcherComponentFieldBuilder(prop));
       dataHolder.addMethod(matcherComponentFieldSetterBuilder(specModel, prop));
     }
@@ -107,7 +107,7 @@ public final class MatcherGenerator {
 
     if (prop.hasVarArgs()) {
       dataHolder.addMethod(varArgBuilder(specModel, prop));
-      final ParameterizedTypeName type = (ParameterizedTypeName) prop.getType();
+      final ParameterizedTypeName type = (ParameterizedTypeName) prop.getTypeName();
       if (getRawType(type.typeArguments.get(0)).equals(ClassNames.COMPONENT)) {
         dataHolder.addMethod(varArgBuilderBuilder(specModel, prop));
       }
@@ -204,11 +204,11 @@ public final class MatcherGenerator {
         break;
     }
 
-    if (getRawType(prop.getType()).equals(ClassNames.COMPONENT)) {
+    if (getRawType(prop.getTypeName()).equals(ClassNames.COMPONENT)) {
       dataHolder.addMethod(builderBuilder(specModel, prop, ClassNames.COMPONENT_BUILDER));
     }
 
-    if (getRawType(prop.getType()).equals(ClassNames.REFERENCE)) {
+    if (getRawType(prop.getTypeName()).equals(ClassNames.REFERENCE)) {
       dataHolder.addMethod(builderBuilder(specModel, prop, ClassNames.REFERENCE_BUILDER));
     }
 
@@ -252,7 +252,7 @@ public final class MatcherGenerator {
         prop,
         prop.getName(),
         Collections.singletonList(
-            parameter(prop, prop.getType(), prop.getName(), extraAnnotations)),
+            parameter(prop, prop.getTypeName(), prop.getName(), extraAnnotations)),
         prop.getName());
   }
 
@@ -269,7 +269,7 @@ public final class MatcherGenerator {
   }
 
   private static ParameterizedTypeName getPropMatcherType(PropModel prop) {
-    final TypeName rawType = getRawType(prop.getType());
+    final TypeName rawType = getRawType(prop.getTypeName());
 
     // We can only match against unparameterized (i.e. raw) types. Thanks, Java.
     return ParameterizedTypeName.get(ClassNames.HAMCREST_MATCHER, rawType.box());
@@ -306,7 +306,7 @@ public final class MatcherGenerator {
 
   private static MethodSpec varArgBuilder(
       SpecModel specModel, final PropModel prop, final AnnotationSpec... extraAnnotations) {
-    final ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) prop.getType();
+    final ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) prop.getTypeName();
     final TypeName singleParameterType = parameterizedTypeName.typeArguments.get(0);
     final String varArgName = prop.getVarArgsSingleName();
 
@@ -328,7 +328,7 @@ public final class MatcherGenerator {
 
   private static MethodSpec varArgBuilderBuilder(SpecModel specModel, final PropModel prop) {
     final String varArgName = prop.getVarArgsSingleName();
-    final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getType();
+    final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getTypeName();
     final TypeName internalType = varArgType.typeArguments.get(0);
     final CodeBlock codeBlock =
         CodeBlock.builder()
@@ -419,7 +419,7 @@ public final class MatcherGenerator {
         prop,
         prop.getName() + "Px",
         Collections.singletonList(
-            parameter(prop, prop.getType(), prop.getName(), annotation(ClassNames.PX))),
+            parameter(prop, prop.getTypeName(), prop.getName(), annotation(ClassNames.PX))),
         prop.getName());
   }
 
@@ -468,7 +468,7 @@ public final class MatcherGenerator {
 
   private static TypeName[] getBuilderGenericTypes(
       final PropModel prop, final ClassName builderClass) {
-    return getBuilderGenericTypes(prop.getType(), builderClass);
+    return getBuilderGenericTypes(prop.getTypeName(), builderClass);
   }
 
   private static TypeName[] getBuilderGenericTypes(
@@ -544,7 +544,7 @@ public final class MatcherGenerator {
                 "this.$N = $L.is(($T) $L)",
                 propMatcherName,
                 ClassNames.HAMCREST_CORE_IS,
-                getRawType(prop.getType()),
+                getRawType(prop.getTypeName()),
                 formattedStatement)
             .build();
 
@@ -591,7 +591,7 @@ public final class MatcherGenerator {
         "final $1L impl = ($1L) value.getComponent()", getEnclosedImplClassName(enclosedSpecModel));
 
     for (PropModel prop : specModel.getProps()) {
-      if (getRawType(prop.getType()).equals(ClassNames.COMPONENT)) {
+      if (getRawType(prop.getTypeName()).equals(ClassNames.COMPONENT)) {
         builder.add(generateComponentMatchBlock(prop));
       }
 

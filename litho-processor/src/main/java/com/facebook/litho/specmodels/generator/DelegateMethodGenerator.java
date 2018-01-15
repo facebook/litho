@@ -30,9 +30,7 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 
 import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getImplAccessor;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_PARAM_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.REF_VARIABLE_NAME;
 import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
 import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
@@ -137,7 +135,7 @@ public class DelegateMethodGenerator {
       final MethodParamModel methodParamModel = delegateMethod.methodParams.get(i);
       final int definedParameterTypesSize = methodDescription.definedParameterTypes.size();
       if (i < definedParameterTypesSize) {
-        delegation.add("($T) $L", methodParamModel.getType(), methodParamModel.getName());
+        delegation.add("($T) $L", methodParamModel.getTypeName(), methodParamModel.getName());
       } else if (i < definedParameterTypesSize + methodDescription.optionalParameters.size()
           && shouldIncludeOptionalParameter(
               methodParamModel,
@@ -150,17 +148,17 @@ public class DelegateMethodGenerator {
         acquireStatements.addStatement(
             "$T $L = ($T) acquireDiff(_prevImpl == null ? null : _prevImpl.$L, "
                 + "_nextImpl == null ? null : _nextImpl.$L)",
-            methodParamModel.getType(),
+            methodParamModel.getTypeName(),
             methodParamModel.getName(),
             ClassNames.DIFF,
             ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel),
             ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel));
         delegation.add("$L", methodParamModel.getName());
         releaseStatements.addStatement("releaseDiff($L)", methodParamModel.getName());
-      } else if (isOutputType(methodParamModel.getType())) {
+      } else if (isOutputType(methodParamModel.getTypeName())) {
         String localOutputName = methodParamModel.getName() + "Tmp";
         acquireStatements.add(
-            "$T $L = acquireOutput();\n", methodParamModel.getType(), localOutputName);
+            "$T $L = acquireOutput();\n", methodParamModel.getTypeName(), localOutputName);
         delegation.add("$L", localOutputName);
 
         final boolean isPropOutput = SpecModelUtils.isPropOutput(specModel, methodParamModel);
@@ -175,10 +173,10 @@ public class DelegateMethodGenerator {
           releaseStatements.endControlFlow();
         }
         releaseStatements.addStatement("releaseOutput($L)", localOutputName);
-      } else if (isStateValueType(methodParamModel.getType())) {
+      } else if (isStateValueType(methodParamModel.getTypeName())) {
         acquireStatements.add(
             "$T $L = new StateValue<>();\n",
-            methodParamModel.getType(),
+            methodParamModel.getTypeName(),
             methodParamModel.getName());
 
         delegation.add("$L", methodParamModel.getName());
@@ -200,7 +198,7 @@ public class DelegateMethodGenerator {
         final String diffName = "_" + methodParamModel.getName() + "Diff";
         CodeBlock block =
             CodeBlock.builder()
-                .add("$T $L = acquireDiff(\n", methodParamModel.getType(), diffName)
+                .add("$T $L = acquireDiff(\n", methodParamModel.getTypeName(), diffName)
                 .indent()
                 .add(
                     "$L == null ? null : $L.$L,\n",
@@ -216,7 +214,7 @@ public class DelegateMethodGenerator {
       } else {
         delegation.add(
             "($T) $L",
-            methodParamModel.getType(),
+            methodParamModel.getTypeName(),
             getImplAccessor(specModel, methodParamModel));
       }
 
@@ -247,7 +245,7 @@ public class DelegateMethodGenerator {
   private static boolean shouldIncludeOptionalParameter(
       MethodParamModel methodParamModel, MethodParamModel extraOptionalParameter) {
     return methodParamModel instanceof SimpleMethodParamModel
-        && methodParamModel.getType().equals(extraOptionalParameter.getType())
+        && methodParamModel.getTypeName().equals(extraOptionalParameter.getTypeName())
         && methodParamModel.getAnnotations().isEmpty();
   }
 

@@ -42,8 +42,8 @@ public class DiffValidation {
       final RenderDataDiffModel diffModel = diffModels.get(i);
 
       final ParameterizedTypeName typeName =
-          (diffModel.getType() instanceof ParameterizedTypeName) ?
-              ((ParameterizedTypeName) diffModel.getType()) : null;
+          (diffModel.getTypeName() instanceof ParameterizedTypeName) ?
+              ((ParameterizedTypeName) diffModel.getTypeName()) : null;
       if (typeName == null || typeName.typeArguments.size() != 1) {
         validationErrors.add(
             new SpecModelValidationError(
@@ -56,7 +56,7 @@ public class DiffValidation {
       if (MethodParamModelUtils.isAnnotatedWith(diffModel, Prop.class)) {
         final PropModel propModel =
             SpecModelUtils.getPropWithName(specModel, diffModel.getName());
-        if (propModel == null || !expectedType.equals(propModel.getType().box())) {
+        if (propModel == null || !expectedType.equals(propModel.getTypeName().box())) {
           validationErrors.add(
               new SpecModelValidationError(
                   diffModel.getRepresentedObject(),
@@ -65,7 +65,7 @@ public class DiffValidation {
       } else if (MethodParamModelUtils.isAnnotatedWith(diffModel, State.class)) {
         final StateParamModel stateValue =
             SpecModelUtils.getStateValueWithName(specModel, diffModel.getName());
-        if (stateValue == null || !expectedType.equals(stateValue.getType().box())) {
+        if (stateValue == null || !expectedType.equals(stateValue.getTypeName().box())) {
           validationErrors.add(
               new SpecModelValidationError(
                   diffModel.getRepresentedObject(),

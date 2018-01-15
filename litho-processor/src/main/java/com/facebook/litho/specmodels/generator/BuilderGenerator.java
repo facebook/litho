@@ -404,7 +404,7 @@ public class BuilderGenerator {
         break;
       case DIMEN_SIZE:
         final String sizeResolverName =
-            !prop.hasVarArgs() && prop.getType().equals(ClassName.FLOAT.box())
+            !prop.hasVarArgs() && prop.getTypeName().equals(ClassName.FLOAT.box())
                 ? "(float) resolveDimenSize"
                 : "resolveDimenSize";
         dataHolder.addTypeSpecDataHolder(pxBuilders(specModel, prop, requiredIndex));
@@ -416,7 +416,7 @@ public class BuilderGenerator {
         break;
       case DIMEN_TEXT:
         final String textResolverName =
-            !prop.hasVarArgs() && prop.getType().equals(ClassName.FLOAT.box())
+            !prop.hasVarArgs() && prop.getTypeName().equals(ClassName.FLOAT.box())
                 ? "(float) resolveDimenSize"
                 : "resolveDimenSize";
         dataHolder.addTypeSpecDataHolder(pxBuilders(specModel, prop, requiredIndex));
@@ -429,7 +429,7 @@ public class BuilderGenerator {
         break;
       case DIMEN_OFFSET:
         final String offsetResolverName =
-            !prop.hasVarArgs() && prop.getType().equals(ClassName.FLOAT.box())
+            !prop.hasVarArgs() && prop.getTypeName().equals(ClassName.FLOAT.box())
                 ? "(float) resolveDimenSize"
                 : "resolveDimenSize";
         dataHolder.addTypeSpecDataHolder(pxBuilders(specModel, prop, requiredIndex));
@@ -459,7 +459,7 @@ public class BuilderGenerator {
       case NONE:
         if (hasVarArgs) {
           dataHolder.addMethod(varArgBuilder(specModel, prop, requiredIndex));
-          ParameterizedTypeName type = (ParameterizedTypeName) prop.getType();
+          ParameterizedTypeName type = (ParameterizedTypeName) prop.getTypeName();
           if (getRawType(type.typeArguments.get(0)).equals(ClassNames.COMPONENT)) {
             dataHolder.addMethod(varArgBuilderBuilder(specModel, prop, requiredIndex));
           }
@@ -467,9 +467,9 @@ public class BuilderGenerator {
         }
 
         final TypeName componentClass =
-            prop.getType() instanceof ParameterizedTypeName ?
-                ((ParameterizedTypeName) prop.getType()).rawType :
-                prop.getType();
+            prop.getTypeName() instanceof ParameterizedTypeName ?
+                ((ParameterizedTypeName) prop.getTypeName()).rawType :
+                prop.getTypeName();
 
         if (componentClass.equals(specModel.getComponentClass())) {
           dataHolder.addMethod(componentBuilder(specModel, prop, requiredIndex));
@@ -479,19 +479,19 @@ public class BuilderGenerator {
         break;
     }
 
-    if (getRawType(prop.getType()).equals(ClassNames.COMPONENT)) {
+    if (getRawType(prop.getTypeName()).equals(ClassNames.COMPONENT)) {
       dataHolder.addMethod(
           builderBuilder(
               specModel, prop, requiredIndex, ClassNames.COMPONENT_BUILDER, true));
     }
 
-    if (getRawType(prop.getType()).equals(ClassNames.REFERENCE)) {
+    if (getRawType(prop.getTypeName()).equals(ClassNames.REFERENCE)) {
       dataHolder.addMethod(
           builderBuilder(
               specModel, prop, requiredIndex, ClassNames.REFERENCE_BUILDER, true));
     }
 
-    if (getRawType(prop.getType()).equals(ClassNames.SECTION)) {
+    if (getRawType(prop.getTypeName()).equals(ClassNames.SECTION)) {
       dataHolder.addMethod(
           builderBuilder(specModel, prop, requiredIndex, ClassNames.SECTION_BUILDER, true));
     }
@@ -544,7 +544,7 @@ public class BuilderGenerator {
             prop,
             requiredIndex,
             prop.getName(),
-            Arrays.asList(parameter(prop, prop.getType(), prop.getName())),
+            Arrays.asList(parameter(prop, prop.getTypeName(), prop.getName())),
             "$L == null ? null : $L.makeShallowCopy()",
             prop.getName(),
             prop.getName())
@@ -561,7 +561,7 @@ public class BuilderGenerator {
             prop,
             requiredIndex,
             prop.getName(),
-            Arrays.asList(parameter(prop, prop.getType(), prop.getName(), extraAnnotations)),
+            Arrays.asList(parameter(prop, prop.getTypeName(), prop.getName(), extraAnnotations)),
             prop.getName())
         .build();
   }
@@ -571,13 +571,13 @@ public class BuilderGenerator {
       PropModel prop,
       int requiredIndex,
       AnnotationSpec... extraAnnotations) {
-    ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) prop.getType();
+    ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) prop.getTypeName();
     TypeName singleParameterType = parameterizedTypeName.typeArguments.get(0);
     String varArgName = prop.getVarArgsSingleName();
 
     final String propName = prop.getName();
     final String implMemberInstanceName = getComponentMemberInstanceName(specModel);
-    final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getType();
+    final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getTypeName();
     final ParameterizedTypeName listType = ParameterizedTypeName.get(
         ClassName.get(ArrayList.class),
         varArgType.typeArguments.get(0));
@@ -610,7 +610,7 @@ public class BuilderGenerator {
       PropModel prop,
       int requiredIndex) {
     String varArgName = prop.getVarArgsSingleName();
-    final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getType();
+    final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getTypeName();
     final TypeName internalType = varArgType.typeArguments.get(0);
     CodeBlock codeBlock =
         CodeBlock.builder()
@@ -818,8 +818,8 @@ public class BuilderGenerator {
                     parameter(
                         prop,
                         hasVarArgs
-                            ? ((ParameterizedTypeName) prop.getType()).typeArguments.get(0).unbox()
-                            : prop.getType().unbox(),
+                            ? ((ParameterizedTypeName) prop.getTypeName()).typeArguments.get(0).unbox()
+                            : prop.getTypeName().unbox(),
                         name,
                         annotation(ClassNames.PX))),
                 name)
@@ -832,7 +832,7 @@ public class BuilderGenerator {
                   prop,
                   requiredIndex,
                   prop.getName() + "Px",
-                  Arrays.asList(parameter(prop, prop.getType(), prop.getName())),
+                  Arrays.asList(parameter(prop, prop.getTypeName(), prop.getName())),
                   prop.getName() + ".get(i)")
               .build());
     }
@@ -846,7 +846,7 @@ public class BuilderGenerator {
     final boolean hasVarArgs = prop.hasVarArgs();
     final String name = hasVarArgs ? prop.getVarArgsSingleName() : prop.getName();
     final String statement =
-        !prop.hasVarArgs() && prop.getType().equals(ClassName.FLOAT.box())
+        !prop.hasVarArgs() && prop.getTypeName().equals(ClassName.FLOAT.box())
             ? "(float) dipsToPixels(dip)"
             : "dipsToPixels(dip)";
 
@@ -889,7 +889,7 @@ public class BuilderGenerator {
     final boolean hasVarArgs = prop.hasVarArgs();
     final String name = hasVarArgs ? prop.getVarArgsSingleName() : prop.getName();
     final String statement =
-        !prop.hasVarArgs() && prop.getType().equals(ClassName.FLOAT.box())
+        !prop.hasVarArgs() && prop.getTypeName().equals(ClassName.FLOAT.box())
             ? "(float) sipsToPixels(sip)"
             : "sipsToPixels(sip)";
 
@@ -950,7 +950,7 @@ public class BuilderGenerator {
   }
 
   private static TypeName[] getBuilderGenericTypes(PropModel prop, ClassName builderClass) {
-    return getBuilderGenericTypes(prop.getType(), builderClass);
+    return getBuilderGenericTypes(prop.getTypeName(), builderClass);
   }
 
   private static TypeName[] getBuilderGenericTypes(TypeName type, ClassName builderClass) {
@@ -999,7 +999,7 @@ public class BuilderGenerator {
     final String propName = prop.getName();
     final String parameterName = parameters.get(0).name;
     final String componentMemberInstanceName = getComponentMemberInstanceName(specModel);
-    final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getType();
+    final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getTypeName();
     final TypeName resType = varArgType.typeArguments.get(0);
     final ParameterizedTypeName listType =
         ParameterizedTypeName.get(ClassName.get(ArrayList.class), resType);
@@ -1034,7 +1034,7 @@ public class BuilderGenerator {
     if (prop.hasVarArgs()) {
       final String propName = prop.getName();
       final String componentMemberInstanceName = getComponentMemberInstanceName(specModel);
-      final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getType();
+      final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getTypeName();
       final TypeName singleParameterType = varArgType.typeArguments.get(0);
       final ParameterizedTypeName listType =
           ParameterizedTypeName.get(ClassName.get(ArrayList.class), singleParameterType);

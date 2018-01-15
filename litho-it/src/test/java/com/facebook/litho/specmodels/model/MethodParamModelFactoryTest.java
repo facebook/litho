@@ -163,7 +163,7 @@ public class MethodParamModelFactoryTest {
         MethodParamModelFactory.createSimpleMethodParamModel(
             TypeName.CHAR, "customParamModel", representedObject);
 
-    assertThat(param.getType()).isEqualTo(TypeName.CHAR);
+    assertThat(param.getTypeName()).isEqualTo(TypeName.CHAR);
     assertThat(param.getName()).isEqualTo("customParamModel");
     assertThat(param.getRepresentedObject()).isEqualTo(representedObject);
     assertThat(param.getAnnotations()).isEmpty();

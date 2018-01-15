@@ -157,7 +157,7 @@ public class StateGenerator {
         } else {
           isFirstParam = false;
         }
-        builder.addParameter(methodParam.getType(), methodParam.getName());
+        builder.addParameter(methodParam.getTypeName(), methodParam.getName());
         builder.addTypeVariables(MethodParamModelUtils.getTypeVariables(methodParam));
         codeBlockBuilder.add(methodParam.getName());
       }
@@ -213,11 +213,11 @@ public class StateGenerator {
     for (MethodParamModel methodParam : updateStateMethod.methodParams) {
       if (MethodParamModelUtils.isAnnotatedWith(methodParam, Param.class)) {
         stateUpdateClassBuilder.addField(
-            methodParam.getType(),
+            methodParam.getTypeName(),
             getMemberName(methodParam),
             Modifier.PRIVATE);
         constructor
-            .addParameter(methodParam.getType(), methodParam.getName())
+            .addParameter(methodParam.getTypeName(), methodParam.getName())
             .addStatement("$L = $L", getMemberName(methodParam), methodParam.getName());
 
         if (!specModel.hasInjectedDependencies()) {
@@ -229,9 +229,9 @@ public class StateGenerator {
         updateStateMethodBuilder
             .addStatement(
                 "$T $L = new $T()",
-                methodParam.getType(),
+                methodParam.getTypeName(),
                 methodParam.getName(),
-                methodParam.getType())
+                methodParam.getTypeName())
             .addStatement(
                 "$L.set($L.$L)",
                 methodParam.getName(),
@@ -291,7 +291,7 @@ public class StateGenerator {
             stateValue.getName().substring(1))
         .addModifiers(Modifier.PROTECTED, Modifier.STATIC)
         .addParameter(specModel.getContextClass(), "c")
-        .addParameter(stateValue.getType(), LAZY_STATE_UPDATE_VALUE_PARAM, Modifier.FINAL);
+        .addParameter(stateValue.getTypeName(), LAZY_STATE_UPDATE_VALUE_PARAM, Modifier.FINAL);
 
     builder.addStatement(
         "$T _component = c.get$LScope()",
@@ -319,9 +319,9 @@ public class StateGenerator {
                 STATE_UPDATE_NEW_COMPONENT_NAME)
             .addStatement(
                 "$T $L = new $T()",
-                ParameterizedTypeName.get(ClassNames.STATE_VALUE, stateValue.getType().box()),
+                ParameterizedTypeName.get(ClassNames.STATE_VALUE, stateValue.getTypeName().box()),
                 stateValue.getName(),
-                ParameterizedTypeName.get(ClassNames.STATE_VALUE, stateValue.getType().box()))
+                ParameterizedTypeName.get(ClassNames.STATE_VALUE, stateValue.getTypeName().box()))
             .addStatement(stateValue.getName() + ".set(" + LAZY_STATE_UPDATE_VALUE_PARAM + ")")
             .addStatement(
                 "$L.$L.$L = $L.get()",

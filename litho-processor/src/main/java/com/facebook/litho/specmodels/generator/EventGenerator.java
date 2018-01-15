@@ -202,13 +202,13 @@ public class EventGenerator {
 
       if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromEvent.class) ||
           MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class) ||
-          methodParamModel.getType().equals(specModel.getContextClass())) {
-        methodSpec.addParameter(methodParamModel.getType(), methodParamModel.getName());
+          methodParamModel.getTypeName().equals(specModel.getContextClass())) {
+        methodSpec.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
         delegation.add(methodParamModel.getName());
       } else {
         delegation.add(
             "($T) $L.$L",
-            methodParamModel.getType(),
+            methodParamModel.getTypeName(),
             REF_VARIABLE_NAME,
             getImplAccessor(specModel, methodParamModel));
       }
@@ -270,13 +270,13 @@ public class EventGenerator {
         if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromEvent.class)) {
           eventHandlerParams.add(
               ",\n($T) $L.$L",
-              methodParamModel.getType(),
+              methodParamModel.getTypeName(),
               eventVariableName,
               methodParamModel.getName());
         } else if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class) ||
-            methodParamModel.getType().equals(specModel.getContextClass())) {
+            methodParamModel.getTypeName().equals(specModel.getContextClass())) {
           eventHandlerParams.add(
-              ",\n($T) eventHandler.params[$L]", methodParamModel.getType(), paramIndex++);
+              ",\n($T) eventHandler.params[$L]", methodParamModel.getTypeName(), paramIndex++);
         }
       }
 
@@ -333,11 +333,11 @@ public class EventGenerator {
 
     for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
       if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
-        builder.addParameter(methodParamModel.getType(), methodParamModel.getName());
+        builder.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
         paramsBlock.add("$L,\n", methodParamModel.getName());
 
-        if (methodParamModel.getType() instanceof TypeVariableName) {
-          builder.addTypeVariable((TypeVariableName) methodParamModel.getType());
+        if (methodParamModel.getTypeName() instanceof TypeVariableName) {
+          builder.addTypeVariable((TypeVariableName) methodParamModel.getTypeName());
         }
       }
     }

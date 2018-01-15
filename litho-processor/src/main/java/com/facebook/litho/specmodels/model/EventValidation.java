@@ -93,7 +93,7 @@ public class EventValidation {
       }
 
       if (eventMethod.methodParams.isEmpty() ||
-          !eventMethod.methodParams.get(0).getType().equals(specModel.getContextClass())) {
+          !eventMethod.methodParams.get(0).getTypeName().equals(specModel.getContextClass())) {
         validationErrors.add(
             new SpecModelValidationError(
                 eventMethod.representedObject,
@@ -110,7 +110,7 @@ public class EventValidation {
                   "Param with name "
                       + methodParam.getName()
                       + " and type "
-                      + methodParam.getType()
+                      + methodParam.getTypeName()
                       + " is not a member of "
                       + eventMethod.typeModel.name
                       + "."));
@@ -129,7 +129,7 @@ public class EventValidation {
       ImmutableList<EventDeclarationModel.FieldModel> fields) {
     for (EventDeclarationModel.FieldModel field : fields) {
       if (param.getName().equals(field.field.name)
-          && (param.getType().box().equals(field.field.type.box())
+          && (param.getTypeName().box().equals(field.field.type.box())
               || isFromEventTypeSpecifiedInAnnotation(param, field.field.type))) {
         return true;
       }

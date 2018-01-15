@@ -58,7 +58,7 @@ public class TreePropGenerator {
       method.addStatement(
           "$L = treeProps.get($L.class)",
           treeProp.getName(),
-          findTypeByTypeName(treeProp.getType()));
+          findTypeByTypeName(treeProp.getTypeName()));
     }
 
     return TypeSpecDataHolder.newBuilder().addMethod(method.build()).build();

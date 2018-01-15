@@ -104,7 +104,7 @@ public class TestingDIComponentProcessor extends AbstractComponentsProcessor {
 
       for (MethodParamModel injectedParam : injectPropParams) {
         final FieldSpec.Builder fieldBuilder =
-            FieldSpec.builder(injectedParam.getType(), injectedParam.getName())
+            FieldSpec.builder(injectedParam.getTypeName(), injectedParam.getName())
                 .addModifiers(Modifier.PRIVATE);
         for (AnnotationSpec extAnnotation : injectedParam.getExternalAnnotations()) {
           fieldBuilder.addAnnotation(extAnnotation);

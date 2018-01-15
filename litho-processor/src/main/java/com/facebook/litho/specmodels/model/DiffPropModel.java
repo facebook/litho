@@ -31,8 +31,8 @@ public class DiffPropModel implements MethodParamModel {
   }
 
   @Override
-  public TypeName getType() {
-    return ParameterizedTypeName.get(ClassNames.DIFF, mUnderlyingPropModel.getType().box());
+  public TypeName getTypeName() {
+    return ParameterizedTypeName.get(ClassNames.DIFF, mUnderlyingPropModel.getTypeName().box());
   }
 
   @Override
@@ -96,7 +96,7 @@ public class DiffPropModel implements MethodParamModel {
    */
   public boolean isSameUnderlyingPropModel(PropModel propModel, @Nullable String cachedName) {
     return (propModel.getName().equals(getName()) || propModel.getName().equals(cachedName))
-        && propModel.getType().box().equals(mUnderlyingPropModel.getType().box())
+        && propModel.getTypeName().box().equals(mUnderlyingPropModel.getTypeName().box())
         && propModel.isOptional() == isOptional()
         && propModel.getResType() == getResType()
         && propModel.getVarArgsSingleName().equals(getVarArgsSingleName());
