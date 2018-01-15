@@ -12,12 +12,13 @@ package com.facebook.litho;
 import android.support.v4.util.ArrayMap;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.annotations.TreeProp;
 import java.util.Collections;
 import java.util.Map;
 
 /**
  * A data structure to store tree props.
- * @see {@link TreeProp}.
+ * @see TreeProp
  */
 @ThreadConfined(ThreadConfined.ANY)
 public class TreeProps {

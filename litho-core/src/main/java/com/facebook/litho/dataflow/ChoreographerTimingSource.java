@@ -31,6 +31,7 @@ public class ChoreographerTimingSource implements TimingSource {
     };
   }
 
+  @Override
   public void setDataFlowGraph(DataFlowGraph dataFlowGraph) {
     mDataFlowGraph = dataFlowGraph;
   }

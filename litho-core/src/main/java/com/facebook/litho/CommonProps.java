@@ -480,7 +480,7 @@ class CommonProps {
     @Nullable private YogaEdgesWithFloats mPaddingPercents;
     @Nullable private YogaEdgesWithFloats mPositionPercents;
     @Nullable private YogaEdgesWithInts mTouchExpansions;
-    @Nullable private float mWidthPercent;
+    private float mWidthPercent;
     @Px private int mMinWidthPx;
     private float mMinWidthPercent;
     @Px private int mMaxWidthPx;
