@@ -212,6 +212,7 @@ public class RecyclerBinder
     private LithoViewFactory lithoViewFactory;
     private boolean isCircular;
     private boolean hasDynamicItemHeight;
+    private @Nullable RecyclerView.Adapter overrideInternalAdapter;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -298,6 +299,16 @@ public class RecyclerBinder
       return this;
     }
 
+    /**
+     * Method for tests to allow mocking of the InternalAdapter to verify interaction with the
+     * RecyclerView.
+     */
+    @VisibleForTesting
+    Builder overrideInternalAdapter(RecyclerView.Adapter overrideInternalAdapter) {
+      this.overrideInternalAdapter = overrideInternalAdapter;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext = c;
@@ -315,7 +326,10 @@ public class RecyclerBinder
     mComponentTreeHolderFactory = builder.componentTreeHolderFactory;
     mComponentTreeHolders = new ArrayList<>();
     mPendingComponentTreeHolders = new ArrayList<>();
-    mInternalAdapter = new InternalAdapter();
+    mInternalAdapter =
+        builder.overrideInternalAdapter != null
+            ? builder.overrideInternalAdapter
+            : new InternalAdapter();
 
     mRangeRatio = builder.rangeRatio;
     mLayoutInfo = builder.layoutInfo;

@@ -1466,6 +1466,104 @@ public class RecyclerBinderTest {
     }
   }
 
+  @Test
+  public void testUpdateItemAtDoesNotNotifyItemChangedExceptWhenUpdatingViews() {
+    final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
+    final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
+
+    final List<RenderInfo> components = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      final Component component =
+          new InlineLayoutSpec() {
+            @Override
+            protected Component onCreateLayout(ComponentContext c) {
+              return TestDrawableComponent.create(c).widthPx(100).heightPx(100).build();
+            }
+          };
+
+      components.add(ComponentRenderInfo.create().component(component).build());
+    }
+    recyclerBinder.insertRangeAt(0, components);
+
+    RecyclerView rv = mock(RecyclerView.class);
+    recyclerBinder.mount(rv);
+
+    recyclerBinder.updateItemAt(
+        0, TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build());
+    verify(adapter, never()).notifyItemChanged(anyInt());
+    verify(adapter, never()).notifyItemRangeChanged(anyInt(), anyInt());
+
+    recyclerBinder.updateItemAt(
+        0,
+        ViewRenderInfo.create()
+            .viewCreator(VIEW_CREATOR_1)
+            .viewBinder(new SimpleViewBinder())
+            .build());
+    verify(adapter, times(1)).notifyItemChanged(0);
+  }
+
+  @Test
+  public void testUpdateRangeAtDoesNotNotifyItemChangedExceptWhenUpdatingViews() {
+    final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
+    final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
+
+    final int NUM_ITEMS = 10;
+    final List<RenderInfo> components = new ArrayList<>();
+    for (int i = 0; i < NUM_ITEMS; i++) {
+      final Component component =
+          new InlineLayoutSpec() {
+            @Override
+            protected Component onCreateLayout(ComponentContext c) {
+              return TestDrawableComponent.create(c).widthPx(100).heightPx(100).build();
+            }
+          };
+
+      components.add(ComponentRenderInfo.create().component(component).build());
+    }
+    recyclerBinder.insertRangeAt(0, components);
+
+    RecyclerView rv = mock(RecyclerView.class);
+    recyclerBinder.mount(rv);
+
+    final List<RenderInfo> newComponents = new ArrayList<>();
+    for (int i = 0; i < NUM_ITEMS; i++) {
+      final Component component =
+          new InlineLayoutSpec() {
+            @Override
+            protected Component onCreateLayout(ComponentContext c) {
+              return TestDrawableComponent.create(c).widthPx(100).heightPx(100).build();
+            }
+          };
+      newComponents.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.updateRangeAt(0, newComponents);
+    verify(adapter, never()).notifyItemChanged(anyInt());
+    verify(adapter, never()).notifyItemRangeChanged(anyInt(), anyInt());
+
+    final List<RenderInfo> newViews = new ArrayList<>();
+    for (int i = 0; i < NUM_ITEMS; i++) {
+      newViews.add(
+          ViewRenderInfo.create()
+              .viewCreator(VIEW_CREATOR_1)
+              .viewBinder(new SimpleViewBinder())
+              .build());
+    }
+
+    recyclerBinder.updateRangeAt(0, newViews);
+    for (int i = 0; i < NUM_ITEMS; i++) {
+      verify(adapter, times(1)).notifyItemChanged(i);
+    }
+  }
+
+  private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
+    return new RecyclerBinder.Builder()
+        .rangeRatio(RANGE_RATIO)
+        .layoutInfo(new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
+        .overrideInternalAdapter(adapterMock)
+        .build(mComponentContext);
+  }
+
   private List<ComponentRenderInfo> prepareLoadedBinder() {
     return prepareLoadedBinder(mRecyclerBinder, 100);
   }
