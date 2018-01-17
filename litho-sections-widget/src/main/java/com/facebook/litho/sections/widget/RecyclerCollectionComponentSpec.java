@@ -9,7 +9,6 @@
 
 package com.facebook.litho.sections.widget;
 
-import static com.facebook.litho.Column.create;
 import static com.facebook.litho.sections.LoadingEvent.LoadingState.FAILED;
 import static com.facebook.litho.sections.LoadingEvent.LoadingState.INITIAL_LOAD;
 import static com.facebook.litho.sections.LoadingEvent.LoadingState.LOADING;
@@ -27,6 +26,7 @@ import android.support.v7.widget.RecyclerView.ItemDecoration;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.support.v7.widget.SnapHelper;
 import android.view.View;
+import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.Component.ContainerBuilder;
 import com.facebook.litho.ComponentContext;
@@ -233,10 +233,8 @@ public class RecyclerCollectionComponentSpec {
           .positionPx(ALL, 0);
     }
 
-    final ContainerBuilder containerBuilder = create(c)
-        .flexShrink(0)
-        .alignContent(FLEX_START)
-        .child(recyclerLayoutBuilder);
+    final ContainerBuilder containerBuilder =
+        Column.create(c).flexShrink(0).alignContent(FLEX_START).child(recyclerLayoutBuilder);
 
     if (shouldDisplayLoading && loadingComponent != null) {
       containerBuilder.child(
