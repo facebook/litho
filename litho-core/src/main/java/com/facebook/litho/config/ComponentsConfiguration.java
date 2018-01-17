@@ -93,12 +93,6 @@ public class ComponentsConfiguration {
   public static boolean setRootAsyncRecyclerCollectionComponent = false;
 
   /**
-   * Don't call RecyclerView.Adapter#notifyItemChanged/notifyItemRangeChanged for rows rendered with
-   * components in sections if this is true.
-   */
-  public static boolean sectionsNoNotifyItemChanged = false;
-
-  /**
    * If true, insert operations with the {@link com.facebook.litho.widget.RecyclerBinder} will not
    * start async layout calculations for the items in range, instead these layout calculations will
    * be posted to the next frame.

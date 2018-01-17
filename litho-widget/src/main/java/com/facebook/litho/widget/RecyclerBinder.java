@@ -601,10 +601,7 @@ public class RecyclerBinder
 
     // If this item is rendered with a view (or was rendered with a view before now) we need to
     // notify the RecyclerView's adapter that something changed.
-    final boolean doNotifyItemChanged =
-        !ComponentsConfiguration.sectionsNoNotifyItemChanged
-            || renderInfoWasView
-            || renderInfo.rendersView();
+    final boolean doNotifyItemChanged = renderInfoWasView || renderInfo.rendersView();
     if (doNotifyItemChanged) {
       if (shouldComputeLayout) {
         holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
@@ -624,19 +621,16 @@ public class RecyclerBinder
   public final void updateRangeAt(int position, List<RenderInfo> renderInfos) {
     ThreadUtils.assertMainThread();
 
-    final boolean doNotifyItemChanged = !ComponentsConfiguration.sectionsNoNotifyItemChanged;
     for (int i = 0, size = renderInfos.size(); i < size; i++) {
 
       synchronized (this) {
         final ComponentTreeHolder holder = mComponentTreeHolders.get(position + i);
         final RenderInfo newRenderInfo = renderInfos.get(i);
 
-        if (!doNotifyItemChanged) {
-          // If this item is rendered with a view (or was rendered with a view before now) we still
-          // need to notify the RecyclerView's adapter that something changed.
-          if (newRenderInfo.rendersView() || holder.getRenderInfo().rendersView()) {
-            mInternalAdapter.notifyItemChanged(position + i);
-          }
+        // If this item is rendered with a view (or was rendered with a view before now) we still
+        // need to notify the RecyclerView's adapter that something changed.
+        if (newRenderInfo.rendersView() || holder.getRenderInfo().rendersView()) {
+          mInternalAdapter.notifyItemChanged(position + i);
         }
 
         mRenderInfoViewCreatorController.maybeTrackViewCreator(newRenderInfo);
@@ -655,10 +649,6 @@ public class RecyclerBinder
               mLayoutInfo.getScrollDirection());
         }
       }
-    }
-
-    if (doNotifyItemChanged) {
-      mInternalAdapter.notifyItemRangeChanged(position, renderInfos.size());
     }
 
     computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
