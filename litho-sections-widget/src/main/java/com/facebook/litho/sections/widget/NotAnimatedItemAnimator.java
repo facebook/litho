@@ -63,8 +63,12 @@ public class NotAnimatedItemAnimator extends SimpleItemAnimator {
       int fromTop,
       int toLeft,
       int toTop) {
-    dispatchChangeStarting(oldHolder, true);
-    dispatchChangeFinished(oldHolder, true);
+    // Avoid calling animation finish for the item twice,
+    // preventing "isRecyclable decremented below 0" error
+    if (oldHolder != newHolder) {
+      dispatchChangeStarting(oldHolder, true);
+      dispatchChangeFinished(oldHolder, true);
+    }
     dispatchChangeStarting(newHolder, false);
     dispatchChangeFinished(newHolder, false);
     return true;
