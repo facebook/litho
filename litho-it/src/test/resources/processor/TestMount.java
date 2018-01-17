@@ -48,6 +48,7 @@ import java.util.BitSet;
  * @prop-required prop6 long
  * @prop-required prop7 java.lang.CharSequence
  * @prop-required prop8 long
+ *
  * @see com.facebook.litho.processor.integration.resources.TestMountSpec
  */
 @TargetApi(17)
@@ -64,7 +65,10 @@ public final class TestMount<S extends View> extends Component {
   )
   int prop1;
 
-  @Prop(resType = ResType.NONE, optional = true)
+  @Prop(
+      resType = ResType.NONE,
+      optional = true
+  )
   boolean prop2 = TestMountSpec.prop2;
 
   @Prop(
@@ -79,10 +83,16 @@ public final class TestMount<S extends View> extends Component {
   )
   char[] prop4;
 
-  @Prop(resType = ResType.NONE, optional = false)
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
   char prop5;
 
-  @Prop(resType = ResType.NONE, optional = false)
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
   long prop6;
 
   @Prop(
@@ -91,7 +101,10 @@ public final class TestMount<S extends View> extends Component {
   )
   CharSequence prop7;
 
-  @Prop(resType = ResType.NONE, optional = false)
+  @Prop(
+      resType = ResType.NONE,
+      optional = false
+  )
   long prop8;
 
   TestTreeProp treeProp;
@@ -209,7 +222,10 @@ public final class TestMount<S extends View> extends Component {
   protected void onLoadStyle(ComponentContext c) {
     Output<Boolean> prop2Tmp = acquireOutput();
     Output<Object> prop3Tmp = acquireOutput();
-    TestMountSpec.onLoadStyle((ComponentContext) c, prop2Tmp, prop3Tmp);
+    TestMountSpec.onLoadStyle(
+        (ComponentContext) c,
+        prop2Tmp,
+        prop3Tmp);
     if (prop2Tmp.get() != null) {
       prop2 = prop2Tmp.get();
     }
@@ -223,15 +239,18 @@ public final class TestMount<S extends View> extends Component {
   @Override
   protected void createInitialState(ComponentContext c) {
     StateValue<S> state2 = new StateValue<>();
-    TestMountSpec.createInitialState((ComponentContext) c, (int) prop1, state2);
+    TestMountSpec.createInitialState(
+        (ComponentContext) c,
+        (int) prop1,
+        state2);
     if (state2.get() != null) {
       mStateContainer.state2 = state2.get();
     }
   }
 
   @Override
-  protected void onMeasure(
-      ComponentContext context, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
+  protected void onMeasure(ComponentContext context, ComponentLayout layout, int widthSpec,
+                           int heightSpec, Size size) {
     Output<Long> measureOutputTmp = acquireOutput();
     TestMountSpec.onMeasure(
         (ComponentContext) context,
@@ -265,7 +284,8 @@ public final class TestMount<S extends View> extends Component {
 
   @Override
   protected Object onCreateMountContent(ComponentContext c) {
-    Object _result = (Object) TestMountSpec.onCreateMountContent((ComponentContext) c);
+    Object _result = (Object) TestMountSpec.onCreateMountContent(
+        (ComponentContext) c);
     return _result;
   }
 
@@ -283,13 +303,17 @@ public final class TestMount<S extends View> extends Component {
 
   @Override
   protected void onUnmount(ComponentContext c, Object v) {
-    TestMountSpec.onUnmount((ComponentContext) c, (Drawable) v, (long) prop8);
+    TestMountSpec.onUnmount(
+        (ComponentContext) c,
+        (Drawable) v,
+        (long) prop8);
   }
 
   @Override
   protected void onPopulateAccessibilityNode(AccessibilityNodeInfoCompat node) {
     TestMountSpec.onPopulateAccessibilityNode(
-        (AccessibilityNodeInfoCompat) node, (CharSequence) prop7);
+        (AccessibilityNodeInfoCompat) node,
+        (CharSequence) prop7);
   }
 
   @Override
@@ -307,11 +331,8 @@ public final class TestMount<S extends View> extends Component {
   }
 
   @Override
-  protected void onPopulateExtraAccessibilityNode(
-      AccessibilityNodeInfoCompat node,
-      int extraNodeIndex,
-      int componentBoundsLeft,
-      int componentBoundsTop) {
+  protected void onPopulateExtraAccessibilityNode(AccessibilityNodeInfoCompat node,
+                                                  int extraNodeIndex, int componentBoundsLeft, int componentBoundsTop) {
     TestMountSpec.onPopulateExtraAccessibilityNode(
         (AccessibilityNodeInfoCompat) node,
         (int) extraNodeIndex,
@@ -342,19 +363,17 @@ public final class TestMount<S extends View> extends Component {
   protected boolean shouldUpdate(Component _prevAbstractImpl, Component _nextAbstractImpl) {
     TestMount _prevImpl = (TestMount) _prevAbstractImpl;
     TestMount _nextImpl = (TestMount) _nextAbstractImpl;
-    Diff<Integer> prop1 =
-        (Diff)
-            acquireDiff(
-                _prevImpl == null ? null : _prevImpl.prop1,
-                _nextImpl == null ? null : _nextImpl.prop1);
-    boolean _result = (boolean) TestMountSpec.shouldUpdate(prop1);
+    Diff<Integer> prop1 = (Diff) acquireDiff(_prevImpl == null ? null : _prevImpl.prop1, _nextImpl == null ? null : _nextImpl.prop1);
+    boolean _result = (boolean) TestMountSpec.shouldUpdate(
+        prop1);
     releaseDiff(prop1);
     return _result;
   }
 
   @Override
   protected MountContentPool onCreateMountContentPool() {
-    MountContentPool _result = (MountContentPool) TestMountSpec.onCreateMountContentPool();
+    MountContentPool _result = (MountContentPool) TestMountSpec.onCreateMountContentPool(
+    );
     return _result;
   }
 
@@ -420,7 +439,7 @@ public final class TestMount<S extends View> extends Component {
   }
 
   private void testLayoutEvent(HasEventDispatcher _abstract, ComponentContext c, View view,
-      int param1) {
+                               int param1) {
     TestMount _ref = (TestMount) _abstract;
     TestMountSpec.testLayoutEvent(
         c,
@@ -432,13 +451,10 @@ public final class TestMount<S extends View> extends Component {
   }
 
   public static EventHandler<ClickEvent> testLayoutEvent(ComponentContext c, int param1) {
-    return newEventHandler(
+    return newEventHandler(c, "testLayoutEvent", 1328162206, new Object[] {
         c,
-        "testLayoutEvent",
-        1328162206,
-        new Object[] {
-          c, param1,
-        });
+        param1,
+    });
   }
 
   @Override
@@ -447,11 +463,11 @@ public final class TestMount<S extends View> extends Component {
     switch (id) {
       case 1328162206: {
         ClickEvent _event = (ClickEvent) eventState;
-          testLayoutEvent(
-              eventHandler.mHasEventDispatcher,
-              (ComponentContext) eventHandler.params[0],
-              (View) _event.view,
-              (int) eventHandler.params[1]);
+        testLayoutEvent(
+            eventHandler.mHasEventDispatcher,
+            (ComponentContext) eventHandler.params[0],
+            (View) _event.view,
+            (int) eventHandler.params[1]);
         return null;
       }
       default:
@@ -467,7 +483,9 @@ public final class TestMount<S extends View> extends Component {
   private void onClickEventTrigger(EventTriggerTarget _abstract, View view) {
     TestMount _ref = (TestMount) _abstract;
     TestMountSpec.onClickEventTrigger(
-        (ComponentContext) _ref.getScopedContext(), view, (Object) _ref.prop3);
+        (ComponentContext) _ref.getScopedContext(),
+        view,
+        (Object) _ref.prop3);
   }
 
   public static void onClickEventTrigger(ComponentContext c, String key, View view) {
@@ -478,26 +496,29 @@ public final class TestMount<S extends View> extends Component {
     }
     ClickEvent _eventState = new ClickEvent();
     _eventState.view = view;
-    trigger.dispatchOnTrigger(_eventState, new Object[] {});
+    trigger.dispatchOnTrigger(_eventState, new Object[] {
+    });
   }
 
   public static void onClickEventTrigger(EventTrigger trigger, View view) {
     ClickEvent _eventState = new ClickEvent();
     _eventState.view = view;
-    trigger.dispatchOnTrigger(_eventState, new Object[] {});
+    trigger.dispatchOnTrigger(_eventState, new Object[] {
+    });
   }
 
   @Override
-  public Object acceptTriggerEvent(
-      final EventTrigger eventTrigger, final Object eventState, final Object[] params) {
+  public Object acceptTriggerEvent(final EventTrigger eventTrigger, final Object eventState,
+                                   final Object[] params) {
     int id = eventTrigger.mId;
-    switch (id) {
-      case -830639048:
-        {
-          ClickEvent _event = (ClickEvent) eventState;
-          onClickEventTrigger(eventTrigger.mTriggerTarget, _event.view);
-          return null;
-        }
+    switch(id) {
+      case -830639048: {
+        ClickEvent _event = (ClickEvent) eventState;
+        onClickEventTrigger(
+            eventTrigger.mTriggerTarget,
+            _event.view);
+        return null;
+      }
       default:
         return null;
     }
@@ -518,7 +539,7 @@ public final class TestMount<S extends View> extends Component {
 
   @Override
   protected void transferState(ComponentContext context,
-      ComponentLifecycle.StateContainer _prevStateContainer) {
+                               ComponentLifecycle.StateContainer _prevStateContainer) {
     TestMountStateContainer prevStateContainer = (TestMountStateContainer) _prevStateContainer;
     mStateContainer.state1 = prevStateContainer.state1;
     mStateContainer.state2 = prevStateContainer.state2;
@@ -548,8 +569,9 @@ public final class TestMount<S extends View> extends Component {
       return;
     }
     ComponentLifecycle.StateUpdate _stateUpdate = new ComponentLifecycle.StateUpdate() {
+      @Override
       public void updateState(ComponentLifecycle.StateContainer _stateContainer,
-          Component newComponent) {
+                              Component newComponent) {
         TestMount newComponentStateUpdate = (TestMount) newComponent;
         StateValue<Long> state1 = new StateValue<Long>();
         state1.set(lazyUpdateValue);
@@ -563,8 +585,8 @@ public final class TestMount<S extends View> extends Component {
     return create(context, 0, 0);
   }
 
-  public static <S extends View> Builder<S> create(
-      ComponentContext context, int defStyleAttr, int defStyleRes) {
+  public static <S extends View> Builder<S> create(ComponentContext context, int defStyleAttr,
+                                                   int defStyleRes) {
     Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
@@ -574,9 +596,10 @@ public final class TestMount<S extends View> extends Component {
     return builder;
   }
 
-  @VisibleForTesting(otherwise = 2)
-  static class TestMountStateContainer<S extends View>
-      implements ComponentLifecycle.StateContainer {
+  @VisibleForTesting(
+      otherwise = 2
+  )
+  static class TestMountStateContainer<S extends View> implements ComponentLifecycle.StateContainer {
     @State
     long state1;
 
@@ -591,8 +614,9 @@ public final class TestMount<S extends View> extends Component {
       mSomeParam = someParam;
     }
 
+    @Override
     public void updateState(ComponentLifecycle.StateContainer _stateContainer,
-        Component newComponent) {
+                            Component newComponent) {
       TestMountStateContainer stateContainer = (TestMountStateContainer) _stateContainer;
       TestMount newComponentStateUpdate = (TestMount) newComponent;
       StateValue<Long> state1 = new StateValue<Long>();
@@ -603,8 +627,7 @@ public final class TestMount<S extends View> extends Component {
   }
 
   public static class Builder<S extends View> extends Component.Builder<Builder<S>> {
-    private static final String[] REQUIRED_PROPS_NAMES =
-        new String[] {"prop1", "prop3", "prop4", "prop5", "prop6", "prop7", "prop8"};
+    private static final String[] REQUIRED_PROPS_NAMES = new String[] {"prop1", "prop3", "prop4", "prop5", "prop6", "prop7", "prop8"};
 
     private static final int REQUIRED_PROPS_COUNT = 7;
 
@@ -615,7 +638,7 @@ public final class TestMount<S extends View> extends Component {
     private BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
     private void init(ComponentContext context, int defStyleAttr, int defStyleRes,
-        TestMount testMountRef) {
+                      TestMount testMountRef) {
       super.init(context, defStyleAttr, defStyleRes, testMountRef);
       mTestMount = testMountRef;
       mContext = context;
@@ -704,8 +727,7 @@ public final class TestMount<S extends View> extends Component {
     }
 
     private void onClickEventTriggerTrigger(String key) {
-      com.facebook.litho.EventTrigger onClickEventTriggerTrigger =
-          this.mTestMount.onClickEventTriggerTrigger;
+      com.facebook.litho.EventTrigger onClickEventTriggerTrigger = this.mTestMount.onClickEventTriggerTrigger;
       if (onClickEventTriggerTrigger == null) {
         onClickEventTriggerTrigger = TestMount.onClickEventTriggerTrigger(this.mContext, key);
       }

@@ -169,6 +169,7 @@ public class StateGeneratorTest {
             "  UpdateCurrentStateStateUpdate() {\n" +
             "  }\n" +
             "\n" +
+            "  @java.lang.Override\n" +
             "  public void updateState(com.facebook.litho.ComponentLifecycle.StateContainer _stateContainer,\n" +
             "      com.facebook.litho.Component newComponent) {\n" +
             "    TestWithStateStateContainer stateContainer = (TestWithStateStateContainer) _stateContainer;\n" +
@@ -194,6 +195,7 @@ public class StateGeneratorTest {
             "    return;\n" +
             "  }\n" +
             "  com.facebook.litho.ComponentLifecycle.StateUpdate _stateUpdate = new com.facebook.litho.ComponentLifecycle.StateUpdate() {\n" +
+            "    @java.lang.Override\n" +
             "    public void updateState(com.facebook.litho.ComponentLifecycle.StateContainer _stateContainer,\n" +
             "        com.facebook.litho.Component newComponent) {\n" +
             "      com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithState newComponentStateUpdate = (com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithState) newComponent;\n" +

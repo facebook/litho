@@ -192,6 +192,7 @@ public class StateGenerator {
 
     MethodSpec.Builder updateStateMethodBuilder =
         MethodSpec.methodBuilder(STATE_UPDATE_METHOD_NAME)
+            .addAnnotation(Override.class)
             .addModifiers(Modifier.PUBLIC)
             .addParameter(specModel.getStateContainerClass(), STATE_CONTAINER_PARAM_NAME)
             .addParameter(specModel.getComponentClass(), STATE_UPDATE_NEW_COMPONENT_NAME)
@@ -308,6 +309,7 @@ public class StateGenerator {
 
     final MethodSpec.Builder stateUpdate =
         MethodSpec.methodBuilder(STATE_UPDATE_METHOD_NAME)
+            .addAnnotation(Override.class)
             .addParameter(specModel.getStateContainerClass(), STATE_CONTAINER_PARAM_NAME)
             .addParameter(specModel.getComponentClass(), STATE_UPDATE_NEW_COMPONENT_NAME)
             .addModifiers(Modifier.PUBLIC)

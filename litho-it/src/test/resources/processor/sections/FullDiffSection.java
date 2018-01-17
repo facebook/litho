@@ -418,6 +418,7 @@ public final class FullDiffSection<T> extends Section {
       mParam = param;
     }
 
+    @Override
     public void updateState(SectionLifecycle.StateContainer _stateContainer, Section newComponent) {
       FullDiffSectionStateContainer stateContainer = (FullDiffSectionStateContainer) _stateContainer;
       FullDiffSection newComponentStateUpdate = (FullDiffSection) newComponent;
