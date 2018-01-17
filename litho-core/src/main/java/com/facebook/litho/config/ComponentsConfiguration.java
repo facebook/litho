@@ -129,6 +129,9 @@ public class ComponentsConfiguration {
    */
   public static boolean preallocateComponentHosts = false;
 
+  /** Whether MatrixDrawable draw call can be shortcutted to underlying drawable */
+  public static boolean shortcutMatrixDrawable = true;
+
   /** If scrapHostRecyclingForComponentHosts is false, determines the ComponentHost pool size. */
   public static int componentHostPoolSize = 30;
 }
