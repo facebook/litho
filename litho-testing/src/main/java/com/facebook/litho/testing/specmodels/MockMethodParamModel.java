@@ -23,33 +23,35 @@ import org.assertj.core.util.Lists;
 /** A simple implementation of {@link MockMethodParamModel} for use in tests. */
 @Immutable
 public class MockMethodParamModel implements MethodParamModel {
-  private final TypeName mType;
+  private final TypeSpec mTypeSpec;
   private final String mName;
   private final List<Annotation> mAnnotations;
   private final List<AnnotationSpec> mExternalAnnotations;
   private final Object mRepresentedObject;
 
   public MockMethodParamModel(
-      TypeName type,
+      TypeSpec typeSpec,
       String name,
       List<Annotation> annotations,
       List<AnnotationSpec> externalAnnotations,
       Object representedObject) {
-    mType = type;
+    mTypeSpec = typeSpec;
     mName = name;
     mAnnotations = annotations;
     mExternalAnnotations = externalAnnotations;
     mRepresentedObject = representedObject;
   }
 
+  // This won't return a full TypeSpec hierarchy because wasn't generated with a TypeMirror.
+  // It's going to be a TypeSpec only wrapping the associated TypeName.
   @Override
   public TypeSpec getTypeSpec() {
-    throw new UnsupportedOperationException("Not yet implemented on the Mock class.");
+    return mTypeSpec;
   }
 
   @Override
   public TypeName getTypeName() {
-    return mType;
+    return mTypeSpec.getTypeName();
   }
 
   @Override
@@ -131,7 +133,7 @@ public class MockMethodParamModel implements MethodParamModel {
             });
       }
       return new MockMethodParamModel(
-          mType, mName, annotations, mExternalAnnotations, mRepresentedObject);
+          new TypeSpec(mType), mName, annotations, mExternalAnnotations, mRepresentedObject);
     }
   }
 }
