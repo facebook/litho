@@ -9,10 +9,11 @@
 
 package com.facebook.litho.sections.widget;
 
-import static com.facebook.litho.sections.LoadingEvent.LoadingState.FAILED;
-import static com.facebook.litho.sections.LoadingEvent.LoadingState.LOADING;
-import static com.facebook.litho.sections.LoadingEvent.LoadingState.SUCCEEDED;
 import static com.facebook.litho.sections.widget.ListRecyclerConfiguration.SNAP_NONE;
+import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.EMPTY;
+import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.ERROR;
+import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.LOADED;
+import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.LOADING;
 import static com.facebook.litho.testing.assertj.ComponentConditions.textEquals;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static com.facebook.litho.testing.assertj.LithoViewSubComponentDeepExtractor.deepSubComponentWith;
@@ -129,7 +130,7 @@ public class RecyclerCollectionComponentSpecTest {
             new StateUpdatesTestHelper.StateUpdater() {
               @Override
               public void performStateUpdate(ComponentContext c) {
-                RecyclerCollectionComponent.updateLoadingAndEmptyAsync(c, SUCCEEDED, true);
+                RecyclerCollectionComponent.updateLoadingState(c, EMPTY);
               }
             })
         .doesNotHave(
@@ -142,7 +143,7 @@ public class RecyclerCollectionComponentSpecTest {
   }
 
   @Test
-  public void testNoEmptySucceeded() throws Exception {
+  public void testEmpty() throws Exception {
     LithoView view =
         StateUpdatesTestHelper.getViewAfterStateUpdate(
             mComponentContext,
@@ -150,27 +151,7 @@ public class RecyclerCollectionComponentSpecTest {
             new StateUpdatesTestHelper.StateUpdater() {
               @Override
               public void performStateUpdate(ComponentContext context) {
-                RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, SUCCEEDED, false);
-              }
-            });
-
-    ViewTreeAssert.assertThat(ViewTree.of(view))
-        .doesNotHaveVisibleText("loading")
-        .hasVisibleText("content")
-        .doesNotHaveVisibleText("empty")
-        .doesNotHaveVisibleText("error");
-  }
-
-  @Test
-  public void testEmptySucceeded() throws Exception {
-    LithoView view =
-        StateUpdatesTestHelper.getViewAfterStateUpdate(
-            mComponentContext,
-            mRecyclerCollectionComponent,
-            new StateUpdatesTestHelper.StateUpdater() {
-              @Override
-              public void performStateUpdate(ComponentContext context) {
-                RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, SUCCEEDED, true);
+                RecyclerCollectionComponent.updateLoadingState(context, EMPTY);
               }
             });
 
@@ -182,7 +163,7 @@ public class RecyclerCollectionComponentSpecTest {
   }
 
   @Test
-  public void testNoEmptyError() throws Exception {
+  public void testError() throws Exception {
     LithoView view =
         StateUpdatesTestHelper.getViewAfterStateUpdate(
             mComponentContext,
@@ -190,27 +171,7 @@ public class RecyclerCollectionComponentSpecTest {
             new StateUpdatesTestHelper.StateUpdater() {
               @Override
               public void performStateUpdate(ComponentContext context) {
-                RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, FAILED, false);
-              }
-            });
-
-    ViewTreeAssert.assertThat(ViewTree.of(view))
-        .doesNotHaveVisibleText("loading")
-        .hasVisibleText("content")
-        .doesNotHaveVisibleText("empty")
-        .doesNotHaveVisibleText("error");
-  }
-
-  @Test
-  public void testEmptyError() throws Exception {
-    LithoView view =
-        StateUpdatesTestHelper.getViewAfterStateUpdate(
-            mComponentContext,
-            mRecyclerCollectionComponent,
-            new StateUpdatesTestHelper.StateUpdater() {
-              @Override
-              public void performStateUpdate(ComponentContext context) {
-                RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, FAILED, true);
+                RecyclerCollectionComponent.updateLoadingState(context, ERROR);
               }
             });
 
@@ -222,7 +183,7 @@ public class RecyclerCollectionComponentSpecTest {
   }
 
   @Test
-  public void testNoEmptyLoading() throws Exception {
+  public void testLoaded() throws Exception {
     LithoView view =
         StateUpdatesTestHelper.getViewAfterStateUpdate(
             mComponentContext,
@@ -230,7 +191,7 @@ public class RecyclerCollectionComponentSpecTest {
             new StateUpdatesTestHelper.StateUpdater() {
               @Override
               public void performStateUpdate(ComponentContext context) {
-                RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, LOADING, false);
+                RecyclerCollectionComponent.updateLoadingState(context, LOADED);
               }
             });
 
@@ -242,7 +203,7 @@ public class RecyclerCollectionComponentSpecTest {
   }
 
   @Test
-  public void testEmptyLoading() throws Exception {
+  public void testLoading() throws Exception {
     LithoView view =
         StateUpdatesTestHelper.getViewAfterStateUpdate(
             mComponentContext,
@@ -250,7 +211,7 @@ public class RecyclerCollectionComponentSpecTest {
             new StateUpdatesTestHelper.StateUpdater() {
               @Override
               public void performStateUpdate(ComponentContext context) {
-                RecyclerCollectionComponent.updateLoadingAndEmptyAsync(context, LOADING, true);
+                RecyclerCollectionComponent.updateLoadingState(context, LOADING);
               }
             });
 

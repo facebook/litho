@@ -9,10 +9,6 @@
 
 package com.facebook.litho.sections.widget;
 
-import static com.facebook.litho.sections.LoadingEvent.LoadingState.FAILED;
-import static com.facebook.litho.sections.LoadingEvent.LoadingState.INITIAL_LOAD;
-import static com.facebook.litho.sections.LoadingEvent.LoadingState.LOADING;
-import static com.facebook.litho.sections.LoadingEvent.LoadingState.SUCCEEDED;
 import static com.facebook.yoga.YogaAlign.FLEX_START;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
@@ -49,8 +45,6 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.BaseLoadEventsHandler;
 import com.facebook.litho.sections.LoadEventsHandler;
-import com.facebook.litho.sections.LoadingEvent;
-import com.facebook.litho.sections.LoadingEvent.LoadingState;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionTree;
@@ -68,27 +62,29 @@ import javax.annotation.Nullable;
 /**
  * A {@link Component} that renders a {@link Recycler} backed by a {@link Section} tree.
  *
- * This {@link Component} handles the loading events from the {@link Section} hierarchy and shows
- * the appropriate error,loading or empty {@link Component} passed in as props.
- * If either the empty or the error components are not passed in and the
- * {@link RecyclerCollectionComponent} is in one of these states it will simply not render
- * anything.
+ * <p>This {@link Component} handles the loading events from the {@link Section} hierarchy and shows
+ * the appropriate error,loading or empty {@link Component} passed in as props. If either the empty
+ * or the error components are not passed in and the {@link RecyclerCollectionComponent} is in one
+ * of these states it will simply not render anything.
  *
- * The {@link RecyclerCollectionComponent} also exposes a {@link LoadEventsHandler} and a
- * {@link OnScrollListener} as {@link Prop}s so its users can receive events about the state
- * of the loading and about the state of the {@link Recycler} scrolling.
+ * <p>The {@link RecyclerCollectionComponent} also exposes a {@link LoadEventsHandler} and a {@link
+ * OnScrollListener} as {@link Prop}s so its users can receive events about the state of the loading
+ * and about the state of the {@link Recycler} scrolling.
  *
- * clipToPadding, clipChildren, itemDecoration, scrollBarStyle, horizontalPadding, verticalPadding
- * and recyclerViewId {@link Prop}s will be directly applied to the {@link Recycler} component.
+ * <p>clipToPadding, clipChildren, itemDecoration, scrollBarStyle, horizontalPadding,
+ * verticalPadding and recyclerViewId {@link Prop}s will be directly applied to the {@link Recycler}
+ * component.
  *
- * The {@link RecyclerCollectionEventsController} {@link Prop} is a way to sent commands to the
+ * <p>The {@link RecyclerCollectionEventsController} {@link Prop} is a way to sent commands to the
  * {@link RecyclerCollectionComponentSpec}, such as scrollTo(position) and refresh().
  */
 @LayoutSpec
 public class RecyclerCollectionComponentSpec {
 
-  @PropDefault protected static final RecyclerConfiguration recyclerConfiguration =
+  @PropDefault
+  protected static final RecyclerConfiguration recyclerConfiguration =
       new ListRecyclerConfiguration();
+
   @PropDefault protected static final boolean nestedScrollingEnabled = true;
   @PropDefault protected static final int scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY;
   @PropDefault protected static final int recyclerViewId = View.NO_ID;
@@ -152,18 +148,16 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) LithoRecylerView.TouchInterceptor touchInterceptor,
       @State(canUpdateLazily = true) boolean hasSetSectionTreeRoot,
       @State RecyclerCollectionEventsController internalEventsController,
-      @State(canUpdateLazily = true) LoadingEvent.LoadingState loadingState,
-      @State boolean isEmpty,
+      @State LoadingState loadingState,
       @State Binder<RecyclerView> binder,
       @State SectionTree sectionTree,
+      @State RecyclerCollectionLoadEventsHandler recyclerCollectionLoadEventsHandler,
       @State SnapHelper snapHelper) {
-    sectionTree.setLoadEventsHandler(
-        new RecyclerCollectionLoadEventsHandler(
-            loadEventsHandler,
-            c,
-            internalEventsController,
-            isEmpty));
 
+    // This is a side effect from OnCreateLayout, so it's inherently prone to race conditions:
+    recyclerCollectionLoadEventsHandler.setLoadEventsHandler(loadEventsHandler);
+
+    // More side effects in OnCreateLayout. Watch out:
     if (hasSetSectionTreeRoot && ComponentsConfiguration.setRootAsyncRecyclerCollectionComponent) {
       sectionTree.setRootAsync(section);
     } else {
@@ -171,22 +165,15 @@ public class RecyclerCollectionComponentSpec {
       sectionTree.setRoot(section);
     }
 
-    if (internalEventsController != null) {
-      internalEventsController.setSectionTree(sectionTree);
-    }
-
-    final boolean shouldDisplayLoading = shouldDisplayLoading(loadingState, isEmpty);
-    final boolean shouldDisplayEmpty = shouldDisplayEmpty(loadingState, isEmpty);
-    final boolean shouldDisplayError = shouldDisplayError(loadingState, isEmpty);
-    final boolean isErrorButNoErrorComponent = shouldDisplayError && (errorComponent == null);
-    final boolean isEmptyButNoEmptyComponent = shouldDisplayEmpty && (emptyComponent == null);
+    final boolean isErrorButNoErrorComponent =
+        loadingState == LoadingState.ERROR && (errorComponent == null);
+    final boolean isEmptyButNoEmptyComponent =
+        loadingState == LoadingState.EMPTY && (emptyComponent == null);
     final boolean shouldHideComponent = isEmptyButNoEmptyComponent || isErrorButNoErrorComponent;
 
     if (shouldHideComponent) {
       return null;
     }
-
-    final Component.Builder recyclerBuilder;
 
     final Recycler.Builder recycler =
         Recycler.create(c)
@@ -214,43 +201,36 @@ public class RecyclerCollectionComponentSpec {
             .refreshProgressBarColor(refreshProgressBarColor)
             .snapHelper(snapHelper)
             .touchInterceptor(touchInterceptor)
-            .binder(binder);
-
-    recycler.itemAnimator(
-        RecyclerCollectionComponentSpec.itemAnimator == itemAnimator
-            ? new NoUpdateItemAnimator()
-            : itemAnimator);
-
-    recyclerBuilder = recycler;
-
-    Component.Builder recyclerLayoutBuilder = recyclerBuilder
-        .flexShrink(0)
-        .touchHandler(recyclerTouchEventHandler);
+            .binder(binder)
+            .itemAnimator(
+                RecyclerCollectionComponentSpec.itemAnimator == itemAnimator
+                    ? new NoUpdateItemAnimator()
+                    : itemAnimator)
+            .flexShrink(0)
+            .touchHandler(recyclerTouchEventHandler);
 
     if (!canMeasureRecycler) {
-      recyclerLayoutBuilder = recyclerLayoutBuilder
-          .positionType(ABSOLUTE)
-          .positionPx(ALL, 0);
+      recycler.positionType(ABSOLUTE).positionPx(ALL, 0);
     }
 
     final ContainerBuilder containerBuilder =
-        Column.create(c).flexShrink(0).alignContent(FLEX_START).child(recyclerLayoutBuilder);
+        Column.create(c).flexShrink(0).alignContent(FLEX_START).child(recycler);
 
-    if (shouldDisplayLoading && loadingComponent != null) {
+    if (loadingState == LoadingState.LOADING && loadingComponent != null) {
       containerBuilder.child(
           Wrapper.create(c)
               .delegate(loadingComponent)
               .flexShrink(0)
               .positionType(ABSOLUTE)
               .positionPx(ALL, 0));
-    } else if (shouldDisplayEmpty) {
+    } else if (loadingState == LoadingState.EMPTY) {
       containerBuilder.child(
           Wrapper.create(c)
               .delegate(emptyComponent)
               .flexShrink(0)
               .positionType(ABSOLUTE)
               .positionPx(ALL, 0));
-    } else if (shouldDisplayError) {
+    } else if (loadingState == LoadingState.ERROR) {
       containerBuilder.child(
           Wrapper.create(c)
               .delegate(errorComponent)
@@ -260,18 +240,6 @@ public class RecyclerCollectionComponentSpec {
     }
 
     return containerBuilder.build();
-  }
-
-  private static boolean shouldDisplayLoading(LoadingState loadingState, boolean isEmpty) {
-    return isEmpty && (loadingState == INITIAL_LOAD || loadingState == LOADING);
-  }
-
-  private static boolean shouldDisplayEmpty(LoadingState loadingState, boolean isEmpty) {
-    return isEmpty && loadingState == SUCCEEDED;
-  }
-
-  private static boolean shouldDisplayError(LoadingState loadingState, boolean isEmpty) {
-    return isEmpty && loadingState == FAILED;
   }
 
   @OnCreateInitialState
@@ -285,9 +253,9 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) String sectionTreeTag,
       StateValue<SnapHelper> snapHelper,
       StateValue<SectionTree> sectionTree,
+      StateValue<RecyclerCollectionLoadEventsHandler> recyclerCollectionLoadEventsHandler,
       StateValue<Binder<RecyclerView>> binder,
-      StateValue<LoadingEvent.LoadingState> loadingState,
-      StateValue<Boolean> isEmpty,
+      StateValue<LoadingState> loadingState,
       StateValue<RecyclerCollectionEventsController> internalEventsController) {
 
     E targetBinder = recyclerConfiguration.buildTarget(c);
@@ -306,6 +274,16 @@ public class RecyclerCollectionComponentSpec {
             .asyncStateUpdates(asyncStateUpdates)
             .build();
     sectionTree.set(sectionTreeInstance);
+
+    final RecyclerCollectionEventsController internalEventsControllerInstance =
+        eventsController != null ? eventsController : new RecyclerCollectionEventsController();
+    internalEventsControllerInstance.setSectionTree(sectionTreeInstance);
+    internalEventsController.set(internalEventsControllerInstance);
+
+    final RecyclerCollectionLoadEventsHandler recyclerCollectionLoadEventsHandlerInstance =
+        new RecyclerCollectionLoadEventsHandler(c, internalEventsControllerInstance);
+    recyclerCollectionLoadEventsHandler.set(recyclerCollectionLoadEventsHandlerInstance);
+    sectionTreeInstance.setLoadEventsHandler(recyclerCollectionLoadEventsHandlerInstance);
 
     final ViewportInfo.ViewportChanged viewPortChanged =
         new ViewportInfo.ViewportChanged() {
@@ -327,28 +305,12 @@ public class RecyclerCollectionComponentSpec {
 
     targetBinder.setViewportChangedListener(viewPortChanged);
 
-    isEmpty.set(true);
-    loadingState.set(LoadingEvent.LoadingState.INITIAL_LOAD);
-
-    internalEventsController.set(eventsController != null
-        ? eventsController
-        : new RecyclerCollectionEventsController());
+    loadingState.set(LoadingState.LOADING);
   }
 
   @OnUpdateState
   static void updateLoadingState(
-      StateValue<LoadingState> loadingState,
-      @Param LoadingState currentLoadingState) {
-    loadingState.set(currentLoadingState);
-  }
-
-  @OnUpdateState
-  static void updateLoadingAndEmpty(
-      StateValue<LoadingState> loadingState,
-      StateValue<Boolean> isEmpty,
-      @Param LoadingState currentLoadingState,
-      @Param boolean empty) {
-    isEmpty.set(empty);
+      StateValue<LoadingState> loadingState, @Param LoadingState currentLoadingState) {
     loadingState.set(currentLoadingState);
   }
 
@@ -392,69 +354,90 @@ public class RecyclerCollectionComponentSpec {
     }
   }
 
-  private static class RecyclerCollectionLoadEventsHandler extends BaseLoadEventsHandler {
+  enum LoadingState {
+    /** We're loading but don't have any content yet. */
+    LOADING,
+    /** A load completed and we have content. */
+    LOADED,
+    /** A load completed, but the content is empty. */
+    EMPTY,
+    /** A load failed with an error. */
+    ERROR,
+  }
 
-    private final LoadEventsHandler mDelegate;
+  static class RecyclerCollectionLoadEventsHandler extends BaseLoadEventsHandler {
+
+    private LoadEventsHandler mDelegate;
+    private LoadingState mLastState = LoadingState.LOADING;
     private final ComponentContext mComponentContext;
     private final RecyclerEventsController mRecyclerEventsController;
-    private final boolean mIsEmpty;
 
     private RecyclerCollectionLoadEventsHandler(
-        LoadEventsHandler delegate,
-        ComponentContext c,
-        RecyclerEventsController recyclerEventsController,
-        boolean isEmpty) {
-      mDelegate = delegate;
+        ComponentContext c, RecyclerEventsController recyclerEventsController) {
       mComponentContext = c;
       mRecyclerEventsController = recyclerEventsController;
-      mIsEmpty = isEmpty;
+    }
+
+    /** May be called from any thread (in OnCreateLayout). (Does this need synchronization?) */
+    public void setLoadEventsHandler(LoadEventsHandler delegate) {
+      mDelegate = delegate;
+    }
+
+    /**
+     * One would hope this is only called from one thread, since onLoadSucceeded could arrive before
+     * onLoadStarted if you post them on different threads. But use synchronized to defend against
+     * bad clients.
+     *
+     * <p>This method exists to avoid thrashing Litho with state updates as we do a bunch of load
+     * operations. In theory you could call updateLoadingStateAsync every single time and get the
+     * same result, but it's more efficient to avoid all the unnecessary updates.
+     */
+    private synchronized void updateState(LoadingState newState) {
+      if (mLastState != newState) {
+        mLastState = newState;
+        RecyclerCollectionComponent.updateLoadingStateAsync(mComponentContext, newState);
+      }
     }
 
     @Override
     public void onLoadStarted(boolean empty) {
-      if (mIsEmpty || empty) {
-        RecyclerCollectionComponent.updateLoadingAndEmptyAsync(mComponentContext, LOADING, empty);
-      } else {
-        RecyclerCollectionComponent.lazyUpdateLoadingState(mComponentContext, LOADING);
-      }
+      updateState(empty ? LoadingState.LOADING : LoadingState.LOADED);
 
-      if (mDelegate != null) {
-        mDelegate.onLoadStarted(empty);
+      final LoadEventsHandler delegate = mDelegate;
+      if (delegate != null) {
+        delegate.onLoadStarted(empty);
       }
     }
 
     @Override
     public void onLoadSucceeded(boolean empty) {
-      if (mIsEmpty || empty) {
-        RecyclerCollectionComponent.updateLoadingAndEmptyAsync(mComponentContext, SUCCEEDED, empty);
-      } else {
-        RecyclerCollectionComponent.lazyUpdateLoadingState(mComponentContext, SUCCEEDED);
-      }
+      updateState(empty ? LoadingState.EMPTY : LoadingState.LOADED);
 
       mRecyclerEventsController.clearRefreshing();
-      if (mDelegate != null) {
-        mDelegate.onLoadSucceeded(empty);
+
+      final LoadEventsHandler delegate = mDelegate;
+      if (delegate != null) {
+        delegate.onLoadSucceeded(empty);
       }
     }
 
     @Override
     public void onLoadFailed(boolean empty) {
-      if (mIsEmpty || empty) {
-        RecyclerCollectionComponent.updateLoadingAndEmptyAsync(mComponentContext, FAILED, empty);
-      } else {
-        RecyclerCollectionComponent.lazyUpdateLoadingState(mComponentContext, FAILED);
-      }
+      updateState(empty ? LoadingState.ERROR : LoadingState.LOADED);
 
       mRecyclerEventsController.clearRefreshing();
-      if (mDelegate != null) {
-        mDelegate.onLoadFailed(empty);
+
+      final LoadEventsHandler delegate = mDelegate;
+      if (delegate != null) {
+        delegate.onLoadFailed(empty);
       }
     }
 
     @Override
     public void onInitialLoad() {
-      if (mDelegate != null) {
-        mDelegate.onInitialLoad();
+      final LoadEventsHandler delegate = mDelegate;
+      if (delegate != null) {
+        delegate.onInitialLoad();
       }
     }
   }
