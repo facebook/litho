@@ -250,6 +250,9 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) RecyclerCollectionEventsController eventsController,
       @Prop(optional = true) boolean asyncPropUpdates,
       @Prop(optional = true) boolean asyncStateUpdates,
+      // Caution: ignoreLoadingUpdates breaks loadingComponent/errorComponent/emptyComponent.
+      // It's intended to be a temporary workaround, not something you should use often.
+      @Prop(optional = true) boolean ignoreLoadingUpdates,
       @Prop(optional = true) String sectionTreeTag,
       StateValue<SnapHelper> snapHelper,
       StateValue<SectionTree> sectionTree,
@@ -281,7 +284,8 @@ public class RecyclerCollectionComponentSpec {
     internalEventsController.set(internalEventsControllerInstance);
 
     final RecyclerCollectionLoadEventsHandler recyclerCollectionLoadEventsHandlerInstance =
-        new RecyclerCollectionLoadEventsHandler(c, internalEventsControllerInstance);
+        new RecyclerCollectionLoadEventsHandler(
+            c, internalEventsControllerInstance, ignoreLoadingUpdates);
     recyclerCollectionLoadEventsHandler.set(recyclerCollectionLoadEventsHandlerInstance);
     sectionTreeInstance.setLoadEventsHandler(recyclerCollectionLoadEventsHandlerInstance);
 
@@ -305,7 +309,11 @@ public class RecyclerCollectionComponentSpec {
 
     targetBinder.setViewportChangedListener(viewPortChanged);
 
-    loadingState.set(LoadingState.LOADING);
+    if (ignoreLoadingUpdates) {
+      loadingState.set(LoadingState.LOADED);
+    } else {
+      loadingState.set(LoadingState.LOADING);
+    }
   }
 
   @OnUpdateState
@@ -371,11 +379,15 @@ public class RecyclerCollectionComponentSpec {
     private LoadingState mLastState = LoadingState.LOADING;
     private final ComponentContext mComponentContext;
     private final RecyclerEventsController mRecyclerEventsController;
+    private final boolean mIgnoreLoadingUpdates;
 
     private RecyclerCollectionLoadEventsHandler(
-        ComponentContext c, RecyclerEventsController recyclerEventsController) {
+        ComponentContext c,
+        RecyclerEventsController recyclerEventsController,
+        boolean ignoreLoadingUpdates) {
       mComponentContext = c;
       mRecyclerEventsController = recyclerEventsController;
+      mIgnoreLoadingUpdates = ignoreLoadingUpdates;
     }
 
     /** May be called from any thread (in OnCreateLayout). (Does this need synchronization?) */
@@ -393,6 +405,9 @@ public class RecyclerCollectionComponentSpec {
      * same result, but it's more efficient to avoid all the unnecessary updates.
      */
     private synchronized void updateState(LoadingState newState) {
+      if (mIgnoreLoadingUpdates) {
+        return;
+      }
       if (mLastState != newState) {
         mLastState = newState;
         RecyclerCollectionComponent.updateLoadingStateAsync(mComponentContext, newState);
