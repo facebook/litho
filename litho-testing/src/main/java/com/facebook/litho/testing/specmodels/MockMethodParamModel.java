@@ -11,6 +11,7 @@ package com.facebook.litho.testing.specmodels;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.MethodParamModel;
+import com.facebook.litho.specmodels.model.TypeSpec;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
@@ -39,6 +40,11 @@ public class MockMethodParamModel implements MethodParamModel {
     mAnnotations = annotations;
     mExternalAnnotations = externalAnnotations;
     mRepresentedObject = representedObject;
+  }
+
+  @Override
+  public TypeSpec getTypeSpec() {
+    throw new UnsupportedOperationException("Not yet implemented on the Mock class.");
   }
 
   @Override

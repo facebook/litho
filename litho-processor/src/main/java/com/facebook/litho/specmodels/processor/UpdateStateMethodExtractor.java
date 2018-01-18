@@ -10,6 +10,7 @@
 package com.facebook.litho.specmodels.processor;
 
 import static com.facebook.litho.specmodels.internal.ImmutableList.copyOf;
+import static com.facebook.litho.specmodels.model.SpecModelUtils.generateTypeSpec;
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getMethodParams;
 
 import com.facebook.litho.annotations.OnUpdateState;
@@ -21,7 +22,6 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethod;
-import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +71,7 @@ public class UpdateStateMethodExtractor {
                 ImmutableList.<Annotation>of(onUpdateStateAnnotation),
                 copyOf(new ArrayList<>(executableElement.getModifiers())),
                 executableElement.getSimpleName(),
-                TypeName.get(executableElement.getReturnType()),
+                generateTypeSpec(executableElement.getReturnType()),
                 ImmutableList.of(),
                 copyOf(methodParams),
                 executableElement,

@@ -9,6 +9,8 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import static com.facebook.litho.specmodels.model.SpecModelUtils.generateTypeSpec;
+
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelFactory;
 import com.squareup.javapoet.AnnotationSpec;
@@ -55,7 +57,7 @@ public class MethodExtractorUtils {
       try {
         methodParamModels.add(
             MethodParamModelFactory.create(
-                TypeName.get(param.asType()),
+                generateTypeSpec(param.asType()),
                 paramName,
                 getLibraryAnnotations(param, permittedAnnotations),
                 getExternalAnnotations(param),

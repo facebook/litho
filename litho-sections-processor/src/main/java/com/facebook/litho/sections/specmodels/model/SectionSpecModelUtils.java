@@ -11,19 +11,19 @@ package com.facebook.litho.sections.specmodels.model;
 
 import com.facebook.litho.sections.annotations.OnCreateService;
 import com.facebook.litho.specmodels.model.DelegateMethod;
-import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelFactory;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
-import com.squareup.javapoet.TypeName;
+import com.facebook.litho.specmodels.model.TypeSpec;
 import javax.annotation.Nullable;
 
 class SectionSpecModelUtils {
 
   @Nullable
   static MethodParamModel createServiceParam(SpecModel model) {
-    final TypeName serviceType = extractServiceParam(model);
+    final TypeSpec serviceType = extractServiceParam(model);
     if (serviceType == null) {
       return null;
     }
@@ -33,9 +33,9 @@ class SectionSpecModelUtils {
   }
 
   @Nullable
-  private static TypeName extractServiceParam(SpecModel specModel) {
+  private static TypeSpec extractServiceParam(SpecModel specModel) {
     final SpecMethodModel<DelegateMethod, Void> onCreateService =
         SpecModelUtils.getMethodModelWithAnnotation(specModel, OnCreateService.class);
-    return onCreateService == null ? null : onCreateService.returnType;
+    return onCreateService == null ? null : onCreateService.returnTypeSpec;
   }
 }

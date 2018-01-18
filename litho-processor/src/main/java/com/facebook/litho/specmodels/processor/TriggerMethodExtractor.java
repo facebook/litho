@@ -9,6 +9,7 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import static com.facebook.litho.specmodels.model.SpecModelUtils.generateTypeSpec;
 import static com.facebook.litho.specmodels.processor.EventDeclarationsExtractor.getFields;
 import static com.facebook.litho.specmodels.processor.EventDeclarationsExtractor.getReturnType;
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getMethodParams;
@@ -27,7 +28,6 @@ import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +89,7 @@ public class TriggerMethodExtractor {
                 ImmutableList.<Annotation>of(),
                 ImmutableList.copyOf(new ArrayList<>(executableElement.getModifiers())),
                 executableElement.getSimpleName(),
-                TypeName.get(executableElement.getReturnType()),
+                generateTypeSpec(executableElement.getReturnType()),
                 ImmutableList.copyOf(getTypeVariables(executableElement)),
                 ImmutableList.copyOf(methodParams),
                 executableElement,

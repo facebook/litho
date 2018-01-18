@@ -26,6 +26,7 @@ public final class SpecMethodModel<Phantom, A> {
   public final ImmutableList<Modifier> modifiers;
   public final CharSequence name;
   public final TypeName returnType;
+  public final TypeSpec returnTypeSpec;
   public final ImmutableList<TypeVariableName> typeVariables;
   public final ImmutableList<MethodParamModel> methodParams;
   public final Object representedObject;
@@ -36,7 +37,7 @@ public final class SpecMethodModel<Phantom, A> {
       ImmutableList<Annotation> annotations,
       ImmutableList<Modifier> modifiers,
       CharSequence name,
-      TypeName returnType,
+      TypeSpec returnTypeSpec,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<MethodParamModel> methodParams,
       Object representedObject,
@@ -44,7 +45,8 @@ public final class SpecMethodModel<Phantom, A> {
     this.annotations = annotations;
     this.modifiers = modifiers;
     this.name = name;
-    this.returnType = returnType;
+    this.returnTypeSpec = returnTypeSpec;
+    this.returnType = returnTypeSpec != null ? returnTypeSpec.getTypeName() : null;
     this.typeVariables = typeVariables;
     this.methodParams = methodParams;
     this.representedObject = representedObject;

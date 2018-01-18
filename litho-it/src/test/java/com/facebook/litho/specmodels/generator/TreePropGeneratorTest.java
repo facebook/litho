@@ -23,7 +23,9 @@ import com.facebook.litho.specmodels.model.MethodParamModelFactory;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
+import com.facebook.litho.specmodels.model.TypeSpec;
 import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
@@ -58,11 +60,11 @@ public class TreePropGeneratorTest {
                 }),
             ImmutableList.of(Modifier.PROTECTED),
             "onCreateTreeProp",
-            TypeName.BOOLEAN,
+            new TypeSpec(TypeName.BOOLEAN),
             ImmutableList.<TypeVariableName>of(),
             ImmutableList.of(
                 MethodParamModelFactory.create(
-                    ClassNames.COMPONENT_CONTEXT,
+                    new TypeSpec(ClassNames.COMPONENT_CONTEXT),
                     "componentContext",
                     new ArrayList<Annotation>(),
                     new ArrayList<AnnotationSpec>(),
@@ -70,7 +72,7 @@ public class TreePropGeneratorTest {
                     true,
                     null),
                 MethodParamModelFactory.create(
-                    TypeName.BOOLEAN,
+                    new TypeSpec(TypeName.BOOLEAN),
                     "prop",
                     ImmutableList.of(createAnnotation(Prop.class)),
                     new ArrayList<AnnotationSpec>(),
@@ -78,7 +80,7 @@ public class TreePropGeneratorTest {
                     true,
                     null),
                 MethodParamModelFactory.create(
-                    TypeName.INT,
+                    new TypeSpec(TypeName.INT),
                     "state",
                     ImmutableList.of(createAnnotation(State.class)),
                     new ArrayList<AnnotationSpec>(),
@@ -111,11 +113,15 @@ public class TreePropGeneratorTest {
                 }),
             ImmutableList.of(Modifier.PROTECTED),
             "onCreateTreeProp",
-            ParameterizedTypeName.get(GenericObject.class, Integer.class),
+            new TypeSpec.DeclaredTypeSpec(
+                ClassName.get(GenericObject.class),
+                GenericObject.class.getName(),
+                new TypeSpec(TypeName.OBJECT),
+                ImmutableList.of(new TypeSpec(TypeName.INT))),
             ImmutableList.<TypeVariableName>of(),
             ImmutableList.of(
                 MethodParamModelFactory.create(
-                    ClassNames.COMPONENT_CONTEXT,
+                    new TypeSpec(ClassNames.COMPONENT_CONTEXT),
                     "componentContext",
                     new ArrayList<Annotation>(),
                     new ArrayList<AnnotationSpec>(),
@@ -123,7 +129,11 @@ public class TreePropGeneratorTest {
                     true,
                     null),
                 MethodParamModelFactory.create(
-                    ParameterizedTypeName.get(GenericObject.class, Integer.class),
+                    new TypeSpec.DeclaredTypeSpec(
+                        ClassName.get(GenericObject.class),
+                        GenericObject.class.getName(),
+                        new TypeSpec(TypeName.OBJECT),
+                        ImmutableList.of(new TypeSpec(TypeName.INT))),
                     "prop",
                     ImmutableList.of(createAnnotation(Prop.class)),
                     new ArrayList<AnnotationSpec>(),

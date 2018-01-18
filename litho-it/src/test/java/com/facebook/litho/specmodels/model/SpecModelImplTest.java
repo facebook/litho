@@ -84,7 +84,11 @@ public class SpecModelImplTest {
     mTreePropModel = new TreePropModel(MockMethodParamModel.newBuilder().name("treeprop").build());
     mMethodParamModel =
         new SimpleMethodParamModel(
-            TypeName.INT, "methodparam", ImmutableList.of(), ImmutableList.of(), new Object());
+            new TypeSpec(TypeName.INT),
+            "methodparam",
+            ImmutableList.of(),
+            ImmutableList.of(),
+            new Object());
     mPropDefaultModel1 =
         new PropDefaultModel(TypeName.INT, "propdefault", ImmutableList.of(), new Object());
 
@@ -104,7 +108,7 @@ public class SpecModelImplTest {
             ImmutableList.<Annotation>of(),
             ImmutableList.<Modifier>of(),
             "method1",
-            TypeName.BOOLEAN,
+            new TypeSpec(TypeName.BOOLEAN),
             ImmutableList.of(),
             ImmutableList.copyOf(params1),
             null,
@@ -114,7 +118,7 @@ public class SpecModelImplTest {
             ImmutableList.<Annotation>of(),
             ImmutableList.<Modifier>of(),
             "method2",
-            TypeName.BOOLEAN,
+            new TypeSpec(TypeName.BOOLEAN),
             ImmutableList.of(),
             ImmutableList.copyOf(params2),
             null,

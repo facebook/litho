@@ -61,7 +61,7 @@ public class DelegateMethodValidationTest {
             ImmutableList.of((Annotation) () -> OnCreateMountContent.class),
             ImmutableList.of(Modifier.STATIC),
             "onCreateMountContent",
-            ClassName.bestGuess("java.lang.MadeUpClass"),
+            new TypeSpec(ClassName.bestGuess("java.lang.MadeUpClass")),
             ImmutableList.of(),
             ImmutableList.of(
                 MockMethodParamModel.newBuilder()
@@ -96,7 +96,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
-                    ClassNames.COMPONENT,
+                    new TypeSpec(ClassNames.COMPONENT),
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -110,7 +110,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnCreateLayoutWithSizeSpec.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
-                    ClassNames.COMPONENT,
+                    new TypeSpec(ClassNames.COMPONENT),
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -150,7 +150,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnCreateLayoutWithSizeSpec.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
-                    ClassNames.COMPONENT,
+                    new TypeSpec(ClassNames.COMPONENT),
                     ImmutableList.of(),
                     ImmutableList.of(),
                     mDelegateMethodObject1,
@@ -176,7 +176,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
-                    ClassNames.COMPONENT,
+                    new TypeSpec(ClassNames.COMPONENT),
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -205,7 +205,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
-                    ClassNames.COMPONENT,
+                    new TypeSpec(ClassNames.COMPONENT),
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -238,7 +238,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(),
                     "name",
-                    ClassNames.COMPONENT,
+                    new TypeSpec(ClassNames.COMPONENT),
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -266,7 +266,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(),
                     "name",
-                    ClassNames.COMPONENT,
+                    new TypeSpec(ClassNames.COMPONENT),
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -290,7 +290,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
-                    ClassNames.COMPONENT_LAYOUT,
+                    new TypeSpec(ClassNames.COMPONENT_LAYOUT),
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -334,7 +334,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnMount.class),
                     ImmutableList.of(Modifier.STATIC),
                     "onMount",
-                    TypeName.VOID,
+                    new TypeSpec(TypeName.VOID),
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -351,7 +351,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnBind.class),
                     ImmutableList.of(Modifier.STATIC),
                     "onBind",
-                    TypeName.VOID,
+                    new TypeSpec(TypeName.VOID),
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -397,7 +397,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnUnmount.class),
                     ImmutableList.of(Modifier.STATIC),
                     "onUnmount",
-                    TypeName.VOID,
+                    new TypeSpec(TypeName.VOID),
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -441,7 +441,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnMount.class),
                     ImmutableList.of(Modifier.STATIC),
                     "onMount",
-                    TypeName.VOID,
+                    new TypeSpec(TypeName.VOID),
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -487,7 +487,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnMount.class),
                     ImmutableList.of(Modifier.STATIC),
                     "onMount",
-                    TypeName.VOID,
+                    new TypeSpec(TypeName.VOID),
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -507,7 +507,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnPrepare.class),
                     ImmutableList.of(Modifier.STATIC),
                     "onPrepare",
-                    TypeName.VOID,
+                    new TypeSpec(TypeName.VOID),
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -541,9 +541,9 @@ public class DelegateMethodValidationTest {
             .optionalParameters(
                 ImmutableList.of(
                     MethodParamModelFactory.createSimpleMethodParamModel(
-                        TypeName.INT.box(), "matched", new Object()),
+                        new TypeSpec(TypeName.INT.box()), "matched", new Object()),
                     MethodParamModelFactory.createSimpleMethodParamModel(
-                        TypeName.CHAR, "unmatched", new Object())))
+                        new TypeSpec(TypeName.CHAR), "unmatched", new Object())))
             .build());
 
     when(mLayoutSpecModel.getDelegateMethods())
@@ -553,7 +553,7 @@ public class DelegateMethodValidationTest {
                     ImmutableList.of((Annotation) () -> OnCreateLayout.class),
                     ImmutableList.of(Modifier.STATIC),
                     "name",
-                    ClassNames.COMPONENT,
+                    new TypeSpec(ClassNames.COMPONENT),
                     ImmutableList.of(),
                     ImmutableList.of(
                         MockMethodParamModel.newBuilder()
@@ -561,9 +561,9 @@ public class DelegateMethodValidationTest {
                             .representedObject(mMethodParamObject1)
                             .build(),
                         MethodParamModelFactory.createSimpleMethodParamModel(
-                            TypeName.INT.box(), "matched", mMethodParamObject2),
+                            new TypeSpec(TypeName.INT.box()), "matched", mMethodParamObject2),
                         MethodParamModelFactory.createSimpleMethodParamModel(
-                            TypeName.OBJECT, "unmatched", mMethodParamObject3)),
+                            new TypeSpec(TypeName.OBJECT), "unmatched", mMethodParamObject3)),
                     mDelegateMethodObject1,
                     null)));
 

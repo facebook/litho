@@ -20,19 +20,19 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 public class SimpleMethodParamModel implements MethodParamModel {
-  private final TypeName mTypeName;
+  private final TypeSpec mTypeSpec;
   private final String mName;
   private final List<Annotation> mAnnotations;
   private final List<AnnotationSpec> mExternalAnnotations;
   private final Object mRepresentedObject;
 
   SimpleMethodParamModel(
-      TypeName typeName,
+      TypeSpec typeSpec,
       String name,
       List<Annotation> annotations,
       List<AnnotationSpec> externalAnnotations,
       Object representedObject) {
-    mTypeName = typeName;
+    mTypeSpec = typeSpec;
     mName = name;
     mAnnotations = annotations;
     mExternalAnnotations = externalAnnotations;
@@ -40,8 +40,13 @@ public class SimpleMethodParamModel implements MethodParamModel {
   }
 
   @Override
+  public TypeSpec getTypeSpec() {
+    return mTypeSpec;
+  }
+
+  @Override
   public TypeName getTypeName() {
-    return mTypeName;
+    return mTypeSpec.getTypeName();
   }
 
   @Override
@@ -68,7 +73,7 @@ public class SimpleMethodParamModel implements MethodParamModel {
   public boolean equals(Object o) {
     if (o instanceof SimpleMethodParamModel) {
       final SimpleMethodParamModel p = (SimpleMethodParamModel) o;
-      return mTypeName.equals(p.mTypeName)
+      return mTypeSpec.equals(p.mTypeSpec)
           && mName.equals(p.mName)
           && mAnnotations.equals(p.mAnnotations)
           && mExternalAnnotations.equals(p.mExternalAnnotations)
@@ -80,7 +85,7 @@ public class SimpleMethodParamModel implements MethodParamModel {
 
   @Override
   public int hashCode() {
-    int result = mTypeName.hashCode();
+    int result = mTypeSpec.hashCode();
     result = 31 * result + mName.hashCode();
     result = 31 * result + mAnnotations.hashCode();
     result = 31 * result + mExternalAnnotations.hashCode();

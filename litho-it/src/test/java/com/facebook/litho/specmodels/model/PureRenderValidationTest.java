@@ -40,7 +40,7 @@ public class PureRenderValidationTest {
                 }),
             ImmutableList.<Modifier>of(),
             "method",
-            TypeName.BOOLEAN,
+            new TypeSpec(TypeName.BOOLEAN),
             ImmutableList.of(),
             ImmutableList.<MethodParamModel>of(),
             mDelegateMethodRepresentedObject1,

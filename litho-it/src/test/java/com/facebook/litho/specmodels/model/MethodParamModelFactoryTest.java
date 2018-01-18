@@ -19,7 +19,6 @@ import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -32,15 +31,23 @@ import org.junit.Test;
  */
 public class MethodParamModelFactoryTest {
 
+  private TypeSpec mDiffTypeSpecWrappingInt;
+
   @Before
   public void ListUp() {
+    mDiffTypeSpecWrappingInt =
+        new TypeSpec.DeclaredTypeSpec(
+            ClassNames.DIFF,
+            ClassNames.DIFF.packageName() + "." + ClassNames.DIFF.simpleName(),
+            new TypeSpec(TypeName.OBJECT),
+            ImmutableList.of(new TypeSpec(TypeName.INT.box())));
   }
 
   @Test
   public void testCreateSimpleMethodParamModel() {
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
-            TypeName.BOOLEAN,
+            new TypeSpec(TypeName.BOOLEAN),
             "testParam",
             new ArrayList<Annotation>(),
             new ArrayList<AnnotationSpec>(),
@@ -57,7 +64,7 @@ public class MethodParamModelFactoryTest {
     annotations.add(mock(Prop.class));
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
-            TypeName.BOOLEAN,
+            new TypeSpec(TypeName.BOOLEAN),
             "testParam",
             annotations,
             new ArrayList<AnnotationSpec>(),
@@ -74,7 +81,7 @@ public class MethodParamModelFactoryTest {
     annotations.add(mock(State.class));
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
-            TypeName.BOOLEAN,
+            new TypeSpec(TypeName.BOOLEAN),
             "testParam",
             annotations,
             new ArrayList<AnnotationSpec>(),
@@ -97,7 +104,7 @@ public class MethodParamModelFactoryTest {
     annotations.add(fromPrepare);
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
-            TypeName.BOOLEAN,
+            new TypeSpec(TypeName.BOOLEAN),
             "testParam",
             annotations,
             new ArrayList<AnnotationSpec>(),
@@ -121,7 +128,7 @@ public class MethodParamModelFactoryTest {
 
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
-            ParameterizedTypeName.get(ClassNames.DIFF, TypeName.INT.box()),
+            mDiffTypeSpecWrappingInt,
             "testParam",
             annotations,
             new ArrayList<AnnotationSpec>(),
@@ -145,7 +152,7 @@ public class MethodParamModelFactoryTest {
 
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
-            ParameterizedTypeName.get(ClassNames.DIFF, TypeName.INT.box()),
+            mDiffTypeSpecWrappingInt,
             "testParam",
             annotations,
             new ArrayList<AnnotationSpec>(),
@@ -161,7 +168,7 @@ public class MethodParamModelFactoryTest {
     Object representedObject = new Object();
     SimpleMethodParamModel param =
         MethodParamModelFactory.createSimpleMethodParamModel(
-            TypeName.CHAR, "customParamModel", representedObject);
+            new TypeSpec(TypeName.CHAR), "customParamModel", representedObject);
 
     assertThat(param.getTypeName()).isEqualTo(TypeName.CHAR);
     assertThat(param.getName()).isEqualTo("customParamModel");

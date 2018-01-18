@@ -36,6 +36,11 @@ public class PropModel implements MethodParamModel {
   }
 
   @Override
+  public TypeSpec getTypeSpec() {
+    return mParamModel.getTypeSpec();
+  }
+
+  @Override
   public TypeName getTypeName() {
     return mParamModel.getTypeName();
   }

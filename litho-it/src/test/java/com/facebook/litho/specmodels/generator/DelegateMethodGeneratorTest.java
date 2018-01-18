@@ -29,6 +29,7 @@ import com.facebook.litho.specmodels.model.MethodParamModelFactory;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
+import com.facebook.litho.specmodels.model.TypeSpec;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
@@ -61,11 +62,11 @@ public class DelegateMethodGeneratorTest {
             ImmutableList.of(createAnnotation(OnCreateLayout.class)),
             ImmutableList.of(Modifier.PROTECTED),
             "onCreateLayout",
-            DelegateMethodDescriptions.ON_CREATE_LAYOUT.returnType,
+            new TypeSpec(DelegateMethodDescriptions.ON_CREATE_LAYOUT.returnType),
             ImmutableList.<TypeVariableName>of(),
             ImmutableList.of(
                 MethodParamModelFactory.create(
-                    ClassNames.COMPONENT_CONTEXT,
+                    new TypeSpec(ClassNames.COMPONENT_CONTEXT),
                     "c",
                     ImmutableList.<Annotation>of(),
                     new ArrayList<AnnotationSpec>(),
@@ -73,7 +74,7 @@ public class DelegateMethodGeneratorTest {
                     true,
                     null),
                 MethodParamModelFactory.create(
-                    TypeName.BOOLEAN,
+                    new TypeSpec(TypeName.BOOLEAN),
                     "prop",
                     ImmutableList.of(createAnnotation(Prop.class)),
                     new ArrayList<AnnotationSpec>(),
@@ -81,7 +82,7 @@ public class DelegateMethodGeneratorTest {
                     true,
                     null),
                 MethodParamModelFactory.create(
-                    TypeName.INT,
+                    new TypeSpec(TypeName.INT),
                     "state",
                     ImmutableList.of(createAnnotation(State.class)),
                     new ArrayList<AnnotationSpec>(),
@@ -170,7 +171,7 @@ public class DelegateMethodGeneratorTest {
             .optionalParameters(
                 ImmutableList.of(
                     MethodParamModelFactory.createSimpleMethodParamModel(
-                        TypeName.CHAR, "optionalParam", new Object())))
+                        new TypeSpec(TypeName.CHAR), "optionalParam", new Object())))
             .build());
 
     TypeSpecDataHolder typeSpecDataHolder = generateDelegates(mSpecModelWithDI, map);
@@ -204,7 +205,7 @@ public class DelegateMethodGeneratorTest {
             .optionalParameters(
                 ImmutableList.of(
                     MethodParamModelFactory.createSimpleMethodParamModel(
-                        TypeName.CHAR, "optionalParam", new Object())))
+                        new TypeSpec(TypeName.CHAR), "optionalParam", new Object())))
             .build());
 
     SpecMethodModel<DelegateMethod, Void> delegateMethodExpectingOptionalParameter =
@@ -212,11 +213,11 @@ public class DelegateMethodGeneratorTest {
             ImmutableList.of(createAnnotation(OnCreateLayout.class)),
             ImmutableList.of(Modifier.PROTECTED),
             "onCreateLayout",
-            DelegateMethodDescriptions.ON_CREATE_LAYOUT.returnType,
+            new TypeSpec(DelegateMethodDescriptions.ON_CREATE_LAYOUT.returnType),
             ImmutableList.<TypeVariableName>of(),
             ImmutableList.of(
                 MethodParamModelFactory.create(
-                    ClassNames.COMPONENT_CONTEXT,
+                    new TypeSpec(ClassNames.COMPONENT_CONTEXT),
                     "c",
                     ImmutableList.<Annotation>of(),
                     new ArrayList<AnnotationSpec>(),
@@ -224,9 +225,9 @@ public class DelegateMethodGeneratorTest {
                     true,
                     null),
                 MethodParamModelFactory.createSimpleMethodParamModel(
-                    TypeName.CHAR, "unimportantName", new Object()),
+                    new TypeSpec(TypeName.CHAR), "unimportantName", new Object()),
                 MethodParamModelFactory.create(
-                    TypeName.BOOLEAN,
+                    new TypeSpec(TypeName.BOOLEAN),
                     "prop",
                     ImmutableList.of(createAnnotation(Prop.class)),
                     new ArrayList<AnnotationSpec>(),

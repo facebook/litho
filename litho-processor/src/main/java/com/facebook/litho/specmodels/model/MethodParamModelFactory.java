@@ -9,13 +9,13 @@
 
 package com.facebook.litho.specmodels.model;
 
+import static com.facebook.litho.specmodels.model.ClassNames.DIFF;
+
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
@@ -25,7 +25,7 @@ import java.util.List;
 public final class MethodParamModelFactory {
 
   public static MethodParamModel create(
-      TypeName typeName,
+      TypeSpec typeSpec,
       String name,
       List<Annotation> annotations,
       List<AnnotationSpec> externalAnnotations,
@@ -33,15 +33,15 @@ public final class MethodParamModelFactory {
       boolean canCreateDiffModels,
       Object representedObject) {
 
-    if (canCreateDiffModels && isDiffType(typeName)) {
+    if (canCreateDiffModels && typeSpec.isSubType(DIFF)) {
       return new RenderDataDiffModel(
           new SimpleMethodParamModel(
-              typeName, name, annotations, externalAnnotations, representedObject));
+              typeSpec, name, annotations, externalAnnotations, representedObject));
     }
 
     final SimpleMethodParamModel simpleMethodParamModel =
         new SimpleMethodParamModel(
-            extractDiffTypeIfNecessary(typeName),
+            extractDiffTypeIfNecessary(typeSpec),
             name,
             annotations,
             externalAnnotations,
@@ -56,7 +56,7 @@ public final class MethodParamModelFactory {
                 ((Prop) annotation).resType(),
                 ((Prop) annotation).varArg());
 
-        if (isDiffType(typeName)) {
+        if (typeSpec.isSubType(DIFF)) {
           return new DiffPropModel(propModel);
         } else {
           return propModel;
@@ -67,7 +67,7 @@ public final class MethodParamModelFactory {
         StateParamModel stateParamModel =
             new StateParamModel(simpleMethodParamModel, ((State) annotation).canUpdateLazily());
 
-        if (isDiffType(typeName)) {
+        if (typeSpec.isSubType(DIFF)) {
           return new DiffStateParamModel(stateParamModel);
         } else {
           return stateParamModel;
@@ -86,24 +86,18 @@ public final class MethodParamModelFactory {
     return simpleMethodParamModel;
   }
 
-  private static boolean isDiffType(TypeName typeName) {
-    return (typeName instanceof ParameterizedTypeName
-        && ((ParameterizedTypeName) typeName).rawType.equals(ClassNames.DIFF));
-  }
-
-
-  static TypeName extractDiffTypeIfNecessary(TypeName typeName) {
-    if (!isDiffType(typeName)) {
-      return typeName;
+  static TypeSpec extractDiffTypeIfNecessary(TypeSpec typeSpec) {
+    if (typeSpec.isSubType(DIFF)) {
+      return ((TypeSpec.DeclaredTypeSpec) typeSpec).getTypeArguments().get(0);
     }
 
-    return ((ParameterizedTypeName) typeName).typeArguments.get(0);
+    return typeSpec;
   }
 
   public static SimpleMethodParamModel createSimpleMethodParamModel(
-      TypeName type, String name, Object representedObject) {
+      TypeSpec typeSpec, String name, Object representedObject) {
     return new SimpleMethodParamModel(
-        type,
+        typeSpec,
         name,
         ImmutableList.<Annotation>of(),
         ImmutableList.<AnnotationSpec>of(),

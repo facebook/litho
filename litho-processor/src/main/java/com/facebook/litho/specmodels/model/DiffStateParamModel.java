@@ -29,6 +29,11 @@ public class DiffStateParamModel implements MethodParamModel {
   }
 
   @Override
+  public TypeSpec getTypeSpec() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public TypeName getTypeName() {
     return ParameterizedTypeName.get(ClassNames.DIFF, mUnderlyingStateParamModel.getTypeName().box());
   }

@@ -54,7 +54,7 @@ public class TreePropValidationTest {
                         }),
                     ImmutableList.<Modifier>of(),
                     "",
-                    TypeName.VOID,
+                    new TypeSpec(TypeName.VOID),
                     ImmutableList.of(),
                     ImmutableList.<MethodParamModel>of(
                         MockMethodParamModel.newBuilder()

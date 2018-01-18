@@ -10,15 +10,25 @@
 package com.facebook.litho.specmodels.model;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
+import static com.facebook.litho.specmodels.internal.ImmutableList.copyOf;
 import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
 
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.SimpleTypeVisitor6;
 
 /**
  * Utility methods for {@link SpecModel}s.
@@ -146,5 +156,65 @@ public class SpecModelUtils {
     }
 
     return false;
+  }
+
+  /**
+   * This method will "expand" the typeArguments of the given type, only if the type is a {@link
+   * ClassNames#DIFF}. Otherwise the typeArguments won't be traversed and recorded.
+   */
+  public static TypeSpec generateTypeSpec(TypeMirror type) {
+    final TypeSpec defaultValue = new TypeSpec(safelyGetTypeName(type));
+
+    return type.accept(
+        new SimpleTypeVisitor6<TypeSpec, Void>(defaultValue) {
+          @Override
+          public TypeSpec visitDeclared(DeclaredType t, Void aVoid) {
+            final TypeElement typeElement = (TypeElement) t.asElement();
+            final TypeMirror superClass = typeElement.getSuperclass();
+            final String qualifiedName = typeElement.getQualifiedName().toString();
+
+            final List<TypeSpec> typeArguments =
+                ClassName.bestGuess(qualifiedName).equals(ClassNames.DIFF)
+                    ? t.getTypeArguments()
+                        .stream()
+                        .map(SpecModelUtils::generateTypeSpec)
+                        .collect(Collectors.toList())
+                    : Collections.emptyList();
+
+            return new TypeSpec.DeclaredTypeSpec(
+                safelyGetTypeName(t),
+                qualifiedName,
+                superClass.getKind() != TypeKind.DECLARED ? null : generateTypeSpec(superClass),
+                copyOf(typeArguments));
+          }
+        },
+        null);
+  }
+
+  /**
+   * There are a few cases of classes with typeArgs (e.g. {@literal MyClass<SomeClass, ..>}) where
+   *
+   * <p>TypeName.get() throws an error like: "com.sun.tools.javac.code.Symbol$CompletionFailure:
+   * class file for SomeClass not found". Therefore we manually get the qualified name and create
+   * the TypeName from the path String.
+   */
+  private static TypeName safelyGetTypeName(TypeMirror t) {
+    TypeName typeName;
+    try {
+      typeName = TypeName.get(t);
+    } catch (Exception e) {
+      final String qualifiedName;
+      if (t instanceof DeclaredType) {
+        qualifiedName =
+            ((TypeElement) ((DeclaredType) t).asElement()).getQualifiedName().toString();
+      } else {
+        String tmp = t.toString();
+        qualifiedName = tmp.substring(0, tmp.indexOf('<'));
+      }
+
+      typeName = ClassName.bestGuess(qualifiedName);
+    }
+
+    return typeName;
   }
 }
