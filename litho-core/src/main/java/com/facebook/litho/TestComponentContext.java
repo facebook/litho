@@ -44,9 +44,9 @@ class TestComponentContext extends ComponentContext {
   }
 
   @Override
-  InternalNode resolveComponent(Component component) {
+  InternalNode resolveLayout(Component component) {
     if (component.isInternalComponent()) {
-      return super.resolveComponent(component);
+      return super.resolveLayout(component);
     }
 
     InternalNode node = ComponentsPools.acquireInternalNode(this);

@@ -61,12 +61,7 @@ public final class Wrapper extends Component {
       return ComponentContext.NULL_LAYOUT;
     }
 
-    InternalNode node = (InternalNode) c.newLayoutBuilder(delegate, 0, 0);
-    if (getCommonProps() != null) {
-      getCommonProps().copyInto(c, node);
-    }
-
-    return node;
+    return c.newLayoutBuilder(delegate, 0, 0);
   }
 
   @Override

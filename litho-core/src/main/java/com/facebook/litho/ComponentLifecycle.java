@@ -264,7 +264,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       if (layoutComponent == null || layoutComponent.getId() <= 0) {
         node = null;
       } else {
-        node = context.resolveComponent(layoutComponent);
+        node = context.resolveLayout(layoutComponent);
       }
     }
 

@@ -12,10 +12,14 @@ package com.facebook.litho;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.robolectric.RuntimeEnvironment.application;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.AttrRes;
+import android.support.annotation.StyleRes;
 import android.util.SparseArray;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.reference.DrawableReference;
@@ -531,6 +535,23 @@ public class LayoutStateCreateTreeTest {
     verify(node).sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
   }
 
+  @Test
+  public void testCopyPropsOnlyCalledOnce() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return Column.create(c).child(Column.create(c).flexGrow(1)).build();
+          }
+        };
+
+    final InternalNode root =
+        LayoutState.createTree(component, new MockInternalNodeComponentContext(application));
+
+    assertThat(root.getChildAt(0) instanceof TestInternalNode).isTrue();
+    assertThat(((TestInternalNode) root.getChildAt(0)).mFlexGrowCounter).isEqualTo(1);
+  }
+
   private static class TestDrawableComponentWithMockInternalNode
       extends TestComponent {
 
@@ -569,6 +590,34 @@ public class LayoutStateCreateTreeTest {
       public Component build() {
         return mComponent;
       }
+    }
+  }
+
+  private class MockInternalNodeComponentContext extends ComponentContext {
+
+    private MockInternalNodeComponentContext(Context context) {
+      super(context);
+    }
+
+    InternalNode newLayoutBuilder(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+      TestInternalNode node = new TestInternalNode();
+      node.init(ComponentsPools.acquireYogaNode(), this);
+      return node;
+    }
+
+    @Override
+    ComponentContext makeNewCopy() {
+      return new MockInternalNodeComponentContext(this);
+    }
+  }
+
+  private class TestInternalNode extends InternalNode {
+    private int mFlexGrowCounter;
+
+    @Override
+    TestInternalNode flexGrow(float flex) {
+      mFlexGrowCounter++;
+      return (TestInternalNode) super.flexGrow(flex);
     }
   }
 }

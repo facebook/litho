@@ -288,7 +288,7 @@ public class ComponentContext extends ContextWrapper {
     return node;
   }
 
-  InternalNode resolveComponent(Component component) {
+  InternalNode resolveLayout(Component component) {
     component.generateKey(this);
     component.applyStateUpdates(this);
 
@@ -297,6 +297,13 @@ public class ComponentContext extends ContextWrapper {
     }
 
     final InternalNode node = (InternalNode) component.resolve(component.getScopedContext());
+    if (component.isInternalComponent()) {
+      final CommonProps props = component.getCommonProps();
+      if (props != null) {
+        props.copyInto(component.getScopedContext(), node);
+      }
+    }
+
     component.getScopedContext().setTreeProps(null);
 
     return node;

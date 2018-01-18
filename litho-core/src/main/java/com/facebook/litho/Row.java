@@ -84,10 +84,6 @@ public final class Row extends Component {
         c.newLayoutBuilder(0, 0)
             .flexDirection(reverse ? YogaFlexDirection.ROW_REVERSE : YogaFlexDirection.ROW);
 
-    if (getCommonProps() != null) {
-      getCommonProps().copyInto(c, node);
-    }
-
     if (alignItems != null) {
       node.alignItems(alignItems);
     }

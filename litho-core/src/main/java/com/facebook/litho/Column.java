@@ -84,10 +84,6 @@ public final class Column extends Component {
         c.newLayoutBuilder(0, 0)
             .flexDirection(reverse ? YogaFlexDirection.COLUMN_REVERSE : YogaFlexDirection.COLUMN);
 
-    if (getCommonProps() != null) {
-      getCommonProps().copyInto(c, node);
-    }
-
     if (alignItems != null) {
       node.alignItems(alignItems);
     }
