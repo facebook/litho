@@ -91,17 +91,19 @@ public class TreeDiffingTest {
           }
         };
 
-    LayoutState layoutState = calculate(
-        mContext,
-        component,
-        -1,
-        makeSizeSpec(350, SizeSpec.EXACTLY),
-        makeSizeSpec(200, SizeSpec.EXACTLY),
-        false /* shouldGenerateDiffTree */,
-        null /* previousDiffTreeRoot */,
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */);
+    LayoutState layoutState =
+        calculate(
+            mContext,
+            component,
+            -1,
+            makeSizeSpec(350, SizeSpec.EXACTLY),
+            makeSizeSpec(200, SizeSpec.EXACTLY),
+            false /* shouldGenerateDiffTree */,
+            null /* previousDiffTreeRoot */,
+            false /* canPrefetchDisplayLists */,
+            false /* canCacheDrawingDisplayLists */,
+            true /* clipChildren */,
+            LayoutState.CalculateLayoutSource.TEST);
 
     // Check diff tree is null.
     assertThat(layoutState.getDiffTree()).isNull();
@@ -120,17 +122,19 @@ public class TreeDiffingTest {
           }
         };
 
-    LayoutState layoutState = calculate(
-        mContext,
-        component,
-        -1,
-        makeSizeSpec(350, SizeSpec.EXACTLY),
-        makeSizeSpec(200, SizeSpec.EXACTLY),
-        true /* shouldGenerateDiffTree */,
-        null /* previousDiffTreeRoot */,
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */);
+    LayoutState layoutState =
+        calculate(
+            mContext,
+            component,
+            -1,
+            makeSizeSpec(350, SizeSpec.EXACTLY),
+            makeSizeSpec(200, SizeSpec.EXACTLY),
+            true /* shouldGenerateDiffTree */,
+            null /* previousDiffTreeRoot */,
+            false /* canPrefetchDisplayLists */,
+            false /* canCacheDrawingDisplayLists */,
+            true /* clipChildren */,
+            LayoutState.CalculateLayoutSource.TEST);
 
     // Check diff tree is not null and consistent.
     DiffNode node = layoutState.getDiffTree();
@@ -250,7 +254,8 @@ public class TreeDiffingTest {
     final Component component1 = new TestLayoutSpec(false);
     final Component component2 = new TestLayoutSpec(false);
 
-    LayoutState prevLayoutState = LayoutState.calculate(
+    LayoutState prevLayoutState =
+        LayoutState.calculate(
             mContext,
             component1,
             -1,
@@ -260,7 +265,8 @@ public class TreeDiffingTest {
             null /* previousDiffTreeRoot */,
             false /* canPrefetchDisplayLists */,
             false /* canCacheDrawingDisplayLists */,
-            true /* clipChildren */);
+            true /* clipChildren */,
+            LayoutState.CalculateLayoutSource.TEST);
 
     // Check diff tree is consistent.
     DiffNode node = prevLayoutState.getDiffTree();
@@ -277,7 +283,8 @@ public class TreeDiffingTest {
     final Component component1 = new TestLayoutSpec(false);
     final Component component2 = new TestLayoutSpec(true);
 
-    LayoutState prevLayoutState = LayoutState.calculate(
+    LayoutState prevLayoutState =
+        LayoutState.calculate(
             mContext,
             component1,
             -1,
@@ -287,7 +294,8 @@ public class TreeDiffingTest {
             null /* previousDiffTreeRoot */,
             false /* canPrefetchDisplayLists */,
             false /* canCacheDrawingDisplayLists */,
-            true /* clipChildren */);
+            true /* clipChildren */,
+            LayoutState.CalculateLayoutSource.TEST);
 
     // Check diff tree is consistent.
     DiffNode node = prevLayoutState.getDiffTree();
@@ -332,29 +340,33 @@ public class TreeDiffingTest {
           }
         };
 
-    LayoutState prevLayoutState = calculate(
-        mContext,
-        component1,
-        -1,
-        makeSizeSpec(350, SizeSpec.EXACTLY),
-        makeSizeSpec(200, SizeSpec.EXACTLY),
-        true /* shouldGenerateDiffTree */,
-        null /* previousDiffTreeRoot */,
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */);
+    LayoutState prevLayoutState =
+        calculate(
+            mContext,
+            component1,
+            -1,
+            makeSizeSpec(350, SizeSpec.EXACTLY),
+            makeSizeSpec(200, SizeSpec.EXACTLY),
+            true /* shouldGenerateDiffTree */,
+            null /* previousDiffTreeRoot */,
+            false /* canPrefetchDisplayLists */,
+            false /* canCacheDrawingDisplayLists */,
+            true /* clipChildren */,
+            LayoutState.CalculateLayoutSource.TEST);
 
-    LayoutState layoutState = calculate(
-        mContext,
-        component2,
-        -1,
-        makeSizeSpec(350, SizeSpec.EXACTLY),
-        makeSizeSpec(200, SizeSpec.EXACTLY),
-        true /* shouldGenerateDiffTree */,
-        prevLayoutState.getDiffTree(),
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */);
+    LayoutState layoutState =
+        calculate(
+            mContext,
+            component2,
+            -1,
+            makeSizeSpec(350, SizeSpec.EXACTLY),
+            makeSizeSpec(200, SizeSpec.EXACTLY),
+            true /* shouldGenerateDiffTree */,
+            prevLayoutState.getDiffTree(),
+            false /* canPrefetchDisplayLists */,
+            false /* canCacheDrawingDisplayLists */,
+            true /* clipChildren */,
+            LayoutState.CalculateLayoutSource.TEST);
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(prevLayoutState.getMountableOutputCount());
     for (int i = 0, count = prevLayoutState.getMountableOutputCount(); i < count; i++) {
@@ -387,7 +399,8 @@ public class TreeDiffingTest {
           }
         };
 
-    LayoutState prevLayoutState = LayoutState.calculate(
+    LayoutState prevLayoutState =
+        LayoutState.calculate(
             mContext,
             component1,
             -1,
@@ -397,8 +410,10 @@ public class TreeDiffingTest {
             null /* previousDiffTreeRoot */,
             false /* canPrefetchDisplayLists */,
             false /* canCacheDrawingDisplayLists */,
-            true /* clipChildren */);
-    LayoutState layoutState = LayoutState.calculate(
+            true /* clipChildren */,
+            LayoutState.CalculateLayoutSource.TEST);
+    LayoutState layoutState =
+        LayoutState.calculate(
             mContext,
             component2,
             -1,
@@ -408,7 +423,8 @@ public class TreeDiffingTest {
             prevLayoutState.getDiffTree(),
             false /* canPrefetchDisplayLists */,
             false /* canCacheDrawingDisplayLists */,
-            true /* clipChildren */);
+            true /* clipChildren */,
+            LayoutState.CalculateLayoutSource.TEST);
 
     assertNotEquals(
             prevLayoutState.getMountableOutputCount(),
@@ -494,36 +510,42 @@ public class TreeDiffingTest {
             .incrementalMount(false)
             .layoutDiffing(false)
             .build();
-    LayoutState state = componentTree.calculateLayoutState(
+    LayoutState state =
+        componentTree.calculateLayoutState(
             null,
             mContext,
             firstComponent,
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
-            null);
+            null,
+            LayoutState.CalculateLayoutSource.TEST);
 
     assertOutputsState(state, LayoutOutput.STATE_UNKNOWN);
 
-    LayoutState secondState = componentTree.calculateLayoutState(
+    LayoutState secondState =
+        componentTree.calculateLayoutState(
             null,
             mContext,
             secondComponent,
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
-            state.getDiffTree());
+            state.getDiffTree(),
+            LayoutState.CalculateLayoutSource.TEST);
 
     assertOutputsState(secondState, LayoutOutput.STATE_UPDATED);
 
-    LayoutState thirdState = componentTree.calculateLayoutState(
+    LayoutState thirdState =
+        componentTree.calculateLayoutState(
             null,
             mContext,
             thirdComponent,
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
-            secondState.getDiffTree());
+            secondState.getDiffTree(),
+            LayoutState.CalculateLayoutSource.TEST);
 
     assertOutputsState(thirdState, LayoutOutput.STATE_DIRTY);
   }
@@ -538,37 +560,43 @@ public class TreeDiffingTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    LayoutState state = componentTree.calculateLayoutState(
-        null,
-        mContext,
-        component1,
-        makeSizeSpec(10, SizeSpec.EXACTLY),
-        makeSizeSpec(10, SizeSpec.EXACTLY),
-        true,
-        null);
+    LayoutState state =
+        componentTree.calculateLayoutState(
+            null,
+            mContext,
+            component1,
+            makeSizeSpec(10, SizeSpec.EXACTLY),
+            makeSizeSpec(10, SizeSpec.EXACTLY),
+            true,
+            null,
+            LayoutState.CalculateLayoutSource.TEST);
 
     assertOutputsState(state, STATE_UNKNOWN);
 
-    LayoutState secondState = componentTree.calculateLayoutState(
-        null,
-        mContext,
-        component2,
-        makeSizeSpec(10, SizeSpec.EXACTLY),
-        makeSizeSpec(10, SizeSpec.EXACTLY),
-        true,
-        state.getDiffTree());
+    LayoutState secondState =
+        componentTree.calculateLayoutState(
+            null,
+            mContext,
+            component2,
+            makeSizeSpec(10, SizeSpec.EXACTLY),
+            makeSizeSpec(10, SizeSpec.EXACTLY),
+            true,
+            state.getDiffTree(),
+            LayoutState.CalculateLayoutSource.TEST);
 
     assertThat(5).isEqualTo(secondState.getMountableOutputCount());
     assertOutputsState(secondState, STATE_UPDATED);
 
-    LayoutState thirdState = componentTree.calculateLayoutState(
-        null,
-        mContext,
-        component3,
-        makeSizeSpec(10, SizeSpec.EXACTLY),
-        makeSizeSpec(10, SizeSpec.EXACTLY),
-        true,
-        secondState.getDiffTree());
+    LayoutState thirdState =
+        componentTree.calculateLayoutState(
+            null,
+            mContext,
+            component3,
+            makeSizeSpec(10, SizeSpec.EXACTLY),
+            makeSizeSpec(10, SizeSpec.EXACTLY),
+            true,
+            secondState.getDiffTree(),
+            LayoutState.CalculateLayoutSource.TEST);
 
     assertThat(5).isEqualTo(thirdState.getMountableOutputCount());
     assertThat(thirdState.getMountableOutputAt(1).getUpdateState()).isEqualTo(STATE_DIRTY);
@@ -588,36 +616,42 @@ public class TreeDiffingTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    LayoutState state = componentTree.calculateLayoutState(
-        null,
-        mContext,
-        component1,
-        makeSizeSpec(10, SizeSpec.EXACTLY),
-        makeSizeSpec(10, SizeSpec.EXACTLY),
-        true,
-        null);
+    LayoutState state =
+        componentTree.calculateLayoutState(
+            null,
+            mContext,
+            component1,
+            makeSizeSpec(10, SizeSpec.EXACTLY),
+            makeSizeSpec(10, SizeSpec.EXACTLY),
+            true,
+            null,
+            LayoutState.CalculateLayoutSource.TEST);
 
     assertThat(state.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_UNKNOWN);
 
-    LayoutState secondState = componentTree.calculateLayoutState(
-        null,
-        mContext,
-        component2,
-        makeSizeSpec(10, SizeSpec.EXACTLY),
-        makeSizeSpec(10, SizeSpec.EXACTLY),
-        true,
-        state.getDiffTree());
+    LayoutState secondState =
+        componentTree.calculateLayoutState(
+            null,
+            mContext,
+            component2,
+            makeSizeSpec(10, SizeSpec.EXACTLY),
+            makeSizeSpec(10, SizeSpec.EXACTLY),
+            true,
+            state.getDiffTree(),
+            LayoutState.CalculateLayoutSource.TEST);
 
     assertThat(secondState.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_UPDATED);
 
-    LayoutState thirdState = componentTree.calculateLayoutState(
-        null,
-        mContext,
-        component3,
-        makeSizeSpec(10, SizeSpec.EXACTLY),
-        makeSizeSpec(10, SizeSpec.EXACTLY),
-        true,
-        secondState.getDiffTree());
+    LayoutState thirdState =
+        componentTree.calculateLayoutState(
+            null,
+            mContext,
+            component3,
+            makeSizeSpec(10, SizeSpec.EXACTLY),
+            makeSizeSpec(10, SizeSpec.EXACTLY),
+            true,
+            secondState.getDiffTree(),
+            LayoutState.CalculateLayoutSource.TEST);
 
     assertThat(thirdState.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_DIRTY);
   }
@@ -631,25 +665,29 @@ public class TreeDiffingTest {
         .incrementalMount(false)
         .layoutDiffing(false)
         .build();
-    LayoutState state = componentTree.calculateLayoutState(
-        null,
-        mContext,
-        component1,
-        makeSizeSpec(10, SizeSpec.EXACTLY),
-        makeSizeSpec(10, SizeSpec.EXACTLY),
-        true,
-        null);
+    LayoutState state =
+        componentTree.calculateLayoutState(
+            null,
+            mContext,
+            component1,
+            makeSizeSpec(10, SizeSpec.EXACTLY),
+            makeSizeSpec(10, SizeSpec.EXACTLY),
+            true,
+            null,
+            LayoutState.CalculateLayoutSource.TEST);
 
     assertOutputsState(state, STATE_UNKNOWN);
 
-    LayoutState secondState = componentTree.calculateLayoutState(
-        null,
-        mContext,
-        component2,
-        makeSizeSpec(10, SizeSpec.EXACTLY),
-        makeSizeSpec(10, SizeSpec.EXACTLY),
-        true,
-        state.getDiffTree());
+    LayoutState secondState =
+        componentTree.calculateLayoutState(
+            null,
+            mContext,
+            component2,
+            makeSizeSpec(10, SizeSpec.EXACTLY),
+            makeSizeSpec(10, SizeSpec.EXACTLY),
+            true,
+            state.getDiffTree(),
+            LayoutState.CalculateLayoutSource.TEST);
 
     assertThat(6).isEqualTo(secondState.getMountableOutputCount());
     assertThat(STATE_DIRTY).isEqualTo(secondState.getMountableOutputAt(0).getUpdateState());
@@ -668,17 +706,19 @@ public class TreeDiffingTest {
 
     final Component layoutComponent = new TestSimpleContainerLayout2(component);
 
-    LayoutState firstLayoutState = calculate(
-        mContext,
-        layoutComponent,
-        0,
-        makeSizeSpec(100, SizeSpec.EXACTLY),
-        makeSizeSpec(100, SizeSpec.EXACTLY),
-        true /* shouldGenerateDiffTree */,
-        null /* previousDiffTreeRoot */,
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */);
+    LayoutState firstLayoutState =
+        calculate(
+            mContext,
+            layoutComponent,
+            0,
+            makeSizeSpec(100, SizeSpec.EXACTLY),
+            makeSizeSpec(100, SizeSpec.EXACTLY),
+            true /* shouldGenerateDiffTree */,
+            null /* previousDiffTreeRoot */,
+            false /* canPrefetchDisplayLists */,
+            false /* canCacheDrawingDisplayLists */,
+            true /* clipChildren */,
+            LayoutState.CalculateLayoutSource.TEST);
 
     assertThat(component.wasMeasureCalled()).isTrue();
 
@@ -698,7 +738,8 @@ public class TreeDiffingTest {
         firstLayoutState.getDiffTree(),
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */);
+        true /* clipChildren */,
+        LayoutState.CalculateLayoutSource.TEST);
 
     assertThat(secondComponent.wasMeasureCalled()).isFalse();
   }
@@ -711,17 +752,19 @@ public class TreeDiffingTest {
 
     final Component layoutComponent = new TestSimpleContainerLayout(component, 0);
 
-    LayoutState firstLayoutState = calculate(
-        mContext,
-        layoutComponent,
-        0,
-        makeSizeSpec(100, SizeSpec.EXACTLY),
-        makeSizeSpec(100, SizeSpec.EXACTLY),
-        true /* shouldGenerateDiffTree */,
-        null /* previousDiffTreeRoot */,
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */);
+    LayoutState firstLayoutState =
+        calculate(
+            mContext,
+            layoutComponent,
+            0,
+            makeSizeSpec(100, SizeSpec.EXACTLY),
+            makeSizeSpec(100, SizeSpec.EXACTLY),
+            true /* shouldGenerateDiffTree */,
+            null /* previousDiffTreeRoot */,
+            false /* canPrefetchDisplayLists */,
+            false /* canCacheDrawingDisplayLists */,
+            true /* clipChildren */,
+            LayoutState.CalculateLayoutSource.TEST);
 
     assertThat(component.wasMeasureCalled()).isTrue();
 
@@ -741,7 +784,8 @@ public class TreeDiffingTest {
         firstLayoutState.getDiffTree(),
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */);
+        true /* clipChildren */,
+        LayoutState.CalculateLayoutSource.TEST);
 
     assertThat(secondComponent.wasMeasureCalled()).isFalse();
   }
@@ -751,29 +795,33 @@ public class TreeDiffingTest {
     final Component component1 = new TestNestedTreeDelegateWithUndefinedSizeLayout();
     final Component component2 = new TestNestedTreeDelegateWithUndefinedSizeLayout();
 
-    LayoutState prevLayoutState = calculate(
-        mContext,
-        component1,
-        -1,
-        makeSizeSpec(350, SizeSpec.EXACTLY),
-        makeSizeSpec(200, SizeSpec.EXACTLY),
-        true /* shouldGenerateDiffTree */,
-        null /* previousDiffTreeRoot */,
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */);
+    LayoutState prevLayoutState =
+        calculate(
+            mContext,
+            component1,
+            -1,
+            makeSizeSpec(350, SizeSpec.EXACTLY),
+            makeSizeSpec(200, SizeSpec.EXACTLY),
+            true /* shouldGenerateDiffTree */,
+            null /* previousDiffTreeRoot */,
+            false /* canPrefetchDisplayLists */,
+            false /* canCacheDrawingDisplayLists */,
+            true /* clipChildren */,
+            LayoutState.CalculateLayoutSource.TEST);
 
-    LayoutState layoutState = calculate(
-        mContext,
-        component2,
-        -1,
-        makeSizeSpec(350, SizeSpec.EXACTLY),
-        makeSizeSpec(200, SizeSpec.EXACTLY),
-        true /* shouldGenerateDiffTree */,
-        prevLayoutState.getDiffTree(),
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */);
+    LayoutState layoutState =
+        calculate(
+            mContext,
+            component2,
+            -1,
+            makeSizeSpec(350, SizeSpec.EXACTLY),
+            makeSizeSpec(200, SizeSpec.EXACTLY),
+            true /* shouldGenerateDiffTree */,
+            prevLayoutState.getDiffTree(),
+            false /* canPrefetchDisplayLists */,
+            false /* canCacheDrawingDisplayLists */,
+            true /* clipChildren */,
+            LayoutState.CalculateLayoutSource.TEST);
 
     // The nested root measure() was called in the first layout calculation.
     TestComponent prevNestedRoot =
@@ -789,29 +837,33 @@ public class TreeDiffingTest {
     final Component component1 = new TestUndefinedSizeLayout();
     final Component component2 = new TestUndefinedSizeLayout();
 
-    LayoutState prevLayoutState = calculate(
-        mContext,
-        component1,
-        -1,
-        makeSizeSpec(350, SizeSpec.EXACTLY),
-        makeSizeSpec(200, SizeSpec.EXACTLY),
-        true /* shouldGenerateDiffTree */,
-        null /* previousDiffTreeRoot */,
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */);
+    LayoutState prevLayoutState =
+        calculate(
+            mContext,
+            component1,
+            -1,
+            makeSizeSpec(350, SizeSpec.EXACTLY),
+            makeSizeSpec(200, SizeSpec.EXACTLY),
+            true /* shouldGenerateDiffTree */,
+            null /* previousDiffTreeRoot */,
+            false /* canPrefetchDisplayLists */,
+            false /* canCacheDrawingDisplayLists */,
+            true /* clipChildren */,
+            LayoutState.CalculateLayoutSource.TEST);
 
-    LayoutState layoutState = calculate(
-        mContext,
-        component2,
-        -1,
-        makeSizeSpec(350, SizeSpec.EXACTLY),
-        makeSizeSpec(200, SizeSpec.EXACTLY),
-        true /* shouldGenerateDiffTree */,
-        prevLayoutState.getDiffTree(),
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */);
+    LayoutState layoutState =
+        calculate(
+            mContext,
+            component2,
+            -1,
+            makeSizeSpec(350, SizeSpec.EXACTLY),
+            makeSizeSpec(200, SizeSpec.EXACTLY),
+            true /* shouldGenerateDiffTree */,
+            prevLayoutState.getDiffTree(),
+            false /* canPrefetchDisplayLists */,
+            false /* canCacheDrawingDisplayLists */,
+            true /* clipChildren */,
+            LayoutState.CalculateLayoutSource.TEST);
 
     // The nested root measure() was called in the first layout calculation.
     TestComponent prevMainTreeLeaf =
@@ -878,33 +930,37 @@ public class TreeDiffingTest {
     // Reset the release/clear counts before issuing calculate().
     reset(sizeDependentComponentSpy1);
 
-    LayoutState prevLayoutState = calculate(
-        mContext,
-        rootContainer1,
-        -1,
-        widthSpecContainer,
-        heightSpec,
-        true /* shouldGenerateDiffTree */,
-        null /* previousDiffTreeRoot */,
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */);
+    LayoutState prevLayoutState =
+        calculate(
+            mContext,
+            rootContainer1,
+            -1,
+            widthSpecContainer,
+            heightSpec,
+            true /* shouldGenerateDiffTree */,
+            null /* previousDiffTreeRoot */,
+            false /* canPrefetchDisplayLists */,
+            false /* canCacheDrawingDisplayLists */,
+            true /* clipChildren */,
+            LayoutState.CalculateLayoutSource.TEST);
 
     // Make sure we reused the cached layout and it wasn't released.
     verify(sizeDependentComponentSpy1, never()).releaseCachedLayout();
     verify(sizeDependentComponentSpy1, times(1)).clearCachedLayout();
 
-    LayoutState layoutState = calculate(
-        mContext,
-        rootContainer2,
-        -1,
-        widthSpecContainer,
-        heightSpec,
-        true /* shouldGenerateDiffTree */,
-        prevLayoutState.getDiffTree(),
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */);
+    LayoutState layoutState =
+        calculate(
+            mContext,
+            rootContainer2,
+            -1,
+            widthSpecContainer,
+            heightSpec,
+            true /* shouldGenerateDiffTree */,
+            prevLayoutState.getDiffTree(),
+            false /* canPrefetchDisplayLists */,
+            false /* canCacheDrawingDisplayLists */,
+            true /* clipChildren */,
+            LayoutState.CalculateLayoutSource.TEST);
 
     // Make sure we reused the cached layout and it wasn't released.
     verify(sizeDependentComponentSpy2, never()).releaseCachedLayout();

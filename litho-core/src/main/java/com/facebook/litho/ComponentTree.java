@@ -15,6 +15,7 @@ import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CON
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
+import static com.facebook.litho.LayoutState.CalculateLayoutSource;
 import static com.facebook.litho.ThreadUtils.assertHoldsLock;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
@@ -106,15 +107,8 @@ public class ComponentTree {
   private static final int[] sCurrentLocation = new int[2];
   private static final int[] sParentLocation = new int[2];
   private static final Rect sParentBounds = new Rect();
+
   @Nullable private final IncrementalMountHelper mIncrementalMountHelper;
-
-  private final Runnable mCalculateLayoutRunnable = new Runnable() {
-    @Override
-    public void run() {
-      calculateLayout(null);
-    }
-  };
-
   private final boolean mShouldPreallocatePerMountSpec;
   private final Runnable mPreAllocateMountContentRunnable =
       new Runnable() {
@@ -156,6 +150,11 @@ public class ComponentTree {
 
   @GuardedBy("this")
   private boolean mHasViewMeasureSpec;
+
+  private final Object mCurrentCalculateLayoutRunnableLock = new Object();
+
+  @GuardedBy("mCurrentCalculateLayoutRunnableLock")
+  private @Nullable CalculateLayoutRunnable mCurrentCalculateLayoutRunnable;
 
   private boolean mHasMounted = false;
 
@@ -694,14 +693,16 @@ public class ComponentTree {
       }
 
       // We have no layout that matches the given spec, so we need to compute it on the main thread.
-      LayoutState localLayoutState = calculateLayoutState(
-          mLayoutLock,
-          mContext,
-          component,
-          widthSpec,
-          heightSpec,
-          mIsLayoutDiffingEnabled,
-          null);
+      LayoutState localLayoutState =
+          calculateLayoutState(
+              mLayoutLock,
+              mContext,
+              component,
+              widthSpec,
+              heightSpec,
+              mIsLayoutDiffingEnabled,
+              null,
+              CalculateLayoutSource.MEASURE);
 
       final StateHandler layoutStateStateHandler =
           localLayoutState.consumeStateHandler();
@@ -751,7 +752,8 @@ public class ComponentTree {
           SIZE_UNINITIALIZED,
           SIZE_UNINITIALIZED,
           layoutScheduleType == SCHEDULE_LAYOUT_ASYNC,
-          null /*output */);
+          null /*output */,
+          CalculateLayoutSource.MEASURE);
     }
   }
 
@@ -790,7 +792,8 @@ public class ComponentTree {
         SIZE_UNINITIALIZED,
         SIZE_UNINITIALIZED,
         false /* isAsync */,
-        null /* output */);
+        null /* output */,
+        CalculateLayoutSource.SET_ROOT);
   }
 
   /**
@@ -836,7 +839,8 @@ public class ComponentTree {
         SIZE_UNINITIALIZED,
         SIZE_UNINITIALIZED,
         true /* isAsync */,
-        null /* output */);
+        null /* output */,
+        CalculateLayoutSource.SET_ROOT);
   }
 
   synchronized void updateStateLazy(String componentKey, StateUpdate stateUpdate) {
@@ -931,7 +935,8 @@ public class ComponentTree {
         SIZE_UNINITIALIZED,
         SIZE_UNINITIALIZED,
         isAsync,
-        null /*output */);
+        null /*output */,
+        CalculateLayoutSource.UPDATE_STATE);
   }
 
   private void bindEventHandler(Component component) {
@@ -1022,7 +1027,8 @@ public class ComponentTree {
         widthSpec,
         heightSpec,
         false /* isAsync */,
-        output /* output */);
+        output /* output */,
+        CalculateLayoutSource.SET_SIZE_SPEC);
   }
 
   public void setSizeSpecAsync(int widthSpec, int heightSpec) {
@@ -1031,7 +1037,8 @@ public class ComponentTree {
         widthSpec,
         heightSpec,
         true /* isAsync */,
-        null /* output */);
+        null /* output */,
+        CalculateLayoutSource.SET_SIZE_SPEC);
   }
 
   /**
@@ -1047,7 +1054,8 @@ public class ComponentTree {
         widthSpec,
         heightSpec,
         true /* isAsync */,
-        null /* output */);
+        null /* output */,
+        CalculateLayoutSource.SET_ROOT);
   }
 
   /**
@@ -1063,7 +1071,8 @@ public class ComponentTree {
         widthSpec,
         heightSpec,
         false /* isAsync */,
-        null /* output */);
+        null /* output */,
+        CalculateLayoutSource.SET_ROOT);
   }
 
   public void setRootAndSizeSpec(Component root, int widthSpec, int heightSpec, Size output) {
@@ -1072,11 +1081,7 @@ public class ComponentTree {
     }
 
     setRootAndSizeSpecInternal(
-        root,
-        widthSpec,
-        heightSpec,
-        false /* isAsync */,
-        output);
+        root, widthSpec, heightSpec, false /* isAsync */, output, CalculateLayoutSource.SET_ROOT);
   }
 
   /**
@@ -1169,7 +1174,8 @@ public class ComponentTree {
       int widthSpec,
       int heightSpec,
       boolean isAsync,
-      Size output) {
+      Size output,
+      @CalculateLayoutSource int source) {
 
     synchronized (this) {
 
@@ -1246,18 +1252,24 @@ public class ComponentTree {
       throw new IllegalArgumentException("The layout can't be calculated asynchronously if" +
           " we need the Size back");
     } else if (isAsync) {
-      mLayoutThreadHandler.removeCallbacks(mCalculateLayoutRunnable);
-      mLayoutThreadHandler.post(mCalculateLayoutRunnable);
+      synchronized (mCurrentCalculateLayoutRunnableLock) {
+        if (mCurrentCalculateLayoutRunnable != null) {
+          mLayoutThreadHandler.removeCallbacks(mCurrentCalculateLayoutRunnable);
+        }
+        mCurrentCalculateLayoutRunnable = new CalculateLayoutRunnable(source);
+        mLayoutThreadHandler.post(mCurrentCalculateLayoutRunnable);
+      }
     } else {
-      calculateLayout(output);
+      calculateLayout(output, source);
     }
   }
 
   /**
    * Calculates the layout.
+   *
    * @param output a destination where the size information should be saved
    */
-  private void calculateLayout(Size output) {
+  private void calculateLayout(Size output, @CalculateLayoutSource int source) {
     final int widthSpec;
     final int heightSpec;
     final Component root;
@@ -1265,7 +1277,12 @@ public class ComponentTree {
 
     // Cancel any scheduled layout requests we might have in the background queue
     // since we are starting a new layout computation.
-    mLayoutThreadHandler.removeCallbacks(mCalculateLayoutRunnable);
+    synchronized (mCurrentCalculateLayoutRunnableLock) {
+      if (mCurrentCalculateLayoutRunnable != null) {
+        mLayoutThreadHandler.removeCallbacks(mCurrentCalculateLayoutRunnable);
+        mCurrentCalculateLayoutRunnable = null;
+      }
+    }
 
     synchronized (this) {
       // Can't compute a layout if specs or root are missing
@@ -1302,14 +1319,16 @@ public class ComponentTree {
       layoutEvent.addParam(PARAM_IS_BACKGROUND_LAYOUT, String.valueOf(!ThreadUtils.isMainThread()));
     }
 
-    LayoutState localLayoutState = calculateLayoutState(
-        mLayoutLock,
-        mContext,
-        root,
-        widthSpec,
-        heightSpec,
-        mIsLayoutDiffingEnabled,
-        previousLayoutState != null ? previousLayoutState.getDiffTree() : null);
+    LayoutState localLayoutState =
+        calculateLayoutState(
+            mLayoutLock,
+            mContext,
+            root,
+            widthSpec,
+            heightSpec,
+            mIsLayoutDiffingEnabled,
+            previousLayoutState != null ? previousLayoutState.getDiffTree() : null,
+            source);
 
     if (output != null) {
       output.width = localLayoutState.getWidth();
@@ -1421,7 +1440,12 @@ public class ComponentTree {
     synchronized (this) {
       sMainThreadHandler.removeMessages(MESSAGE_WHAT_BACKGROUND_LAYOUT_STATE_UPDATED, this);
 
-      mLayoutThreadHandler.removeCallbacks(mCalculateLayoutRunnable);
+      synchronized (mCurrentCalculateLayoutRunnableLock) {
+        if (mCurrentCalculateLayoutRunnable != null) {
+          mLayoutThreadHandler.removeCallbacks(mCurrentCalculateLayoutRunnable);
+          mCurrentCalculateLayoutRunnable = null;
+        }
+      }
       mLayoutThreadHandler.removeCallbacks(mUpdateStateSyncRunnable);
 
       if (mPreAllocateMountContentHandler != null) {
@@ -1572,7 +1596,8 @@ public class ComponentTree {
       int widthSpec,
       int heightSpec,
       boolean diffingEnabled,
-      @Nullable DiffNode diffNode) {
+      @Nullable DiffNode diffNode,
+      @CalculateLayoutSource int source) {
     final ComponentContext contextWithStateHandler;
     synchronized (this) {
       contextWithStateHandler =
@@ -1594,7 +1619,8 @@ public class ComponentTree {
             diffNode,
             mCanPrefetchDisplayLists,
             mCanCacheDrawingDisplayLists,
-            mShouldClipChildren);
+            mShouldClipChildren,
+            source);
       }
     } else {
       return LayoutState.calculate(
@@ -1607,7 +1633,8 @@ public class ComponentTree {
           diffNode,
           mCanPrefetchDisplayLists,
           mCanCacheDrawingDisplayLists,
-          mShouldClipChildren);
+          mShouldClipChildren,
+          source);
     }
   }
 
@@ -1630,6 +1657,20 @@ public class ComponentTree {
 
   public static int generateComponentTreeId() {
     return sIdGenerator.getAndIncrement();
+  }
+
+  private final class CalculateLayoutRunnable implements Runnable {
+
+    private final @CalculateLayoutSource int mSource;
+
+    public CalculateLayoutRunnable(@CalculateLayoutSource int source) {
+      mSource = source;
+    }
+
+    @Override
+    public void run() {
+      calculateLayout(null, mSource);
+    }
   }
 
   /**

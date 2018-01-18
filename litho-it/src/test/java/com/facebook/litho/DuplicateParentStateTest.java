@@ -71,12 +71,14 @@ public class DuplicateParentStateTest {
           }
         };
 
-    LayoutState layoutState = calculate(
-        new ComponentContext(application),
-        component,
-        -1,
-        mUnspecifiedSizeSpec,
-        mUnspecifiedSizeSpec);
+    LayoutState layoutState =
+        calculate(
+            new ComponentContext(application),
+            component,
+            -1,
+            mUnspecifiedSizeSpec,
+            mUnspecifiedSizeSpec,
+            LayoutState.CalculateLayoutSource.TEST);
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(12);
 

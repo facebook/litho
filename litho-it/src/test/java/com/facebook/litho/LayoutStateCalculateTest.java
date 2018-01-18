@@ -2558,6 +2558,7 @@ public class LayoutStateCalculateTest {
         component,
         componentTreeId,
         widthSpec,
-        heightSpec);
+        heightSpec,
+        LayoutState.CalculateLayoutSource.TEST);
   }
 }

@@ -267,6 +267,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */);
+        true /* clipChildren */,
+        LayoutState.CalculateLayoutSource.TEST);
   }
 }

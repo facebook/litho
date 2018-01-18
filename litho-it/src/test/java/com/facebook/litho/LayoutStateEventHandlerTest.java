@@ -68,6 +68,7 @@ public class LayoutStateEventHandlerTest {
         mRootComponent,
         -1,
         mUnspecifiedSizeSpec,
-        mUnspecifiedSizeSpec);
+        mUnspecifiedSizeSpec,
+        LayoutState.CalculateLayoutSource.TEST);
   }
 }

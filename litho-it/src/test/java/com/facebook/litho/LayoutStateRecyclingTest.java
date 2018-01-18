@@ -90,7 +90,8 @@ public class LayoutStateRecyclingTest {
             input,
             -1,
             mUnspecifiedSizeSpec,
-            mUnspecifiedSizeSpec);
+            mUnspecifiedSizeSpec,
+            LayoutState.CalculateLayoutSource.TEST);
     layoutState.releaseRef();
 
     // Verify that the nodes did get recycled

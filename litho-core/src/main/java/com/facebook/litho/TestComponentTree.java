@@ -41,7 +41,8 @@ public class TestComponentTree extends ComponentTree {
       int widthSpec,
       int heightSpec,
       boolean diffingEnabled,
-      @Nullable DiffNode diffNode) {
+      @Nullable DiffNode diffNode,
+      @LayoutState.CalculateLayoutSource int source) {
     return LayoutState.calculate(
         new TestComponentContext(
             ComponentContext.withComponentTree(new TestComponentContext(context), this),
@@ -54,7 +55,8 @@ public class TestComponentTree extends ComponentTree {
         diffNode,
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */);
+        true /* clipChildren */,
+        source);
   }
 
   private static List<Component> extractSubComponents(DiffNode root) {

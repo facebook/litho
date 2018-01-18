@@ -58,7 +58,8 @@ public class UniqueTransitionKeysTest {
             mHasUniqueTransitionKeys,
             ComponentTree.generateComponentTreeId(),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY));
+            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+            LayoutState.CalculateLayoutSource.TEST);
     layoutState.getTransitionKeyMapping();
   }
 
@@ -74,7 +75,8 @@ public class UniqueTransitionKeysTest {
             mHasNonUniqueTransitionKeys,
             ComponentTree.generateComponentTreeId(),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY));
+            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+            LayoutState.CalculateLayoutSource.TEST);
     assertThat(layoutState.getTransitionKeyMapping()).isNotNull();
   }
 }

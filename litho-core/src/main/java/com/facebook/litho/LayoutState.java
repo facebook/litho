@@ -46,6 +46,7 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LongSparseArray;
@@ -68,6 +69,8 @@ import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaNode;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -86,6 +89,25 @@ import javax.annotation.CheckReturnValue;
  * based on the provided {@link InternalNode} for later use in {@link MountState}.
  */
 class LayoutState {
+
+  @IntDef({
+    CalculateLayoutSource.TEST,
+    CalculateLayoutSource.NONE,
+    CalculateLayoutSource.SET_ROOT,
+    CalculateLayoutSource.SET_SIZE_SPEC,
+    CalculateLayoutSource.UPDATE_STATE,
+    CalculateLayoutSource.MEASURE
+  })
+  @Retention(RetentionPolicy.SOURCE)
+  public @interface CalculateLayoutSource {
+    int TEST = -2;
+    int NONE = -1;
+    int SET_ROOT = 0;
+    int SET_SIZE_SPEC = 1;
+    int UPDATE_STATE = 2;
+    int MEASURE = 3;
+  }
+
   static final Comparator<LayoutOutput> sTopsComparator =
       new Comparator<LayoutOutput>() {
         @Override
@@ -1032,7 +1054,8 @@ class LayoutState {
       Component component,
       int componentTreeId,
       int widthSpec,
-      int heightSpec) {
+      int heightSpec,
+      @CalculateLayoutSource int source) {
     return calculate(
         c,
         component,
@@ -1043,7 +1066,8 @@ class LayoutState {
         null /* previousDiffTreeRoot */,
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */);
+        true /* clipChildren */,
+        source);
   }
 
   static <T extends Component> LayoutState calculate(
@@ -1056,12 +1080,23 @@ class LayoutState {
       DiffNode previousDiffTreeRoot,
       boolean canPrefetchDisplayLists,
       boolean canCacheDrawingDisplayLists,
-      boolean clipChildren) {
+      boolean clipChildren,
+      @CalculateLayoutSource int source) {
+
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection(
+          new StringBuilder("LayoutState.calculate_")
+              .append(component.getSimpleName())
+              .append("_")
+              .append(sourceToString(source))
+              .toString());
+    }
 
     // Detect errors internal to components
     component.markLayoutStarted();
 
-    LayoutState layoutState = ComponentsPools.acquireLayoutState(c);
+    final LayoutState layoutState = ComponentsPools.acquireLayoutState(c);
     layoutState.clearComponents();
     layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
     layoutState.mComponentTreeId = componentTreeId;
@@ -1120,7 +1155,6 @@ class LayoutState {
 
     layoutState.mLayoutRoot = root;
 
-    final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("collectResults:" + component.getSimpleName());
     }
@@ -1162,7 +1196,30 @@ class LayoutState {
       }
     }
 
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
+
     return layoutState;
+  }
+
+  private static String sourceToString(@CalculateLayoutSource int source) {
+    switch (source) {
+      case CalculateLayoutSource.SET_ROOT:
+        return "setRoot";
+      case CalculateLayoutSource.SET_SIZE_SPEC:
+        return "setSizeSpec";
+      case CalculateLayoutSource.UPDATE_STATE:
+        return "updateState";
+      case CalculateLayoutSource.MEASURE:
+        return "measure";
+      case CalculateLayoutSource.TEST:
+        return "test";
+      case CalculateLayoutSource.NONE:
+        return "none";
+      default:
+        throw new RuntimeException("Unknown calculate layout source: " + source);
+    }
   }
 
   @ThreadSafe(enableChecks = false)
