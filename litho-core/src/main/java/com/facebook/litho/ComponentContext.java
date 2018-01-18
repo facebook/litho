@@ -289,6 +289,24 @@ public class ComponentContext extends ContextWrapper {
   }
 
   InternalNode resolveComponent(Component component) {
+    component.generateKey(this);
+    component.applyStateUpdates(this);
+
+    if (ComponentsConfiguration.isDebugModeEnabled) {
+      DebugComponent.applyOverrides(this, component);
+    }
+
+    final InternalNode node = (InternalNode) component.resolve(component.getScopedContext());
+    component.getScopedContext().setTreeProps(null);
+
+    return node;
+  }
+
+  InternalNode resolveInternalComponent(Component component) {
+    if (!component.isInternalComponent()) {
+      throw new IllegalArgumentException("Component must be internal!");
+    }
+
     return (InternalNode) component.resolve(this);
   }
 

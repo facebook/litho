@@ -250,6 +250,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     if (deferNestedTreeResolution) {
       node = ComponentsPools.acquireInternalNode(context);
       node.markIsNestedTreeHolder(context.getTreeProps());
+    } else if (component.isInternalComponent()) {
+      node = context.resolveInternalComponent(component);
     } else {
       final Component layoutComponent;
       if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
@@ -262,23 +264,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       if (layoutComponent == null || layoutComponent.getId() <= 0) {
         node = null;
       } else {
-        // If the layoutComponent to be resolved was passed into this method, then we have already
-        // generated a key for it (in ComponentContext.newLayoutBuilder). Otherwise, generate one
-        // now.
-        if (layoutComponent != component) {
-          layoutComponent.generateKey(context);
-          layoutComponent.applyStateUpdates(context);
-
-          if (ComponentsConfiguration.isDebugModeEnabled) {
-            DebugComponent.applyOverrides(context, layoutComponent);
-          }
-        }
-
-        node = layoutComponent.getScopedContext().resolveComponent(layoutComponent);
-
-        if (layoutComponent != component) {
-          layoutComponent.getScopedContext().setTreeProps(null);
-        }
+        node = context.resolveComponent(layoutComponent);
       }
     }
 
