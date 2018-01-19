@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
+import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.litho.ComponentLifecycle.MountType;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -391,6 +392,7 @@ public class ComponentLifecycleTest {
     return Whitebox.getInternalState(ComponentLifecycle.class, "sMeasureFunction");
   }
 
+  @OkToExtend
   private static class TestBaseComponent extends Component {
 
     private final boolean mCanMeasure;

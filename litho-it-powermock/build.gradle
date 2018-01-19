@@ -42,12 +42,13 @@ dependencies {
     testImplementation project(':litho-widget')
 
     // Testing
+    testImplementation deps.assertjCore
     testImplementation deps.guava
-    testImplementation deps.supportRecyclerView
+    testImplementation deps.inferAnnotations
+    testImplementation deps.powermockJunit
+    testImplementation deps.powermockMockito
+    testImplementation deps.powermockXstream
     testImplementation deps.robolectric
     testImplementation deps.soloader
-    testImplementation deps.assertjCore
-    testImplementation deps.powermockMockito
-    testImplementation deps.powermockJunit
-    testImplementation deps.powermockXstream
+    testImplementation deps.supportRecyclerView
 }
