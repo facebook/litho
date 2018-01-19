@@ -27,6 +27,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Layout;
@@ -61,6 +62,8 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.reference.Reference;
 import com.facebook.litho.utils.MeasureUtils;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Component that renders an {@link EditText}.
@@ -265,6 +268,7 @@ class EditTextSpec {
       @Prop(optional = true) boolean isSingleLineWrap,
       @Prop(optional = true) boolean requestFocus,
       @Prop(optional = true) int cursorDrawableRes,
+      @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @State(canUpdateLazily = true) String input) {
 
     // TODO(11759579) - don't allocate a new EditText in every measure.
@@ -275,6 +279,7 @@ class EditTextSpec {
         input == null ? text : input,
         hint,
         ellipsize,
+        inputFilters,
         minLines,
         maxLines,
         maxLength,
@@ -376,6 +381,7 @@ class EditTextSpec {
       @Prop(optional = true) boolean isSingleLineWrap,
       @Prop(optional = true) boolean requestFocus,
       @Prop(optional = true) int cursorDrawableRes,
+      @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @State(canUpdateLazily = true) String input) {
 
     initEditText(
@@ -383,6 +389,7 @@ class EditTextSpec {
         input == null ? text : input,
         hint,
         ellipsize,
+        inputFilters,
         minLines,
         maxLines,
         maxLength,
@@ -446,6 +453,7 @@ class EditTextSpec {
       CharSequence text,
       CharSequence hint,
       TextUtils.TruncateAt ellipsize,
+      @Nullable List<InputFilter> inputFilters,
       int minLines,
       int maxLines,
       int maxLength,
@@ -501,9 +509,14 @@ class EditTextSpec {
     }
 
     // Needs to be set before the text so it would apply to the current text
-    editText.setFilters(new InputFilter[] {
-        new InputFilter.LengthFilter(maxLength)
-    });
+    InputFilter.LengthFilter lengthFilter = new InputFilter.LengthFilter(maxLength);
+    if (inputFilters == null) {
+      editText.setFilters(new InputFilter[] {lengthFilter});
+    } else {
+      inputFilters = new ArrayList<>(inputFilters);
+      inputFilters.add(lengthFilter);
+      editText.setFilters(inputFilters.toArray(new InputFilter[inputFilters.size()]));
+    }
 
     // If it's the same text, don't set it again so that the caret won't move to the beginning or
     // end of the string. Only looking at String instances in order to avoid span comparisons.
