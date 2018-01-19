@@ -31,4 +31,16 @@ public class SectionsConfiguration {
    * <p>SectionLifecycle#destroyService(SectionContext, Object) will not be called if this is True
    */
   public static boolean noServiceRegistration = false;
+
+  /**
+   * If true, this will trim the items that pass the comparison check in the head and tail of the
+   * DataDiffSection data before diffing.
+   */
+  public static boolean trimDataDiffSectionHeadAndTail = false;
+
+  /**
+   * If true, this will trim only the items that are the same instance in the head and tail of the
+   * DataDiffSection data before diffing.
+   */
+  public static boolean trimSameInstancesOnly = false;
 }

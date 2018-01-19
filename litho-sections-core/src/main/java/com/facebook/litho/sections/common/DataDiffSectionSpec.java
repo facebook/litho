@@ -29,6 +29,7 @@ import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.OnDiff;
+import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.ComponentContainer;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.Operation;
@@ -101,13 +102,19 @@ public class DataDiffSectionSpec<T> {
       @Prop(optional = true) Diff<Boolean> trimHeadAndTail,
       @Prop(optional = true) Diff<Boolean> trimSameInstancesOnly) {
 
+    final boolean shouldTrim =
+        trimHeadAndTail == null || trimHeadAndTail.getNext() == null
+            ? SectionsConfiguration.trimDataDiffSectionHeadAndTail
+            : trimHeadAndTail.getNext().booleanValue();
+
+    final boolean shouldTrimSameInstanceOnly =
+        trimSameInstancesOnly == null || trimSameInstancesOnly.getNext() == null
+            ? SectionsConfiguration.trimSameInstancesOnly
+            : trimSameInstancesOnly.getNext().booleanValue();
+
     final Callback<T> callback =
         Callback.acquire(
-            c,
-            data.getPrevious(),
-            data.getNext(),
-            trimHeadAndTail.getNext().booleanValue(),
-            trimSameInstancesOnly.getNext().booleanValue());
+            c, data.getPrevious(), data.getNext(), shouldTrim, shouldTrimSameInstanceOnly);
     DiffUtil.DiffResult result =
         DiffUtil.calculateDiff(callback, isDetectMovesEnabled(detectMoves));
     final RecyclerBinderUpdateCallback<T> updatesCallback =
