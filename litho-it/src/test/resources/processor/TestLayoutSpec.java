@@ -16,6 +16,7 @@ import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Diff;
+import com.facebook.litho.LifecyclePhase;
 import com.facebook.litho.Output;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
@@ -26,6 +27,7 @@ import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateTransition;
 import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.facebook.litho.annotations.OnError;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnTrigger;
@@ -84,6 +86,11 @@ public class TestLayoutSpec<S extends View> {
       @Prop Object prop3,
       @Prop char prop5,
       @State(canUpdateLazily = true) long state1) {
+  }
+
+  @OnError
+  static Component onError(ComponentContext c, Exception e, LifecyclePhase l) {
+    throw new RuntimeException(e);
   }
 
   @OnTrigger(ClickEvent.class)

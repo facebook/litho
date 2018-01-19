@@ -23,6 +23,7 @@ import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggerTarget;
 import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.HasEventDispatcher;
+import com.facebook.litho.LifecyclePhase;
 import com.facebook.litho.Output;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
@@ -227,16 +228,25 @@ public final class TestLayout<S extends View> extends Component {
 
   @Override
   protected Component onCreateLayout(ComponentContext context) {
-    Component _result = (Component) TestLayoutSpec.onCreateLayout(
-        (ComponentContext) context,
-        (boolean) prop2,
-        (Object) prop3,
-        (char[]) prop4,
-        (long) mStateContainer.state1,
-        (S) mStateContainer.state2,
-        (int) mStateContainer.state3,
-        (TestTreeProp) treeProp,
-        (Component) child);
+    Component _result =
+        (Component)
+            TestLayoutSpec.onCreateLayout(
+                (ComponentContext) context,
+                (boolean) prop2,
+                (Object) prop3,
+                (char[]) prop4,
+                (long) mStateContainer.state1,
+                (S) mStateContainer.state2,
+                (int) mStateContainer.state3,
+                (TestTreeProp) treeProp,
+                (Component) child);
+    return _result;
+  }
+
+  @Override
+  protected Component onError(ComponentContext c, Exception e, LifecyclePhase l) {
+    Component _result =
+        (Component) TestLayoutSpec.onError((ComponentContext) c, (Exception) e, (LifecyclePhase) l);
     return _result;
   }
 

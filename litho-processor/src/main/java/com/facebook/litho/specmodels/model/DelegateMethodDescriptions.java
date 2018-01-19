@@ -35,6 +35,7 @@ import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnCreateMountContentPool;
 import com.facebook.litho.annotations.OnCreateTransition;
+import com.facebook.litho.annotations.OnError;
 import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMeasureBaseline;
@@ -81,6 +82,18 @@ public final class DelegateMethodDescriptions {
           .returnType(ClassNames.COMPONENT)
           .name("onCreateLayout")
           .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP))
+          .build();
+
+  public static final DelegateMethodDescription ON_ERROR =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(ClassNames.COMPONENT)
+          .name("onError")
+          .definedParameterTypes(
+              ImmutableList.<TypeName>of(
+                  ClassNames.COMPONENT_CONTEXT, ClassNames.EXCEPTION, ClassNames.LIFECYCLE_PHASE))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP))
           .build();
 
@@ -397,6 +410,7 @@ public final class DelegateMethodDescriptions {
               }
             });
     layoutSpecDelegateMethodsMap.put(OnLoadStyle.class, ON_LOAD_STYLE);
+    layoutSpecDelegateMethodsMap.put(OnError.class, ON_ERROR);
     layoutSpecDelegateMethodsMap.put(OnCreateLayout.class, ON_CREATE_LAYOUT);
     layoutSpecDelegateMethodsMap.put(
         OnCreateLayoutWithSizeSpec.class, ON_CREATE_LAYOUT_WITH_SIZE_SPEC);
@@ -417,6 +431,7 @@ public final class DelegateMethodDescriptions {
         });
     mountSpecDelegateMethodsMap.put(OnCreateInitialState.class, ON_CREATE_INITIAL_STATE);
     mountSpecDelegateMethodsMap.put(OnLoadStyle.class, ON_LOAD_STYLE);
+    mountSpecDelegateMethodsMap.put(OnError.class, ON_ERROR);
     mountSpecDelegateMethodsMap.put(OnPrepare.class, ON_PREPARE);
     mountSpecDelegateMethodsMap.put(OnMeasure.class, ON_MEASURE);
     mountSpecDelegateMethodsMap.put(OnMeasureBaseline.class, ON_MEASURE_BASELINE);

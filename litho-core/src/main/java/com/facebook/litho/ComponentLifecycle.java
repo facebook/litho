@@ -581,6 +581,20 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   }
 
+  /**
+   * Called to provide a fallback if a supported lifecycle method throws an exception. It is
+   * possible to either recover from the error here or reraise the exception to catch it at a higher
+   * level or crash the application.
+   *
+   * @see com.facebook.litho.annotations.OnError
+   * @param c The {@link ComponentContext} the Component was constructed with.
+   * @param e The exception caught.
+   * @param phase A reference to the lifecycle the component was in when the exception occurred.
+   */
+  protected Component onError(ComponentContext c, Exception e, LifecyclePhase phase) {
+    throw new RuntimeException(e);
+  }
+
   @Override
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
     // Do nothing by default.
