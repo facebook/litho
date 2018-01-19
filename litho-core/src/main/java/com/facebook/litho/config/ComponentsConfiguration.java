@@ -71,6 +71,9 @@ public class ComponentsConfiguration {
    */
   public static volatile boolean usePooling = true;
 
+  /** Enable exception delegation to {@link com.facebook.litho.annotations.OnError}. */
+  public static boolean enableOnErrorHandling = false;
+
   /**
    * Whether incremental mount should use the local visible bounds of the {@link
    * com.facebook.litho.LithoView}.

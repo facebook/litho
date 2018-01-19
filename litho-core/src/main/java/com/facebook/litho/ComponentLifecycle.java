@@ -253,13 +253,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     } else if (component.isInternalComponent()) {
       node = context.resolveInternalComponent(component);
     } else {
-      final Component layoutComponent;
-      if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
-        layoutComponent =
-            onCreateLayoutWithSizeSpec(context, context.getWidthSpec(), context.getHeightSpec());
-      } else {
-        layoutComponent = onCreateLayout(context);
-      }
+      final Component layoutComponent = createComponentLayout(context);
 
       if (layoutComponent == null || layoutComponent.getId() <= 0) {
         node = null;
@@ -322,6 +316,34 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
 
     return node;
+  }
+
+  private Component createComponentLayout(ComponentContext context) {
+    Component layoutComponent;
+    if (ComponentsConfiguration.enableOnErrorHandling) {
+      if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
+        try {
+          layoutComponent =
+              onCreateLayoutWithSizeSpec(context, context.getWidthSpec(), context.getHeightSpec());
+        } catch (Exception e) {
+          layoutComponent = onError(context, e, LifecyclePhase.ON_CREATE_LAYOUT);
+        }
+      } else {
+        try {
+          layoutComponent = onCreateLayout(context);
+        } catch (Exception e) {
+          layoutComponent = onError(context, e, LifecyclePhase.ON_CREATE_LAYOUT);
+        }
+      }
+    } else {
+      if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
+        layoutComponent =
+            onCreateLayoutWithSizeSpec(context, context.getWidthSpec(), context.getHeightSpec());
+      } else {
+        layoutComponent = onCreateLayout(context);
+      }
+    }
+    return layoutComponent;
   }
 
   void loadStyle(
