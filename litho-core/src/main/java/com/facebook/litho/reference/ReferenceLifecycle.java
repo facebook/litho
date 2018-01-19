@@ -36,7 +36,7 @@ public abstract class ReferenceLifecycle<T> {
       Reference<T> reference) {
   }
 
-  protected final <T> Diff<T> acquireDiff(T previousValue, T nextValue) {
+  protected final <R> Diff<R> acquireDiff(R previousValue, R nextValue) {
     Diff diff = ComponentsPools.acquireDiff(previousValue, nextValue);
 
     return diff;
