@@ -14,6 +14,7 @@ import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
@@ -31,16 +32,24 @@ import java.util.List;
 @GroupSectionSpec
 public class TestGroupSectionSpec {
 
+  @PropDefault public static Boolean trimHeadAndTail = false;
+  @PropDefault public static Boolean trimSameInstancesOnly = false;
+
   @OnCreateChildren
   protected static Children onCreateChildren(
       SectionContext c,
       @Prop List data,
       @Prop(optional = true) Comparator isSameItemComparator,
-      @Prop(optional = true) Comparator isSameContentComparator) {
+      @Prop(optional = true) Comparator isSameContentComparator,
+      @Prop(optional = true) boolean trimHeadAndTail,
+      @Prop(optional = true) boolean trimSameInstancesOnly) {
 
-    DataDiffSection.Builder builder = DataDiffSection.create(c)
-        .data(data)
-        .renderEventHandler(TestGroupSection.onRender(c, c));
+    DataDiffSection.Builder builder =
+        DataDiffSection.create(c)
+            .data(data)
+            .renderEventHandler(TestGroupSection.onRender(c, c))
+            .trimHeadAndTail(trimHeadAndTail)
+            .trimSameInstancesOnly(trimSameInstancesOnly);
 
     if (isSameItemComparator != null) {
       builder.onCheckIsSameItemEventHandler(TestGroupSection.onCheckIsSameItem(c));

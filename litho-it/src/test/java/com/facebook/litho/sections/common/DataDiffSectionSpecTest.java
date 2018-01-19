@@ -15,6 +15,9 @@ import static com.facebook.litho.testing.sections.TestTarget.MOVE;
 import static junit.framework.Assert.assertEquals;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.EventHandler;
+import com.facebook.litho.HasEventDispatcher;
+import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.testing.sections.TestGroupSection;
@@ -28,6 +31,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link DataDiffSectionSpec} */
@@ -38,8 +43,12 @@ public class DataDiffSectionSpecTest {
   private SectionTree mSectionTree;
   private TestTarget mTestTarget;
 
+  @Mock public EventHandler<OnCheckIsSameItemEvent> mIsSameItemEventEventHandler;
+  @Mock public HasEventDispatcher mHasEventDispatcher;
+
   @Before
   public void setup() throws Exception {
+    MockitoAnnotations.initMocks(this);
     mSectionContext = new SectionContext(RuntimeEnvironment.application);
     mTestTarget = new TestTarget();
     mSectionTree = SectionTree.create(mSectionContext, mTestTarget).build();
@@ -360,6 +369,207 @@ public class DataDiffSectionSpecTest {
     executedOperations = mTestTarget.getOperations();
 
     assertBulkOperations(executedOperations, 0, 0, 20);
+  }
+
+  @Test
+  public void testTrimmingHeadEqualInstancesOnly() {
+    ArrayList<String> previousData = new ArrayList<>();
+    ArrayList<String> nextData = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      String item = "" + i;
+      previousData.add(item);
+      nextData.add(item);
+    }
+
+    for (int i = 0; i < 10; i++) {
+      previousData.add("" + i);
+      nextData.add("" + i);
+    }
+
+    DataDiffSection.Builder builder =
+        DataDiffSection.<String>create(mSectionContext).data(previousData).renderEventHandler(null);
+
+    mSectionContext = SectionContext.withScope(mSectionContext, builder.build());
+
+    final DataDiffSectionSpec.Callback<String> callback =
+        DataDiffSectionSpec.Callback.acquire(
+            mSectionContext,
+            previousData,
+            nextData,
+            true /*trimHeadAndTail*/,
+            true /*trimSameInstancesOnly*/);
+
+    assertThat(callback.getTrimmedHeadItemsCount()).isEqualTo(10);
+    assertThat(callback.getOldListSize()).isEqualTo(10);
+    assertThat(callback.getNewListSize()).isEqualTo(10);
+  }
+
+  @Test
+  public void testTrimmingTailEqualInstancesOnly() {
+    ArrayList<String> previousData = new ArrayList<>();
+    ArrayList<String> nextData = new ArrayList<>();
+
+    for (int i = 0; i < 10; i++) {
+      previousData.add("" + i);
+      nextData.add("" + i);
+    }
+
+    for (int i = 0; i < 10; i++) {
+      String item = "" + i;
+      previousData.add(item);
+      nextData.add(item);
+    }
+
+    DataDiffSection.Builder builder =
+        DataDiffSection.<String>create(mSectionContext).data(previousData).renderEventHandler(null);
+
+    mSectionContext = SectionContext.withScope(mSectionContext, builder.build());
+
+    final DataDiffSectionSpec.Callback<String> callback =
+        DataDiffSectionSpec.Callback.acquire(
+            mSectionContext,
+            previousData,
+            nextData,
+            true /*trimHeadAndTail*/,
+            true /*trimSameInstancesOnly*/);
+
+    assertThat(callback.getTrimmedHeadItemsCount()).isEqualTo(0);
+    assertThat(callback.getOldListSize()).isEqualTo(10);
+    assertThat(callback.getNewListSize()).isEqualTo(10);
+  }
+
+  @Test
+  public void testTrimmingHeadAndTailEqualInstancesOnly() {
+    ArrayList<String> previousData = new ArrayList<>();
+    ArrayList<String> nextData = new ArrayList<>();
+
+    for (int i = 0; i < 10; i++) {
+      String item = "" + i;
+      previousData.add(item);
+      nextData.add(item);
+    }
+
+    for (int i = 0; i < 10; i++) {
+      previousData.add("" + i);
+      nextData.add("" + i);
+    }
+
+    for (int i = 0; i < 10; i++) {
+      String item = "" + i;
+      previousData.add(item);
+      nextData.add(item);
+    }
+
+    DataDiffSection.Builder builder =
+        DataDiffSection.<String>create(mSectionContext).data(previousData).renderEventHandler(null);
+
+    mSectionContext = SectionContext.withScope(mSectionContext, builder.build());
+
+    final DataDiffSectionSpec.Callback<String> callback =
+        DataDiffSectionSpec.Callback.acquire(
+            mSectionContext,
+            previousData,
+            nextData,
+            true /*trimHeadAndTail*/,
+            true /*trimSameInstancesOnly*/);
+
+    assertThat(callback.getTrimmedHeadItemsCount()).isEqualTo(10);
+    assertThat(callback.getOldListSize()).isEqualTo(10);
+    assertThat(callback.getNewListSize()).isEqualTo(10);
+  }
+
+  @Test
+  public void testTrimmingWithComparisonHandlers() {
+    ArrayList<String> previousData = new ArrayList<>();
+    ArrayList<String> nextData = new ArrayList<>();
+
+    for (int i = 0; i < 10; i++) {
+      previousData.add(i, "*" + i);
+      nextData.add(i, "*" + i);
+    }
+
+    for (int i = 10; i < 20; i++) {
+      previousData.add(i, "#" + i);
+      nextData.add(i, "#" + i);
+    }
+
+    Section dispatcher =
+        TestGroupSection.create(mSectionContext)
+            .data(nextData)
+            .isSameItemComparator(
+                new Comparator() {
+                  @Override
+                  public int compare(Object lhs, Object rhs) {
+                    String prev = (String) lhs;
+                    String next = (String) rhs;
+                    return (prev.contains("*") && next.contains("*")) ? 0 : 1;
+                  }
+                })
+            .build();
+    mSectionContext = SectionContext.withSectionTree(mSectionContext, mSectionTree);
+    mSectionContext = SectionContext.withScope(mSectionContext, dispatcher);
+    dispatcher.setScopedContext(mSectionContext);
+
+    EventHandler eh = TestGroupSection.onCheckIsSameItem(mSectionContext);
+
+    EventHandler same =
+        new EventHandler(mHasEventDispatcher, null, eh.id, new Object[] {mSectionContext});
+    same.mHasEventDispatcher = dispatcher;
+
+    DataDiffSection builder =
+        DataDiffSection.<String>create(mSectionContext)
+            .data(previousData)
+            .onCheckIsSameItemEventHandler(same)
+            .renderEventHandler(null)
+            .build();
+
+    mSectionContext = SectionContext.withSectionTree(mSectionContext, mSectionTree);
+    mSectionContext = SectionContext.withScope(mSectionContext, builder);
+    builder.setScopedContext(mSectionContext);
+
+    final DataDiffSectionSpec.Callback<String> callback =
+        DataDiffSectionSpec.Callback.acquire(
+            mSectionContext,
+            previousData,
+            nextData,
+            true /*trimHeadAndTail*/,
+            false /*trimSameInstancesOnly*/);
+
+    assertThat(callback.getTrimmedHeadItemsCount()).isEqualTo(10);
+    assertThat(callback.getOldListSize()).isEqualTo(10);
+    assertThat(callback.getNewListSize()).isEqualTo(10);
+  }
+
+  @Test
+  public void testAppendDataTrimming() {
+    ArrayList<String> data = new ArrayList<>();
+    for (int i = 0; i < 100; i++) {
+      data.add("" + i);
+    }
+
+    mSectionTree.setRoot(
+        TestGroupSection.create(mSectionContext)
+            .data(data)
+            .trimHeadAndTail(true)
+            .trimSameInstancesOnly(true)
+            .build());
+    List<Operation> executedOperations = mTestTarget.getOperations();
+
+    assertThat(executedOperations.size()).isEqualTo(1);
+    assertRangeOperation(executedOperations.get(0), TestTarget.INSERT_RANGE, 0, 100);
+
+    mTestTarget.clear();
+
+    data = new ArrayList<>();
+    for (int i = 0; i < 200; i++) {
+      data.add("" + i);
+    }
+
+    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
+    executedOperations = mTestTarget.getOperations();
+
+    assertThat(executedOperations.size()).isEqualTo(1);
+    assertRangeOperation(executedOperations.get(0), TestTarget.INSERT_RANGE, 100, 100);
   }
 
   private void assertRangeOperation(

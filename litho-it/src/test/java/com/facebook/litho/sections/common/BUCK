@@ -25,6 +25,7 @@ components_robolectric_test(
         COMPONENTS_MOCKITO_TARGET,
         COMPONENTS_SECTIONS_TARGET,
         COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
+        COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         COMPONENTS_ANDROIDSUPPORT_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),

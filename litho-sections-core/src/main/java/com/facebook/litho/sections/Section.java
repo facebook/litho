@@ -253,7 +253,8 @@ public abstract class Section extends SectionLifecycle
     return mScopedContext;
   }
 
-  void setScopedContext(SectionContext scopedContext) {
+  @VisibleForTesting
+  public void setScopedContext(SectionContext scopedContext) {
     mScopedContext = scopedContext;
   }
 

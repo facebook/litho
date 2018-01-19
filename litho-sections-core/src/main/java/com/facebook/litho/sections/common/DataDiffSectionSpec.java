@@ -90,6 +90,7 @@ import java.util.List;
 public class DataDiffSectionSpec<T> {
 
   @PropDefault public static Boolean trimHeadAndTail = false;
+  @PropDefault public static Boolean trimSameInstancesOnly = false;
 
   @OnDiff
   public static <T> void onCreateChangeSet(
@@ -97,11 +98,16 @@ public class DataDiffSectionSpec<T> {
       ChangeSet changeSet,
       @Prop Diff<List<T>> data,
       @Prop(optional = true) @Nullable Diff<Boolean> detectMoves,
-      @Prop(optional = true) Diff<Boolean> trimHeadAndTail) {
+      @Prop(optional = true) Diff<Boolean> trimHeadAndTail,
+      @Prop(optional = true) Diff<Boolean> trimSameInstancesOnly) {
 
     final Callback<T> callback =
         Callback.acquire(
-            c, data.getPrevious(), data.getNext(), trimHeadAndTail.getNext().booleanValue());
+            c,
+            data.getPrevious(),
+            data.getNext(),
+            trimHeadAndTail.getNext().booleanValue(),
+            trimSameInstancesOnly.getNext().booleanValue());
     DiffUtil.DiffResult result =
         DiffUtil.calculateDiff(callback, isDetectMovesEnabled(detectMoves));
     final RecyclerBinderUpdateCallback<T> updatesCallback =
@@ -204,7 +210,8 @@ public class DataDiffSectionSpec<T> {
     }
   }
 
-  private static class Callback<T> extends DiffUtil.Callback {
+  @VisibleForTesting
+  static class Callback<T> extends DiffUtil.Callback {
     private static final Pool<Callback> sCallbackPool = new SynchronizedPool<>(2);
 
     private List<T> mPreviousData;
@@ -218,7 +225,8 @@ public class DataDiffSectionSpec<T> {
         SectionContext sectionContext,
         List<T> previousData,
         List<T> nextData,
-        boolean trimHeadAndTail) {
+        boolean trimHeadAndTail,
+        boolean trimSameInstancesOnly) {
       mSectionContext = sectionContext;
       mIsSameItemEventHandler =
           DataDiffSection.getOnCheckIsSameItemEventHandler(mSectionContext);
@@ -226,7 +234,8 @@ public class DataDiffSectionSpec<T> {
           DataDiffSection.getOnCheckIsSameContentEventHandler(mSectionContext);
 
       if (trimHeadAndTail && previousData != null) {
-        Diff<List<T>> trimmedData = trimHeadAndTail(previousData, nextData, this);
+        Diff<List<T>> trimmedData =
+            trimHeadAndTail(previousData, nextData, trimSameInstancesOnly, this);
         mPreviousData = trimmedData.getPrevious();
         mNextData = trimmedData.getNext();
       } else {
@@ -250,6 +259,10 @@ public class DataDiffSectionSpec<T> {
       final T previous = mPreviousData.get(oldItemPosition);
       final T next = mNextData.get(newItemPosition);
 
+      return areItemsTheSame(previous, next);
+    }
+
+    private boolean areItemsTheSame(T previous, T next) {
       if (previous == next) {
         return true;
       }
@@ -269,6 +282,10 @@ public class DataDiffSectionSpec<T> {
       final T previous = mPreviousData.get(oldItemPosition);
       final T next = mNextData.get(newItemPosition);
 
+      return areContentsTheSame(previous, next);
+    }
+
+    private boolean areContentsTheSame(T previous, T next) {
       if (previous == next) {
         return true;
       }
@@ -283,16 +300,18 @@ public class DataDiffSectionSpec<T> {
       return previous.equals(next);
     }
 
-    private static <T> Callback<T> acquire(
+    @VisibleForTesting
+    static <T> Callback<T> acquire(
         SectionContext sectionContext,
         List<T> previousData,
         List<T> nextData,
-        boolean trimHeadAndTail) {
+        boolean trimHeadAndTail,
+        boolean trimSameInstancesOnly) {
       Callback callback = sCallbackPool.acquire();
       if (callback == null) {
         callback = new Callback();
       }
-      callback.init(sectionContext, previousData, nextData, trimHeadAndTail);
+      callback.init(sectionContext, previousData, nextData, trimHeadAndTail, trimSameInstancesOnly);
 
       return callback;
     }
@@ -312,8 +331,11 @@ public class DataDiffSectionSpec<T> {
       return mTrimmedHeadItemsCount;
     }
 
-    private static <T> Diff<List<T>> trimHeadAndTail(
-        List<T> previousData, List<T> nextData, Callback<T> callback) {
+    static <T> Diff<List<T>> trimHeadAndTail(
+        List<T> previousData,
+        List<T> nextData,
+        boolean trimSameInstancesOnly,
+        Callback<T> callback) {
       int headTrimmedCount = 0;
       int tailTrimmedCount = 0;
       final int previousDataSize = previousData.size();
@@ -322,7 +344,11 @@ public class DataDiffSectionSpec<T> {
       int tailRunnerNext = nextDataSize - 1;
 
       while (headTrimmedCount < previousDataSize && headTrimmedCount < nextDataSize) {
-        if (shouldTrim(previousData.get(headTrimmedCount), nextData.get(headTrimmedCount))) {
+        if (shouldTrim(
+            previousData.get(headTrimmedCount),
+            nextData.get(headTrimmedCount),
+            trimSameInstancesOnly,
+            callback)) {
           headTrimmedCount++;
         } else {
           break;
@@ -330,7 +356,11 @@ public class DataDiffSectionSpec<T> {
       }
 
       while (tailRunnerPrevious > headTrimmedCount && tailRunnerNext > headTrimmedCount) {
-        if (shouldTrim(previousData.get(tailRunnerPrevious), nextData.get(tailRunnerNext))) {
+        if (shouldTrim(
+            previousData.get(tailRunnerPrevious),
+            nextData.get(tailRunnerNext),
+            trimSameInstancesOnly,
+            callback)) {
           tailRunnerPrevious--;
           tailRunnerNext--;
           tailTrimmedCount++;
@@ -350,8 +380,18 @@ public class DataDiffSectionSpec<T> {
       return ComponentsPools.acquireDiff(previousData, nextData);
     }
 
-    private static <T> boolean shouldTrim(T previousItem, T nextItem) {
-      return false;
+    private static <T> boolean shouldTrim(
+        T previousItem, T nextItem, boolean trimSameInstancesOnly, Callback callback) {
+      if (previousItem == nextItem) {
+        return true;
+      }
+
+      if (trimSameInstancesOnly) {
+        return false;
+      }
+
+      return callback.areItemsTheSame(previousItem, nextItem)
+          && callback.areContentsTheSame(previousItem, nextItem);
     }
   }
 }
