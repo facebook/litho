@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-include_defs("//COMPONENTS_DEFS")
+load("//:COMPONENTS_DEFS", "components_robolectric_powermock_test", "make_dep_path", "COMPONENTS_TEST_RES", "COMPONENTS_ANDROIDSUPPORT_TARGET", "COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET", "COMPONENTS_ASSERTJ_TARGET", "COMPONENTS_BUILD_CONFIG_TARGET", "COMPONENTS_JAVA_TARGET", "COMPONENTS_JUNIT_TARGET", "COMPONENTS_MOCKITO_TARGET", "COMPONENTS_POWERMOCK_MOCKITO_TARGET", "COMPONENTS_POWERMOCK_REFLECT_TARGET", "COMPONENTS_SOLOADER_TARGET", "COMPONENTS_WIDGET_TARGET", "COMPONENTS_YOGA_TARGET", "COMPONENTS_TESTING_TARGET", "COMPONENTS_ROBOLECTRIC_TARGET", "COMPONENTS_VIEWCOMPAT_TARGET", "COMPONENTS_INFERANNOTATIONS_TARGET")
 
 components_robolectric_powermock_test(
     name = "litho",
@@ -20,21 +20,22 @@ components_robolectric_powermock_test(
         COMPONENTS_ROBOLECTRIC_TARGET,
     ],
     deps = [
-        COMPONENTS_TEST_RES,
-        COMPONENTS_ANDROIDSUPPORT_TARGET,
         COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+        COMPONENTS_ANDROIDSUPPORT_TARGET,
         COMPONENTS_ASSERTJ_TARGET,
         COMPONENTS_BUILD_CONFIG_TARGET,
+        COMPONENTS_INFERANNOTATIONS_TARGET,
         COMPONENTS_JAVA_TARGET,
         COMPONENTS_JUNIT_TARGET,
         COMPONENTS_MOCKITO_TARGET,
         COMPONENTS_POWERMOCK_MOCKITO_TARGET,
         COMPONENTS_POWERMOCK_REFLECT_TARGET,
         COMPONENTS_SOLOADER_TARGET,
+        COMPONENTS_TESTING_TARGET,
+        COMPONENTS_TEST_RES,
+        COMPONENTS_VIEWCOMPAT_TARGET,
         COMPONENTS_WIDGET_TARGET,
         COMPONENTS_YOGA_TARGET,
-        COMPONENTS_TESTING_TARGET,
-        COMPONENTS_VIEWCOMPAT_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/shadows:shadows"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
