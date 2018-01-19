@@ -27,6 +27,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
 
   private static final SynchronizedPool<RecyclerBinderUpdateCallback> sUpdatesCallbackPool =
       new SynchronizedPool<>(4);
+  private int mHeadOffset;
 
   public interface ComponentRenderer<T> {
     RenderInfo render(T t, int idx);
@@ -52,21 +53,23 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
         oldDataSize,
         data,
         componentRenderer,
-        new RecyclerBinderOperationExecutor(recyclerBinder));
+        new RecyclerBinderOperationExecutor(recyclerBinder),
+        0);
   }
 
-  public static<T> RecyclerBinderUpdateCallback<T> acquire(
+  public static <T> RecyclerBinderUpdateCallback<T> acquire(
       int oldDataSize,
       List<T> data,
       ComponentRenderer<T> componentRenderer,
-      OperationExecutor operationExecutor) {
+      OperationExecutor operationExecutor,
+      int headOffset) {
 
     RecyclerBinderUpdateCallback instance = sUpdatesCallbackPool.acquire();
     if (instance == null) {
       instance = new RecyclerBinderUpdateCallback();
     }
 
-    instance.init(oldDataSize, data, componentRenderer, operationExecutor);
+    instance.init(oldDataSize, data, componentRenderer, operationExecutor, headOffset);
     return instance;
   }
 
@@ -83,6 +86,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
     }
     updatesCallback.mComponentRenderer = null;
     updatesCallback.mOperationExecutor = null;
+    updatesCallback.mHeadOffset = 0;
     sUpdatesCallbackPool.release(updatesCallback);
   }
 
@@ -94,10 +98,12 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
       int oldDataSize,
       List<T> data,
       ComponentRenderer<T> componentRenderer,
-      OperationExecutor operationExecutor) {
+      OperationExecutor operationExecutor,
+      int headOffset) {
     mData = data;
     mComponentRenderer = componentRenderer;
     mOperationExecutor = operationExecutor;
+    mHeadOffset = headOffset;
 
     mOperations = new ArrayList<>();
     mPlaceholders = new ArrayList<>();
@@ -108,8 +114,8 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
 
   @Override
   public void onInserted(int position, int count) {
-
     final List<ComponentContainer> placeholders = new ArrayList<>();
+    position += mHeadOffset;
     for (int i = 0; i < count; i++) {
       final int index = position + i;
       final ComponentContainer componentContainer = ComponentContainer.acquire();
@@ -123,6 +129,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
 
   @Override
   public void onRemoved(int position, int count) {
+    position += mHeadOffset;
     for (int i = 0; i < count; i++) {
       final ComponentContainer componentContainer = mPlaceholders.remove(position);
       componentContainer.release();
@@ -133,6 +140,8 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
 
   @Override
   public void onMoved(int fromPosition, int toPosition) {
+    fromPosition += mHeadOffset;
+    toPosition += mHeadOffset;
     mOperations.add(Operation.acquire(Operation.MOVE, fromPosition, toPosition, null));
     ComponentContainer placeholder = mPlaceholders.remove(fromPosition);
     mPlaceholders.add(toPosition, placeholder);
@@ -142,6 +151,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
   public void onChanged(int position, int count, Object payload) {
     final List<ComponentContainer> placeholders = new ArrayList<>();
 
+    position += mHeadOffset;
     for (int i = 0; i < count; i++) {
       final int index = position + i;
       final ComponentContainer placeholder = mPlaceholders.get(index);

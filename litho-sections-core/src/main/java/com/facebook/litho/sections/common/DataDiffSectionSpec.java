@@ -13,14 +13,17 @@ import static com.facebook.litho.widget.RecyclerBinderUpdateCallback.acquire;
 import static com.facebook.litho.widget.RecyclerBinderUpdateCallback.release;
 
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pools.Pool;
 import android.support.v4.util.Pools.SynchronizedPool;
 import android.support.v7.util.DiffUtil;
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.sections.ChangeSet;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
@@ -86,21 +89,28 @@ import java.util.List;
     RenderEvent.class})
 public class DataDiffSectionSpec<T> {
 
+  @PropDefault public static Boolean trimHeadAndTail = false;
+
   @OnDiff
   public static <T> void onCreateChangeSet(
       SectionContext c,
       ChangeSet changeSet,
       @Prop Diff<List<T>> data,
-      @Prop(optional = true) @Nullable Diff<Boolean> detectMoves) {
+      @Prop(optional = true) @Nullable Diff<Boolean> detectMoves,
+      @Prop(optional = true) Diff<Boolean> trimHeadAndTail) {
 
-    final Callback<T> callback = Callback.acquire(c, data.getPrevious(), data.getNext());
+    final Callback<T> callback =
+        Callback.acquire(
+            c, data.getPrevious(), data.getNext(), trimHeadAndTail.getNext().booleanValue());
     DiffUtil.DiffResult result =
         DiffUtil.calculateDiff(callback, isDetectMovesEnabled(detectMoves));
-    final RecyclerBinderUpdateCallback<T> updatesCallback = acquire(
-        data.getPrevious() != null ? data.getPrevious().size() : 0,
-        data.getNext(),
-        new ComponentRenderer(DataDiffSection.getRenderEventHandler(c)),
-        new DiffSectionOperationExecutor(changeSet));
+    final RecyclerBinderUpdateCallback<T> updatesCallback =
+        acquire(
+            data.getPrevious() != null ? data.getPrevious().size() : 0,
+            data.getNext(),
+            new ComponentRenderer(DataDiffSection.getRenderEventHandler(c)),
+            new DiffSectionOperationExecutor(changeSet),
+            callback.getTrimmedHeadItemsCount());
 
     result.dispatchUpdatesTo(updatesCallback);
     updatesCallback.applyChangeset();
@@ -202,18 +212,27 @@ public class DataDiffSectionSpec<T> {
     private SectionContext mSectionContext;
     private EventHandler<OnCheckIsSameItemEvent> mIsSameItemEventHandler;
     private EventHandler<OnCheckIsSameContentEvent> mIsSameContentEventHandler;
+    private int mTrimmedHeadItemsCount;
 
     void init(
         SectionContext sectionContext,
         List<T> previousData,
-        List<T> nextData) {
-      mPreviousData = previousData;
-      mNextData = nextData;
+        List<T> nextData,
+        boolean trimHeadAndTail) {
       mSectionContext = sectionContext;
       mIsSameItemEventHandler =
           DataDiffSection.getOnCheckIsSameItemEventHandler(mSectionContext);
       mIsSameContentEventHandler =
           DataDiffSection.getOnCheckIsSameContentEventHandler(mSectionContext);
+
+      if (trimHeadAndTail && previousData != null) {
+        Diff<List<T>> trimmedData = trimHeadAndTail(previousData, nextData, this);
+        mPreviousData = trimmedData.getPrevious();
+        mNextData = trimmedData.getNext();
+      } else {
+        mPreviousData = previousData;
+        mNextData = nextData;
+      }
     }
 
     @Override
@@ -264,15 +283,16 @@ public class DataDiffSectionSpec<T> {
       return previous.equals(next);
     }
 
-    private static<T> Callback<T> acquire(
+    private static <T> Callback<T> acquire(
         SectionContext sectionContext,
         List<T> previousData,
-        List<T> nextData) {
+        List<T> nextData,
+        boolean trimHeadAndTail) {
       Callback callback = sCallbackPool.acquire();
       if (callback == null) {
         callback = new Callback();
       }
-      callback.init(sectionContext, previousData, nextData);
+      callback.init(sectionContext, previousData, nextData, trimHeadAndTail);
 
       return callback;
     }
@@ -283,7 +303,55 @@ public class DataDiffSectionSpec<T> {
       callback.mSectionContext = null;
       callback.mIsSameItemEventHandler = null;
       callback.mIsSameContentEventHandler = null;
+      callback.mTrimmedHeadItemsCount = 0;
       sCallbackPool.release(callback);
+    }
+
+    @VisibleForTesting
+    int getTrimmedHeadItemsCount() {
+      return mTrimmedHeadItemsCount;
+    }
+
+    private static <T> Diff<List<T>> trimHeadAndTail(
+        List<T> previousData, List<T> nextData, Callback<T> callback) {
+      int headTrimmedCount = 0;
+      int tailTrimmedCount = 0;
+      final int previousDataSize = previousData.size();
+      final int nextDataSize = nextData.size();
+      int tailRunnerPrevious = previousDataSize - 1;
+      int tailRunnerNext = nextDataSize - 1;
+
+      while (headTrimmedCount < previousDataSize && headTrimmedCount < nextDataSize) {
+        if (shouldTrim(previousData.get(headTrimmedCount), nextData.get(headTrimmedCount))) {
+          headTrimmedCount++;
+        } else {
+          break;
+        }
+      }
+
+      while (tailRunnerPrevious > headTrimmedCount && tailRunnerNext > headTrimmedCount) {
+        if (shouldTrim(previousData.get(tailRunnerPrevious), nextData.get(tailRunnerNext))) {
+          tailRunnerPrevious--;
+          tailRunnerNext--;
+          tailTrimmedCount++;
+        } else {
+          break;
+        }
+      }
+
+      callback.mTrimmedHeadItemsCount = headTrimmedCount;
+
+      if (headTrimmedCount > 0 || tailTrimmedCount > 0) {
+        return ComponentsPools.acquireDiff(
+            previousData.subList(headTrimmedCount, previousDataSize - tailTrimmedCount),
+            nextData.subList(headTrimmedCount, nextDataSize - tailTrimmedCount));
+      }
+
+      return ComponentsPools.acquireDiff(previousData, nextData);
+    }
+
+    private static <T> boolean shouldTrim(T previousItem, T nextItem) {
+      return false;
     }
   }
 }
