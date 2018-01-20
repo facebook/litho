@@ -48,22 +48,12 @@ public class RecyclerEventsController {
       return;
     }
 
-    mRecyclerViewWrapper.post(
-        new Runnable() {
-          @Override
-          public void run() {
-            if (mRecyclerViewWrapper == null) {
-              return;
-            }
+    if (animated) {
+      mRecyclerViewWrapper.getRecyclerView().smoothScrollToPosition(position);
+      return;
+    }
 
-            if (animated) {
-              mRecyclerViewWrapper.getRecyclerView().smoothScrollToPosition(position);
-              return;
-            }
-
-            mRecyclerViewWrapper.getRecyclerView().scrollToPosition(position);
-          }
-        });
+    mRecyclerViewWrapper.getRecyclerView().scrollToPosition(position);
   }
 
   public void clearRefreshing() {
