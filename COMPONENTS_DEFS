@@ -11,7 +11,7 @@ def make_dep_path(pth):
 COMPONENTS_ROOT_TARGET = make_dep_path(":components")
 
 # Java source
-COMPONENTS_JAVA_TARGET                     = make_dep_path('litho-core/src/main/java/com/facebook/litho:components')
+COMPONENTS_JAVA_TARGET                     = make_dep_path('litho-core/src/main/java/com/facebook/litho:litho')
 COMPONENTS_ANNOTATIONS_TARGET              = make_dep_path('litho-annotations/src/main/java/com/facebook/litho/annotations:annotations')
 COMPONENTS_CONFIG_TARGET                   = make_dep_path('litho-core/src/main/java/com/facebook/litho/config:config')
 COMPONENTS_DISPLAYLISTSTUBS_TARGET         = make_dep_path('litho-stubs:stubs')
@@ -35,7 +35,7 @@ COMPONENTS_SECTIONS_CONFIG_TARGET          = make_dep_path('litho-sections-core/
 COMPONENTS_FBJNI_JAVA_TARGET               = make_dep_path('lib/fbjni/src/main/java/com/facebook/jni:jni')
 
 # Test source
-COMPONENTS_TEST_TARGET                     = make_dep_path('litho-it/src/test/java/com/facebook/litho:components')
+COMPONENTS_TEST_TARGET                     = make_dep_path('litho-it/src/test/java/com/facebook/litho:litho')
 
 # Java source with local upstream
 COMPONENTS_PROGUARDANNOTATIONS_TARGET = make_dep_path('litho-annotations/src/main/java/com/facebook/proguard/annotations:annotations')

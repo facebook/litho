@@ -8,7 +8,7 @@
 include_defs("//COMPONENTS_DEFS")
 
 components_robolectric_test(
-    name = "components",
+    name = "litho",
     srcs = glob([
         "*Test.java",
         "animation/*.java",
