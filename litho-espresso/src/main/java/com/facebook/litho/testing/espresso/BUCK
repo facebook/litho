@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-include_defs("//COMPONENTS_DEFS")
+include_defs("//LITHO_DEFS")
 
 android_library(
     name = "espresso",
@@ -17,10 +17,10 @@ android_library(
         "PUBLIC",
     ],
     deps = [
-        COMPONENTS_ANDROIDSUPPORT_TESTING_TARGET,
-        COMPONENTS_ESPRESSO_TARGET,
-        COMPONENTS_HAMCREST_LIBRARY_TARGET,
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_JUNIT_TARGET,
+        LITHO_ANDROIDSUPPORT_TESTING_TARGET,
+        LITHO_ESPRESSO_TARGET,
+        LITHO_HAMCREST_LIBRARY_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_JUNIT_TARGET,
     ],
 )

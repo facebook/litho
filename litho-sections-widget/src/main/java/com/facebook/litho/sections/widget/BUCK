@@ -6,7 +6,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-include_defs("//COMPONENTS_DEFS")
+include_defs("//LITHO_DEFS")
 
 android_library(
     name = "widget",
@@ -14,24 +14,24 @@ android_library(
         "**/*.java",
     ]),
     plugins = [
-        COMPONENTS_PROCESSOR_TARGET,
-        COMPONENTS_SECTIONS_PROCESSOR_TARGET,
+        LITHO_PROCESSOR_TARGET,
+        LITHO_SECTIONS_PROCESSOR_TARGET,
     ],
     provided_deps = [
-        COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
-        COMPONENTS_ANNOTATIONS_TARGET,
+        LITHO_SECTIONS_ANNOTATIONS_TARGET,
+        LITHO_ANNOTATIONS_TARGET,
     ],
     visibility = [
         "PUBLIC",
     ],
     deps = [
-        COMPONENTS_SECTIONS_TARGET,
-        COMPONENTS_SECTIONS_CONFIG_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_TARGET,
-        COMPONENTS_JSR_TARGET,
-        COMPONENTS_WIDGET_TARGET,
-        COMPONENTS_YOGA_TARGET,
-        COMPONENTS_JAVA_TARGET,
+        LITHO_SECTIONS_TARGET,
+        LITHO_SECTIONS_CONFIG_TARGET,
+        LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_JSR_TARGET,
+        LITHO_WIDGET_TARGET,
+        LITHO_YOGA_TARGET,
+        LITHO_JAVA_TARGET,
     ],
 )

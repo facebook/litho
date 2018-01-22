@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-load("//:COMPONENTS_DEFS", "COMPONENTS_VISIBILITY", "make_dep_path")
+load("//:LITHO_DEFS", "LITHO_VISIBILITY", "make_dep_path")
 
 java_library(
     name = "compile-testing",
@@ -15,13 +15,13 @@ java_library(
         make_dep_path("lib/guava:guava"),
         make_dep_path("lib/truth:truth"),
     ],
-    visibility = COMPONENTS_VISIBILITY,
+    visibility = LITHO_VISIBILITY,
 )
 
 prebuilt_jar(
     name = "compile-testing-prebuilt",
     binary_jar = ":compile-testing.jar",
-    visibility = COMPONENTS_VISIBILITY,
+    visibility = LITHO_VISIBILITY,
 )
 
 remote_file(

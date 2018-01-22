@@ -6,7 +6,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-include_defs("//COMPONENTS_DEFS")
+include_defs("//LITHO_DEFS")
 
 java_annotation_processor(
     name = "processor",
@@ -33,9 +33,9 @@ java_library(
     target = "8",
     visibility = ["PUBLIC"],
     deps = [
-        COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
-        COMPONENTS_ANNOTATIONS_TARGET,
-        COMPONENTS_PROCESSOR_LIB_TARGET,
+        LITHO_SECTIONS_ANNOTATIONS_TARGET,
+        LITHO_ANNOTATIONS_TARGET,
+        LITHO_PROCESSOR_LIB_TARGET,
         make_dep_path("litho-sections-processor/src/main/java/com/facebook/litho/sections/specmodels/model:model"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),

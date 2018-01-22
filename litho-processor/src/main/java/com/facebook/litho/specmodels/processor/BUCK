@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-load("//:COMPONENTS_DEFS", "COMPONENTS_ANNOTATIONS_TARGET", "COMPONENTS_JAVAC_TOOLS_TARGET", "COMPONENTS_JAVAPOET_TARGET", "COMPONENTS_JSR_TARGET", "make_dep_path")
+load("//:LITHO_DEFS", "LITHO_ANNOTATIONS_TARGET", "LITHO_JAVAC_TOOLS_TARGET", "LITHO_JAVAPOET_TARGET", "LITHO_JSR_TARGET", "make_dep_path")
 
 java_annotation_processor(
     name = "processor",
@@ -33,8 +33,8 @@ java_library(
     name = "processor-lib",
     exported_deps = [
         ":processor-lib-bare",
-        COMPONENTS_JAVAPOET_TARGET,
-        COMPONENTS_JSR_TARGET,
+        LITHO_JAVAPOET_TARGET,
+        LITHO_JSR_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/generator/testing:testing"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor/testing:testing"),
     ],
@@ -50,9 +50,9 @@ java_library(
     name = "processor-lib-bare",
     srcs = glob(["*.java"]),
     provided_deps = [
-        COMPONENTS_JAVAC_TOOLS_TARGET,
-        COMPONENTS_JAVAPOET_TARGET,
-        COMPONENTS_JSR_TARGET,
+        LITHO_JAVAC_TOOLS_TARGET,
+        LITHO_JAVAPOET_TARGET,
+        LITHO_JSR_TARGET,
     ],
     source = "8",
     target = "8",
@@ -60,7 +60,7 @@ java_library(
         "PUBLIC",
     ],
     deps = [
-        COMPONENTS_ANNOTATIONS_TARGET,
+        LITHO_ANNOTATIONS_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/generator/testing:testing"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),

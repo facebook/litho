@@ -6,14 +6,14 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-include_defs("//COMPONENTS_DEFS")
+include_defs("//LITHO_DEFS")
 
 litho_android_library(
     name = "config",
     srcs = glob(["*.java"]),
     visibility = ["PUBLIC"],
     deps = [
-        COMPONENTS_JSR_TARGET,
+        LITHO_JSR_TARGET,
         make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/logger:logger"),
     ],
 )

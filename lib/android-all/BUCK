@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-load("//:COMPONENTS_DEFS", "COMPONENTS_VISIBILITY")
+load("//:LITHO_DEFS", "LITHO_VISIBILITY")
 
 java_library(
     name = "shadows-prebuilt-core",
@@ -26,5 +26,5 @@ prebuilt_jar(
 prebuilt_jar(
     name = "android-all-5.0.0",
     binary_jar = "android-all-5.0.0_r2-robolectric-1.jar",
-    visibility = COMPONENTS_VISIBILITY,
+    visibility = LITHO_VISIBILITY,
 )

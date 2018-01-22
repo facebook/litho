@@ -5,20 +5,20 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-include_defs("//COMPONENTS_DEFS")
+include_defs("//LITHO_DEFS")
 
 litho_android_library(
     name = "components",
     exported_deps = [
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_TARGET,
-        COMPONENTS_YOGA_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_YOGA_TARGET,
     ],
     visibility = [
         "PUBLIC",
     ],
     deps = [
-        COMPONENTS_BUILD_CONFIG_TARGET,
+        LITHO_BUILD_CONFIG_TARGET,
     ],
 )
 
@@ -26,8 +26,8 @@ litho_android_library(
     name = "sections_core",
     exported_deps = [
         ":components",
-        COMPONENTS_SECTIONS_TARGET,
-        COMPONENTS_SECTIONS_ANNOTATIONS_TARGET,
+        LITHO_SECTIONS_TARGET,
+        LITHO_SECTIONS_ANNOTATIONS_TARGET,
     ],
     visibility = [
         "PUBLIC",
@@ -38,9 +38,9 @@ android_library(
     name = "sections",
     exported_deps = [
         ":sections_core",
-        COMPONENTS_SECTIONS_COMMON_TARGET,
-        COMPONENTS_SECTIONS_WIDGET_TARGET,
-        COMPONENTS_WIDGET_TARGET,
+        LITHO_SECTIONS_COMMON_TARGET,
+        LITHO_SECTIONS_WIDGET_TARGET,
+        LITHO_WIDGET_TARGET,
     ],
     visibility = [
         "PUBLIC",
@@ -51,7 +51,7 @@ android_build_config(
     name = "build_config",
     package = "com.facebook.litho",
     values_file = ":build_config_values",
-    visibility = COMPONENTS_VISIBILITY,
+    visibility = LITHO_VISIBILITY,
 )
 
 genrule(

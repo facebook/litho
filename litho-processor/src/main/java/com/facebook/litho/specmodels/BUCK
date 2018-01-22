@@ -5,14 +5,14 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-load("//:COMPONENTS_DEFS", "COMPONENTS_ANDROIDSUPPORT_TARGET", "COMPONENTS_ANNOTATIONS_TARGET", "COMPONENTS_JAVAPOET_TARGET", "COMPONENTS_JSR_TARGET", "make_dep_path")
+load("//:LITHO_DEFS", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANNOTATIONS_TARGET", "LITHO_JAVAPOET_TARGET", "LITHO_JSR_TARGET", "make_dep_path")
 
 java_library(
     name = "specmodels",
     exported_deps = [
         ":specmodels-bare",
-        COMPONENTS_JAVAPOET_TARGET,
-        COMPONENTS_JSR_TARGET,
+        LITHO_JAVAPOET_TARGET,
+        LITHO_JSR_TARGET,
     ],
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels:specmodels"),
@@ -33,11 +33,11 @@ java_library(
         ]),
     ),
     exported_deps = [
-        COMPONENTS_ANNOTATIONS_TARGET,
+        LITHO_ANNOTATIONS_TARGET,
     ],
     provided_deps = [
-        COMPONENTS_JAVAPOET_TARGET,
-        COMPONENTS_JSR_TARGET,
+        LITHO_JAVAPOET_TARGET,
+        LITHO_JSR_TARGET,
     ],
     source = "8",
     target = "8",
@@ -45,7 +45,7 @@ java_library(
         "PUBLIC",
     ],
     deps = [
-        COMPONENTS_ANDROIDSUPPORT_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
     ],
 )

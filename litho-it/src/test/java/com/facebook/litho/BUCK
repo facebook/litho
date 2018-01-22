@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-include_defs("//COMPONENTS_DEFS")
+include_defs("//LITHO_DEFS")
 
 components_robolectric_test(
     name = "litho",
@@ -17,25 +17,25 @@ components_robolectric_test(
     ]),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
     provided_deps = [
-        COMPONENTS_ROBOLECTRIC_TARGET,
+        LITHO_ROBOLECTRIC_TARGET,
     ],
     source = "8",
     target = "8",
     deps = [
         ":testutil",
-        COMPONENTS_TEST_RES,
-        COMPONENTS_ANDROIDSUPPORT_TARGET,
-        COMPONENTS_ASSERTJ_TARGET,
-        COMPONENTS_BUILD_CONFIG_TARGET,
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_JUNIT_TARGET,
-        COMPONENTS_MOCKITO_TARGET,
-        COMPONENTS_POWERMOCK_REFLECT_TARGET,
-        COMPONENTS_SOLOADER_TARGET,
-        COMPONENTS_WIDGET_TARGET,
-        COMPONENTS_YOGA_TARGET,
-        COMPONENTS_TESTING_TARGET,
-        COMPONENTS_VIEWCOMPAT_TARGET,
+        LITHO_TEST_RES,
+        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_ASSERTJ_TARGET,
+        LITHO_BUILD_CONFIG_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_JUNIT_TARGET,
+        LITHO_MOCKITO_TARGET,
+        LITHO_POWERMOCK_REFLECT_TARGET,
+        LITHO_SOLOADER_TARGET,
+        LITHO_WIDGET_TARGET,
+        LITHO_YOGA_TARGET,
+        LITHO_TESTING_TARGET,
+        LITHO_VIEWCOMPAT_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/shadows:shadows"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
@@ -53,8 +53,8 @@ litho_android_library(
         make_dep_path("litho-it/src/test/java/com/facebook/litho/..."),
     ],
     deps = [
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_TARGET,
-        COMPONENTS_YOGA_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_YOGA_TARGET,
     ],
 )

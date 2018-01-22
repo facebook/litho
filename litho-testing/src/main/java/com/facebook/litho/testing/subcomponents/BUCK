@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-load("//:COMPONENTS_DEFS", "COMPONENTS_ASSERTJ_TARGET", "COMPONENTS_JAVA_TARGET", "COMPONENTS_JSR_TARGET", "COMPONENTS_YOGA_TARGET", "litho_android_library")
+load("//:LITHO_DEFS", "LITHO_ASSERTJ_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_YOGA_TARGET", "litho_android_library")
 
 litho_android_library(
     name = "subcomponents",
@@ -14,9 +14,9 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_ASSERTJ_TARGET,
-        COMPONENTS_YOGA_TARGET,
-        COMPONENTS_JSR_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_ASSERTJ_TARGET,
+        LITHO_YOGA_TARGET,
+        LITHO_JSR_TARGET,
     ],
 )

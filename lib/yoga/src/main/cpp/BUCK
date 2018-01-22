@@ -5,11 +5,11 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-include_defs("//COMPONENTS_DEFS")
+include_defs("//LITHO_DEFS")
 
 # This target is only used in open source and will break the monobuild
 # because we cannot define `soname` multiple times.
-if COMPONENTS_IS_OSS_BUILD:
+if LITHO_IS_OSS_BUILD:
   prebuilt_cxx_library(
       name = "ndklog",
       exported_platform_linker_flags = [
@@ -19,7 +19,7 @@ if COMPONENTS_IS_OSS_BUILD:
           ),
       ],
       header_only = True,
-      visibility = COMPONENTS_VISIBILITY,
+      visibility = LITHO_VISIBILITY,
   )
 
   fb_xplat_cxx_library(
@@ -39,5 +39,5 @@ if COMPONENTS_IS_OSS_BUILD:
       exported_headers = glob(["yoga/*.h"]),
       force_static = True,
       header_namespace = "",
-      visibility = COMPONENTS_VISIBILITY,
+      visibility = LITHO_VISIBILITY,
   )

@@ -5,22 +5,22 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-include_defs("//COMPONENTS_DEFS")
+include_defs("//LITHO_DEFS")
 
 components_robolectric_test(
     name = "utils",
     srcs = glob(["*Test.java"]),
     provided_deps = [
-        COMPONENTS_ROBOLECTRIC_TARGET,
+        LITHO_ROBOLECTRIC_TARGET,
     ],
     source = "8",
     target = "8",
     deps = [
-        COMPONENTS_ASSERTJ_TARGET,
-        COMPONENTS_BUILD_CONFIG_TARGET,
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_JUNIT_TARGET,
-        COMPONENTS_MOCKITO_TARGET,
+        LITHO_ASSERTJ_TARGET,
+        LITHO_BUILD_CONFIG_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_JUNIT_TARGET,
+        LITHO_MOCKITO_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
         make_dep_path("litho-core/src/main/java/com/facebook/litho/utils:utils"),
     ],

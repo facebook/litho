@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-include_defs("//COMPONENTS_DEFS")
+include_defs("//LITHO_DEFS")
 
 components_robolectric_test(
     name = "internal",
@@ -14,7 +14,7 @@ components_robolectric_test(
     target = "8",
     deps = [
         make_dep_path("litho-core/src/main/java/com/facebook/litho/internal:internal"),
-        COMPONENTS_JUNIT_TARGET,
-        COMPONENTS_ASSERTJ_TARGET,
+        LITHO_JUNIT_TARGET,
+        LITHO_ASSERTJ_TARGET,
     ],
 )

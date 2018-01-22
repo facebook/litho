@@ -4,7 +4,7 @@
 # This source code is licensed under the license found in the
 # LICENSE-examples file in the root directory of this source tree.
 
-include_defs("//COMPONENTS_DEFS")
+include_defs("//LITHO_DEFS")
 
 android_binary(
     name = "sample-codelab",
@@ -12,7 +12,7 @@ android_binary(
     keystore = ":debug_keystore",
     manifest = "src/main/AndroidManifest.xml",
     deps = [
-        COMPONENTS_SAMPLE_CODELAB_JAVA,
+        LITHO_SAMPLE_CODELAB_JAVA,
     ],
 )
 

@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-include_defs("//COMPONENTS_DEFS")
+include_defs("//LITHO_DEFS")
 
 components_robolectric_test(
     name = "widget",
@@ -13,19 +13,19 @@ components_robolectric_test(
     source = "8",
     target = "8",
     deps = [
-        COMPONENTS_ASSERTJ_TARGET,
-        COMPONENTS_JUNIT_TARGET,
-        COMPONENTS_ROBOLECTRIC_TARGET,
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_WIDGET_TARGET,
-        COMPONENTS_BUILD_CONFIG_TARGET,
-        COMPONENTS_SECTIONS_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_TARGET,
-        COMPONENTS_POWERMOCK_REFLECT_TARGET,
+        LITHO_ASSERTJ_TARGET,
+        LITHO_JUNIT_TARGET,
+        LITHO_ROBOLECTRIC_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_WIDGET_TARGET,
+        LITHO_BUILD_CONFIG_TARGET,
+        LITHO_SECTIONS_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_POWERMOCK_REFLECT_TARGET,
         make_dep_path("litho-sections-widget/src/main/java/com/facebook/litho/sections/widget:widget"),
         make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/common:common"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
-        COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+        LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:testing"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/util:util"),

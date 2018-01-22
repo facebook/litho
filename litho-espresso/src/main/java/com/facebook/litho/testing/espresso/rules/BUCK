@@ -5,13 +5,13 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-include_defs("//COMPONENTS_DEFS")
+include_defs("//LITHO_DEFS")
 
 android_library(
     name = "rules",
     srcs = glob(["*.java"]),
     exported_deps = [
-        COMPONENTS_ROOT + "litho-espresso/src/main/java/com/facebook/litho/testing/espresso:espresso",
+        LITHO_ROOT + "litho-espresso/src/main/java/com/facebook/litho/testing/espresso:espresso",
     ],
     tests = [
         "//instrumentation_tests/com/facebook/testing/instrumentation:instrumentation",
@@ -20,11 +20,11 @@ android_library(
         "PUBLIC",
     ],
     deps = [
-        COMPONENTS_ANDROIDSUPPORT_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_APPCOMPAT_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_TESTING_TARGET,
-        COMPONENTS_ESPRESSO_TARGET,
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_JUNIT_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_ANDROIDSUPPORT_APPCOMPAT_TARGET,
+        LITHO_ANDROIDSUPPORT_TESTING_TARGET,
+        LITHO_ESPRESSO_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_JUNIT_TARGET,
     ],
 )

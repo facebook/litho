@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-include_defs("//COMPONENTS_DEFS")
+include_defs("//LITHO_DEFS")
 
 fb_instrumentation_test(
     name = "espresso",
@@ -15,13 +15,13 @@ fb_instrumentation_test(
         ":build_config",
         ":testutil",
         make_dep_path("litho-espresso/src/main/java/com/facebook/litho/testing/espresso:espresso"),
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_WIDGET_TARGET,
-        COMPONENTS_ESPRESSO_TARGET,
-        COMPONENTS_JUNIT_TARGET,
-        COMPONENTS_YOGA_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_TESTING_TARGET,
-        COMPONENTS_SCREENSHOT_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_WIDGET_TARGET,
+        LITHO_ESPRESSO_TARGET,
+        LITHO_JUNIT_TARGET,
+        LITHO_YOGA_TARGET,
+        LITHO_ANDROIDSUPPORT_TESTING_TARGET,
+        LITHO_SCREENSHOT_TARGET,
     ],
 )
 
@@ -29,16 +29,16 @@ android_library(
     name = "testutil",
     srcs = glob(["MyComponentSpec.java"]),
     plugins = [
-        COMPONENTS_PROCESSOR_TARGET,
+        LITHO_PROCESSOR_TARGET,
     ],
     provided_deps = [
-        COMPONENTS_ANNOTATIONS_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_TARGET,
+        LITHO_ANNOTATIONS_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
     ],
     deps = [
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_WIDGET_TARGET,
-        COMPONENTS_YOGA_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_WIDGET_TARGET,
+        LITHO_YOGA_TARGET,
     ],
 )
 

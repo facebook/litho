@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-load("//:COMPONENTS_DEFS", "COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET", "COMPONENTS_ANDROIDSUPPORT_TARGET", "COMPONENTS_JAVA_TARGET", "COMPONENTS_JSR_TARGET", "litho_android_library", "make_dep_path")
+load("//:LITHO_DEFS", "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "litho_android_library", "make_dep_path")
 
 litho_android_library(
     name = "utils",
@@ -17,9 +17,9 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
-        COMPONENTS_JSR_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+        LITHO_JSR_TARGET,
     ],
 )

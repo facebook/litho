@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-include_defs("//COMPONENTS_DEFS")
+include_defs("//LITHO_DEFS")
 
 fb_java_test(
     name = "integration",
@@ -13,18 +13,18 @@ fb_java_test(
     source = "1.8",
     target = "1.8",
     deps = [
-        COMPONENTS_COMPILE_TESTING_TARGET,
-        COMPONENTS_TRUTH_TARGET,
-        COMPONENTS_ASSERTJ_TARGET,
-        COMPONENTS_TESTING_TARGET,
-        COMPONENTS_TESTING_ASSERTJ_TARGET,
-        COMPONENTS_GUAVA_TARGET,
-        COMPONENTS_JAVAC_TOOLS_TARGET,
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_JUNIT_TARGET,
-        COMPONENTS_PROCESSOR_LIB_TARGET,
-        COMPONENTS_ROBOLECTRIC_TARGET,
-        COMPONENTS_PROCESSOR_LIB_TARGET,
+        LITHO_COMPILE_TESTING_TARGET,
+        LITHO_TRUTH_TARGET,
+        LITHO_ASSERTJ_TARGET,
+        LITHO_TESTING_TARGET,
+        LITHO_TESTING_ASSERTJ_TARGET,
+        LITHO_GUAVA_TARGET,
+        LITHO_JAVAC_TOOLS_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_JUNIT_TARGET,
+        LITHO_PROCESSOR_LIB_TARGET,
+        LITHO_ROBOLECTRIC_TARGET,
+        LITHO_PROCESSOR_LIB_TARGET,
         make_dep_path("litho-it/src/test/resources:resources"),
     ],
 )

@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-load("//:COMPONENTS_DEFS", "COMPONENTS_VISIBILITY")
+load("//:LITHO_DEFS", "LITHO_VISIBILITY")
 
 android_prebuilt_aar(
     name = "appcompat-aar",
@@ -23,5 +23,5 @@ java_library(
     exported_deps = [
         ":appcompat-aar",
     ],
-    visibility = COMPONENTS_VISIBILITY,
+    visibility = LITHO_VISIBILITY,
 )

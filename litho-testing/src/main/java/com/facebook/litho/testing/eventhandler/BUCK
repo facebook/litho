@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-load("//:COMPONENTS_DEFS", "COMPONENTS_JAVA_TARGET", "COMPONENTS_MOCKITO_TARGET", "litho_android_library")
+load("//:LITHO_DEFS", "LITHO_JAVA_TARGET", "LITHO_MOCKITO_TARGET", "litho_android_library")
 
 litho_android_library(
     name = "eventhandler",
@@ -14,7 +14,7 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_MOCKITO_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_MOCKITO_TARGET,
     ],
 )

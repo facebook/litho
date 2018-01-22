@@ -5,12 +5,12 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-load("//:COMPONENTS_DEFS", "COMPONENTS_VISIBILITY")
+load("//:LITHO_DEFS", "LITHO_VISIBILITY")
 
 prebuilt_jar(
     name = "javapoet",
     binary_jar = ":javapoet.jar",
-    visibility = COMPONENTS_VISIBILITY,
+    visibility = LITHO_VISIBILITY,
 )
 
 remote_file(

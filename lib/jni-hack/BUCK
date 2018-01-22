@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-load("//:COMPONENTS_DEFS", "COMPONENTS_VISIBILITY", "fb_xplat_cxx_library")
+load("//:LITHO_DEFS", "LITHO_VISIBILITY", "fb_xplat_cxx_library")
 
 fb_xplat_cxx_library(
     name = "jni-hack",
@@ -15,5 +15,5 @@ fb_xplat_cxx_library(
         "real/jni.h",
     ],
     force_static = True,
-    visibility = COMPONENTS_VISIBILITY,
+    visibility = LITHO_VISIBILITY,
 )

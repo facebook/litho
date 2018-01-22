@@ -6,7 +6,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-include_defs("//COMPONENTS_DEFS")
+include_defs("//LITHO_DEFS")
 
 litho_android_library(
     name = "logger",
@@ -15,7 +15,7 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_WIDGET_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_WIDGET_TARGET,
     ],
 )

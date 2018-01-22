@@ -5,16 +5,16 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-load("//:COMPONENTS_DEFS", "COMPONENTS_ASSERTJ_TARGET", "COMPONENTS_DIFFUTILS_TARGET", "COMPONENTS_GUAVA_TARGET", "COMPONENTS_JAVA_TARGET", "COMPONENTS_JSR_TARGET", "COMPONENTS_JUNIT_TARGET", "COMPONENTS_ROBOLECTRIC_TARGET", "litho_android_library", "make_dep_path")
+load("//:LITHO_DEFS", "LITHO_ASSERTJ_TARGET", "LITHO_DIFFUTILS_TARGET", "LITHO_GUAVA_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_JUNIT_TARGET", "LITHO_ROBOLECTRIC_TARGET", "litho_android_library", "make_dep_path")
 
 litho_android_library(
     name = "viewtree",
     srcs = glob(["*.java"]),
     exported_deps = [
-        COMPONENTS_ASSERTJ_TARGET,
+        LITHO_ASSERTJ_TARGET,
     ],
     provided_deps = [
-        COMPONENTS_ROBOLECTRIC_TARGET,
+        LITHO_ROBOLECTRIC_TARGET,
     ],
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/testing/viewtree:viewtree"),
@@ -23,10 +23,10 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
-        COMPONENTS_DIFFUTILS_TARGET,
-        COMPONENTS_GUAVA_TARGET,
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_JSR_TARGET,
-        COMPONENTS_JUNIT_TARGET,
+        LITHO_DIFFUTILS_TARGET,
+        LITHO_GUAVA_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_JSR_TARGET,
+        LITHO_JUNIT_TARGET,
     ],
 )

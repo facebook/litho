@@ -5,13 +5,13 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-load("//:COMPONENTS_DEFS", "COMPONENTS_VISIBILITY", "litho_android_library")
+load("//:LITHO_DEFS", "LITHO_VISIBILITY", "litho_android_library")
 
 litho_android_library(
     name = "annotations",
     srcs = glob(["*.java"]),
     proguard_config = "proguard_annotations.pro",
-    visibility = COMPONENTS_VISIBILITY,
+    visibility = LITHO_VISIBILITY,
     deps = [
     ],
 )

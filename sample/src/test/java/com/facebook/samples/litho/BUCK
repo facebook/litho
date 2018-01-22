@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-include_defs("//COMPONENTS_DEFS")
+include_defs("//LITHO_DEFS")
 
 components_robolectric_test(
     name = "litho",
@@ -18,17 +18,17 @@ components_robolectric_test(
         make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
-        COMPONENTS_HAMCREST_LIBRARY_TARGET,
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_TESTING_TARGET,
-        COMPONENTS_TESTING_WIDGET_TARGET,
-        COMPONENTS_JUNIT_TARGET,
-        COMPONENTS_ROBOLECTRIC_TARGET,
-        COMPONENTS_ASSERTJ_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
-        COMPONENTS_WIDGET_TARGET,
-        COMPONENTS_MOCKITO_TARGET,
-        COMPONENTS_SECTIONS_WIDGET_TARGET,
+        LITHO_HAMCREST_LIBRARY_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_TESTING_TARGET,
+        LITHO_TESTING_WIDGET_TARGET,
+        LITHO_JUNIT_TARGET,
+        LITHO_ROBOLECTRIC_TARGET,
+        LITHO_ASSERTJ_TARGET,
+        LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+        LITHO_WIDGET_TARGET,
+        LITHO_MOCKITO_TARGET,
+        LITHO_SECTIONS_WIDGET_TARGET,
     ],
 )
 
@@ -36,20 +36,20 @@ android_library(
     name = "testspecs",
     srcs = glob(["**/Test*ComponentSpec.java"]),
     annotation_processor_deps = [
-        COMPONENTS_PROCESSOR_LIB_TARGET,
+        LITHO_PROCESSOR_LIB_TARGET,
     ],
     annotation_processors = [
         "com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor",
     ],
     deps = [
         make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho"),
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_ANNOTATIONS_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_TARGET,
-        COMPONENTS_TESTING_TARGET,
-        COMPONENTS_TESTING_ASSERTJ_TARGET,
-        COMPONENTS_JSR_TARGET,
-        COMPONENTS_HAMCREST_CORE_TARGET,
-        COMPONENTS_HAMCREST_LIBRARY_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_ANNOTATIONS_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_TESTING_TARGET,
+        LITHO_TESTING_ASSERTJ_TARGET,
+        LITHO_JSR_TARGET,
+        LITHO_HAMCREST_CORE_TARGET,
+        LITHO_HAMCREST_LIBRARY_TARGET,
     ],
 )
