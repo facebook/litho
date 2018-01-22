@@ -9,6 +9,8 @@
 
 package com.facebook.litho.sections;
 
+import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_CREATE_NEW_TREE;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
 import static com.facebook.litho.sections.SectionLifecycle.StateUpdate;
@@ -22,8 +24,10 @@ import android.support.annotation.UiThread;
 import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.LogEvent;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
@@ -1036,8 +1040,21 @@ public class SectionTree {
       SectionsDebugLogger sectionsDebugLogger,
       String sectionTreeTag) {
     nextRoot.setGlobalKey(nextRoot.getKey());
+
+    final ComponentsLogger logger = context.getLogger();
+    LogEvent logEvent = null;
+    if (logger != null) {
+      logEvent =
+          SectionsLogEventUtils.getSectionsPerformanceEvent(
+              logger, EVENT_SECTIONS_CREATE_NEW_TREE, currentRoot, nextRoot);
+    }
+
     createNewTreeAndApplyStateUpdates(
         context, currentRoot, nextRoot, pendingStateUpdates, sectionsDebugLogger, sectionTreeTag);
+
+    if (logger != null) {
+      logger.log(logEvent);
+    }
 
     return ChangeSetState.generateChangeSet(
         context, currentRoot, nextRoot, sectionsDebugLogger, sectionTreeTag, "", "");
@@ -1098,8 +1115,20 @@ public class SectionTree {
       context.setTreeProps(
           nextRoot.getTreePropsForChildren(context, parentTreeProps));
 
+      final ComponentsLogger logger = context.getLogger();
+      LogEvent logEvent = null;
+      if (logger != null) {
+        logEvent =
+            SectionsLogEventUtils.getSectionsPerformanceEvent(
+                logger, EVENT_SECTIONS_ON_CREATE_CHILDREN, null, nextRoot);
+      }
+
       nextRoot.setChildren(nextRoot.createChildren(
           nextRoot.getScopedContext()));
+
+      if (logger != null) {
+        logger.log(logEvent);
+      }
 
       final List<Section> nextRootChildren = nextRoot.getChildren();
 

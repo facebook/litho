@@ -15,6 +15,7 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
+        COMPONENTS_JAVA_TARGET,
         COMPONENTS_WIDGET_TARGET,
     ],
 )

@@ -9,6 +9,7 @@
 
 package com.facebook.litho.sections.common;
 
+import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF;
 import static com.facebook.litho.widget.RecyclerBinderUpdateCallback.acquire;
 import static com.facebook.litho.widget.RecyclerBinderUpdateCallback.release;
 
@@ -18,9 +19,11 @@ import android.support.v4.util.Pools.Pool;
 import android.support.v4.util.Pools.SynchronizedPool;
 import android.support.v7.util.DiffUtil;
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.LogEvent;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
@@ -115,8 +118,20 @@ public class DataDiffSectionSpec<T> {
     final Callback<T> callback =
         Callback.acquire(
             c, data.getPrevious(), data.getNext(), shouldTrim, shouldTrimSameInstanceOnly);
+
+    final ComponentsLogger logger = c.getLogger();
+    LogEvent logEvent = null;
+    if (logger != null) {
+      logEvent = c.getLogger().newPerformanceEvent(EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF);
+    }
+
     DiffUtil.DiffResult result =
         DiffUtil.calculateDiff(callback, isDetectMovesEnabled(detectMoves));
+
+    if (logger != null) {
+      logger.log(logEvent);
+    }
+
     final RecyclerBinderUpdateCallback<T> updatesCallback =
         acquire(
             data.getPrevious() != null ? data.getPrevious().size() : 0,

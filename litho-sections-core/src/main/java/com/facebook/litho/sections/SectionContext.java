@@ -15,6 +15,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.TreeProps;
 import java.lang.ref.WeakReference;
@@ -30,7 +31,11 @@ public class SectionContext extends ComponentContext {
   }
 
   public SectionContext(ComponentContext context) {
-    super(context.getBaseContext());
+    super(context.getBaseContext(), context.getLogTag(), context.getLogger());
+  }
+
+  public SectionContext(Context context, String logTag, ComponentsLogger logger) {
+    super(context, logTag, logger);
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

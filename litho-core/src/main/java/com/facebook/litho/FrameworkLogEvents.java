@@ -45,4 +45,6 @@ public interface FrameworkLogEvents {
   String PARAM_NO_OP_COUNT = "no_op_count";
   String PARAM_IS_DIRTY = "is_dirty";
   String PARAM_MESSAGE = "message";
+  String PARAM_SECTION_CURRENT = "section_current";
+  String PARAM_SECTION_NEXT = "section_next";
 }
