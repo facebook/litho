@@ -62,6 +62,7 @@ public class StateParamModel implements MethodParamModel {
     return mCanUpdateLazily;
   }
 
+  @Override
   public boolean equals(Object o) {
     if (o instanceof StateParamModel) {
       final StateParamModel p = (StateParamModel) o;

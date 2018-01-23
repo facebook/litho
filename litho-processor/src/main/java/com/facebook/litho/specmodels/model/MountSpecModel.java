@@ -260,6 +260,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
     return true;
   }
 
+  @Override
   public DependencyInjectionHelper getDependencyInjectionHelper() {
     return mSpecModel.getDependencyInjectionHelper();
   }

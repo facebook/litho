@@ -56,6 +56,7 @@ public class InterStageInputParamModel implements MethodParamModel {
     return mParamModel.getRepresentedObject();
   }
 
+  @Override
   public boolean equals(Object o) {
     if (o instanceof InterStageInputParamModel) {
       final InterStageInputParamModel p = (InterStageInputParamModel) o;

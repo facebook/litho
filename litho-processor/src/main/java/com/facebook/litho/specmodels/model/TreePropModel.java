@@ -57,6 +57,7 @@ public class TreePropModel implements MethodParamModel {
     return mParamModel.getRepresentedObject();
   }
 
+  @Override
   public boolean equals(Object o) {
     if (o instanceof TreePropModel) {
       final TreePropModel p = (TreePropModel) o;

@@ -66,6 +66,7 @@ public class DiffStateParamModel implements MethodParamModel {
     return mUnderlyingStateParamModel.canUpdateLazily();
   }
 
+  @Override
   public boolean equals(Object o) {
     if (o instanceof DiffStateParamModel) {
       final DiffStateParamModel p = (DiffStateParamModel) o;
