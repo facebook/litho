@@ -84,7 +84,7 @@ Your custom component will be called `ListItem` and it will display a title with
 public class ListItemSpec {
 
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c) {
+  static ComponentLayout onCreateLayout(ComponentContext c) {
 
     return Column.create(c)
         .paddingDip(ALL, 16)
