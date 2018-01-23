@@ -109,8 +109,8 @@ public class SectionTreeTest {
     assertThat(changeSetHandler.wereChangesHandled()).isTrue();
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void testSetRootWithSameKeys() {
+  @Test
+  public void testUniqueGlobalKeys() {
     final Section leaf1 = TestSectionCreator.createChangeSetComponent(
         "leaf1",
         Change.insert(0, ComponentRenderInfo.createEmpty()),
@@ -131,6 +131,9 @@ public class SectionTreeTest {
         .build();
 
     tree.setRoot(root);
+
+    assertThat(leaf1.getGlobalKey()).isEqualTo("node1leaf1");
+    assertThat(leaf2.getGlobalKey()).isEqualTo("node1leaf10");
   }
 
   @Test

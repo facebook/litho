@@ -42,6 +42,12 @@ public abstract class Section extends SectionLifecycle
   private SectionContext mScopedContext;
   EventHandler<LoadingEvent> loadingEventHandler;
 
+  /**
+   * Holds onto how many direct section children of each type this Section has. Used for
+   * automatically generating unique global keys for all sibling sections of the same type.
+   */
+  @Nullable private Map<String, Integer> mChildCounters;
+
   @Override
   public EventDispatcher getEventDispatcher() {
     return this;
@@ -138,8 +144,8 @@ public abstract class Section extends SectionLifecycle
 
   /**
    * @return a key for this {@link Section} that is local between its siblings. A parent is
-   * responsible to set different localScopes to children with the same
-   * {@link SectionLifecycle}.
+   *     responsible to set different localScopes to children with the same {@link
+   *     SectionLifecycle}.
    */
   String getKey() {
     return mKey;
@@ -291,6 +297,42 @@ public abstract class Section extends SectionLifecycle
    */
   void release() {
     //TODO release list into a pool t11953296
+  }
+
+  void generateKeyAndSet(SectionContext c, String globalKey) {
+    final Section parentScope = c.getSectionScope();
+    final String uniqueGlobalKey =
+        parentScope == null
+            ? globalKey
+            : parentScope.generateUniqueGlobalKeyForChild(this, globalKey);
+    setGlobalKey(uniqueGlobalKey);
+
+    c.getKeyHandler().registerKey(uniqueGlobalKey);
+  }
+
+  private String generateUniqueGlobalKeyForChild(Section section, String childKey) {
+    final KeyHandler keyHandler = mScopedContext.getKeyHandler();
+
+    /** If the key is already unique, return it. */
+    if (!keyHandler.hasKey(childKey)) {
+      return childKey;
+    }
+
+    final String childType = section.getSimpleName();
+
+    if (mChildCounters == null) {
+      mChildCounters = new HashMap<>();
+    }
+
+    /**
+     * If the key is a duplicate, we start appending an index based on the child component's type
+     * that would uniquely identify it.
+     */
+    final int childIndex =
+        mChildCounters.containsKey(childType) ? mChildCounters.get(childType) : 0;
+    mChildCounters.put(childType, childIndex + 1);
+
+    return childKey + childIndex;
   }
 
   static Map<String, Pair<Section, Integer>> acquireChildrenMap(

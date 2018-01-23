@@ -25,17 +25,19 @@ public class SectionContext extends ComponentContext {
   private SectionTree mSectionTree;
   private WeakReference<Section> mScope;
   private EventHandler<LoadingEvent> mTreeLoadingEventHandler;
+  private KeyHandler mKeyHandler;
 
   public SectionContext(Context context) {
-    super(context);
+    this(context, null, null);
   }
 
   public SectionContext(ComponentContext context) {
-    super(context.getBaseContext(), context.getLogTag(), context.getLogger());
+    this(context.getBaseContext(), context.getLogTag(), context.getLogger());
   }
 
   public SectionContext(Context context, String logTag, ComponentsLogger logger) {
     super(context, logTag, logger);
+    mKeyHandler = new KeyHandler();
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -106,6 +108,10 @@ public class SectionContext extends ComponentContext {
     final Section section = mScope.get();
 
     return section;
+  }
+
+  KeyHandler getKeyHandler() {
+    return mKeyHandler;
   }
 
   @Nullable SectionTree getSectionTree() {

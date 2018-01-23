@@ -40,7 +40,6 @@ import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1165,29 +1164,20 @@ public class SectionTree {
 
       final List<Section> nextRootChildren = nextRoot.getChildren();
 
-      Set<String> keysSet = acquireKeysSet();
       for (int i = 0, size = nextRootChildren.size(); i < size; i++) {
         final Section child = nextRootChildren.get(i);
         child.setParent(nextRoot);
         final String childKey = child.getKey();
-        final String globalKey = nextRoot.getGlobalKey() + childKey;
-        if (TextUtils.isEmpty(childKey) || keysSet.contains(globalKey)) {
+        if (TextUtils.isEmpty(childKey)) {
           final String errorMessage =
-              TextUtils.isEmpty(childKey)
-                  ? ("Your Section "
-                      + child.getClass().getSimpleName()
-                      + " has an empty key. Please specify a key.")
-                  : ("You have two Sections with the same key: "
-                      + child.getKey()
-                      + ", as children of "
-                      + nextRoot.getClass().getSimpleName()
-                      + ". Please specify different keys.");
-
+              "Your Section "
+                  + child.getClass().getSimpleName()
+                  + " has an empty key. Please specify a key.";
           throw new IllegalStateException(errorMessage);
         }
 
-        child.setGlobalKey(globalKey);
-        keysSet.add(globalKey);
+        final String globalKey = nextRoot.getGlobalKey() + childKey;
+        child.generateKeyAndSet(nextRoot.getScopedContext(), globalKey);
         child.setScopedContext(SectionContext.withScope(context, child));
 
         final Pair<Section,Integer> valueAndIndex = currentComponentChildren == null ?
@@ -1199,22 +1189,11 @@ public class SectionTree {
             context, currentChild, child, pendingStateUpdates, sectionsDebugLogger, sectionTreeTag);
       }
 
-      releaseKeySet(keysSet);
-
       if (context.getTreeProps() != parentTreeProps) {
         ComponentsPools.release(context.getTreeProps());
         context.setTreeProps(parentTreeProps);
       }
     }
-  }
-
-  private static Set<String> acquireKeysSet() {
-    //TODO use pools t11953296
-    return new HashSet<>();
-  }
-
-  private static void releaseKeySet(Set<String> key) {
-    //TODO use pools t11953296
   }
 
   private static synchronized Looper getDefaultChangeSetThreadLooper() {
