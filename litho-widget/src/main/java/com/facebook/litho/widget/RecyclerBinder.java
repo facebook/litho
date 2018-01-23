@@ -1443,7 +1443,7 @@ public class RecyclerBinder
       final ViewCreator viewCreator = mRenderInfoViewCreatorController.getViewCreator(viewType);
 
       if (viewCreator != null) {
-        final View view = viewCreator.createView(mComponentContext);
+        final View view = viewCreator.createView(mComponentContext, parent);
         final RecyclerView.LayoutParams layoutParams;
         if (mLayoutInfo.getScrollDirection() == OrientationHelper.VERTICAL) {
           layoutParams = new RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT);

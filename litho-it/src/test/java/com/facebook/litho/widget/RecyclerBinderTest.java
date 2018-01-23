@@ -30,6 +30,7 @@ import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.view.ViewGroup;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
@@ -72,7 +73,7 @@ public class RecyclerBinderTest {
   private static final ViewCreator VIEW_CREATOR_1 =
       new ViewCreator() {
         @Override
-        public View createView(Context c) {
+        public View createView(Context c, ViewGroup parent) {
           return mock(View.class);
         }
       };
@@ -80,7 +81,7 @@ public class RecyclerBinderTest {
   private static final ViewCreator VIEW_CREATOR_2 =
       new ViewCreator() {
         @Override
-        public View createView(Context c) {
+        public View createView(Context c, ViewGroup parent) {
           return mock(View.class);
         }
       };
@@ -88,7 +89,7 @@ public class RecyclerBinderTest {
   private static final ViewCreator VIEW_CREATOR_3 =
       new ViewCreator() {
         @Override
-        public View createView(Context c) {
+        public View createView(Context c, ViewGroup parent) {
           return mock(View.class);
         }
       };
@@ -1079,7 +1080,7 @@ public class RecyclerBinderTest {
             // Different ViewCreator instances for each view item.
             return new ViewCreator() {
               @Override
-              public View createView(Context c) {
+              public View createView(Context c, ViewGroup parent) {
                 return mock(View.class);
               }
             };
@@ -1181,7 +1182,7 @@ public class RecyclerBinderTest {
     final ViewCreator<View> viewCreator =
         new ViewCreator<View>() {
           @Override
-          public View createView(Context c) {
+          public View createView(Context c, ViewGroup parent) {
             return view;
           }
         };
