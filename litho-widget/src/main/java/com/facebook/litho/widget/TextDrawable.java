@@ -417,17 +417,27 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
      */
     float start = mLayout.getPrimaryHorizontal(mLayout.getLineStart(line));
 
+    float end;
     /**
      * {@link Layout#getLineVisibleEnd} finds either the first trailing whitespace character of the
      * line or the first character of the next line. To handle both cases, we locate the end of the
      * line at the edge of the previous character opposite its primary horizontal position.
      */
     final int endOffset = mLayout.getLineVisibleEnd(line) - 1;
-    final float[] endWidth = new float[1];
-    mLayout.getPaint().getTextWidths(mText, endOffset, endOffset + 1, endWidth);
-    float end =
-        mLayout.getPrimaryHorizontal(endOffset)
-            + (mLayout.isRtlCharAt(endOffset) ? -1 : 1) * endWidth[0];
+    /**
+     * {@link Layout#getLineVisibleEnd} can also return 0 for a string's first line if that line is
+     * composed entirely of non-newline whitespace. The following fallback prevents an {@link
+     * IndexOutOfBoundsException} under these conditions.
+     */
+    if (endOffset < 0) {
+      end = mLayout.getPrimaryHorizontal(0);
+    } else {
+      final float[] endWidth = new float[1];
+      mLayout.getPaint().getTextWidths(mText, endOffset, endOffset + 1, endWidth);
+      end =
+          mLayout.getPrimaryHorizontal(endOffset)
+              + (mLayout.isRtlCharAt(endOffset) ? -1 : 1) * endWidth[0];
+    }
 
     if (start > end) {
       // In RTL scenario
