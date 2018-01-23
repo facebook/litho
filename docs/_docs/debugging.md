@@ -32,11 +32,16 @@ Buck doesn't have built-in support for suspending the compiler, but you can stil
 instrumenting the JVM to open a debugging port.
 
 For that, first make sure to kill any previous instances of Buck which may still be running with old flags, then
-set the `JAVA_TOOLS_OPTIONS` to contain the JDWP options.
+set the `JAVA_TOOLS_OPTIONS` to contain the JDWP options. Exporting the variable
+make sure that this is also picked up by child processes spawned by buck.
+Limiting the number of threads will dramatically speed up the interactive
+debugging performance as you won't have to wait for the scheduler to come around
+again and hand you a time slice.
 
 ```
 $ buck kill
-$ env JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005" buck build //litho-widget/...
+$ export JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+$ buck build --num-threads 1 //litho-widget/...
 ```
 
 Note that this won't pause the JVM (`suspend=n`), but as the process will continue to run you can choose to
