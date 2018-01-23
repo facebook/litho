@@ -10,6 +10,7 @@
 package com.facebook.litho.sections.common;
 
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
 import static com.facebook.litho.widget.RecyclerBinderUpdateCallback.acquire;
 import static com.facebook.litho.widget.RecyclerBinderUpdateCallback.release;
 
@@ -123,6 +124,7 @@ public class DataDiffSectionSpec<T> {
     LogEvent logEvent = null;
     if (logger != null) {
       logEvent = c.getLogger().newPerformanceEvent(EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF);
+      logEvent.addParam(PARAM_LOG_TAG, c.getLogTag());
     }
 
     DiffUtil.DiffResult result =

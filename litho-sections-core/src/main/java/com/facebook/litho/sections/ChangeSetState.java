@@ -63,7 +63,11 @@ public class ChangeSetState {
     if (logger != null) {
       logEvent =
           SectionsLogEventUtils.getSectionsPerformanceEvent(
-              logger, EVENT_SECTIONS_GENERATE_CHANGESET, currentRoot, newRoot);
+              logger,
+              sectionContext.getLogTag(),
+              EVENT_SECTIONS_GENERATE_CHANGESET,
+              currentRoot,
+              newRoot);
     }
 
     changeSetState.mChangeSet =

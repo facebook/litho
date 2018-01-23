@@ -757,6 +757,7 @@ public class SectionTree {
     Map<String, List<StateUpdate>> pendingStateUpdates;
 
     final ComponentsLogger logger;
+    final String logTag;
 
     synchronized (this) {
       if (mReleased) {
@@ -766,15 +767,16 @@ public class SectionTree {
       currentRoot = copy(mCurrentSection, true);
       nextRoot = copy(mNextSection, false);
       logger = mContext.getLogger();
+      logTag = mContext.getLogTag();
       pendingStateUpdates = copyPendingStateUpdatesAndResetNonLazyFlag();
     }
 
     LogEvent logEvent = null;
-
+    
     if (logger != null) {
       logEvent =
           SectionsLogEventUtils.getSectionsPerformanceEvent(
-              logger, EVENT_SECTIONS_SET_ROOT, currentRoot, nextRoot);
+              logger, logTag, EVENT_SECTIONS_SET_ROOT, currentRoot, nextRoot);
       logEvent.addParam(
           PARAM_SECTION_SET_ROOT_SOURCE,
           SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
@@ -1077,7 +1079,7 @@ public class SectionTree {
     if (logger != null) {
       logEvent =
           SectionsLogEventUtils.getSectionsPerformanceEvent(
-              logger, EVENT_SECTIONS_CREATE_NEW_TREE, currentRoot, nextRoot);
+              logger, context.getLogTag(), EVENT_SECTIONS_CREATE_NEW_TREE, currentRoot, nextRoot);
     }
 
     createNewTreeAndApplyStateUpdates(
@@ -1151,7 +1153,7 @@ public class SectionTree {
       if (logger != null) {
         logEvent =
             SectionsLogEventUtils.getSectionsPerformanceEvent(
-                logger, EVENT_SECTIONS_ON_CREATE_CHILDREN, null, nextRoot);
+                logger, context.getLogTag(), EVENT_SECTIONS_ON_CREATE_CHILDREN, null, nextRoot);
       }
 
       nextRoot.setChildren(nextRoot.createChildren(

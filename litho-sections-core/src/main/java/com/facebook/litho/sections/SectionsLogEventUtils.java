@@ -8,6 +8,7 @@
  */
 package com.facebook.litho.sections;
 
+import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_SECTION_CURRENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_SECTION_NEXT;
 
@@ -40,12 +41,17 @@ public class SectionsLogEventUtils {
    * Create a performance event that will add the names of the current and next section as params.
    */
   public static LogEvent getSectionsPerformanceEvent(
-      ComponentsLogger logger, int eventId, Section currentSection, Section nextSection) {
+      ComponentsLogger logger,
+      String logTag,
+      int eventId,
+      Section currentSection,
+      Section nextSection) {
     final LogEvent logEvent = logger.newPerformanceEvent(eventId);
     logEvent.addParam(
         PARAM_SECTION_CURRENT, currentSection == null ? "null" : currentSection.getSimpleName());
     logEvent.addParam(
         PARAM_SECTION_NEXT, nextSection == null ? "null" : nextSection.getSimpleName());
+    logEvent.addParam(PARAM_LOG_TAG, logTag);
 
     return logEvent;
   }
