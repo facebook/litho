@@ -320,27 +320,8 @@ public class TriggerGenerator {
     paramsBlock.add("new Object[] {\n");
     paramsBlock.indent();
 
-    for (int i = 0, size = eventMethodModel.methodParams.size(); i < size; i++) {
-      final MethodParamModel methodParamModel = eventMethodModel.methodParams.get(i);
-
-      if (methodParamModel.getTypeName().equals(contextClassName)) {
-        continue;
-      }
-
-      if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromTrigger.class)) {
-        eventTriggerMethod.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
-        eventTriggerMethod.addStatement(
-            "_eventState.$L = $L", methodParamModel.getName(), methodParamModel.getName());
-      }
-
-      if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
-        paramsBlock.add("$L,\n", methodParamModel.getName());
-        eventTriggerMethod.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
-        if (methodParamModel.getTypeName() instanceof TypeVariableName) {
-          eventTriggerMethod.addTypeVariable((TypeVariableName) methodParamModel.getTypeName());
-        }
-      }
-    }
+    addParametersToStaticTriggerMethods(contextClassName, eventMethodModel, eventTriggerMethod);
+    addTriggerParams(contextClassName, eventMethodModel, eventTriggerMethod, paramsBlock);
 
     paramsBlock.unindent();
     paramsBlock.add("}");
@@ -358,5 +339,56 @@ public class TriggerGenerator {
     }
 
     return eventTriggerMethod.build();
+  }
+
+  private static MethodSpec.Builder addParametersToStaticTriggerMethods(
+      ClassName contextClassName,
+      SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel,
+      MethodSpec.Builder eventTriggerMethod) {
+    for (int i = 0, size = eventMethodModel.methodParams.size(); i < size; i++) {
+      final MethodParamModel methodParamModel = eventMethodModel.methodParams.get(i);
+
+      if (methodParamModel.getTypeName().equals(contextClassName)) {
+        continue;
+      }
+
+      if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromTrigger.class)) {
+        eventTriggerMethod.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
+      }
+
+      if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
+        eventTriggerMethod.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
+      }
+    }
+
+    return eventTriggerMethod;
+  }
+
+  private static MethodSpec.Builder addTriggerParams(
+      ClassName contextClassName,
+      SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel,
+      MethodSpec.Builder eventTriggerMethod,
+      CodeBlock.Builder paramsBlock) {
+    for (int i = 0, size = eventMethodModel.methodParams.size(); i < size; i++) {
+      final MethodParamModel methodParamModel = eventMethodModel.methodParams.get(i);
+
+      if (methodParamModel.getTypeName().equals(contextClassName)) {
+        continue;
+      }
+
+      if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromTrigger.class)) {
+        eventTriggerMethod.addStatement(
+            "_eventState.$L = $L", methodParamModel.getName(), methodParamModel.getName());
+      }
+
+      if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
+        paramsBlock.add("$L,\n", methodParamModel.getName());
+        if (methodParamModel.getTypeName() instanceof TypeVariableName) {
+          eventTriggerMethod.addTypeVariable((TypeVariableName) methodParamModel.getTypeName());
+        }
+      }
+    }
+
+    return eventTriggerMethod;
   }
 }
