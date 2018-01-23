@@ -47,4 +47,6 @@ public interface FrameworkLogEvents {
   String PARAM_MESSAGE = "message";
   String PARAM_SECTION_CURRENT = "section_current";
   String PARAM_SECTION_NEXT = "section_next";
+  String PARAM_SECTION_SET_ROOT_SOURCE = "section_set_root_source";
+  String PARAM_SET_ROOT_ON_BG_THREAD = "sections_set_root_bg_thread";
 }

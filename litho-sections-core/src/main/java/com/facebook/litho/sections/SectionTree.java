@@ -11,6 +11,9 @@ package com.facebook.litho.sections;
 
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_CREATE_NEW_TREE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_SECTION_SET_ROOT_SOURCE;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_SET_ROOT_ON_BG_THREAD;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
 import static com.facebook.litho.sections.SectionLifecycle.StateUpdate;
@@ -28,7 +31,9 @@ import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LogEvent;
+import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.TreeProps;
+import com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.widget.RenderInfo;
@@ -143,14 +148,18 @@ public class SectionTree {
     @GuardedBy("this")
     private boolean mIsPosted;
 
+    @GuardedBy("this")
+    private @ApplyNewChangeSet int mSource;
+
     public CalculateChangeSetRunnable(Handler handler) {
       mHandler = handler;
     }
 
-    public synchronized void ensurePosted() {
+    public synchronized void ensurePosted(@ApplyNewChangeSet int source) {
       if (!mIsPosted) {
         mIsPosted = true;
         mHandler.post(this);
+        mSource = source;
       }
     }
 
@@ -163,15 +172,18 @@ public class SectionTree {
 
     @Override
     public void run() {
+      @ApplyNewChangeSet int source;
       synchronized (this) {
         if (!mIsPosted) {
           return;
         }
+        source = mSource;
+        mSource = ApplyNewChangeSet.NONE;
         mIsPosted = false;
       }
 
       try {
-        applyNewChangeSet();
+        applyNewChangeSet(source);
       } catch (IndexOutOfBoundsException e) {
         throw new RuntimeException(getDebugInfo(SectionTree.this) + e.getMessage(), e);
       }
@@ -255,9 +267,9 @@ public class SectionTree {
 
   /**
    * Update the root Section. This will create the new Section tree and generate a {@link ChangeSet}
-   * to be applied to the UI. In response to this {@link Target#applyNewChangeSet()} will be invoked
-   * once the {@link ChangeSet} has been calculated. The generation of the ChangeSet will happen
-   * synchronously in the thread calling this method.
+   * to be applied to the UI. In response to this {@link Target#applyNewChangeSet(int)} ()} will be
+   * invoked once the {@link ChangeSet} has been calculated. The generation of the ChangeSet will
+   * happen synchronously in the thread calling this method.
    *
    * @param section The new root.
    */
@@ -281,17 +293,17 @@ public class SectionTree {
     }
 
     if (mAsyncPropUpdates && !isFirstSetRoot) {
-      mCalculateChangeSetRunnable.ensurePosted();
+      mCalculateChangeSetRunnable.ensurePosted(ApplyNewChangeSet.SET_ROOT_ASYNC);
     } else {
-      applyNewChangeSet();
+      applyNewChangeSet(ApplyNewChangeSet.SET_ROOT);
     }
   }
 
   /**
    * Update the root Section. This will create the new Section tree and generate a {@link ChangeSet}
-   * to be applied to the UI. In response to this {@link Target#applyNewChangeSet()} will be invoked
-   * once the {@link ChangeSet} has been calculated. The generation of the ChangeSet will happen
-   * asynchronously in this SectionTree ChangeSetThread.
+   * to be applied to the UI. In response to this {@link Target#applyNewChangeSet(int)} will be
+   * invoked once the {@link ChangeSet} has been calculated. The generation of the ChangeSet will
+   * happen asynchronously in this SectionTree ChangeSetThread.
    *
    * @param section The new root.
    */
@@ -312,7 +324,7 @@ public class SectionTree {
       mNextSection = copy(section, false);
     }
 
-    mCalculateChangeSetRunnable.ensurePosted();
+    mCalculateChangeSetRunnable.ensurePosted(ApplyNewChangeSet.SET_ROOT_ASYNC);
   }
 
   /**
@@ -675,7 +687,7 @@ public class SectionTree {
     } else {
       mCalculateChangeSetOnMainThreadRunnable.cancel();
       addStateUpdateInternal(key, stateUpdate, true);
-      mCalculateChangeSetOnMainThreadRunnable.ensurePosted();
+      mCalculateChangeSetOnMainThreadRunnable.ensurePosted(ApplyNewChangeSet.UPDATE_STATE);
     }
   }
 
@@ -691,7 +703,7 @@ public class SectionTree {
   synchronized void updateStateAsync(String key, StateUpdate stateUpdate) {
     mCalculateChangeSetRunnable.cancel();
     addStateUpdateInternal(key, stateUpdate, true);
-    mCalculateChangeSetRunnable.ensurePosted();
+    mCalculateChangeSetRunnable.ensurePosted(ApplyNewChangeSet.UPDATE_STATE_ASYNC);
   }
 
   synchronized void updateStateLazy(String key, StateUpdate stateUpdate) {
@@ -739,10 +751,12 @@ public class SectionTree {
     }
   }
 
-  private void applyNewChangeSet() {
+  private void applyNewChangeSet(@ApplyNewChangeSet int source) {
     Section currentRoot;
     Section nextRoot;
     Map<String, List<StateUpdate>> pendingStateUpdates;
+
+    final ComponentsLogger logger;
 
     synchronized (this) {
       if (mReleased) {
@@ -751,7 +765,20 @@ public class SectionTree {
 
       currentRoot = copy(mCurrentSection, true);
       nextRoot = copy(mNextSection, false);
+      logger = mContext.getLogger();
       pendingStateUpdates = copyPendingStateUpdatesAndResetNonLazyFlag();
+    }
+
+    LogEvent logEvent = null;
+
+    if (logger != null) {
+      logEvent =
+          SectionsLogEventUtils.getSectionsPerformanceEvent(
+              logger, EVENT_SECTIONS_SET_ROOT, currentRoot, nextRoot);
+      logEvent.addParam(
+          PARAM_SECTION_SET_ROOT_SOURCE,
+          SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
+      logEvent.addParam(PARAM_SET_ROOT_ON_BG_THREAD, !ThreadUtils.isMainThread());
     }
 
     // Checking nextRoot is enough here since whenever we enqueue a new state update we also
@@ -824,6 +851,10 @@ public class SectionTree {
           pendingStateUpdates = copyPendingStateUpdatesAndResetNonLazyFlag();
         }
       }
+    }
+
+    if (logger != null) {
+      logger.log(logEvent);
     }
   }
 
