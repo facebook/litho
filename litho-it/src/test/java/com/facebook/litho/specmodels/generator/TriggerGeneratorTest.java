@@ -130,7 +130,7 @@ public class TriggerGeneratorTest {
   public void testGenerateStaticTriggerMethod() {
     TypeSpecDataHolder dataHolder = TriggerGenerator.generateStaticTriggerMethods(mSpecModel);
 
-    assertThat(dataHolder.getMethodSpecs()).hasSize(4);
+    assertThat(dataHolder.getMethodSpecs()).hasSize(6);
 
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
@@ -163,6 +163,18 @@ public class TriggerGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(2).toString())
         .isEqualTo(
+            "static <T extends java.lang.CharSequence> java.lang.Object testTriggerMethod1(com.facebook.litho.ComponentContext c,\n"
+                + "    java.lang.Object arg2, T arg3, long arg4) {\n"
+                + "  Test component = (Test) c.getComponentScope();\n"
+                + "  return component.testTriggerMethod1(\n"
+                + "      (com.facebook.litho.EventTriggerTarget) component,\n"
+                + "      arg2,\n"
+                + "      arg3,\n"
+                + "      arg4);\n"
+                + "}\n");
+
+    assertThat(dataHolder.getMethodSpecs().get(3).toString())
+        .isEqualTo(
             "public static void testTriggerMethod2(com.facebook.litho.ComponentContext c, java.lang.String key) {\n"
                 + "  int methodId = 969727739;\n"
                 + "  com.facebook.litho.EventTrigger trigger = getEventTrigger(c, methodId, key);\n"
@@ -174,12 +186,20 @@ public class TriggerGeneratorTest {
                 + "      });\n"
                 + "}\n");
 
-    assertThat(dataHolder.getMethodSpecs().get(3).toString())
+    assertThat(dataHolder.getMethodSpecs().get(4).toString())
         .isEqualTo(
             "public static void testTriggerMethod2(com.facebook.litho.EventTrigger trigger) {\n"
                 + "  java.lang.Object _eventState = new java.lang.Object();\n"
                 + "  trigger.dispatchOnTrigger(_eventState, new Object[] {\n"
                 + "      });\n"
+                + "}\n");
+
+    assertThat(dataHolder.getMethodSpecs().get(5).toString())
+        .isEqualTo(
+            "static void testTriggerMethod2(com.facebook.litho.ComponentContext c) {\n"
+                + "  Test component = (Test) c.getComponentScope();\n"
+                + "  component.testTriggerMethod2(\n"
+                + "      (com.facebook.litho.EventTriggerTarget) component);\n"
                 + "}\n");
   }
 

@@ -256,6 +256,10 @@ public class TriggerGenerator {
       typeSpecDataHolder.addMethod(
           generateStaticTriggerMethodWithTriggerHandler(
               specModel.getContextClass(), eventMethodModel));
+
+      typeSpecDataHolder.addMethod(
+          generateStateSelfTriggerMethod(
+              specModel.getComponentName(), specModel.getContextClass(), eventMethodModel));
     }
 
     return typeSpecDataHolder.build();
@@ -302,6 +306,48 @@ public class TriggerGenerator {
     triggerMethod.addParameter(ClassNames.EVENT_TRIGGER, "trigger");
 
     return generateCommonStaticTriggerMethodCode(contextClassName, eventMethodModel, triggerMethod);
+  }
+
+  private static MethodSpec generateStateSelfTriggerMethod(
+      String componentClass,
+      ClassName contextClassName,
+      SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
+    MethodSpec.Builder triggerMethod =
+        MethodSpec.methodBuilder(eventMethodModel.name.toString()).addModifiers(Modifier.STATIC);
+
+    triggerMethod.addParameter(contextClassName, "c");
+
+    addParametersToStaticTriggerMethods(contextClassName, eventMethodModel, triggerMethod);
+
+    triggerMethod.addStatement(
+        "$L component = ($L) c.getComponentScope()", componentClass, componentClass);
+
+    final CodeBlock.Builder eventTriggerParams =
+        CodeBlock.builder().add("\n($T) $L", ClassNames.EVENT_TRIGGER_TARGET, "component");
+
+    for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
+      if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromTrigger.class)) {
+        eventTriggerParams.add(",\n$L", methodParamModel.getName());
+        continue;
+      }
+
+      if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
+        eventTriggerParams.add(",\n$L", methodParamModel.getName());
+      }
+    }
+
+    EventDeclarationModel eventDeclaration = eventMethodModel.typeModel;
+    if (eventDeclaration.returnType == null || eventDeclaration.returnType.equals(TypeName.VOID)) {
+      triggerMethod.addStatement(
+          "component.$L($L)", eventMethodModel.name, eventTriggerParams.build());
+    } else {
+      triggerMethod
+          .addStatement(
+              "return component.$L($L)", eventMethodModel.name, eventTriggerParams.build())
+          .returns(eventDeclaration.returnType);
+    }
+
+    return triggerMethod.build();
   }
 
   private static MethodSpec generateCommonStaticTriggerMethodCode(
@@ -358,10 +404,19 @@ public class TriggerGenerator {
 
       if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
         eventTriggerMethod.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
+
+        maybeAddGenericTypeToStaticFunction(methodParamModel, eventTriggerMethod);
       }
     }
 
     return eventTriggerMethod;
+  }
+
+  private static void maybeAddGenericTypeToStaticFunction(
+      MethodParamModel methodParamModel, MethodSpec.Builder eventTriggerMethod) {
+    if (methodParamModel.getTypeName() instanceof TypeVariableName) {
+      eventTriggerMethod.addTypeVariable((TypeVariableName) methodParamModel.getTypeName());
+    }
   }
 
   private static MethodSpec.Builder addTriggerParams(
@@ -383,9 +438,6 @@ public class TriggerGenerator {
 
       if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
         paramsBlock.add("$L,\n", methodParamModel.getName());
-        if (methodParamModel.getTypeName() instanceof TypeVariableName) {
-          eventTriggerMethod.addTypeVariable((TypeVariableName) methodParamModel.getTypeName());
-        }
       }
     }
 

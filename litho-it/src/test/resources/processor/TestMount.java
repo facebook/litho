@@ -507,6 +507,13 @@ public final class TestMount<S extends View> extends Component {
     });
   }
 
+  static void onClickEventTrigger(ComponentContext c, View view) {
+    TestMount component = (TestMount) c.getComponentScope();
+    component.onClickEventTrigger(
+        (EventTriggerTarget) component,
+        view);
+  }
+
   @Override
   public Object acceptTriggerEvent(final EventTrigger eventTrigger, final Object eventState,
                                    final Object[] params) {
