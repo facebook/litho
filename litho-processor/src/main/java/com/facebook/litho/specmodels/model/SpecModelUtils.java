@@ -163,7 +163,8 @@ public class SpecModelUtils {
    * ClassNames#DIFF}. Otherwise the typeArguments won't be traversed and recorded.
    */
   public static TypeSpec generateTypeSpec(TypeMirror type) {
-    final TypeSpec defaultValue = new TypeSpec(safelyGetTypeName(type));
+    final TypeSpec defaultValue =
+        new TypeSpec(safelyGetTypeName(type), type.getKind() != TypeKind.ERROR);
 
     return type.accept(
         new SimpleTypeVisitor6<TypeSpec, Void>(defaultValue) {

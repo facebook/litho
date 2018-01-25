@@ -18,13 +18,27 @@ import com.squareup.javapoet.TypeName;
 public class TypeSpec {
 
   private final TypeName mTypeName;
+  private final boolean mIsValid;
 
   public TypeSpec(TypeName typeName) {
+    this(typeName, true);
+  }
+
+  TypeSpec(TypeName typeName, boolean isValid) {
     mTypeName = typeName;
+    mIsValid = isValid;
   }
 
   public TypeName getTypeName() {
     return mTypeName;
+  }
+
+  /**
+   * Indicate whether or not this is a fully qualified type, i.e. whether full type information was
+   * available at the time the annotation processor or a similar process ran.
+   */
+  public boolean isValid() {
+    return mIsValid;
   }
 
   /**

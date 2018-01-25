@@ -31,6 +31,7 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
+import javax.tools.Diagnostic;
 
 /** Extracts methods from the given input. */
 public final class MethodExtractorUtils {
@@ -59,6 +60,17 @@ public final class MethodExtractorUtils {
 
       try {
         final TypeSpec typeSpec = generateTypeSpec(param.asType());
+
+        if (!typeSpec.isValid()) {
+          messager.printMessage(
+              Diagnostic.Kind.WARNING,
+              String.format(
+                  "The type of '%s' cannot be fully determined at compile time. "
+                      + "This can cause issues if the target referenced from a different package. "
+                      + "Learn more at https://fburl.com/fblitho-cross-package-error.",
+                  param.getSimpleName()),
+              param);
+        }
 
         methodParamModels.add(
             MethodParamModelFactory.create(
