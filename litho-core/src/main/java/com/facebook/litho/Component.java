@@ -390,7 +390,8 @@ public abstract class Component extends ComponentLifecycle
     return true;
   }
 
-  void generateKey(ComponentContext c) {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  protected void generateKey(ComponentContext c) {
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
       final Component parentScope = c.getComponentScope();
       final String key = getKey();

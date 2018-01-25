@@ -38,6 +38,7 @@ import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaJustify.SPACE_AROUND;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -61,6 +62,7 @@ import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,6 +76,11 @@ public class LayoutStateCalculateTest {
 
   @Before
   public void setup() throws Exception {
+  }
+
+  @After
+  public void validate() {
+    validateMockitoUsage();
   }
 
   @Test
@@ -2536,6 +2543,50 @@ public class LayoutStateCalculateTest {
 
     // Output at index 1 is BorderColorDrawable component.
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
+  }
+
+  @Test
+  public void testWillRenderLayoutsOnce() {
+    ComponentContext c = new ComponentContext(application);
+
+    final Component componentSpy =
+        spy(TestLayoutComponent.create(c, 0, 0, true, true, true, false).build());
+
+    Component.willRender(c, componentSpy);
+
+    assertThat(componentSpy.mLayoutCreatedInWillRender).isNotNull();
+
+    LayoutState layoutState =
+        calculateLayoutState(
+            c, componentSpy, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+
+    ComponentLifecycle lifecycle = getComponentAt(layoutState, 0);
+    InternalNode internalNode = lifecycle.createLayout(c, false);
+
+    assertThat(internalNode == componentSpy.mLayoutCreatedInWillRender);
+
+    verify(componentSpy, times(1)).generateKey(any(ComponentContext.class));
+  }
+
+  @Test
+  public void testWillRenderLayoutsOnceInColumn() {
+    ComponentContext c = new ComponentContext(application);
+
+    final Component componentSpy =
+        spy(TestLayoutComponent.create(c, 0, 0, true, true, true, false).build());
+
+    final Component root =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            Component.willRender(c, componentSpy);
+
+            return Column.create(c).child(componentSpy).build();
+          }
+        };
+
+    calculateLayoutState(c, root, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+    verify(componentSpy, times(1)).generateKey(any(ComponentContext.class));
   }
 
   private void enableAccessibility() {

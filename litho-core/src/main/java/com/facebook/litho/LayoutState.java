@@ -1110,13 +1110,16 @@ class LayoutState {
     layoutState.mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
     layoutState.mClipChildren = clipChildren;
 
-    final InternalNode root = createAndMeasureTreeForComponent(
-        c,
-        component,
-        null, // nestedTreeHolder is null because this is measuring the root component tree.
-        widthSpec,
-        heightSpec,
-        previousDiffTreeRoot);
+    final InternalNode root =
+        component.mLayoutCreatedInWillRender == null
+            ? createAndMeasureTreeForComponent(
+                c,
+                component,
+                null, // nestedTreeHolder is null because this is measuring the root component tree.
+                widthSpec,
+                heightSpec,
+                previousDiffTreeRoot)
+            : component.mLayoutCreatedInWillRender;
 
     switch (SizeSpec.getMode(widthSpec)) {
       case SizeSpec.EXACTLY:
@@ -1527,7 +1530,10 @@ class LayoutState {
     final ComponentContext context = nestedTreeHolder.getContext();
     final Component component = nestedTreeHolder.getRootComponent();
 
-    InternalNode nestedTree = nestedTreeHolder.getNestedTree();
+    InternalNode nestedTree =
+        component.mLayoutCreatedInWillRender == null
+            ? nestedTreeHolder.getNestedTree()
+            : component.mLayoutCreatedInWillRender;
 
     if (nestedTree == null
         || !hasCompatibleSizeSpec(
