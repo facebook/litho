@@ -199,9 +199,6 @@ public final class MatcherGenerator {
       case NONE:
         dataHolder.addMethod(regularBuilder(specModel, prop));
         break;
-      case DRAWABLE_REFERENCE:
-        // TODO(T15854501): Implement drawable reference comparison for this and other generators.
-        break;
     }
 
     if (getRawType(prop.getTypeName()).equals(ClassNames.COMPONENT)) {

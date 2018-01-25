@@ -22,5 +22,4 @@ public enum ResType {
   DIMEN_TEXT,
   FLOAT,
   DRAWABLE,
-  DRAWABLE_REFERENCE,
 }
