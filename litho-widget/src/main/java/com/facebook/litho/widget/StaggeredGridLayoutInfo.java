@@ -80,8 +80,11 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
         return SizeSpec.makeSizeSpec(0, UNSPECIFIED);
       default:
         final int spanCount = mStaggeredGridLayoutManager.getSpanCount();
+        final int spanSize =
+            renderInfo.isFullSpan() ? mStaggeredGridLayoutManager.getSpanCount() : 1;
 
-        return SizeSpec.makeSizeSpec(((SizeSpec.getSize(widthSpec)) / spanCount), EXACTLY);
+        return SizeSpec.makeSizeSpec(
+            spanSize * ((SizeSpec.getSize(widthSpec)) / spanCount), EXACTLY);
     }
   }
 
@@ -94,8 +97,11 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
     switch (mStaggeredGridLayoutManager.getOrientation()) {
       case StaggeredGridLayoutManager.HORIZONTAL:
         final int spanCount = mStaggeredGridLayoutManager.getSpanCount();
+        final int spanSize =
+            renderInfo.isFullSpan() ? mStaggeredGridLayoutManager.getSpanCount() : 1;
 
-        return SizeSpec.makeSizeSpec((SizeSpec.getSize(heightSpec) / spanCount), EXACTLY);
+        return SizeSpec.makeSizeSpec(
+            spanSize * (SizeSpec.getSize(heightSpec) / spanCount), EXACTLY);
       default:
         return SizeSpec.makeSizeSpec(0, UNSPECIFIED);
     }
@@ -147,6 +153,7 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
 
       public LayoutParams(RecyclerViewLayoutManagerOverrideParams source) {
         super(source);
+        setFullSpan(source.isFullSpan());
         mOverrideWidthMeasureSpec = source.getWidthMeasureSpec();
         mOverrideHeightMeasureSpec = source.getHeightMeasureSpec();
       }

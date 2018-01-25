@@ -1495,7 +1495,7 @@ public class RecyclerBinder
 
         final RecyclerViewLayoutManagerOverrideParams layoutParams =
             new RecyclerViewLayoutManagerOverrideParams(
-                width, height, childrenWidthSpec, childrenHeightSpec);
+                width, height, childrenWidthSpec, childrenHeightSpec, renderInfo.isFullSpan());
 
         lithoView.setLayoutParams(layoutParams);
         lithoView.setComponentTree(componentTreeHolder.getComponentTree());
@@ -1546,15 +1546,20 @@ public class RecyclerBinder
 
   public static class RecyclerViewLayoutManagerOverrideParams extends RecyclerView.LayoutParams
       implements LithoView.LayoutManagerOverrideParams {
-
     private final int mWidthMeasureSpec;
     private final int mHeightMeasureSpec;
+    private final boolean mIsFullSpan;
 
     private RecyclerViewLayoutManagerOverrideParams(
-        int width, int height, int overrideWidthMeasureSpec, int overrideHeightMeasureSpec) {
+        int width,
+        int height,
+        int overrideWidthMeasureSpec,
+        int overrideHeightMeasureSpec,
+        boolean isFullSpan) {
       super(width, height);
       mWidthMeasureSpec = overrideWidthMeasureSpec;
       mHeightMeasureSpec = overrideHeightMeasureSpec;
+      mIsFullSpan = isFullSpan;
     }
 
     @Override
@@ -1565,6 +1570,10 @@ public class RecyclerBinder
     @Override
     public int getHeightMeasureSpec() {
       return mHeightMeasureSpec;
+    }
+
+    public boolean isFullSpan() {
+      return mIsFullSpan;
     }
   }
 

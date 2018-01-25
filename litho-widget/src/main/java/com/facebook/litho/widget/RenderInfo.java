@@ -23,6 +23,9 @@ import javax.annotation.Nullable;
  *
  * <p>IsSticky will be defaulted to false. It determines if the component should be a sticky header
  * or not
+ *
+ * <p>IsFullSpan will be defaulted to false. It is the information that determines if the component
+ * should occupy all of the SpanCount in a StaggeredGrid layout.
  */
 public abstract class RenderInfo {
 
@@ -30,6 +33,7 @@ public abstract class RenderInfo {
 
   private static final String IS_STICKY = "is_sticky";
   private static final String SPAN_SIZE = "span_size";
+  private static final String IS_FULL_SPAN = "is_full_span";
 
   private final @Nullable SimpleArrayMap<String, Object> mCustomAttributes;
 
@@ -51,6 +55,14 @@ public abstract class RenderInfo {
     }
 
     return (int) mCustomAttributes.get(SPAN_SIZE);
+  }
+
+  public boolean isFullSpan() {
+    if (mCustomAttributes == null || !mCustomAttributes.containsKey(IS_FULL_SPAN)) {
+      return false;
+    }
+
+    return (boolean) mCustomAttributes.get(IS_FULL_SPAN);
   }
 
   public @Nullable Object getCustomAttribute(String key) {
@@ -136,6 +148,10 @@ public abstract class RenderInfo {
 
     public T spanSize(int spanSize) {
       return customAttribute(SPAN_SIZE, spanSize);
+    }
+
+    public T isFullSpan(boolean isFullSpan) {
+      return customAttribute(IS_FULL_SPAN, isFullSpan);
     }
 
     public T customAttribute(String key, Object value) {

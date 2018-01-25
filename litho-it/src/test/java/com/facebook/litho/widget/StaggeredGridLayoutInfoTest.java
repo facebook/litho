@@ -85,6 +85,24 @@ public class StaggeredGridLayoutInfoTest {
   }
 
   @Test
+  public void testGetChildMeasureSpecVerticalWithFullSpan() {
+    final StaggeredGridLayoutInfo staggeredGridLayoutInfo =
+        createStaggeredGridLayoutInfo(VERTICAL, 3);
+    final int sizeSpec = SizeSpec.makeSizeSpec(200, EXACTLY);
+
+    final RenderInfo renderInfo = mock(RenderInfo.class);
+    when(renderInfo.isFullSpan()).thenReturn(true);
+
+    final int heightSpec = staggeredGridLayoutInfo.getChildHeightSpec(sizeSpec, renderInfo);
+    assertThat(SizeSpec.getMode(heightSpec)).isEqualTo(UNSPECIFIED);
+
+    final int widthSpec = staggeredGridLayoutInfo.getChildWidthSpec(sizeSpec, renderInfo);
+
+    assertThat(SizeSpec.getSize(widthSpec)).isEqualTo((200 / 3) * 3);
+    assertThat(SizeSpec.getMode(widthSpec)).isEqualTo(EXACTLY);
+  }
+
+  @Test
   public void testGetChildMeasureSpecHorizontal() {
     final StaggeredGridLayoutInfo staggeredGridLayoutInfo =
         createStaggeredGridLayoutInfo(HORIZONTAL, 3);
@@ -95,6 +113,23 @@ public class StaggeredGridLayoutInfoTest {
 
     final int heightSpec = staggeredGridLayoutInfo.getChildHeightSpec(sizeSpec, renderInfo);
     assertThat(SizeSpec.getSize(heightSpec)).isEqualTo((200 / 3) * 1);
+    assertThat(SizeSpec.getMode(heightSpec)).isEqualTo(EXACTLY);
+
+    final int widthSpec = staggeredGridLayoutInfo.getChildWidthSpec(sizeSpec, renderInfo);
+    assertThat(SizeSpec.getMode(widthSpec)).isEqualTo(UNSPECIFIED);
+  }
+
+  @Test
+  public void testGetChildMeasureSpecHorizontalWithFullSpan() {
+    final StaggeredGridLayoutInfo staggeredGridLayoutInfo =
+        createStaggeredGridLayoutInfo(HORIZONTAL, 3);
+    final int sizeSpec = SizeSpec.makeSizeSpec(200, EXACTLY);
+
+    final RenderInfo renderInfo = mock(RenderInfo.class);
+    when(renderInfo.isFullSpan()).thenReturn(true);
+
+    final int heightSpec = staggeredGridLayoutInfo.getChildHeightSpec(sizeSpec, renderInfo);
+    assertThat(SizeSpec.getSize(heightSpec)).isEqualTo((200 / 3) * 3);
     assertThat(SizeSpec.getMode(heightSpec)).isEqualTo(EXACTLY);
 
     final int widthSpec = staggeredGridLayoutInfo.getChildWidthSpec(sizeSpec, renderInfo);
