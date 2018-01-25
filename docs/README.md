@@ -21,11 +21,15 @@ comes out of Cupertino, use [Docker for Mac](https://docs.docker.com/docker-for-
 In the `docs/` folder, run this:
 
 ```
-docker run -it -v "$PWD":/usr/src/app -p "4000:4000" passy/github-pages:138
+docker run -t --rm -v "$PWD":/usr/src/app -p "4000:4000" starefossen/github-pages
 ```
 
 This will launch a web server on http://localhost:4000/ that monitors the docs
 directory for changes and regenerates on the fly.
+
+NOTE: If you see a error from bundler like `Could not find i18n-0.9.1 in any of
+the sources`, try removing your local `Gemfile.lock` and rerun the command.
+But please don't commit that result.
 
 ### Using Local Ruby
 
