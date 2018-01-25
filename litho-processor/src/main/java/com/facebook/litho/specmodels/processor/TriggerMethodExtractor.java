@@ -31,6 +31,7 @@ import com.squareup.javapoet.ClassName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -58,7 +59,8 @@ public class TriggerMethodExtractor {
       getOnTriggerMethods(
           Elements elements,
           TypeElement typeElement,
-          List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
+          List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+          Messager messager) {
     final List<SpecMethodModel<EventMethod, EventDeclarationModel>> delegateMethods =
         new ArrayList<>();
 
@@ -74,6 +76,7 @@ public class TriggerMethodExtractor {
         final List<MethodParamModel> methodParams =
             getMethodParams(
                 executableElement,
+                messager,
                 getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
                 permittedInterStageInputAnnotations,
                 ImmutableList.<Class<? extends Annotation>>of());

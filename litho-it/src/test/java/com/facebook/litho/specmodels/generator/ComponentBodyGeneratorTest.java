@@ -32,17 +32,21 @@ import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
 import com.squareup.javapoet.ClassName;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 /**
  * Tests {@link ComponentBodyGenerator}
  */
 public class ComponentBodyGeneratorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
+  @Mock private Messager mMessager;
 
   private final LayoutSpecModelFactory mLayoutSpecModelFactory = new LayoutSpecModelFactory();
 
@@ -74,9 +78,10 @@ public class ComponentBodyGeneratorTest {
 
   @Before
   public void setUp() {
+    MockitoAnnotations.initMocks(this);
     Elements elements = mCompilationRule.getElements();
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
-    mSpecModelDI = mLayoutSpecModelFactory.create(elements, typeElement, null, null);
+    mSpecModelDI = mLayoutSpecModelFactory.create(elements, typeElement, mMessager, null, null);
   }
 
   @Test

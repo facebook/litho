@@ -23,6 +23,7 @@ import com.facebook.litho.specmodels.model.SpecMethodModel;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -48,7 +49,8 @@ public class DelegateMethodExtractor {
       TypeElement typeElement,
       List<Class<? extends Annotation>> permittedMethodAnnotations,
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
-      List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels) {
+      List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels,
+      Messager messager) {
     final List<SpecMethodModel<DelegateMethod, Void>> delegateMethods = new ArrayList<>();
 
     for (Element enclosedElement : typeElement.getEnclosedElements()) {
@@ -64,6 +66,7 @@ public class DelegateMethodExtractor {
         final List<MethodParamModel> methodParams =
             getMethodParams(
                 executableElement,
+                messager,
                 getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
                 permittedInterStageInputAnnotations,
                 delegateMethodAnnotationsThatSkipDiffModels);

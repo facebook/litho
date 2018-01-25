@@ -26,17 +26,22 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
 import java.util.List;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 /**
  * Tests {@link BuilderGenerator}
  */
 public class BuilderGeneratorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
+
+  @Mock Messager mMessager;
 
   private final LayoutSpecModelFactory mLayoutSpecModelFactory = new LayoutSpecModelFactory();
 
@@ -83,20 +88,22 @@ public class BuilderGeneratorTest {
 
   @Before
   public void setUp() {
+    MockitoAnnotations.initMocks(this);
     Elements elements = mCompilationRule.getElements();
 
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
-    mSpecModel = mLayoutSpecModelFactory.create(elements, typeElement, null, null);
+    mSpecModel = mLayoutSpecModelFactory.create(elements, typeElement, mMessager, null, null);
 
     TypeElement resWithVarArgsElement =
         elements.getTypeElement(TestResTypeWithVarArgsSpec.class.getCanonicalName());
     mResTypeVarArgsSpecModel =
-        mLayoutSpecModelFactory.create(elements, resWithVarArgsElement, null, null);
+        mLayoutSpecModelFactory.create(elements, resWithVarArgsElement, mMessager, null, null);
 
     TypeElement dimenResTypeWithBoxFloatArgElement =
         elements.getTypeElement(TestDimenResTypeWithBoxFloatArgSpec.class.getCanonicalName());
     mDimenResTypeWithBoxFloatArgSpecModel =
-        mLayoutSpecModelFactory.create(elements, dimenResTypeWithBoxFloatArgElement, null, null);
+        mLayoutSpecModelFactory.create(
+            elements, dimenResTypeWithBoxFloatArgElement, mMessager, null, null);
   }
 
   @Test

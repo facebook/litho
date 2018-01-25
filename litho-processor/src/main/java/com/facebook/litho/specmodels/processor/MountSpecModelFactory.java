@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -72,6 +73,7 @@ public class MountSpecModelFactory implements SpecModelFactory {
   public MountSpecModel create(
       Elements elements,
       TypeElement element,
+      Messager messager,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
     return new MountSpecModel(
@@ -81,11 +83,14 @@ public class MountSpecModelFactory implements SpecModelFactory {
             element,
             DELEGATE_METHOD_ANNOTATIONS,
             INTER_STAGE_INPUT_ANNOTATIONS,
-            ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class)),
-        EventMethodExtractor.getOnEventMethods(elements, element, INTER_STAGE_INPUT_ANNOTATIONS),
+            ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class),
+            messager),
+        EventMethodExtractor.getOnEventMethods(
+            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
         TriggerMethodExtractor.getOnTriggerMethods(
-            elements, element, INTER_STAGE_INPUT_ANNOTATIONS),
-        UpdateStateMethodExtractor.getOnUpdateStateMethods(element, INTER_STAGE_INPUT_ANNOTATIONS),
+            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
+        UpdateStateMethodExtractor.getOnUpdateStateMethods(
+            element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
         interStageStore == null
             ? ImmutableList.of()
             : CachedPropNameExtractor.getCachedPropNames(

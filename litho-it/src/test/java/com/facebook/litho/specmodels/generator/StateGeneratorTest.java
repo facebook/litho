@@ -11,6 +11,7 @@
 package com.facebook.litho.specmodels.generator;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -23,6 +24,7 @@ import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import org.junit.Before;
@@ -75,11 +77,13 @@ public class StateGeneratorTest {
     TypeElement typeElementWithState =
         elements.getTypeElement(TestWithStateSpec.class.getCanonicalName());
     mSpecModelWithState =
-        mLayoutSpecModelFactory.create(elements, typeElementWithState, null, null);
+        mLayoutSpecModelFactory.create(
+            elements, typeElementWithState, mock(Messager.class), null, null);
     TypeElement typeElementWithoutState =
         elements.getTypeElement(TestWithoutStateSpec.class.getCanonicalName());
     mSpecModelWithoutState =
-        mLayoutSpecModelFactory.create(elements, typeElementWithoutState, null, null);
+        mLayoutSpecModelFactory.create(
+            elements, typeElementWithoutState, mock(Messager.class), null, null);
   }
 
   @Test

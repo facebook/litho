@@ -32,6 +32,7 @@ import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MountSpecModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.google.testing.compile.CompilationRule;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import org.junit.Rule;
@@ -126,7 +127,8 @@ public class MountSpecModelFactoryTest {
         elements.getTypeElement(MountSpecModelFactoryTest.TestMountSpec.class.getCanonicalName());
 
     MountSpecModel mountSpecModel =
-        mFactory.create(elements, typeElement, mDependencyInjectionHelper, null);
+        mFactory.create(
+            elements, typeElement, mock(Messager.class), mDependencyInjectionHelper, null);
 
     assertThat(mountSpecModel.getSpecName()).isEqualTo("TestMountSpec");
     assertThat(mountSpecModel.getComponentName()).isEqualTo("TestMountComponentName");

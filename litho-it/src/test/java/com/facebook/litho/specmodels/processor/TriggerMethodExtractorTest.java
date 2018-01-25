@@ -10,6 +10,7 @@
 package com.facebook.litho.specmodels.processor;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.FromTrigger;
@@ -29,6 +30,7 @@ import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
@@ -71,7 +73,7 @@ public class TriggerMethodExtractorTest {
 
     ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> methods =
         TriggerMethodExtractor.getOnTriggerMethods(
-            elements, typeElement, permittedParamAnnotations);
+            elements, typeElement, permittedParamAnnotations, mock(Messager.class));
 
     assertThat(methods).hasSize(1);
 

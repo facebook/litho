@@ -13,6 +13,7 @@ import static com.facebook.litho.specmodels.model.SpecModelUtils.generateTypeSpe
 
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelFactory;
+import com.facebook.litho.specmodels.model.TypeSpec;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
@@ -24,21 +25,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 
-/**
- * Extracts methods from the given input.
- */
-public class MethodExtractorUtils {
-  static final String COMPONENTS_PACKAGE = "com.facebook.litho";
+/** Extracts methods from the given input. */
+public final class MethodExtractorUtils {
+  public static final String COMPONENTS_PACKAGE = "com.facebook.litho";
+
+  private MethodExtractorUtils() {}
 
   /** @return a list of params for a method. */
   static List<MethodParamModel> getMethodParams(
       ExecutableElement method,
+      Messager messager,
       List<Class<? extends Annotation>> permittedAnnotations,
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
       List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels) {
@@ -55,9 +58,11 @@ public class MethodExtractorUtils {
               : savedParameterNames.get(i).toString();
 
       try {
+        final TypeSpec typeSpec = generateTypeSpec(param.asType());
+
         methodParamModels.add(
             MethodParamModelFactory.create(
-                generateTypeSpec(param.asType()),
+                typeSpec,
                 paramName,
                 getLibraryAnnotations(param, permittedAnnotations),
                 getExternalAnnotations(param),

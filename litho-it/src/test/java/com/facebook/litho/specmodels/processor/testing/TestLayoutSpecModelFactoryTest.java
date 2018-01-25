@@ -32,12 +32,15 @@ import com.facebook.litho.specmodels.processor.PropNameInterStageStore;
 import com.google.testing.compile.CompilationRule;
 import java.util.Optional;
 import javax.annotation.processing.Filer;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 /** Tests {@link TestSpecModelFactory} for an enclosed {@link LayoutSpec}. */
 public class TestLayoutSpecModelFactoryTest {
@@ -45,6 +48,7 @@ public class TestLayoutSpecModelFactoryTest {
 
   private Elements mElements;
   private TypeElement mTypeElement;
+  @Mock private Messager mMessager;
 
   @LayoutSpec
   static class MyLayoutSpec {
@@ -64,6 +68,7 @@ public class TestLayoutSpecModelFactoryTest {
 
   @Before
   public void setUp() {
+    MockitoAnnotations.initMocks(this);
     mElements = mCompilationRule.getElements();
     mTypeElement = mElements.getTypeElement(TestMyLayoutSpec.class.getCanonicalName());
   }
@@ -71,7 +76,8 @@ public class TestLayoutSpecModelFactoryTest {
   @Test
   public void testCreate() {
     final TestSpecModelFactory factory = new TestSpecModelFactory();
-    final TestSpecModel layoutSpecModel = factory.create(mElements, mTypeElement, null, null);
+    final TestSpecModel layoutSpecModel =
+        factory.create(mElements, mTypeElement, mMessager, null, null);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestMyLayoutSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("TestMyLayout");
@@ -108,7 +114,7 @@ public class TestLayoutSpecModelFactoryTest {
         };
 
     final TestSpecModel layoutSpecModel =
-        factory.create(mElements, mTypeElement, null, interStageStore);
+        factory.create(mElements, mTypeElement, mMessager, null, interStageStore);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestMyLayoutSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("TestMyLayout");
@@ -132,7 +138,8 @@ public class TestLayoutSpecModelFactoryTest {
     final TestSpecGenerator specGenerator = mock(TestSpecGenerator.class);
     final TestSpecModelFactory factory = new TestSpecModelFactory(specGenerator);
 
-    final TestSpecModel layoutSpecModel = factory.create(mElements, mTypeElement, null, null);
+    final TestSpecModel layoutSpecModel =
+        factory.create(mElements, mTypeElement, mMessager, null, null);
     layoutSpecModel.generate();
 
     verify(specGenerator).generate(layoutSpecModel);

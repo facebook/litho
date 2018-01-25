@@ -10,6 +10,7 @@
 package com.facebook.litho.specmodels.processor;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
@@ -27,6 +28,7 @@ import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
@@ -70,7 +72,8 @@ public class DelegateMethodExtractorTest {
             typeElement,
             new ArrayList<>(DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP.keySet()),
             permittedParamAnnotations,
-            ImmutableList.<Class<? extends Annotation>>of());
+            ImmutableList.<Class<? extends Annotation>>of(),
+            mock(Messager.class));
 
     assertThat(delegateMethods).hasSize(1);
 

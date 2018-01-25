@@ -66,6 +66,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
               specModelFactory.create(
                   processingEnv.getElementUtils(),
                   (TypeElement) element,
+                  processingEnv.getMessager(),
                   mDependencyInjectionHelperFactory == null
                       ? null
                       : mDependencyInjectionHelperFactory.create((TypeElement) element),

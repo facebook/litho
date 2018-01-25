@@ -10,6 +10,7 @@
 package com.facebook.litho.specmodels.processor;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
@@ -26,6 +27,7 @@ import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
@@ -63,7 +65,8 @@ public class UpdateStateMethodExtractorTest {
     List<Class<? extends Annotation>> permittedParamAnnotations = new ArrayList<>();
 
     ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> methods =
-        UpdateStateMethodExtractor.getOnUpdateStateMethods(typeElement, permittedParamAnnotations);
+        UpdateStateMethodExtractor.getOnUpdateStateMethods(
+            typeElement, permittedParamAnnotations, mock(Messager.class));
 
     assertThat(methods).hasSize(1);
 

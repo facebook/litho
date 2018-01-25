@@ -9,6 +9,7 @@
 package com.facebook.litho.specmodels.processor;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.MountSpec;
@@ -21,6 +22,7 @@ import com.facebook.litho.specmodels.model.SpecModelValidation;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.google.testing.compile.CompilationRule;
 import java.util.List;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import org.junit.Rule;
@@ -52,7 +54,8 @@ public class DuplicatePropValidationTest {
   public void testDuplicatePropValidationError() {
     final Elements elements = mCompilationRule.getElements();
     final TypeElement typeElement = elements.getTypeElement(DupeMountSpec.class.getCanonicalName());
-    final MountSpecModel mountSpecModel = mFactory.create(elements, typeElement, null, null);
+    final MountSpecModel mountSpecModel =
+        mFactory.create(elements, typeElement, mock(Messager.class), null, null);
 
     final List<SpecModelValidationError> specModelValidationErrors =
         SpecModelValidation.validateMountSpecModel(mountSpecModel);

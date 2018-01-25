@@ -10,6 +10,7 @@
 package com.facebook.litho.specmodels.generator;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.FromTrigger;
@@ -22,6 +23,7 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import org.junit.Before;
@@ -64,7 +66,8 @@ public class TriggerGeneratorTest {
   public void setUp() {
     Elements elements = mCompilationRule.getElements();
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
-    mSpecModel = mLayoutSpecModelFactory.create(elements, typeElement, null, null);
+    mSpecModel =
+        mLayoutSpecModelFactory.create(elements, typeElement, mock(Messager.class), null, null);
   }
 
   @Test

@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
@@ -85,14 +86,16 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory {
   public SpecModel create(
       Elements elements,
       TypeElement element,
+      Messager messager,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
-    return createModel(elements, element, dependencyInjectionHelper);
+    return createModel(elements, element, messager, dependencyInjectionHelper);
   }
 
   public static GroupSectionSpecModel createModel(
       Elements elements,
       TypeElement element,
+      Messager messager,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
     return new GroupSectionSpecModel(
         element.getQualifiedName().toString(),
@@ -101,11 +104,14 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory {
             element,
             DELEGATE_METHOD_ANNOTATIONS,
             INTER_STAGE_INPUT_ANNOTATIONS,
-            ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class)),
-        EventMethodExtractor.getOnEventMethods(elements, element, INTER_STAGE_INPUT_ANNOTATIONS),
+            ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class),
+            messager),
+        EventMethodExtractor.getOnEventMethods(
+            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
         TriggerMethodExtractor.getOnTriggerMethods(
-            elements, element, INTER_STAGE_INPUT_ANNOTATIONS),
-        UpdateStateMethodExtractor.getOnUpdateStateMethods(element, INTER_STAGE_INPUT_ANNOTATIONS),
+            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
+        UpdateStateMethodExtractor.getOnUpdateStateMethods(
+            element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
         ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),
         EventDeclarationsExtractor.getEventDeclarations(elements, element, GroupSectionSpec.class),

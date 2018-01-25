@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -48,7 +49,7 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
 
   /**
    * Extract the relevant Elements to work with from the round environment before they're passed on
-   * to {@link SpecModelFactory#create(Elements, TypeElement, DependencyInjectionHelper,
+   * to {@link SpecModelFactory#create(Elements, TypeElement, Messager, DependencyInjectionHelper,
    * InterStageStore)}.
    */
   @Override
@@ -64,6 +65,7 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
   public TestSpecModel create(
       Elements elements,
       TypeElement element,
+      Messager messager,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
 
@@ -79,7 +81,8 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
     }
 
     final SpecModel enclosedSpecModel =
-        getEnclosedSpecModel(elements, valueElement, dependencyInjectionHelper, interStageStore);
+        getEnclosedSpecModel(
+            elements, valueElement, messager, dependencyInjectionHelper, interStageStore);
 
     if (enclosedSpecModel == null) {
       final String error;
@@ -150,6 +153,7 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
   private static SpecModel getEnclosedSpecModel(
       Elements elements,
       TypeElement element,
+      Messager messager,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
     final List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
@@ -167,7 +171,8 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
       }
 
       if (factory != null) {
-        return factory.create(elements, element, dependencyInjectionHelper, interStageStore);
+        return factory.create(
+            elements, element, messager, dependencyInjectionHelper, interStageStore);
       }
     }
     return null;

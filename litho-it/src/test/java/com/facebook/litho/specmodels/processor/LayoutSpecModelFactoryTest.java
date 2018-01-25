@@ -16,10 +16,13 @@ import static org.mockito.Mockito.when;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 /**
  * Tests {@link LayoutSpecModelFactory}
@@ -27,6 +30,8 @@ import org.junit.Test;
 public class LayoutSpecModelFactoryTest {
   private static final String TEST_QUALIFIED_SPEC_NAME = "com.facebook.litho.TestSpec";
   private static final String TEST_QUALIFIED_COMPONENT_NAME = "com.facebook.litho.Test";
+
+  @Mock private Messager mMessager;
 
   Elements mElements = mock(Elements.class);
   TypeElement mTypeElement = mock(TypeElement.class);
@@ -37,6 +42,7 @@ public class LayoutSpecModelFactoryTest {
 
   @Before
   public void setUp() {
+    MockitoAnnotations.initMocks(this);
     when(mElements.getDocComment(mTypeElement)).thenReturn("");
     when(mTypeElement.getQualifiedName()).thenReturn(new MockName(TEST_QUALIFIED_SPEC_NAME));
     when(mTypeElement.getAnnotation(LayoutSpec.class)).thenReturn(mLayoutSpec);
@@ -45,7 +51,7 @@ public class LayoutSpecModelFactoryTest {
   @Test
   public void testCreate() {
     LayoutSpecModel layoutSpecModel =
-        mFactory.create(mElements, mTypeElement, mDependencyInjectionHelper, null);
+        mFactory.create(mElements, mTypeElement, mMessager, mDependencyInjectionHelper, null);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("Test");
@@ -66,7 +72,7 @@ public class LayoutSpecModelFactoryTest {
   public void testCreateWithSpecifiedName() {
     when(mLayoutSpec.value()).thenReturn("TestComponentName");
     LayoutSpecModel layoutSpecModel =
-        mFactory.create(mElements, mTypeElement, mDependencyInjectionHelper, null);
+        mFactory.create(mElements, mTypeElement, mMessager, mDependencyInjectionHelper, null);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("TestComponentName");

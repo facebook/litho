@@ -30,6 +30,7 @@ import com.google.testing.compile.CompilationRule;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;
+import javax.annotation.processing.Messager;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
@@ -70,7 +71,8 @@ public class EventGeneratorTest {
   public void setUp() {
     Elements elements = mCompilationRule.getElements();
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
-    mSpecModel = mLayoutSpecModelFactory.create(elements, typeElement, null, null);
+    mSpecModel =
+        mLayoutSpecModelFactory.create(elements, typeElement, mock(Messager.class), null, null);
     EventDeclarationModel eventDeclarationModel = new EventDeclarationModel(
         ClassName.OBJECT,
         ClassName.OBJECT,

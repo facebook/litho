@@ -12,6 +12,7 @@ import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
 import java.util.Set;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
@@ -21,12 +22,13 @@ import javax.lang.model.util.Elements;
  * A factory for a {@link SpecModel}. It first performs an {@link #extract(RoundEnvironment)} step
  * in which it selects the elements it wants to process from the annotation processor's round
  * environment and then creates a {@link SpecModel} for each extracted element in {@link
- * #create(Elements, TypeElement, DependencyInjectionHelper, InterStageStore)}.
+ * #create(Elements, TypeElement, Messager, DependencyInjectionHelper, InterStageStore)}.
  */
 public interface SpecModelFactory<T extends SpecModel> {
   /**
    * Extract the relevant Elements to work with from the round environment before they're passed on
-   * to {@link #create(Elements, TypeElement, DependencyInjectionHelper, InterStageStore)}.
+   * to {@link #create(Elements, TypeElement, Messager, DependencyInjectionHelper,
+   * InterStageStore)}.
    */
   Set<Element> extract(RoundEnvironment roundEnvironment);
 
@@ -38,6 +40,7 @@ public interface SpecModelFactory<T extends SpecModel> {
   T create(
       Elements elements,
       TypeElement element,
+      Messager messager,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore propNameInterStageStore);
 }
