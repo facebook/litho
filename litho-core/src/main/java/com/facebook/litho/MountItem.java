@@ -47,12 +47,9 @@ class MountItem {
   // the behaviour of this item when mounted.
   private int mFlags;
 
-  void init(
-      Component component,
-      MountItem mountItem,
-      LayoutOutput layoutOutput) {
+  void init(LayoutOutput layoutOutput, MountItem mountItem) {
     init(
-        component,
+        layoutOutput.getComponent(),
         mountItem.getHost(),
         mountItem.getContent(),
         layoutOutput,
