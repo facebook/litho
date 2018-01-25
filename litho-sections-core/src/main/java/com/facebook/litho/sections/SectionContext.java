@@ -95,13 +95,14 @@ public class SectionContext extends ComponentContext {
     sectionTree.updateStateAsync(section.getGlobalKey(), stateUpdate);
   }
 
-  <E> EventHandler<E> newEventHandler(String name, int id, Object[] params) {
+  @Override
+  public <E> EventHandler<E> newEventHandler(String name, int id, Object[] params) {
     final Section section = mScope.get();
     if (section == null) {
       throw new IllegalStateException("Called newEventHandler on a released Section");
     }
 
-    return new EventHandler<E>(section, name, id, params);
+    return new EventHandler<>(section, name, id, params);
   }
 
   public Section getSectionScope() {
