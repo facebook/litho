@@ -36,6 +36,7 @@ test:
     - buck test litho-it-powermock/src/test/... --config build.threads=1
     # Run the tests with Gradle
     - ./gradlew test
+    - ./gradlew :sample-kotlin:assembleDebug
   post:
     # Collect the JUnit reports
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
