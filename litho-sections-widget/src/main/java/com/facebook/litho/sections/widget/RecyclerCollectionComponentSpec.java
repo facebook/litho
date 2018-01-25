@@ -21,6 +21,7 @@ import android.support.v7.widget.RecyclerView.ItemAnimator;
 import android.support.v7.widget.RecyclerView.ItemDecoration;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.support.v7.widget.SnapHelper;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
@@ -55,6 +56,7 @@ import com.facebook.litho.widget.LithoRecylerView;
 import com.facebook.litho.widget.PTRRefreshEvent;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerEventsController;
+import com.facebook.litho.widget.StaggeredGridLayoutHelper;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -349,15 +351,21 @@ public class RecyclerCollectionComponentSpec {
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
       super.onScrolled(recyclerView, dx, dy);
 
-      final LinearLayoutManager linearLayoutManager =
-          (LinearLayoutManager) recyclerView.getLayoutManager();
-      final int firstCompletelyVisibleItemPosition =
-          linearLayoutManager.findFirstCompletelyVisibleItemPosition();
-
+      int firstCompletelyVisibleItemPosition =
+          getFirstCompletelyVisibleItemPosition(recyclerView.getLayoutManager());
       if (firstCompletelyVisibleItemPosition != -1) {
         // firstCompletelyVisibleItemPosition can be -1 in middle of the scroll, so
         // wait until it finishes to set the state.
         mEventsController.setFirstCompletelyVisibleItemPosition(firstCompletelyVisibleItemPosition);
+      }
+    }
+
+    private int getFirstCompletelyVisibleItemPosition(RecyclerView.LayoutManager layoutManager) {
+      if (layoutManager instanceof StaggeredGridLayoutManager) {
+        return StaggeredGridLayoutHelper.findFirstFullyVisibleItemPosition(
+            (StaggeredGridLayoutManager) layoutManager);
+      } else {
+        return ((LinearLayoutManager) layoutManager).findFirstCompletelyVisibleItemPosition();
       }
     }
   }
