@@ -40,8 +40,7 @@ class MountItem {
   private ComponentHost mHost;
   private boolean mIsBound;
   private int mImportantForAccessibility;
-  private DisplayListContainer mDisplayListContainer;
-  private DisplayListDrawable mDisplayListDrawable;
+  private @Nullable DisplayListDrawable mDisplayListDrawable;
 
   // ComponentHost flags defined in the LayoutOutput specifying
   // the behaviour of this item when mounted.
@@ -71,7 +70,6 @@ class MountItem {
         content,
         layoutOutput.getNodeInfo(),
         layoutOutput.getViewNodeInfo(),
-        layoutOutput.getDisplayListContainer(),
         displayListDrawable,
         layoutOutput.getFlags(),
         layoutOutput.getImportantForAccessibility());
@@ -83,8 +81,7 @@ class MountItem {
       Object content,
       NodeInfo nodeInfo,
       ViewNodeInfo viewNodeInfo,
-      DisplayListContainer displayListContainer,
-      DisplayListDrawable displayListDrawable,
+      @Nullable DisplayListDrawable displayListDrawable,
       int flags,
       int importantForAccessibility) {
     mComponent = component;
@@ -92,7 +89,6 @@ class MountItem {
     mHost = host;
     mFlags = flags;
     mImportantForAccessibility = importantForAccessibility;
-    mDisplayListContainer = displayListContainer;
     mDisplayListDrawable = displayListDrawable;
 
     if (mNodeInfo != null) {
@@ -134,10 +130,10 @@ class MountItem {
     }
   }
 
-  private @Nullable DisplayListDrawable acquireDisplayListDrawableIfNeeded(
+  private static @Nullable DisplayListDrawable acquireDisplayListDrawableIfNeeded(
       Object content,
-      DisplayListContainer layoutOutputDisplayListContainer,
-      DisplayListDrawable mountItemDisplayListDrawable) {
+      @Nullable DisplayListContainer layoutOutputDisplayListContainer,
+      @Nullable DisplayListDrawable mountItemDisplayListDrawable) {
 
     if (layoutOutputDisplayListContainer == null) {
       // If we do not have DisplayListContainer it would mean that we do not support generating
@@ -160,7 +156,7 @@ class MountItem {
           (Drawable) content, layoutOutputDisplayListContainer);
     }
 
-    if (displayList != null) {
+    if (displayList != null && mountItemDisplayListDrawable != null) {
       mountItemDisplayListDrawable.suppressInvalidations(true);
     }
 
@@ -224,9 +220,6 @@ class MountItem {
       ComponentsPools.release(mDisplayListDrawable);
       mDisplayListDrawable = null;
     }
-    // Do not release DisplayListContainer yet, just dereference the object,
-    // as it might be still referenced by LayoutOutput.
-    mDisplayListContainer = null;
 
     if (mNodeInfo != null) {
       mNodeInfo.release();
@@ -297,15 +290,8 @@ class MountItem {
     mIsBound = bound;
   }
 
+  @Nullable
   DisplayListDrawable getDisplayListDrawable() {
     return mDisplayListDrawable;
-  }
-
-  void setDisplayList(DisplayList displayList) {
-    mDisplayListContainer.setDisplayList(displayList);
-  }
-
-  @Nullable DisplayList getDisplayList() {
-    return mDisplayListContainer.getDisplayList();
   }
 }

@@ -86,7 +86,6 @@ public class MountItemTest {
         mNodeInfo,
         null,
         null,
-        null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_YES);
   }
@@ -131,7 +130,6 @@ public class MountItemTest {
         mNodeInfo,
         null,
         null,
-        null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_AUTO);
 
@@ -153,7 +151,6 @@ public class MountItemTest {
         mComponentHost,
         mContent,
         mNodeInfo,
-        null,
         null,
         null,
         mFlags,
@@ -178,7 +175,6 @@ public class MountItemTest {
         mNodeInfo,
         null,
         null,
-        null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_NO);
 
@@ -199,7 +195,6 @@ public class MountItemTest {
         mComponentHost,
         mContent,
         mNodeInfo,
-        null,
         null,
         null,
         mFlags,

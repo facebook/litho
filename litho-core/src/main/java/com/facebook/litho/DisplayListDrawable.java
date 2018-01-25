@@ -30,6 +30,10 @@ import com.facebook.litho.displaylist.DisplayListException;
 class DisplayListDrawable extends Drawable implements Drawable.Callback {
 
   private Drawable mDrawable;
+  // Note that this instance is shared between this object and corresponding LayoutOutput object.
+  // This optimization is done to make sure that DisplayListPrefetcher can create displaylist of the
+  // mountable content on spare UI cycles while this item is not yet on viewport and use displaylist
+  // to draw contents when it appears on the screen.
   private @Nullable DisplayListContainer mDisplayListContainer;
   private boolean mIgnoreInvalidations;
   private boolean mInvalidated;
