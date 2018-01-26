@@ -120,7 +120,12 @@ public class Border {
         edges[EDGE_LEFT] = value;
         edges[EDGE_RIGHT] = value;
         break;
-      default:
+      case LEFT:
+      case TOP:
+      case RIGHT:
+      case BOTTOM:
+      case START:
+      case END:
         edges[edgeIndex(edge)] = value;
         break;
     }
@@ -138,6 +143,10 @@ public class Border {
         return EDGE_RIGHT;
       case BOTTOM:
         return EDGE_BOTTOM;
+      case HORIZONTAL:
+      case VERTICAL:
+      case ALL:
+        // Fall-through
     }
     throw new IllegalArgumentException("Given unsupported edge " + edge.name());
   }

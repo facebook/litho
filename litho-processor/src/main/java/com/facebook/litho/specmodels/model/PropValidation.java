@@ -339,6 +339,8 @@ public class PropValidation {
                 ? ParameterizedTypeName.get(ClassNames.LIST, ClassNames.DRAWABLE)
                 : ClassNames.DRAWABLE);
         break;
+      case NONE:
+        break;
     }
 
     if (!validResTypes.contains(prop.getTypeName())) {
