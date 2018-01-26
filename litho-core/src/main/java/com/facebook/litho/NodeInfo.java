@@ -81,6 +81,7 @@ class NodeInfo {
   private static final int PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET = 1 << 18;
   private static final int PFLAG_SCALE_IS_SET = 1 << 19;
   private static final int PFLAG_ALPHA_IS_SET = 1 << 20;
+  private static final int PFLAG_ACCESSIBILITY_ROLE_IS_SET = 1 << 21;
 
   private final AtomicInteger mReferenceCount = new AtomicInteger(0);
 
@@ -97,6 +98,7 @@ class NodeInfo {
   private EventHandler<LongClickEvent> mLongClickHandler;
   private EventHandler<TouchEvent> mTouchHandler;
   private EventHandler<InterceptTouchEvent> mInterceptTouchHandler;
+  private AccessibilityRole mAccessibilityRole;
   private EventHandler<DispatchPopulateAccessibilityEventEvent>
       mDispatchPopulateAccessibilityEventHandler;
   private EventHandler<OnInitializeAccessibilityEventEvent>
@@ -227,6 +229,15 @@ class NodeInfo {
         || mInterceptTouchHandler != null;
   }
 
+  void setAccessibilityRole(AccessibilityRole role) {
+    mPrivateFlags |= PFLAG_ACCESSIBILITY_ROLE_IS_SET;
+    mAccessibilityRole = role;
+  }
+
+  AccessibilityRole getAccessibilityRole() {
+    return mAccessibilityRole;
+  }
+
   void setDispatchPopulateAccessibilityEventHandler(
       EventHandler<DispatchPopulateAccessibilityEventEvent>
           dispatchPopulateAccessibilityEventHandler) {
@@ -313,7 +324,7 @@ class NodeInfo {
     return mSendAccessibilityEventUncheckedHandler;
   }
 
-  boolean hasAccessibilityHandlers() {
+  boolean needsAccessibilityDelegate() {
     return mOnInitializeAccessibilityEventHandler != null
         || mOnInitializeAccessibilityNodeInfoHandler != null
         || mOnPopulateAccessibilityEventHandler != null
@@ -321,7 +332,8 @@ class NodeInfo {
         || mPerformAccessibilityActionHandler != null
         || mDispatchPopulateAccessibilityEventHandler != null
         || mSendAccessibilityEventHandler != null
-        || mSendAccessibilityEventUncheckedHandler != null;
+        || mSendAccessibilityEventUncheckedHandler != null
+        || mAccessibilityRole != null;
   }
 
   void setFocusable(boolean isFocusable) {
@@ -391,6 +403,9 @@ class NodeInfo {
     }
     if ((newInfo.mPrivateFlags & PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET) != 0) {
       mInterceptTouchHandler = newInfo.mInterceptTouchHandler;
+    }
+    if ((newInfo.mPrivateFlags & PFLAG_ACCESSIBILITY_ROLE_IS_SET) != 0) {
+      mAccessibilityRole = newInfo.mAccessibilityRole;
     }
     if ((newInfo.mPrivateFlags & PFLAG_DISPATCH_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
       mDispatchPopulateAccessibilityEventHandler =
@@ -464,6 +479,9 @@ class NodeInfo {
     }
     if ((mPrivateFlags & PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET) != 0) {
       layout.interceptTouchHandler(mInterceptTouchHandler);
+    }
+    if ((mPrivateFlags & PFLAG_ACCESSIBILITY_ROLE_IS_SET) != 0) {
+      layout.accessibilityRole(mAccessibilityRole);
     }
     if ((mPrivateFlags & PFLAG_DISPATCH_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
       layout.dispatchPopulateAccessibilityEventHandler(mDispatchPopulateAccessibilityEventHandler);
@@ -556,6 +574,7 @@ class NodeInfo {
     mFocusChangeHandler = null;
     mTouchHandler = null;
     mInterceptTouchHandler = null;
+    mAccessibilityRole = null;
     mDispatchPopulateAccessibilityEventHandler = null;
     mOnInitializeAccessibilityEventHandler = null;
     mOnPopulateAccessibilityEventHandler = null;

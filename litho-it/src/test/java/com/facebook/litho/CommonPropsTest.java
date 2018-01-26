@@ -12,7 +12,6 @@ package com.facebook.litho;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -170,6 +169,7 @@ public class CommonPropsTest {
         mock(EventHandler.class);
     final EventHandler<SendAccessibilityEventUncheckedEvent>
         sendAccessibilityEventUncheckedHandler = mock(EventHandler.class);
+    mCommonProps.accessibilityRole(AccessibilityRole.BUTTON);
     mCommonProps.dispatchPopulateAccessibilityEventHandler(
         dispatchPopulateAccessibilityEventHandler);
     mCommonProps.onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
@@ -275,6 +275,7 @@ public class CommonPropsTest {
     verify(mNode).transitionKey("transitionKey");
     verify(mNode).testKey("testKey");
 
+    verify(mNode).accessibilityRole(AccessibilityRole.BUTTON);
     verify(mNode)
         .dispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
     verify(mNode).onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);

@@ -1257,7 +1257,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
    * a default delegate.
    */
   private static void setAccessibilityDelegate(View view, NodeInfo nodeInfo) {
-    if (!(view instanceof ComponentHost) && !nodeInfo.hasAccessibilityHandlers()) {
+    if (!(view instanceof ComponentHost) && !nodeInfo.needsAccessibilityDelegate()) {
       return;
     }
 

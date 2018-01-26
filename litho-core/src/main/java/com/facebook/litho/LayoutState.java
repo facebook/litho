@@ -460,7 +460,7 @@ class LayoutState {
     final NodeInfo nodeInfo = node.getNodeInfo();
 
     final boolean implementsAccessibility =
-        (nodeInfo != null && nodeInfo.hasAccessibilityHandlers())
+        (nodeInfo != null && nodeInfo.needsAccessibilityDelegate())
             || (component != null && component.implementsAccessibility());
 
     final int importantForAccessibility = node.getImportantForAccessibility();

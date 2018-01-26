@@ -891,6 +891,11 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
+  InternalNode accessibilityRole(AccessibilityRole role) {
+    getOrCreateNodeInfo().setAccessibilityRole(role);
+    return this;
+  }
+
   InternalNode dispatchPopulateAccessibilityEventHandler(
       EventHandler<DispatchPopulateAccessibilityEventEvent>
           dispatchPopulateAccessibilityEventHandler) {

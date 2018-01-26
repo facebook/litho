@@ -309,6 +309,10 @@ class CommonProps {
     getOrCreateNodeInfo().setClipToOutline(clipToOutline);
   }
 
+  void accessibilityRole(AccessibilityRole role) {
+    getOrCreateNodeInfo().setAccessibilityRole(role);
+  }
+
   void dispatchPopulateAccessibilityEventHandler(
       EventHandler<DispatchPopulateAccessibilityEventEvent>
           dispatchPopulateAccessibilityEventHandler) {

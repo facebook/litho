@@ -80,6 +80,13 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     } else {
       super.onInitializeAccessibilityNodeInfo(host, node);
     }
+
+    // If an accessibilityRole has been set, set the className here.  It's important that this
+    // happens *after* any calls to super, since the super call will set a className of its own and
+    // override this one.
+    if (mNodeInfo != null && mNodeInfo.getAccessibilityRole() != null) {
+      node.setClassName(mNodeInfo.getAccessibilityRole().getValue());
+    }
   }
 
   @Override

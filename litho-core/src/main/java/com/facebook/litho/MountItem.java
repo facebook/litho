@@ -201,7 +201,7 @@ class MountItem {
       return false;
     }
 
-    return (mNodeInfo != null && mNodeInfo.hasAccessibilityHandlers())
+    return (mNodeInfo != null && mNodeInfo.needsAccessibilityDelegate())
         || mComponent.implementsAccessibility();
   }
 
