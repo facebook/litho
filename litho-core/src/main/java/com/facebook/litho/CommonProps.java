@@ -839,6 +839,57 @@ class CommonProps {
     }
   }
 
+  static class YogaEdgesWithIntsImplOptimized implements YogaEdgesWithInts {
+    private long mEdges;
+    @Nullable private int[] mValues;
+
+    @Override
+    public void add(YogaEdge yogaEdge, int value) {
+      int index = addEdge(yogaEdge);
+      if (value != 0) {
+        if (mValues == null) {
+          mValues = new int[Math.max(2, index + 1)];
+        } else if (index >= mValues.length) {
+          int[] oldValues = mValues;
+          mValues = new int[Math.min(oldValues.length * 2, YogaEdge.values().length)];
+          System.arraycopy(oldValues, 0, mValues, 0, oldValues.length);
+        }
+        mValues[index] = value;
+      }
+    }
+
+    private int addEdge(YogaEdge yogaEdge) {
+      int size = lookup(0);
+      insert(size + 1, yogaEdge.intValue());
+      insert(0, size + 1);
+      return size;
+    }
+
+    private int lookup(final int pos) {
+      return (int) ((mEdges >> (pos * 4)) & 15);
+    }
+
+    private void insert(final int pos, final int val) {
+      mEdges &= ~((long) (0xF) << (pos * 4));
+      mEdges |= ((long) val << (pos * 4));
+    }
+
+    @Override
+    public int size() {
+      return lookup(0);
+    }
+
+    @Override
+    public YogaEdge getEdge(int index) {
+      return YogaEdge.fromInt(lookup(index + 1));
+    }
+
+    @Override
+    public int getValue(int index) {
+      return (mValues == null || mValues.length <= index) ? 0 : mValues[index];
+    }
+  }
+
   static class YogaEdgesWithIntsImpl implements YogaEdgesWithInts {
     YogaEdge[] mEdges = new YogaEdge[2];
     int[] mValues = new int[2];
