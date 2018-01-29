@@ -944,6 +944,7 @@ public class RecyclerBinder
     }
   }
 
+  @GuardedBy("this")
   private int findFirstComponentPosition() {
     for (int i = 0, size = mComponentTreeHolders.size(); i < size; i++) {
       if (mComponentTreeHolders.get(i).getRenderInfo().rendersComponent()) {
@@ -978,6 +979,7 @@ public class RecyclerBinder
    * Remove operation is not supported in case of circular recycler unless it's a removal if all
    * items because indexes universe gets messed.
    */
+  @GuardedBy("this")
   private void assertNoRemoveOperationIfCircular(int removeCount) {
     if (mIsCircular
         && !mComponentTreeHolders.isEmpty()
@@ -1454,6 +1456,7 @@ public class RecyclerBinder
     }
 
     @Override
+    @GuardedBy("RecyclerBinder.this")
     public void onBindViewHolder(BaseViewHolder holder, int position) {
       position = getNormalizedPosition(position);
 
@@ -1505,6 +1508,7 @@ public class RecyclerBinder
     }
 
     @Override
+    @GuardedBy("RecyclerBinder.this")
     public int getItemViewType(int position) {
       final RenderInfo renderInfo =
           mComponentTreeHolders.get(getNormalizedPosition(position)).getRenderInfo();
@@ -1517,6 +1521,7 @@ public class RecyclerBinder
     }
 
     @Override
+    @GuardedBy("RecyclerBinder.this")
     public int getItemCount() {
       // We can ignore the synchronization here. We'll only add to this from the UiThread.
       // This read only happens on the UiThread as well and we are never writing this here.
@@ -1540,6 +1545,7 @@ public class RecyclerBinder
    * used to render the item at given position. Otherwise, it returns the position passed as
    * parameter, which is the same as the index of the {@link ComponentTreeHolder}.
    */
+  @GuardedBy("this")
   private int getNormalizedPosition(int position) {
     return mIsCircular ? position % mComponentTreeHolders.size() : position;
   }

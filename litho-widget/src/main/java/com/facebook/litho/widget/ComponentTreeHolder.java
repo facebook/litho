@@ -109,6 +109,9 @@ public class ComponentTreeHolder {
         null);
   }
 
+  // If we obtain the tree holder from the pool, we can rely on it being synchronized,
+  // if we create the object from scratch, we do not need to worry about sharing.
+  @SuppressWarnings("GuardedBy")
   public static ComponentTreeHolder acquire(
       RenderInfo renderInfo,
       LayoutHandler layoutHandler,
