@@ -109,7 +109,7 @@ import java.util.List;
  */
 @MountSpec(
   isPureRender = true,
-  events = {TextChangedEvent.class}
+  events = {TextChangedEvent.class, SelectionChangedEvent.class}
 )
 class EditTextSpec {
 
@@ -428,8 +428,10 @@ class EditTextSpec {
       EditTextTextChangedEventHandler editText,
       @Prop(optional = true) EditTextStateUpdatePolicy stateUpdatePolicy) {
     editText.setComponentContext(c);
-    editText.setEventHandler(
+    editText.setTextChangedEventHandler(
         com.facebook.litho.widget.EditText.getTextChangedEventHandler(c));
+    editText.setSelectionChangedEventHandler(
+        com.facebook.litho.widget.EditText.getSelectionChangedEventHandler(c));
     editText.setStateUpdatePolicy(stateUpdatePolicy);
     editText.attachWatcher();
   }
@@ -604,7 +606,8 @@ class EditTextSpec {
     private final TextWatcher mTextWatcher;
     private ComponentContext mComponentContext;
     private EditTextStateUpdatePolicy mStateUpdatePolicy;
-    private EventHandler mEventHandler;
+    private EventHandler mTextChangedEventHandler;
+    private EventHandler mSelectionChangedEventHandler;
 
     EditTextTextChangedEventHandler(Context context) {
       super(context);
@@ -633,12 +636,21 @@ class EditTextSpec {
 
             @Override
             public void afterTextChanged(Editable s) {
-              if (mEventHandler != null) {
+              if (mTextChangedEventHandler != null) {
                 com.facebook.litho.widget.EditText.dispatchTextChangedEvent(
-                    mEventHandler, s.toString());
+                    mTextChangedEventHandler, s.toString());
               }
             }
           };
+    }
+
+    @Override
+    protected void onSelectionChanged(int selStart, int selEnd) {
+      super.onSelectionChanged(selStart, selEnd);
+      if (mSelectionChangedEventHandler != null) {
+        com.facebook.litho.widget.EditText.dispatchSelectionChangedEvent(
+            mSelectionChangedEventHandler, selStart, selEnd);
+      }
     }
 
     void setStateUpdatePolicy(EditTextStateUpdatePolicy stateUpdatePolicy) {
@@ -649,14 +661,19 @@ class EditTextSpec {
       mComponentContext = componentContext;
     }
 
-    void setEventHandler(EventHandler eventHandler) {
-      mEventHandler = eventHandler;
+    void setTextChangedEventHandler(EventHandler textChangedEventHandler) {
+      mTextChangedEventHandler = textChangedEventHandler;
+    }
+
+    public void setSelectionChangedEventHandler(EventHandler selectionChangedEventHandler) {
+      mSelectionChangedEventHandler = selectionChangedEventHandler;
     }
 
     void clear() {
       mStateUpdatePolicy = stateUpdatePolicy;
       mComponentContext = null;
-      mEventHandler = null;
+      mTextChangedEventHandler = null;
+      mSelectionChangedEventHandler = null;
     }
 
     void attachWatcher() {
