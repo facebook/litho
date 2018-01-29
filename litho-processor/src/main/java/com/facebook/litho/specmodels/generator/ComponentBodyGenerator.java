@@ -554,7 +554,7 @@ public class ComponentBodyGenerator {
     final CodeBlock.Builder codeBlock = CodeBlock.builder();
 
     final String implAccessor = getImplAccessor(specModel, field);
-    if (field.getTypeName() == TypeName.FLOAT) {
+    if (field.getTypeName().equals(TypeName.FLOAT)) {
       codeBlock
           .beginControlFlow(
               "if (Float.compare($L, $L.$L) != 0)",
@@ -563,7 +563,7 @@ public class ComponentBodyGenerator {
               implAccessor)
           .addStatement("return false")
           .endControlFlow();
-    } else if (field.getTypeName() == TypeName.DOUBLE) {
+    } else if (field.getTypeName().equals(TypeName.DOUBLE)) {
       codeBlock
           .beginControlFlow(
               "if (Double.compare($L, $L.$L) != 0)",

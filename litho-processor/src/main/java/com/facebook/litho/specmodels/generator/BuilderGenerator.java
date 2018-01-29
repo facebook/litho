@@ -526,6 +526,8 @@ public class BuilderGenerator {
         return generatePropDefaultResInitializer("resolveFloatRes", propDefault, specModel);
       case DRAWABLE:
         return generatePropDefaultResInitializer("resolveDrawableRes", propDefault, specModel);
+      case NONE:
+        break;
     }
 
     return "";
