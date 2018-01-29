@@ -195,6 +195,7 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
       this.shortName = shortName;
     }
 
+    @Override
     public String toString() {
       return shortName;
     }

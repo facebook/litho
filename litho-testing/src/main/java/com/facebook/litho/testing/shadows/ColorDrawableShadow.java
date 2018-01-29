@@ -40,12 +40,14 @@ public class ColorDrawableShadow extends ShadowDrawable {
     directlyOn(mRealColorDrawable, ColorDrawable.class).setColorFilter(colorFilter);
   }
 
+  @Override
   @Implementation
   public void setAlpha(int alpha) {
     mAlpha = alpha;
     directlyOn(mRealColorDrawable, ColorDrawable.class).setAlpha(alpha);
   }
 
+  @Override
   @Implementation
   public int getAlpha() {
     return mAlpha;
