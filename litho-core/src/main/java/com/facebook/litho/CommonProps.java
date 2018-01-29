@@ -17,6 +17,7 @@ import android.support.annotation.StyleRes;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -83,7 +84,10 @@ class CommonProps {
   void positionPx(YogaEdge edge, @Px int position) {
     mPrivateFlags |= PFLAG_POSITION_IS_SET;
     if (mPositions == null) {
-      mPositions = new YogaEdgesWithIntsImpl();
+      mPositions =
+          ComponentsConfiguration.useNewYogaEdge
+              ? new YogaEdgesWithIntsImplOptimized()
+              : new YogaEdgesWithIntsImpl();
     }
 
     mPositions.add(edge, position);
@@ -548,7 +552,10 @@ class CommonProps {
       mPrivateFlags |= PFLAG_MARGIN_IS_SET;
 
       if (mMargins == null) {
-        mMargins = new YogaEdgesWithIntsImpl();
+        mMargins =
+            ComponentsConfiguration.useNewYogaEdge
+                ? new YogaEdgesWithIntsImplOptimized()
+                : new YogaEdgesWithIntsImpl();
       }
       mMargins.add(edge, margin);
     }
@@ -572,7 +579,10 @@ class CommonProps {
     private void paddingPx(YogaEdge edge, @Px int padding) {
       mPrivateFlags |= PFLAG_PADDING_IS_SET;
       if (mPaddings == null) {
-        mPaddings = new YogaEdgesWithIntsImpl();
+        mPaddings =
+            ComponentsConfiguration.useNewYogaEdge
+                ? new YogaEdgesWithIntsImplOptimized()
+                : new YogaEdgesWithIntsImpl();
       }
       mPaddings.add(edge, padding);
     }
@@ -656,7 +666,10 @@ class CommonProps {
     private void touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
       mPrivateFlags |= PFLAG_TOUCH_EXPANSION_IS_SET;
       if (mTouchExpansions == null) {
-        mTouchExpansions = new YogaEdgesWithIntsImpl();
+        mTouchExpansions =
+            ComponentsConfiguration.useNewYogaEdge
+                ? new YogaEdgesWithIntsImplOptimized()
+                : new YogaEdgesWithIntsImpl();
       }
       mTouchExpansions.add(edge, touchExpansion);
     }

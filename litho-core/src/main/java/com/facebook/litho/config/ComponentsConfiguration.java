@@ -131,4 +131,7 @@ public class ComponentsConfiguration {
 
   /** If scrapHostRecyclingForComponentHosts is false, determines the ComponentHost pool size. */
   public static int componentHostPoolSize = 30;
+
+  /** If true then the new version of the YogaEdgeWithInts will be used. */
+  public static boolean useNewYogaEdge = false;
 }
