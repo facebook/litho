@@ -83,7 +83,7 @@ class CommonProps {
   void positionPx(YogaEdge edge, @Px int position) {
     mPrivateFlags |= PFLAG_POSITION_IS_SET;
     if (mPositions == null) {
-      mPositions = new YogaEdgesWithInts();
+      mPositions = new YogaEdgesWithIntsImpl();
     }
 
     mPositions.add(edge, position);
@@ -398,8 +398,8 @@ class CommonProps {
       node.positionType(mPositionType);
     }
     if ((mPrivateFlags & PFLAG_POSITION_IS_SET) != 0L) {
-      for (int i = 0; i < mPositions.mNumEntries; i++) {
-        node.positionPx(mPositions.mEdges[i], mPositions.mValues[i]);
+      for (int i = 0; i < mPositions.size(); i++) {
+        node.positionPx(mPositions.getEdge(i), mPositions.getValue(i));
       }
     }
     if ((mPrivateFlags & PFLAG_WIDTH_IS_SET) != 0L) {
@@ -548,7 +548,7 @@ class CommonProps {
       mPrivateFlags |= PFLAG_MARGIN_IS_SET;
 
       if (mMargins == null) {
-        mMargins = new YogaEdgesWithInts();
+        mMargins = new YogaEdgesWithIntsImpl();
       }
       mMargins.add(edge, margin);
     }
@@ -572,7 +572,7 @@ class CommonProps {
     private void paddingPx(YogaEdge edge, @Px int padding) {
       mPrivateFlags |= PFLAG_PADDING_IS_SET;
       if (mPaddings == null) {
-        mPaddings = new YogaEdgesWithInts();
+        mPaddings = new YogaEdgesWithIntsImpl();
       }
       mPaddings.add(edge, padding);
     }
@@ -656,7 +656,7 @@ class CommonProps {
     private void touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
       mPrivateFlags |= PFLAG_TOUCH_EXPANSION_IS_SET;
       if (mTouchExpansions == null) {
-        mTouchExpansions = new YogaEdgesWithInts();
+        mTouchExpansions = new YogaEdgesWithIntsImpl();
       }
       mTouchExpansions.add(edge, touchExpansion);
     }
@@ -804,8 +804,8 @@ class CommonProps {
         node.aspectRatio(mAspectRatio);
       }
       if ((mPrivateFlags & PFLAG_MARGIN_IS_SET) != 0L) {
-        for (int i = 0; i < mMargins.mNumEntries; i++) {
-          node.marginPx(mMargins.mEdges[i], mMargins.mValues[i]);
+        for (int i = 0; i < mMargins.size(); i++) {
+          node.marginPx(mMargins.getEdge(i), mMargins.getValue(i));
         }
       }
       if ((mPrivateFlags & PFLAG_MARGIN_PERCENT_IS_SET) != 0L) {
@@ -819,8 +819,8 @@ class CommonProps {
         }
       }
       if ((mPrivateFlags & PFLAG_PADDING_IS_SET) != 0L) {
-        for (int i = 0; i < mPaddings.mNumEntries; i++) {
-          node.paddingPx(mPaddings.mEdges[i], mPaddings.mValues[i]);
+        for (int i = 0; i < mPaddings.size(); i++) {
+          node.paddingPx(mPaddings.getEdge(i), mPaddings.getValue(i));
         }
       }
       if ((mPrivateFlags & PFLAG_PADDING_PERCENT_IS_SET) != 0L) {
@@ -829,8 +829,8 @@ class CommonProps {
         }
       }
       if ((mPrivateFlags & PFLAG_TOUCH_EXPANSION_IS_SET) != 0L) {
-        for (int i = 0; i < mTouchExpansions.mNumEntries; i++) {
-          node.touchExpansionPx(mTouchExpansions.mEdges[i], mTouchExpansions.mValues[i]);
+        for (int i = 0; i < mTouchExpansions.size(); i++) {
+          node.touchExpansionPx(mTouchExpansions.getEdge(i), mTouchExpansions.getValue(i));
         }
       }
       if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
@@ -839,13 +839,14 @@ class CommonProps {
     }
   }
 
-  static class YogaEdgesWithInts {
+  static class YogaEdgesWithIntsImpl implements YogaEdgesWithInts {
     YogaEdge[] mEdges = new YogaEdge[2];
     int[] mValues = new int[2];
     int mNumEntries;
     int mSize = 2;
 
-    void add(YogaEdge yogaEdge, int value) {
+    @Override
+    public void add(YogaEdge yogaEdge, int value) {
       if (mNumEntries == mSize) {
         increaseSize();
       }
@@ -853,6 +854,21 @@ class CommonProps {
       mEdges[mNumEntries] = yogaEdge;
       mValues[mNumEntries] = value;
       mNumEntries++;
+    }
+
+    @Override
+    public int size() {
+      return mNumEntries;
+    }
+
+    @Override
+    public YogaEdge getEdge(int index) {
+      return mEdges[index];
+    }
+
+    @Override
+    public int getValue(int index) {
+      return mValues[index];
     }
 
     private void increaseSize() {
