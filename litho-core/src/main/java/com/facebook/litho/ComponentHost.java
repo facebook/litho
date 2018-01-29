@@ -384,17 +384,10 @@ public class ComponentHost extends ViewGroup {
     if (!TextUtils.isEmpty(contentDescription)
         && ViewCompat.getImportantForAccessibility(this)
             == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
-      setImportantForAccessibility(ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES);
+      ViewCompat.setImportantForAccessibility(this, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES);
     }
 
     invalidateAccessibilityState();
-  }
-
-  @Override
-  public void setImportantForAccessibility(int mode) {
-    if (mode != ViewCompat.getImportantForAccessibility(this)) {
-      super.setImportantForAccessibility(mode);
-    }
   }
 
   @Override
