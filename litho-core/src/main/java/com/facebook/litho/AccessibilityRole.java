@@ -27,7 +27,9 @@ public enum AccessibilityRole {
   IMAGE(android.widget.ImageView.class.getName()),
   IMAGE_BUTTON(android.widget.ImageView.class.getName()),
   LIST(android.widget.AbsListView.class.getName()),
-  PAGER(android.support.v4.view.ViewPager.class.getName()),
+  // Hardcoded so that clients don't need to import all ViewPager's classes + methods if they
+  // don't want to.
+  PAGER("android.support.v4.view.ViewPager"),
   RADIO_BUTTON(android.widget.RadioButton.class.getName()),
   SEEK_CONTROL(android.widget.SeekBar.class.getName()),
   SWITCH(android.widget.Switch.class.getName()),
