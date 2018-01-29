@@ -119,7 +119,7 @@ public class SectionTree {
   private static final int MESSAGE_FOCUS_DISPATCHER_LOADING_STATE_UPDATE = 3;
   private static final Handler sMainThreadHandler = new SectionsMainThreadHandler();
 
-  @GuardedBy("ComponentTree.class")
+  @GuardedBy("SectionTree.class")
   private static volatile Looper sDefaultChangeSetThreadLooper;
 
   private final SectionContext mContext;
@@ -132,7 +132,7 @@ public class SectionTree {
 
   // Holds a Pair where the first item is a section's global starting index
   // and the second is the count.
-  @GuardedBy("ui-thread")
+  // Guarded by UI Thread.
   private Map<String, Pair<Integer, Integer>> mSectionPositionInfo;
 
   private LoadEventsHandler mLoadEventsHandler;
@@ -1244,6 +1244,7 @@ public class SectionTree {
     }
   }
 
+  @GuardedBy("tree")
   private static String getDebugInfo(SectionTree tree) {
     final StringBuilder sb = new StringBuilder();
     sb.append("tag: ");
