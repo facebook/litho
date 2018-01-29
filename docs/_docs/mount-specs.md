@@ -145,3 +145,17 @@ In this example this component was defining **someStringProp** as a String `@Pro
 The `onMount` attribute on the `@ShouldUpdate` annotation controls whether this `shouldUpdate` check can happen at mount time. By default, Litho will try to do this reconciliation at layout time, but if layout diffing is turned off it might be useful to set onMount to true in order to execute this check at mount time instead. The `onMount` attribute is set to false by default as the equality check might be heavy itself and make mount performances worse.
 
 `@ShouldUpdate` annotated methods are currently only supported in `@MountSpec`. We have plans to expand the support to complex layouts in the future but at the moment a `@ShouldUpdate` annotated method in a `@LayoutSpec` would have no effect.
+
+## Pre-allocation
+
+When a MountSpec component is being mounted, its `View`/`Drawable` content needs to be either initialized or reused from the recycling pool. If the pool is empty, a new instance will be created at that time, which might keep the UI thread too busy and drop one or more frames. To mitigate that, Litho can pre-allocate a few instances and put in the recycling pool.
+
+``` java
+@MountSpec(poolSize = 3, canPreallocate = true)
+public class ColorComponentSpec {
+  ...
+}
+```
+
+`canPreallocate` enables pre-allocation for this MountSpec and `poolSize` defines the amount of instances to pre-allocate. For this `ColorComponent` example, three instances of `ColorDrawable` will be created and put in the recycling pool. This option is recommended for MountSpec components that inflate a complex `View`.
+
