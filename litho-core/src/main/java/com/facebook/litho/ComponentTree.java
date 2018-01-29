@@ -212,7 +212,10 @@ public class ComponentTree {
     return create(context, root.build());
   }
 
-  public static Builder create(ComponentContext context, Component root) {
+  public static Builder create(ComponentContext context, @NonNull Component root) {
+    if (root == null) {
+      throw new NullPointerException("Creating a ComponentTree with a null root is not allowed!");
+    }
     return ComponentsPools.acquireComponentTreeBuilder(context, root);
   }
 
