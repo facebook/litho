@@ -30,6 +30,7 @@ public interface FrameworkLogEvents {
   int EVENT_SECTIONS_GENERATE_CHANGESET = 13;
   int EVENT_SECTIONS_ON_CREATE_CHILDREN = 14;
   int EVENT_SECTIONS_SET_ROOT = 15;
+  int EVENT_CALCULATE_LAYOUT_STATE = 16;
 
   String PARAM_COMPONENT = "component";
   String PARAM_LOG_TAG = "log_tag";
@@ -49,4 +50,5 @@ public interface FrameworkLogEvents {
   String PARAM_SECTION_NEXT = "section_next";
   String PARAM_SECTION_SET_ROOT_SOURCE = "section_set_root_source";
   String PARAM_SET_ROOT_ON_BG_THREAD = "sections_set_root_bg_thread";
+  String PARAM_LAYOUT_STATE_SOURCE = "calculate_layout_state_source";
 }

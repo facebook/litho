@@ -22,10 +22,12 @@ import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 import static com.facebook.litho.ComponentLifecycle.MountType.NONE;
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_COLLECT_RESULTS;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_CREATE_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_CSS_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_STATE_SOURCE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.MountItem.FLAG_DISABLE_TOUCHABLE;
@@ -1083,6 +1085,9 @@ class LayoutState {
       boolean clipChildren,
       @CalculateLayoutSource int source) {
 
+    final ComponentsLogger logger = c.getLogger();
+    LogEvent logLayoutState = null;
+
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection(
@@ -1091,6 +1096,11 @@ class LayoutState {
               .append("_")
               .append(sourceToString(source))
               .toString());
+    }
+
+    if (logger != null) {
+      logLayoutState = logger.newPerformanceEvent(EVENT_CALCULATE_LAYOUT_STATE);
+      logLayoutState.addParam(PARAM_LAYOUT_STATE_SOURCE, sourceToString(source));
     }
 
     // Detect errors internal to components
@@ -1150,8 +1160,6 @@ class LayoutState {
     // Reset markers before collecting layout outputs.
     layoutState.mCurrentHostMarker = -1;
 
-    final ComponentsLogger logger = c.getLogger();
-
     if (root == NULL_LAYOUT) {
       return layoutState;
     }
@@ -1201,6 +1209,10 @@ class LayoutState {
 
     if (isTracing) {
       ComponentsSystrace.endSection();
+    }
+
+    if (logger != null) {
+      logger.log(logLayoutState);
     }
 
     return layoutState;
