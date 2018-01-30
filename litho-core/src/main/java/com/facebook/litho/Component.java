@@ -1133,7 +1133,7 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
-    public T accessibilityRole(AccessibilityRole role) {
+    public T accessibilityRole(String role) {
       mComponent.getOrCreateCommonProps().accessibilityRole(role);
       return getThis();
     }

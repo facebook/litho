@@ -85,7 +85,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     // happens *after* any calls to super, since the super call will set a className of its own and
     // override this one.
     if (mNodeInfo != null && mNodeInfo.getAccessibilityRole() != null) {
-      node.setClassName(mNodeInfo.getAccessibilityRole().getValue());
+      node.setClassName(mNodeInfo.getAccessibilityRole());
     }
   }
 

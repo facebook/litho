@@ -96,7 +96,7 @@ public class NodeInfoTest {
 
   @Test
   public void testAccessibilityRole() {
-    AccessibilityRole role = AccessibilityRole.BUTTON;
+    String role = AccessibilityRole.BUTTON;
 
     mNodeInfo.setAccessibilityRole(role);
     assertThat(role).isSameAs(mNodeInfo.getAccessibilityRole());

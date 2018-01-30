@@ -98,7 +98,7 @@ class NodeInfo {
   private EventHandler<LongClickEvent> mLongClickHandler;
   private EventHandler<TouchEvent> mTouchHandler;
   private EventHandler<InterceptTouchEvent> mInterceptTouchHandler;
-  private AccessibilityRole mAccessibilityRole;
+  private String mAccessibilityRole;
   private EventHandler<DispatchPopulateAccessibilityEventEvent>
       mDispatchPopulateAccessibilityEventHandler;
   private EventHandler<OnInitializeAccessibilityEventEvent>
@@ -229,12 +229,12 @@ class NodeInfo {
         || mInterceptTouchHandler != null;
   }
 
-  void setAccessibilityRole(AccessibilityRole role) {
+  void setAccessibilityRole(String role) {
     mPrivateFlags |= PFLAG_ACCESSIBILITY_ROLE_IS_SET;
     mAccessibilityRole = role;
   }
 
-  AccessibilityRole getAccessibilityRole() {
+  String getAccessibilityRole() {
     return mAccessibilityRole;
   }
 
