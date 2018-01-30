@@ -588,7 +588,7 @@ class TextSpec {
       layoutBuilder.setTextColor(textColorStateList);
     }
 
-    if (typeface != DEFAULT_TYPEFACE) {
+    if (!DEFAULT_TYPEFACE.equals(typeface)) {
       layoutBuilder.setTypeface(typeface);
     } else {
       layoutBuilder.setTextStyle(textStyle);
