@@ -891,7 +891,7 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
-  InternalNode accessibilityRole(String role) {
+  InternalNode accessibilityRole(@AccessibilityRole.AccessibilityRoleType String role) {
     getOrCreateNodeInfo().setAccessibilityRole(role);
     return this;
   }

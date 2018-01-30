@@ -8,6 +8,10 @@
  */
 package com.facebook.litho;
 
+import android.support.annotation.StringDef;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * A list of all roles used for accessibility. There is no API for these in Android yet, so roles
  * are currently based off of the class being rendered. These roles are defined by Google's TalkBack
@@ -21,23 +25,41 @@ public class AccessibilityRole {
 
   private AccessibilityRole() {}
 
-  public static final String NONE = null;
-  public static final String BUTTON = android.widget.Button.class.getName();
-  public static final String CHECK_BOX = android.widget.CompoundButton.class.getName();
-  public static final String DROP_DOWN_LIST = android.widget.Spinner.class.getName();
-  public static final String EDIT_TEXT = android.widget.EditText.class.getName();
-  public static final String GRID = android.widget.GridView.class.getName();
-  public static final String IMAGE = android.widget.ImageView.class.getName();
-  public static final String IMAGE_BUTTON = android.widget.ImageView.class.getName();
-  public static final String LIST = android.widget.AbsListView.class.getName();
-  // Hardcoded so that clients don't need to import all ViewPager's classes + methods if they
-  // don't want to.
+  @Retention(RetentionPolicy.SOURCE)
+  @StringDef({
+    BUTTON,
+    CHECK_BOX,
+    DROP_DOWN_LIST,
+    EDIT_TEXT,
+    GRID,
+    IMAGE,
+    IMAGE_BUTTON,
+    LIST,
+    PAGER,
+    RADIO_BUTTON,
+    SEEK_CONTROL,
+    SWITCH,
+    TAB_BAR,
+    TOGGLE_BUTTON,
+    VIEW_GROUP,
+    WEB_VIEW,
+  })
+  public @interface AccessibilityRoleType {}
+
+  public static final String BUTTON = "android.widget.Button";
+  public static final String CHECK_BOX = "android.widget.CompoundButton";
+  public static final String DROP_DOWN_LIST = "android.widget.Spinner";
+  public static final String EDIT_TEXT = "android.widget.EditText";
+  public static final String GRID = "android.widget.GridView";
+  public static final String IMAGE = "android.widget.ImageView";
+  public static final String IMAGE_BUTTON = "android.widget.ImageView";
+  public static final String LIST = "android.widget.AbsListView";
   public static final String PAGER = "android.support.v4.view.ViewPager";
-  public static final String RADIO_BUTTON = android.widget.RadioButton.class.getName();
-  public static final String SEEK_CONTROL = android.widget.SeekBar.class.getName();
-  public static final String SWITCH = android.widget.Switch.class.getName();
-  public static final String TAB_BAR = android.widget.TabWidget.class.getName();
-  public static final String TOGGLE_BUTTON = android.widget.ToggleButton.class.getName();
-  public static final String VIEW_GROUP = android.view.ViewGroup.class.getName();
-  public static final String WEB_VIEW = android.webkit.WebView.class.getName();
+  public static final String RADIO_BUTTON = "android.widget.RadioButton";
+  public static final String SEEK_CONTROL = "android.widget.SeekBar";
+  public static final String SWITCH = "android.widget.Switch";
+  public static final String TAB_BAR = "android.widget.TabWidget";
+  public static final String TOGGLE_BUTTON = "android.widget.ToggleButton";
+  public static final String VIEW_GROUP = "android.view.ViewGroup";
+  public static final String WEB_VIEW = "android.webkit.WebView";
 }

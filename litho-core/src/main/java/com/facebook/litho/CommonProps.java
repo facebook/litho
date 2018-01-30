@@ -313,7 +313,7 @@ class CommonProps {
     getOrCreateNodeInfo().setClipToOutline(clipToOutline);
   }
 
-  void accessibilityRole(String role) {
+  void accessibilityRole(@AccessibilityRole.AccessibilityRoleType String role) {
     getOrCreateNodeInfo().setAccessibilityRole(role);
   }
 
