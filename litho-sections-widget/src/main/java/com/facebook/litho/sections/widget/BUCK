@@ -21,6 +21,7 @@ android_library(
         LITHO_SECTIONS_ANNOTATIONS_TARGET,
         LITHO_ANNOTATIONS_TARGET,
     ],
+    required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
     ],
