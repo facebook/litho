@@ -21,7 +21,7 @@ import java.util.List;
 public class TestSpecModelValidation {
   public static List<SpecModelValidationError> validateTestSpecModel(TestSpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
-    validationErrors.addAll(validateSpecModel(specModel, PropValidation.RESERVED_PROP_NAMES));
+    validationErrors.addAll(validateSpecModel(specModel, PropValidation.COMMON_PROP_NAMES));
     return validationErrors;
   }
 }

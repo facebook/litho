@@ -21,10 +21,9 @@ import java.util.List;
  * Class for validating that the state models within a  {@link SpecModel} are well-formed.
  */
 public class PropValidation {
-  // Using these names in props might cause conflicts with the method names in the
-  // component's generated layout builder class so we trigger a more user-friendly
-  // error if the component tries to use them.
-  public static final List<String> RESERVED_PROP_NAMES =
+  // Using these names in props will cause conflicts with the method names for common props in
+  // Component.Builder so we trigger a more user-friendly error if the component tries to use them.
+  public static final List<String> COMMON_PROP_NAMES =
       Arrays.asList(
           "withLayout",
           "key",
@@ -135,6 +134,7 @@ public class PropValidation {
           "outlineProvider",
           "clipToOutline",
           "testKey",
+          "accessibilityRole",
           "dispatchPopulateAccessibilityEventHandler",
           "onInitializeAccessibilityEventHandler",
           "onInitializeAccessibilityNodeInfoHandler",
