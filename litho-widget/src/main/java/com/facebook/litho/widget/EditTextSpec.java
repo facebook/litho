@@ -11,7 +11,9 @@ package com.facebook.litho.widget;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
+import static android.text.Layout.Alignment.ALIGN_CENTER;
 import static android.text.Layout.Alignment.ALIGN_NORMAL;
+import static android.text.Layout.Alignment.ALIGN_OPPOSITE;
 import static android.view.View.TEXT_ALIGNMENT_CENTER;
 import static android.view.View.TEXT_ALIGNMENT_TEXT_END;
 import static android.view.View.TEXT_ALIGNMENT_TEXT_START;
@@ -35,6 +37,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -193,7 +196,8 @@ class EditTextSpec {
         }
       } else if (SDK_INT >= JELLY_BEAN_MR1 &&
           attr == R.styleable.Text_android_textAlignment) {
-        textAlignment.set(ALIGNMENT[a.getInteger(attr, 0)]);
+        int viewTextAlignment = a.getInt(attr, -1);
+        textAlignment.set(getAlignment(viewTextAlignment, Gravity.NO_GRAVITY));
       } else if (attr == R.styleable.Text_android_minLines) {
         minLines.set(a.getInteger(attr, -1));
       } else if (attr == R.styleable.Text_android_maxLines) {
@@ -683,5 +687,63 @@ class EditTextSpec {
     void detachWatcher() {
       removeTextChangedListener(mTextWatcher);
     }
+  }
+
+  private static Layout.Alignment getAlignment(int viewTextAlignment, int gravity) {
+    final Layout.Alignment alignment;
+    // This was copied from TextSpec for handling text alignment
+    switch (viewTextAlignment) {
+      case View.TEXT_ALIGNMENT_GRAVITY:
+        alignment = getAlignment(gravity);
+        break;
+      case View.TEXT_ALIGNMENT_TEXT_START:
+        alignment = ALIGN_NORMAL;
+        break;
+      case View.TEXT_ALIGNMENT_TEXT_END:
+        alignment = ALIGN_OPPOSITE;
+        break;
+      case View.TEXT_ALIGNMENT_CENTER:
+        alignment = ALIGN_CENTER;
+        break;
+      case View.TEXT_ALIGNMENT_VIEW_START: // unsupported, default to normal
+        alignment = ALIGN_NORMAL;
+        break;
+      case View.TEXT_ALIGNMENT_VIEW_END: // unsupported, default to opposite
+        alignment = ALIGN_OPPOSITE;
+        break;
+      case View.TEXT_ALIGNMENT_INHERIT: // unsupported, default to gravity
+        alignment = getAlignment(gravity);
+        break;
+      default:
+        alignment = textAlignment;
+        break;
+    }
+    return alignment;
+  }
+
+  private static Layout.Alignment getAlignment(int gravity) {
+    final Layout.Alignment alignment;
+    // This was copied from TextSpec for handling text alignment
+    switch (gravity & Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK) {
+      case Gravity.START:
+        alignment = ALIGN_NORMAL;
+        break;
+      case Gravity.END:
+        alignment = ALIGN_OPPOSITE;
+        break;
+      case Gravity.LEFT: // unsupported, default to normal
+        alignment = ALIGN_NORMAL;
+        break;
+      case Gravity.RIGHT: // unsupported, default to opposite
+        alignment = ALIGN_OPPOSITE;
+        break;
+      case Gravity.CENTER_HORIZONTAL:
+        alignment = ALIGN_CENTER;
+        break;
+      default:
+        alignment = textAlignment;
+        break;
+    }
+    return alignment;
   }
 }
