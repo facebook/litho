@@ -25,14 +25,28 @@ public class RenderInfoViewCreatorController {
   @VisibleForTesting
   final SimpleArrayMap<ViewCreator, Integer> mViewCreatorToViewType = new SimpleArrayMap<>();
 
+  public static final int DEFAULT_COMPONENT_VIEW_TYPE = 0;
+  private final boolean mCustomViewTypes;
+  private final int mComponentViewType;
+  private int mViewTypeCounter;
 
-  public static final int COMPONENT_VIEW_TYPE = 0;
-  private int mViewTypeCounter = COMPONENT_VIEW_TYPE + 1;
+  public RenderInfoViewCreatorController(boolean hasCustomViewType, int componentViewType) {
+    mCustomViewTypes = hasCustomViewType;
+    mComponentViewType = componentViewType;
+    mViewTypeCounter = componentViewType + 1;
+  }
 
   @UiThread
   public void maybeTrackViewCreator(RenderInfo renderInfo) {
     if (!renderInfo.rendersView()) {
       return;
+    }
+    if (mCustomViewTypes && !renderInfo.hasCustomViewType()) {
+      throw new IllegalStateException("If you enable custom viewTypes, you must provide a"
+          + " customViewType in ViewRenderInfo.");
+    } else if (!mCustomViewTypes && renderInfo.hasCustomViewType()) {
+      throw new IllegalStateException("You must enable custom viewTypes to provide customViewType"
+          + " in ViewRenderInfo.");
     }
 
     final ViewCreator viewCreator = renderInfo.getViewCreator();
@@ -41,15 +55,25 @@ public class RenderInfoViewCreatorController {
     if (index >= 0) {
       viewType = mViewCreatorToViewType.valueAt(index);
     } else {
-      viewType = mViewTypeCounter++;
+      if (renderInfo.hasCustomViewType()) {
+        viewType = renderInfo.getViewType();
+      } else {
+        viewType = mViewTypeCounter++;
+      }
       mViewTypeToViewCreator.put(viewType, viewCreator);
       mViewCreatorToViewType.put(viewCreator, viewType);
     }
 
-    renderInfo.setViewType(viewType);
+    if (!renderInfo.hasCustomViewType()) {
+      renderInfo.setViewType(viewType);
+    }
   }
 
   public @Nullable ViewCreator getViewCreator(int viewType) {
     return mViewTypeToViewCreator.get(viewType);
+  }
+
+  int getComponentViewType() {
+    return mComponentViewType;
   }
 }
