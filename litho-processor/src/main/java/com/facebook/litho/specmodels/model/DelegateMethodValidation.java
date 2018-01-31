@@ -151,7 +151,9 @@ public class DelegateMethodValidation {
             validationErrors.add(
                 new SpecModelValidationError(
                     delegateMethodParam.getRepresentedObject(),
-                    "Inter-stage input annotation is not valid for this method, please use one "
+                    "Inter-stage input annotation is not valid for methods annotated with "
+                        + delegateMethodAnnotation
+                        + "; please use one "
                         + "of the following: "
                         + delegateMethodDescription.interStageInputAnnotations));
           } else {

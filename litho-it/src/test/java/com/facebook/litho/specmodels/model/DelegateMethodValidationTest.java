@@ -416,12 +416,14 @@ public class DelegateMethodValidationTest {
         DelegateMethodValidation.validateMountSpecModel(mMountSpecModel);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "Inter-stage input annotation is not valid for this method, please use one of the " +
-            "following: [interface com.facebook.litho.annotations.FromPrepare, " +
-            "interface com.facebook.litho.annotations.FromMeasure, " +
-            "interface com.facebook.litho.annotations.FromMeasureBaseline, " +
-            "interface com.facebook.litho.annotations.FromBoundsDefined]");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Inter-stage input annotation is not valid for methods annotated with interface "
+                + "com.facebook.litho.annotations.OnUnmount; please use one of the "
+                + "following: [interface com.facebook.litho.annotations.FromPrepare, "
+                + "interface com.facebook.litho.annotations.FromMeasure, "
+                + "interface com.facebook.litho.annotations.FromMeasureBaseline, "
+                + "interface com.facebook.litho.annotations.FromBoundsDefined]");
   }
 
   @Test
