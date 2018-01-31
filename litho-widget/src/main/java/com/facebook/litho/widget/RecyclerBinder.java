@@ -42,6 +42,7 @@ import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.utils.DisplayListUtils;
+import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory;
 import java.util.ArrayList;
@@ -1427,6 +1428,7 @@ public class RecyclerBinder
   private static class BaseViewHolder extends RecyclerView.ViewHolder {
 
     private final boolean isLithoViewType;
+    @Nullable private ViewBinder viewBinder;
 
     public BaseViewHolder(View view, boolean isLithoViewType) {
       super(view);
@@ -1508,7 +1510,9 @@ public class RecyclerBinder
         lithoView.setLayoutParams(layoutParams);
         lithoView.setComponentTree(componentTreeHolder.getComponentTree());
       } else {
-        renderInfo.getViewBinder().bind(holder.itemView);
+        final ViewBinder viewBinder = renderInfo.getViewBinder();
+        holder.viewBinder = viewBinder;
+        viewBinder.bind(holder.itemView);
       }
     }
 
@@ -1544,6 +1548,12 @@ public class RecyclerBinder
           lithoView.unmountAllItems();
         }
         lithoView.setComponentTree(null);
+      } else {
+        final ViewBinder viewBinder = holder.viewBinder;
+        if (viewBinder != null) {
+          viewBinder.unbind(holder.itemView);
+          holder.viewBinder = null;
+        }
       }
     }
   }
