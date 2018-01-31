@@ -655,6 +655,14 @@ public class ComponentBodyGenerator {
       }
     }
 
+    for (SpecMethodModel triggerMethod : specModel.getTriggerMethods()) {
+      for (MethodParamModel param : ((List<MethodParamModel>) triggerMethod.methodParams)) {
+        if (SpecModelUtils.hasAnnotation(param, InjectProp.class)) {
+          injectedParams.add(param);
+        }
+      }
+    }
+
     return injectedParams;
   }
 }

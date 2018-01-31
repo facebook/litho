@@ -89,13 +89,15 @@ public final class SpecModelImpl implements SpecModel {
     mEventMethods = eventMethods;
     mTriggerMethods = triggerMethods;
     mUpdateStateMethods = updateStateMethods;
-    mRawProps = getRawProps(delegateMethods, eventMethods, updateStateMethods);
+    mRawProps = getRawProps(delegateMethods, eventMethods, triggerMethods, updateStateMethods);
     mProps = props.isEmpty() ? getProps(mRawProps, cachedPropNames, delegateMethods) : props;
     mPropDefaults = propDefaults;
     mTypeVariables = typeVariables;
-    mStateValues = getStateValues(delegateMethods, eventMethods, updateStateMethods);
-    mInterStageInputs = getInterStageInputs(delegateMethods, eventMethods, updateStateMethods);
-    mTreeProps = getTreeProps(delegateMethods, eventMethods, updateStateMethods);
+    mStateValues =
+        getStateValues(delegateMethods, eventMethods, triggerMethods, updateStateMethods);
+    mInterStageInputs =
+        getInterStageInputs(delegateMethods, eventMethods, triggerMethods, updateStateMethods);
+    mTreeProps = getTreeProps(delegateMethods, eventMethods, triggerMethods, updateStateMethods);
     mEventDeclarations = eventDeclarations;
     mImplicitBuilderMethods = implicitBuilderMethods;
     mDiffs = getDiffs(delegateMethods);
@@ -332,6 +334,7 @@ public final class SpecModelImpl implements SpecModel {
   private static ImmutableList<PropModel> getRawProps(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
     final List<PropModel> props = new ArrayList<>();
 
@@ -345,6 +348,14 @@ public final class SpecModelImpl implements SpecModel {
 
     for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod : eventMethods) {
       for (MethodParamModel param : eventMethod.methodParams) {
+        if (param instanceof PropModel) {
+          props.add((PropModel) param);
+        }
+      }
+    }
+
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethod : triggerMethods) {
+      for (MethodParamModel param : triggerMethod.methodParams) {
         if (param instanceof PropModel) {
           props.add((PropModel) param);
         }
@@ -436,6 +447,7 @@ public final class SpecModelImpl implements SpecModel {
   private static ImmutableList<StateParamModel> getStateValues(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
     final Set<StateParamModel> stateValues =
         new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
@@ -449,6 +461,14 @@ public final class SpecModelImpl implements SpecModel {
 
     for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod : eventMethods) {
       for (MethodParamModel param : eventMethod.methodParams) {
+        if (param instanceof StateParamModel) {
+          stateValues.add((StateParamModel) param);
+        }
+      }
+    }
+
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethod : triggerMethods) {
+      for (MethodParamModel param : triggerMethod.methodParams) {
         if (param instanceof StateParamModel) {
           stateValues.add((StateParamModel) param);
         }
@@ -505,6 +525,7 @@ public final class SpecModelImpl implements SpecModel {
   private static ImmutableList<InterStageInputParamModel> getInterStageInputs(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
     final Set<InterStageInputParamModel> interStageInputs =
         new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
@@ -518,6 +539,14 @@ public final class SpecModelImpl implements SpecModel {
 
     for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod : eventMethods) {
       for (MethodParamModel param : eventMethod.methodParams) {
+        if (param instanceof InterStageInputParamModel) {
+          interStageInputs.add((InterStageInputParamModel) param);
+        }
+      }
+    }
+
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethod : triggerMethods) {
+      for (MethodParamModel param : triggerMethod.methodParams) {
         if (param instanceof InterStageInputParamModel) {
           interStageInputs.add((InterStageInputParamModel) param);
         }
@@ -538,6 +567,7 @@ public final class SpecModelImpl implements SpecModel {
   private static ImmutableList<TreePropModel> getTreeProps(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
     final Set<TreePropModel> treeProps =
         new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
@@ -551,6 +581,14 @@ public final class SpecModelImpl implements SpecModel {
 
     for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod : eventMethods) {
       for (MethodParamModel param : eventMethod.methodParams) {
+        if (param instanceof TreePropModel) {
+          treeProps.add((TreePropModel) param);
+        }
+      }
+    }
+
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethod : triggerMethods) {
+      for (MethodParamModel param : triggerMethod.methodParams) {
         if (param instanceof TreePropModel) {
           treeProps.add((TreePropModel) param);
         }
@@ -772,6 +810,10 @@ public final class SpecModelImpl implements SpecModel {
 
       if (mEventMethodModels == null) {
         mEventMethodModels = ImmutableList.of();
+      }
+
+      if (mTriggerMethodModels == null) {
+        mTriggerMethodModels = ImmutableList.of();
       }
 
       if (mUpdateStateMethodModels == null) {

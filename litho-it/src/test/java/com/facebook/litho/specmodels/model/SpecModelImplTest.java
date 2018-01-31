@@ -33,13 +33,17 @@ public class SpecModelImplTest {
   PropModel mPropModel1;
   PropModel mPropModel2;
   PropModel mPropModel3;
+  PropModel mPropModel4;
   PropModel mUnderlyingPropModel1;
   PropModel mUnderlyingPropModel2;
   SimpleMethodParamModel mMethodParamModel;
-  TreePropModel mTreePropModel;
+  TreePropModel mTreePropModel1;
+  TreePropModel mTreePropModel2;
 
   SpecMethodModel<DelegateMethod, Void> mMethodModel1;
   SpecMethodModel<DelegateMethod, Void> mMethodModel2;
+
+  SpecMethodModel<EventMethod, EventDeclarationModel> mTriggerMethodModel;
 
   TypeVariableName mTypeVariableName1 = TypeVariableName.get("test1");
   TypeVariableName mTypeVariableName2 = TypeVariableName.get("test2");
@@ -67,6 +71,12 @@ public class SpecModelImplTest {
             false,
             null,
             "");
+    mPropModel4 =
+        new PropModel(
+            MockMethodParamModel.newBuilder().name("propModel4").type(TypeName.INT).build(),
+            false,
+            null,
+            "");
 
     mUnderlyingPropModel1 =
         new PropModel(
@@ -81,7 +91,8 @@ public class SpecModelImplTest {
         new PropModel(
             MockMethodParamModel.newBuilder().name("differentName").build(), false, null, "");
 
-    mTreePropModel = new TreePropModel(MockMethodParamModel.newBuilder().name("treeprop").build());
+    mTreePropModel1 =
+        new TreePropModel(MockMethodParamModel.newBuilder().name("treeprop1").build());
     mMethodParamModel =
         new SimpleMethodParamModel(
             new TypeSpec(TypeName.INT),
@@ -95,13 +106,20 @@ public class SpecModelImplTest {
     List<MethodParamModel> params1 = new ArrayList<>();
     params1.add(mPropModel1);
     params1.add(mPropModel2);
-    params1.add(mTreePropModel);
+    params1.add(mTreePropModel1);
     params1.add(new DiffPropModel(mUnderlyingPropModel1));
     params1.add(new DiffPropModel(mUnderlyingPropModel2));
 
     List<MethodParamModel> params2 = new ArrayList<>();
     params2.add(mPropModel3);
     params2.add(mMethodParamModel);
+
+    mTreePropModel2 =
+        new TreePropModel(MockMethodParamModel.newBuilder().name("treeprop2").build());
+
+    List<MethodParamModel> params3 = new ArrayList<>();
+    params3.add(mPropModel4);
+    params3.add(mTreePropModel2);
 
     mMethodModel1 =
         new SpecMethodModel<DelegateMethod, Void>(
@@ -124,6 +142,17 @@ public class SpecModelImplTest {
             null,
             null);
 
+    mTriggerMethodModel =
+        new SpecMethodModel<EventMethod, EventDeclarationModel>(
+            ImmutableList.<Annotation>of(),
+            ImmutableList.<Modifier>of(),
+            "method3",
+            new TypeSpec(TypeName.BOOLEAN),
+            ImmutableList.of(),
+            ImmutableList.copyOf(params3),
+            null,
+            null);
+
     mTypeVariableNames.add(mTypeVariableName1);
     mTypeVariableNames.add(mTypeVariableName2);
   }
@@ -134,6 +163,7 @@ public class SpecModelImplTest {
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
             .delegateMethods(ImmutableList.of(mMethodModel1, mMethodModel2))
+            .triggerMethods(ImmutableList.of(mTriggerMethodModel))
             .typeVariables(ImmutableList.copyOf(mTypeVariableNames))
             .propDefaults(ImmutableList.of(mPropDefaultModel1))
             .representedObject(new Object())
@@ -148,9 +178,12 @@ public class SpecModelImplTest {
     assertThat(specModel.getDelegateMethods()).hasSize(2);
     assertThat(specModel.getDelegateMethods()).contains(mMethodModel1, mMethodModel2);
 
-    assertThat(specModel.getProps()).hasSize(4);
+    assertThat(specModel.getTriggerMethods()).hasSize(1);
+    assertThat(specModel.getTriggerMethods()).contains(mTriggerMethodModel);
+
+    assertThat(specModel.getProps()).hasSize(5);
     assertThat(specModel.getProps())
-        .contains(mPropModel1, mPropModel2, mPropModel3, mUnderlyingPropModel2);
+        .contains(mPropModel1, mPropModel2, mPropModel3, mPropModel4, mUnderlyingPropModel2);
 
     assertThat(specModel.getPropDefaults()).hasSize(1);
     assertThat(specModel.getPropDefaults()).contains(mPropDefaultModel1);
@@ -158,8 +191,8 @@ public class SpecModelImplTest {
     assertThat(specModel.getTypeVariables()).hasSize(2);
     assertThat(specModel.getTypeVariables()).contains(mTypeVariableName1, mTypeVariableName2);
 
-    assertThat(specModel.getTreeProps()).hasSize(1);
-    assertThat(specModel.getTreeProps()).contains(mTreePropModel);
+    assertThat(specModel.getTreeProps()).hasSize(2);
+    assertThat(specModel.getTreeProps()).contains(mTreePropModel1, mTreePropModel2);
 
     assertThat(specModel.hasInjectedDependencies()).isFalse();
     assertThat(specModel.getDependencyInjectionHelper()).isNull();
@@ -168,14 +201,16 @@ public class SpecModelImplTest {
   @Test
   public void testCreateSpecModelImplWithDependencyInjection() {
     DependencyInjectionHelper diGenerator = mock(DependencyInjectionHelper.class);
-    SpecModel specModel = SpecModelImpl.newBuilder()
-        .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
-        .delegateMethods(ImmutableList.of(mMethodModel1, mMethodModel2))
-        .typeVariables(ImmutableList.copyOf(mTypeVariableNames))
-        .propDefaults(ImmutableList.of(mPropDefaultModel1))
-        .dependencyInjectionGenerator(diGenerator)
-        .representedObject(new Object())
-        .build();
+    SpecModel specModel =
+        SpecModelImpl.newBuilder()
+            .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
+            .delegateMethods(ImmutableList.of(mMethodModel1, mMethodModel2))
+            .triggerMethods(ImmutableList.of(mTriggerMethodModel))
+            .typeVariables(ImmutableList.copyOf(mTypeVariableNames))
+            .propDefaults(ImmutableList.of(mPropDefaultModel1))
+            .dependencyInjectionGenerator(diGenerator)
+            .representedObject(new Object())
+            .build();
 
     assertThat(specModel.hasInjectedDependencies()).isTrue();
     assertThat(specModel.getDependencyInjectionHelper()).isSameAs(diGenerator);
