@@ -25,7 +25,7 @@ public class PropValidation {
   // Component.Builder so we trigger a more user-friendly error if the component tries to use them.
   public static final List<String> COMMON_PROP_NAMES =
       Arrays.asList(
-          "withLayout",
+          "layoutDirection",
           "key",
           "alignSelf",
           "positionType",
@@ -175,8 +175,10 @@ public class PropValidation {
         validationErrors.add(
             new SpecModelValidationError(
                 prop.getRepresentedObject(),
-                "'" + prop.getName() + "' is a reserved prop name used by the component's " +
-                    "layout builder. Please use another name."));
+                "'"
+                    + prop.getName()
+                    + "' is a reserved prop name used by the component's "
+                    + "builder. Please use another name."));
       }
 
       TypeName argumentType = null;

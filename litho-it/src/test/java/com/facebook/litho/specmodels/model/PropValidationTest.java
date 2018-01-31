@@ -106,15 +106,16 @@ public class PropValidationTest {
 
   @Test
   public void testPropWithReservedName() {
-    when(mPropModel1.getName()).thenReturn("withLayout");
+    when(mPropModel1.getName()).thenReturn("layoutDirection");
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(mSpecModel, PropValidation.COMMON_PROP_NAMES);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "'withLayout' is a reserved prop name used by the component's layout builder. Please use " +
-            "another name.");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "'layoutDirection' is a reserved prop name used by the component's builder. Please"
+                + " use another name.");
   }
 
   @Test
