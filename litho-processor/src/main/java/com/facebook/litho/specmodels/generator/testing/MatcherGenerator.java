@@ -236,7 +236,7 @@ public final class MatcherGenerator {
     return getMethodSpecBuilder(
             specModel,
             ImmutableList.of(
-                ParameterSpec.builder(ClassNames.COMPONENT_MATCHER, "matcher").build()),
+                ParameterSpec.builder(getMatcherConditionTypeName(), "matcher").build()),
             CodeBlock.builder().addStatement("$L = matcher", propMatcherName).build(),
             propName)
         .build();
@@ -254,9 +254,14 @@ public final class MatcherGenerator {
   }
 
   private static FieldSpec matcherComponentFieldBuilder(final PropModel prop) {
-    return FieldSpec.builder(ClassNames.COMPONENT_MATCHER, getPropComponentMatcherName(prop))
+    return FieldSpec.builder(getMatcherConditionTypeName(), getPropComponentMatcherName(prop))
         .addAnnotation(Nullable.class)
         .build();
+  }
+
+  private static TypeName getMatcherConditionTypeName() {
+    return ParameterizedTypeName.get(
+        ClassNames.ASSERTJ_CONDITION, ClassNames.INSPECTABLE_COMPONENT);
   }
 
   private static FieldSpec matcherFieldBuilder(final PropModel prop) {
@@ -647,13 +652,13 @@ public final class MatcherGenerator {
     final MethodSpec.Builder buildMethodBuilder =
         MethodSpec.methodBuilder("build")
             .addModifiers(Modifier.PUBLIC)
-            .returns(ClassNames.COMPONENT_MATCHER);
+            .returns(getMatcherConditionTypeName());
 
     final CodeBlock placeHolderCodeBlock = generateMatchMethodBody(specModel);
 
     final TypeSpec matcherInnerClass =
         TypeSpec.anonymousClassBuilder("")
-            .superclass(ClassNames.COMPONENT_MATCHER)
+            .superclass(getMatcherConditionTypeName())
             .addMethod(
                 MethodSpec.methodBuilder("matches")
                     .addModifiers(Modifier.PUBLIC)

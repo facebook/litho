@@ -102,12 +102,11 @@ public interface ClassNames {
   ClassName SECTION = ClassName.bestGuess("com.facebook.litho.sections.Section");
   ClassName SECTION_BUILDER = ClassName.bestGuess("com.facebook.litho.sections.Section.Builder");
 
-  ClassName COMPONENT_MATCHER =
-      ClassName.bestGuess("com.facebook.litho.testing.assertj.ComponentMatcher");
   ClassName INSPECTABLE_COMPONENT =
       ClassName.bestGuess("com.facebook.litho.testing.subcomponents.InspectableComponent");
   ClassName HAMCREST_MATCHER = ClassName.bestGuess("org.hamcrest.Matcher");
   ClassName HAMCREST_CORE_IS = ClassName.bestGuess("org.hamcrest.core.Is");
+  ClassName ASSERTJ_CONDITION = ClassName.bestGuess("org.assertj.core.api.Condition");
   ClassName ASSERTJ_TEXT_DESCRIPTION =
       ClassName.bestGuess("org.assertj.core.description.TextDescription");
 

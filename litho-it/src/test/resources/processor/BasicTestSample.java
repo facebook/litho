@@ -18,9 +18,9 @@ import android.support.annotation.Px;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ResourceResolver;
-import com.facebook.litho.testing.assertj.ComponentMatcher;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import javax.annotation.Nullable;
+import org.assertj.core.api.Condition;
 import org.assertj.core.description.TextDescription;
 
 /**
@@ -36,7 +36,7 @@ public final class BasicTestSample implements BasicTestSampleSpec {
   }
 
   public static class Matcher extends ResourceResolver {
-    @Nullable ComponentMatcher mChildComponentMatcher;
+    @Nullable Condition<InspectableComponent> mChildComponentMatcher;
 
     @Nullable org.hamcrest.Matcher<Component> mChildMatcher;
 
@@ -51,7 +51,7 @@ public final class BasicTestSample implements BasicTestSampleSpec {
       super.init(c, c.getResourceCache());
     }
 
-    public Matcher child(ComponentMatcher matcher) {
+    public Matcher child(Condition<InspectableComponent> matcher) {
       mChildComponentMatcher = matcher;
       return this;
     }
@@ -138,8 +138,8 @@ public final class BasicTestSample implements BasicTestSampleSpec {
       return this;
     }
 
-    public ComponentMatcher build() {
-      return new ComponentMatcher() {
+    public Condition<InspectableComponent> build() {
+      return new Condition<InspectableComponent>() {
         @Override
         public boolean matches(InspectableComponent value) {
           if (!value
@@ -194,5 +194,3 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     }
   }
 }
-
-
