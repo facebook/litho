@@ -40,7 +40,7 @@ public class ProcessorUtils {
       Element element,
       Class<?> annotationType,
       String parameterName,
-      Class<?> expectedReturnType) {
+      Class<? extends T> expectedReturnType) {
     List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
 
     AnnotationMirror mirror = null;
@@ -59,7 +59,7 @@ public class ProcessorUtils {
         elements.getElementValuesWithDefaults(mirror).entrySet()) {
       if (parameterName.equals(entry.getKey().getSimpleName().toString())) {
         try {
-          return (T) expectedReturnType.cast(entry.getValue().getValue());
+          return expectedReturnType.cast(entry.getValue().getValue());
         } catch (ClassCastException e) {
           throw new ComponentsProcessingException(
               element,
