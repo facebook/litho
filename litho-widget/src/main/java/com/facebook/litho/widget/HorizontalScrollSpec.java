@@ -29,7 +29,6 @@ import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
-import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateInitialState;
@@ -37,7 +36,6 @@ import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
-import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
@@ -81,17 +79,6 @@ class HorizontalScrollSpec {
     a.recycle();
   }
 
-  @OnPrepare
-  static void onPrepare(
-      ComponentContext context,
-      @Prop Component contentProps,
-      Output<ComponentTree> contentComponent) {
-    contentComponent.set(
-        ComponentTree.create(context, contentProps)
-            .incrementalMount(false)
-            .build());
-  }
-
   @OnMeasure
   static void onMeasure(
       ComponentContext context,
@@ -99,27 +86,23 @@ class HorizontalScrollSpec {
       int widthSpec,
       int heightSpec,
       Size size,
-      @FromPrepare ComponentTree contentComponent,
+      @Prop Component contentProps,
       Output<Integer> measuredComponentWidth,
       Output<Integer> measuredComponentHeight) {
 
     final int measuredWidth;
     final int measuredHeight;
 
-    Size contentSize = acquireSize();
+    final Size contentSize = acquireSize();
 
     // Measure the component with undefined width spec, as the contents of the
     // hscroll have unlimited horizontal space.
-    contentComponent.setSizeSpec(
-        SizeSpec.makeSizeSpec(0, UNSPECIFIED),
-        heightSpec,
-        contentSize);
+    contentProps.measure(context, SizeSpec.makeSizeSpec(0, UNSPECIFIED), heightSpec, contentSize);
 
     measuredWidth = contentSize.width;
     measuredHeight = contentSize.height;
 
     releaseSize(contentSize);
-    contentSize = null;
 
     measuredComponentWidth.set(measuredWidth);
     measuredComponentHeight.set(measuredHeight);
@@ -136,7 +119,7 @@ class HorizontalScrollSpec {
   static void onBoundsDefined(
       ComponentContext context,
       ComponentLayout layout,
-      @FromPrepare ComponentTree contentComponent,
+      @Prop Component contentProps,
       @FromMeasure Integer measuredComponentWidth,
       @FromMeasure Integer measuredComponentHeight,
       Output<Integer> componentWidth,
@@ -153,7 +136,8 @@ class HorizontalScrollSpec {
       final int measuredHeight;
 
       Size contentSize = acquireSize();
-      contentComponent.setSizeSpec(
+      contentProps.measure(
+          context,
           SizeSpec.makeSizeSpec(0, UNSPECIFIED),
           SizeSpec.makeSizeSpec(layout.getHeight(), EXACTLY),
           contentSize);
@@ -162,7 +146,6 @@ class HorizontalScrollSpec {
       measuredHeight = contentSize.height;
 
       releaseSize(contentSize);
-      contentSize = null;
 
       componentWidth.set(measuredWidth);
       componentHeight.set(measuredHeight);
@@ -180,15 +163,15 @@ class HorizontalScrollSpec {
   static void onMount(
       final ComponentContext context,
       final HorizontalScrollLithoView horizontalScrollLithoView,
+      @Prop Component contentProps,
       @Prop(optional = true, resType = ResType.BOOL) boolean scrollbarEnabled,
       @State(canUpdateLazily = true) final int lastScrollPosition,
-      @FromPrepare ComponentTree contentComponent,
       @FromBoundsDefined int componentWidth,
       @FromBoundsDefined int componentHeight,
       @FromBoundsDefined final YogaDirection layoutDirection) {
 
     horizontalScrollLithoView.setHorizontalScrollBarEnabled(scrollbarEnabled);
-    horizontalScrollLithoView.mount(contentComponent, componentWidth, componentHeight);
+    horizontalScrollLithoView.mount(contentProps, componentWidth, componentHeight);
     final ViewTreeObserver viewTreeObserver = horizontalScrollLithoView.getViewTreeObserver();
     viewTreeObserver.addOnPreDrawListener(
         new ViewTreeObserver.OnPreDrawListener() {
@@ -259,15 +242,22 @@ class HorizontalScrollSpec {
           MeasureSpec.getSize(heightMeasureSpec));
     }
 
-    void mount(ComponentTree component, int width, int height) {
-      mLithoView.setComponentTree(component);
+    void mount(Component component, int width, int height) {
+      if (mLithoView.getComponentTree() == null) {
+        mLithoView.setComponentTree(
+            ComponentTree.create(mLithoView.getComponentContext(), component)
+                .incrementalMount(false)
+                .build());
+      } else {
+        mLithoView.setComponent(component);
+      }
       mComponentWidth = width;
       mComponentHeight = height;
     }
 
     void unmount() {
       // Clear all component-related state from the view.
-      mLithoView.setComponentTree(null);
+      mLithoView.unbind();
       mComponentWidth = 0;
       mComponentHeight = 0;
     }
