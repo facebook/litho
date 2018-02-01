@@ -270,7 +270,12 @@ public class BorderColorDrawable extends Drawable {
   }
 
   private static void drawBorder(Canvas canvas, RectF bounds, float[] radii, Paint paint) {
-    canvas.drawRoundRect(bounds, radii[Border.DIM_X], radii[Border.DIM_Y], paint);
+    float maxRadii = Math.min(bounds.width(), bounds.height()) / 2f;
+    canvas.drawRoundRect(
+        bounds,
+        Math.min(maxRadii, radii[Border.DIM_X]),
+        Math.min(maxRadii, radii[Border.DIM_Y]),
+        paint);
   }
 
   @Override
