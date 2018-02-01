@@ -32,6 +32,7 @@ public class SingleComponentSectionSpecTest {
   private Diff<Component> mComponentDiff;
   private Diff<Boolean> mStickyDiff;
   private Diff<Integer> mSpanSizeDiff;
+  private Diff<Boolean> mIsFullSpanDiff;
   private ChangeSet mChangeSet;
 
   @Before
@@ -40,13 +41,14 @@ public class SingleComponentSectionSpecTest {
     mComponentDiff = new Diff<>();
     mStickyDiff = new Diff<>();
     mSpanSizeDiff = new Diff<>();
+    mIsFullSpanDiff = new Diff<>();
     mChangeSet = ChangeSet.acquireChangeSet();
   }
 
   @Test
   public void testDeleteComponent() {
     SingleComponentSectionSpec.onCreateChangeSet(
-        mSectionContext, mChangeSet, mComponentDiff, mStickyDiff, mSpanSizeDiff);
+        mSectionContext, mChangeSet, mComponentDiff, mStickyDiff, mSpanSizeDiff, mIsFullSpanDiff);
 
     Change change = verifyChangeSetAndGetTheChange(mChangeSet);
     assertThat(change.getType()).isEqualTo(Change.DELETE);
@@ -58,14 +60,16 @@ public class SingleComponentSectionSpecTest {
     mComponentDiff.init(null, component);
     mStickyDiff.init(null, true);
     mSpanSizeDiff.init(null, 2);
+    mIsFullSpanDiff.init(null, true);
     SingleComponentSectionSpec.onCreateChangeSet(
-        mSectionContext, mChangeSet, mComponentDiff, mStickyDiff, mSpanSizeDiff);
+        mSectionContext, mChangeSet, mComponentDiff, mStickyDiff, mSpanSizeDiff, mIsFullSpanDiff);
 
     Change change = verifyChangeSetAndGetTheChange(mChangeSet);
     assertThat(change.getType()).isEqualTo(Change.INSERT);
     assertThat(change.getRenderInfo().getComponent()).isEqualTo(component);
     assertThat(change.getRenderInfo().isSticky()).isTrue();
     assertThat(change.getRenderInfo().getSpanSize()).isEqualTo(2);
+    assertThat(change.getRenderInfo().isFullSpan()).isTrue();
   }
 
   @Test
@@ -77,14 +81,16 @@ public class SingleComponentSectionSpecTest {
     mComponentDiff.init(prevComponent, nextComponent);
     mStickyDiff.init(true, true);
     mSpanSizeDiff.init(2, 2);
+    mIsFullSpanDiff.init(true, true);
     SingleComponentSectionSpec.onCreateChangeSet(
-        mSectionContext, mChangeSet, mComponentDiff, mStickyDiff, mSpanSizeDiff);
+        mSectionContext, mChangeSet, mComponentDiff, mStickyDiff, mSpanSizeDiff, mIsFullSpanDiff);
 
     Change change = verifyChangeSetAndGetTheChange(mChangeSet);
     assertThat(change.getType()).isEqualTo(Change.UPDATE);
     assertThat(change.getRenderInfo().getComponent()).isEqualTo(nextComponent);
     assertThat(change.getRenderInfo().isSticky()).isTrue();
     assertThat(change.getRenderInfo().getSpanSize()).isEqualTo(2);
+    assertThat(change.getRenderInfo().isFullSpan()).isTrue();
   }
 
   @Test
@@ -93,14 +99,16 @@ public class SingleComponentSectionSpecTest {
     mComponentDiff.init(component, component);
     mStickyDiff.init(true, true);
     mSpanSizeDiff.init(1, 2);
+    mIsFullSpanDiff.init(true, true);
     SingleComponentSectionSpec.onCreateChangeSet(
-        mSectionContext, mChangeSet, mComponentDiff, mStickyDiff, mSpanSizeDiff);
+        mSectionContext, mChangeSet, mComponentDiff, mStickyDiff, mSpanSizeDiff, mIsFullSpanDiff);
 
     Change change = verifyChangeSetAndGetTheChange(mChangeSet);
     assertThat(change.getType()).isEqualTo(Change.UPDATE);
     assertThat(change.getRenderInfo().getComponent()).isEqualTo(component);
     assertThat(change.getRenderInfo().isSticky()).isTrue();
     assertThat(change.getRenderInfo().getSpanSize()).isEqualTo(2);
+    assertThat(change.getRenderInfo().isFullSpan()).isTrue();
   }
 
   @Test
@@ -109,14 +117,34 @@ public class SingleComponentSectionSpecTest {
     mComponentDiff.init(component, component);
     mStickyDiff.init(true, false);
     mSpanSizeDiff.init(1, 1);
+    mIsFullSpanDiff.init(true, true);
     SingleComponentSectionSpec.onCreateChangeSet(
-        mSectionContext, mChangeSet, mComponentDiff, mStickyDiff, mSpanSizeDiff);
+        mSectionContext, mChangeSet, mComponentDiff, mStickyDiff, mSpanSizeDiff, mIsFullSpanDiff);
 
     Change change = verifyChangeSetAndGetTheChange(mChangeSet);
     assertThat(change.getType()).isEqualTo(Change.UPDATE);
     assertThat(change.getRenderInfo().getComponent()).isEqualTo(component);
     assertThat(change.getRenderInfo().isSticky()).isFalse();
     assertThat(change.getRenderInfo().getSpanSize()).isEqualTo(1);
+    assertThat(change.getRenderInfo().isFullSpan()).isTrue();
+  }
+
+  @Test
+  public void testUpdateIsFullSpan() {
+    Component component = mock(Component.class);
+    mComponentDiff.init(component, component);
+    mStickyDiff.init(true, true);
+    mSpanSizeDiff.init(1, 1);
+    mIsFullSpanDiff.init(true, false);
+    SingleComponentSectionSpec.onCreateChangeSet(
+        mSectionContext, mChangeSet, mComponentDiff, mStickyDiff, mSpanSizeDiff, mIsFullSpanDiff);
+
+    Change change = verifyChangeSetAndGetTheChange(mChangeSet);
+    assertThat(change.getType()).isEqualTo(Change.UPDATE);
+    assertThat(change.getRenderInfo().getComponent()).isEqualTo(component);
+    assertThat(change.getRenderInfo().isSticky()).isTrue();
+    assertThat(change.getRenderInfo().getSpanSize()).isEqualTo(1);
+    assertThat(change.getRenderInfo().isFullSpan()).isFalse();
   }
 
   @Test
@@ -128,8 +156,9 @@ public class SingleComponentSectionSpecTest {
     mComponentDiff.init(prevComponent, nextComponent);
     mStickyDiff.init(true, true);
     mSpanSizeDiff.init(1, 1);
+    mIsFullSpanDiff.init(true, true);
     SingleComponentSectionSpec.onCreateChangeSet(
-        mSectionContext, mChangeSet, mComponentDiff, mStickyDiff, mSpanSizeDiff);
+        mSectionContext, mChangeSet, mComponentDiff, mStickyDiff, mSpanSizeDiff, mIsFullSpanDiff);
 
     assertThat(mChangeSet.getChangeCount()).isEqualTo(0);
   }

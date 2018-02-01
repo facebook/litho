@@ -27,7 +27,8 @@ public class SingleComponentSectionSpec {
       ChangeSet changeSet,
       @Prop Diff<Component> component,
       @Prop(optional = true) Diff<Boolean> sticky,
-      @Prop(optional = true) Diff<Integer> spanSize) {
+      @Prop(optional = true) Diff<Integer> spanSize,
+      @Prop(optional = true) Diff<Boolean> isFullSpan) {
 
     if (component.getNext() == null) {
       changeSet.delete(0);
@@ -44,6 +45,11 @@ public class SingleComponentSectionSpec {
       nextSpanSize = spanSize.getNext();
     }
 
+    boolean isNextFullSpan = false;
+    if (isFullSpan != null && isFullSpan.getNext() != null) {
+      isNextFullSpan = isFullSpan.getNext();
+    }
+
     if (component.getPrevious() == null) {
       changeSet.insert(
           0,
@@ -51,6 +57,7 @@ public class SingleComponentSectionSpec {
               .component(component.getNext())
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
+              .isFullSpan(isNextFullSpan)
               .build());
       return;
     }
@@ -66,8 +73,14 @@ public class SingleComponentSectionSpec {
       prevSpanSize = spanSize.getPrevious();
     }
 
+    boolean isPrevFullSpan = false;
+    if (isFullSpan != null && isFullSpan.getPrevious() != null) {
+      isPrevFullSpan = isFullSpan.getPrevious();
+    }
+
     if (isPrevSticky != isNextSticky
         || prevSpanSize != nextSpanSize
+        || isPrevFullSpan != isNextFullSpan
         || !component.getPrevious().isEquivalentTo(component.getNext())) {
       changeSet.update(
           0,
@@ -75,6 +88,7 @@ public class SingleComponentSectionSpec {
               .component(component.getNext())
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
+              .isFullSpan(isNextFullSpan)
               .build());
     }
   }
