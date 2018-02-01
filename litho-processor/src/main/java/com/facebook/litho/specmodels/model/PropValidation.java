@@ -145,7 +145,8 @@ public class PropValidation {
           "sendAccessibilityEventUncheckedHandler",
           "transitionKey",
           "alpha",
-          "scale");
+          "scale",
+          "selected");
 
   private static final List<TypeName> ILLEGAL_PROP_TYPES = Arrays.<TypeName>asList(
       ClassNames.COMPONENT_LAYOUT,

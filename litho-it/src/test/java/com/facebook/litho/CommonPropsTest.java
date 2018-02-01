@@ -125,6 +125,7 @@ public class CommonPropsTest {
     mCommonProps.interceptTouchHandler(interceptTouchHandler);
 
     mCommonProps.focusable(true);
+    mCommonProps.selected(false);
     mCommonProps.enabled(false);
     mCommonProps.visibleHeightRatio(55);
     mCommonProps.visibleWidthRatio(56);
@@ -254,6 +255,7 @@ public class CommonPropsTest {
     verify(mNode).interceptTouchHandler(interceptTouchHandler);
 
     verify(mNode).focusable(true);
+    verify(mNode).selected(false);
     verify(mNode).enabled(false);
     verify(mNode).visibleHeightRatio(55);
     verify(mNode).visibleWidthRatio(56);

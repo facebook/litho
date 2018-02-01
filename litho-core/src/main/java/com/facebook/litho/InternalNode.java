@@ -773,6 +773,11 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
+  InternalNode selected(boolean isSelected) {
+    getOrCreateNodeInfo().setSelected(isSelected);
+    return this;
+  }
+
   InternalNode visibleHeightRatio(float visibleHeightRatio) {
     mVisibleHeightRatio = visibleHeightRatio;
     return this;

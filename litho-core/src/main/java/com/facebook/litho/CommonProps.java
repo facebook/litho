@@ -261,6 +261,10 @@ class CommonProps {
     getOrCreateNodeInfo().setEnabled(isEnabled);
   }
 
+  void selected(boolean isSelected) {
+    getOrCreateNodeInfo().setSelected(isSelected);
+  }
+
   void visibleHeightRatio(float visibleHeightRatio) {
     getOrCreateOtherProps().visibleHeightRatio(visibleHeightRatio);
   }

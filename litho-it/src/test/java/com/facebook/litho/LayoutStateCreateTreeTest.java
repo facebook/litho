@@ -403,6 +403,7 @@ public class LayoutStateCreateTreeTest {
                 .touchHandler(touchHandler)
                 .interceptTouchHandler(interceptTouchHandler)
                 .focusable(true)
+                .selected(false)
                 .enabled(false)
                 .visibleHeightRatio(55)
                 .visibleWidthRatio(56)
@@ -504,6 +505,7 @@ public class LayoutStateCreateTreeTest {
     verify(node).interceptTouchHandler(interceptTouchHandler);
 
     verify(node).focusable(true);
+    verify(node).selected(false);
     verify(node).enabled(false);
     verify(node).visibleHeightRatio(55);
     verify(node).visibleWidthRatio(56);

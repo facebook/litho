@@ -32,6 +32,7 @@ class MountItem {
   static final int FLAG_VIEW_FOCUSABLE = 1 << 4;
   static final int FLAG_VIEW_ENABLED = 1 << 5;
   static final int FLAG_IS_TRANSITION_KEY_SET = 1 << 6;
+  static final int FLAG_VIEW_SELECTED = 1 << 7;
 
   private NodeInfo mNodeInfo;
   private ViewNodeInfo mViewNodeInfo;
@@ -126,6 +127,10 @@ class MountItem {
 
       if (view.isEnabled()) {
         mFlags |= FLAG_VIEW_ENABLED;
+      }
+
+      if (view.isSelected()) {
+        mFlags |= FLAG_VIEW_SELECTED;
       }
     }
   }
@@ -275,9 +280,14 @@ class MountItem {
     return (flags & FLAG_VIEW_ENABLED) == FLAG_VIEW_ENABLED;
   }
 
+  /** @return Whether the view associated with this MountItem is setSelected. */
+  static boolean isViewSelected(int flags) {
+    return (flags & FLAG_VIEW_SELECTED) == FLAG_VIEW_SELECTED;
+  }
+
   /**
    * @return Whether this MountItem is currently bound. A bound mount item is a Mount item that has
-   * been mounted and is currently active on screen.
+   *     been mounted and is currently active on screen.
    */
   boolean isBound() {
     return mIsBound;

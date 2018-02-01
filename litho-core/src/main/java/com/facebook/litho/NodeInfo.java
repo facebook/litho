@@ -40,6 +40,14 @@ class NodeInfo {
   @Retention(RetentionPolicy.SOURCE)
   @interface EnabledState {}
 
+  static final short SELECTED_UNSET = 0;
+  static final short SELECTED_SET_TRUE = 1;
+  static final short SELECTED_SET_FALSE = 2;
+
+  @IntDef({SELECTED_UNSET, SELECTED_SET_TRUE, SELECTED_SET_FALSE})
+  @Retention(RetentionPolicy.SOURCE)
+  @interface SelectedState {}
+
   // When this flag is set, contentDescription was explicitly set on this node.
   private static final int PFLAG_CONTENT_DESCRIPTION_IS_SET = 1 << 0;
   // When this flag is set, viewTag was explicitly set on this node.
@@ -116,6 +124,7 @@ class NodeInfo {
   private short mFocusState = FOCUS_UNSET;
   @EnabledState
   private short mEnabledState = ENABLED_UNSET;
+  @SelectedState private short mSelectedState = SELECTED_UNSET;
 
   private int mPrivateFlags;
 
@@ -363,6 +372,19 @@ class NodeInfo {
     return mEnabledState;
   }
 
+  void setSelected(boolean isSelected) {
+    if (isSelected) {
+      mSelectedState = SELECTED_SET_TRUE;
+    } else {
+      mSelectedState = SELECTED_SET_FALSE;
+    }
+  }
+
+  @SelectedState
+  short getSelectedState() {
+    return mSelectedState;
+  }
+
   float getScale() {
     return mScale;
   }
@@ -457,6 +479,9 @@ class NodeInfo {
     if (newInfo.getEnabledState() != ENABLED_UNSET) {
       mEnabledState = newInfo.getEnabledState();
     }
+    if (newInfo.getSelectedState() != SELECTED_UNSET) {
+      mSelectedState = newInfo.getSelectedState();
+    }
     if ((newInfo.mPrivateFlags & PFLAG_SCALE_IS_SET) != 0) {
       mScale = newInfo.mScale;
     }
@@ -532,6 +557,9 @@ class NodeInfo {
     if (getEnabledState() != ENABLED_UNSET) {
       layout.enabled(getEnabledState() == ENABLED_SET_TRUE);
     }
+    if (getSelectedState() != SELECTED_UNSET) {
+      layout.selected(getSelectedState() == SELECTED_SET_TRUE);
+    }
     if ((mPrivateFlags & PFLAG_SCALE_IS_SET) != 0) {
       layout.scale(mScale);
     }
@@ -586,6 +614,7 @@ class NodeInfo {
     mSendAccessibilityEventUncheckedHandler = null;
     mFocusState = FOCUS_UNSET;
     mEnabledState = ENABLED_UNSET;
+    mSelectedState = SELECTED_UNSET;
     mPrivateFlags = 0;
     mShadowElevation = 0;
     mOutlineProvider = null;

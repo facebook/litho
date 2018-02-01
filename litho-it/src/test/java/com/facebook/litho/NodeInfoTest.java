@@ -15,6 +15,9 @@ import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_FALSE;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.NodeInfo.FOCUS_UNSET;
+import static com.facebook.litho.NodeInfo.SELECTED_SET_FALSE;
+import static com.facebook.litho.NodeInfo.SELECTED_SET_TRUE;
+import static com.facebook.litho.NodeInfo.SELECTED_UNSET;
 import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.powermock.reflect.Whitebox.getInternalState;
@@ -345,6 +348,34 @@ public class NodeInfoTest {
   }
 
   @Test
+  public void testSelectedTrue() {
+    assertThat(mNodeInfo.getSelectedState()).isEqualTo(SELECTED_UNSET);
+    mNodeInfo.setSelected(true);
+
+    assertThat(mNodeInfo.getSelectedState()).isEqualTo(SELECTED_SET_TRUE);
+
+    mUpdatedNodeInfo.updateWith(mNodeInfo);
+    assertThat(mUpdatedNodeInfo.getSelectedState()).isEqualTo(SELECTED_SET_TRUE);
+
+    mNodeInfo.release();
+    assertThat(mNodeInfo.getSelectedState()).isEqualTo(SELECTED_UNSET);
+  }
+
+  @Test
+  public void testSelectedFalse() {
+    assertThat(mNodeInfo.getSelectedState()).isEqualTo(SELECTED_UNSET);
+    mNodeInfo.setSelected(false);
+
+    assertThat(mNodeInfo.getSelectedState()).isEqualTo(SELECTED_SET_FALSE);
+
+    mUpdatedNodeInfo.updateWith(mNodeInfo);
+    assertThat(mUpdatedNodeInfo.getSelectedState()).isEqualTo(SELECTED_SET_FALSE);
+
+    mNodeInfo.release();
+    assertThat(mNodeInfo.getSelectedState()).isEqualTo(SELECTED_UNSET);
+  }
+
+  @Test
   public void testEnabledTrue() {
     assertThat(mNodeInfo.getEnabledState()).isEqualTo(ENABLED_UNSET);
     mNodeInfo.setEnabled(true);
@@ -352,7 +383,7 @@ public class NodeInfoTest {
     assertThat(mNodeInfo.getEnabledState()).isEqualTo(ENABLED_SET_TRUE);
 
     mNodeInfo.release();
-    assertThat(mNodeInfo.getEnabledState()).isEqualTo(FOCUS_UNSET);
+    assertThat(mNodeInfo.getEnabledState()).isEqualTo(ENABLED_UNSET);
   }
 
   @Test

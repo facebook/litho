@@ -22,6 +22,7 @@ import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutState.createAndMeasureTreeForComponent;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
+import static com.facebook.litho.NodeInfo.SELECTED_SET_TRUE;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
@@ -1348,6 +1349,55 @@ public class LayoutStateCalculateTest {
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
     assertThat(layoutState.getMountableOutputAt(0).getNodeInfo()).isNull();
     assertThat(layoutState.getMountableOutputAt(1).getNodeInfo().getFocusState()).isEqualTo(FOCUS_SET_TRUE);
+  }
+
+  @Test
+  public void testLayoutOutputsForSelectedOnRoot() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c).child(TestDrawableComponent.create(c)).selected(true).build();
+          }
+        };
+
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
+    final long hostMarkerZero = layoutState.getMountableOutputAt(0).getHostMarker();
+
+    assertThat(layoutState.getMountableOutputAt(1).getHostMarker()).isEqualTo(hostMarkerZero);
+
+    assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
+    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(TestDrawableComponent.class);
+
+    assertThat(layoutState.getMountableOutputAt(0).getNodeInfo().getSelectedState())
+        .isEqualTo(SELECTED_SET_TRUE);
+  }
+
+  @Test
+  public void testLayoutOutputsForSelected() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .child(
+                    create(c).child(TestDrawableComponent.create(c)).focusable(true).selected(true))
+                .build();
+          }
+        };
+
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
+    assertThat(layoutState.getMountableOutputAt(0).getNodeInfo()).isNull();
+    assertThat(layoutState.getMountableOutputAt(1).getNodeInfo().getSelectedState())
+        .isEqualTo(SELECTED_SET_TRUE);
   }
 
   @Test

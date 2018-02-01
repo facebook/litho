@@ -1155,6 +1155,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
       setFocusable(view, nodeInfo.getFocusState());
       setEnabled(view, nodeInfo.getEnabledState());
+      setSelected(view, nodeInfo.getSelectedState());
       setScale(view, nodeInfo);
       setAlpha(view, nodeInfo);
     }
@@ -1228,6 +1229,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     unsetFocusable(view, item);
     unsetEnabled(view, item);
+    unsetSelected(view, item);
 
     if (item.getImportantForAccessibility() != IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
       unsetImportantForAccessibility(view);
@@ -1606,6 +1608,18 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   private static void unsetEnabled(View view, MountItem mountItem) {
     view.setEnabled(MountItem.isViewEnabled(mountItem.getFlags()));
+  }
+
+  private static void setSelected(View view, @NodeInfo.SelectedState short selectedState) {
+    if (selectedState == NodeInfo.SELECTED_SET_TRUE) {
+      view.setSelected(true);
+    } else if (selectedState == NodeInfo.SELECTED_SET_FALSE) {
+      view.setSelected(false);
+    }
+  }
+
+  private static void unsetSelected(View view, MountItem mountItem) {
+    view.setSelected(MountItem.isViewSelected(mountItem.getFlags()));
   }
 
   private static void setScale(View view, NodeInfo nodeInfo) {

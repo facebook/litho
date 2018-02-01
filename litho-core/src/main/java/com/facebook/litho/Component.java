@@ -1035,6 +1035,11 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    public T selected(boolean isSelected) {
+      mComponent.getOrCreateCommonProps().selected(isSelected);
+      return getThis();
+    }
+
     public T visibleHeightRatio(float visibleHeightRatio) {
       mComponent.getOrCreateCommonProps().visibleHeightRatio(visibleHeightRatio);
       return getThis();
