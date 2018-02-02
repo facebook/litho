@@ -675,7 +675,7 @@ public class LithoView extends ComponentHost {
     }
   }
 
-  void unmountAllItems() {
+  public void unmountAllItems() {
     mMountState.unmountAllItems();
   }
 
