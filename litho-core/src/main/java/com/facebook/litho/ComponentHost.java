@@ -1264,6 +1264,10 @@ public class ComponentHost extends ViewGroup {
           return;
         }
 
+        if (!mountItem.isBound()) {
+          continue;
+        }
+
         final boolean isTracing = ComponentsSystrace.isTracing();
         if (isTracing) {
           ComponentsSystrace.beginSection(getTraceName(mountItem));
