@@ -134,4 +134,10 @@ public class ComponentsConfiguration {
 
   /** If true then the new version of the YogaEdgeWithInts will be used. */
   public static boolean useNewYogaEdge = false;
+
+  /**
+   * Used to simulate the impact of longer layout calculations for state updates by delaying the
+   * estimated time with this percentage.
+   */
+  public static long longerStateUpdatePercentage = 0;
 }

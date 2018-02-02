@@ -210,6 +210,7 @@ class LayoutState {
   private SimpleArrayMap<String, LayoutOutput> mTransitionKeyMapping;
   private boolean mHasLithoViewWidthAnimation = false;
   private boolean mHasLithoViewHeightAnimation = false;
+  long mCalculateLayoutDuration;
 
   LayoutState() {
     mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
@@ -1108,6 +1109,7 @@ class LayoutState {
     // Detect errors internal to components
     component.markLayoutStarted();
 
+    final long timestampStartLayout = System.nanoTime();
     final LayoutState layoutState = ComponentsPools.acquireLayoutState(c);
     layoutState.clearComponents();
     layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
@@ -1208,6 +1210,8 @@ class LayoutState {
         queueDisplayListsForPrefetch(layoutState);
       }
     }
+
+    layoutState.mCalculateLayoutDuration = System.nanoTime() - timestampStartLayout;
 
     if (isTracing) {
       ComponentsSystrace.endSection();
