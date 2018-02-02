@@ -24,7 +24,7 @@ import java.util.List;
  * Wrapper that encapsulates all the features {@link RecyclerSpec} provides such as sticky header
  * and pull-to-refresh
  */
-public class RecyclerViewWrapper extends SwipeRefreshLayout implements HasLithoViewChildren {
+public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLithoViewChildren {
 
   private final LithoView mStickyHeader;
   private final RecyclerView mRecyclerView;
@@ -34,7 +34,7 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout implements HasLithoV
    */
   private boolean mHasBeenDetachedFromWindow = false;
 
-  public RecyclerViewWrapper(Context context, RecyclerView recyclerView) {
+  public SectionsRecyclerView(Context context, RecyclerView recyclerView) {
     super(context);
 
     mRecyclerView = recyclerView;
@@ -118,9 +118,9 @@ public class RecyclerViewWrapper extends SwipeRefreshLayout implements HasLithoV
         stickyHeaderTop + mStickyHeader.getMeasuredHeight());
   }
 
-  static RecyclerViewWrapper getParentWrapper(RecyclerView recyclerView) {
-    if (recyclerView.getParent() instanceof RecyclerViewWrapper) {
-      return (RecyclerViewWrapper) recyclerView.getParent();
+  static SectionsRecyclerView getParentRecycler(RecyclerView recyclerView) {
+    if (recyclerView.getParent() instanceof SectionsRecyclerView) {
+      return (SectionsRecyclerView) recyclerView.getParent();
     }
     return null;
   }

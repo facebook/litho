@@ -19,13 +19,13 @@ import com.facebook.litho.ThreadUtils;
  */
 public class RecyclerEventsController {
 
-  private RecyclerViewWrapper mRecyclerViewWrapper;
+  private SectionsRecyclerView mSectionsRecyclerView;
 
   private final Runnable mClearRefreshRunnable = new Runnable() {
     @Override
     public void run() {
-      if (mRecyclerViewWrapper != null && mRecyclerViewWrapper.isRefreshing()) {
-        mRecyclerViewWrapper.setRefreshing(false);
+      if (mSectionsRecyclerView != null && mSectionsRecyclerView.isRefreshing()) {
+        mSectionsRecyclerView.setRefreshing(false);
       }
     }
   };
@@ -44,45 +44,45 @@ public class RecyclerEventsController {
    * @param animated if animated is set to true the scroll will happen with an animation.
    */
   public void requestScrollToPosition(final int position, final boolean animated) {
-    if (mRecyclerViewWrapper == null) {
+    if (mSectionsRecyclerView == null) {
       return;
     }
 
     if (animated) {
-      mRecyclerViewWrapper.getRecyclerView().smoothScrollToPosition(position);
+      mSectionsRecyclerView.getRecyclerView().smoothScrollToPosition(position);
       return;
     }
 
-    mRecyclerViewWrapper.getRecyclerView().scrollToPosition(position);
+    mSectionsRecyclerView.getRecyclerView().scrollToPosition(position);
   }
 
   public void clearRefreshing() {
-    if (mRecyclerViewWrapper == null || !mRecyclerViewWrapper.isRefreshing()) {
+    if (mSectionsRecyclerView == null || !mSectionsRecyclerView.isRefreshing()) {
       return;
     }
 
     if (ThreadUtils.isMainThread()) {
-      mRecyclerViewWrapper.setRefreshing(false);
+      mSectionsRecyclerView.setRefreshing(false);
       return;
     }
 
-    mRecyclerViewWrapper.removeCallbacks(mClearRefreshRunnable);
-    mRecyclerViewWrapper.post(mClearRefreshRunnable);
+    mSectionsRecyclerView.removeCallbacks(mClearRefreshRunnable);
+    mSectionsRecyclerView.post(mClearRefreshRunnable);
   }
 
   public void showRefreshing() {
-    if (mRecyclerViewWrapper == null || mRecyclerViewWrapper.isRefreshing()) {
+    if (mSectionsRecyclerView == null || mSectionsRecyclerView.isRefreshing()) {
       return;
     }
     ThreadUtils.assertMainThread();
-    mRecyclerViewWrapper.setRefreshing(true);
+    mSectionsRecyclerView.setRefreshing(true);
   }
 
-  void setRecyclerViewWrapper(RecyclerViewWrapper recyclerViewWrapper) {
-    mRecyclerViewWrapper = recyclerViewWrapper;
+  void setSectionsRecyclerView(SectionsRecyclerView SectionsrecyclerView) {
+    mSectionsRecyclerView = SectionsrecyclerView;
   }
 
   protected @Nullable RecyclerView getRecyclerView() {
-    return mRecyclerViewWrapper == null ? null : mRecyclerViewWrapper.getRecyclerView();
+    return mSectionsRecyclerView == null ? null : mSectionsRecyclerView.getRecyclerView();
   }
 }

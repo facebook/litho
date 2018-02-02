@@ -1151,15 +1151,15 @@ public class RecyclerBinder
     if (recyclerView == null) {
       return;
     }
-    RecyclerViewWrapper recyclerViewWrapper = RecyclerViewWrapper.getParentWrapper(recyclerView);
-    if (recyclerViewWrapper == null) {
+    SectionsRecyclerView sectionsRecycler = SectionsRecyclerView.getParentRecycler(recyclerView);
+    if (sectionsRecycler == null) {
       return;
     }
     if (mStickyHeaderController == null) {
       mStickyHeaderController = new StickyHeaderController(this);
     }
 
-    mStickyHeaderController.init(recyclerViewWrapper);
+    mStickyHeaderController.init(sectionsRecycler);
   }
 
   /**

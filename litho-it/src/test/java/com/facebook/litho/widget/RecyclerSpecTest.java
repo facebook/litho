@@ -37,17 +37,17 @@ import org.robolectric.RuntimeEnvironment;
 public class RecyclerSpecTest {
 
   private ComponentContext mComponentContext;
-  private RecyclerViewWrapper mRecyclerViewWrapper;
+  private SectionsRecyclerView mSectionsRecyclerView;
   private LithoRecylerView mRecyclerView;
   private ItemAnimator mAnimator;
 
   @Before
   public void setup() {
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
-    mRecyclerViewWrapper = mock(RecyclerViewWrapper.class);
+    mSectionsRecyclerView = mock(SectionsRecyclerView.class);
     mRecyclerView = mock(LithoRecylerView.class);
-    when(mRecyclerViewWrapper.getRecyclerView()).thenReturn(mRecyclerView);
-    when(mRecyclerViewWrapper.hasBeenDetachedFromWindow()).thenReturn(true);
+    when(mSectionsRecyclerView.getRecyclerView()).thenReturn(mRecyclerView);
+    when(mSectionsRecyclerView.hasBeenDetachedFromWindow()).thenReturn(true);
 
     mAnimator = mock(RecyclerView.ItemAnimator.class);
     when(mRecyclerView.getItemAnimator()).thenReturn(mAnimator);
@@ -70,7 +70,7 @@ public class RecyclerSpecTest {
 
     RecyclerSpec.onBind(
         mComponentContext,
-        mRecyclerViewWrapper,
+        mSectionsRecyclerView,
         mAnimator,
         binder,
         null,
@@ -81,21 +81,21 @@ public class RecyclerSpecTest {
         onRefreshListener,
         oldAnimator);
 
-    verify(mRecyclerViewWrapper).setEnabled(true);
-    verify(mRecyclerViewWrapper).setOnRefreshListener(onRefreshListener);
-    verify(mRecyclerViewWrapper, times(1)).getRecyclerView();
+    verify(mSectionsRecyclerView).setEnabled(true);
+    verify(mSectionsRecyclerView).setOnRefreshListener(onRefreshListener);
+    verify(mSectionsRecyclerView, times(1)).getRecyclerView();
     verify(oldAnimator).set(mAnimator);
     verify(mRecyclerView).setItemAnimator(any(ItemAnimator.class));
     verify(mRecyclerView, times(size)).addOnScrollListener(any(OnScrollListener.class));
     verify(mRecyclerView).setTouchInterceptor(touchInterceptor);
     verify(binder).bind(mRecyclerView);
     verify(mRecyclerView, times(1)).requestLayout();
-    verify(mRecyclerViewWrapper).setHasBeenDetachedFromWindow(false);
+    verify(mSectionsRecyclerView).setHasBeenDetachedFromWindow(false);
   }
 
   @Test
   public void testRecyclerSpecOnUnbind() {
-    when(mRecyclerViewWrapper.hasBeenDetachedFromWindow()).thenReturn(true);
+    when(mSectionsRecyclerView.hasBeenDetachedFromWindow()).thenReturn(true);
 
     Binder<RecyclerView> binder = mock(Binder.class);
 
@@ -106,7 +106,7 @@ public class RecyclerSpecTest {
 
     RecyclerSpec.onUnbind(
         mComponentContext,
-        mRecyclerViewWrapper,
+        mSectionsRecyclerView,
         binder,
         null,
         scrollListeners,
@@ -115,7 +115,7 @@ public class RecyclerSpecTest {
     verify(mRecyclerView).setItemAnimator(mAnimator);
     verify(binder).unbind(mRecyclerView);
     verify(mRecyclerView, times(size)).removeOnScrollListener(any(OnScrollListener.class));
-    verify(mRecyclerViewWrapper).setOnRefreshListener(null);
+    verify(mSectionsRecyclerView).setOnRefreshListener(null);
   }
 
   private static List<RecyclerView.OnScrollListener> createListOfScrollListeners(int size) {

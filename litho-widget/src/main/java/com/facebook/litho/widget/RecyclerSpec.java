@@ -107,8 +107,8 @@ class RecyclerSpec {
   }
 
   @OnCreateMountContent
-  static RecyclerViewWrapper onCreateMountContent(ComponentContext c) {
-    return new RecyclerViewWrapper(c, new LithoRecylerView(c));
+  static SectionsRecyclerView onCreateMountContent(ComponentContext c) {
+    return new SectionsRecyclerView(c, new LithoRecylerView(c));
   }
 
   @OnPrepare
@@ -129,7 +129,7 @@ class RecyclerSpec {
   @OnMount
   static void onMount(
       ComponentContext c,
-      RecyclerViewWrapper recyclerViewWrapper,
+      SectionsRecyclerView sectionsRecycler,
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) boolean hasFixedSize,
       @Prop(optional = true) boolean clipToPadding,
@@ -147,22 +147,22 @@ class RecyclerSpec {
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
       @Prop(optional = true) @IdRes int recyclerViewId,
       @Prop(optional = true) int overScrollMode) {
-    final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
+    final RecyclerView recyclerView = sectionsRecycler.getRecyclerView();
 
     if (recyclerView == null) {
       throw new IllegalStateException(
           "RecyclerView not found, it should not be removed from SwipeRefreshLayout");
     }
 
-    recyclerViewWrapper.setColorSchemeColors(refreshProgressBarColor);
+    sectionsRecycler.setColorSchemeColors(refreshProgressBarColor);
     recyclerView.setHasFixedSize(hasFixedSize);
     recyclerView.setClipToPadding(clipToPadding);
-    recyclerViewWrapper.setClipToPadding(clipToPadding);
+    sectionsRecycler.setClipToPadding(clipToPadding);
     recyclerView.setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
     recyclerView.setClipChildren(clipChildren);
-    recyclerViewWrapper.setClipChildren(clipChildren);
+    sectionsRecycler.setClipChildren(clipChildren);
     recyclerView.setNestedScrollingEnabled(nestedScrollingEnabled);
-    recyclerViewWrapper.setNestedScrollingEnabled(nestedScrollingEnabled);
+    sectionsRecycler.setNestedScrollingEnabled(nestedScrollingEnabled);
     recyclerView.setScrollBarStyle(scrollBarStyle);
     recyclerView.setHorizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled);
     recyclerView.setVerticalFadingEdgeEnabled(verticalFadingEdgeEnabled);
@@ -181,7 +181,7 @@ class RecyclerSpec {
   @OnBind
   protected static void onBind(
       ComponentContext context,
-      RecyclerViewWrapper recyclerViewWrapper,
+      SectionsRecyclerView sectionsRecycler,
       @Prop(optional = true) ItemAnimator itemAnimator,
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) final RecyclerEventsController recyclerEventsController,
@@ -192,10 +192,10 @@ class RecyclerSpec {
       @FromPrepare OnRefreshListener onRefreshListener,
       Output<ItemAnimator> oldAnimator) {
 
-    recyclerViewWrapper.setEnabled(pullToRefresh && onRefreshListener != null);
-    recyclerViewWrapper.setOnRefreshListener(onRefreshListener);
+    sectionsRecycler.setEnabled(pullToRefresh && onRefreshListener != null);
+    sectionsRecycler.setOnRefreshListener(onRefreshListener);
 
-    final LithoRecylerView recyclerView = (LithoRecylerView) recyclerViewWrapper.getRecyclerView();
+    final LithoRecylerView recyclerView = (LithoRecylerView) sectionsRecycler.getRecyclerView();
 
     if (recyclerView == null) {
       throw new IllegalStateException(
@@ -227,24 +227,24 @@ class RecyclerSpec {
     binder.bind(recyclerView);
 
     if (recyclerEventsController != null) {
-      recyclerEventsController.setRecyclerViewWrapper(recyclerViewWrapper);
+      recyclerEventsController.setSectionsRecyclerView(sectionsRecycler);
     }
 
-    if (recyclerViewWrapper.hasBeenDetachedFromWindow()) {
+    if (sectionsRecycler.hasBeenDetachedFromWindow()) {
       recyclerView.requestLayout();
-      recyclerViewWrapper.setHasBeenDetachedFromWindow(false);
+      sectionsRecycler.setHasBeenDetachedFromWindow(false);
     }
   }
 
   @OnUnbind
   static void onUnbind(
       ComponentContext context,
-      RecyclerViewWrapper recyclerViewWrapper,
+      SectionsRecyclerView sectionsRecycler,
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) RecyclerEventsController recyclerEventsController,
       @Prop(optional = true, varArg = "onScrollListener") List<OnScrollListener> onScrollListeners,
       @FromBind ItemAnimator oldAnimator) {
-    final LithoRecylerView recyclerView = (LithoRecylerView) recyclerViewWrapper.getRecyclerView();
+    final LithoRecylerView recyclerView = (LithoRecylerView) sectionsRecycler.getRecyclerView();
 
     if (recyclerView == null) {
       throw new IllegalStateException(
@@ -257,7 +257,7 @@ class RecyclerSpec {
     binder.unbind(recyclerView);
 
     if (recyclerEventsController != null) {
-      recyclerEventsController.setRecyclerViewWrapper(null);
+      recyclerEventsController.setSectionsRecyclerView(null);
     }
 
     if (onScrollListeners != null) {
@@ -268,17 +268,17 @@ class RecyclerSpec {
 
     recyclerView.setTouchInterceptor(null);
 
-    recyclerViewWrapper.setOnRefreshListener(null);
+    sectionsRecycler.setOnRefreshListener(null);
   }
 
   @OnUnmount
   static void onUnmount(
       ComponentContext context,
-      RecyclerViewWrapper recyclerViewWrapper,
+      SectionsRecyclerView sectionsRecycler,
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
       @Prop(optional = true) SnapHelper snapHelper) {
-    final RecyclerView recyclerView = recyclerViewWrapper.getRecyclerView();
+    final RecyclerView recyclerView = sectionsRecycler.getRecyclerView();
 
     if (recyclerView == null) {
       throw new IllegalStateException(

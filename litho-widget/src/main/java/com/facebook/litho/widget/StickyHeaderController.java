@@ -19,22 +19,22 @@ import com.facebook.litho.LithoView;
 
 /**
  * Controller that handles sticky header logic. Depending on where the sticky item is located in the
- * list, we might either use first child as sticky header or use {@link RecyclerViewWrapper}'s
+ * list, we might either use first child as sticky header or use {@link SectionsRecyclerView}'s
  * sticky header.
  */
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 class StickyHeaderController extends RecyclerView.OnScrollListener {
 
-  static final String WRAPPER_ARGUMENT_NULL = "Cannot initialize with null RecyclerViewWrapper.";
-  static final String WRAPPER_ALREADY_INITIALIZED =
-          "RecyclerViewWrapper has already been initialized but never reset.";
-  static final String WRAPPER_NOT_INITIALIZED = "RecyclerViewWrapper has not been set yet.";
+  static final String RECYCLER_ARGUMENT_NULL = "Cannot initialize with null SectionsRecyclerView.";
+  static final String RECYCLER_ALREADY_INITIALIZED =
+          "SectionsRecyclerView has already been initialized but never reset.";
+  static final String RECYCLER_NOT_INITIALIZED = "SectionsRecyclerView has not been set yet.";
   static final String LAYOUTMANAGER_NOT_INITIALIZED =
       "LayoutManager of RecyclerView is not initialized yet.";
 
   private final HasStickyHeader mHasStickyHeader;
 
-  private RecyclerViewWrapper mRecyclerViewWrapper;
+  private SectionsRecyclerView mSectionsRecyclerView;
   private RecyclerView.LayoutManager mLayoutManager;
   private View lastTranslatedView;
   private int previousStickyHeaderPosition = RecyclerView.NO_POSITION;
@@ -43,33 +43,33 @@ class StickyHeaderController extends RecyclerView.OnScrollListener {
     mHasStickyHeader = hasStickyHeader;
   }
 
-  void init(RecyclerViewWrapper recyclerViewWrapper) {
-    if (recyclerViewWrapper == null) {
-      throw new RuntimeException(WRAPPER_ARGUMENT_NULL);
+  void init(SectionsRecyclerView SectionsRecyclerView) {
+    if (SectionsRecyclerView == null) {
+      throw new RuntimeException(RECYCLER_ARGUMENT_NULL);
     }
 
-    if (mRecyclerViewWrapper != null) {
-      throw new RuntimeException(WRAPPER_ALREADY_INITIALIZED);
+    if (mSectionsRecyclerView != null) {
+      throw new RuntimeException(RECYCLER_ALREADY_INITIALIZED);
     }
 
-    mRecyclerViewWrapper = recyclerViewWrapper;
-    mRecyclerViewWrapper.hideStickyHeader();
-    mLayoutManager = recyclerViewWrapper.getRecyclerView().getLayoutManager();
+    mSectionsRecyclerView = SectionsRecyclerView;
+    mSectionsRecyclerView.hideStickyHeader();
+    mLayoutManager = SectionsRecyclerView.getRecyclerView().getLayoutManager();
     if (mLayoutManager == null) {
       throw new RuntimeException(LAYOUTMANAGER_NOT_INITIALIZED);
     }
 
-    mRecyclerViewWrapper.getRecyclerView().addOnScrollListener(this);
+    mSectionsRecyclerView.getRecyclerView().addOnScrollListener(this);
   }
 
   void reset() {
-    if (mRecyclerViewWrapper == null) {
-      throw new IllegalStateException(WRAPPER_NOT_INITIALIZED);
+    if (mSectionsRecyclerView == null) {
+      throw new IllegalStateException(RECYCLER_NOT_INITIALIZED);
     }
 
-    mRecyclerViewWrapper.getRecyclerView().removeOnScrollListener(this);
+    mSectionsRecyclerView.getRecyclerView().removeOnScrollListener(this);
     mLayoutManager = null;
-    mRecyclerViewWrapper = null;
+    mSectionsRecyclerView = null;
   }
 
   @Override
@@ -94,7 +94,7 @@ class StickyHeaderController extends RecyclerView.OnScrollListener {
 
     if (stickyHeaderPosition == RecyclerView.NO_POSITION || firstVisibleItemComponentTree == null) {
       // no sticky header above first visible position, reset the state
-      mRecyclerViewWrapper.hideStickyHeader();
+      mSectionsRecyclerView.hideStickyHeader();
       previousStickyHeaderPosition = RecyclerView.NO_POSITION;
       return;
     }
@@ -114,14 +114,14 @@ class StickyHeaderController extends RecyclerView.OnScrollListener {
       }
 
       lastTranslatedView = firstVisibleView;
-      mRecyclerViewWrapper.hideStickyHeader();
+      mSectionsRecyclerView.hideStickyHeader();
       previousStickyHeaderPosition = RecyclerView.NO_POSITION;
     } else {
 
-      if (mRecyclerViewWrapper.isStickyHeaderHidden()
+      if (mSectionsRecyclerView.isStickyHeaderHidden()
           || stickyHeaderPosition != previousStickyHeaderPosition) {
         initStickyHeader(stickyHeaderPosition);
-        mRecyclerViewWrapper.showStickyHeader();
+        mSectionsRecyclerView.showStickyHeader();
       }
 
       // Translate sticky header
@@ -131,13 +131,13 @@ class StickyHeaderController extends RecyclerView.OnScrollListener {
         if (mHasStickyHeader.isSticky(i)) {
           final View nextStickyHeader = mLayoutManager.findViewByPosition(i);
           final int offsetBetweenStickyHeaders = nextStickyHeader.getTop()
-              - mRecyclerViewWrapper.getStickyHeader().getBottom()
-              + mRecyclerViewWrapper.getPaddingTop();
+              - mSectionsRecyclerView.getStickyHeader().getBottom()
+              + mSectionsRecyclerView.getPaddingTop();
           translationY = Math.min(offsetBetweenStickyHeaders, 0);
           break;
         }
       }
-      mRecyclerViewWrapper.setStickyHeaderVerticalOffset(translationY);
+      mSectionsRecyclerView.setStickyHeaderVerticalOffset(translationY);
       previousStickyHeaderPosition = stickyHeaderPosition;
     }
   }
@@ -147,7 +147,7 @@ class StickyHeaderController extends RecyclerView.OnScrollListener {
     // RecyclerView might not have yet detached the view that this componentTree bound to,
     // so detach it if that is the case.
     detachLithoViewIfNeeded(componentTree.getLithoView());
-    mRecyclerViewWrapper.setStickyComponent(componentTree);
+    mSectionsRecyclerView.setStickyComponent(componentTree);
   }
 
   private static void detachLithoViewIfNeeded(LithoView view) {

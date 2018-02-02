@@ -27,14 +27,14 @@ import org.junit.runner.RunWith;
 @RunWith(ComponentsTestRunner.class)
 public class RecyclerEventsControllerTest {
 
-  private RecyclerViewWrapper mRecyclerViewWrapper;
+  private SectionsRecyclerView mSectionsRecyclerView;
   private RecyclerEventsController mRecyclerEventsController;
 
   @Before
   public void setup() {
     mRecyclerEventsController = new RecyclerEventsController();
-    mRecyclerViewWrapper = mock(RecyclerViewWrapper.class);
-    mRecyclerEventsController.setRecyclerViewWrapper(mRecyclerViewWrapper);
+    mSectionsRecyclerView = mock(SectionsRecyclerView.class);
+    mRecyclerEventsController.setSectionsRecyclerView(mSectionsRecyclerView);
   }
 
   @After
@@ -44,52 +44,52 @@ public class RecyclerEventsControllerTest {
 
   @Test
   public void testClearRefreshingOnNotRefreshingView() {
-    when(mRecyclerViewWrapper.isRefreshing()).thenReturn(false);
+    when(mSectionsRecyclerView.isRefreshing()).thenReturn(false);
 
     mRecyclerEventsController.clearRefreshing();
 
-    verify(mRecyclerViewWrapper, never()).setRefreshing(anyBoolean());
-    verify(mRecyclerViewWrapper, never()).removeCallbacks(any(Runnable.class));
-    verify(mRecyclerViewWrapper, never()).post(any(Runnable.class));
+    verify(mSectionsRecyclerView, never()).setRefreshing(anyBoolean());
+    verify(mSectionsRecyclerView, never()).removeCallbacks(any(Runnable.class));
+    verify(mSectionsRecyclerView, never()).post(any(Runnable.class));
   }
 
   @Test
   public void testClearRefreshingFromUIThread() {
-    when(mRecyclerViewWrapper.isRefreshing()).thenReturn(true);
+    when(mSectionsRecyclerView.isRefreshing()).thenReturn(true);
     ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_MAIN_THREAD_TRUE);
 
     mRecyclerEventsController.clearRefreshing();
 
-    verify(mRecyclerViewWrapper).setRefreshing(false);
-    verify(mRecyclerViewWrapper, never()).removeCallbacks(any(Runnable.class));
-    verify(mRecyclerViewWrapper, never()).post(any(Runnable.class));
+    verify(mSectionsRecyclerView).setRefreshing(false);
+    verify(mSectionsRecyclerView, never()).removeCallbacks(any(Runnable.class));
+    verify(mSectionsRecyclerView, never()).post(any(Runnable.class));
   }
 
   @Test
   public void testClearRefreshingFromNonUIThread() {
-    when(mRecyclerViewWrapper.isRefreshing()).thenReturn(true);
+    when(mSectionsRecyclerView.isRefreshing()).thenReturn(true);
     ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_MAIN_THREAD_FALSE);
 
     mRecyclerEventsController.clearRefreshing();
 
-    verify(mRecyclerViewWrapper, times(1)).removeCallbacks(any(Runnable.class));
-    verify(mRecyclerViewWrapper, times(1)).post(any(Runnable.class));
+    verify(mSectionsRecyclerView, times(1)).removeCallbacks(any(Runnable.class));
+    verify(mSectionsRecyclerView, times(1)).post(any(Runnable.class));
   }
 
   @Test
   public void testShowRefreshingFromUIThread() {
-    when(mRecyclerViewWrapper.isRefreshing()).thenReturn(false);
+    when(mSectionsRecyclerView.isRefreshing()).thenReturn(false);
     ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_MAIN_THREAD_TRUE);
 
     mRecyclerEventsController.showRefreshing();
-    verify(mRecyclerViewWrapper).setRefreshing(true);
+    verify(mSectionsRecyclerView).setRefreshing(true);
   }
 
   @Test
   public void testShowRefreshingAlreadyRefreshing() {
-    when(mRecyclerViewWrapper.isRefreshing()).thenReturn(true);
+    when(mSectionsRecyclerView.isRefreshing()).thenReturn(true);
 
     mRecyclerEventsController.showRefreshing();
-    verify(mRecyclerViewWrapper, never()).setRefreshing(anyBoolean());
+    verify(mSectionsRecyclerView, never()).setRefreshing(anyBoolean());
   }
 }

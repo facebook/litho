@@ -338,13 +338,13 @@ public class RecyclerBinderTest {
   }
 
   @Test
-  public void testAddStickyHeaderIfRecyclerViewWrapperExists() throws Exception {
+  public void testAddStickyHeaderIfSectionsRecyclerViewExists() throws Exception {
     RecyclerView recyclerView = mock(RecyclerView.class);
-    RecyclerViewWrapper wrapper = mock(RecyclerViewWrapper.class);
+    SectionsRecyclerView recycler = mock(SectionsRecyclerView.class);
 
-    when(recyclerView.getParent()).thenReturn(wrapper);
+    when(recyclerView.getParent()).thenReturn(recycler);
     when(recyclerView.getLayoutManager()).thenReturn(mock(RecyclerView.LayoutManager.class));
-    when(wrapper.getRecyclerView()).thenReturn(recyclerView);
+    when(recycler.getRecyclerView()).thenReturn(recyclerView);
 
     mRecyclerBinder.mount(recyclerView);
 

@@ -47,48 +47,48 @@ public class StickyHeaderControllerTest {
 
   @Test
   public void testInitNoLayoutManager() {
-    RecyclerViewWrapper wrapper = mock(RecyclerViewWrapper.class);
+    SectionsRecyclerView recycler = mock(SectionsRecyclerView.class);
     RecyclerView recyclerView = mock(RecyclerView.class);
-    when(wrapper.getRecyclerView()).thenReturn(recyclerView);
+    when(recycler.getRecyclerView()).thenReturn(recyclerView);
 
     thrown.expect(RuntimeException.class);
     thrown.expectMessage(StickyHeaderController.LAYOUTMANAGER_NOT_INITIALIZED);
-    mStickyHeaderController.init(wrapper);
+    mStickyHeaderController.init(recycler);
   }
 
   @Test
   public void testInitTwiceWithoutReset() {
-    RecyclerViewWrapper wrapper1 = mock(RecyclerViewWrapper.class);
+    SectionsRecyclerView recycler1 = mock(SectionsRecyclerView.class);
     RecyclerView recyclerView1 = mock(RecyclerView.class);
-    when(wrapper1.getRecyclerView()).thenReturn(recyclerView1);
+    when(recycler1.getRecyclerView()).thenReturn(recyclerView1);
     when(recyclerView1.getLayoutManager()).thenReturn(mock(RecyclerView.LayoutManager.class));
-    mStickyHeaderController.init(wrapper1);
+    mStickyHeaderController.init(recycler1);
 
-    RecyclerViewWrapper wrapper2 = mock(RecyclerViewWrapper.class);
+    SectionsRecyclerView recycler2 = mock(SectionsRecyclerView.class);
     RecyclerView recyclerView2 = mock(RecyclerView.class);
     when(recyclerView2.getLayoutManager()).thenReturn(mock(RecyclerView.LayoutManager.class));
-    when(wrapper2.getRecyclerView()).thenReturn(recyclerView2);
+    when(recycler2.getRecyclerView()).thenReturn(recyclerView2);
 
     thrown.expect(RuntimeException.class);
-    thrown.expectMessage(StickyHeaderController.WRAPPER_ALREADY_INITIALIZED);
-    mStickyHeaderController.init(wrapper2);
+    thrown.expectMessage(StickyHeaderController.RECYCLER_ALREADY_INITIALIZED);
+    mStickyHeaderController.init(recycler2);
   }
 
   @Test
   public void testResetBeforeInit() {
     thrown.expect(RuntimeException.class);
-    thrown.expectMessage(StickyHeaderController.WRAPPER_NOT_INITIALIZED);
+    thrown.expectMessage(StickyHeaderController.RECYCLER_NOT_INITIALIZED);
 
     mStickyHeaderController.reset();
   }
 
   @Test
   public void testTranslateRecyclerViewChild() {
-    RecyclerViewWrapper wrapper = mock(RecyclerViewWrapper.class);
+    SectionsRecyclerView recycler = mock(SectionsRecyclerView.class);
     RecyclerView recyclerView = mock(RecyclerView.class);
-    when(wrapper.getRecyclerView()).thenReturn(recyclerView);
+    when(recycler.getRecyclerView()).thenReturn(recyclerView);
     when(recyclerView.getLayoutManager()).thenReturn(mock(RecyclerView.LayoutManager.class));
-    mStickyHeaderController.init(wrapper);
+    mStickyHeaderController.init(recycler);
 
     when(mHasStickyHeader.findFirstVisibleItemPosition()).thenReturn(2);
     when(mHasStickyHeader.isSticky(2)).thenReturn(true);
@@ -101,16 +101,16 @@ public class StickyHeaderControllerTest {
     mStickyHeaderController.onScrolled(null, 0, 0);
 
     verify(lithoView).setTranslationY(anyFloat());
-    verify(wrapper, times(2)).hideStickyHeader();
+    verify(recycler, times(2)).hideStickyHeader();
   }
 
   @Test
-  public void testTranslateWrapperChild() {
-    RecyclerViewWrapper wrapper = mock(RecyclerViewWrapper.class);
+  public void testTranslaterecyclerChild() {
+    SectionsRecyclerView recycler = mock(SectionsRecyclerView.class);
     RecyclerView recyclerView = mock(RecyclerView.class);
-    when(wrapper.getRecyclerView()).thenReturn(recyclerView);
+    when(recycler.getRecyclerView()).thenReturn(recyclerView);
     when(recyclerView.getLayoutManager()).thenReturn(mock(RecyclerView.LayoutManager.class));
-    mStickyHeaderController.init(wrapper);
+    mStickyHeaderController.init(recycler);
 
     when(mHasStickyHeader.findFirstVisibleItemPosition()).thenReturn(6);
     when(mHasStickyHeader.isSticky(2)).thenReturn(true);
@@ -120,16 +120,16 @@ public class StickyHeaderControllerTest {
 
     mStickyHeaderController.onScrolled(null, 0, 0);
 
-    verify(wrapper).setStickyHeaderVerticalOffset(any(Integer.class));
+    verify(recycler).setStickyHeaderVerticalOffset(any(Integer.class));
   }
 
   @Test
   public void testTranslateStackedStickyHeaders() {
-    RecyclerViewWrapper wrapper = mock(RecyclerViewWrapper.class);
+    SectionsRecyclerView recycler = mock(SectionsRecyclerView.class);
     RecyclerView recyclerView = mock(RecyclerView.class);
-    when(wrapper.getRecyclerView()).thenReturn(recyclerView);
+    when(recycler.getRecyclerView()).thenReturn(recyclerView);
     when(recyclerView.getLayoutManager()).thenReturn(mock(RecyclerView.LayoutManager.class));
-    mStickyHeaderController.init(wrapper);
+    mStickyHeaderController.init(recycler);
 
     when(mHasStickyHeader.findFirstVisibleItemPosition()).thenReturn(2);
     when(mHasStickyHeader.isSticky(2)).thenReturn(true);
@@ -144,6 +144,6 @@ public class StickyHeaderControllerTest {
     mStickyHeaderController.onScrolled(null, 0, 0);
 
     verify(lithoView, never()).setTranslationY(any(Integer.class));
-    verify(wrapper, times(2)).hideStickyHeader();
+    verify(recycler, times(2)).hideStickyHeader();
   }
 }
