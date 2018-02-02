@@ -28,6 +28,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_UNMOUNTED_COUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_UPDATED_COUNT;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
+import android.animation.StateListAnimator;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -1165,6 +1166,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
     if (viewNodeInfo != null) {
       setViewClipChildren(view, viewNodeInfo);
+      setViewStateListAnimator(view, viewNodeInfo);
       if (!isHostSpec(component)) {
         // Set view background, if applicable.  Do this before padding
         // as it otherwise overrides the padding.
@@ -1240,6 +1242,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
     if (viewNodeInfo != null) {
       unsetViewClipChildren(view);
+      unsetViewStateListAnimator(view, viewNodeInfo);
       if (!isHostSpec(component)) {
         unsetViewPadding(view, viewNodeInfo);
         unsetViewBackground(view, viewNodeInfo);
@@ -1772,6 +1775,32 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (view instanceof ViewGroup) {
       // Default value for clipChildren is 'true'.
       ((ViewGroup) view).setClipChildren(true);
+    }
+  }
+
+  private static void setViewStateListAnimator(View view, ViewNodeInfo viewNodeInfo) {
+    StateListAnimator stateListAnimator = viewNodeInfo.getStateListAnimator();
+    if (stateListAnimator != null) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        view.setStateListAnimator(stateListAnimator);
+      } else {
+        throw new IllegalStateException(
+            "MountState has a ViewNodeInfo with stateListAnimator, "
+                + "however the current Android version doesn't support foreground on Views");
+      }
+    }
+  }
+
+  private static void unsetViewStateListAnimator(View view, ViewNodeInfo viewNodeInfo) {
+    StateListAnimator stateListAnimator = viewNodeInfo.getStateListAnimator();
+    if (stateListAnimator != null) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        view.setStateListAnimator(null);
+      } else {
+        throw new IllegalStateException(
+            "MountState has a ViewNodeInfo with stateListAnimator, "
+                + "however the current Android version doesn't support foreground on Views");
+      }
     }
   }
 

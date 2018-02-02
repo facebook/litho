@@ -13,9 +13,12 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import android.animation.StateListAnimator;
+import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.SparseArray;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.reference.DrawableReference;
@@ -45,6 +48,7 @@ public class CommonPropsTest {
   }
 
   @Test
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public void testSetPropsAndBuild() {
     mCommonProps.layoutDirection(YogaDirection.INHERIT);
     mCommonProps.alignSelf(YogaAlign.AUTO);
@@ -181,6 +185,9 @@ public class CommonPropsTest {
     mCommonProps.sendAccessibilityEventHandler(sendAccessibilityEventHandler);
     mCommonProps.sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
 
+    final StateListAnimator stateListAnimator = mock(StateListAnimator.class);
+    mCommonProps.stateListAnimator(stateListAnimator);
+
     mCommonProps.copyInto(mComponentContext, mNode);
 
     verify(mNode).layoutDirection(YogaDirection.INHERIT);
@@ -288,5 +295,7 @@ public class CommonPropsTest {
     verify(mNode).performAccessibilityActionHandler(performAccessibilityActionHandler);
     verify(mNode).sendAccessibilityEventHandler(sendAccessibilityEventHandler);
     verify(mNode).sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
+
+    verify(mNode).stateListAnimator(stateListAnimator);
   }
 }

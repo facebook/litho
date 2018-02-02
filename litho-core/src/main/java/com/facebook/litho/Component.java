@@ -13,8 +13,11 @@ import static android.support.annotation.Dimension.DP;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_WARNING;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
 
+import android.animation.AnimatorInflater;
+import android.animation.StateListAnimator;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.AttrRes;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DimenRes;
@@ -1227,6 +1230,34 @@ public abstract class Component extends ComponentLifecycle
      */
     public T scale(float scale) {
       mComponent.getOrCreateCommonProps().scale(scale);
+      return getThis();
+    }
+
+    /**
+     * Ports {@link android.view.View#setStateListAnimator(android.animation.StateListAnimator)}
+     * into components world. However, since the aforementioned view's method is available only on
+     * API 21 and above, calling this method on lower APIs will have no effect. On the legit
+     * versions, on the other hand, calling this method will lead to the component being wrapped
+     * into a view
+     */
+    public T stateListAnimator(StateListAnimator stateListAnimator) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        mComponent.getOrCreateCommonProps().stateListAnimator(stateListAnimator);
+      }
+      return getThis();
+    }
+
+    /**
+     * Ports {@link android.view.View#setStateListAnimator(android.animation.StateListAnimator)}
+     * into components world. However, since the aforementioned view's method is available only on
+     * API 21 and above, calling this method on lower APIs will have no effect. On the legit
+     * versions, on the other hand, calling this method will lead to the component being wrapped
+     * into a view
+     */
+    public T stateListAnimatorRes(@DrawableRes int resId) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        return stateListAnimator(AnimatorInflater.loadStateListAnimator(mContext, resId));
+      }
       return getThis();
     }
   }

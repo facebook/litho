@@ -9,6 +9,7 @@
 
 package com.facebook.litho;
 
+import android.animation.StateListAnimator;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.Nullable;
@@ -381,6 +382,10 @@ class CommonProps {
     getOrCreateOtherProps().transitionKey(key);
   }
 
+  void stateListAnimator(StateListAnimator stateListAnimator) {
+    getOrCreateOtherProps().stateListAnimator(stateListAnimator);
+  }
+
   private NodeInfo getOrCreateNodeInfo() {
     if (mNodeInfo == null) {
       mNodeInfo = NodeInfo.acquire();
@@ -466,6 +471,7 @@ class CommonProps {
     private static final long PFLAG_MIN_HEIGHT_PERCENT_IS_SET = 1L << 35;
     private static final long PFLAG_MAX_HEIGHT_PERCENT_IS_SET = 1L << 36;
     private static final long PFLAG_BORDER_IS_SET = 1L << 37;
+    private static final long PFLAG_STATE_LIST_ANIMATOR_IS_SET = 1L << 38;
 
     private long mPrivateFlags;
 
@@ -506,6 +512,7 @@ class CommonProps {
     private Drawable mForeground;
     private String mTransitionKey;
     private Border mBorder;
+    private StateListAnimator mStateListAnimator;
 
     private void layoutDirection(YogaDirection direction) {
       mPrivateFlags |= PFLAG_LAYOUT_DIRECTION_IS_SET;
@@ -724,6 +731,11 @@ class CommonProps {
       mTransitionKey = key;
     }
 
+    private void stateListAnimator(StateListAnimator stateListAnimator) {
+      mPrivateFlags |= PFLAG_STATE_LIST_ANIMATOR_IS_SET;
+      mStateListAnimator = stateListAnimator;
+    }
+
     void copyInto(InternalNode node) {
       if ((mPrivateFlags & PFLAG_LAYOUT_DIRECTION_IS_SET) != 0L) {
         node.layoutDirection(mLayoutDirection);
@@ -852,6 +864,9 @@ class CommonProps {
       }
       if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
         node.border(mBorder);
+      }
+      if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_IS_SET) != 0) {
+        node.stateListAnimator(mStateListAnimator);
       }
     }
   }

@@ -9,12 +9,14 @@
 
 package com.facebook.litho;
 
+import android.animation.StateListAnimator;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaDirection;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
 
 /**
  * Additional information passed between {@link LayoutState} and {@link MountState}
@@ -31,6 +33,7 @@ class ViewNodeInfo {
   private YogaDirection mLayoutDirection;
   private String mTransitionKey;
   private boolean mClipChildren;
+  private @Nullable StateListAnimator mStateListAnimator;
 
   void setBackground(Reference<? extends Drawable> background) {
     mBackground = (Reference<Drawable>) background;
@@ -139,6 +142,15 @@ class ViewNodeInfo {
     return mClipChildren;
   }
 
+  @Nullable
+  StateListAnimator getStateListAnimator() {
+    return mStateListAnimator;
+  }
+
+  void setStateListAnimator(StateListAnimator stateListAnimator) {
+    mStateListAnimator = stateListAnimator;
+  }
+
   static ViewNodeInfo acquire() {
     final ViewNodeInfo viewNodeInfo = ComponentsPools.acquireViewNodeInfo();
 
@@ -171,6 +183,7 @@ class ViewNodeInfo {
     mForeground = null;
     mLayoutDirection = YogaDirection.INHERIT;
     mTransitionKey = null;
+    mStateListAnimator = null;
 
     if (mPadding != null) {
       ComponentsPools.release(mPadding);

@@ -14,10 +14,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.RuntimeEnvironment.application;
 
+import android.animation.StateListAnimator;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 import android.util.SparseArray;
@@ -37,6 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateCreateTreeTest {
@@ -308,6 +312,8 @@ public class LayoutStateCreateTreeTest {
   }
 
   @Test
+  @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public void testAddingAllAttributes() {
     final Reference<Drawable> drawableReference = DrawableReference.create().build();
     final Drawable foreground = new ColorDrawable(Color.BLACK);
@@ -339,6 +345,7 @@ public class LayoutStateCreateTreeTest {
         mock(EventHandler.class);
     final EventHandler<SendAccessibilityEventUncheckedEvent>
         sendAccessibilityEventUncheckedHandler = mock(EventHandler.class);
+    final StateListAnimator stateListAnimator = mock(StateListAnimator.class);
 
     final Component component =
         new InlineLayoutSpec() {
@@ -429,6 +436,7 @@ public class LayoutStateCreateTreeTest {
                 .performAccessibilityActionHandler(performAccessibilityActionHandler)
                 .sendAccessibilityEventHandler(sendAccessibilityEventHandler)
                 .sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler)
+                .stateListAnimator(stateListAnimator)
                 .build();
           }
         };
@@ -537,6 +545,8 @@ public class LayoutStateCreateTreeTest {
     verify(node).performAccessibilityActionHandler(performAccessibilityActionHandler);
     verify(node).sendAccessibilityEventHandler(sendAccessibilityEventHandler);
     verify(node).sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
+
+    verify(node).stateListAnimator(stateListAnimator);
   }
 
   @Test

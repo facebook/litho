@@ -24,6 +24,7 @@ import static com.facebook.yoga.YogaEdge.START;
 import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaEdge.VERTICAL;
 
+import android.animation.StateListAnimator;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PathEffect;
@@ -99,6 +100,7 @@ class InternalNode implements ComponentLayout {
   private static final long PFLAG_ASPECT_RATIO_IS_SET = 1L << 26;
   private static final long PFLAG_TRANSITION_KEY_IS_SET = 1L << 27;
   private static final long PFLAG_BORDER_IS_SET = 1L << 28;
+  private static final long PFLAG_STATE_LIST_ANIMATOR_SET = 1L << 29;
 
   YogaNode mYogaNode;
   private ComponentContext mComponentContext;
@@ -116,6 +118,7 @@ class InternalNode implements ComponentLayout {
   private final int[] mBorderColors = new int[Border.EDGE_COUNT];
   private final float[] mBorderRadius = new float[Border.RADIUS_COUNT];
   private @Nullable PathEffect mBorderPathEffect;
+  private @Nullable StateListAnimator mStateListAnimator;
 
   private NodeInfo mNodeInfo;
   private boolean mForceViewWrapping;
@@ -500,6 +503,18 @@ class InternalNode implements ComponentLayout {
     } else {
       mYogaNode.setBorder(edge, borderWidth);
     }
+  }
+
+  InternalNode stateListAnimator(StateListAnimator stateListAnimator) {
+    mPrivateFlags |= PFLAG_STATE_LIST_ANIMATOR_SET;
+    mStateListAnimator = stateListAnimator;
+    wrapInView();
+    return this;
+  }
+
+  @Nullable
+  StateListAnimator getStateListAnimator() {
+    return mStateListAnimator;
   }
 
   InternalNode positionPx(YogaEdge edge, @Px int position) {
@@ -1354,6 +1369,9 @@ class InternalNode implements ComponentLayout {
     if (mVisibleWidthRatio != 0) {
       node.mVisibleWidthRatio = mVisibleWidthRatio;
     }
+    if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_SET) != 0L) {
+      node.mStateListAnimator = mStateListAnimator;
+    }
   }
 
   void setStyleWidthFromSpec(int widthSpec) {
@@ -1564,6 +1582,8 @@ class InternalNode implements ComponentLayout {
 
     mTransitions = null;
     mComponentsNeedingPreviousRenderData = null;
+
+    mStateListAnimator = null;
 
     ComponentsPools.release(this);
   }
