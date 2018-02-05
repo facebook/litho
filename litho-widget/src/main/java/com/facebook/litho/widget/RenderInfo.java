@@ -36,6 +36,7 @@ public abstract class RenderInfo {
   private static final String IS_FULL_SPAN = "is_full_span";
 
   private final @Nullable SimpleArrayMap<String, Object> mCustomAttributes;
+  private @Nullable SimpleArrayMap<String, Object> mDebugInfo;
 
   RenderInfo(Builder builder) {
     mCustomAttributes = builder.mCustomAttributes;
@@ -126,6 +127,22 @@ public abstract class RenderInfo {
    */
   public int getViewType() {
     throw new UnsupportedOperationException();
+  }
+
+  public void addDebugInfo(String key, Object value) {
+    if (mDebugInfo == null) {
+      mDebugInfo = new SimpleArrayMap<>();
+    }
+
+    mDebugInfo.put(key, value);
+  }
+
+  public @Nullable Object getDebugInfo(String key) {
+    if (mDebugInfo == null) {
+      return null;
+    }
+
+    return mDebugInfo.get(key);
   }
 
   /**
