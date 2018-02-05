@@ -112,7 +112,7 @@ public class ChangeSetState {
       // the list.
       final int currentItemsCount = currentRoot.getCount();
       removedComponents.add(currentRoot);
-      final ChangeSet changeSet = ChangeSet.acquireChangeSet(currentRoot.getCount());
+      final ChangeSet changeSet = ChangeSet.acquireChangeSet(currentRoot.getCount(), newRoot);
 
       for (int i = 0; i < currentItemsCount; i++) {
         changeSet.addChange(Change.remove(0));
@@ -127,7 +127,7 @@ public class ChangeSetState {
 
     // Components both exist and don't need to update.
     if (!currentRootIsNull && !lifecycle.shouldComponentUpdate(currentRoot, newRoot)) {
-      final ChangeSet changeSet = ChangeSet.acquireChangeSet(currentRoot.getCount());
+      final ChangeSet changeSet = ChangeSet.acquireChangeSet(currentRoot.getCount(), newRoot);
       newRoot.setCount(changeSet.getCount());
       sectionsDebugLogger.logShouldUpdate(
           sectionTreeTag,
@@ -147,14 +147,14 @@ public class ChangeSetState {
     // Add the startCount to the changeSet.
     if (lifecycle.isDiffSectionSpec()) {
       ChangeSet changeSet =
-          ChangeSet.acquireChangeSet(currentRootIsNull ? 0 : currentRoot.getCount());
+          ChangeSet.acquireChangeSet(currentRootIsNull ? 0 : currentRoot.getCount(), newRoot);
       lifecycle.generateChangeSet(newRoot.getScopedContext(), changeSet, currentRoot, newRoot);
       newRoot.setCount(changeSet.getCount());
 
       return changeSet;
     }
 
-    ChangeSet resultChangeSet = ChangeSet.acquireChangeSet();
+    ChangeSet resultChangeSet = ChangeSet.acquireChangeSet(newRoot);
 
     final Map<String, Pair<Section, Integer>> currentChildren = acquireChildrenMap(currentRoot);
     final Map<String, Pair<Section, Integer>> newChildren = acquireChildrenMap(newRoot);

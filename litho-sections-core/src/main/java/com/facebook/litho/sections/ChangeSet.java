@@ -37,6 +37,7 @@ public final class ChangeSet {
 
   private final List<Change> mChanges;
   private int mFinalCount;
+  private Section mSection;
 
   private ChangeSet() {
     mChanges = new ArrayList<>();
@@ -89,10 +90,22 @@ public final class ChangeSet {
   }
 
   public void insert(int index, RenderInfo renderInfo) {
+    // Null check for tests only. This should never be the case otherwise.
+    if (mSection != null) {
+      renderInfo.addDebugInfo(SectionsDebugParams.SECTION_GLOBAL_KEY, mSection.getGlobalKey());
+    }
     addChange(Change.insert(index, renderInfo));
   }
 
   public void insertRange(int index, int count, List<RenderInfo> renderInfos) {
+    // Null check for tests only. This should never be the case otherwise.
+    if (mSection != null) {
+      for (int i = 0, size = renderInfos.size(); i < size; i++) {
+        renderInfos
+            .get(i)
+            .addDebugInfo(SectionsDebugParams.SECTION_GLOBAL_KEY, mSection.getGlobalKey());
+      }
+    }
     addChange(Change.insertRange(index, count, renderInfos));
   }
 
@@ -126,16 +139,15 @@ public final class ChangeSet {
 
   /** @return an empty ChangeSet. */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public static ChangeSet acquireChangeSet() {
-    return acquireChangeSet(0);
+  public static ChangeSet acquireChangeSet(Section section) {
+    return acquireChangeSet(0, section);
   }
 
-  /**
-   * @return an empty ChangeSet starting from count startCount.
-   */
-  static ChangeSet acquireChangeSet(int startCount) {
+  /** @return an empty ChangeSet starting from count startCount. */
+  static ChangeSet acquireChangeSet(int startCount, Section section) {
     final ChangeSet changeSet = acquire();
     changeSet.mFinalCount = startCount;
+    changeSet.mSection = section;
 
     return changeSet;
   }
@@ -145,7 +157,7 @@ public final class ChangeSet {
    * Section}. The merged ChangeSet will be passed to the {@link Target}.
    */
   static ChangeSet merge(ChangeSet first, ChangeSet second) {
-    final ChangeSet mergedChangeSet = acquireChangeSet();
+    final ChangeSet mergedChangeSet = acquireChangeSet(null);
     final int firstCount = first != null ? first.mFinalCount : 0;
     final int secondCount = second != null ? second.mFinalCount : 0;
 

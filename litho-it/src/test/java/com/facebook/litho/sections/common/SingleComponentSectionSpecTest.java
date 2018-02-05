@@ -42,7 +42,7 @@ public class SingleComponentSectionSpecTest {
     mStickyDiff = new Diff<>();
     mSpanSizeDiff = new Diff<>();
     mIsFullSpanDiff = new Diff<>();
-    mChangeSet = ChangeSet.acquireChangeSet();
+    mChangeSet = ChangeSet.acquireChangeSet(null);
   }
 
   @Test
