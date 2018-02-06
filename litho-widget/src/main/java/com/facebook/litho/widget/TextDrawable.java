@@ -77,11 +77,9 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
 
     final Rect bounds = getBounds();
 
-    final int saveCount = canvas.save();
     canvas.translate(bounds.left, bounds.top + mLayoutTranslationY);
-    canvas.clipRect(0, 0, bounds.width(), bounds.height());
     mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
-    canvas.restoreToCount(saveCount);
+    canvas.translate(-bounds.left, -bounds.top - mLayoutTranslationY);
   }
 
   @Override
