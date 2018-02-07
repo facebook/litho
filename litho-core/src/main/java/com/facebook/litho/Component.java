@@ -462,8 +462,6 @@ public abstract class Component extends ComponentLifecycle
   public abstract static class Builder<T extends Builder<T>> extends ResourceResolver {
 
     private ComponentContext mContext;
-    @AttrRes private int mDefStyleAttr;
-    @StyleRes private int mDefStyleRes;
     private Component mComponent;
 
     protected void init(
@@ -475,8 +473,6 @@ public abstract class Component extends ComponentLifecycle
 
       mComponent = component;
       mContext = c;
-      mDefStyleAttr = defStyleAttr;
-      mDefStyleRes = defStyleRes;
 
       if (defStyleAttr != 0 || defStyleRes != 0) {
         mComponent.getOrCreateCommonProps().setStyle(defStyleAttr, defStyleRes);
@@ -497,8 +493,6 @@ public abstract class Component extends ComponentLifecycle
       super.release();
 
       mContext = null;
-      mDefStyleAttr = 0;
-      mDefStyleRes = 0;
       mComponent = null;
     }
 
