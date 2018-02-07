@@ -17,9 +17,7 @@ import android.support.v4.util.Pools;
 import com.facebook.litho.BorderColorDrawable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsPools;
-
 import java.util.Arrays;
-
 import javax.annotation.Nullable;
 
 /** A Reference for {@link com.facebook.litho.BorderColorDrawable}. */
@@ -216,7 +214,7 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
     }
 
     public BorderColorDrawableReference.PropsBuilder borderRadius(float[] radius) {
-      mState.mBorderRadius = radius;
+      mState.mBorderRadius = Arrays.copyOf(radius, radius.length);
       return this;
     }
 

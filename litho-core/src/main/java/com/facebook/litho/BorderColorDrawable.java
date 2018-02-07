@@ -20,6 +20,7 @@ import android.graphics.RectF;
 import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
+import java.util.Arrays;
 
 /** Drawable that draws border lines with given color, widths and path effect. */
 public class BorderColorDrawable extends Drawable {
@@ -63,7 +64,7 @@ public class BorderColorDrawable extends Drawable {
     mBorderRightColor = rightBorderColor;
     mBorderBottomColor = bottomBorderColor;
 
-    mBorderRadius = borderRadius;
+    mBorderRadius = Arrays.copyOf(borderRadius, Border.RADIUS_COUNT);
 
     mPaint.setPathEffect(pathEffect);
     mPaint.setAntiAlias(
