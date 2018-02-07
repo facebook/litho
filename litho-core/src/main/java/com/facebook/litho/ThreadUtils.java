@@ -13,6 +13,8 @@ import android.os.Looper;
 import android.support.annotation.IntDef;
 import android.support.annotation.VisibleForTesting;
 import com.facebook.litho.config.ComponentsConfiguration;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Thread assertion utilities.
@@ -23,6 +25,7 @@ public class ThreadUtils {
   public static final int OVERRIDE_MAIN_THREAD_FALSE = 2;
 
   @IntDef({OVERRIDE_DISABLED, OVERRIDE_MAIN_THREAD_FALSE, OVERRIDE_MAIN_THREAD_TRUE})
+  @Retention(RetentionPolicy.SOURCE)
   public @interface MainThreadOverride {}
 
   @MainThreadOverride
