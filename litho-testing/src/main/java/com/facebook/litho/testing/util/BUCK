@@ -5,14 +5,12 @@
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
 
-load("//:LITHO_DEFS", "LITHO_JAVA_TARGET")
+load("//:LITHO_DEFS", "LITHO_JAVA_TARGET", "LITHO_TESTING_UTIL_VISIBILITY")
 
 android_library(
     name = "util",
     srcs = glob(["*.java"]),
-    visibility = [
-        "PUBLIC",
-    ],
+    visibility = LITHO_TESTING_UTIL_VISIBILITY,
     deps = [
         LITHO_JAVA_TARGET,
     ],
