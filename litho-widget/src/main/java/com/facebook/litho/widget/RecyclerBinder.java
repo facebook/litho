@@ -168,6 +168,11 @@ public class RecyclerBinder
       new Runnable() {
         @Override
         public void run() {
+          if (mMountedView != null && mMountedView.hasPendingAdapterUpdates()) {
+            ViewCompat.postOnAnimation(mMountedView, mComputeRangeRunnable);
+            return;
+          }
+
           computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
         }
       };
@@ -1302,13 +1307,13 @@ public class RecyclerBinder
   void onNewVisibleRange(int firstVisiblePosition, int lastVisiblePosition) {
     mCurrentFirstVisiblePosition = firstVisiblePosition;
     mCurrentLastVisiblePosition = lastVisiblePosition;
-    computeRange(firstVisiblePosition, lastVisiblePosition);
+    maybePostComputeRange();
   }
 
   private void maybePostComputeRange() {
-    if (ComponentsConfiguration.insertPostAsyncLayout) {
-      mMainThreadHandler.removeCallbacks(mComputeRangeRunnable);
-      mMainThreadHandler.post(mComputeRangeRunnable);
+    if (ComponentsConfiguration.insertPostAsyncLayout && mMountedView != null) {
+      mMountedView.removeCallbacks(mComputeRangeRunnable);
+      ViewCompat.postOnAnimation(mMountedView, mComputeRangeRunnable);
     } else {
       computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
     }
