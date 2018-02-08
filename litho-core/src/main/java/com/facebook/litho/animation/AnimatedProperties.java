@@ -15,6 +15,7 @@ import com.facebook.litho.AnimatableItem;
 import com.facebook.litho.BoundsHelper;
 import com.facebook.litho.ComponentHost;
 import com.facebook.litho.LithoView;
+import java.util.List;
 
 /**
  * A convenience class for common View properties applicable to all subclasses of View.
@@ -167,10 +168,14 @@ public final class AnimatedProperties {
               view, left, view.getTop(), (int) (left + value), view.getBottom(), false);
         }
 
-        final Drawable animatingMountItem = view.getLinkedDrawableForAnimation();
-        if (animatingMountItem != null) {
-          BoundsHelper.applySizeToDrawableForAnimation(
-              animatingMountItem, (int) (value), view.getHeight());
+        final List<Drawable> animatingDrawables = view.getLinkedDrawablesForAnimation();
+        if (animatingDrawables != null) {
+          final int width = (int) value;
+          final int height = view.getHeight();
+          for (int index = 0; index < animatingDrawables.size(); ++index) {
+            BoundsHelper.applySizeToDrawableForAnimation(
+                animatingDrawables.get(index), width, height);
+          }
         }
       } else {
         throw new UnsupportedOperationException(
@@ -212,10 +217,14 @@ public final class AnimatedProperties {
               view, view.getLeft(), top, view.getRight(), (int) (top + value), false);
         }
 
-        final Drawable animatingMountItem = view.getLinkedDrawableForAnimation();
-        if (animatingMountItem != null) {
-          BoundsHelper.applySizeToDrawableForAnimation(
-              animatingMountItem, view.getWidth(), (int) (value));
+        final List<Drawable> animatingDrawables = view.getLinkedDrawablesForAnimation();
+        if (animatingDrawables != null) {
+          final int width = view.getWidth();
+          final int height = (int) value;
+          for (int index = 0; index < animatingDrawables.size(); ++index) {
+            BoundsHelper.applySizeToDrawableForAnimation(
+                animatingDrawables.get(index), width, height);
+          }
         }
       } else {
         throw new UnsupportedOperationException(

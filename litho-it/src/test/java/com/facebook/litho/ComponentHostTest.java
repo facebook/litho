@@ -18,6 +18,7 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static android.view.View.VISIBLE;
 import static com.facebook.litho.MountItem.FLAG_DUPLICATE_PARENT_STATE;
+import static com.facebook.litho.MountItem.FLAG_IS_TRANSITION_KEY_SET;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -730,6 +731,34 @@ public class ComponentHostTest {
     assertThat(getDrawableMountItemAt(0)).isEqualTo(mountItem1);
     assertThat(getDrawableMountItemAt(1)).isEqualTo(mountItem2);
     assertThat(getDrawableMountItemAt(2)).isEqualTo(mountItem3);
+  }
+
+  @Test
+  public void testGetLinkedDrawableForAnimation() {
+    Drawable d1 = new ColorDrawable();
+    MountItem mountItem1 = mount(0, d1, FLAG_IS_TRANSITION_KEY_SET);
+
+    Drawable d2 = new ColorDrawable();
+    MountItem mountItem2 = mount(1, d2);
+
+    Drawable d3 = new ColorDrawable();
+    MountItem mountItem3 = mount(2, d3, FLAG_IS_TRANSITION_KEY_SET);
+
+    List<Drawable> drawables = mHost.getLinkedDrawablesForAnimation();
+    assertThat(drawables).hasSize(2);
+    assertThat(drawables).contains(d1, d3);
+
+    unmount(0, mountItem1);
+
+    drawables = mHost.getLinkedDrawablesForAnimation();
+    assertThat(drawables).hasSize(1);
+    assertThat(drawables).contains(d3);
+
+    unmount(2, mountItem2);
+
+    drawables = mHost.getDrawables();
+    assertThat(drawables).hasSize(1);
+    assertThat(drawables).contains(d3);
   }
 
   private int getDrawableItemsSize()
