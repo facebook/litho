@@ -49,6 +49,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
 
   private Layout mLayout;
   private float mLayoutTranslationY;
+  private boolean mClipToBounds;
   private boolean mShouldHandleTouch;
   private CharSequence mText;
   private ColorStateList mColorStateList;
@@ -75,11 +76,16 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       return;
     }
 
-    final Rect bounds = getBounds();
+    final int saveCount = canvas.save();
 
+    final Rect bounds = getBounds();
+    if (mClipToBounds) {
+      canvas.clipRect(bounds);
+    }
     canvas.translate(bounds.left, bounds.top + mLayoutTranslationY);
     mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
-    canvas.translate(-bounds.left, -bounds.top - mLayoutTranslationY);
+
+    canvas.restoreToCount(saveCount);
   }
 
   @Override
@@ -241,11 +247,11 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       Layout layout,
       int userColor,
       ClickableSpan[] clickableSpans) {
-    mount(text, layout, 0, null, userColor, 0, clickableSpans, null, null, -1, -1, 0f);
+    mount(text, layout, 0, false, null, userColor, 0, clickableSpans, null, null, -1, -1, 0f);
   }
 
   public void mount(CharSequence text, Layout layout, int userColor, int highlightColor) {
-    mount(text, layout, 0, null, userColor, highlightColor, null, null, null, -1, -1, 0f);
+    mount(text, layout, 0, false, null, userColor, highlightColor, null, null, null, -1, -1, 0f);
   }
 
   public void mount(
@@ -256,13 +262,27 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       int userColor,
       int highlightColor,
       ClickableSpan[] clickableSpans) {
-    mount(text, layout, 0, null, userColor, highlightColor, clickableSpans, null, null, -1, -1, 0f);
+    mount(
+        text,
+        layout,
+        0,
+        false,
+        null,
+        userColor,
+        highlightColor,
+        clickableSpans,
+        null,
+        null,
+        -1,
+        -1,
+        0f);
   }
 
   public void mount(
       CharSequence text,
       Layout layout,
       float layoutTranslationY,
+      boolean clipToBounds,
       ColorStateList colorStateList,
       int userColor,
       int highlightColor,
@@ -274,6 +294,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       float clickableSpanExpandedOffset) {
     mLayout = layout;
     mLayoutTranslationY = layoutTranslationY;
+    mClipToBounds = clipToBounds;
     mText = text;
     mClickableSpans = clickableSpans;
     if (mLongClickHandler == null && containsLongClickableSpan(clickableSpans)) {
