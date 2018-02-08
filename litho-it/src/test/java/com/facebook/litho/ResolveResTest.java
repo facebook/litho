@@ -34,11 +34,6 @@ public class ResolveResTest {
         new ContextThemeWrapper(RuntimeEnvironment.application, R.style.TestTheme));
   }
 
-  @After
-  public void tearDown() {
-    ComponentsConfiguration.usePooling = true;
-  }
-
   @Test
   public void testDefaultDimenWidthRes() {
     Column column = Column.create(mContext).widthRes(test_dimen).build();

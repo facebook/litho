@@ -64,13 +64,6 @@ public class ComponentsConfiguration {
    */
   public static boolean isEndToEndTestRun = System.getProperty("IS_TESTING") != null;
 
-  /**
-   * Whether to use Object pooling via {@link com.facebook.litho.ComponentsPools}. This is switch
-   * because we are experimenting with turning off pooling to get a sense of what its impact is in
-   * production.
-   */
-  public static volatile boolean usePooling = true;
-
   /** Enable exception delegation to {@link com.facebook.litho.annotations.OnError}. */
   public static boolean enableOnErrorHandling = false;
 

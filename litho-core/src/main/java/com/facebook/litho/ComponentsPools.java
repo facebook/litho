@@ -168,7 +168,7 @@ public class ComponentsPools {
   static boolean sIsManualCallbacks;
 
   static LayoutState acquireLayoutState(ComponentContext context) {
-    LayoutState state = ComponentsConfiguration.usePooling ? sLayoutStatePool.acquire() : null;
+    LayoutState state = sLayoutStatePool.acquire();
     if (state == null) {
       state = new LayoutState();
     }
@@ -194,7 +194,7 @@ public class ComponentsPools {
       }
     }
 
-    YogaNode node = ComponentsConfiguration.usePooling ? sYogaNodePool.acquire() : null;
+    YogaNode node = sYogaNodePool.acquire();
     if (node == null) {
       node = new YogaNode(sYogaConfig);
     }
@@ -203,7 +203,7 @@ public class ComponentsPools {
   }
 
   static InternalNode acquireInternalNode(ComponentContext componentContext) {
-    InternalNode node = ComponentsConfiguration.usePooling ? sInternalNodePool.acquire() : null;
+    InternalNode node = sInternalNodePool.acquire();
     if (node == null) {
       node = new InternalNode();
     }
@@ -213,7 +213,7 @@ public class ComponentsPools {
   }
 
   static NodeInfo acquireNodeInfo() {
-    NodeInfo nodeInfo = ComponentsConfiguration.usePooling ? sNodeInfoPool.acquire() : null;
+    NodeInfo nodeInfo = sNodeInfoPool.acquire();
     if (nodeInfo == null) {
       nodeInfo = new NodeInfo();
     }
@@ -222,8 +222,7 @@ public class ComponentsPools {
   }
 
   static ViewNodeInfo acquireViewNodeInfo() {
-    ViewNodeInfo viewNodeInfo =
-        ComponentsConfiguration.usePooling ? sViewNodeInfoPool.acquire() : null;
+    ViewNodeInfo viewNodeInfo = sViewNodeInfoPool.acquire();
     if (viewNodeInfo == null) {
       viewNodeInfo = new ViewNodeInfo();
     }
@@ -235,7 +234,7 @@ public class ComponentsPools {
       Component component,
       ComponentHost host,
       Object content) {
-    MountItem item = ComponentsConfiguration.usePooling ? sMountItemPool.acquire() : null;
+    MountItem item = sMountItemPool.acquire();
     if (item == null) {
       item = new MountItem();
     }
@@ -279,7 +278,7 @@ public class ComponentsPools {
       ComponentHost host,
       Object content,
       LayoutOutput layoutOutput) {
-    MountItem item = ComponentsConfiguration.usePooling ? sMountItemPool.acquire() : null;
+    MountItem item = sMountItemPool.acquire();
     if (item == null) {
       item = new MountItem();
     }
@@ -294,7 +293,7 @@ public class ComponentsPools {
   }
 
   static LayoutOutput acquireLayoutOutput() {
-    LayoutOutput output = ComponentsConfiguration.usePooling ? sLayoutOutputPool.acquire() : null;
+    LayoutOutput output = sLayoutOutputPool.acquire();
     if (output == null) {
       output = new LayoutOutput();
     }
@@ -304,8 +303,7 @@ public class ComponentsPools {
   }
 
   static DisplayListContainer acquireDisplayListContainer() {
-    DisplayListContainer displayListContainer =
-        ComponentsConfiguration.usePooling ? sDisplayListContainerPool.acquire() : null;
+    DisplayListContainer displayListContainer = sDisplayListContainerPool.acquire();
     if (displayListContainer == null) {
       displayListContainer = new DisplayListContainer();
     }
@@ -314,8 +312,7 @@ public class ComponentsPools {
   }
 
   static VisibilityOutput acquireVisibilityOutput() {
-    VisibilityOutput output =
-        ComponentsConfiguration.usePooling ? sVisibilityOutputPool.acquire() : null;
+    VisibilityOutput output = sVisibilityOutputPool.acquire();
     if (output == null) {
       output = new VisibilityOutput();
     }
@@ -327,7 +324,7 @@ public class ComponentsPools {
       String globalKey,
       EventHandler<InvisibleEvent> invisibleHandler,
       EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
-    VisibilityItem item = ComponentsConfiguration.usePooling ? sVisibilityItemPool.acquire() : null;
+    VisibilityItem item = sVisibilityItemPool.acquire();
     if (item == null) {
       item = new VisibilityItem();
     }
@@ -343,7 +340,7 @@ public class ComponentsPools {
     if (sTestOutputPool == null) {
       sTestOutputPool = new RecyclePool<>("TestOutput", 64, true);
     }
-    TestOutput output = ComponentsConfiguration.usePooling ? sTestOutputPool.acquire() : null;
+    TestOutput output = sTestOutputPool.acquire();
     if (output == null) {
       output = new TestOutput();
     }
@@ -355,7 +352,7 @@ public class ComponentsPools {
     if (sTestItemPool == null) {
       sTestItemPool = new RecyclePool<>("TestItem", 64, true);
     }
-    TestItem item = ComponentsConfiguration.usePooling ? sTestItemPool.acquire() : null;
+    TestItem item = sTestItemPool.acquire();
     if (item == null) {
       item = new TestItem();
     }
@@ -365,7 +362,7 @@ public class ComponentsPools {
   }
 
   static Output acquireOutput() {
-    Output output = ComponentsConfiguration.usePooling ? sOutputPool.acquire() : null;
+    Output output = sOutputPool.acquire();
     if (output == null) {
       output = new Output();
     }
@@ -374,7 +371,7 @@ public class ComponentsPools {
   }
 
   static DiffNode acquireDiffNode() {
-    DiffNode node = ComponentsConfiguration.usePooling ? sDiffNodePool.acquire() : null;
+    DiffNode node = sDiffNodePool.acquire();
     if (node == null) {
       node = new DiffNode();
     }
@@ -383,7 +380,7 @@ public class ComponentsPools {
   }
 
   public static <T> Diff acquireDiff(T previous, T next) {
-    Diff diff = ComponentsConfiguration.usePooling ? sDiffPool.acquire() : null;
+    Diff diff = sDiffPool.acquire();
     if (diff == null) {
       diff = new Diff();
     }
@@ -393,8 +390,7 @@ public class ComponentsPools {
   }
 
   static ComponentTree.Builder acquireComponentTreeBuilder(ComponentContext c, Component root) {
-    ComponentTree.Builder componentTreeBuilder =
-        ComponentsConfiguration.usePooling ? sComponentTreeBuilderPool.acquire() : null;
+    ComponentTree.Builder componentTreeBuilder = sComponentTreeBuilderPool.acquire();
     if (componentTreeBuilder == null) {
       componentTreeBuilder = new ComponentTree.Builder();
     }
@@ -405,8 +401,7 @@ public class ComponentsPools {
   }
 
   static StateHandler acquireStateHandler(StateHandler fromStateHandler) {
-    StateHandler stateHandler =
-        ComponentsConfiguration.usePooling ? sStateHandlerPool.acquire() : null;
+    StateHandler stateHandler = sStateHandlerPool.acquire();
     if (stateHandler == null) {
       stateHandler = new StateHandler();
     }
@@ -421,8 +416,7 @@ public class ComponentsPools {
   }
 
   static TransitionContext acquireTransitionContext() {
-    TransitionContext transitionContext =
-        ComponentsConfiguration.usePooling ? sTransitionContextPool.acquire() : null;
+    TransitionContext transitionContext = sTransitionContextPool.acquire();
     if (transitionContext == null) {
       transitionContext = new TransitionContext();
     }
@@ -431,7 +425,7 @@ public class ComponentsPools {
   }
 
   public static TreeProps acquireTreeProps() {
-    TreeProps treeProps = ComponentsConfiguration.usePooling ? sTreePropsMapPool.acquire() : null;
+    TreeProps treeProps = sTreePropsMapPool.acquire();
     if (treeProps == null) {
       treeProps = new TreeProps();
     }
@@ -440,7 +434,7 @@ public class ComponentsPools {
   }
 
   public static LogEvent acquireLogEvent(int eventId) {
-    LogEvent event = ComponentsConfiguration.usePooling ? sLogEventPool.acquire() : null;
+    LogEvent event = sLogEventPool.acquire();
     if (event == null) {
       event = new LogEvent();
     }
@@ -452,165 +446,108 @@ public class ComponentsPools {
   //TODO t16407516 shb: change all "enableChecks = false" here to @TakesOwnership
   @ThreadSafe(enableChecks = false)
   public static void release(TreeProps treeProps) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     treeProps.reset();
     sTreePropsMapPool.release(treeProps);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(TransitionContext transitionContext) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     transitionContext.reset();
     sTransitionContextPool.release(transitionContext);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(ComponentTree.Builder componentTreeBuilder) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     componentTreeBuilder.release();
     sComponentTreeBuilderPool.release(componentTreeBuilder);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(StateHandler stateHandler) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     stateHandler.release();
     sStateHandlerPool.release(stateHandler);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(LayoutState state) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     sLayoutStatePool.release(state);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(YogaNode node) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     node.reset();
     sYogaNodePool.release(node);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(InternalNode node) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     sInternalNodePool.release(node);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(NodeInfo nodeInfo) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     sNodeInfoPool.release(nodeInfo);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(ViewNodeInfo viewNodeInfo) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     sViewNodeInfoPool.release(viewNodeInfo);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(ComponentContext context, MountItem item) {
     item.release(context);
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     sMountItemPool.release(item);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(LayoutOutput output) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     sLayoutOutputPool.release(output);
   }
 
   static void release(DisplayListContainer displayListContainer) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     displayListContainer.release();
     sDisplayListContainerPool.release(displayListContainer);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(VisibilityOutput output) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     output.release();
     sVisibilityOutputPool.release(output);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(VisibilityItem item) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     item.release();
     sVisibilityItemPool.release(item);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(TestOutput testOutput) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     testOutput.release();
     sTestOutputPool.release(testOutput);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(TestItem testItem) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     testItem.release();
     sTestItemPool.release(testItem);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(DiffNode node) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     node.release();
     sDiffNodePool.release(node);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(Output output) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     output.release();
     sOutputPool.release(output);
   }
 
   @ThreadSafe(enableChecks = false)
   public static void release(Diff diff) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     diff.release();
     sDiffPool.release(diff);
   }
@@ -696,8 +633,7 @@ public class ComponentsPools {
   }
 
   static SparseArrayCompat<MountItem> acquireScrapMountItemsArray() {
-    SparseArrayCompat<MountItem> sparseArray =
-        ComponentsConfiguration.usePooling ? sMountItemScrapArrayPool.acquire() : null;
+    SparseArrayCompat<MountItem> sparseArray = sMountItemScrapArrayPool.acquire();
     if (sparseArray == null) {
       sparseArray = new SparseArrayCompat<>(SCRAP_ARRAY_INITIAL_SIZE);
     }
@@ -707,14 +643,11 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   static void releaseScrapMountItemsArray(SparseArrayCompat<MountItem> sparseArray) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     sMountItemScrapArrayPool.release(sparseArray);
   }
 
   static RectF acquireRectF() {
-    RectF rect = ComponentsConfiguration.usePooling ? sRectFPool.acquire() : null;
+    RectF rect = sRectFPool.acquire();
     if (rect == null) {
       rect = new RectF();
     }
@@ -724,15 +657,12 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   static void releaseRectF(RectF rect) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     rect.setEmpty();
     sRectFPool.release(rect);
   }
 
   static Rect acquireRect() {
-    Rect rect = ComponentsConfiguration.usePooling ? sRectPool.acquire() : null;
+    Rect rect = sRectPool.acquire();
     if (rect == null) {
       rect = new Rect();
     }
@@ -742,15 +672,12 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   static void release(Rect rect) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     rect.setEmpty();
     sRectPool.release(rect);
   }
 
   static Edges acquireEdges() {
-    Edges spacing = ComponentsConfiguration.usePooling ? sEdgesPool.acquire() : null;
+    Edges spacing = sEdgesPool.acquire();
     if (spacing == null) {
       spacing = new Edges();
     }
@@ -760,9 +687,6 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   static void release(Edges edges) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     edges.reset();
     sEdgesPool.release(edges);
   }
@@ -913,8 +837,7 @@ public class ComponentsPools {
     // view invalidations.
     final Drawable.Callback callback = content.getCallback();
 
-    DisplayListDrawable displayListDrawable =
-        ComponentsConfiguration.usePooling ? sDisplayListDrawablePool.acquire() : null;
+    DisplayListDrawable displayListDrawable = sDisplayListDrawablePool.acquire();
     if (displayListDrawable == null) {
       displayListDrawable = new DisplayListDrawable(content, displayListContainer);
     } else {
@@ -927,9 +850,6 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   public static void release(DisplayListDrawable displayListDrawable) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     displayListDrawable.release();
     sDisplayListDrawablePool.release(displayListDrawable);
   }
@@ -938,8 +858,7 @@ public class ComponentsPools {
     if (sBorderColorDrawablePool == null) {
       sBorderColorDrawablePool = new RecyclePool<>("BorderColorDrawable", 10, true);
     }
-    BorderColorDrawable drawable =
-        ComponentsConfiguration.usePooling ? sBorderColorDrawablePool.acquire() : null;
+    BorderColorDrawable drawable = sBorderColorDrawablePool.acquire();
     if (drawable == null) {
       drawable = new BorderColorDrawable();
     }
@@ -949,14 +868,11 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   public static void release(BorderColorDrawable borderColorDrawable) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     sBorderColorDrawablePool.release(borderColorDrawable);
   }
 
   public static <E> ArraySet<E> acquireArraySet() {
-    ArraySet<E> set = ComponentsConfiguration.usePooling ? sArraySetPool.acquire() : null;
+    ArraySet<E> set = sArraySetPool.acquire();
     if (set == null) {
       set = new ArraySet<>();
     }
@@ -965,15 +881,12 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   public static void release(ArraySet set) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     set.clear();
     sArraySetPool.release(set);
   }
 
   public static <E> ArrayDeque<E> acquireArrayDeque() {
-    ArrayDeque<E> deque = ComponentsConfiguration.usePooling ? sArrayDequePool.acquire() : null;
+    ArrayDeque<E> deque = sArrayDequePool.acquire();
     if (deque == null) {
       deque = new ArrayDeque<>();
     }
@@ -982,25 +895,18 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   public static void release(ArrayDeque deque) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     deque.clear();
     sArrayDequePool.release(deque);
   }
 
   @ThreadSafe(enableChecks = false)
   public static void release(LogEvent event) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
     event.reset();
     sLogEventPool.release(event);
   }
 
   public static RenderState acquireRenderState() {
-    RenderState renderState =
-        ComponentsConfiguration.usePooling ? sRenderStatePool.acquire() : null;
+    RenderState renderState = sRenderStatePool.acquire();
     if (renderState == null) {
       renderState = new RenderState();
     }
@@ -1009,17 +915,12 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   public static void release(RenderState renderState) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
-
     renderState.reset();
     sRenderStatePool.release(renderState);
   }
 
   public static ArrayList<LithoView> acquireLithoViewArrayList() {
-    ArrayList<LithoView> arrayList =
-        ComponentsConfiguration.usePooling ? sLithoViewArrayListPool.acquire() : null;
+    ArrayList<LithoView> arrayList = sLithoViewArrayListPool.acquire();
     if (arrayList == null) {
       arrayList = new ArrayList<>(5);
     }
@@ -1029,10 +930,6 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   public static void release(ArrayList<LithoView> arrayList) {
-    if (!ComponentsConfiguration.usePooling) {
-      return;
-    }
-
     arrayList.clear();
     sLithoViewArrayListPool.release(arrayList);
   }
