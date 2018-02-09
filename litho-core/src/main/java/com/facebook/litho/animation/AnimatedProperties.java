@@ -371,8 +371,8 @@ public final class AnimatedProperties {
         return pos;
       }
       pos += getX ? currentView.getX() : currentView.getY();
-      if (!(mountContent.getParent() instanceof View)) {
-        throw new RuntimeException("Expected parent to be View, was " + mountContent.getParent());
+      if (!(currentView.getParent() instanceof View)) {
+        throw new RuntimeException("Expected parent to be View, was " + currentView.getParent());
       }
       currentView = (View) currentView.getParent();
     }
