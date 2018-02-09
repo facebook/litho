@@ -13,11 +13,11 @@
 package com.facebook.samples.litho.playground;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.samples.litho.NavigatableDemoActivity;
 
-public class PlaygroundActivity extends AppCompatActivity {
+public class PlaygroundActivity extends NavigatableDemoActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {

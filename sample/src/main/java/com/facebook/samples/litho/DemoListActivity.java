@@ -14,7 +14,6 @@ package com.facebook.samples.litho;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.samples.litho.bordereffects.BorderEffectsActivity;
@@ -24,7 +23,7 @@ import com.facebook.samples.litho.transitionsdemo.TransitionsDemoActivity;
 import java.util.Arrays;
 import java.util.List;
 
-public class DemoListActivity extends AppCompatActivity {
+public class DemoListActivity extends NavigatableDemoActivity {
 
   static final String INDICES = "INDICES";
 
@@ -46,7 +45,7 @@ public class DemoListActivity extends AppCompatActivity {
     }
   }
 
-  final List<DemoListDataModel> mDataModels =
+  static final List<DemoListDataModel> DATA_MODELS =
       Arrays.asList(
           new DemoListDataModel("Lithography", LithographyActivity.class),
           new DemoListDataModel("Playground", PlaygroundActivity.class),
@@ -74,7 +73,7 @@ public class DemoListActivity extends AppCompatActivity {
   }
 
   private List<DemoListDataModel> getDataModels(@Nullable int[] indices) {
-    List<DemoListDataModel> dataModels = mDataModels;
+    List<DemoListDataModel> dataModels = DATA_MODELS;
     if (indices == null) {
       return dataModels;
     }

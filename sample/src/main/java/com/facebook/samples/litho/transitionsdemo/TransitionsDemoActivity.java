@@ -13,11 +13,11 @@
 package com.facebook.samples.litho.transitionsdemo;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.samples.litho.NavigatableDemoActivity;
 
-public class TransitionsDemoActivity extends AppCompatActivity {
+public class TransitionsDemoActivity extends NavigatableDemoActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {

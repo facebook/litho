@@ -13,12 +13,12 @@
 package com.facebook.samples.litho.lithography;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.samples.litho.NavigatableDemoActivity;
 import java.util.Arrays;
 
-public class LithographyActivity extends AppCompatActivity {
+public class LithographyActivity extends NavigatableDemoActivity {
 
   private static final Datum[] DATA =
       new Datum[] {

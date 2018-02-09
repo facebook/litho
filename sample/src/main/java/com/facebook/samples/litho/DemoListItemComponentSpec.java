@@ -46,13 +46,9 @@ public class DemoListItemComponentSpec {
       @FromEvent View view,
       @Prop final DemoListActivity.DemoListDataModel model,
       @Prop final int[] currentIndices) {
-    final Intent intent;
-    if (model.datamodels != null) {
-      intent = new Intent(c, DemoListActivity.class);
-      intent.putExtra(DemoListActivity.INDICES, currentIndices);
-    } else {
-      intent = new Intent(c, model.klass);
-    }
+    final Intent intent =
+        new Intent(c, model.datamodels == null ? model.klass : DemoListActivity.class);
+    intent.putExtra(DemoListActivity.INDICES, currentIndices);
     c.startActivity(intent);
   }
 }

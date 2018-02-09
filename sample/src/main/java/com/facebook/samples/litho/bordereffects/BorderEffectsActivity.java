@@ -13,11 +13,11 @@
 package com.facebook.samples.litho.bordereffects;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.samples.litho.NavigatableDemoActivity;
 
-public class BorderEffectsActivity extends AppCompatActivity {
+public class BorderEffectsActivity extends NavigatableDemoActivity {
   @Override
   protected void onCreate(Bundle savedInstance) {
     super.onCreate(savedInstance);
