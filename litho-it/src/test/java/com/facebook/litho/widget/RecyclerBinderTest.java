@@ -27,7 +27,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
+import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.View;
+import android.widget.FrameLayout;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
@@ -40,6 +42,7 @@ import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.viewcompat.SimpleViewBinder;
+import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory;
 import java.util.ArrayList;
@@ -1168,6 +1171,36 @@ public class RecyclerBinderTest {
             .build());
     assertThat(mRenderInfoViewCreatorController.mViewCreatorToViewType.size()).isEqualTo(3);
     assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(3);
+  }
+
+  @Test
+  public void testViewBinderBindAndUnbind() {
+    final View view = mock(View.class);
+    final RecyclerView recyclerView = new RecyclerView(mComponentContext);
+    ViewBinder viewBinder = mock(ViewBinder.class);
+    final ViewCreator<View> viewCreator =
+        new ViewCreator<View>() {
+          @Override
+          public View createView(Context c) {
+            return view;
+          }
+        };
+
+    mRecyclerBinder.insertItemAt(
+        0, ViewRenderInfo.create().viewBinder(viewBinder).viewCreator(viewCreator).build());
+
+    mRecyclerBinder.mount(recyclerView);
+
+    final ViewHolder vh =
+        recyclerView.getAdapter().onCreateViewHolder(new FrameLayout(mComponentContext), 1);
+
+    recyclerView.getAdapter().onBindViewHolder(vh, 0);
+    verify(viewBinder).bind(view);
+    verify(viewBinder, never()).unbind(view);
+
+    recyclerView.getAdapter().onViewRecycled(vh);
+    verify(viewBinder, times(1)).bind(view);
+    verify(viewBinder).unbind(view);
   }
 
   @Test
