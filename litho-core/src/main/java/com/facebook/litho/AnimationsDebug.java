@@ -26,13 +26,10 @@ public class AnimationsDebug {
 
     for (int i = 0; i < layoutState.getMountableOutputCount(); i++) {
       final LayoutOutput output = layoutState.getMountableOutputAt(i);
-      final ViewNodeInfo viewNodeInfo = output.getViewNodeInfo();
-      final String key = (viewNodeInfo != null) ? viewNodeInfo.getTransitionKey() : null;
-
       Log.d(
           TAG,
-          "" + i + " [" + output.getId() + "] (" + key + ") host => (" + output.getHostMarker() +
-              ")");
+          "" + i + " [" + output.getId() + "] (" + output.getTransitionKey() + ") host => (" +
+              output.getHostMarker() + ")");
     }
   }
 

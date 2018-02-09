@@ -42,6 +42,7 @@ class MountItem {
   private boolean mIsBound;
   private int mImportantForAccessibility;
   private @Nullable DisplayListDrawable mDisplayListDrawable;
+  private @Nullable String mTransitionKey;
 
   // ComponentHost flags defined in the LayoutOutput specifying
   // the behaviour of this item when mounted.
@@ -73,7 +74,8 @@ class MountItem {
         layoutOutput.getViewNodeInfo(),
         displayListDrawable,
         layoutOutput.getFlags(),
-        layoutOutput.getImportantForAccessibility());
+        layoutOutput.getImportantForAccessibility(),
+        layoutOutput.getTransitionKey());
   }
 
   void init(
@@ -84,13 +86,15 @@ class MountItem {
       ViewNodeInfo viewNodeInfo,
       @Nullable DisplayListDrawable displayListDrawable,
       int flags,
-      int importantForAccessibility) {
+      int importantForAccessibility,
+      String transitionKey) {
     mComponent = component;
     mContent = content;
     mHost = host;
     mFlags = flags;
     mImportantForAccessibility = importantForAccessibility;
     mDisplayListDrawable = displayListDrawable;
+    mTransitionKey = transitionKey;
 
     if (mNodeInfo != null) {
       mNodeInfo.release();
@@ -197,6 +201,15 @@ class MountItem {
     return mViewNodeInfo;
   }
 
+  @Nullable
+  String getTransitionKey() {
+    return mTransitionKey;
+  }
+
+  boolean hasTransitionKey() {
+    return mTransitionKey != null;
+  }
+
   boolean isAccessible() {
     if (mComponent == null) {
       return false;
@@ -242,6 +255,7 @@ class MountItem {
     mFlags = 0;
     mIsBound = false;
     mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+    mTransitionKey = null;
   }
 
   static boolean isDuplicateParentState(int flags) {

@@ -250,7 +250,8 @@ public class ComponentsPools {
         viewNodeInfo,
         null,
         0,
-        IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        null);
     return item;
   }
 

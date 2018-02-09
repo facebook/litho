@@ -87,7 +87,8 @@ public class MountItemTest {
         null,
         null,
         mFlags,
-        IMPORTANT_FOR_ACCESSIBILITY_YES);
+        IMPORTANT_FOR_ACCESSIBILITY_YES,
+        null);
   }
 
   @Test
@@ -131,7 +132,8 @@ public class MountItemTest {
         null,
         null,
         mFlags,
-        IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        null);
 
     assertThat(mountItem.isAccessible()).isFalse();
   }
@@ -142,19 +144,16 @@ public class MountItemTest {
 
     mountItem.init(
         TestDrawableComponent.create(
-            mContext,
-            true,
-            true,
-            true,
-            true, /* implementsAccessibility */
-            false).build(),
+                mContext, true, true, true, true, /* implementsAccessibility */ false)
+            .build(),
         mComponentHost,
         mContent,
         mNodeInfo,
         null,
         null,
         mFlags,
-        IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        null);
 
     assertThat(mountItem.isAccessible()).isTrue();
   }
@@ -164,19 +163,16 @@ public class MountItemTest {
     final MountItem mountItem = new MountItem();
     mountItem.init(
         TestDrawableComponent.create(
-            mContext,
-            true,
-            true,
-            true,
-            true, /* implementsAccessibility */
-            false).build(),
+                mContext, true, true, true, true, /* implementsAccessibility */ false)
+            .build(),
         mComponentHost,
         mContent,
         mNodeInfo,
         null,
         null,
         mFlags,
-        IMPORTANT_FOR_ACCESSIBILITY_NO);
+        IMPORTANT_FOR_ACCESSIBILITY_NO,
+        null);
 
     assertThat(mountItem.isAccessible()).isFalse();
   }
@@ -186,19 +182,16 @@ public class MountItemTest {
     final MountItem mountItem = new MountItem();
     mountItem.init(
         TestDrawableComponent.create(
-            mContext,
-            true,
-            true,
-            true,
-            true, /* implementsAccessibility */
-            false).build(),
+                mContext, true, true, true, true, /* implementsAccessibility */ false)
+            .build(),
         mComponentHost,
         mContent,
         mNodeInfo,
         null,
         null,
         mFlags,
-        IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        null);
 
     assertThat(mountItem.isAccessible()).isTrue();
   }

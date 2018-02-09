@@ -57,6 +57,8 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private int mImportantForAccessibility;
   private @Nullable DisplayListContainer mDisplayListContainer;
 
+  private @Nullable String mTransitionKey;
+
   public LayoutOutput() {
     mUpdateState = STATE_UNKNOWN;
     mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
@@ -242,17 +244,13 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return mViewNodeInfo;
   }
 
+  void setTransitionKey(String transitionKey) {
+    mTransitionKey = transitionKey;
+  }
+
+  @Nullable
   String getTransitionKey() {
-    if (mViewNodeInfo == null) {
-      return null;
-    }
-
-    final String transitionKey = mViewNodeInfo.getTransitionKey();
-    if (transitionKey == null || transitionKey.length() == 0) {
-      return null;
-    }
-
-    return transitionKey;
+    return mTransitionKey;
   }
 
   void acquire() {
@@ -301,6 +299,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mHostMarker = -1L;
     mUpdateState = STATE_UNKNOWN;
     mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+    mTransitionKey = null;
 
     ComponentsPools.release(this);
   }

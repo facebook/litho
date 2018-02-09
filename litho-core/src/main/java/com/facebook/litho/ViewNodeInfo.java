@@ -31,7 +31,6 @@ class ViewNodeInfo {
   private Rect mPadding;
   private Rect mExpandedTouchBounds;
   private YogaDirection mLayoutDirection;
-  private String mTransitionKey;
   private boolean mClipChildren;
   private @Nullable StateListAnimator mStateListAnimator;
 
@@ -126,14 +125,6 @@ class ViewNodeInfo {
     return mExpandedTouchBounds;
   }
 
-  void setTransitionKey(String key) {
-    mTransitionKey = key;
-  }
-
-  String getTransitionKey() {
-    return mTransitionKey;
-  }
-
   void setClipChildren(boolean clipChildren) {
     mClipChildren = clipChildren;
   }
@@ -182,7 +173,6 @@ class ViewNodeInfo {
     mBackground = null;
     mForeground = null;
     mLayoutDirection = YogaDirection.INHERIT;
-    mTransitionKey = null;
     mStateListAnimator = null;
 
     if (mPadding != null) {

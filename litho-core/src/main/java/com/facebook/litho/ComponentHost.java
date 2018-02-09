@@ -190,9 +190,7 @@ public class ComponentHost extends ViewGroup {
 
   void unmountDisappearingItem(MountItem disappearingItem) {
     if (!mDisappearingItems.remove(disappearingItem)) {
-      final String key = (disappearingItem.getViewNodeInfo() != null) ?
-          disappearingItem.getViewNodeInfo().getTransitionKey() :
-          null;
+      final String key = disappearingItem.getTransitionKey();
       throw new RuntimeException(
           "Tried to remove non-existent disappearing item, transitionKey: " + key);
     }
@@ -213,7 +211,7 @@ public class ComponentHost extends ViewGroup {
     }
     final List<String> keys = new ArrayList<>();
     for (int i = 0, size = mDisappearingItems.size(); i < size; i++) {
-      keys.add(mDisappearingItems.get(i).getViewNodeInfo().getTransitionKey());
+      keys.add(mDisappearingItems.get(i).getTransitionKey());
     }
 
     return keys;

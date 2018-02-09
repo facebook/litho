@@ -260,8 +260,11 @@ class LayoutState {
             node.isDuplicateParentStateEnabled(),
             layoutState.mIsTransitionKeySet);
 
+    if (layoutState.mIsTransitionKeySet) {
+      hostOutput.setTransitionKey(node.getTransitionKey());
+    }
+
     ViewNodeInfo viewNodeInfo = hostOutput.getViewNodeInfo();
-    viewNodeInfo.setTransitionKey(node.getTransitionKey());
     viewNodeInfo.setStateListAnimator(node.getStateListAnimator());
 
     return hostOutput;

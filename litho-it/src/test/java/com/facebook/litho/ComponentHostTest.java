@@ -779,14 +779,7 @@ public class ComponentHostTest {
     View view = mock(viewClass);
     MountItem mountItem = new MountItem();
     mountItem.init(
-        component,
-        null,
-        view,
-        null,
-        null,
-        null,
-        0,
-        IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        component, null, view, null, null, null, 0, IMPORTANT_FOR_ACCESSIBILITY_AUTO, null);
 
     mHost.mount(0, mountItem, new Rect());
     assertThat(mHost.recycleHost()).isNull();
@@ -831,7 +824,8 @@ public class ComponentHostTest {
         null,
         null,
         flags,
-        IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        null);
 
     mHost.mount(
         index,
@@ -853,7 +847,8 @@ public class ComponentHostTest {
         viewNodeInfo,
         null,
         0,
-        IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        null);
     mHost.mount(index, viewMountItem, new Rect());
 
     return viewMountItem;

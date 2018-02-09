@@ -909,7 +909,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
             item = getItemAt(j);
           }
 
-          final String key = getTransitionKey(item);
+          final String key = item.getTransitionKey();
           if (key != null && mTransitionManager.isKeyDisappearing(key)) {
             startUnmountDisappearingItem(j, key);
           }
@@ -2251,20 +2251,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     return hasMountTimeTransitions || newLayoutState.hasTransitionContext();
   }
 
-  private static String getTransitionKey(MountItem mountItem) {
-    final ViewNodeInfo viewNodeInfo = mountItem.getViewNodeInfo();
-    if (viewNodeInfo == null) {
-      return null;
-    }
-
-    final String transitionKey = viewNodeInfo.getTransitionKey();
-    if (transitionKey == null || transitionKey.length() == 0) {
-      return null;
-    }
-
-    return transitionKey;
-  }
-
   @Override
   public void onAnimationComplete(String transitionKey) {
     final MountItem disappearingItem = mDisappearingMountItems.remove(transitionKey);
@@ -2521,16 +2507,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void maybeUpdateAnimatingMountContent(MountItem mountItem, Object mountContent) {
-    if (mTransitionManager == null) {
+    if (mTransitionManager == null || !mountItem.hasTransitionKey()) {
       return;
     }
-
-    final String transitionKey = getTransitionKey(mountItem);
-    if (transitionKey == null) {
-      return;
-    }
-
-    mTransitionManager.setMountContent(transitionKey, mountContent);
+    mTransitionManager.setMountContent(mountItem.getTransitionKey(), mountContent);
   }
 
   private static @Nullable ArrayList<Transition> collectMountTimeTransitions(
