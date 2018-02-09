@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.samples.litho.animations.ExpandableElementActivity;
 import com.facebook.samples.litho.bordereffects.BorderEffectsActivity;
 import com.facebook.samples.litho.lithography.LithographyActivity;
 import com.facebook.samples.litho.playground.PlaygroundActivity;
@@ -53,7 +54,8 @@ public class DemoListActivity extends NavigatableDemoActivity {
           new DemoListDataModel(
               "Animations",
               Arrays.asList(
-                  new DemoListDataModel("Transitions Demo", TransitionsDemoActivity.class))));
+                  new DemoListDataModel("Transitions Demo", TransitionsDemoActivity.class),
+                  new DemoListDataModel("Expandable Element", ExpandableElementActivity.class))));
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
