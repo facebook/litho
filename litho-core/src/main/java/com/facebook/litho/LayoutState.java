@@ -2086,7 +2086,12 @@ class LayoutState {
   private static boolean needsHostView(InternalNode node, LayoutState layoutState) {
     return layoutState.isLayoutRoot(node)
         || (!isMountViewSpec(node.getRootComponent())
-            && (hasViewContent(node, layoutState) || node.isForceViewWrapping()));
+            && (hasViewContent(node, layoutState) || node.isForceViewWrapping()))
+        || needsToBeWrappedForTransition(node);
+  }
+
+  private static boolean needsToBeWrappedForTransition(InternalNode node) {
+    return !isMountViewSpec(node.getRootComponent()) && !TextUtils.isEmpty(node.getTransitionKey());
   }
 
   /**

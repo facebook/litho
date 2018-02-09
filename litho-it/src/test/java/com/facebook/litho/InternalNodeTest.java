@@ -256,7 +256,6 @@ public class InternalNodeTest {
     final InternalNode node = acquireInternalNode();
     node.transitionKey("key");
     assertThat(isFlagSet(node, "PFLAG_TRANSITION_KEY_IS_SET")).isTrue();
-    assertThat(node.isForceViewWrapping()).isTrue();
     clearFlag(node, "PFLAG_TRANSITION_KEY_IS_SET");
     assertEmptyFlags(node);
   }
