@@ -48,6 +48,7 @@ public class DemoListComponentTest {
     mComponent =
         DemoListComponent.create(mComponentsRule.getContext())
             .dataModels(new ArrayList<DemoListActivity.DemoListDataModel>())
+            .parentIndices(null)
             .build();
   }
 

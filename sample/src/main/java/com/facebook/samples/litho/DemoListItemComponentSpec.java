@@ -31,14 +31,11 @@ import com.facebook.litho.widget.Text;
 public class DemoListItemComponentSpec {
 
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c, @Prop final String name) {
+  static Component onCreateLayout(
+      ComponentContext c, @Prop final DemoListActivity.DemoListDataModel model) {
     return Column.create(c)
         .paddingDip(ALL, 16)
-        .child(
-            Text.create(c)
-                .text(name)
-                .textSizeSp(18)
-                .build())
+        .child(Text.create(c).text(model.name).textSizeSp(18).build())
         .clickHandler(DemoListItemComponent.onClick(c))
         .build();
   }
@@ -47,7 +44,15 @@ public class DemoListItemComponentSpec {
   static void onClick(
       ComponentContext c,
       @FromEvent View view,
-      @Prop final Intent intent) {
+      @Prop final DemoListActivity.DemoListDataModel model,
+      @Prop final int[] currentIndices) {
+    final Intent intent;
+    if (model.datamodels != null) {
+      intent = new Intent(c, DemoListActivity.class);
+      intent.putExtra(DemoListActivity.INDICES, currentIndices);
+    } else {
+      intent = new Intent(c, model.klass);
+    }
     c.startActivity(intent);
   }
 }

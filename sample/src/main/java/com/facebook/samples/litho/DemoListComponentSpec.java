@@ -12,6 +12,7 @@
 
 package com.facebook.samples.litho;
 
+import android.support.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.FromEvent;
@@ -27,6 +28,7 @@ import com.facebook.litho.sections.common.RenderEvent;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RenderInfo;
+import java.util.Arrays;
 import java.util.List;
 
 @LayoutSpec
@@ -52,10 +54,26 @@ class DemoListComponentSpec {
 
   @OnEvent(RenderEvent.class)
   static RenderInfo onRender(
-      ComponentContext c, @FromEvent DemoListActivity.DemoListDataModel model) {
+      ComponentContext c,
+      @Prop @Nullable int[] parentIndices,
+      @FromEvent DemoListActivity.DemoListDataModel model,
+      @FromEvent int index) {
     return ComponentRenderInfo.create()
-        .component(DemoListItemComponent.create(c).name(model.name).intent(model.intent).build())
+        .component(
+            DemoListItemComponent.create(c)
+                .model(model)
+                .currentIndices(getUpdatedIndices(parentIndices, index))
+                .build())
         .build();
+  }
+
+  static int[] getUpdatedIndices(@Nullable int[] parentIndices, int currentIndex) {
+    if (parentIndices == null) {
+      return new int[] {currentIndex};
+    }
+    final int[] updatedIndices = Arrays.copyOf(parentIndices, parentIndices.length + 1);
+    updatedIndices[parentIndices.length] = currentIndex;
+    return updatedIndices;
   }
 
   /**

@@ -12,8 +12,8 @@
 
 package com.facebook.samples.litho;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
@@ -26,32 +26,62 @@ import java.util.List;
 
 public class DemoListActivity extends AppCompatActivity {
 
-  final class DemoListDataModel {
-    public final String name;
-    public final Intent intent;
+  static final String INDICES = "INDICES";
 
-    DemoListDataModel(String name, Intent intent) {
+  static final class DemoListDataModel {
+    final String name;
+    @Nullable final Class klass;
+    @Nullable final List<DemoListDataModel> datamodels;
+
+    DemoListDataModel(String name, Class klass) {
       this.name = name;
-      this.intent = intent;
+      this.klass = klass;
+      this.datamodels = null;
+    }
+
+    DemoListDataModel(String name, List<DemoListDataModel> datamodels) {
+      this.name = name;
+      this.datamodels = datamodels;
+      this.klass = null;
     }
   }
+
+  final List<DemoListDataModel> mDataModels =
+      Arrays.asList(
+          new DemoListDataModel("Lithography", LithographyActivity.class),
+          new DemoListDataModel("Playground", PlaygroundActivity.class),
+          new DemoListDataModel("Border effects", BorderEffectsActivity.class),
+          new DemoListDataModel(
+              "Animations",
+              Arrays.asList(
+                  new DemoListDataModel("Transitions Demo", TransitionsDemoActivity.class))));
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    final int[] indices = getIntent().getIntArrayExtra(INDICES);
+    final List<DemoListDataModel> dataModels = getDataModels(indices);
+
     final ComponentContext componentContext = new ComponentContext(this);
-
-    List<DemoListDataModel> dataModels =
-        Arrays.asList(
-            new DemoListDataModel("Lithography", new Intent(this, LithographyActivity.class)),
-            new DemoListDataModel("Playground", new Intent(this, PlaygroundActivity.class)),
-            new DemoListDataModel(
-                "Transitions Demo", new Intent(this, TransitionsDemoActivity.class)),
-            new DemoListDataModel("Border effects", new Intent(this, BorderEffectsActivity.class)));
-
     setContentView(
         LithoView.create(
-            this, DemoListComponent.create(componentContext).dataModels(dataModels).build()));
+            this,
+            DemoListComponent.create(componentContext)
+                .dataModels(dataModels)
+                .parentIndices(indices)
+                .build()));
+  }
+
+  private List<DemoListDataModel> getDataModels(@Nullable int[] indices) {
+    List<DemoListDataModel> dataModels = mDataModels;
+    if (indices == null) {
+      return dataModels;
+    }
+
+    for (int i = 0; i < indices.length; i++) {
+      dataModels = dataModels.get(indices[i]).datamodels;
+    }
+    return dataModels;
   }
 }

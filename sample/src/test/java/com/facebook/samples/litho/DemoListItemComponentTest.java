@@ -24,6 +24,7 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.samples.litho.playground.PlaygroundActivity;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,11 +35,11 @@ public class DemoListItemComponentTest {
 
   @Test
   public void testComponentOnClick() {
-    final Intent intent = new Intent();
+    final Class activityClassToLaunch = PlaygroundActivity.class;
     final DemoListItemComponent.Builder builder =
         DemoListItemComponent.create(mComponentsRule.getContext())
-            .name("My Component")
-            .intent(intent);
+            .model(new DemoListActivity.DemoListDataModel("My Component", activityClassToLaunch))
+            .currentIndices(null);
     // For this test, we mount the view and dispatch the event through the regular
     // Android event mechanism.
     final LithoView lithoView = ComponentTestHelper.mountComponent(builder);
@@ -46,16 +47,16 @@ public class DemoListItemComponentTest {
     lithoView.performClick();
 
     final Intent nextIntent = shadowOf(mComponentsRule.getContext()).getNextStartedActivity();
-    assertThat(nextIntent).isSameAs(intent);
+    assertThat(nextIntent.getComponent().getClassName()).isSameAs(activityClassToLaunch.getName());
   }
 
   @Test
   public void testComponentOnSyntheticEventClick() {
-    final Intent intent = new Intent();
+    final Class activityClassToLaunch = PlaygroundActivity.class;
     final Component component =
         DemoListItemComponent.create(mComponentsRule.getContext())
-            .name("My Component")
-            .intent(intent)
+            .model(new DemoListActivity.DemoListDataModel("My Component", activityClassToLaunch))
+            .currentIndices(null)
             .build();
 
     // Here, we make use of Litho's internal event infrastructure and manually dispatch the event.
@@ -66,6 +67,6 @@ public class DemoListItemComponentTest {
         .dispatchOnEvent(DemoListItemComponent.onClick(componentContext), new ClickEvent());
 
     final Intent nextIntent = shadowOf(mComponentsRule.getContext()).getNextStartedActivity();
-    assertThat(nextIntent).isSameAs(intent);
+    assertThat(nextIntent.getComponent().getClassName()).isSameAs(activityClassToLaunch.getName());
   }
 }
