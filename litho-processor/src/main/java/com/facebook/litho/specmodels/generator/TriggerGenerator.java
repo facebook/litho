@@ -259,7 +259,10 @@ public class TriggerGenerator {
 
       typeSpecDataHolder.addMethod(
           generateStateSelfTriggerMethod(
-              specModel.getComponentName(), specModel.getContextClass(), eventMethodModel));
+              specModel.getComponentName(),
+              specModel.getContextClass(),
+              specModel.getScopeMethodName(),
+              eventMethodModel));
     }
 
     return typeSpecDataHolder.build();
@@ -311,6 +314,7 @@ public class TriggerGenerator {
   private static MethodSpec generateStateSelfTriggerMethod(
       String componentClass,
       ClassName contextClassName,
+      String scopeMethodName,
       SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
     MethodSpec.Builder triggerMethod =
         MethodSpec.methodBuilder(eventMethodModel.name.toString()).addModifiers(Modifier.STATIC);
@@ -320,7 +324,7 @@ public class TriggerGenerator {
     addParametersToStaticTriggerMethods(contextClassName, eventMethodModel, triggerMethod);
 
     triggerMethod.addStatement(
-        "$L component = ($L) c.getComponentScope()", componentClass, componentClass);
+        "$L component = ($L) c.$L()", componentClass, componentClass, scopeMethodName);
 
     final CodeBlock.Builder eventTriggerParams =
         CodeBlock.builder().add("\n($T) $L", ClassNames.EVENT_TRIGGER_TARGET, "component");

@@ -17,6 +17,7 @@ import com.facebook.litho.specmodels.generator.JavadocGenerator;
 import com.facebook.litho.specmodels.generator.PreambleGenerator;
 import com.facebook.litho.specmodels.generator.StateGenerator;
 import com.facebook.litho.specmodels.generator.TreePropGenerator;
+import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
@@ -304,6 +305,7 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
             DelegateMethodGenerator.generateDelegates(
                 this, DelegateMethodDescriptions.getGroupSectionSpecDelegatesMap(this)))
         .addTypeSpecDataHolder(TreePropGenerator.generate(this))
+        .addTypeSpecDataHolder(TriggerGenerator.generate(this))
         .build()
         .addToTypeSpec(typeSpec);
 

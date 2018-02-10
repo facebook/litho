@@ -9,10 +9,13 @@
 
 package com.facebook.litho.sections;
 
+import android.support.annotation.Nullable;
 import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.EventTrigger;
+import com.facebook.litho.EventTriggerTarget;
 import com.facebook.litho.Output;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.annotations.OnCreateTreeProp;
@@ -21,7 +24,7 @@ import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnDataBound;
 import com.facebook.litho.sections.annotations.OnDiff;
 
-public abstract class SectionLifecycle implements EventDispatcher {
+public abstract class SectionLifecycle implements EventDispatcher, EventTriggerTarget {
 
   protected interface StateContainer {}
 
@@ -71,6 +74,13 @@ public abstract class SectionLifecycle implements EventDispatcher {
   @Override
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
     // Do nothing by default.
+    return null;
+  }
+
+  @Override
+  @Nullable
+  public Object acceptTriggerEvent(EventTrigger eventTrigger, Object eventState, Object[] params) {
+    // Do nothing by default
     return null;
   }
 
@@ -184,6 +194,26 @@ public abstract class SectionLifecycle implements EventDispatcher {
     recordEventHandler(c, eventHandler);
 
     return eventHandler;
+  }
+
+  protected static <E> EventTrigger<E> newEventTrigger(SectionContext c, String childKey, int id) {
+    return c.newEventTrigger(childKey, id);
+  }
+
+  @Nullable
+  protected static EventTrigger getEventTrigger(SectionContext c, int id, String key) {
+    if (c.getSectionScope() == null) {
+      return null;
+    }
+
+    EventTrigger trigger =
+        c.getSectionTree().getEventTrigger(c.getSectionScope().getGlobalKey() + id + key);
+
+    if (trigger == null) {
+      return null;
+    }
+
+    return trigger;
   }
 
   private static void recordEventHandler(Section section, EventHandler eventHandler) {

@@ -43,7 +43,7 @@ public class EventTriggersContainer {
    * @return EventTrigger with the triggerKey given.
    */
   @Nullable
-  EventTrigger getEventTrigger(String triggerKey) {
+  public EventTrigger getEventTrigger(String triggerKey) {
     if (mEventTriggers == null || !mEventTriggers.containsKey(triggerKey)) {
       return null;
     }
@@ -51,7 +51,7 @@ public class EventTriggersContainer {
     return mEventTriggers.get(triggerKey);
   }
 
-  void clear() {
+  public void clear() {
     if (mEventTriggers != null) {
       mEventTriggers.clear();
     }

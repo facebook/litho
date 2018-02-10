@@ -17,6 +17,7 @@ import android.support.annotation.VisibleForTesting;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.EventTrigger;
 import com.facebook.litho.TreeProps;
 import java.lang.ref.WeakReference;
 
@@ -103,6 +104,13 @@ public class SectionContext extends ComponentContext {
     }
 
     return new EventHandler<>(section, name, id, params);
+  }
+
+  /** @return New instance of {@link EventTrigger} that is created by the current mScope. */
+  <E> EventTrigger<E> newEventTrigger(String childKey, int id) {
+    final Section section = mScope.get();
+    String parentKey = section == null ? "" : section.getGlobalKey();
+    return new EventTrigger<>(parentKey, id, childKey);
   }
 
   public Section getSectionScope() {

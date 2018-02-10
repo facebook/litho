@@ -13,7 +13,9 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pair;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.HasEventDispatcher;
+import com.facebook.litho.HasEventTrigger;
 import com.facebook.litho.ResourceResolver;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
@@ -28,14 +30,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 
 /**
- * Represents a unique instance of a {@link Section} that is driven by its matching
- * {@link SectionLifecycle}. To create new {@link Section} instances, use the
- * {@code create()} method in the generated {@link SectionLifecycle} subclass which
- * returns a {@link Builder} that allows you to set values for individual props.
- * {@link Section} instances are immutable after creation.
+ * Represents a unique instance of a {@link Section} that is driven by its matching {@link
+ * SectionLifecycle}. To create new {@link Section} instances, use the {@code create()} method in
+ * the generated {@link SectionLifecycle} subclass which returns a {@link Builder} that allows you
+ * to set values for individual props. {@link Section} instances are immutable after creation.
  */
 public abstract class Section extends SectionLifecycle
-    implements Cloneable, HasEventDispatcher {
+    implements Cloneable, HasEventDispatcher, HasEventTrigger {
 
   private Section mParent;
   private boolean mInvalidated;
@@ -51,6 +52,11 @@ public abstract class Section extends SectionLifecycle
   @Override
   public EventDispatcher getEventDispatcher() {
     return this;
+  }
+
+  @Override
+  public void recordEventTrigger(EventTriggersContainer container) {
+    // Do nothing by default
   }
 
   /**
@@ -255,7 +261,7 @@ public abstract class Section extends SectionLifecycle
     return mId;
   }
 
-  SectionContext getScopedContext() {
+  public SectionContext getScopedContext() {
     return mScopedContext;
   }
 

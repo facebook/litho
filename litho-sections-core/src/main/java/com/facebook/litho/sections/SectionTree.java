@@ -30,6 +30,8 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.EventTrigger;
+import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.LogEvent;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.TreeProps;
@@ -206,6 +208,9 @@ public class SectionTree {
   @GuardedBy("this")
   private Map<String, List<EventHandler>> mEventHandlers = new HashMap<>();
 
+  @GuardedBy("this")
+  private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
+
   private synchronized void bindEventHandlers(Section section) {
     if (!mEventHandlers.containsKey(section.getGlobalKey())) {
       return;
@@ -230,6 +235,26 @@ public class SectionTree {
     }
 
     mEventHandlers.get(key).add(eventHandler);
+  }
+
+  private synchronized void bindTriggerHandler(Section section) {
+    section.recordEventTrigger(mEventTriggersContainer);
+
+    final List<Section> children = section.getChildren();
+    if (children != null) {
+      for (int i = 0, size = children.size(); i < size; i++) {
+        bindTriggerHandler(children.get(i));
+      }
+    }
+  }
+
+  private synchronized void clearUnusedTriggerHandlers() {
+    mEventTriggersContainer.clear();
+  }
+
+  @Nullable
+  synchronized EventTrigger getEventTrigger(String triggerKey) {
+    return mEventTriggersContainer.getEventTrigger(triggerKey);
   }
 
   private SectionTree(Builder builder) {
@@ -664,6 +689,7 @@ public class SectionTree {
     }
     mLastRanges.clear();
     mSectionPositionInfo = null;
+    clearUnusedTriggerHandlers();
     //TODO use pools t11953296
   }
 
@@ -782,6 +808,8 @@ public class SectionTree {
       logEvent.addParam(PARAM_SET_ROOT_ON_BG_THREAD, !ThreadUtils.isMainThread());
     }
 
+    clearUnusedTriggerHandlers();
+
     // Checking nextRoot is enough here since whenever we enqueue a new state update we also
     // re-assign nextRoot.
     while (nextRoot != null) {
@@ -826,6 +854,7 @@ public class SectionTree {
           }
 
           bindNewComponent(newRoot);
+          bindTriggerHandler(newRoot);
         }
       }
 

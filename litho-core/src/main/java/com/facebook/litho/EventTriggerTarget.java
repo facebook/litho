@@ -9,11 +9,14 @@
 
 package com.facebook.litho;
 
+import javax.annotation.Nullable;
+
 /**
  * A class implementing this interface wll expose a method annotated with
  * {@link com.facebook.litho.annotations.OnTrigger} to accept an
  * {@link com.facebook.litho.annotations.Event} given an {@link EventTrigger}
  */
 public interface EventTriggerTarget {
+  @Nullable
   Object acceptTriggerEvent(EventTrigger eventTrigger, Object eventState, Object[] params);
 }

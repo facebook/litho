@@ -16,6 +16,7 @@ import com.facebook.litho.specmodels.generator.EventGenerator;
 import com.facebook.litho.specmodels.generator.JavadocGenerator;
 import com.facebook.litho.specmodels.generator.PreambleGenerator;
 import com.facebook.litho.specmodels.generator.StateGenerator;
+import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
@@ -302,6 +303,7 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
         .addTypeSpecDataHolder(
             DelegateMethodGenerator.generateDelegates(
                 this, DelegateMethodDescriptions.getDiffSectionSpecDelegatesMap(this)))
+        .addTypeSpecDataHolder(TriggerGenerator.generate(this))
         .build()
         .addToTypeSpec(typeSpec);
 

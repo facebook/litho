@@ -292,6 +292,10 @@ public class BuilderGenerator {
     }
 
     for (BuilderMethodModel builderMethodModel : specModel.getExtraBuilderMethods()) {
+      if (builderMethodModel.paramName.equals("key") && !specModel.getTriggerMethods().isEmpty()) {
+        // The key setter method has been created if we have trigger methods, ignore it.
+        continue;
+      }
       propsBuilderClassBuilder.addMethod(generateExtraBuilderMethod(specModel, builderMethodModel));
     }
 
