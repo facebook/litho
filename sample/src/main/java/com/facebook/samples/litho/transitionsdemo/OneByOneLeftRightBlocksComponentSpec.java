@@ -10,7 +10,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.facebook.samples.litho.animations.animationcomposition;
+package com.facebook.samples.litho.transitionsdemo;
 
 import android.graphics.Color;
 import com.facebook.litho.ClickEvent;

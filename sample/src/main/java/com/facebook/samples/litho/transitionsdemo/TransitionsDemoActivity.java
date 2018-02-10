@@ -10,14 +10,14 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.facebook.samples.litho.animations.animationcomposition;
+package com.facebook.samples.litho.transitionsdemo;
 
 import android.os.Bundle;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.samples.litho.NavigatableDemoActivity;
 
-public class ComposedAnimationsActivity extends NavigatableDemoActivity {
+public class TransitionsDemoActivity extends NavigatableDemoActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +25,6 @@ public class ComposedAnimationsActivity extends NavigatableDemoActivity {
 
     setContentView(
         LithoView.create(
-            this, ComposedAnimationsComponent.create(new ComponentContext(this)).build()));
+            this, TransitionsDemoComponent.create(new ComponentContext(this)).build()));
   }
 }

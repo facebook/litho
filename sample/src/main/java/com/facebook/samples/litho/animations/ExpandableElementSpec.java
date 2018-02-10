@@ -9,7 +9,7 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.facebook.samples.litho.animations.expandableelement;
+package com.facebook.samples.litho.animations;
 
 import android.graphics.Color;
 import android.graphics.drawable.ShapeDrawable;

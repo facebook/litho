@@ -10,7 +10,8 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.facebook.samples.litho.animations.animationcomposition;
+
+package com.facebook.samples.litho.transitionsdemo;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @LayoutSpec
-class ComposedAnimationsComponentSpec {
+class TransitionsDemoComponentSpec {
 
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c) {
@@ -38,8 +39,8 @@ class ComposedAnimationsComponentSpec {
         .section(
             DataDiffSection.create(new SectionContext(c))
                 .data(generateData(20))
-                .renderEventHandler(ComposedAnimationsComponent.onRender(c))
-                .onCheckIsSameItemEventHandler(ComposedAnimationsComponent.isSameItem(c))
+                .renderEventHandler(TransitionsDemoComponent.onRender(c))
+                .onCheckIsSameItemEventHandler(TransitionsDemoComponent.isSameItem(c))
                 .build())
         .build();
   }

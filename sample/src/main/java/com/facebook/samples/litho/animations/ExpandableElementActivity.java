@@ -10,7 +10,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.facebook.samples.litho.animations.expandableelement;
+package com.facebook.samples.litho.animations;
 
 import android.os.Bundle;
 import com.facebook.litho.ComponentContext;

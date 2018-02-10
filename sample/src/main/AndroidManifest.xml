@@ -38,9 +38,9 @@
     </activity>
     <activity android:name=".lithography.LithographyActivity" />
     <activity android:name=".playground.PlaygroundActivity" />
+    <activity android:name=".transitionsdemo.TransitionsDemoActivity" />
     <activity android:name=".bordereffects.BorderEffectsActivity" />
-    <activity android:name=".animations.animationcomposition.ComposedAnimationsActivity" />
-    <activity android:name=".animations.expandableelement.ExpandableElementActivity" />
+    <activity android:name=".animations.ExpandableElementActivity" />
   </application>
 
 
