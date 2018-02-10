@@ -10,11 +10,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.facebook.samples.litho.transitionsdemo;
+package com.facebook.samples.litho.animations.animationcomposition;
 
 import android.graphics.Color;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.BounceInterpolator;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
@@ -32,7 +30,7 @@ import com.facebook.litho.annotations.State;
 import com.facebook.yoga.YogaAlign;
 
 @LayoutSpec
-public class LeftRightBlocksComponentSpec {
+public class LeftRightBlocksSequenceComponentSpec {
 
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c, @State boolean left) {
@@ -59,13 +57,13 @@ public class LeftRightBlocksComponentSpec {
                 .backgroundColor(Color.parseColor("#11ee11"))
                 .transitionKey("green")
                 .build())
-        .clickHandler(LeftRightBlocksComponent.onClick(c))
+        .clickHandler(LeftRightBlocksSequenceComponent.onClick(c))
         .build();
   }
 
   @OnEvent(ClickEvent.class)
   static void onClick(ComponentContext c) {
-    LeftRightBlocksComponent.updateState(c);
+    LeftRightBlocksSequenceComponent.updateState(c);
   }
 
   @OnUpdateState
@@ -76,13 +74,12 @@ public class LeftRightBlocksComponentSpec {
 
   @OnCreateTransition
   static Transition onCreateTransition(ComponentContext c) {
-    return Transition.parallel(
+    return Transition.sequence(
         Transition.create("red")
-            .animate(AnimatedProperties.X)
-            .animator(Transition.timing(1000, new AccelerateDecelerateInterpolator())),
-        Transition.create("blue").animate(AnimatedProperties.X).animator(Transition.timing(1000)),
+            .animate(AnimatedProperties.X),
+        Transition.create("blue")
+            .animate(AnimatedProperties.X),
         Transition.create("green")
-            .animate(AnimatedProperties.X)
-            .animator(Transition.timing(1000, new BounceInterpolator())));
+            .animate(AnimatedProperties.X));
   }
 }

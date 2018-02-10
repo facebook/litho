@@ -10,12 +10,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
-package com.facebook.samples.litho.transitionsdemo;
+package com.facebook.samples.litho.animations.animationcomposition;
 
 import android.graphics.Color;
 import com.facebook.litho.ClickEvent;
-import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Row;
@@ -31,56 +29,58 @@ import com.facebook.litho.annotations.State;
 import com.facebook.yoga.YogaAlign;
 
 @LayoutSpec
-public class LeftRightBlocksSequenceComponentSpec {
+public class UpDownBlocksComponentSpec {
 
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c, @State boolean left) {
-    return Column.create(c)
-        .alignItems(left ? YogaAlign.FLEX_START : YogaAlign.FLEX_END)
+  static Component onCreateLayout(ComponentContext c, @State boolean top) {
+    return Row.create(c)
+        .heightDip(200)
+        .alignItems(top ? YogaAlign.FLEX_START : YogaAlign.FLEX_END)
         .child(
             Row.create(c)
                 .heightDip(40)
-                .widthDip(40)
+                .flexGrow(1)
                 .backgroundColor(Color.parseColor("#ee1111"))
                 .transitionKey("red")
                 .build())
         .child(
             Row.create(c)
                 .heightDip(40)
-                .widthDip(40)
+                .flexGrow(1)
                 .backgroundColor(Color.parseColor("#1111ee"))
                 .transitionKey("blue")
                 .build())
         .child(
             Row.create(c)
                 .heightDip(40)
-                .widthDip(40)
+                .flexGrow(1)
                 .backgroundColor(Color.parseColor("#11ee11"))
                 .transitionKey("green")
                 .build())
-        .clickHandler(LeftRightBlocksSequenceComponent.onClick(c))
+        .clickHandler(UpDownBlocksComponent.onClick(c))
         .build();
   }
 
   @OnEvent(ClickEvent.class)
   static void onClick(ComponentContext c) {
-    LeftRightBlocksSequenceComponent.updateState(c);
+    UpDownBlocksComponent.updateState(c);
   }
 
   @OnUpdateState
   static void updateState(
-      StateValue<Boolean> left) {
-    left.set(left.get() == true ? false : true);
+      StateValue<Boolean> top) {
+    top.set(!top.get());
   }
 
   @OnCreateTransition
   static Transition onCreateTransition(ComponentContext c) {
-    return Transition.sequence(
+    return Transition.stagger(
+        200,
         Transition.create("red")
-            .animate(AnimatedProperties.X),
+            .animate(AnimatedProperties.Y),
         Transition.create("blue")
-            .animate(AnimatedProperties.X),
+            .animate(AnimatedProperties.Y),
         Transition.create("green")
-            .animate(AnimatedProperties.X));
+            .animate(AnimatedProperties.Y));
   }
 }
