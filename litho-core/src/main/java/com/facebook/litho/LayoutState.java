@@ -1057,7 +1057,7 @@ class LayoutState {
     return hostOutputPosition;
   }
 
-  static <T extends Component> LayoutState calculate(
+  static LayoutState calculate(
       ComponentContext c,
       Component component,
       int componentTreeId,
@@ -1078,7 +1078,7 @@ class LayoutState {
         source);
   }
 
-  static <T extends Component> LayoutState calculate(
+  static LayoutState calculate(
       ComponentContext c,
       Component component,
       int componentTreeId,
@@ -1468,7 +1468,7 @@ class LayoutState {
   }
 
   @VisibleForTesting
-  static <T extends Component> InternalNode createTree(
+  static InternalNode createTree(
       Component component,
       ComponentContext context) {
     final ComponentsLogger logger = context.getLogger();

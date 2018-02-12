@@ -375,7 +375,7 @@ public final class ComponentTestHelper {
 
     for (SubComponent subComponent : subComponents) {
       if (subComponent.getComponentType().equals(componentClass)) {
-        return (Component) subComponent.getComponent();
+        return subComponent.getComponent();
       }
     }
 
