@@ -626,6 +626,49 @@ public class ComponentHostTest {
     assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 1)).isEqualTo(1);
   }
 
+  @Test
+  public void testDisappearingItems() {
+    View v1 = new View(mContext);
+    mount(0, v1);
+
+    Drawable d1 = new ColorDrawable(BLACK);
+    MountItem mountItem1 = mount(1, d1);
+
+    View v2 = new View(mContext);
+    MountItem mountItem2 = mount(2, v2);
+
+    Drawable d2 = new ColorDrawable(BLACK);
+    mount(3, d2);
+
+    assertThat(mHost.getMountItemCount()).isEqualTo(4);
+    assertThat(mHost.getChildCount()).isEqualTo(2);
+    assertThat(mHost.hasDisappearingItems()).isFalse();
+
+    mHost.startUnmountDisappearingItem(1, mountItem1);
+
+    assertThat(mHost.getMountItemCount()).isEqualTo(3);
+    assertThat(mHost.getChildCount()).isEqualTo(2);
+    assertThat(mHost.hasDisappearingItems()).isTrue();
+
+    mHost.unmountDisappearingItem(mountItem1);
+
+    assertThat(mHost.getMountItemCount()).isEqualTo(3);
+    assertThat(mHost.getChildCount()).isEqualTo(2);
+    assertThat(mHost.hasDisappearingItems()).isFalse();
+
+    mHost.startUnmountDisappearingItem(2, mountItem2);
+
+    assertThat(mHost.getMountItemCount()).isEqualTo(2);
+    assertThat(mHost.getChildCount()).isEqualTo(2);
+    assertThat(mHost.hasDisappearingItems()).isTrue();
+
+    mHost.unmountDisappearingItem(mountItem2);
+
+    assertThat(mHost.getMountItemCount()).isEqualTo(2);
+    assertThat(mHost.getChildCount()).isEqualTo(1);
+    assertThat(mHost.hasDisappearingItems()).isFalse();
+  }
+
   @Ignore("t19681984")
   @Test
   public void testDisappearingItemDrawingOrder() {

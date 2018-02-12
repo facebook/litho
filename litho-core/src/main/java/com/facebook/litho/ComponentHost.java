@@ -161,7 +161,8 @@ public class ComponentHost extends ViewGroup {
   public void unmount(int index, MountItem mountItem) {
     final Object content = mountItem.getContent();
     if (content instanceof Drawable) {
-      unmountDrawable(index, mountItem);
+      unmountDrawable(mountItem);
+      ComponentHostUtils.removeItem(index, mDrawableMountItems, mScrapDrawableMountItems);
     } else if (content instanceof View) {
       unmountView((View) content);
       ComponentHostUtils.removeItem(index, mViewMountItems, mScrapViewMountItemsArray);
@@ -176,13 +177,14 @@ public class ComponentHost extends ViewGroup {
 
   void startUnmountDisappearingItem(int index, MountItem mountItem) {
     final Object content = mountItem.getContent();
-    if (!(content instanceof View)) {
-      throw new RuntimeException("Cannot unmount non-view item");
-    }
-    mIsChildDrawingOrderDirty = true;
 
-    maybeUnregisterTouchExpansion(index, mountItem);
-    ComponentHostUtils.removeItem(index, mViewMountItems, mScrapViewMountItemsArray);
+    if (content instanceof Drawable) {
+      ComponentHostUtils.removeItem(index, mDrawableMountItems, mScrapDrawableMountItems);
+    } else if (content instanceof View) {
+      ComponentHostUtils.removeItem(index, mViewMountItems, mScrapViewMountItemsArray);
+      mIsChildDrawingOrderDirty = true;
+      maybeUnregisterTouchExpansion(index, mountItem);
+    }
     ComponentHostUtils.removeItem(index, mMountItems, mScrapMountItemsArray);
     releaseScrapDataStructuresIfNeeded();
     mDisappearingItems.add(mountItem);
@@ -195,9 +197,13 @@ public class ComponentHost extends ViewGroup {
           "Tried to remove non-existent disappearing item, transitionKey: " + key);
     }
 
-    final View content = (View) disappearingItem.getContent();
+    final Object content = disappearingItem.getContent();
+    if (content instanceof Drawable) {
+      unmountDrawable(disappearingItem);
+    } else if (content instanceof View) {
+      unmountView((View) content);
+    }
 
-    unmountView(content);
     maybeInvalidateAccessibilityState(disappearingItem);
   }
 
@@ -696,6 +702,16 @@ public class ComponentHost extends ViewGroup {
 
     mDispatchDraw.end();
 
+    // Everything from mMountItems was drawn at this point. Then ViewGroup took care of drawing
+    // disappearing views, as they still added as children. Thus the only thing left to draw is
+    // disappearing drawables
+    for (int index = 0, size = mDisappearingItems.size(); index < size; ++index) {
+      final Object content = mDisappearingItems.get(index).getContent();
+      if (content instanceof Drawable) {
+        ((Drawable) content).draw(canvas);
+      }
+    }
+
     DebugDraw.draw(this, canvas);
   }
 
@@ -1108,8 +1124,10 @@ public class ComponentHost extends ViewGroup {
 
     // Draw disappearing items on top of mounted views.
     for (int i = 0, size = mDisappearingItems.size(); i < size; i++) {
-      final View child = (View) mDisappearingItems.get(i).getContent();
-      mChildDrawingOrder[index++] = indexOfChild(child);
+      final Object child = mDisappearingItems.get(i).getContent();
+      if (child instanceof View) {
+        mChildDrawingOrder[index++] = indexOfChild((View) child);
+      }
     }
 
     if (mScrapHosts != null) {
@@ -1161,19 +1179,13 @@ public class ComponentHost extends ViewGroup {
         mountItem.getNodeInfo());
   }
 
-  private void unmountDrawable(int index, MountItem mountItem) {
+  private void unmountDrawable(MountItem mountItem) {
     assertMainThread();
 
     final Drawable contentDrawable = (Drawable) mountItem.getContent();
     final Drawable drawable = mountItem.getDisplayListDrawable() == null
         ? contentDrawable
         : mountItem.getDisplayListDrawable();
-
-    if (ComponentHostUtils.existsScrapItemAt(index, mScrapDrawableMountItems)) {
-      mScrapDrawableMountItems.remove(index);
-    } else {
-      mDrawableMountItems.remove(index);
-    }
 
     drawable.setCallback(null);
 
