@@ -41,6 +41,7 @@
     <activity android:name=".transitionsdemo.TransitionsDemoActivity" />
     <activity android:name=".bordereffects.BorderEffectsActivity" />
     <activity android:name=".animations.ExpandableElementActivity" />
+    <activity android:name=".animations.AnimatedBadgeActivity" />
   </application>
 
 
