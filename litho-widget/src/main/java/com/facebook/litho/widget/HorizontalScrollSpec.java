@@ -165,6 +165,7 @@ class HorizontalScrollSpec {
       final HorizontalScrollLithoView horizontalScrollLithoView,
       @Prop Component contentProps,
       @Prop(optional = true, resType = ResType.BOOL) boolean scrollbarEnabled,
+      @Prop(optional = true) HorizontalScrollEventsController eventsController,
       @State(canUpdateLazily = true) final int lastScrollPosition,
       @FromBoundsDefined int componentWidth,
       @FromBoundsDefined int componentHeight,
@@ -200,13 +201,23 @@ class HorizontalScrollSpec {
                 context, horizontalScrollLithoView.getScrollX());
           }
         });
+
+    if (eventsController != null) {
+      eventsController.setScrollableView(horizontalScrollLithoView);
+    }
   }
 
   @OnUnmount
   static void onUnmount(
       ComponentContext context,
-      HorizontalScrollLithoView mountedView) {
+      HorizontalScrollLithoView mountedView,
+      @Prop(optional = true) HorizontalScrollEventsController eventsController) {
+
     mountedView.unmount();
+
+    if (eventsController != null) {
+      eventsController.setScrollableView(null);
+    }
   }
 
   @OnCreateInitialState
