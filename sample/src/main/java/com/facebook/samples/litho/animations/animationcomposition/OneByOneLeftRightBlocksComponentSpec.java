@@ -10,7 +10,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.facebook.samples.litho.transitionsdemo;
+package com.facebook.samples.litho.animations.animationcomposition;
 
 import android.graphics.Color;
 import com.facebook.litho.ClickEvent;
@@ -42,11 +42,11 @@ public class OneByOneLeftRightBlocksComponentSpec {
                 .alignItems(redLeft ? YogaAlign.FLEX_START : YogaAlign.FLEX_END)
                 .child(
                     Row.create(c)
-                          .heightDip(40)
-                          .widthDip(40)
-                          .backgroundColor(Color.parseColor("#ee1111"))
-                          .transitionKey("red")
-                          .build()))
+                        .heightDip(40)
+                        .widthDip(40)
+                        .backgroundColor(Color.parseColor("#ee1111"))
+                        .transitionKey("red")
+                        .build()))
         .child(
             Column.create(c)
                 .alignItems(blueLeft ? YogaAlign.FLEX_START : YogaAlign.FLEX_END)
@@ -77,14 +77,12 @@ public class OneByOneLeftRightBlocksComponentSpec {
   }
 
   @OnUpdateState
-  static void updateState(
-      StateValue<Integer> state) {
+  static void updateState(StateValue<Integer> state) {
     state.set((state.get() + 1) % 6);
   }
 
   @OnCreateTransition
   static Transition onCreateTransition(ComponentContext c) {
-    return Transition.create(Transition.allKeys())
-        .animate(Transition.allProperties());
+    return Transition.create(Transition.allKeys()).animate(Transition.allProperties());
   }
 }

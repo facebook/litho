@@ -10,7 +10,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.facebook.samples.litho.animations;
+package com.facebook.samples.litho.animations.animatedbadge;
 
 import android.graphics.Color;
 import android.graphics.Typeface;

@@ -10,8 +10,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
-package com.facebook.samples.litho.transitionsdemo;
+package com.facebook.samples.litho.animations.animationcomposition;
 
 import android.graphics.Color;
 import com.facebook.litho.ClickEvent;
@@ -68,19 +67,15 @@ public class LeftRightBlocksSequenceComponentSpec {
   }
 
   @OnUpdateState
-  static void updateState(
-      StateValue<Boolean> left) {
+  static void updateState(StateValue<Boolean> left) {
     left.set(left.get() == true ? false : true);
   }
 
   @OnCreateTransition
   static Transition onCreateTransition(ComponentContext c) {
     return Transition.sequence(
-        Transition.create("red")
-            .animate(AnimatedProperties.X),
-        Transition.create("blue")
-            .animate(AnimatedProperties.X),
-        Transition.create("green")
-            .animate(AnimatedProperties.X));
+        Transition.create("red").animate(AnimatedProperties.X),
+        Transition.create("blue").animate(AnimatedProperties.X),
+        Transition.create("green").animate(AnimatedProperties.X));
   }
 }
