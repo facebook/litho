@@ -2091,7 +2091,13 @@ class LayoutState {
   }
 
   private static boolean needsToBeWrappedForTransition(InternalNode node) {
-    return !isMountViewSpec(node.getRootComponent()) && !TextUtils.isEmpty(node.getTransitionKey());
+    if (isMountViewSpec(node.getRootComponent()) || TextUtils.isEmpty(node.getTransitionKey())) {
+      return false;
+    }
+    if (!ComponentsConfiguration.doNotForceWrappingInViewForAnimation) {
+      return true;
+    }
+    return true;
   }
 
   /**

@@ -15,6 +15,7 @@ import com.facebook.litho.AnimatableItem;
 import com.facebook.litho.BoundsHelper;
 import com.facebook.litho.ComponentHost;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.List;
 
 /**
@@ -177,6 +178,19 @@ public final class AnimatedProperties {
                 animatingDrawables.get(index), width, height);
           }
         }
+      } else if (!ComponentsConfiguration.doNotForceWrappingInViewForAnimation) {
+        throw new UnsupportedOperationException(
+            "Setting width on unsupported mount content: " + mountContent);
+      } else if (mountContent instanceof View) {
+        final View view = (View) mountContent;
+        final int left = view.getLeft();
+        final int right = (int) (left + value);
+        BoundsHelper.applyBoundsToView(view, left, view.getTop(), right, view.getBottom(), false);
+      } else if (mountContent instanceof Drawable) {
+        final Drawable drawable = (Drawable) mountContent;
+        final int width = (int) value;
+        final int height = drawable.getBounds().height();
+        BoundsHelper.applySizeToDrawableForAnimation(drawable, width, height);
       } else {
         throw new UnsupportedOperationException(
             "Setting width on unsupported mount content: " + mountContent);
@@ -226,6 +240,19 @@ public final class AnimatedProperties {
                 animatingDrawables.get(index), width, height);
           }
         }
+      } else if (!ComponentsConfiguration.doNotForceWrappingInViewForAnimation) {
+        throw new UnsupportedOperationException(
+            "Setting height on unsupported mount content: " + mountContent);
+      } else if (mountContent instanceof View) {
+        final View view = (View) mountContent;
+        final int top = view.getTop();
+        final int bottom = (int) (top + value);
+        BoundsHelper.applyBoundsToView(view, view.getLeft(), top, view.getRight(), bottom, false);
+      } else if (mountContent instanceof Drawable) {
+        final Drawable drawable = (Drawable) mountContent;
+        final int width = drawable.getBounds().width();
+        final int height = (int) value;
+        BoundsHelper.applySizeToDrawableForAnimation(drawable, width, height);
       } else {
         throw new UnsupportedOperationException(
             "Setting height on unsupported mount content: " + mountContent);
