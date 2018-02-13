@@ -23,7 +23,7 @@ import org.robolectric.shadows.ShadowDrawable;
  * Shadows a {@link ColorDrawable} to support of drawing its description on a
  * {@link org.robolectric.shadows.ShadowCanvas}
  */
-@Implements(value = ColorDrawable.class, inheritImplementationMethods = true)
+@Implements(value = ColorDrawable.class)
 public class ColorDrawableShadow extends ShadowDrawable {
 
   @RealObject private ColorDrawable mRealColorDrawable;
