@@ -8,7 +8,7 @@
  */
 package com.facebook.litho;
 
-import android.os.Process;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
@@ -74,7 +74,7 @@ public class ThreadPoolLayoutHandler implements LayoutHandler {
           @Override
           public Thread newThread(Runnable r) {
             Thread thread = new Thread(r, "ComponentLayoutThread" + threadNumber.getAndIncrement());
-            thread.setPriority(Process.THREAD_PRIORITY_BACKGROUND);
+            thread.setPriority(ComponentsConfiguration.defaultBackgroundThreadPriority);
             return thread;
           }
         };

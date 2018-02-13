@@ -12,6 +12,7 @@ package com.facebook.litho.config;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 
+import android.os.Process;
 import com.facebook.litho.BuildConfig;
 import com.facebook.yoga.YogaLogger;
 
@@ -140,4 +141,7 @@ public class ComponentsConfiguration {
    * rebound to another component.
    */
   public static boolean unmountAllWhenViewRecycled = false;
+
+  /** Override the priority of the default background layout thread in ComponentTree with this. */
+  public static int defaultBackgroundThreadPriority = Process.THREAD_PRIORITY_BACKGROUND;
 }
