@@ -9,6 +9,8 @@
 
 package com.facebook.litho;
 
+import javax.annotation.Nullable;
+
 /**
  * Allows a top-down communication with a component and its immediate parent. The component must be
  * able to handle {@link com.facebook.litho.annotations.OnTrigger} events in order to accept an
@@ -16,7 +18,7 @@ package com.facebook.litho;
  */
 public class EventTrigger<E> {
 
-  public EventTriggerTarget mTriggerTarget;
+  @Nullable public EventTriggerTarget mTriggerTarget;
   public final int mId;
   public final String mKey;
 
@@ -25,11 +27,17 @@ public class EventTrigger<E> {
     mKey = parentKey + id + childKey;
   }
 
+  @Nullable
   public Object dispatchOnTrigger(E event) {
     return dispatchOnTrigger(event, new Object[] {});
   }
 
+  @Nullable
   public Object dispatchOnTrigger(E event, Object[] params) {
+    if (mTriggerTarget == null) {
+      return null;
+    }
+
     return mTriggerTarget.acceptTriggerEvent(this, event, params);
   }
 }
