@@ -35,29 +35,37 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaPositionType;
 import java.util.Arrays;
 
 @LayoutSpec
 public class AnimatedBadgeSpec {
-  private static final int ANIMATION_DURATION = 1000;
+  private static final int ANIMATION_DURATION = 300;
   private static final Transition.TransitionAnimator ANIMATOR =
       Transition.timing(ANIMATION_DURATION);
 
-  private static final String TRANSITION_KEY_OUTER_CONTAINER = "outer_container";
-  private static final String TRANSITION_KEY_CONTAINER = "container";
+  private static final String TRANSITION_KEY_OUTER_CONTAINER_1 = "outer_container_1";
+  private static final String TRANSITION_KEY_CONTAINER_1 = "container_1";
   private static final String TRANSITION_KEY_TEXT = "text";
   private static final String TRANSITION_KEY_BADGE = "badge";
+  private static final String TRANSITION_KEY_OUTER_CONTAINER_2 = "outer_container_2";
+  private static final String TRANSITION_KEY_CONTAINER_2 = "container_2";
+  private static final String TRANSITION_KEY_BADGE_GREEN = "badge_green";
+  private static final String TRANSITION_KEY_BADGE_BLUE = "badge_blue";
 
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c, @State boolean showText) {
-    return Row.create(c)
-        .child(Column.create(c).paddingDip(YogaEdge.ALL, 8).child(buildComment(c, showText)))
+  static Component onCreateLayout(
+      ComponentContext c, @State boolean expanded1, @State boolean expanded2) {
+    return Column.create(c)
+        .paddingDip(YogaEdge.ALL, 8)
+        .child(Row.create(c).marginDip(YogaEdge.TOP, 8).child(buildComment1(c, expanded1)))
+        .child(Row.create(c).marginDip(YogaEdge.TOP, 16).child(buildComment2(c, expanded2)))
         .build();
   }
 
-  static Component buildComment(ComponentContext c, boolean showText) {
+  static Component buildComment1(ComponentContext c, boolean expanded) {
     return Column.create(c)
-        .transitionKey(TRANSITION_KEY_OUTER_CONTAINER)
+        .transitionKey(TRANSITION_KEY_OUTER_CONTAINER_1)
         .paddingDip(YogaEdge.ALL, 8)
         .child(
             Row.create(c)
@@ -69,7 +77,7 @@ public class AnimatedBadgeSpec {
                         .text("Cristobal Castilla"))
                 .child(
                     Row.create(c)
-                        .transitionKey(TRANSITION_KEY_CONTAINER)
+                        .transitionKey(TRANSITION_KEY_CONTAINER_1)
                         .marginDip(YogaEdge.LEFT, 8)
                         .paddingDip(YogaEdge.ALL, 3)
                         .alignItems(YogaAlign.CENTER)
@@ -79,7 +87,7 @@ public class AnimatedBadgeSpec {
                                 .widthDip(18)
                                 .background(buildRoundedRect(c, 0xFFFFB74B, 9)))
                         .child(
-                            !showText
+                            !expanded
                                 ? null
                                 : Text.create(c)
                                     .transitionKey(TRANSITION_KEY_TEXT)
@@ -95,7 +103,54 @@ public class AnimatedBadgeSpec {
                                 .textSizeDip(12)
                                 .textColor(Color.BLUE)
                                 .text("+1"))
-                        .clickHandler(AnimatedBadge.onClick(c))
+                        .clickHandler(AnimatedBadge.onClick1(c))
+                        .background(buildRoundedRect(c, Color.WHITE, 12))))
+        .child(Text.create(c).textSizeSp(18).text("So awesome!"))
+        .background(buildRoundedRect(c, 0xFFDDDDDD, 20))
+        .build();
+  }
+
+  static Component buildComment2(ComponentContext c, boolean expanded) {
+    return Column.create(c)
+        .transitionKey(TRANSITION_KEY_OUTER_CONTAINER_2)
+        .paddingDip(YogaEdge.ALL, 8)
+        .child(
+            Row.create(c)
+                .alignItems(YogaAlign.CENTER)
+                .child(
+                    Text.create(c)
+                        .textSizeSp(16)
+                        .textStyle(Typeface.BOLD)
+                        .text("Cristobal Castilla"))
+                .child(
+                    Row.create(c)
+                        .transitionKey(TRANSITION_KEY_CONTAINER_2)
+                        .widthDip(expanded ? 48 : 24)
+                        .marginDip(YogaEdge.LEFT, 8)
+                        .paddingDip(YogaEdge.ALL, 3)
+                        .alignItems(YogaAlign.CENTER)
+                        .child(
+                            Column.create(c)
+                                .transitionKey(TRANSITION_KEY_BADGE_BLUE)
+                                .positionType(YogaPositionType.ABSOLUTE)
+                                .positionDip(YogaEdge.LEFT, expanded ? 27 : 3)
+                                .heightDip(18)
+                                .widthDip(18)
+                                .background(buildRoundedRect(c, 0xFFB2CFE5, 9)))
+                        .child(
+                            Column.create(c)
+                                .transitionKey(TRANSITION_KEY_BADGE_GREEN)
+                                .positionType(YogaPositionType.ABSOLUTE)
+                                .positionDip(YogaEdge.LEFT, expanded ? 15 : 3)
+                                .heightDip(18)
+                                .widthDip(18)
+                                .background(buildRoundedRect(c, 0xFF4B8C61, 9)))
+                        .child(
+                            Column.create(c)
+                                .heightDip(18)
+                                .widthDip(18)
+                                .background(buildRoundedRect(c, 0xFFFFB74B, 9)))
+                        .clickHandler(AnimatedBadge.onClick2(c))
                         .background(buildRoundedRect(c, Color.WHITE, 12))))
         .child(Text.create(c).textSizeSp(18).text("So awesome!"))
         .background(buildRoundedRect(c, 0xFFDDDDDD, 20))
@@ -103,22 +158,39 @@ public class AnimatedBadgeSpec {
   }
 
   @OnEvent(ClickEvent.class)
-  static void onClick(ComponentContext c) {
-    AnimatedBadge.toggleVisibility(c);
+  static void onClick1(ComponentContext c) {
+    AnimatedBadge.toggleExpanded1(c);
   }
 
   @OnUpdateState
-  static void toggleVisibility(StateValue<Boolean> showText) {
-    showText.set(!showText.get());
+  static void toggleExpanded1(StateValue<Boolean> expanded1) {
+    expanded1.set(!expanded1.get());
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void onClick2(ComponentContext c) {
+    AnimatedBadge.toggleExpanded2(c);
+  }
+
+  @OnUpdateState
+  static void toggleExpanded2(StateValue<Boolean> expanded2) {
+    expanded2.set(!expanded2.get());
   }
 
   @OnCreateTransition
   static Transition onCreateTransition(ComponentContext c) {
     return Transition.parallel(
-        Transition.create(TRANSITION_KEY_CONTAINER, TRANSITION_KEY_OUTER_CONTAINER)
+        Transition.create(
+                TRANSITION_KEY_CONTAINER_1,
+                TRANSITION_KEY_OUTER_CONTAINER_1,
+                TRANSITION_KEY_CONTAINER_2,
+                TRANSITION_KEY_OUTER_CONTAINER_2)
             .animate(AnimatedProperties.WIDTH)
             .animator(ANIMATOR),
-        Transition.create(TRANSITION_KEY_BADGE).animate(AnimatedProperties.X).animator(ANIMATOR),
+        Transition.create(
+                TRANSITION_KEY_BADGE, TRANSITION_KEY_BADGE_GREEN, TRANSITION_KEY_BADGE_BLUE)
+            .animate(AnimatedProperties.X)
+            .animator(ANIMATOR),
         Transition.create(TRANSITION_KEY_TEXT)
             .animate(AnimatedProperties.WIDTH)
             .appearFrom(0f)
