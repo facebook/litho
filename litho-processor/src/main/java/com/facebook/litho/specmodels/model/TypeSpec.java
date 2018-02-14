@@ -10,6 +10,7 @@ package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.TypeName;
+import java.util.function.Supplier;
 
 /**
  * This class represents a partial representation of the {@link javax.lang.model.type.TypeMirror}
@@ -66,13 +67,13 @@ public class TypeSpec {
 
   public static class DeclaredTypeSpec extends TypeSpec {
     private final String mQualifiedName;
-    private final TypeSpec mSuperclass;
+    private final Supplier<TypeSpec> mSuperclass;
     private final ImmutableList<TypeSpec> mTypeArguments;
 
     public DeclaredTypeSpec(
         TypeName typeName,
         String qualifiedName,
-        TypeSpec superclass,
+        Supplier<TypeSpec> superclass,
         ImmutableList<TypeSpec> typeArguments) {
       super(typeName);
       mQualifiedName = qualifiedName;
@@ -83,7 +84,7 @@ public class TypeSpec {
     @Override
     public boolean isSubType(TypeName type) {
       return type.toString().equals(mQualifiedName)
-          || (mSuperclass != null && mSuperclass.isSubType(type));
+          || (mSuperclass.get() != null && mSuperclass.get().isSubType(type));
     }
 
     @Override

@@ -10,6 +10,7 @@ load("//:LITHO_DEFS", "LITHO_JAVAPOET_TARGET", "LITHO_JSR_TARGET", "make_dep_pat
 java_library(
     name = "internal",
     srcs = glob(["*.java"]),
+    java_version = "8",
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels:specmodels"),
     ],

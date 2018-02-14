@@ -15,6 +15,7 @@ import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
 
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.specmodels.internal.SimpleMemoizingSupplier;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
@@ -22,6 +23,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.lang.model.element.TypeElement;
@@ -171,8 +173,15 @@ public class SpecModelUtils {
           @Override
           public TypeSpec visitDeclared(DeclaredType t, Void aVoid) {
             final TypeElement typeElement = (TypeElement) t.asElement();
-            final TypeMirror superClass = typeElement.getSuperclass();
             final String qualifiedName = typeElement.getQualifiedName().toString();
+            final Supplier<TypeSpec> superclass =
+                new SimpleMemoizingSupplier<>(
+                    () -> {
+                      final TypeMirror mirror = typeElement.getSuperclass();
+                      return mirror.getKind() != TypeKind.DECLARED
+                          ? null
+                          : generateTypeSpec(mirror);
+                    });
 
             final List<TypeSpec> typeArguments =
                 ClassName.bestGuess(qualifiedName).equals(ClassNames.DIFF)
@@ -183,10 +192,7 @@ public class SpecModelUtils {
                     : Collections.emptyList();
 
             return new TypeSpec.DeclaredTypeSpec(
-                safelyGetTypeName(t),
-                qualifiedName,
-                superClass.getKind() != TypeKind.DECLARED ? null : generateTypeSpec(superClass),
-                copyOf(typeArguments));
+                safelyGetTypeName(t), qualifiedName, superclass, copyOf(typeArguments));
           }
         },
         null);
