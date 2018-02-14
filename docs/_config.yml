@@ -92,7 +92,7 @@ redcarpet:
   extensions: [with_toc_data]
 
 # Gems
-gems:
+plugins:
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
