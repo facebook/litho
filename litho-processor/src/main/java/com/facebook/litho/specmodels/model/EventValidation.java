@@ -80,42 +80,45 @@ public class EventValidation {
       }
     }
 
-    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod : eventMethods) {
-      validationErrors.addAll(validateMethodIsStatic(specModel, eventMethod));
+    if (runMode != RunMode.ABI) {
+      for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod : eventMethods) {
+        validationErrors.addAll(validateMethodIsStatic(specModel, eventMethod));
 
-      if (!eventMethod.returnType.box().equals(eventMethod.typeModel.returnType.box())) {
-        validationErrors.add(
-            new SpecModelValidationError(
-                eventMethod.representedObject,
-                "Method must return "
-                    + eventMethod.typeModel.returnType
-                    + " since that is what "
-                    + eventMethod.typeModel.name
-                    + " expects."));
-      }
-
-      if (eventMethod.methodParams.isEmpty() ||
-          !eventMethod.methodParams.get(0).getTypeName().equals(specModel.getContextClass())) {
-        validationErrors.add(
-            new SpecModelValidationError(
-                eventMethod.representedObject,
-                "The first parameter for a method annotated with @OnEvent should be of type " +
-                    specModel.getContextClass() + "."));
-      }
-
-      for (MethodParamModel methodParam : eventMethod.methodParams) {
-        if (MethodParamModelUtils.isAnnotatedWith(methodParam, FromEvent.class)
-            && !hasMatchingField(methodParam, eventMethod.typeModel.fields)) {
+        if (!eventMethod.returnType.box().equals(eventMethod.typeModel.returnType.box())) {
           validationErrors.add(
               new SpecModelValidationError(
-                  methodParam.getRepresentedObject(),
-                  "Param with name "
-                      + methodParam.getName()
-                      + " and type "
-                      + methodParam.getTypeName()
-                      + " is not a member of "
+                  eventMethod.representedObject,
+                  "Method must return "
+                      + eventMethod.typeModel.returnType
+                      + " since that is what "
                       + eventMethod.typeModel.name
+                      + " expects."));
+        }
+
+        if (eventMethod.methodParams.isEmpty()
+            || !eventMethod.methodParams.get(0).getTypeName().equals(specModel.getContextClass())) {
+          validationErrors.add(
+              new SpecModelValidationError(
+                  eventMethod.representedObject,
+                  "The first parameter for a method annotated with @OnEvent should be of type "
+                      + specModel.getContextClass()
                       + "."));
+        }
+
+        for (MethodParamModel methodParam : eventMethod.methodParams) {
+          if (MethodParamModelUtils.isAnnotatedWith(methodParam, FromEvent.class)
+              && !hasMatchingField(methodParam, eventMethod.typeModel.fields)) {
+            validationErrors.add(
+                new SpecModelValidationError(
+                    methodParam.getRepresentedObject(),
+                    "Param with name "
+                        + methodParam.getName()
+                        + " and type "
+                        + methodParam.getTypeName()
+                        + " is not a member of "
+                        + eventMethod.typeModel.name
+                        + "."));
+          }
         }
       }
     }

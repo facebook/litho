@@ -27,6 +27,7 @@ import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +88,15 @@ public class EventMethodExtractor {
                 elements, executableElement, OnEvent.class, "value", DeclaredType.class);
         final Element eventClass = eventClassDeclaredType.asElement();
 
+        final TypeName returnType =
+            runMode == RunMode.ABI
+                ? TypeName.VOID
+                : EventDeclarationsExtractor.getReturnType(elements, eventClass);
+        final ImmutableList<EventDeclarationModel.FieldModel> fields =
+            runMode == RunMode.ABI
+                ? ImmutableList.of()
+                : EventDeclarationsExtractor.getFields(eventClass);
+
         final SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =
             new SpecMethodModel<EventMethod, EventDeclarationModel>(
                 ImmutableList.<Annotation>of(),
@@ -97,10 +107,7 @@ public class EventMethodExtractor {
                 ImmutableList.copyOf(methodParams),
                 executableElement,
                 new EventDeclarationModel(
-                    ClassName.bestGuess(eventClass.toString()),
-                    EventDeclarationsExtractor.getReturnType(elements, eventClass),
-                    EventDeclarationsExtractor.getFields(eventClass),
-                    eventClass));
+                    ClassName.bestGuess(eventClass.toString()), returnType, fields, eventClass));
         delegateMethods.add(eventMethod);
       }
     }

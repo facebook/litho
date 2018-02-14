@@ -23,11 +23,13 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +62,8 @@ public class TriggerMethodExtractor {
           Elements elements,
           TypeElement typeElement,
           List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
-          Messager messager) {
+          Messager messager,
+          RunMode runMode) {
     final List<SpecMethodModel<EventMethod, EventDeclarationModel>> delegateMethods =
         new ArrayList<>();
 
@@ -86,6 +89,11 @@ public class TriggerMethodExtractor {
                 elements, executableElement, OnTrigger.class, "value", DeclaredType.class);
         final Element eventClass = eventClassDeclaredType.asElement();
 
+        final TypeName returnType =
+            runMode == RunMode.ABI ? TypeName.VOID : getReturnType(elements, eventClass);
+        final ImmutableList<EventDeclarationModel.FieldModel> fields =
+            runMode == RunMode.ABI ? ImmutableList.of() : getFields(eventClass);
+
         // Reuse EventMethodModel and EventDeclarationModel because we are capturing the same info
         final SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =
             new SpecMethodModel<EventMethod, EventDeclarationModel>(
@@ -97,10 +105,7 @@ public class TriggerMethodExtractor {
                 ImmutableList.copyOf(methodParams),
                 executableElement,
                 new EventDeclarationModel(
-                    ClassName.bestGuess(eventClass.toString()),
-                    getReturnType(elements, eventClass),
-                    getFields(eventClass),
-                    eventClass));
+                    ClassName.bestGuess(eventClass.toString()), returnType, fields, eventClass));
         delegateMethods.add(eventMethod);
       }
     }

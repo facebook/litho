@@ -90,7 +90,7 @@ public class MountSpecModelFactory implements SpecModelFactory {
         EventMethodExtractor.getOnEventMethods(
             elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager, runMode),
         TriggerMethodExtractor.getOnTriggerMethods(
-            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
+            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager, runMode),
         UpdateStateMethodExtractor.getOnUpdateStateMethods(
             element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
         interStageStore == null

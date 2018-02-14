@@ -21,6 +21,7 @@ import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
@@ -73,7 +74,7 @@ public class TriggerMethodExtractorTest {
 
     ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> methods =
         TriggerMethodExtractor.getOnTriggerMethods(
-            elements, typeElement, permittedParamAnnotations, mock(Messager.class));
+            elements, typeElement, permittedParamAnnotations, mock(Messager.class), RunMode.NORMAL);
 
     assertThat(methods).hasSize(1);
 

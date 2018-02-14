@@ -46,11 +46,15 @@ public class EventDeclarationsExtractor {
       eventDeclarations = new ArrayList<>();
       for (AnnotationValue eventType : eventTypes) {
         final DeclaredType type = (DeclaredType) eventType.getValue();
+        final TypeName returnType =
+            runMode == RunMode.ABI ? TypeName.VOID : getReturnType(elements, type.asElement());
+        final ImmutableList<EventDeclarationModel.FieldModel> fields =
+            runMode == RunMode.ABI ? ImmutableList.of() : getFields(type.asElement());
         eventDeclarations.add(
             new EventDeclarationModel(
                 ClassName.bestGuess(type.asElement().toString()),
-                getReturnType(elements, type.asElement()),
-                getFields(type.asElement()),
+                returnType,
+                fields,
                 type.asElement()));
       }
     } else {

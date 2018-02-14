@@ -113,7 +113,7 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory {
             elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager, runMode),
         AnnotationExtractor.extractValidAnnotations(element),
         TriggerMethodExtractor.getOnTriggerMethods(
-            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
+            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager, runMode),
         UpdateStateMethodExtractor.getOnUpdateStateMethods(
             element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
         ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
