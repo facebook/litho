@@ -10,6 +10,7 @@
 package com.facebook.litho;
 
 import android.support.annotation.IntDef;
+import android.support.annotation.Nullable;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -95,7 +96,7 @@ class NodeInfo {
 
   private CharSequence mContentDescription;
   private Object mViewTag;
-  private SparseArray<Object> mViewTags;
+  @Nullable private SparseArray<Object> mViewTags;
   private float mShadowElevation;
   private ViewOutlineProvider mOutlineProvider;
   private boolean mClipToOutline;
@@ -178,6 +179,7 @@ class NodeInfo {
     mClipToOutline = clipToOutline;
   }
 
+  @Nullable
   SparseArray<Object> getViewTags() {
     return mViewTags;
   }
