@@ -571,7 +571,7 @@ public class LayoutStateCreateTreeTest {
 
     protected ComponentLayout resolve(ComponentContext c) {
       InternalNode node = mock(InternalNode.class);
-      ((Component) this).getCommonProps().copyInto(c, node);
+      ((Component) this).getCommonPropsCopyable().copyInto(c, node);
 
       return node;
     }

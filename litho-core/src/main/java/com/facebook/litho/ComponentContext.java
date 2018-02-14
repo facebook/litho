@@ -306,7 +306,7 @@ public class ComponentContext extends ContextWrapper {
 
     final InternalNode node = (InternalNode) component.resolve(component.getScopedContext());
     if (component.isInternalComponent()) {
-      final CommonProps props = component.getCommonProps();
+      final CommonPropsCopyable props = component.getCommonPropsCopyable();
       if (props != null) {
         props.copyInto(component.getScopedContext(), node);
       }

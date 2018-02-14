@@ -29,7 +29,7 @@ import java.util.List;
 
 /** Internal class that holds props that are common to all {@link Component}s. */
 @ThreadConfined(ThreadConfined.ANY)
-class CommonProps {
+class CommonProps implements CommonPropsCopyable {
 
   // Flags used to indicate that a certain attribute was explicitly set on the node.
   private static final byte PFLAG_POSITION_TYPE_IS_SET = 1 << 1;
@@ -394,7 +394,8 @@ class CommonProps {
     return mNodeInfo;
   }
 
-  void copyInto(ComponentContext c, InternalNode node) {
+  @Override
+  public void copyInto(ComponentContext c, InternalNode node) {
     c.applyStyle(node, mDefStyleAttr, mDefStyleRes);
 
     if (mNodeInfo != null) {

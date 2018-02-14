@@ -274,7 +274,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     // If this is a layout spec with size spec, and we're not deferring the nested tree resolution,
     // then we already added the props earlier on (when we did defer resolution), and
     // therefore we shouldn't add them again here.
-    final CommonProps commonProps = ((Component) this).getCommonProps();
+    final CommonPropsCopyable commonProps = ((Component) this).getCommonPropsCopyable();
     if (commonProps != null
         && (deferNestedTreeResolution || !Component.isLayoutSpecWithSizeSpec((Component) this))) {
       commonProps.copyInto(context, node);

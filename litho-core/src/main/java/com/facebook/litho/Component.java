@@ -437,7 +437,8 @@ public abstract class Component extends ComponentLifecycle
     return false;
   }
 
-  CommonProps getCommonProps() {
+  @Nullable
+  CommonPropsCopyable getCommonPropsCopyable() {
     return mCommonProps;
   }
 
