@@ -15,6 +15,7 @@ import static com.facebook.litho.testing.helper.ComponentTestHelper.unbindCompon
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.content.Context;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.viewcompat.ViewBinder;
@@ -33,7 +34,7 @@ public class ViewCompatComponentTest {
   private static final ViewCreator<TextView> TEXT_VIEW_CREATOR =
       new ViewCreator<TextView>() {
         @Override
-        public TextView createView(Context c) {
+        public TextView createView(Context c, ViewGroup parent) {
           return new TextView(c);
         }
       };
@@ -41,7 +42,7 @@ public class ViewCompatComponentTest {
   private static final ViewCreator<TextView> TEXT_VIEW_CREATOR_2 =
       new ViewCreator<TextView>() {
         @Override
-        public TextView createView(Context c) {
+        public TextView createView(Context c, ViewGroup parent) {
           return new TextView(c);
         }
       };
