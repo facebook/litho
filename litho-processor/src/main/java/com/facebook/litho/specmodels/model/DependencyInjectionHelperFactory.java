@@ -9,6 +9,7 @@
 
 package com.facebook.litho.specmodels.model;
 
+import com.facebook.litho.specmodels.internal.RunMode;
 import javax.annotation.Nullable;
 import javax.lang.model.element.TypeElement;
 
@@ -18,5 +19,5 @@ import javax.lang.model.element.TypeElement;
  */
 public interface DependencyInjectionHelperFactory {
   @Nullable
-  DependencyInjectionHelper create(TypeElement typeElement);
+  DependencyInjectionHelper create(TypeElement typeElement, RunMode runMode);
 }

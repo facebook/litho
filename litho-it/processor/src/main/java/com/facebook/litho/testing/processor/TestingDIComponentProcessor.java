@@ -46,7 +46,7 @@ public class TestingDIComponentProcessor extends AbstractComponentsProcessor {
   public TestingDIComponentProcessor() {
     super(
         ImmutableList.of(new LayoutSpecModelFactory(), new MountSpecModelFactory()),
-        typeElement -> new TestingDependencyInjectionHelper());
+        (typeElement, runMode) -> new TestingDependencyInjectionHelper());
   }
 
   @Override

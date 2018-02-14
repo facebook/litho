@@ -84,7 +84,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
                   mRunMode,
                   mDependencyInjectionHelperFactory == null
                       ? null
-                      : mDependencyInjectionHelperFactory.create((TypeElement) element),
+                      : mDependencyInjectionHelperFactory.create((TypeElement) element, mRunMode),
                   mInterStageStore);
 
           validate(specModel, mRunMode);
