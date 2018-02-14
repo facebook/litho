@@ -19,8 +19,8 @@ public class YogaEdgesWithIntsTest {
 
   @Test
   public void testDefault() {
-    YogaEdgesWithInts edgesOld = new CommonProps.YogaEdgesWithIntsImpl();
-    YogaEdgesWithInts edgesNew = new CommonProps.YogaEdgesWithIntsImplOptimized();
+    YogaEdgesWithInts edgesOld = new CommonPropsHolder.YogaEdgesWithIntsImpl();
+    YogaEdgesWithInts edgesNew = new CommonPropsHolder.YogaEdgesWithIntsImplOptimized();
 
     YogaEdgesWithInts[] bothEdges = {edgesOld, edgesNew};
 
@@ -43,8 +43,8 @@ public class YogaEdgesWithIntsTest {
 
   @Test
   public void testDefaultZeros() {
-    YogaEdgesWithInts edgesOld = new CommonProps.YogaEdgesWithIntsImpl();
-    YogaEdgesWithInts edgesNew = new CommonProps.YogaEdgesWithIntsImplOptimized();
+    YogaEdgesWithInts edgesOld = new CommonPropsHolder.YogaEdgesWithIntsImpl();
+    YogaEdgesWithInts edgesNew = new CommonPropsHolder.YogaEdgesWithIntsImplOptimized();
 
     YogaEdgesWithInts[] bothEdges = {edgesOld, edgesNew};
 

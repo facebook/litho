@@ -37,13 +37,13 @@ import org.robolectric.RuntimeEnvironment;
 public class CommonPropsTest {
 
   private InternalNode mNode;
-  private CommonProps mCommonProps;
+  private CommonPropsHolder mCommonProps;
   private ComponentContext mComponentContext;
 
   @Before
   public void setup() {
     mNode = mock(InternalNode.class);
-    mCommonProps = new CommonProps();
+    mCommonProps = new CommonPropsHolder();
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
   }
 

@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 
 /**
  * Utility class for wrapping an existing {@link Component}. This is useful for adding further
- * {@link CommonProps} to an already created component.
+ * {@link CommonPropsHolder} to an already created component.
  */
 public final class Wrapper extends Component {
 
