@@ -18,4 +18,12 @@ import java.lang.annotation.RetentionPolicy;
  * com.facebook.litho.ComponentContext as parameter. No props are allowed here.
  */
 @Retention(RetentionPolicy.CLASS)
-public @interface OnCreateMountContent {}
+public @interface OnCreateMountContent {
+
+  /**
+   * The type of class used for the mount content. During normal compilation, it should never be
+   * necessary to specify this explicitly. However, projects that use source-only ABI generation may
+   * need to if the mounting type cannot be inferred from the return type.
+   */
+  MountingType mountingType() default MountingType.INFER;
+}

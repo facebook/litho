@@ -15,6 +15,7 @@ import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromMeasureBaseline;
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.MountSpec;
+import com.facebook.litho.annotations.MountingType;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.ShouldUpdate;
@@ -121,7 +122,14 @@ public class MountSpecModelFactory implements SpecModelFactory {
         continue;
       }
 
-      if (enclosedElement.getAnnotation(OnCreateMountContent.class) != null) {
+      OnCreateMountContent annotation = enclosedElement.getAnnotation(OnCreateMountContent.class);
+      if (annotation != null) {
+        if (annotation.mountingType() == MountingType.VIEW) {
+          return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW;
+        }
+        if (annotation.mountingType() == MountingType.DRAWABLE) {
+          return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE;
+        }
         TypeMirror returnType = ((ExecutableElement) enclosedElement).getReturnType();
         while (returnType.getKind() != TypeKind.NONE && returnType.getKind() != TypeKind.VOID) {
           final TypeElement returnElement = (TypeElement) ((DeclaredType) returnType).asElement();
@@ -131,7 +139,14 @@ public class MountSpecModelFactory implements SpecModelFactory {
           } else if (returnElement.equals(drawableType)) {
             return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE;
           }
-          returnType = returnElement.getSuperclass();
+          try {
+            returnType = returnElement.getSuperclass();
+          } catch (RuntimeException e) {
+            throw new ComponentsProcessingException(
+                "Failed to get mount type for "
+                    + element
+                    + ".  Try specifying `@OnCreateMountContent(mountingType = MountingType.VIEW)` (or DRAWABLE).");
+          }
         }
       }
     }
