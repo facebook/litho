@@ -23,7 +23,6 @@ import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.MountSpecModel;
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -108,12 +107,15 @@ public class MountSpecModelFactory implements SpecModelFactory {
         element.getAnnotation(MountSpec.class).shouldUseDisplayList(),
         element.getAnnotation(MountSpec.class).poolSize(),
         element.getAnnotation(MountSpec.class).canPreallocate(),
-        getMountType(element),
+        getMountType(elements, element),
         SpecElementTypeDeterminator.determine(element),
         element);
   }
 
-  private static TypeName getMountType(TypeElement element) {
+  private static TypeName getMountType(Elements elements, TypeElement element) {
+    TypeElement viewType = elements.getTypeElement(ClassNames.VIEW_NAME);
+    TypeElement drawableType = elements.getTypeElement(ClassNames.DRAWABLE_NAME);
+
     for (Element enclosedElement : element.getEnclosedElements()) {
       if (enclosedElement.getKind() != ElementKind.METHOD) {
         continue;
@@ -124,10 +126,9 @@ public class MountSpecModelFactory implements SpecModelFactory {
         while (returnType.getKind() != TypeKind.NONE && returnType.getKind() != TypeKind.VOID) {
           final TypeElement returnElement = (TypeElement) ((DeclaredType) returnType).asElement();
 
-          final TypeName type = ClassName.get(returnElement);
-          if (type.equals(ClassNames.VIEW)) {
+          if (returnElement.equals(viewType)) {
             return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW;
-          } else if (type.equals(ClassNames.DRAWABLE)) {
+          } else if (returnElement.equals(drawableType)) {
             return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE;
           }
           returnType = returnElement.getSuperclass();

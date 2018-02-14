@@ -20,9 +20,10 @@ public interface ClassNames {
   ClassName STRING = ClassName.bestGuess("java.lang.String");
   ClassName EXCEPTION = ClassName.bestGuess("java.lang.Exception");
 
-  ClassName VIEW = ClassName.bestGuess("android.view.View");
-  ClassName DRAWABLE =
-      ClassName.bestGuess("android.graphics.drawable.Drawable");
+  String VIEW_NAME = "android.view.View";
+  ClassName VIEW = ClassName.bestGuess(VIEW_NAME);
+  String DRAWABLE_NAME = "android.graphics.drawable.Drawable";
+  ClassName DRAWABLE = ClassName.bestGuess(DRAWABLE_NAME);
 
   ClassName ACCESSIBILITY_NODE =
       ClassName.bestGuess("android.support.v4.view.accessibility.AccessibilityNodeInfoCompat");
