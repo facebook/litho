@@ -11,6 +11,7 @@ package com.facebook.litho.viewcompat;
 
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 
 /**
  * Creates a View of the specified type. Used as the mount content for ViewCompatComponent.
@@ -22,7 +23,8 @@ public interface ViewCreator<V extends View> {
 
   /**
    * @param c android Context.
+   * @param parent the parent {@link ViewGroup}, or {@code null} if there isn't one.
    * @return a new view of type V.
    */
-  V createView(Context c);
+  V createView(Context c, ViewGroup parent);
 }
