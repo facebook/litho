@@ -66,7 +66,8 @@ public final class MethodExtractorUtils {
               Diagnostic.Kind.WARNING,
               String.format(
                   "The type of '%s' cannot be fully determined at compile time. "
-                      + "This can cause issues if the target referenced from a different package. "
+                      + "This can cause issues if the target referenced is from a different "
+                      + "package. "
                       + "Learn more at https://fburl.com/fblitho-cross-package-error.",
                   param.getSimpleName()),
               param);
