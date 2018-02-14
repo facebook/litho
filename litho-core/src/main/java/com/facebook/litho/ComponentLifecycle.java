@@ -58,14 +58,15 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    */
   public interface RenderData {}
 
-  private static final YogaBaselineFunction sBaselineFunction = new YogaBaselineFunction() {
-    public float baseline(YogaNode cssNode, float width, float height) {
-      final InternalNode node = (InternalNode) cssNode.getData();
-      return node.getRootComponent()
-          
-          .onMeasureBaseline(node.getContext(), (int) width, (int) height);
-    }
-  };
+  private static final YogaBaselineFunction sBaselineFunction =
+      new YogaBaselineFunction() {
+        @Override
+        public float baseline(YogaNode cssNode, float width, float height) {
+          final InternalNode node = (InternalNode) cssNode.getData();
+          return node.getRootComponent()
+              .onMeasureBaseline(node.getContext(), (int) width, (int) height);
+        }
+      };
 
   private static final YogaMeasureFunction sMeasureFunction =
       new YogaMeasureFunction() {
@@ -523,8 +524,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /**
-   * This indicates the type of the {@link java.lang.Object} that will be returned by
-   * {@link ComponentLifecycle#mount}.
+   * This indicates the type of the {@link Object} that will be returned by {@link
+   * ComponentLifecycle#mount}.
    *
    * @return one of {@link ComponentLifecycle.MountType}
    */
