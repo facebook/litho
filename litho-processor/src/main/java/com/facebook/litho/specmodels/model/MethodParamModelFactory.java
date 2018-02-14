@@ -33,7 +33,7 @@ public final class MethodParamModelFactory {
       boolean canCreateDiffModels,
       Object representedObject) {
 
-    if (canCreateDiffModels && typeSpec.isSubType(DIFF)) {
+    if (canCreateDiffModels && typeSpec.isSameDeclaredType(DIFF)) {
       return new RenderDataDiffModel(
           new SimpleMethodParamModel(
               typeSpec, name, annotations, externalAnnotations, representedObject));
@@ -56,7 +56,7 @@ public final class MethodParamModelFactory {
                 ((Prop) annotation).resType(),
                 ((Prop) annotation).varArg());
 
-        if (typeSpec.isSubType(DIFF)) {
+        if (typeSpec.isSameDeclaredType(DIFF)) {
           return new DiffPropModel(propModel);
         } else {
           return propModel;
@@ -67,7 +67,7 @@ public final class MethodParamModelFactory {
         StateParamModel stateParamModel =
             new StateParamModel(simpleMethodParamModel, ((State) annotation).canUpdateLazily());
 
-        if (typeSpec.isSubType(DIFF)) {
+        if (typeSpec.isSameDeclaredType(DIFF)) {
           return new DiffStateParamModel(stateParamModel);
         } else {
           return stateParamModel;
@@ -87,7 +87,7 @@ public final class MethodParamModelFactory {
   }
 
   static TypeSpec extractDiffTypeIfNecessary(TypeSpec typeSpec) {
-    if (typeSpec.isSubType(DIFF)) {
+    if (typeSpec.isSameDeclaredType(DIFF)) {
       return ((TypeSpec.DeclaredTypeSpec) typeSpec).getTypeArguments().get(0);
     }
 

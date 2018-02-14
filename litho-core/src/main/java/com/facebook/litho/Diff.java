@@ -17,7 +17,7 @@ import com.facebook.litho.annotations.ShouldUpdate;
  * {@link ShouldUpdate} callback in a ComponentSpec. a Diff
  * holds the previous and next value for a specific Prop for a ComponentSpec
  */
-public class Diff<T> {
+public final class Diff<T> {
 
   T mPrevious;
   T mNext;

@@ -49,6 +49,11 @@ public class TypeSpec {
     return false;
   }
 
+  /** The comparison will be performed only if the TypeSpec is a DeclaredTypeSpec. */
+  public boolean isSameDeclaredType(TypeName type) {
+    return false;
+  }
+
   @Override
   public boolean equals(Object o) {
     return mTypeName.equals(o);
@@ -79,6 +84,11 @@ public class TypeSpec {
     public boolean isSubType(TypeName type) {
       return type.toString().equals(mQualifiedName)
           || (mSuperclass != null && mSuperclass.isSubType(type));
+    }
+
+    @Override
+    public boolean isSameDeclaredType(TypeName type) {
+      return type.toString().equals(mQualifiedName);
     }
 
     public ImmutableList<TypeSpec> getTypeArguments() {
