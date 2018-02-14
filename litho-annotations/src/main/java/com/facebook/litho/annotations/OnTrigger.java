@@ -15,18 +15,19 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Annotated function in the component will allow its parents to call it with an EventTrigger.
  *
- * For example
- * <pre>
- *   {@code
+ * <p>For example
  *
- *   {@literal @}LayoutSpec
+ * <pre>
+ * <code>
+ *  {@literal @}LayoutSpec
  *   public class ComponentSpec {
  *
- *     {@literal @}OnTrigger(YourEvent.class)
- *     static Object yourEventClick(ComponentContext c, {@literal @}FromTrigger YourObject obj) {
+ *    {@literal @}OnTrigger(YourEvent.class)
+ *     static Object yourEventClick(ComponentContext c,{@literal @}FromTrigger YourObject obj) {
  *       return new Object();
  *     }
- *   }}
+ *   }
+ * </code>
  * </pre>
  */
 @Retention(RetentionPolicy.CLASS)

@@ -17,16 +17,18 @@ import java.lang.annotation.RetentionPolicy;
  *
  * <p>For example:
  *
- * <pre>{@code
+ * <pre>
+ * <code>
  * {@literal @}LayoutSpec
  * public class ComponentSpec {
  *
- *   {@literal @}OnTrigger(YourEvent.class)
- *   static Object yourEventClick(ComponentContext c, {@literal @}FromTrigger YourObject obj) {
+ *  {@literal @}OnTrigger(YourEvent.class)
+ *   static Object yourEventClick(ComponentContext c,{@literal @}FromTrigger YourObject obj) {
  *     return new Object();
  *   }
  * }
- * }</pre>
+ * </code>
+ * </pre>
  */
 @Retention(RetentionPolicy.CLASS)
 public @interface FromTrigger {}

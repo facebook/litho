@@ -29,12 +29,13 @@ import java.lang.annotation.RetentionPolicy;
  *
  * An example use may look like this:
  *
- * <pre>{@code
+ * <pre>
+ * <code>
  * {@literal @}OnError
  *  static Component onError(ComponentContext c,
  *    Exception e,
  *    LifecyclePhase l,
- *  {@literal @}Prop final SomeProp prop) {
+ *   {@literal @}Prop final SomeProp prop) {
  *    switch (l) {
  *      case ON_CREATE_LAYOUT:
  *        return Text.create(c).text(
@@ -44,7 +45,8 @@ import java.lang.annotation.RetentionPolicy;
  *        throw new RuntimeException(e);
  *    }
  *  }
- * }</pre>
+ * </code>
+ * </pre>
  */
 @Retention(RetentionPolicy.SOURCE)
 public @interface OnError {}
