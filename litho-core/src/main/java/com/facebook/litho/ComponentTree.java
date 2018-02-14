@@ -1605,11 +1605,11 @@ public class ComponentTree {
     int simulateDelayNano = 0;
 
     synchronized (this) {
+      final KeyHandler keyHandler =
+          ComponentsConfiguration.useGlobalKeys ? new KeyHandler(mContext.getLogger()) : null;
+
       contextWithStateHandler =
-          new ComponentContext(
-              context,
-              StateHandler.acquireNewInstance(mStateHandler),
-              new KeyHandler(mContext.getLogger()));
+          new ComponentContext(context, StateHandler.acquireNewInstance(mStateHandler), keyHandler);
 
       if (mMainThreadLayoutState != null && source == CalculateLayoutSource.UPDATE_STATE) {
         simulateDelayNano =
