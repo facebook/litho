@@ -20,6 +20,7 @@ import com.facebook.litho.specmodels.generator.TreePropGenerator;
 import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
@@ -275,8 +276,8 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
-  public List<SpecModelValidationError> validate() {
-    return SpecModelValidation.validateGroupSectionSpecModel(this);
+  public List<SpecModelValidationError> validate(RunMode runMode) {
+    return SpecModelValidation.validateGroupSectionSpecModel(this, runMode);
   }
 
   @Override

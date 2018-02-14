@@ -10,6 +10,7 @@
 package com.facebook.litho.specmodels.model.testing;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
@@ -247,7 +248,7 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   }
 
   @Override
-  public List<SpecModelValidationError> validate() {
+  public List<SpecModelValidationError> validate(RunMode runMode) {
     return TestSpecModelValidation.validateTestSpecModel(this);
   }
 

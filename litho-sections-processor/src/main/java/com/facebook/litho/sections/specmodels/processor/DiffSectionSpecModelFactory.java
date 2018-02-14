@@ -23,6 +23,7 @@ import com.facebook.litho.sections.annotations.OnViewportChanged;
 import com.facebook.litho.sections.specmodels.model.DiffSectionSpecModel;
 import com.facebook.litho.sections.specmodels.model.SectionClassNames;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
@@ -87,16 +88,18 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory {
       Elements elements,
       TypeElement element,
       Messager messager,
+      RunMode runMode,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
-    return createModel(elements, element, messager, dependencyInjectionHelper);
+    return createModel(elements, element, messager, dependencyInjectionHelper, runMode);
   }
 
   public static DiffSectionSpecModel createModel(
       Elements elements,
       TypeElement element,
       Messager messager,
-      @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
+      @Nullable DependencyInjectionHelper dependencyInjectionHelper,
+      RunMode runMode) {
     return new DiffSectionSpecModel(
         element.getQualifiedName().toString(),
         element.getAnnotation(DiffSectionSpec.class).value(),
@@ -107,7 +110,7 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory {
             ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class, OnDiff.class),
             messager),
         EventMethodExtractor.getOnEventMethods(
-            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
+            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager, runMode),
         AnnotationExtractor.extractValidAnnotations(element),
         TriggerMethodExtractor.getOnTriggerMethods(
             elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
@@ -115,7 +118,8 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory {
             element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
         ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),
-        EventDeclarationsExtractor.getEventDeclarations(elements, element, DiffSectionSpec.class),
+        EventDeclarationsExtractor.getEventDeclarations(
+            elements, element, DiffSectionSpec.class, runMode),
         ImmutableList.of(BuilderMethodModel.KEY_BUILDER_METHOD, LOADING_EVENT_BUILDER_METHOD),
         JavadocExtractor.getClassJavadoc(elements, element),
         JavadocExtractor.getPropJavadocs(elements, element),

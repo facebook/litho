@@ -20,6 +20,7 @@ import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
@@ -67,7 +68,8 @@ public class TriggerGeneratorTest {
     Elements elements = mCompilationRule.getElements();
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
     mSpecModel =
-        mLayoutSpecModelFactory.create(elements, typeElement, mock(Messager.class), null, null);
+        mLayoutSpecModelFactory.create(
+            elements, typeElement, mock(Messager.class), RunMode.NORMAL, null, null);
   }
 
   @Test

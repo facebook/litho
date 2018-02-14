@@ -24,6 +24,7 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.PropModel;
@@ -81,7 +82,9 @@ public class ComponentBodyGeneratorTest {
     MockitoAnnotations.initMocks(this);
     Elements elements = mCompilationRule.getElements();
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
-    mSpecModelDI = mLayoutSpecModelFactory.create(elements, typeElement, mMessager, null, null);
+    mSpecModelDI =
+        mLayoutSpecModelFactory.create(
+            elements, typeElement, mMessager, RunMode.NORMAL, null, null);
   }
 
   @Test

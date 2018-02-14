@@ -24,6 +24,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.TestSpec;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.testing.TestSpecGenerator;
 import com.facebook.litho.specmodels.model.testing.TestSpecModel;
@@ -77,7 +78,7 @@ public class TestLayoutSpecModelFactoryTest {
   public void testCreate() {
     final TestSpecModelFactory factory = new TestSpecModelFactory();
     final TestSpecModel layoutSpecModel =
-        factory.create(mElements, mTypeElement, mMessager, null, null);
+        factory.create(mElements, mTypeElement, mMessager, RunMode.NORMAL, null, null);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestMyLayoutSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("TestMyLayout");
@@ -114,7 +115,7 @@ public class TestLayoutSpecModelFactoryTest {
         };
 
     final TestSpecModel layoutSpecModel =
-        factory.create(mElements, mTypeElement, mMessager, null, interStageStore);
+        factory.create(mElements, mTypeElement, mMessager, RunMode.NORMAL, null, interStageStore);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestMyLayoutSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("TestMyLayout");
@@ -139,7 +140,7 @@ public class TestLayoutSpecModelFactoryTest {
     final TestSpecModelFactory factory = new TestSpecModelFactory(specGenerator);
 
     final TestSpecModel layoutSpecModel =
-        factory.create(mElements, mTypeElement, mMessager, null, null);
+        factory.create(mElements, mTypeElement, mMessager, RunMode.NORMAL, null, null);
     layoutSpecModel.generate();
 
     verify(specGenerator).generate(layoutSpecModel);

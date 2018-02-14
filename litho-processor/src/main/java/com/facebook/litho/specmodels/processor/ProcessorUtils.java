@@ -9,6 +9,7 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.squareup.javapoet.TypeName;
@@ -79,8 +80,8 @@ public class ProcessorUtils {
    * processor for the given specmodel and throws a {@link MultiPrintableException} if any such
    * errors are found.
    */
-  public static final void validate(SpecModel specModel) {
-    List<SpecModelValidationError> validationErrors = specModel.validate();
+  public static final void validate(SpecModel specModel, RunMode runMode) {
+    List<SpecModelValidationError> validationErrors = specModel.validate(runMode);
 
     if (validationErrors == null || validationErrors.isEmpty()) {
       return;

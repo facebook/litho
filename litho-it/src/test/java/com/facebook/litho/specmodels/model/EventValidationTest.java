@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.testing.specmodels.MockMethodParamModel;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
@@ -76,7 +77,7 @@ public class EventValidationTest {
                 mRepresentedObject5)));
 
     List<SpecModelValidationError> validationErrors =
-        EventValidation.validate(mSpecModel);
+        EventValidation.validate(mSpecModel, RunMode.NORMAL);
     assertThat(validationErrors).hasSize(3);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(1).element).isEqualTo(mRepresentedObject2);
@@ -104,7 +105,7 @@ public class EventValidationTest {
                 mRepresentedObject5)));
 
     List<SpecModelValidationError> validationErrors =
-        EventValidation.validate(mSpecModel);
+        EventValidation.validate(mSpecModel, RunMode.NORMAL);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message).isEqualTo(
@@ -120,7 +121,7 @@ public class EventValidationTest {
                     ClassName.OBJECT, null, ImmutableList.of(), mRepresentedObject5)));
 
     List<SpecModelValidationError> validationErrors =
-        EventValidation.validate(mSpecModel);
+        EventValidation.validate(mSpecModel, RunMode.NORMAL);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject5);
     assertThat(validationErrors.get(0).message).isEqualTo(
@@ -155,7 +156,7 @@ public class EventValidationTest {
     when(mSpecModel.getEventMethods()).thenReturn(ImmutableList.of(eventMethod1, eventMethod2));
 
     List<SpecModelValidationError> validationErrors =
-        EventValidation.validate(mSpecModel);
+        EventValidation.validate(mSpecModel, RunMode.NORMAL);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
     assertThat(validationErrors.get(0).message).isEqualTo(
@@ -180,7 +181,7 @@ public class EventValidationTest {
     when(mSpecModel.getEventMethods()).thenReturn(ImmutableList.of(eventMethod));
 
     List<SpecModelValidationError> validationErrors =
-        EventValidation.validate(mSpecModel);
+        EventValidation.validate(mSpecModel, RunMode.NORMAL);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
     assertThat(validationErrors.get(0).message).isEqualTo(
@@ -204,7 +205,8 @@ public class EventValidationTest {
 
     when(mSpecModel.getEventMethods()).thenReturn(ImmutableList.of(eventMethod));
 
-    List<SpecModelValidationError> validationErrors = EventValidation.validate(mSpecModel);
+    List<SpecModelValidationError> validationErrors =
+        EventValidation.validate(mSpecModel, RunMode.NORMAL);
     assertThat(validationErrors).hasSize(0);
   }
 
@@ -225,7 +227,7 @@ public class EventValidationTest {
     when(mSpecModel.getEventMethods()).thenReturn(ImmutableList.of(eventMethod));
 
     List<SpecModelValidationError> validationErrors =
-        EventValidation.validate(mSpecModel);
+        EventValidation.validate(mSpecModel, RunMode.NORMAL);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
     assertThat(validationErrors.get(0).message).isEqualTo(
@@ -271,7 +273,7 @@ public class EventValidationTest {
     when(mSpecModel.getEventMethods()).thenReturn(ImmutableList.of(eventMethod));
 
     List<SpecModelValidationError> validationErrors =
-        EventValidation.validate(mSpecModel);
+        EventValidation.validate(mSpecModel, RunMode.NORMAL);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject4);
     assertThat(validationErrors.get(0).message).isEqualTo(
@@ -296,7 +298,7 @@ public class EventValidationTest {
     when(mSpecModel.getEventMethods()).thenReturn(ImmutableList.of(eventMethod));
 
     List<SpecModelValidationError> validationErrors =
-        EventValidation.validate(mSpecModel);
+        EventValidation.validate(mSpecModel, RunMode.NORMAL);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
     assertThat(validationErrors.get(0).message).isEqualTo(

@@ -10,6 +10,7 @@
 package com.facebook.litho.specmodels.processor.testing;
 
 import com.facebook.litho.annotations.TestSpec;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
@@ -49,8 +50,8 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
 
   /**
    * Extract the relevant Elements to work with from the round environment before they're passed on
-   * to {@link SpecModelFactory#create(Elements, TypeElement, Messager, DependencyInjectionHelper,
-   * InterStageStore)}.
+   * to {@link SpecModelFactory#create(Elements, TypeElement, Messager, RunMode,
+   * DependencyInjectionHelper, InterStageStore)}.
    */
   @Override
   public Set<Element> extract(RoundEnvironment roundEnvironment) {
@@ -66,6 +67,7 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
       Elements elements,
       TypeElement element,
       Messager messager,
+      RunMode runMode,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
 
@@ -82,7 +84,7 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
 
     final SpecModel enclosedSpecModel =
         getEnclosedSpecModel(
-            elements, valueElement, messager, dependencyInjectionHelper, interStageStore);
+            elements, valueElement, messager, dependencyInjectionHelper, interStageStore, runMode);
 
     if (enclosedSpecModel == null) {
       final String error;
@@ -155,7 +157,8 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
       TypeElement element,
       Messager messager,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
-      @Nullable InterStageStore interStageStore) {
+      @Nullable InterStageStore interStageStore,
+      RunMode runMode) {
     final List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
 
     for (AnnotationMirror annotationMirror : annotationMirrors) {
@@ -172,7 +175,7 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
 
       if (factory != null) {
         return factory.create(
-            elements, element, messager, dependencyInjectionHelper, interStageStore);
+            elements, element, messager, runMode, dependencyInjectionHelper, interStageStore);
       }
     }
     return null;

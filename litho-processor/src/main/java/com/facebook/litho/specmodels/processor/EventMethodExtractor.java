@@ -21,6 +21,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
@@ -59,7 +60,8 @@ public class EventMethodExtractor {
           Elements elements,
           TypeElement typeElement,
           List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
-          Messager messager) {
+          Messager messager,
+          RunMode runMode) {
     final List<SpecMethodModel<EventMethod, EventDeclarationModel>> delegateMethods =
         new ArrayList<>();
 

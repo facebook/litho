@@ -10,6 +10,7 @@
 package com.facebook.litho.testing.specmodels;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
@@ -337,7 +338,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   }
 
   @Override
-  public List<SpecModelValidationError> validate() {
+  public List<SpecModelValidationError> validate(RunMode runMode) {
     return mSpecModelValidationErrors;
   }
 

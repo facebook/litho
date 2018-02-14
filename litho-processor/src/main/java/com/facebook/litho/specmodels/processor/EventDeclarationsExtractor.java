@@ -11,6 +11,7 @@ package com.facebook.litho.specmodels.processor;
 
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
@@ -35,9 +36,7 @@ import javax.lang.model.util.Elements;
 public class EventDeclarationsExtractor {
 
   public static ImmutableList<EventDeclarationModel> getEventDeclarations(
-      Elements elements,
-      TypeElement element,
-      Class<?> annotationType) {
+      Elements elements, TypeElement element, Class<?> annotationType, RunMode runMode) {
     final List<AnnotationValue> eventTypes =
         ProcessorUtils.getAnnotationParameter(
             elements, element, annotationType, "events", List.class);

@@ -22,6 +22,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.SpecModel;
@@ -72,7 +73,8 @@ public class EventGeneratorTest {
     Elements elements = mCompilationRule.getElements();
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
     mSpecModel =
-        mLayoutSpecModelFactory.create(elements, typeElement, mock(Messager.class), null, null);
+        mLayoutSpecModelFactory.create(
+            elements, typeElement, mock(Messager.class), RunMode.NORMAL, null, null);
     EventDeclarationModel eventDeclarationModel = new EventDeclarationModel(
         ClassName.OBJECT,
         ClassName.OBJECT,

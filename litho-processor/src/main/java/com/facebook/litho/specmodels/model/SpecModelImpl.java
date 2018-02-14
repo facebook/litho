@@ -10,6 +10,7 @@
 package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
@@ -288,7 +289,7 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   @Override
-  public List<SpecModelValidationError> validate() {
+  public List<SpecModelValidationError> validate(RunMode runMode) {
     throw new RuntimeException("Don't delegate to this method!");
   }
 

@@ -12,14 +12,17 @@ package com.facebook.litho.specmodels.processor;
 import static com.facebook.litho.specmodels.processor.ProcessorUtils.getPackageName;
 import static com.facebook.litho.specmodels.processor.ProcessorUtils.validate;
 
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelperFactory;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.JavaFile;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
@@ -33,6 +36,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
   @Nullable private final DependencyInjectionHelperFactory mDependencyInjectionHelperFactory;
   private final List<SpecModelFactory> mSpecModelFactories;
   private PropNameInterStageStore mPropNameInterStageStore;
+  private RunMode mRunMode;
 
   private final InterStageStore mInterStageStore =
       new InterStageStore() {
@@ -47,6 +51,16 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
       DependencyInjectionHelperFactory dependencyInjectionHelperFactory) {
     mSpecModelFactories = specModelFactories;
     mDependencyInjectionHelperFactory = dependencyInjectionHelperFactory;
+  }
+
+  @Override
+  public void init(ProcessingEnvironment processingEnv) {
+    super.init(processingEnv);
+
+    Map<String, String> options = processingEnv.getOptions();
+    boolean isGeneratingAbi =
+        Boolean.valueOf(options.getOrDefault("com.facebook.buck.java.generating_abi", "false"));
+    mRunMode = isGeneratingAbi ? RunMode.ABI : RunMode.NORMAL;
   }
 
   @Override
@@ -67,12 +81,13 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
                   processingEnv.getElementUtils(),
                   (TypeElement) element,
                   processingEnv.getMessager(),
+                  mRunMode,
                   mDependencyInjectionHelperFactory == null
                       ? null
                       : mDependencyInjectionHelperFactory.create((TypeElement) element),
                   mInterStageStore);
 
-          validate(specModel);
+          validate(specModel, mRunMode);
           generate(specModel);
           afterGenerate(specModel);
         } catch (PrintableException e) {

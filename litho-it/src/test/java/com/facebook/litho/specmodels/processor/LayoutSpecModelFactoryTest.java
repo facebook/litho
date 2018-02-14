@@ -14,6 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import javax.annotation.processing.Messager;
@@ -51,7 +52,8 @@ public class LayoutSpecModelFactoryTest {
   @Test
   public void testCreate() {
     LayoutSpecModel layoutSpecModel =
-        mFactory.create(mElements, mTypeElement, mMessager, mDependencyInjectionHelper, null);
+        mFactory.create(
+            mElements, mTypeElement, mMessager, RunMode.NORMAL, mDependencyInjectionHelper, null);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("Test");
@@ -72,7 +74,8 @@ public class LayoutSpecModelFactoryTest {
   public void testCreateWithSpecifiedName() {
     when(mLayoutSpec.value()).thenReturn("TestComponentName");
     LayoutSpecModel layoutSpecModel =
-        mFactory.create(mElements, mTypeElement, mMessager, mDependencyInjectionHelper, null);
+        mFactory.create(
+            mElements, mTypeElement, mMessager, RunMode.NORMAL, mDependencyInjectionHelper, null);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("TestComponentName");

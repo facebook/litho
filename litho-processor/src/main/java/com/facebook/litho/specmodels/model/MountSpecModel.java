@@ -24,6 +24,7 @@ import com.facebook.litho.specmodels.generator.TreePropGenerator;
 import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
@@ -276,8 +277,8 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public List<SpecModelValidationError> validate() {
-    return SpecModelValidation.validateMountSpecModel(this);
+  public List<SpecModelValidationError> validate(RunMode runMode) {
+    return SpecModelValidation.validateMountSpecModel(this, runMode);
   }
 
   @Override

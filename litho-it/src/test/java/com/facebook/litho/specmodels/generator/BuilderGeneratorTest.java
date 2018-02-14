@@ -22,6 +22,7 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.sections.Section;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
@@ -92,18 +93,21 @@ public class BuilderGeneratorTest {
     Elements elements = mCompilationRule.getElements();
 
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
-    mSpecModel = mLayoutSpecModelFactory.create(elements, typeElement, mMessager, null, null);
+    mSpecModel =
+        mLayoutSpecModelFactory.create(
+            elements, typeElement, mMessager, RunMode.NORMAL, null, null);
 
     TypeElement resWithVarArgsElement =
         elements.getTypeElement(TestResTypeWithVarArgsSpec.class.getCanonicalName());
     mResTypeVarArgsSpecModel =
-        mLayoutSpecModelFactory.create(elements, resWithVarArgsElement, mMessager, null, null);
+        mLayoutSpecModelFactory.create(
+            elements, resWithVarArgsElement, mMessager, RunMode.NORMAL, null, null);
 
     TypeElement dimenResTypeWithBoxFloatArgElement =
         elements.getTypeElement(TestDimenResTypeWithBoxFloatArgSpec.class.getCanonicalName());
     mDimenResTypeWithBoxFloatArgSpecModel =
         mLayoutSpecModelFactory.create(
-            elements, dimenResTypeWithBoxFloatArgElement, mMessager, null, null);
+            elements, dimenResTypeWithBoxFloatArgElement, mMessager, RunMode.NORMAL, null, null);
   }
 
   @Test

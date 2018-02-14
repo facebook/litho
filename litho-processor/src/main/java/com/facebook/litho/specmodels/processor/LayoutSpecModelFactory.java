@@ -13,6 +13,7 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.DefaultLayoutSpecGenerator;
 import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
@@ -70,6 +71,7 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
       Elements elements,
       TypeElement element,
       Messager messager,
+      RunMode runMode,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
     return new LayoutSpecModel(
@@ -82,7 +84,7 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
             ImmutableList.<Class<? extends Annotation>>of(ShouldUpdate.class),
             messager),
         EventMethodExtractor.getOnEventMethods(
-            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
+            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager, runMode),
         TriggerMethodExtractor.getOnTriggerMethods(
             elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
         UpdateStateMethodExtractor.getOnUpdateStateMethods(
@@ -92,7 +94,8 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
             : CachedPropNameExtractor.getCachedPropNames(
                 interStageStore, element.getQualifiedName()),
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),
-        EventDeclarationsExtractor.getEventDeclarations(elements, element, LayoutSpec.class),
+        EventDeclarationsExtractor.getEventDeclarations(
+            elements, element, LayoutSpec.class, runMode),
         AnnotationExtractor.extractValidAnnotations(element),
         JavadocExtractor.getClassJavadoc(elements, element),
         JavadocExtractor.getPropJavadocs(elements, element),

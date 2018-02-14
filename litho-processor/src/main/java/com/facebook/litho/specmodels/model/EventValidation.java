@@ -13,6 +13,7 @@ import static com.facebook.litho.specmodels.model.SpecMethodModelValidation.vali
 
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
@@ -26,10 +27,10 @@ import javax.lang.model.type.MirroredTypeException;
  */
 public class EventValidation {
 
-  static List<SpecModelValidationError> validate(SpecModel specModel) {
+  static List<SpecModelValidationError> validate(SpecModel specModel, RunMode runMode) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(validateEventDeclarations(specModel));
-    validationErrors.addAll(validateOnEventMethods(specModel));
+    validationErrors.addAll(validateOnEventMethods(specModel, runMode));
 
     return validationErrors;
   }
@@ -60,7 +61,8 @@ public class EventValidation {
     return validationErrors;
   }
 
-  static List<SpecModelValidationError> validateOnEventMethods(SpecModel specModel) {
+  static List<SpecModelValidationError> validateOnEventMethods(
+      SpecModel specModel, RunMode runMode) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
     final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods =

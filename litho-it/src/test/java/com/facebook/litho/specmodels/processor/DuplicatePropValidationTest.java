@@ -17,6 +17,7 @@ import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.MountSpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidation;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
@@ -55,10 +56,10 @@ public class DuplicatePropValidationTest {
     final Elements elements = mCompilationRule.getElements();
     final TypeElement typeElement = elements.getTypeElement(DupeMountSpec.class.getCanonicalName());
     final MountSpecModel mountSpecModel =
-        mFactory.create(elements, typeElement, mock(Messager.class), null, null);
+        mFactory.create(elements, typeElement, mock(Messager.class), RunMode.NORMAL, null, null);
 
     final List<SpecModelValidationError> specModelValidationErrors =
-        SpecModelValidation.validateMountSpecModel(mountSpecModel);
+        SpecModelValidation.validateMountSpecModel(mountSpecModel, RunMode.NORMAL);
 
     assertThat(specModelValidationErrors)
         .extracting("message")

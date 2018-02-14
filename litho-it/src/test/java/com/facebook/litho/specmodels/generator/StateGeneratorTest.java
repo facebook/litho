@@ -21,6 +21,7 @@ import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
@@ -78,12 +79,12 @@ public class StateGeneratorTest {
         elements.getTypeElement(TestWithStateSpec.class.getCanonicalName());
     mSpecModelWithState =
         mLayoutSpecModelFactory.create(
-            elements, typeElementWithState, mock(Messager.class), null, null);
+            elements, typeElementWithState, mock(Messager.class), RunMode.NORMAL, null, null);
     TypeElement typeElementWithoutState =
         elements.getTypeElement(TestWithoutStateSpec.class.getCanonicalName());
     mSpecModelWithoutState =
         mLayoutSpecModelFactory.create(
-            elements, typeElementWithoutState, mock(Messager.class), null, null);
+            elements, typeElementWithoutState, mock(Messager.class), RunMode.NORMAL, null, null);
   }
 
   @Test

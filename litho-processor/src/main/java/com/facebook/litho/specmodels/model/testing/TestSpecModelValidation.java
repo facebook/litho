@@ -12,6 +12,7 @@ package com.facebook.litho.specmodels.model.testing;
 
 import static com.facebook.litho.specmodels.model.SpecModelValidation.validateSpecModel;
 
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.PropValidation;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import java.util.ArrayList;
@@ -21,7 +22,8 @@ import java.util.List;
 public class TestSpecModelValidation {
   public static List<SpecModelValidationError> validateTestSpecModel(TestSpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
-    validationErrors.addAll(validateSpecModel(specModel, PropValidation.COMMON_PROP_NAMES));
+    validationErrors.addAll(
+        validateSpecModel(specModel, PropValidation.COMMON_PROP_NAMES, RunMode.NORMAL));
     return validationErrors;
   }
 }

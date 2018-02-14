@@ -10,6 +10,7 @@
 package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
@@ -246,8 +247,8 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public List<SpecModelValidationError> validate() {
-    return SpecModelValidation.validateLayoutSpecModel(this);
+  public List<SpecModelValidationError> validate(RunMode runMode) {
+    return SpecModelValidation.validateLayoutSpecModel(this, runMode);
   }
 
   @Override

@@ -26,6 +26,7 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
@@ -128,7 +129,12 @@ public class MountSpecModelFactoryTest {
 
     MountSpecModel mountSpecModel =
         mFactory.create(
-            elements, typeElement, mock(Messager.class), mDependencyInjectionHelper, null);
+            elements,
+            typeElement,
+            mock(Messager.class),
+            RunMode.NORMAL,
+            mDependencyInjectionHelper,
+            null);
 
     assertThat(mountSpecModel.getSpecName()).isEqualTo("TestMountSpec");
     assertThat(mountSpecModel.getComponentName()).isEqualTo("TestMountComponentName");
