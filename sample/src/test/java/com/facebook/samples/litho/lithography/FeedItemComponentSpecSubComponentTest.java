@@ -16,14 +16,15 @@ import static com.facebook.litho.testing.assertj.SubComponentExtractor.subCompon
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assume.assumeThat;
-import static org.mockito.Mockito.mock;
 
+import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.EventHandler;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.widget.RecyclerBinder;
+import org.hamcrest.core.IsNull;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -87,6 +88,21 @@ public class FeedItemComponentSpecSubComponentTest {
         .has(
             subComponentWith(
                 c, TestFooterComponent.matcher(c).textRes(android.R.string.cancel).build()));
+  }
+
+  @Test
+  public void testFooterHasNoClickHandler() {
+    final ComponentContext c = mComponentsRule.getContext();
+    final Component component = makeComponent("Any Text");
+
+    // Components commonly have conditional handlers assigned. Using the clickHandler matcher
+    // we can assert whether or not a given component has a handler attached to them.
+    //noinspection unchecked
+    assertThat(c, component)
+        .has(
+            subComponentWith(
+                c,
+                TestFooterComponent.matcher(c).clickHandler(IsNull.<EventHandler<ClickEvent>>nullValue(null)).build()));
   }
 
   private Component makeComponent(String value) {

@@ -41,6 +41,9 @@ android_library(
     annotation_processors = [
         "com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor",
     ],
+    exported_deps = [
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho"),
+    ],
     deps = [
         make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho"),
         LITHO_JAVA_TARGET,
