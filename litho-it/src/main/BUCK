@@ -4,10 +4,9 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
+load("//:LITHO_DEFS", "fb_android_resource", "make_dep_path")
 
-include_defs("//LITHO_DEFS")
-
-android_resource(
+fb_android_resource(
     name = "res",
     package = "com.facebook.litho.it",
     res = "res",

@@ -156,3 +156,8 @@ components_robolectric_powermock_test = components_robolectric_test
 def fb_xplat_cxx_library(*args, **kwargs):
     """Delegates to cxx_library for OSS project."""
     cxx_library(*args, **kwargs)
+
+
+def fb_android_resource(**kwargs):
+    """Delegates to native fb_android_resource rule."""
+    android_resource(**kwargs)

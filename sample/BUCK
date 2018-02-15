@@ -16,7 +16,7 @@ android_binary(
     ],
 )
 
-android_resource(
+fb_android_resource(
     name = "res",
     package = "com.facebook.samples.litho",
     res = "src/main/res",

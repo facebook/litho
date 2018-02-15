@@ -3,7 +3,6 @@
 #
 # This source code is licensed under the license found in the
 # LICENSE-examples file in the root directory of this source tree.
-
 include_defs("//LITHO_DEFS")
 
 android_binary(
@@ -16,7 +15,7 @@ android_binary(
     ],
 )
 
-android_resource(
+fb_android_resource(
     name = "res",
     package = "com.facebook.samples.lithocodelab",
     res = "src/main/res",
