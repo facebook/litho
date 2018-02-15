@@ -1606,7 +1606,9 @@ public class ComponentTree {
 
     synchronized (this) {
       final KeyHandler keyHandler =
-          ComponentsConfiguration.useGlobalKeys ? new KeyHandler(mContext.getLogger()) : null;
+          (ComponentsConfiguration.useGlobalKeys || ComponentsConfiguration.isDebugModeEnabled)
+              ? new KeyHandler(mContext.getLogger())
+              : null;
 
       contextWithStateHandler =
           new ComponentContext(context, StateHandler.acquireNewInstance(mStateHandler), keyHandler);
