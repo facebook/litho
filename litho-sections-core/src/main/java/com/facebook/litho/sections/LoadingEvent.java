@@ -13,19 +13,20 @@ import com.facebook.litho.annotations.Event;
 import javax.annotation.Nullable;
 
 /**
- * Sections should implement this method to receive events about their children's loading state.
- * An example of the correct usage is:
+ * Sections should implement this method to receive events about their children's loading state. An
+ * example of the correct usage is:
  *
  * <pre>
- * {@code
+ * <code>
  *
- * @OnEvent(LoadingEvent.class)
- * static void onLoadingStateChanged(
- *    @FromEvent LoadingState loadingState,
- *    @Param SectionContext context,
- *    @Prop int someProp) {
- *      context.updateLoadingState(loadingState);
- * }
+ * {@literal @}OnEvent(LoadingEvent.class)
+ *  static void onLoadingStateChanged(
+ *     {@literal @}FromEvent LoadingState loadingState,
+ *     {@literal @}Param SectionContext context,
+ *     {@literal @}Prop int someProp) {
+ *       context.updateLoadingState(loadingState);
+ *  }
+ * </code>
  * </pre>
  */
 @Event
@@ -42,5 +43,5 @@ public class LoadingEvent {
   // Either INITIAL_LOAD, LOADING, SUCCEEDED OR FAILED
   public LoadingState loadingState;
   // The reason for LOAD_FAILED events.
-  public @Nullable Throwable t;
+  @Nullable public Throwable t;
 }
