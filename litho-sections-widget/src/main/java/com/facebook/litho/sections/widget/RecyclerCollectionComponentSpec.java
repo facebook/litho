@@ -43,6 +43,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.BaseLoadEventsHandler;
 import com.facebook.litho.sections.LoadEventsHandler;
 import com.facebook.litho.sections.Section;
@@ -159,7 +160,7 @@ public class RecyclerCollectionComponentSpec {
     recyclerCollectionLoadEventsHandler.setLoadEventsHandler(loadEventsHandler);
 
     // More side effects in OnCreateLayout. Watch out:
-    if (hasSetSectionTreeRoot) {
+    if (hasSetSectionTreeRoot && ComponentsConfiguration.setRootAsyncRecyclerCollectionComponent) {
       sectionTree.setRootAsync(section);
     } else {
       RecyclerCollectionComponent.lazyUpdateHasSetSectionTreeRoot(c, true);

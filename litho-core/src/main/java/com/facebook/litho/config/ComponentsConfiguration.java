@@ -86,6 +86,9 @@ public class ComponentsConfiguration {
    */
   public static boolean persistInternalNodeTree = false;
 
+  /** Whether the RecyclerCollectionComponent can asynchronously set the root of a SectionTree. */
+  public static boolean setRootAsyncRecyclerCollectionComponent = false;
+
   /**
    * If true, insert operations with the {@link com.facebook.litho.widget.RecyclerBinder} will not
    * start async layout calculations for the items in range, instead these layout calculations will
