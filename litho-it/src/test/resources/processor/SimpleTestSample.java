@@ -9,10 +9,12 @@
 
 package com.facebook.litho.processor.integration.resources;
 
+import com.facebook.litho.BaseMatcher;
+import com.facebook.litho.BaseMatcherBuilder;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ResourceResolver;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import org.assertj.core.api.Condition;
+import org.assertj.core.api.Java6Assertions;
 import org.assertj.core.description.TextDescription;
 
 /**
@@ -24,30 +26,37 @@ public final class SimpleTestSample implements SimpleTestSampleSpec {
     return new Matcher(c);
   }
 
-  public static class Matcher extends ResourceResolver {
+  public static class Matcher extends BaseMatcher<Matcher> {
     Matcher(ComponentContext c) {
       super.init(c, c.getResourceCache());
     }
 
     public Condition<InspectableComponent> build() {
-      return new Condition<InspectableComponent>() {
-        @Override
-        public boolean matches(InspectableComponent value) {
-          if (!value
-              .getComponentClass()
-              .isAssignableFrom(
-                  com.facebook.litho.processor.integration.resources.SimpleLayout.class)) {
-            as(
-                new TextDescription(
-                    "Sub-component of type \"com.facebook.litho.processor.integration.resources.SimpleLayout\""));
-            return false;
-          }
-          final com.facebook.litho.processor.integration.resources.SimpleLayout impl =
-              (com.facebook.litho.processor.integration.resources.SimpleLayout)
-                  value.getComponent();
-          return true;
-        }
-      };
+      final Condition<InspectableComponent> mainBuilder =
+          new Condition<InspectableComponent>() {
+            @Override
+            public boolean matches(InspectableComponent value) {
+              if (!value
+                  .getComponentClass()
+                  .isAssignableFrom(
+                      com.facebook.litho.processor.integration.resources.SimpleLayout.class)) {
+                as(
+                    new TextDescription(
+                        "Sub-component of type \"com.facebook.litho.processor.integration.resources.SimpleLayout\""));
+                return false;
+              }
+              final com.facebook.litho.processor.integration.resources.SimpleLayout impl =
+                  (com.facebook.litho.processor.integration.resources.SimpleLayout)
+                      value.getComponent();
+              return true;
+            }
+          };
+      return Java6Assertions.allOf(mainBuilder, BaseMatcherBuilder.buildCommonMatcher(this));
+    }
+
+    @Override
+    public Matcher getThis() {
+      return this;
     }
   }
 }

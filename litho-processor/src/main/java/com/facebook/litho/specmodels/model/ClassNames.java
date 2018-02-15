@@ -103,6 +103,8 @@ public interface ClassNames {
   ClassName SECTION = ClassName.bestGuess("com.facebook.litho.sections.Section");
   ClassName SECTION_BUILDER = ClassName.bestGuess("com.facebook.litho.sections.Section.Builder");
 
+  ClassName BASE_MATCHER = ClassName.bestGuess("com.facebook.litho.BaseMatcher");
+  ClassName BASE_MATCHER_BUILDER = ClassName.bestGuess("com.facebook.litho.BaseMatcherBuilder");
   ClassName INSPECTABLE_COMPONENT =
       ClassName.bestGuess("com.facebook.litho.testing.subcomponents.InspectableComponent");
   ClassName HAMCREST_MATCHER = ClassName.bestGuess("org.hamcrest.Matcher");
@@ -110,6 +112,7 @@ public interface ClassNames {
   ClassName ASSERTJ_CONDITION = ClassName.bestGuess("org.assertj.core.api.Condition");
   ClassName ASSERTJ_TEXT_DESCRIPTION =
       ClassName.bestGuess("org.assertj.core.description.TextDescription");
+  ClassName ASSERTJ_JAVA6ASSERTIONS = ClassName.bestGuess("org.assertj.core.api.Java6Assertions");
 
   ClassName NON_EXISTENT_CLASS = ClassName.bestGuess("error.NonExistentClass");
 }

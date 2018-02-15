@@ -15,12 +15,14 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.Dimension;
 import android.support.annotation.Px;
+import com.facebook.litho.BaseMatcher;
+import com.facebook.litho.BaseMatcherBuilder;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ResourceResolver;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import javax.annotation.Nullable;
 import org.assertj.core.api.Condition;
+import org.assertj.core.api.Java6Assertions;
 import org.assertj.core.description.TextDescription;
 
 /**
@@ -35,7 +37,7 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     return new Matcher(c);
   }
 
-  public static class Matcher extends ResourceResolver {
+  public static class Matcher extends BaseMatcher<Matcher> {
     @Nullable Condition<InspectableComponent> mChildComponentMatcher;
 
     @Nullable org.hamcrest.Matcher<Component> mChildMatcher;
@@ -139,58 +141,67 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     }
 
     public Condition<InspectableComponent> build() {
-      return new Condition<InspectableComponent>() {
-        @Override
-        public boolean matches(InspectableComponent value) {
-          if (!value
-              .getComponentClass()
-              .isAssignableFrom(
-                  com.facebook.litho.processor.integration.resources.BasicLayout.class)) {
-            as(
-                new TextDescription(
-                    "Sub-component of type \"com.facebook.litho.processor.integration.resources.BasicLayout\""));
-            return false;
-          }
-          final com.facebook.litho.processor.integration.resources.BasicLayout impl =
-              (com.facebook.litho.processor.integration.resources.BasicLayout) value.getComponent();
-          if (mChildComponentMatcher != null
-              && !mChildComponentMatcher.matches(value.getNestedInstance(impl.child))) {
-            as(mChildComponentMatcher.description());
-            return false;
-          }
-          if (mChildMatcher != null && !mChildMatcher.matches(impl.child)) {
-            as(
-                new TextDescription(
-                    "Sub-component of type <BasicLayout> with prop <child> %s (doesn't match %s)",
-                    mChildMatcher, impl.child));
-            return false;
-          }
-          if (mMyDimenSizePropMatcher != null
-              && !mMyDimenSizePropMatcher.matches(impl.myDimenSizeProp)) {
-            as(
-                new TextDescription(
-                    "Sub-component of type <BasicLayout> with prop <myDimenSizeProp> %s (doesn't match %s)",
-                    mMyDimenSizePropMatcher, impl.myDimenSizeProp));
-            return false;
-          }
-          if (mMyRequiredColorPropMatcher != null
-              && !mMyRequiredColorPropMatcher.matches(impl.myRequiredColorProp)) {
-            as(
-                new TextDescription(
-                    "Sub-component of type <BasicLayout> with prop <myRequiredColorProp> %s (doesn't match %s)",
-                    mMyRequiredColorPropMatcher, impl.myRequiredColorProp));
-            return false;
-          }
-          if (mMyStringPropMatcher != null && !mMyStringPropMatcher.matches(impl.myStringProp)) {
-            as(
-                new TextDescription(
-                    "Sub-component of type <BasicLayout> with prop <myStringProp> %s (doesn't match %s)",
-                    mMyStringPropMatcher, impl.myStringProp));
-            return false;
-          }
-          return true;
-        }
-      };
+      final Condition<InspectableComponent> mainBuilder =
+          new Condition<InspectableComponent>() {
+            @Override
+            public boolean matches(InspectableComponent value) {
+              if (!value
+                  .getComponentClass()
+                  .isAssignableFrom(
+                      com.facebook.litho.processor.integration.resources.BasicLayout.class)) {
+                as(
+                    new TextDescription(
+                        "Sub-component of type \"com.facebook.litho.processor.integration.resources.BasicLayout\""));
+                return false;
+              }
+              final com.facebook.litho.processor.integration.resources.BasicLayout impl =
+                  (com.facebook.litho.processor.integration.resources.BasicLayout)
+                      value.getComponent();
+              if (mChildComponentMatcher != null
+                  && !mChildComponentMatcher.matches(value.getNestedInstance(impl.child))) {
+                as(mChildComponentMatcher.description());
+                return false;
+              }
+              if (mChildMatcher != null && !mChildMatcher.matches(impl.child)) {
+                as(
+                    new TextDescription(
+                        "Sub-component of type <BasicLayout> with prop <child> %s (doesn't match %s)",
+                        mChildMatcher, impl.child));
+                return false;
+              }
+              if (mMyDimenSizePropMatcher != null
+                  && !mMyDimenSizePropMatcher.matches(impl.myDimenSizeProp)) {
+                as(
+                    new TextDescription(
+                        "Sub-component of type <BasicLayout> with prop <myDimenSizeProp> %s (doesn't match %s)",
+                        mMyDimenSizePropMatcher, impl.myDimenSizeProp));
+                return false;
+              }
+              if (mMyRequiredColorPropMatcher != null
+                  && !mMyRequiredColorPropMatcher.matches(impl.myRequiredColorProp)) {
+                as(
+                    new TextDescription(
+                        "Sub-component of type <BasicLayout> with prop <myRequiredColorProp> %s (doesn't match %s)",
+                        mMyRequiredColorPropMatcher, impl.myRequiredColorProp));
+                return false;
+              }
+              if (mMyStringPropMatcher != null
+                  && !mMyStringPropMatcher.matches(impl.myStringProp)) {
+                as(
+                    new TextDescription(
+                        "Sub-component of type <BasicLayout> with prop <myStringProp> %s (doesn't match %s)",
+                        mMyStringPropMatcher, impl.myStringProp));
+                return false;
+              }
+              return true;
+            }
+          };
+      return Java6Assertions.allOf(mainBuilder, BaseMatcherBuilder.buildCommonMatcher(this));
+    }
+
+    @Override
+    public Matcher getThis() {
+      return this;
     }
   }
 }

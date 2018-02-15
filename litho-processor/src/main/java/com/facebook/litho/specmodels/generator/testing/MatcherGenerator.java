@@ -65,12 +65,22 @@ public final class MatcherGenerator {
     return dataHolder.addMethod(factoryMethod.build()).build();
   }
 
+  private static MethodSpec generateGetThisMethod(SpecModel specModel) {
+    return MethodSpec.methodBuilder("getThis")
+        .addAnnotation(Override.class)
+        .addModifiers(Modifier.PUBLIC)
+        .addStatement("return this")
+        .returns(getMatcherType(specModel))
+        .build();
+  }
+
   private static <T extends SpecModel & HasEnclosedSpecModel> TypeSpecDataHolder generateBuilder(
       final T specModel) {
     final TypeSpec.Builder propsBuilderClassBuilder =
         TypeSpec.classBuilder(BUILDER)
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-            .superclass(ClassNames.RESOURCE_RESOLVER);
+            .superclass(
+                ParameterizedTypeName.get(ClassNames.BASE_MATCHER, getMatcherType(specModel)));
 
     if (!specModel.getTypeVariables().isEmpty()) {
       propsBuilderClassBuilder.addTypeVariables(specModel.getTypeVariables());
@@ -88,7 +98,9 @@ public final class MatcherGenerator {
       generatePropsBuilderMethods(specModel, prop).addToTypeSpec(propsBuilderClassBuilder);
     }
 
-    propsBuilderClassBuilder.addMethod(generateBuildMethod(specModel));
+    propsBuilderClassBuilder
+        .addMethod(generateBuildMethod(specModel))
+        .addMethod(generateGetThisMethod(specModel));
 
     return TypeSpecDataHolder.newBuilder().addType(propsBuilderClassBuilder.build()).build();
   }
@@ -654,7 +666,7 @@ public final class MatcherGenerator {
             .addModifiers(Modifier.PUBLIC)
             .returns(getMatcherConditionTypeName());
 
-    final CodeBlock placeHolderCodeBlock = generateMatchMethodBody(specModel);
+    final CodeBlock innerMatcherLogicBlock = generateMatchMethodBody(specModel);
 
     final TypeSpec matcherInnerClass =
         TypeSpec.anonymousClassBuilder("")
@@ -665,11 +677,17 @@ public final class MatcherGenerator {
                     .addParameter(ClassNames.INSPECTABLE_COMPONENT, "value")
                     .returns(TypeName.BOOLEAN)
                     .addAnnotation(Override.class)
-                    .addCode(placeHolderCodeBlock)
+                    .addCode(innerMatcherLogicBlock)
                     .build())
             .build();
 
-    return buildMethodBuilder.addStatement("return $L", matcherInnerClass).build();
+    return buildMethodBuilder
+        .addStatement("final $T mainBuilder = $L", getMatcherConditionTypeName(), matcherInnerClass)
+        .addStatement(
+            "return $T.allOf(mainBuilder, $T.buildCommonMatcher(this))",
+            ClassNames.ASSERTJ_JAVA6ASSERTIONS,
+            ClassNames.BASE_MATCHER_BUILDER)
+        .build();
   }
 
 }

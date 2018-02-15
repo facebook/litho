@@ -114,7 +114,8 @@ public class MatcherGeneratorTest {
                 "prop2Attr",
                 "prop2Attr",
                 "prop2Dip",
-                "build"));
+                "build",
+                "getThis"));
   }
 
   @Test
