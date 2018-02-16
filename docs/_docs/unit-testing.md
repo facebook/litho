@@ -1,6 +1,6 @@
 ---
 docid: unit-testing
-title: Unit Testing
+title: Unit Testing Basics
 layout: docs
 permalink: /docs/unit-testing.html
 ---
@@ -127,54 +127,10 @@ or on the `ComponentBuilder` before it is consumed by `build()`.
   }
 ```
 
-
-## Testing Sub-Component Rendering
-
-Instead of performing assertions on the content rendered by your Component, it
-might be useful to test for the rendering of sub-components instead.
-[SubComponent](/javadoc/com/facebook/litho/testing/SubComponent) is a convenience class that allows for easier comparison of Component
-types. You can, again, use AssertJ to verify the presence or absence of
-the sub-Components.
-
-```java
-public class StoryTest {
-  ...
-
-  @Test
-  public void testStoryLayout() {
-    ComponentContext c = mComponentsRule.getContext();
-    Story story = ...
-
-    StoryComponent.Builder componentBuilder =
-        StoryComponent.create(c)
-            .story(story);
-
-    assertThat(componentBuilder).hasSubComponents(
-        SubComponent.of(HeaderComponent.class),
-        SubComponent.of(MessageComponent.class),
-        SubComponent.of(LikersComponent.class),
-        SubComponent.of(FeedbackComponent.class));
-  }
-
-  @Test
-  public void testStoryWithZeroLikes() {
-    ComponentContext c = mComponentsRule.getContext();
-    Story storyWithZeroLikes = ...;
-
-    Component<StoryComponent> component = StoryComponent.create(c)
-        .story(storyWithZeroLikes)
-        .build();
-
-    assertThat(c, component)
-        .doesNotContainSubComponent(SubComponent.of(LikersComponent.class));
-  }
-}
-```
-
 ## Additional Asserts
 
 There are several more assertions available for `Component`s and
-`LithoView`s. They all operate on the tree created by your `Component`.
+`LithoView`s. They all operate on the tree created by your mounted `Component`.
 So asserting the presence of a `Drawable` in your `Component` will traverse
 the view hierarchy from the provided starting point.
 
@@ -224,3 +180,8 @@ Ultimately, depending on your build system and the existing constraints of your
 project, you may need to adjust the way in which your test runner utilizes
 ClassLoaders. This is, however, not a problem unique to Litho but an unfortunate
 consequence of mixing native and Java code in Android projects.
+
+## Next
+
+Either head back to the [testing overview](/docs/testing-overview.html) or
+continue with the next section, [Sub-Component Testing](/docs/subcomponent-testing).

@@ -1,6 +1,6 @@
 ---
 docid: prop-matching
-title: Prop Matching
+title: Matching Props
 layout: docs
 permalink: /docs/prop-matching.html
 ---
@@ -402,3 +402,8 @@ public void testComplexTestSpecAdvancedProps() {
 }
 
 ```
+
+## Next
+
+Either head back to the [testing overview](/docs/testing-overview.html) or
+continue with the next section, [Espresso](/docs/espresso-testing).

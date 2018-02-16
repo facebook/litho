@@ -92,6 +92,11 @@ public void testButtonIsDisplayedAndClickableByTestKey() {
 }
 ```
 
+## Next
+
+Either head back to the [testing overview](/docs/testing-overview.html) or
+continue with the next section, [Running Tests in Android Studio](/docs/tests-in-android-studio).
+
 ## Additional Resources
 
 There are plenty of additional matchers available, which you can look up in the

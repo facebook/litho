@@ -5,10 +5,6 @@ layout: docs
 permalink: /docs/subcomponent-testing.html
 ---
 
-> IMPORTANT: These APIs are currently considered experimental and subject to
-  change. If you want to play safe, stick with the APIs documented under [Unit
-  Testing](/docs/unit-testing).
-
 This document outlines fluid APIs for testing assertions about the
 sub-components created by your layout specs. We make heavy use of
 [AssertJ](https://joel-costigliola.github.io/assertj/) and
@@ -300,13 +296,57 @@ public void testHasBackground() {
 }
 ```
 
+## Simple Matching with SubComponent.of
+
+For very simple cases, it can sometimes be enough to verify the mere presence
+of a sub-component of a certain class. For these cases, we have the
+[SubComponent.of](/javadoc/com/facebook/litho/testing/SubComponent) API which
+works without any code generation.
+
+In the following example, we use the `hasSubComponents` method on the AssertJ
+matcher to ensure that the Components of the given types are either present of absent.
+
+```java
+public class StoryTest {
+  ...
+
+  @Test
+  public void testStoryLayout() {
+    ComponentContext c = mComponentsRule.getContext();
+    Story story = ...
+
+    StoryComponent.Builder componentBuilder =
+        StoryComponent.create(c)
+            .story(story);
+
+    assertThat(componentBuilder).hasSubComponents(
+        SubComponent.of(HeaderComponent.class),
+        SubComponent.of(MessageComponent.class),
+        SubComponent.of(LikersComponent.class),
+        SubComponent.of(FeedbackComponent.class));
+  }
+
+  @Test
+  public void testStoryWithZeroLikes() {
+    ComponentContext c = mComponentsRule.getContext();
+    Story storyWithZeroLikes = ...;
+
+    Component<StoryComponent> component = StoryComponent.create(c)
+        .story(storyWithZeroLikes)
+        .build();
+
+    assertThat(c, component)
+        .doesNotContainSubComponent(SubComponent.of(LikersComponent.class));
+  }
+}
+```
+
 ## Old Meets New
 
-If you have written unit tests for Litho before, you may have used
-[SubComponent](/javadoc/com/facebook/litho/testing/subcomponents/SubComponent.html)
-in your tests. The goal if these new fluid combinators is to ultimately replace
-the need for `SubComponent` altogether. But until we're there, you can use the
-[legacySubComponent](/javadoc/com/facebook/litho/testing/subcomponents/SubComponent.html#legacySubComponent-com.facebook.litho.testing.subcomponents.SubComponent-) matcher.
+The example above may look a bit foreign as it doesn't work with `has` and is
+thus not composable with other matchers. We provide a bridge interface so you
+can combine the best from the old and new world of sub-component testing with 
+[legacySubComponent](/javadoc/com/facebook/litho/testing/subcomponents/SubComponent.html#legacySubComponent-com.facebook.litho.testing.subcomponents.SubComponent-).
 
 It accepts an existing `SubComponent` and works with both shallow and deep
 sub-component traversals. This is great if you want to ensure that a property
@@ -326,6 +366,11 @@ public void testSubComponentLegacyBridge() {
                       FooterComponent.create(c).subtitle("Gubba nub nub doo rah kah").build()))));
 }
 ```
+
+## Next
+
+Either head back to the [testing overview](/docs/testing-overview.html) or
+continue with the next section, [Matching Props](/docs/prop-matching).
 
 ## Resources
 
