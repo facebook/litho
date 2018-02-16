@@ -6,7 +6,7 @@ jobs:
       ANDROID_HOME: '/home/circleci/android-sdk'
       ANDROID_NDK_REPOSITORY: "/home/circleci/android-ndk"
     docker:
-      - image: circleci/android:api-27-alpha
+      - image: passy/android-circleci-litho:latest
     resource_class: large
     steps:
       - checkout
@@ -19,17 +19,8 @@ jobs:
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "gradle.properties" }}
       - run:
-          name: Install buck dependencies
-          command: "sudo apt-get update -qq && sudo apt-get install -y ant"
-      - run:
-          name: Set up Buck and Android
-          command: |
-            if [[ ! -e $HOME/buck ]]; then git clone https://github.com/facebook/buck.git $HOME/buck; fi
-            export PATH="$HOME/buck/bin:$PATH"
-            pushd $HOME/buck && ant; popd
-            buck --version
-            echo "export PATH=$HOME/buck/bin:$PATH" >> $BASH_ENV
-            source scripts/circle-ci-android-setup.sh && installAndroidSDK
+          name: Set up Buck
+          command: echo "export PATH=$HOME/buck/bin:$PATH" >> $BASH_ENV
       - run:
           name: Gradle Dependencies
           command: ./gradlew androidDependencies
