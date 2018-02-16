@@ -128,7 +128,7 @@ def components_robolectric_test(
         '//lib/fbjni:jni',
     ]
 
-    robolectric_test(
+    native.robolectric_test(
         name=name,
         *args,
         **kwargs)
