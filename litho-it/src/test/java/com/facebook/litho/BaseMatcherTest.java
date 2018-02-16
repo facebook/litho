@@ -9,6 +9,7 @@
 package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
@@ -21,13 +22,13 @@ import org.mockito.MockitoAnnotations;
 
 public class BaseMatcherTest {
   @Mock InspectableComponent mInspectableComponent;
-
-  @Mock NodeInfo mNodeInfo;
+  @Mock Component mComponent;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    when(mInspectableComponent.getNodeInfo()).thenReturn(mNodeInfo);
+    when(mInspectableComponent.getComponent()).thenReturn(mComponent);
+    when(mComponent.getCommonProps()).thenReturn(mock(CommonProps.class));
   }
 
   @Test

@@ -36,6 +36,7 @@ components_robolectric_test(
         LITHO_YOGA_TARGET,
         LITHO_TESTING_TARGET,
         LITHO_VIEWCOMPAT_TARGET,
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/shadows:shadows"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
