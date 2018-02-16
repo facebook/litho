@@ -115,5 +115,10 @@ public class TestingDIComponentProcessor extends AbstractComponentsProcessor {
 
       return builder.build();
     }
+
+    @Override
+    public boolean hasDIComponentCreation() {
+      return true;
+    }
   }
 }

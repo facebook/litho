@@ -69,15 +69,16 @@ public class BuilderGenerator {
             .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
             .initializer("new $T(2)", synchronizedPoolClass);
 
-    final MethodSpec.Builder factoryMethod = MethodSpec.methodBuilder("create")
-        .addModifiers(Modifier.PUBLIC)
-        .addModifiers(!specModel.hasInjectedDependencies() ? Modifier.STATIC : Modifier.FINAL)
-        .returns(getBuilderType(specModel))
-        .addParameter(specModel.getContextClass(), "context")
-        .addStatement("$T builder = $L.acquire()", BUILDER_CLASS_NAME, BUILDER_POOL_FIELD)
-        .beginControlFlow("if (builder == null)")
-        .addStatement("builder = new $T()", BUILDER_CLASS_NAME)
-        .endControlFlow();
+    final MethodSpec.Builder factoryMethod =
+        MethodSpec.methodBuilder("create")
+            .addModifiers(Modifier.PUBLIC)
+            .addModifiers(hasStaticCreate(specModel) ? Modifier.STATIC : Modifier.FINAL)
+            .returns(getBuilderType(specModel))
+            .addParameter(specModel.getContextClass(), "context")
+            .addStatement("$T builder = $L.acquire()", BUILDER_CLASS_NAME, BUILDER_POOL_FIELD)
+            .beginControlFlow("if (builder == null)")
+            .addStatement("builder = new $T()", BUILDER_CLASS_NAME)
+            .endControlFlow();
 
     if (!specModel.hasInjectedDependencies() && !specModel.getTypeVariables().isEmpty()) {
       factoryMethod.addTypeVariables(specModel.getTypeVariables());
@@ -123,7 +124,7 @@ public class BuilderGenerator {
             .returns(getBuilderType(specModel))
             .addParameter(specModel.getContextClass(), "context")
             .addStatement("return create(context, 0, 0)")
-            .addModifiers(!specModel.hasInjectedDependencies() ? Modifier.STATIC : Modifier.FINAL);
+            .addModifiers(hasStaticCreate(specModel) ? Modifier.STATIC : Modifier.FINAL);
 
     if (!specModel.hasInjectedDependencies() && !specModel.getTypeVariables().isEmpty()) {
       methodBuilder.addTypeVariables(specModel.getTypeVariables());
@@ -1304,5 +1305,10 @@ public class BuilderGenerator {
     }
 
     return builtInitializer.toString();
+  }
+
+  private static boolean hasStaticCreate(SpecModel specModel) {
+    return !(specModel.hasInjectedDependencies()
+        && specModel.getDependencyInjectionHelper().hasDIComponentCreation());
   }
 }
