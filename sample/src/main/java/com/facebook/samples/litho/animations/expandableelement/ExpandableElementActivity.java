@@ -13,6 +13,7 @@
 package com.facebook.samples.litho.animations.expandableelement;
 
 import android.os.Bundle;
+import android.view.ViewGroup;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.samples.litho.NavigatableDemoActivity;
@@ -23,7 +24,11 @@ public class ExpandableElementActivity extends NavigatableDemoActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    setContentView(
-        LithoView.create(this, ExpandableElement.create(new ComponentContext(this)).build()));
+    final LithoView lithoView =
+        LithoView.create(this, ExpandableElement.create(new ComponentContext(this)).build());
+    lithoView.setLayoutParams(
+        new ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+    setContentView(lithoView);
   }
 }

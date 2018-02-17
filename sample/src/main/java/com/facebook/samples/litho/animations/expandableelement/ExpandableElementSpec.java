@@ -16,7 +16,6 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.support.annotation.Nullable;
-import android.util.TypedValue;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
@@ -40,10 +39,10 @@ import com.facebook.yoga.YogaEdge;
 public class ExpandableElementSpec {
 
   private static final String TRANSITION_MSG_PARENT = "transition_msg_parent";
-  private static final String TRANSITION_TEXT_MESSAGE = "transition_text_msg";
+  private static final String TRANSITION_TEXT_MESSAGE_WITH_BOTTOM =
+      "transition_text_msg_with_bottom";
   private static final String TRANSITION_TOP_DETAIL = "transition_top_detail";
   private static final String TRANSITION_BOTTOM_DETAIL = "transition_bottom_detail";
-  private static final String TRANSITION_NEXT_ELEMENT = "transition_next_element";
 
   private static final String MESSAGE_BODY =
       "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque "
@@ -53,19 +52,16 @@ public class ExpandableElementSpec {
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c, @State boolean expanded) {
     return Column.create(c)
+        .backgroundColor(0xfff0f0f0)
+        .paddingDip(YogaEdge.TOP, 8)
+        .transitionKey(TRANSITION_MSG_PARENT)
+        .clickHandler(ExpandableElement.onClick(c))
+        .child(maybeCreateTopDetailComponent(c, expanded))
         .child(
             Column.create(c)
-                .paddingDip(YogaEdge.TOP, 8)
-                .transitionKey(TRANSITION_MSG_PARENT)
-                .clickHandler(ExpandableElement.onClick(c))
-                .child(maybeCreateTopDetailComponent(c, expanded))
-                .child(
-                    Row.create(c)
-                        .child(createSenderTile(c))
-                        .child(createMessageContent(c))
-                        .transitionKey(TRANSITION_TEXT_MESSAGE))
+                .transitionKey(TRANSITION_TEXT_MESSAGE_WITH_BOTTOM)
+                .child(Row.create(c).child(createSenderTile(c)).child(createMessageContent(c)))
                 .child(maybeCreateBottomDetailComponent(c, expanded)))
-        .child(createNextElement(c))
         .build();
   }
 
@@ -86,10 +82,12 @@ public class ExpandableElementSpec {
             .animate(AnimatedProperties.HEIGHT)
             .appearFrom(0)
             .disappearTo(0),
-        Transition.create(
-                TRANSITION_TEXT_MESSAGE, TRANSITION_BOTTOM_DETAIL, TRANSITION_NEXT_ELEMENT)
-            .animate(AnimatedProperties.Y),
-        Transition.create(TRANSITION_MSG_PARENT).animate(AnimatedProperties.HEIGHT));
+        Transition.create(TRANSITION_TEXT_MESSAGE_WITH_BOTTOM).animate(AnimatedProperties.Y),
+        Transition.create(TRANSITION_MSG_PARENT).animate(AnimatedProperties.HEIGHT).appearFrom(0),
+        Transition.create(TRANSITION_BOTTOM_DETAIL)
+            .animate(AnimatedProperties.HEIGHT)
+            .appearFrom(0)
+            .disappearTo(0));
   }
 
   @Nullable
@@ -103,6 +101,7 @@ public class ExpandableElementSpec {
         .textColor(Color.GRAY)
         .alignSelf(YogaAlign.CENTER)
         .transitionKey(TRANSITION_TOP_DETAIL)
+        .clipToBounds(true)
         .text("DEC 25 AT 9:55");
   }
 
@@ -152,21 +151,8 @@ public class ExpandableElementSpec {
         .textColor(Color.GRAY)
         .alignSelf(YogaAlign.FLEX_END)
         .paddingDip(YogaEdge.RIGHT, 10)
+        .clipToBounds(true)
         .transitionKey(TRANSITION_BOTTOM_DETAIL)
         .text("Seen");
-  }
-
-  static Component.Builder createNextElement(ComponentContext c) {
-    return Row.create(c)
-        .heightDip(40)
-        .alignContent(YogaAlign.STRETCH)
-        .backgroundColor(0xffd0e0f0)
-        .transitionKey(TRANSITION_NEXT_ELEMENT);
-  }
-
-  static int dpToPx(ComponentContext c, int dp) {
-    return (int)
-        TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, dp, c.getResources().getDisplayMetrics());
   }
 }
