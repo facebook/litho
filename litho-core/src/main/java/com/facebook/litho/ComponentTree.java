@@ -484,7 +484,8 @@ public class ComponentTree {
     // not in "depth order", this variable cannot be static.
     final Rect currentVisibleArea = ComponentsPools.acquireRect();
 
-    if (getVisibleRect(currentVisibleArea)) {
+    if (getVisibleRect(currentVisibleArea)
+        || animatingLithoViewBoundsOnFirstMount(currentVisibleArea)) {
       mountComponent(currentVisibleArea, true);
     }
     // if false: no-op, doesn't have visible area, is not ready or not attached
@@ -512,6 +513,14 @@ public class ComponentTree {
     visibleBounds.offset(-sCurrentLocation[0], -sCurrentLocation[1]);
 
     return true;
+  }
+
+  private boolean animatingLithoViewBoundsOnFirstMount(Rect visibleBounds) {
+    // We might be animating bounds of LithoView from 0 width/height on first mount, so we need to
+    // make sure to initiate mounting so that the animation properties are applied.
+    return !mHasMounted
+        && ((hasLithoViewHeightAnimation() && visibleBounds.height() == 0)
+            || (hasLithoViewWidthAnimation() && visibleBounds.width() == 0));
   }
 
   private static void getLocationAndBoundsOnScreen(View view, int[] location, Rect bounds) {
