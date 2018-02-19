@@ -16,10 +16,16 @@ import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 
 /**
- * A component that can wrap a view using a {@link ViewBinder} class to bind the view
- * and a {@link ViewCreator} to create the mount contents.
- * This component will have a different recycle pool per {@link ViewCreator}.
+ * A component that can wrap a view using a {@link ViewBinder} class to bind the view and a {@link
+ * ViewCreator} to create the mount contents. This component will have a different recycle pool per
+ * {@link ViewCreator}.
+ *
+ * @deprecated ViewCompatComponent is not efficient as it will do measurement of views twice.
+ *     Recommended way now is to use either ViewRenderInfo (which utilizes same interfaces as this
+ *     class: ViewCreator and ViewBinder) if the view is used with sections API or create a custom
+ *     MountSpec.
  */
+@Deprecated
 public class ViewCompatComponent<V extends View> extends Component {
 
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
