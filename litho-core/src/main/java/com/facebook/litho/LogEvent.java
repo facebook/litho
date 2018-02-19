@@ -10,6 +10,8 @@
 package com.facebook.litho;
 
 import android.support.v4.util.SimpleArrayMap;
+import java.util.List;
+import org.json.JSONArray;
 
 /**
  * A class representing an event to log to a {@link ComponentsLogger}. There are two kind of events,
@@ -49,6 +51,10 @@ public final class LogEvent {
 
   public void addParam(String key, Object value) {
     mParams.put(key, value);
+  }
+
+  public void addJsonParam(String key, List<?> value) {
+    mParams.put(key, new JSONArray(value));
   }
 
   public int getParamCount() {

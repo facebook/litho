@@ -20,12 +20,18 @@ import static com.facebook.litho.FrameworkLogEvents.EVENT_SHOULD_UPDATE_REFERENC
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_DIRTY;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_TIME;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOVED_COUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_NO_OP_COUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_UNCHANGED_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_UNMOUNTED_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_UNMOUNTED_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_UNMOUNTED_TIME;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_UPDATED_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_UPDATED_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_UPDATED_TIME;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.animation.StateListAnimator;
@@ -207,6 +213,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     mMountStats.reset();
+    if (logger != null && mountEvent != null && logger.isTracing(mountEvent)) {
+      mMountStats.enableLogging();
+    }
 
     final boolean isIncrementalMountEnabled = localVisibleRect != null;
     final boolean isTracing = ComponentsSystrace.isTracing();
@@ -252,6 +261,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
             final boolean useUpdateValueFromLayoutOutput =
                 (componentTreeId >= 0) && (componentTreeId == mLastMountedComponentTreeId);
 
+            final long startTime = System.nanoTime();
             final boolean itemUpdated = updateMountItemIfNeeded(
                 layoutOutput,
                 currentMountItem,
@@ -260,10 +270,14 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
                 componentTreeId,
                 i);
 
-            if (itemUpdated) {
-              mMountStats.updatedCount++;
-            } else {
-              mMountStats.noOpCount++;
+            if (mMountStats.isLoggingEnabled) {
+              if (itemUpdated) {
+                mMountStats.updatedNames.add(component.getSimpleName());
+                mMountStats.updatedTimes.add((System.nanoTime() - startTime) / 1000000.0);
+                mMountStats.updatedCount++;
+              } else {
+                mMountStats.noOpCount++;
+              }
             }
           }
 
@@ -309,13 +323,23 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     suppressInvalidationsOnHosts(false);
 
-    if (logger != null) {
+    if (mMountStats.isLoggingEnabled) {
       mountEvent.addParam(PARAM_LOG_TAG, componentTree.getContext().getLogTag());
       mountEvent.addParam(PARAM_MOUNTED_COUNT, String.valueOf(mMountStats.mountedCount));
+      mountEvent.addJsonParam(PARAM_MOUNTED_CONTENT, mMountStats.mountedNames);
+      mountEvent.addJsonParam(PARAM_MOUNTED_TIME, mMountStats.mountTimes);
+
       mountEvent.addParam(PARAM_UNMOUNTED_COUNT, String.valueOf(mMountStats.unmountedCount));
+      mountEvent.addJsonParam(PARAM_UNMOUNTED_CONTENT, mMountStats.unmountedNames);
+      mountEvent.addJsonParam(PARAM_UNMOUNTED_TIME, mMountStats.unmountedTimes);
+
       mountEvent.addParam(PARAM_UPDATED_COUNT, String.valueOf(mMountStats.updatedCount));
+      mountEvent.addJsonParam(PARAM_UPDATED_CONTENT, mMountStats.updatedNames);
+      mountEvent.addJsonParam(PARAM_UPDATED_TIME, mMountStats.updatedTimes);
+
       mountEvent.addParam(PARAM_NO_OP_COUNT, String.valueOf(mMountStats.noOpCount));
       mountEvent.addParam(PARAM_IS_DIRTY, String.valueOf(mIsDirty));
+
       logger.log(mountEvent);
     }
 
@@ -991,6 +1015,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   private void mountLayoutOutput(int index, LayoutOutput layoutOutput, LayoutState layoutState) {
     // 1. Resolve the correct host to mount our content to.
+    final long startTime = System.nanoTime();
     ComponentHost host = resolveComponentHost(layoutOutput, mHostsByMarker);
 
     if (host == null) {
@@ -1050,7 +1075,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     // 6. Update the mount stats
-    mMountStats.mountedCount++;
+    if (mMountStats.isLoggingEnabled) {
+      mMountStats.mountTimes.add((System.nanoTime() - startTime) / 1000000.0);
+      mMountStats.mountedNames.add(component.getSimpleName());
+      mMountStats.mountedCount++;
+    }
   }
 
   // The content might be null because it's the LayoutSpec for the root host
@@ -1911,6 +1940,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       int index,
       LongSparseArray<ComponentHost> hostsByMarker) {
     final MountItem item = getItemAt(index);
+    final long startTime = System.nanoTime();
 
     // The root host item should never be unmounted as it's a reference
     // to the top-level LithoView.
@@ -1986,7 +2016,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     ComponentsPools.release(context, item);
 
-    mMountStats.unmountedCount++;
+    if (mMountStats.isLoggingEnabled) {
+      mMountStats.unmountedTimes.add((System.nanoTime() - startTime) / 1000000.0);
+      mMountStats.unmountedNames.add(component.getSimpleName());
+      mMountStats.unmountedCount++;
+    }
   }
 
   private void unbindAndUnmountLifecycle(
@@ -2300,16 +2334,54 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static class MountStats {
+    private List<String> mountedNames;
+    private List<String> unmountedNames;
+    private List<String> updatedNames;
+
+    private List<Double> mountTimes;
+    private List<Double> unmountedTimes;
+    private List<Double> updatedTimes;
+
     private int mountedCount;
     private int unmountedCount;
     private int updatedCount;
     private int noOpCount;
+
+    private boolean isLoggingEnabled;
+    private boolean isInitialized;
+
+    private void enableLogging() {
+      isLoggingEnabled = true;
+
+      if (!isInitialized) {
+        isInitialized = true;
+        mountedNames = new ArrayList<>();
+        unmountedNames = new ArrayList<>();
+        updatedNames = new ArrayList<>();
+
+        mountTimes = new ArrayList<>();
+        unmountedTimes = new ArrayList<>();
+        updatedTimes = new ArrayList<>();
+      }
+    }
 
     private void reset() {
       mountedCount = 0;
       unmountedCount = 0;
       updatedCount = 0;
       noOpCount = 0;
+
+      if (isInitialized) {
+        mountedNames.clear();
+        unmountedNames.clear();
+        updatedNames.clear();
+
+        mountTimes.clear();
+        unmountedTimes.clear();
+        updatedTimes.clear();
+      }
+
+      isLoggingEnabled = false;
     }
   }
 

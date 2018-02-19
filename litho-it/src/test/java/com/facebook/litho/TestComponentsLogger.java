@@ -25,9 +25,12 @@ public class TestComponentsLogger extends BaseComponentsLogger {
   }
 
   @Override
-  public void onPerformanceEventStarted(LogEvent event) {
-
+  public boolean isTracing(LogEvent logEvent) {
+    return true;
   }
+
+  @Override
+  public void onPerformanceEventStarted(LogEvent event) {}
 
   @Override
   public void onPerformanceEventEnded(LogEvent event) {

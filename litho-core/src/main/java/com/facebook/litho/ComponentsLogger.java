@@ -48,4 +48,7 @@ public interface ComponentsLogger {
    * @see #getKeyCollisionStackTraceKeywords()
    */
   Set<String> getKeyCollisionStackTraceBlacklist();
+
+  /** @return whether this event is being traced and getting logged. */
+  boolean isTracing(LogEvent logEvent);
 }
