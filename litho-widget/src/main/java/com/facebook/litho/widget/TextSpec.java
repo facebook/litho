@@ -114,7 +114,7 @@ import com.facebook.yoga.YogaDirection;
  *     bounds user can click to be able to trigger ClickableSpan's click action. This could be
  *     useful in a densely lined text with links like 'Continue reading ...' in NewsFeed to be able
  *     to click that easily.
- * @prop clipToBounds If the text should be clipped inside component bounds. Default: {@code false}
+ * @prop clipToBounds If the text should be clipped inside component bounds. Default: {@code true}
  */
 @MountSpec(
   isPureRender = true,
@@ -166,7 +166,7 @@ class TextSpec {
   @PropDefault protected static final int hyphenationFrequency = DEFAULT_HYPHENATION_FREQUENCY;
   @PropDefault protected static final int highlightStartOffset = -1;
   @PropDefault protected static final int highlightEndOffset = -1;
-  @PropDefault protected static final boolean clipToBounds = false;
+  @PropDefault protected static final boolean clipToBounds = true;
 
   private static final Path sTempPath = new Path();
   private static final Rect sTempRect = new Rect();
