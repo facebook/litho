@@ -59,7 +59,6 @@ public class StateUpdatesTest {
     private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
 
     public TestComponent() {
-      super();
       mStateContainer = new TestStateContainer();
       mId = sIdGenerator.getAndIncrement();
     }
@@ -223,7 +222,7 @@ public class StateUpdatesTest {
   @Test
   public void testKeepUpdatedStateValue() {
     mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
-    mLayoutThreadShadowLooper.runOneTask();
+    mLayoutThreadShadowLooper.runToEndOfTasks();
     TestStateContainer previousStateContainer =
         (TestStateContainer) getStateContainersMap().get(mTestComponent.getGlobalKey());
     assertThat(previousStateContainer).isNotNull();
@@ -234,7 +233,7 @@ public class StateUpdatesTest {
   public void testClearAppliedStateUpdates() {
     mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
     assertThat(getPendingStateUpdatesForComponent(mTestComponent)).hasSize(1);
-    mLayoutThreadShadowLooper.runOneTask();
+    mLayoutThreadShadowLooper.runToEndOfTasks();
     assertThat(getPendingStateUpdatesForComponent(mTestComponent.getComponentForStateUpdate())).isNull();
   }
 
@@ -242,7 +241,7 @@ public class StateUpdatesTest {
   public void testEnqueueStateUpdate() {
     mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
     assertThat(getPendingStateUpdatesForComponent(mTestComponent)).hasSize(1);
-    mLayoutThreadShadowLooper.runOneTask();
+    mLayoutThreadShadowLooper.runToEndOfTasks();
     mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
     assertThat(((TestStateContainer) getStateContainersMap().get(mTestComponent.getGlobalKey())).mCount).isEqualTo(INITIAL_COUNT_STATE_VALUE + 1);
     assertThat(getPendingStateUpdatesForComponent(mTestComponent.getComponentForStateUpdate())).hasSize(1);
@@ -256,14 +255,14 @@ public class StateUpdatesTest {
   @Test
   public void testUpdateState() {
     mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
-    mLayoutThreadShadowLooper.runOneTask();
+    mLayoutThreadShadowLooper.runToEndOfTasks();
     assertThat(mTestComponent.getComponentForStateUpdate().getCount()).isEqualTo(INITIAL_COUNT_STATE_VALUE + 1);
   }
 
   @Test
   public void testTransferState() {
     mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
-    mLayoutThreadShadowLooper.runOneTask();
+    mLayoutThreadShadowLooper.runToEndOfTasks();
     mComponentTree.setSizeSpec(mWidthSpec, mHeightSpec);
     assertThat(mTestComponent.getComponentForStateUpdate().getCount()).isEqualTo(INITIAL_COUNT_STATE_VALUE + 1);
   }
@@ -271,10 +270,10 @@ public class StateUpdatesTest {
   @Test
   public void testTransferAndUpdateState() {
     mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
-    mLayoutThreadShadowLooper.runOneTask();
+    mLayoutThreadShadowLooper.runToEndOfTasks();
 
     mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
-    mLayoutThreadShadowLooper.runOneTask();
+    mLayoutThreadShadowLooper.runToEndOfTasks();
     assertThat(mTestComponent.getComponentForStateUpdate().getCount()).isEqualTo(INITIAL_COUNT_STATE_VALUE + 2);
   }
 
