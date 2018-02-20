@@ -25,14 +25,6 @@ public class SectionsConfiguration {
   public static boolean sectionComponentsAsyncStateUpdates = false;
 
   /**
-   * If this is False, then a Service created from SectionLifecycle#createService(SectionContext,
-   * Section) is registered and kept in ServiceRegistry.
-   *
-   * <p>SectionLifecycle#destroyService(SectionContext, Object) will not be called if this is True
-   */
-  public static boolean noServiceRegistration = false;
-
-  /**
    * If true, this will trim the items that pass the comparison check in the head and tail of the
    * DataDiffSection data before diffing.
    */
