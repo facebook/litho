@@ -24,11 +24,15 @@ import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
+import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.widget.Text;
 
 @LayoutSpec
 public class LearningStateComponentSpec {
+
+  @PropDefault static final boolean canClick = true;
 
   @OnCreateInitialState
   static void onCreateInitialState(ComponentContext c, StateValue<Integer> count) {
@@ -36,11 +40,12 @@ public class LearningStateComponentSpec {
   }
 
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c, @State Integer count) {
+  static Component onCreateLayout(
+      ComponentContext c, @Prop(optional = true) boolean canClick, @State Integer count) {
     return Text.create(c)
         .text("Clicked " + count + " times.")
         .textSizeDip(50)
-        .clickHandler(LearningStateComponent.onClick(c))
+        .clickHandler(canClick ? LearningStateComponent.onClick(c) : null)
         .backgroundRes(android.R.color.holo_blue_light)
         .alignSelf(STRETCH)
         .paddingDip(BOTTOM, 20)

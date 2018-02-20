@@ -62,4 +62,15 @@ dependencies {
     // Support Library
     implementation deps.supportAppCompat
     implementation deps.supportRecyclerView
+
+    // Unit test only
+    testImplementation project(':litho-testing')
+    testImplementation project(':litho-annotations')
+    testCompileOnly deps.jsr305
+    testAnnotationProcessor project(':litho-processor')
+    testImplementation deps.junit
+    testImplementation deps.hamcrestLibrary
+    testImplementation deps.robolectric
+    testImplementation deps.assertjCore
+    testImplementation deps.mockitoCore
 }
