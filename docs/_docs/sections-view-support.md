@@ -11,7 +11,7 @@ View support is only offered by `DataDiffSection` at the moment. Let's have anot
 
 ```java
 @GroupSectionSpec
-class MyGroupSection {
+class MyGroupSectionSpec {
 
   @OnCreateChildren
   Children onCreateChildren(
@@ -20,12 +20,12 @@ class MyGroupSection {
       return Children.create()
           .child(DataDiffSection.create(c)
               .data(dataModel)
-              .renderEventHandler(MyGroupSection.onRenderEdge(c)))
+              .renderEventHandler(MyGroupSection.onRenderEvent(c)))
           .build();
     }
 
   @OnEvent(RenderEvent.class)
-  RenderInfo onRenderEdge(
+  RenderInfo onRenderEvent(
       SectionContext c,
       @FromEvent MyModel model) {
       return ComponentRenderInfo.create(c)
@@ -43,7 +43,7 @@ We've seen in the previous example how to use `ComponentRenderInfo` to declare h
 
 ```java
 @GroupSectionSpec
-class MyGroupSection {
+class MyGroupSectionSpec {
 
   @OnCreateChildren
   Children onCreateChildren(
@@ -52,12 +52,12 @@ class MyGroupSection {
       return Children.create()
           .child(DataDiffSection.create(c)
               .data(dataModel)
-              .renderEventHandler(MyGroupSection.onRenderEdge(c)))
+              .renderEventHandler(MyGroupSection.onRenderEvent(c)))
           .build();
     }
 
   @OnEvent(RenderEvent.class)
-  RenderInfo onRenderEdge(
+  RenderInfo onRenderEvent(
       SectionContext c,
       @FromEvent MyModel model,
       @FromEvent int index) {
@@ -97,7 +97,7 @@ Here's how you could do that:
 
 ```java
 @GroupSectionSpec
-class MyGroupSection {
+class MyGroupSectionSpec {
 
   @OnCreateChildren
   Children onCreateChildren(
@@ -106,12 +106,12 @@ class MyGroupSection {
       return Children.create()
           .child(DataDiffSection.create(c)
               .data(dataModel)
-              .renderEventHandler(MyGroupSection.onRenderEdge(c)))
+              .renderEventHandler(MyGroupSection.onRenderEvent(c)))
           .build();
     }
 
   @OnEvent(RenderEvent.class)
-  RenderInfo onRenderEdge(
+  RenderInfo onRenderEvent(
       SectionContext c,
       @FromEvent MyModel model) {
       if (model.canRenderWithComponent()) {
