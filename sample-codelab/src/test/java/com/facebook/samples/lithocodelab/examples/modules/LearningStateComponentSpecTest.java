@@ -11,17 +11,22 @@
  */
 package com.facebook.samples.lithocodelab.examples.modules;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assume.assumeThat;
+
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.assertj.LithoAssertions;
 import com.facebook.litho.testing.assertj.SubComponentExtractor;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.TestText;
 import org.hamcrest.core.IsNull;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +34,14 @@ import org.junit.runner.RunWith;
 @RunWith(ComponentsTestRunner.class)
 public class LearningStateComponentSpecTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
+
+  @Before
+  public void assumeDebug() {
+    assumeThat(
+        "These tests can only be run in debug mode.",
+        ComponentsConfiguration.IS_INTERNAL_BUILD,
+        is(true));
+  }
 
   @Test
   public void testComponentOnClick() {
