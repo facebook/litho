@@ -14,7 +14,7 @@ import static android.support.v7.widget.OrientationHelper.VERTICAL;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static com.facebook.litho.MeasureComparisonUtils.isMeasureSpecCompatible;
-import static com.facebook.litho.widget.RenderInfoViewCreatorController.COMPONENT_VIEW_TYPE;
+import static com.facebook.litho.widget.RenderInfoViewCreatorController.DEFAULT_COMPONENT_VIEW_TYPE;
 
 import android.os.Build;
 import android.os.Handler;
@@ -161,9 +161,7 @@ public class RecyclerBinder
         }
       };
 
-  @VisibleForTesting
-  final RenderInfoViewCreatorController mRenderInfoViewCreatorController =
-      new RenderInfoViewCreatorController();
+  @VisibleForTesting final RenderInfoViewCreatorController mRenderInfoViewCreatorController;
 
   private Runnable mComputeRangeRunnable =
       new Runnable() {
@@ -218,6 +216,8 @@ public class RecyclerBinder
     private LithoViewFactory lithoViewFactory;
     private boolean isCircular;
     private boolean hasDynamicItemHeight;
+    private boolean customViewTypeEnabled;
+    private int componentViewType;
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
 
     /**
@@ -306,6 +306,22 @@ public class RecyclerBinder
     }
 
     /**
+     * Enable setting custom viewTypes on {@link ViewRenderInfo}s.
+     *
+     * <p>After this is set, all {@link ViewRenderInfo}s must be built with a custom viewType
+     * through {@link ViewRenderInfo.Builder#customViewType(int)}, otherwise exception will be
+     * thrown.
+     *
+     * @param componentViewType the viewType to be used for Component types, provided through {@link
+     *     ComponentRenderInfo}. Set this to a value that won't conflict with your custom viewTypes.
+     */
+    public Builder enableCustomViewType(int componentViewType) {
+      this.customViewTypeEnabled = true;
+      this.componentViewType = componentViewType;
+      return this;
+    }
+
+    /**
      * Method for tests to allow mocking of the InternalAdapter to verify interaction with the
      * RecyclerView.
      */
@@ -343,6 +359,12 @@ public class RecyclerBinder
     mLithoViewFactory = builder.lithoViewFactory;
     mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
     mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
+    mRenderInfoViewCreatorController =
+        new RenderInfoViewCreatorController(
+            builder.customViewTypeEnabled,
+            builder.customViewTypeEnabled
+                ? builder.componentViewType
+                : DEFAULT_COMPONENT_VIEW_TYPE);
 
     mIsCircular = builder.isCircular;
     mHasDynamicItemHeight =
@@ -1523,7 +1545,7 @@ public class RecyclerBinder
           mComponentTreeHolders.get(getNormalizedPosition(position)).getRenderInfo();
       if (renderInfo.rendersComponent()) {
         // Special value for LithoViews
-        return COMPONENT_VIEW_TYPE;
+        return mRenderInfoViewCreatorController.getComponentViewType();
       } else {
         return renderInfo.getViewType();
       }

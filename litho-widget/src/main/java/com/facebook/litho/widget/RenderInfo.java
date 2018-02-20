@@ -120,6 +120,14 @@ public abstract class RenderInfo {
   }
 
   /**
+   * @return true, if a custom viewType was set for this {@link RenderInfo} and it was created
+   *     through {@link ViewRenderInfo#create()}, or false otherwise.
+   */
+  public boolean hasCustomViewType() {
+    return false;
+  }
+
+  /**
    * @return viewType of current {@link RenderInfo} if it was created through {@link
    *     ViewRenderInfo#create()} or otherwise it will throw {@link UnsupportedOperationException}.
    *     If this method is accessed from {@link RenderInfo} type, {@link #rendersView()} should be
@@ -147,7 +155,8 @@ public abstract class RenderInfo {
 
   /**
    * Set viewType of current {@link RenderInfo} if it was created through {@link
-   * ViewRenderInfo#create()}, or otherwise it will throw {@link UnsupportedOperationException}.
+   * ViewRenderInfo#create()} and a custom viewType was not set, or otherwise it will throw {@link
+   * UnsupportedOperationException}.
    */
   void setViewType(int viewType) {
     throw new UnsupportedOperationException();

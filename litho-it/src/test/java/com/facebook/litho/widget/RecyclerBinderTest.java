@@ -93,7 +93,6 @@ public class RecyclerBinderTest {
           return mock(View.class);
         }
       };
-  private RenderInfoViewCreatorController mRenderInfoViewCreatorController;
 
   private interface ViewCreatorProvider {
     ViewCreator get();
@@ -101,6 +100,7 @@ public class RecyclerBinderTest {
 
   private final Map<Component, TestComponentTreeHolder> mHoldersForComponents = new HashMap<>();
   private RecyclerBinder mRecyclerBinder;
+  private RecyclerBinder.Builder mRecyclerBinderBuilder;
   private RecyclerBinder mCircularRecyclerBinder;
   private LayoutInfo mLayoutInfo;
   private LayoutInfo mCircularLayoutInfo;
@@ -136,13 +136,13 @@ public class RecyclerBinderTest {
     setupBaseLayoutInfoMock(mLayoutInfo, OrientationHelper.VERTICAL);
     setupBaseLayoutInfoMock(mCircularLayoutInfo, OrientationHelper.HORIZONTAL);
 
-    mRecyclerBinder = new RecyclerBinder.Builder()
-        .rangeRatio(RANGE_RATIO)
-        .layoutInfo(mLayoutInfo)
-        .componentTreeHolderFactory(componentTreeHolderFactory)
-        .build(mComponentContext);
+    mRecyclerBinderBuilder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(mLayoutInfo)
+            .componentTreeHolderFactory(componentTreeHolderFactory);
 
-    mRenderInfoViewCreatorController = mRecyclerBinder.mRenderInfoViewCreatorController;
+    mRecyclerBinder = mRecyclerBinderBuilder.build(mComponentContext);
 
     mCircularRecyclerBinder =
         new RecyclerBinder.Builder()
@@ -1056,14 +1056,16 @@ public class RecyclerBinderTest {
           }
         });
 
-    assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(1);
-    assertThat(mRenderInfoViewCreatorController.mViewCreatorToViewType.size()).isEqualTo(1);
+    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewTypeToViewCreator.size())
+        .isEqualTo(1);
+    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size())
+        .isEqualTo(1);
 
     ViewCreator obtainedViewCreator =
-        mRenderInfoViewCreatorController.mViewCreatorToViewType.keyAt(0);
+        mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.keyAt(0);
     assertThat(obtainedViewCreator).isEqualTo(VIEW_CREATOR_1);
     assertThat(
-            mRenderInfoViewCreatorController.mViewTypeToViewCreator.indexOfValue(
+            mRecyclerBinder.mRenderInfoViewCreatorController.mViewTypeToViewCreator.indexOfValue(
                 obtainedViewCreator))
         .isGreaterThanOrEqualTo(0);
   }
@@ -1087,16 +1089,19 @@ public class RecyclerBinderTest {
           }
         });
 
-    assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(4);
-    assertThat(mRenderInfoViewCreatorController.mViewCreatorToViewType.size()).isEqualTo(4);
+    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewTypeToViewCreator.size())
+        .isEqualTo(4);
+    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size())
+        .isEqualTo(4);
 
-    for (int i = 0, size = mRenderInfoViewCreatorController.mViewCreatorToViewType.size();
+    for (int i = 0,
+            size = mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size();
         i < size;
         i++) {
       final ViewCreator obtainedViewCreator =
-          mRenderInfoViewCreatorController.mViewCreatorToViewType.keyAt(i);
+          mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.keyAt(i);
       assertThat(
-              mRenderInfoViewCreatorController.mViewTypeToViewCreator.indexOfValue(
+              mRecyclerBinder.mRenderInfoViewCreatorController.mViewTypeToViewCreator.indexOfValue(
                   obtainedViewCreator))
           .isGreaterThanOrEqualTo(0);
     }
@@ -1114,8 +1119,10 @@ public class RecyclerBinderTest {
             .viewCreator(VIEW_CREATOR_1)
             .build());
 
-    assertThat(mRenderInfoViewCreatorController.mViewCreatorToViewType.size()).isEqualTo(1);
-    assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(1);
+    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size())
+        .isEqualTo(1);
+    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewTypeToViewCreator.size())
+        .isEqualTo(1);
 
     mRecyclerBinder.insertItemAt(
         2,
@@ -1124,14 +1131,18 @@ public class RecyclerBinderTest {
             .viewCreator(VIEW_CREATOR_2)
             .build());
 
-    assertThat(mRenderInfoViewCreatorController.mViewCreatorToViewType.size()).isEqualTo(2);
-    assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(2);
+    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size())
+        .isEqualTo(2);
+    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewTypeToViewCreator.size())
+        .isEqualTo(2);
 
     mRecyclerBinder.removeItemAt(1);
     mRecyclerBinder.removeItemAt(1);
 
-    assertThat(mRenderInfoViewCreatorController.mViewCreatorToViewType.size()).isEqualTo(2);
-    assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(2);
+    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size())
+        .isEqualTo(2);
+    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewTypeToViewCreator.size())
+        .isEqualTo(2);
   }
 
   @Test
@@ -1151,8 +1162,10 @@ public class RecyclerBinderTest {
             .viewCreator(VIEW_CREATOR_2)
             .build());
 
-    assertThat(mRenderInfoViewCreatorController.mViewCreatorToViewType.size()).isEqualTo(2);
-    assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(2);
+    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size())
+        .isEqualTo(2);
+    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewTypeToViewCreator.size())
+        .isEqualTo(2);
 
     mRecyclerBinder.updateItemAt(
         1,
@@ -1161,8 +1174,10 @@ public class RecyclerBinderTest {
             .viewCreator(VIEW_CREATOR_2)
             .build());
 
-    assertThat(mRenderInfoViewCreatorController.mViewCreatorToViewType.size()).isEqualTo(2);
-    assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(2);
+    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size())
+        .isEqualTo(2);
+    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewTypeToViewCreator.size())
+        .isEqualTo(2);
 
     mRecyclerBinder.updateItemAt(
         2,
@@ -1170,8 +1185,98 @@ public class RecyclerBinderTest {
             .viewCreator(VIEW_CREATOR_3)
             .viewBinder(new SimpleViewBinder())
             .build());
-    assertThat(mRenderInfoViewCreatorController.mViewCreatorToViewType.size()).isEqualTo(3);
-    assertThat(mRenderInfoViewCreatorController.mViewTypeToViewCreator.size()).isEqualTo(3);
+    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size())
+        .isEqualTo(3);
+    assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewTypeToViewCreator.size())
+        .isEqualTo(3);
+  }
+
+  @Test
+  public void testCustomViewTypeEnabledViewTypeProvided() {
+    final RecyclerBinder recyclerBinder =
+        mRecyclerBinderBuilder.enableCustomViewType(5).build(mComponentContext);
+
+    recyclerBinder.insertItemAt(
+        0, ComponentRenderInfo.create().component(mock(Component.class)).build());
+    recyclerBinder.insertItemAt(
+        1,
+        ViewRenderInfo.create()
+            .viewBinder(new SimpleViewBinder())
+            .viewCreator(VIEW_CREATOR_1)
+            .customViewType(10)
+            .build());
+
+    assertThat(recyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size())
+        .isEqualTo(1);
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testCustomViewTypeEnabledViewTypeNotProvided() {
+    final RecyclerBinder recyclerBinder =
+        mRecyclerBinderBuilder.enableCustomViewType(4).build(mComponentContext);
+
+    recyclerBinder.insertItemAt(
+        0, ComponentRenderInfo.create().component(mock(Component.class)).build());
+    recyclerBinder.insertItemAt(
+        1,
+        ViewRenderInfo.create()
+            .viewBinder(new SimpleViewBinder())
+            .viewCreator(VIEW_CREATOR_1)
+            .build());
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testCustomViewTypeNotEnabledViewTypeProvided() {
+    final RecyclerBinder recyclerBinder = mRecyclerBinderBuilder.build(mComponentContext);
+
+    recyclerBinder.insertItemAt(
+        0, ComponentRenderInfo.create().component(mock(Component.class)).build());
+    recyclerBinder.insertItemAt(
+        1,
+        ViewRenderInfo.create()
+            .viewBinder(new SimpleViewBinder())
+            .viewCreator(VIEW_CREATOR_1)
+            .customViewType(10)
+            .build());
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testCustomViewTypeEnabledDuplicateViewTypeProvided() {
+    final RecyclerBinder recyclerBinder =
+        mRecyclerBinderBuilder.enableCustomViewType(2).build(mComponentContext);
+
+    recyclerBinder.insertItemAt(
+        0, ComponentRenderInfo.create().component(mock(Component.class)).build());
+    recyclerBinder.insertItemAt(
+        1,
+        ViewRenderInfo.create()
+            .viewBinder(new SimpleViewBinder())
+            .viewCreator(VIEW_CREATOR_1)
+            .customViewType(10)
+            .build());
+    recyclerBinder.insertItemAt(
+        2,
+        ViewRenderInfo.create()
+            .viewBinder(new SimpleViewBinder())
+            .viewCreator(VIEW_CREATOR_2)
+            .customViewType(10)
+            .build());
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testCustomViewTypeEnabledDuplicateViewTypeProvided2() {
+    final RecyclerBinder recyclerBinder =
+        mRecyclerBinderBuilder.enableCustomViewType(2).build(mComponentContext);
+
+    recyclerBinder.insertItemAt(
+        0, ComponentRenderInfo.create().component(mock(Component.class)).build());
+    recyclerBinder.insertItemAt(
+        1,
+        ViewRenderInfo.create()
+            .viewBinder(new SimpleViewBinder())
+            .viewCreator(VIEW_CREATOR_1)
+            .customViewType(2)
+            .build());
   }
 
   @Test
@@ -1193,7 +1298,11 @@ public class RecyclerBinderTest {
     mRecyclerBinder.mount(recyclerView);
 
     final ViewHolder vh =
-        recyclerView.getAdapter().onCreateViewHolder(new FrameLayout(mComponentContext), 1);
+        recyclerView
+            .getAdapter()
+            .onCreateViewHolder(
+                new FrameLayout(mComponentContext),
+                RenderInfoViewCreatorController.DEFAULT_COMPONENT_VIEW_TYPE + 1);
 
     recyclerView.getAdapter().onBindViewHolder(vh, 0);
     verify(viewBinder).bind(view);
