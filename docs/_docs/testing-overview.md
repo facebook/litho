@@ -21,6 +21,19 @@ assertions over its children. [Sub-Component
 Matching](/docs/subcomponent-testing) lays out the concepts and APIs for writing
 declarative matchers against your component trees.
 
+## Matching Props
+
+Once you know how to test for sub-components, you can learn about more advanced
+techniques for verifying props on them in the [Matching
+Props](/docs/prop-matching) guide.
+
+## Testing Event Handlers
+
+Event handlers are just like any other prop you would set on your component.
+That means you can use the mechanisms you've learned before with Sub-Component
+Testing. Find an example on how to use this in the
+[Event Handler Testing](/docs/event-handler-testing) guide.
+
 ## Sections
 
 For testing Sections, we have a few helpers, including

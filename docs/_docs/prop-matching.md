@@ -5,10 +5,6 @@ layout: docs
 permalink: /docs/prop-matching.html
 ---
 
-> IMPORTANT: These APIs are currently considered experimental and subject to
-  change. If you want to play safe, stick with the APIs documented under [Unit
-  Testing](/docs/unit-testing).
-
 We have already learned about matching [sub-components in the
 hierarchy](/docs/subcomponent-testing). In this article, we will drill a bit
 deeper and explore TestSpecs as a way to test individual props of those
@@ -406,4 +402,4 @@ public void testComplexTestSpecAdvancedProps() {
 ## Next
 
 Either head back to the [testing overview](/docs/testing-overview.html) or
-continue with the next section, [Espresso](/docs/espresso-testing).
+continue with the next section, [Testing Event Handlers](/docs/event-handler-testing).
