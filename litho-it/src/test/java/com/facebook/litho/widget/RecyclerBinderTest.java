@@ -1192,8 +1192,9 @@ public class RecyclerBinderTest {
 
     mRecyclerBinder.mount(recyclerView);
 
-    final ViewHolder vh =
-        recyclerView.getAdapter().onCreateViewHolder(new FrameLayout(mComponentContext), 1);
+    final ViewHolder vh = recyclerView.getAdapter()
+        .onCreateViewHolder(new FrameLayout(mComponentContext),
+            RenderInfoViewCreatorController.DEFAULT_COMPONENT_VIEW_TYPE + 1);
 
     recyclerView.getAdapter().onBindViewHolder(vh, 0);
     verify(viewBinder).bind(view);

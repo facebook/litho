@@ -21,6 +21,7 @@ public class ViewRenderInfo extends RenderInfo {
   private final ViewBinder mViewBinder;
   private final ViewCreator mViewCreator;
 
+  private final boolean mCustomViewType;
   private int mViewType;
 
   public static Builder create() {
@@ -36,6 +37,10 @@ public class ViewRenderInfo extends RenderInfo {
     super(builder);
     mViewBinder = builder.viewBinder;
     mViewCreator = builder.viewCreator;
+    mCustomViewType = builder.hasCustomViewType;
+    if (mCustomViewType) {
+      mViewType = builder.viewType;
+    }
   }
 
   @Override
@@ -54,7 +59,15 @@ public class ViewRenderInfo extends RenderInfo {
   }
 
   @Override
+  public boolean hasCustomViewType() {
+    return mCustomViewType;
+  }
+
+  @Override
   void setViewType(int viewType) {
+    if (mCustomViewType) {
+      throw new UnsupportedOperationException("Cannot override custom view type.");
+    }
     mViewType = viewType;
   }
 
@@ -71,6 +84,8 @@ public class ViewRenderInfo extends RenderInfo {
   public static class Builder extends RenderInfo.Builder<Builder> {
     private ViewBinder viewBinder;
     private ViewCreator viewCreator;
+    private boolean hasCustomViewType = false;
+    private int viewType = 0;
 
     /**
      * Specify {@link ViewCreator} implementation that can be used to create a new view if such view
@@ -91,6 +106,16 @@ public class ViewRenderInfo extends RenderInfo {
       return this;
     }
 
+    /**
+     * Specify a custom ViewType identifier for this View. This will be used instead of being
+     * generated from the {@link ViewCreator} instance.
+     */
+    public Builder customViewType(int viewType) {
+      hasCustomViewType = true;
+      this.viewType = viewType;
+      return this;
+    }
+
     public ViewRenderInfo build() {
       if (viewCreator == null || viewBinder == null) {
         throw new IllegalStateException("Both viewCreator and viewBinder must be provided.");
@@ -107,6 +132,8 @@ public class ViewRenderInfo extends RenderInfo {
       super.release();
       viewBinder = null;
       viewCreator = null;
+      hasCustomViewType = false;
+      viewType = 0;
       sBuilderPool.release(this);
     }
   }
