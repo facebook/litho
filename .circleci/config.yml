@@ -6,7 +6,7 @@ jobs:
       ANDROID_HOME: '/home/circleci/android-sdk'
       ANDROID_NDK_REPOSITORY: "/home/circleci/android-ndk"
     docker:
-      - image: passy/android-circleci-litho:latest
+      - image: passy/android-circleci-litho:v27-2
     resource_class: large
     steps:
       - checkout
