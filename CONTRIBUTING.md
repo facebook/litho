@@ -8,7 +8,7 @@ We want to make contributing to this project as easy and transparent as possible
 2. Ensure your Android SDK has the right dependencies.  To build Litho you need:
    - [The Android NDK and build tools](https://developer.android.com/studio/projects/add-native-code.html) (NDK, CMake, LLDB)
    - The Android 7.1.1 (API 25) SDK
-   - Version 25.0.3 of the The Android SDK Build tools.
+   - Version 26.0.2 of the The Android SDK Build tools.
 3. Import the project by selecting the repo's root directory. You should be able to successfully sync the gradle project now!
 
 ## Our Development Process
@@ -32,7 +32,7 @@ We actively welcome your pull requests!
 3. If you've changed APIs, update the documentation (under `/docs`)
 4. Ensure the test suite passes.
 5. If you haven't already, complete the Contributor License Agreement ("CLA").
-6. We will review your code and merge it
+6. We will review your code and merge it.
 
 ## Contributor License Agreement ("CLA")
 
@@ -62,7 +62,10 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 
 ## Coding Style
 
-Please use 2 spaces for indentation rather than tabs.  Use [Egyptian](https://lehacker.com/wp-content/uploads/2017/01/egyptian-brackets-programming-jargon.jpg) (K&R) braces and limit lines to 100 characters each.
+Please use 2 spaces for indentation rather than tabs. We follow the [Google Java
+Style](https://google.github.io/styleguide/javaguide.html). You can use the
+[google-java-format tool](https://github.com/google/google-java-format) to
+format your code accordingly.
 
 Most importantly, be consistent with existing code.  Look around the codebase and match the style.
 
