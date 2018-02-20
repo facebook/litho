@@ -10,9 +10,6 @@ include_defs("//LITHO_DEFS")
 android_library(
     name = "espresso",
     srcs = glob(["*.java"]),
-    tests = [
-        "//instrumentation_tests/com/facebook/testing/instrumentation:instrumentation",
-    ],
     visibility = [
         "PUBLIC",
     ],

@@ -15,6 +15,14 @@ We want to make contributing to this project as easy and transparent as possible
 
 We develop on a private branch internally at Facebook. We regularly update this github project with the changes from the internal repo. External pull requests are cherry-picked into our repo and then pushed back out.
 
+## Testing
+
+When making changes to the code base, make sure that the existing tests pass and you cover
+new features appropriately. You can run the test suite
+
+1. with buck: `buck test ...`, or
+2. with gradle: `./gradlew test`.
+
 ## Pull Requests
 
 We actively welcome your pull requests!

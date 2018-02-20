@@ -13,9 +13,6 @@ android_library(
     exported_deps = [
         LITHO_ROOT + "litho-espresso/src/main/java/com/facebook/litho/testing/espresso:espresso",
     ],
-    tests = [
-        "//instrumentation_tests/com/facebook/testing/instrumentation:instrumentation",
-    ],
     visibility = [
         "PUBLIC",
     ],
