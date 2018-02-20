@@ -66,6 +66,10 @@ public class LearningStateComponentSpec {
 }
 ```
 
+<video loop autoplay class="video" style="float: right; width: 300px;">
+  <source type="video/mp4" src="/static/videos/state_taps.mp4"></source>
+</video>
+
 When testing event handlers, it is important to remember what you actually want
 to validate in your unit test. You may be getting this inkling to ensure that a
 click event you issue triggers the callback you pass in as your prop. *When you
@@ -73,6 +77,8 @@ do this, you are actually testing the framework.* This is not what you want to
 spend your time on. While writing high-level end-to-end tests ensuring that your
 touch events have the right effects, this is not what you should concern
 yourself with for unit tests.
+
+<div style="clear:both;"></div>
 
 ## Testing handler presence
 
