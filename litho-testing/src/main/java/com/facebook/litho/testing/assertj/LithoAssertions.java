@@ -12,6 +12,7 @@ package com.facebook.litho.testing.assertj;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.StateValue;
 import javax.annotation.CheckReturnValue;
 import org.assertj.core.api.Java6Assertions;
 
@@ -33,5 +34,10 @@ public class LithoAssertions extends Java6Assertions {
   @CheckReturnValue
   public static LithoViewAssert assertThat(LithoView lithoView) {
     return LithoViewAssert.assertThat(lithoView);
+  }
+
+  @CheckReturnValue
+  public static <T> StateValueAssert<T> assertThat(StateValue<T> stateValue) {
+    return StateValueAssert.assertThat(stateValue);
   }
 }

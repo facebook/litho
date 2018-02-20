@@ -15,6 +15,7 @@ import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.StateValue;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.assertj.LithoAssertions;
 import com.facebook.litho.testing.assertj.SubComponentExtractor;
@@ -55,5 +56,14 @@ public class LearningStateComponentSpecTest {
                 TestText.matcher(c)
                     .clickHandler(IsNull.<EventHandler<ClickEvent>>nullValue(null))
                     .build()));
+  }
+
+  @Test
+  public void testIncrementClickCount() {
+    final StateValue<Integer> count = new StateValue<>();
+    count.set(0);
+    LearningStateComponentSpec.incrementClickCount(count);
+
+    LithoAssertions.assertThat(count).valueEqualTo(1);
   }
 }
