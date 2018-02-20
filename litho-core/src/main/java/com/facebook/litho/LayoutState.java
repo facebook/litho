@@ -32,7 +32,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.MountItem.FLAG_DISABLE_TOUCHABLE;
 import static com.facebook.litho.MountItem.FLAG_DUPLICATE_PARENT_STATE;
-import static com.facebook.litho.MountItem.FLAG_IS_TRANSITION_KEY_SET;
+import static com.facebook.litho.MountItem.FLAG_MATCH_HOST_BOUNDS_TRANSITIONS;
 import static com.facebook.litho.MountState.ROOT_HOST_ID;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
@@ -230,8 +230,7 @@ class LayoutState {
    */
   @Nullable
   private static LayoutOutput createGenericLayoutOutput(
-      InternalNode node,
-      LayoutState layoutState) {
+      InternalNode node, LayoutState layoutState, boolean matchHostBoundsTransitions) {
     final Component component = node.getRootComponent();
 
     // Skip empty nodes and layout specs because they don't mount anything.
@@ -246,7 +245,7 @@ class LayoutState {
         true /* useNodePadding */,
         node.getImportantForAccessibility(),
         layoutState.mShouldDuplicateParentState,
-        layoutState.mIsTransitionKeySet);
+        matchHostBoundsTransitions);
   }
 
   private static LayoutOutput createHostLayoutOutput(LayoutState layoutState, InternalNode node) {
@@ -258,7 +257,7 @@ class LayoutState {
             false /* useNodePadding */,
             node.getImportantForAccessibility(),
             node.isDuplicateParentStateEnabled(),
-            layoutState.mIsTransitionKeySet);
+            false);
 
     if (layoutState.mIsTransitionKeySet) {
       hostOutput.setTransitionKey(node.getTransitionKey());
@@ -273,7 +272,8 @@ class LayoutState {
   private static LayoutOutput createDrawableLayoutOutput(
       Component component,
       LayoutState layoutState,
-      InternalNode node) {
+      InternalNode node,
+      boolean matchHostBoundsTransitions) {
     return createLayoutOutput(
         component,
         layoutState,
@@ -281,7 +281,7 @@ class LayoutState {
         false /* useNodePadding */,
         IMPORTANT_FOR_ACCESSIBILITY_NO,
         layoutState.mShouldDuplicateParentState,
-        layoutState.mIsTransitionKeySet);
+        matchHostBoundsTransitions);
   }
 
   private static LayoutOutput createLayoutOutput(
@@ -291,7 +291,7 @@ class LayoutState {
       boolean useNodePadding,
       int importantForAccessibility,
       boolean duplicateParentState,
-      boolean isTransitionKeySet) {
+      boolean matchHostBoundsTransitions) {
     final boolean isMountViewSpec = isMountViewSpec(component);
 
     final LayoutOutput layoutOutput = ComponentsPools.acquireLayoutOutput();
@@ -369,8 +369,8 @@ class LayoutState {
       flags |= FLAG_DUPLICATE_PARENT_STATE;
     }
 
-    if (isTransitionKeySet) {
-      flags |= FLAG_IS_TRANSITION_KEY_SET;
+    if (matchHostBoundsTransitions) {
+      flags |= FLAG_MATCH_HOST_BOUNDS_TRANSITIONS;
     }
 
     layoutOutput.setFlags(flags);
@@ -632,7 +632,7 @@ class LayoutState {
         needsHostView || (shouldDuplicateParentState && node.isDuplicateParentStateEnabled());
 
     // Generate the layoutOutput for the given node.
-    final LayoutOutput layoutOutput = createGenericLayoutOutput(node, layoutState);
+    final LayoutOutput layoutOutput = createGenericLayoutOutput(node, layoutState, needsHostView);
     if (layoutOutput != null) {
       final long previousId = shouldUseCachedOutputs ? currentDiffNode.getContent().getId() : -1;
       layoutState.mLayoutStateOutputIdCalculator.calculateAndSetLayoutOutputIdAndUpdateState(
@@ -659,12 +659,14 @@ class LayoutState {
             ? currentDiffNode.getBackground()
             : null;
 
-        final LayoutOutput backgroundOutput = addDrawableComponent(
-            node,
-            layoutState,
-            convertBackground,
-            background,
-            LayoutOutput.TYPE_BACKGROUND);
+        final LayoutOutput backgroundOutput =
+            addDrawableComponent(
+                node,
+                layoutState,
+                convertBackground,
+                background,
+                LayoutOutput.TYPE_BACKGROUND,
+                needsHostView);
 
         if (diffNode != null) {
           diffNode.setBackground(backgroundOutput);
@@ -694,12 +696,14 @@ class LayoutState {
           ? currentDiffNode.getBorder()
           : null;
 
-      final LayoutOutput borderOutput = addDrawableComponent(
-          node,
-          layoutState,
-          convertBorder,
-          getBorderColorDrawable(node),
-          LayoutOutput.TYPE_BORDER);
+      final LayoutOutput borderOutput =
+          addDrawableComponent(
+              node,
+              layoutState,
+              convertBorder,
+              getBorderColorDrawable(node),
+              LayoutOutput.TYPE_BORDER,
+              needsHostView);
       if (diffNode != null) {
         diffNode.setBorder(borderOutput);
       }
@@ -768,12 +772,14 @@ class LayoutState {
             ? currentDiffNode.getForeground()
             : null;
 
-        final LayoutOutput foregroundOutput = addDrawableComponent(
-            node,
-            layoutState,
-            convertForeground,
-            DrawableReference.create().drawable(foreground).build(),
-            LayoutOutput.TYPE_FOREGROUND);
+        final LayoutOutput foregroundOutput =
+            addDrawableComponent(
+                node,
+                layoutState,
+                convertForeground,
+                DrawableReference.create().drawable(foreground).build(),
+                LayoutOutput.TYPE_FOREGROUND,
+                needsHostView);
 
         if (diffNode != null) {
           diffNode.setForeground(foregroundOutput);
@@ -889,7 +895,8 @@ class LayoutState {
       LayoutState layoutState,
       LayoutOutput recycle,
       Reference<? extends Drawable> reference,
-      @LayoutOutput.LayoutOutputType int type) {
+      @LayoutOutput.LayoutOutputType int type,
+      boolean matchHostBoundsTransitions) {
     final Component drawableComponent = DrawableComponent.create(reference);
     drawableComponent.setScopedContext(
         ComponentContext.withComponentScope(node.getContext(), drawableComponent));
@@ -902,13 +909,15 @@ class LayoutState {
     }
 
     final long previousId = recycle != null ? recycle.getId() : -1;
-    final LayoutOutput output = addDrawableLayoutOutput(
-        drawableComponent,
-        layoutState,
-        node,
-        type,
-        previousId,
-        isOutputUpdated);
+    final LayoutOutput output =
+        addDrawableLayoutOutput(
+            drawableComponent,
+            layoutState,
+            node,
+            type,
+            previousId,
+            isOutputUpdated,
+            matchHostBoundsTransitions);
 
     return output;
   }
@@ -962,14 +971,14 @@ class LayoutState {
       InternalNode node,
       @LayoutOutput.LayoutOutputType int layoutOutputType,
       long previousId,
-      boolean isCachedOutputUpdated) {
+      boolean isCachedOutputUpdated,
+      boolean matchHostBoundsTransitions) {
 
     drawableComponent.onBoundsDefined(layoutState.mContext, node);
 
-    final LayoutOutput drawableLayoutOutput = createDrawableLayoutOutput(
-        drawableComponent,
-        layoutState,
-        node);
+    final LayoutOutput drawableLayoutOutput =
+        createDrawableLayoutOutput(
+            drawableComponent, layoutState, node, matchHostBoundsTransitions);
     layoutState.mLayoutStateOutputIdCalculator.calculateAndSetLayoutOutputIdAndUpdateState(
         drawableLayoutOutput,
         layoutState.mCurrentLevel,

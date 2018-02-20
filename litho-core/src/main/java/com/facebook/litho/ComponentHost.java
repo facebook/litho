@@ -1095,7 +1095,7 @@ public class ComponentHost extends ViewGroup {
     List<Drawable> drawables = null;
     for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
       final MountItem mountItem = mDrawableMountItems.valueAt(i);
-      if ((mountItem.getFlags() & MountItem.FLAG_IS_TRANSITION_KEY_SET) != 0) {
+      if ((mountItem.getFlags() & MountItem.FLAG_MATCH_HOST_BOUNDS_TRANSITIONS) != 0) {
         if (drawables == null) {
           drawables = new ArrayList<>();
         }
