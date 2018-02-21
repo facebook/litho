@@ -18,6 +18,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -500,26 +501,26 @@ public class RecyclerBinderTest {
   }
 
   @Test
-    public void testRequestRemeasure() {
-      final Size size = new Size();
-      final int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.AT_MOST);
-      final int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
-      final RecyclerView recyclerView = mock(RecyclerView.class);
+  public void testRequestRemeasure() {
+    final Size size = new Size();
+    final int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.AT_MOST);
+    final int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+    final RecyclerView recyclerView = mock(RecyclerView.class);
 
-      mRecyclerBinder.mount(recyclerView);
-      mRecyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    mRecyclerBinder.mount(recyclerView);
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
 
     assertThat(0).isEqualTo(size.width);
 
-      final List<ComponentRenderInfo> components = new ArrayList<>();
-      for (int i = 0; i < 100; i++) {
-        components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
-        mRecyclerBinder.insertItemAt(i, components.get(i));
-      }
-
-      verify(recyclerView, times(100)).removeCallbacks(any(Runnable.class));
-      verify(recyclerView, times(100)).postOnAnimation(any(Runnable.class));
+    final List<ComponentRenderInfo> components = new ArrayList<>();
+    for (int i = 0; i < 100; i++) {
+      components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
+      mRecyclerBinder.insertItemAt(i, components.get(i));
     }
+
+    verify(recyclerView, times(100)).removeCallbacks(any(Runnable.class));
+    verify(recyclerView, times(100)).postOnAnimation(any(Runnable.class));
+  }
 
   @Test
   public void testRequestRemeasureInsertRange() {
@@ -541,6 +542,65 @@ public class RecyclerBinderTest {
 
     verify(recyclerView, times(100)).removeCallbacks(any(Runnable.class));
     verify(recyclerView, times(100)).postOnAnimation(any(Runnable.class));
+  }
+
+  @Test
+  public void testRequestRemeasureUpdateAt() {
+    final Size size = new Size();
+    final int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.AT_MOST);
+    final int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+    final RecyclerView recyclerView = mock(RecyclerView.class);
+
+    mRecyclerBinder.mount(recyclerView);
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+
+    assertThat(0).isEqualTo(size.width);
+
+    final List<RenderInfo> components = new ArrayList<>();
+    for (int i = 0; i < 100; i++) {
+      components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
+    }
+    mRecyclerBinder.insertRangeAt(0, components);
+
+    reset(recyclerView);
+
+    for (int i = 0; i < 50; i++) {
+      mRecyclerBinder.updateItemAt(
+          i, ComponentRenderInfo.create().component(mock(Component.class)).build());
+    }
+
+    verify(recyclerView, times(50)).removeCallbacks(any(Runnable.class));
+    verify(recyclerView, times(50)).postOnAnimation(any(Runnable.class));
+  }
+
+  @Test
+  public void testRequestRemeasureUpdateRange() {
+    final Size size = new Size();
+    final int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.AT_MOST);
+    final int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+    final RecyclerView recyclerView = mock(RecyclerView.class);
+
+    mRecyclerBinder.mount(recyclerView);
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+
+    assertThat(0).isEqualTo(size.width);
+
+    final List<RenderInfo> components = new ArrayList<>();
+    final List<RenderInfo> updatedComponents = new ArrayList<>();
+    for (int i = 0; i < 100; i++) {
+      components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
+    }
+    for (int i = 0; i < 50; i++) {
+      updatedComponents.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
+    }
+    mRecyclerBinder.insertRangeAt(0, components);
+
+    reset(recyclerView);
+
+    mRecyclerBinder.updateRangeAt(0, updatedComponents);
+
+    verify(recyclerView, times(50)).removeCallbacks(any(Runnable.class));
+    verify(recyclerView, times(50)).postOnAnimation(any(Runnable.class));
   }
 
     @Test

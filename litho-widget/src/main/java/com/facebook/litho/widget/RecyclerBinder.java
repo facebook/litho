@@ -492,28 +492,10 @@ public class RecyclerBinder
     assertNoInsertOperationIfCircular();
 
     final ComponentTreeHolder holder = createComponentTreeHolder(renderInfo);
-    final int childrenWidthSpec, childrenHeightSpec;
     synchronized (this) {
       mComponentTreeHolders.add(position, holder);
-
       mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
-
-      childrenWidthSpec = getActualChildrenWidthSpec(holder);
-      childrenHeightSpec = getActualChildrenHeightSpec(holder);
-
-      if (mIsMeasured.get() && holder.getRenderInfo().rendersComponent()) {
-        if (mRange == null && !mRequiresRemeasure.get()) {
-          initRange(
-              mMeasuredSize.width,
-              mMeasuredSize.height,
-              position,
-              childrenWidthSpec,
-              childrenHeightSpec,
-              mLayoutInfo.getScrollDirection());
-        } else if (mRequiresRemeasure.get()) {
-          requestRemeasure();
-        }
-      }
+      maybeInitRangeOrRemeasureForMutation(position, holder);
     }
 
     mInternalAdapter.notifyItemInserted(position);
@@ -538,10 +520,35 @@ public class RecyclerBinder
   }
 
   /**
+   * Whenever an item is inserted or updated, we should check whether we need to initialize the
+   * range or request a remeasure of the entire binder
+   */
+  @GuardedBy("this")
+  private void maybeInitRangeOrRemeasureForMutation(int position, ComponentTreeHolder holder) {
+    if (!mIsMeasured.get() || !holder.getRenderInfo().rendersComponent()) {
+      return;
+    }
+
+    if (mRequiresRemeasure.get()) {
+      requestRemeasure();
+      return;
+    }
+
+    if (mRange == null) {
+      initRange(
+          mMeasuredSize.width,
+          mMeasuredSize.height,
+          position,
+          getActualChildrenWidthSpec(holder),
+          getActualChildrenHeightSpec(holder),
+          mLayoutInfo.getScrollDirection());
+    }
+  }
+
+  /**
    * Inserts the new items starting from position. The {@link RecyclerView} gets notified
-   * immediately about the new item being inserted.
-   * The RenderInfo contains the component that will be inserted in the Binder and extra info
-   * like isSticky or spanCount.
+   * immediately about the new item being inserted. The RenderInfo contains the component that will
+   * be inserted in the Binder and extra info like isSticky or spanCount.
    */
   @UiThread
   public final void insertRangeAt(int position, List<RenderInfo> renderInfos) {
@@ -557,22 +564,10 @@ public class RecyclerBinder
 
         mComponentTreeHolders.add(position + i, holder);
         mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
-
-        if (mIsMeasured.get() && holder.getRenderInfo().rendersComponent()) {
-          if (mRange == null && !mRequiresRemeasure.get()) {
-            initRange(
-                mMeasuredSize.width,
-                mMeasuredSize.height,
-                position + i,
-                getActualChildrenWidthSpec(holder),
-                getActualChildrenHeightSpec(holder),
-                mLayoutInfo.getScrollDirection());
-          } else if (mRequiresRemeasure.get()) {
-            requestRemeasure();
-          }
-        }
+        maybeInitRangeOrRemeasureForMutation(position + i, holder);
       }
     }
+
     mInternalAdapter.notifyItemRangeInserted(position, renderInfos.size());
 
     maybePostComputeRange();
@@ -608,17 +603,9 @@ public class RecyclerBinder
       mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
       holder.setRenderInfo(renderInfo);
 
-      if (mRange == null && mIsMeasured.get() && renderInfo.rendersComponent()) {
-        // Range might not have been initialized if all previous items were views and we update
-        // one of them to be a component.
-        initRange(
-            mMeasuredSize.width,
-            mMeasuredSize.height,
-            position,
-            getActualChildrenWidthSpec(holder),
-            getActualChildrenHeightSpec(holder),
-            mLayoutInfo.getScrollDirection());
-      }
+      // Range might not have been initialized if all previous items were views and we update
+      // one of them to be a component.
+      maybeInitRangeOrRemeasureForMutation(position, holder);
     }
 
     // If this item is rendered with a view (or was rendered with a view before now) we need to
@@ -653,20 +640,8 @@ public class RecyclerBinder
         }
 
         mRenderInfoViewCreatorController.maybeTrackViewCreator(newRenderInfo);
-
         holder.setRenderInfo(newRenderInfo);
-
-        if (mRange == null && mIsMeasured.get() && newRenderInfo.rendersComponent()) {
-          // Range might not have been initialized if all previous items were views and we update
-          // one of them to be a component.
-          initRange(
-              mMeasuredSize.width,
-              mMeasuredSize.height,
-              position + i,
-              getActualChildrenWidthSpec(holder),
-              getActualChildrenHeightSpec(holder),
-              mLayoutInfo.getScrollDirection());
-        }
+        maybeInitRangeOrRemeasureForMutation(position + i, holder);
       }
     }
 
