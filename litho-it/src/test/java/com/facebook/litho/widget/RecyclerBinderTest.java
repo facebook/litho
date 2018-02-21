@@ -1241,30 +1241,7 @@ public class RecyclerBinderTest {
   }
 
   @Test(expected = IllegalStateException.class)
-  public void testCustomViewTypeEnabledDuplicateViewTypeProvided() {
-    final RecyclerBinder recyclerBinder =
-        mRecyclerBinderBuilder.enableCustomViewType(2).build(mComponentContext);
-
-    recyclerBinder.insertItemAt(
-        0, ComponentRenderInfo.create().component(mock(Component.class)).build());
-    recyclerBinder.insertItemAt(
-        1,
-        ViewRenderInfo.create()
-            .viewBinder(new SimpleViewBinder())
-            .viewCreator(VIEW_CREATOR_1)
-            .customViewType(10)
-            .build());
-    recyclerBinder.insertItemAt(
-        2,
-        ViewRenderInfo.create()
-            .viewBinder(new SimpleViewBinder())
-            .viewCreator(VIEW_CREATOR_2)
-            .customViewType(10)
-            .build());
-  }
-
-  @Test(expected = IllegalStateException.class)
-  public void testCustomViewTypeEnabledDuplicateViewTypeProvided2() {
+  public void testCustomViewTypeEnabledComponentViewTypeSameAsCustomViewType() {
     final RecyclerBinder recyclerBinder =
         mRecyclerBinderBuilder.enableCustomViewType(2).build(mComponentContext);
 
