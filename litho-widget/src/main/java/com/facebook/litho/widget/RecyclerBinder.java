@@ -627,7 +627,8 @@ public class RecyclerBinder
       mInternalAdapter.notifyItemChanged(position);
     }
 
-    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+    maybePostComputeRange();
+
     mViewportManager.setDataChangedIsVisible(mViewportManager.isUpdateInVisibleRange(position, 1));
   }
 
@@ -669,7 +670,7 @@ public class RecyclerBinder
       }
     }
 
-    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+    maybePostComputeRange();
 
     mViewportManager.setDataChangedIsVisible(
         mViewportManager.isUpdateInVisibleRange(position, renderInfos.size()));
@@ -701,7 +702,7 @@ public class RecyclerBinder
     }
     mInternalAdapter.notifyItemMoved(fromPosition, toPosition);
 
-    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+    maybePostComputeRange();
 
     mViewportManager.setDataChangedIsVisible(
         mViewportManager.isMoveInVisibleRange(fromPosition, toPosition, mRangeSize));
@@ -723,7 +724,8 @@ public class RecyclerBinder
     mInternalAdapter.notifyItemRemoved(position);
 
     holder.release();
-    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+
+    maybePostComputeRange();
 
     mViewportManager.setDataChangedIsVisible(mViewportManager.isRemoveInVisibleRange(position, 1));
   }
@@ -745,7 +747,7 @@ public class RecyclerBinder
     }
     mInternalAdapter.notifyItemRangeRemoved(position, count);
 
-    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+    maybePostComputeRange();
 
     mViewportManager.setDataChangedIsVisible(
         mViewportManager.isRemoveInVisibleRange(position, count));
