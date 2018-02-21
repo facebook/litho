@@ -468,11 +468,18 @@ public class RecyclerBinderTest {
 
     int rangeTotal = RANGE_SIZE + (int) (RANGE_SIZE * RANGE_RATIO);
 
-    for (int i = 0; i < RANGE_SIZE; i++) {
+    // The first component is used to calculate the range
+    TestComponentTreeHolder firstHolder =
+        mHoldersForComponents.get(components.get(0).getComponent());
+    assertThat(firstHolder.isTreeValid()).isTrue();
+    assertThat(firstHolder.mLayoutSyncCalled).isTrue();
+
+    for (int i = 1; i < RANGE_SIZE; i++) {
       componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
 
       assertThat(componentTreeHolder.isTreeValid()).isTrue();
-      assertThat(componentTreeHolder.mLayoutSyncCalled).isTrue();
+      assertThat(componentTreeHolder.mLayoutAsyncCalled).isTrue();
+      assertThat(componentTreeHolder.mLayoutSyncCalled).isFalse();
     }
 
     for (int i = RANGE_SIZE; i <= rangeTotal; i++) {
@@ -773,8 +780,8 @@ public class RecyclerBinderTest {
         mHoldersForComponents.get(components.get(99).getComponent());
 
     assertThat(movedHolder.isTreeValid()).isTrue();
-    assertThat(movedHolder.mLayoutAsyncCalled).isFalse();
-    assertThat(movedHolder.mLayoutSyncCalled).isTrue();
+    assertThat(movedHolder.mLayoutAsyncCalled).isTrue();
+    assertThat(movedHolder.mLayoutSyncCalled).isFalse();
     assertThat(movedHolder.mDidAcquireStateHandler).isFalse();
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
@@ -850,8 +857,8 @@ public class RecyclerBinderTest {
         mHoldersForComponents.get(newRenderInfo.getComponent());
 
     assertThat(holder.isTreeValid()).isTrue();
-    assertThat(holder.mLayoutSyncCalled).isTrue();
-    assertThat(holder.mLayoutAsyncCalled).isFalse();
+    assertThat(holder.mLayoutSyncCalled).isFalse();
+    assertThat(holder.mLayoutAsyncCalled).isTrue();
     assertThat(holder.mDidAcquireStateHandler).isFalse();
 
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));

@@ -492,7 +492,6 @@ public class RecyclerBinder
     assertNoInsertOperationIfCircular();
 
     final ComponentTreeHolder holder = createComponentTreeHolder(renderInfo);
-    final boolean computeLayout;
     final int childrenWidthSpec, childrenHeightSpec;
     synchronized (this) {
       mComponentTreeHolders.add(position, holder);
@@ -511,24 +510,12 @@ public class RecyclerBinder
               childrenWidthSpec,
               childrenHeightSpec,
               mLayoutInfo.getScrollDirection());
-
-          computeLayout = false;
         } else if (mRequiresRemeasure.get()) {
           requestRemeasure();
-          computeLayout = false;
-        } else {
-          final int firstVisiblePosition = Math.max(mCurrentFirstVisiblePosition, 0);
-          computeLayout = position >= firstVisiblePosition &&
-              position < firstVisiblePosition + mRange.estimatedViewportCount;
         }
-      } else {
-        computeLayout = false;
       }
     }
 
-    if (computeLayout) {
-      holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
-    }
     mInternalAdapter.notifyItemInserted(position);
 
     maybePostComputeRange();
@@ -614,12 +601,8 @@ public class RecyclerBinder
 
     final ComponentTreeHolder holder;
     final boolean renderInfoWasView;
-    final boolean shouldComputeLayout;
-    final int childrenWidthSpec, childrenHeightSpec;
     synchronized (this) {
       holder = mComponentTreeHolders.get(position);
-      shouldComputeLayout = mRange != null && position >= mCurrentFirstVisiblePosition &&
-          position < mCurrentFirstVisiblePosition + mRange.estimatedViewportCount;
       renderInfoWasView = holder.getRenderInfo().rendersView();
 
       mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
@@ -636,21 +619,14 @@ public class RecyclerBinder
             getActualChildrenHeightSpec(holder),
             mLayoutInfo.getScrollDirection());
       }
-
-      childrenWidthSpec = getActualChildrenWidthSpec(holder);
-      childrenHeightSpec = getActualChildrenHeightSpec(holder);
     }
 
     // If this item is rendered with a view (or was rendered with a view before now) we need to
     // notify the RecyclerView's adapter that something changed.
-    final boolean doNotifyItemChanged = renderInfoWasView || renderInfo.rendersView();
-    if (doNotifyItemChanged) {
-      if (shouldComputeLayout) {
-        holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
-      }
-
+    if (renderInfoWasView || renderInfo.rendersView()) {
       mInternalAdapter.notifyItemChanged(position);
     }
+
     computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
     mViewportManager.setDataChangedIsVisible(mViewportManager.isUpdateInVisibleRange(position, 1));
   }
@@ -708,8 +684,7 @@ public class RecyclerBinder
     ThreadUtils.assertMainThread();
 
     final ComponentTreeHolder holder;
-    final boolean isNewPositionInRange, isNewPositionInVisibleRange;
-    final int childrenWidthSpec, childrenHeightSpec;
+    final boolean isNewPositionInRange;
     final int mRangeSize = mRange != null ? mRange.estimatedViewportCount : -1;
     synchronized (this) {
       holder = mComponentTreeHolders.remove(fromPosition);
@@ -718,20 +693,11 @@ public class RecyclerBinder
       isNewPositionInRange = mRangeSize > 0 &&
           toPosition >= mCurrentFirstVisiblePosition - (mRangeSize * mRangeRatio) &&
           toPosition <= mCurrentFirstVisiblePosition + mRangeSize + (mRangeSize * mRangeRatio);
-
-      isNewPositionInVisibleRange = mRangeSize > 0 &&
-          toPosition >= mCurrentFirstVisiblePosition &&
-          toPosition <= mCurrentFirstVisiblePosition + mRangeSize;
-
-      childrenWidthSpec = getActualChildrenWidthSpec(holder);
-      childrenHeightSpec = getActualChildrenHeightSpec(holder);
     }
     final boolean isTreeValid = holder.isTreeValid();
 
     if (isTreeValid && !isNewPositionInRange) {
       holder.acquireStateHandlerAndReleaseTree();
-    } else if (isNewPositionInVisibleRange && !isTreeValid) {
-      holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
     }
     mInternalAdapter.notifyItemMoved(fromPosition, toPosition);
 
