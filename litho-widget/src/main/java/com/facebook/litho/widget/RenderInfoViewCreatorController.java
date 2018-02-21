@@ -6,6 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
+
 package com.facebook.litho.widget;
 
 import android.support.annotation.UiThread;
@@ -67,10 +68,8 @@ public class RenderInfoViewCreatorController {
     } else if (!mCustomViewTypeEnabled && renderInfo.hasCustomViewType()) {
       throw new IllegalStateException(
           "You must enable custom viewTypes to provide customViewType in ViewRenderInfo.");
-    } else if (mCustomViewTypeEnabled
-        && (mViewTypeToViewCreator.indexOfKey(renderInfo.getViewType()) >= 0
-            || mComponentViewType == renderInfo.getViewType())) {
-      throw new IllegalStateException("Duplicate ViewType detected: " + renderInfo.getViewType());
+    } else if (mCustomViewTypeEnabled && mComponentViewType == renderInfo.getViewType()) {
+      throw new IllegalStateException("CustomViewType cannot be the same as ComponentViewType.");
     }
   }
 
