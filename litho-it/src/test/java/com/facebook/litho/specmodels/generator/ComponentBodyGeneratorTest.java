@@ -14,6 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.facebook.litho.Component;
+import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
@@ -29,11 +30,17 @@ import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.StateParamModel;
+import com.facebook.litho.specmodels.model.TypeSpec;
+import com.facebook.litho.specmodels.model.TypeSpec.DeclaredTypeSpec;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
 import com.squareup.javapoet.ClassName;
+import java.util.List;
+import java.util.Set;
 import javax.annotation.processing.Messager;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import org.junit.Before;
@@ -61,7 +68,11 @@ public class ComponentBodyGeneratorTest {
         @State int arg1,
         @Param Object arg2,
         @TreeProp long arg3,
-        @Prop Component arg4) {}
+        @Prop Component arg4,
+        @Prop List<Component> arg5,
+        @Prop List<String> arg6,
+        @TreeProp Set<List<Row>> arg7,
+        @TreeProp Set<Integer> arg8) {}
 
     @OnEvent(Object.class)
     public void testEventMethod(
@@ -120,7 +131,7 @@ public class ComponentBodyGeneratorTest {
   @Test
   public void testGenerateProps() {
     TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateProps(mSpecModelDI);
-    assertThat(dataHolder.getFieldSpecs()).hasSize(2);
+    assertThat(dataHolder.getFieldSpecs()).hasSize(4);
     assertThat(dataHolder.getFieldSpecs().get(0).toString())
         .isEqualTo(
             "@com.facebook.litho.annotations.Prop(\n" +
@@ -140,7 +151,7 @@ public class ComponentBodyGeneratorTest {
   @Test
   public void testGenerateTreeProps() {
     TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateTreeProps(mSpecModelDI);
-    assertThat(dataHolder.getFieldSpecs()).hasSize(1);
+    assertThat(dataHolder.getFieldSpecs()).hasSize(3);
     assertThat(dataHolder.getFieldSpecs().get(0).toString()).isEqualTo("long arg3;\n");
   }
 
@@ -199,10 +210,51 @@ public class ComponentBodyGeneratorTest {
                 + "  if (arg4 != null ? !arg4.isEquivalentTo(testRef.arg4) : testRef.arg4 != null) {\n"
                 + "    return false;\n"
                 + "  }\n"
+                + "  if (arg5 != null) {\n"
+                + "    if (testRef.arg5 == null || arg5.size() != testRef.arg5.size()) {\n"
+                + "      return false;\n"
+                + "    }\n"
+                + "    java.util.Iterator<com.facebook.litho.Component> _e1_1 = arg5.iterator();\n"
+                + "    java.util.Iterator<com.facebook.litho.Component> _e2_1 = testRef.arg5.iterator();\n"
+                + "    while (_e1_1.hasNext() && _e2_1.hasNext()) {\n"
+                + "      if (!_e1_1.next().isEquivalentTo(_e2_1.next())) {\n"
+                + "        return false;\n"
+                + "      }\n"
+                + "    }\n"
+                + "  } else if (testRef.arg5 != null) {\n"
+                + "    return false;\n"
+                + "  }\n"
+                + "  if (arg6 != null ? !arg6.equals(testRef.arg6) : testRef.arg6 != null) {\n"
+                + "    return false;\n"
+                + "  }\n"
                 + "  if (mStateContainer.arg1 != testRef.mStateContainer.arg1) {\n"
                 + "    return false;\n"
                 + "  }\n"
                 + "  if (arg3 != testRef.arg3) {\n"
+                + "    return false;\n"
+                + "  }\n"
+                + "  if (arg7 != null) {\n"
+                + "    if (testRef.arg7 == null || arg7.size() != testRef.arg7.size()) {\n"
+                + "      return false;\n"
+                + "    }\n"
+                + "    java.util.Iterator<java.util.List<com.facebook.litho.Row>> _e1_2 = arg7.iterator();\n"
+                + "    java.util.Iterator<java.util.List<com.facebook.litho.Row>> _e2_2 = testRef.arg7.iterator();\n"
+                + "    while (_e1_2.hasNext() && _e2_2.hasNext()) {\n"
+                + "      if (_e1_2.next().size() != _e2_2.next().size()) {\n"
+                + "        return false;\n"
+                + "      }\n"
+                + "      java.util.Iterator<com.facebook.litho.Row> _e1_1 = _e1_2.next().iterator();\n"
+                + "      java.util.Iterator<com.facebook.litho.Row> _e2_1 = _e2_2.next().iterator();\n"
+                + "      while (_e1_1.hasNext() && _e2_1.hasNext()) {\n"
+                + "        if (!_e1_1.next().isEquivalentTo(_e2_1.next())) {\n"
+                + "          return false;\n"
+                + "        }\n"
+                + "      }\n"
+                + "    }\n"
+                + "  } else if (testRef.arg7 != null) {\n"
+                + "    return false;\n"
+                + "  }\n"
+                + "  if (arg8 != null ? !arg8.equals(testRef.arg8) : testRef.arg8 != null) {\n"
                 + "    return false;\n"
                 + "  }\n"
                 + "  return true;\n"
@@ -235,5 +287,34 @@ public class ComponentBodyGeneratorTest {
     when(propModel.getName()).thenReturn("propParam");
     assertThat(ComponentBodyGenerator.getImplAccessor(mSpecModelDI, propModel))
         .isEqualTo("propParam");
+  }
+
+  @Test
+  public void testCalculateLevelOfComponentInCollections() {
+    Elements elements = mCompilationRule.getElements();
+    TypeElement typeElement = elements.getTypeElement(CollectionObject.class.getCanonicalName());
+    List<? extends Element> fields = typeElement.getEnclosedElements();
+    TypeSpec arg0 = SpecModelUtils.generateTypeSpec(fields.get(0).asType());
+    TypeSpec arg1 = SpecModelUtils.generateTypeSpec(fields.get(1).asType());
+    TypeSpec arg2 = SpecModelUtils.generateTypeSpec(fields.get(2).asType());
+
+    assertThat(arg0.getClass()).isEqualTo(DeclaredTypeSpec.class);
+    assertThat(arg1.getClass()).isEqualTo(DeclaredTypeSpec.class);
+    assertThat(arg2.getClass()).isEqualTo(DeclaredTypeSpec.class);
+    assertThat(
+            ComponentBodyGenerator.calculateLevelOfComponentInCollections((DeclaredTypeSpec) arg0))
+        .isEqualTo(1);
+    assertThat(
+            ComponentBodyGenerator.calculateLevelOfComponentInCollections((DeclaredTypeSpec) arg1))
+        .isEqualTo(2);
+    assertThat(
+            ComponentBodyGenerator.calculateLevelOfComponentInCollections((DeclaredTypeSpec) arg2))
+        .isEqualTo(0);
+  }
+
+  private static class CollectionObject {
+    List<Component> arg0;
+    List<Set<Component>> arg1;
+    Set<List<List<Integer>>> arg2;
   }
 }

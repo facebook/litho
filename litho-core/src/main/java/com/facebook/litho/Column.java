@@ -121,7 +121,16 @@ public final class Column extends Component {
     if (this.getId() == column.getId()) {
       return true;
     }
-    if (children != null ? !children.equals(column.children) : column.children != null) {
+    if (children != null) {
+      if (column.children == null || children.size() != column.children.size()) {
+        return false;
+      }
+      for (int i = 0, size = children.size(); i < size; i++) {
+        if (!children.get(i).isEquivalentTo(column.children.get(i))) {
+          return false;
+        }
+      }
+    } else if (column.children != null) {
       return false;
     }
     if (alignItems != null ? !alignItems.equals(column.alignItems) : column.alignItems != null) {

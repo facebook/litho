@@ -40,6 +40,7 @@ public class MethodParamModelFactoryTest {
             ClassNames.DIFF,
             ClassNames.DIFF.packageName() + "." + ClassNames.DIFF.simpleName(),
             () -> new TypeSpec(TypeName.OBJECT),
+            ImmutableList.of(),
             ImmutableList.of(new TypeSpec(TypeName.INT.box())));
   }
 

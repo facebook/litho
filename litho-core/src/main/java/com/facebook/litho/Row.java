@@ -121,7 +121,16 @@ public final class Row extends Component {
     if (this.getId() == row.getId()) {
       return true;
     }
-    if (children != null ? !children.equals(row.children) : row.children != null) {
+    if (children != null) {
+      if (row.children == null || children.size() != row.children.size()) {
+        return false;
+      }
+      for (int i = 0, size = children.size(); i < size; i++) {
+        if (!children.get(i).isEquivalentTo(row.children.get(i))) {
+          return false;
+        }
+      }
+    } else if (row.children != null) {
       return false;
     }
     if (alignItems != null ? !alignItems.equals(row.alignItems) : row.alignItems != null) {

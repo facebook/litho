@@ -162,7 +162,8 @@ public class SpecModelUtils {
 
   /**
    * This method will "expand" the typeArguments of the given type, only if the type is a {@link
-   * ClassNames#DIFF}. Otherwise the typeArguments won't be traversed and recorded.
+   * ClassNames#DIFF} or a {@link java.util.Collection}. Otherwise the typeArguments won't be
+   * traversed and recorded.
    */
   public static TypeSpec generateTypeSpec(TypeMirror type) {
     final TypeSpec defaultValue =
@@ -183,16 +184,34 @@ public class SpecModelUtils {
                           : generateTypeSpec(mirror);
                     });
 
+            final List<? extends TypeMirror> mirrors = typeElement.getInterfaces();
+            final List<TypeSpec> superinterfaces =
+                mirrors != null && !mirrors.isEmpty()
+                    ? mirrors
+                        .stream()
+                        .filter(mirror -> mirror.getKind() == TypeKind.DECLARED)
+                        .map(SpecModelUtils::generateTypeSpec)
+                        .collect(Collectors.toList())
+                    : Collections.emptyList();
+
             final List<TypeSpec> typeArguments =
                 ClassName.bestGuess(qualifiedName).equals(ClassNames.DIFF)
-                    ? t.getTypeArguments()
+                        || superinterfaces
+                            .stream()
+                            .anyMatch(typeSpec -> typeSpec.isSubInterface(ClassNames.COLLECTION))
+                    ? ((DeclaredType) type)
+                        .getTypeArguments()
                         .stream()
                         .map(SpecModelUtils::generateTypeSpec)
                         .collect(Collectors.toList())
                     : Collections.emptyList();
 
             return new TypeSpec.DeclaredTypeSpec(
-                safelyGetTypeName(t), qualifiedName, superclass, copyOf(typeArguments));
+                safelyGetTypeName(t),
+                qualifiedName,
+                superclass,
+                copyOf(superinterfaces),
+                copyOf(typeArguments));
           }
         },
         null);

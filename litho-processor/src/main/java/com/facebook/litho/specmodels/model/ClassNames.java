@@ -41,6 +41,7 @@ public interface ClassNames {
   ClassName PX = ClassName.bestGuess("android.support.annotation.Px");
 
   ClassName LIST = ClassName.get(List.class);
+  ClassName COLLECTION = ClassName.bestGuess("java.util.Collection");
 
   ClassName SYNCHRONIZED_POOL =
       ClassName.bestGuess("android.support.v4.util.Pools.SynchronizedPool");

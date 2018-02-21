@@ -33,6 +33,7 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
+import com.facebook.litho.specmodels.model.TypeSpec.DeclaredTypeSpec;
 import com.facebook.litho.specmodels.model.UpdateStateMethod;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ArrayTypeName;
@@ -47,8 +48,10 @@ import com.squareup.javapoet.TypeSpec;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.annotation.Nullable;
@@ -600,6 +603,43 @@ public class ComponentBodyGenerator {
               implAccessor)
           .addStatement("return false")
           .endControlFlow();
+    } else if (field.getTypeSpec().isSubInterface(ClassNames.COLLECTION)) {
+      final int level =
+          calculateLevelOfComponentInCollections((DeclaredTypeSpec) field.getTypeSpec());
+      if (level > 0) {
+        codeBlock
+            .beginControlFlow("if ($L != null)", implAccessor)
+            .beginControlFlow(
+                "if ($L.$L == null || $L.size() != $L.$L.size())",
+                implInstanceName,
+                implAccessor,
+                implAccessor,
+                implInstanceName,
+                implAccessor)
+            .addStatement("return false")
+            .endControlFlow()
+            .add(
+                getComponentCollectionCompareStatement(
+                    level,
+                    (DeclaredTypeSpec) field.getTypeSpec(),
+                    implAccessor,
+                    implInstanceName + "." + implAccessor))
+            .nextControlFlow("else if ($L.$L != null)", implInstanceName, implAccessor)
+            .addStatement("return false")
+            .endControlFlow();
+      } else {
+        codeBlock
+            .beginControlFlow(
+                "if ($L != null ? !$L.equals($L.$L) : $L.$L != null)",
+                implAccessor,
+                implAccessor,
+                implInstanceName,
+                implAccessor,
+                implInstanceName,
+                implAccessor)
+            .addStatement("return false")
+            .endControlFlow();
+      }
     } else {
       final String equalMethodName =
           shouldUseIsEquivalentTo(specModel, field) ? "isEquivalentTo" : "equals";
@@ -664,5 +704,65 @@ public class ComponentBodyGenerator {
     }
 
     return injectedParams;
+  }
+
+  /**
+   * Calculate the level of the target component. The level here means how many bracket pairs are
+   * needed to break until reaching the component type. For example, the level of {@literal
+   * List<Component>} is 1, and the level of {@literal List<List<Component>>} is 2.
+   *
+   * @return the level of the target component, or 0 if the target isn't a component.
+   */
+  static int calculateLevelOfComponentInCollections(DeclaredTypeSpec typeSpec) {
+    int level = 0;
+    DeclaredTypeSpec declaredTypeSpec = typeSpec;
+    while (declaredTypeSpec.isSubInterface(ClassNames.COLLECTION)) {
+      Optional<DeclaredTypeSpec> result =
+          declaredTypeSpec
+              .getTypeArguments()
+              .stream()
+              .filter(it -> it != null && it instanceof DeclaredTypeSpec)
+              .findFirst()
+              .map(it -> (DeclaredTypeSpec) it);
+      if (!result.isPresent()) {
+        return 0;
+      }
+      declaredTypeSpec = result.get();
+      level++;
+    }
+    return declaredTypeSpec.isSubType(ClassNames.COMPONENT) ? level : 0;
+  }
+
+  private static CodeBlock getComponentCollectionCompareStatement(
+      int level, DeclaredTypeSpec declaredTypeSpec, String it, String ref) {
+    final TypeName argumentTypeName = declaredTypeSpec.getTypeArguments().get(0).getTypeName();
+    CodeBlock.Builder builder =
+        CodeBlock.builder()
+            .addStatement(
+                "$T<$L> _e1_$L = $L.iterator()", Iterator.class, argumentTypeName, level, it)
+            .addStatement(
+                "$T<$L> _e2_$L = $L.iterator()", Iterator.class, argumentTypeName, level, ref)
+            .beginControlFlow("while (_e1_$L.hasNext() && _e2_$L.hasNext())", level, level);
+
+    if (level == 1) {
+      builder.add(
+          CodeBlock.builder()
+              .beginControlFlow("if (!_e1_$L.next().isEquivalentTo(_e2_$L.next()))", level, level)
+              .addStatement("return false")
+              .endControlFlow()
+              .build());
+    } else {
+      builder
+          .beginControlFlow("if (_e1_$L.next().size() != _e2_$L.next().size())", level, level)
+          .addStatement("return false")
+          .endControlFlow()
+          .add(
+              getComponentCollectionCompareStatement(
+                  level - 1,
+                  (DeclaredTypeSpec) declaredTypeSpec.getTypeArguments().get(0),
+                  "_e1_" + level + ".next()",
+                  "_e2_" + level + ".next()"));
+    }
+    return builder.endControlFlow().build();
   }
 }
