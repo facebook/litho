@@ -18,8 +18,7 @@ import java.lang.annotation.RetentionPolicy;
  * screen reader, and this list should be kept up to date with their implementation.
  *
  * @see <a
- *     href="https://github.com/google/talkback/blob/master/src/main/java/com/android/utils/Role.java">
- *     https://github.com/google/talkback/blob/master/src/main/java/com/android/utils/Role.java </a>
+ *     href="https://github.com/google/talkback/blob/master/utils/src/main/java/Role.java">https://github.com/google/talkback/blob/master/utils/src/main/java/Role.java</a>
  */
 public class AccessibilityRole {
 
@@ -43,6 +42,21 @@ public class AccessibilityRole {
     TOGGLE_BUTTON,
     VIEW_GROUP,
     WEB_VIEW,
+    CHECKED_TEXT_VIEW,
+    PROGRESS_BAR,
+    ACTION_BAR_TAB,
+    DRAWER_LAYOUT,
+    SLIDING_DRAWER,
+    ICON_MENU,
+    TOAST,
+    DATE_PICKER_DIALOG,
+    TIME_PICKER_DIALOG,
+    DATE_PICKER,
+    TIME_PICKER,
+    NUMBER_PICKER,
+    SCROLL_VIEW,
+    HORIZONTAL_SCROLL_VIEW,
+    KEYBOARD_KEY,
   })
   public @interface AccessibilityRoleType {}
 
@@ -62,4 +76,19 @@ public class AccessibilityRole {
   public static final String TOGGLE_BUTTON = "android.widget.ToggleButton";
   public static final String VIEW_GROUP = "android.view.ViewGroup";
   public static final String WEB_VIEW = "android.webkit.WebView";
+  public static final String CHECKED_TEXT_VIEW = "android.widget.CheckedTextView";
+  public static final String PROGRESS_BAR = "android.widget.ProgressBar";
+  public static final String ACTION_BAR_TAB = "android.app.ActionBar$Tab";
+  public static final String DRAWER_LAYOUT = "android.support.v4.widget.DrawerLayout";
+  public static final String SLIDING_DRAWER = "android.widget.SlidingDrawer";
+  public static final String ICON_MENU = "com.android.internal.view.menu.IconMenuView";
+  public static final String TOAST = "android.widget.Toast$TN";
+  public static final String DATE_PICKER_DIALOG = "android.app.DatePickerDialog";
+  public static final String TIME_PICKER_DIALOG = "android.app.TimePickerDialog";
+  public static final String DATE_PICKER = "android.widget.DatePicker";
+  public static final String TIME_PICKER = "android.widget.TimePicker";
+  public static final String NUMBER_PICKER = "android.widget.NumberPicker";
+  public static final String SCROLL_VIEW = "android.widget.ScrollView";
+  public static final String HORIZONTAL_SCROLL_VIEW = "android.widget.HorizontalScrollView";
+  public static final String KEYBOARD_KEY = "android.inputmethodservice.Keyboard$Key";
 }
