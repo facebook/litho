@@ -32,7 +32,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.MountItem.FLAG_DISABLE_TOUCHABLE;
 import static com.facebook.litho.MountItem.FLAG_DUPLICATE_PARENT_STATE;
-import static com.facebook.litho.MountItem.FLAG_MATCH_HOST_BOUNDS_TRANSITIONS;
+import static com.facebook.litho.MountItem.FLAG_MATCH_HOST_BOUNDS;
 import static com.facebook.litho.MountState.ROOT_HOST_ID;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
@@ -193,7 +193,6 @@ class LayoutState {
   private int mCurrentHostOutputPosition = -1;
 
   private boolean mShouldDuplicateParentState = true;
-  private boolean mIsTransitionKeySet = false;
   private @NodeInfo.EnabledState int mParentEnabledState = ENABLED_UNSET;
 
   private boolean mShouldGenerateDiffTree = false;
@@ -230,7 +229,7 @@ class LayoutState {
    */
   @Nullable
   private static LayoutOutput createGenericLayoutOutput(
-      InternalNode node, LayoutState layoutState, boolean matchHostBoundsTransitions) {
+      InternalNode node, LayoutState layoutState, boolean matchHostBounds) {
     final Component component = node.getRootComponent();
 
     // Skip empty nodes and layout specs because they don't mount anything.
@@ -245,7 +244,7 @@ class LayoutState {
         true /* useNodePadding */,
         node.getImportantForAccessibility(),
         layoutState.mShouldDuplicateParentState,
-        matchHostBoundsTransitions);
+        matchHostBounds);
   }
 
   private static LayoutOutput createHostLayoutOutput(LayoutState layoutState, InternalNode node) {
@@ -259,8 +258,9 @@ class LayoutState {
             node.isDuplicateParentStateEnabled(),
             false);
 
-    if (layoutState.mIsTransitionKeySet) {
-      hostOutput.setTransitionKey(node.getTransitionKey());
+    final String transitionKey = node.getTransitionKey();
+    if (!TextUtils.isEmpty(transitionKey)) {
+      hostOutput.setTransitionKey(transitionKey);
     }
 
     ViewNodeInfo viewNodeInfo = hostOutput.getViewNodeInfo();
@@ -270,10 +270,7 @@ class LayoutState {
   }
 
   private static LayoutOutput createDrawableLayoutOutput(
-      Component component,
-      LayoutState layoutState,
-      InternalNode node,
-      boolean matchHostBoundsTransitions) {
+      Component component, LayoutState layoutState, InternalNode node, boolean matchHostBounds) {
     return createLayoutOutput(
         component,
         layoutState,
@@ -281,7 +278,7 @@ class LayoutState {
         false /* useNodePadding */,
         IMPORTANT_FOR_ACCESSIBILITY_NO,
         layoutState.mShouldDuplicateParentState,
-        matchHostBoundsTransitions);
+        matchHostBounds);
   }
 
   private static LayoutOutput createLayoutOutput(
@@ -370,7 +367,7 @@ class LayoutState {
     }
 
     if (matchHostBoundsTransitions) {
-      flags |= FLAG_MATCH_HOST_BOUNDS_TRANSITIONS;
+      flags |= FLAG_MATCH_HOST_BOUNDS;
     }
 
     layoutOutput.setFlags(flags);
@@ -585,9 +582,6 @@ class LayoutState {
     final boolean shouldUseCachedOutputs =
         isMountSpec(component) && currentDiffNode != null;
     final boolean isCachedOutputUpdated = shouldUseCachedOutputs && node.areCachedMeasuresValid();
-    final boolean isTransitionKeySet = layoutState.mIsTransitionKeySet;
-
-    layoutState.mIsTransitionKeySet = false;
 
     final DiffNode diffNode;
     if (shouldGenerateDiffTree) {
@@ -613,8 +607,6 @@ class LayoutState {
 
     // 1. Insert a host LayoutOutput if we have some interactive content to be attached to.
     if (needsHostView) {
-      layoutState.mIsTransitionKeySet = !TextUtils.isEmpty(node.getTransitionKey());
-
       hostLayoutPosition = addHostLayoutOutput(node, layoutState, diffNode);
 
       layoutState.mCurrentLevel++;
@@ -852,7 +844,6 @@ class LayoutState {
       layoutState.mCurrentLevel--;
     }
     layoutState.mShouldDuplicateParentState = shouldDuplicateParentState;
-    layoutState.mIsTransitionKeySet = isTransitionKeySet;
   }
 
   Map<String, Rect> getComponentKeyToBounds() {
@@ -1945,7 +1936,6 @@ class LayoutState {
       mComponentTreeId = -1;
 
       mShouldDuplicateParentState = true;
-      mIsTransitionKeySet = false;
       mClipChildren = true;
 
       for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {

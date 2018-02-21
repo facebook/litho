@@ -18,7 +18,7 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static android.view.View.VISIBLE;
 import static com.facebook.litho.MountItem.FLAG_DUPLICATE_PARENT_STATE;
-import static com.facebook.litho.MountItem.FLAG_MATCH_HOST_BOUNDS_TRANSITIONS;
+import static com.facebook.litho.MountItem.FLAG_MATCH_HOST_BOUNDS;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -779,13 +779,13 @@ public class ComponentHostTest {
   @Test
   public void testGetLinkedDrawableForAnimation() {
     Drawable d1 = new ColorDrawable();
-    MountItem mountItem1 = mount(0, d1, FLAG_MATCH_HOST_BOUNDS_TRANSITIONS);
+    MountItem mountItem1 = mount(0, d1, FLAG_MATCH_HOST_BOUNDS);
 
     Drawable d2 = new ColorDrawable();
     MountItem mountItem2 = mount(1, d2);
 
     Drawable d3 = new ColorDrawable();
-    MountItem mountItem3 = mount(2, d3, FLAG_MATCH_HOST_BOUNDS_TRANSITIONS);
+    MountItem mountItem3 = mount(2, d3, FLAG_MATCH_HOST_BOUNDS);
 
     List<Drawable> drawables = mHost.getLinkedDrawablesForAnimation();
     assertThat(drawables).hasSize(2);
