@@ -127,7 +127,7 @@ public class RecyclerBinder
           resetMeasuredSize(width);
         }
 
-        requestUpdate();
+        requestRemeasure();
       }
     };
   }
@@ -514,7 +514,7 @@ public class RecyclerBinder
 
           computeLayout = false;
         } else if (mRequiresRemeasure.get()) {
-          requestUpdate();
+          requestRemeasure();
           computeLayout = false;
         } else {
           final int firstVisiblePosition = Math.max(mCurrentFirstVisiblePosition, 0);
@@ -538,7 +538,7 @@ public class RecyclerBinder
             position, 1, mRange != null ? mRange.estimatedViewportCount : -1));
   }
 
-  private void requestUpdate() {
+  private void requestRemeasure() {
     if (mMountedView != null) {
       mMainThreadHandler.removeCallbacks(mRemeasureRunnable);
       mMountedView.removeCallbacks(mRemeasureRunnable);
@@ -581,7 +581,7 @@ public class RecyclerBinder
                 getActualChildrenHeightSpec(holder),
                 mLayoutInfo.getScrollDirection());
           } else if (mRequiresRemeasure.get()) {
-            requestUpdate();
+            requestRemeasure();
           }
         }
       }
