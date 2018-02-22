@@ -686,9 +686,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     // This needs to happen after updating the bounds so that the right translateX/Y are applied to
     // the mount content
-    if (shouldUpdate) {
-      maybeUpdateAnimatingMountContent(currentMountItem, currentMountItem.getContent());
-    }
+    maybeUpdateAnimatingMountContent(currentMountItem, currentMountItem.getContent());
 
     maybeInvalidateAccessibilityState(currentMountItem);
     if (currentMountItem.getContent() instanceof Drawable) {
@@ -2044,10 +2042,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       throw new RuntimeException("Item at index=" + index +" does not exist");
     }
 
-    if (!(item.getContent() instanceof ComponentHost)) {
-      throw new RuntimeException("Only host components can be used as disappearing items");
-    }
-
     if (mDisappearingMountItems.put(key, item) != null) {
       throw new RuntimeException("Disappearing the same key twice!");
     }
@@ -2059,18 +2053,22 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void endUnmountDisappearingItem(MountItem item) {
-    final ComponentHost content = (ComponentHost) item.getContent();
+    if (item.getContent() instanceof ComponentHost) {
+      final ComponentHost content = (ComponentHost) item.getContent();
 
-    // Unmount descendant items in reverse order.
-    for (int i = content.getMountItemCount() - 1; i >= 0; i--) {
-      final MountItem mountItem = content.getMountItemAt(i);
-      unmountDisappearingItemChild(mContext, mountItem);
+      // Unmount descendant items in reverse order.
+      for (int i = content.getMountItemCount() - 1; i >= 0; i--) {
+        final MountItem mountItem = content.getMountItemAt(i);
+        unmountDisappearingItemChild(mContext, mountItem);
+      }
+
+      if (content.getMountItemCount() > 0) {
+        throw new IllegalStateException(
+            "Recursively unmounting items from a ComponentHost, left"
+                + " some items behind maybe because not tracked by its MountState");
+      }
     }
 
-    if (content.getMountItemCount() > 0) {
-      throw new IllegalStateException("Recursively unmounting items from a ComponentHost, left" +
-          " some items behind maybe because not tracked by its MountState");
-    }
     final ComponentHost host = item.getHost();
     host.unmountDisappearingItem(item);
     unsetViewAttributes(item);

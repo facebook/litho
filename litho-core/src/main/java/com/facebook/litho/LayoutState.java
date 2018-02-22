@@ -17,6 +17,7 @@ import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUT
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static com.facebook.litho.Component.isHostSpec;
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
+import static com.facebook.litho.Component.isMountDrawableSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
@@ -229,7 +230,7 @@ class LayoutState {
    */
   @Nullable
   private static LayoutOutput createGenericLayoutOutput(
-      InternalNode node, LayoutState layoutState, boolean matchHostBounds) {
+      InternalNode node, LayoutState layoutState, boolean hasHostView) {
     final Component component = node.getRootComponent();
 
     // Skip empty nodes and layout specs because they don't mount anything.
@@ -244,7 +245,7 @@ class LayoutState {
         true /* useNodePadding */,
         node.getImportantForAccessibility(),
         layoutState.mShouldDuplicateParentState,
-        matchHostBounds);
+        hasHostView);
   }
 
   private static LayoutOutput createHostLayoutOutput(LayoutState layoutState, InternalNode node) {
@@ -258,11 +259,6 @@ class LayoutState {
             node.isDuplicateParentStateEnabled(),
             false);
 
-    final String transitionKey = node.getTransitionKey();
-    if (!TextUtils.isEmpty(transitionKey)) {
-      hostOutput.setTransitionKey(transitionKey);
-    }
-
     ViewNodeInfo viewNodeInfo = hostOutput.getViewNodeInfo();
     viewNodeInfo.setStateListAnimator(node.getStateListAnimator());
 
@@ -270,7 +266,7 @@ class LayoutState {
   }
 
   private static LayoutOutput createDrawableLayoutOutput(
-      Component component, LayoutState layoutState, InternalNode node, boolean matchHostBounds) {
+      Component component, LayoutState layoutState, InternalNode node, boolean hasHostView) {
     return createLayoutOutput(
         component,
         layoutState,
@@ -278,7 +274,7 @@ class LayoutState {
         false /* useNodePadding */,
         IMPORTANT_FOR_ACCESSIBILITY_NO,
         layoutState.mShouldDuplicateParentState,
-        matchHostBounds);
+        hasHostView);
   }
 
   private static LayoutOutput createLayoutOutput(
@@ -288,7 +284,7 @@ class LayoutState {
       boolean useNodePadding,
       int importantForAccessibility,
       boolean duplicateParentState,
-      boolean matchHostBoundsTransitions) {
+      boolean hasHostView) {
     final boolean isMountViewSpec = isMountViewSpec(component);
 
     final LayoutOutput layoutOutput = ComponentsPools.acquireLayoutOutput();
@@ -366,8 +362,14 @@ class LayoutState {
       flags |= FLAG_DUPLICATE_PARENT_STATE;
     }
 
-    if (matchHostBoundsTransitions) {
+    if (hasHostView) {
       flags |= FLAG_MATCH_HOST_BOUNDS;
+    } else {
+      // If there is a host view, the transition key will be set on the view's layout output
+      final String transitionKey = node.getTransitionKey();
+      if (!TextUtils.isEmpty(transitionKey)) {
+        layoutOutput.setTransitionKey(transitionKey);
+      }
     }
 
     layoutOutput.setFlags(flags);
@@ -604,7 +606,7 @@ class LayoutState {
     final int currentHostOutputPosition = layoutState.mCurrentHostOutputPosition;
 
     int hostLayoutPosition = -1;
-
+    
     // 1. Insert a host LayoutOutput if we have some interactive content to be attached to.
     if (needsHostView) {
       hostLayoutPosition = addHostLayoutOutput(node, layoutState, diffNode);
@@ -2096,7 +2098,10 @@ class LayoutState {
     if (!ComponentsConfiguration.doNotForceWrappingInViewForAnimation) {
       return true;
     }
-    return true;
+    return !isMountDrawableSpec(node.getRootComponent())
+        || node.getBackground() != null
+        || node.shouldDrawBorders()
+        || node.getForeground() != null;
   }
 
   /**

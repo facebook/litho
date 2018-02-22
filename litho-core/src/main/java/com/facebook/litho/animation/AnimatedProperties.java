@@ -17,6 +17,7 @@ import com.facebook.litho.ComponentHost;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * A convenience class for common View properties applicable to all subclasses of View.
@@ -101,14 +102,30 @@ public final class AnimatedProperties {
 
     @Override
     public void set(Object mountContent, float value) {
-      View mountView = assertIsView(mountContent, this);
-      float parentX = getPositionRelativeToLithoView((View) mountView.getParent(), true);
-      mountView.setX(value - parentX);
+      if (mountContent instanceof View) {
+        final View view = (View) mountContent;
+        float parentX = getPositionRelativeToLithoView((View) view.getParent(), true);
+        view.setX(value - parentX);
+      } else if (ComponentsConfiguration.doNotForceWrappingInViewForAnimation
+          && (mountContent instanceof Drawable)) {
+        final Drawable drawable = (Drawable) mountContent;
+        float parentX = getPositionRelativeToLithoView(getHostView(drawable), true);
+        BoundsHelper.applyXYToDrawableForAnimation(
+            drawable, (int) (value - parentX), drawable.getBounds().top);
+      } else {
+        throw new UnsupportedOperationException(
+            "Setting X on unsupported mount content: " + mountContent);
+      }
     }
 
     @Override
     public void reset(Object mountContent) {
-      assertIsView(mountContent, this).setTranslationX(0);
+      if (mountContent instanceof View) {
+        final View view = (View) mountContent;
+        view.setTranslationX(0);
+      } else if (mountContent instanceof Drawable) {
+        // No-op: x/y are always properly set for Drawables
+      }
     }
   }
 
@@ -130,14 +147,30 @@ public final class AnimatedProperties {
 
     @Override
     public void set(Object mountContent, float value) {
-      View mountView = assertIsView(mountContent, this);
-      float parentY = getPositionRelativeToLithoView((View) mountView.getParent(), false);
-      mountView.setY(value - parentY);
+      if (mountContent instanceof View) {
+        final View view = (View) mountContent;
+        float parentY = getPositionRelativeToLithoView((View) view.getParent(), false);
+        view.setY(value - parentY);
+      } else if (ComponentsConfiguration.doNotForceWrappingInViewForAnimation
+          && (mountContent instanceof Drawable)) {
+        final Drawable drawable = (Drawable) mountContent;
+        float parentY = getPositionRelativeToLithoView(getHostView(drawable), false);
+        BoundsHelper.applyXYToDrawableForAnimation(
+            drawable, drawable.getBounds().left, (int) (value - parentY));
+      } else {
+        throw new UnsupportedOperationException(
+            "Setting Y on unsupported mount content: " + mountContent);
+      }
     }
 
     @Override
     public void reset(Object mountContent) {
-      assertIsView(mountContent, this).setTranslationY(0);
+      if (mountContent instanceof View) {
+        final View view = (View) mountContent;
+        view.setTranslationY(0);
+      } else if (mountContent instanceof Drawable) {
+        // No-op: x/y are always properly set for Drawables
+      }
     }
   };
 
@@ -402,6 +435,21 @@ public final class AnimatedProperties {
         throw new RuntimeException("Expected parent to be View, was " + currentView.getParent());
       }
       currentView = (View) currentView.getParent();
+    }
+  }
+
+  @Nullable
+  private static View getHostView(Drawable drawable) {
+    Drawable.Callback callback;
+    while (true) {
+      callback = drawable.getCallback();
+      if (callback instanceof Drawable) {
+        drawable = (Drawable) callback;
+      } else if (callback instanceof View) {
+        return (View) callback;
+      } else {
+        return null;
+      }
     }
   }
 }

@@ -22,8 +22,8 @@ public class BoundsHelper {
    */
   public static void applyBoundsToView(
       View view, int left, int top, int right, int bottom, boolean force) {
-    int width = right - left;
-    int height = bottom - top;
+    final int width = right - left;
+    final int height = bottom - top;
 
     if (force || view.getMeasuredHeight() != height || view.getMeasuredWidth() != width) {
       view.measure(
@@ -41,12 +41,17 @@ public class BoundsHelper {
   }
 
   public static void applySizeToDrawableForAnimation(Drawable drawable, int width, int height) {
-    Rect bounds = drawable.getBounds();
+    final Rect bounds = drawable.getBounds();
     drawable.setBounds(bounds.left, bounds.top, bounds.left + width, bounds.top + height);
 
     // TODO(t22432769): Remove this after D5965597 lands
     if (drawable instanceof MatrixDrawable) {
       ((MatrixDrawable) drawable).bind(width, height);
     }
+  }
+
+  public static void applyXYToDrawableForAnimation(Drawable drawable, int x, int y) {
+    final Rect bounds = drawable.getBounds();
+    drawable.setBounds(x, y, bounds.width() + x, bounds.height() + y);
   }
 }
