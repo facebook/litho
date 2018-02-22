@@ -21,9 +21,9 @@ public class DefaultThreadPoolLayoutHandlerBuilder {
   private boolean mHasFixedSizePool;
   private int mCorePoolSize = 1;
   private int mMaxPoolSize = 1;
-  private int mCorePoolSizeMultiplier = 1;
+  private double mCorePoolSizeMultiplier = 1;
   private int mCorePoolSizeIncrement = 0;
-  private int mMaxPoolSizeMultiplier = 1;
+  private double mMaxPoolSizeMultiplier = 1;
   private int mMaxPoolSizeIncrement = 0;
 
   public DefaultThreadPoolLayoutHandlerBuilder() {}
@@ -41,9 +41,9 @@ public class DefaultThreadPoolLayoutHandlerBuilder {
   }
 
   public DefaultThreadPoolLayoutHandlerBuilder coreDependentPoolConfiguration(
-      int corePoolSizeMultiplier,
+      double corePoolSizeMultiplier,
       int corePoolSizeIncrement,
-      int maxPoolSizeMultiplier,
+      double maxPoolSizeMultiplier,
       int maxPoolSizeIncrement) {
     mCorePoolSizeMultiplier = corePoolSizeMultiplier;
     mCorePoolSizeIncrement = corePoolSizeIncrement;
@@ -66,12 +66,12 @@ public class DefaultThreadPoolLayoutHandlerBuilder {
         new ThreadPoolLayoutHandler.PoolSizeCalculator() {
           @Override
           public int getCorePoolSize(int numProcessors) {
-            return numProcessors * mCorePoolSizeMultiplier + mCorePoolSizeIncrement;
+            return (int) (numProcessors * mCorePoolSizeMultiplier + mCorePoolSizeIncrement);
           }
 
           @Override
           public int getMaxPoolSize(int numProcessors) {
-            return numProcessors * mMaxPoolSizeMultiplier + mMaxPoolSizeIncrement;
+            return (int) (numProcessors * mMaxPoolSizeMultiplier + mMaxPoolSizeIncrement);
           }
         });
   }
