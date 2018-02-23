@@ -73,10 +73,20 @@ public class ThreadPoolLayoutHandler implements LayoutHandler {
           private final AtomicInteger threadNumber = new AtomicInteger(1);
 
           @Override
-          public Thread newThread(Runnable r) {
-            Thread thread = new Thread(r, "ComponentLayoutThread" + threadNumber.getAndIncrement());
-            Process.setThreadPriority(ComponentsConfiguration.defaultBackgroundThreadPriority);
-            return thread;
+          public Thread newThread(final Runnable r) {
+
+            final Runnable wrapperRunnable =
+                new Runnable() {
+                  @Override
+                  public void run() {
+                    Process.setThreadPriority(
+                        ComponentsConfiguration.defaultBackgroundThreadPriority);
+                    r.run();
+                  }
+                };
+
+            return new Thread(
+                wrapperRunnable, "ComponentLayoutThread" + threadNumber.getAndIncrement());
           }
         };
 
