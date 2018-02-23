@@ -311,8 +311,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       onPrepare(context);
     }
 
-    if (context.getTreeProps() != parentTreeProps) {
-      ComponentsPools.release(context.getTreeProps());
+    final TreeProps contextTreeProps = context.getTreeProps();
+    if (contextTreeProps != parentTreeProps) {
+      if (contextTreeProps != null) {
+        ComponentsPools.release(contextTreeProps);
+      }
       context.setTreeProps(parentTreeProps);
     }
 

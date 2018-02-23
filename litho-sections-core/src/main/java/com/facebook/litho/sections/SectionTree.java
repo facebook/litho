@@ -1218,8 +1218,11 @@ public class SectionTree {
             context, currentChild, child, pendingStateUpdates, sectionsDebugLogger, sectionTreeTag);
       }
 
-      if (context.getTreeProps() != parentTreeProps) {
-        ComponentsPools.release(context.getTreeProps());
+      final TreeProps contextTreeProps = context.getTreeProps();
+      if (contextTreeProps != parentTreeProps) {
+        if (contextTreeProps != null) {
+          ComponentsPools.release(contextTreeProps);
+        }
         context.setTreeProps(parentTreeProps);
       }
     }
