@@ -316,7 +316,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     mLastMountedLayoutState = layoutState.acquireRef();
 
     if (processVisibilityOutputs) {
+      ComponentsSystrace.beginSection("processVisibilityOutputs");
       processVisibilityOutputs(layoutState, localVisibleRect);
+      ComponentsSystrace.endSection();
     }
 
     processTestOutputs(layoutState);
@@ -351,8 +353,16 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return;
     }
 
+    final boolean isTracing = ComponentsSystrace.isTracing();
     for (int j = 0, size = layoutState.getVisibilityOutputCount(); j < size; j++) {
       final VisibilityOutput visibilityOutput = layoutState.getVisibilityOutputAt(j);
+      if (isTracing) {
+        final String componentName =
+            visibilityOutput.getComponent() != null
+                ? visibilityOutput.getComponent().getSimpleName()
+                : "Unknown";
+        ComponentsSystrace.beginSection("visibilityHandlers:" + componentName);
+      }
 
       final EventHandler<VisibleEvent> visibleHandler = visibilityOutput.getVisibleEventHandler();
       final EventHandler<FocusedVisibleEvent> focusedHandler =
@@ -451,6 +461,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
             EventDispatcherUtils.dispatchOnFullImpression(fullImpressionHandler);
           }
         }
+      }
+      if (isTracing) {
+        ComponentsSystrace.endSection();
       }
     }
   }
