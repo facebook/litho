@@ -868,9 +868,7 @@ public class RecyclerBinder
           outSize.width = SizeSpec.getSize(widthSpec);
           mReMeasureEventEventHandler = null;
           mRequiresRemeasure.set(false);
-        } else if (mRange != null
-            && (SizeSpec.getMode(widthSpec) == SizeSpec.AT_MOST
-            || SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED)) {
+        } else if (mRange != null) {
           outSize.width = mRange.measuredSize;
           mReMeasureEventEventHandler = null;
           mRequiresRemeasure.set(false);
@@ -893,9 +891,7 @@ public class RecyclerBinder
           outSize.height = SizeSpec.getSize(heightSpec);
           mReMeasureEventEventHandler = mHasDynamicItemHeight ? reMeasureEventHandler : null;
           mRequiresRemeasure.set(mHasDynamicItemHeight);
-        } else if (mRange != null
-            && (SizeSpec.getMode(heightSpec) == SizeSpec.AT_MOST
-            || SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED)) {
+        } else if (mRange != null) {
           outSize.height = mRange.measuredSize;
           mReMeasureEventEventHandler = mHasDynamicItemHeight ? reMeasureEventHandler : null;
           mRequiresRemeasure.set(mHasDynamicItemHeight);
