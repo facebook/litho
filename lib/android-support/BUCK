@@ -4,8 +4,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
-
-load("//:LITHO_DEFS", "LITHO_VISIBILITY", "litho_android_library")
+load("//:LITHO_DEFS", "LITHO_VISIBILITY", "litho_android_library", "fb_java_library")
 
 android_prebuilt_aar(
     name = "android-support-test-rules-aar",
@@ -106,7 +105,7 @@ remote_file(
     url = "mvn:com.android.support:recyclerview-v7:aar:25.3.1",
 )
 
-java_library(
+fb_java_library(
     name = "android-support",
     exported_deps = [
         ":android-support-annotations-jar",

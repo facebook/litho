@@ -7,7 +7,7 @@
 
 include_defs("//LITHO_DEFS")
 
-java_library(
+fb_java_library(
     name = "annotations",
     srcs = glob(["*.java"]),
     required_for_source_only_abi = True,

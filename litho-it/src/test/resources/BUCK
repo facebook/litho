@@ -7,7 +7,7 @@
 
 include_defs("//LITHO_DEFS")
 
-java_library(
+fb_java_library(
     name = "resources",
     resources = glob(["**"]),
     resources_root = ".",

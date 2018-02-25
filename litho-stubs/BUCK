@@ -9,9 +9,9 @@
 # methods. They must be referenced as provided_deps. Since future platforms
 # may change this hidden API, callers should handle LinkageError gracefully.
 
-load("//:LITHO_DEFS", "LITHO_VISIBILITY")
+load("//:LITHO_DEFS", "LITHO_VISIBILITY", "fb_java_library")
 
-java_library(
+fb_java_library(
     name = "stubs",
     srcs = glob([
         "src/**/*.java",

@@ -1,4 +1,6 @@
-java_library(
+load("//:LITHO_DEFS", "fb_java_library")
+
+fb_java_library(
     name = "guava",
     exported_deps = [
         ":guava-prebuilt",

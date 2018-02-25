@@ -4,10 +4,9 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
+load("//:LITHO_DEFS", "make_dep_path", "fb_java_library")
 
-load("//:LITHO_DEFS", "make_dep_path")
-
-java_library(
+fb_java_library(
     name = "powermock-reflect",
     exported_deps = [
         ":powermock-reflect-prebuilt",
@@ -27,7 +26,7 @@ remote_file(
     url = "mvn:org.powermock:powermock-reflect:jar:1.5.6",
 )
 
-java_library(
+fb_java_library(
     name = "powermock-mockito",
     exported_deps = [
         ":javassist-prebuilt",

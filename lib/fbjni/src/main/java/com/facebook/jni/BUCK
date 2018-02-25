@@ -4,10 +4,9 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
+load("//:LITHO_DEFS", "LITHO_JSR_TARGET", "LITHO_PROGUARDANNOTATIONS_TARGET", "LITHO_SOLOADER_TARGET", "fb_java_library")
 
-load("//:LITHO_DEFS", "LITHO_JSR_TARGET", "LITHO_PROGUARDANNOTATIONS_TARGET", "LITHO_SOLOADER_TARGET")
-
-java_library(
+fb_java_library(
     name = "jni",
     srcs = glob(["**/*.java"]),
     proguard_config = "fbjni.pro",

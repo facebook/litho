@@ -4,8 +4,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
-
-load("//:LITHO_DEFS", "LITHO_ANNOTATIONS_TARGET", "LITHO_JAVAC_TOOLS_TARGET", "LITHO_JAVAPOET_TARGET", "LITHO_JSR_TARGET", "make_dep_path")
+load("//:LITHO_DEFS", "LITHO_ANNOTATIONS_TARGET", "LITHO_JAVAC_TOOLS_TARGET", "LITHO_JAVAPOET_TARGET", "LITHO_JSR_TARGET", "make_dep_path", "fb_java_library")
 
 java_annotation_processor(
     name = "processor",
@@ -29,7 +28,7 @@ java_annotation_processor(
     ],
 )
 
-java_library(
+fb_java_library(
     name = "processor-lib",
     exported_deps = [
         ":processor-lib-bare",
@@ -46,7 +45,7 @@ java_library(
     ],
 )
 
-java_library(
+fb_java_library(
     name = "processor-lib-bare",
     srcs = glob(["*.java"]),
     provided_deps = [
