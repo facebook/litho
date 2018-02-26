@@ -32,6 +32,9 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_UNMOUNTED_TIME;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_UPDATED_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_UPDATED_COUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_UPDATED_TIME;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_VISIBILITY_HANDLER;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_VISIBILITY_HANDLERS_TOTAL_TIME;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_VISIBILITY_HANDLER_TIME;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.animation.StateListAnimator;
@@ -72,6 +75,7 @@ import java.util.Map;
 class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   static final int ROOT_HOST_ID = 0;
+  private static final double NS_IN_MS = 1000000.0;
 
   // Holds the current list of mounted items.
   // Should always be used within a draw lock.
@@ -273,7 +277,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
             if (mMountStats.isLoggingEnabled) {
               if (itemUpdated) {
                 mMountStats.updatedNames.add(component.getSimpleName());
-                mMountStats.updatedTimes.add((System.nanoTime() - startTime) / 1000000.0);
+                mMountStats.updatedTimes.add((System.nanoTime() - startTime) / NS_IN_MS);
                 mMountStats.updatedCount++;
               } else {
                 mMountStats.noOpCount++;
@@ -339,6 +343,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       mountEvent.addJsonParam(PARAM_UPDATED_CONTENT, mMountStats.updatedNames);
       mountEvent.addJsonParam(PARAM_UPDATED_TIME, mMountStats.updatedTimes);
 
+      mountEvent.addParam(
+          PARAM_VISIBILITY_HANDLERS_TOTAL_TIME, mMountStats.visibilityHandlersTotalTime);
+      mountEvent.addJsonParam(PARAM_VISIBILITY_HANDLER, mMountStats.visibilityHandlerNames);
+      mountEvent.addJsonParam(PARAM_VISIBILITY_HANDLER_TIME, mMountStats.visibilityHandlerTimes);
+
       mountEvent.addParam(PARAM_NO_OP_COUNT, String.valueOf(mMountStats.noOpCount));
       mountEvent.addParam(PARAM_IS_DIRTY, String.valueOf(mIsDirty));
 
@@ -353,7 +362,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return;
     }
 
+    final boolean isDoingPerfLog = mMountStats.isLoggingEnabled;
     final boolean isTracing = ComponentsSystrace.isTracing();
+    final long totalStartTime = isDoingPerfLog ? System.nanoTime() : 0;
     for (int j = 0, size = layoutState.getVisibilityOutputCount(); j < size; j++) {
       final VisibilityOutput visibilityOutput = layoutState.getVisibilityOutputAt(j);
       if (isTracing) {
@@ -363,7 +374,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
                 : "Unknown";
         ComponentsSystrace.beginSection("visibilityHandlers:" + componentName);
       }
-
+      final long handlerStartTime = isDoingPerfLog ? System.nanoTime() : 0;
       final EventHandler<VisibleEvent> visibleHandler = visibilityOutput.getVisibleEventHandler();
       final EventHandler<FocusedVisibleEvent> focusedHandler =
           visibilityOutput.getFocusedEventHandler();
@@ -462,9 +473,21 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           }
         }
       }
+      if (isDoingPerfLog) {
+        final String componentName =
+            visibilityOutput.getComponent() != null
+                ? visibilityOutput.getComponent().getSimpleName()
+                : "Unknown";
+        mMountStats.visibilityHandlerTimes.add((System.nanoTime() - handlerStartTime) / NS_IN_MS);
+        mMountStats.visibilityHandlerNames.add(componentName);
+      }
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
+    }
+
+    if (isDoingPerfLog) {
+      mMountStats.visibilityHandlersTotalTime = (System.nanoTime() - totalStartTime) / NS_IN_MS;
     }
   }
 
@@ -1087,7 +1110,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     // 6. Update the mount stats
     if (mMountStats.isLoggingEnabled) {
-      mMountStats.mountTimes.add((System.nanoTime() - startTime) / 1000000.0);
+      mMountStats.mountTimes.add((System.nanoTime() - startTime) / NS_IN_MS);
       mMountStats.mountedNames.add(component.getSimpleName());
       mMountStats.mountedCount++;
     }
@@ -2028,7 +2051,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     ComponentsPools.release(context, item);
 
     if (mMountStats.isLoggingEnabled) {
-      mMountStats.unmountedTimes.add((System.nanoTime() - startTime) / 1000000.0);
+      mMountStats.unmountedTimes.add((System.nanoTime() - startTime) / NS_IN_MS);
       mMountStats.unmountedNames.add(component.getSimpleName());
       mMountStats.unmountedCount++;
     }
@@ -2348,15 +2371,19 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     private List<String> mountedNames;
     private List<String> unmountedNames;
     private List<String> updatedNames;
+    private List<String> visibilityHandlerNames;
 
     private List<Double> mountTimes;
     private List<Double> unmountedTimes;
     private List<Double> updatedTimes;
+    private List<Double> visibilityHandlerTimes;
 
     private int mountedCount;
     private int unmountedCount;
     private int updatedCount;
     private int noOpCount;
+
+    private double visibilityHandlersTotalTime;
 
     private boolean isLoggingEnabled;
     private boolean isInitialized;
@@ -2369,10 +2396,12 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         mountedNames = new ArrayList<>();
         unmountedNames = new ArrayList<>();
         updatedNames = new ArrayList<>();
+        visibilityHandlerNames = new ArrayList<>();
 
         mountTimes = new ArrayList<>();
         unmountedTimes = new ArrayList<>();
         updatedTimes = new ArrayList<>();
+        visibilityHandlerTimes = new ArrayList<>();
       }
     }
 
@@ -2381,15 +2410,18 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       unmountedCount = 0;
       updatedCount = 0;
       noOpCount = 0;
+      visibilityHandlersTotalTime = 0;
 
       if (isInitialized) {
         mountedNames.clear();
         unmountedNames.clear();
         updatedNames.clear();
+        visibilityHandlerNames.clear();
 
         mountTimes.clear();
         unmountedTimes.clear();
         updatedTimes.clear();
+        visibilityHandlerTimes.clear();
       }
 
       isLoggingEnabled = false;

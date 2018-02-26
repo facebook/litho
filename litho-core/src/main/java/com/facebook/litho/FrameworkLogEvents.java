@@ -51,6 +51,9 @@ public interface FrameworkLogEvents {
   String PARAM_UPDATED_TIME = "updated_time_ms";
   String PARAM_NO_OP_COUNT = "no_op_count";
   String PARAM_IS_DIRTY = "is_dirty";
+  String PARAM_VISIBILITY_HANDLERS_TOTAL_TIME = "visibility_handlers_total_time_ms";
+  String PARAM_VISIBILITY_HANDLER = "visibility_handler";
+  String PARAM_VISIBILITY_HANDLER_TIME = "visibility_handler_time_ms";
   String PARAM_MESSAGE = "message";
   String PARAM_SECTION_CURRENT = "section_current";
   String PARAM_SECTION_NEXT = "section_next";
