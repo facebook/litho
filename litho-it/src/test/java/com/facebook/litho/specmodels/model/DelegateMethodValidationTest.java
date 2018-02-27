@@ -57,20 +57,22 @@ public class DelegateMethodValidationTest {
     when(mMountSpecModel.getRepresentedObject()).thenReturn(mMountSpecObject);
 
     mOnCreateMountContent =
-        new SpecMethodModel<DelegateMethod, Void>(
-            ImmutableList.of((Annotation) () -> OnCreateMountContent.class),
-            ImmutableList.of(Modifier.STATIC),
-            "onCreateMountContent",
-            new TypeSpec(ClassName.bestGuess("java.lang.MadeUpClass")),
-            ImmutableList.of(),
-            ImmutableList.of(
-                MockMethodParamModel.newBuilder()
-                    .name("c")
-                    .type(ClassNames.COMPONENT_CONTEXT)
-                    .representedObject(new Object())
-                    .build()),
-            mOnCreateMountContentObject,
-            null);
+        SpecMethodModel.<DelegateMethod, Void>builder()
+            .annotations(ImmutableList.of((Annotation) () -> OnCreateMountContent.class))
+            .modifiers(ImmutableList.of(Modifier.STATIC))
+            .name("onCreateMountContent")
+            .returnTypeSpec(new TypeSpec(ClassName.bestGuess("java.lang.MadeUpClass")))
+            .typeVariables(ImmutableList.of())
+            .methodParams(
+                ImmutableList.of(
+                    MockMethodParamModel.newBuilder()
+                        .name("c")
+                        .type(ClassNames.COMPONENT_CONTEXT)
+                        .representedObject(new Object())
+                        .build()))
+            .representedObject(mOnCreateMountContentObject)
+            .typeModel(null)
+            .build();
   }
 
   @Test
@@ -92,44 +94,49 @@ public class DelegateMethodValidationTest {
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
             ImmutableList.of(
-                new SpecMethodModel<DelegateMethod, Void>(
-                    ImmutableList.of((Annotation) () -> OnCreateLayout.class),
-                    ImmutableList.of(Modifier.STATIC),
-                    "name",
-                    new TypeSpec(ClassNames.COMPONENT),
-                    ImmutableList.of(),
-                    ImmutableList.of(
-                        MockMethodParamModel.newBuilder()
-                            .name("c")
-                            .type(ClassNames.COMPONENT_CONTEXT)
-                            .representedObject(new Object())
-                            .build()),
-                    new Object(),
-                    null),
-                new SpecMethodModel<DelegateMethod, Void>(
-                    ImmutableList.of((Annotation) () -> OnCreateLayoutWithSizeSpec.class),
-                    ImmutableList.of(Modifier.STATIC),
-                    "name",
-                    new TypeSpec(ClassNames.COMPONENT),
-                    ImmutableList.of(),
-                    ImmutableList.of(
-                        MockMethodParamModel.newBuilder()
-                            .name("c")
-                            .type(ClassNames.COMPONENT_CONTEXT)
-                            .representedObject(new Object())
-                            .build(),
-                        MockMethodParamModel.newBuilder()
-                            .name("widthSpec")
-                            .type(TypeName.INT)
-                            .representedObject(new Object())
-                            .build(),
-                        MockMethodParamModel.newBuilder()
-                            .name("heightSpec")
-                            .type(TypeName.INT)
-                            .representedObject(new Object())
-                            .build()),
-                    new Object(),
-                    null)));
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnCreateLayout.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("name")
+                    .returnTypeSpec(new TypeSpec(ClassNames.COMPONENT))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            MockMethodParamModel.newBuilder()
+                                .name("c")
+                                .type(ClassNames.COMPONENT_CONTEXT)
+                                .representedObject(new Object())
+                                .build()))
+                    .representedObject(new Object())
+                    .typeModel(null)
+                    .build(),
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(
+                        ImmutableList.of((Annotation) () -> OnCreateLayoutWithSizeSpec.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("name")
+                    .returnTypeSpec(new TypeSpec(ClassNames.COMPONENT))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            MockMethodParamModel.newBuilder()
+                                .name("c")
+                                .type(ClassNames.COMPONENT_CONTEXT)
+                                .representedObject(new Object())
+                                .build(),
+                            MockMethodParamModel.newBuilder()
+                                .name("widthSpec")
+                                .type(TypeName.INT)
+                                .representedObject(new Object())
+                                .build(),
+                            MockMethodParamModel.newBuilder()
+                                .name("heightSpec")
+                                .type(TypeName.INT)
+                                .representedObject(new Object())
+                                .build()))
+                    .representedObject(new Object())
+                    .typeModel(null)
+                    .build()));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
@@ -146,15 +153,17 @@ public class DelegateMethodValidationTest {
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
             ImmutableList.of(
-                new SpecMethodModel<DelegateMethod, Void>(
-                    ImmutableList.of((Annotation) () -> OnCreateLayoutWithSizeSpec.class),
-                    ImmutableList.of(Modifier.STATIC),
-                    "name",
-                    new TypeSpec(ClassNames.COMPONENT),
-                    ImmutableList.of(),
-                    ImmutableList.of(),
-                    mDelegateMethodObject1,
-                    null)));
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(
+                        ImmutableList.of((Annotation) () -> OnCreateLayoutWithSizeSpec.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("name")
+                    .returnTypeSpec(new TypeSpec(ClassNames.COMPONENT))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(ImmutableList.of())
+                    .representedObject(mDelegateMethodObject1)
+                    .typeModel(null)
+                    .build()));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
@@ -172,19 +181,21 @@ public class DelegateMethodValidationTest {
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
             ImmutableList.of(
-                new SpecMethodModel<DelegateMethod, Void>(
-                    ImmutableList.of((Annotation) () -> OnCreateLayout.class),
-                    ImmutableList.of(Modifier.STATIC),
-                    "name",
-                    new TypeSpec(ClassNames.COMPONENT),
-                    ImmutableList.of(),
-                    ImmutableList.of(
-                        MockMethodParamModel.newBuilder()
-                            .type(TypeName.BOOLEAN)
-                            .representedObject(mMethodParamObject1)
-                            .build()),
-                    mDelegateMethodObject1,
-                    null)));
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnCreateLayout.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("name")
+                    .returnTypeSpec(new TypeSpec(ClassNames.COMPONENT))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            MockMethodParamModel.newBuilder()
+                                .type(TypeName.BOOLEAN)
+                                .representedObject(mMethodParamObject1)
+                                .build()))
+                    .representedObject(mDelegateMethodObject1)
+                    .typeModel(null)
+                    .build()));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
@@ -201,23 +212,25 @@ public class DelegateMethodValidationTest {
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
             ImmutableList.of(
-                new SpecMethodModel<DelegateMethod, Void>(
-                    ImmutableList.of((Annotation) () -> OnCreateLayout.class),
-                    ImmutableList.of(Modifier.STATIC),
-                    "name",
-                    new TypeSpec(ClassNames.COMPONENT),
-                    ImmutableList.of(),
-                    ImmutableList.of(
-                        MockMethodParamModel.newBuilder()
-                            .type(ClassNames.COMPONENT_CONTEXT)
-                            .representedObject(mMethodParamObject1)
-                            .build(),
-                        MockMethodParamModel.newBuilder()
-                            .type(TypeName.INT)
-                            .representedObject(mMethodParamObject2)
-                            .build()),
-                    mDelegateMethodObject1,
-                    null)));
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnCreateLayout.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("name")
+                    .returnTypeSpec(new TypeSpec(ClassNames.COMPONENT))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            MockMethodParamModel.newBuilder()
+                                .type(ClassNames.COMPONENT_CONTEXT)
+                                .representedObject(mMethodParamObject1)
+                                .build(),
+                            MockMethodParamModel.newBuilder()
+                                .type(TypeName.INT)
+                                .representedObject(mMethodParamObject2)
+                                .build()))
+                    .representedObject(mDelegateMethodObject1)
+                    .typeModel(null)
+                    .build()));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
@@ -234,19 +247,21 @@ public class DelegateMethodValidationTest {
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
             ImmutableList.of(
-                new SpecMethodModel<DelegateMethod, Void>(
-                    ImmutableList.of((Annotation) () -> OnCreateLayout.class),
-                    ImmutableList.of(),
-                    "name",
-                    new TypeSpec(ClassNames.COMPONENT),
-                    ImmutableList.of(),
-                    ImmutableList.of(
-                        MockMethodParamModel.newBuilder()
-                            .type(ClassNames.COMPONENT_CONTEXT)
-                            .representedObject(mMethodParamObject1)
-                            .build()),
-                    mDelegateMethodObject1,
-                    null)));
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnCreateLayout.class))
+                    .modifiers(ImmutableList.of())
+                    .name("name")
+                    .returnTypeSpec(new TypeSpec(ClassNames.COMPONENT))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            MockMethodParamModel.newBuilder()
+                                .type(ClassNames.COMPONENT_CONTEXT)
+                                .representedObject(mMethodParamObject1)
+                                .build()))
+                    .representedObject(mDelegateMethodObject1)
+                    .typeModel(null)
+                    .build()));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
@@ -262,19 +277,21 @@ public class DelegateMethodValidationTest {
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
             ImmutableList.of(
-                new SpecMethodModel<DelegateMethod, Void>(
-                    ImmutableList.of((Annotation) () -> OnCreateLayout.class),
-                    ImmutableList.of(),
-                    "name",
-                    new TypeSpec(ClassNames.COMPONENT),
-                    ImmutableList.of(),
-                    ImmutableList.of(
-                        MockMethodParamModel.newBuilder()
-                            .type(ClassNames.COMPONENT_CONTEXT)
-                            .representedObject(mMethodParamObject1)
-                            .build()),
-                    mDelegateMethodObject1,
-                    null)));
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnCreateLayout.class))
+                    .modifiers(ImmutableList.of())
+                    .name("name")
+                    .returnTypeSpec(new TypeSpec(ClassNames.COMPONENT))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            MockMethodParamModel.newBuilder()
+                                .type(ClassNames.COMPONENT_CONTEXT)
+                                .representedObject(mMethodParamObject1)
+                                .build()))
+                    .representedObject(mDelegateMethodObject1)
+                    .typeModel(null)
+                    .build()));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
@@ -286,19 +303,21 @@ public class DelegateMethodValidationTest {
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
             ImmutableList.of(
-                new SpecMethodModel<DelegateMethod, Void>(
-                    ImmutableList.of((Annotation) () -> OnCreateLayout.class),
-                    ImmutableList.of(Modifier.STATIC),
-                    "name",
-                    new TypeSpec(ClassNames.COMPONENT_LAYOUT),
-                    ImmutableList.of(),
-                    ImmutableList.of(
-                        MockMethodParamModel.newBuilder()
-                            .type(ClassNames.COMPONENT_CONTEXT)
-                            .representedObject(mMethodParamObject1)
-                            .build()),
-                    mDelegateMethodObject1,
-                    null)));
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnCreateLayout.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("name")
+                    .returnTypeSpec(new TypeSpec(ClassNames.COMPONENT_LAYOUT))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            MockMethodParamModel.newBuilder()
+                                .type(ClassNames.COMPONENT_CONTEXT)
+                                .representedObject(mMethodParamObject1)
+                                .build()))
+                    .representedObject(mDelegateMethodObject1)
+                    .typeModel(null)
+                    .build()));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
@@ -330,40 +349,44 @@ public class DelegateMethodValidationTest {
         .thenReturn(
             ImmutableList.of(
                 mOnCreateMountContent,
-                new SpecMethodModel<DelegateMethod, Void>(
-                    ImmutableList.of((Annotation) () -> OnMount.class),
-                    ImmutableList.of(Modifier.STATIC),
-                    "onMount",
-                    new TypeSpec(TypeName.VOID),
-                    ImmutableList.of(),
-                    ImmutableList.of(
-                        MockMethodParamModel.newBuilder()
-                            .type(ClassNames.COMPONENT_CONTEXT)
-                            .representedObject(mMethodParamObject1)
-                            .build(),
-                        MockMethodParamModel.newBuilder()
-                            .type(ClassNames.OBJECT)
-                            .representedObject(mMethodParamObject2)
-                            .build()),
-                    mDelegateMethodObject1,
-                    null),
-                new SpecMethodModel<DelegateMethod, Void>(
-                    ImmutableList.of((Annotation) () -> OnBind.class),
-                    ImmutableList.of(Modifier.STATIC),
-                    "onBind",
-                    new TypeSpec(TypeName.VOID),
-                    ImmutableList.of(),
-                    ImmutableList.of(
-                        MockMethodParamModel.newBuilder()
-                            .type(ClassNames.COMPONENT_CONTEXT)
-                            .representedObject(mMethodParamObject1)
-                            .build(),
-                        MockMethodParamModel.newBuilder()
-                            .type(ClassNames.OBJECT)
-                            .representedObject(mMethodParamObject2)
-                            .build()),
-                    mDelegateMethodObject2,
-                    null)));
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnMount.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("onMount")
+                    .returnTypeSpec(new TypeSpec(TypeName.VOID))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            MockMethodParamModel.newBuilder()
+                                .type(ClassNames.COMPONENT_CONTEXT)
+                                .representedObject(mMethodParamObject1)
+                                .build(),
+                            MockMethodParamModel.newBuilder()
+                                .type(ClassNames.OBJECT)
+                                .representedObject(mMethodParamObject2)
+                                .build()))
+                    .representedObject(mDelegateMethodObject1)
+                    .typeModel(null)
+                    .build(),
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnBind.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("onBind")
+                    .returnTypeSpec(new TypeSpec(TypeName.VOID))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            MockMethodParamModel.newBuilder()
+                                .type(ClassNames.COMPONENT_CONTEXT)
+                                .representedObject(mMethodParamObject1)
+                                .build(),
+                            MockMethodParamModel.newBuilder()
+                                .type(ClassNames.OBJECT)
+                                .representedObject(mMethodParamObject2)
+                                .build()))
+                    .representedObject(mDelegateMethodObject2)
+                    .typeModel(null)
+                    .build()));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateMountSpecModel(mMountSpecModel);
@@ -393,24 +416,26 @@ public class DelegateMethodValidationTest {
         .thenReturn(
             ImmutableList.of(
                 mOnCreateMountContent,
-                new SpecMethodModel<DelegateMethod, Void>(
-                    ImmutableList.of((Annotation) () -> OnUnmount.class),
-                    ImmutableList.of(Modifier.STATIC),
-                    "onUnmount",
-                    new TypeSpec(TypeName.VOID),
-                    ImmutableList.of(),
-                    ImmutableList.of(
-                        MockMethodParamModel.newBuilder()
-                            .type(ClassNames.COMPONENT_CONTEXT)
-                            .representedObject(mMethodParamObject1)
-                            .build(),
-                        MockMethodParamModel.newBuilder()
-                            .type(ClassName.bestGuess("java.lang.MadeUpClass"))
-                            .representedObject(mMethodParamObject2)
-                            .build(),
-                        interStageInputParamModel),
-                    mDelegateMethodObject1,
-                    null)));
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnUnmount.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("onUnmount")
+                    .returnTypeSpec(new TypeSpec(TypeName.VOID))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            MockMethodParamModel.newBuilder()
+                                .type(ClassNames.COMPONENT_CONTEXT)
+                                .representedObject(mMethodParamObject1)
+                                .build(),
+                            MockMethodParamModel.newBuilder()
+                                .type(ClassName.bestGuess("java.lang.MadeUpClass"))
+                                .representedObject(mMethodParamObject2)
+                                .build(),
+                            interStageInputParamModel))
+                    .representedObject(mDelegateMethodObject1)
+                    .typeModel(null)
+                    .build()));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateMountSpecModel(mMountSpecModel);
@@ -439,24 +464,26 @@ public class DelegateMethodValidationTest {
         .thenReturn(
             ImmutableList.of(
                 mOnCreateMountContent,
-                new SpecMethodModel<DelegateMethod, Void>(
-                    ImmutableList.of((Annotation) () -> OnMount.class),
-                    ImmutableList.of(Modifier.STATIC),
-                    "onMount",
-                    new TypeSpec(TypeName.VOID),
-                    ImmutableList.of(),
-                    ImmutableList.of(
-                        MockMethodParamModel.newBuilder()
-                            .type(ClassNames.COMPONENT_CONTEXT)
-                            .representedObject(mMethodParamObject1)
-                            .build(),
-                        MockMethodParamModel.newBuilder()
-                            .type(ClassName.bestGuess("java.lang.MadeUpClass"))
-                            .representedObject(mMethodParamObject2)
-                            .build(),
-                        interStageInputParamModel),
-                    mDelegateMethodObject1,
-                    null)));
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnMount.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("onMount")
+                    .returnTypeSpec(new TypeSpec(TypeName.VOID))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            MockMethodParamModel.newBuilder()
+                                .type(ClassNames.COMPONENT_CONTEXT)
+                                .representedObject(mMethodParamObject1)
+                                .build(),
+                            MockMethodParamModel.newBuilder()
+                                .type(ClassName.bestGuess("java.lang.MadeUpClass"))
+                                .representedObject(mMethodParamObject2)
+                                .build(),
+                            interStageInputParamModel))
+                    .representedObject(mDelegateMethodObject1)
+                    .typeModel(null)
+                    .build()));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateMountSpecModel(mMountSpecModel);
@@ -485,40 +512,44 @@ public class DelegateMethodValidationTest {
         .thenReturn(
             ImmutableList.of(
                 mOnCreateMountContent,
-                new SpecMethodModel<DelegateMethod, Void>(
-                    ImmutableList.of((Annotation) () -> OnMount.class),
-                    ImmutableList.of(Modifier.STATIC),
-                    "onMount",
-                    new TypeSpec(TypeName.VOID),
-                    ImmutableList.of(),
-                    ImmutableList.of(
-                        MockMethodParamModel.newBuilder()
-                            .name("c")
-                            .type(ClassNames.COMPONENT_CONTEXT)
-                            .representedObject(mMethodParamObject1)
-                            .build(),
-                        MockMethodParamModel.newBuilder()
-                            .name("param")
-                            .type(ClassName.bestGuess("java.lang.MadeUpClass"))
-                            .representedObject(mMethodParamObject2)
-                            .build(),
-                        interStageInputParamModel),
-                    mDelegateMethodObject1,
-                    null),
-                new SpecMethodModel<DelegateMethod, Void>(
-                    ImmutableList.of((Annotation) () -> OnPrepare.class),
-                    ImmutableList.of(Modifier.STATIC),
-                    "onPrepare",
-                    new TypeSpec(TypeName.VOID),
-                    ImmutableList.of(),
-                    ImmutableList.of(
-                        MockMethodParamModel.newBuilder()
-                            .name("c")
-                            .type(ClassNames.COMPONENT_CONTEXT)
-                            .representedObject(mMethodParamObject1)
-                            .build()),
-                    mDelegateMethodObject2,
-                    null)));
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnMount.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("onMount")
+                    .returnTypeSpec(new TypeSpec(TypeName.VOID))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            MockMethodParamModel.newBuilder()
+                                .name("c")
+                                .type(ClassNames.COMPONENT_CONTEXT)
+                                .representedObject(mMethodParamObject1)
+                                .build(),
+                            MockMethodParamModel.newBuilder()
+                                .name("param")
+                                .type(ClassName.bestGuess("java.lang.MadeUpClass"))
+                                .representedObject(mMethodParamObject2)
+                                .build(),
+                            interStageInputParamModel))
+                    .representedObject(mDelegateMethodObject1)
+                    .typeModel(null)
+                    .build(),
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnPrepare.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("onPrepare")
+                    .returnTypeSpec(new TypeSpec(TypeName.VOID))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            MockMethodParamModel.newBuilder()
+                                .name("c")
+                                .type(ClassNames.COMPONENT_CONTEXT)
+                                .representedObject(mMethodParamObject1)
+                                .build()))
+                    .representedObject(mDelegateMethodObject2)
+                    .typeModel(null)
+                    .build()));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateMountSpecModel(mMountSpecModel);
@@ -551,23 +582,25 @@ public class DelegateMethodValidationTest {
     when(mLayoutSpecModel.getDelegateMethods())
         .thenReturn(
             ImmutableList.of(
-                new SpecMethodModel<DelegateMethod, Void>(
-                    ImmutableList.of((Annotation) () -> OnCreateLayout.class),
-                    ImmutableList.of(Modifier.STATIC),
-                    "name",
-                    new TypeSpec(ClassNames.COMPONENT),
-                    ImmutableList.of(),
-                    ImmutableList.of(
-                        MockMethodParamModel.newBuilder()
-                            .type(ClassNames.COMPONENT_CONTEXT)
-                            .representedObject(mMethodParamObject1)
-                            .build(),
-                        MethodParamModelFactory.createSimpleMethodParamModel(
-                            new TypeSpec(TypeName.INT.box()), "matched", mMethodParamObject2),
-                        MethodParamModelFactory.createSimpleMethodParamModel(
-                            new TypeSpec(TypeName.OBJECT), "unmatched", mMethodParamObject3)),
-                    mDelegateMethodObject1,
-                    null)));
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnCreateLayout.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("name")
+                    .returnTypeSpec(new TypeSpec(ClassNames.COMPONENT))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(
+                        ImmutableList.of(
+                            MockMethodParamModel.newBuilder()
+                                .type(ClassNames.COMPONENT_CONTEXT)
+                                .representedObject(mMethodParamObject1)
+                                .build(),
+                            MethodParamModelFactory.createSimpleMethodParamModel(
+                                new TypeSpec(TypeName.INT.box()), "matched", mMethodParamObject2),
+                            MethodParamModelFactory.createSimpleMethodParamModel(
+                                new TypeSpec(TypeName.OBJECT), "unmatched", mMethodParamObject3)))
+                    .representedObject(mDelegateMethodObject1)
+                    .typeModel(null)
+                    .build()));
 
     final List<SpecModelValidationError> validationErrors =
         DelegateMethodValidation.validateMethods(mLayoutSpecModel, map);

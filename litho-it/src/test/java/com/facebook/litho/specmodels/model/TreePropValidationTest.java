@@ -44,29 +44,30 @@ public class TreePropValidationTest {
     when(mSpecModel.getDelegateMethods())
         .thenReturn(
             ImmutableList.<SpecMethodModel<DelegateMethod, Void>>of(
-                new SpecMethodModel<DelegateMethod, Void>(
-                    ImmutableList.<Annotation>of(
-                        new OnCreateTreeProp() {
-                          @Override
-                          public Class<? extends Annotation> annotationType() {
-                            return OnCreateTreeProp.class;
-                          }
-                        }),
-                    ImmutableList.<Modifier>of(),
-                    "",
-                    new TypeSpec(TypeName.VOID),
-                    ImmutableList.of(),
-                    ImmutableList.<MethodParamModel>of(
-                        MockMethodParamModel.newBuilder()
-                            .type(TypeName.INT)
-                            .representedObject(mMethodParamObject1)
-                            .build(),
-                        MockMethodParamModel.newBuilder()
-                            .type(ClassNames.COMPONENT_CONTEXT)
-                            .representedObject(mMethodParamObject2)
-                            .build()),
-                    mDelegateMethodObject,
-                    null)));
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(
+                        ImmutableList.<Annotation>of(
+                            new OnCreateTreeProp() {
+                              @Override
+                              public Class<? extends Annotation> annotationType() {
+                                return OnCreateTreeProp.class;
+                              }
+                            }))
+                    .modifiers(ImmutableList.<Modifier>of())
+                    .name("")
+                    .returnTypeSpec(new TypeSpec(TypeName.VOID))
+                    .methodParams(
+                        ImmutableList.<MethodParamModel>of(
+                            MockMethodParamModel.newBuilder()
+                                .type(TypeName.INT)
+                                .representedObject(mMethodParamObject1)
+                                .build(),
+                            MockMethodParamModel.newBuilder()
+                                .type(ClassNames.COMPONENT_CONTEXT)
+                                .representedObject(mMethodParamObject2)
+                                .build()))
+                    .representedObject(mDelegateMethodObject)
+                    .build()));
 
     List<SpecModelValidationError> validationErrors = TreePropValidation.validate(mSpecModel);
     assertThat(validationErrors).hasSize(2);

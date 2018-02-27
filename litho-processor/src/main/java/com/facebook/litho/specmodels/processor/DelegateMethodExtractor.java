@@ -72,15 +72,18 @@ public class DelegateMethodExtractor {
                 delegateMethodAnnotationsThatSkipDiffModels);
 
         final SpecMethodModel<DelegateMethod, Void> delegateMethod =
-            new SpecMethodModel<DelegateMethod, Void>(
-                ImmutableList.<Annotation>copyOf(methodAnnotations),
-                ImmutableList.<Modifier>copyOf(new ArrayList<>(executableElement.getModifiers())),
-                executableElement.getSimpleName(),
-                generateTypeSpec(executableElement.getReturnType()),
-                ImmutableList.of(),
-                ImmutableList.copyOf(methodParams),
-                enclosedElement,
-                null);
+            SpecMethodModel.<DelegateMethod, Void>builder()
+                .annotations(ImmutableList.<Annotation>copyOf(methodAnnotations))
+                .modifiers(
+                    ImmutableList.<Modifier>copyOf(
+                        new ArrayList<>(executableElement.getModifiers())))
+                .name(executableElement.getSimpleName())
+                .returnTypeSpec(generateTypeSpec(executableElement.getReturnType()))
+                .typeVariables(ImmutableList.of())
+                .methodParams(ImmutableList.copyOf(methodParams))
+                .representedObject(enclosedElement)
+                .typeModel(null)
+                .build();
         delegateMethods.add(delegateMethod);
       }
     }

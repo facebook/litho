@@ -49,46 +49,47 @@ public class TreePropGeneratorTest {
   @Before
   public void setUp() {
     mOnCreateTreePropMethodModel =
-        new SpecMethodModel<DelegateMethod, Void>(
-            ImmutableList.<Annotation>of(
-                new OnCreateTreeProp() {
+        SpecMethodModel.<DelegateMethod, Void>builder()
+            .annotations(
+                ImmutableList.of(
+                    new OnCreateTreeProp() {
 
-                  @Override
-                  public Class<? extends Annotation> annotationType() {
-                    return OnCreateTreeProp.class;
-                  }
-                }),
-            ImmutableList.of(Modifier.PROTECTED),
-            "onCreateTreeProp",
-            new TypeSpec(TypeName.BOOLEAN),
-            ImmutableList.<TypeVariableName>of(),
-            ImmutableList.of(
-                MethodParamModelFactory.create(
-                    new TypeSpec(ClassNames.COMPONENT_CONTEXT),
-                    "componentContext",
-                    new ArrayList<Annotation>(),
-                    new ArrayList<AnnotationSpec>(),
-                    new ArrayList<Class<? extends Annotation>>(),
-                    true,
-                    null),
-                MethodParamModelFactory.create(
-                    new TypeSpec(TypeName.BOOLEAN),
-                    "prop",
-                    ImmutableList.of(createAnnotation(Prop.class)),
-                    new ArrayList<AnnotationSpec>(),
-                    new ArrayList<Class<? extends Annotation>>(),
-                    true,
-                    null),
-                MethodParamModelFactory.create(
-                    new TypeSpec(TypeName.INT),
-                    "state",
-                    ImmutableList.of(createAnnotation(State.class)),
-                    new ArrayList<AnnotationSpec>(),
-                    new ArrayList<Class<? extends Annotation>>(),
-                    true,
-                    null)),
-            null,
-            null);
+                      @Override
+                      public Class<? extends Annotation> annotationType() {
+                        return OnCreateTreeProp.class;
+                      }
+                    }))
+            .modifiers(ImmutableList.of(Modifier.PROTECTED))
+            .name("onCreateTreeProp")
+            .returnTypeSpec(new TypeSpec(TypeName.BOOLEAN))
+            .typeVariables(ImmutableList.<TypeVariableName>of())
+            .methodParams(
+                ImmutableList.of(
+                    MethodParamModelFactory.create(
+                        new TypeSpec(ClassNames.COMPONENT_CONTEXT),
+                        "componentContext",
+                        new ArrayList<Annotation>(),
+                        new ArrayList<AnnotationSpec>(),
+                        new ArrayList<Class<? extends Annotation>>(),
+                        true,
+                        null),
+                    MethodParamModelFactory.create(
+                        new TypeSpec(TypeName.BOOLEAN),
+                        "prop",
+                        ImmutableList.of(createAnnotation(Prop.class)),
+                        new ArrayList<AnnotationSpec>(),
+                        new ArrayList<Class<? extends Annotation>>(),
+                        true,
+                        null),
+                    MethodParamModelFactory.create(
+                        new TypeSpec(TypeName.INT),
+                        "state",
+                        ImmutableList.of(createAnnotation(State.class)),
+                        new ArrayList<AnnotationSpec>(),
+                        new ArrayList<Class<? extends Annotation>>(),
+                        true,
+                        null)))
+            .build();
 
     when(mTreeProp.getName()).thenReturn("treeProp");
     when(mTreeProp.getTypeName()).thenReturn(TypeName.INT);
@@ -102,48 +103,52 @@ public class TreePropGeneratorTest {
     when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.of(mTreeProp));
 
     mGenericOnCreateTreePropMethodModel =
-        new SpecMethodModel<DelegateMethod, Void>(
-            ImmutableList.<Annotation>of(
-                new OnCreateTreeProp() {
+        SpecMethodModel.<DelegateMethod, Void>builder()
+            .annotations(
+                ImmutableList.<Annotation>of(
+                    new OnCreateTreeProp() {
 
-                  @Override
-                  public Class<? extends Annotation> annotationType() {
-                    return OnCreateTreeProp.class;
-                  }
-                }),
-            ImmutableList.of(Modifier.PROTECTED),
-            "onCreateTreeProp",
-            new TypeSpec.DeclaredTypeSpec(
-                ClassName.get(GenericObject.class),
-                GenericObject.class.getName(),
-                () -> new TypeSpec(TypeName.OBJECT),
-                ImmutableList.of(),
-                ImmutableList.of(new TypeSpec(TypeName.INT))),
-            ImmutableList.<TypeVariableName>of(),
-            ImmutableList.of(
-                MethodParamModelFactory.create(
-                    new TypeSpec(ClassNames.COMPONENT_CONTEXT),
-                    "componentContext",
-                    new ArrayList<Annotation>(),
-                    new ArrayList<AnnotationSpec>(),
-                    new ArrayList<Class<? extends Annotation>>(),
-                    true,
-                    null),
-                MethodParamModelFactory.create(
-                    new TypeSpec.DeclaredTypeSpec(
-                        ClassName.get(GenericObject.class),
-                        GenericObject.class.getName(),
-                        () -> new TypeSpec(TypeName.OBJECT),
-                        ImmutableList.of(),
-                        ImmutableList.of(new TypeSpec(TypeName.INT))),
-                    "prop",
-                    ImmutableList.of(createAnnotation(Prop.class)),
-                    new ArrayList<AnnotationSpec>(),
-                    new ArrayList<Class<? extends Annotation>>(),
-                    true,
-                    null)),
-            null,
-            null);
+                      @Override
+                      public Class<? extends Annotation> annotationType() {
+                        return OnCreateTreeProp.class;
+                      }
+                    }))
+            .modifiers(ImmutableList.of(Modifier.PROTECTED))
+            .name("onCreateTreeProp")
+            .returnTypeSpec(
+                new TypeSpec.DeclaredTypeSpec(
+                    ClassName.get(GenericObject.class),
+                    GenericObject.class.getName(),
+                    () -> new TypeSpec(TypeName.OBJECT),
+                    ImmutableList.of(),
+                    ImmutableList.of(new TypeSpec(TypeName.INT))))
+            .typeVariables(ImmutableList.<TypeVariableName>of())
+            .methodParams(
+                ImmutableList.of(
+                    MethodParamModelFactory.create(
+                        new TypeSpec(ClassNames.COMPONENT_CONTEXT),
+                        "componentContext",
+                        new ArrayList<Annotation>(),
+                        new ArrayList<AnnotationSpec>(),
+                        new ArrayList<Class<? extends Annotation>>(),
+                        true,
+                        null),
+                    MethodParamModelFactory.create(
+                        new TypeSpec.DeclaredTypeSpec(
+                            ClassName.get(GenericObject.class),
+                            GenericObject.class.getName(),
+                            () -> new TypeSpec(TypeName.OBJECT),
+                            ImmutableList.of(),
+                            ImmutableList.of(new TypeSpec(TypeName.INT))),
+                        "prop",
+                        ImmutableList.of(createAnnotation(Prop.class)),
+                        new ArrayList<AnnotationSpec>(),
+                        new ArrayList<Class<? extends Annotation>>(),
+                        true,
+                        null)))
+            .representedObject(null)
+            .typeModel(null)
+            .build();
 
     when(mGenericTreeProp.getName()).thenReturn("genericTreeProp");
     when(mGenericTreeProp.getTypeName())

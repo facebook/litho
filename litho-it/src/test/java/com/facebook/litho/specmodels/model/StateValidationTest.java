@@ -103,15 +103,16 @@ public class StateValidationTest {
             .build();
 
     SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel =
-        new SpecMethodModel<UpdateStateMethod, Void>(
-            null,
-            ImmutableList.of(Modifier.STATIC),
-            null,
-            null,
-            ImmutableList.of(),
-            ImmutableList.of(methodParamModel1, methodParamModel2),
-            mRepresentedObject3,
-            null);
+        SpecMethodModel.<UpdateStateMethod, Void>builder()
+            .annotations(null)
+            .modifiers(ImmutableList.of(Modifier.STATIC))
+            .name(null)
+            .returnTypeSpec(null)
+            .typeVariables(ImmutableList.of())
+            .methodParams(ImmutableList.of(methodParamModel1, methodParamModel2))
+            .representedObject(mRepresentedObject3)
+            .typeModel(null)
+            .build();
 
     when(mPropModel.getName()).thenReturn("propName");
     when(mStateParamModel.getName()).thenReturn("stateName");
@@ -165,16 +166,16 @@ public class StateValidationTest {
             .build();
 
     SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel =
-        new SpecMethodModel<UpdateStateMethod, Void>(
-            null,
-            ImmutableList.of(Modifier.STATIC),
-            "methodName",
-            null,
-            ImmutableList.of(),
-            ImmutableList.of(
-                methodParamModel1, methodParamModel2, methodParamModel3, methodParamModel4),
-            mRepresentedObject5,
-            null);
+        SpecMethodModel.<UpdateStateMethod, Void>builder()
+            .annotations(null)
+            .modifiers(ImmutableList.of(Modifier.STATIC))
+            .name("methodName")
+            .returnTypeSpec(null)
+            .methodParams(
+                ImmutableList.of(
+                    methodParamModel1, methodParamModel2, methodParamModel3, methodParamModel4))
+            .representedObject(mRepresentedObject5)
+            .build();
 
     List<SpecModelValidationError> validationErrors =
         StateValidation.validateOnUpdateStateMethod(mSpecModel, updateStateMethodModel);
@@ -212,15 +213,16 @@ public class StateValidationTest {
             .build();
 
     SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel =
-        new SpecMethodModel<UpdateStateMethod, Void>(
-            null,
-            ImmutableList.of(Modifier.STATIC),
-            "methodName",
-            null,
-            ImmutableList.of(),
-            ImmutableList.of(methodParamModel4),
-            mRepresentedObject2,
-            null);
+        SpecMethodModel.<UpdateStateMethod, Void>builder()
+            .annotations(null)
+            .modifiers(ImmutableList.of(Modifier.STATIC))
+            .name("methodName")
+            .returnTypeSpec(null)
+            .typeVariables(ImmutableList.of())
+            .methodParams(ImmutableList.of(methodParamModel4))
+            .representedObject(mRepresentedObject2)
+            .typeModel(null)
+            .build();
 
     List<SpecModelValidationError> validationErrors =
         StateValidation.validateOnUpdateStateMethod(mSpecModel, updateStateMethodModel);
@@ -234,15 +236,16 @@ public class StateValidationTest {
   @Test
   public void testOnUpdateStateNotStatic() {
     SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel =
-        new SpecMethodModel<UpdateStateMethod, Void>(
-            null,
-            ImmutableList.<Modifier>of(),
-            "methodName",
-            null,
-            ImmutableList.of(),
-            ImmutableList.<MethodParamModel>of(),
-            mRepresentedObject1,
-            null);
+        SpecMethodModel.<UpdateStateMethod, Void>builder()
+            .annotations(null)
+            .modifiers(ImmutableList.<Modifier>of())
+            .name("methodName")
+            .returnTypeSpec(null)
+            .typeVariables(ImmutableList.of())
+            .methodParams(ImmutableList.<MethodParamModel>of())
+            .representedObject(mRepresentedObject1)
+            .typeModel(null)
+            .build();
 
     List<SpecModelValidationError> validationErrors =
         StateValidation.validateOnUpdateStateMethod(mSpecModel, updateStateMethodModel);

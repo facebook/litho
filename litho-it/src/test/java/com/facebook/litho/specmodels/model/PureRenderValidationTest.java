@@ -30,21 +30,22 @@ public class PureRenderValidationTest {
   @Before
   public void setup() {
     SpecMethodModel<DelegateMethod, Void> delegateMethod =
-        new SpecMethodModel<DelegateMethod, Void>(
-            ImmutableList.<Annotation>of(
-                new Annotation() {
-                  @Override
-                  public Class<? extends Annotation> annotationType() {
-                    return ShouldUpdate.class;
-                  }
-                }),
-            ImmutableList.<Modifier>of(),
-            "method",
-            new TypeSpec(TypeName.BOOLEAN),
-            ImmutableList.of(),
-            ImmutableList.<MethodParamModel>of(),
-            mDelegateMethodRepresentedObject1,
-            null);
+        SpecMethodModel.<DelegateMethod, Void>builder()
+            .annotations(
+                ImmutableList.<Annotation>of(
+                    new Annotation() {
+                      @Override
+                      public Class<? extends Annotation> annotationType() {
+                        return ShouldUpdate.class;
+                      }
+                    }))
+            .modifiers(ImmutableList.<Modifier>of())
+            .name("method")
+            .returnTypeSpec(new TypeSpec(TypeName.BOOLEAN))
+            .typeVariables(ImmutableList.of())
+            .methodParams(ImmutableList.<MethodParamModel>of())
+            .representedObject(mDelegateMethodRepresentedObject1)
+            .build();
     when(mSpecModel.getDelegateMethods()).thenReturn(ImmutableList.of(delegateMethod));
   }
 

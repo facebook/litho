@@ -52,4 +52,73 @@ public final class SpecMethodModel<Phantom, A> {
     this.representedObject = representedObject;
     this.typeModel = typeModel;
   }
+
+  public static <Phantom, A> Builder<Phantom, A> builder() {
+    return new Builder<>();
+  }
+
+  public static class Builder<Phantom, A> {
+    private ImmutableList<Annotation> mAnnotations = ImmutableList.of();
+    private ImmutableList<Modifier> mModifiers = ImmutableList.of();
+    private CharSequence mName;
+    private TypeSpec mReturnTypeSpec;
+    private ImmutableList<TypeVariableName> mTypeVariables = ImmutableList.of();
+    private ImmutableList<MethodParamModel> mMethodParams = ImmutableList.of();
+    private Object mRepresentedObject;
+    private A mTypeModel;
+
+    private Builder() {}
+
+    public Builder<Phantom, A> annotations(ImmutableList<Annotation> annotations) {
+      mAnnotations = annotations;
+      return this;
+    }
+
+    public Builder<Phantom, A> modifiers(ImmutableList<Modifier> modifiers) {
+      mModifiers = modifiers;
+      return this;
+    }
+
+    public Builder<Phantom, A> name(CharSequence name) {
+      mName = name;
+      return this;
+    }
+
+    public Builder<Phantom, A> returnTypeSpec(TypeSpec returnTypeSpec) {
+      mReturnTypeSpec = returnTypeSpec;
+      return this;
+    }
+
+    public Builder<Phantom, A> typeVariables(ImmutableList<TypeVariableName> typeVariables) {
+      mTypeVariables = typeVariables;
+      return this;
+    }
+
+    public Builder<Phantom, A> methodParams(ImmutableList<MethodParamModel> methodParams) {
+      mMethodParams = methodParams;
+      return this;
+    }
+
+    public Builder<Phantom, A> representedObject(Object representedObject) {
+      mRepresentedObject = representedObject;
+      return this;
+    }
+
+    public Builder<Phantom, A> typeModel(A typeModel) {
+      mTypeModel = typeModel;
+      return this;
+    }
+
+    public SpecMethodModel<Phantom, A> build() {
+      return new SpecMethodModel<>(
+          mAnnotations,
+          mModifiers,
+          mName,
+          mReturnTypeSpec,
+          mTypeVariables,
+          mMethodParams,
+          mRepresentedObject,
+          mTypeModel);
+    }
+  }
 }

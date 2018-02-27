@@ -98,16 +98,18 @@ public class EventMethodExtractor {
                 : EventDeclarationsExtractor.getFields(eventClass);
 
         final SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =
-            new SpecMethodModel<EventMethod, EventDeclarationModel>(
-                ImmutableList.<Annotation>of(),
-                ImmutableList.copyOf(new ArrayList<>(executableElement.getModifiers())),
-                executableElement.getSimpleName(),
-                generateTypeSpec(executableElement.getReturnType()),
-                ImmutableList.copyOf(getTypeVariables(executableElement)),
-                ImmutableList.copyOf(methodParams),
-                executableElement,
-                new EventDeclarationModel(
-                    ClassName.bestGuess(eventClass.toString()), returnType, fields, eventClass));
+            SpecMethodModel.<EventMethod, EventDeclarationModel>builder()
+                .annotations(ImmutableList.of())
+                .modifiers(ImmutableList.copyOf(new ArrayList<>(executableElement.getModifiers())))
+                .name(executableElement.getSimpleName())
+                .returnTypeSpec(generateTypeSpec(executableElement.getReturnType()))
+                .typeVariables(ImmutableList.copyOf(getTypeVariables(executableElement)))
+                .methodParams(ImmutableList.copyOf(methodParams))
+                .representedObject(executableElement)
+                .typeModel(
+                    new EventDeclarationModel(
+                        ClassName.bestGuess(eventClass.toString()), returnType, fields, eventClass))
+                .build();
         delegateMethods.add(eventMethod);
       }
     }

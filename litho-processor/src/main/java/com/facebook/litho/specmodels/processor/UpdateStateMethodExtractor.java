@@ -70,15 +70,16 @@ public class UpdateStateMethodExtractor {
                 ImmutableList.<Class<? extends Annotation>>of());
 
         final SpecMethodModel<UpdateStateMethod, Void> delegateMethod =
-            new SpecMethodModel<UpdateStateMethod, Void>(
-                ImmutableList.<Annotation>of(onUpdateStateAnnotation),
-                copyOf(new ArrayList<>(executableElement.getModifiers())),
-                executableElement.getSimpleName(),
-                generateTypeSpec(executableElement.getReturnType()),
-                ImmutableList.of(),
-                copyOf(methodParams),
-                executableElement,
-                null);
+            SpecMethodModel.<UpdateStateMethod, Void>builder()
+                .annotations(ImmutableList.<Annotation>of(onUpdateStateAnnotation))
+                .modifiers(copyOf(new ArrayList<>(executableElement.getModifiers())))
+                .name(executableElement.getSimpleName())
+                .returnTypeSpec(generateTypeSpec(executableElement.getReturnType()))
+                .typeVariables(ImmutableList.of())
+                .methodParams(copyOf(methodParams))
+                .representedObject(executableElement)
+                .typeModel(null)
+                .build();
         delegateMethods.add(delegateMethod);
       }
     }

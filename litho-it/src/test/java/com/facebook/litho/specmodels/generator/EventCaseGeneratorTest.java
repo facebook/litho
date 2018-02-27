@@ -14,6 +14,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
+import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.TypeSpec;
 import com.squareup.javapoet.ClassName;
@@ -33,15 +34,11 @@ public class EventCaseGeneratorTest {
         .contextClass(ClassNames.COMPONENT_CONTEXT)
         .eventMethodModels(
             ImmutableList.of(
-                new SpecMethodModel<>(
-                    ImmutableList.of(),
-                    ImmutableList.of(),
-                    "event",
-                    new TypeSpec(TypeName.VOID),
-                    ImmutableList.of(),
-                    ImmutableList.of(),
-                    null,
-                    model)))
+                SpecMethodModel.<EventMethod, EventDeclarationModel>builder()
+                    .name("event")
+                    .returnTypeSpec(new TypeSpec(TypeName.VOID))
+                    .typeModel(model)
+                    .build()))
         .writeTo(methodBuilder);
 
     assertThat(methodBuilder.build().toString())

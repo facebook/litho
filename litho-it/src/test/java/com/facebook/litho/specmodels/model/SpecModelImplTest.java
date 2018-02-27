@@ -122,36 +122,30 @@ public class SpecModelImplTest {
     params3.add(mTreePropModel2);
 
     mMethodModel1 =
-        new SpecMethodModel<DelegateMethod, Void>(
-            ImmutableList.<Annotation>of(),
-            ImmutableList.<Modifier>of(),
-            "method1",
-            new TypeSpec(TypeName.BOOLEAN),
-            ImmutableList.of(),
-            ImmutableList.copyOf(params1),
-            null,
-            null);
+        SpecMethodModel.<DelegateMethod, Void>builder()
+            .annotations(ImmutableList.of())
+            .modifiers(ImmutableList.<Modifier>of())
+            .name("method1")
+            .returnTypeSpec(new TypeSpec(TypeName.BOOLEAN))
+            .methodParams(ImmutableList.copyOf(params1))
+            .build();
     mMethodModel2 =
-        new SpecMethodModel<DelegateMethod, Void>(
-            ImmutableList.<Annotation>of(),
-            ImmutableList.<Modifier>of(),
-            "method2",
-            new TypeSpec(TypeName.BOOLEAN),
-            ImmutableList.of(),
-            ImmutableList.copyOf(params2),
-            null,
-            null);
+        SpecMethodModel.<DelegateMethod, Void>builder()
+            .annotations(ImmutableList.<Annotation>of())
+            .modifiers(ImmutableList.<Modifier>of())
+            .name("method2")
+            .returnTypeSpec(new TypeSpec(TypeName.BOOLEAN))
+            .methodParams(ImmutableList.copyOf(params2))
+            .build();
 
     mTriggerMethodModel =
-        new SpecMethodModel<EventMethod, EventDeclarationModel>(
-            ImmutableList.<Annotation>of(),
-            ImmutableList.<Modifier>of(),
-            "method3",
-            new TypeSpec(TypeName.BOOLEAN),
-            ImmutableList.of(),
-            ImmutableList.copyOf(params3),
-            null,
-            null);
+        SpecMethodModel.<EventMethod, EventDeclarationModel>builder()
+            .annotations(ImmutableList.<Annotation>of())
+            .modifiers(ImmutableList.<Modifier>of())
+            .name("method3")
+            .returnTypeSpec(new TypeSpec(TypeName.BOOLEAN))
+            .methodParams(ImmutableList.copyOf(params3))
+            .build();
 
     mTypeVariableNames.add(mTypeVariableName1);
     mTypeVariableNames.add(mTypeVariableName2);
