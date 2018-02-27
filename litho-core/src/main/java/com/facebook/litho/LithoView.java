@@ -773,4 +773,9 @@ public class LithoView extends ComponentHost {
 
     int getHeightMeasureSpec();
   }
+
+  @Override
+  public String toString() {
+    return LithoViewTestHelper.viewToString(this, true);
+  }
 }

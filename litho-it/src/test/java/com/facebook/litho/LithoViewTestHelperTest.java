@@ -62,7 +62,9 @@ public class LithoViewTestHelperTest {
     final String string = LithoViewTestHelper.viewToString(lithoView);
 
     assertThat(string)
-        .isEqualTo("InlineLayout{0, 0 - 100, 100}\n" + "  TestDrawableComponent{0, 0 - 100, 100}");
+        .containsPattern(
+            "litho.InlineLayout\\{\\w{8} V.E..... .. 0,0-100,100\\}\n"
+                + "  litho.TestDrawableComponent\\{\\w{8} V.E..... .. 0,0-100,100\\}");
   }
 
   @Test
@@ -97,9 +99,9 @@ public class LithoViewTestHelperTest {
 
     final String string = LithoViewTestHelper.viewToString(lithoView);
     assertThat(string)
-        .isEqualTo(
-            "InlineLayout{0, 0 - 100, 100}\n"
-                + "  TestDrawableComponent{0, 0 - 100, 100 testKey=\"test-drawable\"}\n"
-                + "  Text{0, 100 - 100, 100 text=\"Hello, World\"}");
+        .containsPattern(
+            "litho.InlineLayout\\{\\w{8} V.E..... .. 0,0-100,100\\}\n"
+                + "  litho.TestDrawableComponent\\{\\w{8} V.E..... .. 0,0-100,100 litho:id/test-drawable\\}\n"
+                + "  litho.Text\\{\\w{8} V.E..... .. 0,100-100,100 text=\"Hello, World\"\\}");
   }
 }

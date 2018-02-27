@@ -13,6 +13,8 @@ import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.view.View;
+import android.view.ViewParent;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -91,67 +93,99 @@ public class LithoViewTestHelper {
     return lithoView.findTestItems(testKey);
   }
 
-  /**
-   * Provide a nested string representation of a LithoView and its nested
-   * components for debugging purposes.
-   *
-   * @param view A Litho view with mounted components.
-   */
   @DoNotStrip
   public static String viewToString(LithoView view) {
-    return viewToString(DebugComponent.getRootInstance(view), 0);
+    return viewToString(view, false);
   }
 
-  private static String viewToString(@Nullable DebugComponent debugComponent, int depth) {
-    if (debugComponent == null) {
-      return "";
+  /**
+   * Provide a nested string representation of a LithoView and its nested components for debugging
+   * purposes.
+   *
+   * @param view A Litho view with mounted components.
+   * @param embedded if the call is embedded in "adb dumpsys activity"
+   */
+  @DoNotStrip
+  public static String viewToString(LithoView view, boolean embedded) {
+    int left = 0;
+    int top = 0;
+    int depth = 0;
+    if (embedded) {
+      left = view.getLeft();
+      top = view.getTop();
+      depth = 2;
+      ViewParent parent = view.getParent();
+      while (parent != null) {
+        depth++;
+        parent = parent.getParent();
+      }
     }
-
     final StringBuilder sb = new StringBuilder();
+    viewToString(left, top, DebugComponent.getRootInstance(view), sb, embedded, depth);
+    return sb.toString();
+  }
 
-    if (depth > 0) {
-      sb.append('\n');
+  private static void viewToString(
+      int left,
+      int top,
+      @Nullable DebugComponent debugComponent,
+      StringBuilder sb,
+      boolean embedded,
+      int depth) {
+    if (debugComponent == null) {
+      return;
     }
 
-    for (int i = 0; i < depth; i++) {
-      sb.append("  ");
-    }
-
+    sb.append("litho.");
     sb.append(debugComponent.getComponent().getSimpleName());
 
-    final Rect bounds = debugComponent.getBounds();
     sb.append('{');
+    sb.append(Integer.toHexString(debugComponent.hashCode()));
+    sb.append(' ');
 
-    sb.append(bounds.left);
-    sb.append(", ");
-    sb.append(bounds.top);
-    sb.append(" - ");
-    sb.append(bounds.right);
-    sb.append(", ");
-    sb.append(bounds.bottom);
+    final LithoView lithoView = debugComponent.getLithoView();
+    final DebugLayoutNode layout = debugComponent.getLayoutNode();
+    sb.append(lithoView != null && lithoView.getVisibility() == View.VISIBLE ? "V" : ".");
+    sb.append(layout != null && layout.getFocusable() ? "F" : ".");
+    sb.append(lithoView != null && lithoView.isEnabled() ? "E" : ".");
+    sb.append(".");
+    sb.append(lithoView != null && lithoView.isHorizontalScrollBarEnabled() ? "H" : ".");
+    sb.append(lithoView != null && lithoView.isVerticalScrollBarEnabled() ? "V" : ".");
+    sb.append(layout != null && layout.getClickHandler() != null ? "C" : ".");
+    sb.append(". .. ");
+
+    final Rect bounds = debugComponent.getBounds();
+    sb.append(left + bounds.left);
+    sb.append(",");
+    sb.append(top + bounds.top);
+    sb.append("-");
+    sb.append(left + bounds.right);
+    sb.append(",");
+    sb.append(top + bounds.bottom);
 
     final String testKey = debugComponent.getTestKey();
-    if (!TextUtils.isEmpty(testKey)) {
-      sb.append(String.format(" testKey=\"%s\"", testKey));
+    if (testKey != null && !TextUtils.isEmpty(testKey)) {
+      sb.append(String.format(" litho:id/%s", testKey.replace(' ', '_')));
     }
 
     final String textContent = debugComponent.getTextContent();
-    if (!TextUtils.isEmpty(textContent)) {
-      sb.append(String.format(" text=\"%s\"", textContent));
+    if (textContent != null && !TextUtils.isEmpty(textContent)) {
+      sb.append(String.format(" text=\"%s\"", textContent.replace("\n", "").replace("\"", "")));
     }
 
-    final DebugLayoutNode layout = debugComponent.getLayoutNode();
-    if (layout != null && layout.getClickHandler() != null) {
+    if (!embedded && layout != null && layout.getClickHandler() != null) {
       sb.append(" [clickable]");
     }
 
     sb.append('}');
 
     for (DebugComponent child : debugComponent.getChildComponents()) {
-      sb.append(viewToString(child, depth + 1));
+      sb.append("\n");
+      for (int i = 0; i <= depth; i++) {
+        sb.append("  ");
+      }
+      viewToString(0, 0, child, sb, embedded, depth + 1);
     }
-
-    return sb.toString();
   }
 
   /**

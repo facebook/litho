@@ -57,7 +57,7 @@ public class LithoRepresentationTest {
       LithoAssertions.assertThat(layout).has(subComponentWith(c, textEquals("Doesn't match.")));
     } catch (final AssertionError assertionError) {
       LithoAssertions.assertThat(assertionError)
-          .hasMessageContaining("Text{0, 0 - 100, 100 text=\"Hello, World!\"");
+          .hasMessageContaining(" 0,0-100,100 text=\"Hello, World!\"");
     }
 
     // Verify that resetting the representation in the same
@@ -67,7 +67,7 @@ public class LithoRepresentationTest {
       LithoAssertions.assertThat(layout).has(subComponentWith(c, textEquals("Doesn't match.")));
     } catch (final AssertionError assertionError) {
       LithoAssertions.assertThat(assertionError.getMessage())
-          .doesNotContain("Text{0, 0 - 100, 100 text=\"Hello, World!\"");
+          .doesNotContain(" 0,0-100,100 text=\"Hello, World!\"");
     }
   }
 }
