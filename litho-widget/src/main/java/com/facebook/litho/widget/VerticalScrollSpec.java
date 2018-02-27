@@ -9,11 +9,11 @@
 
 package com.facebook.litho.widget;
 
-import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.content.Context;
+import android.support.v4.util.Pools;
 import android.view.ViewTreeObserver;
 import android.widget.ScrollView;
 import com.facebook.litho.Component;
@@ -26,7 +26,8 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.FromBind;
-import com.facebook.litho.annotations.FromPrepare;
+import com.facebook.litho.annotations.FromBoundsDefined;
+import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnBoundsDefined;
@@ -34,7 +35,6 @@ import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
-import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
@@ -58,13 +58,7 @@ public class VerticalScrollSpec {
   @PropDefault static final boolean scrollbarEnabled = true;
   @PropDefault static final boolean scrollbarFadingEnabled = true;
 
-  @OnPrepare
-  static void onPrepare(
-      ComponentContext context,
-      @Prop Component childComponent,
-      Output<ComponentTree> childComponentTree) {
-    childComponentTree.set(ComponentTree.create(context, childComponent).build());
-  }
+  private static final Pools.SynchronizedPool<Size> sSizePool = new Pools.SynchronizedPool<>(2);
 
   @OnMeasure
   static void onMeasure(
@@ -73,38 +67,63 @@ public class VerticalScrollSpec {
       int widthSpec,
       int heightSpec,
       Size size,
-      @FromPrepare ComponentTree childComponentTree) {
-    measureVerticalScroll(widthSpec, heightSpec, size, childComponentTree);
+      @Prop Component childComponent,
+      Output<Integer> measuredComponentWidth,
+      Output<Integer> measuredComponentHeight) {
+    final int measuredWidth;
+    final int measuredHeight;
+
+    final Size measuredSize = acquireSize();
+
+    childComponent.measure(context, widthSpec, SizeSpec.makeSizeSpec(0, UNSPECIFIED), measuredSize);
+
+    measuredWidth = measuredSize.width;
+    measuredHeight = measuredSize.height;
+
+    releaseSize(measuredSize);
+
+    measuredComponentWidth.set(measuredWidth);
+    measuredComponentHeight.set(measuredHeight);
+
+    // If size constraints were not explicitly defined, just fallback to the
+    // component dimensions instead.
+    size.height =
+        SizeSpec.getMode(heightSpec) == UNSPECIFIED ? measuredHeight : SizeSpec.getSize(heightSpec);
+    size.width = measuredWidth;
   }
 
   @OnBoundsDefined
   static void onBoundsDefined(
-      ComponentContext c, ComponentLayout layout, @FromPrepare ComponentTree childComponentTree) {
-    measureVerticalScroll(
-        SizeSpec.makeSizeSpec(layout.getWidth(), EXACTLY),
-        SizeSpec.makeSizeSpec(layout.getHeight(), EXACTLY),
-        null,
-        childComponentTree);
-  }
+      ComponentContext c,
+      ComponentLayout layout,
+      @Prop Component childComponent,
+      @FromMeasure Integer measuredComponentWidth,
+      @FromMeasure Integer measuredComponentHeight,
+      Output<Integer> componentWidth,
+      Output<Integer> componentHeight) {
+    // If onMeasure() has been called, this means the content component already
+    // has a defined size, no need to calculate it again.
+    if (measuredComponentWidth != null && measuredComponentHeight != null) {
+      componentWidth.set(measuredComponentWidth);
+      componentHeight.set(measuredComponentHeight);
+    } else {
+      final int measuredWidth;
+      final int measuredHeight;
 
-  static void measureVerticalScroll(
-      int widthSpec, int heightSpec, Size size, ComponentTree childComponentTree) {
-    childComponentTree.setSizeSpec(widthSpec, SizeSpec.makeSizeSpec(0, UNSPECIFIED), size);
+      Size contentSize = acquireSize();
+      childComponent.measure(
+          c,
+          SizeSpec.makeSizeSpec(layout.getWidth(), EXACTLY),
+          SizeSpec.makeSizeSpec(0, UNSPECIFIED),
+          contentSize);
 
-    // If we were measuring the component now we want to compute the appropriate size depending on
-    // the heightSpec
-    if (size != null) {
-      switch (SizeSpec.getMode(heightSpec)) {
-          // If this Vertical scroll is being measured with a fixed height we don't care about
-          // the size of the content and just use that instead
-        case EXACTLY:
-          size.height = SizeSpec.getSize(heightSpec);
-          break;
-          // For at most we want the VerticalScroll to be as big as its content up to the maximum
-          // height specified in the heightSpec
-        case AT_MOST:
-          size.height = Math.min(SizeSpec.getSize(heightSpec), size.height);
-      }
+      measuredWidth = contentSize.width;
+      measuredHeight = contentSize.height;
+
+      releaseSize(contentSize);
+
+      componentWidth.set(measuredWidth);
+      componentHeight.set(measuredHeight);
     }
   }
 
@@ -117,6 +136,7 @@ public class VerticalScrollSpec {
   static void onCreateInitialState(
       ComponentContext context,
       StateValue<ScrollPosition> scrollPosition,
+      @Prop Component childComponent,
       @Prop(optional = true) Integer initialScrollOffsetPixels) {
     ScrollPosition initialScrollPosition = new ScrollPosition();
     initialScrollPosition.y = initialScrollOffsetPixels == null ? 0 : initialScrollOffsetPixels;
@@ -129,9 +149,11 @@ public class VerticalScrollSpec {
       final LithoScrollView lithoScrollView,
       @Prop(optional = true) boolean scrollbarEnabled,
       @Prop(optional = true) boolean scrollbarFadingEnabled,
-      @FromPrepare ComponentTree childComponentTree,
-      @State final ScrollPosition scrollPosition) {
-    lithoScrollView.mount(childComponentTree);
+      @Prop Component childComponent,
+      @State final ScrollPosition scrollPosition,
+      @FromBoundsDefined int componentWidth,
+      @FromBoundsDefined int componentHeight) {
+    lithoScrollView.mount(childComponent, componentWidth, componentHeight);
     lithoScrollView.setVerticalScrollBarEnabled(scrollbarEnabled);
     lithoScrollView.setScrollbarFadingEnabled(scrollbarFadingEnabled);
   }
@@ -190,6 +212,8 @@ public class VerticalScrollSpec {
   static class LithoScrollView extends ScrollView {
 
     private final LithoView mLithoView;
+    private int mComponentWidth;
+    private int mComponentHeight;
 
     LithoScrollView(Context context) {
       super(context);
@@ -198,23 +222,60 @@ public class VerticalScrollSpec {
     }
 
     @Override
-    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
-      super.onScrollChanged(l, t, oldl, oldt);
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+      // The hosting component view always matches the component size. This will
+      // ensure that there will never be a size-mismatch between the view and the
+      // component-based content, which would trigger a layout pass in the
+      // UI thread.
+      mLithoView.measure(
+          MeasureSpec.makeMeasureSpec(mComponentWidth, MeasureSpec.EXACTLY),
+          MeasureSpec.makeMeasureSpec(mComponentHeight, MeasureSpec.EXACTLY));
 
-      // Perform incremental mount since visible region has changed.
-      mLithoView.performIncrementalMount();
+      // The mounted view always gets exact dimensions from the framework.
+      setMeasuredDimension(
+          MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));
     }
 
-    private void mount(ComponentTree contentComponentTree) {
-      mLithoView.setComponentTree(contentComponentTree);
+    @Override
+    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+      super.onScrollChanged(l, t, oldl, oldt);
+    }
+
+    private void mount(Component component, int componentWidth, int componentHeight) {
+      if (mLithoView.getComponentTree() == null) {
+        mLithoView.setComponentTree(
+            ComponentTree.create(mLithoView.getComponentContext(), component)
+                .incrementalMount(false)
+                .build());
+      } else {
+        mLithoView.setComponent(component);
+      }
+
+      mComponentWidth = componentWidth;
+      mComponentHeight = componentHeight;
     }
 
     private void unmount() {
-      mLithoView.setComponentTree(null);
+      mLithoView.unbind();
+      mComponentWidth = 0;
+      mComponentHeight = 0;
     }
   }
 
   static class ScrollPosition {
     int y = 0;
+  }
+
+  private static Size acquireSize() {
+    Size size = sSizePool.acquire();
+    if (size == null) {
+      size = new Size();
+    }
+
+    return size;
+  }
+
+  private static void releaseSize(Size size) {
+    sSizePool.release(size);
   }
 }
