@@ -140,4 +140,16 @@ public class ComponentTreeNewLayoutStateReadyListenerTest {
 
     verify(mListener, never()).onNewLayoutStateReady(mComponentTree);
   }
+
+  @Test
+  public void testListenerNotInvokedWhenNewMeasureSpecsAreCompatible() {
+    mComponentTree.setLithoView(new LithoView(mContext));
+    mComponentTree.attach();
+    mComponentTree.setSizeSpec(mWidthSpec, mHeightSpec);
+    mComponentTree.setNewLayoutStateReadyListener(mListener);
+
+    mComponentTree.setSizeSpec(mWidthSpec, mHeightSpec);
+
+    verify(mListener, never()).onNewLayoutStateReady(mComponentTree);
+  }
 }
