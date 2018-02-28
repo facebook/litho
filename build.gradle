@@ -40,6 +40,17 @@ subprojects {
     apply plugin: 'net.ltgt.errorprone'
 }
 
+allprojects {
+  /* Prevents sporadic compilation error:
+   * 'Bad service configuration file, or exception thrown while constructing
+   *  Processor object: javax.annotation.processing.Processor: Error reading
+   *  configuration file'
+   *
+   * See https://discuss.gradle.org/t/gradle-not-compiles-with-solder-tooling-jar/7583/20
+   */
+  tasks.withType(JavaCompile) { options.fork = true }
+}
+
 ext {
     minSdkVersion = 15
     targetSdkVersion = 25
