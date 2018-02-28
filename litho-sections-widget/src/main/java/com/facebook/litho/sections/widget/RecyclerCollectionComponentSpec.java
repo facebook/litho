@@ -252,6 +252,11 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) RecyclerCollectionEventsController eventsController,
       @Prop(optional = true) boolean asyncPropUpdates,
       @Prop(optional = true) boolean asyncStateUpdates,
+      // NB: This is a *workaround* for sections that use non-threadsafe models, e.g. models that
+      // may be updated from the main thread while background changesets would be calculated. It has
+      // negative performance implications since it forces all changesets to be calculated on the
+      // main thread!
+      @Prop(optional = true) boolean forceSyncStateUpdates,
       // Caution: ignoreLoadingUpdates breaks loadingComponent/errorComponent/emptyComponent.
       // It's intended to be a temporary workaround, not something you should use often.
       @Prop(optional = true) boolean ignoreLoadingUpdates,
@@ -277,6 +282,7 @@ public class RecyclerCollectionComponentSpec {
                     : sectionTreeTag)
             .asyncPropUpdates(asyncPropUpdates)
             .asyncStateUpdates(asyncStateUpdates)
+            .forceSyncStateUpdates(forceSyncStateUpdates)
             .build();
     sectionTree.set(sectionTreeInstance);
 
