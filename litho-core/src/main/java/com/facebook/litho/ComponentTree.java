@@ -90,6 +90,14 @@ public class ComponentTree {
     void onSetRootAndSizeSpec(int width, int height);
   }
 
+  /**
+   * Listener that will be notified when a new LayoutState is computed and ready to be committed to
+   * this ComponentTree.
+   */
+  public interface NewLayoutStateReadyListener {
+    void onNewLayoutStateReady(ComponentTree componentTree);
+  }
+
   private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
   private static final Handler sMainThreadHandler = new ComponentMainThreadHandler();
   // Do not access sDefaultLayoutThreadLooper directly, use getDefaultLayoutThreadLooper().
@@ -147,6 +155,8 @@ public class ComponentTree {
   private LithoView mLithoView;
   @ThreadConfined(ThreadConfined.UI)
   private LayoutHandler mLayoutThreadHandler;
+
+  private volatile NewLayoutStateReadyListener mNewLayoutStateReadyListener;
 
   @GuardedBy("this")
   private boolean mHasViewMeasureSpec;
@@ -332,12 +342,25 @@ public class ComponentTree {
     }
   }
 
+  public void setNewLayoutStateReadyListener(NewLayoutStateReadyListener listener) {
+    mNewLayoutStateReadyListener = listener;
+  }
+
+  @ThreadConfined(ThreadConfined.UI)
+  private void dispatchNewLayoutStateReady() {
+    final NewLayoutStateReadyListener listener = mNewLayoutStateReadyListener;
+    if (listener != null) {
+      listener.onNewLayoutStateReady(this);
+    }
+  }
+
   private void backgroundLayoutStateUpdated() {
     assertMainThread();
 
     // If we aren't attached, then we have nothing to do. We'll handle
     // everything in onAttach.
     if (!mIsAttached) {
+      dispatchNewLayoutStateReady();
       return;
     }
 
@@ -364,6 +387,8 @@ public class ComponentTree {
     if (!layoutStateUpdated) {
       return;
     }
+
+    dispatchNewLayoutStateReady();
 
     // We defer until measure if we don't yet have a width/height
     final int viewWidth = mLithoView.getMeasuredWidth();
@@ -745,6 +770,8 @@ public class ComponentTree {
 
       // We need to force remount on layout
       mLithoView.setMountStateDirty();
+
+      dispatchNewLayoutStateReady();
     }
 
     measureOutput[0] = mMainThreadLayoutState.getWidth();
