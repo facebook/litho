@@ -33,10 +33,6 @@ public class LithoViewTestHelperTest {
         ComponentsConfiguration.IS_INTERNAL_BUILD);
   }
 
-  @Before
-  public void setup() {
-  }
-
   @Test
   public void testBasicViewToString() {
     final Component component =
@@ -63,8 +59,8 @@ public class LithoViewTestHelperTest {
 
     assertThat(string)
         .containsPattern(
-            "litho.InlineLayout\\{\\w{8} V.E..... .. 0,0-100,100\\}\n"
-                + "  litho.TestDrawableComponent\\{\\w{8} V.E..... .. 0,0-100,100\\}");
+            "litho.InlineLayout\\{\\w+ V.E..... .. 0,0-100,100\\}\n"
+                + "  litho.TestDrawableComponent\\{\\w+ V.E..... .. 0,0-100,100\\}");
   }
 
   @Test
@@ -100,8 +96,8 @@ public class LithoViewTestHelperTest {
     final String string = LithoViewTestHelper.viewToString(lithoView);
     assertThat(string)
         .containsPattern(
-            "litho.InlineLayout\\{\\w{8} V.E..... .. 0,0-100,100\\}\n"
-                + "  litho.TestDrawableComponent\\{\\w{8} V.E..... .. 0,0-100,100 litho:id/test-drawable\\}\n"
-                + "  litho.Text\\{\\w{8} V.E..... .. 0,100-100,100 text=\"Hello, World\"\\}");
+            "litho.InlineLayout\\{\\w+ V.E..... .. 0,0-100,100\\}\n"
+                + "  litho.TestDrawableComponent\\{\\w+ V.E..... .. 0,0-100,100 litho:id/test-drawable\\}\n"
+                + "  litho.Text\\{\\w+ V.E..... .. 0,100-100,100 text=\"Hello, World\"\\}");
   }
 }
