@@ -15,6 +15,9 @@ litho_android_library(
         LITHO_SECTIONS_ANNOTATIONS_TARGET,
     ],
     required_for_source_only_abi = True,
+    tests = [
+        make_dep_path("litho-it/src/test/java/com/facebook/litho/sections:sections"),
+    ],
     visibility = LITHO_VISIBILITY,
     deps = [
         LITHO_JAVA_TARGET,
