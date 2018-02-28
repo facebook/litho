@@ -13,10 +13,10 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import android.os.Looper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
-import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -26,7 +26,10 @@ import com.facebook.litho.viewcompat.ViewCreator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
+import org.robolectric.shadows.ShadowLooper;
 
 /** Tests for {@link ComponentTreeHolder} */
 @RunWith(ComponentsTestRunner.class)
@@ -36,9 +39,14 @@ public class ComponentTreeHolderTest {
   private Component mComponent;
   private ComponentRenderInfo mComponentRenderInfo;
   private ViewRenderInfo mViewRenderInfo;
+  private ShadowLooper mLayoutThreadShadowLooper;
+  private int mWidthSpec = SizeSpec.makeSizeSpec(100, EXACTLY);
+  private int mHeightSpec = SizeSpec.makeSizeSpec(100, EXACTLY);
+  private int mWidthSpec2 = SizeSpec.makeSizeSpec(101, EXACTLY);
+  private int mHeightSpec2 = SizeSpec.makeSizeSpec(101, EXACTLY);
 
   @Before
-  public void setUp() {
+  public void setUp() throws Exception {
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mComponent = TestDrawableComponent.create(mContext).build();
     mComponentRenderInfo = ComponentRenderInfo.create().component(mComponent).build();
@@ -48,6 +56,59 @@ public class ComponentTreeHolderTest {
             .viewBinder(mock(ViewBinder.class))
             .viewCreator(mock(ViewCreator.class))
             .build();
+
+    mLayoutThreadShadowLooper =
+        Shadows.shadowOf(
+            (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
+  }
+
+  @Test
+  public void testHasCompletedLatestLayoutWhenNoLayoutComputed() {
+    ComponentTreeHolder holder = createComponentTreeHolder(mComponentRenderInfo);
+    assertThat(holder.hasCompletedLatestLayout()).isFalse();
+  }
+
+  @Test
+  public void testHasCompletedLatestLayoutForSyncRender() {
+    ComponentTreeHolder holder = createComponentTreeHolder(mComponentRenderInfo);
+    holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
+
+    assertThat(holder.hasCompletedLatestLayout()).isTrue();
+  }
+
+  @Test
+  public void testHasCompletedLatestLayoutForAsyncRender() {
+    ComponentTreeHolder holder = createComponentTreeHolder(mComponentRenderInfo);
+    holder.computeLayoutAsync(mContext, mWidthSpec, mHeightSpec);
+
+    assertThat(holder.hasCompletedLatestLayout()).isFalse();
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(holder.hasCompletedLatestLayout()).isTrue();
+
+    // Re-computing with the same async layout specs shouldn't invalidate the layout
+    holder.computeLayoutAsync(mContext, mWidthSpec, mHeightSpec);
+
+    assertThat(holder.hasCompletedLatestLayout()).isTrue();
+  }
+
+  @Test
+  public void testHasCompletedLatestLayoutForAsyncRenderAfterSyncRender() {
+    ComponentTreeHolder holder = createComponentTreeHolder(mComponentRenderInfo);
+    holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
+
+    assertThat(holder.hasCompletedLatestLayout()).isTrue();
+
+    holder.computeLayoutAsync(mContext, mWidthSpec2, mHeightSpec2);
+
+    assertThat(holder.hasCompletedLatestLayout()).isFalse();
+  }
+
+  @Test
+  public void testHasCompletedLatestLayoutForViewBasedTreeHolder() {
+    ComponentTreeHolder holder = createComponentTreeHolder(mViewRenderInfo);
+    assertThat(holder.hasCompletedLatestLayout()).isTrue();
   }
 
   @Test
@@ -98,6 +159,6 @@ public class ComponentTreeHolderTest {
   }
 
   private ComponentTreeHolder createComponentTreeHolder(RenderInfo info) {
-    return ComponentTreeHolder.acquire(info, mock(LayoutHandler.class), false, false);
+    return ComponentTreeHolder.acquire(info, null, false, false);
   }
 }

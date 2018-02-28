@@ -29,6 +29,7 @@ import javax.annotation.concurrent.ThreadSafe;
  */
 @ThreadSafe
 public class ComponentTreeHolder {
+  private static final int UNINITIALIZED = -1;
   private static final Pools.SynchronizedPool<ComponentTreeHolder> sComponentTreeHoldersPool =
       new Pools.SynchronizedPool<>(8);
   private ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
@@ -47,6 +48,12 @@ public class ComponentTreeHolder {
 
   @GuardedBy("this")
   private @Nullable ComponentTree.NewLayoutStateReadyListener mPendingNewLayoutListener;
+
+  @GuardedBy("this")
+  private int mLastRequestedWidthSpec = UNINITIALIZED;
+
+  @GuardedBy("this")
+  private int mLastRequestedHeightSpec = UNINITIALIZED;
 
   private boolean mIsTreeValid;
   private LayoutHandler mLayoutHandler;
@@ -174,6 +181,9 @@ public class ComponentTreeHolder {
         return;
       }
 
+      mLastRequestedWidthSpec = widthSpec;
+      mLastRequestedHeightSpec = heightSpec;
+
       ensureComponentTree(context);
 
       componentTree = mComponentTree;
@@ -202,6 +212,9 @@ public class ComponentTreeHolder {
         // Nothing to do for views.
         return;
       }
+
+      mLastRequestedWidthSpec = widthSpec;
+      mLastRequestedHeightSpec = heightSpec;
 
       ensureComponentTree(context);
 
@@ -243,6 +256,13 @@ public class ComponentTreeHolder {
     mLastMeasuredHeight = height;
   }
 
+  public synchronized boolean hasCompletedLatestLayout() {
+    return mRenderInfo.rendersView()
+        || (mComponentTree != null
+            && mComponentTree.hasCompatibleLayout(
+                mLastRequestedWidthSpec, mLastRequestedHeightSpec));
+  }
+
   public synchronized void release() {
     releaseTree();
     clearStateHandler();
@@ -255,6 +275,8 @@ public class ComponentTreeHolder {
     mCanPreallocateOnDefaultHandler = false;
     sComponentTreeHoldersPool.release(this);
     mPendingNewLayoutListener = null;
+    mLastRequestedWidthSpec = UNINITIALIZED;
+    mLastRequestedHeightSpec = UNINITIALIZED;
   }
 
   @GuardedBy("this")
