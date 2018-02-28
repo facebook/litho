@@ -346,6 +346,11 @@ public class ComponentTree {
     mNewLayoutStateReadyListener = listener;
   }
 
+  @VisibleForTesting
+  public NewLayoutStateReadyListener getNewLayoutStateReadyListener() {
+    return mNewLayoutStateReadyListener;
+  }
+
   @ThreadConfined(ThreadConfined.UI)
   private void dispatchNewLayoutStateReady() {
     final NewLayoutStateReadyListener listener = mNewLayoutStateReadyListener;

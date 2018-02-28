@@ -37,13 +37,16 @@ public class ComponentTreeHolder {
   private int mLastMeasuredHeight;
 
   @GuardedBy("this")
-  private ComponentTree mComponentTree;
+  private @Nullable ComponentTree mComponentTree;
 
   @GuardedBy("this")
   private StateHandler mStateHandler;
 
   @GuardedBy("this")
   private RenderInfo mRenderInfo;
+
+  @GuardedBy("this")
+  private @Nullable ComponentTree.NewLayoutStateReadyListener mPendingNewLayoutListener;
 
   private boolean mIsTreeValid;
   private LayoutHandler mLayoutHandler;
@@ -150,6 +153,15 @@ public class ComponentTreeHolder {
     mStateHandler = null;
   }
 
+  synchronized void setNewLayoutReadyListener(
+      @Nullable ComponentTree.NewLayoutStateReadyListener listener) {
+    if (mComponentTree != null) {
+      mComponentTree.setNewLayoutStateReadyListener(listener);
+    } else {
+      mPendingNewLayoutListener = listener;
+    }
+  }
+
   public void computeLayoutSync(
       ComponentContext context, int widthSpec, int heightSpec, Size size) {
 
@@ -214,7 +226,7 @@ public class ComponentTreeHolder {
     return mIsTreeValid;
   }
 
-  public synchronized ComponentTree getComponentTree() {
+  public synchronized @Nullable ComponentTree getComponentTree() {
     return mComponentTree;
   }
 
@@ -242,6 +254,7 @@ public class ComponentTreeHolder {
     mShouldPreallocatePerMountSpec = false;
     mCanPreallocateOnDefaultHandler = false;
     sComponentTreeHoldersPool.release(this);
+    mPendingNewLayoutListener = null;
   }
 
   @GuardedBy("this")
@@ -264,6 +277,9 @@ public class ComponentTreeHolder {
                       ? null
                       : mComponentTreeMeasureListenerFactory.create(this))
               .build();
+      if (mPendingNewLayoutListener != null) {
+        mComponentTree.setNewLayoutStateReadyListener(mPendingNewLayoutListener);
+      }
     }
   }
 
