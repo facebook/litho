@@ -21,6 +21,7 @@ import com.facebook.litho.testing.sections.TestTarget;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RenderInfo;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +44,13 @@ public class SectionTreeTest {
         (Looper) Whitebox.invokeMethod(
             SectionTree.class,
             "getDefaultChangeSetThreadLooper"));
+  }
+
+  @After
+  public void tearDown() {
+    // If a test fails, make sure the shadow looper gets cleared out anyway so it doesn't impact
+    // other tests.
+    mChangeSetThreadShadowLooper.runToEndOfTasks();
   }
 
   @Test
@@ -384,17 +392,6 @@ public class SectionTreeTest {
     assertThat(stateUpdate.mUpdateStateCalled).isFalse();
   }
 
-  private static class StateUpdate implements SectionLifecycle.StateUpdate {
-
-    private boolean mUpdateStateCalled;
-
-    @Override
-    public void updateState(
-        StateContainer stateContainer, Section section) {
-      mUpdateStateCalled = true;
-    }
-  }
-
   @Test
   public void testSetRootAsync() {
     final Section section = TestSectionCreator.createChangeSetComponent(
@@ -426,7 +423,30 @@ public class SectionTreeTest {
     final StateUpdate stateUpdate = new StateUpdate();
     changeSetHandler.clear();
     tree.updateStateAsync("key", stateUpdate);
+    assertThat(stateUpdate.mUpdateStateCalled).isFalse();
+
     mChangeSetThreadShadowLooper.runOneTask();
+
+    assertThat(stateUpdate.mUpdateStateCalled).isTrue();
+    assertThat(changeSetHandler.wereChangesHandled()).isFalse();
+  }
+
+  @Test
+  public void testUpdateStateAsyncButForceSyncUpdates() {
+    final Section section =
+        TestSectionCreator.createChangeSetComponent("leaf1", Change.insert(0, makeComponentInfo()));
+    section.setKey("key");
+
+    final TestTarget changeSetHandler = new TestTarget();
+    SectionTree tree =
+        SectionTree.create(mSectionContext, changeSetHandler).forceSyncStateUpdates(true).build();
+
+    tree.setRoot(section);
+    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
+
+    final StateUpdate stateUpdate = new StateUpdate();
+    changeSetHandler.clear();
+    tree.updateStateAsync("key", stateUpdate);
 
     assertThat(stateUpdate.mUpdateStateCalled).isTrue();
     assertThat(changeSetHandler.wereChangesHandled()).isFalse();
@@ -685,6 +705,24 @@ public class SectionTreeTest {
 
     tree.requestFocusEnd("rootnode2leaf4");
     assertThat(9).isEqualTo(changeSetHandler.getFocusedTo());
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void testCannotForceBothSyncAndAsyncStateUpdates() {
+    SectionTree.create(mSectionContext, new TestTarget())
+        .forceSyncStateUpdates(true)
+        .asyncStateUpdates(true)
+        .build();
+  }
+
+  private static class StateUpdate implements SectionLifecycle.StateUpdate {
+
+    private boolean mUpdateStateCalled;
+
+    @Override
+    public void updateState(StateContainer stateContainer, Section section) {
+      mUpdateStateCalled = true;
+    }
   }
 
   private static RenderInfo makeComponentInfo() {

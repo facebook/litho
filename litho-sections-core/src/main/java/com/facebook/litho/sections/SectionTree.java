@@ -131,6 +131,7 @@ public class SectionTree {
   private final boolean mAsyncPropUpdates;
   private final String mTag;
   private final Map<String, Range> mLastRanges = new HashMap<>();
+  private final boolean mForceSyncStateUpdates;
 
   // Holds a Pair where the first item is a section's global starting index
   // and the second is the count.
@@ -261,7 +262,12 @@ public class SectionTree {
     mSectionsDebugLogger = new Logger(SectionsConfiguration.LOGGERS);
     mReleased = false;
     mAsyncStateUpdates = builder.mAsyncStateUpdates;
-    mAsyncPropUpdates = builder.mAsyngPropUpdates;
+    mForceSyncStateUpdates = builder.mForceSyncStateUpdates;
+    if (mAsyncStateUpdates && mForceSyncStateUpdates) {
+      throw new RuntimeException("Cannot force both sync and async state updates at the same time");
+    }
+
+    mAsyncPropUpdates = builder.mAsyncPropUpdates;
     mTag = builder.mTag;
     mTarget = new BatchedTarget(builder.mTarget, mSectionsDebugLogger, mTag);
     mFocusDispatcher = new FocusDispatcher(mTarget);
@@ -726,9 +732,13 @@ public class SectionTree {
    *     new state.
    */
   synchronized void updateStateAsync(String key, StateUpdate stateUpdate) {
-    mCalculateChangeSetRunnable.cancel();
-    addStateUpdateInternal(key, stateUpdate, true);
-    mCalculateChangeSetRunnable.ensurePosted(ApplyNewChangeSet.UPDATE_STATE_ASYNC);
+    if (mForceSyncStateUpdates) {
+      updateState(key, stateUpdate);
+    } else {
+      mCalculateChangeSetRunnable.cancel();
+      addStateUpdateInternal(key, stateUpdate, true);
+      mCalculateChangeSetRunnable.ensurePosted(ApplyNewChangeSet.UPDATE_STATE_ASYNC);
+    }
   }
 
   synchronized void updateStateLazy(String key, StateUpdate stateUpdate) {
@@ -1308,15 +1318,16 @@ public class SectionTree {
     private final SectionContext mContext;
     private final Target mTarget;
     private boolean mAsyncStateUpdates;
-    private boolean mAsyngPropUpdates;
+    private boolean mAsyncPropUpdates;
     private String mTag;
     private Handler mChangeSetThreadHandler;
+    private boolean mForceSyncStateUpdates;
 
     private Builder(SectionContext componentContext, Target target) {
       mContext = componentContext;
       mTarget = target;
       mAsyncStateUpdates = SectionsConfiguration.sectionComponentsAsyncStateUpdates;
-      mAsyngPropUpdates = SectionsConfiguration.sectionComponentsAsyncPropUpdates;
+      mAsyncPropUpdates = SectionsConfiguration.sectionComponentsAsyncPropUpdates;
     }
 
     /**
@@ -1330,10 +1341,21 @@ public class SectionTree {
 
     /**
      * If enabled, all state updates will be performed on a background thread.
-     * @return
      */
     public Builder asyncStateUpdates(boolean asyncStateUpdates) {
       mAsyncStateUpdates = asyncStateUpdates;
+      return this;
+    }
+
+    /**
+     * If enabled, all state updates will be performed on the main thread. This may be necessary to
+     * use if your data model is not thread safe (e.g. model objects can be mutated from another
+     * thread), meaning changesets on the datamodel list cannot be computed in the background.
+     *
+     * <p>NB: This may come at significant performance cost.
+     */
+    public Builder forceSyncStateUpdates(boolean forceSyncStateUpdates) {
+      mForceSyncStateUpdates = forceSyncStateUpdates;
       return this;
     }
 
@@ -1342,8 +1364,8 @@ public class SectionTree {
      * the very first setRoot where there isn't an existing section. That one will still be on the
      * main thread.
      */
-    public Builder asyncPropUpdates(boolean asyngPropUpdates) {
-      mAsyngPropUpdates = asyngPropUpdates;
+    public Builder asyncPropUpdates(boolean asyncPropUpdates) {
+      mAsyncPropUpdates = asyncPropUpdates;
       return this;
     }
 
