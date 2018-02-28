@@ -15,6 +15,7 @@ import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.sections.SectionTree.Target;
+import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.widget.Binder;
 import com.facebook.litho.widget.ReMeasureEvent;
 import com.facebook.litho.widget.RecyclerBinder;
@@ -79,13 +80,20 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
 
   @Override
   public void insert(int index, RenderInfo renderInfo) {
-    mRecyclerBinder.insertItemAt(index, renderInfo);
+    if (SectionsConfiguration.asyncMutations) {
+      mRecyclerBinder.insertItemAtAsync(index, renderInfo);
+    } else {
+      mRecyclerBinder.insertItemAt(index, renderInfo);
+    }
   }
 
   @Override
-  public void insertRange(
-      int index, int count, List<RenderInfo> renderInfos) {
-    mRecyclerBinder.insertRangeAt(index, renderInfos);
+  public void insertRange(int index, int count, List<RenderInfo> renderInfos) {
+    if (SectionsConfiguration.asyncMutations) {
+      mRecyclerBinder.insertRangeAtAsync(index, renderInfos);
+    } else {
+      mRecyclerBinder.insertRangeAt(index, renderInfos);
+    }
   }
 
   @Override

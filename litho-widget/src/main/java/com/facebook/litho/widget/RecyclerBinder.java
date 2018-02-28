@@ -415,6 +415,19 @@ public class RecyclerBinder
   }
 
   /**
+   * Inserts the new items starting from position. The {@link RecyclerView} will only be notified of
+   * the items being inserted after a layout calculation has been completed for the new {@link
+   * Component}s. There is not a guarantee that the {@link RecyclerView} will be notified about all
+   * the items in the range at the same time.
+   */
+  @UiThread
+  public final void insertRangeAtAsync(int position, List<RenderInfo> renderInfos) {
+    ThreadUtils.assertMainThread();
+
+    // TODO t15827349 implement async operations in RecyclerBinder.
+  }
+
+  /**
    * Moves an item from fromPosition to toPostion. If there are other pending operations on this
    * binder this will only be executed when all the operations have been completed (to ensure index
    * consistency).

@@ -35,4 +35,7 @@ public class SectionsConfiguration {
    * DataDiffSection data before diffing.
    */
   public static boolean trimSameInstancesOnly = false;
+
+  /** Whether inserts/updates/removes should be async. */
+  public static boolean asyncMutations = false;
 }
