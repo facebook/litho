@@ -570,6 +570,15 @@ public class ComponentTree {
     return mMainThreadLayoutState != null && mMainThreadLayoutState.hasLithoViewHeightAnimation();
   }
 
+  /**
+   * @return whether this ComponentTree has a computed layout that will work for the given measure
+   *     specs.
+   */
+  public synchronized boolean hasCompatibleLayout(int widthSpec, int heightSpec) {
+    return isCompatibleSpec(mMainThreadLayoutState, widthSpec, heightSpec)
+        || isCompatibleSpec(mBackgroundLayoutState, widthSpec, heightSpec);
+  }
+
   void mountComponent(Rect currentVisibleArea, boolean processVisibilityOutputs) {
     assertMainThread();
 
