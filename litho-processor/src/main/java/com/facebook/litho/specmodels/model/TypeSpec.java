@@ -10,6 +10,7 @@ package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.TypeName;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -61,12 +62,15 @@ public class TypeSpec {
 
   @Override
   public boolean equals(Object o) {
-    return mTypeName.equals(o);
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    final TypeSpec typeSpec = (TypeSpec) o;
+    return mIsValid == typeSpec.mIsValid && Objects.equals(mTypeName, typeSpec.mTypeName);
   }
 
   @Override
   public int hashCode() {
-    return mTypeName.hashCode();
+    return Objects.hash(mTypeName, mIsValid);
   }
 
   public static class DeclaredTypeSpec extends TypeSpec {

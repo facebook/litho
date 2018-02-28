@@ -13,6 +13,7 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.lang.model.element.Modifier;
@@ -55,6 +56,36 @@ public final class SpecMethodModel<Phantom, A> {
 
   public static <Phantom, A> Builder<Phantom, A> builder() {
     return new Builder<>();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    SpecMethodModel<?, ?> that = (SpecMethodModel<?, ?>) o;
+    return Objects.equals(annotations, that.annotations)
+        && Objects.equals(modifiers, that.modifiers)
+        && Objects.equals(name, that.name)
+        && Objects.equals(returnType, that.returnType)
+        && Objects.equals(returnTypeSpec, that.returnTypeSpec)
+        && Objects.equals(typeVariables, that.typeVariables)
+        && Objects.equals(methodParams, that.methodParams)
+        && Objects.equals(representedObject, that.representedObject)
+        && Objects.equals(typeModel, that.typeModel);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(
+        annotations,
+        modifiers,
+        name,
+        returnType,
+        returnTypeSpec,
+        typeVariables,
+        methodParams,
+        representedObject,
+        typeModel);
   }
 
   public static class Builder<Phantom, A> {

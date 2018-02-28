@@ -13,6 +13,7 @@ import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -71,25 +72,18 @@ public class SimpleMethodParamModel implements MethodParamModel {
 
   @Override
   public boolean equals(Object o) {
-    if (o instanceof SimpleMethodParamModel) {
-      final SimpleMethodParamModel p = (SimpleMethodParamModel) o;
-      return mTypeSpec.equals(p.mTypeSpec)
-          && mName.equals(p.mName)
-          && mAnnotations.equals(p.mAnnotations)
-          && mExternalAnnotations.equals(p.mExternalAnnotations)
-          && mRepresentedObject.equals(p.mRepresentedObject);
-    }
-
-    return false;
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    final SimpleMethodParamModel that = (SimpleMethodParamModel) o;
+    return Objects.equals(mTypeSpec, that.mTypeSpec)
+        && Objects.equals(mName, that.mName)
+        && Objects.equals(mAnnotations, that.mAnnotations)
+        && Objects.equals(mExternalAnnotations, that.mExternalAnnotations)
+        && Objects.equals(mRepresentedObject, that.mRepresentedObject);
   }
 
   @Override
   public int hashCode() {
-    int result = mTypeSpec.hashCode();
-    result = 31 * result + mName.hashCode();
-    result = 31 * result + mAnnotations.hashCode();
-    result = 31 * result + mExternalAnnotations.hashCode();
-    result = 31 * result + mRepresentedObject.hashCode();
-    return result;
+    return Objects.hash(mTypeSpec, mName, mAnnotations, mExternalAnnotations, mRepresentedObject);
   }
 }
