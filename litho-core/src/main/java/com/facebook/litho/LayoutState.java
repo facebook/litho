@@ -1199,6 +1199,7 @@ class LayoutState {
     }
 
     if (!ComponentsConfiguration.isDebugModeEnabled
+        && !ComponentsConfiguration.isEndToEndTestRun
         && !ComponentsConfiguration.persistInternalNodeTree
         && layoutState.mLayoutRoot != null) {
       releaseNodeTree(layoutState.mLayoutRoot, false /* isNestedTree */);
