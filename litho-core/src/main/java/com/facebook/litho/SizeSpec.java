@@ -141,24 +141,15 @@ public class SizeSpec {
   }
 
   public static int makeSizeSpecFromCssSpec(float cssSize, YogaMeasureMode cssMode) {
-    final int mode;
     switch (cssMode) {
       case EXACTLY:
-        mode = SizeSpec.EXACTLY;
-        break;
-
+        return makeSizeSpec(FastMath.round(cssSize), SizeSpec.EXACTLY);
       case UNDEFINED:
-        mode = SizeSpec.UNSPECIFIED;
-        break;
-
+        return makeSizeSpec(0, SizeSpec.UNSPECIFIED);
       case AT_MOST:
-        mode = SizeSpec.AT_MOST;
-        break;
-
+        return makeSizeSpec(FastMath.round(cssSize), SizeSpec.AT_MOST);
       default:
         throw new IllegalArgumentException("Unexpected YogaMeasureMode: " + cssMode);
     }
-
-    return makeSizeSpec(FastMath.round(cssSize), mode);
   }
 }
