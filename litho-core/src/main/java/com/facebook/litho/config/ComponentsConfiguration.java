@@ -164,4 +164,7 @@ public class ComponentsConfiguration {
    * posted by setRootAsync.
    */
   public static boolean doNotRelayoutForAsyncRootInMeasure = false;
+
+  /** If true then we'll allocate YogaEdgesWithIntsImplOptimized arrays in batches */
+  public static boolean useBatchArrayAllocator = false;
 }
