@@ -1175,6 +1175,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
   }
 
   static class YogaEdgesWithIntsImplOptimized implements YogaEdgesWithInts {
+
     private long mEdges;
     @Nullable private int[] mValues;
 
@@ -1183,13 +1184,22 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       int index = addEdge(yogaEdge);
       if (value != 0) {
         if (mValues == null) {
-          mValues = new int[Math.max(2, index + 1)];
+          mValues = createArray(Math.max(2, index + 1));
         } else if (index >= mValues.length) {
           int[] oldValues = mValues;
           mValues = new int[Math.min(oldValues.length * 2, YogaEdge.values().length)];
           System.arraycopy(oldValues, 0, mValues, 0, oldValues.length);
         }
         mValues[index] = value;
+      }
+    }
+
+    private static int[] createArray(int size) {
+      boolean myGK = false;
+      if (myGK && size == 2) {
+        return ArrayBatchAllocator.newArrayOfSize2(); // = new int[2];
+      } else {
+        return new int[size];
       }
     }
 
