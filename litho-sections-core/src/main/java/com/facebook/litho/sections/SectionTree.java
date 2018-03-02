@@ -29,6 +29,7 @@ import android.text.TextUtils;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsPools;
+import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggersContainer;
@@ -787,114 +788,126 @@ public class SectionTree {
   }
 
   private void applyNewChangeSet(@ApplyNewChangeSet int source) {
-    Section currentRoot;
-    Section nextRoot;
-    Map<String, List<StateUpdate>> pendingStateUpdates;
-
-    final ComponentsLogger logger;
-    final String logTag;
-
-    synchronized (this) {
-      if (mReleased) {
-        return;
-      }
-
-      currentRoot = copy(mCurrentSection, true);
-      nextRoot = copy(mNextSection, false);
-      logger = mContext.getLogger();
-      logTag = mContext.getLogTag();
-      pendingStateUpdates = copyPendingStateUpdatesAndResetNonLazyFlag();
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection(
+          "applyNewChangeSet_" + SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
     }
 
-    LogEvent logEvent = null;
-    
-    if (logger != null) {
-      logEvent =
-          SectionsLogEventUtils.getSectionsPerformanceEvent(
-              logger, logTag, EVENT_SECTIONS_SET_ROOT, currentRoot, nextRoot);
-      logEvent.addParam(
-          PARAM_SECTION_SET_ROOT_SOURCE,
-          SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
-      logEvent.addParam(PARAM_SET_ROOT_ON_BG_THREAD, !ThreadUtils.isMainThread());
-    }
+    try {
+      Section currentRoot;
+      Section nextRoot;
+      Map<String, List<StateUpdate>> pendingStateUpdates;
 
-    clearUnusedTriggerHandlers();
-
-    // Checking nextRoot is enough here since whenever we enqueue a new state update we also
-    // re-assign nextRoot.
-    while (nextRoot != null) {
-      final ChangeSetState changeSetState =
-          calculateNewChangeSet(
-              mContext, currentRoot, nextRoot, pendingStateUpdates, mSectionsDebugLogger, mTag);
-
-      final boolean changeSetIsValid;
-      Section oldRoot = null;
-      Section newRoot = null;
+      final ComponentsLogger logger;
+      final String logTag;
 
       synchronized (this) {
-
-        boolean currentNotNull = currentRoot != null;
-        boolean instanceCurrentNotNull = mCurrentSection != null;
-        boolean currentIsSame = (currentNotNull && instanceCurrentNotNull &&
-            currentRoot.getId() == mCurrentSection.getId()) ||
-            (!currentNotNull && !instanceCurrentNotNull);
-
-        boolean nextNotNull = nextRoot != null;
-        boolean instanceNextNotNull = mNextSection != null;
-        boolean nextIsSame = (nextNotNull && instanceNextNotNull &&
-            nextRoot.getId() == mNextSection.getId()) ||
-            (!nextNotNull && !instanceNextNotNull);
-
-        changeSetIsValid = currentIsSame &&
-            nextIsSame &&
-            isStateUpdateCompleted(pendingStateUpdates);
-
-        if (changeSetIsValid) {
-          oldRoot = mCurrentSection;
-          newRoot = nextRoot;
-
-          mCurrentSection = newRoot;
-          mNextSection = null;
-          removeCompletedStateUpdatesFromInstance(pendingStateUpdates);
-          mPendingChangeSets.add(changeSetState.getChangeSet());
-
-          if (oldRoot != null) {
-            unbindOldComponent(oldRoot);
-            oldRoot.release();
-          }
-
-          bindNewComponent(newRoot);
-          bindTriggerHandler(newRoot);
-        }
-      }
-
-      if (changeSetIsValid) {
-        final List<Section> removedComponents = changeSetState.getRemovedComponents();
-        for (int i = 0, size = removedComponents.size(); i < size; i++) {
-          final Section removedComponent = removedComponents.get(i);
-          releaseRange(mLastRanges.remove(removedComponent.getGlobalKey()));
-        }
-
-        postNewChangeSets();
-      }
-
-      synchronized (this) {
-        SectionsPools.release(pendingStateUpdates);
-
         if (mReleased) {
           return;
         }
 
         currentRoot = copy(mCurrentSection, true);
         nextRoot = copy(mNextSection, false);
-        if (nextRoot != null) {
-          pendingStateUpdates = copyPendingStateUpdatesAndResetNonLazyFlag();
+        logger = mContext.getLogger();
+        logTag = mContext.getLogTag();
+        pendingStateUpdates = copyPendingStateUpdatesAndResetNonLazyFlag();
+      }
+
+      LogEvent logEvent = null;
+
+      if (logger != null) {
+        logEvent =
+            SectionsLogEventUtils.getSectionsPerformanceEvent(
+                logger, logTag, EVENT_SECTIONS_SET_ROOT, currentRoot, nextRoot);
+        logEvent.addParam(
+            PARAM_SECTION_SET_ROOT_SOURCE,
+            SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
+        logEvent.addParam(PARAM_SET_ROOT_ON_BG_THREAD, !ThreadUtils.isMainThread());
+      }
+
+      clearUnusedTriggerHandlers();
+
+      // Checking nextRoot is enough here since whenever we enqueue a new state update we also
+      // re-assign nextRoot.
+      while (nextRoot != null) {
+        final ChangeSetState changeSetState =
+            calculateNewChangeSet(
+                mContext, currentRoot, nextRoot, pendingStateUpdates, mSectionsDebugLogger, mTag);
+
+        final boolean changeSetIsValid;
+        Section oldRoot = null;
+        Section newRoot = null;
+
+        synchronized (this) {
+          boolean currentNotNull = currentRoot != null;
+          boolean instanceCurrentNotNull = mCurrentSection != null;
+          boolean currentIsSame =
+              (currentNotNull
+                      && instanceCurrentNotNull
+                      && currentRoot.getId() == mCurrentSection.getId())
+                  || (!currentNotNull && !instanceCurrentNotNull);
+
+          boolean nextNotNull = nextRoot != null;
+          boolean instanceNextNotNull = mNextSection != null;
+          boolean nextIsSame =
+              (nextNotNull && instanceNextNotNull && nextRoot.getId() == mNextSection.getId())
+                  || (!nextNotNull && !instanceNextNotNull);
+
+          changeSetIsValid =
+              currentIsSame && nextIsSame && isStateUpdateCompleted(pendingStateUpdates);
+
+          if (changeSetIsValid) {
+            oldRoot = mCurrentSection;
+            newRoot = nextRoot;
+
+            mCurrentSection = newRoot;
+            mNextSection = null;
+            removeCompletedStateUpdatesFromInstance(pendingStateUpdates);
+            mPendingChangeSets.add(changeSetState.getChangeSet());
+
+            if (oldRoot != null) {
+              unbindOldComponent(oldRoot);
+              oldRoot.release();
+            }
+
+            bindNewComponent(newRoot);
+            bindTriggerHandler(newRoot);
+          }
+        }
+
+        if (changeSetIsValid) {
+          final List<Section> removedComponents = changeSetState.getRemovedComponents();
+          for (int i = 0, size = removedComponents.size(); i < size; i++) {
+            final Section removedComponent = removedComponents.get(i);
+            releaseRange(mLastRanges.remove(removedComponent.getGlobalKey()));
+          }
+
+          postNewChangeSets();
+        }
+
+        synchronized (this) {
+          SectionsPools.release(pendingStateUpdates);
+
+          if (mReleased) {
+            return;
+          }
+
+          currentRoot = copy(mCurrentSection, true);
+          nextRoot = copy(mNextSection, false);
+          if (nextRoot != null) {
+            pendingStateUpdates = copyPendingStateUpdatesAndResetNonLazyFlag();
+          }
         }
       }
-    }
 
-    if (logger != null) {
-      logger.log(logEvent);
+      if (logger != null) {
+        logger.log(logEvent);
+      }
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
   }
 
