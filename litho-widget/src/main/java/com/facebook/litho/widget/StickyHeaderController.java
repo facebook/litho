@@ -82,7 +82,7 @@ class StickyHeaderController extends RecyclerView.OnScrollListener {
 
     final int stickyHeaderPosition = findStickyHeaderPosition(firstVisiblePosition);
     final ComponentTree firstVisibleItemComponentTree =
-        mHasStickyHeader.getComponentAt(firstVisiblePosition);
+        mHasStickyHeader.getComponentForStickyHeaderAt(firstVisiblePosition);
 
     if (lastTranslatedView != null
         && firstVisibleItemComponentTree != null
@@ -143,7 +143,8 @@ class StickyHeaderController extends RecyclerView.OnScrollListener {
   }
 
   private void initStickyHeader(int stickyHeaderPosition) {
-    final ComponentTree componentTree = mHasStickyHeader.getComponentAt(stickyHeaderPosition);
+    final ComponentTree componentTree =
+        mHasStickyHeader.getComponentForStickyHeaderAt(stickyHeaderPosition);
     // RecyclerView might not have yet detached the view that this componentTree bound to,
     // so detach it if that is the case.
     detachLithoViewIfNeeded(componentTree.getLithoView());

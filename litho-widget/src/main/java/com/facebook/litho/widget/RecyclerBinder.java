@@ -752,6 +752,23 @@ public class RecyclerBinder
   }
 
   @Override
+  public final synchronized ComponentTree getComponentForStickyHeaderAt(int position) {
+    final ComponentTreeHolder holder = mComponentTreeHolders.get(position);
+    if (holder.isTreeValid()) {
+      return holder.getComponentTree();
+    }
+
+    // This could happen when RecyclerView is populated with new data, and first position is not 0.
+    // It is possible that sticky header is above the first visible position and also it is outside
+    // calculated range and its layout has not been calculated yet.
+    final int childrenWidthSpec = getActualChildrenWidthSpec(holder);
+    final int childrenHeightSpec = getActualChildrenHeightSpec(holder);
+    holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
+
+    return holder.getComponentTree();
+  }
+
+  @Override
   public final synchronized RenderInfo getRenderInfoAt(int position) {
     return mComponentTreeHolders.get(position).getRenderInfo();
   }

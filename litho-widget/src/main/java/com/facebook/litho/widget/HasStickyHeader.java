@@ -26,7 +26,7 @@ interface HasStickyHeader extends ViewportInfo {
 
   /**
    * @param position
-   * @return a component tree for the idem at position.
+   * @return a component tree for the item at position.
    */
-  ComponentTree getComponentAt(int position);
+  ComponentTree getComponentForStickyHeaderAt(int position);
 }

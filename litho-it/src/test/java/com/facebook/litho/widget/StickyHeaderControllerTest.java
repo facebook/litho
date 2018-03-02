@@ -94,7 +94,7 @@ public class StickyHeaderControllerTest {
     when(mHasStickyHeader.isSticky(2)).thenReturn(true);
 
     ComponentTree componentTree = mock(ComponentTree.class);
-    when(mHasStickyHeader.getComponentAt(2)).thenReturn(componentTree);
+    when(mHasStickyHeader.getComponentForStickyHeaderAt(2)).thenReturn(componentTree);
     LithoView lithoView = mock(LithoView.class);
     when(componentTree.getLithoView()).thenReturn(lithoView);
 
@@ -115,8 +115,8 @@ public class StickyHeaderControllerTest {
     when(mHasStickyHeader.findFirstVisibleItemPosition()).thenReturn(6);
     when(mHasStickyHeader.isSticky(2)).thenReturn(true);
 
-    when(mHasStickyHeader.getComponentAt(2)).thenReturn(mock(ComponentTree.class));
-    when(mHasStickyHeader.getComponentAt(6)).thenReturn(mock(ComponentTree.class));
+    when(mHasStickyHeader.getComponentForStickyHeaderAt(2)).thenReturn(mock(ComponentTree.class));
+    when(mHasStickyHeader.getComponentForStickyHeaderAt(6)).thenReturn(mock(ComponentTree.class));
 
     mStickyHeaderController.onScrolled(null, 0, 0);
 
@@ -137,7 +137,7 @@ public class StickyHeaderControllerTest {
     when(mHasStickyHeader.isValidPosition(3)).thenReturn(true);
 
     ComponentTree componentTree = mock(ComponentTree.class);
-    when(mHasStickyHeader.getComponentAt(2)).thenReturn(componentTree);
+    when(mHasStickyHeader.getComponentForStickyHeaderAt(2)).thenReturn(componentTree);
     LithoView lithoView = mock(LithoView.class);
     when(componentTree.getLithoView()).thenReturn(lithoView);
 
