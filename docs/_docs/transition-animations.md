@@ -203,4 +203,4 @@ Springs provide natural movement and can be easily interrupted but you may need 
 
 ## Sample Code
 
-You can find a transitions demo if you install the litho sample app via `./gradlew :sample:installDebug`. Code for these examples can be found [on Github](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/transitionsdemo).
+You can find a transitions demo if you install the litho sample app via `./gradlew :sample:installDebug`. Code for these examples can be found [on Github](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/animations).
