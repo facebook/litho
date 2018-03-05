@@ -81,6 +81,12 @@ public abstract class Component extends ComponentLifecycle
    */
   @Nullable private Map<String, Integer> mChildCounters;
 
+  /**
+   * Holds an event handler with its dispatcher set to the parent component, or - in case that this
+   * is a root component - a default handler that reraises the exception.
+   */
+  @Nullable private EventHandler<ErrorEvent> mErrorEventHandler;
+
   // Keep hold of the layout that we resolved during will render in order to use it again in
   // createLayout.
   @Nullable InternalNode mLayoutCreatedInWillRender;
@@ -398,6 +404,7 @@ public abstract class Component extends ComponentLifecycle
   protected void updateInternalChildState(ComponentContext parentContext) {
     generateKey(parentContext);
     applyStateUpdates(parentContext);
+    generateErrorEventHandler(parentContext);
   }
 
   private void generateKey(ComponentContext parentContext) {
@@ -407,6 +414,23 @@ public abstract class Component extends ComponentLifecycle
       setGlobalKey(
           parentScope == null ? key : parentScope.generateUniqueGlobalKeyForChild(this, key));
     }
+  }
+
+  private void generateErrorEventHandler(ComponentContext parentContext) {
+    HasEventDispatcher parentEventDispatcherProvider = parentContext.getComponentScope();
+
+    // We have no parent, which means we're sitting at the root of the hierarchy. Since we cannot
+    // pass the event on any further, we reraise it.
+    if (parentEventDispatcherProvider == null) {
+      parentEventDispatcherProvider = new DefaultErrorEventDispatcher();
+    }
+
+    mErrorEventHandler =
+        new EventHandler<>(
+            parentEventDispatcherProvider,
+            "onErrorHandler",
+            EVENT_HANDLER_ID,
+            new Object[] {parentContext});
   }
 
   /**
@@ -464,6 +488,15 @@ public abstract class Component extends ComponentLifecycle
   @Override
   public EventDispatcher getEventDispatcher() {
     return this;
+  }
+
+  /**
+   * @return The error handler dispatching to either the parent component if available, or reraising
+   *     the exception. Null if the component isn't initialized.
+   */
+  @Nullable
+  EventHandler<ErrorEvent> getErrorHandler() {
+    return mErrorEventHandler;
   }
 
   /**
@@ -1320,5 +1353,22 @@ public abstract class Component extends ComponentLifecycle
 
     /** Set this to true if you want the container to be laid out in reverse. */
     public abstract T reverse(boolean reverse);
+  }
+
+  /** An event handler to be used for the root of the hierarchy that reraises error events. */
+  private static class DefaultErrorEventDispatcher implements HasEventDispatcher {
+
+    @Override
+    public EventDispatcher getEventDispatcher() {
+      return new EventDispatcher() {
+        @Override
+        public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+          if (eventHandler.id == EVENT_HANDLER_ID) {
+            throw new RuntimeException(((ErrorEvent) eventState).exception);
+          }
+          return null;
+        }
+      };
+    }
   }
 }

@@ -42,6 +42,12 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   private static final AtomicInteger sComponentTypeId = new AtomicInteger();
   private static final int DEFAULT_MAX_PREALLOCATION = 3;
 
+  // This name needs to match the generated code in specmodels in
+  // com.facebook.litho.specmodels.generator.EventCaseGenerator#INTERNAL_ON_ERROR_HANDLER_NAME.
+  // Since we cannot easily share this identifier across modules, we verify the consistency through
+  // integration tests.
+  static final int EVENT_HANDLER_ID = "__internalOnErrorHandler".hashCode();
+
   public enum MountType {
     NONE,
     DRAWABLE,
@@ -350,14 +356,25 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return layoutComponent;
   }
 
-  public static void dispatchErrorEvent(ComponentContext context, Exception e) {
-    // TODO(T25566614): This only serves as a placeholder whilst error propagation is implemented.
-    throw new RuntimeException(e);
+  /**
+   * Reraise an error event up the hierarchy so it can be caught by another component, or reach the
+   * root and cause the application to crash.
+   *
+   * @param c The component context the error event was caught in.
+   * @param e The original exception.
+   */
+  public static void dispatchErrorEvent(ComponentContext c, Exception e) {
+    final ErrorEvent errorEvent = new ErrorEvent();
+    errorEvent.exception = e;
+
+    dispatchErrorEvent(c, errorEvent);
   }
 
-  public static void dispatchErrorEvent(ComponentContext context, ErrorEvent e) {
-    // TODO(T25566614): This only serves as a placeholder whilst error propagation is implemented.
-    dispatchErrorEvent(context, e.exception);
+  /**
+   * For internal use, only. Use {@link #dispatchErrorEvent(ComponentContext, Exception)} instead.
+   */
+  public static void dispatchErrorEvent(ComponentContext c, ErrorEvent e) {
+    c.getComponentScope().getErrorHandler().dispatchEvent(e);
   }
 
   void loadStyle(
@@ -632,7 +649,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   @Override
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-    // Do nothing by default.
+    if (eventHandler.id == EVENT_HANDLER_ID) {
+      ((Component) this).getErrorHandler().dispatchEvent(((ErrorEvent) eventState));
+    }
+
+    // Don't do anything by default, unless we're handling an error.
     return null;
   }
 
