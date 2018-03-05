@@ -24,16 +24,11 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.litho.ComponentLifecycle.MountType;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -84,21 +79,14 @@ public class ComponentLifecycleTest {
     when(mDiffNode.getLastMeasuredWidth()).thenReturn(-1f);
     when(mDiffNode.getLastMeasuredHeight()).thenReturn(-1f);
     when(ComponentsPools.acquireInternalNode(any(ComponentContext.class))).thenReturn(mNode);
+    when(ComponentsPools.acquireComponentTreeBuilder(
+            any(ComponentContext.class), any(Component.class)))
+        .thenCallRealMethod();
 
     mockStatic(LayoutState.class);
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mNestedTreeWidthSpec = SizeSpec.makeSizeSpec(400, SizeSpec.EXACTLY);
     mNestedTreeHeightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
-  }
-
-  @Before
-  public void saveConfiguration() {
-    mPreviousOnErrorConfig = ComponentsConfiguration.enableOnErrorHandling;
-  }
-
-  @After
-  public void restoreConfiguration() {
-    ComponentsConfiguration.enableOnErrorHandling = mPreviousOnErrorConfig;
   }
 
   @Test
@@ -284,57 +272,6 @@ public class ComponentLifecycleTest {
   }
 
   @Test
-  @Ignore("Disabled while refactoring: T25566614")
-  public void testOnCreateLayoutErrorHandling() {
-    ComponentsConfiguration.enableOnErrorHandling = true;
-
-    final AtomicBoolean called = new AtomicBoolean(false);
-
-    final Function<Exception, Component> errorHandler =
-        new Function<Exception, Component>() {
-          @Override
-          public Component apply(Exception e) {
-            assertThat(e).hasMessage("Woops!");
-            called.set(true);
-            return null;
-          }
-        };
-    final Component component = new TestLayoutSpecWithCrash(mNode, errorHandler);
-    final InternalNode layout = component.createLayout(mContext, false);
-
-    assertThat(called).isTrue();
-  }
-
-  @Test
-  @Ignore("Disabled while refactoring: T25566614")
-  public void testOnCreateLayoutErrorHandlingWhenDisabled() {
-    ComponentsConfiguration.enableOnErrorHandling = false;
-
-    final AtomicBoolean calledInner = new AtomicBoolean(false);
-    boolean calledOuter = false;
-
-    final Function<Exception, Component> errorHandler =
-        new Function<Exception, Component>() {
-          @Override
-          public Component apply(Exception e) {
-            assertThat(e).hasMessage("Woops!");
-            calledInner.set(true);
-            return null;
-          }
-        };
-    final Component component = new TestLayoutSpecWithCrash(mNode, errorHandler);
-
-    try {
-      component.createLayout(mContext, false);
-    } catch (RuntimeException ignored) {
-      calledOuter = true;
-    }
-
-    assertThat(calledInner).isFalse();
-    assertThat(calledOuter).isTrue();
-  }
-
-  @Test
   public void testMountSpecYogaMeasureOutputSet() {
     Component component = new TestMountSpecSettingSizesInOnMeasure(mNode);
     YogaMeasureFunction measureFunction = getMeasureFunction(component);
@@ -437,26 +374,6 @@ public class ComponentLifecycleTest {
     @Override
     public String getSimpleName() {
       return "TestLifecycleComponentBase";
-    }
-  }
-
-  private static class TestLayoutSpecWithCrash extends TestBaseComponent {
-
-    private final Function<Exception, Component> mErrorHandler;
-
-    TestLayoutSpecWithCrash(InternalNode node, Function<Exception, Component> errorHandler) {
-      super(false, MountType.VIEW, node);
-      this.mErrorHandler = errorHandler;
-    }
-
-    @Override
-    protected Component onCreateLayout(ComponentContext c) {
-      throw new RuntimeException("Woops!");
-    }
-
-    @Override
-    protected void onError(ComponentContext c, Exception e) {
-      mErrorHandler.apply(e);
     }
   }
 
