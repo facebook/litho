@@ -14,36 +14,20 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Annotate a method inside your component with {@literal @}OnError to receive a callback when an
- * exception inside supported delegate methods happens. You then get a chance to either provide a
- * fallback component that is displayed instead or re-raise the error.
+ * exception inside supported delegate methods of a child component happens. You then get a chance
+ * to either trigger a state update or reraise the exception using <code>dispatchErrorEvent</code>.
  *
- * <p>The method will receive a ComponentContext, an {@link Exception} and a LifecycleMethod enum.
+ * <p>The method will receive a ComponentContext, and an {@link Exception}.
  *
- * <p>The currently supported lifecycle methods are defined in {@code
- * com.facebook.litho.LifecyclePhase}.
- *
- * <ul>
- *   <li>onCreateLayout
- *   <li>onCreateLayoutWithSizeSpec
- * </ul>
- *
- * An example use may look like this:
+ * <p>An example use may look like this:
  *
  * <pre>
  * <code>
  * {@literal @}OnError
  *  static Component onError(ComponentContext c,
  *    Exception e,
- *    LifecyclePhase l,
  *   {@literal @}Prop final SomeProp prop) {
- *    switch (l) {
- *      case ON_CREATE_LAYOUT:
- *        return Text.create(c).text(
- *            String.format("Prop Name=%s, Error=%s", prop.name, e)
- *        ).textSizeSp(36).build();
- *      default:
- *        throw new RuntimeException(e);
- *    }
+ *       MyComponent.updateErrorAsync(c, String.format("Error for %s: %s", prop, e.getMessage()));
  *  }
  * </code>
  * </pre>

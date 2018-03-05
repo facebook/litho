@@ -89,11 +89,10 @@ public final class DelegateMethodDescriptions {
       DelegateMethodDescription.newBuilder()
           .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
           .accessType(Modifier.PROTECTED)
-          .returnType(ClassNames.COMPONENT)
+          .returnType(TypeName.VOID)
           .name("onError")
           .definedParameterTypes(
-              ImmutableList.<TypeName>of(
-                  ClassNames.COMPONENT_CONTEXT, ClassNames.EXCEPTION, ClassNames.LIFECYCLE_PHASE))
+              ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT, ClassNames.EXCEPTION))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP))
           .build();
 

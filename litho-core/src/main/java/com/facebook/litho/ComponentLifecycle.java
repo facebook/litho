@@ -323,20 +323,20 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   private Component createComponentLayout(ComponentContext context) {
-    Component layoutComponent;
+    Component layoutComponent = null;
     if (ComponentsConfiguration.enableOnErrorHandling) {
       if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
         try {
           layoutComponent =
               onCreateLayoutWithSizeSpec(context, context.getWidthSpec(), context.getHeightSpec());
         } catch (Exception e) {
-          layoutComponent = onError(context, e, LifecyclePhase.ON_CREATE_LAYOUT);
+          dispatchErrorEvent(context, e);
         }
       } else {
         try {
           layoutComponent = onCreateLayout(context);
         } catch (Exception e) {
-          layoutComponent = onError(context, e, LifecyclePhase.ON_CREATE_LAYOUT);
+          dispatchErrorEvent(context, e);
         }
       }
     } else {
@@ -348,6 +348,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       }
     }
     return layoutComponent;
+  }
+
+  public static void dispatchErrorEvent(ComponentContext context, Exception e) {
+    // TODO(T25566614): This only serves as a placeholder whilst error propagation is implemented.
+    throw new RuntimeException(e);
   }
 
   void loadStyle(
@@ -615,9 +620,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @see com.facebook.litho.annotations.OnError
    * @param c The {@link ComponentContext} the Component was constructed with.
    * @param e The exception caught.
-   * @param phase A reference to the lifecycle the component was in when the exception occurred.
    */
-  protected Component onError(ComponentContext c, Exception e, LifecyclePhase phase) {
+  protected void onError(ComponentContext c, Exception e) {
     throw new RuntimeException(e);
   }
 

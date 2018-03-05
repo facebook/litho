@@ -16,7 +16,6 @@ import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Diff;
-import com.facebook.litho.LifecyclePhase;
 import com.facebook.litho.Output;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
@@ -89,7 +88,7 @@ public class TestLayoutSpec<S extends View> {
   }
 
   @OnError
-  static Component onError(ComponentContext c, Exception e, LifecyclePhase l) {
+  static void onError(ComponentContext c, Exception e) {
     throw new RuntimeException(e);
   }
 
