@@ -39,6 +39,7 @@
     <activity android:name=".lithography.LithographyActivity" />
     <activity android:name=".playground.PlaygroundActivity" />
     <activity android:name=".bordereffects.BorderEffectsActivity" />
+    <activity android:name=".errors.ErrorHandlingActivity" />
     <activity android:name=".animations.animatedbadge.AnimatedBadgeActivity" />
     <activity android:name=".animations.animationcomposition.ComposedAnimationsActivity" />
     <activity android:name=".animations.expandableelement.ExpandableElementActivity" />
