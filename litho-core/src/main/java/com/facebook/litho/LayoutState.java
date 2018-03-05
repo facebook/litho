@@ -1638,8 +1638,7 @@ class LayoutState {
       int heightSpec,
       DiffNode diffTreeRoot) {
 
-    component.generateKey(c);
-    component.applyStateUpdates(c);
+    component.updateInternalChildState(c);
 
     if (ComponentsConfiguration.isDebugModeEnabled) {
       DebugComponent.applyOverrides(c, component);

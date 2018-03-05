@@ -393,10 +393,16 @@ public abstract class Component extends ComponentLifecycle
     return true;
   }
 
+  /** Called to install internal state based on a component's parent context. */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  protected void generateKey(ComponentContext c) {
+  protected void updateInternalChildState(ComponentContext parentContext) {
+    generateKey(parentContext);
+    applyStateUpdates(parentContext);
+  }
+
+  private void generateKey(ComponentContext parentContext) {
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
-      final Component parentScope = c.getComponentScope();
+      final Component parentScope = parentContext.getComponentScope();
       final String key = getKey();
       setGlobalKey(
           parentScope == null ? key : parentScope.generateUniqueGlobalKeyForChild(this, key));
@@ -410,7 +416,7 @@ public abstract class Component extends ComponentLifecycle
    *
    * @param c component context
    */
-  void applyStateUpdates(ComponentContext c) {
+  private void applyStateUpdates(ComponentContext c) {
     setScopedContext(ComponentContext.withComponentScope(c, this));
 
     populateTreeProps(getScopedContext().getTreeProps());

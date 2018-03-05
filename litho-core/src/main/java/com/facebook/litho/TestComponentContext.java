@@ -35,8 +35,7 @@ class TestComponentContext extends ComponentContext {
     }
 
     final InternalNode node = ComponentsPools.acquireInternalNode(this);
-    component.generateKey(this);
-    component.applyStateUpdates(this);
+    component.updateInternalChildState(this);
 
     node.appendComponent(new TestComponent(component));
 

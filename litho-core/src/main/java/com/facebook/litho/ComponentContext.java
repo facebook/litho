@@ -275,8 +275,7 @@ public class ComponentContext extends ContextWrapper {
       return component.mLayoutCreatedInWillRender;
     }
 
-    component.generateKey(this);
-    component.applyStateUpdates(this);
+    component.updateInternalChildState(this);
 
     if (ComponentsConfiguration.isDebugModeEnabled) {
       DebugComponent.applyOverrides(this, component);
@@ -297,8 +296,7 @@ public class ComponentContext extends ContextWrapper {
       return component.mLayoutCreatedInWillRender;
     }
 
-    component.generateKey(this);
-    component.applyStateUpdates(this);
+    component.updateInternalChildState(this);
 
     if (ComponentsConfiguration.isDebugModeEnabled) {
       DebugComponent.applyOverrides(this, component);

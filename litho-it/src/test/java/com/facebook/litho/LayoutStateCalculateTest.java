@@ -2615,7 +2615,7 @@ public class LayoutStateCalculateTest {
 
     assertThat(internalNode == componentSpy.mLayoutCreatedInWillRender);
 
-    verify(componentSpy, times(1)).generateKey(any(ComponentContext.class));
+    verify(componentSpy, times(1)).updateInternalChildState(any(ComponentContext.class));
   }
 
   @Test
@@ -2636,7 +2636,7 @@ public class LayoutStateCalculateTest {
         };
 
     calculateLayoutState(c, root, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
-    verify(componentSpy, times(1)).generateKey(any(ComponentContext.class));
+    verify(componentSpy, times(1)).updateInternalChildState(any(ComponentContext.class));
   }
 
   private void enableAccessibility() {
