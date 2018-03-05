@@ -364,17 +364,27 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @param e The original exception.
    */
   public static void dispatchErrorEvent(ComponentContext c, Exception e) {
-    final ErrorEvent errorEvent = new ErrorEvent();
-    errorEvent.exception = e;
+    if (ComponentsConfiguration.enableOnErrorHandling) {
+      final ErrorEvent errorEvent = new ErrorEvent();
+      errorEvent.exception = e;
 
-    dispatchErrorEvent(c, errorEvent);
+      dispatchErrorEvent(c, errorEvent);
+    } else {
+      throw new RuntimeException(e);
+    }
   }
 
   /**
    * For internal use, only. Use {@link #dispatchErrorEvent(ComponentContext, Exception)} instead.
    */
   public static void dispatchErrorEvent(ComponentContext c, ErrorEvent e) {
-    c.getComponentScope().getErrorHandler().dispatchEvent(e);
+    final EventHandler<ErrorEvent> errorHandler = c.getComponentScope().getErrorHandler();
+
+    // TODO(T26533980): This check is only necessary as long as we have the configuration flag as
+    //                  the enabled state could theoretically change at runtime.
+    if (errorHandler != null) {
+      errorHandler.dispatchEvent(e);
+    }
   }
 
   void loadStyle(
@@ -649,7 +659,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   @Override
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-    if (eventHandler.id == EVENT_HANDLER_ID) {
+    if (ComponentsConfiguration.enableOnErrorHandling && eventHandler.id == EVENT_HANDLER_ID) {
       ((Component) this).getErrorHandler().dispatchEvent(((ErrorEvent) eventState));
     }
 

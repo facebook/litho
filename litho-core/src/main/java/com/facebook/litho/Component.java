@@ -417,20 +417,22 @@ public abstract class Component extends ComponentLifecycle
   }
 
   private void generateErrorEventHandler(ComponentContext parentContext) {
-    HasEventDispatcher parentEventDispatcherProvider = parentContext.getComponentScope();
+    if (ComponentsConfiguration.enableOnErrorHandling) {
+      HasEventDispatcher parentEventDispatcherProvider = parentContext.getComponentScope();
 
-    // We have no parent, which means we're sitting at the root of the hierarchy. Since we cannot
-    // pass the event on any further, we reraise it.
-    if (parentEventDispatcherProvider == null) {
-      parentEventDispatcherProvider = new DefaultErrorEventDispatcher();
+      // We have no parent, which means we're sitting at the root of the hierarchy. Since we cannot
+      // pass the event on any further, we reraise it.
+      if (parentEventDispatcherProvider == null) {
+        parentEventDispatcherProvider = new DefaultErrorEventDispatcher();
+      }
+
+      mErrorEventHandler =
+          new EventHandler<>(
+              parentEventDispatcherProvider,
+              "onErrorHandler",
+              EVENT_HANDLER_ID,
+              new Object[] {parentContext});
     }
-
-    mErrorEventHandler =
-        new EventHandler<>(
-            parentEventDispatcherProvider,
-            "onErrorHandler",
-            EVENT_HANDLER_ID,
-            new Object[] {parentContext});
   }
 
   /**
