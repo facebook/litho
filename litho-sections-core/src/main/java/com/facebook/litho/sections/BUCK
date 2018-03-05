@@ -20,6 +20,7 @@ litho_android_library(
     ],
     visibility = LITHO_VISIBILITY,
     deps = [
+        LITHO_INFERANNOTATIONS_TARGET,
         LITHO_JAVA_TARGET,
         LITHO_YOGA_TARGET,
         LITHO_JSR_TARGET,

@@ -9,6 +9,7 @@
 
 package com.facebook.litho.sections;
 
+import static com.facebook.infer.annotation.ThreadConfined.ANY;
 import static com.facebook.litho.sections.Change.DELETE;
 import static com.facebook.litho.sections.Change.DELETE_RANGE;
 import static com.facebook.litho.sections.Change.INSERT;
@@ -18,6 +19,7 @@ import static com.facebook.litho.sections.Change.UPDATE;
 import static com.facebook.litho.sections.Change.UPDATE_RANGE;
 
 import android.support.annotation.VisibleForTesting;
+import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.sections.SectionTree.Target;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.OnDiff;
@@ -26,13 +28,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A ChangeSet represent a list of Change that has to be applied to a
- * {@link Target} as the result of an update of a
- * {@link Section}. A ChangeSet is provided in the
- * {@link OnDiff} of a
- * {@link DiffSectionSpec} to allow the ChangeSetSpec to
- * define its changes based on old/new props and state.
+ * A ChangeSet represent a list of Change that has to be applied to a {@link Target} as the result
+ * of an update of a {@link Section}. A ChangeSet is provided in the {@link OnDiff} of a {@link
+ * DiffSectionSpec} to allow the ChangeSetSpec to define its changes based on old/new props and
+ * state.
  */
+@ThreadConfined(ANY)
 public final class ChangeSet {
 
   private final List<Change> mChanges;
