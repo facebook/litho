@@ -135,16 +135,6 @@ public class ComponentsConfiguration {
    */
   public static long longerStateUpdatePercentage = 0;
 
-  /**
-   * Whether to unmount all contents of LithoView when it is being recycled by RecyclerView.
-   *
-   * <p>Currently we unmount only through incremental mount mechanism which is triggered when at
-   * least one pixel of LithoView is visible. When LithoView is fully outside the viewport
-   * RecyclerView recycles it and mounted content sticks around until the next time when it is
-   * rebound to another component.
-   */
-  public static boolean unmountAllWhenViewRecycled = false;
-
   /** Override the priority of the default background layout thread in ComponentTree with this. */
   public static int defaultBackgroundThreadPriority = Process.THREAD_PRIORITY_BACKGROUND;
 

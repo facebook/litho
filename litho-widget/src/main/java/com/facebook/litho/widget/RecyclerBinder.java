@@ -1535,9 +1535,7 @@ public class RecyclerBinder
     public void onViewRecycled(BaseViewHolder holder) {
       if (holder.isLithoViewType) {
         final LithoView lithoView = (LithoView) holder.itemView;
-        if (ComponentsConfiguration.unmountAllWhenViewRecycled) {
-          lithoView.unmountAllItems();
-        }
+        lithoView.unmountAllItems();
         lithoView.setComponentTree(null);
       } else {
         final ViewBinder viewBinder = holder.viewBinder;
