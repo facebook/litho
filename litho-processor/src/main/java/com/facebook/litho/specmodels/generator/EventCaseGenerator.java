@@ -22,10 +22,12 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 
 /** Generator for the cases within the event handler switch clause. */
-class EventCaseGenerator {
+public class EventCaseGenerator {
   private final ClassName mContextClass;
   private final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>>
       mEventMethodModels;
+
+  public static final String INTERNAL_ON_ERROR_HANDLER_NAME = "__internalOnErrorHandler";
 
   EventCaseGenerator(
       ClassName contextClass,

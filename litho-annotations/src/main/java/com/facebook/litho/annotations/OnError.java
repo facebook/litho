@@ -48,5 +48,5 @@ import java.lang.annotation.RetentionPolicy;
  * </code>
  * </pre>
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface OnError {}
