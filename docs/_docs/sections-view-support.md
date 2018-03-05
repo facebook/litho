@@ -14,7 +14,7 @@ View support is only offered by `DataDiffSection` at the moment. Let's have anot
 class MyGroupSectionSpec {
 
   @OnCreateChildren
-  Children onCreateChildren(
+  static Children onCreateChildren(
       SectionContext c,
       @Prop ImmutableList<MyModel> dataModel) {
       return Children.create()
@@ -22,10 +22,10 @@ class MyGroupSectionSpec {
               .data(dataModel)
               .renderEventHandler(MyGroupSection.onRenderEvent(c)))
           .build();
-    }
+  }
 
   @OnEvent(RenderEvent.class)
-  RenderInfo onRenderEvent(
+  static RenderInfo onRenderEvent(
       SectionContext c,
       @FromEvent MyModel model) {
       return ComponentRenderInfo.create(c)
@@ -45,8 +45,17 @@ We've seen in the previous example how to use `ComponentRenderInfo` to declare h
 @GroupSectionSpec
 class MyGroupSectionSpec {
 
+  private static ViewCreator VIEW_CREATOR =  
+      new ViewCreator<MyView>() {
+          @Override
+          public MyView createView(Context c, ViewGroup parent) {
+              // this call is equivalent to onCreateViewHolder()
+              return new MyView(c);
+          }
+      };
+
   @OnCreateChildren
-  Children onCreateChildren(
+  static Children onCreateChildren(
       SectionContext c,
       @Prop ImmutableList<MyModel> dataModel) {
       return Children.create()
@@ -54,22 +63,15 @@ class MyGroupSectionSpec {
               .data(dataModel)
               .renderEventHandler(MyGroupSection.onRenderEvent(c)))
           .build();
-    }
+  }
 
   @OnEvent(RenderEvent.class)
-  RenderInfo onRenderEvent(
+  static RenderInfo onRenderEvent(
       SectionContext c,
       @FromEvent MyModel model,
       @FromEvent int index) {
       return ViewRenderInfo.create(c)
-          .viewCreator(
-              new ViewCreator<MyView>() {
-                  @Override
-                  public View createView(Context c) {
-                      // this call is equivalent to onCreateViewHolder()
-                      return new MyView(c);
-                  }
-               })
+          .viewCreator(VIEW_CREATOR)
           .viewBinder(
               new SimpleViewBinder<MyView>() {
                   @Override
@@ -86,7 +88,7 @@ class MyGroupSectionSpec {
 
 `ViewCreator` and `ViewBinder` are the logical equivalent of `onCreateViewHolder` and `onBindViewHolder` methods of the `RecyclerView.Adapter`.
 
-Views created by the same `ViewCreator` will be recycled. You can use the `model` or the `index` to decide amongst multiple view types and return the appropriate View from `ViewCreator#createView()`.
+Views created by the same `ViewCreator` instance will be recycled in the same pool in RecyclerView. You can create a static instance of `ViewCreator` for different view types which you will use in the sections and pass static instance to `.viewCreator` method to ensure efficient recycling. You can use the `model` or the `index` to decide amongst multiple view types and return the appropriate `ViewCreator` instance. 
 
 The framework provides a no-op implementation of `ViewBinder`, called [SimpleViewBinder](/javadoc/com/facebook/litho/viewcompat/SimpleViewBinder.html), that you can use if only need to implement one of the `ViewBinder` methods, typically `bind(View)`.
 
@@ -99,8 +101,17 @@ Here's how you could do that:
 @GroupSectionSpec
 class MyGroupSectionSpec {
 
+  private static ViewCreator VIEW_CREATOR =  
+      new ViewCreator<MyView>() {
+          @Override
+          public MyView createView(Context c, ViewGroup parent) {
+              // this call is equivalent to onCreateViewHolder()
+              return new MyView(c);
+          }
+      };
+
   @OnCreateChildren
-  Children onCreateChildren(
+  static Children onCreateChildren(
       SectionContext c,
       @Prop ImmutableList<MyModel> dataModel) {
       return Children.create()
@@ -108,10 +119,10 @@ class MyGroupSectionSpec {
               .data(dataModel)
               .renderEventHandler(MyGroupSection.onRenderEvent(c)))
           .build();
-    }
+  }
 
   @OnEvent(RenderEvent.class)
-  RenderInfo onRenderEvent(
+  static RenderInfo onRenderEvent(
       SectionContext c,
       @FromEvent MyModel model) {
       if (model.canRenderWithComponent()) {
@@ -121,14 +132,7 @@ class MyGroupSectionSpec {
       }
 
       return ViewRenderInfo.create(c)
-               .viewCreator(
-                   new ViewCreator<MyView>() {
-                       @Override
-                       public View createView(Context c) {
-                           // this call is equivalent to onCreateViewHolder()
-                           return new MyView(c);
-                       }
-                    })
+               .viewCreator(VIEW_CREATOR)
                .viewBinder(
                    new SimpleViewBinder<MyView>() {
                        @Override
