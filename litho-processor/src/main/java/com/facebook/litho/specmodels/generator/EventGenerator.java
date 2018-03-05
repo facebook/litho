@@ -185,7 +185,12 @@ public class EventGenerator {
     final CodeBlock.Builder delegation = CodeBlock.builder();
 
     final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
-    if (eventMethodModel.returnType.equals(TypeName.VOID)) {
+    final boolean isErrorDelegation =
+        eventMethodModel.name.toString().equals(EventCaseGenerator.INTERNAL_ON_ERROR_HANDLER_NAME);
+
+    if (isErrorDelegation) {
+      delegation.add("$L(\n", "onError");
+    } else if (eventMethodModel.returnType.equals(TypeName.VOID)) {
       delegation.add("$L.$L(\n", sourceDelegateAccessor, eventMethodModel.name);
     } else {
       delegation.add(
@@ -251,6 +256,8 @@ public class EventGenerator {
     EventCaseGenerator.builder()
         .contextClass(specModel.getContextClass())
         .eventMethodModels(specModel.getEventMethods())
+        // For now, Sections are not supported for error propagation
+        .withErrorPropagation(specModel.getComponentClass().equals(ClassNames.COMPONENT))
         .writeTo(methodBuilder);
 
     return methodBuilder.addStatement("default:\nreturn null")

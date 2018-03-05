@@ -87,7 +87,7 @@ public final class SpecModelImpl implements SpecModel {
     mComponentName = getComponentName(componentClassName, qualifiedSpecClassName);
     mComponentTypeName = getComponentTypeName(componentClassName, qualifiedSpecClassName);
     mDelegateMethods = delegateMethods;
-    mEventMethods = eventMethods;
+    mEventMethods = getCombinedEventMethods(delegateMethods, eventMethods);
     mTriggerMethods = triggerMethods;
     mUpdateStateMethods = updateStateMethods;
     mRawProps = getRawProps(delegateMethods, eventMethods, triggerMethods, updateStateMethods);
@@ -300,6 +300,20 @@ public final class SpecModelImpl implements SpecModel {
 
   private static String getSpecName(String qualifiedSpecClassName) {
     return qualifiedSpecClassName.substring(qualifiedSpecClassName.lastIndexOf('.') + 1);
+  }
+
+  /** Generate synthetic event methods if necessary based on delegate implementations. */
+  private static ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>>
+      getCombinedEventMethods(
+          ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
+          ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods) {
+    final List<SpecMethodModel<EventMethod, EventDeclarationModel>> list =
+        new ArrayList<>(eventMethods);
+    if (ErrorEventHandlerGenerator.hasOnErrorDelegateMethod(delegateMethods)) {
+      list.add(ErrorEventHandlerGenerator.generateErrorEventHandlerDefinition());
+    }
+
+    return ImmutableList.copyOf(list);
   }
 
   private static ClassName getComponentTypeName(

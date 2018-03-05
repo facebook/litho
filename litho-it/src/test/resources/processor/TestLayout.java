@@ -17,6 +17,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.Diff;
+import com.facebook.litho.ErrorEvent;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTrigger;
@@ -288,6 +289,12 @@ public final class TestLayout<S extends View> extends Component {
         (long) _ref.mStateContainer.state1);
   }
 
+  private void __internalOnErrorHandler(
+      HasEventDispatcher _abstract, ComponentContext c, Exception exception) {
+    TestLayout _ref = (TestLayout) _abstract;
+    onError(c, exception);
+  }
+
   public static EventHandler<ClickEvent> testLayoutEvent(ComponentContext c, int param1) {
     return newEventHandler(
         c,
@@ -295,6 +302,16 @@ public final class TestLayout<S extends View> extends Component {
         1328162206,
         new Object[] {
           c, param1,
+        });
+  }
+
+  public static EventHandler<ErrorEvent> __internalOnErrorHandler(ComponentContext c) {
+    return newEventHandler(
+        c,
+        "__internalOnErrorHandler",
+        -1048037474,
+        new Object[] {
+          c,
         });
   }
 
@@ -309,6 +326,15 @@ public final class TestLayout<S extends View> extends Component {
               (ComponentContext) eventHandler.params[0],
               (View) _event.view,
               (int) eventHandler.params[1]);
+          return null;
+        }
+      case -1048037474:
+        {
+          ErrorEvent _event = (ErrorEvent) eventState;
+          __internalOnErrorHandler(
+              eventHandler.mHasEventDispatcher,
+              (ComponentContext) eventHandler.params[0],
+              (Exception) _event.exception);
         return null;
       }
       default:

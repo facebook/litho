@@ -101,6 +101,7 @@ public interface ClassNames {
   ClassName EVENT_TRIGGER_CONTAINER =
       ClassName.bestGuess("com.facebook.litho.EventTriggersContainer");
   ClassName ERROR_EVENT = ClassName.bestGuess("com.facebook.litho.ErrorEvent");
+  ClassName FROM_EVENT = ClassName.bestGuess("com.facebook.litho.annotations.FromEvent");
 
   ClassName SECTION = ClassName.bestGuess("com.facebook.litho.sections.Section");
   ClassName SECTION_BUILDER = ClassName.bestGuess("com.facebook.litho.sections.Section.Builder");

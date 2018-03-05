@@ -355,6 +355,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     throw new RuntimeException(e);
   }
 
+  public static void dispatchErrorEvent(ComponentContext context, ErrorEvent e) {
+    // TODO(T25566614): This only serves as a placeholder whilst error propagation is implemented.
+    dispatchErrorEvent(context, e.exception);
+  }
+
   void loadStyle(
       ComponentContext c,
       @AttrRes int defStyleAttr,

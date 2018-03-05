@@ -11,6 +11,7 @@ package com.facebook.litho.specmodels.generator;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
@@ -26,18 +27,43 @@ public class EventCaseGenerator {
   private final ClassName mContextClass;
   private final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>>
       mEventMethodModels;
+  private final boolean mWithErrorPropagation;
 
   public static final String INTERNAL_ON_ERROR_HANDLER_NAME = "__internalOnErrorHandler";
 
   EventCaseGenerator(
       ClassName contextClass,
-      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethodModels) {
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethodModels,
+      boolean withErrorPropagation) {
     mContextClass = contextClass;
     mEventMethodModels = eventMethodModels;
+    mWithErrorPropagation = withErrorPropagation;
   }
 
   public void writeTo(MethodSpec.Builder methodBuilder) {
     mEventMethodModels.forEach(e -> writeCase(methodBuilder, e));
+
+    if (mWithErrorPropagation) {
+      boolean hasErrorHandler =
+          mEventMethodModels
+              .stream()
+              .anyMatch(e -> e.name.toString().equals(INTERNAL_ON_ERROR_HANDLER_NAME));
+
+      if (!hasErrorHandler) {
+        writePropagatingErrorCase(methodBuilder);
+      }
+    }
+  }
+
+  private void writePropagatingErrorCase(MethodSpec.Builder methodBuilder) {
+    methodBuilder
+        .beginControlFlow("case $L:", INTERNAL_ON_ERROR_HANDLER_NAME.toString().hashCode())
+        .addStatement(
+            "dispatchErrorEvent(($L) eventHandler.params[0], ($L) eventState)",
+            mContextClass,
+            ClassNames.ERROR_EVENT)
+        .addStatement("return null")
+        .endControlFlow();
   }
 
   private void writeCase(
@@ -92,6 +118,7 @@ public class EventCaseGenerator {
   public static class Builder {
     private ClassName mContextClass;
     private ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mEventMethodModels;
+    private boolean mWithErrorPropagation;
 
     private Builder() {}
 
@@ -106,8 +133,14 @@ public class EventCaseGenerator {
       return this;
     }
 
+    public Builder withErrorPropagation(boolean withErrorPropagation) {
+      mWithErrorPropagation = withErrorPropagation;
+      return this;
+    }
+
     public void writeTo(MethodSpec.Builder methodBuilder) {
-      new EventCaseGenerator(mContextClass, mEventMethodModels).writeTo(methodBuilder);
+      new EventCaseGenerator(mContextClass, mEventMethodModels, mWithErrorPropagation)
+          .writeTo(methodBuilder);
     }
   }
 }

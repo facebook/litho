@@ -152,29 +152,33 @@ public class EventGeneratorTest {
   public void testGenerateDispatchOnEvent() {
     assertThat(EventGenerator.generateDispatchOnEvent(mSpecModel).toString())
         .isEqualTo(
-            "@java.lang.Override\n" +
-            "public java.lang.Object dispatchOnEvent(final com.facebook.litho.EventHandler eventHandler,\n" +
-            "    final java.lang.Object eventState) {\n" +
-            "  int id = eventHandler.id;\n" +
-            "  switch (id) {\n" +
-            "    case -1400079064: {\n" +
-            "      java.lang.Object _event = (java.lang.Object) eventState;\n" +
-            "      testEventMethod1(\n" +
-            "            eventHandler.mHasEventDispatcher,\n" +
-            "            (java.lang.Object) eventHandler.params[0],\n" +
-            "            (T) eventHandler.params[1]);\n" +
-            "      return null;\n" +
-            "    }\n" +
-            "    case -1400079063: {\n" +
-            "      java.lang.Object _event = (java.lang.Object) eventState;\n" +
-            "      testEventMethod2(\n" +
-            "            eventHandler.mHasEventDispatcher);\n" +
-            "      return null;\n" +
-            "    }\n" +
-            "    default:\n" +
-            "        return null;\n" +
-            "  }\n" +
-            "}\n");
+            "@java.lang.Override\n"
+                + "public java.lang.Object dispatchOnEvent(final com.facebook.litho.EventHandler eventHandler,\n"
+                + "    final java.lang.Object eventState) {\n"
+                + "  int id = eventHandler.id;\n"
+                + "  switch (id) {\n"
+                + "    case -1400079064: {\n"
+                + "      java.lang.Object _event = (java.lang.Object) eventState;\n"
+                + "      testEventMethod1(\n"
+                + "            eventHandler.mHasEventDispatcher,\n"
+                + "            (java.lang.Object) eventHandler.params[0],\n"
+                + "            (T) eventHandler.params[1]);\n"
+                + "      return null;\n"
+                + "    }\n"
+                + "    case -1400079063: {\n"
+                + "      java.lang.Object _event = (java.lang.Object) eventState;\n"
+                + "      testEventMethod2(\n"
+                + "            eventHandler.mHasEventDispatcher);\n"
+                + "      return null;\n"
+                + "    }\n"
+                + "    case -1048037474: {\n"
+                + "      dispatchErrorEvent((com.facebook.litho.ComponentContext) eventHandler.params[0], (com.facebook.litho.ErrorEvent) eventState);\n"
+                + "      return null;\n"
+                + "    }\n"
+                + "    default:\n"
+                + "        return null;\n"
+                + "  }\n"
+                + "}\n");
   }
 
   @Test
