@@ -53,6 +53,12 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return new ComponentAssert(context, builder.build());
   }
 
+  /** Performs a state update and returns the new view. */
+  public LithoViewAssert afterStateUpdate() throws Exception {
+    return LithoViewAssert.assertThat(
+        StateUpdatesTestHelper.getViewAfterStateUpdate(mComponentContext, actual));
+  }
+
   public LithoViewAssert withStateUpdate(final StateUpdatesTestHelper.StateUpdater updater)
       throws Exception {
     return LithoViewAssert.assertThat(
@@ -182,8 +188,16 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return this;
   }
 
+  /** Assert that the given component contains the provided pattern. */
+  public ComponentAssert hasVisibleTextMatching(String pattern) {
+    assertThatLithoView().hasVisibleTextMatching(pattern);
+
+    return this;
+  }
+
   /**
    * Assert that the view tag is present for the given index.
+   *
    * @param tagId Index of the view tag.
    * @param tagValue View tag value.
    */

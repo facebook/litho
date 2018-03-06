@@ -139,9 +139,12 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
     return this;
   }
 
-  /**
-   * Assert that the LithoView under test has the provided measured width.
-   */
+  /** Assert that the given component contains the provided pattern. */
+  public void hasVisibleTextMatching(String pattern) {
+    assertThatViewTree().hasVisibleTextMatching(pattern);
+  }
+
+  /** Assert that the LithoView under test has the provided measured width. */
   public LithoViewAssert hasMeasuredWidthOf(int width) {
     Java6Assertions.assertThat(actual.getMeasuredWidth())
         .overridingErrorMessage(

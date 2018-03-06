@@ -51,6 +51,26 @@ public final class StateUpdatesTestHelper {
   }
 
   /**
+   * Returns a LithoView after all outstanding asynchronous state updates are performed.
+   *
+   * @param context context
+   * @param component the component to update
+   * @return the updated LithoView after the state update was applied
+   */
+  public static LithoView getViewAfterStateUpdate(ComponentContext context, Component component)
+      throws Exception {
+    return getViewAfterStateUpdate(
+        context,
+        component,
+        new StateUpdater() {
+          @Override
+          public void performStateUpdate(ComponentContext ignored) {}
+        },
+        ComponentTestHelper.getDefaultLayoutThreadShadowLooper(),
+        false);
+  }
+
+  /**
    * Call a state update as specified in {@link StateUpdater#performStateUpdate(ComponentContext)}
    * on the component and return the updated view.
    *
