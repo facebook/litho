@@ -15,6 +15,7 @@ import static org.junit.Assume.assumeThat;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.error.TestCrasherOnCreateLayout;
+import com.facebook.litho.testing.error.TestCrasherOnCreateLayoutWithSizeSpec;
 import com.facebook.litho.testing.error.TestCrasherOnMount;
 import com.facebook.litho.testing.error.TestErrorBoundary;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
@@ -82,6 +83,41 @@ public class ComponentLifecycleErrorTest {
     }
 
     assertThat(exception).isNotNull().hasMessage("onCreateLayout crash");
+  }
+
+  @Test
+  public void testOnCreateLayoutWithSizeSpecErrorBoundary() throws Exception {
+    ComponentsConfiguration.enableOnErrorHandling = true;
+
+    final ComponentContext c = mComponentsRule.getContext();
+
+    final Component component =
+        TestErrorBoundary.create(c)
+            .child(TestCrasherOnCreateLayoutWithSizeSpec.create(c).build())
+            .build();
+
+    assertThat(c, component)
+        .afterStateUpdate()
+        .hasVisibleTextMatching("onCreateLayoutWithSizeSpec crash");
+  }
+
+  @Test
+  public void testOnCreateLayoutWithSizeSpecErrorBoundaryWhenDisabled() {
+    ComponentsConfiguration.enableOnErrorHandling = false;
+
+    final ComponentContext c = mComponentsRule.getContext();
+
+    final TestErrorBoundary.Builder builder =
+        TestErrorBoundary.create(c).child(TestCrasherOnCreateLayoutWithSizeSpec.create(c).build());
+
+    RuntimeException exception = null;
+    try {
+      ComponentTestHelper.mountComponent(builder);
+    } catch (RuntimeException e) {
+      exception = e;
+    }
+
+    assertThat(exception).isNotNull().hasMessage("onCreateLayoutWithSizeSpec crash");
   }
 
   @Test

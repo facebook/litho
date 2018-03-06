@@ -417,7 +417,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   private void generateErrorEventHandler(ComponentContext parentContext) {
-    if (ComponentsConfiguration.enableOnErrorHandling) {
+    if (ComponentsConfiguration.enableOnErrorHandling && mErrorEventHandler == null) {
       HasEventDispatcher parentEventDispatcherProvider = parentContext.getComponentScope();
 
       // We have no parent, which means we're sitting at the root of the hierarchy. Since we cannot
