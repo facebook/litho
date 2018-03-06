@@ -207,7 +207,12 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   void mount(ComponentContext c, Object convertContent) {
     c.enterNoStateUpdatesMethod("mount");
-    onMount(c, convertContent);
+    try {
+      onMount(c, convertContent);
+    } catch (Exception e) {
+      c.exitNoStateUpdatesMethod();
+      dispatchErrorEvent(c, e);
+    }
     c.exitNoStateUpdatesMethod();
   }
 

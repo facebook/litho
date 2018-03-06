@@ -54,7 +54,7 @@ public class TestErrorBoundarySpec {
 
   @OnError
   static void onError(ComponentContext c, Exception e) {
-    TestErrorBoundary.updateError(
+    TestErrorBoundary.updateErrorAsync(
         c, String.format("Error caught from boundary: %s", e.getMessage()));
   }
 }

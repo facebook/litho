@@ -14,9 +14,9 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 
 @LayoutSpec
-public class TestCrasherSpec {
+public class TestCrasherOnCreateLayoutSpec {
   @OnCreateLayout
   public static Component onCreateLayout(ComponentContext c) {
-    throw new RuntimeException("Boom!");
+    throw new RuntimeException("onCreateLayout crash");
   }
 }

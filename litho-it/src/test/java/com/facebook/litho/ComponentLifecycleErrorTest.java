@@ -8,16 +8,14 @@
  */
 package com.facebook.litho;
 
-import static com.facebook.litho.testing.assertj.ComponentConditions.text;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
-import static com.facebook.litho.testing.assertj.SubComponentExtractor.subComponentWith;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assume.assumeThat;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
-import com.facebook.litho.testing.error.TestCrasher;
+import com.facebook.litho.testing.error.TestCrasherOnCreateLayout;
+import com.facebook.litho.testing.error.TestCrasherOnMount;
 import com.facebook.litho.testing.error.TestErrorBoundary;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -28,9 +26,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * Tests error handling in {@link ComponentLifecycle} using the components {@link
- * com.facebook.litho.testing.error.TestErrorBoundarySpec} and {@link
- * com.facebook.litho.testing.error.TestCrasherSpec}.
+ * Tests error handling in {@link ComponentLifecycle} using the {@link
+ * com.facebook.litho.testing.error.TestErrorBoundarySpec} against components crashing in various
+ * different lifecycle methods.
  */
 @RunWith(ComponentsTestRunner.class)
 public class ComponentLifecycleErrorTest {
@@ -56,23 +54,25 @@ public class ComponentLifecycleErrorTest {
   }
 
   @Test
-  public void testErrorBoundary() {
+  public void testOnCreateLayoutErrorBoundary() throws Exception {
     ComponentsConfiguration.enableOnErrorHandling = true;
 
     final ComponentContext c = mComponentsRule.getContext();
 
-    assertThat(TestErrorBoundary.create(c).child(TestCrasher.create(c).build()))
-        .has(subComponentWith(c, text(containsString("A WILD ERROR APPEARS"))));
+    final Component component =
+        TestErrorBoundary.create(c).child(TestCrasherOnCreateLayout.create(c).build()).build();
+
+    assertThat(c, component).afterStateUpdate().hasVisibleTextMatching("onCreateLayout crash");
   }
 
   @Test
-  public void testErrorBoundaryWhenDisabled() {
+  public void testOnCreateLayoutErrorBoundaryWhenDisabled() {
     ComponentsConfiguration.enableOnErrorHandling = false;
 
     final ComponentContext c = mComponentsRule.getContext();
 
     final TestErrorBoundary.Builder builder =
-        TestErrorBoundary.create(c).child(TestCrasher.create(c).build());
+        TestErrorBoundary.create(c).child(TestCrasherOnCreateLayout.create(c).build());
 
     RuntimeException exception = null;
     try {
@@ -81,6 +81,36 @@ public class ComponentLifecycleErrorTest {
       exception = e;
     }
 
-    assertThat(exception).isNotNull().hasMessage("Boom!");
+    assertThat(exception).isNotNull().hasMessage("onCreateLayout crash");
+  }
+
+  @Test
+  public void testOnMountErrorBoundary() throws Exception {
+    ComponentsConfiguration.enableOnErrorHandling = true;
+
+    final ComponentContext c = mComponentsRule.getContext();
+
+    final Component component =
+        TestErrorBoundary.create(c).child(TestCrasherOnMount.create(c).build()).build();
+    assertThat(c, component).afterStateUpdate().hasVisibleTextMatching("onMount crash");
+  }
+
+  @Test
+  public void testOnMountErrorBoundaryWhenDisabled() throws Exception {
+    ComponentsConfiguration.enableOnErrorHandling = false;
+
+    final ComponentContext c = mComponentsRule.getContext();
+
+    final TestErrorBoundary.Builder builder =
+        TestErrorBoundary.create(c).child(TestCrasherOnMount.create(c).build());
+
+    RuntimeException exception = null;
+    try {
+      ComponentTestHelper.mountComponent(builder);
+    } catch (RuntimeException e) {
+      exception = e;
+    }
+
+    assertThat(exception).isNotNull().hasMessageContaining("onMount crash");
   }
 }
