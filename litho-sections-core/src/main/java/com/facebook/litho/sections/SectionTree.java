@@ -757,30 +757,13 @@ public class SectionTree {
       throw new IllegalStateException("State set with no attached Section");
     }
 
-    List<StateUpdate> currentPendingUpdatesForKey = mPendingStateUpdates.mAllStateUpdates.get(key);
-
-    if (currentPendingUpdatesForKey == null) {
-      currentPendingUpdatesForKey = acquireUpdatesList();
-      mPendingStateUpdates.mAllStateUpdates.put(key, currentPendingUpdatesForKey);
-    }
-
-    currentPendingUpdatesForKey.add(stateUpdate);
+    mPendingStateUpdates.addStateUpdate(key, stateUpdate, isLazyStateUpdate);
 
     // If the state update is lazy, do not create a new tree root because the calculation of
     // a new tree will not happen yet.
     if (isLazyStateUpdate) {
       return;
     }
-
-    List<StateUpdate> currentPendingNonLazyUpdatesForKey =
-        mPendingStateUpdates.mNonLazyStateUpdates.get(key);
-
-    if (currentPendingNonLazyUpdatesForKey == null) {
-      currentPendingNonLazyUpdatesForKey = acquireUpdatesList();
-      mPendingStateUpdates.mNonLazyStateUpdates.put(key, currentPendingNonLazyUpdatesForKey);
-    }
-
-    currentPendingNonLazyUpdatesForKey.add(stateUpdate);
 
     // Need to calculate a new tree since the state changed. The next tree root will be the same
     // of the current tree or a copy of the next pending root.
@@ -815,7 +798,7 @@ public class SectionTree {
         nextRoot = copy(mNextSection, false);
         logger = mContext.getLogger();
         logTag = mContext.getLogTag();
-        pendingStateUpdates = copyPendingStateUpdates();
+        pendingStateUpdates = mPendingStateUpdates.copy();
       }
 
       LogEvent logEvent = null;
@@ -867,7 +850,7 @@ public class SectionTree {
 
             mCurrentSection = newRoot;
             mNextSection = null;
-            removeCompletedStateUpdatesFromInstance(pendingStateUpdates);
+            mPendingStateUpdates.removeCompletedStateUpdates(pendingStateUpdates);
             mPendingChangeSets.add(changeSetState.getChangeSet());
 
             if (oldRoot != null) {
@@ -900,7 +883,7 @@ public class SectionTree {
           currentRoot = copy(mCurrentSection, true);
           nextRoot = copy(mNextSection, false);
           if (nextRoot != null) {
-            pendingStateUpdates = copyPendingStateUpdates();
+            pendingStateUpdates = mPendingStateUpdates.copy();
           }
         }
       }
@@ -915,29 +898,6 @@ public class SectionTree {
     }
   }
 
-  @GuardedBy("this")
-  private StateUpdatesHolder copyPendingStateUpdates() {
-    StateUpdatesHolder clonedPendingStateUpdates = SectionsPools.acquireStateUpdatesHolder();
-
-    if (mPendingStateUpdates.mAllStateUpdates.isEmpty()) {
-      return clonedPendingStateUpdates;
-    }
-
-    final Set<String> keys = mPendingStateUpdates.mAllStateUpdates.keySet();
-    for (String key : keys) {
-      clonedPendingStateUpdates.mAllStateUpdates.put(
-          key, new ArrayList<>(mPendingStateUpdates.mAllStateUpdates.get(key)));
-    }
-
-    final Set<String> keysNonLazy = mPendingStateUpdates.mNonLazyStateUpdates.keySet();
-    for (String key : keysNonLazy) {
-      clonedPendingStateUpdates.mNonLazyStateUpdates.put(
-          key, new ArrayList<>(mPendingStateUpdates.mNonLazyStateUpdates.get(key)));
-    }
-
-    return clonedPendingStateUpdates;
-  }
-
   /**
    * The state update is completed if there are no new non-lazy state updates enqueued.
    *
@@ -946,39 +906,6 @@ public class SectionTree {
   private synchronized boolean isStateUpdateCompleted(StateUpdatesHolder localPendingStateUpdates) {
     return localPendingStateUpdates.mNonLazyStateUpdates.equals(
         mPendingStateUpdates.mNonLazyStateUpdates);
-  }
-
-  @GuardedBy("this")
-  private void removeCompletedStateUpdatesFromInstance(
-      StateUpdatesHolder localPendingStateUpdates) {
-    if (localPendingStateUpdates.mAllStateUpdates.isEmpty()) {
-      return;
-    }
-
-    final Set<String> keys = localPendingStateUpdates.mAllStateUpdates.keySet();
-    for (String key : keys) {
-      if (!mPendingStateUpdates.mAllStateUpdates.containsKey(key)) {
-        // instanceMap has been modified and since the localMap is created, so it's no longer valid.
-        // We will exit the function early
-        return;
-      }
-
-      List<StateUpdate> completed = localPendingStateUpdates.mAllStateUpdates.get(key);
-      List<StateUpdate> pending = mPendingStateUpdates.mAllStateUpdates.remove(key);
-      pending.removeAll(completed);
-      if (!pending.isEmpty()) {
-        mPendingStateUpdates.mAllStateUpdates.put(key, pending);
-      }
-
-      List<StateUpdate> completedNonLazy = localPendingStateUpdates.mNonLazyStateUpdates.get(key);
-      List<StateUpdate> pendingNonLazy = mPendingStateUpdates.mNonLazyStateUpdates.remove(key);
-      if (completedNonLazy != null && pendingNonLazy != null) {
-        pendingNonLazy.removeAll(completedNonLazy);
-      }
-      if (pendingNonLazy != null && !pendingNonLazy.isEmpty()) {
-        mPendingStateUpdates.mNonLazyStateUpdates.put(key, pendingNonLazy);
-      }
-    }
   }
 
   void dispatchLoadingEvent(LoadingEvent event) {
@@ -1430,6 +1357,82 @@ public class SectionTree {
     StateUpdatesHolder() {
       mAllStateUpdates = new HashMap<>();
       mNonLazyStateUpdates = new HashMap<>();
+    }
+
+    private void addStateUpdate(String key, StateUpdate stateUpdate, boolean isLazyStateUpdate) {
+      addStateUpdateForKey(key, stateUpdate, mAllStateUpdates);
+
+      if (!isLazyStateUpdate) {
+        addStateUpdateForKey(key, stateUpdate, mNonLazyStateUpdates);
+      }
+    }
+
+    private static void addStateUpdateForKey(
+        String key, StateUpdate stateUpdate, Map<String, List<StateUpdate>> map) {
+      List<StateUpdate> currentStateUpdatesForKey = map.get(key);
+
+      if (currentStateUpdatesForKey == null) {
+        currentStateUpdatesForKey = acquireUpdatesList();
+        map.put(key, currentStateUpdatesForKey);
+      }
+
+      currentStateUpdatesForKey.add(stateUpdate);
+    }
+
+    private StateUpdatesHolder copy() {
+      StateUpdatesHolder clonedPendingStateUpdates = SectionsPools.acquireStateUpdatesHolder();
+
+      if (mAllStateUpdates.isEmpty()) {
+        return clonedPendingStateUpdates;
+      }
+
+      final Set<String> keys = mAllStateUpdates.keySet();
+      for (String key : keys) {
+        clonedPendingStateUpdates.mAllStateUpdates.put(
+            key, new ArrayList<>(mAllStateUpdates.get(key)));
+      }
+
+      final Set<String> keysNonLazy = mNonLazyStateUpdates.keySet();
+      for (String key : keysNonLazy) {
+        clonedPendingStateUpdates.mNonLazyStateUpdates.put(
+            key, new ArrayList<>(mNonLazyStateUpdates.get(key)));
+      }
+
+      return clonedPendingStateUpdates;
+    }
+
+    private void removeCompletedStateUpdates(StateUpdatesHolder completedStateUpdates) {
+      if (completedStateUpdates.mAllStateUpdates.isEmpty()) {
+        return;
+      }
+
+      final Set<String> keys = completedStateUpdates.mAllStateUpdates.keySet();
+      for (String key : keys) {
+        if (!mAllStateUpdates.containsKey(key)) {
+          // instanceMap has been modified and since the localMap is created, so it's no longer
+          // valid. We will exit the function early.
+          return;
+        }
+
+        removeCompletedStateUpdatesFromMap(
+            mAllStateUpdates, completedStateUpdates.mAllStateUpdates, key);
+        removeCompletedStateUpdatesFromMap(
+            mNonLazyStateUpdates, completedStateUpdates.mNonLazyStateUpdates, key);
+      }
+    }
+
+    private static void removeCompletedStateUpdatesFromMap(
+        Map<String, List<StateUpdate>> currentStateUpdates,
+        Map<String, List<StateUpdate>> completedStateUpdates,
+        String key) {
+      List<StateUpdate> completed = completedStateUpdates.get(key);
+      List<StateUpdate> current = currentStateUpdates.remove(key);
+      if (completed != null && current != null) {
+        current.removeAll(completed);
+      }
+      if (current != null && !current.isEmpty()) {
+        currentStateUpdates.put(key, current);
+      }
     }
 
     void release() {
