@@ -9,30 +9,26 @@
 
 package com.facebook.litho.sections;
 
-import static com.facebook.litho.sections.SectionLifecycle.StateUpdate;
-
-import android.support.v4.util.ArrayMap;
 import com.facebook.litho.RecyclePool;
-import java.util.List;
-import java.util.Map;
+import com.facebook.litho.sections.SectionTree.StateUpdatesHolder;
 
 /** Pools of recycled resources. */
 public class SectionsPools {
 
-  private static final RecyclePool<Map<String, List<StateUpdate>>> sStateUpdatesMapPool =
-      new RecyclePool<>("StateUpdateMap", 4, true);
+  private static final RecyclePool<StateUpdatesHolder> sStateUpdatesHolderPool =
+      new RecyclePool<>("StateUpdatesHolder", 4, true);
 
-  static Map<String, List<StateUpdate>> acquireStateUpdatesMap() {
-    Map<String, List<StateUpdate>> map = sStateUpdatesMapPool.acquire();
-    if (map == null) {
-      map = new ArrayMap<>();
+  static StateUpdatesHolder acquireStateUpdatesHolder() {
+    StateUpdatesHolder pendingStateUpdates = sStateUpdatesHolderPool.acquire();
+    if (pendingStateUpdates == null) {
+      pendingStateUpdates = new StateUpdatesHolder();
     }
 
-    return map;
+    return pendingStateUpdates;
   }
 
-  static void release(Map<String, List<StateUpdate>> map) {
-    map.clear();
-    sStateUpdatesMapPool.release(map);
+  static void release(StateUpdatesHolder pendingStateUpdates) {
+    pendingStateUpdates.release();
+    sStateUpdatesHolderPool.release(pendingStateUpdates);
   }
 }

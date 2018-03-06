@@ -200,12 +200,10 @@ public class SectionTree {
   private @Nullable Section mNextSection;
 
   @GuardedBy("this")
-  private Map<String, List<StateUpdate>> mPendingStateUpdates;
+  private StateUpdatesHolder mPendingStateUpdates;
 
   @GuardedBy("this")
   private List<ChangeSet> mPendingChangeSets;
-
-  private boolean mHasNonLazyUpdate;
 
   @GuardedBy("this")
   private Map<String, List<EventHandler>> mEventHandlers = new HashMap<>();
@@ -274,8 +272,7 @@ public class SectionTree {
     mFocusDispatcher = new FocusDispatcher(mTarget);
     mContext = SectionContext.withSectionTree(builder.mContext, this);
     mPendingChangeSets = new ArrayList<>();
-    mPendingStateUpdates = new HashMap<>();
-    mHasNonLazyUpdate = false;
+    mPendingStateUpdates = SectionsPools.acquireStateUpdatesHolder();
     Handler changeSetThreadHandler = builder.mChangeSetThreadHandler != null ?
         builder.mChangeSetThreadHandler :
         new Handler(getDefaultChangeSetThreadLooper());
@@ -760,14 +757,13 @@ public class SectionTree {
       throw new IllegalStateException("State set with no attached Section");
     }
 
-    List<StateUpdate> currentPendingUpdatesForKey = mPendingStateUpdates.get(key);
+    List<StateUpdate> currentPendingUpdatesForKey = mPendingStateUpdates.mAllStateUpdates.get(key);
 
     if (currentPendingUpdatesForKey == null) {
       currentPendingUpdatesForKey = acquireUpdatesList();
-      mPendingStateUpdates.put(key, currentPendingUpdatesForKey);
+      mPendingStateUpdates.mAllStateUpdates.put(key, currentPendingUpdatesForKey);
     }
 
-    mHasNonLazyUpdate = !isLazyStateUpdate || mHasNonLazyUpdate;
     currentPendingUpdatesForKey.add(stateUpdate);
 
     // If the state update is lazy, do not create a new tree root because the calculation of
@@ -775,6 +771,16 @@ public class SectionTree {
     if (isLazyStateUpdate) {
       return;
     }
+
+    List<StateUpdate> currentPendingNonLazyUpdatesForKey =
+        mPendingStateUpdates.mNonLazyStateUpdates.get(key);
+
+    if (currentPendingNonLazyUpdatesForKey == null) {
+      currentPendingNonLazyUpdatesForKey = acquireUpdatesList();
+      mPendingStateUpdates.mNonLazyStateUpdates.put(key, currentPendingNonLazyUpdatesForKey);
+    }
+
+    currentPendingNonLazyUpdatesForKey.add(stateUpdate);
 
     // Need to calculate a new tree since the state changed. The next tree root will be the same
     // of the current tree or a copy of the next pending root.
@@ -795,7 +801,7 @@ public class SectionTree {
     try {
       Section currentRoot;
       Section nextRoot;
-      Map<String, List<StateUpdate>> pendingStateUpdates;
+      StateUpdatesHolder pendingStateUpdates;
 
       final ComponentsLogger logger;
       final String logTag;
@@ -809,7 +815,7 @@ public class SectionTree {
         nextRoot = copy(mNextSection, false);
         logger = mContext.getLogger();
         logTag = mContext.getLogTag();
-        pendingStateUpdates = copyPendingStateUpdatesAndResetNonLazyFlag();
+        pendingStateUpdates = copyPendingStateUpdates();
       }
 
       LogEvent logEvent = null;
@@ -831,7 +837,12 @@ public class SectionTree {
       while (nextRoot != null) {
         final ChangeSetState changeSetState =
             calculateNewChangeSet(
-                mContext, currentRoot, nextRoot, pendingStateUpdates, mSectionsDebugLogger, mTag);
+                mContext,
+                currentRoot,
+                nextRoot,
+                pendingStateUpdates.mAllStateUpdates,
+                mSectionsDebugLogger,
+                mTag);
 
         final boolean changeSetIsValid;
         Section oldRoot = null;
@@ -894,7 +905,7 @@ public class SectionTree {
           currentRoot = copy(mCurrentSection, true);
           nextRoot = copy(mNextSection, false);
           if (nextRoot != null) {
-            pendingStateUpdates = copyPendingStateUpdatesAndResetNonLazyFlag();
+            pendingStateUpdates = copyPendingStateUpdates();
           }
         }
       }
@@ -910,54 +921,67 @@ public class SectionTree {
   }
 
   @GuardedBy("this")
-  private Map<String, List<StateUpdate>> copyPendingStateUpdatesAndResetNonLazyFlag() {
-    mHasNonLazyUpdate = false;
-    Map<String, List<StateUpdate>> clonedPendingStateUpdated =
-        SectionsPools.acquireStateUpdatesMap();
+  private StateUpdatesHolder copyPendingStateUpdates() {
+    StateUpdatesHolder clonedPendingStateUpdates = SectionsPools.acquireStateUpdatesHolder();
 
-    if (mPendingStateUpdates.isEmpty()) {
-      return clonedPendingStateUpdated;
+    if (mPendingStateUpdates.mAllStateUpdates.isEmpty()) {
+      return clonedPendingStateUpdates;
     }
 
-    final Set<String> keys = mPendingStateUpdates.keySet();
+    final Set<String> keys = mPendingStateUpdates.mAllStateUpdates.keySet();
     for (String key : keys) {
-      clonedPendingStateUpdated.put(key, new ArrayList<>(mPendingStateUpdates.get(key)));
+      clonedPendingStateUpdates.mAllStateUpdates.put(
+          key, new ArrayList<>(mPendingStateUpdates.mAllStateUpdates.get(key)));
     }
 
-    return clonedPendingStateUpdated;
+    final Set<String> keysNonLazy = mPendingStateUpdates.mNonLazyStateUpdates.keySet();
+    for (String key : keysNonLazy) {
+      clonedPendingStateUpdates.mNonLazyStateUpdates.put(
+          key, new ArrayList<>(mPendingStateUpdates.mNonLazyStateUpdates.get(key)));
+    }
+
+    return clonedPendingStateUpdates;
   }
 
   /**
-   * If the completed state update map is equal to the pending state update map, state update is
-   * completed.
+   * The state update is completed if there are no new non-lazy state updates enqueued.
    *
-   * Otherwise, we check if there is any new non-lazy state updates enqueued.
-   *
-   * @return true if there is no more state update to be processed immediately
+   * @return true if there are no more state updates to be processed immediately.
    */
-  private synchronized boolean isStateUpdateCompleted(Map<String, List<StateUpdate>> localMap) {
-    return localMap.equals(mPendingStateUpdates) || !mHasNonLazyUpdate;
+  private synchronized boolean isStateUpdateCompleted(StateUpdatesHolder localPendingStateUpdates) {
+    return localPendingStateUpdates.mNonLazyStateUpdates.equals(
+        mPendingStateUpdates.mNonLazyStateUpdates);
   }
 
   @GuardedBy("this")
-  private void removeCompletedStateUpdatesFromInstance(Map<String, List<StateUpdate>> localMap) {
-    if (localMap.isEmpty()) {
+  private void removeCompletedStateUpdatesFromInstance(
+      StateUpdatesHolder localPendingStateUpdates) {
+    if (localPendingStateUpdates.mAllStateUpdates.isEmpty()) {
       return;
     }
 
-    final Set<String> keys = localMap.keySet();
+    final Set<String> keys = localPendingStateUpdates.mAllStateUpdates.keySet();
     for (String key : keys) {
-      if (!mPendingStateUpdates.containsKey(key)) {
+      if (!mPendingStateUpdates.mAllStateUpdates.containsKey(key)) {
         // instanceMap has been modified and since the localMap is created, so it's no longer valid.
         // We will exit the function early
         return;
       }
 
-      List<StateUpdate> completed = localMap.get(key);
-      List<StateUpdate> pending = mPendingStateUpdates.remove(key);
+      List<StateUpdate> completed = localPendingStateUpdates.mAllStateUpdates.get(key);
+      List<StateUpdate> pending = mPendingStateUpdates.mAllStateUpdates.remove(key);
       pending.removeAll(completed);
       if (!pending.isEmpty()) {
-        mPendingStateUpdates.put(key, pending);
+        mPendingStateUpdates.mAllStateUpdates.put(key, pending);
+      }
+
+      List<StateUpdate> completedNonLazy = localPendingStateUpdates.mNonLazyStateUpdates.get(key);
+      List<StateUpdate> pendingNonLazy = mPendingStateUpdates.mNonLazyStateUpdates.remove(key);
+      if (completedNonLazy != null && pendingNonLazy != null) {
+        pendingNonLazy.removeAll(completedNonLazy);
+      }
+      if (pendingNonLazy != null && !pendingNonLazy.isEmpty()) {
+        mPendingStateUpdates.mNonLazyStateUpdates.put(key, pendingNonLazy);
       }
     }
   }
@@ -1313,10 +1337,10 @@ public class SectionTree {
     sb.append(tree.mPendingChangeSets.size());
 
     sb.append(", pendingStateUpdates.size: ");
-    sb.append(tree.mPendingStateUpdates.size());
+    sb.append(tree.mPendingStateUpdates.mAllStateUpdates.size());
 
-    sb.append(", hasNonLazyUpdate: ");
-    sb.append(tree.mHasNonLazyUpdate);
+    sb.append(", pendingNonLazyStateUpdates.size: ");
+    sb.append(tree.mPendingStateUpdates.mNonLazyStateUpdates.size());
     sb.append("\n");
     return sb.toString();
   }
@@ -1396,6 +1420,26 @@ public class SectionTree {
      */
     public SectionTree build() {
       return new SectionTree(this);
+    }
+  }
+
+  /**
+   * A class to track state updates. It keeps track of both all state updates, and all non-lazy
+   * state updates. We're interested in non-lazy state updates in particular since they are the ones
+   * we need in order to determine whether we need to execute another state update or not.
+   */
+  static class StateUpdatesHolder {
+    private Map<String, List<StateUpdate>> mAllStateUpdates;
+    private Map<String, List<StateUpdate>> mNonLazyStateUpdates;
+
+    StateUpdatesHolder() {
+      mAllStateUpdates = new HashMap<>();
+      mNonLazyStateUpdates = new HashMap<>();
+    }
+
+    void release() {
+      mAllStateUpdates.clear();
+      mNonLazyStateUpdates.clear();
     }
   }
 }
