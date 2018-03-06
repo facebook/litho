@@ -856,12 +856,7 @@ public class SectionTree {
                       && instanceCurrentNotNull
                       && currentRoot.getId() == mCurrentSection.getId())
                   || (!currentNotNull && !instanceCurrentNotNull);
-
-          boolean nextNotNull = nextRoot != null;
-          boolean instanceNextNotNull = mNextSection != null;
-          boolean nextIsSame =
-              (nextNotNull && instanceNextNotNull && nextRoot.getId() == mNextSection.getId())
-                  || (!nextNotNull && !instanceNextNotNull);
+          boolean nextIsSame = (mNextSection != null && nextRoot.getId() == mNextSection.getId());
 
           changeSetIsValid =
               currentIsSame && nextIsSame && isStateUpdateCompleted(pendingStateUpdates);
