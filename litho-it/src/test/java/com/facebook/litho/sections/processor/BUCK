@@ -27,9 +27,9 @@ components_robolectric_test(
         LITHO_MOCKITO_TARGET,
         LITHO_PROCESSOR_LIB_TARGET,
         LITHO_SECTIONS_TARGET,
+        make_dep_path("litho-it/src/main/java/com/facebook/litho/testing/treeprop:treeprop"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/sections:sections"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/treeprop:treeprop"),
     ],
 )
