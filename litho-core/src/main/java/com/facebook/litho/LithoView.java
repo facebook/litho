@@ -410,6 +410,10 @@ public class LithoView extends ComponentHost {
     setMountStateDirty();
 
     if (mComponentTree != null) {
+      if (ComponentsConfiguration.unmountAllWhenComponentTreeSetToNull && componentTree == null) {
+        unmountAllItems();
+      }
+
       if (mIsAttached) {
         mComponentTree.detach();
       }
