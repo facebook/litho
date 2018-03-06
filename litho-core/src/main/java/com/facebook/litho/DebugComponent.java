@@ -119,7 +119,7 @@ public final class DebugComponent {
       return Arrays.asList(getInstance(mNode, nextComponentIndex));
     }
 
-    final ArrayList<DebugComponent> children = new ArrayList<>();
+    final List<DebugComponent> children = new ArrayList<>();
 
     for (int i = 0, count = mNode.getChildCount(); i < count; i++) {
       final InternalNode childNode = mNode.getChildAt(i);
@@ -128,7 +128,7 @@ public final class DebugComponent {
     }
 
     final InternalNode nestedTree = mNode.getNestedTree();
-    if (nestedTree != null) {
+    if (nestedTree != null && nestedTree.isInitialized()) {
       for (int i = 0, count = nestedTree.getChildCount(); i < count; i++) {
         final InternalNode childNode = nestedTree.getChildAt(i);
         children.add(getInstance(childNode, Math.max(0, childNode.getComponents().size() - 1)));

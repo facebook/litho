@@ -166,6 +166,14 @@ class InternalNode implements ComponentLayout {
     mComponentContext = componentContext;
   }
 
+  /**
+   * For testing and debugging purposes only where initialization may have not occurred. For
+   * any production use, this should never be necessary.
+   */
+  boolean isInitialized() {
+    return mYogaNode != null && mComponentContext != null;
+  }
+
   @Px
   @Override
   public int getX() {
