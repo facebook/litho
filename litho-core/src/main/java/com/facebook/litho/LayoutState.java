@@ -168,10 +168,11 @@ class LayoutState {
   private final List<LayoutOutput> mMountableOutputs = new ArrayList<>(8);
   private final List<VisibilityOutput> mVisibilityOutputs = new ArrayList<>(8);
   private final LongSparseArray<Integer> mOutputsIdToPositionMap = new LongSparseArray<>(8);
-  private final LayoutStateOutputIdCalculator mLayoutStateOutputIdCalculator;
   private final ArrayList<LayoutOutput> mMountableOutputTops = new ArrayList<>();
   private final ArrayList<LayoutOutput> mMountableOutputBottoms = new ArrayList<>();
   private final Queue<Integer> mDisplayListsToPrefetch = new LinkedList<>();
+
+  @Nullable private LayoutStateOutputIdCalculator mLayoutStateOutputIdCalculator;
 
   private List<TestOutput> mTestOutputs;
 
@@ -213,7 +214,9 @@ class LayoutState {
   long mCalculateLayoutDuration;
 
   LayoutState() {
-    mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
+    if (!ComponentsConfiguration.lazilyInitializeLayoutStateOutputIdCalculator) {
+      mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
+    }
   }
 
   void init(ComponentContext context) {
@@ -629,7 +632,7 @@ class LayoutState {
     final LayoutOutput layoutOutput = createGenericLayoutOutput(node, layoutState, needsHostView);
     if (layoutOutput != null) {
       final long previousId = shouldUseCachedOutputs ? currentDiffNode.getContent().getId() : -1;
-      layoutState.mLayoutStateOutputIdCalculator.calculateAndSetLayoutOutputIdAndUpdateState(
+      layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
           layoutOutput,
           layoutState.mCurrentLevel,
           LayoutOutput.TYPE_CONTENT,
@@ -789,10 +792,8 @@ class LayoutState {
               ? currentDiffNode.getVisibilityOutput().getId()
               : -1;
 
-      layoutState.mLayoutStateOutputIdCalculator.calculateAndSetVisibilityOutputId(
-          visibilityOutput,
-          layoutState.mCurrentLevel,
-          previousId);
+      layoutState.calculateAndSetVisibilityOutputId(
+          visibilityOutput, layoutState.mCurrentLevel, previousId);
       layoutState.mVisibilityOutputs.add(visibilityOutput);
 
       if (diffNode != null) {
@@ -874,12 +875,8 @@ class LayoutState {
       hostOutput.setHostMarker(ROOT_HOST_ID);
       hostOutput.setUpdateState(LayoutOutput.STATE_DIRTY);
     } else {
-      layoutState.mLayoutStateOutputIdCalculator.calculateAndSetLayoutOutputIdAndUpdateState(
-          hostOutput,
-          layoutState.mCurrentLevel,
-          LayoutOutput.TYPE_HOST,
-          -1,
-          isCachedOutputUpdated);
+      layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
+          hostOutput, layoutState.mCurrentLevel, LayoutOutput.TYPE_HOST, -1, isCachedOutputUpdated);
     }
   }
 
@@ -972,7 +969,7 @@ class LayoutState {
     final LayoutOutput drawableLayoutOutput =
         createDrawableLayoutOutput(
             drawableComponent, layoutState, node, matchHostBoundsTransitions);
-    layoutState.mLayoutStateOutputIdCalculator.calculateAndSetLayoutOutputIdAndUpdateState(
+    layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
         drawableLayoutOutput,
         layoutState.mCurrentLevel,
         layoutOutputType,
@@ -1164,7 +1161,7 @@ class LayoutState {
         break;
     }
 
-    layoutState.mLayoutStateOutputIdCalculator.clear();
+    layoutState.clearLayoutStateOutputIdCalculator();
 
     // Reset markers before collecting layout outputs.
     layoutState.mCurrentHostMarker = -1;
@@ -1351,6 +1348,34 @@ class LayoutState {
 
   boolean isActivityValid() {
     return getValidActivityForContext(mContext) != null;
+  }
+
+  private void clearLayoutStateOutputIdCalculator() {
+    if (mLayoutStateOutputIdCalculator != null) {
+      mLayoutStateOutputIdCalculator.clear();
+    }
+  }
+
+  private void calculateAndSetLayoutOutputIdAndUpdateState(
+      LayoutOutput layoutOutput,
+      int level,
+      @LayoutOutput.LayoutOutputType int type,
+      long previousId,
+      boolean isCachedOutputUpdated) {
+    if (mLayoutStateOutputIdCalculator == null) {
+      mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
+    }
+    mLayoutStateOutputIdCalculator.calculateAndSetLayoutOutputIdAndUpdateState(
+        layoutOutput, level, type, previousId, isCachedOutputUpdated);
+  }
+
+  private void calculateAndSetVisibilityOutputId(
+      VisibilityOutput visibilityOutput, int level, long previousId) {
+    if (mLayoutStateOutputIdCalculator == null) {
+      mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
+    }
+    mLayoutStateOutputIdCalculator.calculateAndSetVisibilityOutputId(
+        visibilityOutput, level, previousId);
   }
 
   void createDisplayList(LayoutOutput output) {
@@ -1974,7 +1999,7 @@ class LayoutState {
         ComponentsPools.release(mDiffTreeRoot);
         mDiffTreeRoot = null;
       }
-      mLayoutStateOutputIdCalculator.clear();
+      clearLayoutStateOutputIdCalculator();
 
       if (mTransitionContext != null) {
         ComponentsPools.release(mTransitionContext);
