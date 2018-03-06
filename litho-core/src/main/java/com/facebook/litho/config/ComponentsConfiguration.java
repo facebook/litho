@@ -157,4 +157,7 @@ public class ComponentsConfiguration {
 
   /** If true then we'll allocate YogaEdgesWithIntsImplOptimized arrays in batches */
   public static boolean useBatchArrayAllocator = false;
+
+  /** If true then we'll lazily initialize the LayoutStateOutputIdCalculator */
+  public static boolean lazilyInitializeLayoutStateOutputIdCalculator = false;
 }
