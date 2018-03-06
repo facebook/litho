@@ -80,7 +80,7 @@ public class BuilderGenerator {
             .addStatement("builder = new $T()", BUILDER_CLASS_NAME)
             .endControlFlow();
 
-    if (!specModel.hasInjectedDependencies() && !specModel.getTypeVariables().isEmpty()) {
+    if (hasStaticCreate(specModel) && !specModel.getTypeVariables().isEmpty()) {
       factoryMethod.addTypeVariables(specModel.getTypeVariables());
     }
 
@@ -126,7 +126,7 @@ public class BuilderGenerator {
             .addStatement("return create(context, 0, 0)")
             .addModifiers(hasStaticCreate(specModel) ? Modifier.STATIC : Modifier.FINAL);
 
-    if (!specModel.hasInjectedDependencies() && !specModel.getTypeVariables().isEmpty()) {
+    if (hasStaticCreate(specModel) && !specModel.getTypeVariables().isEmpty()) {
       methodBuilder.addTypeVariables(specModel.getTypeVariables());
     }
 
