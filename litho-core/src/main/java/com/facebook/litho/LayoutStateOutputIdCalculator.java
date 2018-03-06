@@ -9,7 +9,9 @@
 
 package com.facebook.litho;
 
+import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
+import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
  * Utility class used to calculate the id of a {@link LayoutOutput} in the context of a
@@ -18,9 +20,8 @@ import android.support.v4.util.LongSparseArray;
  */
 class LayoutStateOutputIdCalculator {
 
-  private final LongSparseArray<Integer> mLayoutCurrentSequenceForBaseId = new LongSparseArray<>(8);
-  private final LongSparseArray<Integer> mVisibilityCurrentSequenceForBaseId =
-      new LongSparseArray<>(8);
+  @Nullable private LongSparseArray<Integer> mLayoutCurrentSequenceForBaseId;
+  @Nullable private LongSparseArray<Integer> mVisibilityCurrentSequenceForBaseId;
 
   private static final int MAX_SEQUENCE = 65535; // (2^16 - 1)
   private static final int MAX_LEVEL = 255; // (2^8 - 1)
@@ -32,12 +33,23 @@ class LayoutStateOutputIdCalculator {
   // Last 16 bits are for sequence.
   private static final short TYPE_SHIFT = 16;
 
+  public LayoutStateOutputIdCalculator() {
+    if (!ComponentsConfiguration.lazilyInitializeLayoutStateOutputIdCalculator) {
+      mLayoutCurrentSequenceForBaseId = new LongSparseArray<>(8);
+      mVisibilityCurrentSequenceForBaseId = new LongSparseArray<>(8);
+    }
+  }
+
   void calculateAndSetLayoutOutputIdAndUpdateState(
       LayoutOutput layoutOutput,
       int level,
       @LayoutOutput.LayoutOutputType int type,
       long previousId,
       boolean isCachedOutputUpdated) {
+
+    if (mLayoutCurrentSequenceForBaseId == null) {
+      mLayoutCurrentSequenceForBaseId = new LongSparseArray<>(2);
+    }
 
     // We need to assign an id to this LayoutOutput. We want the ids to be as consistent as possible
     // between different layout calculations. For this reason the id generation is a function based
@@ -84,6 +96,10 @@ class LayoutStateOutputIdCalculator {
       int level,
       long previousId) {
 
+    if (mVisibilityCurrentSequenceForBaseId == null) {
+      mVisibilityCurrentSequenceForBaseId = new LongSparseArray<>(2);
+    }
+
     // We need to assign an id to this VisibilityOutput. We want the ids to be as consistent as
     // possible between different layout calculations. For this reason the id generation is a
     // function based on the component of the VisibilityOutput, the depth of this output in the view
@@ -113,8 +129,12 @@ class LayoutStateOutputIdCalculator {
   }
 
   void clear() {
-    mLayoutCurrentSequenceForBaseId.clear();
-    mVisibilityCurrentSequenceForBaseId.clear();
+    if (mLayoutCurrentSequenceForBaseId != null) {
+      mLayoutCurrentSequenceForBaseId.clear();
+    }
+    if (mVisibilityCurrentSequenceForBaseId != null) {
+      mVisibilityCurrentSequenceForBaseId.clear();
+    }
   }
   
   /**
