@@ -430,7 +430,7 @@ public abstract class Component extends ComponentLifecycle
           new EventHandler<>(
               parentEventDispatcherProvider,
               "onErrorHandler",
-              EVENT_HANDLER_ID,
+              ERROR_EVENT_HANDLER_ID,
               new Object[] {parentContext});
     }
   }
@@ -1365,7 +1365,7 @@ public abstract class Component extends ComponentLifecycle
       return new EventDispatcher() {
         @Override
         public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-          if (eventHandler.id == EVENT_HANDLER_ID) {
+          if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
             throw new RuntimeException(((ErrorEvent) eventState).exception);
           }
           return null;

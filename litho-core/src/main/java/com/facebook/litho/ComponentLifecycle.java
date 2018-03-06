@@ -46,7 +46,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   // com.facebook.litho.specmodels.generator.EventCaseGenerator#INTERNAL_ON_ERROR_HANDLER_NAME.
   // Since we cannot easily share this identifier across modules, we verify the consistency through
   // integration tests.
-  static final int EVENT_HANDLER_ID = "__internalOnErrorHandler".hashCode();
+  static final int ERROR_EVENT_HANDLER_ID = "__internalOnErrorHandler".hashCode();
 
   public enum MountType {
     NONE,
@@ -664,7 +664,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   @Override
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-    if (ComponentsConfiguration.enableOnErrorHandling && eventHandler.id == EVENT_HANDLER_ID) {
+    if (ComponentsConfiguration.enableOnErrorHandling && eventHandler.id == ERROR_EVENT_HANDLER_ID) {
       ((Component) this).getErrorHandler().dispatchEvent(((ErrorEvent) eventState));
     }
 
