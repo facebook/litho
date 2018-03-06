@@ -718,7 +718,7 @@ public class SectionTree {
       updateStateAsync(key, stateUpdate);
     } else {
       mCalculateChangeSetOnMainThreadRunnable.cancel();
-      addStateUpdateInternal(key, stateUpdate, true);
+      addStateUpdateInternal(key, stateUpdate, false);
       mCalculateChangeSetOnMainThreadRunnable.ensurePosted(ApplyNewChangeSet.UPDATE_STATE);
     }
   }
@@ -737,13 +737,13 @@ public class SectionTree {
       updateState(key, stateUpdate);
     } else {
       mCalculateChangeSetRunnable.cancel();
-      addStateUpdateInternal(key, stateUpdate, true);
+      addStateUpdateInternal(key, stateUpdate, false);
       mCalculateChangeSetRunnable.ensurePosted(ApplyNewChangeSet.UPDATE_STATE_ASYNC);
     }
   }
 
   synchronized void updateStateLazy(String key, StateUpdate stateUpdate) {
-    addStateUpdateInternal(key, stateUpdate, false);
+    addStateUpdateInternal(key, stateUpdate, true);
   }
 
   private static Section copy(Section section, boolean deep) {
@@ -751,9 +751,7 @@ public class SectionTree {
   }
 
   private synchronized void addStateUpdateInternal(
-      String key,
-      StateUpdate stateUpdate,
-      boolean isNonLazyStateUpdate) {
+      String key, StateUpdate stateUpdate, boolean isLazyStateUpdate) {
     if (mReleased) {
       return;
     }
@@ -769,12 +767,12 @@ public class SectionTree {
       mPendingStateUpdates.put(key, currentPendingUpdatesForKey);
     }
 
-    mHasNonLazyUpdate = isNonLazyStateUpdate || mHasNonLazyUpdate;
+    mHasNonLazyUpdate = !isLazyStateUpdate || mHasNonLazyUpdate;
     currentPendingUpdatesForKey.add(stateUpdate);
 
     // If the state update is lazy, do not create a new tree root because the calculation of
     // a new tree will not happen yet.
-    if (!isNonLazyStateUpdate) {
+    if (isLazyStateUpdate) {
       return;
     }
 
