@@ -556,16 +556,6 @@ public class ComponentHostTest {
   }
 
   @Test
-  public void testNoScrapHosts() {
-    assertThat(mHost.recycleHost()).isNull();
-  }
-
-  @Test
-  public void testViewGroupScrapHosts() {
-    testScrapHostsForComponent(mViewGroupHost, ComponentHost.class);
-  }
-
-  @Test
   public void testGetContentDescriptions() {
     CharSequence hostContentDescription = "hostContentDescription";
     mHost.setContentDescription(hostContentDescription);
@@ -814,36 +804,6 @@ public class ComponentHostTest {
       throws Exception {
     SparseArrayCompat drawableItems = Whitebox.getInternalState(mHost, "mDrawableMountItems");
     return Whitebox.invokeMethod(drawableItems, "valueAt", index);
-  }
-
-  private void testScrapHostsForComponent(
-      Component component,
-      Class<? extends View> viewClass) {
-    View view = mock(viewClass);
-    MountItem mountItem = new MountItem();
-    mountItem.init(
-        component, null, view, null, null, null, 0, IMPORTANT_FOR_ACCESSIBILITY_AUTO, null);
-
-    mHost.mount(0, mountItem, new Rect());
-    assertThat(mHost.recycleHost()).isNull();
-    assertThat(mHost.getChildCount()).isEqualTo(1);
-
-    mHost.unmount(0, mountItem);
-    assertThat(mHost.recycleHost()).isNotNull();
-    assertThat(mHost.getChildCount()).isEqualTo(1);
-
-    assertThat(mHost.recycleHost()).isNull();
-
-    when(view.getParent()).thenReturn(mHost);
-
-    mHost.mount(0, mountItem, new Rect());
-    assertThat(mHost.recycleHost()).isNull();
-    assertThat(mHost.getChildCount()).isEqualTo(1);
-
-    assertThat(mHost.recycleHost()).isNull();
-
-    verify(view).setVisibility(GONE);
-    verify(view).setVisibility(VISIBLE);
   }
 
   private MountItem mount(int index, Object content) {

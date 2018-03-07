@@ -1069,10 +1069,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     // 2. Generate the component's mount state (this might also be a ComponentHost View).
     final Component component = layoutOutput.getComponent();
-    final Object content =
-        (ComponentsConfiguration.scrapHostRecyclingForComponentHosts && isHostSpec(component))
-            ? acquireComponentHost(mContext, component, host)
-            : ComponentsPools.acquireMountContent(mContext, component);
+    final Object content = ComponentsPools.acquireMountContent(mContext, component);
 
     final ComponentContext context = getContextForComponent(component);
     component.mount(
@@ -1148,12 +1145,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     maybeUpdateAnimatingMountContent(item, content);
 
     return item;
-  }
-
-  private static Object acquireComponentHost(
-      ComponentContext context, ComponentLifecycle hostLifecycle, ComponentHost host) {
-    final ComponentHost recycled = host.recycleHost();
-    return recycled != null ? recycled : hostLifecycle.createMountContent(context);
   }
 
   private static void applyBoundsToMountContent(

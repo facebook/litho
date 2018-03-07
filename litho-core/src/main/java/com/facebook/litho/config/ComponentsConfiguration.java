@@ -108,23 +108,8 @@ public class ComponentsConfiguration {
    */
   public static boolean useGlobalKeys = true;
 
-  /**
-   * Whether to use special recycling for ComponentHosts or not. True (default) if we should use
-   * scrap host recycling (see ComponentHost#mScrapHosts).
-   */
-  public static boolean scrapHostRecyclingForComponentHosts = true;
-
-  /**
-   * If scrapHostRecyclingForComponentHosts is false, determines whether we try to preallocate
-   * ComponentHosts.
-   */
-  public static boolean preallocateComponentHosts = false;
-
   /** Whether MatrixDrawable draw call can be shortcutted to underlying drawable */
   public static boolean shortcutMatrixDrawable = false;
-
-  /** If scrapHostRecyclingForComponentHosts is false, determines the ComponentHost pool size. */
-  public static int componentHostPoolSize = 30;
 
   /** If true then the new version of the YogaEdgeWithInts will be used. */
   public static boolean useNewYogaEdge = false;

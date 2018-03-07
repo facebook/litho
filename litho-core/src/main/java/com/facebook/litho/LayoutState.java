@@ -1266,10 +1266,7 @@ class LayoutState {
             ComponentsSystrace.beginSection("preAllocateMountContent:" + component.getSimpleName());
           }
 
-          if (ComponentsConfiguration.preallocateComponentHosts
-              || !(component instanceof HostComponent)) {
-            ComponentsPools.maybePreallocateContent(mContext, component);
-          }
+          ComponentsPools.maybePreallocateContent(mContext, component);
 
           if (isTracing) {
             ComponentsSystrace.endSection();

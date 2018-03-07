@@ -34,7 +34,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityNodeInfo;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,8 +66,6 @@ public class ComponentHost extends ViewGroup {
   private boolean mSuppressInvalidations;
 
   private final InterleavedDispatchDraw mDispatchDraw = new InterleavedDispatchDraw();
-
-  private final @Nullable List<ComponentHost> mScrapHosts;
 
   private int[] mChildDrawingOrder = new int[0];
   private boolean mIsChildDrawingOrderDirty;
@@ -104,10 +101,6 @@ public class ComponentHost extends ViewGroup {
     setWillNotDraw(false);
     setChildrenDrawingOrderEnabled(true);
     refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context));
-    mScrapHosts =
-        ComponentsConfiguration.scrapHostRecyclingForComponentHosts
-            ? new ArrayList<ComponentHost>(3)
-            : null;
   }
 
   /**
@@ -272,35 +265,6 @@ public class ComponentHost extends ViewGroup {
     }
 
     mTouchExpansionDelegate.unregisterTouchExpansion(index);
-  }
-
-  /**
-   * Tries to recycle a scrap host attached to this host.
-   * @return The host view to be recycled.
-   */
-  ComponentHost recycleHost() {
-    if (mScrapHosts == null) {
-      return null;
-    }
-
-    if (mScrapHosts.size() > 0) {
-      final ComponentHost host = mScrapHosts.remove(0);
-
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        // We are bringing the re-used host to the front because before API 17, Android doesn't
-        // take into account the children drawing order when dispatching ViewGroup touch events,
-        // but it just traverses its children list backwards.
-        bringChildToFront(host);
-      }
-
-      // The recycled host is immediately re-mounted in mountView(), therefore setting
-      // the flag here is redundant, but future proof.
-      mIsChildDrawingOrderDirty = true;
-
-      return host;
-    }
-
-    return null;
   }
 
   /**
@@ -663,19 +627,7 @@ public class ComponentHost extends ViewGroup {
   private void unmountView(View view) {
     mIsChildDrawingOrderDirty = true;
 
-    if (mScrapHosts != null && view instanceof ComponentHost) {
-      final ComponentHost componentHost = (ComponentHost) view;
-
-      view.setVisibility(GONE);
-
-      // In Gingerbread the View system doesn't invalidate
-      // the parent if a child become invisible.
-      invalidate();
-
-      startTemporaryDetach(componentHost);
-
-      mScrapHosts.add(componentHost);
-    } else if (mInLayout) {
+    if (mInLayout) {
       super.removeViewInLayout(view);
     } else {
       super.removeView(view);
@@ -1127,13 +1079,6 @@ public class ComponentHost extends ViewGroup {
       final Object child = mDisappearingItems.get(i).getContent();
       if (child instanceof View) {
         mChildDrawingOrder[index++] = indexOfChild((View) child);
-      }
-    }
-
-    if (mScrapHosts != null) {
-      for (int i = 0, size = mScrapHosts.size(); i < size; i++) {
-        final View child = mScrapHosts.get(i);
-        mChildDrawingOrder[index++] = indexOfChild(child);
       }
     }
 

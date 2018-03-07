@@ -15,7 +15,6 @@ import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.view.View;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.displaylist.DisplayList;
 
 /**
@@ -224,15 +223,7 @@ class MountItem {
   }
 
   void release(ComponentContext context) {
-    // Component hosts are recycled within other hosts instead of the global pool.
-    // For the scrapHostRecyclingForComponentHosts experiment: if the switch gets flipped while the
-    // app is running, this ComponentHost could be only temporarily detached, so don't recycle it
-    // if so.
-    if (!(mContent instanceof ComponentHost)
-        || (!ComponentsConfiguration.scrapHostRecyclingForComponentHosts
-            && ((ComponentHost) mContent).getParent() == null)) {
-      ComponentsPools.release(context, mComponent, mContent);
-    }
+    ComponentsPools.release(context, mComponent, mContent);
 
     if (mDisplayListDrawable != null) {
       ComponentsPools.release(mDisplayListDrawable);
