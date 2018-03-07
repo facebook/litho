@@ -12,15 +12,19 @@ package com.facebook.litho.specmodels.model;
 import com.squareup.javapoet.ClassName;
 import javax.annotation.concurrent.Immutable;
 
+/** Model that is an abstract representation of empty interfaces tagging component specs. */
 @Immutable
 public class TagModel {
   public final ClassName name;
   public final boolean hasSupertype;
   public final boolean hasMethods;
+  public final Object representedObject;
 
-  public TagModel(ClassName name, boolean hasSupertype, boolean hasMethods) {
+  public TagModel(
+      ClassName name, boolean hasSupertype, boolean hasMethods, Object representedObject) {
     this.name = name;
     this.hasSupertype = hasSupertype;
     this.hasMethods = hasMethods;
+    this.representedObject = representedObject;
   }
 }

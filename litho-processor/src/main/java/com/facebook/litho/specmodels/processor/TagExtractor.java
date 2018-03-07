@@ -53,6 +53,7 @@ public final class TagExtractor {
         ClassName.bestGuess(typeElement.toString()),
         types.directSupertypes(typeElement.asType()).size()
             > 1, // java.lang.Object is always a supertype
-        !typeElement.getEnclosedElements().isEmpty());
+        !typeElement.getEnclosedElements().isEmpty(),
+        typeElement);
   }
 }
