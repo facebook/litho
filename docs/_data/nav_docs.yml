@@ -16,6 +16,7 @@
   - id: props
   - id: state
   - id: layout
+  - id: error-boundaries
   - id: border
   - id: recycler-collection-component
   - id: transition-animations
