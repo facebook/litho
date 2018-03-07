@@ -22,9 +22,11 @@ import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.DefaultMountSpecGenerator;
 import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.MountSpecModel;
+import com.facebook.litho.specmodels.model.SpecGenerator;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -60,6 +62,16 @@ public class MountSpecModelFactory implements SpecModelFactory {
         DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP.keySet());
     DELEGATE_METHOD_ANNOTATIONS.add(OnCreateTreeProp.class);
     DELEGATE_METHOD_ANNOTATIONS.add(ShouldUpdate.class);
+  }
+
+  private final SpecGenerator<MountSpecModel> mMountSpecGenerator;
+
+  public MountSpecModelFactory() {
+    this(new DefaultMountSpecGenerator());
+  }
+
+  public MountSpecModelFactory(SpecGenerator<MountSpecModel> mountSpecGenerator) {
+    mMountSpecGenerator = mountSpecGenerator;
   }
 
   @Override
@@ -115,7 +127,8 @@ public class MountSpecModelFactory implements SpecModelFactory {
         element.getAnnotation(MountSpec.class).canPreallocate(),
         getMountType(elements, element),
         SpecElementTypeDeterminator.determine(element),
-        element);
+        element,
+        mMountSpecGenerator);
   }
 
   private static TypeName getMountType(Elements elements, TypeElement element) {

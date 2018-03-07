@@ -9,20 +9,6 @@
 
 package com.facebook.litho.specmodels.model;
 
-import com.facebook.litho.specmodels.generator.BuilderGenerator;
-import com.facebook.litho.specmodels.generator.ClassAnnotationsGenerator;
-import com.facebook.litho.specmodels.generator.ComponentBodyGenerator;
-import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
-import com.facebook.litho.specmodels.generator.EventGenerator;
-import com.facebook.litho.specmodels.generator.JavadocGenerator;
-import com.facebook.litho.specmodels.generator.MountSpecGenerator;
-import com.facebook.litho.specmodels.generator.PreambleGenerator;
-import com.facebook.litho.specmodels.generator.PureRenderGenerator;
-import com.facebook.litho.specmodels.generator.RenderDataGenerator;
-import com.facebook.litho.specmodels.generator.StateGenerator;
-import com.facebook.litho.specmodels.generator.TreePropGenerator;
-import com.facebook.litho.specmodels.generator.TriggerGenerator;
-import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.squareup.javapoet.AnnotationSpec;
@@ -31,7 +17,6 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import java.util.List;
-import javax.lang.model.element.Modifier;
 
 /**
  * Model that is an abstract representation of a {@link com.facebook.litho.annotations.MountSpec}.
@@ -44,6 +29,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   private final int mPoolSize;
   private final boolean mCanPreallocate;
   private final TypeName mMountType;
+  private final SpecGenerator<MountSpecModel> mMountSpecGenerator;
 
   public MountSpecModel(
       String qualifiedSpecClassName,
@@ -68,7 +54,8 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       boolean canPreallocate,
       TypeName mountType,
       SpecElementType specElementType,
-      Object representedObject) {
+      Object representedObject,
+      SpecGenerator<MountSpecModel> mountSpecGenerator) {
     mSpecModel =
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(qualifiedSpecClassName)
@@ -96,6 +83,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
     mPoolSize = poolSize;
     mCanPreallocate = canPreallocate;
     mMountType = mountType;
+    mMountSpecGenerator = mountSpecGenerator;
   }
 
   @Override
@@ -288,45 +276,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
 
   @Override
   public TypeSpec generate() {
-    final TypeSpec.Builder typeSpec =
-        TypeSpec.classBuilder(getComponentName())
-            .superclass(ClassNames.COMPONENT)
-            .addTypeVariables(getTypeVariables());
-
-    if (isPublic()) {
-      typeSpec.addModifiers(Modifier.PUBLIC);
-    }
-
-    if (!hasInjectedDependencies()) {
-      typeSpec.addModifiers(Modifier.FINAL);
-    }
-
-    TypeSpecDataHolder.newBuilder()
-        .addTypeSpecDataHolder(JavadocGenerator.generate(this))
-        .addTypeSpecDataHolder(ClassAnnotationsGenerator.generate(this))
-        .addTypeSpecDataHolder(PreambleGenerator.generate(this))
-        .addTypeSpecDataHolder(ComponentBodyGenerator.generate(this, null))
-        .addTypeSpecDataHolder(TreePropGenerator.generate(this))
-        .addTypeSpecDataHolder(
-            DelegateMethodGenerator.generateDelegates(
-                this, DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP))
-        .addTypeSpecDataHolder(MountSpecGenerator.generateGetMountType(this))
-        .addTypeSpecDataHolder(MountSpecGenerator.generatePoolSize(this))
-        .addTypeSpecDataHolder(MountSpecGenerator.generateCanPreallocate(this))
-        .addTypeSpecDataHolder(MountSpecGenerator.generateCanMountIncrementally(this))
-        .addTypeSpecDataHolder(MountSpecGenerator.generateShouldUseDisplayList(this))
-        .addTypeSpecDataHolder(MountSpecGenerator.generateIsMountSizeDependent(this))
-        .addTypeSpecDataHolder(MountSpecGenerator.generateCallsShouldUpdateOnMount(this))
-        .addTypeSpecDataHolder(PureRenderGenerator.generate(this))
-        .addTypeSpecDataHolder(EventGenerator.generate(this))
-        .addTypeSpecDataHolder(TriggerGenerator.generate(this))
-        .addTypeSpecDataHolder(StateGenerator.generate(this))
-        .addTypeSpecDataHolder(RenderDataGenerator.generate(this))
-        .addTypeSpecDataHolder(BuilderGenerator.generate(this))
-        .build()
-        .addToTypeSpec(typeSpec);
-
-    return typeSpec.build();
+    return mMountSpecGenerator.generate(this);
   }
 
   @Override
