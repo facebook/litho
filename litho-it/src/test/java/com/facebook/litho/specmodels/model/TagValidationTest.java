@@ -25,24 +25,29 @@ public class TagValidationTest {
   public void testNotEmpty() throws Exception {
     final SpecModel model =
         MockSpecModel.newBuilder()
+            .specName("MyTestSpec")
             .tags(ImmutableList.of(new TagModel(ClassName.OBJECT, false, true, mRepresentedObject)))
             .build();
     List<SpecModelValidationError> validationErrors = TagValidation.validate(model);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject);
-    assertThat(validationErrors.get(0).message).isEqualTo(TagValidation.NON_EMPTY_ERROR_MESSAGE);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "MyTestSpec: Spec classes use interfaces as component tags. Tags cannot be non-empty interfaces like 'java.lang.Object'.");
   }
 
   @Test
   public void testExtendInterface() throws Exception {
     final SpecModel model =
         MockSpecModel.newBuilder()
+            .specName("MyTestSpec")
             .tags(ImmutableList.of(new TagModel(ClassName.OBJECT, true, false, mRepresentedObject)))
             .build();
     List<SpecModelValidationError> validationErrors = TagValidation.validate(model);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject);
     assertThat(validationErrors.get(0).message)
-        .isEqualTo(TagValidation.EXTEND_INTERFACE_ERROR_MESSAGE);
+        .isEqualTo(
+            "MyTestSpec: Spec classes use interfaces as component tags. Tags cannot extend other interfaces like 'java.lang.Object'.");
   }
 }

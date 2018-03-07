@@ -17,23 +17,27 @@ public class TagValidation {
 
   @VisibleForTesting
   static final String NON_EMPTY_ERROR_MESSAGE =
-      "Spec classes use interfaces as component tags. Tags cannot be non-empty interfaces.";
+      "%s: Spec classes use interfaces as component tags. Tags cannot be non-empty interfaces like '%s'.";
 
   @VisibleForTesting
   static final String EXTEND_INTERFACE_ERROR_MESSAGE =
-      "Spec classes use interfaces as component tags. Tags cannot extend other interfaces.";
+      "%s: Spec classes use interfaces as component tags. Tags cannot extend other interfaces like '%s'.";
 
   static List<SpecModelValidationError> validate(SpecModel specModel) {
-    List<SpecModelValidationError> validationErrors = new ArrayList<>();
+    final List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
     for (TagModel tag : specModel.getTags()) {
       if (tag.hasMethods) {
         validationErrors.add(
-            new SpecModelValidationError(tag.representedObject, NON_EMPTY_ERROR_MESSAGE));
+            new SpecModelValidationError(
+                tag.representedObject,
+                String.format(NON_EMPTY_ERROR_MESSAGE, specModel.getSpecName(), tag.name)));
       }
       if (tag.hasSupertype) {
         validationErrors.add(
-            new SpecModelValidationError(tag.representedObject, EXTEND_INTERFACE_ERROR_MESSAGE));
+            new SpecModelValidationError(
+                tag.representedObject,
+                String.format(EXTEND_INTERFACE_ERROR_MESSAGE, specModel.getSpecName(), tag.name)));
       }
     }
 
