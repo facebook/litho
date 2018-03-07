@@ -21,6 +21,7 @@ import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.model.SpecGenerator;
 import com.squareup.javapoet.TypeSpec;
+import java.util.LinkedHashSet;
 import javax.lang.model.element.Modifier;
 
 public class DefaultDiffSectionSpecGenerator implements SpecGenerator<DiffSectionSpecModel> {
@@ -52,7 +53,7 @@ public class DefaultDiffSectionSpecGenerator implements SpecGenerator<DiffSectio
             DelegateMethodGenerator.generateDelegates(
                 specModel, DelegateMethodDescriptions.getDiffSectionSpecDelegatesMap(specModel)))
         .addTypeSpecDataHolder(TriggerGenerator.generate(specModel))
-        .addTypeSpecDataHolder(TagGenerator.generate(specModel))
+        .addTypeSpecDataHolder(TagGenerator.generate(specModel, new LinkedHashSet<>()))
         .build()
         .addToTypeSpec(typeSpec);
 

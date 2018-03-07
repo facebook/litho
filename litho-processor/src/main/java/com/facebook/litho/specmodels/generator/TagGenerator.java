@@ -11,15 +11,20 @@ package com.facebook.litho.specmodels.generator;
 
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.TagModel;
+import com.squareup.javapoet.ClassName;
+import java.util.Set;
 
 public class TagGenerator {
   private TagGenerator() {}
 
-  public static TypeSpecDataHolder generate(SpecModel specModel) {
+  public static TypeSpecDataHolder generate(
+      SpecModel specModel, Set<ClassName> blacklistedInterfaces) {
     TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
 
     for (TagModel tagModel : specModel.getTags()) {
-      dataHolder.addSuperInterface(tagModel.name);
+      if (!blacklistedInterfaces.contains(tagModel.name)) {
+        dataHolder.addSuperInterface(tagModel.name);
+      }
     }
 
     return dataHolder.build();

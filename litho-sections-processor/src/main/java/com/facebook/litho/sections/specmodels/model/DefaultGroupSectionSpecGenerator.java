@@ -22,6 +22,7 @@ import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.model.SpecGenerator;
 import com.squareup.javapoet.TypeSpec;
+import java.util.LinkedHashSet;
 import javax.lang.model.element.Modifier;
 
 public class DefaultGroupSectionSpecGenerator implements SpecGenerator<GroupSectionSpecModel> {
@@ -55,7 +56,7 @@ public class DefaultGroupSectionSpecGenerator implements SpecGenerator<GroupSect
                 specModel, DelegateMethodDescriptions.getGroupSectionSpecDelegatesMap(specModel)))
         .addTypeSpecDataHolder(TreePropGenerator.generate(specModel))
         .addTypeSpecDataHolder(TriggerGenerator.generate(specModel))
-        .addTypeSpecDataHolder(TagGenerator.generate(specModel))
+        .addTypeSpecDataHolder(TagGenerator.generate(specModel, new LinkedHashSet<>()))
         .build()
         .addToTypeSpec(typeSpec);
 

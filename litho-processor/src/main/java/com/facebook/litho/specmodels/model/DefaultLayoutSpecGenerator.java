@@ -19,10 +19,12 @@ import com.facebook.litho.specmodels.generator.PreambleGenerator;
 import com.facebook.litho.specmodels.generator.PureRenderGenerator;
 import com.facebook.litho.specmodels.generator.RenderDataGenerator;
 import com.facebook.litho.specmodels.generator.StateGenerator;
+import com.facebook.litho.specmodels.generator.TagGenerator;
 import com.facebook.litho.specmodels.generator.TreePropGenerator;
 import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.squareup.javapoet.TypeSpec;
+import java.util.LinkedHashSet;
 import javax.lang.model.element.Modifier;
 
 public class DefaultLayoutSpecGenerator implements SpecGenerator<LayoutSpecModel> {
@@ -57,6 +59,7 @@ public class DefaultLayoutSpecGenerator implements SpecGenerator<LayoutSpecModel
         .addTypeSpecDataHolder(StateGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(RenderDataGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(BuilderGenerator.generate(layoutSpecModel))
+        .addTypeSpecDataHolder(TagGenerator.generate(layoutSpecModel, new LinkedHashSet<>()))
         .build()
         .addToTypeSpec(typeSpec);
 

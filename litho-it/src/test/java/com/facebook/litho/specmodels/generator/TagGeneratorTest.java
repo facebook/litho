@@ -18,6 +18,7 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
 import com.facebook.litho.specmodels.model.TagModel;
 import com.squareup.javapoet.ClassName;
+import java.util.LinkedHashSet;
 import org.junit.Test;
 
 /** Tests {@link TagGenerator} */
@@ -42,7 +43,7 @@ public class TagGeneratorTest {
             .tags(tags)
             .build();
 
-    final TypeSpecDataHolder dataHolder = TagGenerator.generate(specModel);
+    final TypeSpecDataHolder dataHolder = TagGenerator.generate(specModel, new LinkedHashSet<>());
 
     assertThat(dataHolder.getSuperInterfaces())
         .hasSize(2)
