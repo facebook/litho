@@ -20,6 +20,7 @@ import com.facebook.litho.sections.annotations.OnDiff;
 import com.facebook.litho.sections.annotations.OnRefresh;
 import com.facebook.litho.sections.annotations.OnUnbindService;
 import com.facebook.litho.sections.annotations.OnViewportChanged;
+import com.facebook.litho.sections.specmodels.model.DefaultDiffSectionSpecGenerator;
 import com.facebook.litho.sections.specmodels.model.DiffSectionSpecModel;
 import com.facebook.litho.sections.specmodels.model.SectionClassNames;
 import com.facebook.litho.specmodels.internal.ImmutableList;
@@ -27,6 +28,7 @@ import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
+import com.facebook.litho.specmodels.model.SpecGenerator;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.AnnotationExtractor;
 import com.facebook.litho.specmodels.processor.DelegateMethodExtractor;
@@ -79,6 +81,16 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory {
     DELEGATE_METHOD_ANNOTATIONS.add(OnCreateTreeProp.class);
   }
 
+  private final SpecGenerator<DiffSectionSpecModel> mSpecGenerator;
+
+  public DiffSectionSpecModelFactory() {
+    this(new DefaultDiffSectionSpecGenerator());
+  }
+
+  public DiffSectionSpecModelFactory(SpecGenerator<DiffSectionSpecModel> specGenerator) {
+    mSpecGenerator = specGenerator;
+  }
+
   @Override
   public Set<Element> extract(RoundEnvironment roundEnvironment) {
     return (Set<Element>) roundEnvironment.getElementsAnnotatedWith(DiffSectionSpec.class);
@@ -96,7 +108,7 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory {
     return createModel(elements, element, messager, dependencyInjectionHelper, runMode);
   }
 
-  public static DiffSectionSpecModel createModel(
+  public DiffSectionSpecModel createModel(
       Elements elements,
       TypeElement element,
       Messager messager,
@@ -128,6 +140,7 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory {
         element.getAnnotation(DiffSectionSpec.class).isPublic(),
         SpecElementTypeDeterminator.determine(element),
         dependencyInjectionHelper,
-        element);
+        element,
+        mSpecGenerator);
   }
 }

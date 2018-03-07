@@ -9,15 +9,6 @@
 
 package com.facebook.litho.sections.specmodels.model;
 
-import com.facebook.litho.specmodels.generator.BuilderGenerator;
-import com.facebook.litho.specmodels.generator.ComponentBodyGenerator;
-import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
-import com.facebook.litho.specmodels.generator.EventGenerator;
-import com.facebook.litho.specmodels.generator.JavadocGenerator;
-import com.facebook.litho.specmodels.generator.PreambleGenerator;
-import com.facebook.litho.specmodels.generator.StateGenerator;
-import com.facebook.litho.specmodels.generator.TriggerGenerator;
-import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
@@ -32,6 +23,7 @@ import com.facebook.litho.specmodels.model.PropJavadocModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
 import com.facebook.litho.specmodels.model.SpecElementType;
+import com.facebook.litho.specmodels.model.SpecGenerator;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
@@ -47,7 +39,6 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import java.util.List;
 import javax.annotation.Nullable;
-import javax.lang.model.element.Modifier;
 
 /**
  * Model that is an abstract representation of a {@link
@@ -57,6 +48,7 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
 
   private final SpecModelImpl mSpecModel;
   private final @Nullable MethodParamModel mServiceParam;
+  private final SpecGenerator<DiffSectionSpecModel> mSpecGenerator;
 
   public DiffSectionSpecModel(
       String qualifiedSpecClassName,
@@ -75,7 +67,8 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
       boolean isPublic,
       SpecElementType specElementType,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
-      Object representedObject) {
+      Object representedObject,
+      SpecGenerator<DiffSectionSpecModel> specGenerator) {
     mSpecModel =
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(qualifiedSpecClassName)
@@ -98,6 +91,7 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
             .representedObject(representedObject)
             .build();
     mServiceParam = SectionSpecModelUtils.createServiceParam(mSpecModel);
+    mSpecGenerator = specGenerator;
   }
 
   @Override
@@ -287,34 +281,7 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
 
   @Override
   public TypeSpec generate() {
-    final TypeSpec.Builder typeSpec =
-        TypeSpec.classBuilder(getComponentName())
-            .superclass(SectionClassNames.SECTION)
-            .addTypeVariables(getTypeVariables());
-
-    if (isPublic()) {
-      typeSpec.addModifiers(Modifier.PUBLIC);
-    }
-
-    if (!hasInjectedDependencies()) {
-      typeSpec.addModifiers(Modifier.FINAL);
-    }
-
-    TypeSpecDataHolder.newBuilder()
-        .addTypeSpecDataHolder(JavadocGenerator.generate(this))
-        .addTypeSpecDataHolder(PreambleGenerator.generate(this))
-        .addTypeSpecDataHolder(ComponentBodyGenerator.generate(this, getServiceParam()))
-        .addTypeSpecDataHolder(BuilderGenerator.generate(this))
-        .addTypeSpecDataHolder(StateGenerator.generate(this))
-        .addTypeSpecDataHolder(EventGenerator.generate(this))
-        .addTypeSpecDataHolder(
-            DelegateMethodGenerator.generateDelegates(
-                this, DelegateMethodDescriptions.getDiffSectionSpecDelegatesMap(this)))
-        .addTypeSpecDataHolder(TriggerGenerator.generate(this))
-        .build()
-        .addToTypeSpec(typeSpec);
-
-    return typeSpec.build();
+    return mSpecGenerator.generate(this);
   }
 
   @Override
