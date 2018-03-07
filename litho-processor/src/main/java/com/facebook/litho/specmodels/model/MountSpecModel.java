@@ -44,6 +44,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       ImmutableList<EventDeclarationModel> eventDeclarations,
       String classJavadoc,
       ImmutableList<AnnotationSpec> classAnnotations,
+      ImmutableList<TagModel> tags,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
       DependencyInjectionHelper dependencyInjectionHelper,
@@ -70,6 +71,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .propDefaults(propDefaults)
             .eventDeclarations(eventDeclarations)
             .classAnnotations(classAnnotations)
+            .tags(tags)
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
             .isPublic(isPublic)

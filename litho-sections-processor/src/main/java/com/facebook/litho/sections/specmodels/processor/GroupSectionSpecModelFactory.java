@@ -39,6 +39,7 @@ import com.facebook.litho.specmodels.processor.JavadocExtractor;
 import com.facebook.litho.specmodels.processor.PropDefaultsExtractor;
 import com.facebook.litho.specmodels.processor.SpecElementTypeDeterminator;
 import com.facebook.litho.specmodels.processor.SpecModelFactory;
+import com.facebook.litho.specmodels.processor.TagExtractor;
 import com.facebook.litho.specmodels.processor.TriggerMethodExtractor;
 import com.facebook.litho.specmodels.processor.TypeVariablesExtractor;
 import com.facebook.litho.specmodels.processor.UpdateStateMethodExtractor;
@@ -105,11 +106,12 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory {
       RunMode runMode,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
-    return createModel(elements, element, messager, dependencyInjectionHelper, runMode);
+    return createModel(elements, types, element, messager, dependencyInjectionHelper, runMode);
   }
 
   public GroupSectionSpecModel createModel(
       Elements elements,
+      Types types,
       TypeElement element,
       Messager messager,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
@@ -135,6 +137,7 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory {
             elements, element, GroupSectionSpec.class, runMode),
         AnnotationExtractor.extractValidAnnotations(element),
         ImmutableList.of(BuilderMethodModel.KEY_BUILDER_METHOD, LOADING_EVENT_BUILDER_METHOD),
+        TagExtractor.extractTagsFromSpecClass(types, element),
         JavadocExtractor.getClassJavadoc(elements, element),
         JavadocExtractor.getPropJavadocs(elements, element),
         element.getAnnotation(GroupSectionSpec.class).isPublic(),

@@ -37,6 +37,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
       ImmutableList<AnnotationSpec> classAnnotations,
+      ImmutableList<TagModel> tags,
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
@@ -60,6 +61,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
             .propDefaults(propDefaults)
             .eventDeclarations(eventDeclarations)
             .classAnnotations(classAnnotations)
+            .tags(tags)
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
             .isPublic(isPublic)

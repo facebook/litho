@@ -13,9 +13,7 @@ import com.facebook.litho.specmodels.internal.RunMode;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Class for validating that a {@link SpecModel} is well-formed.
- */
+/** Class for validating that a {@link SpecModel} is well-formed. */
 public class SpecModelValidation {
 
   public static List<SpecModelValidationError> validateSpecModel(
@@ -32,6 +30,7 @@ public class SpecModelValidation {
     validationErrors.addAll(EventValidation.validate(specModel, runMode));
     validationErrors.addAll(TreePropValidation.validate(specModel));
     validationErrors.addAll(DiffValidation.validate(specModel));
+    validationErrors.addAll(TagValidation.validate(specModel));
     return validationErrors;
   }
 
@@ -63,9 +62,9 @@ public class SpecModelValidation {
       validationErrors.add(
           new SpecModelValidationError(
               specModel.getRepresentedObject(),
-              "You must suffix the class name of your spec with \"Spec\" e.g. a " +
-                  "\"MyComponentSpec\" class name generates a component named " +
-                  "\"MyComponent\"."));
+              "You must suffix the class name of your spec with \"Spec\" e.g. a "
+                  + "\"MyComponentSpec\" class name generates a component named "
+                  + "\"MyComponent\"."));
     }
 
     return validationErrors;
@@ -79,8 +78,8 @@ public class SpecModelValidation {
       validationErrors.add(
           new SpecModelValidationError(
               specModel.getRepresentedObject(),
-              "onCreateMountContent's return type should be either a View or a Drawable " +
-                  "subclass."));
+              "onCreateMountContent's return type should be either a View or a Drawable "
+                  + "subclass."));
     }
 
     return validationErrors;
@@ -89,8 +88,8 @@ public class SpecModelValidation {
   static List<SpecModelValidationError> validateShouldUseDisplayLists(MountSpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
-    if (specModel.shouldUseDisplayList() &&
-        !specModel.getMountType().equals(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE)) {
+    if (specModel.shouldUseDisplayList()
+        && !specModel.getMountType().equals(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE)) {
       validationErrors.add(
           new SpecModelValidationError(
               specModel.getRepresentedObject(),

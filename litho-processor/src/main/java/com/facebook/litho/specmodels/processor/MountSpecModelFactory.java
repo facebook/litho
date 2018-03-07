@@ -117,6 +117,7 @@ public class MountSpecModelFactory implements SpecModelFactory {
             elements, element, MountSpec.class, runMode),
         JavadocExtractor.getClassJavadoc(elements, element),
         AnnotationExtractor.extractValidAnnotations(element),
+        TagExtractor.extractTagsFromSpecClass(types, element),
         JavadocExtractor.getPropJavadocs(elements, element),
         element.getAnnotation(MountSpec.class).isPublic(),
         dependencyInjectionHelper,

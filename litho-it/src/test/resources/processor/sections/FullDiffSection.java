@@ -37,10 +37,12 @@ import java.util.List;
  * @prop-required prop3 com.facebook.litho.Component
  * @see com.facebook.litho.sections.processor.integration.resources.FullDiffSectionSpec
  */
-public final class FullDiffSection<T> extends Section {
-  private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
+public final class FullDiffSection<T> extends Section implements TestTag {
+  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
+      new Pools.SynchronizedPool<Builder>(2);
 
-  static final Pools.SynchronizedPool<TestEvent> sTestEventPool = new Pools.SynchronizedPool<TestEvent>(2);
+  static final Pools.SynchronizedPool<TestEvent> sTestEventPool =
+      new Pools.SynchronizedPool<TestEvent>(2);
 
   private FullDiffSectionStateContainer mStateContainer;
 
@@ -50,16 +52,10 @@ public final class FullDiffSection<T> extends Section {
   @Prop(resType = ResType.NONE, optional = false)
   Integer prop1;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = true
-  )
+  @Prop(resType = ResType.NONE, optional = true)
   String prop2;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
   Component prop3;
 
   String _service;
@@ -93,16 +89,24 @@ public final class FullDiffSection<T> extends Section {
     if (data != null ? !data.equals(fullDiffSectionRef.data) : fullDiffSectionRef.data != null) {
       return false;
     }
-    if (prop1 != null ? !prop1.equals(fullDiffSectionRef.prop1) : fullDiffSectionRef.prop1 != null) {
+    if (prop1 != null
+        ? !prop1.equals(fullDiffSectionRef.prop1)
+        : fullDiffSectionRef.prop1 != null) {
       return false;
     }
-    if (prop2 != null ? !prop2.equals(fullDiffSectionRef.prop2) : fullDiffSectionRef.prop2 != null) {
+    if (prop2 != null
+        ? !prop2.equals(fullDiffSectionRef.prop2)
+        : fullDiffSectionRef.prop2 != null) {
       return false;
     }
-    if (prop3 != null ? !prop3.isEquivalentTo(fullDiffSectionRef.prop3) : fullDiffSectionRef.prop3 != null) {
+    if (prop3 != null
+        ? !prop3.isEquivalentTo(fullDiffSectionRef.prop3)
+        : fullDiffSectionRef.prop3 != null) {
       return false;
     }
-    if (mStateContainer.state1 != null ? !mStateContainer.state1.equals(fullDiffSectionRef.mStateContainer.state1) : fullDiffSectionRef.mStateContainer.state1 != null) {
+    if (mStateContainer.state1 != null
+        ? !mStateContainer.state1.equals(fullDiffSectionRef.mStateContainer.state1)
+        : fullDiffSectionRef.mStateContainer.state1 != null) {
       return false;
     }
     return true;
@@ -134,8 +138,7 @@ public final class FullDiffSection<T> extends Section {
 
   @Override
   protected void transferState(
-      SectionContext context,
-      SectionLifecycle.StateContainer _prevStateContainer) {
+      SectionContext context, SectionLifecycle.StateContainer _prevStateContainer) {
     FullDiffSectionStateContainer prevStateContainer =
         (FullDiffSectionStateContainer) _prevStateContainer;
     mStateContainer.state1 = prevStateContainer.state1;
@@ -156,7 +159,8 @@ public final class FullDiffSection<T> extends Section {
     if (_component == null) {
       return;
     }
-    FullDiffSection.UpdateStateStateUpdate _stateUpdate = ((FullDiffSection) _component).createUpdateStateStateUpdate(param);
+    FullDiffSection.UpdateStateStateUpdate _stateUpdate =
+        ((FullDiffSection) _component).createUpdateStateStateUpdate(param);
     c.updateStateSync(_stateUpdate);
   }
 
@@ -182,32 +186,33 @@ public final class FullDiffSection<T> extends Section {
 
   private void testEvent(HasEventDispatcher _abstract, SectionContext c, View view, int someParam) {
     FullDiffSection _ref = (FullDiffSection) _abstract;
-    FullDiffSectionSpec.testEvent(
-        c,
-        view,
-        someParam);
+    FullDiffSectionSpec.testEvent(c, view, someParam);
   }
 
   public static EventHandler<ClickEvent> testEvent(SectionContext c, int someParam) {
-    return newEventHandler(c, "testEvent", -1204074200, new Object[] {
+    return newEventHandler(
         c,
-        someParam,
-    });
+        "testEvent",
+        -1204074200,
+        new Object[] {
+          c, someParam,
+        });
   }
 
   @Override
   public Object dispatchOnEvent(final EventHandler eventHandler, final Object eventState) {
     int id = eventHandler.id;
     switch (id) {
-      case -1204074200: {
-        ClickEvent _event = (ClickEvent) eventState;
-        testEvent(
-            eventHandler.mHasEventDispatcher,
-            (SectionContext) eventHandler.params[0],
-            (View) _event.view,
-            (int) eventHandler.params[1]);
-        return null;
-      }
+      case -1204074200:
+        {
+          ClickEvent _event = (ClickEvent) eventState;
+          testEvent(
+              eventHandler.mHasEventDispatcher,
+              (SectionContext) eventHandler.params[0],
+              (View) _event.view,
+              (int) eventHandler.params[1]);
+          return null;
+        }
       default:
         return null;
     }
@@ -216,27 +221,31 @@ public final class FullDiffSection<T> extends Section {
   @Override
   protected void createInitialState(SectionContext c) {
     StateValue<Object> state1 = new StateValue<>();
-    FullDiffSectionSpec.onCreateInitialState(
-        (SectionContext) c,
-        (Integer) prop1,
-        state1);
+    FullDiffSectionSpec.onCreateInitialState((SectionContext) c, (Integer) prop1, state1);
     mStateContainer.state1 = state1.get();
   }
 
   @Override
-  protected void generateChangeSet(SectionContext c, ChangeSet changeSet, Section _prevAbstractImpl,
-      Section _nextAbstractImpl) {
+  protected void generateChangeSet(
+      SectionContext c, ChangeSet changeSet, Section _prevAbstractImpl, Section _nextAbstractImpl) {
     FullDiffSection _prevImpl = (FullDiffSection) _prevAbstractImpl;
     FullDiffSection _nextImpl = (FullDiffSection) _nextAbstractImpl;
-    Diff<List<T>> data = (Diff) acquireDiff(_prevImpl == null ? null : _prevImpl.data, _nextImpl == null ? null : _nextImpl.data);
-    Diff<Component> prop3 = (Diff) acquireDiff(_prevImpl == null ? null : _prevImpl.prop3, _nextImpl == null ? null : _nextImpl.prop3);
-    Diff<Object> state1 = (Diff) acquireDiff(_prevImpl == null ? null : _prevImpl.mStateContainer.state1, _nextImpl == null ? null : _nextImpl.mStateContainer.state1);
-    FullDiffSectionSpec.onDiff(
-        (SectionContext) c,
-        (ChangeSet) changeSet,
-        data,
-        prop3,
-        state1);
+    Diff<List<T>> data =
+        (Diff)
+            acquireDiff(
+                _prevImpl == null ? null : _prevImpl.data,
+                _nextImpl == null ? null : _nextImpl.data);
+    Diff<Component> prop3 =
+        (Diff)
+            acquireDiff(
+                _prevImpl == null ? null : _prevImpl.prop3,
+                _nextImpl == null ? null : _nextImpl.prop3);
+    Diff<Object> state1 =
+        (Diff)
+            acquireDiff(
+                _prevImpl == null ? null : _prevImpl.mStateContainer.state1,
+                _nextImpl == null ? null : _nextImpl.mStateContainer.state1);
+    FullDiffSectionSpec.onDiff((SectionContext) c, (ChangeSet) changeSet, data, prop3, state1);
     releaseDiff(data);
     releaseDiff(prop3);
     releaseDiff(state1);
@@ -248,9 +257,8 @@ public final class FullDiffSection<T> extends Section {
   }
 
   private String onCreateService(SectionContext c) {
-    String _result = (String) FullDiffSectionSpec.onCreateService(
-        (SectionContext) c,
-        (String) prop2);
+    String _result =
+        (String) FullDiffSectionSpec.onCreateService((SectionContext) c, (String) prop2);
     return _result;
   }
 
@@ -273,45 +281,46 @@ public final class FullDiffSection<T> extends Section {
 
   @Override
   protected void bindService(SectionContext c) {
-    FullDiffSectionSpec.bindService(
-        (SectionContext) c,
-        _service);
+    FullDiffSectionSpec.bindService((SectionContext) c, _service);
   }
 
   @Override
   protected void unbindService(SectionContext c) {
-    FullDiffSectionSpec.unbindService(
-        (SectionContext) c,
-        _service);
+    FullDiffSectionSpec.unbindService((SectionContext) c, _service);
   }
 
   @Override
   protected void refresh(SectionContext c) {
-    FullDiffSectionSpec.onRefresh(
-        (SectionContext) c,
-        _service);
+    FullDiffSectionSpec.onRefresh((SectionContext) c, _service);
   }
 
   @Override
   protected void dataBound(SectionContext c) {
-    FullDiffSectionSpec.onDataBound(
-        (SectionContext) c);
+    FullDiffSectionSpec.onDataBound((SectionContext) c);
   }
 
   @Override
   protected boolean shouldUpdate(Section _prevAbstractImpl, Section _nextAbstractImpl) {
     FullDiffSection _prevImpl = (FullDiffSection) _prevAbstractImpl;
     FullDiffSection _nextImpl = (FullDiffSection) _nextAbstractImpl;
-    Diff<Integer> prop1 = (Diff) acquireDiff(_prevImpl == null ? null : _prevImpl.prop1, _nextImpl == null ? null : _nextImpl.prop1);
-    boolean _result = (boolean) FullDiffSectionSpec.shouldUpdate(
-        prop1);
+    Diff<Integer> prop1 =
+        (Diff)
+            acquireDiff(
+                _prevImpl == null ? null : _prevImpl.prop1,
+                _nextImpl == null ? null : _nextImpl.prop1);
+    boolean _result = (boolean) FullDiffSectionSpec.shouldUpdate(prop1);
     releaseDiff(prop1);
     return _result;
   }
 
   @Override
-  protected void viewportChanged(SectionContext c, int firstVisibleIndex, int lastVisibleIndex,
-      int totalCount, int firstFullyVisibleIndex, int lastFullyVisibleIndex) {
+  protected void viewportChanged(
+      SectionContext c,
+      int firstVisibleIndex,
+      int lastVisibleIndex,
+      int totalCount,
+      int firstFullyVisibleIndex,
+      int lastFullyVisibleIndex) {
     FullDiffSectionSpec.onViewportChanged(
         (SectionContext) c,
         (int) firstVisibleIndex,
@@ -323,8 +332,7 @@ public final class FullDiffSection<T> extends Section {
 
   @VisibleForTesting(otherwise = 2)
   static class FullDiffSectionStateContainer<T> implements SectionLifecycle.StateContainer {
-    @State
-    Object state1;
+    @State Object state1;
   }
 
   public static class Builder<T> extends Section.Builder<Builder<T>> {
@@ -420,7 +428,8 @@ public final class FullDiffSection<T> extends Section {
 
     @Override
     public void updateState(SectionLifecycle.StateContainer _stateContainer, Section newComponent) {
-      FullDiffSectionStateContainer stateContainer = (FullDiffSectionStateContainer) _stateContainer;
+      FullDiffSectionStateContainer stateContainer =
+          (FullDiffSectionStateContainer) _stateContainer;
       FullDiffSection newComponentStateUpdate = (FullDiffSection) newComponent;
       StateValue<Object> state1 = new StateValue<Object>();
       state1.set(stateContainer.state1);

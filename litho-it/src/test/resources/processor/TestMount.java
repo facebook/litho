@@ -48,11 +48,10 @@ import java.util.BitSet;
  * @prop-required prop6 long
  * @prop-required prop7 java.lang.CharSequence
  * @prop-required prop8 long
- *
  * @see com.facebook.litho.processor.integration.resources.TestMountSpec
  */
 @TargetApi(17)
-public final class TestMount<S extends View> extends Component {
+public final class TestMount<S extends View> extends Component implements TestTag {
   static final Pools.SynchronizedPool<TestEvent> sTestEventPool = new Pools.SynchronizedPool<TestEvent>(2);
 
   private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);

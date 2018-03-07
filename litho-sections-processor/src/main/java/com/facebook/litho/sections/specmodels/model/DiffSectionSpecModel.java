@@ -62,6 +62,7 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
       ImmutableList<BuilderMethodModel> builderMethodModels,
+      ImmutableList<TagModel> tags,
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
@@ -83,6 +84,7 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
             .propDefaults(propDefaults)
             .eventDeclarations(eventDeclarations)
             .extraBuilderMethods(builderMethodModels)
+            .tags(tags)
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
             .isPublic(isPublic)

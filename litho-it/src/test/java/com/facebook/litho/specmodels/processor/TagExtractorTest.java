@@ -26,7 +26,7 @@ import org.junit.Test;
 public class TagExtractorTest {
 
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
-  private ImmutableList<TagModel> mTagsFromSpecClass;
+  private ImmutableList<TagModel> mTagModels;
 
   interface EmptyInterface {}
 
@@ -48,19 +48,19 @@ public class TagExtractorTest {
     Elements elements = mCompilationRule.getElements();
     Types types = mCompilationRule.getTypes();
 
-    mTagsFromSpecClass =
+    mTagModels =
         TagExtractor.extractTagsFromSpecClass(
             types, elements.getTypeElement(TestClass.class.getCanonicalName()));
   }
 
   @Test
   public void testExtractsAllTags() {
-    assertThat(mTagsFromSpecClass).hasSize(3);
+    assertThat(mTagModels).hasSize(3);
   }
 
   @Test
   public void testValidExtraction() {
-    TagModel emptyInterface = mTagsFromSpecClass.get(0);
+    TagModel emptyInterface = mTagModels.get(0);
     assertThat(emptyInterface.name)
         .isEqualTo(
             ClassName.bestGuess(
@@ -71,7 +71,7 @@ public class TagExtractorTest {
 
   @Test
   public void testNonEmptyTag() {
-    TagModel nonEmptyInterface = mTagsFromSpecClass.get(1);
+    TagModel nonEmptyInterface = mTagModels.get(1);
     assertThat(nonEmptyInterface.name)
         .isEqualTo(
             ClassName.bestGuess(
@@ -81,7 +81,7 @@ public class TagExtractorTest {
 
   @Test
   public void testTagWithExtend() {
-    TagModel extendedInterface = mTagsFromSpecClass.get(2);
+    TagModel extendedInterface = mTagModels.get(2);
     assertThat(extendedInterface.name)
         .isEqualTo(
             ClassName.bestGuess(

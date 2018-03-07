@@ -65,27 +65,18 @@ import com.facebook.litho.annotations.TreeProp;
   canMountIncrementally = true,
   canPreallocate = true
 )
-public class TestMountSpec<S extends View> {
+public class TestMountSpec<S extends View> implements TestTag {
   @PropDefault protected static final boolean prop2 = true;
 
   @OnLoadStyle
-  static void onLoadStyle(
-      ComponentContext c,
-      Output<Boolean> prop2,
-      Output<Object> prop3) {
-  }
+  static void onLoadStyle(ComponentContext c, Output<Boolean> prop2, Output<Object> prop3) {}
 
   @OnCreateInitialState
   static <S extends View> void createInitialState(
-      ComponentContext c,
-      @Prop int prop1,
-      StateValue<S> state2) {
-  }
+      ComponentContext c, @Prop int prop1, StateValue<S> state2) {}
 
   @OnCreateTreeProp
-  static TestTreeProp onCreateFeedPrefetcherProp(
-      ComponentContext c,
-      @Prop long prop6) {
+  static TestTreeProp onCreateFeedPrefetcherProp(ComponentContext c, @Prop long prop6) {
     return new TestTreeProp(prop6);
   }
 
@@ -120,21 +111,14 @@ public class TestMountSpec<S extends View> {
       @State(canUpdateLazily = true) long state1,
       @State S state2,
       @FromMeasure Long measureOutput,
-      @TreeProp TestTreeProp treeProp) {
-  }
+      @TreeProp TestTreeProp treeProp) {}
 
   @OnUnmount
-  static void onUnmount(
-      ComponentContext c,
-      Drawable v,
-      @Prop long prop8) {
-  }
+  static void onUnmount(ComponentContext c, Drawable v, @Prop long prop8) {}
 
   @OnPopulateAccessibilityNode
   static void onPopulateAccessibilityNode(
-      AccessibilityNodeInfoCompat node,
-      @Prop(resType = STRING) CharSequence prop7) {
-  }
+      AccessibilityNodeInfoCompat node, @Prop(resType = STRING) CharSequence prop7) {}
 
   @GetExtraAccessibilityNodesCount
   static int getExtraAccessibilityNodesCount(
@@ -152,8 +136,7 @@ public class TestMountSpec<S extends View> {
       int componentBoundsTop,
       @Prop Object prop3,
       @Prop(resType = STRING) CharSequence prop7,
-      @FromBoundsDefined Integer boundsDefinedOutput) {
-  }
+      @FromBoundsDefined Integer boundsDefinedOutput) {}
 
   @GetExtraAccessibilityNodeAt
   static int getExtraAccessibilityNodeAt(
@@ -172,25 +155,18 @@ public class TestMountSpec<S extends View> {
       @Param int param1,
       @Prop Object prop3,
       @Prop char prop5,
-      @State(canUpdateLazily = true) long state1) {
-  }
+      @State(canUpdateLazily = true) long state1) {}
 
   @OnTrigger(ClickEvent.class)
   static void onClickEventTrigger(ComponentContext c, @FromTrigger View view, @Prop Object prop3) {}
 
   @OnUpdateState
-  static void updateCurrentState(
-      StateValue<Long> state1,
-      @Param int someParam) {
-  }
+  static void updateCurrentState(StateValue<Long> state1, @Param int someParam) {}
 
   @OnCreateTransition
   static Transition onCreateTransition(
-      ComponentContext c,
-      @Prop Object prop3,
-      @State(canUpdateLazily = true) long state1) {
-    return Transition.parallel(
-      Transition.create("testKey"));
+      ComponentContext c, @Prop Object prop3, @State(canUpdateLazily = true) long state1) {
+    return Transition.parallel(Transition.create("testKey"));
   }
 
   @ShouldUpdate(onMount = true)

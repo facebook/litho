@@ -39,16 +39,13 @@ import com.facebook.litho.sections.annotations.OnViewportChanged;
 
 /** Comment to be copied in generated section */
 @GroupSectionSpec(events = TestEvent.class, isPublic = false)
-public class FullGroupSectionSpec<T> {
+public class FullGroupSectionSpec<T> implements TestTag {
 
   static class TreePropWrapper {}
 
   @OnCreateInitialState
   static <T> void onCreateInitialState(
-      SectionContext c,
-      @Prop int prop1,
-      StateValue<T> state1,
-      StateValue<Object> state2) {}
+      SectionContext c, @Prop int prop1, StateValue<T> state1, StateValue<Object> state2) {}
 
   @OnCreateTreeProp
   static TreePropWrapper onCreateTreeProp(SectionContext c, @TreeProp TreePropWrapper treeProp) {
@@ -56,9 +53,7 @@ public class FullGroupSectionSpec<T> {
   }
 
   @OnCreateService
-  static String onCreateService(
-      SectionContext c,
-      @Prop(optional = true) String prop2) {
+  static String onCreateService(SectionContext c, @Prop(optional = true) String prop2) {
     return prop2;
   }
 
@@ -79,34 +74,21 @@ public class FullGroupSectionSpec<T> {
       SectionContext c,
       String service,
       @Prop int prop1,
-      @State(canUpdateLazily = true) Object state2) {
-
-  }
+      @State(canUpdateLazily = true) Object state2) {}
 
   @OnUnbindService
   static void unbindService(
       SectionContext c,
       String service,
       @Prop int prop1,
-      @State(canUpdateLazily = true) Object state2) {
-
-  }
+      @State(canUpdateLazily = true) Object state2) {}
 
   @OnRefresh
-  static void onRefresh(
-      SectionContext c,
-      String service,
-      @Prop(optional = true) String prop2) {
-
-  }
+  static void onRefresh(SectionContext c, String service, @Prop(optional = true) String prop2) {}
 
   @OnDataBound
   static void onDataBound(
-      SectionContext c,
-      @Prop Component prop3,
-      @State(canUpdateLazily = true) Object state2) {
-
-  }
+      SectionContext c, @Prop Component prop3, @State(canUpdateLazily = true) Object state2) {}
 
   @ShouldUpdate
   static boolean shouldUpdate(@Prop Diff<Integer> prop1) {
@@ -125,9 +107,7 @@ public class FullGroupSectionSpec<T> {
       @State(canUpdateLazily = true) Object state2,
       @Prop int prop1,
       @Prop(optional = true) String prop2,
-      @Prop Component prop3) {
-
-  }
+      @Prop Component prop3) {}
 
   @OnEvent(ClickEvent.class)
   static void testEvent(

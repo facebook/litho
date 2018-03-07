@@ -35,13 +35,11 @@ import com.facebook.litho.sections.annotations.OnViewportChanged;
 import java.util.List;
 
 @DiffSectionSpec(events = TestEvent.class)
-public class FullDiffSectionSpec<T> {
+public class FullDiffSectionSpec<T> implements TestTag {
 
   @OnCreateInitialState
   static void onCreateInitialState(
-      SectionContext c,
-      @Prop Integer prop1,
-      StateValue<Object> state1) {}
+      SectionContext c, @Prop Integer prop1, StateValue<Object> state1) {}
 
   @OnDiff
   protected static <T> void onDiff(
@@ -55,38 +53,21 @@ public class FullDiffSectionSpec<T> {
   protected static void updateState(StateValue<Object> state1, @Param Object param) {}
 
   @OnCreateService
-  static String onCreateService(
-      SectionContext c,
-      @Prop(optional = true) String prop2) {
+  static String onCreateService(SectionContext c, @Prop(optional = true) String prop2) {
     return prop2;
   }
 
   @OnBindService
-  static void bindService(
-      SectionContext c,
-      String service) {
-
-  }
+  static void bindService(SectionContext c, String service) {}
 
   @OnUnbindService
-  static void unbindService(
-      SectionContext c,
-      String service) {
-
-  }
+  static void unbindService(SectionContext c, String service) {}
 
   @OnRefresh
-  static void onRefresh(
-      SectionContext c,
-      String service) {
-
-  }
+  static void onRefresh(SectionContext c, String service) {}
 
   @OnDataBound
-  static void onDataBound(
-      SectionContext c) {
-
-  }
+  static void onDataBound(SectionContext c) {}
 
   @ShouldUpdate
   static boolean shouldUpdate(@Prop Diff<Integer> prop1) {
@@ -100,9 +81,7 @@ public class FullDiffSectionSpec<T> {
       int lastVisibleIndex,
       int totalCount,
       int firstFullyVisibleIndex,
-      int lastFullyVisibleIndex) {
-
-  }
+      int lastFullyVisibleIndex) {}
 
   @OnEvent(ClickEvent.class)
   static void testEvent(SectionContext c, @FromEvent View view, @Param int someParam) {}

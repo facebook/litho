@@ -33,43 +33,35 @@ import com.facebook.litho.sections.SectionLifecycle;
 import java.util.BitSet;
 
 /**
- * Comment to be copied in generated section <p>
+ * Comment to be copied in generated section
+ *
+ * <p>
+ *
  * @prop-required prop1 int
  * @prop-optional prop2 java.lang.String
  * @prop-required prop3 com.facebook.litho.Component
  * @prop-required prop4 java.lang.String
- *
  * @see com.facebook.litho.sections.processor.integration.resources.FullGroupSectionSpec
  */
-final class FullGroupSection<T> extends Section {
-  private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
+final class FullGroupSection<T> extends Section implements TestTag {
+  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
+      new Pools.SynchronizedPool<Builder>(2);
 
-  static final Pools.SynchronizedPool<TestEvent> sTestEventPool = new Pools.SynchronizedPool<TestEvent>(2);
+  static final Pools.SynchronizedPool<TestEvent> sTestEventPool =
+      new Pools.SynchronizedPool<TestEvent>(2);
 
   private FullGroupSectionStateContainer mStateContainer;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
   int prop1;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = true
-  )
+  @Prop(resType = ResType.NONE, optional = true)
   String prop2;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
   Component prop3;
 
-  @Prop(
-      resType = ResType.STRING,
-      optional = false
-  )
+  @Prop(resType = ResType.STRING, optional = false)
   String prop4;
 
   FullGroupSectionSpec.TreePropWrapper treeProp;
@@ -105,22 +97,34 @@ final class FullGroupSection<T> extends Section {
     if (prop1 != fullGroupSectionRef.prop1) {
       return false;
     }
-    if (prop2 != null ? !prop2.equals(fullGroupSectionRef.prop2) : fullGroupSectionRef.prop2 != null) {
+    if (prop2 != null
+        ? !prop2.equals(fullGroupSectionRef.prop2)
+        : fullGroupSectionRef.prop2 != null) {
       return false;
     }
-    if (prop3 != null ? !prop3.isEquivalentTo(fullGroupSectionRef.prop3) : fullGroupSectionRef.prop3 != null) {
+    if (prop3 != null
+        ? !prop3.isEquivalentTo(fullGroupSectionRef.prop3)
+        : fullGroupSectionRef.prop3 != null) {
       return false;
     }
-    if (prop4 != null ? !prop4.equals(fullGroupSectionRef.prop4) : fullGroupSectionRef.prop4 != null) {
+    if (prop4 != null
+        ? !prop4.equals(fullGroupSectionRef.prop4)
+        : fullGroupSectionRef.prop4 != null) {
       return false;
     }
-    if (mStateContainer.state1 != null ? !mStateContainer.state1.equals(fullGroupSectionRef.mStateContainer.state1) : fullGroupSectionRef.mStateContainer.state1 != null) {
+    if (mStateContainer.state1 != null
+        ? !mStateContainer.state1.equals(fullGroupSectionRef.mStateContainer.state1)
+        : fullGroupSectionRef.mStateContainer.state1 != null) {
       return false;
     }
-    if (mStateContainer.state2 != null ? !mStateContainer.state2.equals(fullGroupSectionRef.mStateContainer.state2) : fullGroupSectionRef.mStateContainer.state2 != null) {
+    if (mStateContainer.state2 != null
+        ? !mStateContainer.state2.equals(fullGroupSectionRef.mStateContainer.state2)
+        : fullGroupSectionRef.mStateContainer.state2 != null) {
       return false;
     }
-    if (treeProp != null ? !treeProp.equals(fullGroupSectionRef.treeProp) : fullGroupSectionRef.treeProp != null) {
+    if (treeProp != null
+        ? !treeProp.equals(fullGroupSectionRef.treeProp)
+        : fullGroupSectionRef.treeProp != null) {
       return false;
     }
     return true;
@@ -151,9 +155,10 @@ final class FullGroupSection<T> extends Section {
   }
 
   @Override
-  protected void transferState(SectionContext context,
-                               SectionLifecycle.StateContainer _prevStateContainer) {
-    FullGroupSectionStateContainer prevStateContainer = (FullGroupSectionStateContainer) _prevStateContainer;
+  protected void transferState(
+      SectionContext context, SectionLifecycle.StateContainer _prevStateContainer) {
+    FullGroupSectionStateContainer prevStateContainer =
+        (FullGroupSectionStateContainer) _prevStateContainer;
     mStateContainer.state1 = prevStateContainer.state1;
     mStateContainer.state2 = prevStateContainer.state2;
   }
@@ -163,7 +168,8 @@ final class FullGroupSection<T> extends Section {
     if (_component == null) {
       return;
     }
-    FullGroupSection.UpdateStateStateUpdate _stateUpdate = ((FullGroupSection) _component).createUpdateStateStateUpdate(param);
+    FullGroupSection.UpdateStateStateUpdate _stateUpdate =
+        ((FullGroupSection) _component).createUpdateStateStateUpdate(param);
     c.updateStateAsync(_stateUpdate);
   }
 
@@ -172,7 +178,8 @@ final class FullGroupSection<T> extends Section {
     if (_component == null) {
       return;
     }
-    FullGroupSection.UpdateStateStateUpdate _stateUpdate = ((FullGroupSection) _component).createUpdateStateStateUpdate(param);
+    FullGroupSection.UpdateStateStateUpdate _stateUpdate =
+        ((FullGroupSection) _component).createUpdateStateStateUpdate(param);
     c.updateStateSync(_stateUpdate);
   }
 
@@ -181,16 +188,17 @@ final class FullGroupSection<T> extends Section {
     if (_component == null) {
       return;
     }
-    SectionLifecycle.StateUpdate _stateUpdate = new SectionLifecycle.StateUpdate() {
-      @Override
-      public void updateState(SectionLifecycle.StateContainer _stateContainer,
-                              Section newComponent) {
-        FullGroupSection newComponentStateUpdate = (FullGroupSection) newComponent;
-        StateValue<Object> state2 = new StateValue<Object>();
-        state2.set(lazyUpdateValue);
-        newComponentStateUpdate.mStateContainer.state2 = state2.get();
-      }
-    };
+    SectionLifecycle.StateUpdate _stateUpdate =
+        new SectionLifecycle.StateUpdate() {
+          @Override
+          public void updateState(
+              SectionLifecycle.StateContainer _stateContainer, Section newComponent) {
+            FullGroupSection newComponentStateUpdate = (FullGroupSection) newComponent;
+            StateValue<Object> state2 = new StateValue<Object>();
+            state2.set(lazyUpdateValue);
+            newComponentStateUpdate.mStateContainer.state2 = state2.get();
+          }
+        };
     c.updateStateLazy(_stateUpdate);
   }
 
@@ -214,37 +222,37 @@ final class FullGroupSection<T> extends Section {
     return result;
   }
 
-  private void testEvent(HasEventDispatcher _abstract, SectionContext c, TextView view,
-                         int someParam) {
+  private void testEvent(
+      HasEventDispatcher _abstract, SectionContext c, TextView view, int someParam) {
     FullGroupSection _ref = (FullGroupSection) _abstract;
     FullGroupSectionSpec.testEvent(
-        c,
-        view,
-        someParam,
-        (Object) _ref.mStateContainer.state2,
-        (String) _ref.prop2);
+        c, view, someParam, (Object) _ref.mStateContainer.state2, (String) _ref.prop2);
   }
 
   public static EventHandler<ClickEvent> testEvent(SectionContext c, int someParam) {
-    return newEventHandler(c, "testEvent", -1204074200, new Object[] {
+    return newEventHandler(
         c,
-        someParam,
-    });
+        "testEvent",
+        -1204074200,
+        new Object[] {
+          c, someParam,
+        });
   }
 
   @Override
   public Object dispatchOnEvent(final EventHandler eventHandler, final Object eventState) {
     int id = eventHandler.id;
     switch (id) {
-      case -1204074200: {
-        ClickEvent _event = (ClickEvent) eventState;
-        testEvent(
-            eventHandler.mHasEventDispatcher,
-            (SectionContext) eventHandler.params[0],
-            (TextView) _event.view,
-            (int) eventHandler.params[1]);
-        return null;
-      }
+      case -1204074200:
+        {
+          ClickEvent _event = (ClickEvent) eventState;
+          testEvent(
+              eventHandler.mHasEventDispatcher,
+              (SectionContext) eventHandler.params[0],
+              (TextView) _event.view,
+              (int) eventHandler.params[1]);
+          return null;
+        }
       default:
         return null;
     }
@@ -254,19 +262,14 @@ final class FullGroupSection<T> extends Section {
   protected void createInitialState(SectionContext c) {
     StateValue<T> state1 = new StateValue<>();
     StateValue<Object> state2 = new StateValue<>();
-    FullGroupSectionSpec.onCreateInitialState(
-        (SectionContext) c,
-        (int) prop1,
-        state1,
-        state2);
+    FullGroupSectionSpec.onCreateInitialState((SectionContext) c, (int) prop1, state1, state2);
     mStateContainer.state1 = state1.get();
     mStateContainer.state2 = state2.get();
   }
 
   private String onCreateService(SectionContext c) {
-    String _result = (String) FullGroupSectionSpec.onCreateService(
-        (SectionContext) c,
-        (String) prop2);
+    String _result =
+        (String) FullGroupSectionSpec.onCreateService((SectionContext) c, (String) prop2);
     return _result;
   }
 
@@ -289,62 +292,58 @@ final class FullGroupSection<T> extends Section {
 
   @Override
   protected Children createChildren(SectionContext c) {
-    Children _result = (Children) FullGroupSectionSpec.onCreateChildren(
-        (SectionContext) c,
-        (Component) prop3,
-        (String) prop4,
-        (T) mStateContainer.state1);
+    Children _result =
+        (Children)
+            FullGroupSectionSpec.onCreateChildren(
+                (SectionContext) c, (Component) prop3, (String) prop4, (T) mStateContainer.state1);
     return _result;
   }
 
   @Override
   protected void bindService(SectionContext c) {
     FullGroupSectionSpec.bindService(
-        (SectionContext) c,
-        _service,
-        (int) prop1,
-        (Object) mStateContainer.state2);
+        (SectionContext) c, _service, (int) prop1, (Object) mStateContainer.state2);
   }
 
   @Override
   protected void unbindService(SectionContext c) {
     FullGroupSectionSpec.unbindService(
-        (SectionContext) c,
-        _service,
-        (int) prop1,
-        (Object) mStateContainer.state2);
+        (SectionContext) c, _service, (int) prop1, (Object) mStateContainer.state2);
   }
 
   @Override
   protected void refresh(SectionContext c) {
-    FullGroupSectionSpec.onRefresh(
-        (SectionContext) c,
-        _service,
-        (String) prop2);
+    FullGroupSectionSpec.onRefresh((SectionContext) c, _service, (String) prop2);
   }
 
   @Override
   protected void dataBound(SectionContext c) {
     FullGroupSectionSpec.onDataBound(
-        (SectionContext) c,
-        (Component) prop3,
-        (Object) mStateContainer.state2);
+        (SectionContext) c, (Component) prop3, (Object) mStateContainer.state2);
   }
 
   @Override
   protected boolean shouldUpdate(Section _prevAbstractImpl, Section _nextAbstractImpl) {
     FullGroupSection _prevImpl = (FullGroupSection) _prevAbstractImpl;
     FullGroupSection _nextImpl = (FullGroupSection) _nextAbstractImpl;
-    Diff<Integer> prop1 = (Diff) acquireDiff(_prevImpl == null ? null : _prevImpl.prop1, _nextImpl == null ? null : _nextImpl.prop1);
-    boolean _result = (boolean) FullGroupSectionSpec.shouldUpdate(
-        prop1);
+    Diff<Integer> prop1 =
+        (Diff)
+            acquireDiff(
+                _prevImpl == null ? null : _prevImpl.prop1,
+                _nextImpl == null ? null : _nextImpl.prop1);
+    boolean _result = (boolean) FullGroupSectionSpec.shouldUpdate(prop1);
     releaseDiff(prop1);
     return _result;
   }
 
   @Override
-  protected void viewportChanged(SectionContext c, int firstVisibleIndex, int lastVisibleIndex,
-                                 int totalCount, int firstFullyVisibleIndex, int lastFullyVisibleIndex) {
+  protected void viewportChanged(
+      SectionContext c,
+      int firstVisibleIndex,
+      int lastVisibleIndex,
+      int totalCount,
+      int firstFullyVisibleIndex,
+      int lastFullyVisibleIndex) {
     FullGroupSectionSpec.onViewportChanged(
         (SectionContext) c,
         (int) firstVisibleIndex,
@@ -364,27 +363,27 @@ final class FullGroupSection<T> extends Section {
     if (treeProps == null) {
       return;
     }
-    treeProp = treeProps.get(com.facebook.litho.sections.processor.integration.resources.FullGroupSectionSpec.TreePropWrapper.class);
+    treeProp =
+        treeProps.get(
+            com.facebook.litho.sections.processor.integration.resources.FullGroupSectionSpec
+                .TreePropWrapper.class);
   }
 
   @Override
   protected TreeProps getTreePropsForChildren(SectionContext c, TreeProps parentTreeProps) {
     final TreeProps childTreeProps = TreeProps.copy(parentTreeProps);
-    childTreeProps.put(com.facebook.litho.sections.processor.integration.resources.FullGroupSectionSpec.TreePropWrapper.class, FullGroupSectionSpec.onCreateTreeProp(
-        (SectionContext) c,
-        treeProp));
+    childTreeProps.put(
+        com.facebook.litho.sections.processor.integration.resources.FullGroupSectionSpec
+            .TreePropWrapper.class,
+        FullGroupSectionSpec.onCreateTreeProp((SectionContext) c, treeProp));
     return childTreeProps;
   }
 
-  @VisibleForTesting(
-      otherwise = 2
-  )
+  @VisibleForTesting(otherwise = 2)
   static class FullGroupSectionStateContainer<T> implements SectionLifecycle.StateContainer {
-    @State
-    T state1;
+    @State T state1;
 
-    @State
-    Object state2;
+    @State Object state2;
   }
 
   public static class Builder<T> extends Section.Builder<Builder<T>> {
@@ -504,15 +503,13 @@ final class FullGroupSection<T> extends Section {
 
     @Override
     public void updateState(SectionLifecycle.StateContainer _stateContainer, Section newComponent) {
-      FullGroupSectionStateContainer stateContainer = (FullGroupSectionStateContainer) _stateContainer;
+      FullGroupSectionStateContainer stateContainer =
+          (FullGroupSectionStateContainer) _stateContainer;
       FullGroupSection newComponentStateUpdate = (FullGroupSection) newComponent;
       StateValue<Object> state2 = new StateValue<Object>();
       state2.set(stateContainer.state2);
-      FullGroupSectionSpec.updateState(state2,mParam);
+      FullGroupSectionSpec.updateState(state2, mParam);
       newComponentStateUpdate.mStateContainer.state2 = state2.get();
     }
   }
 }
-
-
-

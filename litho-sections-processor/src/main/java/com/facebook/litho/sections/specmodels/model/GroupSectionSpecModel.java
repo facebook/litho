@@ -62,6 +62,7 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
       ImmutableList<EventDeclarationModel> eventDeclarations,
       ImmutableList<AnnotationSpec> classAnnotations,
       ImmutableList<BuilderMethodModel> builderMethodModels,
+      ImmutableList<TagModel> tags,
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
@@ -83,6 +84,7 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
             .eventDeclarations(eventDeclarations)
             .classAnnotations(classAnnotations)
             .extraBuilderMethods(builderMethodModels)
+            .tags(tags)
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
             .isPublic(isPublic)

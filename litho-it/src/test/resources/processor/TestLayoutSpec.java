@@ -39,27 +39,18 @@ import com.facebook.litho.annotations.TreeProp;
 
 @LayoutSpec(events = TestEvent.class)
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-public class TestLayoutSpec<S extends View> {
+public class TestLayoutSpec<S extends View> implements TestTag {
   @PropDefault protected static final boolean prop2 = true;
 
   @OnLoadStyle
-  static void onLoadStyle(
-      ComponentContext c,
-      Output<Boolean> prop2,
-      Output<Object> prop3) {
-  }
+  static void onLoadStyle(ComponentContext c, Output<Boolean> prop2, Output<Object> prop3) {}
 
   @OnCreateInitialState
   static <S extends View> void createInitialState(
-      ComponentContext c,
-      @Prop int prop1,
-      StateValue<S> state2) {
-  }
+      ComponentContext c, @Prop int prop1, StateValue<S> state2) {}
 
   @OnCreateTreeProp
-  static TestTreeProp onCreateFeedPrefetcherProp(
-      ComponentContext c,
-      @Prop long prop6) {
+  static TestTreeProp onCreateFeedPrefetcherProp(ComponentContext c, @Prop long prop6) {
     return new TestTreeProp(prop6);
   }
 
@@ -84,8 +75,7 @@ public class TestLayoutSpec<S extends View> {
       @Param int param1,
       @Prop Object prop3,
       @Prop char prop5,
-      @State(canUpdateLazily = true) long state1) {
-  }
+      @State(canUpdateLazily = true) long state1) {}
 
   @OnError
   static void onError(ComponentContext c, Exception e) {
@@ -96,10 +86,7 @@ public class TestLayoutSpec<S extends View> {
   static void onClickEventTrigger(ComponentContext c, @FromTrigger View view) {}
 
   @OnUpdateState
-  static void updateCurrentState(
-      StateValue<Long> state1,
-      @Param int someParam) {
-  }
+  static void updateCurrentState(StateValue<Long> state1, @Param int someParam) {}
 
   @OnCreateTransition
   static Transition onCreateTransition(
@@ -107,7 +94,6 @@ public class TestLayoutSpec<S extends View> {
       @Prop Object prop3,
       @State(canUpdateLazily = true) long state1,
       @State Diff<Integer> state3) {
-    return Transition.parallel(
-      Transition.create("testKey"));
+    return Transition.parallel(Transition.create("testKey"));
   }
 }

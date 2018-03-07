@@ -27,13 +27,13 @@ public class SectionsProcessorIntegrationTest {
 
   @Test
   public void compilesGroupSpecWithoutError() {
-    final JavaFileObject javaFileObject = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "SimpleGroupSectionSpec.java"));
+    final JavaFileObject javaFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "SimpleGroupSectionSpec.java"));
 
-    final JavaFileObject expectedOutput = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "SimpleGroupSection.java"));
+    final JavaFileObject expectedOutput =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "SimpleGroupSection.java"));
 
     Truth.assertAbout(JavaSourceSubjectFactory.javaSource())
         .that(javaFileObject)
@@ -50,13 +50,13 @@ public class SectionsProcessorIntegrationTest {
 
   @Test
   public void compilesDiffSpecWithoutError() throws Exception {
-    final JavaFileObject javaFileObject = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "SimpleDiffSectionSpec.java"));
+    final JavaFileObject javaFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "SimpleDiffSectionSpec.java"));
 
-    final JavaFileObject expectedOutput = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "SimpleDiffSection.java"));
+    final JavaFileObject expectedOutput =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "SimpleDiffSection.java"));
 
     Truth.assertAbout(JavaSourceSubjectFactory.javaSource())
         .that(javaFileObject)
@@ -66,29 +66,30 @@ public class SectionsProcessorIntegrationTest {
         .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleDiffSection.class")
         .and()
         .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "SimpleDiffSectionSpec.class")
+            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleDiffSectionSpec.class")
         .and()
         .generatesSources(expectedOutput);
   }
 
   @Test
   public void compilesFullGroupSectionSpecWithoutError() {
-    final JavaFileObject javaFileObject = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "FullGroupSectionSpec.java"));
+    final JavaFileObject javaFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "FullGroupSectionSpec.java"));
 
-    final JavaFileObject testEventFileObject = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "TestEvent.java"));
+    final JavaFileObject testEventFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "TestEvent.java"));
 
-    final JavaFileObject expectedOutput = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "FullGroupSection.java"));
+    final JavaFileObject testTagFileObject =
+        JavaFileObjects.forResource(Resources.getResource(getClass(), RES_PREFIX + "TestTag.java"));
+
+    final JavaFileObject expectedOutput =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "FullGroupSection.java"));
 
     Truth.assertAbout(JavaSourcesSubjectFactory.javaSources())
-        .that(ImmutableList.of(javaFileObject, testEventFileObject))
+        .that(ImmutableList.of(javaFileObject, testEventFileObject, testTagFileObject))
         .processedWith(new SectionsComponentProcessor())
         .compilesWithoutError()
         .and()
@@ -110,20 +111,23 @@ public class SectionsProcessorIntegrationTest {
 
   @Test
   public void compilesFullDiffSectionSpecWithoutError() {
-    final JavaFileObject javaFileObject = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "FullDiffSectionSpec.java"));
+    final JavaFileObject javaFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "FullDiffSectionSpec.java"));
 
-    final JavaFileObject testEventFileObject = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "TestEvent.java"));
+    final JavaFileObject testEventFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "TestEvent.java"));
 
-    final JavaFileObject expectedOutput = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "FullDiffSection.java"));
+    final JavaFileObject testTagFileObject =
+        JavaFileObjects.forResource(Resources.getResource(getClass(), RES_PREFIX + "TestTag.java"));
+
+    final JavaFileObject expectedOutput =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "FullDiffSection.java"));
 
     Truth.assertAbout(JavaSourcesSubjectFactory.javaSources())
-        .that(ImmutableList.of(javaFileObject, testEventFileObject))
+        .that(ImmutableList.of(javaFileObject, testEventFileObject, testTagFileObject))
         .processedWith(new SectionsComponentProcessor())
         .compilesWithoutError()
         .and()
@@ -137,10 +141,7 @@ public class SectionsProcessorIntegrationTest {
         .generatesFileNamed(
             StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullDiffSection$Builder.class")
         .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "FullDiffSectionSpec.class")
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullDiffSectionSpec.class")
         .and()
         .generatesSources(expectedOutput);
   }

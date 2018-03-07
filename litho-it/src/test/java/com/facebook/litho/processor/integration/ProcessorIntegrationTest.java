@@ -28,9 +28,10 @@ public class ProcessorIntegrationTest {
 
   @Test
   public void failsToCompileWithWrongContext() throws IOException {
-    final JavaFileObject javaFileObject = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "IncorrectOnCreateLayoutArgsComponentSpec.java"));
+    final JavaFileObject javaFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(
+                getClass(), RES_PREFIX + "IncorrectOnCreateLayoutArgsComponentSpec.java"));
     Truth.assertAbout(JavaSourceSubjectFactory.javaSource())
         .that(javaFileObject)
         .processedWith(new ComponentsProcessor())
@@ -46,163 +47,131 @@ public class ProcessorIntegrationTest {
 
   @Test
   public void compilesWithoutError() {
-    final JavaFileObject javaFileObject = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "SimpleLayoutSpec.java"));
+    final JavaFileObject javaFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "SimpleLayoutSpec.java"));
 
-    final JavaFileObject expectedOutput = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "SimpleLayout.java"));
+    final JavaFileObject expectedOutput =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "SimpleLayout.java"));
 
     Truth.assertAbout(JavaSourceSubjectFactory.javaSource())
         .that(javaFileObject)
         .processedWith(new ComponentsProcessor())
         .compilesWithoutError()
         .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "SimpleLayout.class")
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleLayout.class")
         .and()
         .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "SimpleLayout$Builder.class")
+            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleLayout$Builder.class")
         .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "SimpleLayoutSpec.class")
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleLayoutSpec.class")
         .and()
         .generatesSources(expectedOutput);
   }
 
   @Test
   public void compilesTestLayoutSpecWithoutError() {
-    final JavaFileObject javaFileObject = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "TestLayoutSpec.java"));
+    final JavaFileObject javaFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "TestLayoutSpec.java"));
 
-    final JavaFileObject testTreePropFileObject = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "TestTreeProp.java"));
+    final JavaFileObject testTreePropFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "TestTreeProp.java"));
 
-    final JavaFileObject testEventFileObject = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "TestEvent.java"));
+    final JavaFileObject testEventFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "TestEvent.java"));
 
-    final JavaFileObject expectedOutput = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "TestLayout.java"));
+    final JavaFileObject testTagFileObject =
+        JavaFileObjects.forResource(Resources.getResource(getClass(), RES_PREFIX + "TestTag.java"));
+
+    final JavaFileObject expectedOutput =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "TestLayout.java"));
 
     Truth.assertAbout(JavaSourcesSubjectFactory.javaSources())
-        .that(ImmutableList.of(javaFileObject, testTreePropFileObject, testEventFileObject))
+        .that(
+            ImmutableList.of(
+                javaFileObject, testTreePropFileObject, testEventFileObject, testTagFileObject))
         .processedWith(new ComponentsProcessor())
         .compilesWithoutError()
         .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "TestLayout.class")
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "TestLayout.class")
         .and()
         .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "TestLayout$TestLayoutStateContainer.class")
+            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "TestLayout$TestLayoutStateContainer.class")
         .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "TestLayout$Builder.class")
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "TestLayout$Builder.class")
         .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "TestLayoutSpec.class")
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "TestLayoutSpec.class")
         .and()
         .generatesSources(expectedOutput);
   }
 
   @Test
   public void compilesMountSpec() {
-    final JavaFileObject javaFileObject = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "SimpleMountSpec.java"));
+    final JavaFileObject javaFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "SimpleMountSpec.java"));
 
-    final JavaFileObject expectedOutput = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "SimpleMount.java"));
+    final JavaFileObject expectedOutput =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "SimpleMount.java"));
 
     Truth.assertAbout(JavaSourceSubjectFactory.javaSource())
         .that(javaFileObject)
         .processedWith(new ComponentsProcessor())
         .compilesWithoutError()
         .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "SimpleMount.class")
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleMount.class")
         .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "SimpleMount$Builder.class")
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleMount$Builder.class")
         .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "SimpleMountSpec.class")
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleMountSpec.class")
         .and()
         .generatesSources(expectedOutput);
   }
 
   @Test
   public void compilesTestMountSpec() {
-    final JavaFileObject javaFileObject = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "TestMountSpec.java"));
+    final JavaFileObject javaFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "TestMountSpec.java"));
 
-    final JavaFileObject testTreePropFileObject = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "TestTreeProp.java"));
+    final JavaFileObject testTreePropFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "TestTreeProp.java"));
 
-    final JavaFileObject testEventFileObject = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "TestEvent.java"));
+    final JavaFileObject testEventFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "TestEvent.java"));
 
-    final JavaFileObject expectedOutput = JavaFileObjects.forResource(Resources.getResource(
-        getClass(),
-        RES_PREFIX + "TestMount.java"));
+    final JavaFileObject testTagFileObject =
+        JavaFileObjects.forResource(Resources.getResource(getClass(), RES_PREFIX + "TestTag.java"));
+
+    final JavaFileObject expectedOutput =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "TestMount.java"));
 
     Truth.assertAbout(JavaSourcesSubjectFactory.javaSources())
-        .that(ImmutableList.of(javaFileObject, testTreePropFileObject, testEventFileObject))
+        .that(
+            ImmutableList.of(
+                javaFileObject, testTreePropFileObject, testEventFileObject, testTagFileObject))
         .processedWith(new ComponentsProcessor())
         .compilesWithoutError()
         .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "TestMount.class")
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "TestMount.class")
         .and()
         .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "TestMount$TestMountStateContainer.class")
+            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "TestMount$TestMountStateContainer.class")
         .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "TestMount$1.class")
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "TestMount$1.class")
         .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "TestMount$Builder.class")
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "TestMount$Builder.class")
         .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT,
-            RES_PACKAGE,
-            "TestMountSpec.class")
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "TestMountSpec.class")
         .and()
         .generatesSources(expectedOutput);
   }
