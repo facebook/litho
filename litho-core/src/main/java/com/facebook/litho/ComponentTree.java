@@ -773,14 +773,7 @@ public class ComponentTree {
         localLayoutState = null;
       }
 
-      clearUnusedTriggerHandlers();
-
-      for (final Component layoutComponent : components) {
-        bindEventHandler(layoutComponent);
-        bindTriggerHandler(layoutComponent);
-      }
-
-      clearUnusedEventHandlers();
+      bindEventAndTriggerHandlers(components);
 
       // We need to force remount on layout
       mLithoView.setMountStateDirty();
@@ -1438,15 +1431,7 @@ public class ComponentTree {
     }
 
     if (components != null) {
-
-      clearUnusedTriggerHandlers();
-
-      for (final Component component : components) {
-        bindEventHandler(component);
-        bindTriggerHandler(component);
-      }
-
-      clearUnusedEventHandlers();
+      bindEventAndTriggerHandlers(components);
     }
 
     if (localLayoutState != null) {
@@ -1466,6 +1451,17 @@ public class ComponentTree {
     if (logger != null) {
       logger.log(layoutEvent);
     }
+  }
+
+  private void bindEventAndTriggerHandlers(List<Component> components) {
+    clearUnusedTriggerHandlers();
+
+    for (final Component component : components) {
+      bindEventHandler(component);
+      bindTriggerHandler(component);
+    }
+
+    clearUnusedEventHandlers();
   }
 
   /**
