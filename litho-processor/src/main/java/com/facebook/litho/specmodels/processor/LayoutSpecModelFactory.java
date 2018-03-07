@@ -17,8 +17,8 @@ import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.DefaultLayoutSpecGenerator;
 import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
-import com.facebook.litho.specmodels.model.LayoutSpecGenerator;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
+import com.facebook.litho.specmodels.model.SpecGenerator;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +44,7 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
   }
 
   private final List<Class<? extends Annotation>> mLayoutSpecDelegateMethodAnnotations;
-  private final LayoutSpecGenerator mLayoutSpecGenerator;
+  private final SpecGenerator<LayoutSpecModel> mLayoutSpecGenerator;
 
   public LayoutSpecModelFactory() {
     this(DELEGATE_METHOD_ANNOTATIONS, new DefaultLayoutSpecGenerator());
@@ -52,7 +52,7 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
 
   public LayoutSpecModelFactory(
       List<Class<? extends Annotation>> layoutSpecDelegateMethodAnnotations,
-      LayoutSpecGenerator layoutSpecGenerator) {
+      SpecGenerator<LayoutSpecModel> layoutSpecGenerator) {
 
     mLayoutSpecDelegateMethodAnnotations = layoutSpecDelegateMethodAnnotations;
     mLayoutSpecGenerator = layoutSpecGenerator;

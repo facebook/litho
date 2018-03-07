@@ -24,7 +24,7 @@ import java.util.List;
 public class LayoutSpecModel implements SpecModel, HasPureRender {
   private final SpecModelImpl mSpecModel;
   private final boolean mIsPureRender;
-  private final LayoutSpecGenerator mLayoutSpecGenerator;
+  private final SpecGenerator<LayoutSpecModel> mLayoutSpecGenerator;
 
   public LayoutSpecModel(
       String qualifiedSpecClassName,
@@ -44,7 +44,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       boolean isPureRender,
       SpecElementType specElementType,
       Object representedObject,
-      LayoutSpecGenerator layoutSpecGenerator,
+      SpecGenerator<LayoutSpecModel> layoutSpecGenerator,
       ImmutableList<TypeVariableName> typeVariables) {
     mSpecModel =
         SpecModelImpl.newBuilder()

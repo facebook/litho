@@ -11,7 +11,7 @@ package com.facebook.litho.specmodels.model;
 
 import com.squareup.javapoet.TypeSpec;
 
-public interface LayoutSpecGenerator {
+public interface SpecGenerator<T extends SpecModel> {
 
-  TypeSpec generate(LayoutSpecModel layoutSpecModel);
+  TypeSpec generate(T specModel);
 }

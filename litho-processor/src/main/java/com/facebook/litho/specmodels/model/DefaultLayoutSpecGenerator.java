@@ -25,7 +25,7 @@ import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.squareup.javapoet.TypeSpec;
 import javax.lang.model.element.Modifier;
 
-public class DefaultLayoutSpecGenerator implements LayoutSpecGenerator {
+public class DefaultLayoutSpecGenerator implements SpecGenerator<LayoutSpecModel> {
 
   @Override
   public TypeSpec generate(LayoutSpecModel layoutSpecModel) {
