@@ -46,23 +46,30 @@ public final class AnimatedProperties {
    */
   public static final AnimatedProperty HEIGHT = new HeightAnimatedProperty();
 
-  /**
-   * The transparency of a mount content.
-   */
+  /** The transparency of a mount content, where 0 is fully invisible and 1 is fully opaque. */
   public static final AnimatedProperty ALPHA = new AlphaAnimatedProperty();
 
   /**
    * The scale of a mount content: treats both X- and Y-scales as one.
+   *
+   * <p>The unit for scale is a percentage of the canonical dimensions of this content, with 1 =
+   * original size (e.g. .5 = half the width/height, 2 = double the width/height).
    */
   public static final AnimatedProperty SCALE = new ScaleAnimatedProperty();
 
   /**
-   * The x-scale of a mount content.
+   * The width scale factor of a mount content.
+   *
+   * <p>The unit for scale is a percentage of the canonical width of this content, with 1 = original
+   * width (e.g. .5 = half the width, 2 = double the width).
    */
   public static final AnimatedProperty SCALE_X = new ScaleXAnimatedProperty();
 
   /**
-   * The y-scale of a mount content.
+   * The height scale factor of a mount content.
+   *
+   * <p>The unit for scale is a percentage of the canonical height of this content, with 1 =
+   * original height (e.g. .5 = half the height, 2 = double the height).
    */
   public static final AnimatedProperty SCALE_Y = new ScaleYAnimatedProperty();
 
