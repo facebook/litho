@@ -79,6 +79,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
           final SpecModel specModel =
               specModelFactory.create(
                   processingEnv.getElementUtils(),
+                  processingEnv.getTypeUtils(),
                   (TypeElement) element,
                   processingEnv.getMessager(),
                   mRunMode,

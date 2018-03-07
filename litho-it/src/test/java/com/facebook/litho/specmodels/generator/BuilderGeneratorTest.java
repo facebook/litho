@@ -7,7 +7,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-
 package com.facebook.litho.specmodels.generator;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -30,15 +29,14 @@ import java.util.List;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-/**
- * Tests {@link BuilderGenerator}
- */
+/** Tests {@link BuilderGenerator} */
 public class BuilderGeneratorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 
@@ -91,23 +89,30 @@ public class BuilderGeneratorTest {
   public void setUp() {
     MockitoAnnotations.initMocks(this);
     Elements elements = mCompilationRule.getElements();
+    Types types = mCompilationRule.getTypes();
 
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
     mSpecModel =
         mLayoutSpecModelFactory.create(
-            elements, typeElement, mMessager, RunMode.NORMAL, null, null);
+            elements, types, typeElement, mMessager, RunMode.NORMAL, null, null);
 
     TypeElement resWithVarArgsElement =
         elements.getTypeElement(TestResTypeWithVarArgsSpec.class.getCanonicalName());
     mResTypeVarArgsSpecModel =
         mLayoutSpecModelFactory.create(
-            elements, resWithVarArgsElement, mMessager, RunMode.NORMAL, null, null);
+            elements, types, resWithVarArgsElement, mMessager, RunMode.NORMAL, null, null);
 
     TypeElement dimenResTypeWithBoxFloatArgElement =
         elements.getTypeElement(TestDimenResTypeWithBoxFloatArgSpec.class.getCanonicalName());
     mDimenResTypeWithBoxFloatArgSpecModel =
         mLayoutSpecModelFactory.create(
-            elements, dimenResTypeWithBoxFloatArgElement, mMessager, RunMode.NORMAL, null, null);
+            elements,
+            types,
+            dimenResTypeWithBoxFloatArgElement,
+            mMessager,
+            RunMode.NORMAL,
+            null,
+            null);
   }
 
   @Test
@@ -115,25 +120,28 @@ public class BuilderGeneratorTest {
     TypeSpecDataHolder dataHolder = BuilderGenerator.generate(mSpecModel);
 
     assertThat(dataHolder.getMethodSpecs()).hasSize(2);
-    assertThat(dataHolder.getMethodSpecs().get(0).toString()).isEqualTo(
-        "public static Builder create(com.facebook.litho.ComponentContext context) {\n" +
-        "  return create(context, 0, 0);\n" +
-        "}\n");
-    assertThat(dataHolder.getMethodSpecs().get(1).toString()).isEqualTo(
-        "public static Builder create(com.facebook.litho.ComponentContext context, int defStyleAttr,\n" +
-            "    int defStyleRes) {\n" +
-            "  Builder builder = sBuilderPool.acquire();\n" +
-            "  if (builder == null) {\n" +
-            "    builder = new Builder();\n" +
-            "  }\n" +
-            "  Test instance = new Test();\n" +
-            "  builder.init(context, defStyleAttr, defStyleRes, instance);\n" +
-            "  return builder;\n" +
-            "}\n");
+    assertThat(dataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "public static Builder create(com.facebook.litho.ComponentContext context) {\n"
+                + "  return create(context, 0, 0);\n"
+                + "}\n");
+    assertThat(dataHolder.getMethodSpecs().get(1).toString())
+        .isEqualTo(
+            "public static Builder create(com.facebook.litho.ComponentContext context, int defStyleAttr,\n"
+                + "    int defStyleRes) {\n"
+                + "  Builder builder = sBuilderPool.acquire();\n"
+                + "  if (builder == null) {\n"
+                + "    builder = new Builder();\n"
+                + "  }\n"
+                + "  Test instance = new Test();\n"
+                + "  builder.init(context, defStyleAttr, defStyleRes, instance);\n"
+                + "  return builder;\n"
+                + "}\n");
 
     assertThat(dataHolder.getFieldSpecs()).hasSize(1);
-    assertThat(dataHolder.getFieldSpecs().get(0).toString()).isEqualTo(
-        "private static final android.support.v4.util.Pools.SynchronizedPool<Builder> sBuilderPool = new android.support.v4.util.Pools.SynchronizedPool<Builder>(2);\n");
+    assertThat(dataHolder.getFieldSpecs().get(0).toString())
+        .isEqualTo(
+            "private static final android.support.v4.util.Pools.SynchronizedPool<Builder> sBuilderPool = new android.support.v4.util.Pools.SynchronizedPool<Builder>(2);\n");
 
     assertThat(dataHolder.getTypeSpecs()).hasSize(1);
     assertThat(dataHolder.getTypeSpecs().get(0).toString())

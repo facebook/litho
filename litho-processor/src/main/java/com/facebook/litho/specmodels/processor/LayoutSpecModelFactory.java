@@ -29,6 +29,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
 /** Factory for creating {@link LayoutSpecModel}s. */
 public class LayoutSpecModelFactory implements SpecModelFactory {
@@ -69,11 +70,13 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
   @Override
   public LayoutSpecModel create(
       Elements elements,
+      Types types,
       TypeElement element,
       Messager messager,
       RunMode runMode,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
+
     return new LayoutSpecModel(
         element.getQualifiedName().toString(),
         element.getAnnotation(LayoutSpec.class).value(),

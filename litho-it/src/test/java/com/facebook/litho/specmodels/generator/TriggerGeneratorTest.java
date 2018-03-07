@@ -27,6 +27,7 @@ import com.google.testing.compile.CompilationRule;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -66,10 +67,11 @@ public class TriggerGeneratorTest {
   @Before
   public void setUp() {
     Elements elements = mCompilationRule.getElements();
+    Types types = mCompilationRule.getTypes();
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
     mSpecModel =
         mLayoutSpecModelFactory.create(
-            elements, typeElement, mock(Messager.class), RunMode.NORMAL, null, null);
+            elements, types, typeElement, mock(Messager.class), RunMode.NORMAL, null, null);
   }
 
   @Test

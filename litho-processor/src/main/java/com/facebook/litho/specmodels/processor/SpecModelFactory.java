@@ -18,17 +18,19 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
 /**
  * A factory for a {@link SpecModel}. It first performs an {@link #extract(RoundEnvironment)} step
  * in which it selects the elements it wants to process from the annotation processor's round
  * environment and then creates a {@link SpecModel} for each extracted element in {@link
- * #create(Elements, TypeElement, Messager, RunMode, DependencyInjectionHelper, InterStageStore)}.
+ * #create(Elements, Types, TypeElement, Messager, RunMode, DependencyInjectionHelper,
+ * InterStageStore)}.
  */
 public interface SpecModelFactory<T extends SpecModel> {
   /**
    * Extract the relevant Elements to work with from the round environment before they're passed on
-   * to {@link #create(Elements, TypeElement, Messager, RunMode, DependencyInjectionHelper,
+   * to {@link #create(Elements, Types, TypeElement, Messager, RunMode, DependencyInjectionHelper,
    * InterStageStore)}.
    */
   Set<Element> extract(RoundEnvironment roundEnvironment);
@@ -40,6 +42,7 @@ public interface SpecModelFactory<T extends SpecModel> {
    */
   T create(
       Elements elements,
+      Types types,
       TypeElement element,
       Messager messager,
       RunMode runMode,

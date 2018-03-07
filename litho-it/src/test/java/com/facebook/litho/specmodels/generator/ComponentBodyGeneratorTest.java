@@ -43,15 +43,14 @@ import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-/**
- * Tests {@link ComponentBodyGenerator}
- */
+/** Tests {@link ComponentBodyGenerator} */
 public class ComponentBodyGeneratorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
   @Mock private Messager mMessager;
@@ -92,23 +91,24 @@ public class ComponentBodyGeneratorTest {
   public void setUp() {
     MockitoAnnotations.initMocks(this);
     Elements elements = mCompilationRule.getElements();
+    Types types = mCompilationRule.getTypes();
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
     mSpecModelDI =
         mLayoutSpecModelFactory.create(
-            elements, typeElement, mMessager, RunMode.NORMAL, null, null);
+            elements, types, typeElement, mMessager, RunMode.NORMAL, null, null);
   }
 
   @Test
   public void testGenerateStateContainerImpl() {
     assertThat(ComponentBodyGenerator.generateStateContainer(mSpecModelDI).toString())
         .isEqualTo(
-            "@android.support.annotation.VisibleForTesting(\n" +
-            "    otherwise = 2\n" +
-            ")\n" +
-            "static class TestStateContainer implements com.facebook.litho.ComponentLifecycle.StateContainer {\n" +
-            "  @com.facebook.litho.annotations.State\n" +
-            "  int arg1;\n" +
-            "}\n");
+            "@android.support.annotation.VisibleForTesting(\n"
+                + "    otherwise = 2\n"
+                + ")\n"
+                + "static class TestStateContainer implements com.facebook.litho.ComponentLifecycle.StateContainer {\n"
+                + "  @com.facebook.litho.annotations.State\n"
+                + "  int arg1;\n"
+                + "}\n");
   }
 
   @Test
@@ -119,13 +119,15 @@ public class ComponentBodyGeneratorTest {
 
   @Test
   public void testGenerateStateContainerGetter() {
-    assertThat(ComponentBodyGenerator.generateStateContainerGetter(
-        ClassNames.STATE_CONTAINER_COMPONENT).toString())
+    assertThat(
+            ComponentBodyGenerator.generateStateContainerGetter(
+                    ClassNames.STATE_CONTAINER_COMPONENT)
+                .toString())
         .isEqualTo(
-            "@java.lang.Override\n" +
-            "protected com.facebook.litho.ComponentLifecycle.StateContainer getStateContainer() {\n" +
-            "  return mStateContainer;\n" +
-            "}\n");
+            "@java.lang.Override\n"
+                + "protected com.facebook.litho.ComponentLifecycle.StateContainer getStateContainer() {\n"
+                + "  return mStateContainer;\n"
+                + "}\n");
   }
 
   @Test
@@ -134,11 +136,11 @@ public class ComponentBodyGeneratorTest {
     assertThat(dataHolder.getFieldSpecs()).hasSize(4);
     assertThat(dataHolder.getFieldSpecs().get(0).toString())
         .isEqualTo(
-            "@com.facebook.litho.annotations.Prop(\n" +
-            "    resType = com.facebook.litho.annotations.ResType.NONE,\n" +
-            "    optional = false\n" +
-            ")\n" +
-            "boolean arg0 = TestSpec.arg0;\n");
+            "@com.facebook.litho.annotations.Prop(\n"
+                + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
+                + "    optional = false\n"
+                + ")\n"
+                + "boolean arg0 = TestSpec.arg0;\n");
     assertThat(dataHolder.getFieldSpecs().get(1).toString())
         .isEqualTo(
             "@com.facebook.litho.annotations.Prop(\n"
@@ -164,13 +166,14 @@ public class ComponentBodyGeneratorTest {
   @Test
   public void testGenerateEventDeclarations() {
     SpecModel specModel = mock(SpecModel.class);
-    when(specModel.getEventDeclarations()).thenReturn(
-        ImmutableList.of(
-            new EventDeclarationModel(
-                ClassName.OBJECT,
-                ClassName.OBJECT,
-                ImmutableList.<EventDeclarationModel.FieldModel>of(),
-                null)));
+    when(specModel.getEventDeclarations())
+        .thenReturn(
+            ImmutableList.of(
+                new EventDeclarationModel(
+                    ClassName.OBJECT,
+                    ClassName.OBJECT,
+                    ImmutableList.<EventDeclarationModel.FieldModel>of(),
+                    null)));
 
     TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateEventHandlers(specModel);
     assertThat(dataHolder.getFieldSpecs()).hasSize(1);
@@ -182,10 +185,10 @@ public class ComponentBodyGeneratorTest {
   public void testGenerateGetSimpleName() {
     assertThat(ComponentBodyGenerator.generateGetSimpleName(mSpecModelDI).toString())
         .isEqualTo(
-            "@java.lang.Override\n" +
-            "public java.lang.String getSimpleName() {\n" +
-            "  return \"Test\";\n" +
-            "}\n");
+            "@java.lang.Override\n"
+                + "public java.lang.String getSimpleName() {\n"
+                + "  return \"Test\";\n"
+                + "}\n");
   }
 
   @Test
@@ -268,9 +271,9 @@ public class ComponentBodyGeneratorTest {
     assertThat(dataHolder.getMethodSpecs()).hasSize(1);
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "private TestUpdateStateMethodStateUpdate createTestUpdateStateMethodStateUpdate() {\n" +
-            "  return new TestUpdateStateMethodStateUpdate();\n" +
-            "}\n");
+            "private TestUpdateStateMethodStateUpdate createTestUpdateStateMethodStateUpdate() {\n"
+                + "  return new TestUpdateStateMethodStateUpdate();\n"
+                + "}\n");
   }
 
   @Test

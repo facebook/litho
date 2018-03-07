@@ -35,6 +35,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
 public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
 
@@ -50,7 +51,7 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
 
   /**
    * Extract the relevant Elements to work with from the round environment before they're passed on
-   * to {@link SpecModelFactory#create(Elements, TypeElement, Messager, RunMode,
+   * to {@link SpecModelFactory#create(Elements, Types, TypeElement, Messager, RunMode,
    * DependencyInjectionHelper, InterStageStore)}.
    */
   @Override
@@ -65,6 +66,7 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
   @Override
   public TestSpecModel create(
       Elements elements,
+      Types types,
       TypeElement element,
       Messager messager,
       RunMode runMode,
@@ -84,7 +86,13 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
 
     final SpecModel enclosedSpecModel =
         getEnclosedSpecModel(
-            elements, valueElement, messager, dependencyInjectionHelper, interStageStore, runMode);
+            elements,
+            types,
+            valueElement,
+            messager,
+            dependencyInjectionHelper,
+            interStageStore,
+            runMode);
 
     if (enclosedSpecModel == null) {
       final String error;
@@ -154,6 +162,7 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
   @Nullable
   private static SpecModel getEnclosedSpecModel(
       Elements elements,
+      Types types,
       TypeElement element,
       Messager messager,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
@@ -175,7 +184,13 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
 
       if (factory != null) {
         return factory.create(
-            elements, element, messager, runMode, dependencyInjectionHelper, interStageStore);
+            elements,
+            types,
+            element,
+            messager,
+            runMode,
+            dependencyInjectionHelper,
+            interStageStore);
       }
     }
     return null;

@@ -41,6 +41,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
 /** Factory for creating {@link MountSpecModel}s. */
 public class MountSpecModelFactory implements SpecModelFactory {
@@ -73,6 +74,7 @@ public class MountSpecModelFactory implements SpecModelFactory {
   @Override
   public MountSpecModel create(
       Elements elements,
+      Types types,
       TypeElement element,
       Messager messager,
       RunMode runMode,

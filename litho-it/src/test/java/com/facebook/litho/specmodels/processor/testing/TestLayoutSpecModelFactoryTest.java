@@ -37,6 +37,7 @@ import javax.annotation.processing.Messager;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,6 +49,7 @@ public class TestLayoutSpecModelFactoryTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 
   private Elements mElements;
+  private Types mTypes;
   private TypeElement mTypeElement;
   @Mock private Messager mMessager;
 
@@ -71,6 +73,7 @@ public class TestLayoutSpecModelFactoryTest {
   public void setUp() {
     MockitoAnnotations.initMocks(this);
     mElements = mCompilationRule.getElements();
+    mTypes = mCompilationRule.getTypes();
     mTypeElement = mElements.getTypeElement(TestMyLayoutSpec.class.getCanonicalName());
   }
 
@@ -78,7 +81,7 @@ public class TestLayoutSpecModelFactoryTest {
   public void testCreate() {
     final TestSpecModelFactory factory = new TestSpecModelFactory();
     final TestSpecModel layoutSpecModel =
-        factory.create(mElements, mTypeElement, mMessager, RunMode.NORMAL, null, null);
+        factory.create(mElements, mTypes, mTypeElement, mMessager, RunMode.NORMAL, null, null);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestMyLayoutSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("TestMyLayout");
@@ -115,7 +118,8 @@ public class TestLayoutSpecModelFactoryTest {
         };
 
     final TestSpecModel layoutSpecModel =
-        factory.create(mElements, mTypeElement, mMessager, RunMode.NORMAL, null, interStageStore);
+        factory.create(
+            mElements, mTypes, mTypeElement, mMessager, RunMode.NORMAL, null, interStageStore);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestMyLayoutSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("TestMyLayout");
@@ -140,7 +144,7 @@ public class TestLayoutSpecModelFactoryTest {
     final TestSpecModelFactory factory = new TestSpecModelFactory(specGenerator);
 
     final TestSpecModel layoutSpecModel =
-        factory.create(mElements, mTypeElement, mMessager, RunMode.NORMAL, null, null);
+        factory.create(mElements, mTypes, mTypeElement, mMessager, RunMode.NORMAL, null, null);
     layoutSpecModel.generate();
 
     verify(specGenerator).generate(layoutSpecModel);

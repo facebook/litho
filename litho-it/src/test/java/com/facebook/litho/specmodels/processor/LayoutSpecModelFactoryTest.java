@@ -20,14 +20,13 @@ import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-/**
- * Tests {@link LayoutSpecModelFactory}
- */
+/** Tests {@link LayoutSpecModelFactory} */
 public class LayoutSpecModelFactoryTest {
   private static final String TEST_QUALIFIED_SPEC_NAME = "com.facebook.litho.TestSpec";
   private static final String TEST_QUALIFIED_COMPONENT_NAME = "com.facebook.litho.Test";
@@ -35,9 +34,9 @@ public class LayoutSpecModelFactoryTest {
   @Mock private Messager mMessager;
 
   Elements mElements = mock(Elements.class);
+  Types mTypes = mock(Types.class);
   TypeElement mTypeElement = mock(TypeElement.class);
-  DependencyInjectionHelper mDependencyInjectionHelper =
-      mock(DependencyInjectionHelper.class);
+  DependencyInjectionHelper mDependencyInjectionHelper = mock(DependencyInjectionHelper.class);
   LayoutSpecModelFactory mFactory = new LayoutSpecModelFactory();
   LayoutSpec mLayoutSpec = mock(LayoutSpec.class);
 
@@ -53,7 +52,13 @@ public class LayoutSpecModelFactoryTest {
   public void testCreate() {
     LayoutSpecModel layoutSpecModel =
         mFactory.create(
-            mElements, mTypeElement, mMessager, RunMode.NORMAL, mDependencyInjectionHelper, null);
+            mElements,
+            mTypes,
+            mTypeElement,
+            mMessager,
+            RunMode.NORMAL,
+            mDependencyInjectionHelper,
+            null);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("Test");
@@ -66,8 +71,7 @@ public class LayoutSpecModelFactoryTest {
     assertThat(layoutSpecModel.getProps()).isEmpty();
 
     assertThat(layoutSpecModel.hasInjectedDependencies()).isTrue();
-    assertThat(layoutSpecModel.getDependencyInjectionHelper())
-        .isSameAs(mDependencyInjectionHelper);
+    assertThat(layoutSpecModel.getDependencyInjectionHelper()).isSameAs(mDependencyInjectionHelper);
   }
 
   @Test
@@ -75,7 +79,13 @@ public class LayoutSpecModelFactoryTest {
     when(mLayoutSpec.value()).thenReturn("TestComponentName");
     LayoutSpecModel layoutSpecModel =
         mFactory.create(
-            mElements, mTypeElement, mMessager, RunMode.NORMAL, mDependencyInjectionHelper, null);
+            mElements,
+            mTypes,
+            mTypeElement,
+            mMessager,
+            RunMode.NORMAL,
+            mDependencyInjectionHelper,
+            null);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("TestComponentName");
@@ -83,5 +93,4 @@ public class LayoutSpecModelFactoryTest {
     assertThat(layoutSpecModel.getComponentTypeName().toString())
         .isEqualTo("com.facebook.litho.TestComponentName");
   }
-
 }

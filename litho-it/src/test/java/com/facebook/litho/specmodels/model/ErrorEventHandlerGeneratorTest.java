@@ -22,6 +22,7 @@ import com.google.testing.compile.CompilationRule;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -56,9 +57,10 @@ public class ErrorEventHandlerGeneratorTest {
   public void testHasOnErrorDelegate() {
     final Elements elements = mCompilationRule.getElements();
     final TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
+    final Types types = mCompilationRule.getTypes();
     final LayoutSpecModel specModel =
         mLayoutSpecModelFactory.create(
-            elements, typeElement, mMessager, RunMode.NORMAL, null, null);
+            elements, types, typeElement, mMessager, RunMode.NORMAL, null, null);
 
     assertThat(ErrorEventHandlerGenerator.hasOnErrorDelegateMethod(specModel.getDelegateMethods()))
         .isTrue();
@@ -69,9 +71,10 @@ public class ErrorEventHandlerGeneratorTest {
     final Elements elements = mCompilationRule.getElements();
     final TypeElement typeElement =
         elements.getTypeElement(ManualErrorHandlerSpec.class.getCanonicalName());
+    final Types types = mCompilationRule.getTypes();
     final LayoutSpecModel specModel =
         mLayoutSpecModelFactory.create(
-            elements, typeElement, mMessager, RunMode.NORMAL, null, null);
+            elements, types, typeElement, mMessager, RunMode.NORMAL, null, null);
 
     assertThat(ErrorEventHandlerGenerator.hasOnErrorDelegateMethod(specModel.getDelegateMethods()))
         .isFalse();

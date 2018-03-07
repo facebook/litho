@@ -26,6 +26,7 @@ import java.util.List;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -54,9 +55,11 @@ public class DuplicatePropValidationTest {
   @Test
   public void testDuplicatePropValidationError() {
     final Elements elements = mCompilationRule.getElements();
+    final Types types = mCompilationRule.getTypes();
     final TypeElement typeElement = elements.getTypeElement(DupeMountSpec.class.getCanonicalName());
     final MountSpecModel mountSpecModel =
-        mFactory.create(elements, typeElement, mock(Messager.class), RunMode.NORMAL, null, null);
+        mFactory.create(
+            elements, types, typeElement, mock(Messager.class), RunMode.NORMAL, null, null);
 
     final List<SpecModelValidationError> specModelValidationErrors =
         SpecModelValidation.validateMountSpecModel(mountSpecModel, RunMode.NORMAL);

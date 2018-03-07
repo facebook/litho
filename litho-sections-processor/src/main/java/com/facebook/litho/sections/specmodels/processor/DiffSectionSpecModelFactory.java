@@ -51,6 +51,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
 /** Factory for creating {@link DiffSectionSpecModel}s. */
 public class DiffSectionSpecModelFactory implements SpecModelFactory {
@@ -86,6 +87,7 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory {
   @Override
   public SpecModel create(
       Elements elements,
+      Types types,
       TypeElement element,
       Messager messager,
       RunMode runMode,

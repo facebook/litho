@@ -7,7 +7,6 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-
 package com.facebook.litho.specmodels.processor;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -36,12 +35,11 @@ import com.google.testing.compile.CompilationRule;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import org.junit.Rule;
 import org.junit.Test;
 
-/**
- * Tests {@link MountSpecModelFactory}
- */
+/** Tests {@link MountSpecModelFactory} */
 public class MountSpecModelFactoryTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 
@@ -89,21 +87,16 @@ public class MountSpecModelFactoryTest {
   static class TestMountSpec {
 
     @OnCreateInitialState
-    static void createInitialState(
-        @Prop int prop1) {
-    }
+    static void createInitialState(@Prop int prop1) {}
 
     @OnCreateTreeProp
-    static TestTreeProp onCreateFeedPrefetcherProp(
-        @Prop long prop2) {
+    static TestTreeProp onCreateFeedPrefetcherProp(@Prop long prop2) {
       return new TestTreeProp(prop2);
     }
 
     @OnBoundsDefined
     static void onBoundsDefined(
-        @Prop Object prop3,
-        @Prop char[] prop4,
-        @FromMeasure Long measureOutput) {}
+        @Prop Object prop3, @Prop char[] prop4, @FromMeasure Long measureOutput) {}
 
     @OnMount
     static <S extends Object> void onMount(
@@ -124,12 +117,14 @@ public class MountSpecModelFactoryTest {
   @Test
   public void testCreate() {
     Elements elements = mCompilationRule.getElements();
+    Types types = mCompilationRule.getTypes();
     TypeElement typeElement =
         elements.getTypeElement(MountSpecModelFactoryTest.TestMountSpec.class.getCanonicalName());
 
     MountSpecModel mountSpecModel =
         mFactory.create(
             elements,
+            types,
             typeElement,
             mock(Messager.class),
             RunMode.NORMAL,
@@ -143,8 +138,8 @@ public class MountSpecModelFactoryTest {
             "com.facebook.litho.specmodels.processor.MountSpecModelFactoryTest.TestMountSpec");
     assertThat(mountSpecModel.getComponentTypeName().toString())
         .isEqualTo(
-            "com.facebook.litho.specmodels.processor.MountSpecModelFactoryTest." +
-                "TestMountComponentName");
+            "com.facebook.litho.specmodels.processor.MountSpecModelFactoryTest."
+                + "TestMountComponentName");
 
     assertThat(mountSpecModel.getDelegateMethods()).hasSize(5);
 
