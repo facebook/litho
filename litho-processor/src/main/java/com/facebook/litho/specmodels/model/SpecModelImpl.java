@@ -53,6 +53,7 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<BuilderMethodModel> mImplicitBuilderMethods;
   private final ImmutableList<RenderDataDiffModel> mDiffs;
   private final ImmutableList<AnnotationSpec> mClassAnnotations;
+  private final ImmutableList<TagModel> mTags;
   private final String mClassJavadoc;
   private final ImmutableList<PropJavadocModel> mPropJavadocs;
   private final boolean mIsPublic;
@@ -75,6 +76,7 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<EventDeclarationModel> eventDeclarations,
       ImmutableList<BuilderMethodModel> implicitBuilderMethods,
       ImmutableList<AnnotationSpec> classAnnotations,
+      ImmutableList<TagModel> tags,
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
@@ -103,6 +105,7 @@ public final class SpecModelImpl implements SpecModel {
     mImplicitBuilderMethods = implicitBuilderMethods;
     mDiffs = getDiffs(delegateMethods);
     mClassAnnotations = classAnnotations;
+    mTags = tags;
     mClassJavadoc = classJavadoc;
     mPropJavadocs = propJavadocs;
     mIsPublic = isPublic;
@@ -205,6 +208,11 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public ImmutableList<AnnotationSpec> getClassAnnotations() {
     return mClassAnnotations;
+  }
+
+  @Override
+  public ImmutableList<TagModel> getTags() {
+    return mTags;
   }
 
   @Override
@@ -500,8 +508,8 @@ public final class SpecModelImpl implements SpecModel {
 
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
-        if (param instanceof DiffStateParamModel &&
-            !hasSameUnderlyingStateParamModel(stateValues, (DiffStateParamModel) param)) {
+        if (param instanceof DiffStateParamModel
+            && !hasSameUnderlyingStateParamModel(stateValues, (DiffStateParamModel) param)) {
           stateValues.add(((DiffStateParamModel) param).getUnderlyingStateParamModel());
         }
       }
@@ -509,7 +517,6 @@ public final class SpecModelImpl implements SpecModel {
 
     return ImmutableList.copyOf(new ArrayList<>(stateValues));
   }
-
 
   private static boolean hasSameUnderlyingStateParamModel(
       Set<StateParamModel> props, DiffStateParamModel diffStateParamModel) {
@@ -639,6 +646,7 @@ public final class SpecModelImpl implements SpecModel {
     private ImmutableList<EventDeclarationModel> mEventDeclarations;
     private ImmutableList<BuilderMethodModel> mBuilderMethodModels;
     private ImmutableList<AnnotationSpec> mClassAnnotations;
+    @Nullable private ImmutableList<TagModel> mTags;
     private String mClassJavadoc;
     private ImmutableList<PropJavadocModel> mPropJavadocs;
     private boolean mIsPublic;
@@ -664,11 +672,12 @@ public final class SpecModelImpl implements SpecModel {
     }
 
     public Builder componentClass(ClassName componentClass) {
-      mComponentClass= componentClass;
+      mComponentClass = componentClass;
       return this;
     }
 
-    public Builder delegateMethods(ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethodModels) {
+    public Builder delegateMethods(
+        ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethodModels) {
       mDelegateMethodModels = delegateMethodModels;
       return this;
     }
@@ -718,6 +727,11 @@ public final class SpecModelImpl implements SpecModel {
 
     public Builder classAnnotations(ImmutableList<AnnotationSpec> annotations) {
       mClassAnnotations = annotations;
+      return this;
+    }
+
+    public Builder tags(ImmutableList<TagModel> tags) {
+      mTags = tags;
       return this;
     }
 
@@ -776,6 +790,7 @@ public final class SpecModelImpl implements SpecModel {
           mEventDeclarations,
           mBuilderMethodModels,
           mClassAnnotations,
+          mTags,
           mClassJavadoc,
           mPropJavadocs,
           mIsPublic,
@@ -841,6 +856,10 @@ public final class SpecModelImpl implements SpecModel {
 
       if (mClassAnnotations == null) {
         mClassAnnotations = ImmutableList.of();
+      }
+
+      if (mTags == null) {
+        mTags = ImmutableList.of();
       }
 
       if (mBuilderMethodModels == null) {

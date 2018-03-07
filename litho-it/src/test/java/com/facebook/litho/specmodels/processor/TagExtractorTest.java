@@ -13,7 +13,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.specmodels.model.ComponentTagModel;
+import com.facebook.litho.specmodels.model.TagModel;
 import com.google.testing.compile.CompilationRule;
 import com.squareup.javapoet.ClassName;
 import javax.lang.model.util.Elements;
@@ -26,7 +26,7 @@ import org.junit.Test;
 public class TagExtractorTest {
 
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
-  private ImmutableList<ComponentTagModel> mTagsFromSpecClass;
+  private ImmutableList<TagModel> mTagsFromSpecClass;
 
   interface EmptyInterface {}
 
@@ -59,8 +59,8 @@ public class TagExtractorTest {
   }
 
   @Test
-  public void testValidExtraction() throws Exception {
-    ComponentTagModel emptyInterface = mTagsFromSpecClass.get(0);
+  public void testValidExtraction() {
+    TagModel emptyInterface = mTagsFromSpecClass.get(0);
     assertThat(emptyInterface.name)
         .isEqualTo(
             ClassName.bestGuess(
@@ -70,8 +70,8 @@ public class TagExtractorTest {
   }
 
   @Test
-  public void testNonEmptyTag() throws Exception {
-    ComponentTagModel nonEmptyInterface = mTagsFromSpecClass.get(1);
+  public void testNonEmptyTag() {
+    TagModel nonEmptyInterface = mTagsFromSpecClass.get(1);
     assertThat(nonEmptyInterface.name)
         .isEqualTo(
             ClassName.bestGuess(
@@ -80,8 +80,8 @@ public class TagExtractorTest {
   }
 
   @Test
-  public void testTagWithExtend() throws Exception {
-    ComponentTagModel extendedInterface = mTagsFromSpecClass.get(2);
+  public void testTagWithExtend() {
+    TagModel extendedInterface = mTagsFromSpecClass.get(2);
     assertThat(extendedInterface.name)
         .isEqualTo(
             ClassName.bestGuess(

@@ -29,6 +29,7 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.facebook.litho.specmodels.model.StateParamModel;
+import com.facebook.litho.specmodels.model.TagModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethod;
 import com.squareup.javapoet.AnnotationSpec;
@@ -164,6 +165,11 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   @Override
   public ImmutableList<AnnotationSpec> getClassAnnotations() {
     return mSpecModel.getClassAnnotations();
+  }
+
+  @Override
+  public ImmutableList<TagModel> getTags() {
+    return mSpecModel.getTags();
   }
 
   @Override

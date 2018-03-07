@@ -87,6 +87,9 @@ public interface SpecModel {
   /** @return the set of annotations that should be added to the generated class. */
   ImmutableList<AnnotationSpec> getClassAnnotations();
 
+  /** @return the set of empty interface tags that should be implemented by the generated class */
+  ImmutableList<TagModel> getTags();
+
   /** @return the javadoc for this spec. */
   String getClassJavadoc();
 
@@ -121,14 +124,10 @@ public interface SpecModel {
   /** @return whether this spec uses dependency injection. */
   boolean hasInjectedDependencies();
 
-  /**
-   * @return whether or not to check component id in isEquivalentTo() method.
-   */
+  /** @return whether or not to check component id in isEquivalentTo() method. */
   boolean shouldCheckIdInIsEquivalentToMethod();
 
-  /**
-   * @return whether or not to deep copy this component.
-   */
+  /** @return whether or not to deep copy this component. */
   boolean hasDeepCopy();
 
   /** @return whether or not to generate a hasState method. */

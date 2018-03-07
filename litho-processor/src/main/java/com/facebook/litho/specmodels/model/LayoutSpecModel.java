@@ -167,6 +167,11 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public ImmutableList<TagModel> getTags() {
+    return mSpecModel.getTags();
+  }
+
+  @Override
   public String getClassJavadoc() {
     return mSpecModel.getClassJavadoc();
   }

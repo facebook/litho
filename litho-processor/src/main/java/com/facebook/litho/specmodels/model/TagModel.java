@@ -13,12 +13,12 @@ import com.squareup.javapoet.ClassName;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class ComponentTagModel {
+public class TagModel {
   public final ClassName name;
   public final boolean hasSupertype;
   public final boolean hasMethods;
 
-  public ComponentTagModel(ClassName name, boolean hasSupertype, boolean hasMethods) {
+  public TagModel(ClassName name, boolean hasSupertype, boolean hasMethods) {
     this.name = name;
     this.hasSupertype = hasSupertype;
     this.hasMethods = hasMethods;

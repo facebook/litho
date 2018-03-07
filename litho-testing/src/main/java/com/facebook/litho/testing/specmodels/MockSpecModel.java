@@ -28,6 +28,7 @@ import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.facebook.litho.specmodels.model.StateParamModel;
+import com.facebook.litho.specmodels.model.TagModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethod;
 import com.squareup.javapoet.AnnotationSpec;
@@ -78,6 +79,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   private final boolean mIsStylingSupported;
   private final List<SpecModelValidationError> mSpecModelValidationErrors;
   private final ImmutableList<AnnotationSpec> mClassAnnotations;
+  private final ImmutableList<TagModel> mTags;
   private final SpecElementType mSpecElementType;
   private final boolean mIsPureRender;
   private final SpecModel mEnclosedSpecModel;
@@ -118,6 +120,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       boolean isStylingSupported,
       List<SpecModelValidationError> specModelValidationErrors,
       ImmutableList<AnnotationSpec> classAnnotations,
+      ImmutableList<TagModel> tags,
       SpecElementType specElementType,
       boolean isPureRender,
       SpecModel enclosedSpecModel) {
@@ -156,6 +159,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     mIsStylingSupported = isStylingSupported;
     mSpecModelValidationErrors = specModelValidationErrors;
     mClassAnnotations = classAnnotations;
+    mTags = tags;
     mSpecElementType = specElementType;
     mIsPureRender = isPureRender;
     mEnclosedSpecModel = enclosedSpecModel;
@@ -254,6 +258,11 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   @Override
   public ImmutableList<AnnotationSpec> getClassAnnotations() {
     return mClassAnnotations;
+  }
+
+  @Override
+  public ImmutableList<TagModel> getTags() {
+    return mTags;
   }
 
   @Override
@@ -367,7 +376,8 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     private String mComponentName;
     private TypeName mComponentTypeName;
     private ClassName mComponentClass;
-    private ImmutableList<SpecMethodModel<DelegateMethod, Void>> mDelegateMethods = ImmutableList.of();
+    private ImmutableList<SpecMethodModel<DelegateMethod, Void>> mDelegateMethods =
+        ImmutableList.of();
     private ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mEventMethods =
         ImmutableList.of();
     private ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mTriggerMethods =
@@ -400,6 +410,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     private boolean mIsStylingSupported;
     private List<SpecModelValidationError> mSpecModelValidationErrors = ImmutableList.of();
     private ImmutableList<AnnotationSpec> mClassAnnotations;
+    private ImmutableList<TagModel> mTags = ImmutableList.of();
     private SpecElementType mSpecElementType;
     private boolean mIsPureRender;
     private SpecModel mEnclosedSpecModel;
@@ -429,7 +440,8 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       return this;
     }
 
-    public Builder delegateMethods(ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods) {
+    public Builder delegateMethods(
+        ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods) {
       mDelegateMethods = delegateMethods;
       return this;
     }
@@ -580,9 +592,13 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       return this;
     }
 
-    public Builder classAnnotations(
-        ImmutableList<AnnotationSpec> classAnnotations) {
+    public Builder classAnnotations(ImmutableList<AnnotationSpec> classAnnotations) {
       mClassAnnotations = classAnnotations;
+      return this;
+    }
+
+    public Builder tags(ImmutableList<TagModel> tags) {
+      mTags = tags;
       return this;
     }
 
@@ -638,6 +654,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mIsStylingSupported,
           mSpecModelValidationErrors,
           mClassAnnotations,
+          mTags,
           mSpecElementType,
           mIsPureRender,
           mEnclosedSpecModel);
@@ -683,6 +700,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           && Objects.equals(mScopeMethodName, builder.mScopeMethodName)
           && Objects.equals(mSpecModelValidationErrors, builder.mSpecModelValidationErrors)
           && Objects.equals(mClassAnnotations, builder.mClassAnnotations)
+          && Objects.equals(mTags, builder.mTags)
           && Objects.equals(mSpecElementType, builder.mSpecElementType)
           && Objects.equals(mIsPureRender, builder.mIsPureRender)
           && Objects.equals(mEnclosedSpecModel, builder.mEnclosedSpecModel);
@@ -725,6 +743,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mIsStylingSupported,
           mSpecModelValidationErrors,
           mClassAnnotations,
+          mTags,
           mSpecElementType,
           mIsPureRender,
           mEnclosedSpecModel);

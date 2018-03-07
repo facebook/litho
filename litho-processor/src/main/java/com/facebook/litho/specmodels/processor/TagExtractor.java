@@ -10,7 +10,7 @@
 package com.facebook.litho.specmodels.processor;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.specmodels.model.ComponentTagModel;
+import com.facebook.litho.specmodels.model.TagModel;
 import com.squareup.javapoet.ClassName;
 import java.util.Collections;
 import java.util.List;
@@ -23,18 +23,17 @@ import javax.lang.model.util.Types;
 
 /**
  * Tags a {@link TypeElement} and extract possible spec tags from it in the form of a {@link
- * ComponentTagModel}, retaining information about supertypes and potential methods for validation
+ * TagModel}, retaining information about supertypes and potential methods for validation
  * purposes.
  */
 public final class TagExtractor {
 
   private TagExtractor() {}
 
-  static ImmutableList<ComponentTagModel> extractTagsFromSpecClass(
-      Types types, TypeElement element) {
+  public static ImmutableList<TagModel> extractTagsFromSpecClass(Types types, TypeElement element) {
     final List<? extends TypeMirror> interfaces = element.getInterfaces();
 
-    final List<ComponentTagModel> tags;
+    final List<TagModel> tags;
     if (interfaces != null) {
       tags =
           interfaces
@@ -49,8 +48,8 @@ public final class TagExtractor {
     return ImmutableList.copyOf(tags);
   }
 
-  private static ComponentTagModel newTagModel(Element typeElement, Types types) {
-    return new ComponentTagModel(
+  private static TagModel newTagModel(Element typeElement, Types types) {
+    return new TagModel(
         ClassName.bestGuess(typeElement.toString()),
         types.directSupertypes(typeElement.asType()).size()
             > 1, // java.lang.Object is always a supertype
