@@ -2042,7 +2042,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     unbindAndUnmountLifecycle(context, item);
 
     mIndexToItemMap.remove(mLayoutOutputsIds[index]);
-    maybeUpdateAnimatingMountContent(item, null);
 
     if (component.canMountIncrementally()) {
       mCanMountIncrementallyMountItems.delete(mLayoutOutputsIds[index]);
@@ -2069,6 +2068,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       item.setIsBound(false);
     }
     component.unmount(context, content);
+
+    maybeUpdateAnimatingMountContent(item, null);
   }
 
   private void startUnmountDisappearingItem(int index, String key) {
