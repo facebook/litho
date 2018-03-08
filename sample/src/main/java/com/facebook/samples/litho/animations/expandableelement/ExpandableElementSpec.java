@@ -50,24 +50,26 @@ public class ExpandableElementSpec {
           + "architecto beatae vitae dicta sunt explicabo.";
 
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c, @State boolean expanded) {
+  static Component onCreateLayout(ComponentContext c, @State Boolean expanded) {
+    final boolean isExpanded = expanded == null ? false : expanded;
     return Column.create(c)
         .backgroundColor(0xfff0f0f0)
         .paddingDip(YogaEdge.TOP, 8)
         .transitionKey(TRANSITION_MSG_PARENT)
         .clickHandler(ExpandableElement.onClick(c))
-        .child(maybeCreateTopDetailComponent(c, expanded))
+        .child(maybeCreateTopDetailComponent(c, isExpanded))
         .child(
             Column.create(c)
                 .transitionKey(TRANSITION_TEXT_MESSAGE_WITH_BOTTOM)
                 .child(Row.create(c).child(createSenderTile(c)).child(createMessageContent(c)))
-                .child(maybeCreateBottomDetailComponent(c, expanded)))
+                .child(maybeCreateBottomDetailComponent(c, isExpanded)))
         .build();
   }
 
   @OnEvent(ClickEvent.class)
-  static void onClick(ComponentContext c, @State boolean expanded) {
-    ExpandableElement.updateExpandedState(c, !expanded);
+  static void onClick(ComponentContext c, @State Boolean expanded) {
+    final boolean isExpanded = expanded == null ? false : expanded;
+    ExpandableElement.updateExpandedState(c, !isExpanded);
   }
 
   @OnUpdateState
@@ -75,15 +77,19 @@ public class ExpandableElementSpec {
     expanded.set(expand);
   }
 
+  @Nullable
   @OnCreateTransition
-  static Transition onCreateTransition(ComponentContext c) {
+  static Transition onCreateTransition(ComponentContext c, @State Boolean expanded) {
+    if (expanded == null) {
+      return null;
+    }
+
     return Transition.parallel(
+        Transition.allLayout(),
         Transition.create(TRANSITION_TOP_DETAIL)
             .animate(AnimatedProperties.HEIGHT)
             .appearFrom(0)
             .disappearTo(0),
-        Transition.create(TRANSITION_TEXT_MESSAGE_WITH_BOTTOM).animate(AnimatedProperties.Y),
-        Transition.create(TRANSITION_MSG_PARENT).animate(AnimatedProperties.HEIGHT).appearFrom(0),
         Transition.create(TRANSITION_BOTTOM_DETAIL)
             .animate(AnimatedProperties.HEIGHT)
             .appearFrom(0)
