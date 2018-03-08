@@ -375,7 +375,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
       dispatchErrorEvent(c, errorEvent);
     } else {
-      throw new RuntimeException(e);
+      if (e instanceof RuntimeException) {
+        throw (RuntimeException) e;
+      } else {
+        throw new RuntimeException(e);
+      }
     }
   }
 
