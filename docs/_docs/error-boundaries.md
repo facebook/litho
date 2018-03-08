@@ -24,9 +24,10 @@ contains a full example of using error boundaries in a Sections-powered list.
 > - `onMount`
 > We plan to expand them to more delegates in the future.
 
-A component becomes an error boundary when it defines an `@OnError` delegate
-method. The method will receive all exceptions that occur are raised in
-supported methods of components sitting underneath the error boundary in the tree.
+A component becomes an error boundary when it defines an
+[`OnError`](/javadoc/com/facebook/litho/annotations/OnError.html) delegate method.
+The method will receive all exceptions that occur are raised in supported
+methods of components sitting underneath the error boundary in the tree.
 
 ```java
 @LayoutSpec
@@ -142,7 +143,7 @@ commenting function.
 You can re-raise an exception from within an `onError` delegate so that it
 propagates up the component tree until it is either caught by another error
 boundary or hits the root and causes a crash. This is done by calling
-`ComponentLifecycle.dispatchErrorEvent` with your context and the exception.
+[`ComponentLifecycle.dispatchErrorEvent`](/javadoc/com/facebook/litho/ComponentLifecycle.html#dispatchErrorEvent-com.facebook.litho.ComponentContext-java.lang.Exception-) with your context and the exception.
 
 ```java
 @OnError

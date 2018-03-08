@@ -1,10 +1,10 @@
 body {
   background: $litho-light;
   color: $text;
-	font: normal #{$base-font-size}/#{$base-line-height} $base-font-family;
+  font: normal #{$base-font-size}/#{$base-line-height} $base-font-family;
   height: 100vh;
-	text-align: left;
-	text-rendering: optimizeLegibility;
+  text-align: left;
+  text-rendering: optimizeLegibility;
   font-weight: 400;
   line-height: 150%;
 }
@@ -35,6 +35,16 @@ a {
   }
 }
 
+.mainContainer .mainWrapper a > code {
+  color: $litho-vibrant;
+  background-color: transparent;
+
+  &:hover {
+    color: inherit;
+    text-decoration: underline;
+  }
+}
+
 blockquote {
   padding: 15px 30px 15px 15px;
   margin: 20px 0 15px 10px;
@@ -53,10 +63,10 @@ h1, h2, h3, h4 {
 
 .navPusher {
   border-top: $header-height + $header-ptop + $header-pbot solid $primary-bg;
-	height: 100%;
-	left: 0;
-	position: relative;
-	z-index: 99;
+  height: 100%;
+  left: 0;
+  position: relative;
+  z-index: 99;
 }
 
 .homeContainer {
@@ -100,9 +110,9 @@ h1, h2, h3, h4 {
 }
 
 .wrapper {
-	margin: 0px auto;
-	max-width: $content-width;
-	padding: 0 10px;
+  margin: 0px auto;
+  max-width: $content-width;
+  padding: 0 10px;
 }
 
 .projectLogo {
