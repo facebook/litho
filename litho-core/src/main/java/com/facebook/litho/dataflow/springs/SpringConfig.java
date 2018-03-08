@@ -15,11 +15,15 @@ package com.facebook.litho.dataflow.springs;
  * This code was forked from the facebook/rebound repository.
  */
 public class SpringConfig {
+
+  public static final double DEFAULT_TENSION = 230.2;
+  public static final double DEFAULT_FRICTION = 22.0;
+
   public double friction;
   public double tension;
 
   // Taken from the default Quartz Composer spring config of tension=40, friction=7 (in QC units)
-  public static SpringConfig defaultConfig = new SpringConfig(230.2, 22.0);
+  public static SpringConfig defaultConfig = new SpringConfig(DEFAULT_TENSION, DEFAULT_FRICTION);
 
   /**
    * constructor for the SpringConfig

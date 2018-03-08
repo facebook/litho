@@ -208,7 +208,12 @@ public abstract class Transition {
     return new SequenceTransitionSet(transitions);
   }
 
-  /** Creates a {@link SpringTransition} with the given tension and friction. */
+  /**
+   * Creates a {@link SpringTransition} with the given tension and friction. Spring physics
+   * implementation is taken from Rebound library and we recommend to use demo provided at <a
+   * href="http://facebook.github.io/rebound/">http://facebook.github.io/rebound</a> to have a
+   * better sense of how friction and tension values work together.
+   */
   public static TransitionAnimator springWithConfig(final double tension, final double friction) {
     return new SpringTransitionAnimator(tension, friction);
   }
@@ -490,10 +495,23 @@ public abstract class Transition {
 
     @Nullable SpringConfig mSpringConfig;
 
+    /**
+     * Create spring-driven animator with default values of {@link SpringConfig#DEFAULT_FRICTION}
+     * and {@link SpringConfig#DEFAULT_TENSION}. Spring physics implementation is taken from Rebound
+     * library and we recommend to use demo provided at <a
+     * href="http://facebook.github.io/rebound/">http://facebook.github.io/rebound</a> to have a
+     * better sense of how friction and tension values work together.
+     */
     public SpringTransitionAnimator() {
       mSpringConfig = null;
     }
 
+    /**
+     * Create spring-driven animator with given tension and friction values. Spring physics
+     * implementation is taken from Rebound library and we recommend to use demo provided at <a
+     * href="http://facebook.github.io/rebound/">http://facebook.github.io/rebound</a> to have a
+     * better sense of how friction and tension values work together.
+     */
     public SpringTransitionAnimator(final double tension, final double friction) {
       mSpringConfig = new SpringConfig(tension, friction);
     }
@@ -512,10 +530,12 @@ public abstract class Transition {
     final int mDurationMs;
     final Interpolator mInterpolator;
 
+    /** Create timing animator with linear interpolation. */
     public TimingTransitionAnimator(int durationMs) {
       this(durationMs, null);
     }
 
+    /** Create timing animator with custom Android interpolator. */
     public TimingTransitionAnimator(int durationMs, Interpolator interpolator) {
       mDurationMs = durationMs;
       mInterpolator = interpolator;
