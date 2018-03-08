@@ -86,6 +86,24 @@ public class ComponentLifecycleErrorTest {
   }
 
   @Test
+  public void testOnCreateLayoutErrorWithoutBoundaryWhenEnabled() {
+    ComponentsConfiguration.enableOnErrorHandling = true;
+
+    final ComponentContext c = mComponentsRule.getContext();
+
+    final TestCrasherOnCreateLayout.Builder builder = TestCrasherOnCreateLayout.create(c);
+
+    RuntimeException exception = null;
+    try {
+      ComponentTestHelper.mountComponent(builder);
+    } catch (RuntimeException e) {
+      exception = e;
+    }
+
+    assertThat(exception).isNotNull().hasMessageContaining("onCreateLayout crash");
+  }
+
+  @Test
   public void testOnCreateLayoutWithSizeSpecErrorBoundary() throws Exception {
     ComponentsConfiguration.enableOnErrorHandling = true;
 
@@ -121,6 +139,25 @@ public class ComponentLifecycleErrorTest {
   }
 
   @Test
+  public void testOnCreateLayoutWithSizeSpecErrorWithoutBoundaryWhenEnabled() {
+    ComponentsConfiguration.enableOnErrorHandling = true;
+
+    final ComponentContext c = mComponentsRule.getContext();
+
+    final TestCrasherOnCreateLayoutWithSizeSpec.Builder builder =
+        TestCrasherOnCreateLayoutWithSizeSpec.create(c);
+
+    RuntimeException exception = null;
+    try {
+      ComponentTestHelper.mountComponent(builder);
+    } catch (RuntimeException e) {
+      exception = e;
+    }
+
+    assertThat(exception).isNotNull().hasMessageContaining("onCreateLayoutWithSizeSpec crash");
+  }
+
+  @Test
   public void testOnMountErrorBoundary() throws Exception {
     ComponentsConfiguration.enableOnErrorHandling = true;
 
@@ -139,6 +176,24 @@ public class ComponentLifecycleErrorTest {
 
     final TestErrorBoundary.Builder builder =
         TestErrorBoundary.create(c).child(TestCrasherOnMount.create(c).build());
+
+    RuntimeException exception = null;
+    try {
+      ComponentTestHelper.mountComponent(builder);
+    } catch (RuntimeException e) {
+      exception = e;
+    }
+
+    assertThat(exception).isNotNull().hasMessageContaining("onMount crash");
+  }
+
+  @Test
+  public void testOnMountErrorWithoutBoundaryWhenEnabled() throws Exception {
+    ComponentsConfiguration.enableOnErrorHandling = true;
+
+    final ComponentContext c = mComponentsRule.getContext();
+
+    final TestCrasherOnMount.Builder builder = TestCrasherOnMount.create(c);
 
     RuntimeException exception = null;
     try {
