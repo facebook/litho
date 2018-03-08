@@ -167,12 +167,24 @@ public class RecyclerBinder
       new Runnable() {
         @Override
         public void run() {
-          if (mMountedView != null && mMountedView.hasPendingAdapterUpdates()) {
-            ViewCompat.postOnAnimation(mMountedView, mComputeRangeRunnable);
+          // If mount hasn't happened or we don't have any pending updates, we're ready to compute
+          // range.
+          if (mMountedView == null || !mMountedView.hasPendingAdapterUpdates()) {
+            computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
             return;
           }
 
-          computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+          // If the view gets detached, we can still have pending updates.
+          // If the view's visibility is GONE, layout won't happen until it becomes visible. We have
+          // to exit here, otherwise we keep posting this runnable to the next frame until it
+          // becomes visible.
+          if (!mMountedView.isAttachedToWindow() || mMountedView.getVisibility() == View.GONE) {
+            return;
+          }
+
+          // If we have pending updates, wait until the sync operations are finished and try again
+          // in the next frame.
+          ViewCompat.postOnAnimation(mMountedView, mComputeRangeRunnable);
         }
       };
 
