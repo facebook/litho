@@ -16,8 +16,9 @@ contains a full example of using error boundaries in a Sections-powered list.
 
 ## Conceptual Overview
 
-> NOTE: For the time being, error boundaries are limited to the following
-> lifecycle methods:
+> NOTE: Error boundaries are still considered experimental and disabled by
+> default. To use them, you have to enable `ComponentsConfiguration.enableOnErrorHandling`.
+> The supported delegate methods are currently limited to:
 > - `onCreateLayout`
 > - `onCreateLayoutWithSizeSpec`
 > - `onMount`
