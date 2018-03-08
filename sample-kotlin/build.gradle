@@ -26,6 +26,10 @@ android {
     }
 }
 
+kapt {
+    mapDiagnosticLocations = true
+}
+
 dependencies {
     implementation project(':litho-core')
     implementation project(':litho-widget')
