@@ -467,6 +467,11 @@ public class TransitionManager {
       case ALL:
         createAnimationsForTransitionUnitAllKeys(transition, createdAnimations);
         break;
+      case AUTO_LAYOUT:
+        // TODO T25723456. As of now targeting components which have transition keys. Later we'll
+        // move on to remove that constraint (Step 2).
+        createAnimationsForTransitionUnitAllKeys(transition, createdAnimations);
+        break;
       case SET:
         final String[] keys = (String[]) animationTarget.componentTarget.componentTargetExtraData;
         for (int j = 0; j < keys.length; j++) {
@@ -514,6 +519,15 @@ public class TransitionManager {
         for (int i = 0; i < AnimatedProperties.ALL_PROPERTIES.length; i++) {
           final AnimationBinding createdAnimation =
               maybeCreateAnimation(transition, key, AnimatedProperties.ALL_PROPERTIES[i]);
+          if (createdAnimation != null) {
+            outList.add(createdAnimation);
+          }
+        }
+        break;
+      case AUTO_LAYOUT:
+        for (int i = 0; i < AnimatedProperties.AUTO_LAYOUT_PROPERTIES.length; i++) {
+          final AnimationBinding createdAnimation =
+              maybeCreateAnimation(transition, key, AnimatedProperties.AUTO_LAYOUT_PROPERTIES[i]);
           if (createdAnimation != null) {
             outList.add(createdAnimation);
           }

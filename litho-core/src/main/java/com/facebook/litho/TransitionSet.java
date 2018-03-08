@@ -32,9 +32,9 @@ public abstract class TransitionSet extends Transition {
   }
 
   private void addChild(Transition child) {
-    if (child instanceof Transition.TransitionUnitsBuilder) {
+    if (child instanceof Transition.BaseTransitionUnitsBuilder) {
       final ArrayList<? extends Transition> transitions =
-          ((Transition.TransitionUnitsBuilder) child).getTransitionUnits();
+          ((Transition.BaseTransitionUnitsBuilder) child).getTransitionUnits();
       if (transitions.size() > 1) {
         mChildren.add(new ParallelTransitionSet(transitions));
       } else {

@@ -20,8 +20,9 @@ class TransitionContext {
   private final ArrayList<Transition> mTransitions = new ArrayList<>();
 
   void addTransition(Transition transition) {
-    if (transition instanceof Transition.TransitionUnitsBuilder) {
-      mTransitions.addAll(((Transition.TransitionUnitsBuilder) transition).getTransitionUnits());
+    if (transition instanceof Transition.BaseTransitionUnitsBuilder) {
+      mTransitions.addAll(
+          ((Transition.BaseTransitionUnitsBuilder) transition).getTransitionUnits());
     } else {
       mTransitions.add(transition);
     }

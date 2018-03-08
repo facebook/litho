@@ -188,6 +188,34 @@ public class TransitionManagerAnimationCreationTest {
   }
 
   @Test
+  public void testAutoLayoutAnimation() {
+    final LayoutState current =
+        createMockLayoutState(
+            Transition.parallel(),
+            createMockLayoutOutput("test1", 0, 0),
+            createMockLayoutOutput("test2", 0, 0));
+
+    final LayoutState next =
+        createMockLayoutState(
+            Transition.parallel(Transition.allLayout().animator(mTestVerificationAnimator)),
+            createMockLayoutOutput("test1", 10, 20, 200, 150),
+            createMockLayoutOutput("test2", -10, -20, 50, 80));
+
+    mTransitionManager.setupTransitions(current, next, null);
+
+    assertThat(mCreatedAnimations)
+        .containsExactlyInAnyOrder(
+            createPropertyAnimation("test1", AnimatedProperties.X, 10),
+            createPropertyAnimation("test1", AnimatedProperties.Y, 20),
+            createPropertyAnimation("test1", AnimatedProperties.WIDTH, 200),
+            createPropertyAnimation("test1", AnimatedProperties.HEIGHT, 150),
+            createPropertyAnimation("test2", AnimatedProperties.X, -10),
+            createPropertyAnimation("test2", AnimatedProperties.Y, -20),
+            createPropertyAnimation("test2", AnimatedProperties.WIDTH, 50),
+            createPropertyAnimation("test2", AnimatedProperties.HEIGHT, 80));
+  }
+
+  @Test
   public void testKeyDoesntExist() {
     final LayoutState current = createMockLayoutState(
         Transition.parallel(),
@@ -321,13 +349,17 @@ public class TransitionManagerAnimationCreationTest {
     return layoutState;
   }
 
-  /**
-   * @return a mock LayoutOutput with a transition key and dummy bounds.
-   */
-  private LayoutOutput createMockLayoutOutput(String transitionKey, int x, int y) {
+  /** @return a mock LayoutOutput with a transition key and dummy bounds. */
+  private static LayoutOutput createMockLayoutOutput(String transitionKey, int x, int y) {
+    return createMockLayoutOutput(transitionKey, x, y, 100, 100);
+  }
+
+  /** @return a mock LayoutOutput with a transition key and bounds. */
+  private static LayoutOutput createMockLayoutOutput(
+      String transitionKey, int x, int y, int width, int height) {
     final LayoutOutput layoutOutput = mock(LayoutOutput.class);
     when(layoutOutput.getTransitionKey()).thenReturn(transitionKey);
-    when(layoutOutput.getBounds()).thenReturn(new Rect(x, y, 100, 100));
+    when(layoutOutput.getBounds()).thenReturn(new Rect(x, y, x + width, y + height));
     when(layoutOutput.acquireRef()).thenReturn(layoutOutput);
     return layoutOutput;
   }

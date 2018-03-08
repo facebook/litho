@@ -10,6 +10,7 @@ package com.facebook.litho;
 
 import android.view.animation.Interpolator;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.animation.AnimationBinding;
 import com.facebook.litho.animation.DimensionValue;
@@ -47,15 +48,19 @@ public abstract class Transition {
      */
     ALL,
 
-    /**
-     * Targets a  set of transition keys. Expected extra data: String[] of transition keys.
-     */
+    /** Targets a set of transition keys. Expected extra data: String[] of transition keys. */
     SET,
 
     /**
      * Targets one transition key. Expected extra data: String, a transition key.
      */
     SINGLE,
+
+    /**
+     * Used for automatic bounds transition. Targets all components in the Component tree which
+     * bounds are changing in this transition. Expected extra data: none.
+     */
+    AUTO_LAYOUT
   }
 
   /**
@@ -80,6 +85,12 @@ public abstract class Transition {
      * Targets a single property. Expected extra data: AnimatedProperty, a single property.
      */
     SINGLE,
+
+    /**
+     * Used for automatic bounds transition. Targets properties related to bounds which are defined
+     * in {@link AnimatedProperties#AUTO_LAYOUT_PROPERTIES}. Expected extra data: none.
+     */
+    AUTO_LAYOUT,
   }
 
   /**
@@ -169,6 +180,14 @@ public abstract class Transition {
     return new TransitionUnitsBuilder(target.componentTargetType, target.componentTargetExtraData);
   }
 
+  /**
+   * Creates an Automatic Bounds Transition that targets every component in the component tree whose
+   * bounds have been changed.
+   */
+  public static AutoBoundsTransitionBuilder allLayout() {
+    return new AutoBoundsTransitionBuilder();
+  }
+
   /** Creates a set of {@link Transition}s that will run in parallel. */
   @ThreadSafe(enableChecks = false)
   public static <T extends Transition> TransitionSet parallel(T... transitions) {
@@ -251,6 +270,7 @@ public abstract class Transition {
     boolean targetsKey(String key) {
       switch (mAnimationTarget.componentTarget.componentTargetType) {
         case ALL:
+        case AUTO_LAYOUT:
           return true;
         case SET:
           return arrayContains(
@@ -265,8 +285,10 @@ public abstract class Transition {
 
     boolean targetsProperty(AnimatedProperty property) {
       switch (mAnimationTarget.propertyTarget.propertyTargetType) {
+        case AUTO_LAYOUT:
+          return arrayContains(AnimatedProperties.AUTO_LAYOUT_PROPERTIES, property);
         case ALL:
-          return true;
+          return arrayContains(AnimatedProperties.ALL_PROPERTIES, property);
         case SET:
           return arrayContains(
               (AnimatedProperty[]) mAnimationTarget.propertyTarget.propertyTargetExtraData,
@@ -280,14 +302,14 @@ public abstract class Transition {
     }
   }
 
-  public static class TransitionUnitsBuilder extends Transition {
-
-    private final ArrayList<TransitionUnit> mBuiltTransitions = new ArrayList<>();
-    private final ComponentTarget mComponentTarget;
-    private PropertyTarget mPropertyTarget;
-    private TransitionAnimator mTransitionAnimator = DEFAULT_ANIMATOR;
-    private RuntimeValue mAppearFrom;
-    private RuntimeValue mDisappearTo;
+  /**
+   * Transition builder that allows targeting arbitrary keys and properties. By default CHANGE
+   * animation is supported and it is possible to add support for APPEARING/DISAPPEARING animations
+   * by providing start/end values for given property with {@link #appearFrom(float)}/{@link
+   * #disappearTo(float)}. Default animator is {@link SpringTransition} but that can be customized
+   * by providing other animator with {@link #animator(TransitionAnimator)}.
+   */
+  public static class TransitionUnitsBuilder extends BaseTransitionUnitsBuilder {
 
     TransitionUnitsBuilder(ComponentTarget componentTarget) {
       mComponentTarget = componentTarget;
@@ -396,13 +418,40 @@ public abstract class Transition {
     public TransitionUnitsBuilder disappearTo(float value) {
       return disappearTo(new FloatValue(value));
     }
+  }
 
-    ArrayList<TransitionUnit> getTransitionUnits() {
-      maybeCommitCurrentBuilder();
-      return mBuiltTransitions;
+  /**
+   * Transition builder that targets every component in the component tree whose bounds have been
+   * changed. Default animator is {@link SpringTransition} but that can be customized by providing
+   * other animator with {@link #animator(TransitionAnimator)}.
+   */
+  public static class AutoBoundsTransitionBuilder extends BaseTransitionUnitsBuilder {
+
+    AutoBoundsTransitionBuilder() {
+      mComponentTarget = new ComponentTarget(ComponentTargetType.AUTO_LAYOUT, null);
+      mPropertyTarget = new PropertyTarget(PropertyTargetType.AUTO_LAYOUT, null);
     }
 
-    private void maybeCommitCurrentBuilder() {
+    /**
+     * Use to define the {@link TransitionAnimator} that drives the animation. The default is a
+     * spring.
+     */
+    public AutoBoundsTransitionBuilder animator(TransitionAnimator animator) {
+      mTransitionAnimator = animator;
+      return this;
+    }
+  }
+
+  public abstract static class BaseTransitionUnitsBuilder extends Transition {
+
+    ArrayList<TransitionUnit> mBuiltTransitions = new ArrayList<>();
+    ComponentTarget mComponentTarget;
+    PropertyTarget mPropertyTarget;
+    TransitionAnimator mTransitionAnimator = DEFAULT_ANIMATOR;
+    RuntimeValue mAppearFrom;
+    RuntimeValue mDisappearTo;
+
+    void maybeCommitCurrentBuilder() {
       if (mPropertyTarget == null) {
         return;
       }
@@ -416,6 +465,11 @@ public abstract class Transition {
       mTransitionAnimator = DEFAULT_ANIMATOR;
       mAppearFrom = null;
       mDisappearTo = null;
+    }
+
+    ArrayList<TransitionUnit> getTransitionUnits() {
+      maybeCommitCurrentBuilder();
+      return mBuiltTransitions;
     }
   }
 
@@ -472,5 +526,4 @@ public abstract class Transition {
       return new TimingTransition(mDurationMs, propertyAnimation, mInterpolator);
     }
   }
-
 }

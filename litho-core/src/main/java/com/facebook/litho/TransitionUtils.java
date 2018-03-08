@@ -36,9 +36,9 @@ class TransitionUtils {
       return transitionUnit.targetsKey(transitionKey) && (transitionUnit.targetsProperty(property));
     }
 
-    if (transition instanceof Transition.TransitionUnitsBuilder) {
-      final Transition.TransitionUnitsBuilder builder =
-          (Transition.TransitionUnitsBuilder) transition;
+    if (transition instanceof Transition.BaseTransitionUnitsBuilder) {
+      final Transition.BaseTransitionUnitsBuilder builder =
+          (Transition.BaseTransitionUnitsBuilder) transition;
       ArrayList<Transition.TransitionUnit> units = builder.getTransitionUnits();
       for (int i = 0, size = units.size(); i < size; i++) {
         if (hasAnimationForProperty(transitionKey, units.get(i), property)) {
