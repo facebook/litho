@@ -8,22 +8,24 @@
  */
 package com.facebook.litho;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.support.annotation.VisibleForTesting;
+import android.support.v4.util.SparseArrayCompat;
 
 /** Used to hold a component's event handlers. */
 public class EventHandlersWrapper {
 
-  private final List<EventHandler> eventHandlers = new ArrayList<>();
+  @VisibleForTesting
+  final SparseArrayCompat<EventHandler> eventHandlers = new SparseArrayCompat<>();
+
   boolean boundInCurrentLayout;
 
   void addEventHandler(EventHandler eventHandler) {
-    this.eventHandlers.add(eventHandler);
+    this.eventHandlers.put(eventHandler.id, eventHandler);
   }
 
   void bindToDispatcherComponent(Component dispatcher) {
     for (int i = 0, size = eventHandlers.size(); i < size; i++) {
-      final EventHandler eventHandler = eventHandlers.get(i);
+      final EventHandler eventHandler = eventHandlers.valueAt(i);
       eventHandler.mHasEventDispatcher = dispatcher;
 
       // Params should only be null for tests

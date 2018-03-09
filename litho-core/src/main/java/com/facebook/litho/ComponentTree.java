@@ -985,7 +985,8 @@ public class ComponentTree {
         CalculateLayoutSource.UPDATE_STATE);
   }
 
-  private void bindEventHandler(Component component) {
+  @VisibleForTesting
+  void bindEventHandler(Component component) {
     final String key = component.getGlobalKey();
 
     if (key == null) {
@@ -1005,7 +1006,8 @@ public class ComponentTree {
     }
   }
 
-  private void clearUnusedEventHandlers() {
+  @VisibleForTesting
+  void clearUnusedEventHandlers() {
     synchronized (mEventHandlers) {
       final Iterator iterator = mEventHandlers.keySet().iterator();
       while (iterator.hasNext()) {
@@ -1731,6 +1733,11 @@ public class ComponentTree {
 
   public static int generateComponentTreeId() {
     return sIdGenerator.getAndIncrement();
+  }
+
+  @VisibleForTesting
+  Map<String, EventHandlersWrapper> getEventHandlers() {
+    return mEventHandlers;
   }
 
   private final class CalculateLayoutRunnable implements Runnable {
