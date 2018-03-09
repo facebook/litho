@@ -10,7 +10,7 @@ include_defs("//LITHO_DEFS")
 # This target is only used in open source and will break the monobuild
 # because we cannot define `soname` multiple times.
 if LITHO_IS_OSS_BUILD:
-  prebuilt_cxx_library(
+  fb_prebuilt_cxx_library(
       name = "ndklog",
       exported_platform_linker_flags = [
           (

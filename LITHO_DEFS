@@ -169,3 +169,7 @@ def fb_java_library(**kwargs):
 def fb_android_library(**kwargs):
     """Delegates to native android_library rule."""
     android_library(**kwargs)
+
+def fb_prebuilt_cxx_library(**kwargs):
+    """Delegates to native prebuilt_cxx_library."""
+    prebuilt_cxx_library(**kwargs)
