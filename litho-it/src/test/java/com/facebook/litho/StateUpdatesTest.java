@@ -96,6 +96,11 @@ public class StateUpdatesTest {
     }
 
     @Override
+    synchronized void markLayoutStarted() {
+      // No-op because we override makeShallowCopy below :(
+    }
+
+    @Override
     public Component makeShallowCopy() {
       return this;
     }

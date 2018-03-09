@@ -158,9 +158,6 @@ public class ComponentTree {
 
   private volatile NewLayoutStateReadyListener mNewLayoutStateReadyListener;
 
-  @GuardedBy("this")
-  private boolean mHasViewMeasureSpec;
-
   private final Object mCurrentCalculateLayoutRunnableLock = new Object();
 
   @GuardedBy("mCurrentCalculateLayoutRunnableLock")
@@ -654,7 +651,6 @@ public class ComponentTree {
 
     synchronized (this) {
       mIsAttached = false;
-      mHasViewMeasureSpec = false;
     }
   }
 
@@ -713,7 +709,6 @@ public class ComponentTree {
       // This widthSpec/heightSpec is fixed until the view gets detached.
       mWidthSpec = widthSpec;
       mHeightSpec = heightSpec;
-      mHasViewMeasureSpec = true;
 
       toRelease = setBestMainThreadLayoutAndReturnOldLayout();
 
@@ -1238,18 +1233,6 @@ public class ComponentTree {
       final boolean rootInitialized = root != null;
       final boolean widthSpecInitialized = widthSpec != SIZE_UNINITIALIZED;
       final boolean heightSpecInitialized = heightSpec != SIZE_UNINITIALIZED;
-
-      if (mHasViewMeasureSpec && !rootInitialized) {
-        // It doesn't make sense to specify the width/height while the HostView is attached and it
-        // has been measured. We do not throw an Exception only because there can be race conditions
-        // that can cause this to happen. In such race conditions, ignoring the setSizeSpec call is
-        // the right thing to do.
-        if (output != null) {
-          output.width = mWidthSpec;
-          output.height = mHeightSpec;
-        }
-        return;
-      }
 
       final boolean widthSpecDidntChange = !widthSpecInitialized || widthSpec == mWidthSpec;
       final boolean heightSpecDidntChange = !heightSpecInitialized || heightSpec == mHeightSpec;

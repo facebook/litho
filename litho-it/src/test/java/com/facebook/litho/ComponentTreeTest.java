@@ -66,10 +66,6 @@ public class ComponentTreeTest {
     Assert.assertNull(getLithoView(componentTree));
     Assert.assertFalse(isAttached(componentTree));
 
-    // No measure spec from view yet.
-    Assert.assertFalse(
-        (Boolean) Whitebox.getInternalState(componentTree, "mHasViewMeasureSpec"));
-
     // The component input should be the one we passed in
     Assert.assertSame(
         mComponent,
@@ -245,6 +241,42 @@ public class ComponentTreeTest {
     // Since this happens post creation, it's not in general safe to update the main thread layout
     // state synchronously, so the result should be in the background layout state
     postSizeSpecChecks(componentTree, "mBackgroundLayoutState");
+  }
+
+  @Test
+  public void testSetSizeSpecWithOutputWhenAttachedToViewWithSameSpec() {
+    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    Size size = new Size();
+    componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
+    componentTree.attach();
+
+    componentTree.setSizeSpec(mWidthSpec, mHeightSpec, size);
+
+    assertEquals(SizeSpec.getSize(mWidthSpec), size.width, 0.0);
+    assertEquals(SizeSpec.getSize(mHeightSpec), size.height, 0.0);
+
+    assertThat(componentTree.hasCompatibleLayout(mWidthSpec, mHeightSpec)).isTrue();
+    assertThat(componentTree.getRoot()).isEqualTo(mComponent);
+  }
+
+  @Test
+  public void testSetSizeSpecWithOutputWhenAttachedToViewWithNewSpec() {
+    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    Size size = new Size();
+    componentTree.measure(mWidthSpec2, mHeightSpec2, new int[2], false);
+    componentTree.attach();
+
+    componentTree.setSizeSpec(mWidthSpec, mHeightSpec, size);
+
+    assertEquals(SizeSpec.getSize(mWidthSpec), size.width, 0.0);
+    assertEquals(SizeSpec.getSize(mHeightSpec), size.height, 0.0);
+
+    assertThat(componentTree.hasCompatibleLayout(mWidthSpec, mHeightSpec)).isTrue();
+    assertThat(componentTree.getRoot()).isEqualTo(mComponent);
   }
 
   @Test
