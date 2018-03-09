@@ -19,7 +19,9 @@ public interface AnimatableItem {
   Rect getBounds();
   float getScale();
   float getAlpha();
+  float getRotation();
 
   boolean isScaleSet();
   boolean isAlphaSet();
+  boolean isRotationSet();
 }

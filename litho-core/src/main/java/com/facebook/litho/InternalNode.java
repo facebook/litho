@@ -919,6 +919,13 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
+  InternalNode rotation(float rotation) {
+    wrapInView();
+
+    getOrCreateNodeInfo().setRotation(rotation);
+    return this;
+  }
+
   InternalNode accessibilityRole(@AccessibilityRole.AccessibilityRoleType String role) {
     getOrCreateNodeInfo().setAccessibilityRole(role);
     return this;

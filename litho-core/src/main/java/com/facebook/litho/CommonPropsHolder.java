@@ -678,6 +678,15 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return getOrCreateNodeInfo().getAlpha();
   }
 
+  void rotation(float rotation) {
+    getOrCreateNodeInfo().setRotation(rotation);
+  }
+
+  @Override
+  public float getRotation() {
+    return getOrCreateNodeInfo().getRotation();
+  }
+
   void transitionKey(String key) {
     getOrCreateOtherProps().transitionKey(key);
   }

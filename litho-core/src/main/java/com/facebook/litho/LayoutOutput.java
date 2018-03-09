@@ -96,6 +96,11 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   }
 
   @Override
+  public float getRotation() {
+    return mNodeInfo != null ? mNodeInfo.getRotation() : 0;
+  }
+
+  @Override
   public boolean isScaleSet() {
     return mNodeInfo != null && mNodeInfo.isScaleSet();
   }
@@ -103,6 +108,11 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   @Override
   public boolean isAlphaSet() {
     return mNodeInfo != null && mNodeInfo.isAlphaSet();
+  }
+
+  @Override
+  public boolean isRotationSet() {
+    return mNodeInfo != null && mNodeInfo.isRotationSet();
   }
 
   void setBounds(int l, int t, int r, int b) {

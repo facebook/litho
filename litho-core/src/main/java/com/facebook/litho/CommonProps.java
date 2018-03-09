@@ -165,6 +165,8 @@ public interface CommonProps {
 
   float getAlpha();
 
+  float getRotation();
+
   @Nullable
   String getTransitionKey();
 }

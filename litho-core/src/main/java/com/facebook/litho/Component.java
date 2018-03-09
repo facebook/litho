@@ -1276,6 +1276,15 @@ public abstract class Component extends ComponentLifecycle
     }
 
     /**
+     * Sets the degree that this component is rotated around the pivot point. Increasing the value
+     * results in clockwise rotation. By default, the pivot point is centered on the component.
+     */
+    public T rotation(float rotation) {
+      mComponent.getOrCreateCommonPropsHolder().rotation(rotation);
+      return getThis();
+    }
+
+    /**
      * Ports {@link android.view.View#setStateListAnimator(android.animation.StateListAnimator)}
      * into components world. However, since the aforementioned view's method is available only on
      * API 21 and above, calling this method on lower APIs will have no effect. On the legit

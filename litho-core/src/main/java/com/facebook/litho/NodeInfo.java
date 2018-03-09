@@ -90,7 +90,8 @@ class NodeInfo {
   private static final int PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET = 1 << 18;
   private static final int PFLAG_SCALE_IS_SET = 1 << 19;
   private static final int PFLAG_ALPHA_IS_SET = 1 << 20;
-  private static final int PFLAG_ACCESSIBILITY_ROLE_IS_SET = 1 << 21;
+  private static final int PFLAG_ROTATION_IS_SET = 1 << 21;
+  private static final int PFLAG_ACCESSIBILITY_ROLE_IS_SET = 1 << 22;
 
   private final AtomicInteger mReferenceCount = new AtomicInteger(0);
 
@@ -102,6 +103,7 @@ class NodeInfo {
   private boolean mClipToOutline;
   private float mScale = 1;
   private float mAlpha = 1;
+  private float mRotation = 0;
   private EventHandler<ClickEvent> mClickHandler;
   private EventHandler<FocusChangedEvent> mFocusChangeHandler;
   private EventHandler<LongClickEvent> mLongClickHandler;
@@ -413,6 +415,19 @@ class NodeInfo {
     return (mPrivateFlags & PFLAG_ALPHA_IS_SET) != 0;
   }
 
+  float getRotation() {
+    return mRotation;
+  }
+
+  void setRotation(float rotation) {
+    mRotation = rotation;
+    mPrivateFlags |= PFLAG_ROTATION_IS_SET;
+  }
+
+  boolean isRotationSet() {
+    return (mPrivateFlags & PFLAG_ROTATION_IS_SET) != 0;
+  }
+
   void updateWith(NodeInfo newInfo) {
     if ((newInfo.mPrivateFlags & PFLAG_CLICK_HANDLER_IS_SET) != 0) {
       mClickHandler = newInfo.mClickHandler;
@@ -489,6 +504,9 @@ class NodeInfo {
     }
     if ((newInfo.mPrivateFlags & PFLAG_ALPHA_IS_SET) != 0) {
       mAlpha = newInfo.mAlpha;
+    }
+    if ((newInfo.mPrivateFlags & PFLAG_ROTATION_IS_SET) != 0) {
+      mRotation = newInfo.mRotation;
     }
   }
 
@@ -568,6 +586,9 @@ class NodeInfo {
     if ((mPrivateFlags & PFLAG_ALPHA_IS_SET) != 0) {
       layout.alpha(mAlpha);
     }
+    if ((mPrivateFlags & PFLAG_ROTATION_IS_SET) != 0) {
+      layout.rotation(mRotation);
+    }
   }
 
   static NodeInfo acquire() {
@@ -623,6 +644,7 @@ class NodeInfo {
     mClipToOutline = false;
     mScale = 1;
     mAlpha = 1;
+    mRotation = 0;
 
     ComponentsPools.release(this);
   }
