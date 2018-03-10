@@ -158,6 +158,8 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
             .canPrefetchDisplayLists(mRecyclerBinderConfiguration.canPrefetchDisplayLists())
             .isCircular(mRecyclerBinderConfiguration.isCircular())
             .hasDynamicItemHeight(mRecyclerBinderConfiguration.hasDynamicItemHeight())
+            .insertPostAsyncLayoutEnabled(
+                mRecyclerBinderConfiguration.insertPostAsyncLayoutEnabled())
             .build(c);
     return (T) new SectionBinderTarget(recyclerBinder);
   }

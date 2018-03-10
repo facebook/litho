@@ -22,6 +22,7 @@ public class RecyclerBinderConfiguration {
   private final boolean mCanPrefetchDisplayLists;
   private final boolean mIsCircular;
   private boolean mHasDynamicItemHeight;
+  private boolean mInsertPostAsyncLayoutEnabled;
 
   public RecyclerBinderConfiguration(double rangeRatio) {
     this(rangeRatio, null, false);
@@ -71,6 +72,16 @@ public class RecyclerBinderConfiguration {
     mHasDynamicItemHeight = hasDynamicItemHeight;
   }
 
+  /**
+   * TODO (T26795745): remove this once the experiment is finished.
+   *
+   * <p>Do not enable this. This is an experimental feature and your Section surface will take a
+   * perf hit if you use it.
+   */
+  public void setInsertPostAsyncLayoutEnabled(boolean insertPostAsyncLayoutEnabled) {
+    mInsertPostAsyncLayoutEnabled = insertPostAsyncLayoutEnabled;
+  }
+
   public double getRangeRatio() {
     return mRangeRatio;
   }
@@ -89,5 +100,9 @@ public class RecyclerBinderConfiguration {
 
   boolean hasDynamicItemHeight() {
     return mHasDynamicItemHeight;
+  }
+
+  boolean insertPostAsyncLayoutEnabled() {
+    return mInsertPostAsyncLayoutEnabled;
   }
 }
