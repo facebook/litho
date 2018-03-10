@@ -1736,6 +1736,7 @@ public class ComponentTree {
   }
 
   @VisibleForTesting
+  @GuardedBy("mEventHandlers")
   Map<String, EventHandlersWrapper> getEventHandlers() {
     return mEventHandlers;
   }
