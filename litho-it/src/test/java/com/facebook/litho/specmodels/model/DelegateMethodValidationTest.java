@@ -20,6 +20,7 @@ import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnmount;
@@ -174,6 +175,31 @@ public class DelegateMethodValidationTest {
             "com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec " +
             "must have at least 3 parameters, and they should be of type " +
             "com.facebook.litho.ComponentContext, int, int.");
+  }
+
+  @Test
+  public void testDelegateMethodStartsWithDunder() {
+    when(mLayoutSpecModel.getDelegateMethods())
+        .thenReturn(
+            ImmutableList.of(
+                SpecMethodModel.<DelegateMethod, Void>builder()
+                    .annotations(ImmutableList.of((Annotation) () -> OnEvent.class))
+                    .modifiers(ImmutableList.of(Modifier.STATIC))
+                    .name("__someEventHandler")
+                    .returnTypeSpec(new TypeSpec(TypeName.VOID))
+                    .typeVariables(ImmutableList.of())
+                    .methodParams(ImmutableList.of())
+                    .representedObject(null)
+                    .typeModel(null)
+                    .build()));
+
+    final List<SpecModelValidationError> validationErrors =
+        DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
+    assertThat(validationErrors).hasSize(2);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Methods in a component must not start with '__' as they are reserved"
+                + " for internal use. Method '__someEventHandler' violates this contract.");
   }
 
   @Test

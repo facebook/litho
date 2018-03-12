@@ -40,4 +40,26 @@ public final class SpecMethodModelValidation {
     }
     return validationErrors;
   }
+
+  /**
+   * Validate that a method adheres to the component method naming rules.
+   *
+   * @param methodModel The method to analyze.
+   * @return List of new errors, possibly empty.
+   */
+  public static List<SpecModelValidationError> validateMethodName(
+      SpecMethodModel<?, ?> methodModel) {
+    final List<SpecModelValidationError> validationErrors = new ArrayList<>(1);
+
+    if (methodModel.name.toString().startsWith("__")) {
+      validationErrors.add(
+          new SpecModelValidationError(
+              methodModel.representedObject,
+              String.format(
+                  "Methods in a component must not start with '__' as they are "
+                      + "reserved for internal use. Method '%s' violates this contract.",
+                  methodModel.name)));
+    }
+    return validationErrors;
+  }
 }

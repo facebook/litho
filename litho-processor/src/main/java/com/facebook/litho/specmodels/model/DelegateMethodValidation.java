@@ -10,6 +10,7 @@
 package com.facebook.litho.specmodels.model;
 
 import static com.facebook.litho.specmodels.model.SpecMethodModelValidation.validateMethodIsStatic;
+import static com.facebook.litho.specmodels.model.SpecMethodModelValidation.validateMethodName;
 
 import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.OnBind;
@@ -108,6 +109,7 @@ public class DelegateMethodValidation {
 
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : specModel.getDelegateMethods()) {
       validationErrors.addAll(validateMethodIsStatic(specModel, delegateMethod));
+      validationErrors.addAll(validateMethodName(delegateMethod));
     }
 
     for (Map.Entry<Class<? extends Annotation>, DelegateMethodDescription> entry :
