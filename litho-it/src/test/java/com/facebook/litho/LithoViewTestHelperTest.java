@@ -9,8 +9,7 @@
 
 package com.facebook.litho;
 
-import static android.view.View.MeasureSpec.UNSPECIFIED;
-import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -52,8 +51,8 @@ public class LithoViewTestHelperTest {
     final LithoView lithoView = new LithoView(RuntimeEnvironment.application);
     lithoView.setComponentTree(componentTree);
     lithoView.measure(
-        makeMeasureSpec(0, UNSPECIFIED),
-        makeMeasureSpec(0, UNSPECIFIED));
+        SizeSpec.makeSizeSpec(0, UNSPECIFIED),
+        SizeSpec.makeSizeSpec(0, UNSPECIFIED));
 
     final String string = LithoViewTestHelper.viewToString(lithoView);
 
@@ -89,8 +88,8 @@ public class LithoViewTestHelperTest {
     final LithoView lithoView = new LithoView(RuntimeEnvironment.application);
     lithoView.setComponentTree(componentTree);
     lithoView.measure(
-        makeMeasureSpec(0, UNSPECIFIED),
-        makeMeasureSpec(0, UNSPECIFIED));
+        SizeSpec.makeSizeSpec(0, UNSPECIFIED),
+        SizeSpec.makeSizeSpec(0, UNSPECIFIED));
     lithoView.layout(0, 0, lithoView.getMeasuredWidth(), lithoView.getMeasuredHeight());
 
     final String string = LithoViewTestHelper.viewToString(lithoView);

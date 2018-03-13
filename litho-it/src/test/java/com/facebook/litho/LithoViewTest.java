@@ -9,10 +9,11 @@
 
 package com.facebook.litho;
 
-import static android.view.View.MeasureSpec.EXACTLY;
-import static android.view.View.MeasureSpec.UNSPECIFIED;
-import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static com.facebook.litho.ComponentTree.create;
+import static com.facebook.litho.SizeSpec.AT_MOST;
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -67,8 +68,8 @@ public class LithoViewTest {
   @Test
   public void measureBeforeBeingAttached() {
     mLithoView.measure(
-        makeMeasureSpec(0, UNSPECIFIED),
-        makeMeasureSpec(0, UNSPECIFIED));
+        makeSizeSpec(0, UNSPECIFIED),
+        makeSizeSpec(0, UNSPECIFIED));
     mLithoView.layout(
         0,
         0,
@@ -110,8 +111,8 @@ public class LithoViewTest {
             .build());
 
     nullLithoView.measure(
-        makeMeasureSpec(0, UNSPECIFIED),
-        makeMeasureSpec(0, UNSPECIFIED));
+        makeSizeSpec(0, UNSPECIFIED),
+        makeSizeSpec(0, UNSPECIFIED));
     nullLithoView.layout(
         0,
         0,
@@ -132,8 +133,8 @@ public class LithoViewTest {
     mLithoView.setComponentTree(mockComponentTree);
     mLithoView.suppressMeasureComponentTree(true);
     mLithoView.measure(
-        makeMeasureSpec(width, EXACTLY),
-        makeMeasureSpec(height, EXACTLY));
+        makeSizeSpec(width, EXACTLY),
+        makeSizeSpec(height, EXACTLY));
 
     verify(mockComponentTree, never())
         .measure(anyInt(), anyInt(), any(int[].class), anyBoolean());
@@ -185,7 +186,7 @@ public class LithoViewTest {
     mLithoView.setComponentTree(componentTree);
 
     mLithoView.setLayoutParams(new ViewGroup.LayoutParams(0, 200));
-    mLithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(200, EXACTLY));
+    mLithoView.measure(makeSizeSpec(0, UNSPECIFIED), makeSizeSpec(200, EXACTLY));
     mLithoView.layout(0, 0, mLithoView.getMeasuredWidth(), mLithoView.getMeasuredHeight());
 
     // View got measured.
@@ -219,9 +220,9 @@ public class LithoViewTest {
 
     mLithoView.setLayoutParams(
         new RecyclerViewLayoutManagerOverrideParams(
-            SizeSpec.makeSizeSpec(100, SizeSpec.AT_MOST),
-            SizeSpec.makeSizeSpec(200, SizeSpec.AT_MOST)));
-    mLithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
+            makeSizeSpec(100, AT_MOST),
+            makeSizeSpec(200, AT_MOST)));
+    mLithoView.measure(makeSizeSpec(0, UNSPECIFIED), makeSizeSpec(0, UNSPECIFIED));
     mLithoView.layout(0, 0, mLithoView.getMeasuredWidth(), mLithoView.getMeasuredHeight());
 
     // View got measured.

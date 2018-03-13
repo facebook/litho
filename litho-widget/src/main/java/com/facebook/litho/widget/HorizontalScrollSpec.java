@@ -244,8 +244,8 @@ class HorizontalScrollSpec {
       // component-based content, which would trigger a layout pass in the
       // UI thread.
       mLithoView.measure(
-          MeasureSpec.makeMeasureSpec(mComponentWidth, MeasureSpec.EXACTLY),
-          MeasureSpec.makeMeasureSpec(mComponentHeight, MeasureSpec.EXACTLY));
+          SizeSpec.makeSizeSpec(mComponentWidth, MeasureSpec.EXACTLY),
+          SizeSpec.makeSizeSpec(mComponentHeight, MeasureSpec.EXACTLY));
 
       // The mounted view always gets exact dimensions from the framework.
       setMeasuredDimension(

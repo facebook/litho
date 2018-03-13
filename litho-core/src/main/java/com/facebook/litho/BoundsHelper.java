@@ -8,7 +8,7 @@
  */
 package com.facebook.litho;
 
-import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
 
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -27,8 +27,8 @@ public class BoundsHelper {
 
     if (force || view.getMeasuredHeight() != height || view.getMeasuredWidth() != width) {
       view.measure(
-          makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
-          makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
+          makeSizeSpec(width, SizeSpec.EXACTLY),
+          makeSizeSpec(height, SizeSpec.EXACTLY));
     }
 
     if (force

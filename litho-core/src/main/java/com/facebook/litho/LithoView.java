@@ -122,8 +122,8 @@ public class LithoView extends ComponentHost {
         // The hosting view doesn't allow children to change sizes dynamically as
         // this would conflict with the component's own layout calculations.
         child.measure(
-            MeasureSpec.makeMeasureSpec(child.getWidth(), MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(child.getHeight(), MeasureSpec.EXACTLY));
+            SizeSpec.makeSizeSpec(child.getWidth(), SizeSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(child.getHeight(), SizeSpec.EXACTLY));
         child.layout(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
       }
 
@@ -306,8 +306,8 @@ public class LithoView extends ComponentHost {
           && mComponentTree.getMainThreadLayoutState() == null) {
         // Call measure so that we get a layout state that we can use for layout.
         mComponentTree.measure(
-            MeasureSpec.makeMeasureSpec(right - left, MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(bottom - top, MeasureSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(right - left, SizeSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(bottom - top, SizeSpec.EXACTLY),
             new int[2],
             false);
       }

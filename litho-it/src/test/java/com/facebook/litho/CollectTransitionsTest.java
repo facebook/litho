@@ -12,7 +12,6 @@ package com.facebook.litho;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
-import android.view.View;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
@@ -65,8 +64,8 @@ public class CollectTransitionsTest {
             c,
             mWrappingContentWithTransition,
             ComponentTree.generateComponentTreeId(),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
             LayoutState.CalculateLayoutSource.TEST);
     assertThat(layoutState.getTransitionContext()).isNotNull();
     assertThat(layoutState.getTransitionContext().getTransitions()).hasSize(2);
