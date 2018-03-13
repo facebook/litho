@@ -401,7 +401,7 @@ public class ComponentsPools {
     return componentTreeBuilder;
   }
 
-  static StateHandler acquireStateHandler(StateHandler fromStateHandler) {
+  static StateHandler acquireStateHandler(@Nullable StateHandler fromStateHandler) {
     StateHandler stateHandler = sStateHandlerPool.acquire();
     if (stateHandler == null) {
       stateHandler = new StateHandler();

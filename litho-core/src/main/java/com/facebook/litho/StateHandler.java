@@ -11,6 +11,7 @@ package com.facebook.litho;
 
 import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 
+import android.support.annotation.Nullable;
 import android.support.v4.util.Pools;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentLifecycle.StateContainer;
@@ -50,7 +51,7 @@ public class StateHandler {
   @GuardedBy("this")
   public Map<String, StateContainer> mStateContainers;
 
-  void init(StateHandler stateHandler) {
+  void init(@Nullable StateHandler stateHandler) {
     if (stateHandler == null) {
       return;
     }
@@ -61,7 +62,7 @@ public class StateHandler {
     }
   }
 
-  public static StateHandler acquireNewInstance(StateHandler stateHandler) {
+  public static StateHandler acquireNewInstance(@Nullable StateHandler stateHandler) {
     return ComponentsPools.acquireStateHandler(stateHandler);
   }
 
