@@ -5,7 +5,7 @@ layout: docs
 permalink: /docs/layout
 ---
 
-Litho uses [Yoga](https://facebook.github.io/yoga/) which is an implementation of [Flexbox](https://www.w3.org/TR/css-flexbox-1/) to measure and layout components on screen. If you have used Flexbox on the web before this should be very familiar. If you are more familiar with how Android normally performs Layout then Flexbox will remind you a lot of `LinearLayout`.
+Litho uses [Yoga](https://yogalayout.com/) which is an implementation of [Flexbox](https://www.w3.org/TR/css-flexbox-1/) to measure and layout components on screen. If you have used Flexbox on the web before this should be very familiar. If you are more familiar with how Android normally performs Layout then Flexbox will remind you a lot of `LinearLayout`.
 
 In Litho you can use a `Row` to achieve a similar layout to a horizontal `LinearLayout`.
 
@@ -56,4 +56,4 @@ Column.create(c)
     .build();
 ```
 
-For more documentation of specific Flexbox properties check out the [Yoga documentation](https://facebook.github.io/yoga/docs/getting-started/) or explore any web resources on how Flexbox works.
+For more documentation of specific Flexbox properties check out the [Yoga documentation](https://yogalayout.com/docs/) or explore any web resources on how Flexbox works.
