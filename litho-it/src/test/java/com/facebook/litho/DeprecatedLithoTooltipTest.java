@@ -11,7 +11,6 @@ package com.facebook.litho;
 
 import static org.mockito.Mockito.verify;
 
-import android.view.View;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -176,8 +175,8 @@ public class DeprecatedLithoTooltipTest {
     LithoView lithoView = new LithoView(mContext);
     lithoView.setComponentTree(componentTree);
     lithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(HOST_WIDTH, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(HOST_HEIGHT, View.MeasureSpec.EXACTLY));
+        SizeSpec.makeSizeSpec(HOST_WIDTH, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(HOST_HEIGHT, SizeSpec.EXACTLY));
     lithoView.layout(
         0,
         0,

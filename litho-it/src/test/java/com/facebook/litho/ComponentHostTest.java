@@ -14,11 +14,11 @@ import static android.view.MotionEvent.obtain;
 import static android.view.View.GONE;
 import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static android.view.View.INVISIBLE;
-import static android.view.View.MeasureSpec.EXACTLY;
-import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static android.view.View.VISIBLE;
 import static com.facebook.litho.MountItem.FLAG_DUPLICATE_PARENT_STATE;
 import static com.facebook.litho.MountItem.FLAG_MATCH_HOST_BOUNDS;
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -104,8 +104,8 @@ public class ComponentHostTest {
     View v1 = new View(mContext);
     Rect v1Bounds = new Rect(0, 0, 10, 10);
     v1.measure(
-        makeMeasureSpec(v1Bounds.width(), EXACTLY),
-        makeMeasureSpec(v1Bounds.height(), EXACTLY));
+        makeSizeSpec(v1Bounds.width(), EXACTLY),
+        makeSizeSpec(v1Bounds.height(), EXACTLY));
     v1.layout(v1Bounds.left, v1Bounds.top, v1Bounds.right, v1Bounds.bottom);
 
     MountItem mountItem3 = mount(2, v1);

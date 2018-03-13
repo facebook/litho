@@ -11,9 +11,9 @@ package com.facebook.litho.widget;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import android.view.View;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.SizeSpec;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
@@ -46,8 +46,8 @@ public class ProgressSpecTest {
     LithoView view = getMountedView();
 
     view.measure(
-        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED));
 
     assertThat(view.getMeasuredWidth()).isEqualTo(ProgressSpec.DEFAULT_SIZE);
     assertThat(view.getMeasuredHeight()).isEqualTo(ProgressSpec.DEFAULT_SIZE);

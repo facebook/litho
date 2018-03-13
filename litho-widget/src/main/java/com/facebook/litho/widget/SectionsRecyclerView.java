@@ -18,6 +18,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.SizeSpec;
 import java.util.List;
 
 /**
@@ -97,7 +98,7 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
   private void measureStickyHeader(int parentWidth) {
     measureChild(
         mStickyHeader,
-        MeasureSpec.makeMeasureSpec(parentWidth, MeasureSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(parentWidth, SizeSpec.EXACTLY),
         MeasureSpec.UNSPECIFIED);
   }
 

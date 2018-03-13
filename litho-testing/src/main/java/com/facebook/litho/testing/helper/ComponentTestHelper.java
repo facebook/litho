@@ -9,9 +9,9 @@
 
 package com.facebook.litho.testing.helper;
 
-import static android.view.View.MeasureSpec.EXACTLY;
-import static android.view.View.MeasureSpec.UNSPECIFIED;
-import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.graphics.Rect;
@@ -187,8 +187,8 @@ public final class ComponentTestHelper {
             .incrementalMount(incrementalMountEnabled)
             .layoutDiffing(false)
             .build(),
-        makeMeasureSpec(width, EXACTLY),
-        makeMeasureSpec(height, EXACTLY));
+        makeSizeSpec(width, EXACTLY),
+        makeSizeSpec(height, EXACTLY));
   }
 
   /**
@@ -204,8 +204,8 @@ public final class ComponentTestHelper {
     return mountComponent(
         lithoView,
         componentTree,
-        makeMeasureSpec(100, EXACTLY),
-        makeMeasureSpec(100, EXACTLY));
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY));
   }
 
   /**
@@ -308,8 +308,8 @@ public final class ComponentTestHelper {
     return getSubComponents(
         context,
         component,
-        makeMeasureSpec(1000, EXACTLY),
-        makeMeasureSpec(0, UNSPECIFIED));
+        makeSizeSpec(1000, EXACTLY),
+        makeSizeSpec(0, UNSPECIFIED));
   }
 
   /**
@@ -388,7 +388,7 @@ public final class ComponentTestHelper {
    * @param view The component view to measure and layout
    */
   public static void measureAndLayout(View view) {
-    view.measure(makeMeasureSpec(1000, EXACTLY), makeMeasureSpec(0, UNSPECIFIED));
+    view.measure(makeSizeSpec(1000, EXACTLY), makeSizeSpec(0, UNSPECIFIED));
     view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
   }
 

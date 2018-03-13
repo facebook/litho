@@ -11,11 +11,11 @@ package com.facebook.litho;
 
 import static android.graphics.Color.BLACK;
 import static android.graphics.Color.WHITE;
-import static android.view.View.MeasureSpec.AT_MOST;
-import static android.view.View.MeasureSpec.EXACTLY;
-import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static com.facebook.litho.SizeSpec.AT_MOST;
+import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PREPARE_MOUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOVED_COUNT;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -270,8 +270,8 @@ public class MountStateRemountInPlaceTest {
                 .incrementalMount(false)
                 .layoutDiffing(false)
                 .build(),
-            makeMeasureSpec(100, AT_MOST),
-            makeMeasureSpec(100, AT_MOST));
+            makeSizeSpec(100, AT_MOST),
+            makeSizeSpec(100, AT_MOST));
 
     assertThat(firstComponent.wasOnMountCalled()).isTrue();
     assertThat(firstComponent.wasOnBindCalled()).isTrue();
@@ -318,8 +318,8 @@ public class MountStateRemountInPlaceTest {
                 .incrementalMount(false)
                 .layoutDiffing(false)
                 .build(),
-            makeMeasureSpec(100, EXACTLY),
-            makeMeasureSpec(100, EXACTLY));
+            makeSizeSpec(100, EXACTLY),
+            makeSizeSpec(100, EXACTLY));
 
     assertThat(firstComponent.wasOnMountCalled()).isTrue();
     assertThat(firstComponent.wasOnBindCalled()).isTrue();
@@ -366,8 +366,8 @@ public class MountStateRemountInPlaceTest {
                 .incrementalMount(false)
                 .layoutDiffing(false)
                 .build(),
-            makeMeasureSpec(100, EXACTLY),
-            makeMeasureSpec(100, EXACTLY));
+            makeSizeSpec(100, EXACTLY),
+            makeSizeSpec(100, EXACTLY));
 
     assertThat(firstComponent.wasOnMountCalled()).isTrue();
     assertThat(firstComponent.wasOnBindCalled()).isTrue();

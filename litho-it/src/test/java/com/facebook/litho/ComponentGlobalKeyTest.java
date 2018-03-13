@@ -17,7 +17,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.view.View;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
@@ -347,8 +346,8 @@ public class ComponentGlobalKeyTest {
     LithoView lithoView = new LithoView(mContext);
     lithoView.setComponentTree(componentTree);
     lithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED));
     lithoView.layout(
         0,
         0,

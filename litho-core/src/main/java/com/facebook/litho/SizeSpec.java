@@ -40,6 +40,8 @@ import java.lang.annotation.RetentionPolicy;
  * is provided to pack and unpack the &lt;size, mode&gt; tuple into the int.
  */
 public class SizeSpec {
+  private static final int MODE_SHIFT = 30;
+  private static final int MODE_MASK  = 0x3 << MODE_SHIFT;
 
   /**
    * Size specification mode: The parent has not imposed any constraint
@@ -77,15 +79,15 @@ public class SizeSpec {
    * implementation was such that the order of arguments did not matter
    * and overflow in either value could impact the resulting MeasureSpec.
    * {@link android.widget.RelativeLayout} was affected by this bug.
-   * Apps targeting API levels greater than 17 will get the fixed, more strict
-   * behavior.</p>
+   * This implementation uses the fixed, more strict version of the function
+   * found in API level 18+.</p>
    *
    * @param size the size of the size specification
    * @param mode the mode of the size specification
    * @return the size specification based on size and mode
    */
   public static int makeSizeSpec(int size, @MeasureSpecMode int mode) {
-    return View.MeasureSpec.makeMeasureSpec(size, mode);
+    return (size & ~MODE_MASK) | (mode & MODE_MASK);
   }
 
   /**

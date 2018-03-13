@@ -28,11 +28,11 @@ public final class MeasureUtils {
   public static int getViewMeasureSpec(int sizeSpec) {
     switch (getMode(sizeSpec)) {
       case SizeSpec.EXACTLY:
-        return MeasureSpec.makeMeasureSpec(getSize(sizeSpec), MeasureSpec.EXACTLY);
+        return SizeSpec.makeSizeSpec(getSize(sizeSpec), MeasureSpec.EXACTLY);
       case SizeSpec.AT_MOST:
-        return MeasureSpec.makeMeasureSpec(getSize(sizeSpec), MeasureSpec.AT_MOST);
+        return SizeSpec.makeSizeSpec(getSize(sizeSpec), MeasureSpec.AT_MOST);
       case SizeSpec.UNSPECIFIED:
-        return MeasureSpec.makeMeasureSpec(getSize(sizeSpec), MeasureSpec.UNSPECIFIED);
+        return SizeSpec.makeSizeSpec(getSize(sizeSpec), MeasureSpec.UNSPECIFIED);
       default:
         throw new IllegalStateException("Unexpected size spec mode");
     }

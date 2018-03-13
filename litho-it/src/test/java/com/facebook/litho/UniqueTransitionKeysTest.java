@@ -12,7 +12,6 @@ package com.facebook.litho;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
-import android.view.View;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import org.junit.Rule;
@@ -57,8 +56,8 @@ public class UniqueTransitionKeysTest {
             c,
             mHasUniqueTransitionKeys,
             ComponentTree.generateComponentTreeId(),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
             LayoutState.CalculateLayoutSource.TEST);
     layoutState.getTransitionKeyMapping();
   }
@@ -74,8 +73,8 @@ public class UniqueTransitionKeysTest {
             c,
             mHasNonUniqueTransitionKeys,
             ComponentTree.generateComponentTreeId(),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
             LayoutState.CalculateLayoutSource.TEST);
     assertThat(layoutState.getTransitionKeyMapping()).isNotNull();
   }

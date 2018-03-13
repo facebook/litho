@@ -9,7 +9,6 @@
 
 package com.facebook.litho.utils;
 
-import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
@@ -20,7 +19,6 @@ import static com.facebook.litho.utils.MeasureUtils.measureWithDesiredPx;
 import static com.facebook.litho.utils.MeasureUtils.measureWithEqualDimens;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import android.view.View.MeasureSpec;
 import com.facebook.litho.Size;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Test;
@@ -322,17 +320,17 @@ public class MeasureUtilsTest {
 
   @Test
   public void testGetViewMeasureSpecExactly() {
-    assertThat(getViewMeasureSpec(makeSizeSpec(10, EXACTLY))).isEqualTo(getViewMeasureSpec(makeMeasureSpec(10, MeasureSpec.EXACTLY)));
+    assertThat(getViewMeasureSpec(makeSizeSpec(10, EXACTLY))).isEqualTo(getViewMeasureSpec(makeSizeSpec(10, EXACTLY)));
   }
 
   @Test
   public void testGetViewMeasureSpecAtMost() {
-    assertThat(getViewMeasureSpec(makeSizeSpec(10, AT_MOST))).isEqualTo(getViewMeasureSpec(makeMeasureSpec(10, MeasureSpec.AT_MOST)));
+    assertThat(getViewMeasureSpec(makeSizeSpec(10, AT_MOST))).isEqualTo(getViewMeasureSpec(makeSizeSpec(10, AT_MOST)));
   }
 
   @Test
   public void testGetViewMeasureSpecUnspecified() {
-    assertThat(getViewMeasureSpec(makeSizeSpec(10, UNSPECIFIED))).isEqualTo(getViewMeasureSpec(makeMeasureSpec(10, MeasureSpec.UNSPECIFIED)));
+    assertThat(getViewMeasureSpec(makeSizeSpec(10, UNSPECIFIED))).isEqualTo(getViewMeasureSpec(makeSizeSpec(10, UNSPECIFIED)));
   }
 
   @Test
