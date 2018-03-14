@@ -174,7 +174,7 @@ static Component onCreateLayout(ComponentContext c) {
         .color(Color.RED)
         .build();
   } catch (Exception e) {
-    return FallbackConponent.create(c).exception(e).build();
+    return FallbackComponent.create(c).exception(e).build();
   }
 }
 ```
