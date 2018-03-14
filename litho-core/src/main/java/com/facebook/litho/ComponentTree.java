@@ -712,11 +712,12 @@ public class ComponentTree {
 
       toRelease = setBestMainThreadLayoutAndReturnOldLayout();
 
+      // We don't check if mRoot is compatible here since if it doesn't match mMainThreadLayout,
+      // that means we're computing an async layout with a new root which can just be applied when
+      // it finishes.
       final boolean shouldCalculateNewLayout =
-          ComponentsConfiguration.doNotRelayoutForAsyncRootInMeasure
-              ? (mMainThreadLayoutState == null
-                  || !isCompatibleSpec(mMainThreadLayoutState, mWidthSpec, mHeightSpec))
-              : !isCompatibleComponentAndSpec(mMainThreadLayoutState);
+          mMainThreadLayoutState == null
+              || !isCompatibleSpec(mMainThreadLayoutState, mWidthSpec, mHeightSpec);
       if (forceLayout || shouldCalculateNewLayout) {
         // Neither layout was compatible and we have to perform a layout.
         // Since outputs get set on the same object during the lifecycle calls,
@@ -1596,7 +1597,7 @@ public class ComponentTree {
   private static boolean isCompatibleComponentAndSize(
       LayoutState layoutState, int componentId, int width, int height) {
     return layoutState != null
-        && layoutState.isComponentId(componentId)
+        && layoutState.isForComponentId(componentId)
         && layoutState.isCompatibleSize(width, height)
         && layoutState.isCompatibleAccessibility();
   }

@@ -23,6 +23,7 @@ import android.os.Looper;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,6 +60,12 @@ public class ComponentTreeTest {
     mWidthSpec2 = makeSizeSpec(40, EXACTLY);
     mHeightSpec = makeSizeSpec(41, EXACTLY);
     mHeightSpec2 = makeSizeSpec(42, EXACTLY);
+  }
+
+  @After
+  public void tearDown() {
+    // Clear pending tasks in case test failed
+    mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
   private void creationCommonChecks(ComponentTree componentTree) {
@@ -477,6 +484,51 @@ public class ComponentTreeTest {
     assertThat(getComponentTree(lithoView2)).isEqualTo(componentTree);
 
     Assert.assertNull(getComponentTree(lithoView1));
+  }
+
+  @Test
+  public void testSetRootAsyncFollowedByMeasureDoesntComputeSyncLayout() {
+    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
+    componentTree.attach();
+
+    Component newComponent = TestDrawableComponent.create(mContext).color(1234).build();
+    componentTree.setRootAsync(newComponent);
+    assertThat(componentTree.getRoot()).isEqualTo(newComponent);
+
+    componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
+
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(mComponent.getId()))
+        .isTrue();
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+        .isTrue();
+  }
+
+  @Test
+  public void testSetRootAsyncFollowedByNonCompatibleMeasureComputesSyncLayout() {
+    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
+    componentTree.attach();
+
+    Component newComponent = TestDrawableComponent.create(mContext).color(1234).build();
+    componentTree.setRootAsync(newComponent);
+
+    componentTree.measure(mWidthSpec2, mHeightSpec2, new int[2], false);
+
+    assertThat(componentTree.getRoot()).isEqualTo(newComponent);
+    assertThat(componentTree.hasCompatibleLayout(mWidthSpec2, mHeightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+        .isTrue();
+
+    // Clear tasks
+    mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
   private static LithoView getLithoView(ComponentTree componentTree) {

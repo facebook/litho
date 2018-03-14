@@ -133,13 +133,6 @@ public class ComponentsConfiguration {
    */
   public static boolean doNotForceWrappingInViewForAnimation = false;
 
-  /**
-   * Whether ComponentTree should re-calculate the layout in measure when a new root has been set
-   * via setRootAsync. Otherwise, it can just wait for the result of the background layout that was
-   * posted by setRootAsync.
-   */
-  public static boolean doNotRelayoutForAsyncRootInMeasure = false;
-
   /** If true then we'll allocate YogaEdgesWithIntsImplOptimized arrays in batches */
   public static boolean useBatchArrayAllocator = false;
 
