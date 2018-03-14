@@ -9,10 +9,14 @@
 
 package com.facebook.litho.widget;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.LayoutParams;
 import com.facebook.litho.SizeSpec;
 
 /**
@@ -20,6 +24,7 @@ import com.facebook.litho.SizeSpec;
  * {@link LinearLayoutManager}.
  */
 public class LinearLayoutInfo implements LayoutInfo {
+
   private static final int MAX_SANE_RANGE = 10;
   private static final int MIN_SANE_RANGE = 2;
 
@@ -30,18 +35,7 @@ public class LinearLayoutInfo implements LayoutInfo {
   }
 
   public LinearLayoutInfo(Context context, int orientation, boolean reverseLayout) {
-    if (orientation == OrientationHelper.HORIZONTAL) {
-      // Predictive animation in RecyclerView has some bugs that surface occasionally when one
-      // RecyclerView is used as a child of another RecyclerView and it is very hard to repro
-      // (https://issuetracker.google.com/issues/37007605). This one disables that optional
-      // feature for Horizontal one which is used as inner RecyclerView most of the cases.
-      // Disabling predictive animations lets RecyclerView use the simple animations instead.
-      mLinearLayoutManager =
-          new LinearLayoutManagerNoPredictiveAnim(context, orientation, reverseLayout);
-    } else {
-      mLinearLayoutManager = new LinearLayoutManager(context, orientation, reverseLayout);
-    }
-
+    mLinearLayoutManager = new InternalLinearLayoutManager(context, orientation, reverseLayout);
     mLinearLayoutManager.setMeasurementCacheEnabled(false);
   }
 
@@ -134,10 +128,10 @@ public class LinearLayoutInfo implements LayoutInfo {
     }
   }
 
-  private static class LinearLayoutManagerNoPredictiveAnim
+  private static class InternalLinearLayoutManager
       extends LinearLayoutManager {
 
-    public LinearLayoutManagerNoPredictiveAnim(
+    InternalLinearLayoutManager(
         Context context,
         int orientation,
         boolean reverseLayout) {
@@ -145,8 +139,22 @@ public class LinearLayoutInfo implements LayoutInfo {
     }
 
     @Override
+    public LayoutParams generateDefaultLayoutParams() {
+      return getOrientation() == OrientationHelper.VERTICAL
+          ? new RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+          : new RecyclerView.LayoutParams(WRAP_CONTENT, MATCH_PARENT);
+    }
+
+    @Override
     public boolean supportsPredictiveItemAnimations() {
-      return false;
+      // Predictive animation in RecyclerView has some bugs that surface occasionally when one
+      // RecyclerView is used as a child of another RecyclerView and it is very hard to repro
+      // (https://issuetracker.google.com/issues/37007605). This one disables that optional
+      // feature for Horizontal one which is used as inner RecyclerView most of the cases.
+      // Disabling predictive animations lets RecyclerView use the simple animations instead.
+      return getOrientation() == OrientationHelper.HORIZONTAL
+          ? false
+          : super.supportsPredictiveItemAnimations();
     }
   }
 }
