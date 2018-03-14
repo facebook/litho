@@ -70,9 +70,9 @@ Children onCreateChildren(
   return Children.create()
     .child(DataDiffSection.create(c)
         .data(dataModel)
+        .onCheckIsSameItemEventHandler(MyGroupSection.onCheckIsSameItem(c))
+        .onCheckIsSameContentEventHandler(MyGroupSection.onCheckIsSameContent(c))
         .renderEventHandler(MyGroupSection.onRenderEdge(c)))
-    .onCheckIsSameItemEventHandler(MyGroupSection.onCheckIsSameItem(c))
-    .onCheckIsSameContentEventHandler(MyGroupSection.onCheckIsSameContent(c))
     .build();
 }
 
