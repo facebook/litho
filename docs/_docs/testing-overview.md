@@ -49,6 +49,6 @@ more in the [Espresso](/docs/espresso-testing) section.
 
 Lastly, if you want to run unit tests in Android Studio, you currently have to
 jump through some hoops as loading native code is not well supported by the IDE.
-[Follow the guide](/docs/test-in-android-studio) to get set up.
+[Follow the guide](/docs/tests-in-android-studio) to get set up.
 
 
