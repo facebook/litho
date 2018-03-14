@@ -190,9 +190,17 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       throw new IllegalStateException("Trying to mount a null layoutState");
     }
 
-    ComponentsSystrace.beginSection("mount");
-
     final ComponentTree componentTree = mLithoView.getComponentTree();
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      String logTag = componentTree.getContext().getLogTag();
+      if (logTag == null) {
+        ComponentsSystrace.beginSection("mount");
+      } else {
+        ComponentsSystrace.beginSection("mount:" + logTag);
+      }
+    }
+
     final ComponentsLogger logger = componentTree.getContext().getLogger();
     final int componentTreeId = layoutState.getComponentTreeId();
     if (componentTreeId != mLastMountedComponentTreeId) {
@@ -222,7 +230,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     final boolean isIncrementalMountEnabled = localVisibleRect != null;
-    final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (!isIncrementalMountEnabled
         || !performIncrementalMount(layoutState, localVisibleRect, processVisibilityOutputs)) {
@@ -354,7 +361,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       logger.log(mountEvent);
     }
 
-    ComponentsSystrace.endSection();
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
   }
 
   private void processVisibilityOutputs(LayoutState layoutState, Rect localVisibleRect) {
