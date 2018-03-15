@@ -21,7 +21,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.sections.SectionTree;
-import com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.RecyclerConfiguration;
 import com.facebook.litho.widget.Binder;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.RecyclerBinder;

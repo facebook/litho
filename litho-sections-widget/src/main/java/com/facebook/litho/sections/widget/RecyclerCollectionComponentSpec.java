@@ -59,7 +59,6 @@ import com.facebook.litho.widget.RecyclerEventsController;
 import com.facebook.litho.widget.StaggeredGridLayoutHelper;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * A {@link Component} that renders a {@link Recycler} backed by a {@link Section} tree.
@@ -106,18 +105,6 @@ public class RecyclerCollectionComponentSpec {
   @PropDefault static final boolean clipChildren = true;
   @PropDefault static final int refreshProgressBarColor = 0XFF4267B2; // blue
   private static final int MIN_SCROLL_FOR_PAGE = 20;
-
-  /**
-   * A configuration object the {@link RecyclerCollectionComponent} will use to determine which
-   * layout manager should be used for the {@link RecyclerView}
-   */
-  public interface RecyclerConfiguration {
-
-    <E extends Binder<RecyclerView> & Target> E buildTarget(ComponentContext c);
-
-    @Nullable
-    SnapHelper getSnapHelper();
-  }
 
   @OnCreateLayout
   static Component onCreateLayout(

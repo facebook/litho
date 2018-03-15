@@ -14,7 +14,6 @@ import android.support.v7.widget.SnapHelper;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.sections.SectionTree;
-import com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.RecyclerConfiguration;
 import com.facebook.litho.widget.Binder;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.StaggeredGridLayoutInfo;
