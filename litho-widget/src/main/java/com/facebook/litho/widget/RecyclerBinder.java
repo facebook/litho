@@ -1465,13 +1465,6 @@ public class RecyclerBinder
 
       if (viewCreator != null) {
         final View view = viewCreator.createView(mComponentContext, parent);
-        final RecyclerView.LayoutParams layoutParams;
-        if (mLayoutInfo.getScrollDirection() == OrientationHelper.VERTICAL) {
-          layoutParams = new RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
-        } else {
-          layoutParams = new RecyclerView.LayoutParams(WRAP_CONTENT, MATCH_PARENT);
-        }
-        view.setLayoutParams(layoutParams);
         return new BaseViewHolder(view, false);
       } else {
         final LithoView lithoView =
