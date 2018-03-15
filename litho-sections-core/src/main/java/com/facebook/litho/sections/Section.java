@@ -77,7 +77,7 @@ public abstract class Section extends SectionLifecycle
     }
 
     /** Sets the key of this {@link Section} local to his parent. */
-    protected T key(String key) {
+    public T key(String key) {
       mSection.setKey(key);
       return getThis();
     }
