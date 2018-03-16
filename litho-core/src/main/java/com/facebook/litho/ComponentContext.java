@@ -296,7 +296,7 @@ public class ComponentContext extends ContextWrapper {
       return component.mLayoutCreatedInWillRender;
     }
 
-    component.updateInternalChildState(this);
+    component.updateInternalChildState(this, true);
 
     if (ComponentsConfiguration.isDebugModeEnabled) {
       DebugComponent.applyOverrides(this, component);

@@ -63,6 +63,16 @@ public abstract class Component extends ComponentLifecycle
   private String mGlobalKey;
   @Nullable private String mKey;
   private boolean mHasManualKey;
+  /**
+   * Whether this Component should split the layout calculation of its direct children on multiple
+   * background threads.
+   */
+  private boolean mSplitChildrenLayoutInThreadPool;
+  /**
+   * Whether the layout calculation of this Component has been delegated by its parent to be
+   * computed on a background thread from a pool.
+   */
+  private boolean mCalculateLayoutInThreadPool;
 
   @ThreadConfined(ThreadConfined.ANY)
   private ComponentContext mScopedContext;
@@ -104,6 +114,8 @@ public abstract class Component extends ComponentLifecycle
     if (!ComponentsConfiguration.lazyInitializeComponent) {
       mChildCounters = new HashMap<>();
       mKey = Integer.toString(getTypeId());
+      mSplitChildrenLayoutInThreadPool =
+          SplitBackgroundLayoutConfiguration.canSplitChildrenLayouts(this);
     }
   }
 
@@ -402,9 +414,35 @@ public abstract class Component extends ComponentLifecycle
   /** Called to install internal state based on a component's parent context. */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   protected void updateInternalChildState(ComponentContext parentContext) {
+    updateInternalChildState(parentContext, false);
+  }
+
+  /** Called to install internal state based on a component's parent context. */
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  protected void updateInternalChildState(
+      ComponentContext parentContext, boolean shouldForwardSplitLayoutStatus) {
     generateKey(parentContext);
     applyStateUpdates(parentContext);
     generateErrorEventHandler(parentContext);
+    setSplitLayoutOnThreadPoolStatus(parentContext, shouldForwardSplitLayoutStatus);
+  }
+
+  private void setSplitLayoutOnThreadPoolStatus(
+      ComponentContext parentContext, boolean shouldForwardSplitLayoutStatus) {
+    final Component parent = parentContext.getComponentScope();
+    if (parent == null) {
+      return;
+    }
+
+    /**
+     * For parent components that enable split layout but wrap their children in a Row or Column,
+     * forward this flag to the Row or Column to split the layout of their children.
+     */
+    if (shouldForwardSplitLayoutStatus) {
+      mSplitChildrenLayoutInThreadPool = parent.mSplitChildrenLayoutInThreadPool;
+    } else {
+      mCalculateLayoutInThreadPool = parent.mSplitChildrenLayoutInThreadPool;
+    }
   }
 
   private void generateKey(ComponentContext parentContext) {
