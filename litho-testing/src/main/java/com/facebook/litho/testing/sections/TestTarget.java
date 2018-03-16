@@ -113,6 +113,11 @@ public class TestTarget implements SectionTree.Target {
   }
 
   @Override
+  public void requestSmoothFocus(int index) {
+    requestFocus(index);
+  }
+
+  @Override
   public void requestFocusWithOffset(int index, int offset) {
     mFocusTo = index;
     mFocusToOffset = offset;

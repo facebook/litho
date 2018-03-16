@@ -111,6 +111,9 @@ public class SectionTree {
      */
     void requestFocus(int index);
 
+    /** Request smooth focus on the item with the given index. */
+    void requestSmoothFocus(int index);
+
     /**
      * Request focus on the item with the given index, plus some additional offset.
      */

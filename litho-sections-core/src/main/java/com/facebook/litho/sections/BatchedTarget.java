@@ -135,23 +135,37 @@ class BatchedTarget implements SectionTree.Target {
   @Override
   public void requestFocus(int index) {
     mTarget.requestFocus(index);
-    if (ENABLE_LOGGER && mComponentInfoSparseArray.size() != 0) {
-      mSectionsDebugLogger.logRequestFocus(
-          mSectionTreeTag,
-          index,
-          mComponentInfoSparseArray.get(index),
-          Thread.currentThread().getName());
-    }
+    maybeLogRequestFocus(index);
+  }
+
+  @Override
+  public void requestSmoothFocus(int index) {
+    mTarget.requestSmoothFocus(index);
+    maybeLogRequestFocus(index);
   }
 
   @Override
   public void requestFocusWithOffset(int index, int offset) {
     mTarget.requestFocusWithOffset(index, offset);
+    maybeLogRequestFocusWithOffset(index, offset);
+  }
+
+  private void maybeLogRequestFocusWithOffset(int index, int offset) {
     if (ENABLE_LOGGER && mComponentInfoSparseArray.size() != 0) {
       mSectionsDebugLogger.logRequestFocusWithOffset(
           mSectionTreeTag,
           index,
           offset,
+          mComponentInfoSparseArray.get(index),
+          Thread.currentThread().getName());
+    }
+  }
+
+  private void maybeLogRequestFocus(int index) {
+    if (ENABLE_LOGGER && mComponentInfoSparseArray.size() != 0) {
+      mSectionsDebugLogger.logRequestFocus(
+          mSectionTreeTag,
+          index,
           mComponentInfoSparseArray.get(index),
           Thread.currentThread().getName());
     }

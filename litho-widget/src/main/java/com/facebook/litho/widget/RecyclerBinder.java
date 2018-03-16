@@ -1231,13 +1231,17 @@ public class RecyclerBinder
   }
 
   @UiThread
-  public void scrollToPosition(int position) {
+  public void scrollToPosition(int position, boolean smoothScroll) {
     if (mMountedView == null) {
       mCurrentFirstVisiblePosition = position;
       return;
     }
 
-    mMountedView.scrollToPosition(position);
+    if (smoothScroll) {
+      mMountedView.smoothScrollToPosition(position);
+    } else {
+      mMountedView.scrollToPosition(position);
+    }
   }
 
   @UiThread
