@@ -406,7 +406,8 @@ public class LithoView extends ComponentHost {
       return;
     }
 
-    mHasNewComponentTree = true;
+    mHasNewComponentTree =
+        mComponentTree == null || componentTree == null || mComponentTree.mId != componentTree.mId;
     setMountStateDirty();
 
     if (mComponentTree != null) {
