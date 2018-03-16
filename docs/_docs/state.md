@@ -5,12 +5,12 @@ layout: docs
 permalink: /docs/state
 ---
 
-A Litho component can also contain two types of data:
+A Litho component can contain two types of data:
 
 *  **props**: passed down from parent and cannot change during a component's lifecycle.
 *  **state**: encapsulates implementation details that are managed by the component and is transparent to the parent.
 
-A common example for when State is needed is rendering a checkbox. The component renders different drawables for the checked and unchecked states, but this is an internal detail of the checkbox component that the parent doesn't need to be aware of.
+A common example of when State is needed is rendering a checkbox. The component renders different drawables for the checked and unchecked states, but this is an internal detail of the checkbox component that the parent doesn't need to be aware of.
 
 ## Declaring a Component State
 You can define a State on a Component by using the @State annotation in the spec lifecycle methods, similarly to how you would define a Prop.
@@ -51,7 +51,7 @@ To set an initial value for a state, you have to write a method annotated with `
 
 This is what you need to know when writing an `@OnCreateInitialState` method:
 
-* First parameter must be of type `ComponentContext`.
+* The first parameter must be of type `ComponentContext`.
 * `@Prop` parameters are allowed.
 * All other parameters must have a corresponding parameter annotated with `@State` in the other lifecycle methods, and their type must be a [StateValue](/javadoc/com/facebook/litho/StateValue) that is parameterized with the type of the matching `@State` element.
 * `@OnCreateInitialState` methods are not mandatory. If you do not define one or if you only initialize some states, the uninitialized ones will take Java defaults.
@@ -121,7 +121,7 @@ static void updateMultipleStates(
 For each `@OnUpdateState` method in your spec, the generated component will have two methods that will delegate to the `@OnUpdateState` method under the hood:
 * a static method with the same name, which will synchronously apply the state updates.
 * a static method with the same name and an *Async* suffix, which will asynchronously trigger the state updates.
-Both methods take as first parameter a `ComponentContext` followed by all the parameters declared with `@Param` in your `@OnUpdateState` method.
+Both methods take a `ComponentContext` as first parameter, followed by all the parameters declared with `@Param` in your `@OnUpdateState` method.
 
 Here's how you would call the state update method to update your checkbox when a user clicks it:
 
@@ -158,7 +158,7 @@ public class CheckboxSpec {
 
 This is what you need to keep in mind when calling state update methods:
 
-* When calling a state update method, the `ComponentContext` instance passed as first parameter must always be the one that is passed down as parameter in the lifecycle method in which the update state is triggered. This context contains important information about the currently known state values and it's important for transfering these values from the old components to the new ones during new layout calculations.
+* When calling a state update method, the `ComponentContext` instance passed as first parameter must always be the one that is passed down as parameter in the lifecycle method in which the update state is triggered. This context contains important information about the currently known state values and it's important for transferring these values from the old components to the new ones during new layout calculations.
 * In `LayoutSpecs`, You should avoid calling state update methods in `onCreateLayout`, unless you are absolutely certain they will happen only a deterministic, small number of times.
 Every call to a state update method will trigger a new layout calculation on the ComponentTree, which in turn will call `onCreateLayout` on all its components, so it's rather easy to go into an infinite loop. You should consider whether a lazy state update (described below) wouldn't be more appropriate for your use case.
 * In `MountSpecs`, you should never call update state methods from `bind` and `mount` methods. If you need to update a state value in those methods, you should instead use a lazy state update, described below.
@@ -171,7 +171,7 @@ Components of the same type that have the same parent will be assigned the same 
 Moreover, when a Component's state or props are updated and the `ComponentTree` is recreated, there are situations when components are removed, added or rearranged inside the tree. Because components can be dynamic we need a way of keeping track of the components so we know, even after the `ComponentTree` changes, for which component to apply a state update.
 
 Whenever a key collision is detected in a ComponentTree, which can happen when a parent component created multiple children components of the same type, we assign a unique key on those siblings which depends on the order in which they added to the parent.
-However, with the current implementation, there's no easy way for us to detect that a component is the same when the order of the components in your hierarchy changes. This means that the keys that is autogenerated is not stable through component moves. If you expect your components to move around, you have to assign manual keys.
+However, with the current implementation, there's no easy way for us to detect that a component is the same when the order of the components in your hierarchy changes. This means that the keys that are autogenerated are not stable through component moves. If you expect your components to move around, you have to assign manual keys.
 
 The `Component.Builder` class exposes a .key() method that you can call when creating a component to assign a unique key to it that will be used to identify this component.
 
@@ -200,7 +200,7 @@ For situations where you want to update the value of a `State` but don't need to
 
 To use lazy state updates, you need to set the `canUpdateLazily` parameter on the `@State` annotation to true.
 
-For a state parameter `foo` marked with `canUpdateLazily`, the framework will generate a static state update method named `lazyUpdateFoo` which takes as parameter a new value that will be set as the new value for foo.
+For a state parameter `foo` marked with `canUpdateLazily`, the framework will generate a static state update method named `lazyUpdateFoo` which takes a new value as parameter that will be set as the new value for foo.
 
 States marked as `canUpdateLazily` can still be used for regular state updates.
 
