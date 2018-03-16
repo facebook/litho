@@ -8,14 +8,8 @@
  */
 package com.facebook.litho;
 
-import android.os.Process;
-import com.facebook.litho.config.ComponentsConfiguration;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /** LayoutHandler implementation that uses a thread pool to calculate the layout. */
 public class ThreadPoolLayoutHandler implements LayoutHandler {
@@ -63,41 +57,5 @@ public class ThreadPoolLayoutHandler implements LayoutHandler {
   @Override
   public void removeCallbacksAndMessages(Object token) {
     throw new RuntimeException("Operation not supported");
-  }
-
-  private static class LayoutThreadPoolExecutor extends ThreadPoolExecutor {
-
-    private static final ThreadFactory sThreadFactory =
-        new ThreadFactory() {
-
-          private final AtomicInteger threadNumber = new AtomicInteger(1);
-
-          @Override
-          public Thread newThread(final Runnable r) {
-
-            final Runnable wrapperRunnable =
-                new Runnable() {
-                  @Override
-                  public void run() {
-                    Process.setThreadPriority(
-                        ComponentsConfiguration.defaultBackgroundThreadPriority);
-                    r.run();
-                  }
-                };
-
-            return new Thread(
-                wrapperRunnable, "ComponentLayoutThread" + threadNumber.getAndIncrement());
-          }
-        };
-
-    public LayoutThreadPoolExecutor(int corePoolSize, int maxPoolSize) {
-      super(
-          corePoolSize,
-          maxPoolSize,
-          1,
-          TimeUnit.SECONDS,
-          new LinkedBlockingQueue<Runnable>(),
-          sThreadFactory);
-    }
   }
 }
