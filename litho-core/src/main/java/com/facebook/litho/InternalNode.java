@@ -692,11 +692,9 @@ class InternalNode implements ComponentLayout {
 
   InternalNode child(Component child) {
     if (child != null) {
-      final InternalNode layout = Layout.create(mComponentContext, child);
-      if (layout != NULL_LAYOUT) {
-        addChildAt(layout, mYogaNode.getChildCount());
-      }
+      return child(Layout.create(mComponentContext, child));
     }
+
     return this;
   }
 
@@ -704,6 +702,14 @@ class InternalNode implements ComponentLayout {
     if (child != null) {
       child(child.build());
     }
+    return this;
+  }
+
+  InternalNode child(InternalNode child) {
+    if (child != null && child != NULL_LAYOUT) {
+      addChildAt(child, mYogaNode.getChildCount());
+    }
+
     return this;
   }
 

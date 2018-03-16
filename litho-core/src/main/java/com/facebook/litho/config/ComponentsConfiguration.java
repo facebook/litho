@@ -141,4 +141,11 @@ public class ComponentsConfiguration {
 
   /** Whether to unmount all contents of LithoView when its ComponentTree is set to null. */
   public static boolean unmountAllWhenComponentTreeSetToNull = false;
+
+  public static int layoutMainThreadPoolCorePoolSize = 2;
+  public static int layoutMainThreadPoolMaxPoolSize = 2;
+  public static int layoutBackgroundThreadPoolCorePoolSize = 2;
+  public static int layoutBackgroundThreadMaxPoolSize = 2;
+  public static int layoutMainThreadPoolPriority = Process.THREAD_PRIORITY_DISPLAY;
+  public static int layoutBackgroundThreadPoolPriority = Process.THREAD_PRIORITY_BACKGROUND;
 }

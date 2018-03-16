@@ -67,7 +67,7 @@ public abstract class Component extends ComponentLifecycle
    * Whether this Component should split the layout calculation of its direct children on multiple
    * background threads.
    */
-  private boolean mSplitChildrenLayoutInThreadPool;
+  protected boolean mSplitChildrenLayoutInThreadPool;
   /**
    * Whether the layout calculation of this Component has been delegated by its parent to be
    * computed on a background thread from a pool.
