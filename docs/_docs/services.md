@@ -109,9 +109,9 @@ As aforementioned, services are able to respond to events such as `@OnViewportCh
    SectionContext c,
    int firstVisibleIndex,
    int lastVisibleIndex,
+   int totalCount,
    int firstFullyVisibleIndex,
    int lastFullyVisibleIndex,
-   int totalCount,
    DataLoader service,
    ...) {
      service.makeTailFetch();

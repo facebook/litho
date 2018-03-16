@@ -39,9 +39,9 @@ class SectionSpec {
     SectionContext c,
     int firstVisiblePosition,
     int lastVisiblePosition,
+    int totalCount,
     int firstFullyVisibleIndex,
     int lastFullyVisibleIndex,
-    int totalCount,
     @Prop YourProp prop,
     @State YourState state) {
   }
@@ -56,15 +56,16 @@ hidden from the visible viewport.
 Position of the last visible components in the viewport. Components are partially
 hidden from the visible viewport.
 
-3) `firstFullyVisibleIndex`
-Position of the first fully visible components in the viewport.
-
-4) `lastFullyVisibleIndex`
-Position of the last fully visible components in the viewport.
-
-5) `totalCount`
+3) `totalCount`
 Total number of items in the section's hierarchy, with the section that contains the
 annotated method as its root.
+
+4) `firstFullyVisibleIndex`
+Position of the first fully visible components in the viewport.
+
+5) `lastFullyVisibleIndex`
+Position of the last fully visible components in the viewport.
+
 
 ### Change in Viewport
 A viewport change could occur due to any number of the following reasons:
