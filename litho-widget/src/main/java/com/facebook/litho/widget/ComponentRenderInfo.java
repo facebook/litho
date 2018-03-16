@@ -10,7 +10,9 @@
 package com.facebook.litho.widget;
 
 import android.support.v4.util.Pools;
+import com.facebook.litho.Column;
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
 
 /** {@link RenderInfo} that can render components. */
 public class ComponentRenderInfo extends RenderInfo {
@@ -30,12 +32,17 @@ public class ComponentRenderInfo extends RenderInfo {
 
   private ComponentRenderInfo(Builder builder) {
     super(builder);
+
+    if (builder.component == null) {
+      throw new IllegalStateException("Component must be provided.");
+    }
+
     mComponent = builder.component;
   }
 
-  /** Create empty {@link ComponentRenderInfo} for testing purposes. */
+  /** Create empty {@link ComponentRenderInfo}. */
   public static RenderInfo createEmpty() {
-    return new ComponentRenderInfo(new Builder());
+    return create().component(new EmptyComponent()).build();
   }
 
   @Override
@@ -63,9 +70,6 @@ public class ComponentRenderInfo extends RenderInfo {
     }
 
     public ComponentRenderInfo build() {
-      if (component == null) {
-        throw new IllegalStateException("Component must be provided.");
-      }
       final ComponentRenderInfo renderInfo = new ComponentRenderInfo(this);
       release();
 
@@ -77,6 +81,25 @@ public class ComponentRenderInfo extends RenderInfo {
       super.release();
       component = null;
       sBuilderPool.release(this);
+    }
+  }
+
+  private static class EmptyComponent extends Component {
+
+    @Override
+    public String getSimpleName() {
+      return "EmptyComponent";
+    }
+
+    @Override
+    protected Component onCreateLayout(ComponentContext c) {
+      return Column.create(c).build();
+    }
+
+    @Override
+    public boolean isEquivalentTo(Component other) {
+      return EmptyComponent.this == other
+          || (other != null && EmptyComponent.this.getClass() == other.getClass());
     }
   }
 }
