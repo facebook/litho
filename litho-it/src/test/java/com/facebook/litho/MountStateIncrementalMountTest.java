@@ -554,6 +554,48 @@ public class MountStateIncrementalMountTest {
     assertThat(child1.wasOnUnmountCalled()).isFalse();
   }
 
+  /**
+   * Tests incremental mount behaviour of a vertical stack of components with a Drawable mount type
+   * after unmountAllItems was called.
+   */
+  @Test
+  public void testIncrementalMountAfterUnmountAllItemsCall() {
+    final TestComponent child1 = TestDrawableComponent.create(mContext).build();
+    final TestComponent child2 = TestDrawableComponent.create(mContext).build();
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
+                    .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
+                    .build();
+              }
+            });
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
+    assertThat(child1.isMounted()).isFalse();
+    assertThat(child2.isMounted()).isFalse();
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 5), true);
+    assertThat(child1.isMounted()).isTrue();
+    assertThat(child2.isMounted()).isFalse();
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
+    assertThat(child1.isMounted()).isTrue();
+    assertThat(child2.isMounted()).isTrue();
+
+    lithoView.unmountAllItems();
+    assertThat(child1.isMounted()).isFalse();
+    assertThat(child2.isMounted()).isFalse();
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
+    assertThat(child1.isMounted()).isTrue();
+    assertThat(child2.isMounted()).isTrue();
+  }
+
   private void verifyLoggingAndResetLogger(int mountedCount, int unmountedCount) {
     final LogEvent event = mComponentsLogger.newPerformanceEvent(EVENT_MOUNT);
     event.addParam(PARAM_MOUNTED_COUNT, String.valueOf(mountedCount));

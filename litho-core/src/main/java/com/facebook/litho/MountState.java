@@ -1985,6 +1985,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     for (int i = mLayoutOutputsIds.length - 1; i >= 0; i--) {
       unmountItem(mContext, i, mHostsByMarker);
     }
+    mPreviousLocalVisibleRect.setEmpty();
   }
 
   private void unmountItem(
