@@ -8,35 +8,21 @@
  */
 package com.facebook.litho;
 
+import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /** LayoutHandler implementation that uses a thread pool to calculate the layout. */
 public class ThreadPoolLayoutHandler implements LayoutHandler {
 
-  /**
-   * A PoolSizeCalculator instance can be passed to construct the ThreadPoolLayoutHandler for a
-   * custom way of calculating the number of threads based on the number of cores available on the
-   * device.
-   */
-  public interface PoolSizeCalculator {
-    int getCorePoolSize(int numProcessors);
-
-    int getMaxPoolSize(int numProcessors);
-  }
-
   private final ThreadPoolExecutor mLayoutThreadPoolExecutor;
 
-  public ThreadPoolLayoutHandler(int corePoolSize, int maxPoolSize) {
-    mLayoutThreadPoolExecutor = new LayoutThreadPoolExecutor(corePoolSize, maxPoolSize);
-  }
-
-  public ThreadPoolLayoutHandler(PoolSizeCalculator poolSizeCalculator) {
-    final int numProcessors = DeviceInfoUtils.getNumberOfCPUCores();
+  public ThreadPoolLayoutHandler(LayoutThreadPoolConfiguration configuration) {
     mLayoutThreadPoolExecutor =
         new LayoutThreadPoolExecutor(
-            poolSizeCalculator.getCorePoolSize(numProcessors),
-            poolSizeCalculator.getMaxPoolSize(numProcessors));
+            configuration.getCorePoolSize(),
+            configuration.getMaxPoolSize(),
+            configuration.getThreadPriority());
   }
 
   @Override

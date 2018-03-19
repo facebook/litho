@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree. An additional grant
  * of patent rights can be found in the PATENTS file in the same directory.
  */
-package com.facebook.litho;
+package com.facebook.litho.config;
 
 import android.os.Build;
 import java.io.BufferedReader;

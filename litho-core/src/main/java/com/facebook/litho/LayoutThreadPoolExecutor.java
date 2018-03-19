@@ -31,10 +31,6 @@ public class LayoutThreadPoolExecutor extends ThreadPoolExecutor {
         new LayoutThreadFactory(priority));
   }
 
-  public LayoutThreadPoolExecutor(int corePoolSize, int maxPoolSize) {
-    this(corePoolSize, maxPoolSize, ComponentsConfiguration.defaultBackgroundThreadPriority);
-  }
-
   private static class LayoutThreadFactory implements ThreadFactory {
 
     private final AtomicInteger threadNumber = new AtomicInteger(1);
