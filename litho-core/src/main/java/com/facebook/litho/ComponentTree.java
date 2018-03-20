@@ -245,7 +245,11 @@ public class ComponentTree {
     mMeasureListener = builder.mMeasureListener;
 
     if (mLayoutThreadHandler == null) {
-      mLayoutThreadHandler = new DefaultLayoutHandler(getDefaultLayoutThreadLooper());
+      mLayoutThreadHandler =
+          ComponentsConfiguration.threadPoolForBackgroundThreadsConfig == null
+              ? new DefaultLayoutHandler(getDefaultLayoutThreadLooper())
+              : new ThreadPoolLayoutHandler(
+                  ComponentsConfiguration.threadPoolForBackgroundThreadsConfig);
     }
 
     if (mPreAllocateMountContentHandler == null && builder.canPreallocateOnDefaultHandler) {

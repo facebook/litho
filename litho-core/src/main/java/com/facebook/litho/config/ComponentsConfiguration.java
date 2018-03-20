@@ -148,4 +148,10 @@ public class ComponentsConfiguration {
   public static int layoutBackgroundThreadMaxPoolSize = 2;
   public static int layoutMainThreadPoolPriority = Process.THREAD_PRIORITY_DISPLAY;
   public static int layoutBackgroundThreadPoolPriority = Process.THREAD_PRIORITY_BACKGROUND;
+
+  /**
+   * Configuration for creating a thread pool of threads used for background layout. If null, a
+   * single default thread will be used for background layout.
+   */
+  public static LayoutThreadPoolConfiguration threadPoolForBackgroundThreadsConfig = null;
 }
