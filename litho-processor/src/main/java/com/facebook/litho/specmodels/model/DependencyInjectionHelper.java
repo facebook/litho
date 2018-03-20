@@ -10,11 +10,11 @@
 package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import java.util.List;
-import java.util.Set;
 
 /**
  * An interface for generating certain methods that are required in order for Dependency
@@ -44,8 +44,10 @@ public interface DependencyInjectionHelper {
   /**
    * Generate the necessary code to handle the {@link com.facebook.litho.annotations.InjectProp}
    * annotation. Field with the same name of the parameter should be returned to be usable.
+   *
+   * @param injectPropParams
    */
-  TypeSpecDataHolder generateInjectedFields(Set<MethodParamModel> injectPropParams);
+  TypeSpecDataHolder generateInjectedFields(ImmutableList<InjectPropModel> injectPropParams);
 
   /** True if the Spec has to be injected. */
   boolean hasSpecInjection();

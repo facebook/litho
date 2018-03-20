@@ -15,6 +15,7 @@ import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
+import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
@@ -99,13 +100,13 @@ public class TestingDIComponentProcessor extends AbstractComponentsProcessor {
     }
 
     @Override
-    public TypeSpecDataHolder generateInjectedFields(Set<MethodParamModel> injectPropParams) {
+    public TypeSpecDataHolder generateInjectedFields(
+        ImmutableList<InjectPropModel> injectPropParams) {
       final TypeSpecDataHolder.Builder builder = TypeSpecDataHolder.newBuilder();
 
       for (MethodParamModel injectedParam : injectPropParams) {
         final FieldSpec.Builder fieldBuilder =
-            FieldSpec.builder(injectedParam.getTypeName(), injectedParam.getName())
-                .addModifiers(Modifier.PRIVATE);
+            FieldSpec.builder(injectedParam.getTypeName(), injectedParam.getName());
         for (AnnotationSpec extAnnotation : injectedParam.getExternalAnnotations()) {
           fieldBuilder.addAnnotation(extAnnotation);
         }

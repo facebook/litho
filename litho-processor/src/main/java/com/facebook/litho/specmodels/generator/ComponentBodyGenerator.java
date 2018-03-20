@@ -14,7 +14,6 @@ import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_C
 import static com.facebook.litho.specmodels.model.ClassNames.COMPONENT;
 
 import android.support.annotation.VisibleForTesting;
-import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
@@ -25,7 +24,6 @@ import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
-import com.facebook.litho.specmodels.model.MethodParamModelUtils;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
@@ -52,8 +50,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
 import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
@@ -249,9 +245,10 @@ public class ComponentBodyGenerator {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
 
     if (specModel.hasInjectedDependencies()) {
-      final Set<MethodParamModel> injectedParams = extractInjectedParams(specModel);
       typeSpecDataHolder.addTypeSpecDataHolder(
-          specModel.getDependencyInjectionHelper().generateInjectedFields(injectedParams));
+          specModel
+              .getDependencyInjectionHelper()
+              .generateInjectedFields(specModel.getInjectProps()));
     }
 
     return typeSpecDataHolder.build();
@@ -673,37 +670,6 @@ public class ComponentBodyGenerator {
     }
 
     return methodParamModel.getName();
-  }
-
-  public static Set<MethodParamModel> extractInjectedParams(SpecModel specModel) {
-    final Set<MethodParamModel> injectedParams =
-        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
-
-    for (SpecMethodModel delegateMethod : specModel.getDelegateMethods()) {
-      for (MethodParamModel param : ((List<MethodParamModel>) delegateMethod.methodParams)) {
-        if (SpecModelUtils.hasAnnotation(param, InjectProp.class)) {
-          injectedParams.add(param);
-        }
-      }
-    }
-
-    for (SpecMethodModel eventMethod : specModel.getEventMethods()) {
-      for (MethodParamModel param : ((List<MethodParamModel>) eventMethod.methodParams)) {
-        if (SpecModelUtils.hasAnnotation(param, InjectProp.class)) {
-          injectedParams.add(param);
-        }
-      }
-    }
-
-    for (SpecMethodModel triggerMethod : specModel.getTriggerMethods()) {
-      for (MethodParamModel param : ((List<MethodParamModel>) triggerMethod.methodParams)) {
-        if (SpecModelUtils.hasAnnotation(param, InjectProp.class)) {
-          injectedParams.add(param);
-        }
-      }
-    }
-
-    return injectedParams;
   }
 
   /**

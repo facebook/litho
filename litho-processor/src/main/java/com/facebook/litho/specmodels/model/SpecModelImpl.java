@@ -480,7 +480,8 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
-    final List<InjectPropModel> props = new ArrayList<>();
+    final Set<InjectPropModel> props =
+        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
 
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
@@ -514,7 +515,7 @@ public final class SpecModelImpl implements SpecModel {
       }
     }
 
-    return ImmutableList.copyOf(props);
+    return ImmutableList.copyOf(new ArrayList<>(props));
   }
 
   private static ImmutableList<StateParamModel> getStateValues(
