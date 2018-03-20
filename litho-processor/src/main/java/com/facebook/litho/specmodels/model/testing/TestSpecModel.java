@@ -53,8 +53,10 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
       String qualifiedSpecClassName,
       String componentClassName,
       ImmutableList<PropModel> props,
+      ImmutableList<InjectPropModel> injectProps,
       ImmutableList<BuilderMethodModel> builderMethodModels,
       ImmutableList<PropJavadocModel> propJavadocs,
+      ImmutableList<TypeVariableName> typeVariables,
       SpecModel enclosedSpecModel,
       TestSpecGenerator testSpecGenerator,
       String classJavadoc) {
@@ -64,9 +66,11 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
             .componentClassName(componentClassName)
             .componentClass(ClassNames.COMPONENT)
             .props(props)
+            .injectProps(injectProps)
             .extraBuilderMethods(builderMethodModels)
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
+            .typeVariables(typeVariables)
             .representedObject(enclosedSpecModel)
             .build();
     mEnclosedSpecModel = enclosedSpecModel;
@@ -125,7 +129,7 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
 
   @Override
   public ImmutableList<InjectPropModel> getInjectProps() {
-    return mEnclosedSpecModel.getInjectProps();
+    return mSpecModel.getInjectProps();
   }
 
   @Override
@@ -135,7 +139,7 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
 
   @Override
   public ImmutableList<TypeVariableName> getTypeVariables() {
-    return mEnclosedSpecModel.getTypeVariables();
+    return mSpecModel.getTypeVariables();
   }
 
   @Override

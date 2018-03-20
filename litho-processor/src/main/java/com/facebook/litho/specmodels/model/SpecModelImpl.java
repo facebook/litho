@@ -71,6 +71,7 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
       ImmutableList<PropModel> props,
+      ImmutableList<InjectPropModel> injectProps,
       ImmutableList<String> cachedPropNames,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
@@ -94,8 +95,7 @@ public final class SpecModelImpl implements SpecModel {
     mTriggerMethods = triggerMethods;
     mUpdateStateMethods = updateStateMethods;
     mRawProps = getRawProps(delegateMethods, eventMethods, triggerMethods, updateStateMethods);
-    mInjectProps =
-        getInjectProps(delegateMethods, eventMethods, triggerMethods, updateStateMethods);
+    mInjectProps = injectProps.isEmpty() ? getInjectProps(delegateMethods, eventMethods, triggerMethods, updateStateMethods) : injectProps;
     mProps = props.isEmpty() ? getProps(mRawProps, cachedPropNames, delegateMethods) : props;
     mPropDefaults = propDefaults;
     mTypeVariables = typeVariables;
@@ -704,6 +704,7 @@ public final class SpecModelImpl implements SpecModel {
     private Object mRepresentedObject;
     private SpecElementType mSpecElementType;
     private ImmutableList<PropModel> mProps;
+    private ImmutableList<InjectPropModel> mInjectProps;
 
     private Builder() {}
 
@@ -805,6 +806,11 @@ public final class SpecModelImpl implements SpecModel {
       return this;
     }
 
+    public Builder injectProps(ImmutableList<InjectPropModel> injectPropModels) {
+      mInjectProps = injectPropModels;
+      return this;
+    }
+
     public Builder dependencyInjectionGenerator(
         @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
       mDependencyInjectionHelper = dependencyInjectionHelper;
@@ -834,6 +840,7 @@ public final class SpecModelImpl implements SpecModel {
           mTriggerMethodModels,
           mUpdateStateMethodModels,
           mProps,
+          mInjectProps,
           mCachedPropNames,
           mTypeVariableNames,
           mPropDefaultModels,
@@ -874,6 +881,10 @@ public final class SpecModelImpl implements SpecModel {
 
       if (mProps == null) {
         mProps = ImmutableList.of();
+      }
+
+      if (mInjectProps == null) {
+        mInjectProps = ImmutableList.of();
       }
 
       if (mDelegateMethodModels == null) {
