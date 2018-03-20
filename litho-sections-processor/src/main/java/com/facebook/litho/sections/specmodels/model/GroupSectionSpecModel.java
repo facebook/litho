@@ -16,6 +16,7 @@ import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
+import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
@@ -144,6 +145,11 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   @Override
   public ImmutableList<PropModel> getProps() {
     return mSpecModel.getProps();
+  }
+
+  @Override
+  public ImmutableList<InjectPropModel> getInjectProps() {
+    return mSpecModel.getInjectProps();
   }
 
   @Override

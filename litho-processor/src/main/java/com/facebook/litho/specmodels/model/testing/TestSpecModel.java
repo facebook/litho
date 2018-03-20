@@ -18,6 +18,7 @@ import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.HasEnclosedSpecModel;
+import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.facebook.litho.specmodels.model.PropJavadocModel;
@@ -120,6 +121,11 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   @Override
   public ImmutableList<PropModel> getProps() {
     return mSpecModel.getProps();
+  }
+
+  @Override
+  public ImmutableList<InjectPropModel> getInjectProps() {
+    return mEnclosedSpecModel.getInjectProps();
   }
 
   @Override

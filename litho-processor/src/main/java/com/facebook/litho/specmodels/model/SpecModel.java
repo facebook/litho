@@ -60,6 +60,9 @@ public interface SpecModel {
   /** @return the set of props that are defined by the spec. */
   ImmutableList<PropModel> getProps();
 
+  /** @return the set of injected props that are defined by the spec. */
+  ImmutableList<InjectPropModel> getInjectProps();
+
   /** @return the set of prop defaults defined by the spec. */
   ImmutableList<PropDefaultModel> getPropDefaults();
 

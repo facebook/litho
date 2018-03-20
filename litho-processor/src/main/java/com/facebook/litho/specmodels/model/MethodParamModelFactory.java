@@ -11,6 +11,7 @@ package com.facebook.litho.specmodels.model;
 
 import static com.facebook.litho.specmodels.model.ClassNames.DIFF;
 
+import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
@@ -61,6 +62,10 @@ public final class MethodParamModelFactory {
         } else {
           return propModel;
         }
+      }
+
+      if (annotation instanceof InjectProp) {
+        return new InjectPropModel(simpleMethodParamModel);
       }
 
       if (annotation instanceof State) {

@@ -60,6 +60,7 @@ public final class SpecModelImpl implements SpecModel {
   private final boolean mHasInjectedDependencies;
   @Nullable private final DependencyInjectionHelper mDependencyInjectionHelper;
   private final Object mRepresentedObject;
+  private final ImmutableList<InjectPropModel> mInjectProps;
 
   private SpecModelImpl(
       String qualifiedSpecClassName,
@@ -93,6 +94,8 @@ public final class SpecModelImpl implements SpecModel {
     mTriggerMethods = triggerMethods;
     mUpdateStateMethods = updateStateMethods;
     mRawProps = getRawProps(delegateMethods, eventMethods, triggerMethods, updateStateMethods);
+    mInjectProps =
+        getInjectProps(delegateMethods, eventMethods, triggerMethods, updateStateMethods);
     mProps = props.isEmpty() ? getProps(mRawProps, cachedPropNames, delegateMethods) : props;
     mPropDefaults = propDefaults;
     mTypeVariables = typeVariables;
@@ -163,6 +166,11 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public ImmutableList<PropModel> getProps() {
     return mProps;
+  }
+
+  @Override
+  public ImmutableList<InjectPropModel> getInjectProps() {
+    return mInjectProps;
   }
 
   @Override
@@ -465,6 +473,48 @@ public final class SpecModelImpl implements SpecModel {
     props.addAll(additionalProps);
 
     return ImmutableList.copyOf(new ArrayList<>(props));
+  }
+
+  private static ImmutableList<InjectPropModel> getInjectProps(
+      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
+    final List<InjectPropModel> props = new ArrayList<>();
+
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
+      for (MethodParamModel param : delegateMethod.methodParams) {
+        if (param instanceof InjectPropModel) {
+          props.add((InjectPropModel) param);
+        }
+      }
+    }
+
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod : eventMethods) {
+      for (MethodParamModel param : eventMethod.methodParams) {
+        if (param instanceof InjectPropModel) {
+          props.add((InjectPropModel) param);
+        }
+      }
+    }
+
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethod : triggerMethods) {
+      for (MethodParamModel param : triggerMethod.methodParams) {
+        if (param instanceof InjectPropModel) {
+          props.add((InjectPropModel) param);
+        }
+      }
+    }
+
+    for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod : updateStateMethods) {
+      for (MethodParamModel param : updateStateMethod.methodParams) {
+        if (param instanceof InjectPropModel) {
+          props.add((InjectPropModel) param);
+        }
+      }
+    }
+
+    return ImmutableList.copyOf(props);
   }
 
   private static ImmutableList<StateParamModel> getStateValues(

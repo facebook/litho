@@ -142,6 +142,11 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public ImmutableList<InjectPropModel> getInjectProps() {
+    return mSpecModel.getInjectProps();
+  }
+
+  @Override
   public ImmutableList<PropDefaultModel> getPropDefaults() {
     return mSpecModel.getPropDefaults();
   }
