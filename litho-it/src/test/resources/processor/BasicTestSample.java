@@ -59,7 +59,7 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     }
 
     public Matcher child(org.hamcrest.Matcher<Component> matcher) {
-      mChildMatcher = matcher;
+      mChildMatcher = (org.hamcrest.Matcher<com.facebook.litho.Component>) matcher;
       return this;
     }
 
@@ -74,7 +74,7 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     }
 
     public Matcher myDimenSizeProp(org.hamcrest.Matcher<Float> matcher) {
-      mMyDimenSizePropMatcher = matcher;
+      mMyDimenSizePropMatcher = (org.hamcrest.Matcher<java.lang.Float>) matcher;
       return this;
     }
 
@@ -104,7 +104,7 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     }
 
     public Matcher myRequiredColorProp(org.hamcrest.Matcher<Integer> matcher) {
-      mMyRequiredColorPropMatcher = matcher;
+      mMyRequiredColorPropMatcher = (org.hamcrest.Matcher<java.lang.Integer>) matcher;
       return this;
     }
 
@@ -131,7 +131,7 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     }
 
     public Matcher myStringProp(org.hamcrest.Matcher<String> matcher) {
-      mMyStringPropMatcher = matcher;
+      mMyStringPropMatcher = (org.hamcrest.Matcher<java.lang.String>) matcher;
       return this;
     }
 
@@ -157,40 +157,75 @@ public final class BasicTestSample implements BasicTestSampleSpec {
               final com.facebook.litho.processor.integration.resources.BasicLayout impl =
                   (com.facebook.litho.processor.integration.resources.BasicLayout)
                       value.getComponent();
+              final Component propValueChildComponent;
+              try {
+                propValueChildComponent =
+                    (Component) impl.getClass().getDeclaredField("child").get(impl);
+              } catch (Exception e) {
+                throw new RuntimeException(e);
+              }
               if (mChildComponentMatcher != null
-                  && !mChildComponentMatcher.matches(value.getNestedInstance(impl.child))) {
+                  && !mChildComponentMatcher.matches(
+                      value.getNestedInstance(propValueChildComponent))) {
                 as(mChildComponentMatcher.description());
                 return false;
               }
-              if (mChildMatcher != null && !mChildMatcher.matches(impl.child)) {
+              final Component propValueChild;
+              try {
+                propValueChild = (Component) impl.getClass().getDeclaredField("child").get(impl);
+              } catch (Exception e) {
+                throw new RuntimeException(e);
+              }
+              if (mChildMatcher != null && !mChildMatcher.matches(propValueChild)) {
                 as(
                     new TextDescription(
                         "Sub-component of type <BasicLayout> with prop <child> %s (doesn't match %s)",
-                        mChildMatcher, impl.child));
+                        mChildMatcher, propValueChild));
                 return false;
               }
+              final float propValueMyDimenSizeProp;
+              try {
+                propValueMyDimenSizeProp =
+                    (float) impl.getClass().getDeclaredField("myDimenSizeProp").get(impl);
+              } catch (Exception e) {
+                throw new RuntimeException(e);
+              }
               if (mMyDimenSizePropMatcher != null
-                  && !mMyDimenSizePropMatcher.matches(impl.myDimenSizeProp)) {
+                  && !mMyDimenSizePropMatcher.matches(propValueMyDimenSizeProp)) {
                 as(
                     new TextDescription(
                         "Sub-component of type <BasicLayout> with prop <myDimenSizeProp> %s (doesn't match %s)",
-                        mMyDimenSizePropMatcher, impl.myDimenSizeProp));
+                        mMyDimenSizePropMatcher, propValueMyDimenSizeProp));
                 return false;
               }
+              final int propValueMyRequiredColorProp;
+              try {
+                propValueMyRequiredColorProp =
+                    (int) impl.getClass().getDeclaredField("myRequiredColorProp").get(impl);
+              } catch (Exception e) {
+                throw new RuntimeException(e);
+              }
               if (mMyRequiredColorPropMatcher != null
-                  && !mMyRequiredColorPropMatcher.matches(impl.myRequiredColorProp)) {
+                  && !mMyRequiredColorPropMatcher.matches(propValueMyRequiredColorProp)) {
                 as(
                     new TextDescription(
                         "Sub-component of type <BasicLayout> with prop <myRequiredColorProp> %s (doesn't match %s)",
-                        mMyRequiredColorPropMatcher, impl.myRequiredColorProp));
+                        mMyRequiredColorPropMatcher, propValueMyRequiredColorProp));
                 return false;
               }
+              final String propValueMyStringProp;
+              try {
+                propValueMyStringProp =
+                    (String) impl.getClass().getDeclaredField("myStringProp").get(impl);
+              } catch (Exception e) {
+                throw new RuntimeException(e);
+              }
               if (mMyStringPropMatcher != null
-                  && !mMyStringPropMatcher.matches(impl.myStringProp)) {
+                  && !mMyStringPropMatcher.matches(propValueMyStringProp)) {
                 as(
                     new TextDescription(
                         "Sub-component of type <BasicLayout> with prop <myStringProp> %s (doesn't match %s)",
-                        mMyStringPropMatcher, impl.myStringProp));
+                        mMyStringPropMatcher, propValueMyStringProp));
                 return false;
               }
               return true;

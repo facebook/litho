@@ -235,7 +235,10 @@ public final class MatcherGenerator {
     return getMethodSpecBuilder(
             specModel,
             ImmutableList.of(ParameterSpec.builder(getPropMatcherType(prop), "matcher").build()),
-            CodeBlock.builder().addStatement("$L = matcher", propMatcherName).build(),
+            CodeBlock.builder()
+                .addStatement(
+                    "$L = ($L) matcher", propMatcherName, getPropMatcherType(prop).toString())
+                .build(),
             propName)
         .build();
   }
@@ -619,13 +622,35 @@ public final class MatcherGenerator {
     return builder.build();
   }
 
+  private static String getPropValueName(PropModel prop) {
+    final String name = prop.getName();
+    return "propValue" + name.substring(0, 1).toUpperCase() + name.substring(1);
+  }
+
+  private static CodeBlock generateFieldExtractorBlock(PropModel prop, String varName) {
+    return CodeBlock.builder()
+        .addStatement("final $T $L", prop.getTypeName(), varName)
+        .beginControlFlow("try")
+        .addStatement(
+            "$L = ($T) impl.getClass().getDeclaredField($S).get(impl)",
+            varName,
+            prop.getTypeName(),
+            prop.getName())
+        .nextControlFlow("catch (Exception e)")
+        .addStatement("throw new RuntimeException(e)")
+        .endControlFlow()
+        .build();
+  }
+
   private static CodeBlock generateComponentMatchBlock(PropModel prop) {
     final String matcherName = getPropComponentMatcherName(prop);
+    final String propValueName = getPropValueName(prop) + "Component";
     return CodeBlock.builder()
+        .add(generateFieldExtractorBlock(prop, propValueName))
         .beginControlFlow(
-            "if ($1N != null && !$1N.matches(value.getNestedInstance(impl.$2L)))",
+            "if ($1N != null && !$1N.matches(value.getNestedInstance($2L)))",
             matcherName,
-            prop.getName())
+            propValueName)
         .addStatement("as($N.description())", matcherName)
         .addStatement("return false")
         .endControlFlow()
@@ -636,7 +661,9 @@ public final class MatcherGenerator {
       SpecModel enclosedSpecModel, PropModel prop) {
     final String matcherName = getPropMatcherName(prop);
     return CodeBlock.builder()
-        .beginControlFlow("if ($1N != null && !$1N.matches(impl.$2L))", matcherName, prop.getName())
+        .add(generateFieldExtractorBlock(prop, getPropValueName(prop)))
+        .beginControlFlow(
+            "if ($1N != null && !$1N.matches($2L))", matcherName, getPropValueName(prop))
         .add(generateMatchFailureStatement(enclosedSpecModel, matcherName, prop))
         .addStatement("return false")
         .endControlFlow()
@@ -648,8 +675,11 @@ public final class MatcherGenerator {
     return CodeBlock.builder()
         .add("as(new $T(", ClassNames.ASSERTJ_TEXT_DESCRIPTION)
         .add(
-            "\"Sub-component of type <$T> with prop <$L> %s (doesn't match %s)\", $N, impl.$L",
-            enclosedSpecModel.getComponentTypeName(), prop.getName(), matcherName, prop.getName())
+            "\"Sub-component of type <$T> with prop <$L> %s (doesn't match %s)\", $N, $L",
+            enclosedSpecModel.getComponentTypeName(),
+            prop.getName(),
+            matcherName,
+            getPropValueName(prop))
         .addStatement("))")
         .build();
   }
