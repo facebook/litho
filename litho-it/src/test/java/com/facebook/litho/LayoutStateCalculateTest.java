@@ -2566,7 +2566,7 @@ public class LayoutStateCalculateTest {
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
     // Output at index 1 is BorderColorDrawable component.
-    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
+    assertThat(getComponentAt(layoutState, 2)).isInstanceOf(DrawableComponent.class);
   }
 
   @Test
@@ -2592,7 +2592,7 @@ public class LayoutStateCalculateTest {
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
     // Output at index 1 is BorderColorDrawable component.
-    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
+    assertThat(getComponentAt(layoutState, 2)).isInstanceOf(DrawableComponent.class);
   }
 
   @Test

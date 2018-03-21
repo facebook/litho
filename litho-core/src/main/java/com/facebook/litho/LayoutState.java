@@ -609,7 +609,7 @@ class LayoutState {
     final int currentHostOutputPosition = layoutState.mCurrentHostOutputPosition;
 
     int hostLayoutPosition = -1;
-    
+
     // 1. Insert a host LayoutOutput if we have some interactive content to be attached to.
     if (needsHostView) {
       hostLayoutPosition = addHostLayoutOutput(node, layoutState, diffNode);
@@ -687,26 +687,7 @@ class LayoutState {
       }
     }
 
-    // 4. Add border color if defined.
-    if (node.shouldDrawBorders()) {
-      final LayoutOutput convertBorder = (currentDiffNode != null)
-          ? currentDiffNode.getBorder()
-          : null;
-
-      final LayoutOutput borderOutput =
-          addDrawableComponent(
-              node,
-              layoutState,
-              convertBorder,
-              getBorderColorDrawable(node),
-              LayoutOutput.TYPE_BORDER,
-              needsHostView);
-      if (diffNode != null) {
-        diffNode.setBorder(borderOutput);
-      }
-    }
-
-    // 5. Extract the Transitions.
+    // 4. Extract the Transitions.
     if (ComponentsConfiguration.ARE_TRANSITIONS_SUPPORTED) {
       final ArrayList<Transition> transitions = node.getTransitions();
       if (transitions != null) {
@@ -758,6 +739,24 @@ class LayoutState {
     layoutState.mParentEnabledState = parentEnabledState;
     layoutState.mCurrentX -= node.getX();
     layoutState.mCurrentY -= node.getY();
+
+    // 5. Add border color if defined.
+    if (node.shouldDrawBorders()) {
+      final LayoutOutput convertBorder =
+          (currentDiffNode != null) ? currentDiffNode.getBorder() : null;
+
+      final LayoutOutput borderOutput =
+          addDrawableComponent(
+              node,
+              layoutState,
+              convertBorder,
+              getBorderColorDrawable(node),
+              LayoutOutput.TYPE_BORDER,
+              needsHostView);
+      if (diffNode != null) {
+        diffNode.setBorder(borderOutput);
+      }
+    }
 
     // 6. Add foreground if defined.
     final Drawable foreground = node.getForeground();
