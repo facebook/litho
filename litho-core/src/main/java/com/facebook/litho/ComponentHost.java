@@ -1069,7 +1069,7 @@ public class ComponentHost extends ViewGroup {
 
     int index = 0;
     final int viewMountItemCount = mViewMountItems.size();
-    for (int i = 0, size = viewMountItemCount; i < size; i++) {
+    for (int i = 0; i < viewMountItemCount; i++) {
       final View child = (View) mViewMountItems.valueAt(i).getContent();
       mChildDrawingOrder[index++] = indexOfChild(child);
     }
