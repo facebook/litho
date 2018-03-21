@@ -619,7 +619,9 @@ public abstract class Component extends ComponentLifecycle
 
     /**
      * Controls how a child aligns in the cross direction, overriding the alignItems of the parent.
-     * See https://facebook.github.io/yoga/docs/alignment/ for more information.
+     * See <a
+     * href="https://yogalayout.com/docs/align-items">https://yogalayout.com/docs/align-items</a>
+     * for more information.
      *
      * <p>Default: {@link YogaAlign#AUTO}
      */
@@ -629,8 +631,9 @@ public abstract class Component extends ComponentLifecycle
     }
 
     /**
-     * Controls how this component will be positioned within its parent. See
-     * https://facebook.github.io/yoga/docs/absolute-position/ for more details.
+     * Controls how this component will be positioned within its parent. See <a
+     * href="https://yogalayout.com/docs/absolute-relative-layout">https://yogalayout.com/docs/absolute-relative-layout</a>
+     * for more details.
      *
      * <p>Default: {@link YogaPositionType#RELATIVE}
      */
@@ -651,7 +654,8 @@ public abstract class Component extends ComponentLifecycle
      * <p>When flex is -1, the component is normally sized according width and height. However, if
      * there's not enough space, the component will shrink to its minWidth and minHeight.
      *
-     * <p>See https://facebook.github.io/yoga/docs/flex/ for more information.
+     * <p>See <a href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for
+     * more information.
      *
      * <p>Default: 0
      */
@@ -664,7 +668,8 @@ public abstract class Component extends ComponentLifecycle
      * If the sum of childrens' main axis dimensions is less than the minimum size, how much should
      * this component grow? This value represents the "flex grow factor" and determines how much
      * this component should grow along the main axis in relation to any other flexible children.
-     * See https://facebook.github.io/yoga/docs/flex/ for more information.
+     * See <a href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for more
+     * information.
      *
      * <p>Default: 0
      */
@@ -675,8 +680,9 @@ public abstract class Component extends ComponentLifecycle
 
     /**
      * The FlexShrink property describes how to shrink children along the main axis in the case that
-     * the total size of the children overflow the size of the container on the main axis. See
-     * https://facebook.github.io/yoga/docs/flex/ for more information.
+     * the total size of the children overflow the size of the container on the main axis. See <a
+     * href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for more
+     * information.
      *
      * <p>Default: 0
      */
@@ -691,7 +697,9 @@ public abstract class Component extends ComponentLifecycle
      * if its parent is a container with FlexDirection = row or setting the Height of a child if its
      * parent is a container with FlexDirection = column. The FlexBasis of an item is the default
      * size of that item, the size of the item before any FlexGrow and FlexShrink calculations are
-     * performed. See https://facebook.github.io/yoga/docs/flex/ for more information.
+     * performed. See <a
+     * href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for more
+     * information.
      *
      * <p>Default: 0
      */
@@ -802,8 +810,9 @@ public abstract class Component extends ComponentLifecycle
 
     /**
      * When used in combination with {@link #positionType} of {@link YogaPositionType#ABSOLUTE},
-     * allows the component to specify how it should be positioned within its parent. See
-     * https://facebook.github.io/yoga/docs/absolute-position/ for more information.
+     * allows the component to specify how it should be positioned within its parent. See <a
+     * href="https://yogalayout.com/docs/absolute-relative-layout">https://yogalayout.com/docs/absolute-relative-layout</a>
+     * for more information.
      */
     public T positionPx(YogaEdge edge, @Px int position) {
       mComponent.getOrCreateCommonPropsHolder().positionPx(edge, position);
@@ -1359,8 +1368,9 @@ public abstract class Component extends ComponentLifecycle
     /**
      * The AlignSelf property has the same options and effect as AlignItems but instead of affecting
      * the children within a container, you can apply this property to a single child to change its
-     * alignment within its parent. See https://facebook.github.io/yoga/docs/alignment/ for more
-     * information.
+     * alignment within its parent. See <a
+     * href="https://yogalayout.com/docs/align-content">https://yogalayout.com/docs/align-content</a>
+     * for more information.
      *
      * <p>Default: {@link YogaAlign#AUTO}
      */
@@ -1369,8 +1379,9 @@ public abstract class Component extends ComponentLifecycle
     /**
      * The AlignItems property describes how to align children along the cross axis of their
      * container. AlignItems is very similar to JustifyContent but instead of applying to the main
-     * axis, it applies to the cross axis. See https://facebook.github.io/yoga/docs/alignment/ for
-     * more information.
+     * axis, it applies to the cross axis. See <a
+     * href="https://yogalayout.com/docs/align-items">https://yogalayout.com/docs/align-items</a>
+     * for more information.
      *
      * <p>Default: {@link YogaAlign#STRETCH}
      */
@@ -1380,7 +1391,9 @@ public abstract class Component extends ComponentLifecycle
      * The JustifyContent property describes how to align children within the main axis of a
      * container. For example, you can use this property to center a child horizontally within a
      * container with FlexDirection = Row or vertically within one with FlexDirection = Column. See
-     * https://facebook.github.io/yoga/docs/justify-content/ for more information.
+     * <a
+     * href="https://yogalayout.com/docs/justify-content">https://yogalayout.com/docs/justify-content</a>
+     * for more information.
      *
      * <p>Default: {@link YogaJustify#FLEX_START}
      */
@@ -1393,7 +1406,8 @@ public abstract class Component extends ComponentLifecycle
      *
      * <p>The next line will have the same FlexDirection as the first line and will appear next to
      * the first line along the cross axis - below it if using FlexDirection = Column and to the
-     * right if using FlexDirection = Row. See https://facebook.github.io/yoga/docs/flex-wrap/ for
+     * right if using FlexDirection = Row. See <a
+     * href="https://yogalayout.com/docs/flex-wrap">https://yogalayout.com/docs/flex-wrap</a> for
      * more information.
      *
      * <p>Default: {@link YogaWrap#NO_WRAP}
