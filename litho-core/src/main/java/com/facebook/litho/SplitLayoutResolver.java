@@ -9,9 +9,10 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
+import static com.facebook.litho.config.ComponentsConfiguration.splitLayoutBackgroundThreadPoolConfiguration;
+import static com.facebook.litho.config.ComponentsConfiguration.splitLayoutMainThreadPoolConfiguration;
 
 import android.os.Looper;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.List;
 import java.util.concurrent.ExecutorCompletionService;
 
@@ -28,14 +29,14 @@ public class SplitLayoutResolver {
     // TODO mihaelao T27032479 Set proper pool sizes when configuring the experiment.
     final LayoutThreadPoolExecutor mainExecutor =
         new LayoutThreadPoolExecutor(
-            ComponentsConfiguration.layoutMainThreadPoolCorePoolSize,
-            ComponentsConfiguration.layoutMainThreadPoolMaxPoolSize,
-            ComponentsConfiguration.layoutMainThreadPoolPriority);
+            splitLayoutMainThreadPoolConfiguration.getCorePoolSize(),
+            splitLayoutMainThreadPoolConfiguration.getMaxPoolSize(),
+            splitLayoutMainThreadPoolConfiguration.getThreadPriority());
     final LayoutThreadPoolExecutor bgExecutor =
         new LayoutThreadPoolExecutor(
-            ComponentsConfiguration.layoutBackgroundThreadPoolCorePoolSize,
-            ComponentsConfiguration.layoutBackgroundThreadMaxPoolSize,
-            ComponentsConfiguration.layoutBackgroundThreadPoolPriority);
+            splitLayoutBackgroundThreadPoolConfiguration.getCorePoolSize(),
+            splitLayoutBackgroundThreadPoolConfiguration.getMaxPoolSize(),
+            splitLayoutBackgroundThreadPoolConfiguration.getThreadPriority());
     mainService = new ExecutorCompletionService(mainExecutor);
     bgService = new ExecutorCompletionService(bgExecutor);
   }
