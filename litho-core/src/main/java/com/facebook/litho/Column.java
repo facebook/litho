@@ -101,7 +101,7 @@ public final class Column extends Component {
     }
 
     if (children != null) {
-      if (SplitBackgroundLayoutConfiguration.isSplitLayoutEnabled(this)) {
+      if (mSplitChildrenLayoutInThreadPool) {
         SplitLayoutResolver.resolveLayouts(children, node);
       } else {
         for (Component child : children) {

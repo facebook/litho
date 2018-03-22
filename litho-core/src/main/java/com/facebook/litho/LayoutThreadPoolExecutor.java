@@ -9,6 +9,7 @@
 package com.facebook.litho;
 
 import android.os.Process;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -48,16 +49,7 @@ public class LayoutThreadPoolExecutor extends ThreadPoolExecutor {
           new Runnable() {
             @Override
             public void run() {
-              try {
-                Process.setThreadPriority(mThreadPriority);
-              } catch (SecurityException e) {
-                /**
-                 * From {@link Process#THREAD_PRIORITY_DISPLAY}, some applications can not change
-                 * the thread priority to that of the main thread. This catches that potential error
-                 * and tries to set a lower priority.
-                 */
-                Process.setThreadPriority(mThreadPriority + 1);
-              }
+              Process.setThreadPriority(mThreadPriority);
               r.run();
             }
           };
