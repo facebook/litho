@@ -61,13 +61,13 @@ public class SectionsLogEventUtils {
       case ApplyNewChangeSet.NONE:
         return "none";
       case ApplyNewChangeSet.SET_ROOT:
-        return "set_root";
+        return "setRoot";
       case ApplyNewChangeSet.SET_ROOT_ASYNC:
-        return "set_root_async";
+        return "setRootAsync";
       case ApplyNewChangeSet.UPDATE_STATE:
-        return "update_state";
+        return "updateState";
       case ApplyNewChangeSet.UPDATE_STATE_ASYNC:
-        return "update_state_async";
+        return "updateStateAsync";
       default:
         throw new IllegalStateException("Unknown source");
     }

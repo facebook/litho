@@ -780,8 +780,11 @@ public class SectionTree {
   private void applyNewChangeSet(@ApplyNewChangeSet int source) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
+      final String name = mNextSection != null ? mNextSection.getSimpleName() : "<null>";
       ComponentsSystrace.beginSection(
-          "applyNewChangeSet_" + SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
+          name
+              + "_applyNewChangeSet_"
+              + SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
     }
 
     try {
