@@ -8,14 +8,25 @@
  */
 package com.facebook.litho;
 
+import com.facebook.litho.config.ComponentsConfiguration;
+
 /**
  * Configures what components can put their children's layout calculations on multiple background
- * threads.`
+ * threads.
  */
 public class SplitBackgroundLayoutConfiguration {
 
+  /** Checks if a component is enabled to split its children layouts on multiple threads. */
   static boolean canSplitChildrenLayouts(Component component) {
-    // todo mihaelao T27032479
-    return false;
+    return ComponentsConfiguration.enabledForSplitLayout.contains(
+        component.getClass().getSimpleName());
+  }
+
+  /** If true, the given component's children layouts will be split on multiple threads. */
+  static boolean isSplitLayoutEnabled(Component component) {
+    return component.mSplitChildrenLayoutInThreadPool
+        && (ThreadUtils.isMainThread()
+            ? ComponentsConfiguration.isMainThreadSplitLayoutEnabled
+            : ComponentsConfiguration.isSplitLayoutEnabled);
   }
 }

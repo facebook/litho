@@ -14,7 +14,9 @@ import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 
 import android.os.Process;
 import com.facebook.litho.BuildConfig;
+import com.facebook.litho.internal.ArraySet;
 import com.facebook.yoga.YogaLogger;
+import java.util.Set;
 
 /**
  * Configuration for the Components library.
@@ -154,4 +156,12 @@ public class ComponentsConfiguration {
    * single default thread will be used for background layout.
    */
   public static LayoutThreadPoolConfiguration threadPoolForBackgroundThreadsConfig = null;
+
+  public static Set<String> enabledForSplitLayout = new ArraySet<>();
+  public static boolean isSplitLayoutEnabled;
+  public static boolean isMainThreadSplitLayoutEnabled;
+  public static LayoutThreadPoolConfiguration splitLayoutMainThreadPoolConfiguration =
+      new LayoutThreadPoolConfiguration(2, 2, Process.THREAD_PRIORITY_DISPLAY);
+  public static LayoutThreadPoolConfiguration splitLayoutBackgroundThreadPoolConfiguration =
+      new LayoutThreadPoolConfiguration(2, 2, Process.THREAD_PRIORITY_BACKGROUND);
 }
