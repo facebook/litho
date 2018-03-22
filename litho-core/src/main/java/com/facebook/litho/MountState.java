@@ -996,14 +996,19 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         unmountItem(mContext, i, mHostsByMarker);
         mPrepareMountStats.unmountedCount++;
       } else {
-        final long newHostMarker = newLayoutState.getMountableOutputAt(newPosition).getHostMarker();
+        final LayoutOutput newItem = newLayoutState.getMountableOutputAt(newPosition);
+        final long newHostMarker = newItem.getHostMarker();
 
         if (oldItem == null) {
           // This was previously unmounted.
           mPrepareMountStats.unmountedCount++;
-        } else if (oldItem.getHost() != mHostsByMarker.get(newHostMarker)) {
+        } else if (oldItem.getHost() != mHostsByMarker.get(newHostMarker)
+            || (oldItem.getTransitionKey() != null
+                && !oldItem.getTransitionKey().equals(newItem.getTransitionKey()))) {
           // If the id is the same but the parent host is different we simply unmount the item and
-          // re-mount it later. If the item to unmount is a ComponentHost, all the children will be
+          // re-mount it later. Also if transitionKeys are different we unmount them because
+          // logically they represent different items.
+          // If the item to unmount is a ComponentHost, all the children will be
           // recursively unmounted.
           unmountItem(mContext, i, mHostsByMarker);
           mPrepareMountStats.unmountedCount++;
