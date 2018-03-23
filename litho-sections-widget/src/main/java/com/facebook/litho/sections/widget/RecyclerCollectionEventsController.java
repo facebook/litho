@@ -9,7 +9,6 @@
 
 package com.facebook.litho.sections.widget;
 
-import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.RecyclerEventsController;
 import java.lang.ref.WeakReference;
@@ -42,15 +41,6 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
       }
 
       mSectionTree.get().refresh();
-    }
-  }
-
-  /**
-   * Update the section tree with a new root.
-   */
-  public void requestNewRootSection(Section section) {
-    if (mSectionTree != null && mSectionTree.get() != null) {
-      mSectionTree.get().setRoot(section);
     }
   }
 
