@@ -396,9 +396,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       final long visibilityOutputId = visibilityOutput.getId();
       final Rect visibilityOutputBounds = visibilityOutput.getBounds();
 
-      sTempRect.set(visibilityOutputBounds);
-      final boolean isCurrentlyVisible = sTempRect.intersect(localVisibleRect)
-          && isInVisibleRange(visibilityOutput, visibilityOutputBounds, localVisibleRect);
+      boolean boundsIntersect = sTempRect.setIntersect(visibilityOutputBounds, localVisibleRect);
+      final boolean isCurrentlyVisible =
+          boundsIntersect && isInVisibleRange(visibilityOutput, visibilityOutputBounds, sTempRect);
 
       VisibilityItem visibilityItem = mVisibilityIdToItemMap.get(visibilityOutputId);
       if (visibilityItem != null) {
