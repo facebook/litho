@@ -340,6 +340,7 @@ public class ComponentLifecycleTest {
     private final InternalNode mNode;
 
     TestBaseComponent(boolean canMeasure, MountType mountType, InternalNode node) {
+      super("TestBaseComponent");
       mCanMeasure = canMeasure;
       mMountType = mountType;
       mNode = node;
@@ -369,11 +370,6 @@ public class ComponentLifecycleTest {
     @Override
     public MountType getMountType() {
       return mMountType;
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "TestLifecycleComponentBase";
     }
   }
 

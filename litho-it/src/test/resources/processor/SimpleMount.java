@@ -34,12 +34,7 @@ public final class SimpleMount extends Component {
   double ratio;
 
   private SimpleMount() {
-    super();
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "SimpleMount";
+    super("SimpleMount");
   }
 
   @Override
@@ -91,8 +86,7 @@ public final class SimpleMount extends Component {
 
   @Override
   protected Object onCreateMountContent(ComponentContext c) {
-    Object _result = (Object) SimpleMountSpec.onCreateMountContent(
-        (ComponentContext) c);
+    Object _result = (Object) SimpleMountSpec.onCreateMountContent((ComponentContext) c);
     return _result;
   }
 
@@ -103,9 +97,7 @@ public final class SimpleMount extends Component {
 
   @Override
   protected void onUnmount(ComponentContext c, Object mountedView) {
-    SimpleMountSpec.onUnmount(
-        (ComponentContext) c,
-        (LithoView) mountedView);
+    SimpleMountSpec.onUnmount((ComponentContext) c, (LithoView) mountedView);
   }
 
   @Override
@@ -196,5 +188,3 @@ public final class SimpleMount extends Component {
     }
   }
 }
-
-

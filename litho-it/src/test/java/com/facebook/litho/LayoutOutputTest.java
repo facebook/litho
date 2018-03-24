@@ -36,14 +36,13 @@ public class LayoutOutputTest {
 
   private static class TestComponent extends Component {
 
-    @Override
-    int getTypeId() {
-      return LIFECYCLE_TEST_ID;
+    protected TestComponent() {
+      super("TestComponent");
     }
 
     @Override
-    public String getSimpleName() {
-      return "TestComponent";
+    int getTypeId() {
+      return LIFECYCLE_TEST_ID;
     }
   }
 

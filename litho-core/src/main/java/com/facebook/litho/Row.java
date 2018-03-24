@@ -48,11 +48,8 @@ public final class Row extends Component {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
-  private Row() {}
-
-  @Override
-  public String getSimpleName() {
-    return "Row";
+  private Row() {
+    super("Row");
   }
 
   @Override

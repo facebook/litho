@@ -101,16 +101,21 @@ public abstract class Component extends ComponentLifecycle
   // createLayout.
   @Nullable InternalNode mLayoutCreatedInWillRender;
 
-  protected Component() {
-    this(null);
+  /** Holds an identifying name of the component, set at construction time. */
+  private final String mSimpleName;
+
+  protected Component(String simpleName) {
+    this(simpleName, null);
   }
 
   /**
    * This constructor should be called only if working with a manually crafted "special" Component.
-   * This should NOT be used in general use cases. Use the standard {@link #Component()} instead.
+   * This should NOT be used in general use cases. Use the standard {@link #Component(String)}
+   * instead.
    */
-  protected Component(Class classType) {
+  protected Component(String simpleName, Class classType) {
     super(classType);
+    mSimpleName = simpleName;
     if (!ComponentsConfiguration.lazyInitializeComponent) {
       mChildCounters = new HashMap<>();
       mKey = Integer.toString(getTypeId());
@@ -119,10 +124,10 @@ public abstract class Component extends ComponentLifecycle
     }
   }
 
-  /**
-   * Mostly used by logging to provide more readable messages.
-   */
-  public abstract String getSimpleName();
+  /** Mostly used by logging to provide more readable messages. */
+  public final String getSimpleName() {
+    return mSimpleName;
+  }
 
   /**
    * Compares this component to a different one to check if they are the same

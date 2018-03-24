@@ -16,17 +16,13 @@ import com.facebook.litho.sections.LoadingEvent;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 
+/** @see com.facebook.litho.sections.processor.integration.resources.SimpleGroupSectionSpec */
 public final class SimpleGroupSection extends Section {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<Builder>(2);
 
   private SimpleGroupSection() {
-    super();
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "SimpleGroupSection";
+    super("SimpleGroupSection");
   }
 
   @Override

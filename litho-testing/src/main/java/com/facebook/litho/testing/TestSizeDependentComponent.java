@@ -20,7 +20,9 @@ public class TestSizeDependentComponent extends Component {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
-  private TestSizeDependentComponent() {}
+  private TestSizeDependentComponent() {
+    super("TestSizeDependentComponent");
+  }
 
   @Override
   protected Component onCreateLayoutWithSizeSpec(
@@ -75,11 +77,6 @@ public class TestSizeDependentComponent extends Component {
 
   boolean hasFixedSizes;
   boolean isDelegate;
-
-  @Override
-  public String getSimpleName() {
-    return "TestSizeDependentComponent";
-  }
 
   @Override
   public boolean equals(Object other) {

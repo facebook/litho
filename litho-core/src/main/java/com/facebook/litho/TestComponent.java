@@ -18,14 +18,9 @@ class TestComponent extends Component {
   private final Component mWrappedComponent;
 
   TestComponent(Component component) {
-    super();
+    super(component.getSimpleName());
 
     mWrappedComponent = component;
-  }
-
-  @Override
-  public String getSimpleName() {
-    return mWrappedComponent.getSimpleName();
   }
 
   Component getWrappedComponent() {

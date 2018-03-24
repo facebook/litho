@@ -63,18 +63,13 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   EventHandler testEventHandler;
 
   private FullDiffSection() {
-    super();
+    super("FullDiffSection");
     mStateContainer = new FullDiffSectionStateContainer();
   }
 
   @Override
   protected SectionLifecycle.StateContainer getStateContainer() {
     return mStateContainer;
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "FullDiffSection";
   }
 
   @Override

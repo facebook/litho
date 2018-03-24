@@ -71,18 +71,13 @@ final class FullGroupSection<T> extends Section implements TestTag {
   EventHandler testEventHandler;
 
   private FullGroupSection() {
-    super();
+    super("FullGroupSection");
     mStateContainer = new FullGroupSectionStateContainer();
   }
 
   @Override
   protected SectionLifecycle.StateContainer getStateContainer() {
     return mStateContainer;
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "FullGroupSection";
   }
 
   @Override

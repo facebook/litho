@@ -578,12 +578,7 @@ public class LayoutStateCreateTreeTest {
 
     public static TestDrawableComponentWithMockInternalNode.Builder create(ComponentContext c) {
       Builder builder = new Builder();
-      builder.mComponent = new TestDrawableComponentWithMockInternalNode() {
-            @Override
-            public String getSimpleName() {
-              return "TestDrawableComponentWithMockInternalNode";
-            }
-          };
+      builder.mComponent = new TestDrawableComponentWithMockInternalNode();
       builder.init(c, 0, 0, builder.mComponent);
 
       return builder;

@@ -181,7 +181,7 @@ public class TestSectionCreator {
         int initialCount,
         String key,
         boolean forceShouldUpdate) {
-      super();
+      super("TestSection");
       this.forceShouldUpdate = forceShouldUpdate;
       setCount(initialCount);
       setKey(key);
@@ -196,11 +196,6 @@ public class TestSectionCreator {
 
       return o.getClass().equals(getClass())
           && ((Section) o).getGlobalKey().equals(getGlobalKey());
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "TestSection";
     }
   }
 }

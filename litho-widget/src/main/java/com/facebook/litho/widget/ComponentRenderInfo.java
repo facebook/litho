@@ -86,9 +86,8 @@ public class ComponentRenderInfo extends RenderInfo {
 
   private static class EmptyComponent extends Component {
 
-    @Override
-    public String getSimpleName() {
-      return "EmptyComponent";
+    protected EmptyComponent() {
+      super("EmptyComponent");
     }
 
     @Override

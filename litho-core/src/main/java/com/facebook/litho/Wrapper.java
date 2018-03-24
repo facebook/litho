@@ -25,11 +25,8 @@ public final class Wrapper extends Component {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<Builder>(2);
 
-  private Wrapper() {}
-
-  @Override
-  public String getSimpleName() {
-    return "Wrapper";
+  private Wrapper() {
+    super("Wrapper");
   }
 
   @Override

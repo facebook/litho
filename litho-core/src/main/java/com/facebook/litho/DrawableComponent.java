@@ -19,7 +19,7 @@ class DrawableComponent<T extends Drawable> extends Component {
   int mDrawableHeight;
 
   private DrawableComponent(Reference drawable) {
-    super();
+    super("DrawableComponent");
     mDrawable = drawable;
   }
 
@@ -81,11 +81,6 @@ class DrawableComponent<T extends Drawable> extends Component {
     final Reference nextReference = ((DrawableComponent) next).getDrawable();
 
     return Reference.shouldUpdate(previousReference, nextReference);
-  }
-
-  @Override
-  public String getSimpleName() {
-    return mDrawable.getSimpleName();
   }
 
   private Reference<T> getDrawable() {

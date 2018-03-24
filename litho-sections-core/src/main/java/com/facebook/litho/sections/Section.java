@@ -49,6 +49,14 @@ public abstract class Section extends SectionLifecycle
    */
   @Nullable private Map<String, Integer> mChildCounters;
 
+  /** Simple name to identify the generated section. */
+  private final String mSimpleName;
+
+  protected Section(String simpleName) {
+    mSimpleName = simpleName;
+    mKey = getLogTag();
+  }
+
   @Override
   public EventDispatcher getEventDispatcher() {
     return this;
@@ -131,10 +139,6 @@ public abstract class Section extends SectionLifecycle
   private List<Section> mChildren;
   private String mGlobalKey;
   private String mKey;
-
-  protected Section() {
-    mKey = getLogTag();
-  }
 
   /** @return a unique key for this {@link Section} within its tree. */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -275,10 +279,10 @@ public abstract class Section extends SectionLifecycle
     mChildren = children == null ? new ArrayList<Section>() : children.getChildren();
   }
 
-  /**
-   * Mostly used by logging to provide more readable messages.
-   */
-  public abstract String getSimpleName();
+  /** Mostly used by logging to provide more readable messages. */
+  public final String getSimpleName() {
+    return mSimpleName;
+  }
 
   /**
    * Compares this section to a different one to check if they are the same

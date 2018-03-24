@@ -33,17 +33,12 @@ public class TestViewComponent extends TestComponent {
       boolean isPureRender,
       boolean canMeasure,
       boolean canMountIncrementally) {
-    super();
+    super("TestViewComponent");
 
     mCallsShouldUpdateOnMount = callsShouldUpdateOnMount;
     mIsPureRender = isPureRender;
     mCanMeasure = canMeasure;
     mCanMountIncrementally = canMountIncrementally;
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "TestViewComponent";
   }
 
   @Override

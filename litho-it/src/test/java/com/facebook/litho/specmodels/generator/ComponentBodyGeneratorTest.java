@@ -182,16 +182,6 @@ public class ComponentBodyGeneratorTest {
   }
 
   @Test
-  public void testGenerateGetSimpleName() {
-    assertThat(ComponentBodyGenerator.generateGetSimpleName(mSpecModelDI).toString())
-        .isEqualTo(
-            "@java.lang.Override\n"
-                + "public java.lang.String getSimpleName() {\n"
-                + "  return \"Test\";\n"
-                + "}\n");
-  }
-
-  @Test
   public void testGenerateIsEquivalentMethod() {
     assertThat(ComponentBodyGenerator.generateIsEquivalentMethod(mSpecModelDI).toString())
         .isEqualTo(

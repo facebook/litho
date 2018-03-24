@@ -169,13 +169,8 @@ public class LifecycleMethodsTest {
     private LifecycleStep mCurrentStep = LifecycleStep.ON_UNMOUNT;
 
     protected LifecycleMethodsComponent(int size) {
-      super();
+      super("LifecycleMethodsInstance");
       mSize = size;
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "LifecycleMethodsInstance";
     }
 
     LifecycleStep getCurrentStep() {

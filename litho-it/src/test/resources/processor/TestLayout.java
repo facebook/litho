@@ -103,18 +103,13 @@ public final class TestLayout<S extends View> extends Component implements TestT
   EventTrigger onClickEventTriggerTrigger;
 
   private TestLayout() {
-    super();
+    super("TestLayout");
     mStateContainer = new TestLayoutStateContainer();
   }
 
   @Override
   protected ComponentLifecycle.StateContainer getStateContainer() {
     return mStateContainer;
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "TestLayout";
   }
 
   @Override

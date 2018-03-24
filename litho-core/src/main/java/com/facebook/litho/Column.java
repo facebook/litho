@@ -48,11 +48,8 @@ public final class Column extends Component {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
-  private Column() {}
-
-  @Override
-  public String getSimpleName() {
-    return "Column";
+  private Column() {
+    super("Column");
   }
 
   @Override

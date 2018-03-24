@@ -10,11 +10,14 @@
 package com.facebook.litho.testing.util;
 
 import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
 
 /** Like {@link InlineLayoutSpec} but uses onCreateLayoutWithSizeSpec */
 public abstract class InlineLayoutWithSizeSpec extends Component {
+
+  protected InlineLayoutWithSizeSpec() {
+    super("InlineLayoutWithSize");
+  }
 
   @Override
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
@@ -25,11 +28,5 @@ public abstract class InlineLayoutWithSizeSpec extends Component {
   @Override
   protected boolean canMeasure() {
     return true;
-  }
-
-  @Override
-  public String getSimpleName() {
-    // You may want to override this in your inline spec, but it's not required.
-    return "InlineLayoutWithSize";
   }
 }

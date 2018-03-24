@@ -47,7 +47,7 @@ public class SectionsTestHelper extends Section {
   private final Map<Section, SectionContext> preparedSections;
 
   public SectionsTestHelper(Context c) {
-    super();
+    super("SectionComponentTestHelper");
     final SectionContext base = new SectionContext(c);
     mSectionTree = SectionTree.create(base, new TestTarget()).build();
     mSectionContext = SectionContext.withSectionTree(base, mSectionTree);
@@ -182,10 +182,5 @@ public class SectionsTestHelper extends Section {
       throw new IllegalStateException(
           "Section not prepared, did you call SectionsTestHelper#prepare()?");
     }
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "SectionComponentTestHelper";
   }
 }

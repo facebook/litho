@@ -32,13 +32,12 @@ public abstract class TestComponent extends Component {
   protected boolean mIsUnique;
   private boolean mOnMeasureCalled;
 
-  protected TestComponent() {
-    super();
+  protected TestComponent(String simpleName) {
+    super(simpleName);
   }
 
-  @Override
-  public String getSimpleName() {
-    return "TestComponent";
+  protected TestComponent() {
+    super("TestComponent");
   }
 
   void onMountCalled() {

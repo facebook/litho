@@ -117,18 +117,13 @@ public final class TestMount<S extends View> extends Component implements TestTa
   EventTrigger onClickEventTriggerTrigger;
 
   private TestMount() {
-    super();
+    super("TestMount");
     mStateContainer = new TestMountStateContainer();
   }
 
   @Override
   protected ComponentLifecycle.StateContainer getStateContainer() {
     return mStateContainer;
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "TestMount";
   }
 
   @Override
@@ -470,7 +465,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
               (com.facebook.litho.ComponentContext) eventHandler.params[0],
               (com.facebook.litho.ErrorEvent) eventState);
         return null;
-      }
+        }
       default:
         return null;
     }

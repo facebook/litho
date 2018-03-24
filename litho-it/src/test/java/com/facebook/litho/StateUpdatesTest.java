@@ -59,6 +59,7 @@ public class StateUpdatesTest {
     private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
 
     public TestComponent() {
+      super("TestComponent");
       mStateContainer = new TestStateContainer();
       mId = sIdGenerator.getAndIncrement();
     }
@@ -84,11 +85,6 @@ public class StateUpdatesTest {
         StateContainer stateContainer) {
       TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
       mStateContainer.mCount = stateContainerImpl.mCount;
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "TestComponent";
     }
 
     int getCount() {

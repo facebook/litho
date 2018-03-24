@@ -88,7 +88,6 @@ public class ComponentBodyGenerator {
         .addTypeSpecDataHolder(generateEventHandlers(specModel))
         .addTypeSpecDataHolder(generateEventTriggers(specModel));
 
-    builder.addMethod(generateGetSimpleName(specModel));
     builder.addMethod(generateIsEquivalentMethod(specModel));
 
     builder.addTypeSpecDataHolder(generateCopyInterStageImpl(specModel));
@@ -320,15 +319,6 @@ public class ComponentBodyGenerator {
     return eventTriggerName.substring(0, 1).toLowerCase(Locale.ROOT)
         + eventTriggerName.substring(1)
         + "Trigger";
-  }
-
-  static MethodSpec generateGetSimpleName(SpecModel specModel) {
-    return MethodSpec.methodBuilder("getSimpleName")
-        .addModifiers(Modifier.PUBLIC)
-        .addAnnotation(Override.class)
-        .returns(ClassNames.STRING)
-        .addStatement("return \"$N\"", specModel.getComponentName())
-        .build();
   }
 
   static MethodSpec generateIsEquivalentMethod(SpecModel specModel) {

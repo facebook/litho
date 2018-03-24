@@ -32,7 +32,6 @@ public class ViewCompatComponent<V extends View> extends Component {
       new Pools.SynchronizedPool<>(2);
 
   private final ViewCreator mViewCreator;
-  private final String mComponentName;
   private ViewBinder<V> mViewBinder;
 
   public static <V extends View> ViewCompatComponent<V> get(
@@ -52,9 +51,8 @@ public class ViewCompatComponent<V extends View> extends Component {
   }
 
   private ViewCompatComponent(ViewCreator viewCreator, String componentName) {
-    super(viewCreator.getClass());
+    super("ViewCompatComponent_" + componentName, viewCreator.getClass());
     mViewCreator = viewCreator;
-    mComponentName = "ViewCompatComponent_" + componentName;
   }
 
   @Override
@@ -105,11 +103,6 @@ public class ViewCompatComponent<V extends View> extends Component {
   @Override
   public MountType getMountType() {
     return MountType.VIEW;
-  }
-
-  @Override
-  public String getSimpleName() {
-    return mComponentName;
   }
 
   @Override

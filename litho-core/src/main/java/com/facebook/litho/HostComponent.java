@@ -11,6 +11,10 @@ package com.facebook.litho;
 
 class HostComponent extends Component {
 
+  protected HostComponent() {
+    super("HostComponent");
+  }
+
   @Override
   protected Object onCreateMountContent(ComponentContext c) {
     return new ComponentHost(c);
@@ -23,11 +27,6 @@ class HostComponent extends Component {
 
   static Component create() {
     return new HostComponent();
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "HostComponent";
   }
 
   @Override

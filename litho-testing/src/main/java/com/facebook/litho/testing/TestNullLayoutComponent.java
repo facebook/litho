@@ -14,6 +14,10 @@ import com.facebook.litho.ComponentContext;
 
 public class TestNullLayoutComponent extends Component {
 
+  public TestNullLayoutComponent() {
+    super("TestNullLayoutComponent");
+  }
+
   @Override
   protected boolean canMeasure() {
     return true;
@@ -23,10 +27,5 @@ public class TestNullLayoutComponent extends Component {
   protected Component onCreateLayoutWithSizeSpec(
       ComponentContext c, int widthSpec, int heightSpec) {
     return null;
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "TestNullLayoutComponent";
   }
 }

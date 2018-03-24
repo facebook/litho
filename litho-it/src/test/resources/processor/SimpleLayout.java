@@ -12,16 +12,12 @@ import android.support.v4.util.Pools;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 
+/** @see com.facebook.litho.processor.integration.resources.SimpleLayoutSpec */
 public final class SimpleLayout extends Component {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
 
   private SimpleLayout() {
-    super();
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "SimpleLayout";
+    super("SimpleLayout");
   }
 
   @Override

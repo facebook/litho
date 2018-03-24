@@ -35,13 +35,8 @@ public class TestDrawableComponent extends TestComponent {
   private final long mProperties;
 
   private TestDrawableComponent(long properties) {
-    super();
+    super("TestDrawableComponent");
     mProperties = properties;
-  }
-
-  @Override
-  public String getSimpleName() {
-    return "TestDrawableComponent";
   }
 
   @Override

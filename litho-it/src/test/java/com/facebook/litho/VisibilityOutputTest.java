@@ -38,15 +38,10 @@ public class VisibilityOutputTest {
     mVisibilityOutput = new VisibilityOutput();
 
     mComponent =
-        new Component() {
+        new Component("TestComponent") {
           @Override
           int getTypeId() {
             return LIFECYCLE_TEST_ID;
-          }
-
-          @Override
-          public String getSimpleName() {
-            return "TestComponent";
           }
         };
   }

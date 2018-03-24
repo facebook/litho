@@ -16,6 +16,10 @@ import com.facebook.litho.Transition;
 
 public abstract class InlineLayoutSpec extends Component {
 
+  protected InlineLayoutSpec() {
+    super("InlineLayout");
+  }
+
   @Override
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
     // no-op
@@ -25,11 +29,5 @@ public abstract class InlineLayoutSpec extends Component {
   @Override
   protected Transition onCreateTransition(ComponentContext c) {
     return null;
-  }
-
-  @Override
-  public String getSimpleName() {
-    // You may want to override this in your inline spec, but it's not required.
-    return "InlineLayout";
   }
 }
