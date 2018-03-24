@@ -213,7 +213,7 @@ final class ViewPredicates {
     }
 
     try {
-      final Method onDraw = view.getClass().getDeclaredMethod("onDraw", Canvas.class);
+      final Method onDraw = view.getClass().getMethod("onDraw", Canvas.class);
       onDraw.setAccessible(true);
       onDraw.invoke(view, canvas);
       final ShadowCanvas shadowCanvas2 = Shadows.shadowOf(canvas);
