@@ -150,6 +150,7 @@ class InternalNode implements ComponentLayout {
   private DiffNode mDiffNode;
   private @Nullable ArrayList<Transition> mTransitions;
   private @Nullable ArrayList<Component> mComponentsNeedingPreviousRenderData;
+  private @Nullable ArrayList<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
 
   private boolean mCachedMeasuresValid;
   private TreeProps mPendingTreeProps;
@@ -1020,6 +1021,11 @@ class InternalNode implements ComponentLayout {
     return mComponentsNeedingPreviousRenderData;
   }
 
+  @Nullable
+  ArrayList<WorkingRangeContainer.Registration> getWorkingRangeRegistrations() {
+    return mWorkingRangeRegistrations;
+  }
+
   /**
    * A unique identifier which may be set for retrieving a component and its bounds when testing.
    */
@@ -1220,6 +1226,13 @@ class InternalNode implements ComponentLayout {
       mComponentsNeedingPreviousRenderData = new ArrayList<>(1);
     }
     mComponentsNeedingPreviousRenderData.add(component);
+  }
+
+  void addWorkingRanges(List<WorkingRangeContainer.Registration> registrations) {
+    if (mWorkingRangeRegistrations == null) {
+      mWorkingRangeRegistrations = new ArrayList<>(registrations.size());
+    }
+    mWorkingRangeRegistrations.addAll(registrations);
   }
 
   boolean hasNestedTree() {
@@ -1602,6 +1615,7 @@ class InternalNode implements ComponentLayout {
 
     mTransitions = null;
     mComponentsNeedingPreviousRenderData = null;
+    mWorkingRangeRegistrations = null;
 
     mStateListAnimator = null;
 

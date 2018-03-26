@@ -101,6 +101,12 @@ public abstract class Component extends ComponentLifecycle
   // createLayout.
   @Nullable InternalNode mLayoutCreatedInWillRender;
 
+  /**
+   * Holds a list of working range related data. {@link LayoutState} will use it to update {@link
+   * LayoutState#mWorkingRangeContainer} when calculate method is finished.
+   */
+  @Nullable List<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
+
   /** Holds an identifying name of the component, set at construction time. */
   private final String mSimpleName;
 
@@ -542,6 +548,16 @@ public abstract class Component extends ComponentLifecycle
   @Nullable
   EventHandler<ErrorEvent> getErrorHandler() {
     return mErrorEventHandler;
+  }
+
+  /** Store a working range information into a list for later use by {@link LayoutState}. */
+  protected static void registerWorkingRange(
+      String name, WorkingRange workingRange, Component component) {
+    if (component.mWorkingRangeRegistrations == null) {
+      component.mWorkingRangeRegistrations = new ArrayList<>();
+    }
+    component.mWorkingRangeRegistrations.add(
+        new WorkingRangeContainer.Registration(name, workingRange, component));
   }
 
   /**

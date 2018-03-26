@@ -213,6 +213,8 @@ class LayoutState {
   private boolean mHasLithoViewHeightAnimation = false;
   long mCalculateLayoutDuration;
 
+  @Nullable WorkingRangeContainer mWorkingRangeContainer;
+
   LayoutState() {
     if (!ComponentsConfiguration.lazilyInitializeLayoutStateOutputIdCalculator) {
       mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
@@ -816,6 +818,19 @@ class LayoutState {
         && component.getScopedContext() != null
         && component.getScopedContext().getComponentTree() != null) {
       layoutState.mComponents.add(component);
+    }
+
+    // 10. Extract the Working Range registrations.
+    List<WorkingRangeContainer.Registration> registrations = node.getWorkingRangeRegistrations();
+    if (registrations != null && !registrations.isEmpty()) {
+      if (layoutState.mWorkingRangeContainer == null) {
+        layoutState.mWorkingRangeContainer = new WorkingRangeContainer();
+      }
+
+      for (WorkingRangeContainer.Registration registration : registrations) {
+        layoutState.mWorkingRangeContainer.registerWorkingRange(
+            registration.mName, registration.mWorkingRange, registration.mComponent);
+      }
     }
 
     if (component != null) {
@@ -2018,6 +2033,8 @@ class LayoutState {
       mHasLithoViewWidthAnimation = false;
       mHasLithoViewHeightAnimation = false;
 
+      mWorkingRangeContainer = null;
+
       ComponentsPools.release(this);
     }
   }
@@ -2250,5 +2267,25 @@ class LayoutState {
   @Nullable
   List<Component> getComponentsNeedingPreviousRenderData() {
     return mComponentsNeedingPreviousRenderData;
+  }
+
+  void checkWorkingRangeAndDispatch(
+      int position,
+      int firstVisibleIndex,
+      int lastVisibleIndex,
+      int firstFullyVisibleIndex,
+      int lastFullyVisibleIndex,
+      WorkingRangeStatusHandler stateHandler) {
+    if (mWorkingRangeContainer == null) {
+      return;
+    }
+
+    mWorkingRangeContainer.checkWorkingRangeAndDispatch(
+        position,
+        firstVisibleIndex,
+        lastVisibleIndex,
+        firstFullyVisibleIndex,
+        lastFullyVisibleIndex,
+        stateHandler);
   }
 }

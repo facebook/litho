@@ -215,6 +215,10 @@ public class ComponentTree {
   @GuardedBy("mEventTriggersContainer")
   private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
 
+  @GuardedBy("this")
+  private final WorkingRangeStatusHandler mWorkingRangeStatusHandler =
+      new WorkingRangeStatusHandler();
+
   public static Builder create(ComponentContext context, Component.Builder<?> root) {
     return create(context, root.build());
   }
@@ -305,22 +309,7 @@ public class ComponentTree {
   private LayoutState setBestMainThreadLayoutAndReturnOldLayout() {
     assertHoldsLock(this);
 
-    // If everything matches perfectly then we prefer mMainThreadLayoutState
-    // because that means we don't need to remount.
-    final boolean isMainThreadLayoutBest;
-    if (isCompatibleComponentAndSpec(mMainThreadLayoutState)) {
-      isMainThreadLayoutBest = true;
-    } else if (isCompatibleSpec(mBackgroundLayoutState, mWidthSpec, mHeightSpec)
-        || !isCompatibleSpec(mMainThreadLayoutState, mWidthSpec, mHeightSpec)) {
-      // If mMainThreadLayoutState isn't a perfect match, we'll prefer
-      // mBackgroundLayoutState since it will have the more recent create.
-      isMainThreadLayoutBest = false;
-    } else {
-      // If the main thread layout is still compatible size-wise, and the
-      // background one is not, then we'll do nothing. We want to keep the same
-      // main thread layout so that we don't force main thread re-layout.
-      isMainThreadLayoutBest = true;
-    }
+    final boolean isMainThreadLayoutBest = isBestMainThreadLayout();
 
     if (isMainThreadLayoutBest) {
       // We don't want to hold onto mBackgroundLayoutState since it's unlikely
@@ -340,6 +329,30 @@ public class ComponentTree {
       mBackgroundLayoutState = null;
 
       return toRelease;
+    }
+  }
+
+  @CheckReturnValue
+  @ReturnsOwnership
+  @ThreadConfined(ThreadConfined.UI)
+  @GuardedBy("this")
+  private boolean isBestMainThreadLayout() {
+    assertHoldsLock(this);
+
+    // If everything matches perfectly then we prefer mMainThreadLayoutState
+    // because that means we don't need to remount.
+    if (isCompatibleComponentAndSpec(mMainThreadLayoutState)) {
+      return true;
+    } else if (isCompatibleSpec(mBackgroundLayoutState, mWidthSpec, mHeightSpec)
+        || !isCompatibleSpec(mMainThreadLayoutState, mWidthSpec, mHeightSpec)) {
+      // If mMainThreadLayoutState isn't a perfect match, we'll prefer
+      // mBackgroundLayoutState since it will have the more recent create.
+      return false;
+    } else {
+      // If the main thread layout is still compatible size-wise, and the
+      // background one is not, then we'll do nothing. We want to keep the same
+      // main thread layout so that we don't force main thread re-layout.
+      return true;
     }
   }
 
@@ -1062,6 +1075,31 @@ public class ComponentTree {
   }
 
   /**
+   * Check if the any child components stored in {@link LayoutState} have entered/exited the working
+   * range, and dispatch the event to trigger the corresponding registered methods.
+   */
+  public synchronized void checkWorkingRangeAndDispatch(
+      int position,
+      int firstVisibleIndex,
+      int lastVisibleIndex,
+      int firstFullyVisibleIndex,
+      int lastFullyVisibleIndex) {
+
+    LayoutState layoutState =
+        isBestMainThreadLayout() ? mMainThreadLayoutState : mBackgroundLayoutState;
+
+    if (layoutState != null) {
+      layoutState.checkWorkingRangeAndDispatch(
+          position,
+          firstVisibleIndex,
+          lastVisibleIndex,
+          firstFullyVisibleIndex,
+          lastFullyVisibleIndex,
+          mWorkingRangeStatusHandler);
+    }
+  }
+
+  /**
    * Update the width/height spec. This is useful if you are currently detached and are responding
    * to a configuration change. If you are currently attached then the HostView is the source of
    * truth for width/height, so this call will be ignored.
@@ -1521,6 +1559,8 @@ public class ComponentTree {
       }
       mPreviousRenderState = null;
       mPreviousRenderStateSetFromBuilder = false;
+
+      mWorkingRangeStatusHandler.clear();
     }
 
     if (mainThreadLayoutState != null) {
