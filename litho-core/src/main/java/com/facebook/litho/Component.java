@@ -713,7 +713,10 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
-    /** @see #flexBasisPx */
+    /**
+     * @see #flexBasisPx
+     * @param percent a value between 0 and 100.
+     */
     public T flexBasisPercent(float percent) {
       mComponent.getOrCreateCommonPropsHolder().flexBasisPercent(percent);
       return getThis();
@@ -756,6 +759,7 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    /** @param percent a value between 0 and 100. */
     public T marginPercent(YogaEdge edge, float percent) {
       mComponent.getOrCreateCommonPropsHolder().marginPercent(edge, percent);
       return getThis();
@@ -787,6 +791,7 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    /** @param percent a value between 0 and 100. */
     public T paddingPercent(YogaEdge edge, float percent) {
       mComponent.getOrCreateCommonPropsHolder().paddingPercent(edge, percent);
       return getThis();
@@ -824,7 +829,10 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
-    /** @see #positionPx */
+    /**
+     * @see #positionPx
+     * @param percent a value between 0 and 100.
+     */
     public T positionPercent(YogaEdge edge, float percent) {
       mComponent.getOrCreateCommonPropsHolder().positionPercent(edge, percent);
       return getThis();
@@ -855,6 +863,7 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    /** @param percent a value between 0 and 100. */
     public T widthPercent(float percent) {
       mComponent.getOrCreateCommonPropsHolder().widthPercent(percent);
       return getThis();
@@ -881,6 +890,7 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    /** @param percent a value between 0 and 100. */
     public T minWidthPercent(float percent) {
       mComponent.getOrCreateCommonPropsHolder().minWidthPercent(percent);
       return getThis();
@@ -907,6 +917,7 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    /** @param percent a value between 0 and 100. */
     public T maxWidthPercent(float percent) {
       mComponent.getOrCreateCommonPropsHolder().maxWidthPercent(percent);
       return getThis();
@@ -933,6 +944,7 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    /** @param percent a value between 0 and 100. */
     public T heightPercent(float percent) {
       mComponent.getOrCreateCommonPropsHolder().heightPercent(percent);
       return getThis();
@@ -959,6 +971,7 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    /** @param percent a value between 0 and 100. */
     public T minHeightPercent(float percent) {
       mComponent.getOrCreateCommonPropsHolder().minHeightPercent(percent);
       return getThis();
@@ -985,6 +998,7 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    /** @param percent a value between 0 and 100. */
     public T maxHeightPercent(float percent) {
       mComponent.getOrCreateCommonPropsHolder().maxHeightPercent(percent);
       return getThis();
