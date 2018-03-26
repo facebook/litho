@@ -689,7 +689,7 @@ public abstract class Component extends ComponentLifecycle
      * href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for more
      * information.
      *
-     * <p>Default: 0
+     * <p>Default: 1
      */
     public T flexShrink(float flexShrink) {
       mComponent.getOrCreateCommonPropsHolder().flexShrink(flexShrink);
