@@ -674,6 +674,14 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return null;
   }
 
+  protected void dispatchOnEnteredRange(String name) {
+    // Do nothing by default
+  }
+
+  protected void dispatchOnExitedRange(String name) {
+    // Do nothing by default
+  }
+
   protected boolean isPureRender() {
     return false;
   }
