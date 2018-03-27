@@ -24,11 +24,23 @@ import com.facebook.litho.specmodels.generator.TagGenerator;
 import com.facebook.litho.specmodels.generator.TreePropGenerator;
 import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeSpec;
 import java.util.LinkedHashSet;
+import java.util.Set;
 import javax.lang.model.element.Modifier;
 
 public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> {
+
+  private final Set<ClassName> mBlacklistedTagInterfaces;
+
+  public DefaultMountSpecGenerator() {
+    this(new LinkedHashSet<>());
+  }
+
+  public DefaultMountSpecGenerator(Set<ClassName> blacklistedTagInterfaces) {
+    mBlacklistedTagInterfaces = blacklistedTagInterfaces;
+  }
 
   @Override
   public TypeSpec generate(MountSpecModel mountSpecModel) {
@@ -67,7 +79,7 @@ public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> 
         .addTypeSpecDataHolder(StateGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(RenderDataGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(BuilderGenerator.generate(mountSpecModel))
-        .addTypeSpecDataHolder(TagGenerator.generate(mountSpecModel, new LinkedHashSet<>()))
+        .addTypeSpecDataHolder(TagGenerator.generate(mountSpecModel, mBlacklistedTagInterfaces))
         .build()
         .addToTypeSpec(typeSpec);
 

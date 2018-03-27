@@ -21,11 +21,23 @@ import com.facebook.litho.specmodels.generator.TreePropGenerator;
 import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.model.SpecGenerator;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeSpec;
 import java.util.LinkedHashSet;
+import java.util.Set;
 import javax.lang.model.element.Modifier;
 
 public class DefaultGroupSectionSpecGenerator implements SpecGenerator<GroupSectionSpecModel> {
+
+  private final Set<ClassName> mBlacklistedTagInterfaces;
+
+  public DefaultGroupSectionSpecGenerator() {
+    this(new LinkedHashSet<>());
+  }
+
+  public DefaultGroupSectionSpecGenerator(Set<ClassName> blacklistedTagInterfaces) {
+    mBlacklistedTagInterfaces = blacklistedTagInterfaces;
+  }
 
   @Override
   public TypeSpec generate(GroupSectionSpecModel specModel) {
@@ -56,7 +68,7 @@ public class DefaultGroupSectionSpecGenerator implements SpecGenerator<GroupSect
                 specModel, DelegateMethodDescriptions.getGroupSectionSpecDelegatesMap(specModel)))
         .addTypeSpecDataHolder(TreePropGenerator.generate(specModel))
         .addTypeSpecDataHolder(TriggerGenerator.generate(specModel))
-        .addTypeSpecDataHolder(TagGenerator.generate(specModel, new LinkedHashSet<>()))
+        .addTypeSpecDataHolder(TagGenerator.generate(specModel, mBlacklistedTagInterfaces))
         .build()
         .addToTypeSpec(typeSpec);
 

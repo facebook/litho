@@ -20,11 +20,23 @@ import com.facebook.litho.specmodels.generator.TagGenerator;
 import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.model.SpecGenerator;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeSpec;
 import java.util.LinkedHashSet;
+import java.util.Set;
 import javax.lang.model.element.Modifier;
 
 public class DefaultDiffSectionSpecGenerator implements SpecGenerator<DiffSectionSpecModel> {
+
+  private final Set<ClassName> mBlacklistedTagInterfaces;
+
+  public DefaultDiffSectionSpecGenerator() {
+    this(new LinkedHashSet<>());
+  }
+
+  public DefaultDiffSectionSpecGenerator(Set<ClassName> blacklistedTagInterfaces) {
+    mBlacklistedTagInterfaces = blacklistedTagInterfaces;
+  }
 
   @Override
   public TypeSpec generate(DiffSectionSpecModel specModel) {
@@ -53,7 +65,7 @@ public class DefaultDiffSectionSpecGenerator implements SpecGenerator<DiffSectio
             DelegateMethodGenerator.generateDelegates(
                 specModel, DelegateMethodDescriptions.getDiffSectionSpecDelegatesMap(specModel)))
         .addTypeSpecDataHolder(TriggerGenerator.generate(specModel))
-        .addTypeSpecDataHolder(TagGenerator.generate(specModel, new LinkedHashSet<>()))
+        .addTypeSpecDataHolder(TagGenerator.generate(specModel, mBlacklistedTagInterfaces))
         .build()
         .addToTypeSpec(typeSpec);
 
