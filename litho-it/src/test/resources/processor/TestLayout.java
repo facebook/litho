@@ -292,7 +292,6 @@ public final class TestLayout<S extends View> extends Component implements TestT
   public static EventHandler<ClickEvent> testLayoutEvent(ComponentContext c, int param1) {
     return newEventHandler(
         c,
-        "testLayoutEvent",
         1328162206,
         new Object[] {
           c, param1,
@@ -302,7 +301,6 @@ public final class TestLayout<S extends View> extends Component implements TestT
   public static EventHandler<ErrorEvent> __internalOnErrorHandler(ComponentContext c) {
     return newEventHandler(
         c,
-        "__internalOnErrorHandler",
         -1048037474,
         new Object[] {
           c,

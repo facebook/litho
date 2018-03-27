@@ -176,10 +176,9 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
 
   protected static <E> EventHandler<E> newEventHandler(
       SectionContext c,
-      String name,
       int id,
       Object[] params) {
-    final EventHandler eventHandler = c.newEventHandler(name, id, params);
+    final EventHandler eventHandler = c.newEventHandler(id, params);
     recordEventHandler(c.getSectionScope(), eventHandler);
 
     return eventHandler;
@@ -187,10 +186,9 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
 
   protected static <E> EventHandler<E> newEventHandler(
       Section c,
-      String name,
       int id,
       Object[] params) {
-    final EventHandler eventHandler = new EventHandler<E>(c, name, id, params);
+    final EventHandler eventHandler = new EventHandler<E>(c, id, params);
     recordEventHandler(c, eventHandler);
 
     return eventHandler;

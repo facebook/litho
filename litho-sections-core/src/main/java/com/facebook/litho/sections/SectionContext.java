@@ -97,13 +97,13 @@ public class SectionContext extends ComponentContext {
   }
 
   @Override
-  public <E> EventHandler<E> newEventHandler(String name, int id, Object[] params) {
+  public <E> EventHandler<E> newEventHandler(int id, Object[] params) {
     final Section section = mScope.get();
     if (section == null) {
       throw new IllegalStateException("Called newEventHandler on a released Section");
     }
 
-    return new EventHandler<>(section, name, id, params);
+    return new EventHandler<>(section, id, params);
   }
 
   /** @return New instance of {@link EventTrigger} that is created by the current mScope. */

@@ -478,7 +478,6 @@ public abstract class Component extends ComponentLifecycle
       mErrorEventHandler =
           new EventHandler<>(
               parentEventDispatcherProvider,
-              "onErrorHandler",
               ERROR_EVENT_HANDLER_ID,
               new Object[] {parentContext});
     }

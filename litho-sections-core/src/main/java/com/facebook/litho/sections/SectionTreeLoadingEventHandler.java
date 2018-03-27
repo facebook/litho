@@ -18,12 +18,12 @@ public class SectionTreeLoadingEventHandler extends EventHandler<LoadingEvent> {
   private final WeakReference<SectionTree> mSectionTree;
 
   SectionTreeLoadingEventHandler(SectionTree sectionTree) {
-    super(null, null, INVALID_ID);
+    super(null, INVALID_ID);
     mSectionTree = new WeakReference<>(sectionTree);
   }
 
-  SectionTreeLoadingEventHandler(SectionTree sectionTree, String name, int id, Object[] params) {
-    super(null, name, id, params);
+  SectionTreeLoadingEventHandler(SectionTree sectionTree, int id, Object[] params) {
+    super(null, id, params);
     mSectionTree = new WeakReference<>(sectionTree);
   }
 

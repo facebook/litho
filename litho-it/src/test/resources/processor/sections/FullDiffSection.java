@@ -187,7 +187,6 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   public static EventHandler<ClickEvent> testEvent(SectionContext c, int someParam) {
     return newEventHandler(
         c,
-        "testEvent",
         -1204074200,
         new Object[] {
           c, someParam,

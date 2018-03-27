@@ -513,7 +513,7 @@ public class DataDiffSectionSpecTest {
     EventHandler eh = TestGroupSection.onCheckIsSameItem(mSectionContext);
 
     EventHandler same =
-        new EventHandler(mHasEventDispatcher, null, eh.id, new Object[] {mSectionContext});
+        new EventHandler(mHasEventDispatcher, eh.id, new Object[] {mSectionContext});
     same.mHasEventDispatcher = dispatcher;
 
     DataDiffSection builder =

@@ -439,7 +439,6 @@ public final class TestMount<S extends View> extends Component implements TestTa
   public static EventHandler<ClickEvent> testLayoutEvent(ComponentContext c, int param1) {
     return newEventHandler(
         c,
-        "testLayoutEvent",
         1328162206,
         new Object[] {
           c, param1,
