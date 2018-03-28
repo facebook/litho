@@ -682,6 +682,7 @@ public class LithoView extends ComponentHost {
 
   public void unmountAllItems() {
     mMountState.unmountAllItems();
+    mPreviousMountBounds.setEmpty();
   }
 
   public Rect getPreviousMountBounds() {

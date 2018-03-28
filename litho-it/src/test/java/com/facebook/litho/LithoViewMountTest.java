@@ -9,11 +9,12 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.ComponentTree.create;
 import static com.facebook.litho.SizeSpec.EXACTLY;
-import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -52,13 +53,27 @@ public class LithoViewMountTest {
           }
         };
 
-    mComponentTree = ComponentTree.create(mContext, mComponent)
-        .incrementalMount(false)
-        .layoutDiffing(false)
-        .build();
-    mComponentTree.setSizeSpec(
-        SizeSpec.makeSizeSpec(100, EXACTLY),
-        SizeSpec.makeSizeSpec(100, EXACTLY));
+    mComponentTree = createComponentTree(false, false, 100, 100);
+  }
+
+  @Test
+  public void testIncrementalMountTriggeredAfterUnmountAllWithSameDimensions() {
+    mComponentTree = createComponentTree(true, true, 100, 100);
+
+    final int WIDTH = 50;
+    final int HEIGHT = 50;
+
+    mLithoView.setMeasured(WIDTH, HEIGHT);
+    mLithoView.setComponentTree(mComponentTree);
+    mLithoView.onAttachedToWindow();
+
+    mLithoView.layout(0, 0, mLithoView.getMeasuredWidth(), mLithoView.getMeasuredHeight());
+    verify(mComponentTree).incrementalMountComponent();
+
+    mLithoView.unmountAllItems();
+
+    mLithoView.performLayout(false, 0, 0, WIDTH, HEIGHT);
+    verify(mComponentTree, times(2)).incrementalMountComponent();
   }
 
   @Test
@@ -89,11 +104,7 @@ public class LithoViewMountTest {
 
   @Test
   public void testSetComponentTwiceWithResetAndAttachRequestsLayout() {
-    ComponentTree ct = create(mContext, mComponent)
-        .incrementalMount(false)
-        .layoutDiffing(false)
-        .build();
-    ct.setSizeSpec(100, 100);
+    ComponentTree ct = createComponentTree(false, false, 100, 100);
 
     mLithoView.setComponentTree(ct);
     mLithoView.setMeasured(100, 100);
@@ -143,14 +154,7 @@ public class LithoViewMountTest {
 
     assertThat(mLithoView.getRequestLayoutInvocationCount()).isEqualTo(1);
 
-    ComponentTree newComponentTree =
-        create(mContext, mComponent)
-            .incrementalMount(false)
-            .layoutDiffing(false)
-            .build();
-    newComponentTree.setSizeSpec(
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    ComponentTree newComponentTree = createComponentTree(false, false, 100, 100);
 
     mLithoView.resetRequestLayoutInvocationCount();
     mLithoView.setComponentTree(newComponentTree);
@@ -183,6 +187,19 @@ public class LithoViewMountTest {
     lithoView.setHasTransientState(true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isTrue();
+  }
+
+  private ComponentTree createComponentTree(boolean useSpy, boolean incMountEnabled, int width, int height) {
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent)
+            .incrementalMount(incMountEnabled)
+            .layoutDiffing(false)
+            .build();
+    componentTree.setSizeSpec(
+        SizeSpec.makeSizeSpec(width, EXACTLY),
+        SizeSpec.makeSizeSpec(height, EXACTLY));
+
+    return useSpy ? spy(componentTree) : componentTree;
   }
 
   private static class TestLithoView extends LithoView {
