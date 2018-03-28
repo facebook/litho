@@ -14,7 +14,7 @@ A good candidate, for example, is a prefetcher which fetches network images ahea
 
 Each TreeProp is declared and created from a method annotated with `@OnCreateTreeProp`.
 
-``` java
+```java
 @LayoutSpec
 public class ParentComponentSpec {
   @OnCreateTreeProp
@@ -37,7 +37,7 @@ public class ParentComponentSpec {
 }
 ```
 
-You can only declare one TreeProp for any given type. If a child of ParentComponent also defines a TreeProp of type Prefetcher, it will override the value of that TreeProp for all its children (but not for itself).
+You can only declare one TreeProp for any one given type. If a child of ParentComponent also defines a TreeProp of type Prefetcher, it will override the value of that TreeProp for all its children (but not for itself).
 
 ### Using a TreeProp #
 
@@ -59,9 +59,9 @@ class ChildComponentSpec {
 }
 ```
 
-> IMPORTANT: Once created, TreeProp value will be passed down to all children, but will not be accessible from component that created this TreeProp.
+> IMPORTANT: Once created, the TreeProp value will be passed down to all children, but will not be accessible from the component that created this TreeProp.
 
-If you want to access a TreeProp from the component that created this TreeProp, you can transorm it into [`@State`](https://fblitho.com/docs/state) value like this:
+If you want to access a TreeProp from the component that created this TreeProp, you can transform it into [`@State`](https://fblitho.com/docs/state) value like this:
 
 ```java
 @LayoutSpec
