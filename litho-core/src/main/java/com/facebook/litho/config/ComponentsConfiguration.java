@@ -15,6 +15,8 @@ import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import android.os.Process;
 import com.facebook.litho.BuildConfig;
 import com.facebook.yoga.YogaLogger;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Configuration for the Components library.
@@ -142,16 +144,15 @@ public class ComponentsConfiguration {
   /** Whether to unmount all contents of LithoView when its ComponentTree is set to null. */
   public static boolean unmountAllWhenComponentTreeSetToNull = false;
 
-  public static int layoutMainThreadPoolCorePoolSize = 2;
-  public static int layoutMainThreadPoolMaxPoolSize = 2;
-  public static int layoutBackgroundThreadPoolCorePoolSize = 2;
-  public static int layoutBackgroundThreadMaxPoolSize = 2;
-  public static int layoutMainThreadPoolPriority = Process.THREAD_PRIORITY_DISPLAY;
-  public static int layoutBackgroundThreadPoolPriority = Process.THREAD_PRIORITY_BACKGROUND;
-
   /**
    * Configuration for creating a thread pool of threads used for background layout. If null, a
    * single default thread will be used for background layout.
    */
   public static LayoutThreadPoolConfiguration threadPoolForBackgroundThreadsConfig = null;
+
+  public static Set<String> enabledForSplitLayout = new HashSet<>();
+  public static boolean isSplitLayoutEnabled;
+  public static boolean isMainThreadSplitLayoutEnabled;
+  public static LayoutThreadPoolConfiguration splitLayoutMainThreadPoolConfiguration = null;
+  public static LayoutThreadPoolConfiguration splitLayoutBackgroundThreadPoolConfiguration = null;
 }
