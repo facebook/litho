@@ -8,6 +8,9 @@
  */
 package com.facebook.litho;
 
+import static com.facebook.litho.FrameworkLogEvents.EVENT_WARNING;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
+
 import android.os.Process;
 import com.facebook.litho.config.DeviceInfoUtils;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
@@ -49,6 +52,7 @@ public class LayoutThreadPoolConfigurationImpl implements LayoutThreadPoolConfig
     private double maxPoolSizeMultiplier = 1;
     private int maxPoolSizeIncrement = 0;
     private int threadPriority = Process.THREAD_PRIORITY_BACKGROUND;
+    private ComponentsLogger logger;
 
     public Builder hasFixedSizePool(boolean hasFixedSizePool) {
       this.hasFixedSizePool = hasFixedSizePool;
@@ -78,12 +82,26 @@ public class LayoutThreadPoolConfigurationImpl implements LayoutThreadPoolConfig
       return this;
     }
 
+    public Builder logger(ComponentsLogger logger) {
+      this.logger = logger;
+      return this;
+    }
+
     public LayoutThreadPoolConfigurationImpl build() {
       if (hasFixedSizePool) {
         return new LayoutThreadPoolConfigurationImpl(corePoolSize, maxPoolSize, threadPriority);
       }
 
       int numProcessors = DeviceInfoUtils.getNumberOfCPUCores();
+
+      if (numProcessors == DeviceInfoUtils.DEVICEINFO_UNKNOWN || numProcessors == 0) {
+        numProcessors = 1;
+        if (logger != null) {
+          final LogEvent event = logger.newEvent(EVENT_WARNING);
+          event.addParam(PARAM_MESSAGE, "Could not read number of cores from device");
+          logger.log(event);
+        }
+      }
 
       int procDepCorePoolSize =
           (int) (numProcessors * corePoolSizeMultiplier + corePoolSizeIncrement);
