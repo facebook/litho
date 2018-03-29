@@ -9,6 +9,8 @@ load("//:LITHO_DEFS", "LITHO_JAVAPOET_TARGET", "LITHO_JSR_TARGET", "LITHO_VISIBI
 fb_java_library(
     name = "testing",
     srcs = glob(["*.java"]),
+    source = "8",
+    target = "8",
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels:specmodels"),
     ],

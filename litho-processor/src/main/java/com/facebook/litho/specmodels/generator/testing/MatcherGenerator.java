@@ -26,10 +26,12 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
 import com.squareup.javapoet.WildcardTypeName;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
@@ -689,9 +691,20 @@ public final class MatcherGenerator {
         .build();
   }
 
-  private static ClassName getEnclosedImplClassName(final SpecModel enclosedSpecModel) {
+  private static TypeName getEnclosedImplClassName(final SpecModel enclosedSpecModel) {
     final String componentTypeName = enclosedSpecModel.getComponentTypeName().toString();
-    return ClassName.bestGuess(componentTypeName);
+    if (enclosedSpecModel.getTypeVariables().isEmpty()) {
+      return ClassName.bestGuess(componentTypeName);
+    }
+
+    final TypeName[] typeNames =
+        enclosedSpecModel
+            .getTypeVariables()
+            .stream()
+            .map(TypeVariableName::withoutAnnotations)
+            .collect(Collectors.toList())
+            .toArray(new TypeName[] {});
+    return ParameterizedTypeName.get(ClassName.bestGuess(componentTypeName), typeNames);
   }
 
   private static <T extends SpecModel & HasEnclosedSpecModel> MethodSpec generateBuildMethod(
