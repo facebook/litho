@@ -13,6 +13,8 @@ import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
 import static android.support.v7.widget.OrientationHelper.VERTICAL;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_ERROR;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
 import static com.facebook.litho.MeasureComparisonUtils.isMeasureSpecCompatible;
 import static com.facebook.litho.widget.RenderInfoViewCreatorController.DEFAULT_COMPONENT_VIEW_TYPE;
 
@@ -33,9 +35,11 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
+import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.LogEvent;
 import com.facebook.litho.MeasureComparisonUtils;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
@@ -161,6 +165,7 @@ public class RecyclerBinder
           onNewVisibleRange(firstVisibleIndex, lastVisibleIndex);
         }
       };
+  private int mCountPostComputeRangeRunnableOnAnimation;
 
   @VisibleForTesting final RenderInfoViewCreatorController mRenderInfoViewCreatorController;
 
@@ -171,6 +176,7 @@ public class RecyclerBinder
           // If mount hasn't happened or we don't have any pending updates, we're ready to compute
           // range.
           if (mMountedView == null || !mMountedView.hasPendingAdapterUpdates()) {
+            mCountPostComputeRangeRunnableOnAnimation = 0;
             computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
             return;
           }
@@ -183,8 +189,17 @@ public class RecyclerBinder
             return;
           }
 
+          if (mCountPostComputeRangeRunnableOnAnimation >= 3) {
+            mCountPostComputeRangeRunnableOnAnimation = 0;
+            logTooManyPostingAttempts();
+            computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+
+            return;
+          }
+
           // If we have pending updates, wait until the sync operations are finished and try again
           // in the next frame.
+          mCountPostComputeRangeRunnableOnAnimation++;
           ViewCompat.postOnAnimation(mMountedView, mComputeRangeRunnable);
         }
       };
@@ -1626,5 +1641,42 @@ public class RecyclerBinder
         mCanPrefetchDisplayLists,
         mCanCacheDrawingDisplayLists,
         mHasDynamicItemHeight ? mComponentTreeMeasureListenerFactory : null);
+  }
+
+  private void logTooManyPostingAttempts() {
+    final ComponentsLogger logger = mComponentContext.getLogger();
+    if (logger != null) {
+      final LogEvent logEvent = logger.newEvent(EVENT_ERROR);
+      if (logger.isTracing(logEvent)) {
+        final StringBuilder messageBuilder = new StringBuilder();
+        messageBuilder.append("Tried posting too many times! ");
+        messageBuilder.append("mMountedView is attached: ");
+        messageBuilder.append(mMountedView.isAttachedToWindow());
+        messageBuilder.append("; ");
+        messageBuilder.append("mMountedView visibility: ");
+        messageBuilder.append(mMountedView.getVisibility());
+        messageBuilder.append("; ");
+        messageBuilder.append("adapter has updates: ");
+        messageBuilder.append(mMountedView.hasPendingAdapterUpdates());
+        messageBuilder.append("; ");
+        messageBuilder.append("mMountedView requested layout: ");
+        messageBuilder.append(mMountedView.isLayoutRequested());
+        messageBuilder.append("; ");
+
+        for (int i = mCurrentFirstVisiblePosition; i <= mCurrentLastVisiblePosition; i++) {
+          final RenderInfo renderInfo = mComponentTreeHolders.get(i).getRenderInfo();
+          if (renderInfo.rendersComponent()) {
+            messageBuilder.append(renderInfo.getComponent().getSimpleName());
+          } else {
+            messageBuilder.append(renderInfo.getViewCreator().getClass());
+          }
+
+          messageBuilder.append(" ");
+        }
+
+        logEvent.addParam(PARAM_MESSAGE, messageBuilder.toString());
+        logger.log(logEvent);
+      }
+    }
   }
 }
