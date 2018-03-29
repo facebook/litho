@@ -61,7 +61,8 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
       ImmutableList<TypeVariableName> typeVariables,
       SpecModel enclosedSpecModel,
       TestSpecGenerator testSpecGenerator,
-      String classJavadoc) {
+      String classJavadoc,
+      @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
     mSpecModel =
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(qualifiedSpecClassName)
@@ -74,6 +75,7 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
             .propJavadocs(propJavadocs)
             .typeVariables(typeVariables)
             .representedObject(enclosedSpecModel)
+            .dependencyInjectionHelper(dependencyInjectionHelper)
             .build();
     mEnclosedSpecModel = enclosedSpecModel;
     mTestSpecGenerator = testSpecGenerator;
@@ -251,7 +253,7 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
 
   @Override
   public boolean hasInjectedDependencies() {
-    return false;
+    return mSpecModel.hasInjectedDependencies();
   }
 
   @Override
@@ -272,7 +274,7 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   @Override
   @Nullable
   public DependencyInjectionHelper getDependencyInjectionHelper() {
-    return null;
+    return mSpecModel.getDependencyInjectionHelper();
   }
 
   @Override

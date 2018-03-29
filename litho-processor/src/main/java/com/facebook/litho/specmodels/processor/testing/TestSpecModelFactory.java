@@ -125,7 +125,8 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
         enclosedSpecModel.getTypeVariables(),
         enclosedSpecModel,
         mTestSpecGenerator,
-        JavadocExtractor.getClassJavadoc(elements, element));
+        JavadocExtractor.getClassJavadoc(elements, element),
+        enclosedSpecModel.getDependencyInjectionHelper());
   }
 
   private void validateElementIsEmpty(TypeElement element) {
