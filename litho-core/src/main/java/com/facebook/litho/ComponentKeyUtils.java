@@ -25,14 +25,22 @@ public class ComponentKeyUtils {
   }
 
   public static String getKeyWithSeparator(String parentGlobalKey, String key) {
-    final StringBuilder sb = new StringBuilder();
+    // TODO(t27615219): Enforce non-null keys
+    if (key == null) {
+      key = "null";
+    }
+
+    int parentLength = parentGlobalKey.length();
+    int keyLength  = key.length();
+    final StringBuilder sb = new StringBuilder(parentLength + keyLength + 1);
     sb.append(parentGlobalKey).append(',').append(key);
 
     return sb.toString();
   }
 
   public static String getKeyForChildPosition(String currentKey, int index) {
-    final StringBuilder sb = new StringBuilder();
+    // Index will almost always be under 3 digits
+    final StringBuilder sb = new StringBuilder(currentKey.length() + 4);
     sb.append(currentKey).append('!').append(index);
 
     return sb.toString();
