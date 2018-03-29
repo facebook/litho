@@ -221,8 +221,12 @@ class HorizontalScrollSpec {
   }
 
   @OnCreateInitialState
-  static void onCreateInitialState(ComponentContext c, StateValue<Integer> lastScrollPosition) {
-    lastScrollPosition.set(LAST_SCROLL_POSITION_UNSET);
+  static void onCreateInitialState(
+      ComponentContext c,
+      StateValue<Integer> lastScrollPosition,
+      @Prop(optional = true) Integer initialScrollPosition) {
+    lastScrollPosition.set(
+        initialScrollPosition == null ? LAST_SCROLL_POSITION_UNSET : initialScrollPosition);
   }
 
   static class HorizontalScrollLithoView extends HorizontalScrollView {
