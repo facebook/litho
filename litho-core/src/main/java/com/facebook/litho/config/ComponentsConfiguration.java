@@ -82,12 +82,6 @@ public class ComponentsConfiguration {
    */
   public static boolean lithoViewIncrementalMountUsesLocalVisibleBounds = false;
 
-  /**
-   * Whether to keep a reference to the InternalNode tree in LayoutState instead of immediately
-   * releasing it.
-   */
-  public static boolean persistInternalNodeTree = false;
-
   /** Whether the RecyclerCollectionComponent can asynchronously set the root of a SectionTree. */
   public static boolean setRootAsyncRecyclerCollectionComponent = false;
 
