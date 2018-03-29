@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.testing.assertj.LithoAssertions;
 import com.facebook.litho.testing.specmodels.MockMethodParamModel;
@@ -69,6 +70,7 @@ public class PropNameInterStageStoreTest {
     final MockSpecModel specModel =
         MockSpecModel.newBuilder()
             .rawProps(ImmutableList.of(makePropModel("param0"), makePropModel("param1")))
+            .rawInjectProps(ImmutableList.of(makeInjectPropModel("injectParam0")))
             .specTypeName(ClassName.get(MyTestSpec.class))
             .build();
     store.saveNames(specModel);
@@ -94,5 +96,9 @@ public class PropNameInterStageStoreTest {
   static PropModel makePropModel(String name) {
     return new PropModel(
         MockMethodParamModel.newBuilder().name(name).build(), false, ResType.BOOL, "");
+  }
+
+  private InjectPropModel makeInjectPropModel(String name) {
+    return new InjectPropModel(MockMethodParamModel.newBuilder().name(name).build());
   }
 }

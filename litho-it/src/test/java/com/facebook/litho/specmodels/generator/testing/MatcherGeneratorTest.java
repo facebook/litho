@@ -14,8 +14,10 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.model.testing.TestSpecModel;
 import com.facebook.litho.testing.specmodels.MockMethodParamModel;
 import com.facebook.litho.testing.specmodels.MockSpecModel;
 import com.squareup.javapoet.ClassName;
@@ -114,6 +116,58 @@ public class MatcherGeneratorTest {
                 "prop2Attr",
                 "prop2Attr",
                 "prop2Dip",
+                "build",
+                "getThis"));
+  }
+
+  @Test
+  public void testGenerationWithInjectProps() {
+    final MockSpecModel mockSpecModel =
+        MockSpecModel.newBuilder()
+            .contextClass(ClassName.bestGuess(DummyContext.class.getName()))
+            .enclosedSpecModel(sEnclosedSpec)
+            .props(
+                ImmutableList.of(
+                    new PropModel(
+                        MockMethodParamModel.newBuilder()
+                            .name("prop1")
+                            .type(TypeName.get(String.class))
+                            .build(),
+                        false,
+                        ResType.STRING,
+                        "")))
+            .injectProps(
+                ImmutableList.of(
+                    new InjectPropModel(
+                        MockMethodParamModel.newBuilder()
+                            .name("injectProp1")
+                            .type(TypeName.get(MatcherGenerator.class))
+                            .build())))
+            .build();
+    final TestSpecModel specModel = new TestSpecModel(mockSpecModel, null, sEnclosedSpec);
+
+    final TypeSpecDataHolder holder = MatcherGenerator.generate(specModel);
+
+    assertThat(holder.getFieldSpecs()).isEmpty();
+
+    assertThat(holder.getTypeSpecs()).hasSize(1);
+
+    final TypeSpec matcherSpec = holder.getTypeSpecs().get(0);
+
+    assertThat(matcherSpec.name).isEqualTo("Matcher");
+    assertThat(matcherSpec.fieldSpecs).hasSize(2);
+
+    assertThat(matcherSpec.methodSpecs.stream().map(m -> m.name).toArray())
+        .hasSameElementsAs(
+            ImmutableList.of(
+                "<init>",
+                "prop1",
+                "prop1",
+                "prop1Res",
+                "prop1Res",
+                "prop1Attr",
+                "prop1Attr",
+                "injectProp1",
                 "build",
                 "getThis"));
   }

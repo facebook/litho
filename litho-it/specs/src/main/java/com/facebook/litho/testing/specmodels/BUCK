@@ -41,5 +41,6 @@ android_library(
         LITHO_TESTING_ASSERTJ_TARGET,
         LITHO_TESTING_SUBCOMPONENTS_TARGET,
         LITHO_YOGA_TARGET,
+        LITHO_WIDGET_TARGET,
     ],
 )
