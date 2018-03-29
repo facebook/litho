@@ -91,6 +91,7 @@ public class RecyclerSpecTest {
     verify(binder).bind(mRecyclerView);
     verify(mRecyclerView, times(1)).requestLayout();
     verify(mSectionsRecyclerView).setHasBeenDetachedFromWindow(false);
+    verify(snapHelper).attachToRecyclerView(mRecyclerView);
   }
 
   @Test
@@ -98,8 +99,6 @@ public class RecyclerSpecTest {
     when(mSectionsRecyclerView.hasBeenDetachedFromWindow()).thenReturn(true);
 
     Binder<RecyclerView> binder = mock(Binder.class);
-
-    SnapHelper snapHelper = mock(SnapHelper.class);
 
     final int size = 3;
     List<RecyclerView.OnScrollListener> scrollListeners = createListOfScrollListeners(size);

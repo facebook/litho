@@ -220,7 +220,9 @@ class RecyclerSpec {
       recyclerView.setTouchInterceptor(touchInterceptor);
     }
 
-    if (snapHelper != null) {
+    // We cannot detach the snap helper in unbind, so it may be possible for it to get
+    // attached twice which causes SnapHelper to raise an exception.
+    if (snapHelper != null && recyclerView.getOnFlingListener() == null) {
       snapHelper.attachToRecyclerView(recyclerView);
     }
 
