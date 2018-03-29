@@ -22,6 +22,7 @@ import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.facebook.litho.specmodels.processor.AbstractComponentsProcessor;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.facebook.litho.specmodels.processor.MountSpecModelFactory;
+import com.facebook.litho.specmodels.processor.testing.TestSpecModelFactory;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
@@ -46,14 +47,18 @@ public class TestingDIComponentProcessor extends AbstractComponentsProcessor {
 
   public TestingDIComponentProcessor() {
     super(
-        ImmutableList.of(new LayoutSpecModelFactory(), new MountSpecModelFactory()),
+        ImmutableList.of(
+            new LayoutSpecModelFactory(), new MountSpecModelFactory(), new TestSpecModelFactory()),
         (typeElement, runMode) -> new TestingDependencyInjectionHelper());
   }
 
   @Override
   public Set<String> getSupportedAnnotationTypes() {
     return new LinkedHashSet<>(
-        Arrays.asList(ClassNames.LAYOUT_SPEC.toString(), ClassNames.MOUNT_SPEC.toString()));
+        Arrays.asList(
+            ClassNames.LAYOUT_SPEC.toString(),
+            ClassNames.MOUNT_SPEC.toString(),
+            ClassNames.TEST_SPEC.toString()));
   }
 
   private static class TestingDependencyInjectionHelper implements DependencyInjectionHelper {

@@ -19,7 +19,6 @@ android {
         javaCompileOptions {
             annotationProcessorOptions {
                 className 'com.facebook.litho.testing.processor.TestingDIComponentProcessor'
-                className 'com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor'
             }
         }
     }
