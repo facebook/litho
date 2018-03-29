@@ -28,9 +28,9 @@ contain a mix of normal props, state and injected props.
 
 ```java
 @LayoutSpec
-public class MyInjectPropSpec {
+class MyInjectPropSpec {
   @OnCreateLayout
-  public static Component onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext c,
       @Prop String normalProp,
       @InjectProp UserController injectedProp,
@@ -107,6 +107,47 @@ public class InjectPropMatcherGenerationTest {
 In the example you can see how we test against normal and injected props in just
 the same way. The Kettle object is instantiated with a temperature, that we can
 verify using a custom matcher.
+
+## Testing injected components
+
+A fairly common type to inject is indeed other Components. Let's consider our
+spec from before with an injected `Text` component instead:
+
+```java
+@OnCreateLayout
+static Component onCreateLayout(
+    ComponentContext c,
+    @InjectProp Text injectedComponent) {
+  return Column.create(c).child(injectedComponent).build();
+}
+```
+
+While `Text` is clearly too broad of a component to be a reasonable target for
+DI, it'll do just fine for this example.
+
+When testing that the injected component behaves as expected, we can use the
+previously explored pattern of passing in another TestSpec matcher:
+
+```java
+@Test
+public void testInjectPropMatching() {
+  final ComponentContext c = mComponentsRule.getContext();
+  final MyInjectProp component =
+      new MyInjectProp(new MyInjectPropSpec()).create(c).build();
+  component.injectedComponent = Text.create(c).text("injected text").build();
+
+  final Condition<InspectableComponent> matcher =
+      TestMyInjectProp.matcher(c)
+          .injectedComponent(TestText.matcher(c).text("injected text").build())
+          .build();
+
+  assertThat(c, component).has(deepSubComponentWith(c, matcher));
+}
+```
+
+As you can see, the appropriate matchers are generated for you even if the
+type of the prop is a concrete instance of a component rather than the generic
+`Component` type.
 
 ## Next
 
