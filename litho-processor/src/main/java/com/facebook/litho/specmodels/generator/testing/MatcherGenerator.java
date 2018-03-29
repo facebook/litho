@@ -629,7 +629,7 @@ public final class MatcherGenerator {
 
   private static CodeBlock generateFieldExtractorBlock(PropModel prop, String varName) {
     return CodeBlock.builder()
-        .addStatement("final $T $L", prop.getTypeName(), varName)
+        .addStatement("$T $L = null", prop.getTypeName().box(), varName)
         .beginControlFlow("try")
         .addStatement(
             "$L = ($T) impl.getClass().getDeclaredField($S).get(impl)",
@@ -637,7 +637,7 @@ public final class MatcherGenerator {
             prop.getTypeName(),
             prop.getName())
         .nextControlFlow("catch (Exception e)")
-        .addStatement("throw new RuntimeException(e)")
+        .add("// TODO(T25404536): Temporarily ignored.\n")
         .endControlFlow()
         .build();
   }
