@@ -698,6 +698,10 @@ public class LithoView extends ComponentHost {
     return mMountState.isDirty();
   }
 
+  boolean mountStateNeedsRemount() {
+    return mMountState.needsRemount();
+  }
+
   MountState getMountState() {
     return mMountState;
   }

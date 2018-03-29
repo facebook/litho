@@ -427,7 +427,7 @@ public class ComponentTree {
     if (needsAndroidLayout) {
       mLithoView.requestLayout();
     } else {
-      mountComponentIfDirty();
+      mountComponentIfNeeded();
     }
   }
 
@@ -498,8 +498,8 @@ public class ComponentTree {
     return mIsMounting;
   }
 
-  private boolean mountComponentIfDirty() {
-    if (mLithoView.isMountStateDirty()) {
+  private boolean mountComponentIfNeeded() {
+    if (mLithoView.isMountStateDirty() || mLithoView.mountStateNeedsRemount()) {
       if (mIncrementalMountEnabled) {
         incrementalMountComponent();
       } else {
@@ -827,7 +827,7 @@ public class ComponentTree {
   boolean layout() {
     assertMainThread();
 
-    return mountComponentIfDirty();
+    return mountComponentIfNeeded();
   }
 
   /**

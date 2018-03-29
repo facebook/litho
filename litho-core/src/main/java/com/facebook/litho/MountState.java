@@ -100,6 +100,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   // refresh the content of the HostComponent. Always set from the main thread.
   private boolean mIsDirty;
 
+  // See #needsRemount()
+  private boolean mNeedsRemount;
+
   // Holds the list of known component hosts during a mount pass.
   private final LongSparseArray<ComponentHost> mHostsByMarker = new LongSparseArray<>();
 
@@ -159,6 +162,17 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     assertMainThread();
 
     return mIsDirty;
+  }
+
+  /**
+   * True if we have manually unmounted content (e.g. via unmountAllItems) which means that while we
+   * may not have a new LayoutState, the mounted content does not match what the viewport for the
+   * LithoView may be.
+   */
+  boolean needsRemount() {
+    assertMainThread();
+
+    return mNeedsRemount;
   }
 
   /**
@@ -317,6 +331,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     mMountTimeTransitions = null;
     mIsDirty = false;
+    mNeedsRemount = false;
     mIsFirstMountOfComponentTree = false;
     if (localVisibleRect != null) {
       mPreviousLocalVisibleRect.set(localVisibleRect);
@@ -1991,6 +2006,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       unmountItem(mContext, i, mHostsByMarker);
     }
     mPreviousLocalVisibleRect.setEmpty();
+    mNeedsRemount = true;
   }
 
   private void unmountItem(

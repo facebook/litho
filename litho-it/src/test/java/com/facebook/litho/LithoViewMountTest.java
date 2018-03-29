@@ -189,6 +189,37 @@ public class LithoViewMountTest {
     assertThat(child2.isMounted()).isTrue();
   }
 
+  @Test
+  public void testUnmountAllCausesRemountOfComponentTreeOnLayout() {
+    final TestComponent child1 = TestViewComponent.create(mContext).build();
+    final TestComponent child2 = TestDrawableComponent.create(mContext).build();
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
+                    .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
+                    .build();
+              }
+            },
+            true);
+
+    lithoView.performLayout(false, 0, 0, 100, 100);
+    assertThat(child1.isMounted()).isTrue();
+    assertThat(child2.isMounted()).isTrue();
+
+    lithoView.unmountAllItems();
+    assertThat(child1.isMounted()).isFalse();
+    assertThat(child2.isMounted()).isFalse();
+
+    lithoView.performLayout(false, 0, 0, 100, 100);
+    assertThat(child1.isMounted()).isTrue();
+    assertThat(child2.isMounted()).isTrue();
+  }
+
   private ComponentTree createComponentTree(boolean useSpy, boolean incMountEnabled, int width, int height) {
     ComponentTree componentTree =
         ComponentTree.create(mContext, mComponent)
