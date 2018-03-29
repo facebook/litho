@@ -13,6 +13,7 @@ import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.HasEnclosedSpecModel;
+import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.AnnotationSpec;
@@ -109,7 +110,7 @@ public final class MatcherGenerator {
       SpecModel specModel, final PropModel prop) {
     final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
 
-    if (getRawType(prop.getTypeName()).equals(ClassNames.COMPONENT)) {
+    if (isComponentType(prop)) {
       dataHolder.addField(matcherComponentFieldBuilder(prop));
       dataHolder.addMethod(matcherComponentFieldSetterBuilder(specModel, prop));
     }
@@ -120,7 +121,7 @@ public final class MatcherGenerator {
     if (prop.hasVarArgs()) {
       dataHolder.addMethod(varArgBuilder(specModel, prop));
       final ParameterizedTypeName type = (ParameterizedTypeName) prop.getTypeName();
-      if (getRawType(type.typeArguments.get(0)).equals(ClassNames.COMPONENT)) {
+      if (isComponentType(prop)) {
         dataHolder.addMethod(varArgBuilderBuilder(specModel, prop));
       }
       // fall through to generate builder method for List<T>
@@ -213,7 +214,7 @@ public final class MatcherGenerator {
         break;
     }
 
-    if (getRawType(prop.getTypeName()).equals(ClassNames.COMPONENT)) {
+    if (isComponentType(prop)) {
       dataHolder.addMethod(builderBuilder(specModel, prop, ClassNames.COMPONENT_BUILDER));
     }
 
@@ -222,6 +223,10 @@ public final class MatcherGenerator {
     }
 
     return dataHolder.build();
+  }
+
+  private static boolean isComponentType(MethodParamModel paramModel) {
+    return paramModel.getTypeSpec().isSubType(ClassNames.COMPONENT);
   }
 
   private static TypeName getRawType(final TypeName type) {

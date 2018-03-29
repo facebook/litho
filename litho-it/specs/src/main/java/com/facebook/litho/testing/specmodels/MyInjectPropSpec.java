@@ -15,6 +15,7 @@ import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.widget.Text;
 
 @LayoutSpec
 public class MyInjectPropSpec {
@@ -23,8 +24,9 @@ public class MyInjectPropSpec {
       ComponentContext c,
       @Prop String normalString,
       @InjectProp String injectedString,
-      @InjectProp Kettle injectedKettle) {
-    return Column.create(c).build();
+      @InjectProp Kettle injectedKettle,
+      @InjectProp Text injectedComponent) {
+    return Column.create(c).child(injectedComponent).build();
   }
 
   public static class Kettle {

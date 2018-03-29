@@ -19,6 +19,8 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.widget.TestText;
+import com.facebook.litho.widget.Text;
 import org.assertj.core.api.Condition;
 import org.hamcrest.CustomTypeSafeMatcher;
 import org.junit.Before;
@@ -46,6 +48,7 @@ public class InjectPropMatcherGenerationTest {
     // Faking some DI mechanism doing its thing.
     component.injectedString = "injected string";
     component.injectedKettle = new MyInjectPropSpec.Kettle(92f);
+    component.injectedComponent = Text.create(c).text("injected text").build();
 
     final Condition<InspectableComponent> matcher =
         TestMyInjectProp.matcher(c)
@@ -58,6 +61,7 @@ public class InjectPropMatcherGenerationTest {
                     return Math.abs(item.temperatureCelsius - 92f) < 0.1;
                   }
                 })
+            .injectedComponent(TestText.matcher(c).text("injected text").build())
             .build();
 
     assertThat(c, component).has(deepSubComponentWith(c, matcher));
