@@ -850,7 +850,7 @@ public final class SpecModelImpl implements SpecModel {
       return this;
     }
 
-    public Builder dependencyInjectionGenerator(
+    public Builder dependencyInjectionHelper(
         @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
       mDependencyInjectionHelper = dependencyInjectionHelper;
       return this;

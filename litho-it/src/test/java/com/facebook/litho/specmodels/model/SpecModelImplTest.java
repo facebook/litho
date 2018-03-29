@@ -202,7 +202,7 @@ public class SpecModelImplTest {
             .triggerMethods(ImmutableList.of(mTriggerMethodModel))
             .typeVariables(ImmutableList.copyOf(mTypeVariableNames))
             .propDefaults(ImmutableList.of(mPropDefaultModel1))
-            .dependencyInjectionGenerator(diGenerator)
+            .dependencyInjectionHelper(diGenerator)
             .representedObject(new Object())
             .build();
 

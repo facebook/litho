@@ -99,13 +99,14 @@ public class DelegateMethodGeneratorTest {
         .representedObject(new Object())
         .build();
 
-    mSpecModelWithDI = SpecModelImpl.newBuilder()
-        .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
-        .componentClass(ClassNames.COMPONENT)
-        .delegateMethods(ImmutableList.of(mDelegateMethodModel))
-        .dependencyInjectionGenerator(mDependencyInjectionHelper)
-        .representedObject(new Object())
-        .build();
+    mSpecModelWithDI =
+        SpecModelImpl.newBuilder()
+            .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
+            .componentClass(ClassNames.COMPONENT)
+            .delegateMethods(ImmutableList.of(mDelegateMethodModel))
+            .dependencyInjectionHelper(mDependencyInjectionHelper)
+            .representedObject(new Object())
+            .build();
   }
 
   @Test

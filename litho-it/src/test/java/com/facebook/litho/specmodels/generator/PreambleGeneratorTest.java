@@ -48,12 +48,13 @@ public class PreambleGeneratorTest {
         .representedObject(new Object())
         .build();
 
-    mSpecModelWithDI = SpecModelImpl.newBuilder()
-        .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
-        .delegateMethods(ImmutableList.<SpecMethodModel<DelegateMethod, Void>>of())
-        .dependencyInjectionGenerator(mDependencyInjectionHelper)
-        .representedObject(new Object())
-        .build();
+    mSpecModelWithDI =
+        SpecModelImpl.newBuilder()
+            .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
+            .delegateMethods(ImmutableList.<SpecMethodModel<DelegateMethod, Void>>of())
+            .dependencyInjectionHelper(mDependencyInjectionHelper)
+            .representedObject(new Object())
+            .build();
   }
 
   @Test

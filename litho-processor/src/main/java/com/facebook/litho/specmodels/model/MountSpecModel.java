@@ -75,7 +75,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
             .isPublic(isPublic)
-            .dependencyInjectionGenerator(dependencyInjectionHelper)
+            .dependencyInjectionHelper(dependencyInjectionHelper)
             .specElementType(specElementType)
             .representedObject(representedObject)
             .build();
