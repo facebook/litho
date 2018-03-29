@@ -44,6 +44,8 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethods;
   private final ImmutableList<PropModel> mRawProps;
   private final ImmutableList<PropModel> mProps;
+  private final ImmutableList<InjectPropModel> mInjectProps;
+  private final ImmutableList<InjectPropModel> mRawInjectProps;
   private final ImmutableList<PropDefaultModel> mPropDefaults;
   private final ImmutableList<TypeVariableName> mTypeVariables;
   private final ImmutableList<StateParamModel> mStateValues;
@@ -60,7 +62,6 @@ public final class SpecModelImpl implements SpecModel {
   private final boolean mHasInjectedDependencies;
   @Nullable private final DependencyInjectionHelper mDependencyInjectionHelper;
   private final Object mRepresentedObject;
-  private final ImmutableList<InjectPropModel> mInjectProps;
 
   private SpecModelImpl(
       String qualifiedSpecClassName,
@@ -95,8 +96,13 @@ public final class SpecModelImpl implements SpecModel {
     mTriggerMethods = triggerMethods;
     mUpdateStateMethods = updateStateMethods;
     mRawProps = getRawProps(delegateMethods, eventMethods, triggerMethods, updateStateMethods);
-    mInjectProps = injectProps.isEmpty() ? getInjectProps(delegateMethods, eventMethods, triggerMethods, updateStateMethods) : injectProps;
     mProps = props.isEmpty() ? getProps(mRawProps, cachedPropNames, delegateMethods) : props;
+    mRawInjectProps =
+        getRawInjectProps(delegateMethods, eventMethods, triggerMethods, updateStateMethods);
+    mInjectProps =
+        injectProps.isEmpty()
+            ? getInjectProps(mRawInjectProps, cachedPropNames, mProps.size())
+            : injectProps;
     mPropDefaults = propDefaults;
     mTypeVariables = typeVariables;
     mStateValues =
@@ -166,6 +172,12 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public ImmutableList<PropModel> getProps() {
     return mProps;
+  }
+
+  /** @return the list of injected props without name cache adjustments. */
+  @Override
+  public ImmutableList<InjectPropModel> getRawInjectProps() {
+    return mRawInjectProps;
   }
 
   @Override
@@ -361,6 +373,15 @@ public final class SpecModelImpl implements SpecModel {
     return name != null ? prop.withName(name) : prop;
   }
 
+  private static InjectPropModel updateInjectPropWithCachedName(
+      InjectPropModel prop, @Nullable List<String> cachedPropNames, int index) {
+    final String name =
+        cachedPropNames != null && index < cachedPropNames.size()
+            ? cachedPropNames.get(index)
+            : null;
+    return name != null ? prop.withName(name) : prop;
+  }
+
   /** Extract props without taking deduplication and name caching into account. */
   private static ImmutableList<PropModel> getRawProps(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
@@ -475,7 +496,7 @@ public final class SpecModelImpl implements SpecModel {
     return ImmutableList.copyOf(new ArrayList<>(props));
   }
 
-  private static ImmutableList<InjectPropModel> getInjectProps(
+  private static ImmutableList<InjectPropModel> getRawInjectProps(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
@@ -516,6 +537,23 @@ public final class SpecModelImpl implements SpecModel {
     }
 
     return ImmutableList.copyOf(new ArrayList<>(props));
+  }
+
+  private static ImmutableList<InjectPropModel> getInjectProps(
+      ImmutableList<InjectPropModel> rawInjectProps,
+      ImmutableList<String> cachedPropNames,
+      int propOffset) {
+
+    // Update names from cache.
+    final List<InjectPropModel> renamedProps =
+        IntStream.range(0, rawInjectProps.size())
+            .mapToObj(
+                i ->
+                    updateInjectPropWithCachedName(
+                        rawInjectProps.get(i), cachedPropNames, i + propOffset))
+            .collect(Collectors.toList());
+
+    return ImmutableList.copyOf(renamedProps);
   }
 
   private static ImmutableList<StateParamModel> getStateValues(

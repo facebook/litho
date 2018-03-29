@@ -74,6 +74,22 @@ public class InjectPropModel implements MethodParamModel {
 
   /** Convert to a regular prop model. */
   public PropModel toPropModel() {
-    return new PropModel(mParamModel, false, ResType.NONE, "");
+    final String localName = getName();
+    return new PropModel(mParamModel, false, ResType.NONE, "") {
+      @Override
+      public String getName() {
+        return localName;
+      }
+    };
+  }
+
+  /** @return a new {@link PropModel} instance with the given name overridden. */
+  public InjectPropModel withName(String name) {
+    return new InjectPropModel(mParamModel) {
+      @Override
+      public String getName() {
+        return name;
+      }
+    };
   }
 }

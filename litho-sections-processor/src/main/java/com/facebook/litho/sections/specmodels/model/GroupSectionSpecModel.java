@@ -148,6 +148,11 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
+  public ImmutableList<InjectPropModel> getRawInjectProps() {
+    return mSpecModel.getRawInjectProps();
+  }
+
+  @Override
   public ImmutableList<InjectPropModel> getInjectProps() {
     return mSpecModel.getInjectProps();
   }

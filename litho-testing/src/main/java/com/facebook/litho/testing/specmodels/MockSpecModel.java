@@ -56,6 +56,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   private final ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethods;
   private final ImmutableList<PropModel> mProps;
   private final ImmutableList<PropModel> mRawProps;
+  private final ImmutableList<InjectPropModel> mRawInjectProps;
   private final ImmutableList<InjectPropModel> mInjectProps;
   private final ImmutableList<PropDefaultModel> mPropDefaults;
   private final ImmutableList<TypeVariableName> mTypeVariables;
@@ -98,6 +99,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
       ImmutableList<PropModel> rawProps,
       ImmutableList<PropModel> props,
+      ImmutableList<InjectPropModel> rawInjectProps,
       ImmutableList<InjectPropModel> injectProps,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<TypeVariableName> typeVariables,
@@ -138,6 +140,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     mUpdateStateMethods = updateStateMethods;
     mRawProps = rawProps;
     mProps = props;
+    mRawInjectProps = rawInjectProps;
     mInjectProps = injectProps;
     mPropDefaults = propDefaults;
     mTypeVariables = typeVariables;
@@ -217,6 +220,11 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   @Override
   public ImmutableList<PropModel> getProps() {
     return mProps;
+  }
+
+  @Override
+  public ImmutableList<InjectPropModel> getRawInjectProps() {
+    return mRawInjectProps;
   }
 
   @Override
@@ -395,6 +403,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
         ImmutableList.of();
     private ImmutableList<PropModel> mRawProps = ImmutableList.of();
     private ImmutableList<PropModel> mProps = ImmutableList.of();
+    private ImmutableList<InjectPropModel> mRawInjectProps = ImmutableList.of();
     private ImmutableList<InjectPropModel> mInjectProps = ImmutableList.of();
     private ImmutableList<PropDefaultModel> mPropDefaults = ImmutableList.of();
     private ImmutableList<TypeVariableName> mTypeVariables = ImmutableList.of();
@@ -481,6 +490,11 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
 
     public Builder props(ImmutableList<PropModel> props) {
       mProps = props;
+      return this;
+    }
+
+    public Builder rawInjectProps(ImmutableList<InjectPropModel> rawInjectProps) {
+      mRawInjectProps = rawInjectProps;
       return this;
     }
 
@@ -645,6 +659,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mUpdateStateMethods,
           mRawProps,
           mProps,
+          mRawInjectProps,
           mInjectProps,
           mPropDefaults,
           mTypeVariables,

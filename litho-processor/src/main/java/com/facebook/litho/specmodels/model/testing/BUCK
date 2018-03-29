@@ -4,11 +4,13 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree. An additional grant
 # of patent rights can be found in the PATENTS file in the same directory.
-load("//:LITHO_DEFS", "LITHO_JAVAPOET_TARGET", "LITHO_JSR_TARGET", "LITHO_VISIBILITY", "make_dep_path", "fb_java_library")
+load("//:LITHO_DEFS", "LITHO_JAVAPOET_TARGET", "LITHO_JSR_TARGET", "LITHO_VISIBILITY", "LITHO_ANDROIDSUPPORT_TARGET", "make_dep_path", "fb_java_library")
 
 fb_java_library(
     name = "testing",
     srcs = glob(["*.java"]),
+    source = "8",
+    target = "8",
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels:specmodels"),
     ],
@@ -16,6 +18,7 @@ fb_java_library(
     deps = [
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/generator/testing:testing"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),

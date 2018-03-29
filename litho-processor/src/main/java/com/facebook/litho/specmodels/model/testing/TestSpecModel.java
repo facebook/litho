@@ -9,6 +9,7 @@
 
 package com.facebook.litho.specmodels.model.testing;
 
+import android.support.annotation.VisibleForTesting;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
@@ -39,13 +40,14 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 /**
  * Model that is an abstract representation of a {@link com.facebook.litho.annotations.TestSpec}.
  */
 public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
-  private final SpecModelImpl mSpecModel;
+  private final SpecModel mSpecModel;
   private final TestSpecGenerator mTestSpecGenerator;
   private final SpecModel mEnclosedSpecModel;
 
@@ -75,6 +77,14 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
             .build();
     mEnclosedSpecModel = enclosedSpecModel;
     mTestSpecGenerator = testSpecGenerator;
+  }
+
+  @VisibleForTesting
+  public TestSpecModel(
+      SpecModel specModel, TestSpecGenerator generator, SpecModel enclosedSpecModel) {
+    mSpecModel = specModel;
+    mTestSpecGenerator = generator;
+    mEnclosedSpecModel = enclosedSpecModel;
   }
 
   @Override
@@ -124,7 +134,19 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
 
   @Override
   public ImmutableList<PropModel> getProps() {
-    return mSpecModel.getProps();
+    final ImmutableList<PropModel> props = mSpecModel.getProps();
+    final ImmutableList<InjectPropModel> injectProps = mSpecModel.getInjectProps();
+
+    final List<PropModel> injectPropModels =
+        injectProps.stream().map(InjectPropModel::toPropModel).collect(Collectors.toList());
+    injectPropModels.addAll(props);
+
+    return ImmutableList.copyOf(injectPropModels);
+  }
+
+  @Override
+  public ImmutableList<InjectPropModel> getRawInjectProps() {
+    return mSpecModel.getRawInjectProps();
   }
 
   @Override
