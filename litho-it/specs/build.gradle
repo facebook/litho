@@ -28,6 +28,7 @@ android {
 dependencies {
     implementation project(':litho-core')
     implementation project(':litho-testing')
+    implementation project(':litho-widget')
     compileOnly project(':litho-annotations')
 
     annotationProcessor project(':litho-processor')

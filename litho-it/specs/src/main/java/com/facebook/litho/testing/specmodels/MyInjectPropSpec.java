@@ -20,7 +20,18 @@ import com.facebook.litho.annotations.Prop;
 public class MyInjectPropSpec {
   @OnCreateLayout
   public static Component onCreateLayout(
-      ComponentContext c, @Prop String normalString, @InjectProp String injectedString) {
+      ComponentContext c,
+      @Prop String normalString,
+      @InjectProp String injectedString,
+      @InjectProp Kettle injectedKettle) {
     return Column.create(c).build();
+  }
+
+  public static class Kettle {
+    public float temperatureCelsius;
+
+    public Kettle(float v) {
+      temperatureCelsius = v;
+    }
   }
 }

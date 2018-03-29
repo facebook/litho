@@ -27,6 +27,11 @@ Once you know how to test for sub-components, you can learn about more advanced
 techniques for verifying props on them in the [Matching
 Props](/docs/prop-matching) guide.
 
+## Matching InjectProps
+
+Litho provides a pluggable mechanism for dependency injection. [This tutorial](/docs/injectprops-matching)
+shows you how to test props which were injected via `@InjectProp`.
+
 ## Testing Event Handlers
 
 Event handlers are just like any other prop you would set on your component.

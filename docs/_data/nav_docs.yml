@@ -49,6 +49,7 @@
   - id: unit-testing
   - id: subcomponent-testing
   - id: prop-matching
+  - id: injectprop-matching
   - id: event-handler-testing
   - id: espresso-testing
   - id: tests-in-android-studio
