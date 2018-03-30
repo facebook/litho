@@ -18,25 +18,24 @@ namespace facebook {
 namespace jni {
 
 jint initialize(JavaVM* vm, std::function<void()>&& init_fn) noexcept {
-  static std::once_flag flag{};
   // TODO (t7832883): DTRT when we have exception pointers
   static auto error_msg = std::string{"Failed to initialize fbjni"};
-  static auto error_occured = false;
-
-  std::call_once(flag, [vm] {
-    try {
-      Environment::initialize(vm);
-    } catch (std::exception& ex) {
-      error_occured = true;
+  static bool error_occured = [vm] {
+      bool retVal = false;
       try {
-        error_msg = std::string{"Failed to initialize fbjni: "} + ex.what();
+        Environment::initialize(vm);
+      } catch (std::exception& ex) {
+        retVal = true;
+        try {
+          error_msg = std::string{"Failed to initialize fbjni: "} + ex.what();
+        } catch (...) {
+          // Ignore, we already have a fall back message
+        }
       } catch (...) {
-        // Ignore, we already have a fall back message
+        retVal = true;
       }
-    } catch (...) {
-      error_occured = true;
-    }
-  });
+      return retVal;
+    }();
 
   try {
     if (error_occured) {
