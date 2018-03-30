@@ -101,6 +101,10 @@ public class RecyclerCollectionComponentSpec {
   protected static final boolean asyncPropUpdates =
       SectionsConfiguration.sectionComponentsAsyncPropUpdates;
 
+  @PropDefault
+  protected static final boolean setRootAsync =
+      ComponentsConfiguration.setRootAsyncRecyclerCollectionComponent;
+
   @PropDefault static final boolean clipToPadding = true;
   @PropDefault static final boolean clipChildren = true;
   @PropDefault static final int refreshProgressBarColor = 0XFF4267B2; // blue
@@ -135,6 +139,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
       @Prop(optional = true, resType = ResType.COLOR) int refreshProgressBarColor,
       @Prop(optional = true) LithoRecylerView.TouchInterceptor touchInterceptor,
+      @Prop(optional = true) boolean setRootAsync,
       @State(canUpdateLazily = true) boolean hasSetSectionTreeRoot,
       @State RecyclerCollectionEventsController internalEventsController,
       @State LoadingState loadingState,
@@ -147,7 +152,7 @@ public class RecyclerCollectionComponentSpec {
     recyclerCollectionLoadEventsHandler.setLoadEventsHandler(loadEventsHandler);
 
     // More side effects in OnCreateLayout. Watch out:
-    if (hasSetSectionTreeRoot && ComponentsConfiguration.setRootAsyncRecyclerCollectionComponent) {
+    if (hasSetSectionTreeRoot && setRootAsync) {
       sectionTree.setRootAsync(section);
     } else {
       RecyclerCollectionComponent.lazyUpdateHasSetSectionTreeRoot(c, true);
