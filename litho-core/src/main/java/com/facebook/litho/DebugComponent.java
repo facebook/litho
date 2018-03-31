@@ -62,6 +62,11 @@ public final class DebugComponent {
    * traversal.
    */
   @Nullable
+  public static DebugComponent getRootInstance(Component component) {
+    return getRootInstance(component.getScopedContext().getComponentTree());
+  }
+
+  @Nullable
   public static DebugComponent getRootInstance(LithoView view) {
     return getRootInstance(view.getComponentTree());
   }
