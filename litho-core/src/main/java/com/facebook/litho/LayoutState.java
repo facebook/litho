@@ -955,7 +955,7 @@ class LayoutState {
   /** Continually walks the node hierarchy until a node returns a non inherited layout direction */
   private static YogaDirection resolveLayoutDirection(YogaNode node) {
     while (node != null && node.getLayoutDirection() == YogaDirection.INHERIT) {
-      node = node.getParent();
+      node = node.getOwner();
     }
     return node == null ? YogaDirection.INHERIT : node.getLayoutDirection();
   }

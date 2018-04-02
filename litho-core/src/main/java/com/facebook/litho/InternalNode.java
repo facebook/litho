@@ -1125,10 +1125,10 @@ class InternalNode implements ComponentLayout {
   }
 
   InternalNode getParent() {
-    if (mYogaNode == null || mYogaNode.getParent() == null) {
+    if (mYogaNode == null || mYogaNode.getOwner() == null) {
       return null;
     }
-    return (InternalNode) mYogaNode.getParent().getData();
+    return (InternalNode) mYogaNode.getOwner().getData();
   }
 
   void addChildAt(InternalNode child, int index) {
@@ -1542,7 +1542,7 @@ class InternalNode implements ComponentLayout {
    * Reset all attributes to default values. Intended to facilitate recycling.
    */
   void release() {
-    if (mYogaNode.getParent() != null || mYogaNode.getChildCount() > 0) {
+    if (mYogaNode.getOwner() != null || mYogaNode.getChildCount() > 0) {
       throw new IllegalStateException("You should not free an attached Internalnode");
     }
 
