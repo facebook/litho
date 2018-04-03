@@ -1387,8 +1387,14 @@ public abstract class Component extends ComponentLifecycle
      * into a view
      */
     public T stateListAnimatorRes(@DrawableRes int resId) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (Build.VERSION.SDK_INT >= 26) {
+        // We cannot do it on the versions prior to Android 8.0 since there is a possible race
+        // condition when loading state list animators, thus we will avoid doing it off the UI
+        // thread
         return stateListAnimator(AnimatorInflater.loadStateListAnimator(mContext, resId));
+      }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        mComponent.getOrCreateCommonPropsHolder().stateListAnimatorRes(resId);
       }
       return getThis();
     }

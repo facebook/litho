@@ -12,6 +12,7 @@ package com.facebook.litho;
 import android.animation.StateListAnimator;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.AttrRes;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.support.annotation.StyleRes;
@@ -271,10 +272,20 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     getOrCreateOtherProps().stateListAnimator(stateListAnimator);
   }
 
-  @Nullable
   @Override
+  @Nullable
   public StateListAnimator getStateListAnimator() {
     return getOrCreateOtherProps().mStateListAnimator;
+  }
+
+  void stateListAnimatorRes(@DrawableRes int resId) {
+    getOrCreateOtherProps().stateListAnimatorRes(resId);
+  }
+
+  @Override
+  @DrawableRes
+  public int getStateListAnimatorRes() {
+    return getOrCreateOtherProps().mStateListAnimatorRes;
   }
 
   void positionPercent(YogaEdge edge, float percent) {
@@ -784,6 +795,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     private static final long PFLAG_MAX_HEIGHT_PERCENT_IS_SET = 1L << 36;
     private static final long PFLAG_BORDER_IS_SET = 1L << 37;
     private static final long PFLAG_STATE_LIST_ANIMATOR_IS_SET = 1L << 38;
+    private static final long PFLAG_STATE_LIST_ANIMATOR_RES_IS_SET = 1L << 39;
 
     private long mPrivateFlags;
 
@@ -825,6 +837,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     @Nullable private String mTransitionKey;
     @Nullable private Border mBorder;
     @Nullable private StateListAnimator mStateListAnimator;
+    @DrawableRes private int mStateListAnimatorRes;
 
     private void layoutDirection(YogaDirection direction) {
       mPrivateFlags |= PFLAG_LAYOUT_DIRECTION_IS_SET;
@@ -1048,6 +1061,11 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mStateListAnimator = stateListAnimator;
     }
 
+    private void stateListAnimatorRes(@DrawableRes int resId) {
+      mPrivateFlags |= PFLAG_STATE_LIST_ANIMATOR_RES_IS_SET;
+      mStateListAnimatorRes = resId;
+    }
+
     void copyInto(InternalNode node) {
       if ((mPrivateFlags & PFLAG_LAYOUT_DIRECTION_IS_SET) != 0L) {
         node.layoutDirection(mLayoutDirection);
@@ -1179,6 +1197,9 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       }
       if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_IS_SET) != 0L) {
         node.stateListAnimator(mStateListAnimator);
+      }
+      if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_RES_IS_SET) != 0L) {
+        node.stateListAnimatorRes(mStateListAnimatorRes);
       }
     }
   }

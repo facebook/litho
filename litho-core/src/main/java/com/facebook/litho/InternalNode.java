@@ -101,6 +101,7 @@ class InternalNode implements ComponentLayout {
   private static final long PFLAG_TRANSITION_KEY_IS_SET = 1L << 27;
   private static final long PFLAG_BORDER_IS_SET = 1L << 28;
   private static final long PFLAG_STATE_LIST_ANIMATOR_SET = 1L << 29;
+  private static final long PFLAG_STATE_LIST_ANIMATOR_RES_SET = 1L << 30;
 
   YogaNode mYogaNode;
   private ComponentContext mComponentContext;
@@ -119,6 +120,7 @@ class InternalNode implements ComponentLayout {
   private final float[] mBorderRadius = new float[Border.RADIUS_COUNT];
   private @Nullable PathEffect mBorderPathEffect;
   private @Nullable StateListAnimator mStateListAnimator;
+  private @DrawableRes int mStateListAnimatorRes;
 
   private NodeInfo mNodeInfo;
   private boolean mForceViewWrapping;
@@ -524,6 +526,22 @@ class InternalNode implements ComponentLayout {
   @Nullable
   StateListAnimator getStateListAnimator() {
     return mStateListAnimator;
+  }
+
+  InternalNode stateListAnimatorRes(@DrawableRes int resId) {
+    mPrivateFlags |= PFLAG_STATE_LIST_ANIMATOR_RES_SET;
+    mStateListAnimatorRes = resId;
+    wrapInView();
+    return this;
+  }
+
+  boolean hasStateListAnimatorResSet() {
+    return (mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_RES_SET) != 0;
+  }
+
+  @DrawableRes
+  int getStateListAnimatorRes() {
+    return mStateListAnimatorRes;
   }
 
   InternalNode positionPx(YogaEdge edge, @Px int position) {
@@ -1405,6 +1423,9 @@ class InternalNode implements ComponentLayout {
     if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_SET) != 0L) {
       node.mStateListAnimator = mStateListAnimator;
     }
+    if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_RES_SET) != 0L) {
+      node.mStateListAnimatorRes = mStateListAnimatorRes;
+    }
   }
 
   void setStyleWidthFromSpec(int widthSpec) {
@@ -1618,6 +1639,7 @@ class InternalNode implements ComponentLayout {
     mWorkingRangeRegistrations = null;
 
     mStateListAnimator = null;
+    mStateListAnimatorRes = 0;
 
     ComponentsPools.release(this);
   }

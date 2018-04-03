@@ -12,6 +12,7 @@ package com.facebook.litho;
 import android.animation.StateListAnimator;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.DrawableRes;
 import android.view.View;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaDirection;
@@ -33,6 +34,7 @@ class ViewNodeInfo {
   private YogaDirection mLayoutDirection;
   private boolean mClipChildren;
   private @Nullable StateListAnimator mStateListAnimator;
+  private @DrawableRes int mStateListAnimatorRes;
 
   void setBackground(Reference<? extends Drawable> background) {
     mBackground = (Reference<Drawable>) background;
@@ -140,6 +142,15 @@ class ViewNodeInfo {
 
   void setStateListAnimator(StateListAnimator stateListAnimator) {
     mStateListAnimator = stateListAnimator;
+  }
+
+  @DrawableRes
+  int getStateListAnimatorRes() {
+    return mStateListAnimatorRes;
+  }
+
+  void setStateListAnimatorRes(@DrawableRes int resId) {
+    mStateListAnimatorRes = resId;
   }
 
   static ViewNodeInfo acquire() {

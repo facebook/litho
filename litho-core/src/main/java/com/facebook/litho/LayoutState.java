@@ -265,7 +265,11 @@ class LayoutState {
             false);
 
     ViewNodeInfo viewNodeInfo = hostOutput.getViewNodeInfo();
-    viewNodeInfo.setStateListAnimator(node.getStateListAnimator());
+    if (node.hasStateListAnimatorResSet()) {
+      viewNodeInfo.setStateListAnimatorRes(node.getStateListAnimatorRes());
+    } else {
+      viewNodeInfo.setStateListAnimator(node.getStateListAnimator());
+    }
 
     return hostOutput;
   }

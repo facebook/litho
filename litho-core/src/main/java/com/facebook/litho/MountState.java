@@ -37,6 +37,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_VISIBILITY_HANDLERS_TO
 import static com.facebook.litho.FrameworkLogEvents.PARAM_VISIBILITY_HANDLER_TIME;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
+import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -1881,28 +1882,33 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   private static void setViewStateListAnimator(View view, ViewNodeInfo viewNodeInfo) {
     StateListAnimator stateListAnimator = viewNodeInfo.getStateListAnimator();
-    if (stateListAnimator != null) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        view.setStateListAnimator(stateListAnimator);
-      } else {
-        throw new IllegalStateException(
-            "MountState has a ViewNodeInfo with stateListAnimator, "
-                + "however the current Android version doesn't support foreground on Views");
-      }
+    final int stateListAnimatorRes = viewNodeInfo.getStateListAnimatorRes();
+    if (stateListAnimator == null && stateListAnimatorRes == 0) {
+      return;
     }
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+      throw new IllegalStateException(
+          "MountState has a ViewNodeInfo with stateListAnimator, "
+              + "however the current Android version doesn't support stateListAnimator on Views");
+    }
+    if (stateListAnimator == null) {
+      stateListAnimator =
+          AnimatorInflater.loadStateListAnimator(view.getContext(), stateListAnimatorRes);
+    }
+    view.setStateListAnimator(stateListAnimator);
   }
 
   private static void unsetViewStateListAnimator(View view, ViewNodeInfo viewNodeInfo) {
-    StateListAnimator stateListAnimator = viewNodeInfo.getStateListAnimator();
-    if (stateListAnimator != null) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        view.setStateListAnimator(null);
-      } else {
-        throw new IllegalStateException(
-            "MountState has a ViewNodeInfo with stateListAnimator, "
-                + "however the current Android version doesn't support foreground on Views");
-      }
+    if (viewNodeInfo.getStateListAnimator() == null
+        && viewNodeInfo.getStateListAnimatorRes() == 0) {
+      return;
     }
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+      throw new IllegalStateException(
+          "MountState has a ViewNodeInfo with stateListAnimator, "
+              + "however the current Android version doesn't support stateListAnimator on Views");
+    }
+    view.setStateListAnimator(null);
   }
 
   private static void mountItemIncrementally(
