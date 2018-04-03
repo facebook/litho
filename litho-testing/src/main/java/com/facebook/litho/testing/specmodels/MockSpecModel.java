@@ -57,8 +57,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   @Nullable private final SpecMethodModel<EventMethod, Void> mWorkingRangeRegisterMethod;
   private final ImmutableList<WorkingRangeMethodModel> mWorkingRangeMethods;
   private final ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethods;
-  private final ImmutableList<SpecMethodModel<UpdateStateMethod, Void>>
-      mUpdateStateWithTransitionMethods;
   private final ImmutableList<PropModel> mProps;
   private final ImmutableList<PropModel> mRawProps;
   private final ImmutableList<InjectPropModel> mRawInjectProps;
@@ -80,8 +78,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   private final TypeSpec mGeneratedTypeSpec;
   private final ClassName mContextClass;
   private final ClassName mStateContainerClass;
-  private final ClassName mTransitionClass;
-  private final ClassName mTransitionContainerClass;
   private final boolean mHasDeepCopy;
   private final boolean mShouldCheckIdInIsEquivalentToMethod;
   private final TypeName mUpdateStateInterface;
@@ -106,7 +102,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
       ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
-      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateWithTransitionMethods,
       ImmutableList<PropModel> rawProps,
       ImmutableList<PropModel> props,
       ImmutableList<InjectPropModel> rawInjectProps,
@@ -128,8 +123,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       TypeSpec generatedTypeSpec,
       ClassName contextClass,
       ClassName stateContainerClass,
-      ClassName transitionClass,
-      ClassName transitionContainerClass,
       boolean hasDeepCopy,
       boolean shouldCheckIdInIsEquivalentToMethod,
       TypeName updateStateInterface,
@@ -152,7 +145,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     mWorkingRangeRegisterMethod = workingRangeRegisterMethod;
     mWorkingRangeMethods = workingRangeMethods;
     mUpdateStateMethods = updateStateMethods;
-    mUpdateStateWithTransitionMethods = updateStateWithTransitionMethods;
     mRawProps = rawProps;
     mProps = props;
     mRawInjectProps = rawInjectProps;
@@ -174,8 +166,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     mGeneratedTypeSpec = generatedTypeSpec;
     mContextClass = contextClass;
     mStateContainerClass = stateContainerClass;
-    mTransitionClass = transitionClass;
-    mTransitionContainerClass = transitionContainerClass;
     mHasDeepCopy = hasDeepCopy;
     mShouldCheckIdInIsEquivalentToMethod = shouldCheckIdInIsEquivalentToMethod;
     mUpdateStateInterface = updateStateInterface;
@@ -238,12 +228,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   @Override
   public ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> getUpdateStateMethods() {
     return mUpdateStateMethods;
-  }
-
-  @Override
-  public ImmutableList<SpecMethodModel<UpdateStateMethod, Void>>
-      getUpdateStateWithTransitionMethods() {
-    return mUpdateStateWithTransitionMethods;
   }
 
   @Override
@@ -352,16 +336,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   }
 
   @Override
-  public ClassName getTransitionClass() {
-    return mTransitionClass;
-  }
-
-  @Override
-  public ClassName getTransitionContainerClass() {
-    return mTransitionContainerClass;
-  }
-
-  @Override
   public String getScopeMethodName() {
     return mScopeMethodName;
   }
@@ -448,8 +422,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     private ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethods =
         ImmutableList.of();
     private ImmutableList<PropModel> mRawProps = ImmutableList.of();
-    private ImmutableList<SpecMethodModel<UpdateStateMethod, Void>>
-        mUpdateStateWithTransitionMethods = ImmutableList.of();
     private ImmutableList<PropModel> mProps = ImmutableList.of();
     private ImmutableList<InjectPropModel> mRawInjectProps = ImmutableList.of();
     private ImmutableList<InjectPropModel> mInjectProps = ImmutableList.of();
@@ -470,8 +442,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     private TypeSpec mGeneratedTypeSpec;
     private ClassName mContextClass;
     private ClassName mStateContainerClass;
-    private ClassName mTransitionClass;
-    private ClassName mTransitionContainerClass;
     private boolean mHasDeepCopy;
     private boolean mShouldCheckIdInIsEquivalentToMethod;
     private TypeName mUpdateStateInterface;
@@ -541,12 +511,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     public Builder updateStateMethods(
         ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
       mUpdateStateMethods = updateStateMethods;
-      return this;
-    }
-
-    public Builder updateStateWithTransitionMethods(
-        ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateWithTransitionMethods) {
-      mUpdateStateWithTransitionMethods = updateStateWithTransitionMethods;
       return this;
     }
 
@@ -656,16 +620,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       return this;
     }
 
-    public Builder transitionClass(ClassName transitionClass) {
-      mTransitionClass = transitionClass;
-      return this;
-    }
-
-    public Builder transitionContainerClass(ClassName transitionContainerClass) {
-      mTransitionContainerClass = transitionContainerClass;
-      return this;
-    }
-
     public Builder hasDeepCopy(boolean hasDeepCopy) {
       mHasDeepCopy = hasDeepCopy;
       return this;
@@ -736,7 +690,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mWorkingRangeRegisterMethod,
           mWorkingRangeMethods,
           mUpdateStateMethods,
-          mUpdateStateWithTransitionMethods,
           mRawProps,
           mProps,
           mRawInjectProps,
@@ -758,8 +711,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mGeneratedTypeSpec,
           mContextClass,
           mStateContainerClass,
-          mTransitionClass,
-          mTransitionContainerClass,
           mHasDeepCopy,
           mShouldCheckIdInIsEquivalentToMethod,
           mUpdateStateInterface,
@@ -794,8 +745,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           && Objects.equals(mWorkingRangeRegisterMethod, builder.mWorkingRangeRegisterMethod)
           && Objects.equals(mWorkingRangeMethods, builder.mWorkingRangeMethods)
           && Objects.equals(mUpdateStateMethods, builder.mUpdateStateMethods)
-          && Objects.equals(
-              mUpdateStateWithTransitionMethods, builder.mUpdateStateWithTransitionMethods)
           && Objects.equals(mRawProps, builder.mRawProps)
           && Objects.equals(mProps, builder.mProps)
           && Objects.equals(mPropDefaults, builder.mPropDefaults)
@@ -813,8 +762,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           && Objects.equals(mGeneratedTypeSpec, builder.mGeneratedTypeSpec)
           && Objects.equals(mContextClass, builder.mContextClass)
           && Objects.equals(mStateContainerClass, builder.mStateContainerClass)
-          && Objects.equals(mTransitionClass, builder.mTransitionClass)
-          && Objects.equals(mTransitionContainerClass, builder.mTransitionContainerClass)
           && Objects.equals(mUpdateStateInterface, builder.mUpdateStateInterface)
           && Objects.equals(mScopeMethodName, builder.mScopeMethodName)
           && Objects.equals(mSpecModelValidationErrors, builder.mSpecModelValidationErrors)
@@ -839,7 +786,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mWorkingRangeRegisterMethod,
           mWorkingRangeMethods,
           mUpdateStateMethods,
-          mUpdateStateWithTransitionMethods,
           mProps,
           mPropDefaults,
           mTypeVariables,
@@ -858,8 +804,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mGeneratedTypeSpec,
           mContextClass,
           mStateContainerClass,
-          mTransitionClass,
-          mTransitionContainerClass,
           mHasDeepCopy,
           mShouldCheckIdInIsEquivalentToMethod,
           mUpdateStateInterface,

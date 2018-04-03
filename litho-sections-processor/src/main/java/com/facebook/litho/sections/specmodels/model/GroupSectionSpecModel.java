@@ -150,12 +150,6 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
-  public ImmutableList<SpecMethodModel<UpdateStateMethod, Void>>
-      getUpdateStateWithTransitionMethods() {
-    return mSpecModel.getUpdateStateWithTransitionMethods();
-  }
-
-  @Override
   public ImmutableList<PropModel> getRawProps() {
     return mSpecModel.getRawProps();
   }
@@ -253,16 +247,6 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   @Override
   public ClassName getStateContainerClass() {
     return SectionClassNames.STATE_CONTAINER_SECTION;
-  }
-
-  @Override
-  public ClassName getTransitionClass() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public ClassName getTransitionContainerClass() {
-    throw new UnsupportedOperationException();
   }
 
   @Override

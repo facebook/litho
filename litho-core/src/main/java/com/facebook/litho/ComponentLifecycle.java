@@ -28,7 +28,6 @@ import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.concurrent.GuardedBy;
@@ -56,17 +55,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   public interface StateContainer {}
-
-  /**
-   * Generated component's state container could implement this interface along with {@link
-   * StateContainer} when componentspec specifies state update method with {@link
-   * com.facebook.litho.annotations.OnUpdateStateWithTransition} annotation.
-   */
-  public interface TransitionContainer {
-
-    /** Remove and return all transitions collected from state updates with transitions. */
-    List<Transition> consumeTransitions();
-  }
 
   /**
    * A per-Component-class data structure to keep track of some of the last mounted @Prop/@State

@@ -141,12 +141,6 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   }
 
   @Override
-  public ImmutableList<SpecMethodModel<UpdateStateMethod, Void>>
-      getUpdateStateWithTransitionMethods() {
-    return mSpecModel.getUpdateStateWithTransitionMethods();
-  }
-
-  @Override
   public ImmutableList<PropModel> getRawProps() {
     return mSpecModel.getRawProps();
   }
@@ -244,16 +238,6 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   @Override
   public ClassName getStateContainerClass() {
     return ClassNames.STATE_CONTAINER_COMPONENT;
-  }
-
-  @Override
-  public ClassName getTransitionClass() {
-    return ClassNames.TRANSITION;
-  }
-
-  @Override
-  public ClassName getTransitionContainerClass() {
-    return ClassNames.TRANSITION_CONTAINER;
   }
 
   @Override

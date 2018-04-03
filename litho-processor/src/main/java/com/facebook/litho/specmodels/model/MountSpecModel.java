@@ -144,12 +144,6 @@ public class MountSpecModel implements SpecModel, HasPureRender {
     return mSpecModel.getUpdateStateMethods();
   }
 
-  @Override
-  public ImmutableList<SpecMethodModel<UpdateStateMethod, Void>>
-      getUpdateStateWithTransitionMethods() {
-    return mSpecModel.getUpdateStateWithTransitionMethods();
-  }
-
   /**
    * @return the list of props without taking deduplication or name cache adjustments into account.
    */
@@ -251,16 +245,6 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   @Override
   public ClassName getStateContainerClass() {
     return ClassNames.STATE_CONTAINER_COMPONENT;
-  }
-
-  @Override
-  public ClassName getTransitionClass() {
-    return ClassNames.TRANSITION;
-  }
-
-  @Override
-  public ClassName getTransitionContainerClass() {
-    return ClassNames.TRANSITION_CONTAINER;
   }
 
   @Override

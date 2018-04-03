@@ -181,10 +181,6 @@ public class ComponentContext extends ContextWrapper {
     mComponentTree.updateStateAsync(mComponentScope.getGlobalKey(), stateUpdate);
   }
 
-  public void updateStateWithTransition(ComponentLifecycle.StateUpdate stateUpdate) {
-    updateStateAsync(stateUpdate);
-  }
-
   public void updateStateLazy(ComponentLifecycle.StateUpdate stateUpdate) {
     if (mComponentTree == null) {
       return;
