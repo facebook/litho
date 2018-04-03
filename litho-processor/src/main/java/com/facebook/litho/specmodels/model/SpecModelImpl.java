@@ -44,6 +44,8 @@ public final class SpecModelImpl implements SpecModel {
   @Nullable private final SpecMethodModel<EventMethod, Void> mWorkingRangeRegisterMethod;
   private final ImmutableList<WorkingRangeMethodModel> mWorkingRangeMethods;
   private final ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethods;
+  private final ImmutableList<SpecMethodModel<UpdateStateMethod, Void>>
+      mUpdateStateWithTransitionMethods;
   private final ImmutableList<PropModel> mRawProps;
   private final ImmutableList<PropModel> mProps;
   private final ImmutableList<InjectPropModel> mInjectProps;
@@ -75,6 +77,7 @@ public final class SpecModelImpl implements SpecModel {
       @Nullable SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
       ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateWithTransitionMethods,
       ImmutableList<PropModel> props,
       ImmutableList<InjectPropModel> injectProps,
       ImmutableList<String> cachedPropNames,
@@ -101,6 +104,7 @@ public final class SpecModelImpl implements SpecModel {
     mWorkingRangeRegisterMethod = workingRangeRegisterMethod;
     mWorkingRangeMethods = workingRangeMethods;
     mUpdateStateMethods = updateStateMethods;
+    mUpdateStateWithTransitionMethods = updateStateWithTransitionMethods;
     mRawProps =
         getRawProps(
             delegateMethods,
@@ -214,6 +218,12 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   @Override
+  public ImmutableList<SpecMethodModel<UpdateStateMethod, Void>>
+      getUpdateStateWithTransitionMethods() {
+    return mUpdateStateWithTransitionMethods;
+  }
+
+  @Override
   public ImmutableList<PropModel> getRawProps() {
     return mRawProps;
   }
@@ -307,6 +317,16 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public ClassName getComponentClass() {
     return mComponentClass;
+  }
+
+  @Override
+  public ClassName getTransitionClass() {
+    throw new RuntimeException("Don't delegate to this method!");
+  }
+
+  @Override
+  public ClassName getTransitionContainerClass() {
+    throw new RuntimeException("Don't delegate to this method!");
   }
 
   @Override
@@ -923,6 +943,8 @@ public final class SpecModelImpl implements SpecModel {
     @Nullable private SpecMethodModel<EventMethod, Void> mWorkingRangeRegisterModel;
     private ImmutableList<WorkingRangeMethodModel> mWorkingRangeMethodModels;
     private ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethodModels;
+    private ImmutableList<SpecMethodModel<UpdateStateMethod, Void>>
+        mUpdateStateWithTransitionMethodModels;
     private ImmutableList<String> mCachedPropNames;
     private ImmutableList<TypeVariableName> mTypeVariableNames;
     private ImmutableList<PropDefaultModel> mPropDefaultModels;
@@ -993,6 +1015,13 @@ public final class SpecModelImpl implements SpecModel {
     public Builder updateStateMethods(
         ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethodModels) {
       mUpdateStateMethodModels = updateStateMethodModels;
+      return this;
+    }
+
+    public Builder updateStateWithTransitionMethods(
+        ImmutableList<SpecMethodModel<UpdateStateMethod, Void>>
+            updateStateWithTransitionMethodModels) {
+      mUpdateStateWithTransitionMethodModels = updateStateWithTransitionMethodModels;
       return this;
     }
 
@@ -1086,6 +1115,7 @@ public final class SpecModelImpl implements SpecModel {
           mWorkingRangeRegisterModel,
           mWorkingRangeMethodModels,
           mUpdateStateMethodModels,
+          mUpdateStateWithTransitionMethodModels,
           mProps,
           mInjectProps,
           mCachedPropNames,

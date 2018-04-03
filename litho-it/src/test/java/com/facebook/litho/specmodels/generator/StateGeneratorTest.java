@@ -12,10 +12,13 @@ package com.facebook.litho.specmodels.generator;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import com.facebook.litho.Transition;
+import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
+import com.facebook.litho.annotations.OnUpdateStateWithTransition;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
@@ -62,8 +65,49 @@ public class StateGeneratorTest {
     public void onCreateLayout() {}
   }
 
+  @LayoutSpec
+  private static class TestWithStateWithTransitionSpec<T extends CharSequence> {
+    @OnCreateLayout
+    public void onCreateLayout(
+        @Prop boolean arg0,
+        @State int arg1,
+        @Param Object arg2,
+        @TreeProp long arg3,
+        @State(canUpdateLazily = true) boolean arg4) {}
+
+    @OnEvent(Object.class)
+    public void testEventMethod2(@Prop boolean arg0, @State int arg1) {}
+
+    @OnUpdateStateWithTransition
+    void updateCurrentState() {}
+  }
+
+  @LayoutSpec
+  private static class TestWithBothStatesSpec<T extends CharSequence> {
+    @OnCreateLayout
+    public void onCreateLayout(
+        @Prop boolean arg0,
+        @State int arg1,
+        @Param Object arg2,
+        @TreeProp long arg3,
+        @State(canUpdateLazily = true) boolean arg4) {}
+
+    @OnEvent(Object.class)
+    public void testEventMethod2(@Prop boolean arg0, @State int arg1) {}
+
+    @OnUpdateState
+    void updateCurrentState() {}
+
+    @OnUpdateStateWithTransition
+    Transition updateCurrentStateWithTransition() {
+      return Transition.create("key").animate(AnimatedProperties.X);
+    }
+  }
+
   private SpecModel mSpecModelWithState;
   private SpecModel mSpecModelWithoutState;
+  private SpecModel mSpecModelWithStateWithTransition;
+  private SpecModel mSpecModelWithBothStates;
 
   @Before
   public void setUp() {
@@ -87,6 +131,30 @@ public class StateGeneratorTest {
             elements,
             types,
             typeElementWithoutState,
+            mock(Messager.class),
+            RunMode.NORMAL,
+            null,
+            null);
+
+    TypeElement typeElementWithStateWithTransition =
+        elements.getTypeElement(TestWithStateWithTransitionSpec.class.getCanonicalName());
+    mSpecModelWithStateWithTransition =
+        mLayoutSpecModelFactory.create(
+            elements,
+            types,
+            typeElementWithStateWithTransition,
+            mock(Messager.class),
+            RunMode.NORMAL,
+            null,
+            null);
+
+    TypeElement typeElementWithBothStates =
+        elements.getTypeElement(TestWithBothStatesSpec.class.getCanonicalName());
+    mSpecModelWithBothStates =
+        mLayoutSpecModelFactory.create(
+            elements,
+            types,
+            typeElementWithBothStates,
             mock(Messager.class),
             RunMode.NORMAL,
             null,
@@ -132,6 +200,25 @@ public class StateGeneratorTest {
   }
 
   @Test
+  public void testGenerateTransferStateWithTransition() {
+    TypeSpecDataHolder dataHolder =
+        StateGenerator.generateTransferState(mSpecModelWithStateWithTransition);
+
+    assertThat(dataHolder.getMethodSpecs()).hasSize(1);
+
+    assertThat(dataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "@java.lang.Override\n"
+                + "protected void transferState(com.facebook.litho.ComponentContext context,\n"
+                + "    com.facebook.litho.ComponentLifecycle.StateContainer _prevStateContainer) {\n"
+                + "  TestWithStateWithTransitionStateContainer prevStateContainer = (TestWithStateWithTransitionStateContainer) _prevStateContainer;\n"
+                + "  mStateContainer.arg1 = prevStateContainer.arg1;\n"
+                + "  mStateContainer.arg4 = prevStateContainer.arg4;\n"
+                + "  mStateContainer._transitions = prevStateContainer._transitions;\n"
+                + "}\n");
+  }
+
+  @Test
   public void testDoNotGenerateTransferState() {
     TypeSpecDataHolder dataHolder = StateGenerator.generateTransferState(mSpecModelWithoutState);
 
@@ -169,6 +256,25 @@ public class StateGeneratorTest {
   }
 
   @Test
+  public void testGenerateOnStateUpdateWithTransitionMethods() {
+    TypeSpecDataHolder dataHolder =
+        StateGenerator.generateOnStateUpdateMethods(mSpecModelWithStateWithTransition);
+
+    assertThat(dataHolder.getMethodSpecs()).hasSize(1);
+
+    assertThat(dataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "protected static void updateCurrentState(com.facebook.litho.ComponentContext c) {\n"
+                + "  com.facebook.litho.Component _component = c.getComponentScope();\n"
+                + "  if (_component == null) {\n"
+                + "    return;\n"
+                + "  }\n"
+                + "  TestWithStateWithTransition.UpdateCurrentStateStateUpdate _stateUpdate = ((TestWithStateWithTransition) _component).createUpdateCurrentStateStateUpdate();\n"
+                + "  c.updateStateWithTransition(_stateUpdate);\n"
+                + "}\n");
+  }
+
+  @Test
   public void testGenerateStateUpdateClasses() {
     TypeSpecDataHolder dataHolder = StateGenerator.generateStateUpdateClasses(mSpecModelWithState);
 
@@ -186,6 +292,73 @@ public class StateGeneratorTest {
                 + "    TestWithStateStateContainer stateContainer = (TestWithStateStateContainer) _stateContainer;\n"
                 + "    TestWithState newComponentStateUpdate = (TestWithState) newComponent;\n"
                 + "    TestWithStateSpec.updateCurrentState();\n"
+                + "  }\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testGenerateStateUpdateWithTransitionClasses() {
+    TypeSpecDataHolder dataHolder =
+        StateGenerator.generateStateUpdateClasses(mSpecModelWithStateWithTransition);
+
+    assertThat(dataHolder.getTypeSpecs()).hasSize(1);
+
+    assertThat(dataHolder.getTypeSpecs().get(0).toString())
+        .isEqualTo(
+            "private static class UpdateCurrentStateStateUpdate implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
+                + "  UpdateCurrentStateStateUpdate() {\n"
+                + "  }\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public void updateState(com.facebook.litho.ComponentLifecycle.StateContainer _stateContainer,\n"
+                + "      com.facebook.litho.Component newComponent) {\n"
+                + "    TestWithStateWithTransitionStateContainer stateContainer = (TestWithStateWithTransitionStateContainer) _stateContainer;\n"
+                + "    TestWithStateWithTransition newComponentStateUpdate = (TestWithStateWithTransition) newComponent;\n"
+                + "    com.facebook.litho.Transition transition = TestWithStateWithTransitionSpec.updateCurrentState();\n"
+                + "    if (transition != null) {\n"
+                + "      newComponentStateUpdate.mStateContainer._transitions.add(transition);\n"
+                + "    }\n"
+                + "  }\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testGenerateStateUpdateWithBothTransitionAndRegularClasses() {
+    TypeSpecDataHolder dataHolder =
+        StateGenerator.generateStateUpdateClasses(mSpecModelWithBothStates);
+
+    assertThat(dataHolder.getTypeSpecs()).hasSize(2);
+
+    assertThat(dataHolder.getTypeSpecs().get(0).toString())
+        .isEqualTo(
+            "private static class UpdateCurrentStateStateUpdate implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
+                + "  UpdateCurrentStateStateUpdate() {\n"
+                + "  }\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public void updateState(com.facebook.litho.ComponentLifecycle.StateContainer _stateContainer,\n"
+                + "      com.facebook.litho.Component newComponent) {\n"
+                + "    TestWithBothStatesStateContainer stateContainer = (TestWithBothStatesStateContainer) _stateContainer;\n"
+                + "    TestWithBothStates newComponentStateUpdate = (TestWithBothStates) newComponent;\n"
+                + "    TestWithBothStatesSpec.updateCurrentState();\n"
+                + "  }\n"
+                + "}\n");
+
+    assertThat(dataHolder.getTypeSpecs().get(1).toString())
+        .isEqualTo(
+            "private static class UpdateCurrentStateWithTransitionStateUpdate implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
+                + "  UpdateCurrentStateWithTransitionStateUpdate() {\n"
+                + "  }\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public void updateState(com.facebook.litho.ComponentLifecycle.StateContainer _stateContainer,\n"
+                + "      com.facebook.litho.Component newComponent) {\n"
+                + "    TestWithBothStatesStateContainer stateContainer = (TestWithBothStatesStateContainer) _stateContainer;\n"
+                + "    TestWithBothStates newComponentStateUpdate = (TestWithBothStates) newComponent;\n"
+                + "    com.facebook.litho.Transition transition = TestWithBothStatesSpec.updateCurrentStateWithTransition();\n"
+                + "    if (transition != null) {\n"
+                + "      newComponentStateUpdate.mStateContainer._transitions.add(transition);\n"
+                + "    }\n"
                 + "  }\n"
                 + "}\n");
   }
