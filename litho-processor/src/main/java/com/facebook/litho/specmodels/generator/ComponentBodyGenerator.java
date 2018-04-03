@@ -65,18 +65,17 @@ public class ComponentBodyGenerator {
     final TypeSpecDataHolder.Builder builder = TypeSpecDataHolder.newBuilder();
 
     final boolean hasState = !specModel.getStateValues().isEmpty();
-    final boolean needsRenderDataInfra = !specModel.getRenderDataDiffs().isEmpty();
-    final ClassName stateContainerClass =
-        ClassName.bestGuess(getStateContainerClassName(specModel));
-    final ClassName previousRenderDataClass =
-        ClassName.bestGuess(RenderDataGenerator.getRenderDataImplClassName(specModel));
-
     if (hasState) {
+      final ClassName stateContainerClass =
+          ClassName.bestGuess(getStateContainerClassName(specModel));
       builder.addField(stateContainerClass, STATE_CONTAINER_FIELD_NAME, Modifier.PRIVATE);
       builder.addMethod(generateStateContainerGetter(specModel.getStateContainerClass()));
     }
 
+    final boolean needsRenderDataInfra = !specModel.getRenderDataDiffs().isEmpty();
     if (needsRenderDataInfra) {
+      final ClassName previousRenderDataClass =
+          ClassName.bestGuess(RenderDataGenerator.getRenderDataImplClassName(specModel));
       builder.addField(previousRenderDataClass, PREVIOUS_RENDER_DATA_FIELD_NAME, Modifier.PRIVATE);
     }
 
