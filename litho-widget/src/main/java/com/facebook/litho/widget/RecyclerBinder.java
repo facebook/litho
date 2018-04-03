@@ -1582,8 +1582,6 @@ public class RecyclerBinder
           height = MATCH_PARENT;
         }
 
-        lithoView.setLayoutParams(new RecyclerView.LayoutParams(width, height));
-
         final RecyclerViewLayoutManagerOverrideParams layoutParams =
             new RecyclerViewLayoutManagerOverrideParams(
                 width, height, childrenWidthSpec, childrenHeightSpec, renderInfo.isFullSpan());
