@@ -1743,6 +1743,31 @@ public class RecyclerBinderTest {
     }
   }
 
+  @Test
+  public void testOnNewWorkingRange() {
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
+    final int firstVisibleIndex = 40;
+    final int lastVisibleIndex = 82;
+    final int rangeSize = Math.max(RANGE_SIZE, lastVisibleIndex - firstVisibleIndex);
+    final int layoutRangeSize = (int) (rangeSize * RANGE_RATIO);
+    final int rangeTotal = rangeSize + layoutRangeSize;
+
+    mRecyclerBinder.onNewWorkingRange(
+        firstVisibleIndex, lastVisibleIndex, firstVisibleIndex + 1, lastVisibleIndex - 1);
+
+    TestComponentTreeHolder componentTreeHolder;
+    for (int i = 0; i < components.size(); i++) {
+      componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
+      assertThat(componentTreeHolder).isNotNull();
+
+      if (i >= firstVisibleIndex - layoutRangeSize && i <= firstVisibleIndex + rangeTotal) {
+        assertThat(componentTreeHolder.mCheckWorkingRangeCalled).isTrue();
+      } else {
+        assertThat(componentTreeHolder.mCheckWorkingRangeCalled).isFalse();
+      }
+    }
+  }
+
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
     return new RecyclerBinder.Builder()
         .rangeRatio(RANGE_RATIO)
@@ -1794,6 +1819,7 @@ public class RecyclerBinderTest {
     private boolean mReleased;
     private int mChildWidth;
     private int mChildHeight;
+    private boolean mCheckWorkingRangeCalled;
 
     private TestComponentTreeHolder(RenderInfo renderInfo) {
       mRenderInfo = renderInfo;
@@ -1858,6 +1884,16 @@ public class RecyclerBinderTest {
     @Override
     public synchronized ComponentTree getComponentTree() {
       return mComponentTree;
+    }
+
+    @Override
+    synchronized void checkWorkingRangeAndDispatch(
+        int position,
+        int firstVisibleIndex,
+        int lastVisibleIndex,
+        int firstFullyVisibleIndex,
+        int lastFullyVisibleIndex) {
+      mCheckWorkingRangeCalled = true;
     }
 
     @Override

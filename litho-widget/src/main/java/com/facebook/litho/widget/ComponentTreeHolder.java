@@ -256,6 +256,22 @@ public class ComponentTreeHolder {
     mLastMeasuredHeight = height;
   }
 
+  synchronized void checkWorkingRangeAndDispatch(
+      int position,
+      int firstVisibleIndex,
+      int lastVisibleIndex,
+      int firstFullyVisibleIndex,
+      int lastFullyVisibleIndex) {
+    if (mComponentTree != null) {
+      mComponentTree.checkWorkingRangeAndDispatch(
+          position,
+          firstVisibleIndex,
+          lastVisibleIndex,
+          firstFullyVisibleIndex,
+          lastFullyVisibleIndex);
+    }
+  }
+
   public synchronized boolean hasCompletedLatestLayout() {
     return mRenderInfo.rendersView()
         || (mComponentTree != null
