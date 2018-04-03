@@ -24,6 +24,7 @@ import com.facebook.litho.specmodels.generator.TagGenerator;
 import com.facebook.litho.specmodels.generator.TreePropGenerator;
 import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
+import com.facebook.litho.specmodels.generator.WorkingRangeGenerator;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeSpec;
 import java.util.LinkedHashSet;
@@ -76,6 +77,7 @@ public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> 
         .addTypeSpecDataHolder(PureRenderGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(EventGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(TriggerGenerator.generate(mountSpecModel))
+        .addTypeSpecDataHolder(WorkingRangeGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(StateGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(RenderDataGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(BuilderGenerator.generate(mountSpecModel))

@@ -44,6 +44,7 @@ public class SpecModelImplTest {
   SpecMethodModel<DelegateMethod, Void> mMethodModel2;
 
   SpecMethodModel<EventMethod, EventDeclarationModel> mTriggerMethodModel;
+  WorkingRangeMethodModel mWorkingRangeMethodModel;
 
   TypeVariableName mTypeVariableName1 = TypeVariableName.get("test1");
   TypeVariableName mTypeVariableName2 = TypeVariableName.get("test2");
@@ -121,6 +122,14 @@ public class SpecModelImplTest {
     params3.add(mPropModel4);
     params3.add(mTreePropModel2);
 
+    List<MethodParamModel> params4 = new ArrayList<>();
+    params3.add(mPropModel1);
+    params3.add(mTreePropModel2);
+
+    List<MethodParamModel> params5 = new ArrayList<>();
+    params3.add(mPropModel3);
+    params3.add(mTreePropModel1);
+
     mMethodModel1 =
         SpecMethodModel.<DelegateMethod, Void>builder()
             .annotations(ImmutableList.of())
@@ -147,6 +156,24 @@ public class SpecModelImplTest {
             .methodParams(ImmutableList.copyOf(params3))
             .build();
 
+    mWorkingRangeMethodModel = new WorkingRangeMethodModel("workingRange");
+    mWorkingRangeMethodModel.enteredRangeModel =
+        SpecMethodModel.<EventMethod, WorkingRangeDeclarationModel>builder()
+            .annotations(ImmutableList.<Annotation>of())
+            .modifiers(ImmutableList.<Modifier>of())
+            .name("method4")
+            .returnTypeSpec(new TypeSpec(TypeName.VOID))
+            .methodParams(ImmutableList.copyOf(params4))
+            .build();
+    mWorkingRangeMethodModel.exitedRangeModel =
+        SpecMethodModel.<EventMethod, WorkingRangeDeclarationModel>builder()
+            .annotations(ImmutableList.<Annotation>of())
+            .modifiers(ImmutableList.<Modifier>of())
+            .name("method5")
+            .returnTypeSpec(new TypeSpec(TypeName.VOID))
+            .methodParams(ImmutableList.copyOf(params5))
+            .build();
+
     mTypeVariableNames.add(mTypeVariableName1);
     mTypeVariableNames.add(mTypeVariableName2);
   }
@@ -158,6 +185,7 @@ public class SpecModelImplTest {
             .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
             .delegateMethods(ImmutableList.of(mMethodModel1, mMethodModel2))
             .triggerMethods(ImmutableList.of(mTriggerMethodModel))
+            .workingRangeMethods(ImmutableList.of(mWorkingRangeMethodModel))
             .typeVariables(ImmutableList.copyOf(mTypeVariableNames))
             .propDefaults(ImmutableList.of(mPropDefaultModel1))
             .representedObject(new Object())
@@ -174,6 +202,9 @@ public class SpecModelImplTest {
 
     assertThat(specModel.getTriggerMethods()).hasSize(1);
     assertThat(specModel.getTriggerMethods()).contains(mTriggerMethodModel);
+
+    assertThat(specModel.getWorkingRangeMethods()).hasSize(1);
+    assertThat(specModel.getWorkingRangeMethods()).contains(mWorkingRangeMethodModel);
 
     assertThat(specModel.getProps()).hasSize(5);
     assertThat(specModel.getProps())
@@ -200,6 +231,7 @@ public class SpecModelImplTest {
             .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
             .delegateMethods(ImmutableList.of(mMethodModel1, mMethodModel2))
             .triggerMethods(ImmutableList.of(mTriggerMethodModel))
+            .workingRangeMethods(ImmutableList.of(mWorkingRangeMethodModel))
             .typeVariables(ImmutableList.copyOf(mTypeVariableNames))
             .propDefaults(ImmutableList.of(mPropDefaultModel1))
             .dependencyInjectionHelper(diGenerator)

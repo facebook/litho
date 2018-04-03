@@ -41,6 +41,8 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<SpecMethodModel<DelegateMethod, Void>> mDelegateMethods;
   private final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mEventMethods;
   private final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mTriggerMethods;
+  @Nullable private final SpecMethodModel<EventMethod, Void> mWorkingRangeRegisterMethod;
+  private final ImmutableList<WorkingRangeMethodModel> mWorkingRangeMethods;
   private final ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethods;
   private final ImmutableList<PropModel> mRawProps;
   private final ImmutableList<PropModel> mProps;
@@ -70,6 +72,8 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
+      @Nullable SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
+      ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
       ImmutableList<PropModel> props,
       ImmutableList<InjectPropModel> injectProps,
@@ -94,11 +98,26 @@ public final class SpecModelImpl implements SpecModel {
     mDelegateMethods = delegateMethods;
     mEventMethods = getCombinedEventMethods(delegateMethods, eventMethods);
     mTriggerMethods = triggerMethods;
+    mWorkingRangeRegisterMethod = workingRangeRegisterMethod;
+    mWorkingRangeMethods = workingRangeMethods;
     mUpdateStateMethods = updateStateMethods;
-    mRawProps = getRawProps(delegateMethods, eventMethods, triggerMethods, updateStateMethods);
+    mRawProps =
+        getRawProps(
+            delegateMethods,
+            eventMethods,
+            triggerMethods,
+            workingRangeRegisterMethod,
+            workingRangeMethods,
+            updateStateMethods);
     mProps = props.isEmpty() ? getProps(mRawProps, cachedPropNames, delegateMethods) : props;
     mRawInjectProps =
-        getRawInjectProps(delegateMethods, eventMethods, triggerMethods, updateStateMethods);
+        getRawInjectProps(
+            delegateMethods, 
+            eventMethods, 
+            triggerMethods, 
+            workingRangeRegisterMethod,
+            workingRangeMethods,
+            updateStateMethods);
     mInjectProps =
         injectProps.isEmpty()
             ? getInjectProps(mRawInjectProps, cachedPropNames, mProps.size())
@@ -106,10 +125,29 @@ public final class SpecModelImpl implements SpecModel {
     mPropDefaults = propDefaults;
     mTypeVariables = typeVariables;
     mStateValues =
-        getStateValues(delegateMethods, eventMethods, triggerMethods, updateStateMethods);
+        getStateValues(
+            delegateMethods,
+            eventMethods,
+            triggerMethods,
+            workingRangeRegisterMethod,
+            workingRangeMethods,
+            updateStateMethods);
     mInterStageInputs =
-        getInterStageInputs(delegateMethods, eventMethods, triggerMethods, updateStateMethods);
-    mTreeProps = getTreeProps(delegateMethods, eventMethods, triggerMethods, updateStateMethods);
+        getInterStageInputs(
+            delegateMethods,
+            eventMethods,
+            triggerMethods,
+            workingRangeRegisterMethod,
+            workingRangeMethods,
+            updateStateMethods);
+    mTreeProps =
+        getTreeProps(
+            delegateMethods,
+            eventMethods,
+            triggerMethods,
+            workingRangeRegisterMethod,
+            workingRangeMethods,
+            updateStateMethods);
     mEventDeclarations = eventDeclarations;
     mImplicitBuilderMethods = implicitBuilderMethods;
     mDiffs = getDiffs(delegateMethods);
@@ -157,6 +195,17 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> getTriggerMethods() {
     return mTriggerMethods;
+  }
+
+  @Override
+  @Nullable
+  public SpecMethodModel<EventMethod, Void> getWorkingRangeRegisterMethod() {
+    return mWorkingRangeRegisterMethod;
+  }
+
+  @Override
+  public ImmutableList<WorkingRangeMethodModel> getWorkingRangeMethods() {
+    return mWorkingRangeMethods;
   }
 
   @Override
@@ -387,6 +436,8 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
+      @Nullable SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
+      ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
     final List<PropModel> props = new ArrayList<>();
 
@@ -410,6 +461,31 @@ public final class SpecModelImpl implements SpecModel {
       for (MethodParamModel param : triggerMethod.methodParams) {
         if (param instanceof PropModel) {
           props.add((PropModel) param);
+        }
+      }
+    }
+
+    if (workingRangeRegisterMethod != null) {
+      for (MethodParamModel param : workingRangeRegisterMethod.methodParams) {
+        if (param instanceof PropModel) {
+          props.add((PropModel) param);
+        }
+      }
+    }
+
+    for (WorkingRangeMethodModel workingRangeMethod : workingRangeMethods) {
+      if (workingRangeMethod.enteredRangeModel != null) {
+        for (MethodParamModel param : workingRangeMethod.enteredRangeModel.methodParams) {
+          if (param instanceof PropModel) {
+            props.add((PropModel) param);
+          }
+        }
+      }
+      if (workingRangeMethod.exitedRangeModel != null) {
+        for (MethodParamModel param : workingRangeMethod.exitedRangeModel.methodParams) {
+          if (param instanceof PropModel) {
+            props.add((PropModel) param);
+          }
         }
       }
     }
@@ -500,6 +576,8 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
+      @Nullable SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
+      ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
     final Set<InjectPropModel> props =
         new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
@@ -524,6 +602,31 @@ public final class SpecModelImpl implements SpecModel {
       for (MethodParamModel param : triggerMethod.methodParams) {
         if (param instanceof InjectPropModel) {
           props.add((InjectPropModel) param);
+        }
+      }
+    }
+
+    if (workingRangeRegisterMethod != null) {
+      for (MethodParamModel param : workingRangeRegisterMethod.methodParams) {
+        if (param instanceof InjectPropModel) {
+          props.add((InjectPropModel) param);
+        }
+      }
+    }
+
+    for (WorkingRangeMethodModel workingRangeMethod : workingRangeMethods) {
+      if (workingRangeMethod.enteredRangeModel != null) {
+        for (MethodParamModel param : workingRangeMethod.enteredRangeModel.methodParams) {
+          if (param instanceof InjectPropModel) {
+            props.add((InjectPropModel) param);
+          }
+        }
+      }
+      if (workingRangeMethod.exitedRangeModel != null) {
+        for (MethodParamModel param : workingRangeMethod.exitedRangeModel.methodParams) {
+          if (param instanceof InjectPropModel) {
+            props.add((InjectPropModel) param);
+          }
         }
       }
     }
@@ -560,6 +663,8 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
+      @Nullable SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
+      ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
     final Set<StateParamModel> stateValues =
         new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
@@ -583,6 +688,31 @@ public final class SpecModelImpl implements SpecModel {
       for (MethodParamModel param : triggerMethod.methodParams) {
         if (param instanceof StateParamModel) {
           stateValues.add((StateParamModel) param);
+        }
+      }
+    }
+
+    if (workingRangeRegisterMethod != null) {
+      for (MethodParamModel param : workingRangeRegisterMethod.methodParams) {
+        if (param instanceof StateParamModel) {
+          stateValues.add((StateParamModel) param);
+        }
+      }
+    }
+
+    for (WorkingRangeMethodModel workingRangeMethod : workingRangeMethods) {
+      if (workingRangeMethod.enteredRangeModel != null) {
+        for (MethodParamModel param : workingRangeMethod.enteredRangeModel.methodParams) {
+          if (param instanceof StateParamModel) {
+            stateValues.add((StateParamModel) param);
+          }
+        }
+      }
+      if (workingRangeMethod.exitedRangeModel != null) {
+        for (MethodParamModel param : workingRangeMethod.exitedRangeModel.methodParams) {
+          if (param instanceof StateParamModel) {
+            stateValues.add((StateParamModel) param);
+          }
         }
       }
     }
@@ -637,11 +767,21 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
+      @Nullable SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
+      ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
     final Set<InterStageInputParamModel> interStageInputs =
         new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
+        if (param instanceof InterStageInputParamModel) {
+          interStageInputs.add((InterStageInputParamModel) param);
+        }
+      }
+    }
+
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod : eventMethods) {
+      for (MethodParamModel param : eventMethod.methodParams) {
         if (param instanceof InterStageInputParamModel) {
           interStageInputs.add((InterStageInputParamModel) param);
         }
@@ -664,6 +804,31 @@ public final class SpecModelImpl implements SpecModel {
       }
     }
 
+    if (workingRangeRegisterMethod != null) {
+      for (MethodParamModel param : workingRangeRegisterMethod.methodParams) {
+        if (param instanceof InterStageInputParamModel) {
+          interStageInputs.add((InterStageInputParamModel) param);
+        }
+      }
+    }
+
+    for (WorkingRangeMethodModel workingRangeMethod : workingRangeMethods) {
+      if (workingRangeMethod.enteredRangeModel != null) {
+        for (MethodParamModel param : workingRangeMethod.enteredRangeModel.methodParams) {
+          if (param instanceof InterStageInputParamModel) {
+            interStageInputs.add((InterStageInputParamModel) param);
+          }
+        }
+      }
+      if (workingRangeMethod.exitedRangeModel != null) {
+        for (MethodParamModel param : workingRangeMethod.exitedRangeModel.methodParams) {
+          if (param instanceof InterStageInputParamModel) {
+            interStageInputs.add((InterStageInputParamModel) param);
+          }
+        }
+      }
+    }
+
     for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod : updateStateMethods) {
       for (MethodParamModel param : updateStateMethod.methodParams) {
         if (param instanceof InterStageInputParamModel) {
@@ -679,6 +844,8 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
+      @Nullable SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
+      ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
     final Set<TreePropModel> treeProps =
         new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
@@ -706,6 +873,31 @@ public final class SpecModelImpl implements SpecModel {
       }
     }
 
+    if (workingRangeRegisterMethod != null) {
+      for (MethodParamModel param : workingRangeRegisterMethod.methodParams) {
+        if (param instanceof TreePropModel) {
+          treeProps.add((TreePropModel) param);
+        }
+      }
+    }
+
+    for (WorkingRangeMethodModel workingRangeMethod : workingRangeMethods) {
+      if (workingRangeMethod.enteredRangeModel != null) {
+        for (MethodParamModel param : workingRangeMethod.enteredRangeModel.methodParams) {
+          if (param instanceof TreePropModel) {
+            treeProps.add((TreePropModel) param);
+          }
+        }
+      }
+      if (workingRangeMethod.exitedRangeModel != null) {
+        for (MethodParamModel param : workingRangeMethod.exitedRangeModel.methodParams) {
+          if (param instanceof TreePropModel) {
+            treeProps.add((TreePropModel) param);
+          }
+        }
+      }
+    }
+
     for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod : updateStateMethods) {
       for (MethodParamModel param : updateStateMethod.methodParams) {
         if (param instanceof TreePropModel) {
@@ -728,6 +920,8 @@ public final class SpecModelImpl implements SpecModel {
     private ImmutableList<SpecMethodModel<DelegateMethod, Void>> mDelegateMethodModels;
     private ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mEventMethodModels;
     private ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mTriggerMethodModels;
+    @Nullable private SpecMethodModel<EventMethod, Void> mWorkingRangeRegisterModel;
+    private ImmutableList<WorkingRangeMethodModel> mWorkingRangeMethodModels;
     private ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethodModels;
     private ImmutableList<String> mCachedPropNames;
     private ImmutableList<TypeVariableName> mTypeVariableNames;
@@ -781,6 +975,18 @@ public final class SpecModelImpl implements SpecModel {
     public Builder triggerMethods(
         ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethodModels) {
       mTriggerMethodModels = triggerMethodModels;
+      return this;
+    }
+
+    public Builder workingRangeRegisterMethod(
+        SpecMethodModel<EventMethod, Void> workingRangeRegisterModel) {
+      mWorkingRangeRegisterModel = workingRangeRegisterModel;
+      return this;
+    }
+
+    public Builder workingRangeMethods(
+        ImmutableList<WorkingRangeMethodModel> workingRangeMethodModels) {
+      mWorkingRangeMethodModels = workingRangeMethodModels;
       return this;
     }
 
@@ -877,6 +1083,8 @@ public final class SpecModelImpl implements SpecModel {
           mDelegateMethodModels,
           mEventMethodModels,
           mTriggerMethodModels,
+          mWorkingRangeRegisterModel,
+          mWorkingRangeMethodModels,
           mUpdateStateMethodModels,
           mProps,
           mInjectProps,
@@ -964,6 +1172,10 @@ public final class SpecModelImpl implements SpecModel {
 
       if (mBuilderMethodModels == null) {
         mBuilderMethodModels = ImmutableList.of();
+      }
+
+      if (mWorkingRangeMethodModels == null) {
+        mWorkingRangeMethodModels = ImmutableList.of();
       }
     }
   }

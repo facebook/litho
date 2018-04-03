@@ -9,11 +9,19 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getImplAccessor;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
+import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
+import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_STATE;
+
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DelegateMethodDescription;
 import com.facebook.litho.specmodels.model.DiffPropModel;
 import com.facebook.litho.specmodels.model.DiffStateParamModel;
+import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
 import com.facebook.litho.specmodels.model.SimpleMethodParamModel;
@@ -25,16 +33,8 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
-
 import java.lang.annotation.Annotation;
 import java.util.Map;
-
-import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getImplAccessor;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
-import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
-import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
-import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
-import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_STATE;
 
 /**
  * Class that generates delegate methods for a component.
@@ -229,6 +229,30 @@ public class DelegateMethodGenerator {
     methodSpec.addCode(acquireStatements.build());
     methodSpec.addCode(delegation.build());
     methodSpec.addCode(releaseStatements.build());
+
+    if (delegateMethod.name.toString().equals("onCreateLayout")
+        || delegateMethod.name.toString().equals("onPrepare")) {
+      SpecMethodModel<EventMethod, Void> registerRangesModel =
+          specModel.getWorkingRangeRegisterMethod();
+
+      if (registerRangesModel != null) {
+        CodeBlock.Builder registerDelegation =
+            CodeBlock.builder().add("$L.$L(\n", sourceDelegateAccessor, registerRangesModel.name);
+
+        registerDelegation.indent();
+        for (int i = 0, size = registerRangesModel.methodParams.size(); i < size; i++) {
+          final MethodParamModel methodParamModel = registerRangesModel.methodParams.get(i);
+          registerDelegation.add(
+              "($T) $L",
+              methodParamModel.getTypeName(),
+              getImplAccessor(specModel, methodParamModel));
+          registerDelegation.add(
+              (i < registerRangesModel.methodParams.size() - 1) ? ",\n" : ");\n");
+        }
+        registerDelegation.unindent();
+        methodSpec.addCode(registerDelegation.build());
+      }
+    }
 
     if (!methodDescription.returnType.equals(TypeName.VOID)) {
       methodSpec.addStatement("return _result");

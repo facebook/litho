@@ -11,6 +11,9 @@ package com.facebook.litho.specmodels.processor;
 
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.facebook.litho.annotations.OnEnteredRange;
+import com.facebook.litho.annotations.OnExitedRange;
+import com.facebook.litho.annotations.OnRegisterRanges;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
@@ -41,6 +44,9 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
         DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP.keySet());
     DELEGATE_METHOD_ANNOTATIONS.add(OnCreateTreeProp.class);
     DELEGATE_METHOD_ANNOTATIONS.add(ShouldUpdate.class);
+    DELEGATE_METHOD_ANNOTATIONS.add(OnEnteredRange.class);
+    DELEGATE_METHOD_ANNOTATIONS.add(OnExitedRange.class);
+    DELEGATE_METHOD_ANNOTATIONS.add(OnRegisterRanges.class);
   }
 
   private final List<Class<? extends Annotation>> mLayoutSpecDelegateMethodAnnotations;
@@ -90,6 +96,10 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
             elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager, runMode),
         TriggerMethodExtractor.getOnTriggerMethods(
             elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager, runMode),
+        WorkingRangesMethodExtractor.getRegisterMethod(
+            element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
+        WorkingRangesMethodExtractor.getRangesMethods(
+            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
         UpdateStateMethodExtractor.getOnUpdateStateMethods(
             element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
         interStageStore == null

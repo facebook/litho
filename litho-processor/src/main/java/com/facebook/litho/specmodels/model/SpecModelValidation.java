@@ -31,6 +31,7 @@ public class SpecModelValidation {
     validationErrors.addAll(TreePropValidation.validate(specModel));
     validationErrors.addAll(DiffValidation.validate(specModel));
     validationErrors.addAll(TagValidation.validate(specModel));
+    validationErrors.addAll(WorkingRangeValidation.validate(specModel));
     return validationErrors;
   }
 

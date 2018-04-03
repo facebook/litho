@@ -17,6 +17,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Model that is an abstract representation of a {@link com.facebook.litho.annotations.MountSpec}.
@@ -37,6 +38,8 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
+      SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
+      ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
       ImmutableList<String> cachedPropNames,
       ImmutableList<TypeVariableName> typeVariables,
@@ -65,6 +68,8 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .delegateMethods(delegateMethods)
             .eventMethods(eventMethods)
             .triggerMethods(triggerMethods)
+            .workingRangeRegisterMethod(workingRangeRegisterMethod)
+            .workingRangeMethods(workingRangeMethods)
             .updateStateMethods(updateStateMethods)
             .cachedPropNames(cachedPropNames)
             .typeVariables(typeVariables)
@@ -121,6 +126,17 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   @Override
   public ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> getTriggerMethods() {
     return mSpecModel.getTriggerMethods();
+  }
+
+  @Override
+  @Nullable
+  public SpecMethodModel<EventMethod, Void> getWorkingRangeRegisterMethod() {
+    return mSpecModel.getWorkingRangeRegisterMethod();
+  }
+
+  @Override
+  public ImmutableList<WorkingRangeMethodModel> getWorkingRangeMethods() {
+    return mSpecModel.getWorkingRangeMethods();
   }
 
   @Override

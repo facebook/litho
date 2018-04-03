@@ -33,6 +33,7 @@ import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.TagModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethod;
+import com.facebook.litho.specmodels.model.WorkingRangeMethodModel;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
@@ -130,6 +131,17 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   @Override
   public ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> getTriggerMethods() {
     return mSpecModel.getTriggerMethods();
+  }
+
+  @Override
+  @Nullable
+  public SpecMethodModel<EventMethod, Void> getWorkingRangeRegisterMethod() {
+    return mSpecModel.getWorkingRangeRegisterMethod();
+  }
+
+  @Override
+  public ImmutableList<WorkingRangeMethodModel> getWorkingRangeMethods() {
+    return mSpecModel.getWorkingRangeMethods();
   }
 
   @Override

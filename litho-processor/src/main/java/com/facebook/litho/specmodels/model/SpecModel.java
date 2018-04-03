@@ -49,6 +49,12 @@ public interface SpecModel {
   /** @return the list of trigger methods defined by the spec. */
   ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> getTriggerMethods();
 
+  /** @return the working range register method defined by the spec. */
+  SpecMethodModel<EventMethod, Void> getWorkingRangeRegisterMethod();
+
+  /** @return the list of working ranges methods defined by the spec. */
+  ImmutableList<WorkingRangeMethodModel> getWorkingRangeMethods();
+
   /** @return the list of methods defined in the spec for updating state. */
   ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> getUpdateStateMethods();
 

@@ -118,4 +118,6 @@ public interface ClassNames {
   ClassName ASSERTJ_JAVA6ASSERTIONS = ClassName.bestGuess("org.assertj.core.api.Java6Assertions");
 
   ClassName NON_EXISTENT_CLASS = ClassName.bestGuess("error.NonExistentClass");
+
+  ClassName WORKING_RANGE = ClassName.bestGuess("com.facebook.litho.WorkingRange");
 }

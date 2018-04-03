@@ -11,10 +11,16 @@ package com.facebook.litho.specmodels.model;
 
 public class SpecModelValidationError {
   public final Object element;
+  public final Object annotation;
   public final String message;
 
   public SpecModelValidationError(Object element, String message) {
+    this(element, null, message);
+  }
+
+  public SpecModelValidationError(Object element, Object annotation, String message) {
     this.element = element;
+    this.annotation = annotation;
     this.message = message;
   }
 

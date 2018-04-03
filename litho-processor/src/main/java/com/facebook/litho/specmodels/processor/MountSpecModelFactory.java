@@ -18,6 +18,9 @@ import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.MountingType;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.facebook.litho.annotations.OnEnteredRange;
+import com.facebook.litho.annotations.OnExitedRange;
+import com.facebook.litho.annotations.OnRegisterRanges;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
@@ -62,6 +65,9 @@ public class MountSpecModelFactory implements SpecModelFactory {
         DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP.keySet());
     DELEGATE_METHOD_ANNOTATIONS.add(OnCreateTreeProp.class);
     DELEGATE_METHOD_ANNOTATIONS.add(ShouldUpdate.class);
+    DELEGATE_METHOD_ANNOTATIONS.add(OnEnteredRange.class);
+    DELEGATE_METHOD_ANNOTATIONS.add(OnExitedRange.class);
+    DELEGATE_METHOD_ANNOTATIONS.add(OnRegisterRanges.class);
   }
 
   private final SpecGenerator<MountSpecModel> mMountSpecGenerator;
@@ -105,6 +111,10 @@ public class MountSpecModelFactory implements SpecModelFactory {
             elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager, runMode),
         TriggerMethodExtractor.getOnTriggerMethods(
             elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager, runMode),
+        WorkingRangesMethodExtractor.getRegisterMethod(
+            element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
+        WorkingRangesMethodExtractor.getRangesMethods(
+            elements, element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
         UpdateStateMethodExtractor.getOnUpdateStateMethods(
             element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
         interStageStore == null

@@ -92,6 +92,7 @@ public class ProcessorUtils {
       printableExceptions.add(
           new ComponentsProcessingException(
               (Element) validationError.element,
+              (AnnotationMirror) validationError.annotation,
               validationError.message));
     }
 

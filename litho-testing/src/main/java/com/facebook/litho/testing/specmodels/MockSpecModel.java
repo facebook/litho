@@ -32,6 +32,7 @@ import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.TagModel;
 import com.facebook.litho.specmodels.model.TreePropModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethod;
+import com.facebook.litho.specmodels.model.WorkingRangeMethodModel;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
@@ -53,6 +54,8 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   private final ImmutableList<SpecMethodModel<DelegateMethod, Void>> mDelegateMethods;
   private final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mEventMethods;
   private final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mTriggerMethods;
+  @Nullable private final SpecMethodModel<EventMethod, Void> mWorkingRangeRegisterMethod;
+  private final ImmutableList<WorkingRangeMethodModel> mWorkingRangeMethods;
   private final ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethods;
   private final ImmutableList<PropModel> mProps;
   private final ImmutableList<PropModel> mRawProps;
@@ -96,6 +99,8 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
+      SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
+      ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
       ImmutableList<PropModel> rawProps,
       ImmutableList<PropModel> props,
@@ -137,6 +142,8 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     mDelegateMethods = delegateMethods;
     mEventMethods = eventMethods;
     mTriggerMethods = triggerMethods;
+    mWorkingRangeRegisterMethod = workingRangeRegisterMethod;
+    mWorkingRangeMethods = workingRangeMethods;
     mUpdateStateMethods = updateStateMethods;
     mRawProps = rawProps;
     mProps = props;
@@ -205,6 +212,17 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   @Override
   public ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> getTriggerMethods() {
     return mTriggerMethods;
+  }
+
+  @Override
+  @Nullable
+  public SpecMethodModel<EventMethod, Void> getWorkingRangeRegisterMethod() {
+    return mWorkingRangeRegisterMethod;
+  }
+
+  @Override
+  public ImmutableList<WorkingRangeMethodModel> getWorkingRangeMethods() {
+    return mWorkingRangeMethods;
   }
 
   @Override
@@ -399,6 +417,8 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
         ImmutableList.of();
     private ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> mTriggerMethods =
         ImmutableList.of();
+    private SpecMethodModel<EventMethod, Void> mWorkingRangeRegisterMethod;
+    private ImmutableList<WorkingRangeMethodModel> mWorkingRangeMethods = ImmutableList.of();
     private ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> mUpdateStateMethods =
         ImmutableList.of();
     private ImmutableList<PropModel> mRawProps = ImmutableList.of();
@@ -474,6 +494,17 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     public Builder triggerMethods(
         ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods) {
       mTriggerMethods = triggerMethods;
+      return this;
+    }
+
+    public Builder workingRangeRegisterMethod(
+        SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod) {
+      mWorkingRangeRegisterMethod = workingRangeRegisterMethod;
+      return this;
+    }
+
+    public Builder workingRangeMethods(ImmutableList<WorkingRangeMethodModel> workingRangeMethods) {
+      mWorkingRangeMethods = workingRangeMethods;
       return this;
     }
 
@@ -656,6 +687,8 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mDelegateMethods,
           mEventMethods,
           mTriggerMethods,
+          mWorkingRangeRegisterMethod,
+          mWorkingRangeMethods,
           mUpdateStateMethods,
           mRawProps,
           mProps,
@@ -709,6 +742,8 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           && Objects.equals(mDelegateMethods, builder.mDelegateMethods)
           && Objects.equals(mEventMethods, builder.mEventMethods)
           && Objects.equals(mTriggerMethods, builder.mTriggerMethods)
+          && Objects.equals(mWorkingRangeRegisterMethod, builder.mWorkingRangeRegisterMethod)
+          && Objects.equals(mWorkingRangeMethods, builder.mWorkingRangeMethods)
           && Objects.equals(mUpdateStateMethods, builder.mUpdateStateMethods)
           && Objects.equals(mRawProps, builder.mRawProps)
           && Objects.equals(mProps, builder.mProps)
@@ -748,6 +783,8 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mDelegateMethods,
           mEventMethods,
           mTriggerMethods,
+          mWorkingRangeRegisterMethod,
+          mWorkingRangeMethods,
           mUpdateStateMethods,
           mProps,
           mPropDefaults,
