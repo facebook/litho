@@ -630,7 +630,7 @@ public class SectionTree {
     requestFocusWithOffset(sectionKey, 0, offset);
   }
 
-  private void requestFocusWithOffset(final String sectionKey, final int index, final int offset) {
+  void requestFocusWithOffset(final String sectionKey, final int index, final int offset) {
     focusRequestOnUiThread(
         new Runnable() {
           @Override
