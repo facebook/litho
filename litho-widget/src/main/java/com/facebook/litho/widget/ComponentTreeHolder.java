@@ -336,6 +336,6 @@ public class ComponentTreeHolder {
       return;
     }
 
-    mStateHandler = mComponentTree.getStateHandler();
+    mStateHandler = mComponentTree.acquireStateHandler();
   }
 }
