@@ -219,7 +219,7 @@ public class ComponentBodyGenerator {
         .build();
   }
 
-  static TypeSpecDataHolder generateProps(SpecModel specModel) {
+  public static TypeSpecDataHolder generateProps(SpecModel specModel) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
     final ImmutableList<PropModel> props = specModel.getProps();
 
@@ -240,7 +240,7 @@ public class ComponentBodyGenerator {
     return typeSpecDataHolder.build();
   }
 
-  static TypeSpecDataHolder generateInjectedFields(SpecModel specModel) {
+  public static TypeSpecDataHolder generateInjectedFields(SpecModel specModel) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
 
     if (specModel.hasInjectedDependencies()) {
