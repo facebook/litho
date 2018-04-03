@@ -206,6 +206,19 @@ public class RecyclerBinder
         }
       };
 
+  private final Handler mReleaseTreeHandler;
+  private final Runnable mReleaseTreeRunnable =
+      new Runnable() {
+        @Override
+        public void run() {
+          for (ComponentTreeHolder holder : mComponentTreeHolders) {
+            if (holder.isTreeValid()) {
+              holder.releaseTree();
+            }
+          }
+        }
+      };
+
   interface ComponentTreeHolderFactory {
     ComponentTreeHolder create(
         RenderInfo renderInfo,
@@ -422,6 +435,8 @@ public class RecyclerBinder
             mCurrentLastVisiblePosition,
             builder.layoutInfo,
             mMainThreadHandler);
+
+    mReleaseTreeHandler = new Handler(Looper.getMainLooper());
   }
 
   /**
@@ -821,12 +836,13 @@ public class RecyclerBinder
 
   @Override
   public void bind(RecyclerView view) {
-    // Nothing to do here.
+    mReleaseTreeHandler.removeCallbacks(mReleaseTreeRunnable);
   }
 
   @Override
   public void unbind(RecyclerView view) {
-    // Nothing to do here.
+    mReleaseTreeHandler.removeCallbacks(mReleaseTreeRunnable);
+    mReleaseTreeHandler.post(mReleaseTreeRunnable);
   }
 
   /**

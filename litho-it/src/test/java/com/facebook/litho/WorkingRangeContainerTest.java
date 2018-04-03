@@ -10,7 +10,11 @@
 package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.support.v4.util.SimpleArrayMap;
@@ -23,11 +27,11 @@ import org.junit.runner.RunWith;
 @RunWith(ComponentsTestRunner.class)
 public class WorkingRangeContainerTest {
   private static final String NAME = "workingRangeName";
-  private static final int COMPONENT_ID = 1024;
 
   private WorkingRangeContainer mWorkingRangeContainer;
   private WorkingRange mWorkingRange;
   private Component mComponent;
+  private Component mComponent2;
 
   @Before
   public void setup() {
@@ -35,7 +39,9 @@ public class WorkingRangeContainerTest {
 
     mWorkingRange = new TestWorkingRange();
     mComponent = mock(Component.class);
-    when(mComponent.getId()).thenReturn(COMPONENT_ID);
+    when(mComponent.getGlobalKey()).thenReturn("component");
+    mComponent2 = mock(Component.class);
+    when(mComponent2.getGlobalKey()).thenReturn("component2");
   }
 
   @Test
@@ -73,7 +79,31 @@ public class WorkingRangeContainerTest {
     assertThat(WorkingRangeContainer.isExitingRange(workingRange, 0, 1, 2, 1, 2)).isEqualTo(true);
   }
 
+  @Test
+  public void testDispatchOnExitedRangeIfNeeded() {
+    TestWorkingRange workingRange = new TestWorkingRange();
+    mWorkingRangeContainer.registerWorkingRange(NAME, workingRange, mComponent);
+
+    TestWorkingRange workingRange2 = new TestWorkingRange();
+    mWorkingRangeContainer.registerWorkingRange(NAME, workingRange2, mComponent2);
+
+    final WorkingRangeStatusHandler statusHandler = new WorkingRangeStatusHandler();
+    statusHandler.setStatus(NAME, mComponent, WorkingRangeStatusHandler.STATUS_IN_RANGE);
+    doNothing().when(mComponent).dispatchOnExitedRange(isA(String.class));
+
+    statusHandler.setStatus(NAME, mComponent2, WorkingRangeStatusHandler.STATUS_OUT_OF_RANGE);
+    doNothing().when(mComponent2).dispatchOnExitedRange(isA(String.class));
+
+    mWorkingRangeContainer.dispatchOnExitedRangeIfNeeded(statusHandler);
+
+    verify(mComponent, times(1)).dispatchOnExitedRange(NAME);
+    verify(mComponent2, times(0)).dispatchOnExitedRange(NAME);
+  }
+
   private static class TestWorkingRange implements WorkingRange {
+
+    boolean isExitRangeCalled = false;
+
     @Override
     public boolean shouldEnterRange(
         int position,
@@ -91,6 +121,7 @@ public class WorkingRangeContainerTest {
         int lastVisibleIndex,
         int firstFullyVisibleIndex,
         int lastFullyVisibleIndex) {
+      isExitRangeCalled = true;
       return !isInRange(position, firstVisibleIndex, lastVisibleIndex);
     }
 

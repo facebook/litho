@@ -1100,6 +1100,20 @@ public class ComponentTree {
   }
 
   /**
+   * Dispatch OnExitedRange event to component which is still in the range, then clear the handler.
+   */
+  private synchronized void clearWorkingRangeStatusHandler() {
+    final LayoutState layoutState =
+        isBestMainThreadLayout() ? mMainThreadLayoutState : mBackgroundLayoutState;
+
+    if (layoutState != null) {
+      layoutState.dispatchOnExitRangeIfNeeded(mWorkingRangeStatusHandler);
+    }
+
+    mWorkingRangeStatusHandler.clear();
+  }
+
+  /**
    * Update the width/height spec. This is useful if you are currently detached and are responding
    * to a configuration change. If you are currently attached then the HostView is the source of
    * truth for width/height, so this call will be ignored.
@@ -1545,6 +1559,10 @@ public class ComponentTree {
       }
       mRoot = null;
 
+      // Clear mWorkingRangeStatusHandler before releasing LayoutState because we need them to help
+      // dispatch OnExitRange events.
+      clearWorkingRangeStatusHandler();
+
       mainThreadLayoutState = mMainThreadLayoutState;
       mMainThreadLayoutState = null;
 
@@ -1559,8 +1577,6 @@ public class ComponentTree {
       }
       mPreviousRenderState = null;
       mPreviousRenderStateSetFromBuilder = false;
-
-      mWorkingRangeStatusHandler.clear();
     }
 
     if (mainThreadLayoutState != null) {

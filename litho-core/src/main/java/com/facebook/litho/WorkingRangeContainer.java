@@ -89,6 +89,27 @@ class WorkingRangeContainer {
     }
   }
 
+  /**
+   * Dispatch onExitRange if the status of the component is in the range. This method should only be
+   * called when releasing a ComponentTree, thus no status update needed.
+   */
+  void dispatchOnExitedRangeIfNeeded(WorkingRangeStatusHandler statusHandler) {
+    if (mWorkingRanges == null) {
+      return;
+    }
+
+    for (int i = 0, size = mWorkingRanges.size(); i < size; i++) {
+      final String key = mWorkingRanges.keyAt(i);
+      final RangeTuple rangeTuple = mWorkingRanges.get(key);
+
+      for (Component component : rangeTuple.mComponents) {
+        if (statusHandler.isInRange(rangeTuple.mName, component)) {
+          component.dispatchOnExitedRange(rangeTuple.mName);
+        }
+      }
+    }
+  }
+
   static boolean isEnteringRange(
       WorkingRange workingRange,
       int position,
