@@ -12,7 +12,6 @@ package com.facebook.litho.config;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 
-import android.os.Process;
 import com.facebook.litho.BuildConfig;
 import com.facebook.yoga.YogaLogger;
 import java.util.HashSet;
@@ -116,8 +115,8 @@ public class ComponentsConfiguration {
    */
   public static long longerStateUpdatePercentage = 0;
 
-  /** Override the priority of the default background layout thread in ComponentTree with this. */
-  public static int defaultBackgroundThreadPriority = Process.THREAD_PRIORITY_BACKGROUND;
+  /** The default priority for threads that perform background layout calculations. */
+  public static final int DEFAULT_BACKGROUND_THREAD_PRIORITY = 5;
 
   /**
    * Whether components with transitions set on don't necessarily have to be wrapped in views

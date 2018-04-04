@@ -19,6 +19,7 @@ import static com.facebook.litho.LayoutState.CalculateLayoutSource;
 import static com.facebook.litho.ThreadUtils.assertHoldsLock;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
+import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -72,8 +73,6 @@ public class ComponentTree {
   private static final int MESSAGE_WHAT_BACKGROUND_LAYOUT_STATE_UPDATED = 1;
   private static final String DEFAULT_LAYOUT_THREAD_NAME = "ComponentLayoutThread";
   private static final String DEFAULT_PMC_THREAD_NAME = "PreallocateMountContentThread";
-  private static final int DEFAULT_LAYOUT_THREAD_PRIORITY =
-      ComponentsConfiguration.defaultBackgroundThreadPriority;
 
   private static final int SCHEDULE_NONE = 0;
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
@@ -1623,7 +1622,7 @@ public class ComponentTree {
   private static synchronized Looper getDefaultLayoutThreadLooper() {
     if (sDefaultLayoutThreadLooper == null) {
       final HandlerThread defaultThread =
-          new HandlerThread(DEFAULT_LAYOUT_THREAD_NAME, DEFAULT_LAYOUT_THREAD_PRIORITY);
+          new HandlerThread(DEFAULT_LAYOUT_THREAD_NAME, DEFAULT_BACKGROUND_THREAD_PRIORITY);
       defaultThread.start();
       sDefaultLayoutThreadLooper = defaultThread.getLooper();
     }

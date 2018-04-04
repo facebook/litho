@@ -10,8 +10,8 @@ package com.facebook.litho;
 
 import static com.facebook.litho.FrameworkLogEvents.EVENT_WARNING;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
+import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
 
-import android.os.Process;
 import com.facebook.litho.config.DeviceInfoUtils;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 
@@ -51,7 +51,7 @@ public class LayoutThreadPoolConfigurationImpl implements LayoutThreadPoolConfig
     private int corePoolSizeIncrement = 0;
     private double maxPoolSizeMultiplier = 1;
     private int maxPoolSizeIncrement = 0;
-    private int threadPriority = Process.THREAD_PRIORITY_BACKGROUND;
+    private int threadPriority = DEFAULT_BACKGROUND_THREAD_PRIORITY;
     private ComponentsLogger logger;
 
     public Builder hasFixedSizePool(boolean hasFixedSizePool) {
