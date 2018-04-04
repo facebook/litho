@@ -230,18 +230,20 @@ public class LithoView extends ComponentHost {
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     // mAnimatedWidth/mAnimatedHeight >= 0 if something is driving a width/height animation.
-    if (mAnimatedWidth != -1 || mAnimatedHeight != -1) {
-      final int nextWidth = (mAnimatedWidth != -1) ? mAnimatedWidth : getWidth();
-      final int nextHeight = (mAnimatedHeight != -1) ? mAnimatedHeight : getHeight();
-      mAnimatedWidth = -1;
-      mAnimatedHeight = -1;
+    final boolean animating = mAnimatedWidth != -1 || mAnimatedHeight != -1;
+    // up to date view sizes, taking into account running animations
+    final int upToDateWidth = (mAnimatedWidth != -1) ? mAnimatedWidth : getWidth();
+    final int upToDateHeight = (mAnimatedHeight != -1) ? mAnimatedHeight : getHeight();
+    mAnimatedWidth = -1;
+    mAnimatedHeight = -1;
 
+    if (animating) {
       // If the mount state is dirty, we want to ignore the current animation and calculate the
       // new LayoutState as normal below. That LayoutState has the opportunity to define its own
       // transition to a new width/height from the current height of the LithoView, or if not we
       // will jump straight to that width/height.
       if (!isMountStateDirty()) {
-        setMeasuredDimension(nextWidth, nextHeight);
+        setMeasuredDimension(upToDateWidth, upToDateHeight);
         return;
       }
     }
@@ -276,15 +278,13 @@ public class LithoView extends ComponentHost {
     // If we're mounting a new ComponentTree, it probably has a different width/height but we don't
     // want to animate it.
     if (!mHasNewComponentTree && mComponentTree != null) {
-      final boolean isExpectingWidthAnimation =
-          width != getWidth() && mComponentTree.hasLithoViewWidthAnimation();
-      if (isExpectingWidthAnimation) {
-        width = getWidth();
+      if (mComponentTree.hasLithoViewWidthAnimation()) {
+        // We expect width to animate
+        width = upToDateWidth;
       }
-      final boolean isExpectingHeightAnimation =
-          height != getHeight() && mComponentTree.hasLithoViewHeightAnimation();
-      if (isExpectingHeightAnimation) {
-        height = getHeight();
+      if (mComponentTree.hasLithoViewHeightAnimation()) {
+        // We expect height to animate
+        height = upToDateHeight;
       }
     }
     setMeasuredDimension(width, height);
