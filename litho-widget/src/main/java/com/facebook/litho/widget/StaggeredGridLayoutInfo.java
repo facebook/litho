@@ -24,6 +24,12 @@ import com.facebook.litho.widget.RecyclerBinder.RecyclerViewLayoutManagerOverrid
  * StaggeredGridLayoutManager}.
  */
 public class StaggeredGridLayoutInfo implements LayoutInfo {
+  // A custom LayoutInfo param to override the size of an item in the grid. Since
+  // StaggeredGridLayoutInfo does not support item decorations offsets on the non scrolling side
+  // natively, this can be useful to manually compute the size of an item after such decorations are
+  // taken into account.
+  public static final String OVERRIDE_SIZE = "OVERRIDE_SIZE";
+
   private final StaggeredGridLayoutManager mStaggeredGridLayoutManager;
 
   public StaggeredGridLayoutInfo(
@@ -79,6 +85,11 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
       case StaggeredGridLayoutManager.HORIZONTAL:
         return SizeSpec.makeSizeSpec(0, UNSPECIFIED);
       default:
+        Integer overrideWidth = (Integer) renderInfo.getCustomAttribute(OVERRIDE_SIZE);
+        if (overrideWidth != null) {
+          return SizeSpec.makeSizeSpec(overrideWidth, EXACTLY);
+        }
+
         final int spanCount = mStaggeredGridLayoutManager.getSpanCount();
         final int spanSize =
             renderInfo.isFullSpan() ? mStaggeredGridLayoutManager.getSpanCount() : 1;
@@ -96,6 +107,11 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
   public int getChildHeightSpec(int heightSpec, RenderInfo renderInfo) {
     switch (mStaggeredGridLayoutManager.getOrientation()) {
       case StaggeredGridLayoutManager.HORIZONTAL:
+        Integer overrideHeight = (Integer) renderInfo.getCustomAttribute(OVERRIDE_SIZE);
+        if (overrideHeight != null) {
+          return SizeSpec.makeSizeSpec(overrideHeight, EXACTLY);
+        }
+
         final int spanCount = mStaggeredGridLayoutManager.getSpanCount();
         final int spanSize =
             renderInfo.isFullSpan() ? mStaggeredGridLayoutManager.getSpanCount() : 1;
