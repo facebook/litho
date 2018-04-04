@@ -10,6 +10,8 @@
 package com.facebook.litho.specmodels.model;
 
 import com.squareup.javapoet.ClassName;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,6 +43,8 @@ public interface ClassNames {
   ClassName PX = ClassName.bestGuess("android.support.annotation.Px");
 
   ClassName LIST = ClassName.get(List.class);
+  ClassName ARRAY_LIST = ClassName.get(ArrayList.class);
+  ClassName COLLECTIONS = ClassName.get(Collections.class);
   ClassName COLLECTION = ClassName.bestGuess("java.util.Collection");
 
   ClassName SYNCHRONIZED_POOL =
@@ -73,6 +77,10 @@ public interface ClassNames {
       ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.MountType.VIEW");
   ClassName COMPONENT_LIFECYCLE_MOUNT_TYPE_NONE =
       ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.MountType.NONE");
+
+  ClassName TRANSITON = ClassName.bestGuess("com.facebook.litho.Transition");
+  ClassName TRANSITION_CONTAINER =
+      ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.TransitionContainer");
 
   ClassName REFERENCE = ClassName.bestGuess("com.facebook.litho.reference.Reference");
   ClassName REFERENCE_BUILDER =

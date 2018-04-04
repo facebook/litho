@@ -119,6 +119,13 @@ public class ComponentBodyGenerator {
         TypeSpec.classBuilder(getStateContainerClassName(specModel))
             .addSuperinterface(specModel.getStateContainerClass());
 
+    final boolean hasUpdateStateWithTransition =
+        StateGenerator.hasUpdateStateWithTransition(specModel);
+
+    if (hasUpdateStateWithTransition) {
+      stateContainerClassBuilder.addSuperinterface(specModel.getTransitionContainerClass());
+    }
+
     if (!specModel.hasInjectedDependencies()) {
       stateContainerClassBuilder.addAnnotation(
           AnnotationSpec.builder(VisibleForTesting.class)
@@ -131,6 +138,41 @@ public class ComponentBodyGenerator {
       stateContainerClassBuilder.addField(FieldSpec.builder(
           stateValue.getTypeName(),
           stateValue.getName()).addAnnotation(State.class).build());
+    }
+
+    if (hasUpdateStateWithTransition) {
+      stateContainerClassBuilder.addField(
+          FieldSpec.builder(
+                  ParameterizedTypeName.get(ClassNames.LIST, specModel.getTransitionClass().box()),
+                  GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME)
+              .initializer("new $T<>()", ClassNames.ARRAY_LIST)
+              .build());
+
+      final String transitionsCopyVarName = "transitionsCopy";
+
+      stateContainerClassBuilder.addMethod(
+          MethodSpec.methodBuilder("consumeTransitions")
+              .addModifiers(Modifier.PUBLIC)
+              .addAnnotation(Override.class)
+              .returns(
+                  ParameterizedTypeName.get(ClassNames.LIST, specModel.getTransitionClass().box()))
+              .addCode(
+                  CodeBlock.builder()
+                      .beginControlFlow(
+                          "if ($L.isEmpty())", GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME)
+                      .addStatement("return $T.EMPTY_LIST", ClassNames.COLLECTIONS)
+                      .endControlFlow()
+                      .build())
+              .addStatement(
+                  "$T<$T> $N = new $T<>($N)",
+                  ClassNames.LIST,
+                  specModel.getTransitionClass(),
+                  transitionsCopyVarName,
+                  ClassNames.ARRAY_LIST,
+                  GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME)
+              .addStatement("$N.clear()", GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME)
+              .addStatement("return $N", transitionsCopyVarName)
+              .build());
     }
 
     return stateContainerClassBuilder.build();
@@ -400,8 +442,14 @@ public class ComponentBodyGenerator {
   static TypeSpecDataHolder generateOnUpdateStateMethods(SpecModel specModel) {
     TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
 
-    for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel :
-        specModel.getUpdateStateMethods()) {
+    final ArrayList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods =
+        new ArrayList<>(specModel.getUpdateStateMethods());
+
+    if (StateGenerator.hasUpdateStateWithTransition(specModel)) {
+      updateStateMethods.addAll(specModel.getUpdateStateWithTransitionMethods());
+    }
+
+    for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel : updateStateMethods) {
       final String stateUpdateClassName = getStateUpdateClassName(updateStateMethodModel);
       final List<MethodParamModel> params = getParams(updateStateMethodModel);
 

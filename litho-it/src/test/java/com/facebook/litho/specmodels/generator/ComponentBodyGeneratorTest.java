@@ -19,6 +19,7 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
+import com.facebook.litho.annotations.OnUpdateStateWithTransition;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
@@ -85,7 +86,31 @@ public class ComponentBodyGeneratorTest {
     public void testUpdateStateMethod() {}
   }
 
+  @LayoutSpec
+  static class TestWithTransitionSpec {
+    @PropDefault protected static boolean arg0 = true;
+
+    @OnCreateLayout
+    public void testDelegateMethod(
+        @Prop boolean arg0,
+        @State int arg1,
+        @Param Object arg2,
+        @TreeProp long arg3,
+        @Prop Component arg4,
+        @Prop List<Component> arg5,
+        @Prop List<String> arg6,
+        @TreeProp Set<List<Row>> arg7,
+        @TreeProp Set<Integer> arg8) {}
+
+    @OnUpdateState
+    public void testUpdateStateMethod() {}
+
+    @OnUpdateStateWithTransition
+    public void testUpdateStateWithTransitionMethod() {}
+  }
+
   private SpecModel mSpecModelDI;
+  private SpecModel mSpecModelWithTransitionDI;
 
   @Before
   public void setUp() {
@@ -96,6 +121,12 @@ public class ComponentBodyGeneratorTest {
     mSpecModelDI =
         mLayoutSpecModelFactory.create(
             elements, types, typeElement, mMessager, RunMode.NORMAL, null, null);
+
+    TypeElement typeElementWithTransition =
+        elements.getTypeElement(TestWithTransitionSpec.class.getCanonicalName());
+    mSpecModelWithTransitionDI =
+        mLayoutSpecModelFactory.create(
+            elements, types, typeElementWithTransition, mMessager, RunMode.NORMAL, null, null);
   }
 
   @Test
@@ -108,6 +139,32 @@ public class ComponentBodyGeneratorTest {
                 + "static class TestStateContainer implements com.facebook.litho.ComponentLifecycle.StateContainer {\n"
                 + "  @com.facebook.litho.annotations.State\n"
                 + "  int arg1;\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testGenerateStateContainerWithTransitionImpl() {
+    assertThat(ComponentBodyGenerator.generateStateContainer(mSpecModelWithTransitionDI).toString())
+        .isEqualTo(
+            "@android.support.annotation.VisibleForTesting(\n"
+                + "    otherwise = 2\n"
+                + ")\n"
+                + "static class TestWithTransitionStateContainer implements com.facebook.litho.ComponentLifecycle.StateContainer, "
+                + "com.facebook.litho.ComponentLifecycle.TransitionContainer {\n"
+                + "  @com.facebook.litho.annotations.State\n"
+                + "  int arg1;\n"
+                + "\n"
+                + "  java.util.List<com.facebook.litho.Transition> _transitions = new java.util.ArrayList<>();\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public java.util.List<com.facebook.litho.Transition> consumeTransitions() {\n"
+                + "    if (_transitions.isEmpty()) {\n"
+                + "      return java.util.Collections.EMPTY_LIST;\n"
+                + "    }\n"
+                + "    java.util.List<com.facebook.litho.Transition> transitionsCopy = new java.util.ArrayList<>(_transitions);\n"
+                + "    _transitions.clear();\n"
+                + "    return transitionsCopy;\n"
+                + "  }\n"
                 + "}\n");
   }
 
@@ -263,6 +320,23 @@ public class ComponentBodyGeneratorTest {
         .isEqualTo(
             "private TestUpdateStateMethodStateUpdate createTestUpdateStateMethodStateUpdate() {\n"
                 + "  return new TestUpdateStateMethodStateUpdate();\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testOnUpdateStateWithTransitionMethods() {
+    TypeSpecDataHolder dataHolder =
+        ComponentBodyGenerator.generateOnUpdateStateMethods(mSpecModelWithTransitionDI);
+    assertThat(dataHolder.getMethodSpecs()).hasSize(2);
+    assertThat(dataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "private TestUpdateStateMethodStateUpdate createTestUpdateStateMethodStateUpdate() {\n"
+                + "  return new TestUpdateStateMethodStateUpdate();\n"
+                + "}\n");
+    assertThat(dataHolder.getMethodSpecs().get(1).toString())
+        .isEqualTo(
+            "private TestUpdateStateWithTransitionMethodStateUpdate createTestUpdateStateWithTransitionMethodStateUpdate() {\n"
+                + "  return new TestUpdateStateWithTransitionMethodStateUpdate();\n"
                 + "}\n");
   }
 

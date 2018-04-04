@@ -20,4 +20,5 @@ public interface GeneratorConstants {
   String PREVIOUS_RENDER_DATA_FIELD_NAME = "mPreviousRenderData";
   String STATE_CONTAINER_NAME_SUFFIX = "StateContainer";
   String STATE_UPDATE_NAME_SUFFIX = "StateUpdate";
+  String STATE_TRANSITIONS_FIELD_NAME = "_transitions";
 }

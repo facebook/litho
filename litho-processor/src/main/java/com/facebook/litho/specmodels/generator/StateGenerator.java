@@ -10,6 +10,7 @@
 package com.facebook.litho.specmodels.generator;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME;
 
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -95,6 +96,14 @@ public class StateGenerator {
           stateValue.getName());
     }
 
+    if (hasUpdateStateWithTransition(specModel)) {
+      methodSpec.addStatement(
+          "$L.$L = prevStateContainer.$L",
+          STATE_CONTAINER_FIELD_NAME,
+          GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME,
+          GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME);
+    }
+
     return TypeSpecDataHolder.newBuilder().addMethod(methodSpec.build()).build();
   }
 
@@ -102,18 +111,42 @@ public class StateGenerator {
     TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
     for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod :
         specModel.getUpdateStateMethods()) {
-      dataHolder.addTypeSpecDataHolder(generateStateUpdateClass(specModel, updateStateMethod));
+      dataHolder.addTypeSpecDataHolder(
+          generateStateUpdateClass(specModel, updateStateMethod, false));
+    }
+
+    if (hasUpdateStateWithTransition(specModel)) {
+      for (SpecMethodModel<UpdateStateMethod, Void> updateStateWithTransitionMethod :
+          specModel.getUpdateStateWithTransitionMethods()) {
+        dataHolder.addTypeSpecDataHolder(
+            generateStateUpdateClass(specModel, updateStateWithTransitionMethod, true));
+      }
     }
 
     return dataHolder.build();
+  }
+
+  static boolean hasUpdateStateWithTransition(SpecModel specModel) {
+    return specModel.getUpdateStateWithTransitionMethods() != null
+        && !specModel.getUpdateStateWithTransitionMethods().isEmpty();
   }
 
   static TypeSpecDataHolder generateOnStateUpdateMethods(SpecModel specModel) {
     TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
     for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod :
         specModel.getUpdateStateMethods()) {
-      dataHolder.addTypeSpecDataHolder(generateOnStateUpdateMethod(specModel, updateStateMethod, true));
-      dataHolder.addTypeSpecDataHolder(generateOnStateUpdateMethod(specModel, updateStateMethod, false));
+      dataHolder.addTypeSpecDataHolder(
+          generateOnStateUpdateMethod(specModel, updateStateMethod, true, false));
+      dataHolder.addTypeSpecDataHolder(
+          generateOnStateUpdateMethod(specModel, updateStateMethod, false, false));
+    }
+
+    if (hasUpdateStateWithTransition(specModel)) {
+      for (SpecMethodModel<UpdateStateMethod, Void> updateStateWithTransitionMethod :
+          specModel.getUpdateStateWithTransitionMethods()) {
+        dataHolder.addTypeSpecDataHolder(
+            generateOnStateUpdateMethod(specModel, updateStateWithTransitionMethod, true, true));
+      }
     }
 
     return dataHolder.build();
@@ -122,10 +155,13 @@ public class StateGenerator {
   static TypeSpecDataHolder generateOnStateUpdateMethod(
       SpecModel specModel,
       SpecMethodModel<UpdateStateMethod, Void> updateStateMethod,
-      boolean isAsync) {
+      boolean isAsync,
+      boolean withTransitions) {
 
     final String name =
-        isAsync ? updateStateMethod.name.toString() + "Async" : updateStateMethod.name.toString();
+        isAsync && !withTransitions
+            ? updateStateMethod.name.toString() + "Async"
+            : updateStateMethod.name.toString();
     final MethodSpec.Builder builder = MethodSpec.methodBuilder(name)
         .addModifiers(Modifier.PROTECTED, Modifier.STATIC)
         .addParameter(specModel.getContextClass(), "c");
@@ -166,7 +202,9 @@ public class StateGenerator {
     codeBlockBuilder.add(");\n");
 
     builder.addCode(codeBlockBuilder.build());
-    if (isAsync) {
+    if (withTransitions) {
+      builder.addStatement("c.updateStateWithTransition(_stateUpdate)");
+    } else if (isAsync) {
       builder.addStatement("c.updateStateAsync(_stateUpdate)");
     } else {
       builder.addStatement("c.updateStateSync(_stateUpdate)");
@@ -176,7 +214,9 @@ public class StateGenerator {
   }
 
   static TypeSpecDataHolder generateStateUpdateClass(
-      SpecModel specModel, SpecMethodModel<UpdateStateMethod, Void> updateStateMethod) {
+      SpecModel specModel,
+      SpecMethodModel<UpdateStateMethod, Void> updateStateMethod,
+      boolean withTransition) {
     final TypeSpec.Builder stateUpdateClassBuilder =
         TypeSpec.classBuilder(getStateUpdateClassName(updateStateMethod))
             .addModifiers(Modifier.PRIVATE)
@@ -241,13 +281,37 @@ public class StateGenerator {
       }
     }
 
+    final String transitionLocalVarName = "transition";
 
-    // Call the spec's update method.
-    updateStateMethodBuilder.addStatement(
-        "$N.$N($L)",
-        SpecModelUtils.getSpecAccessor(specModel),
-        updateStateMethod.name,
-        getParamsForSpecUpdateMethodCall(updateStateMethod));
+    if (withTransition) {
+      // Call the spec's update method and add transition to statecontainer's transition list.
+      updateStateMethodBuilder.addStatement(
+          "$T $N = $N.$N($L)",
+          ClassNames.TRANSITION,
+          transitionLocalVarName,
+          SpecModelUtils.getSpecAccessor(specModel),
+          updateStateMethod.name,
+          getParamsForSpecUpdateMethodCall(updateStateMethod));
+
+      updateStateMethodBuilder.addCode(
+          CodeBlock.builder()
+              .beginControlFlow("if ($L != null)", transitionLocalVarName)
+              .addStatement(
+                  "$N.$N.$N.add($L)",
+                  newComponentImplName,
+                  STATE_CONTAINER_FIELD_NAME,
+                  STATE_TRANSITIONS_FIELD_NAME,
+                  transitionLocalVarName)
+              .endControlFlow()
+              .build());
+    } else {
+      // Call the spec's update method.
+      updateStateMethodBuilder.addStatement(
+          "$N.$N($L)",
+          SpecModelUtils.getSpecAccessor(specModel),
+          updateStateMethod.name,
+          getParamsForSpecUpdateMethodCall(updateStateMethod));
+    }
 
     // Set the new value of the state.
     for (MethodParamModel methodParamModel : updateStateMethod.methodParams) {

@@ -14,6 +14,7 @@ import static com.facebook.litho.specmodels.model.SpecModelUtils.generateTypeSpe
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getMethodParams;
 
 import com.facebook.litho.annotations.OnUpdateState;
+import com.facebook.litho.annotations.OnUpdateStateWithTransition;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
@@ -50,6 +51,26 @@ public class UpdateStateMethodExtractor {
       TypeElement typeElement,
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
       Messager messager) {
+    return extractOnUpdateStateMethods(
+        typeElement, permittedInterStageInputAnnotations, messager, false);
+  }
+
+  /** Get the delegate methods from the given {@link TypeElement}. */
+  public static ImmutableList<SpecMethodModel<UpdateStateMethod, Void>>
+      getOnUpdateStateWithTransitionMethods(
+          TypeElement typeElement,
+          List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+          Messager messager) {
+    return extractOnUpdateStateMethods(
+        typeElement, permittedInterStageInputAnnotations, messager, true);
+  }
+
+  private static ImmutableList<SpecMethodModel<UpdateStateMethod, Void>>
+      extractOnUpdateStateMethods(
+          TypeElement typeElement,
+          List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
+          Messager messager,
+          boolean isTransitionMethod) {
     final List<SpecMethodModel<UpdateStateMethod, Void>> delegateMethods = new ArrayList<>();
 
     for (Element enclosedElement : typeElement.getEnclosedElements()) {
@@ -57,7 +78,10 @@ public class UpdateStateMethodExtractor {
         continue;
       }
 
-      final Annotation onUpdateStateAnnotation = enclosedElement.getAnnotation(OnUpdateState.class);
+      final Annotation onUpdateStateAnnotation =
+          isTransitionMethod
+              ? enclosedElement.getAnnotation(OnUpdateStateWithTransition.class)
+              : enclosedElement.getAnnotation(OnUpdateState.class);
 
       if (onUpdateStateAnnotation != null) {
         final ExecutableElement executableElement = (ExecutableElement) enclosedElement;

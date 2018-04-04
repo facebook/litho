@@ -59,6 +59,11 @@ public interface SpecModel {
   ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> getUpdateStateMethods();
 
   /**
+   * @return the list of methods defined in the spec for updating state with transition specified.
+   */
+  ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> getUpdateStateWithTransitionMethods();
+
+  /**
    * @return the list of props without taking deduplication or name cache adjustments into account.
    */
   ImmutableList<PropModel> getRawProps();
@@ -121,6 +126,15 @@ public interface SpecModel {
    * @return the {@link ClassName} of the state container class that is used in the generated class.
    */
   ClassName getStateContainerClass();
+
+  /** @return the {@link ClassName} of the transition that is used in the generated class. */
+  ClassName getTransitionClass();
+
+  /**
+   * @return the {@link ClassName} of the transition container class that is used in the generated
+   *     class.
+   */
+  ClassName getTransitionContainerClass();
 
   /**
    * @return the {@link TypeName} of the update state interface that is used in the generated class.

@@ -36,6 +36,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
       ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateWithTransitionMethods,
       ImmutableList<String> cachedPropNames,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
@@ -61,6 +62,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
             .workingRangeRegisterMethod(workingRangeRegisterMethod)
             .workingRangeMethods(workingRangeMethods)
             .updateStateMethods(updateStateMethods)
+            .updateStateWithTransitionMethods(updateStateWithTransitionMethods)
             .cachedPropNames(cachedPropNames)
             .typeVariables(typeVariables)
             .propDefaults(propDefaults)
@@ -127,6 +129,12 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   @Override
   public ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> getUpdateStateMethods() {
     return mSpecModel.getUpdateStateMethods();
+  }
+
+  @Override
+  public ImmutableList<SpecMethodModel<UpdateStateMethod, Void>>
+      getUpdateStateWithTransitionMethods() {
+    return mSpecModel.getUpdateStateWithTransitionMethods();
   }
 
   @Override
@@ -227,6 +235,16 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   @Override
   public ClassName getStateContainerClass() {
     return ClassNames.STATE_CONTAINER_COMPONENT;
+  }
+
+  @Override
+  public ClassName getTransitionClass() {
+    return ClassNames.TRANSITION;
+  }
+
+  @Override
+  public ClassName getTransitionContainerClass() {
+    return ClassNames.TRANSITION_CONTAINER;
   }
 
   @Override
