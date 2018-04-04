@@ -231,11 +231,8 @@ public class BuilderGenerator {
 
       propsBuilderClassBuilder.addField(requiredPropsCountBuilder.build());
 
-      propsBuilderClassBuilder
-          .addField(FieldSpec.builder(
-              BitSet.class,
-              "mRequired",
-              Modifier.PRIVATE)
+      propsBuilderClassBuilder.addField(
+          FieldSpec.builder(BitSet.class, "mRequired", Modifier.PRIVATE, Modifier.FINAL)
               .initializer("new $T($L)", BitSet.class, REQUIRED_PROPS_COUNT)
               .build());
 

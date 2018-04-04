@@ -389,7 +389,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
 
     SectionContext mContext;
 
-    private BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
+    private final BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
     private void init(SectionContext context, FullGroupSection fullGroupSectionRef) {
       super.init(context, fullGroupSectionRef);

@@ -138,7 +138,7 @@ public final class SimpleMount extends Component {
 
     ComponentContext mContext;
 
-    private BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
+    private final BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
     private void init(ComponentContext context, int defStyleAttr, int defStyleRes,
         SimpleMount simpleMountRef) {

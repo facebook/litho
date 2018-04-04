@@ -338,7 +338,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
 
     SectionContext mContext;
 
-    private BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
+    private final BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
     private void init(SectionContext context, FullDiffSection fullDiffSectionRef) {
       super.init(context, fullDiffSectionRef);

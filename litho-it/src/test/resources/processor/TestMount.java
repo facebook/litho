@@ -632,7 +632,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
     ComponentContext mContext;
 
-    private BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
+    private final BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
     private void init(
         ComponentContext context, int defStyleAttr, int defStyleRes, TestMount testMountRef) {

@@ -538,7 +538,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
     ComponentContext mContext;
 
-    private BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
+    private final BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
     private void init(
         ComponentContext context, int defStyleAttr, int defStyleRes, TestLayout testLayoutRef) {
