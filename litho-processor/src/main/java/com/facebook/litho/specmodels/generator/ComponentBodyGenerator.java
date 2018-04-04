@@ -50,7 +50,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
@@ -248,14 +247,6 @@ public class ComponentBodyGenerator {
           specModel
               .getDependencyInjectionHelper()
               .generateInjectedFields(specModel.getInjectProps()));
-
-      final List<MethodSpec> testAccessors =
-          specModel
-              .getInjectProps()
-              .stream()
-              .map(p -> specModel.getDependencyInjectionHelper().generateTestingFieldAccessor(p))
-              .collect(Collectors.toList());
-      typeSpecDataHolder.addMethods(testAccessors);
     }
 
     return typeSpecDataHolder.build();

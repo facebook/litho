@@ -123,17 +123,6 @@ public class TestingDIComponentProcessor extends AbstractComponentsProcessor {
     }
 
     @Override
-    public MethodSpec generateTestingFieldAccessor(InjectPropModel injectedParam) {
-      return MethodSpec.methodBuilder(
-              "get"
-                  + injectedParam.getName().substring(0, 1).toUpperCase()
-                  + injectedParam.getName().substring(1))
-          .returns(injectedParam.getTypeName())
-          .addStatement("return $N", injectedParam.getName())
-          .build();
-    }
-
-    @Override
     public boolean hasDIComponentCreation() {
       return true;
     }

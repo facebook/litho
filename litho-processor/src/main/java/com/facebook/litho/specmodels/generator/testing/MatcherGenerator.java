@@ -12,9 +12,7 @@ package com.facebook.litho.specmodels.generator.testing;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.HasEnclosedSpecModel;
-import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecModel;
@@ -33,7 +31,6 @@ import com.squareup.javapoet.WildcardTypeName;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
@@ -102,11 +99,6 @@ public final class MatcherGenerator {
 
     for (final PropModel prop : specModel.getProps()) {
       generatePropsBuilderMethods(specModel, prop).addToTypeSpec(propsBuilderClassBuilder);
-    }
-
-    for (final InjectPropModel prop : specModel.getInjectProps()) {
-      generatePropsBuilderMethods(specModel, prop.toPropModel())
-          .addToTypeSpec(propsBuilderClassBuilder);
     }
 
     propsBuilderClassBuilder
@@ -307,15 +299,15 @@ public final class MatcherGenerator {
     return ParameterizedTypeName.get(ClassNames.HAMCREST_MATCHER, rawType.box());
   }
 
-  static String getPropComponentMatcherName(final MethodParamModel prop) {
+  static String getPropComponentMatcherName(final PropModel prop) {
     return getBasePropMatcherName(prop, "ComponentMatcher");
   }
 
-  static String getPropMatcherName(final MethodParamModel prop) {
+  static String getPropMatcherName(final PropModel prop) {
     return getBasePropMatcherName(prop, "Matcher");
   }
 
-  private static String getBasePropMatcherName(final MethodParamModel prop, final String suffix) {
+  private static String getBasePropMatcherName(final PropModel prop, final String suffix) {
     final String name = prop.getName();
 
     final int fst = Character.toUpperCase(name.codePointAt(0));
@@ -624,28 +616,12 @@ public final class MatcherGenerator {
 
     for (PropModel prop : specModel.getProps()) {
       if (getRawType(prop.getTypeName()).equals(ClassNames.COMPONENT)) {
-        builder.add(
-            generateComponentMatchBlock(
-                enclosedSpecModel, prop, MatcherGenerator::generateFieldExtractorBlock));
+        builder.add(generateComponentMatchBlock(prop));
       }
 
       // We generate matchers for both components as well as nested matchers, so the fall-through
       // here is intended.
-      builder.add(
-          generateValuePropMatchBlock(
-              enclosedSpecModel, prop, MatcherGenerator::generateFieldExtractorBlock));
-    }
-
-    for (InjectPropModel prop : specModel.getInjectProps()) {
-      if (getRawType(prop.getTypeName()).equals(ClassNames.COMPONENT)) {
-        builder.add(
-            generateComponentMatchBlock(
-                enclosedSpecModel, prop, MatcherGenerator::generateInjectedFieldExtractorBlock));
-      }
-
-      builder.add(
-          generateValuePropMatchBlock(
-              enclosedSpecModel, prop, MatcherGenerator::generateInjectedFieldExtractorBlock));
+      builder.add(generateValuePropMatchBlock(enclosedSpecModel, prop));
     }
 
     builder.addStatement("return true");
@@ -653,52 +629,31 @@ public final class MatcherGenerator {
     return builder.build();
   }
 
-  private static String getPropValueName(MethodParamModel prop) {
+  private static String getPropValueName(PropModel prop) {
     final String name = prop.getName();
     return "propValue" + name.substring(0, 1).toUpperCase() + name.substring(1);
   }
 
-  private static CodeBlock generateFieldExtractorBlock(FieldExtractorSpec fieldExtractorSpec) {
+  private static CodeBlock generateFieldExtractorBlock(PropModel prop, String varName) {
     return CodeBlock.builder()
+        .addStatement("$T $L = null", prop.getTypeName().box(), varName)
+        .beginControlFlow("try")
         .addStatement(
-            "final $T $L = impl.$L",
-            fieldExtractorSpec.propModel.getTypeName(),
-            fieldExtractorSpec.varName,
-            fieldExtractorSpec.propModel.getName())
+            "$L = ($T) impl.getClass().getDeclaredField($S).get(impl)",
+            varName,
+            prop.getTypeName(),
+            prop.getName())
+        .nextControlFlow("catch (Exception e)")
+        .add("// TODO(T25404536): Temporarily ignored.\n")
+        .endControlFlow()
         .build();
   }
 
-  private static CodeBlock generateInjectedFieldExtractorBlock(
-      FieldExtractorSpec fieldExtractorSpec) {
-    final DependencyInjectionHelper diHelper =
-        fieldExtractorSpec.specModel.getDependencyInjectionHelper();
-
-    if (diHelper == null) {
-      return CodeBlock.builder().build();
-    }
-
-    final String getterName =
-        diHelper.generateTestingFieldAccessor(new InjectPropModel(fieldExtractorSpec.propModel))
-            .name;
-    return CodeBlock.builder()
-        .addStatement(
-            "final $T $L = impl.$L()",
-            fieldExtractorSpec.propModel.getTypeName(),
-            fieldExtractorSpec.varName,
-            getterName)
-        .build();
-  }
-
-  private static CodeBlock generateComponentMatchBlock(
-      SpecModel enclosedSpecModel,
-      MethodParamModel prop,
-      Function<FieldExtractorSpec, CodeBlock> fieldExtractorBlockFn) {
+  private static CodeBlock generateComponentMatchBlock(PropModel prop) {
     final String matcherName = getPropComponentMatcherName(prop);
     final String propValueName = getPropValueName(prop) + "Component";
     return CodeBlock.builder()
-        .add(
-            fieldExtractorBlockFn.apply(
-                new FieldExtractorSpec(enclosedSpecModel, prop, propValueName)))
+        .add(generateFieldExtractorBlock(prop, propValueName))
         .beginControlFlow(
             "if ($1N != null && !$1N.matches(value.getNestedInstance($2L)))",
             matcherName,
@@ -710,14 +665,10 @@ public final class MatcherGenerator {
   }
 
   private static CodeBlock generateValuePropMatchBlock(
-      SpecModel enclosedSpecModel,
-      MethodParamModel prop,
-      Function<FieldExtractorSpec, CodeBlock> fieldExtractorBlockFn) {
+      SpecModel enclosedSpecModel, PropModel prop) {
     final String matcherName = getPropMatcherName(prop);
     return CodeBlock.builder()
-        .add(
-            fieldExtractorBlockFn.apply(
-                new FieldExtractorSpec(enclosedSpecModel, prop, getPropValueName(prop))))
+        .add(generateFieldExtractorBlock(prop, getPropValueName(prop)))
         .beginControlFlow(
             "if ($1N != null && !$1N.matches($2L))", matcherName, getPropValueName(prop))
         .add(generateMatchFailureStatement(enclosedSpecModel, matcherName, prop))
@@ -727,7 +678,7 @@ public final class MatcherGenerator {
   }
 
   private static CodeBlock generateMatchFailureStatement(
-      final SpecModel enclosedSpecModel, String matcherName, MethodParamModel prop) {
+      final SpecModel enclosedSpecModel, String matcherName, PropModel prop) {
     return CodeBlock.builder()
         .add("as(new $T(", ClassNames.ASSERTJ_TEXT_DESCRIPTION)
         .add(
@@ -787,15 +738,4 @@ public final class MatcherGenerator {
         .build();
   }
 
-  private static class FieldExtractorSpec {
-    public final SpecModel specModel;
-    public final String varName;
-    public final MethodParamModel propModel;
-
-    private FieldExtractorSpec(SpecModel specModel, MethodParamModel propModel, String varName) {
-      this.specModel = specModel;
-      this.propModel = propModel;
-      this.varName = varName;
-    }
-  }
 }

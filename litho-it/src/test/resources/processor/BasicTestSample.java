@@ -157,14 +157,25 @@ public final class BasicTestSample implements BasicTestSampleSpec {
               final com.facebook.litho.processor.integration.resources.BasicLayout impl =
                   (com.facebook.litho.processor.integration.resources.BasicLayout)
                       value.getComponent();
-              final Component propValueChildComponent = impl.child;
+              Component propValueChildComponent = null;
+              try {
+                propValueChildComponent =
+                    (Component) impl.getClass().getDeclaredField("child").get(impl);
+              } catch (Exception e) {
+                // TODO(T25404536): Temporarily ignored.
+              }
               if (mChildComponentMatcher != null
                   && !mChildComponentMatcher.matches(
                       value.getNestedInstance(propValueChildComponent))) {
                 as(mChildComponentMatcher.description());
                 return false;
               }
-              final Component propValueChild = impl.child;
+              Component propValueChild = null;
+              try {
+                propValueChild = (Component) impl.getClass().getDeclaredField("child").get(impl);
+              } catch (Exception e) {
+                // TODO(T25404536): Temporarily ignored.
+              }
               if (mChildMatcher != null && !mChildMatcher.matches(propValueChild)) {
                 as(
                     new TextDescription(
@@ -172,7 +183,13 @@ public final class BasicTestSample implements BasicTestSampleSpec {
                         mChildMatcher, propValueChild));
                 return false;
               }
-              final float propValueMyDimenSizeProp = impl.myDimenSizeProp;
+              Float propValueMyDimenSizeProp = null;
+              try {
+                propValueMyDimenSizeProp =
+                    (float) impl.getClass().getDeclaredField("myDimenSizeProp").get(impl);
+              } catch (Exception e) {
+                // TODO(T25404536): Temporarily ignored.
+              }
               if (mMyDimenSizePropMatcher != null
                   && !mMyDimenSizePropMatcher.matches(propValueMyDimenSizeProp)) {
                 as(
@@ -181,7 +198,13 @@ public final class BasicTestSample implements BasicTestSampleSpec {
                         mMyDimenSizePropMatcher, propValueMyDimenSizeProp));
                 return false;
               }
-              final int propValueMyRequiredColorProp = impl.myRequiredColorProp;
+              Integer propValueMyRequiredColorProp = null;
+              try {
+                propValueMyRequiredColorProp =
+                    (int) impl.getClass().getDeclaredField("myRequiredColorProp").get(impl);
+              } catch (Exception e) {
+                // TODO(T25404536): Temporarily ignored.
+              }
               if (mMyRequiredColorPropMatcher != null
                   && !mMyRequiredColorPropMatcher.matches(propValueMyRequiredColorProp)) {
                 as(
@@ -190,7 +213,13 @@ public final class BasicTestSample implements BasicTestSampleSpec {
                         mMyRequiredColorPropMatcher, propValueMyRequiredColorProp));
                 return false;
               }
-              final String propValueMyStringProp = impl.myStringProp;
+              String propValueMyStringProp = null;
+              try {
+                propValueMyStringProp =
+                    (String) impl.getClass().getDeclaredField("myStringProp").get(impl);
+              } catch (Exception e) {
+                // TODO(T25404536): Temporarily ignored.
+              }
               if (mMyStringPropMatcher != null
                   && !mMyStringPropMatcher.matches(propValueMyStringProp)) {
                 as(
