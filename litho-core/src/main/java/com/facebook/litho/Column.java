@@ -164,7 +164,7 @@ public final class Column extends Component {
     }
 
     @Override
-    public Builder child(Component child) {
+    public Builder child(@Nullable Component child) {
       if (child == null) {
         return this;
       }
@@ -178,7 +178,7 @@ public final class Column extends Component {
     }
 
     @Override
-    public Builder child(Component.Builder<?> child) {
+    public Builder child(@Nullable Component.Builder<?> child) {
       if (child == null) {
         return this;
       }
