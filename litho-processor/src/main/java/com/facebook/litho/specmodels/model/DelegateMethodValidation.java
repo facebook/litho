@@ -270,21 +270,39 @@ public class DelegateMethodValidation {
 
     // When using Kotlin, we get incorrect return type "error.NonExistentClass". Just ignore it.
     if (!delegateMethod.returnType.equals(ClassNames.NON_EXISTENT_CLASS)
-        && !delegateMethodDescription.returnType.equals(TypeName.OBJECT)
-        && !delegateMethodDescription.returnType.equals(delegateMethod.returnType)) {
-      validationErrors.add(
-          new SpecModelValidationError(
-              delegateMethod.representedObject,
-              "A method annotated with @"
-                  + delegateMethodAnnotation.getSimpleName()
-                  + " needs to return "
-                  + delegateMethodDescription.returnType
-                  + ". Note that even if your return value is a subclass of "
-                  + delegateMethodDescription.returnType
-                  + ", you should still use "
-                  + delegateMethodDescription.returnType
-                  + " as the return type."));
+        && !delegateMethodDescription.returnType.equals(TypeName.OBJECT)) {
+      TypeName returnType = delegateMethod.returnType;
+
+      if (delegateMethodDescription.returnsParameterizedType) {
+        if (!(delegateMethod.returnType instanceof ParameterizedTypeName)) {
+          validationErrors.add(
+              new SpecModelValidationError(
+                  delegateMethod.representedObject,
+                  "A method annotated with @"
+                      + delegateMethodAnnotation.getSimpleName()
+                      + " is expected to have a return type that is parameterized."));
+          return validationErrors;
+        }
+
+        returnType = ((ParameterizedTypeName) returnType).rawType;
+      }
+
+      if (!delegateMethodDescription.returnType.equals(returnType)) {
+        validationErrors.add(
+            new SpecModelValidationError(
+                delegateMethod.representedObject,
+                "A method annotated with @"
+                    + delegateMethodAnnotation.getSimpleName()
+                    + " needs to return "
+                    + delegateMethodDescription.returnType
+                    + ". Note that even if your return value is a subclass of "
+                    + delegateMethodDescription.returnType
+                    + ", you should still use "
+                    + delegateMethodDescription.returnType
+                    + " as the return type."));
+      }
     }
+
     return validationErrors;
   }
 
