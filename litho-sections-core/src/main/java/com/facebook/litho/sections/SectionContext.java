@@ -14,11 +14,13 @@ import static com.facebook.litho.sections.SectionLifecycle.StateUpdate;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.TreeProps;
+import com.facebook.litho.widget.SectionsDebug;
 import java.lang.ref.WeakReference;
 
 public class SectionContext extends ComponentContext {
@@ -72,6 +74,12 @@ public class SectionContext extends ComponentContext {
       return;
     }
 
+    if (SectionsDebug.ENABLED) {
+      Log.d(
+          SectionsDebug.TAG,
+          "(" + mSectionTree.hashCode() + ") updateState from " + stateUpdate.getClass().getName());
+    }
+
     sectionTree.updateState(section.getGlobalKey(), stateUpdate);
   }
 
@@ -91,6 +99,15 @@ public class SectionContext extends ComponentContext {
     final SectionTree sectionTree = mSectionTree;
     if (sectionTree == null || section == null) {
       return;
+    }
+
+    if (SectionsDebug.ENABLED) {
+      Log.d(
+          SectionsDebug.TAG,
+          "("
+              + mSectionTree.hashCode()
+              + ") updateStateAsync from "
+              + stateUpdate.getClass().getName());
     }
 
     sectionTree.updateStateAsync(section.getGlobalKey(), stateUpdate);

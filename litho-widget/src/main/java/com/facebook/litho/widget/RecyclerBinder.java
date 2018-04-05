@@ -565,6 +565,10 @@ public class RecyclerBinder
 
     assertNoInsertOperationIfCircular();
 
+    if (SectionsDebug.ENABLED) {
+      Log.d(SectionsDebug.TAG, "(" + hashCode() + ") insertItemAt " + position);
+    }
+
     final ComponentTreeHolder holder = createComponentTreeHolder(renderInfo);
     synchronized (this) {
       mComponentTreeHolders.add(position, holder);
@@ -582,6 +586,10 @@ public class RecyclerBinder
   }
 
   private void requestRemeasure() {
+    if (SectionsDebug.ENABLED) {
+      Log.d(SectionsDebug.TAG, "(" + hashCode() + ") requestRemeasure");
+    }
+
     if (mMountedView != null) {
       mMainThreadHandler.removeCallbacks(mRemeasureRunnable);
       mMountedView.removeCallbacks(mRemeasureRunnable);
@@ -630,6 +638,12 @@ public class RecyclerBinder
 
     assertNoInsertOperationIfCircular();
 
+    if (SectionsDebug.ENABLED) {
+      Log.d(
+          SectionsDebug.TAG,
+          "(" + hashCode() + ") insertRangeAt " + position + ", size: " + renderInfos.size());
+    }
+
     for (int i = 0, size = renderInfos.size(); i < size; i++) {
 
       synchronized (this) {
@@ -668,6 +682,10 @@ public class RecyclerBinder
   public final void updateItemAt(int position, RenderInfo renderInfo) {
     ThreadUtils.assertMainThread();
 
+    if (SectionsDebug.ENABLED) {
+      Log.d(SectionsDebug.TAG, "(" + hashCode() + ") updateItemAt " + position);
+    }
+
     final ComponentTreeHolder holder;
     final boolean renderInfoWasView;
     synchronized (this) {
@@ -701,6 +719,12 @@ public class RecyclerBinder
   public final void updateRangeAt(int position, List<RenderInfo> renderInfos) {
     ThreadUtils.assertMainThread();
 
+    if (SectionsDebug.ENABLED) {
+      Log.d(
+          SectionsDebug.TAG,
+          "(" + hashCode() + ") updateRangeAt " + position + ", size: " + renderInfos.size());
+    }
+
     for (int i = 0, size = renderInfos.size(); i < size; i++) {
 
       synchronized (this) {
@@ -732,6 +756,11 @@ public class RecyclerBinder
   @UiThread
   public final void moveItem(int fromPosition, int toPosition) {
     ThreadUtils.assertMainThread();
+
+    if (SectionsDebug.ENABLED) {
+      Log.d(
+          SectionsDebug.TAG, "(" + hashCode() + ") moveItem " + fromPosition + " to " + toPosition);
+    }
 
     final ComponentTreeHolder holder;
     final boolean isNewPositionInRange;
@@ -766,6 +795,10 @@ public class RecyclerBinder
 
     assertNoRemoveOperationIfCircular(1);
 
+    if (SectionsDebug.ENABLED) {
+      Log.d(SectionsDebug.TAG, "(" + hashCode() + ") removeItemAt " + position);
+    }
+
     final ComponentTreeHolder holder;
     synchronized (this) {
       holder = mComponentTreeHolders.remove(position);
@@ -787,6 +820,11 @@ public class RecyclerBinder
     ThreadUtils.assertMainThread();
 
     assertNoRemoveOperationIfCircular(count);
+
+    if (SectionsDebug.ENABLED) {
+      Log.d(
+          SectionsDebug.TAG, "(" + hashCode() + ") removeRangeAt " + position + ", size: " + count);
+    }
 
     synchronized (this) {
       for (int i = 0; i < count; i++) {

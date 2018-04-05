@@ -26,6 +26,7 @@ import android.os.Process;
 import android.support.annotation.UiThread;
 import android.support.v4.util.Pair;
 import android.text.TextUtils;
+import android.util.Log;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsPools;
@@ -40,6 +41,7 @@ import com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.widget.RenderInfo;
+import com.facebook.litho.widget.SectionsDebug;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -785,6 +787,16 @@ public class SectionTree {
           name
               + "_applyNewChangeSet_"
               + SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
+    }
+
+    if (SectionsDebug.ENABLED) {
+      Log.d(
+          SectionsDebug.TAG,
+          "=== NEW CHANGE SET ("
+              + SectionsLogEventUtils.applyNewChangeSetSourceToString(source)
+              + ", "
+              + hashCode()
+              + ") ====");
     }
 
     try {
