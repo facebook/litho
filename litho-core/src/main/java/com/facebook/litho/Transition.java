@@ -69,14 +69,6 @@ public abstract class Transition {
   enum PropertyTargetType {
 
     /**
-     * Targets all properties on each component in this transition. For now, that just means the
-     * properties in {@link com.facebook.litho.animation.AnimatedProperties#ALL_PROPERTIES}, in the
-     * future it should target all animatable properties on the targeted components (see t20555897).
-     * Expected extra data: none.
-     */
-    ALL,
-
-    /**
      * Targets a set of properties. Expected extra data: AnimatedProperty[] of properties.
      */
     SET,
@@ -153,10 +145,6 @@ public abstract class Transition {
 
   public static ComponentTarget allKeys() {
     return new ComponentTarget(ComponentTargetType.ALL, null);
-  }
-
-  public static PropertyTarget allProperties() {
-    return new PropertyTarget(PropertyTargetType.ALL, null);
   }
 
   /**
@@ -292,8 +280,6 @@ public abstract class Transition {
       switch (mAnimationTarget.propertyTarget.propertyTargetType) {
         case AUTO_LAYOUT:
           return arrayContains(AnimatedProperties.AUTO_LAYOUT_PROPERTIES, property);
-        case ALL:
-          return arrayContains(AnimatedProperties.ALL_PROPERTIES, property);
         case SET:
           return arrayContains(
               (AnimatedProperty[]) mAnimationTarget.propertyTarget.propertyTargetExtraData,
@@ -356,8 +342,6 @@ public abstract class Transition {
      * Adds a target of properties to animate. This also puts the Builder in a state to configure
      * the animation of these properties using {@link #animator}. To specify appearFrom/disappearTo
      * values, address properties individually using {@link #animate(AnimatedProperty)}.
-     *
-     * You can use {@link Transition#allProperties()} with this method.
      *
      * @param propertyTarget the target properties to animate
      */

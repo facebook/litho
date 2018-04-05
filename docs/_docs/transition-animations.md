@@ -113,17 +113,9 @@ See [the javadocs for `DimensionValue`](/javadoc/index.html?com/facebook/litho/a
 
 ### Targeting
 
-Litho transitions support targeting a single component, sets of components, or all components with transition keys. Similarly, transitions can target a single property, a set of properties, or 'all' properties.
+Litho transitions support targeting a single component, sets of components, or all components with transition keys. Transitions can target a single property or a set of properties.
 
-1\. Animate 'all' properties on all components with transition keys:
-
-```java
-Transition.create(Transition.allKeys())
-    .animate(Transition.allProperties())
-```
-
-<br />
-2\. Animate the `X` property on all components with transition keys:
+1\. Animate the `X` property on all components with transition keys:
 
 ```java
 Transition.create(Transition.allKeys())
@@ -131,11 +123,19 @@ Transition.create(Transition.allKeys())
 ```
 
 <br />
-3\. Animate all properties on the component with transition key `'red'`:
+2\. Animate multiple properties on all components with transition keys:
+
+```java
+Transition.create(Transition.allKeys())
+    .animate(AnimatedProperties.X, AnimatedProperties.Y)
+```
+
+<br />
+3\. Animate `X`, `Y` and `ALPHA` properties on the component with transition key `'red'`:
 
 ```java
 Transition.create('red')
-    .animate(Transition.allProperties())
+    .animate(AnimatedProperties.X, AnimatedProperties.Y, AnimatedProperties.ALPHA)
 ```
 
 <br />
@@ -147,7 +147,6 @@ Transition.create('red', 'blue')
 ```
 
 <br />
-**NOTE**: When we say 'all' properties, right now we just mean the supported properties listed above.
 
 ### Staggers, Sequences, and Parallel Sets
 

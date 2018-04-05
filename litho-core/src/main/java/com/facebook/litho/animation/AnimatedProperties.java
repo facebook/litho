@@ -79,8 +79,6 @@ public final class AnimatedProperties {
    */
   public static final AnimatedProperty ROTATION = new RotationAnimatedProperty();
 
-  public static final AnimatedProperty[] ALL_PROPERTIES = new AnimatedProperty[] {X, Y, ALPHA};
-
   public static final AnimatedProperty[] AUTO_LAYOUT_PROPERTIES =
       new AnimatedProperty[] {X, Y, WIDTH, HEIGHT};
 

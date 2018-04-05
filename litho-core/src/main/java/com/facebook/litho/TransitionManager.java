@@ -514,16 +514,6 @@ public class TransitionManager {
       ArrayList<AnimationBinding> outList) {
     final Transition.AnimationTarget animationTarget = transition.getAnimationTarget();
     switch (animationTarget.propertyTarget.propertyTargetType) {
-      case ALL:
-        // TODO(t20555897): Enumerate all animatable properties on a LayoutOutput
-        for (int i = 0; i < AnimatedProperties.ALL_PROPERTIES.length; i++) {
-          final AnimationBinding createdAnimation =
-              maybeCreateAnimation(transition, key, AnimatedProperties.ALL_PROPERTIES[i]);
-          if (createdAnimation != null) {
-            outList.add(createdAnimation);
-          }
-        }
-        break;
       case AUTO_LAYOUT:
         for (int i = 0; i < AnimatedProperties.AUTO_LAYOUT_PROPERTIES.length; i++) {
           final AnimationBinding createdAnimation =
