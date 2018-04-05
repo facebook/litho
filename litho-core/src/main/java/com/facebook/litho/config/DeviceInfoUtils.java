@@ -26,6 +26,9 @@ public class DeviceInfoUtils {
    */
   public static final int DEVICEINFO_UNKNOWN = -1;
 
+  public static final int NUM_CORES_NOT_SET = -1;
+  private static int sNumCores = NUM_CORES_NOT_SET;
+
   /**
    * Reads the number of CPU cores from the first available information from {@code
    * /sys/devices/system/cpu/possible}, {@code /sys/devices/system/cpu/present}, then {@code
@@ -34,6 +37,10 @@ public class DeviceInfoUtils {
    * @return Number of CPU cores in the phone, or DEVICEINFO_UKNOWN = -1 in the event of an error.
    */
   public static int getNumberOfCPUCores() {
+    if (sNumCores != NUM_CORES_NOT_SET) {
+      return sNumCores;
+    }
+
     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.GINGERBREAD_MR1) {
       // Gingerbread doesn't support giving a single application access to both cores, but a
       // handful of devices (Atrix 4G and Droid X2 for example) were released with a dual-core
@@ -57,7 +64,14 @@ public class DeviceInfoUtils {
       cores = DEVICEINFO_UNKNOWN;
     }
 
+    sNumCores = cores;
     return cores;
+  }
+
+  public static boolean hasMultipleCores() {
+    final int numCores = getNumberOfCPUCores();
+
+    return numCores != DEVICEINFO_UNKNOWN && numCores > 1;
   }
 
   /**

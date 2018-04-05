@@ -104,8 +104,19 @@ public class LayoutThreadPoolConfigurationImpl implements LayoutThreadPoolConfig
       }
 
       int procDepCorePoolSize =
-          (int) (numProcessors * corePoolSizeMultiplier + corePoolSizeIncrement);
-      int procDepMaxPoolSize = (int) (numProcessors * maxPoolSizeMultiplier + maxPoolSizeIncrement);
+          (int) Math.ceil(numProcessors * corePoolSizeMultiplier + corePoolSizeIncrement);
+      int procDepMaxPoolSize =
+          (int) Math.ceil(numProcessors * maxPoolSizeMultiplier + maxPoolSizeIncrement);
+
+      // Safety net if we somehow try to set an invalid pool size, which can happen if we set the
+      // size to 0 or the max is smaller than the core size.
+      if (procDepCorePoolSize == 0) {
+        procDepCorePoolSize = 1;
+      }
+
+      if (procDepMaxPoolSize < procDepCorePoolSize) {
+        procDepMaxPoolSize = procDepCorePoolSize;
+      }
 
       return new LayoutThreadPoolConfigurationImpl(
           procDepCorePoolSize, procDepMaxPoolSize, threadPriority);
