@@ -1121,120 +1121,124 @@ class LayoutState {
               .toString());
     }
 
-    if (logger != null) {
-      logLayoutState = logger.newPerformanceEvent(EVENT_CALCULATE_LAYOUT_STATE);
-      logLayoutState.addParam(PARAM_LAYOUT_STATE_SOURCE, sourceToString(source));
-    }
-
-    // Detect errors internal to components
-    component.markLayoutStarted();
-
-    final long timestampStartLayout = System.nanoTime();
-    final LayoutState layoutState = ComponentsPools.acquireLayoutState(c);
-    layoutState.clearComponents();
-    layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
-    layoutState.mComponentTreeId = componentTreeId;
-    layoutState.mAccessibilityManager =
-        (AccessibilityManager) c.getSystemService(ACCESSIBILITY_SERVICE);
-    layoutState.mAccessibilityEnabled = isAccessibilityEnabled(layoutState.mAccessibilityManager);
-    layoutState.mComponent = component;
-    layoutState.mWidthSpec = widthSpec;
-    layoutState.mHeightSpec = heightSpec;
-    layoutState.mCanPrefetchDisplayLists = canPrefetchDisplayLists;
-    layoutState.mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
-    layoutState.mClipChildren = clipChildren;
-
-    final InternalNode root =
-        component.mLayoutCreatedInWillRender == null
-            ? createAndMeasureTreeForComponent(
-                c,
-                component,
-                null, // nestedTreeHolder is null because this is measuring the root component tree.
-                widthSpec,
-                heightSpec,
-                previousDiffTreeRoot)
-            : component.mLayoutCreatedInWillRender;
-
-    switch (SizeSpec.getMode(widthSpec)) {
-      case SizeSpec.EXACTLY:
-        layoutState.mWidth = SizeSpec.getSize(widthSpec);
-        break;
-      case SizeSpec.AT_MOST:
-        layoutState.mWidth = Math.min(root.getWidth(), SizeSpec.getSize(widthSpec));
-        break;
-      case SizeSpec.UNSPECIFIED:
-        layoutState.mWidth = root.getWidth();
-        break;
-    }
-
-    switch (SizeSpec.getMode(heightSpec)) {
-      case SizeSpec.EXACTLY:
-        layoutState.mHeight = SizeSpec.getSize(heightSpec);
-        break;
-      case SizeSpec.AT_MOST:
-        layoutState.mHeight = Math.min(root.getHeight(), SizeSpec.getSize(heightSpec));
-        break;
-      case SizeSpec.UNSPECIFIED:
-        layoutState.mHeight = root.getHeight();
-        break;
-    }
-
-    layoutState.clearLayoutStateOutputIdCalculator();
-
-    // Reset markers before collecting layout outputs.
-    layoutState.mCurrentHostMarker = -1;
-
-    if (root == NULL_LAYOUT) {
-      return layoutState;
-    }
-
-    layoutState.mLayoutRoot = root;
-
-    if (isTracing) {
-      ComponentsSystrace.beginSection("collectResults:" + component.getSimpleName());
-    }
-
-    LogEvent collectResultsEvent = null;
-    if (logger != null) {
-      collectResultsEvent = logger.newPerformanceEvent(EVENT_COLLECT_RESULTS);
-      collectResultsEvent.addParam(PARAM_LOG_TAG, c.getLogTag());
-    }
-
-    collectResults(root, layoutState, null);
-
-    Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
-    Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
-
-    if (logger != null) {
-      logger.log(collectResultsEvent);
-    }
-
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
-
-    if (!ComponentsConfiguration.isDebugModeEnabled
-        && !ComponentsConfiguration.isEndToEndTestRun
-        && layoutState.mLayoutRoot != null) {
-      releaseNodeTree(layoutState.mLayoutRoot, false /* isNestedTree */);
-      layoutState.mLayoutRoot = null;
-    }
-
-    final Activity activity = getValidActivityForContext(c);
-    if (activity != null && isEligibleForCreatingDisplayLists()) {
-      if (ThreadUtils.isMainThread()
-          && !layoutState.mCanPrefetchDisplayLists
-          && canCollectDisplayListsSync(activity)) {
-        collectDisplayLists(layoutState);
-      } else if (layoutState.mCanPrefetchDisplayLists) {
-        queueDisplayListsForPrefetch(layoutState);
+    final LayoutState layoutState;
+    try {
+      if (logger != null) {
+        logLayoutState = logger.newPerformanceEvent(EVENT_CALCULATE_LAYOUT_STATE);
+        logLayoutState.addParam(PARAM_LAYOUT_STATE_SOURCE, sourceToString(source));
       }
-    }
 
-    layoutState.mCalculateLayoutDuration = System.nanoTime() - timestampStartLayout;
+      // Detect errors internal to components
+      component.markLayoutStarted();
 
-    if (isTracing) {
-      ComponentsSystrace.endSection();
+      final long timestampStartLayout = System.nanoTime();
+      layoutState = ComponentsPools.acquireLayoutState(c);
+      layoutState.clearComponents();
+      layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
+      layoutState.mComponentTreeId = componentTreeId;
+      layoutState.mAccessibilityManager =
+          (AccessibilityManager) c.getSystemService(ACCESSIBILITY_SERVICE);
+      layoutState.mAccessibilityEnabled = isAccessibilityEnabled(layoutState.mAccessibilityManager);
+      layoutState.mComponent = component;
+      layoutState.mWidthSpec = widthSpec;
+      layoutState.mHeightSpec = heightSpec;
+      layoutState.mCanPrefetchDisplayLists = canPrefetchDisplayLists;
+      layoutState.mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
+      layoutState.mClipChildren = clipChildren;
+
+      final InternalNode root =
+          component.mLayoutCreatedInWillRender == null
+              ? createAndMeasureTreeForComponent(
+                  c,
+                  component,
+                  null, // nestedTreeHolder is null because this is measuring the root component
+                        // tree.
+                  widthSpec,
+                  heightSpec,
+                  previousDiffTreeRoot)
+              : component.mLayoutCreatedInWillRender;
+
+      switch (SizeSpec.getMode(widthSpec)) {
+        case SizeSpec.EXACTLY:
+          layoutState.mWidth = SizeSpec.getSize(widthSpec);
+          break;
+        case SizeSpec.AT_MOST:
+          layoutState.mWidth = Math.min(root.getWidth(), SizeSpec.getSize(widthSpec));
+          break;
+        case SizeSpec.UNSPECIFIED:
+          layoutState.mWidth = root.getWidth();
+          break;
+      }
+
+      switch (SizeSpec.getMode(heightSpec)) {
+        case SizeSpec.EXACTLY:
+          layoutState.mHeight = SizeSpec.getSize(heightSpec);
+          break;
+        case SizeSpec.AT_MOST:
+          layoutState.mHeight = Math.min(root.getHeight(), SizeSpec.getSize(heightSpec));
+          break;
+        case SizeSpec.UNSPECIFIED:
+          layoutState.mHeight = root.getHeight();
+          break;
+      }
+
+      layoutState.clearLayoutStateOutputIdCalculator();
+
+      // Reset markers before collecting layout outputs.
+      layoutState.mCurrentHostMarker = -1;
+
+      if (root == NULL_LAYOUT) {
+        return layoutState;
+      }
+
+      layoutState.mLayoutRoot = root;
+
+      if (isTracing) {
+        ComponentsSystrace.beginSection("collectResults:" + component.getSimpleName());
+      }
+
+      LogEvent collectResultsEvent = null;
+      if (logger != null) {
+        collectResultsEvent = logger.newPerformanceEvent(EVENT_COLLECT_RESULTS);
+        collectResultsEvent.addParam(PARAM_LOG_TAG, c.getLogTag());
+      }
+
+      collectResults(root, layoutState, null);
+
+      Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
+      Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
+
+      if (logger != null) {
+        logger.log(collectResultsEvent);
+      }
+
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+
+      if (!ComponentsConfiguration.isDebugModeEnabled
+          && !ComponentsConfiguration.isEndToEndTestRun
+          && layoutState.mLayoutRoot != null) {
+        releaseNodeTree(layoutState.mLayoutRoot, false /* isNestedTree */);
+        layoutState.mLayoutRoot = null;
+      }
+
+      final Activity activity = getValidActivityForContext(c);
+      if (activity != null && isEligibleForCreatingDisplayLists()) {
+        if (ThreadUtils.isMainThread()
+            && !layoutState.mCanPrefetchDisplayLists
+            && canCollectDisplayListsSync(activity)) {
+          collectDisplayLists(layoutState);
+        } else if (layoutState.mCanPrefetchDisplayLists) {
+          queueDisplayListsForPrefetch(layoutState);
+        }
+      }
+
+      layoutState.mCalculateLayoutDuration = System.nanoTime() - timestampStartLayout;
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
 
     if (logger != null) {
