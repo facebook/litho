@@ -182,8 +182,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
         }
       };
 
-  @GuardedBy("sTypeIdByComponentClass")
-  private static final Map<Class, Integer> sTypeIdByComponentClass = new HashMap<>();
+  @GuardedBy("sTypeIdByComponentType")
+  private static final Map<Object, Integer> sTypeIdByComponentType = new HashMap<>();
+
   private final int mTypeId;
 
   ComponentLifecycle() {
@@ -194,17 +195,17 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * This constructor should be called only if working with a manually crafted special Component.
    * This should NOT be used in general use cases.
    */
-  protected ComponentLifecycle(Class classType) {
-    if (classType == null) {
-      classType = getClass();
+  protected ComponentLifecycle(Object type) {
+    if (type == null) {
+      type = getClass();
     }
 
-    synchronized (sTypeIdByComponentClass) {
-      if (!sTypeIdByComponentClass.containsKey(classType)) {
-        sTypeIdByComponentClass.put(classType, sComponentTypeId.incrementAndGet());
+    synchronized (sTypeIdByComponentType) {
+      if (!sTypeIdByComponentType.containsKey(type)) {
+        sTypeIdByComponentType.put(type, sComponentTypeId.incrementAndGet());
       }
 
-      mTypeId = sTypeIdByComponentClass.get(classType);
+      mTypeId = sTypeIdByComponentType.get(type);
     }
   }
 

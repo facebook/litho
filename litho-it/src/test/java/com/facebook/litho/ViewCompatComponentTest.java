@@ -15,6 +15,7 @@ import static com.facebook.litho.testing.helper.ComponentTestHelper.unbindCompon
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.content.Context;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -46,6 +47,21 @@ public class ViewCompatComponentTest {
           return new TextView(c);
         }
       };
+
+  private class CustomViewCreator implements ViewCreator {
+    private final String mText;
+
+    private CustomViewCreator(String text) {
+      this.mText = text;
+    }
+
+    @Override
+    public View createView(Context c, ViewGroup parent) {
+      final TextView textView = new TextView(c);
+      textView.setText(mText);
+      return textView;
+    }
+  }
 
   private static final ViewBinder<TextView> NO_OP_VIEW_BINDER =
       new ViewBinder<TextView>() {
@@ -164,18 +180,38 @@ public class ViewCompatComponentTest {
 
   @Test
   public void testTypeIdForDifferentViewCreators() {
-    ViewCompatComponent compatComponent = get(TEXT_VIEW_CREATOR, "compat")
-        .create(mContext)
-        .viewBinder(NO_OP_VIEW_BINDER)
-        .build();
-    ViewCompatComponent sameCompatComponent = get(TEXT_VIEW_CREATOR, "sameCompat")
-        .create(mContext)
-        .viewBinder(NO_OP_VIEW_BINDER)
-        .build();
-    ViewCompatComponent differentCompatComponent = get(TEXT_VIEW_CREATOR_2, "differentCompat")
-        .create(mContext)
-        .viewBinder(NO_OP_VIEW_BINDER)
-        .build();
+    ViewCompatComponent compatComponent =
+        get(TEXT_VIEW_CREATOR, "compat").create(mContext).viewBinder(NO_OP_VIEW_BINDER).build();
+    ViewCompatComponent sameCompatComponent =
+        get(TEXT_VIEW_CREATOR, "sameCompat").create(mContext).viewBinder(NO_OP_VIEW_BINDER).build();
+    ViewCompatComponent differentCompatComponent =
+        get(TEXT_VIEW_CREATOR_2, "differentCompat")
+            .create(mContext)
+            .viewBinder(NO_OP_VIEW_BINDER)
+            .build();
+
+    assertThat(compatComponent.getId()).isNotEqualTo(sameCompatComponent.getId());
+    assertThat(compatComponent.getId()).isNotEqualTo(differentCompatComponent.getId());
+    assertThat(sameCompatComponent.getId()).isNotEqualTo(differentCompatComponent.getId());
+
+    assertThat(compatComponent.getTypeId()).isEqualTo(sameCompatComponent.getTypeId());
+    assertThat(compatComponent.getTypeId()).isNotEqualTo(differentCompatComponent.getTypeId());
+  }
+
+  @Test
+  public void testTypeIdForSameViewCreatorTypeButDifferentInstances() {
+    CustomViewCreator textViewCreator1 = new CustomViewCreator("textviewcreator1");
+    CustomViewCreator textViewCreator2 = new CustomViewCreator("textviewcreator2");
+
+    ViewCompatComponent compatComponent =
+        get(textViewCreator1, "compat").create(mContext).viewBinder(NO_OP_VIEW_BINDER).build();
+    ViewCompatComponent sameCompatComponent =
+        get(textViewCreator1, "sameCompat").create(mContext).viewBinder(NO_OP_VIEW_BINDER).build();
+    ViewCompatComponent differentCompatComponent =
+        get(textViewCreator2, "differentCompat")
+            .create(mContext)
+            .viewBinder(NO_OP_VIEW_BINDER)
+            .build();
 
     assertThat(compatComponent.getId()).isNotEqualTo(sameCompatComponent.getId());
     assertThat(compatComponent.getId()).isNotEqualTo(differentCompatComponent.getId());

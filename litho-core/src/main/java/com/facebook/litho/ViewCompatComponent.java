@@ -18,7 +18,7 @@ import com.facebook.litho.viewcompat.ViewCreator;
 /**
  * A component that can wrap a view using a {@link ViewBinder} class to bind the view and a {@link
  * ViewCreator} to create the mount contents. This component will have a different recycle pool per
- * {@link ViewCreator}.
+ * {@link ViewCreator} instance.
  *
  * @deprecated ViewCompatComponent is not efficient as it will do measurement of views twice.
  *     Recommended way now is to use either ViewRenderInfo (which utilizes same interfaces as this
@@ -51,7 +51,7 @@ public class ViewCompatComponent<V extends View> extends Component {
   }
 
   private ViewCompatComponent(ViewCreator viewCreator, String componentName) {
-    super("ViewCompatComponent_" + componentName, viewCreator.getClass());
+    super("ViewCompatComponent_" + componentName, viewCreator);
     mViewCreator = viewCreator;
   }
 

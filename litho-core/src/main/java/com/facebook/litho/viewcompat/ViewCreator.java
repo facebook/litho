@@ -14,9 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * Creates a View of the specified type. Used as the mount content for ViewCompatComponent.
- * Views created with the same {@link ViewCreator} will be recycled across instances of
- * ViewCompatComponent.
+ * Creates a View of the specified type.
+ *
  * @param <V> the type of View to create.
  */
 public interface ViewCreator<V extends View> {

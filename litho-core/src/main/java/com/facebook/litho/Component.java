@@ -119,8 +119,8 @@ public abstract class Component extends ComponentLifecycle
    * This should NOT be used in general use cases. Use the standard {@link #Component(String)}
    * instead.
    */
-  protected Component(String simpleName, Class classType) {
-    super(classType);
+  protected Component(String simpleName, Object type) {
+    super(type);
     mSimpleName = simpleName;
     if (!ComponentsConfiguration.lazyInitializeComponent) {
       mChildCounters = new HashMap<>();
