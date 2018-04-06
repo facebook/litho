@@ -71,7 +71,7 @@ import java.util.List;
 /**
  * Component that renders an {@link EditText}.
  *
- * @uidocs_import android_components
+ * @uidocs https://fburl.com/EditText:6bb7
  * @prop text Initial text to display.
  * @prop hint Hint text to display.
  * @prop ellipsize If sets, specifies the position of the text to be ellispized.

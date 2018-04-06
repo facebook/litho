@@ -22,7 +22,7 @@ import com.facebook.litho.annotations.Prop;
 /**
  * A component that renders a solid color.
  *
- * @uidocs_import android_components
+ * @uidocs https://fburl.com/SolidColor:b0df
  * @prop color Color to be shown.
  */
 @LayoutSpec
