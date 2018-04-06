@@ -47,7 +47,7 @@ import com.facebook.yoga.YogaDirection;
  * A component that wraps another component and allow it to be horizontally scrollable. It's
  * analogous to a {@link android.widget.HorizontalScrollView}.
  *
- * @uidocs
+ * @uidocs_import android_components
  */
 @MountSpec
 class HorizontalScrollSpec {

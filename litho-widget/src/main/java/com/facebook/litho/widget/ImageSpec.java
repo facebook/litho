@@ -41,10 +41,9 @@ import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.utils.MeasureUtils;
 
 /**
- * A component that is able to display drawable resources. It takes a drawable
- * resource ID as prop.
+ * A component that is able to display drawable resources. It takes a drawable resource ID as prop.
  *
- * @uidocs
+ * @uidocs_import android_components
  * @prop drawable Drawable to display.
  * @prop scaleType Scale type for the drawable within the container.
  */

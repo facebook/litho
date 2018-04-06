@@ -81,7 +81,7 @@ import com.facebook.yoga.YogaDirection;
 /**
  * Component to render text.
  *
- * @uidocs
+ * @uidocs_import android_components
  * @prop text Text to display.
  * @prop ellipsize If set, specifies the position of the text to be ellipsized.
  * @prop minLines Minimum number of lines to show.

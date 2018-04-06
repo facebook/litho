@@ -38,7 +38,7 @@ import com.facebook.litho.utils.MeasureUtils;
 /**
  * Renders an infinitely spinning progress bar.
  *
- * @uidocs
+ * @uidocs_import android_components
  * @prop indeterminateDrawable Drawable to be shown to show progress.
  * @prop color Tint color for the drawable.
  */
