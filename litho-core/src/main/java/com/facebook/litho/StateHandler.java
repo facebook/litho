@@ -45,6 +45,11 @@ public class StateHandler {
   @GuardedBy("this")
   private Map<String, List<StateUpdate>> mPendingStateUpdates;
 
+  /** List of transitions from state update that will be applied on next mount. */
+  @GuardedBy("this")
+  @Nullable
+  private Map<String, List<Transition>> mPendingStateUpdateTransitions;
+
   /**
    * Maps a component key to a component object that retains the current state values for that key.
    */
@@ -59,6 +64,7 @@ public class StateHandler {
     synchronized (this) {
       copyPendingStateUpdatesMap(stateHandler.getPendingStateUpdates());
       copyCurrentStateContainers(stateHandler.getStateContainers());
+      copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
     }
   }
 
@@ -137,7 +143,16 @@ public class StateHandler {
     }
 
     synchronized (this) {
-      mStateContainers.put(key, component.getStateContainer());
+      final StateContainer stateContainer = component.getStateContainer();
+      mStateContainers.put(key, stateContainer);
+      if (stateContainer instanceof ComponentLifecycle.TransitionContainer) {
+        final List<Transition> transitions =
+            ((ComponentLifecycle.TransitionContainer) stateContainer).consumeTransitions();
+        if (!transitions.isEmpty()) {
+          maybeInitPendingStateUpdateTransitions();
+          mPendingStateUpdateTransitions.put(key, transitions);
+        }
+      }
     }
   }
 
@@ -149,6 +164,7 @@ public class StateHandler {
   void commit(StateHandler stateHandler) {
     clearStateUpdates(stateHandler.getPendingStateUpdates());
     updateCurrentComponentsWithState(stateHandler.getStateContainers());
+    copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
   }
 
   private void clearStateUpdates(Map<String, List<StateUpdate>> appliedStateUpdates) {
@@ -201,6 +217,8 @@ public class StateHandler {
       mPendingStateUpdates = null;
     }
 
+    mPendingStateUpdateTransitions = null;
+
     if (mStateContainers != null) {
       mStateContainers.clear();
       sStateContainersMapPool.release(mStateContainers);
@@ -238,6 +256,25 @@ public class StateHandler {
     return mPendingStateUpdates;
   }
 
+  @Nullable
+  synchronized Map<String, List<Transition>> getPendingStateUpdateTransitions() {
+    return mPendingStateUpdateTransitions;
+  }
+
+  @Nullable
+  synchronized List<Transition> consumePendingStateUpdateTransitions() {
+    if (mPendingStateUpdateTransitions == null) {
+      return null;
+    }
+
+    final List<Transition> transitions = new ArrayList<>();
+    for (List<Transition> pendingTransitions : mPendingStateUpdateTransitions.values()) {
+      transitions.addAll(pendingTransitions);
+    }
+    mPendingStateUpdateTransitions = null;
+    return transitions;
+  }
+
   /**
    * @return copy the information from the given map of state updates into the map of pending state
    * updates.
@@ -273,12 +310,30 @@ public class StateHandler {
     }
   }
 
+  private void copyPendingStateTransitions(
+      @Nullable Map<String, List<Transition>> pendingStateUpdateTransitions) {
+    if (pendingStateUpdateTransitions == null || pendingStateUpdateTransitions.isEmpty()) {
+      return;
+    }
+
+    synchronized (this) {
+      maybeInitPendingStateUpdateTransitions();
+      mPendingStateUpdateTransitions.putAll(pendingStateUpdateTransitions);
+    }
+  }
+
   private synchronized void maybeInitStateContainers() {
     if (mStateContainers == null) {
       mStateContainers = sStateContainersMapPool.acquire();
       if (mStateContainers == null) {
         mStateContainers = new HashMap<>(INITIAL_MAP_CAPACITY);
       }
+    }
+  }
+
+  private synchronized void maybeInitPendingStateUpdateTransitions() {
+    if (mPendingStateUpdateTransitions == null) {
+      mPendingStateUpdateTransitions = new HashMap<>();
     }
   }
 

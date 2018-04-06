@@ -1209,6 +1209,14 @@ public class ComponentTree {
     return StateHandler.acquireNewInstance(mStateHandler);
   }
 
+  synchronized @Nullable List<Transition> consumeStateUpdateTransitions() {
+    if (mStateHandler == null) {
+      return null;
+    }
+
+    return mStateHandler.consumePendingStateUpdateTransitions();
+  }
+
   /**
    * Takes ownership of the {@link RenderState} object from this ComponentTree - this allows the
    * RenderState to be persisted somewhere and then set back on another ComponentTree using the

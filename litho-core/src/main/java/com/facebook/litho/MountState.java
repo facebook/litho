@@ -123,7 +123,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private LayoutState mLastMountedLayoutState;
   private int[] mAnimationLockedIndices;
   private boolean mIsFirstMountOfComponentTree = false;
-  private @Nullable ArrayList<Transition> mMountTimeTransitions;
+  private @Nullable List<Transition> mMountTimeTransitions;
+  private @Nullable List<Transition> mStateUpdateTransitions;
 
   private final MountItem mRootHostMountItem;
 
@@ -230,7 +231,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     if (mIsDirty) {
-      updateTransitions(layoutState);
+      updateTransitions(layoutState, componentTree);
 
       suppressInvalidationsOnHosts(true);
 
@@ -331,6 +332,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     mMountTimeTransitions = null;
+    mStateUpdateTransitions = null;
     mIsDirty = false;
     mNeedsRemount = false;
     mIsFirstMountOfComponentTree = false;
@@ -2176,17 +2178,19 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   /**
-   * Creates and updates transitions for a new LayoutState. The steps are as follows
+   * Creates and updates transitions for a new LayoutState. The steps are as follows:
    *
-   * 1. Disappearing items: Update disappearing mount items that are no longer disappearing (e.g.
-   *    because they came back). This means canceling the animation and cleaning up the
-   *    corresponding ComponentHost.
-   * 2. New transitions: Use the transition manager to create new animations.
-   * 3. Update locked indices: Based on running/new animations, there are some mount items we want
-   *    to make sure are not unmounted due to incremental mount and being outside of visibility
-   *    bounds.
+   * <p>1. Disappearing items: Update disappearing mount items that are no longer disappearing (e.g.
+   * because they came back). This means canceling the animation and cleaning up the corresponding
+   * ComponentHost.
+   *
+   * <p>2. New transitions: Use the transition manager to create new animations.
+   *
+   * <p>3. Update locked indices: Based on running/new animations, there are some mount items we
+   * want to make sure are not unmounted due to incremental mount and being outside of visibility
+   * bounds.
    */
-  private void updateTransitions(LayoutState layoutState) {
+  private void updateTransitions(LayoutState layoutState, ComponentTree componentTree) {
     if (!mIsDirty) {
       throw new RuntimeException("Should only process transitions on dirty mounts");
     }
@@ -2208,8 +2212,14 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     if (shouldAnimateTransitions(layoutState)) {
       mMountTimeTransitions = collectMountTimeTransitions(layoutState);
+      mStateUpdateTransitions = componentTree.consumeStateUpdateTransitions();
+
       if (hasTransitionsToAnimate(layoutState)) {
-        createNewTransitions(layoutState);
+        final Transition rootTransition =
+            TransitionManager.getRootTransition(
+                layoutState, mMountTimeTransitions, mStateUpdateTransitions);
+
+        createNewTransitions(layoutState, rootTransition);
       }
     }
 
@@ -2244,11 +2254,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
-  private void createNewTransitions(LayoutState newLayoutState) {
+  private void createNewTransitions(LayoutState newLayoutState, Transition rootTransition) {
     prepareTransitionManager(newLayoutState);
 
-    mTransitionManager.setupTransitions(
-        mLastMountedLayoutState, newLayoutState, mMountTimeTransitions);
+    mTransitionManager.setupTransitions(mLastMountedLayoutState, newLayoutState, rootTransition);
 
     SimpleArrayMap<String, LayoutOutput> nextTransitionKeys =
         newLayoutState.getTransitionKeyMapping();
@@ -2363,7 +2372,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private boolean hasTransitionsToAnimate(LayoutState newLayoutState) {
     final boolean hasMountTimeTransitions =
         mMountTimeTransitions != null && !mMountTimeTransitions.isEmpty();
-    return hasMountTimeTransitions || newLayoutState.hasTransitionContext();
+    final boolean hasStateUpdateTransitions =
+        mStateUpdateTransitions != null && !mStateUpdateTransitions.isEmpty();
+    return hasMountTimeTransitions
+        || hasStateUpdateTransitions
+        || newLayoutState.hasTransitionContext();
   }
 
   @Override

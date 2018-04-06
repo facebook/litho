@@ -31,6 +31,7 @@ import com.facebook.litho.internal.ArraySet;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Handles animating transitions defined by ComponentSpec's onCreateTransition code.
@@ -211,9 +212,7 @@ public class TransitionManager {
    * animations.
    */
   void setupTransitions(
-      LayoutState currentLayoutState,
-      LayoutState nextLayoutState,
-      ArrayList<Transition> mountTimeTransitions) {
+      LayoutState currentLayoutState, LayoutState nextLayoutState, Transition rootTransition) {
     for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
       mAnimationStates.valueAt(i).seenInLastTransition = false;
     }
@@ -254,7 +253,7 @@ public class TransitionManager {
       }
     }
 
-    createTransitionAnimations(getRootTransition(nextLayoutState, mountTimeTransitions));
+    createTransitionAnimations(rootTransition);
 
     // If we recorded any mount content diffs that didn't result in an animation being created for
     // that transition key, clean them up now.
@@ -395,38 +394,39 @@ public class TransitionManager {
     }
   }
 
-  private Transition getRootTransition(
-      LayoutState nextLayoutState, ArrayList<Transition> mountTimeTransitions) {
-    final ArrayList<Transition> layoutStateTransitions =
+  static Transition getRootTransition(
+      LayoutState nextLayoutState,
+      @Nullable List<Transition> mountTimeTransitions,
+      @Nullable List<Transition> stateUpdateTransitions) {
+
+    final ArrayList<Transition> mergedList = new ArrayList<>();
+
+    final @Nullable ArrayList<Transition> layoutStateTransitions =
         nextLayoutState.getTransitionContext() != null
             ? nextLayoutState.getTransitionContext().getTransitions()
             : null;
-    if (mountTimeTransitions == null || mountTimeTransitions.isEmpty()) {
-      return getRootTransitionFromList(layoutStateTransitions);
+
+    if (layoutStateTransitions != null) {
+      mergedList.addAll(layoutStateTransitions);
     }
 
-    if (layoutStateTransitions == null || layoutStateTransitions.isEmpty()) {
-      return getRootTransitionFromList(mountTimeTransitions);
+    if (mountTimeTransitions != null) {
+      mergedList.addAll(mountTimeTransitions);
     }
 
-    final ArrayList<Transition> mergedList =
-        new ArrayList<>(layoutStateTransitions.size() + mountTimeTransitions.size());
-    mergedList.addAll(layoutStateTransitions);
-    mergedList.addAll(mountTimeTransitions);
+    if (stateUpdateTransitions != null) {
+      mergedList.addAll(stateUpdateTransitions);
+    }
+
+    if (mergedList.isEmpty()) {
+      return null;
+    }
+
+    if (mergedList.size() == 1) {
+      return mergedList.get(0);
+    }
 
     return new ParallelTransitionSet(mergedList);
-  }
-
-  private Transition getRootTransitionFromList(ArrayList<Transition> transitions) {
-    if (transitions == null || transitions.isEmpty()) {
-      throw new RuntimeException("Expected list of transitions to be non-empty");
-    }
-
-    if (transitions.size() == 1) {
-      return transitions.get(0);
-    }
-
-    return new ParallelTransitionSet(transitions);
   }
 
   private void createTransitionAnimations(Transition rootTransition) {
