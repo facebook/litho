@@ -1768,23 +1768,6 @@ public class RecyclerBinderTest {
     }
   }
 
-  @Test
-  public void testReleaseComponentTreeHolderInUnbind() {
-    final List<ComponentRenderInfo> components = prepareLoadedBinder();
-
-    mRecyclerBinder.unbind(mock(RecyclerView.class));
-
-    for (ComponentRenderInfo renderInfo : components) {
-      TestComponentTreeHolder holder = mHoldersForComponents.get(renderInfo.getComponent());
-
-      assertThat(holder).isNotNull();
-
-      if (holder.isTreeValid()) {
-        assertThat(holder.mComponentTree).isNull();
-      }
-    }
-  }
-
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
     return new RecyclerBinder.Builder()
         .rangeRatio(RANGE_RATIO)
@@ -1916,11 +1899,6 @@ public class RecyclerBinderTest {
     @Override
     public RenderInfo getRenderInfo() {
       return mRenderInfo;
-    }
-
-    @Override
-    synchronized void releaseTree() {
-      mComponentTree = null;
     }
   }
 }

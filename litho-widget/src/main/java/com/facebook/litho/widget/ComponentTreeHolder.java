@@ -321,7 +321,8 @@ public class ComponentTreeHolder {
     }
   }
 
-  synchronized void releaseTree() {
+  @GuardedBy("this")
+  private void releaseTree() {
     if (mComponentTree != null) {
       mComponentTree.release();
       mComponentTree = null;
