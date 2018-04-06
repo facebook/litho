@@ -25,13 +25,8 @@ public class ComponentKeyUtils {
   }
 
   public static String getKeyWithSeparator(String parentGlobalKey, String key) {
-    // TODO(t27615219): Enforce non-null keys
-    if (key == null) {
-      key = "null";
-    }
-
     int parentLength = parentGlobalKey.length();
-    int keyLength  = key.length();
+    int keyLength = key.length();
     final StringBuilder sb = new StringBuilder(parentLength + keyLength + 1);
     sb.append(parentGlobalKey).append(',').append(key);
 

@@ -588,6 +588,9 @@ public abstract class Component extends ComponentLifecycle
 
     /** Set a key on the component that is local to its parent. */
     public T key(String key) {
+      if (key == null) {
+        key = "null";
+      }
       mComponent.setKey(key);
       return getThis();
     }
