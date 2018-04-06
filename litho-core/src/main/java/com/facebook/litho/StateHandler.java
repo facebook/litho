@@ -163,7 +163,7 @@ public class StateHandler {
    */
   void commit(StateHandler stateHandler) {
     clearStateUpdates(stateHandler.getPendingStateUpdates());
-    updateCurrentComponentsWithState(stateHandler.getStateContainers());
+    copyCurrentStateContainers(stateHandler.getStateContainers());
     copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
   }
 
@@ -195,18 +195,6 @@ public class StateHandler {
       } else {
         pendingStateUpdatesForKey.removeAll(appliedStateUpdatesForKey);
       }
-    }
-  }
-
-  private void updateCurrentComponentsWithState(
-      Map<String, StateContainer> updatedStateContainers) {
-    if (updatedStateContainers == null || updatedStateContainers.isEmpty()) {
-      return;
-    }
-
-    synchronized (this) {
-      maybeInitStateContainers();
-      mStateContainers.putAll(updatedStateContainers);
     }
   }
 
@@ -302,11 +290,9 @@ public class StateHandler {
       return;
     }
 
-    maybeInitStateContainers();
-    for (String key : stateContainers.keySet()) {
-      synchronized (this) {
-        mStateContainers.put(key, stateContainers.get(key));
-      }
+    synchronized (this) {
+      maybeInitStateContainers();
+      mStateContainers.putAll(stateContainers);
     }
   }
 
