@@ -46,21 +46,9 @@ public class DefaultMountContentPool extends RecyclePool implements MountContent
    */
   @Override
   public void maybePreallocateContent(ComponentContext c, ComponentLifecycle lifecycle) {
-    final int poolSize = lifecycle.poolSize();
-    if (poolSize != mPoolSize) {
-      throw new RuntimeException(
-          "Expected lifecycle poolSize for "
-              + lifecycle.getClass().getSimpleName()
-              + " to match poolSize of recycle pool ("
-              + poolSize
-              + " != "
-              + mPoolSize
-              + ")");
-    }
-
     // There's a slight race between checking isFull and the actual release() but this shouldn't
     // happen much and when it does it isn't that bad.
-    if (!isFull() && mAllocationCount.getAndIncrement() < poolSize) {
+    if (!isFull() && mAllocationCount.getAndIncrement() < mPoolSize) {
       release(lifecycle.createMountContent(c));
     }
   }
