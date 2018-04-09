@@ -10,6 +10,7 @@
 package com.facebook.litho;
 
 import static android.support.annotation.Dimension.DP;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_ERROR;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_WARNING;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
 
@@ -222,7 +223,7 @@ public abstract class Component extends ComponentLifecycle
    * @return a unique global key for this component relative to its siblings.
    */
   private String generateUniqueGlobalKeyForChild(Component component, String key) {
-
+    
     final String childKey = ComponentKeyUtils.getKeyWithSeparator(getGlobalKey(), key);
     final KeyHandler keyHandler = mScopedContext.getKeyHandler();
 
@@ -460,8 +461,31 @@ public abstract class Component extends ComponentLifecycle
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
       final Component parentScope = parentContext.getComponentScope();
       final String key = getKey();
-      setGlobalKey(
-          parentScope == null ? key : parentScope.generateUniqueGlobalKeyForChild(this, key));
+
+      if (parentScope == null) {
+        setGlobalKey(key);
+      } else {
+        if (parentScope.getGlobalKey() == null) {
+          final ComponentsLogger logger = parentContext.getLogger();
+          if (logger != null) {
+            final LogEvent event = logger.newEvent(EVENT_ERROR);
+            event.addParam(
+                PARAM_MESSAGE,
+                "Trying to generate parent-based key for component "
+                    + getSimpleName()
+                    + " , but parent "
+                    + parentScope.getSimpleName()
+                    + " has a null global key \"."
+                    + " This is most likely a configuration mistake, check the value of ComponentsConfiguration.useGlobalKeys.");
+            logger.log(event);
+          }
+
+          setGlobalKey("null" + key);
+        } else {
+          setGlobalKey(
+              parentScope == null ? key : parentScope.generateUniqueGlobalKeyForChild(this, key));
+        }
+      }
     }
   }
 
