@@ -613,6 +613,20 @@ public abstract class Component extends ComponentLifecycle
     /** Set a key on the component that is local to its parent. */
     public T key(String key) {
       if (key == null) {
+        final ComponentsLogger logger = mContext.getLogger();
+        if (logger != null) {
+          final LogEvent event = logger.newEvent(EVENT_ERROR);
+          final String componentName =
+              mContext.getComponentScope() != null
+                  ? mContext.getComponentScope().getSimpleName()
+                  : "unknown component";
+          event.addParam(
+              PARAM_MESSAGE,
+              "Setting a null key from "
+                  + componentName
+                  + " which is usually a mistake! If it is not, explicitly set the String 'null'");
+          logger.log(event);
+        }
         key = "null";
       }
       mComponent.setKey(key);
