@@ -99,6 +99,6 @@ public class PropNameInterStageStoreTest {
   }
 
   private InjectPropModel makeInjectPropModel(String name) {
-    return new InjectPropModel(MockMethodParamModel.newBuilder().name(name).build());
+    return new InjectPropModel(MockMethodParamModel.newBuilder().name(name).build(), true);
   }
 }

@@ -65,7 +65,7 @@ public final class MethodParamModelFactory {
       }
 
       if (annotation instanceof InjectProp) {
-        return new InjectPropModel(simpleMethodParamModel);
+        return new InjectPropModel(simpleMethodParamModel, ((InjectProp) annotation).isLazy());
       }
 
       if (annotation instanceof State) {

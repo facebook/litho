@@ -17,4 +17,9 @@ import java.lang.annotation.RetentionPolicy;
  * DependencyInjectionHelper.generateInjectedMembers() needs to be properly implemented.
  */
 @Retention(RetentionPolicy.CLASS)
-public @interface InjectProp {}
+public @interface InjectProp {
+  /**
+   * @return Boolean indicating whether the injection should be lazy.
+   */
+  boolean isLazy() default true;
+}
