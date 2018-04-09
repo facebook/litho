@@ -56,6 +56,14 @@ To build and run (on an attached device/emulator) the sample app, execute
 or, if you prefer Gradle,
 
     $ ./gradlew :sample:installDebug
+    
+    
+## Progurad
+Include these lines in your proguard-rules.pro
+```
+-dontwarn com.facebook.fbui.**
+-dontwarn com.facebook.litho.**
+```
 
 ## Contributing
 For pull requests, please see our [CONTRIBUTING](CONTRIBUTING.md) guide.
