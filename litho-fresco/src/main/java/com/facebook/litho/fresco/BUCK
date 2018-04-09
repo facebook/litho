@@ -11,7 +11,7 @@ litho_android_library(
     name = "fresco",
     srcs = glob(
         ["*.java"],
-        excludes = ["common/**/*"],
+        exclude = ["common/**/*"],
     ),
     plugins = [
         LITHO_PROCESSOR_TARGET,

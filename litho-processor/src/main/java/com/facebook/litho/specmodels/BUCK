@@ -25,7 +25,7 @@ fb_java_library(
     name = "specmodels-bare",
     srcs = glob(
         ["**/*.java"],
-        excludes = glob([
+        exclude = glob([
             "processor/**/*.java",
             "internal/*.java",
             "*/testing/*.java",
