@@ -72,6 +72,7 @@ class TransitionUtils {
     float animatorDurationScale =
         Settings.Global.getFloat(
             context.getContentResolver(), Settings.Global.ANIMATOR_DURATION_SCALE, 1f);
-    return animatorDurationScale != 0f;
+    return ComponentsConfiguration.forceEnableTransitionsForInstrumentationTests
+        || animatorDurationScale != 0f;
   }
 }

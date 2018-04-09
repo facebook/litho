@@ -142,6 +142,12 @@ public class ComponentsConfiguration {
   public static boolean unmountAllWhenComponentTreeSetToNull = false;
 
   /**
+   * By default end-to-end tests will disable transitions and this flag lets to explicitly enable
+   * transitions to test animation related behavior.
+   */
+  public static boolean forceEnableTransitionsForInstrumentationTests = false;
+
+  /**
    * Configuration for creating a thread pool of threads used for background layout. If null, a
    * single default thread will be used for background layout.
    */
