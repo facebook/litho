@@ -694,7 +694,7 @@ class LayoutState {
     }
 
     // 4. Extract the Transitions.
-    if (ComponentsConfiguration.ARE_TRANSITIONS_SUPPORTED) {
+    if (TransitionUtils.areTransitionsEnabled(component.getScopedContext())) {
       final ArrayList<Transition> transitions = node.getTransitions();
       if (transitions != null) {
         for (int i = 0, size = transitions.size(); i < size; i++) {

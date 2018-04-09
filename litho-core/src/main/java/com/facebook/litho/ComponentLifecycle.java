@@ -320,7 +320,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
 
     node.appendComponent((Component) this);
-    if (ComponentsConfiguration.ARE_TRANSITIONS_SUPPORTED) {
+    if (TransitionUtils.areTransitionsEnabled(context)) {
       if (needsPreviousRenderData()) {
         node.addComponentNeedingPreviousRenderData((Component) this);
       } else {

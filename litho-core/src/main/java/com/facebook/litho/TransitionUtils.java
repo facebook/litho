@@ -8,7 +8,10 @@
  */
 package com.facebook.litho;
 
+import android.content.Context;
+import android.provider.Settings;
 import com.facebook.litho.animation.AnimatedProperty;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;
 
 /** Utilities to interact with {@link Transition}. */
@@ -50,5 +53,25 @@ class TransitionUtils {
     }
 
     throw new RuntimeException("Unhandled transition type: " + transition);
+  }
+
+  static boolean areTransitionsEnabled(Context context) {
+    if (!ComponentsConfiguration.ARE_TRANSITIONS_SUPPORTED) {
+      // Transitions use some APIs that are not available before ICS.
+      return false;
+    }
+
+    if (!ComponentsConfiguration.isEndToEndTestRun) {
+      return true;
+    }
+
+    if (!ComponentsConfiguration.CAN_CHECK_GLOBAL_ANIMATOR_SETTINGS) {
+      return false;
+    }
+
+    float animatorDurationScale =
+        Settings.Global.getFloat(
+            context.getContentResolver(), Settings.Global.ANIMATOR_DURATION_SCALE, 1f);
+    return animatorDurationScale != 0f;
   }
 }

@@ -11,6 +11,7 @@ package com.facebook.litho.config;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
+import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 
 import com.facebook.litho.BuildConfig;
 import com.facebook.yoga.YogaLogger;
@@ -39,6 +40,9 @@ public class ComponentsConfiguration {
 
   /** Whether transitions are supported for this API version. */
   public static final boolean ARE_TRANSITIONS_SUPPORTED = (SDK_INT >= ICE_CREAM_SANDWICH);
+
+  /** Whether we can access properties in Settings.Global for animations. */
+  public static final boolean CAN_CHECK_GLOBAL_ANIMATOR_SETTINGS = (SDK_INT >= JELLY_BEAN_MR1);
 
   /**
    * Option to enabled debug mode. This will save extra data asscociated with each node and allow
