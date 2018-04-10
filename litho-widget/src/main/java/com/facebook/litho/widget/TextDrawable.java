@@ -167,7 +167,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       }
     } else if (action == ACTION_DOWN) {
       if (clickedSpan instanceof LongClickableSpan) {
-        registerForLongClick((LongClickableSpan) clickedSpan);
+        registerForLongClick((LongClickableSpan) clickedSpan, view);
       }
       setSelection(clickedSpan);
     }
@@ -183,8 +183,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     mLongClickActivated = false;
   }
 
-  private void registerForLongClick(LongClickableSpan longClickableSpan) {
-    mLongClickRunnable = new LongClickRunnable(longClickableSpan);
+  private void registerForLongClick(LongClickableSpan longClickableSpan, View view) {
+    mLongClickRunnable = new LongClickRunnable(longClickableSpan, view);
     mLongClickHandler.postDelayed(mLongClickRunnable, ViewConfiguration.getLongPressTimeout());
   }
 
@@ -615,14 +615,16 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
 
   private class LongClickRunnable implements Runnable {
     private LongClickableSpan longClickableSpan;
+    private View longClickableSpanView;
 
-    LongClickRunnable(LongClickableSpan span) {
+    LongClickRunnable(LongClickableSpan span, View view) {
       longClickableSpan = span;
+      longClickableSpanView = view;
     }
 
     @Override
     public void run() {
-      mLongClickActivated = longClickableSpan.onLongClick();
+      mLongClickActivated = longClickableSpan.onLongClick(longClickableSpanView);
     }
   }
 }

@@ -10,6 +10,7 @@
 package com.facebook.litho.widget;
 
 import android.text.style.ClickableSpan;
+import android.view.View;
 
 /** Extension of {@link ClickableSpan} that provides longclick capability in addition to click. */
 public abstract class LongClickableSpan extends ClickableSpan {
@@ -18,5 +19,5 @@ public abstract class LongClickableSpan extends ClickableSpan {
    *
    * @return true if the callback consumed the longclick, false otherwise.
    */
-  public abstract boolean onLongClick();
+  public abstract boolean onLongClick(View view);
 }
