@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.facebook.litho.annotations.FromEvent;
@@ -47,7 +48,7 @@ class ListSectionSpec {
   // of the view creator that was used to create them.
   private final static ViewCreator VIEW_CREATOR = new ViewCreator() {
     @Override
-    public View createView(Context c) {
+    public View createView(Context c, ViewGroup parent) {
       return LayoutInflater.from(c).inflate(R.layout.simple_view, null);
     }
   };
@@ -80,8 +81,9 @@ class ListSectionSpec {
   @OnEvent(RenderEvent.class)
   static RenderInfo onRender(final SectionContext c, @FromEvent Integer model) {
     if (model.intValue() == 1) {
-      return ViewRenderInfo.create().
-          viewBinder(new SimpleViewBinder<TextView>() {
+      return ViewRenderInfo
+          .create()
+          .viewBinder(new SimpleViewBinder<TextView>() {
             @Override
             public void bind(TextView textView) {
               textView.setText("I'm a view in a Litho world");
