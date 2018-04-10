@@ -339,6 +339,41 @@ public class ComponentGlobalKeyTest {
         getComponentAt(lithoView, 3).getGlobalKey());
   }
 
+  @Test
+  public void testOwnerGlobalKey() {
+    final Component root = getMultipleChildrenComponent();
+
+    final int layoutSpecId = root.getTypeId();
+    final int nestedLayoutSpecId = layoutSpecId - 1;
+    final int columnSpecId = Column.create(mContext).build().getTypeId();
+
+    final ComponentTree componentTree =
+        ComponentTree.create(mContext, root).incrementalMount(false).layoutDiffing(false).build();
+    final LithoView lithoView = getLithoView(componentTree);
+
+    final String rootGlobalKey = ComponentKeyUtils.getKeyWithSeparator(layoutSpecId);
+    final String nestedLayoutGlobalKey =
+        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, nestedLayoutSpecId);
+
+    // Text
+    Assert.assertEquals(rootGlobalKey, getComponentAt(lithoView, 0).getOwnerGlobalKey());
+
+    // TestViewComponent in child layout
+    Assert.assertEquals(nestedLayoutGlobalKey, getComponentAt(lithoView, 1).getOwnerGlobalKey());
+
+    // CardClip in child
+    Assert.assertEquals(nestedLayoutGlobalKey, getComponentAt(lithoView, 3).getOwnerGlobalKey());
+
+    // Text in child
+    Assert.assertEquals(nestedLayoutGlobalKey, getComponentAt(lithoView, 4).getOwnerGlobalKey());
+
+    // CardClip
+    Assert.assertEquals(rootGlobalKey, getComponentAt(lithoView, 6).getOwnerGlobalKey());
+
+    // TestViewComponent
+    Assert.assertEquals(rootGlobalKey, getComponentAt(lithoView, 7).getOwnerGlobalKey());
+  }
+
   private static Component getComponentAt(LithoView lithoView, int index) {
     return lithoView.getMountItemAt(index).getComponent();
   }

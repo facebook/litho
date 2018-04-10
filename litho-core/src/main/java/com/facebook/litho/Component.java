@@ -61,6 +61,7 @@ public abstract class Component extends ComponentLifecycle
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private int mId = sIdGenerator.getAndIncrement();
+  @Nullable private String mOwnerGlobalKey;
   private String mGlobalKey;
   @Nullable private String mKey;
   private boolean mHasManualKey;
@@ -174,6 +175,11 @@ public abstract class Component extends ComponentLifecycle
     return mId;
   }
 
+  @Nullable
+  String getOwnerGlobalKey() {
+    return mOwnerGlobalKey;
+  }
+
   /**
    * Get a key that is unique to this component within its tree.
    * @return
@@ -223,7 +229,7 @@ public abstract class Component extends ComponentLifecycle
    * @return a unique global key for this component relative to its siblings.
    */
   private String generateUniqueGlobalKeyForChild(Component component, String key) {
-    
+
     final String childKey = ComponentKeyUtils.getKeyWithSeparator(getGlobalKey(), key);
     final KeyHandler keyHandler = mScopedContext.getKeyHandler();
 
@@ -601,6 +607,11 @@ public abstract class Component extends ComponentLifecycle
 
       mComponent = component;
       mContext = c;
+
+      final Component owner = getOwner();
+      if (owner != null) {
+        mComponent.mOwnerGlobalKey = owner.getGlobalKey();
+      }
 
       if (defStyleAttr != 0 || defStyleRes != 0) {
         mComponent.getOrCreateCommonPropsHolder().setStyle(defStyleAttr, defStyleRes);
@@ -1438,6 +1449,10 @@ public abstract class Component extends ComponentLifecycle
         mComponent.getOrCreateCommonPropsHolder().stateListAnimatorRes(resId);
       }
       return getThis();
+    }
+
+    private Component getOwner() {
+      return mContext.getComponentScope();
     }
   }
 
