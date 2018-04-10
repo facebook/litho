@@ -82,6 +82,7 @@ dependencies {
     testImplementation deps.powermockReflect
     testImplementation deps.khronos
     testImplementation files(Jvm.current().getToolsJar())
+    testImplementation files(org.gradle.internal.jvm.Jvm.current().getJre().homeDir.getAbsolutePath() + '/lib/rt.jar')
 }
 
 tasks.withType(JavaCompile) {
