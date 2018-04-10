@@ -14,6 +14,7 @@ import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -61,17 +62,16 @@ public class InjectPropModel implements MethodParamModel {
 
   @Override
   public boolean equals(Object o) {
-    if (o instanceof InjectPropModel) {
-      final InjectPropModel p = (InjectPropModel) o;
-      return mParamModel.equals(p.mParamModel);
-    }
-
-    return false;
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    InjectPropModel that = (InjectPropModel) o;
+    return mIsLazy == that.mIsLazy &&
+        Objects.equals(mParamModel, that.mParamModel);
   }
 
   @Override
   public int hashCode() {
-    return mParamModel.hashCode();
+    return Objects.hash(mParamModel, mIsLazy);
   }
 
   /** Convert to a regular prop model. */
