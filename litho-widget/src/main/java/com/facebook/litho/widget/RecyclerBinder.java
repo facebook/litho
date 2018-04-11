@@ -36,6 +36,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
 import com.facebook.litho.ComponentsLogger;
+import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.LithoView;
@@ -890,7 +891,7 @@ public class RecyclerBinder
       Size outSize,
       int widthSpec,
       int heightSpec,
-      EventHandler<ReMeasureEvent> reMeasureEventHandler) {
+      @Nullable EventHandler<ReMeasureEvent> reMeasureEventHandler) {
     final int scrollDirection = mLayoutInfo.getScrollDirection();
 
     switch (scrollDirection) {
@@ -1018,11 +1019,63 @@ public class RecyclerBinder
     }
 
     mMeasuredSize = new Size(outSize.width, outSize.height);
-    mIsMeasured.set(true);
+    final boolean wasMeasured = mIsMeasured.getAndSet(true);
+
+    if (!wasMeasured && shouldFillListViewport()) {
+      fillListViewport();
+    }
 
     if (mRange != null) {
       computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
     }
+  }
+
+  private boolean shouldFillListViewport() {
+    return ComponentsConfiguration.fillListViewport
+        || (ComponentsConfiguration.fillListViewportHScrollOnly
+            && mLayoutInfo.getScrollDirection() == OrientationHelper.HORIZONTAL);
+  }
+
+  @GuardedBy("this")
+  private void fillListViewport() {
+    final int width = mMeasuredSize.width;
+    final int height = mMeasuredSize.height;
+    final LayoutInfo.ViewportFiller filler = mLayoutInfo.createViewportFiller(width, height);
+    if (filler == null) {
+      return;
+    }
+
+    ComponentsSystrace.beginSection("fillListViewport");
+
+    final int widthSpec = SizeSpec.makeSizeSpec(width, SizeSpec.EXACTLY);
+    final int heightSpec = SizeSpec.makeSizeSpec(height, SizeSpec.EXACTLY);
+    final int firstVisiblePosition = mLayoutInfo.findFirstVisibleItemPosition();
+    final Size outSize = new Size();
+
+    // NB: This does not handle 1) partially visible items 2) item decorations
+    int index = firstVisiblePosition != RecyclerView.NO_POSITION ? firstVisiblePosition : 0;
+    while (filler.wantsMore() && index < mComponentTreeHolders.size()) {
+      final ComponentTreeHolder holder = mComponentTreeHolders.get(index);
+      final RenderInfo renderInfo = holder.getRenderInfo();
+
+      // Bail as soon as we see a View since we can't tell what height it is and don't want to
+      // layout too much :(
+      if (renderInfo.rendersView()) {
+        break;
+      }
+
+      holder.computeLayoutSync(
+          mComponentContext,
+          mLayoutInfo.getChildWidthSpec(widthSpec, renderInfo),
+          mLayoutInfo.getChildHeightSpec(heightSpec, renderInfo),
+          outSize);
+
+      filler.add(renderInfo, outSize.width, outSize.height);
+
+      index++;
+    }
+
+    ComponentsSystrace.endSection();
   }
 
   @GuardedBy("this")

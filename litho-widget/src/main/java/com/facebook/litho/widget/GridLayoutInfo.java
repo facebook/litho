@@ -168,6 +168,12 @@ public class GridLayoutInfo implements LayoutInfo {
     }
   }
 
+  @Override
+  public ViewportFiller createViewportFiller(int measuredWidth, int measuredHeight) {
+    // TODO(t28219954): Implement ViewportFiller for GridLayout
+    return null;
+  }
+
   private class GridSpanSizeLookup extends GridLayoutManager.SpanSizeLookup {
 
     @Override

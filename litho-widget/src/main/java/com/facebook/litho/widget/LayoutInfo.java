@@ -70,7 +70,39 @@ public interface LayoutInfo extends ViewportInfo {
    */
   int getChildHeightSpec(int heightSpec, RenderInfo renderInfo);
 
+  /**
+   * @param measuredWidth the width of the RecyclerView
+   * @param measuredHeight the height of the RecyclerView
+   * @return a {@link ViewportFiller} to fill the RecyclerView viewport with views, or null to not
+   *     pre-fill the RecyclerView.
+   */
+  ViewportFiller createViewportFiller(int measuredWidth, int measuredHeight);
+
   interface RenderInfoCollection {
     RenderInfo getRenderInfoAt(int position);
+  }
+
+  /**
+   * Interface that is responsible for filling the viewport of the list with initial layouts
+   * according to the LayoutManager. The goal here is to have the layouts that the RecyclerView will
+   * ask for when it comes onto the screen already computed, e.g. in the background, so that we
+   * don't drop frames on the main thread. NB: This class should try to respect the layout of views
+   * as they will appear in the RecyclerView.
+   */
+  interface ViewportFiller {
+
+    /**
+     * Implementations should return true if they need more views to be computed in order to fill
+     * the screen.
+     */
+    boolean wantsMore();
+
+    /**
+     * This will be called to inform implementations that the next layout has been computed.
+     * Implementations should use the width/height to determine whether they still need more views
+     * to fill their initial viewport (which should be reflected in the next call to {@link
+     * #wantsMore()}
+     */
+    void add(RenderInfo renderInfo, int width, int height);
   }
 }

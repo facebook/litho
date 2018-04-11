@@ -19,6 +19,7 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,6 +41,7 @@ import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
@@ -55,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import junit.framework.Assert;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -152,6 +155,12 @@ public class RecyclerBinderTest {
             .componentTreeHolderFactory(componentTreeHolderFactory)
             .isCircular(true)
             .build(mComponentContext);
+  }
+
+  @After
+  public void tearDown() {
+    ComponentsConfiguration.fillListViewport = false;
+    ComponentsConfiguration.fillListViewportHScrollOnly = false;
   }
 
   private void setupBaseLayoutInfoMock(LayoutInfo layoutInfo, int orientation) {
@@ -1768,12 +1777,389 @@ public class RecyclerBinderTest {
     }
   }
 
+  @Test
+  public void testDoesNotFillViewportWithConfigurationOff() {
+    final LayoutInfo layoutInfo = mock(LayoutInfo.class);
+    setupBaseLayoutInfoMock(layoutInfo, OrientationHelper.VERTICAL);
+
+    RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(layoutInfo)
+            .build(mComponentContext);
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    verify(layoutInfo, never()).createViewportFiller(anyInt(), anyInt());
+  }
+
+  @Test
+  public void testDoesNotFillViewportHScrollOnly() {
+    ComponentsConfiguration.fillListViewportHScrollOnly = true;
+
+    final LayoutInfo layoutInfo = mock(LayoutInfo.class);
+    setupBaseLayoutInfoMock(layoutInfo, OrientationHelper.VERTICAL);
+
+    RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(layoutInfo)
+            .build(mComponentContext);
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    verify(layoutInfo, never()).createViewportFiller(anyInt(), anyInt());
+  }
+
+  @Test
+  public void testFillsViewport() {
+    ComponentsConfiguration.fillListViewport = true;
+
+    final LayoutInfo layoutInfo =
+        new LinearLayoutInfo(mComponentContext, OrientationHelper.VERTICAL, false);
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(layoutInfo)
+            .build(mComponentContext);
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(250, EXACTLY), null);
+
+    final int expectedWidthSpec = makeSizeSpec(1000, EXACTLY);
+    final int expectedHeightSpec = makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+    assertThat(
+            recyclerBinder
+                .getComponentAt(0)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(1)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(2)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(3)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isFalse();
+  }
+
+  @Test
+  public void testFillsViewportHScroll() {
+    ComponentsConfiguration.fillListViewportHScrollOnly = true;
+
+    final LayoutInfo layoutInfo =
+        new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false);
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(layoutInfo)
+            .build(mComponentContext);
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(250, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    final int expectedWidthSpec = makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+    final int expectedHeightSpec = makeSizeSpec(1000, SizeSpec.EXACTLY);
+    assertThat(
+            recyclerBinder
+                .getComponentAt(0)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(1)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(2)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(3)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isFalse();
+  }
+
+  @Test
+  public void testFillsViewportOnRemeasure() {
+    ComponentsConfiguration.fillListViewport = true;
+
+    final LayoutInfo layoutInfo =
+        new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false);
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(layoutInfo)
+            .build(mComponentContext);
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(250, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    final int expectedWidthSpec = makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+    final int expectedHeightSpec = makeSizeSpec(1000, SizeSpec.EXACTLY);
+    assertThat(
+            recyclerBinder
+                .getComponentAt(0)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(1)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(2)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(3)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isFalse();
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(250, EXACTLY), makeSizeSpec(900, EXACTLY), null);
+
+    final int newExpectedHeightSpec = makeSizeSpec(900, SizeSpec.EXACTLY);
+    assertThat(
+            recyclerBinder
+                .getComponentAt(0)
+                .hasCompatibleLayout(expectedWidthSpec, newExpectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(1)
+                .hasCompatibleLayout(expectedWidthSpec, newExpectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(2)
+                .hasCompatibleLayout(expectedWidthSpec, newExpectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(3)
+                .hasCompatibleLayout(expectedWidthSpec, newExpectedHeightSpec))
+        .isFalse();
+  }
+
+  @Test
+  public void testDoesNotFillViewportOnCompatibleMeasure() {
+    ComponentsConfiguration.fillListViewport = true;
+
+    final LayoutInfo layoutInfo = mock(LayoutInfo.class);
+    setupBaseLayoutInfoMock(layoutInfo, OrientationHelper.HORIZONTAL);
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(layoutInfo)
+            .build(mComponentContext);
+
+    when(layoutInfo.findFirstFullyVisibleItemPosition()).thenReturn(0);
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(250, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    verify(layoutInfo).createViewportFiller(anyInt(), anyInt());
+    reset(layoutInfo);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(250, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    verify(layoutInfo, never()).createViewportFiller(anyInt(), anyInt());
+  }
+
+  @Test
+  public void testFillsViewportFromFirstVisibleItem() {
+    ComponentsConfiguration.fillListViewport = true;
+
+    final LayoutInfo layoutInfo =
+        spy(new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false));
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(layoutInfo)
+            .build(mComponentContext);
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
+
+    when(layoutInfo.findFirstVisibleItemPosition()).thenReturn(5);
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(250, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    final int expectedWidthSpec = makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+    final int expectedHeightSpec = makeSizeSpec(1000, SizeSpec.EXACTLY);
+    assertThat(
+            recyclerBinder
+                .getComponentAt(5)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(6)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(7)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(8)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isFalse();
+
+    assertThat(
+            recyclerBinder
+                .getComponentAt(1)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isFalse();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(4)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isFalse();
+  }
+
+  @Test
+  public void testFillsViewportWithSomeViews() {
+    ComponentsConfiguration.fillListViewport = true;
+
+    final LayoutInfo layoutInfo =
+        new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false);
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(layoutInfo)
+            .build(mComponentContext);
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 3);
+
+    recyclerBinder.insertItemAt(
+        3,
+        ViewRenderInfo.create()
+            .viewBinder(new SimpleViewBinder())
+            .viewCreator(VIEW_CREATOR_1)
+            .build());
+
+    for (int i = 4; i < 7; i++) {
+      recyclerBinder.insertItemAt(
+          i,
+          ComponentRenderInfo.create()
+              .component(
+                  TestDrawableComponent.create(mComponentContext)
+                      .widthPx(100)
+                      .heightPx(100)
+                      .build())
+              .build());
+    }
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    final int expectedWidthSpec = makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+    final int expectedHeightSpec = makeSizeSpec(1000, SizeSpec.EXACTLY);
+    assertThat(
+            recyclerBinder
+                .getComponentAt(0)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(1)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(2)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(4)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isFalse();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(5)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isFalse();
+  }
+
+  @Test
+  public void testFillViewportWithAllViews() {
+    ComponentsConfiguration.fillListViewport = true;
+
+    final LayoutInfo layoutInfo =
+        new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false);
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(layoutInfo)
+            .build(mComponentContext);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    // Just make sure we don't crash
+  }
+
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
     return new RecyclerBinder.Builder()
         .rangeRatio(RANGE_RATIO)
         .layoutInfo(new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
         .overrideInternalAdapter(adapterMock)
         .build(mComponentContext);
+  }
+
+  private void fillRecyclerBinderWithComponents(
+      RecyclerBinder recyclerBinder,
+      int componentWidthPx,
+      int componentHeightPx,
+      int numComponents) {
+    for (int i = 0; i < numComponents; i++) {
+      recyclerBinder.insertItemAt(
+          i,
+          ComponentRenderInfo.create()
+              .component(
+                  TestDrawableComponent.create(mComponentContext)
+                      .widthPx(componentWidthPx)
+                      .heightPx(componentHeightPx)
+                      .build())
+              .build());
+    }
   }
 
   private List<ComponentRenderInfo> prepareLoadedBinder() {

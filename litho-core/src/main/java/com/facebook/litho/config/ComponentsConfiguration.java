@@ -158,4 +158,10 @@ public class ComponentsConfiguration {
   public static boolean isMainThreadSplitLayoutEnabled;
   public static LayoutThreadPoolConfiguration splitLayoutMainThreadPoolConfiguration = null;
   public static LayoutThreadPoolConfiguration splitLayoutBackgroundThreadPoolConfiguration = null;
+
+  /** Whether to fill list viewports in RecyclerBinder from measure(). */
+  public static boolean fillListViewport = false;
+
+  /** Whether to fill list viewports in RecyclerBinder from measure(), but only for HScrolls. */
+  public static boolean fillListViewportHScrollOnly = false;
 }

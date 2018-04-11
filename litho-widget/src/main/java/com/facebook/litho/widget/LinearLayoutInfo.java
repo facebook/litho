@@ -9,6 +9,7 @@
 
 package com.facebook.litho.widget;
 
+import static android.support.v7.widget.OrientationHelper.VERTICAL;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
@@ -128,6 +129,11 @@ public class LinearLayoutInfo implements LayoutInfo {
     }
   }
 
+  @Override
+  public ViewportFiller createViewportFiller(int measuredWidth, int measuredHeight) {
+    return new ViewportFiller(measuredWidth, measuredHeight, getScrollDirection());
+  }
+
   private static class InternalLinearLayoutManager extends LinearLayoutManager {
 
     InternalLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
@@ -151,6 +157,35 @@ public class LinearLayoutInfo implements LayoutInfo {
       return getOrientation() == OrientationHelper.HORIZONTAL
           ? false
           : super.supportsPredictiveItemAnimations();
+    }
+  }
+
+  /**
+   * Simple implementation of {@link LayoutInfo.ViewportFiller} which fills the viewport by laying
+   * out items sequentially.
+   */
+  public static class ViewportFiller implements LayoutInfo.ViewportFiller {
+
+    private final int mWidth;
+    private final int mHeight;
+    private final int mOrientation;
+    private int mFill;
+
+    public ViewportFiller(int width, int height, int orientation) {
+      mWidth = width;
+      mHeight = height;
+      mOrientation = orientation;
+    }
+
+    @Override
+    public boolean wantsMore() {
+      final int target = mOrientation == VERTICAL ? mHeight : mWidth;
+      return mFill < target;
+    }
+
+    @Override
+    public void add(RenderInfo renderInfo, int width, int height) {
+      mFill += mOrientation == VERTICAL ? height : width;
     }
   }
 }

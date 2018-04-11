@@ -124,6 +124,12 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
   }
 
   @Override
+  public ViewportFiller createViewportFiller(int measuredWidth, int measuredHeight) {
+    // TODO(t28219976): Implement ViewportFiller for StaggeredGridLayout
+    return null;
+  }
+
+  @Override
   public int findFirstVisibleItemPosition() {
     return StaggeredGridLayoutHelper.findFirstVisibleItemPosition(mStaggeredGridLayoutManager);
   }
