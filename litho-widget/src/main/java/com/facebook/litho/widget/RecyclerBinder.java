@@ -1038,24 +1038,34 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private void fillListViewport() {
+    final int firstVisiblePosition = mLayoutInfo.findFirstVisibleItemPosition();
+
+    // NB: This does not handle 1) partially visible items 2) item decorations
+    final int startIndex =
+        firstVisiblePosition != RecyclerView.NO_POSITION ? firstVisiblePosition : 0;
+
+    computeLayoutsToFillListViewport(mComponentTreeHolders, startIndex);
+  }
+
+  @GuardedBy("this")
+  private int computeLayoutsToFillListViewport(List<ComponentTreeHolder> holders, int offset) {
     final int width = mMeasuredSize.width;
     final int height = mMeasuredSize.height;
     final LayoutInfo.ViewportFiller filler = mLayoutInfo.createViewportFiller(width, height);
     if (filler == null) {
-      return;
+      return 0;
     }
 
-    ComponentsSystrace.beginSection("fillListViewport");
+    ComponentsSystrace.beginSection("computeLayoutsToFillListViewport");
 
     final int widthSpec = SizeSpec.makeSizeSpec(width, SizeSpec.EXACTLY);
     final int heightSpec = SizeSpec.makeSizeSpec(height, SizeSpec.EXACTLY);
-    final int firstVisiblePosition = mLayoutInfo.findFirstVisibleItemPosition();
     final Size outSize = new Size();
 
-    // NB: This does not handle 1) partially visible items 2) item decorations
-    int index = firstVisiblePosition != RecyclerView.NO_POSITION ? firstVisiblePosition : 0;
-    while (filler.wantsMore() && index < mComponentTreeHolders.size()) {
-      final ComponentTreeHolder holder = mComponentTreeHolders.get(index);
+    int numInserted = 0;
+    int index = offset;
+    while (filler.wantsMore() && index < holders.size()) {
+      final ComponentTreeHolder holder = holders.get(index);
       final RenderInfo renderInfo = holder.getRenderInfo();
 
       // Bail as soon as we see a View since we can't tell what height it is and don't want to
@@ -1073,9 +1083,12 @@ public class RecyclerBinder
       filler.add(renderInfo, outSize.width, outSize.height);
 
       index++;
+      numInserted++;
     }
 
     ComponentsSystrace.endSection();
+
+    return numInserted;
   }
 
   @GuardedBy("this")
