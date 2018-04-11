@@ -102,4 +102,9 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   public @Nullable SnapHelper getSnapHelper() {
     return null;
   }
+
+  @Override
+  public int getOrientation() {
+    return mOrientation;
+  }
 }

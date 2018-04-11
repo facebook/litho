@@ -168,6 +168,11 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     return mSnapHelper;
   }
 
+  @Override
+  public int getOrientation() {
+    return mOrientation;
+  }
+
   private static class DefaultLinearLayoutInfoFactory implements LinearLayoutInfoFactory {
     @Override
     public LinearLayoutInfo createLinearLayoutInfo(

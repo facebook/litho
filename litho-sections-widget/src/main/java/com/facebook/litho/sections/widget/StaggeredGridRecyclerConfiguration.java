@@ -97,4 +97,9 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
   public @Nullable SnapHelper getSnapHelper() {
     return null;
   }
+
+  @Override
+  public int getOrientation() {
+    return mOrientation;
+  }
 }

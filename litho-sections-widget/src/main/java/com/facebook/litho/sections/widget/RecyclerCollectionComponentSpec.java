@@ -16,6 +16,7 @@ import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import android.support.annotation.IdRes;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemAnimator;
 import android.support.v7.widget.RecyclerView.ItemDecoration;
@@ -125,7 +126,6 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) int scrollBarStyle,
       @Prop(optional = true) ItemDecoration itemDecoration,
       @Prop(optional = true) ItemAnimator itemAnimator,
-      @Prop(optional = true) boolean disablePTR,
       @Prop(optional = true) @IdRes int recyclerViewId,
       @Prop(optional = true) int overScrollMode,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int leftPadding,
@@ -146,7 +146,8 @@ public class RecyclerCollectionComponentSpec {
       @State Binder<RecyclerView> binder,
       @State SectionTree sectionTree,
       @State RecyclerCollectionLoadEventsHandler recyclerCollectionLoadEventsHandler,
-      @State SnapHelper snapHelper) {
+      @State SnapHelper snapHelper,
+      @State boolean canPTR) {
 
     // This is a side effect from OnCreateLayout, so it's inherently prone to race conditions:
     recyclerCollectionLoadEventsHandler.setLoadEventsHandler(loadEventsHandler);
@@ -182,9 +183,8 @@ public class RecyclerCollectionComponentSpec {
             .recyclerViewId(recyclerViewId)
             .overScrollMode(overScrollMode)
             .recyclerEventsController(internalEventsController)
-            .refreshHandler(
-                disablePTR ? null : RecyclerCollectionComponent.onRefresh(c, sectionTree))
-            .pullToRefresh(!disablePTR)
+            .refreshHandler(canPTR ? null : RecyclerCollectionComponent.onRefresh(c, sectionTree))
+            .pullToRefresh(!canPTR)
             .itemDecoration(itemDecoration)
             .canMeasure(canMeasureRecycler)
             .horizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled)
@@ -253,12 +253,14 @@ public class RecyclerCollectionComponentSpec {
       // It's intended to be a temporary workaround, not something you should use often.
       @Prop(optional = true) boolean ignoreLoadingUpdates,
       @Prop(optional = true) String sectionTreeTag,
+      @Prop(optional = true) boolean disablePTR,
       StateValue<SnapHelper> snapHelper,
       StateValue<SectionTree> sectionTree,
       StateValue<RecyclerCollectionLoadEventsHandler> recyclerCollectionLoadEventsHandler,
       StateValue<Binder<RecyclerView>> binder,
       StateValue<LoadingState> loadingState,
-      StateValue<RecyclerCollectionEventsController> internalEventsController) {
+      StateValue<RecyclerCollectionEventsController> internalEventsController,
+      StateValue<Boolean> canPTR) {
 
     E targetBinder = recyclerConfiguration.buildTarget(c);
 
@@ -314,6 +316,9 @@ public class RecyclerCollectionComponentSpec {
     } else {
       loadingState.set(LoadingState.LOADING);
     }
+
+    canPTR.set(
+        recyclerConfiguration.getOrientation() != OrientationHelper.HORIZONTAL && !disablePTR);
   }
 
   @OnUpdateState

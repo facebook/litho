@@ -26,4 +26,6 @@ public interface RecyclerConfiguration {
 
   @Nullable
   SnapHelper getSnapHelper();
+
+  int getOrientation();
 }
