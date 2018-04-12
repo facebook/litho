@@ -641,7 +641,7 @@ class LayoutState {
       layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
           layoutOutput,
           layoutState.mCurrentLevel,
-          LayoutOutput.TYPE_CONTENT,
+          OutputUnitType.CONTENT,
           previousId,
           isCachedOutputUpdated);
     }
@@ -668,7 +668,7 @@ class LayoutState {
                 layoutState,
                 convertBackground,
                 background,
-                LayoutOutput.TYPE_BACKGROUND,
+                OutputUnitType.BACKGROUND,
                 needsHostView);
 
         if (diffNode != null) {
@@ -757,7 +757,7 @@ class LayoutState {
               layoutState,
               convertBorder,
               getBorderColorDrawable(node),
-              LayoutOutput.TYPE_BORDER,
+              OutputUnitType.BORDER,
               needsHostView);
       if (diffNode != null) {
         diffNode.setBorder(borderOutput);
@@ -780,7 +780,7 @@ class LayoutState {
                 layoutState,
                 convertForeground,
                 DrawableReference.create().drawable(foreground).build(),
-                LayoutOutput.TYPE_FOREGROUND,
+                OutputUnitType.FOREGROUND,
                 needsHostView);
 
         if (diffNode != null) {
@@ -894,7 +894,7 @@ class LayoutState {
       hostOutput.setUpdateState(LayoutOutput.STATE_DIRTY);
     } else {
       layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
-          hostOutput, layoutState.mCurrentLevel, LayoutOutput.TYPE_HOST, -1, isCachedOutputUpdated);
+          hostOutput, layoutState.mCurrentLevel, OutputUnitType.HOST, -1, isCachedOutputUpdated);
     }
   }
 
@@ -903,7 +903,7 @@ class LayoutState {
       LayoutState layoutState,
       LayoutOutput recycle,
       Reference<? extends Drawable> reference,
-      @LayoutOutput.LayoutOutputType int type,
+      @OutputUnitType int type,
       boolean matchHostBoundsTransitions) {
     final Component drawableComponent = DrawableComponent.create(reference);
     drawableComponent.setScopedContext(
@@ -977,7 +977,7 @@ class LayoutState {
       Component drawableComponent,
       LayoutState layoutState,
       InternalNode node,
-      @LayoutOutput.LayoutOutputType int layoutOutputType,
+      @OutputUnitType int layoutOutputType,
       long previousId,
       boolean isCachedOutputUpdated,
       boolean matchHostBoundsTransitions) {
@@ -1377,7 +1377,7 @@ class LayoutState {
   private void calculateAndSetLayoutOutputIdAndUpdateState(
       LayoutOutput layoutOutput,
       int level,
-      @LayoutOutput.LayoutOutputType int type,
+      @OutputUnitType int type,
       long previousId,
       boolean isCachedOutputUpdated) {
     if (mLayoutStateOutputIdCalculator == null) {

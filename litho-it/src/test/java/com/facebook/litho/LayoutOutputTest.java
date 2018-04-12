@@ -9,10 +9,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.LayoutOutput.TYPE_BACKGROUND;
-import static com.facebook.litho.LayoutOutput.TYPE_CONTENT;
-import static com.facebook.litho.LayoutOutput.TYPE_FOREGROUND;
-import static com.facebook.litho.LayoutOutput.TYPE_HOST;
 import static com.facebook.litho.LayoutStateOutputIdCalculator.calculateLayoutOutputId;
 import static com.facebook.litho.LayoutStateOutputIdCalculator.getLevelFromId;
 import static com.facebook.litho.LayoutStateOutputIdCalculator.getSequenceFromId;
@@ -80,17 +76,12 @@ public class LayoutOutputTest {
   public void testStableIdCalculation() {
     mLayoutOutput.setComponent(mTestComponent);
 
-    long stableId = calculateLayoutOutputId(
-        mLayoutOutput,
-        LEVEL_TEST,
-        TYPE_CONTENT,
-        SEQ_TEST);
+    long stableId =
+        calculateLayoutOutputId(mLayoutOutput, LEVEL_TEST, OutputUnitType.CONTENT, SEQ_TEST);
 
-    long stableIdSeq2 = calculateLayoutOutputId(
-        mLayoutOutput,
-        LEVEL_TEST + 1,
-        TYPE_CONTENT,
-        SEQ_TEST + 1);
+    long stableIdSeq2 =
+        calculateLayoutOutputId(
+            mLayoutOutput, LEVEL_TEST + 1, OutputUnitType.CONTENT, SEQ_TEST + 1);
 
     assertThat(toBinaryString(stableId)).isEqualTo("100000001000000000000000001");
     assertThat(toBinaryString(stableIdSeq2)).isEqualTo("100000010000000000000000010");
@@ -100,11 +91,7 @@ public class LayoutOutputTest {
   public void testStableIdBackgroundType() {
     mLayoutOutput.setComponent(mTestComponent);
     mLayoutOutput.setId(
-        calculateLayoutOutputId(
-            mLayoutOutput,
-            LEVEL_TEST,
-            TYPE_BACKGROUND,
-            SEQ_TEST));
+        calculateLayoutOutputId(mLayoutOutput, LEVEL_TEST, OutputUnitType.BACKGROUND, SEQ_TEST));
 
     long stableId = mLayoutOutput.getId();
     assertThat(toBinaryString(stableId)).isEqualTo("100000001010000000000000001");
@@ -114,11 +101,7 @@ public class LayoutOutputTest {
   public void testStableIdForegroundType() {
     mLayoutOutput.setComponent(mTestComponent);
     mLayoutOutput.setId(
-        calculateLayoutOutputId(
-            mLayoutOutput,
-            LEVEL_TEST,
-            TYPE_FOREGROUND,
-            SEQ_TEST));
+        calculateLayoutOutputId(mLayoutOutput, LEVEL_TEST, OutputUnitType.FOREGROUND, SEQ_TEST));
 
     long stableId = mLayoutOutput.getId();
     assertThat(toBinaryString(stableId)).isEqualTo("100000001100000000000000001");
@@ -128,11 +111,7 @@ public class LayoutOutputTest {
   public void testStableIdHostType() {
     mLayoutOutput.setComponent(mTestComponent);
     mLayoutOutput.setId(
-        calculateLayoutOutputId(
-            mLayoutOutput,
-            LEVEL_TEST,
-            TYPE_HOST,
-            SEQ_TEST));
+        calculateLayoutOutputId(mLayoutOutput, LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
 
     long stableId = mLayoutOutput.getId();
     assertThat(toBinaryString(stableId)).isEqualTo("100000001110000000000000001");
@@ -142,19 +121,11 @@ public class LayoutOutputTest {
   public void testGetIdLevel() {
     mLayoutOutput.setComponent(mTestComponent);
     mLayoutOutput.setId(
-        calculateLayoutOutputId(
-            mLayoutOutput,
-            LEVEL_TEST,
-            TYPE_HOST,
-            SEQ_TEST));
+        calculateLayoutOutputId(mLayoutOutput, LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
     assertThat(LEVEL_TEST).isEqualTo(getLevelFromId(mLayoutOutput.getId()));
 
     mLayoutOutput.setId(
-        calculateLayoutOutputId(
-            mLayoutOutput,
-            MAX_LEVEL_TEST,
-            TYPE_CONTENT,
-            SEQ_TEST));
+        calculateLayoutOutputId(mLayoutOutput, MAX_LEVEL_TEST, OutputUnitType.CONTENT, SEQ_TEST));
 
     assertThat(MAX_LEVEL_TEST).isEqualTo(getLevelFromId(mLayoutOutput.getId()));
   }
@@ -163,19 +134,11 @@ public class LayoutOutputTest {
   public void testGetIdSequence() {
     mLayoutOutput.setComponent(mTestComponent);
     mLayoutOutput.setId(
-        calculateLayoutOutputId(
-            mLayoutOutput,
-            LEVEL_TEST,
-            TYPE_HOST,
-            SEQ_TEST));
+        calculateLayoutOutputId(mLayoutOutput, LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
     assertThat(SEQ_TEST).isEqualTo(getSequenceFromId(mLayoutOutput.getId()));
 
     mLayoutOutput.setId(
-        calculateLayoutOutputId(
-            mLayoutOutput,
-            LEVEL_TEST,
-            TYPE_CONTENT,
-            MAX_SEQ_TEST));
+        calculateLayoutOutputId(mLayoutOutput, LEVEL_TEST, OutputUnitType.CONTENT, MAX_SEQ_TEST));
 
     assertThat(MAX_SEQ_TEST).isEqualTo(getSequenceFromId(mLayoutOutput.getId()));
   }
@@ -185,10 +148,7 @@ public class LayoutOutputTest {
     mLayoutOutput.setComponent(mTestComponent);
     mLayoutOutput.setId(
         LayoutStateOutputIdCalculator.calculateLayoutOutputId(
-            mLayoutOutput,
-            MAX_LEVEL_TEST + 1,
-            LayoutOutput.TYPE_HOST,
-            SEQ_TEST));
+            mLayoutOutput, MAX_LEVEL_TEST + 1, OutputUnitType.HOST, SEQ_TEST));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -196,10 +156,7 @@ public class LayoutOutputTest {
     mLayoutOutput.setComponent(mTestComponent);
     mLayoutOutput.setId(
         LayoutStateOutputIdCalculator.calculateLayoutOutputId(
-            mLayoutOutput,
-            LEVEL_TEST,
-            LayoutOutput.TYPE_FOREGROUND,
-            MAX_SEQ_TEST + 1));
+            mLayoutOutput, LEVEL_TEST, OutputUnitType.FOREGROUND, MAX_SEQ_TEST + 1));
   }
 
   @Test

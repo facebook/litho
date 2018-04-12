@@ -43,7 +43,7 @@ class LayoutStateOutputIdCalculator {
   void calculateAndSetLayoutOutputIdAndUpdateState(
       LayoutOutput layoutOutput,
       int level,
-      @LayoutOutput.LayoutOutputType int type,
+      @OutputUnitType int type,
       long previousId,
       boolean isCachedOutputUpdated) {
 
@@ -153,15 +153,12 @@ class LayoutStateOutputIdCalculator {
   }
 
   /**
-   * Calculates an id for a {@link LayoutOutput}. See
-   * {@link LayoutStateOutputIdCalculator#calculateLayoutOutputBaseId(LayoutOutput, int, int)} and
-   * {@link LayoutStateOutputIdCalculator#calculateId(long, int)}.
+   * Calculates an id for a {@link LayoutOutput}. See {@link
+   * LayoutStateOutputIdCalculator#calculateLayoutOutputBaseId(LayoutOutput, int, int)} and {@link
+   * LayoutStateOutputIdCalculator#calculateId(long, int)}.
    */
   static long calculateLayoutOutputId(
-      LayoutOutput layoutOutput,
-      int level,
-      @LayoutOutput.LayoutOutputType int type,
-      int sequence) {
+      LayoutOutput layoutOutput, int level, @OutputUnitType int type, int sequence) {
     long baseId = calculateLayoutOutputBaseId(layoutOutput, level, type);
     return calculateId(baseId, sequence);
   }
@@ -194,13 +191,11 @@ class LayoutStateOutputIdCalculator {
   }
 
   /**
-   * Calculates a base id for an {@link LayoutOutput} based on the {@link Component}, the depth
-   * in the View hierarchy, and the type of output see {@link LayoutOutput.LayoutOutputType}.
+   * Calculates a base id for an {@link LayoutOutput} based on the {@link Component}, the depth in
+   * the View hierarchy, and the type of output see {@link OutputUnitType}.
    */
   private static long calculateLayoutOutputBaseId(
-      LayoutOutput layoutOutput,
-      int level,
-      @LayoutOutput.LayoutOutputType int type) {
+      LayoutOutput layoutOutput, int level, @OutputUnitType int type) {
     if (level < 0 || level > MAX_LEVEL) {
       throw new IllegalArgumentException(
           "Level must be non-negative and no greater than " + MAX_LEVEL + " actual level " + level);

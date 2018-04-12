@@ -24,16 +24,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * {@link MountState} to mount a component.
  */
 class LayoutOutput implements Cloneable, AnimatableItem {
-  public static final int TYPE_CONTENT = 0;
-  public static final int TYPE_BACKGROUND = 1;
-  public static final int TYPE_FOREGROUND = 2;
-  public static final int TYPE_HOST = 3;
-  public static final int TYPE_BORDER = 4;
-
-  @IntDef({TYPE_CONTENT, TYPE_BACKGROUND, TYPE_FOREGROUND, TYPE_HOST, TYPE_BORDER})
-  @Retention(RetentionPolicy.SOURCE)
-  @interface LayoutOutputType {}
-
   public static final int STATE_UNKNOWN = 0;
   public static final int STATE_UPDATED = 1;
   public static final int STATE_DIRTY = 2;
