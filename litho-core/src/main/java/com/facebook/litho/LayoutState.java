@@ -208,6 +208,9 @@ class LayoutState {
   private boolean mCanCacheDrawingDisplayLists;
   private boolean mClipChildren = true;
   private ArrayList<Component> mComponentsNeedingPreviousRenderData;
+  private @Nullable OutputUnitsAffinityGroup<LayoutOutput> mCurrentLayoutOutputAffinityGroup;
+  private final SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>>
+      mFullTransitionKeyMapping = new SimpleArrayMap<>();
   private SimpleArrayMap<String, LayoutOutput> mTransitionKeyMapping;
   private boolean mHasLithoViewWidthAnimation = false;
   private boolean mHasLithoViewHeightAnimation = false;
@@ -614,11 +617,19 @@ class LayoutState {
     final long currentHostMarker = layoutState.mCurrentHostMarker;
     final int currentHostOutputPosition = layoutState.mCurrentHostOutputPosition;
 
+    final OutputUnitsAffinityGroup<LayoutOutput> currentLayoutOutputAffinityGroup =
+        layoutState.mCurrentLayoutOutputAffinityGroup;
+    layoutState.mCurrentLayoutOutputAffinityGroup =
+        TextUtils.isEmpty(node.getTransitionKey())
+            ? null
+            : new OutputUnitsAffinityGroup<LayoutOutput>();
+
     int hostLayoutPosition = -1;
 
     // 1. Insert a host LayoutOutput if we have some interactive content to be attached to.
     if (needsHostView) {
       hostLayoutPosition = addHostLayoutOutput(node, layoutState, diffNode);
+      addCurrentAffinityGroupToTransitionMapping(node.getTransitionKey(), layoutState);
 
       layoutState.mCurrentLevel++;
       layoutState.mCurrentHostMarker =
@@ -687,6 +698,8 @@ class LayoutState {
           layoutState.mOutputsIdToPositionMap,
           layoutOutput,
           layoutState.mMountableOutputs.size() - 1);
+      maybeAddLayoutOutputToAffinityGroup(
+          layoutState.mCurrentLayoutOutputAffinityGroup, OutputUnitType.CONTENT, layoutOutput);
 
       if (diffNode != null) {
         diffNode.setContent(layoutOutput);
@@ -865,6 +878,9 @@ class LayoutState {
       layoutState.mCurrentLevel--;
     }
     layoutState.mShouldDuplicateParentState = shouldDuplicateParentState;
+
+    addCurrentAffinityGroupToTransitionMapping(node.getTransitionKey(), layoutState);
+    layoutState.mCurrentLayoutOutputAffinityGroup = currentLayoutOutputAffinityGroup;
   }
 
   Map<String, Rect> getComponentKeyToBounds() {
@@ -927,6 +943,9 @@ class LayoutState {
             isOutputUpdated,
             matchHostBoundsTransitions);
 
+    maybeAddLayoutOutputToAffinityGroup(
+        layoutState.mCurrentLayoutOutputAffinityGroup, type, output);
+
     return output;
   }
 
@@ -973,11 +992,40 @@ class LayoutState {
     }
   }
 
+  private static void maybeAddLayoutOutputToAffinityGroup(
+      OutputUnitsAffinityGroup<LayoutOutput> group,
+      @OutputUnitType int outputType,
+      LayoutOutput layoutOutput) {
+    if (group != null) {
+      group.add(outputType, layoutOutput);
+    }
+  }
+
+  private static void addCurrentAffinityGroupToTransitionMapping(
+      String transitionKey, LayoutState layoutState) {
+    if (layoutState.mCurrentLayoutOutputAffinityGroup == null) {
+      return;
+    }
+
+    if (layoutState.mFullTransitionKeyMapping.put(
+            transitionKey, layoutState.mCurrentLayoutOutputAffinityGroup)
+        != null) {
+      throw new RuntimeException(
+          "The transitionKey '"
+              + transitionKey
+              + "' is defined multiple times in the same layout. transitionKeys must be unique "
+              + "identifiers per layout. If this is a reusable component that can appear in the "
+              + "same layout multiple times, consider passing unique transitionKeys from above.");
+    }
+
+    layoutState.mCurrentLayoutOutputAffinityGroup = null;
+  }
+
   private static LayoutOutput addDrawableLayoutOutput(
       Component drawableComponent,
       LayoutState layoutState,
       InternalNode node,
-      @OutputUnitType int layoutOutputType,
+      @OutputUnitType int outputType,
       long previousId,
       boolean isCachedOutputUpdated,
       boolean matchHostBoundsTransitions) {
@@ -990,7 +1038,7 @@ class LayoutState {
     layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
         drawableLayoutOutput,
         layoutState.mCurrentLevel,
-        layoutOutputType,
+        outputType,
         previousId,
         isCachedOutputUpdated);
 
@@ -1070,6 +1118,9 @@ class LayoutState {
         layoutState.mOutputsIdToPositionMap,
         hostLayoutOutput,
         hostOutputPosition);
+
+    maybeAddLayoutOutputToAffinityGroup(
+        layoutState.mCurrentLayoutOutputAffinityGroup, OutputUnitType.HOST, hostLayoutOutput);
 
     return hostOutputPosition;
   }
@@ -2036,6 +2087,8 @@ class LayoutState {
         mComponentsNeedingPreviousRenderData.clear();
       }
 
+      mCurrentLayoutOutputAffinityGroup = null;
+      mFullTransitionKeyMapping.clear();
       mTransitionKeyMapping = null;
       mHasLithoViewWidthAnimation = false;
       mHasLithoViewHeightAnimation = false;
@@ -2170,29 +2223,21 @@ class LayoutState {
    * Gets (or creates) a mapping from transition key to LayoutOutput.
    */
   SimpleArrayMap<String, LayoutOutput> getTransitionKeyMapping() {
-    if (mTransitionKeyMapping != null) {
-      return mTransitionKeyMapping;
-    }
-
-    mTransitionKeyMapping = new SimpleArrayMap<>();
-
-    for (int i = 0, size = getMountableOutputCount(); i < size; i++) {
-      final LayoutOutput newOutput = getMountableOutputAt(i);
-      final String transitionKey = newOutput.getTransitionKey();
-      if (transitionKey == null) {
-        continue;
-      }
-
-      if (mTransitionKeyMapping.put(transitionKey, newOutput) != null) {
-        throw new RuntimeException(
-            "The transitionKey '"
-                + transitionKey
-                + "' was defined multiple times in the same layout. transitionKeys must be unique "
-                + "identifiers per layout. If this is a reusable component that can appear in the "
-                + "same layout multiple times, consider passing unique transitionKeys from above.");
+    // TODO: simply return mFullTransitionKeyMapping when all the groundwork in TransitionManager
+    // and MountState is done
+    if (mTransitionKeyMapping == null) {
+      mTransitionKeyMapping = new SimpleArrayMap<>(mFullTransitionKeyMapping.size());
+      for (int index = 0, size = mFullTransitionKeyMapping.size(); index < size; index++) {
+        final String key = mFullTransitionKeyMapping.keyAt(index);
+        final OutputUnitsAffinityGroup<LayoutOutput> group =
+            mFullTransitionKeyMapping.valueAt(index);
+        LayoutOutput layoutOutput = group.get(OutputUnitType.CONTENT);
+        if (layoutOutput == null) {
+          layoutOutput = group.get(OutputUnitType.HOST);
+        }
+        mTransitionKeyMapping.put(key, layoutOutput);
       }
     }
-
     return mTransitionKeyMapping;
   }
 

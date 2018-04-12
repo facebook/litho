@@ -66,7 +66,7 @@ public class UniqueTransitionKeysTest {
   @Test
   public void testThrowIfSameTransitionKeyAppearsMultipleTimes() {
     mExpectedException.expect(RuntimeException.class);
-    mExpectedException.expectMessage("The transitionKey 'test' was defined multiple times");
+    mExpectedException.expectMessage("The transitionKey 'test' is defined multiple times");
 
     ComponentContext c = new ComponentContext(application);
     LayoutState layoutState =
