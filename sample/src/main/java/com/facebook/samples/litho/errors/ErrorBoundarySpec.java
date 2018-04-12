@@ -39,7 +39,7 @@ public class ErrorBoundarySpec {
           .marginDip(YogaEdge.ALL, 16)
           .child(
               DebugErrorComponent.create(c)
-                  .message("Error caught at boundary")
+                  .message("Error Boundary")
                   .throwable(error.get())
                   .build())
           .build();

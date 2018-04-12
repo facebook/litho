@@ -11,6 +11,7 @@
  */
 package com.facebook.samples.litho.errors;
 
+import android.graphics.Typeface;
 import android.support.annotation.ColorInt;
 import android.util.Log;
 import com.facebook.litho.ClickEvent;
@@ -21,6 +22,7 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.utils.StacktraceHelper;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
 
@@ -49,15 +51,16 @@ public class DebugErrorComponentSpec {
             Text.create(c)
                 .backgroundColor(LIGHT_RED_BACKGROUND)
                 .paddingDip(YogaEdge.ALL, 4f)
-                .textSizeDip(12f)
+                .textSizeDip(16f)
                 .text(message))
         .child(
             Text.create(c)
                 .backgroundColor(LIGHT_RED_BACKGROUND)
                 .paddingDip(YogaEdge.ALL, 4f)
-                .textSizeDip(8f)
+                .textSizeDip(12f)
                 .textColor(LIGHT_GRAY_TEXT)
-                .text(throwable.toString()))
+                .typeface(Typeface.MONOSPACE)
+                .text(StacktraceHelper.formatStacktrace(throwable)))
         .clickHandler(DebugErrorComponent.onClick(c))
         .build();
   }
