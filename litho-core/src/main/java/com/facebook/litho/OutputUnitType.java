@@ -20,7 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @IntDef({CONTENT, BACKGROUND, FOREGROUND, HOST, BORDER})
 @Retention(RetentionPolicy.SOURCE)
-@interface OutputUnitType {
+public @interface OutputUnitType {
   int CONTENT = 0;
   int BACKGROUND = 1;
   int FOREGROUND = 2;

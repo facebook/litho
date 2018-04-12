@@ -15,6 +15,8 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
 import android.view.View;
+import com.facebook.litho.OutputUnitType;
+import com.facebook.litho.OutputUnitsAffinityGroup;
 import com.facebook.litho.dataflow.DataFlowGraph;
 import com.facebook.litho.dataflow.GraphBinding;
 import com.facebook.litho.dataflow.MockTimingSource;
@@ -41,9 +43,11 @@ public class AnimatedPropertyNodeTest {
   @Test
   public void testViewPropertyNodeWithInput() {
     View view = new View(application);
+    OutputUnitsAffinityGroup<Object> group = new OutputUnitsAffinityGroup<>();
+    group.add(OutputUnitType.HOST, view);
     SettableNode source = new SettableNode();
     SimpleNode middle = new SimpleNode();
-    AnimatedPropertyNode destination = new AnimatedPropertyNode(view, SCALE);
+    AnimatedPropertyNode destination = new AnimatedPropertyNode(group, SCALE);
 
     GraphBinding binding = create(mDataFlowGraph);
     binding.addBinding(source, middle);
@@ -63,13 +67,15 @@ public class AnimatedPropertyNodeTest {
   @Test
   public void testViewPropertyNodeWithInputAndOutput() {
     View view = new View(application);
+    OutputUnitsAffinityGroup<Object> group = new OutputUnitsAffinityGroup<>();
+    group.add(OutputUnitType.HOST, view);
     SettableNode source = new SettableNode();
-    AnimatedPropertyNode viewNode = new AnimatedPropertyNode(view, SCALE);
+    AnimatedPropertyNode animatedNode = new AnimatedPropertyNode(group, SCALE);
     OutputOnlyNode destination = new OutputOnlyNode();
 
     GraphBinding binding = create(mDataFlowGraph);
-    binding.addBinding(source, viewNode);
-    binding.addBinding(viewNode, destination);
+    binding.addBinding(source, animatedNode);
+    binding.addBinding(animatedNode, destination);
     binding.activate();
 
     mTestTimingSource.step(1);
@@ -87,12 +93,18 @@ public class AnimatedPropertyNodeTest {
   @Test
   public void testSettingMountContentOnNodeWithValue() {
     View view1 = new View(application);
+    OutputUnitsAffinityGroup<Object> group1 = new OutputUnitsAffinityGroup<>();
+    group1.add(OutputUnitType.HOST, view1);
+
     View view2 = new View(application);
+    OutputUnitsAffinityGroup<Object> group2 = new OutputUnitsAffinityGroup<>();
+    group2.add(OutputUnitType.HOST, view2);
+
     SettableNode source = new SettableNode();
-    AnimatedPropertyNode viewNode = new AnimatedPropertyNode(view1, SCALE);
+    AnimatedPropertyNode animatedNode = new AnimatedPropertyNode(group1, SCALE);
 
     GraphBinding binding = create(mDataFlowGraph);
-    binding.addBinding(source, viewNode);
+    binding.addBinding(source, animatedNode);
     binding.activate();
 
     mTestTimingSource.step(1);
@@ -106,7 +118,7 @@ public class AnimatedPropertyNodeTest {
 
     assertThat(view2.getScaleX()).isEqualTo(1f);
 
-    viewNode.setMountContent(view2);
+    animatedNode.setMountContentGroup(group2);
 
     assertThat(view2.getScaleX()).isEqualTo(123f);
   }

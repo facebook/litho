@@ -9,8 +9,9 @@
 
 package com.facebook.litho.animation;
 
+import com.facebook.litho.OutputUnitType;
+import com.facebook.litho.OutputUnitsAffinityGroup;
 import com.facebook.litho.dataflow.ValueNode;
-import java.lang.ref.WeakReference;
 
 /**
  * A ValueNode that allows getting and/or setting the value of a specific property (x, y, scale,
@@ -23,38 +24,45 @@ import java.lang.ref.WeakReference;
 public class AnimatedPropertyNode extends ValueNode {
 
   private final AnimatedProperty mAnimatedProperty;
-  private WeakReference<Object> mMountContent;
+  private OutputUnitsAffinityGroup<Object> mMountContentGroup;
 
+  // T0D0: get rid of this when TransitionManager is ready
   public AnimatedPropertyNode(Object mountContent, AnimatedProperty animatedProperty) {
-    mMountContent = new WeakReference<>(mountContent);
+    this(wrapIntoGroup(mountContent), animatedProperty);
+  }
+
+  public AnimatedPropertyNode(
+      OutputUnitsAffinityGroup<Object> mountContentGroup, AnimatedProperty animatedProperty) {
+    mMountContentGroup = mountContentGroup;
     mAnimatedProperty = animatedProperty;
   }
 
-  /**
-   * Sets the mount content that this {@link AnimatedPropertyNode} updates a value on.
-   */
+  // T0D0: get rid of this when TransitionManager is ready
   public void setMountContent(Object mountContent) {
-    mMountContent = new WeakReference<>(mountContent);
-    if (mountContent != null) {
-      mAnimatedProperty.set(mountContent, getValue());
+    setMountContentGroup(wrapIntoGroup(mountContent));
+  }
+
+  /** Sets the mount content that this {@link AnimatedPropertyNode} updates a value on. */
+  public void setMountContentGroup(OutputUnitsAffinityGroup<Object> mountContentGroup) {
+    mMountContentGroup = mountContentGroup;
+    if (mountContentGroup != null) {
+      setValueInner(getValue());
     }
   }
 
   @Override
   public void setValue(float value) {
     super.setValue(value);
-    final Object mountContent = mMountContent.get();
-    if (mountContent != null) {
-      mAnimatedProperty.set(mountContent, value);
+    if (mMountContentGroup != null) {
+      setValueInner(value);
     }
   }
 
   @Override
   public float calculateValue(long frameTimeNanos) {
-    final Object mountContent = mMountContent.get();
-    final boolean hasInput = hasInput();
+    boolean hasInput = hasInput();
 
-    if (mountContent == null) {
+    if (mMountContentGroup == null || mMountContentGroup.isEmpty()) {
       if (hasInput) {
         return getInput().getValue();
       }
@@ -64,12 +72,54 @@ public class AnimatedPropertyNode extends ValueNode {
     }
 
     if (!hasInput) {
+      final Object mountContent = getMostSignificantMountContent();
       return mAnimatedProperty.get(mountContent);
     }
 
     final float value = getInput().getValue();
-    mAnimatedProperty.set(mountContent, value);
+    setValueInner(value);
 
     return value;
+  }
+
+  private void setValueInner(float value) {
+    for (int i = 0, size = mMountContentGroup.size(); i < size; i++) {
+      final Object mountContent = mMountContentGroup.getAt(i);
+      mAnimatedProperty.set(mountContent, value);
+    }
+  }
+
+  private Object getMostSignificantMountContent() {
+    Object mountContent = mMountContentGroup.get(OutputUnitType.HOST);
+    if (mountContent != null) {
+      return mountContent;
+    }
+
+    mountContent = mMountContentGroup.get(OutputUnitType.CONTENT);
+    if (mountContent != null) {
+      return mountContent;
+    }
+
+    mountContent = mMountContentGroup.get(OutputUnitType.BACKGROUND);
+    if (mountContent != null) {
+      return mountContent;
+    }
+
+    mountContent = mMountContentGroup.get(OutputUnitType.FOREGROUND);
+    if (mountContent != null) {
+      return mountContent;
+    }
+
+    return mMountContentGroup.get(OutputUnitType.BORDER);
+  }
+
+  // T0D0: get rid of this when TransitionManager is ready
+  private static OutputUnitsAffinityGroup<Object> wrapIntoGroup(Object mountContent) {
+    if (mountContent == null) {
+      return null;
+    }
+    OutputUnitsAffinityGroup<Object> mountContentGroup = new OutputUnitsAffinityGroup<>();
+    mountContentGroup.add(OutputUnitType.HOST, mountContent);
+    return mountContentGroup;
   }
 }
