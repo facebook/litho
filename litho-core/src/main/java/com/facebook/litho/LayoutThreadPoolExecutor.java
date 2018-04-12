@@ -8,6 +8,7 @@
  */
 package com.facebook.litho;
 
+import android.os.Looper;
 import android.os.Process;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -48,6 +49,10 @@ public class LayoutThreadPoolExecutor extends ThreadPoolExecutor {
           new Runnable() {
             @Override
             public void run() {
+              if (Looper.myLooper() == null) {
+                Looper.prepare();
+              }
+
               try {
                 Process.setThreadPriority(mThreadPriority);
               } catch (SecurityException e) {
