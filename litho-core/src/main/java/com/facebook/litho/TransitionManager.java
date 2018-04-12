@@ -278,18 +278,34 @@ public class TransitionManager {
     }
   }
 
+  void removeMountContent(String transitionKey, @OutputUnitType int type) {
+    final AnimationState animationState = mAnimationStates.get(transitionKey);
+    if (animationState == null) {
+      return;
+    }
+    final OutputUnitsAffinityGroup<Object> mountContentGroup = animationState.mountContentGroup;
+    if (mountContentGroup == null || mountContentGroup.get(type) == null) {
+      return;
+    }
+
+    OutputUnitsAffinityGroup<Object> updatedMountContentGroup;
+    if (mountContentGroup.size() > 1) {
+      updatedMountContentGroup = new OutputUnitsAffinityGroup<>(mountContentGroup);
+      updatedMountContentGroup.replace(type, null);
+    } else {
+      // The group is empty now, so just pass null
+      updatedMountContentGroup = null;
+    }
+    setMountContentInner(transitionKey, animationState, updatedMountContentGroup);
+  }
+
   /**
    * Sets the mount content for a given key. This is used to initially set mount content, but also
    * to set content when content is incrementally mounted during an animation.
    */
-  void setMountContent(String transitionKey, Object mountContent) {
+  void setMountContent(String transitionKey, OutputUnitsAffinityGroup<Object> mountContentGroup) {
     final AnimationState animationState = mAnimationStates.get(transitionKey);
     if (animationState != null) {
-      OutputUnitsAffinityGroup<Object> mountContentGroup = null;
-      if (mountContent != null) {
-        mountContentGroup = new OutputUnitsAffinityGroup<>();
-        mountContentGroup.add(OutputUnitType.HOST, mountContent);
-      }
       setMountContentInner(transitionKey, animationState, mountContentGroup);
     }
   }
@@ -968,7 +984,9 @@ public class TransitionManager {
           if (AnimationsDebug.ENABLED) {
             Log.d(AnimationsDebug.TAG, "Finished all animations for key " + key);
           }
-          recursivelySetChildClippingForGroup(animationState.mountContentGroup, true);
+          if (animationState.mountContentGroup != null) {
+            recursivelySetChildClippingForGroup(animationState.mountContentGroup, true);
+          }
           if (mOnAnimationCompleteListener != null) {
             mOnAnimationCompleteListener.onAnimationComplete(key);
           }

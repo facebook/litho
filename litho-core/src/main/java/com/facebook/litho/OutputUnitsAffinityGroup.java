@@ -17,6 +17,15 @@ public class OutputUnitsAffinityGroup<T> {
   private final Object[] mContent = new Object[5];
   private short mSize = 0;
 
+  public OutputUnitsAffinityGroup() {}
+
+  public OutputUnitsAffinityGroup(OutputUnitsAffinityGroup<T> group) {
+    for (int index = 0, size = mContent.length; index < size; index++) {
+      mContent[index] = group.mContent[index];
+    }
+    mSize = group.mSize;
+  }
+
   public void add(@OutputUnitType int type, T value) {
     if (value == null) {
       throw new IllegalArgumentException("value should not be null");
