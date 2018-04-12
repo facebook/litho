@@ -157,7 +157,7 @@ public class TransitionManager {
      * The current mount content for this animation state, if it's mounted, null otherwise. This
      * mount content can change over time.
      */
-    public @Nullable Object mountContent;
+    public @Nullable OutputUnitsAffinityGroup<Object> mountContentGroup;
 
     /**
      * Whether the last LayoutState diff that had this content in it showed the content appearing,
@@ -165,15 +165,11 @@ public class TransitionManager {
      */
     public int changeType = ChangeType.UNSET;
 
-    /**
-     * While calculating animations, the current (before) LayoutOutput.
-     */
-    public @Nullable LayoutOutput currentLayoutOutput;
+    /** While calculating animations, the current (before) LayoutOutput. */
+    public @Nullable OutputUnitsAffinityGroup<LayoutOutput> currentLayoutOutputsGroup;
 
-    /**
-     * While calculating animations, the next (after) LayoutOutput.
-     */
-    public @Nullable LayoutOutput nextLayoutOutput;
+    /** While calculating animations, the next (after) LayoutOutput. */
+    public @Nullable OutputUnitsAffinityGroup<LayoutOutput> nextLayoutOutputsGroup;
 
     /**
      * Whether this transition key was seen in the last transition, either in the current or next
@@ -217,38 +213,41 @@ public class TransitionManager {
       mAnimationStates.valueAt(i).seenInLastTransition = false;
     }
 
-    final SimpleArrayMap<String, LayoutOutput> nextTransitionKeys =
+    final SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>> nextTransitionKeys =
         nextLayoutState.getTransitionKeyMapping();
     if (currentLayoutState == null) {
       for (int i = 0, size = nextTransitionKeys.size(); i < size; i++) {
         final String transitionKey = nextTransitionKeys.keyAt(i);
-        final LayoutOutput nextLayoutOutput = nextTransitionKeys.valueAt(i);
-        recordLayoutOutputDiff(transitionKey, null, nextLayoutOutput);
+        final OutputUnitsAffinityGroup<LayoutOutput> nextLayoutOutputsGroup =
+            nextTransitionKeys.valueAt(i);
+        recordLayoutOutputsGroupDiff(transitionKey, null, nextLayoutOutputsGroup);
       }
     } else {
-      final SimpleArrayMap<String, LayoutOutput> currentTransitionKeys =
+      final SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>> currentTransitionKeys =
           currentLayoutState.getTransitionKeyMapping();
       final boolean[] seenIndicesInNewLayout = new boolean[currentTransitionKeys.size()];
       for (int i = 0, size = nextTransitionKeys.size(); i < size; i++) {
         final String transitionKey = nextTransitionKeys.keyAt(i);
-        final LayoutOutput nextLayoutOutput = nextTransitionKeys.valueAt(i);
+        final OutputUnitsAffinityGroup<LayoutOutput> nextLayoutOutputsGroup =
+            nextTransitionKeys.valueAt(i);
 
         final int currentIndex = currentTransitionKeys.indexOfKey(transitionKey);
 
-        LayoutOutput currentLayoutOutput = null;
+        OutputUnitsAffinityGroup<LayoutOutput> currentLayoutOutputsGroup = null;
         if (currentIndex >= 0) {
-          currentLayoutOutput = currentTransitionKeys.valueAt(currentIndex);
+          currentLayoutOutputsGroup = currentTransitionKeys.valueAt(currentIndex);
           seenIndicesInNewLayout[currentIndex] = true;
         }
 
-        recordLayoutOutputDiff(transitionKey, currentLayoutOutput, nextLayoutOutput);
+        recordLayoutOutputsGroupDiff(
+            transitionKey, currentLayoutOutputsGroup, nextLayoutOutputsGroup);
       }
 
       for (int i = 0, size = currentTransitionKeys.size(); i < size; i++) {
         if (seenIndicesInNewLayout[i]) {
           continue;
         }
-        recordLayoutOutputDiff(
+        recordLayoutOutputsGroupDiff(
             currentTransitionKeys.keyAt(i), currentTransitionKeys.valueAt(i), null);
       }
     }
@@ -286,7 +285,12 @@ public class TransitionManager {
   void setMountContent(String transitionKey, Object mountContent) {
     final AnimationState animationState = mAnimationStates.get(transitionKey);
     if (animationState != null) {
-      setMountContentInner(transitionKey, animationState, mountContent);
+      OutputUnitsAffinityGroup<Object> mountContentGroup = null;
+      if (mountContent != null) {
+        mountContentGroup = new OutputUnitsAffinityGroup<>();
+        mountContentGroup.add(OutputUnitType.HOST, mountContent);
+      }
+      setMountContentInner(transitionKey, animationState, mountContentGroup);
     }
   }
 
@@ -339,36 +343,42 @@ public class TransitionManager {
   /**
    * Called to record the current/next content for a transition key.
    *
-   * @param currentLayoutOutput the current LayoutOutput for this key, or null if the key is
-   * appearing
-   * @param nextLayoutOutput the new LayoutOutput for this key, or null if the key is disappearing
+   * @param currentLayoutOutputsGroup the current group of LayoutOutputs for this key, or null if
+   *     the key is appearing
+   * @param nextLayoutOutputsGroup the new group of LayoutOutput for this key, or null if the key is
+   *     disappearing
    */
-  private void recordLayoutOutputDiff(
+  private void recordLayoutOutputsGroupDiff(
       String transitionKey,
-      LayoutOutput currentLayoutOutput,
-      LayoutOutput nextLayoutOutput) {
+      OutputUnitsAffinityGroup<LayoutOutput> currentLayoutOutputsGroup,
+      OutputUnitsAffinityGroup<LayoutOutput> nextLayoutOutputsGroup) {
     AnimationState animationState = mAnimationStates.get(transitionKey);
     if (animationState == null) {
       animationState = new AnimationState();
       mAnimationStates.put(transitionKey, animationState);
     }
 
-    if (currentLayoutOutput == null && nextLayoutOutput == null) {
-      throw new RuntimeException("Both current and next LayoutOutputs were null!");
+    if (currentLayoutOutputsGroup == null && nextLayoutOutputsGroup == null) {
+      throw new RuntimeException("Both current and next LayoutOutput groups were null!");
     }
 
-    if (currentLayoutOutput == null && nextLayoutOutput != null) {
+    if (currentLayoutOutputsGroup == null && nextLayoutOutputsGroup != null) {
       animationState.changeType = ChangeType.APPEARED;
-    } else if (currentLayoutOutput != null && nextLayoutOutput != null) {
+    } else if (currentLayoutOutputsGroup != null && nextLayoutOutputsGroup != null) {
       animationState.changeType = ChangeType.CHANGED;
     } else {
       animationState.changeType = ChangeType.DISAPPEARED;
     }
 
-    animationState.currentLayoutOutput =
-        currentLayoutOutput != null ? currentLayoutOutput.acquireRef() : null;
-    animationState.nextLayoutOutput =
-        nextLayoutOutput != null ? nextLayoutOutput.acquireRef() : null;
+    if (currentLayoutOutputsGroup != null) {
+      acquireRef(currentLayoutOutputsGroup);
+    }
+    animationState.currentLayoutOutputsGroup = currentLayoutOutputsGroup;
+
+    if (nextLayoutOutputsGroup != null) {
+      acquireRef(nextLayoutOutputsGroup);
+    }
+    animationState.nextLayoutOutputsGroup = nextLayoutOutputsGroup;
 
     recordLastMountedValues(animationState);
 
@@ -382,14 +392,26 @@ public class TransitionManager {
     }
   }
 
+  private static void acquireRef(OutputUnitsAffinityGroup<LayoutOutput> group) {
+    for (int i = 0, size = group.size(); i < size; i++) {
+      group.getAt(i).acquireRef();
+    }
+  }
+
   private void recordLastMountedValues(AnimationState animationState) {
+    final LayoutOutput layoutOutput =
+        animationState.nextLayoutOutputsGroup != null
+            ? animationState.nextLayoutOutputsGroup.getMostSignificantUnit()
+            : null;
+    // The values for all members of the group should be the same, thus we'll be collected from the
+    // most significant one
     for (int i = 0, size = animationState.propertyStates.size(); i < size; i++) {
       final PropertyState propertyState = animationState.propertyStates.valueAt(i);
-      if (animationState.nextLayoutOutput == null) {
+      if (layoutOutput == null) {
         propertyState.lastMountedValue = null;
       } else {
         final AnimatedProperty property = animationState.propertyStates.keyAt(i);
-        propertyState.lastMountedValue = property.get(animationState.nextLayoutOutput);
+        propertyState.lastMountedValue = property.get(layoutOutput);
       }
     }
   }
@@ -557,8 +579,9 @@ public class TransitionManager {
           "Calculating transitions for " + key + "#" + property.getName() + ":");
     }
 
-    if (animationState == null ||
-        (animationState.currentLayoutOutput == null && animationState.nextLayoutOutput == null)) {
+    if (animationState == null
+        || (animationState.currentLayoutOutputsGroup == null
+            && animationState.nextLayoutOutputsGroup == null)) {
       if (AnimationsDebug.ENABLED) {
         Log.d(AnimationsDebug.TAG, " - this key was not seen in the before/after layout state");
       }
@@ -584,7 +607,8 @@ public class TransitionManager {
       startValue = existingState.animatedPropertyNode.getValue();
     } else {
       if (animationState.changeType != ChangeType.APPEARED) {
-        startValue = property.get(animationState.currentLayoutOutput);
+        startValue =
+            property.get(animationState.currentLayoutOutputsGroup.getMostSignificantUnit());
       } else {
         startValue = transition.getAppearFrom().resolve(mResolver, propertyHandle);
       }
@@ -592,7 +616,7 @@ public class TransitionManager {
 
     final float endValue;
     if (animationState.changeType != ChangeType.DISAPPEARED) {
-      endValue = property.get(animationState.nextLayoutOutput);
+      endValue = property.get(animationState.nextLayoutOutputsGroup.getMostSignificantUnit());
     } else {
       endValue = transition.getDisappearTo().resolve(mResolver, propertyHandle);
     }
@@ -627,9 +651,9 @@ public class TransitionManager {
     PropertyState propertyState = existingState;
     if (propertyState == null) {
       propertyState = new PropertyState();
-      propertyState.animatedPropertyNode = new AnimatedPropertyNode(
-          animationState.mountContent,
-          property);
+
+      propertyState.animatedPropertyNode =
+          new AnimatedPropertyNode(animationState.mountContentGroup, property);
       animationState.propertyStates.put(property, propertyState);
     }
     propertyState.animatedPropertyNode.setValue(startValue);
@@ -651,9 +675,8 @@ public class TransitionManager {
       final PropertyHandle propertyHandle = mInitialStatesToRestore.keyAt(i);
       final float value = mInitialStatesToRestore.valueAt(i);
       final AnimationState animationState = mAnimationStates.get(propertyHandle.getTransitionKey());
-      final AnimatedProperty property = propertyHandle.getProperty();
-      if (animationState.mountContent != null) {
-        property.set(animationState.mountContent, value);
+      if (animationState.mountContentGroup != null) {
+        setPropertyValue(propertyHandle.getProperty(), value, animationState.mountContentGroup);
       }
     }
 
@@ -663,31 +686,46 @@ public class TransitionManager {
   private void setMountContentInner(
       String key,
       AnimationState animationState,
-      Object mountContent) {
+      OutputUnitsAffinityGroup<Object> newMountContentGroup) {
     // If the mount content changes, this means this transition key will be rendered with a
     // different mount content (View or Drawable) than it was during the last mount, so we need to
     // migrate animation state from the old mount content to the new one.
-    if (animationState.mountContent == mountContent) {
+    final OutputUnitsAffinityGroup<Object> mountContentGroup = animationState.mountContentGroup;
+    if ((mountContentGroup == null && newMountContentGroup == null)
+        || (mountContentGroup != null && mountContentGroup.equals(newMountContentGroup))) {
       return;
     }
 
     if (AnimationsDebug.ENABLED) {
-      Log.d(AnimationsDebug.TAG, "Setting mount content for " + key + " to " + mountContent);
+      Log.d(
+          AnimationsDebug.TAG, "Setting mount content for " + key + " to " + newMountContentGroup);
     }
 
     final SimpleArrayMap<AnimatedProperty, PropertyState> animatingProperties =
         animationState.propertyStates;
-    if (animationState.mountContent != null) {
+    if (animationState.mountContentGroup != null) {
       for (int i = 0, size = animatingProperties.size(); i < size; i++) {
-        animatingProperties.keyAt(i).reset(animationState.mountContent);
+        resetProperty(animatingProperties.keyAt(i), animationState.mountContentGroup);
       }
-      recursivelySetChildClipping(animationState.mountContent, true);
+      recursivelySetChildClippingForGroup(animationState.mountContentGroup, true);
     }
+
     for (int i = 0, size = animatingProperties.size(); i < size; i++) {
-      animatingProperties.valueAt(i).animatedPropertyNode.setMountContent(mountContent);
+      animatingProperties
+          .valueAt(i)
+          .animatedPropertyNode
+          .setMountContentGroup(newMountContentGroup);
     }
-    recursivelySetChildClipping(mountContent, false);
-    animationState.mountContent = mountContent;
+    if (newMountContentGroup != null) {
+      recursivelySetChildClippingForGroup(newMountContentGroup, false);
+    }
+    animationState.mountContentGroup = newMountContentGroup;
+  }
+
+  private void recursivelySetChildClippingForGroup(
+      OutputUnitsAffinityGroup<Object> mountContentGroup, boolean clipChildren) {
+    // We only need to set clipping to view containers (OutputUnitType.HOST)
+    recursivelySetChildClipping(mountContentGroup.get(OutputUnitType.HOST), clipChildren);
   }
 
   /**
@@ -717,8 +755,8 @@ public class TransitionManager {
   }
 
   /**
-   * Removes any AnimationStates that were created in {@link #recordLayoutOutputDiff} but never
-   * resulted in an animation being created.
+   * Removes any AnimationStates that were created in {@link #recordLayoutOutputsGroupDiff} but
+   * never resulted in an animation being created.
    */
   private void cleanupNonAnimatingAnimationStates() {
     for (int i = mAnimationStates.size() - 1; i >= 0; i--) {
@@ -756,13 +794,38 @@ public class TransitionManager {
   }
 
   private static void clearLayoutOutputs(AnimationState animationState) {
-    if (animationState.currentLayoutOutput != null) {
-      animationState.currentLayoutOutput.release();
-      animationState.currentLayoutOutput = null;
+    if (animationState.currentLayoutOutputsGroup != null) {
+      release(animationState.currentLayoutOutputsGroup);
+      animationState.currentLayoutOutputsGroup = null;
     }
-    if (animationState.nextLayoutOutput != null) {
-      animationState.nextLayoutOutput.release();
-      animationState.nextLayoutOutput = null;
+    if (animationState.nextLayoutOutputsGroup != null) {
+      release(animationState.nextLayoutOutputsGroup);
+      animationState.nextLayoutOutputsGroup = null;
+    }
+  }
+
+  private static void release(OutputUnitsAffinityGroup<LayoutOutput> group) {
+    for (int i = 0, size = group.size(); i < size; i++) {
+      group.getAt(i).release();
+    }
+  }
+
+  private static float getPropertyValue(
+      AnimatedProperty property, OutputUnitsAffinityGroup<LayoutOutput> mountContentGroup) {
+    return property.get(mountContentGroup.getMostSignificantUnit());
+  }
+
+  private static void setPropertyValue(
+      AnimatedProperty property, float value, OutputUnitsAffinityGroup<Object> mountContentGroup) {
+    for (int i = 0, size = mountContentGroup.size(); i < size; i++) {
+      property.set(mountContentGroup.getAt(i), value);
+    }
+  }
+
+  private static void resetProperty(
+      AnimatedProperty property, OutputUnitsAffinityGroup<Object> mountContentGroup) {
+    for (int i = 0, size = mountContentGroup.size(); i < size; i++) {
+      property.reset(mountContentGroup.getAt(i));
     }
   }
 
@@ -872,9 +935,10 @@ public class TransitionManager {
 
           propertyState.numPendingAnimations--;
           didFinish = areAllDisappearingAnimationsFinished(animationState);
-          if (didFinish && animationState.mountContent != null) {
+          if (didFinish && animationState.mountContentGroup != null) {
             for (int j = 0; j < animationState.propertyStates.size(); j++) {
-              animationState.propertyStates.keyAt(j).reset(animationState.mountContent);
+              resetProperty(
+                  animationState.propertyStates.keyAt(j), animationState.mountContentGroup);
             }
           }
         } else {
@@ -893,9 +957,9 @@ public class TransitionManager {
             animationState.propertyStates.removeAt(index);
             didFinish = animationState.propertyStates.isEmpty();
 
-            if (animationState.mountContent != null) {
-              property.set(
-                  animationState.mountContent, property.get(animationState.nextLayoutOutput));
+            if (animationState.mountContentGroup != null) {
+              final float value = getPropertyValue(property, animationState.nextLayoutOutputsGroup);
+              setPropertyValue(property, value, animationState.mountContentGroup);
             }
           }
         }
@@ -904,7 +968,7 @@ public class TransitionManager {
           if (AnimationsDebug.ENABLED) {
             Log.d(AnimationsDebug.TAG, "Finished all animations for key " + key);
           }
-          recursivelySetChildClipping(animationState.mountContent, true);
+          recursivelySetChildClippingForGroup(animationState.mountContentGroup, true);
           if (mOnAnimationCompleteListener != null) {
             mOnAnimationCompleteListener.onAnimationComplete(key);
           }
@@ -943,14 +1007,15 @@ public class TransitionManager {
 
       // ...otherwise, if it's a property not being animated (e.g., the width when content appears
       // from a width offset), get the property from the LayoutOutput.
-      final LayoutOutput layoutOutputToCheck = animationState.changeType == ChangeType.APPEARED ?
-          animationState.nextLayoutOutput :
-          animationState.currentLayoutOutput;
-      if (layoutOutputToCheck == null) {
+      final OutputUnitsAffinityGroup<LayoutOutput> layoutOutputGroupToCheck =
+          animationState.changeType == ChangeType.APPEARED
+              ? animationState.nextLayoutOutputsGroup
+              : animationState.currentLayoutOutputsGroup;
+      if (layoutOutputGroupToCheck == null) {
         throw new RuntimeException("Both LayoutOutputs were null!");
       }
 
-      return animatedProperty.get(layoutOutputToCheck);
+      return animatedProperty.get(layoutOutputGroupToCheck.getMostSignificantUnit());
     }
 
     @Override

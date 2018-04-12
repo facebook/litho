@@ -210,8 +210,7 @@ class LayoutState {
   private ArrayList<Component> mComponentsNeedingPreviousRenderData;
   private @Nullable OutputUnitsAffinityGroup<LayoutOutput> mCurrentLayoutOutputAffinityGroup;
   private final SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>>
-      mFullTransitionKeyMapping = new SimpleArrayMap<>();
-  private SimpleArrayMap<String, LayoutOutput> mTransitionKeyMapping;
+      mTransitionKeyMapping = new SimpleArrayMap<>();
   private boolean mHasLithoViewWidthAnimation = false;
   private boolean mHasLithoViewHeightAnimation = false;
   long mCalculateLayoutDuration;
@@ -1007,7 +1006,7 @@ class LayoutState {
       return;
     }
 
-    if (layoutState.mFullTransitionKeyMapping.put(
+    if (layoutState.mTransitionKeyMapping.put(
             transitionKey, layoutState.mCurrentLayoutOutputAffinityGroup)
         != null) {
       throw new RuntimeException(
@@ -2088,8 +2087,7 @@ class LayoutState {
       }
 
       mCurrentLayoutOutputAffinityGroup = null;
-      mFullTransitionKeyMapping.clear();
-      mTransitionKeyMapping = null;
+      mTransitionKeyMapping.clear();
       mHasLithoViewWidthAnimation = false;
       mHasLithoViewHeightAnimation = false;
 
@@ -2219,38 +2217,13 @@ class LayoutState {
     return (mTransitionContext != null);
   }
 
-  SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>> getFullTransitionKeyMapping() {
-    return mFullTransitionKeyMapping;
-  }
-
-  OutputUnitsAffinityGroup<LayoutOutput> getLayoutOutputsForTransitionKey(String key) {
-    return mFullTransitionKeyMapping.get(key);
-  }
-
-  /**
-   * Gets (or creates) a mapping from transition key to LayoutOutput.
-   */
-  SimpleArrayMap<String, LayoutOutput> getTransitionKeyMapping() {
-    // TODO: simply return mFullTransitionKeyMapping when all the groundwork in TransitionManager
-    // and MountState is done
-    if (mTransitionKeyMapping == null) {
-      mTransitionKeyMapping = new SimpleArrayMap<>(mFullTransitionKeyMapping.size());
-      for (int index = 0, size = mFullTransitionKeyMapping.size(); index < size; index++) {
-        final String key = mFullTransitionKeyMapping.keyAt(index);
-        final OutputUnitsAffinityGroup<LayoutOutput> group =
-            mFullTransitionKeyMapping.valueAt(index);
-        LayoutOutput layoutOutput = group.get(OutputUnitType.CONTENT);
-        if (layoutOutput == null) {
-          layoutOutput = group.get(OutputUnitType.HOST);
-        }
-        mTransitionKeyMapping.put(key, layoutOutput);
-      }
-    }
+  /** Gets a mapping from transition key to a group of LayoutOutput. */
+  SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>> getTransitionKeyMapping() {
     return mTransitionKeyMapping;
   }
 
-  LayoutOutput getLayoutOutputForTransitionKey(String transitionKey) {
-    return getTransitionKeyMapping().get(transitionKey);
+  OutputUnitsAffinityGroup<LayoutOutput> getLayoutOutputsForTransitionKey(String key) {
+    return mTransitionKeyMapping.get(key);
   }
 
   private static void addMountableOutput(LayoutState layoutState, LayoutOutput layoutOutput) {

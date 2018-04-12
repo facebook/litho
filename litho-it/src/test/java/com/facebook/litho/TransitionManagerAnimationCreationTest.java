@@ -382,10 +382,22 @@ public class TransitionManagerAnimationCreationTest {
   /** @return a mock LayoutState that only has a transition key -> LayoutOutput mapping. */
   private LayoutState createMockLayoutState(
       TransitionSet transitions, LayoutOutput... layoutOutputs) {
-    final SimpleArrayMap<String, LayoutOutput> transitionKeyMapping = new SimpleArrayMap<>();
+    final SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>> transitionKeyMapping =
+        new SimpleArrayMap<>();
     for (int i = 0; i < layoutOutputs.length; i++) {
       final LayoutOutput layoutOutput = layoutOutputs[i];
-      transitionKeyMapping.put(layoutOutput.getTransitionKey(), layoutOutput);
+      final String transitionKey = layoutOutput.getTransitionKey();
+      if (transitionKey == null) {
+        continue;
+      }
+      OutputUnitsAffinityGroup<LayoutOutput> group = transitionKeyMapping.get(transitionKey);
+      if (group == null) {
+        group = new OutputUnitsAffinityGroup<>();
+        transitionKeyMapping.put(transitionKey, group);
+      }
+      final @OutputUnitType int type =
+          LayoutStateOutputIdCalculator.getLevelFromId(layoutOutput.getId());
+      group.add(type, layoutOutput);
     }
 
     final TransitionContext transitionContext = mock(TransitionContext.class);
@@ -395,13 +407,16 @@ public class TransitionManagerAnimationCreationTest {
     final LayoutState layoutState = mock(LayoutState.class);
     when(layoutState.getTransitionContext()).thenReturn(transitionContext);
     when(layoutState.getTransitionKeyMapping()).thenReturn(transitionKeyMapping);
-    when(layoutState.getLayoutOutputForTransitionKey(anyString())).then(new Answer<LayoutOutput>() {
-      @Override
-      public LayoutOutput answer(InvocationOnMock invocation) throws Throwable {
-        final String transitionKey = (String) invocation.getArguments()[0];
-        return transitionKeyMapping.get(transitionKey);
-      }
-    });
+    when(layoutState.getLayoutOutputsForTransitionKey(anyString()))
+        .then(
+            new Answer<OutputUnitsAffinityGroup<LayoutOutput>>() {
+              @Override
+              public OutputUnitsAffinityGroup<LayoutOutput> answer(InvocationOnMock invocation)
+                  throws Throwable {
+                final String transitionKey = (String) invocation.getArguments()[0];
+                return transitionKeyMapping.get(transitionKey);
+              }
+            });
     return layoutState;
   }
 

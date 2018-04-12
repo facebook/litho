@@ -190,6 +190,11 @@ class LayoutStateOutputIdCalculator {
     return (int) ((id >> LEVEL_SHIFT) & 0xFF);
   }
 
+  /** @return the type part of an id. */
+  static @OutputUnitType int getTypeFromId(long id) {
+    return (int) ((id >> TYPE_SHIFT) & 0x3);
+  }
+
   /**
    * Calculates a base id for an {@link LayoutOutput} based on the {@link Component}, the depth in
    * the View hierarchy, and the type of output see {@link OutputUnitType}.

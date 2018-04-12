@@ -9,7 +9,6 @@
 
 package com.facebook.litho.animation;
 
-import com.facebook.litho.OutputUnitType;
 import com.facebook.litho.OutputUnitsAffinityGroup;
 import com.facebook.litho.dataflow.ValueNode;
 
@@ -26,20 +25,10 @@ public class AnimatedPropertyNode extends ValueNode {
   private final AnimatedProperty mAnimatedProperty;
   private OutputUnitsAffinityGroup<Object> mMountContentGroup;
 
-  // T0D0: get rid of this when TransitionManager is ready
-  public AnimatedPropertyNode(Object mountContent, AnimatedProperty animatedProperty) {
-    this(wrapIntoGroup(mountContent), animatedProperty);
-  }
-
   public AnimatedPropertyNode(
       OutputUnitsAffinityGroup<Object> mountContentGroup, AnimatedProperty animatedProperty) {
     mMountContentGroup = mountContentGroup;
     mAnimatedProperty = animatedProperty;
-  }
-
-  // T0D0: get rid of this when TransitionManager is ready
-  public void setMountContent(Object mountContent) {
-    setMountContentGroup(wrapIntoGroup(mountContent));
   }
 
   /** Sets the mount content that this {@link AnimatedPropertyNode} updates a value on. */
@@ -72,7 +61,7 @@ public class AnimatedPropertyNode extends ValueNode {
     }
 
     if (!hasInput) {
-      final Object mountContent = getMostSignificantMountContent();
+      final Object mountContent = mMountContentGroup.getMostSignificantUnit();
       return mAnimatedProperty.get(mountContent);
     }
 
@@ -87,39 +76,5 @@ public class AnimatedPropertyNode extends ValueNode {
       final Object mountContent = mMountContentGroup.getAt(i);
       mAnimatedProperty.set(mountContent, value);
     }
-  }
-
-  private Object getMostSignificantMountContent() {
-    Object mountContent = mMountContentGroup.get(OutputUnitType.HOST);
-    if (mountContent != null) {
-      return mountContent;
-    }
-
-    mountContent = mMountContentGroup.get(OutputUnitType.CONTENT);
-    if (mountContent != null) {
-      return mountContent;
-    }
-
-    mountContent = mMountContentGroup.get(OutputUnitType.BACKGROUND);
-    if (mountContent != null) {
-      return mountContent;
-    }
-
-    mountContent = mMountContentGroup.get(OutputUnitType.FOREGROUND);
-    if (mountContent != null) {
-      return mountContent;
-    }
-
-    return mMountContentGroup.get(OutputUnitType.BORDER);
-  }
-
-  // T0D0: get rid of this when TransitionManager is ready
-  private static OutputUnitsAffinityGroup<Object> wrapIntoGroup(Object mountContent) {
-    if (mountContent == null) {
-      return null;
-    }
-    OutputUnitsAffinityGroup<Object> mountContentGroup = new OutputUnitsAffinityGroup<>();
-    mountContentGroup.add(OutputUnitType.HOST, mountContent);
-    return mountContentGroup;
   }
 }
