@@ -114,19 +114,21 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private final Rect mPreviousLocalVisibleRect = new Rect();
   private final PrepareMountStats mPrepareMountStats = new PrepareMountStats();
   private final MountStats mMountStats = new MountStats();
-  private TransitionManager mTransitionManager;
   private int mPreviousTopsIndex;
   private int mPreviousBottomsIndex;
   private int mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
-  private final HashMap<String, MountItem> mDisappearingMountItems = new HashMap<>();
-  private final HashSet<String> mAnimatingTransitionKeys = new HashSet<>();
   private LayoutState mLastMountedLayoutState;
-  private int[] mAnimationLockedIndices;
   private boolean mIsFirstMountOfComponentTree = false;
-  private @Nullable List<Transition> mMountTimeTransitions;
-  private @Nullable List<Transition> mStateUpdateTransitions;
 
   private final MountItem mRootHostMountItem;
+
+  private TransitionManager mTransitionManager;
+  private final HashSet<String> mAnimatingTransitionKeys = new HashSet<>();
+  private int[] mAnimationLockedIndices;
+  private final SimpleArrayMap<String, OutputUnitsAffinityGroup<MountItem>>
+      mDisappearingMountItems = new SimpleArrayMap<>();
+  private @Nullable ArrayList<Transition> mMountTimeTransitions;
+  private @Nullable List<Transition> mStateUpdateTransitions;
 
   public MountState(LithoView view) {
     mIndexToItemMap = new LongSparseArray<>();
@@ -2127,9 +2129,14 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       throw new RuntimeException("Item at index=" + index +" does not exist");
     }
 
-    if (mDisappearingMountItems.put(key, item) != null) {
-      throw new RuntimeException("Disappearing the same key twice!");
+    OutputUnitsAffinityGroup<MountItem> disappearingGroup = mDisappearingMountItems.get(key);
+    if (disappearingGroup == null) {
+      disappearingGroup = new OutputUnitsAffinityGroup<>();
+      mDisappearingMountItems.put(key, disappearingGroup);
     }
+    // TODO: should retrieve type from MountItem
+    final @OutputUnitType int type = OutputUnitType.HOST;
+    disappearingGroup.add(type, item);
 
     final ComponentHost host = item.getHost();
     host.startUnmountDisappearingItem(index, item);
@@ -2137,36 +2144,39 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     mTransitionManager.setMountContent(key, item.getContent());
   }
 
-  private void endUnmountDisappearingItem(MountItem item) {
-    if (item.getContent() instanceof ComponentHost) {
-      final ComponentHost content = (ComponentHost) item.getContent();
+  private void endUnmountDisappearingItem(OutputUnitsAffinityGroup<MountItem> group) {
+    for (int i = 0, size = group.size(); i < size; i++) {
+      final MountItem item = group.getAt(i);
+      if (item.getContent() instanceof ComponentHost) {
+        final ComponentHost content = (ComponentHost) item.getContent();
 
-      // Unmount descendant items in reverse order.
-      for (int i = content.getMountItemCount() - 1; i >= 0; i--) {
-        final MountItem mountItem = content.getMountItemAt(i);
-        unmountDisappearingItemChild(mContext, mountItem);
+        // Unmount descendant items in reverse order.
+        for (int j = content.getMountItemCount() - 1; j >= 0; j--) {
+          final MountItem mountItem = content.getMountItemAt(j);
+          unmountDisappearingItemChild(mContext, mountItem);
+        }
+
+        if (content.getMountItemCount() > 0) {
+          throw new IllegalStateException(
+              "Recursively unmounting items from a ComponentHost, left"
+                  + " some items behind maybe because not tracked by its MountState");
+        }
       }
 
-      if (content.getMountItemCount() > 0) {
-        throw new IllegalStateException(
-            "Recursively unmounting items from a ComponentHost, left"
-                + " some items behind maybe because not tracked by its MountState");
+      final ComponentHost host = item.getHost();
+      host.unmountDisappearingItem(item);
+      unsetViewAttributes(item);
+
+      unbindAndUnmountLifecycle(mContext, item);
+
+      if (item.getComponent().canMountIncrementally()) {
+        final int index = mCanMountIncrementallyMountItems.indexOfValue(item);
+        if (index > 0) {
+          mCanMountIncrementallyMountItems.removeAt(index);
+        }
       }
+      ComponentsPools.release(mContext, item);
     }
-
-    final ComponentHost host = item.getHost();
-    host.unmountDisappearingItem(item);
-    unsetViewAttributes(item);
-
-    unbindAndUnmountLifecycle(mContext, item);
-
-    if (item.getComponent().canMountIncrementally()) {
-      final int index = mCanMountIncrementallyMountItems.indexOfValue(item);
-      if (index > 0) {
-        mCanMountIncrementallyMountItems.removeAt(index);
-      }
-    }
-    ComponentsPools.release(mContext, item);
   }
 
   int getItemCount() {
@@ -2233,8 +2243,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (mTransitionManager == null) {
       return;
     }
-    for (MountItem item : mDisappearingMountItems.values()) {
-      endUnmountDisappearingItem(item);
+    for (int i = 0, size = mDisappearingMountItems.size(); i < size; i++) {
+      endUnmountDisappearingItem(mDisappearingMountItems.valueAt(i));
     }
     mDisappearingMountItems.clear();
     mAnimatingTransitionKeys.clear();
@@ -2243,11 +2253,12 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void updateDisappearingMountItems(LayoutState newLayoutState) {
-    SimpleArrayMap<String, LayoutOutput> nextMountedTransitionKeys =
-        newLayoutState.getTransitionKeyMapping();
+    SimpleArrayMap<String, ?> nextMountedTransitionKeys =
+        newLayoutState.getFullTransitionKeyMapping();
     for (int i = 0, size = nextMountedTransitionKeys.size(); i < size; i++) {
       final String transitionKey = nextMountedTransitionKeys.keyAt(i);
-      final MountItem disappearingItem = mDisappearingMountItems.remove(transitionKey);
+      final OutputUnitsAffinityGroup<MountItem> disappearingItem =
+          mDisappearingMountItems.remove(transitionKey);
       if (disappearingItem != null) {
         endUnmountDisappearingItem(disappearingItem);
       }
@@ -2259,8 +2270,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     mTransitionManager.setupTransitions(mLastMountedLayoutState, newLayoutState, rootTransition);
 
-    SimpleArrayMap<String, LayoutOutput> nextTransitionKeys =
-        newLayoutState.getTransitionKeyMapping();
+    SimpleArrayMap<String, ?> nextTransitionKeys = newLayoutState.getFullTransitionKeyMapping();
     for (int i = 0, size = nextTransitionKeys.size(); i < size; i++) {
       final String transitionKey = nextTransitionKeys.keyAt(i);
       if (mTransitionManager.isKeyAnimating(transitionKey)) {
@@ -2270,17 +2280,28 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void regenerateAnimationLockedIndices(LayoutState newLayoutState) {
-    mAnimationLockedIndices = null;
-    for (int i = 0, size = newLayoutState.getMountableOutputCount(); i < size; i++) {
-      final LayoutOutput output = newLayoutState.getMountableOutputAt(i);
-      final String transitionKey = output.getTransitionKey();
-      if (transitionKey == null) {
-        continue;
-      }
+    final SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>> transitionMapping =
+        newLayoutState.getFullTransitionKeyMapping();
+    if (transitionMapping != null) {
+      for (int i = 0, size = transitionMapping.size(); i < size; i++) {
+        final String key = transitionMapping.keyAt(i);
+        if (!mAnimatingTransitionKeys.contains(key)) {
+          continue;
+        }
 
-      if (mAnimatingTransitionKeys.contains(transitionKey)) {
-        lockLayoutOutputForAnimation(newLayoutState, i);
+        if (mAnimationLockedIndices == null) {
+          mAnimationLockedIndices = new int[newLayoutState.getMountableOutputCount()];
+        }
+
+        final OutputUnitsAffinityGroup<LayoutOutput> group = transitionMapping.valueAt(i);
+        for (int j = 0, sz = group.size(); j < sz; j++) {
+          final LayoutOutput layoutOutput = group.getAt(j);
+          final int position = newLayoutState.getLayoutOutputPositionForId(layoutOutput.getId());
+          updateAnimationLockCount(newLayoutState, position, true);
+        }
       }
+    } else {
+      mAnimationLockedIndices = null;
     }
 
     if (AnimationsDebug.ENABLED) {
@@ -2310,18 +2331,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     return layoutState.getMountableOutputCount() - 1;
-  }
-
-  private void lockLayoutOutputForAnimation(LayoutState layoutState, int index) {
-    if (mAnimationLockedIndices == null) {
-      mAnimationLockedIndices = new int[layoutState.getMountableOutputCount()];
-    }
-
-    updateAnimationLockCount(layoutState, index, true);
-  }
-
-  private void unlockLayoutOutputForAnimation(LayoutState layoutState, int index) {
-    updateAnimationLockCount(layoutState, index, false);
   }
 
   /**
@@ -2381,27 +2390,30 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   @Override
   public void onAnimationComplete(String transitionKey) {
-    final MountItem disappearingItem = mDisappearingMountItems.remove(transitionKey);
-    if (disappearingItem != null) {
-      endUnmountDisappearingItem(disappearingItem);
+    final OutputUnitsAffinityGroup<MountItem> disappearingGroup =
+        mDisappearingMountItems.remove(transitionKey);
+    if (disappearingGroup != null) {
+      endUnmountDisappearingItem(disappearingGroup);
     } else {
       if (!mAnimatingTransitionKeys.remove(transitionKey)) {
         throw new RuntimeException(
             "Ending animation for key " + transitionKey + " but it wasn't recorded as animating!");
       }
 
-      final LayoutOutput layoutOutput = mLastMountedLayoutState.getLayoutOutputForTransitionKey(
-          transitionKey);
-      if (layoutOutput == null) {
+      final OutputUnitsAffinityGroup<LayoutOutput> layoutOutputGroup =
+          mLastMountedLayoutState.getLayoutOutputsForTransitionKey(transitionKey);
+      if (layoutOutputGroup == null) {
         // This can happen if the component was unmounted without animation or the transitionKey
         // was removed from the component.
         return;
       }
 
-      unlockLayoutOutputForAnimation(
-          mLastMountedLayoutState,
-          mLastMountedLayoutState.getLayoutOutputPositionForId(layoutOutput.getId()));
-
+      for (int i = 0, size = layoutOutputGroup.size(); i < size; i++) {
+        final LayoutOutput layoutOutput = layoutOutputGroup.getAt(i);
+        final int position =
+            mLastMountedLayoutState.getLayoutOutputPositionForId(layoutOutput.getId());
+        updateAnimationLockCount(mLastMountedLayoutState, position, false);
+      }
       if (ComponentsConfiguration.isDebugModeEnabled && mAnimatingTransitionKeys.isEmpty()) {
         for (int i = 0, size = mAnimationLockedIndices.length; i < size; i++) {
           if (mAnimationLockedIndices[i] != 0) {

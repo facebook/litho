@@ -2219,6 +2219,14 @@ class LayoutState {
     return (mTransitionContext != null);
   }
 
+  SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>> getFullTransitionKeyMapping() {
+    return mFullTransitionKeyMapping;
+  }
+
+  OutputUnitsAffinityGroup<LayoutOutput> getLayoutOutputsForTransitionKey(String key) {
+    return mFullTransitionKeyMapping.get(key);
+  }
+
   /**
    * Gets (or creates) a mapping from transition key to LayoutOutput.
    */
