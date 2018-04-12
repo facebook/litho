@@ -49,7 +49,7 @@ public class WorkingRangeContainerTest {
     mWorkingRangeContainer.registerWorkingRange(NAME, mWorkingRange, mComponent);
 
     final SimpleArrayMap<String, RangeTuple> workingRanges =
-        mWorkingRangeContainer.getWorkingRanges();
+        mWorkingRangeContainer.getWorkingRangesForTestOnly();
     assertThat(workingRanges.size()).isEqualTo(1);
 
     final String key = workingRanges.keyAt(0);

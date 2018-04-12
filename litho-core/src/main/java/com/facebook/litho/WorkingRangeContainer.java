@@ -143,7 +143,7 @@ class WorkingRangeContainer {
   }
 
   @VisibleForTesting
-  SimpleArrayMap<String, RangeTuple> getWorkingRanges() {
+  SimpleArrayMap<String, RangeTuple> getWorkingRangesForTestOnly() {
     return (mWorkingRanges != null) ? mWorkingRanges : new SimpleArrayMap<String, RangeTuple>();
   }
 
