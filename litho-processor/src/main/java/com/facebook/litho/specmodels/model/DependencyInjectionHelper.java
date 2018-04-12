@@ -49,6 +49,13 @@ public interface DependencyInjectionHelper {
    */
   TypeSpecDataHolder generateInjectedFields(ImmutableList<InjectPropModel> injectPropParams);
 
+  /**
+   * Generate an accessor for each injected field. This is used to generate matchers for TestSpecs
+   * and can be necessary for DI mechanisms which do not allow direct access to the generated
+   * fields. For instance, when field values are wrapped in a lazy wrapper.
+   */
+  MethodSpec generateTestingFieldAccessor(InjectPropModel injectPropModel);
+
   /** True if the Spec has to be injected. */
   boolean hasSpecInjection();
 

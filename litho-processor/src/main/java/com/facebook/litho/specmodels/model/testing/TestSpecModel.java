@@ -41,7 +41,6 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 /**
@@ -154,14 +153,7 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
 
   @Override
   public ImmutableList<PropModel> getProps() {
-    final ImmutableList<PropModel> props = mSpecModel.getProps();
-    final ImmutableList<InjectPropModel> injectProps = mSpecModel.getInjectProps();
-
-    final List<PropModel> injectPropModels =
-        injectProps.stream().map(InjectPropModel::toPropModel).collect(Collectors.toList());
-    injectPropModels.addAll(props);
-
-    return ImmutableList.copyOf(injectPropModels);
+    return mSpecModel.getProps();
   }
 
   @Override
