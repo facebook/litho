@@ -112,7 +112,9 @@ public final class AnimatedProperties {
 
     @Override
     public void set(Object mountContent, float value) {
-      if (mountContent instanceof View) {
+      if (mountContent instanceof LithoView) {
+        ((View) mountContent).setX(value);
+      } else if (mountContent instanceof View) {
         final View view = (View) mountContent;
         float parentX = getPositionRelativeToLithoView((View) view.getParent(), true);
         view.setX(value - parentX);
@@ -157,7 +159,9 @@ public final class AnimatedProperties {
 
     @Override
     public void set(Object mountContent, float value) {
-      if (mountContent instanceof View) {
+      if (mountContent instanceof LithoView) {
+        ((View) mountContent).setY(value);
+      } else if (mountContent instanceof View) {
         final View view = (View) mountContent;
         float parentY = getPositionRelativeToLithoView((View) view.getParent(), false);
         view.setY(value - parentY);

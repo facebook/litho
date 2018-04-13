@@ -532,6 +532,9 @@ public class LithoView extends ComponentHost {
 
   @Override
   public void setTranslationX(float translationX) {
+    if (translationX == getTranslationX()) {
+      return;
+    }
     super.setTranslationX(translationX);
 
     maybePerformIncrementalMountOnView();
@@ -539,6 +542,9 @@ public class LithoView extends ComponentHost {
 
   @Override
   public void setTranslationY(float translationY) {
+    if (translationY == getTranslationY()) {
+      return;
+    }
     super.setTranslationY(translationY);
 
     maybePerformIncrementalMountOnView();
