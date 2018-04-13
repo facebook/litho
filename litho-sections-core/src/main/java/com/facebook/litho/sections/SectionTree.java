@@ -800,11 +800,14 @@ public class SectionTree {
     }
 
     if (SectionsDebug.ENABLED) {
+      final String name = mNextSection != null ? mNextSection.getSimpleName() : "<null>";
       Log.d(
           SectionsDebug.TAG,
           "=== NEW CHANGE SET ("
               + SectionsLogEventUtils.applyNewChangeSetSourceToString(source)
-              + ", "
+              + ", S: "
+              + name
+              + ", Tree: "
               + hashCode()
               + ") ====");
     }

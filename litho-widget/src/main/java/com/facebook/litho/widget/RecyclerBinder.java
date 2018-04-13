@@ -1120,6 +1120,18 @@ public class RecyclerBinder
 
     ComponentsSystrace.endSection();
 
+    if (SectionsDebug.ENABLED) {
+      Log.d(
+          SectionsDebug.TAG,
+          "("
+              + hashCode()
+              + ") filled viewport with "
+              + numInserted
+              + " items (holder.size() = "
+              + holders.size()
+              + ")");
+    }
+
     return numInserted;
   }
 
