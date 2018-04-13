@@ -113,6 +113,11 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   }
 
   @Override
+  public void notifyChangeSetComplete() {
+    mRecyclerBinder.notifyChangeSetComplete();
+  }
+
+  @Override
   public void requestFocus(int index) {
     mRecyclerBinder.scrollToPosition(index, false);
   }

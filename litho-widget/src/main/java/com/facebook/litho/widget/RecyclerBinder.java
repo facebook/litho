@@ -827,6 +827,18 @@ public class RecyclerBinder
   }
 
   /**
+   * Called after all the change set operations (inserts, removes, etc.) in a batch have completed.
+   */
+  @UiThread
+  public void notifyChangeSetComplete() {
+    ThreadUtils.assertMainThread();
+
+    if (SectionsDebug.ENABLED) {
+      Log.d(SectionsDebug.TAG, "(" + hashCode() + ") notifyChangeSetComplete");
+    }
+  }
+
+  /**
    * Returns the {@link ComponentTree} for the item at index position. TODO 16212132 remove
    * getComponentAt from binder
    */

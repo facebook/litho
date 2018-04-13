@@ -65,7 +65,7 @@ public class SectionTreeTest {
         .build();
 
     tree.setRoot(section);
-    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
+    assertChangeSetHandled(changeSetHandler);
   }
 
   @Test
@@ -81,12 +81,12 @@ public class SectionTreeTest {
         .build();
 
     tree.setRoot(section);
-    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
+    assertChangeSetHandled(changeSetHandler);
 
     changeSetHandler.clear();
 
     tree.setRoot(section.makeShallowCopy(false));
-    assertThat(changeSetHandler.wereChangesHandled()).isFalse();
+    assertChangeSetNotSeen(changeSetHandler);
   }
 
   @Test
@@ -105,7 +105,7 @@ public class SectionTreeTest {
     changeSetHandler.clear();
     tree.setRoot(section);
 
-    assertThat(changeSetHandler.wereChangesHandled()).isFalse();
+    assertChangeSetNotSeen(changeSetHandler);
 
     final Section secondSection = TestSectionCreator.createChangeSetSection(
         0,
@@ -114,7 +114,7 @@ public class SectionTreeTest {
         Change.update(0, makeComponentInfo()));
     tree.setRoot(secondSection);
 
-    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
+    assertChangeSetHandled(changeSetHandler);
   }
 
   @Test
@@ -181,7 +181,7 @@ public class SectionTreeTest {
 
     tree.setRoot(root);
 
-    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
+    assertChangeSetHandled(changeSetHandler);
     assertThat(changeSetHandler.getNumChanges()).isEqualTo(9);
   }
 
@@ -221,6 +221,8 @@ public class SectionTreeTest {
     assertThat(((TestSection) leaf3).refreshCalled).isTrue();
     assertThat(((TestSection) leaf4).refreshCalled).isTrue();
     assertThat(((TestSection) node1).refreshCalled).isTrue();
+
+    assertChangeSetNotSeen(changeSetHandler);
   }
 
   @Test
@@ -333,14 +335,14 @@ public class SectionTreeTest {
         .build();
 
     tree.setRoot(section);
-    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
+    assertChangeSetHandled(changeSetHandler);
 
     final StateUpdate stateUpdate = new StateUpdate();
     changeSetHandler.clear();
     tree.updateState("key", stateUpdate);
 
     assertThat(stateUpdate.mUpdateStateCalled).isTrue();
-    assertThat(changeSetHandler.wereChangesHandled()).isFalse();
+    assertChangeSetNotSeen(changeSetHandler);
   }
 
   @Test
@@ -355,7 +357,7 @@ public class SectionTreeTest {
         .build();
 
     tree.setRoot(section);
-    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
+    assertChangeSetHandled(changeSetHandler);
 
     final StateUpdate lazyStateUpdate = new StateUpdate();
     changeSetHandler.clear();
@@ -382,7 +384,7 @@ public class SectionTreeTest {
         .build();
 
     tree.setRoot(section);
-    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
+    assertChangeSetHandled(changeSetHandler);
 
     final StateUpdate stateUpdate = new StateUpdate();
     changeSetHandler.clear();
@@ -403,7 +405,7 @@ public class SectionTreeTest {
 
     tree.setRootAsync(section);
     mChangeSetThreadShadowLooper.runOneTask();
-    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
+    assertChangeSetHandled(changeSetHandler);
   }
 
   @Test
@@ -418,7 +420,7 @@ public class SectionTreeTest {
         .build();
 
     tree.setRoot(section);
-    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
+    assertChangeSetHandled(changeSetHandler);
 
     final StateUpdate stateUpdate = new StateUpdate();
     changeSetHandler.clear();
@@ -428,7 +430,7 @@ public class SectionTreeTest {
     mChangeSetThreadShadowLooper.runOneTask();
 
     assertThat(stateUpdate.mUpdateStateCalled).isTrue();
-    assertThat(changeSetHandler.wereChangesHandled()).isFalse();
+    assertChangeSetNotSeen(changeSetHandler);
   }
 
   @Test
@@ -442,14 +444,14 @@ public class SectionTreeTest {
         SectionTree.create(mSectionContext, changeSetHandler).forceSyncStateUpdates(true).build();
 
     tree.setRoot(section);
-    assertThat(changeSetHandler.wereChangesHandled()).isTrue();
+    assertChangeSetHandled(changeSetHandler);
 
     final StateUpdate stateUpdate = new StateUpdate();
     changeSetHandler.clear();
     tree.updateStateAsync("key", stateUpdate);
 
     assertThat(stateUpdate.mUpdateStateCalled).isTrue();
-    assertThat(changeSetHandler.wereChangesHandled()).isFalse();
+    assertChangeSetNotSeen(changeSetHandler);
   }
 
   @Test(expected = IllegalStateException.class)
@@ -713,6 +715,16 @@ public class SectionTreeTest {
         .forceSyncStateUpdates(true)
         .asyncStateUpdates(true)
         .build();
+  }
+
+  private static void assertChangeSetHandled(TestTarget testTarget) {
+    assertThat(testTarget.wereChangesHandled()).isTrue();
+    assertThat(testTarget.wasNotifyChangeSetCompleteCalled()).isTrue();
+  }
+
+  private static void assertChangeSetNotSeen(TestTarget testTarget) {
+    assertThat(testTarget.wereChangesHandled()).isFalse();
+    assertThat(testTarget.wasNotifyChangeSetCompleteCalled()).isFalse();
   }
 
   private static class StateUpdate implements SectionLifecycle.StateUpdate {

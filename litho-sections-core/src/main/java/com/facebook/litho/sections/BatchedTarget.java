@@ -133,6 +133,11 @@ class BatchedTarget implements SectionTree.Target {
   }
 
   @Override
+  public void notifyChangeSetComplete() {
+    mTarget.notifyChangeSetComplete();
+  }
+
+  @Override
   public void requestFocus(int index) {
     mTarget.requestFocus(index);
     maybeLogRequestFocus(index);

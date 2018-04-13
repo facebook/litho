@@ -108,6 +108,9 @@ public class SectionTree {
      */
     void move(int fromPosition, int toPosition);
 
+    /** Called when a changeset has finished being applied. */
+    void notifyChangeSetComplete();
+
     /**
      * Request focus on the item with the given index.
      */
@@ -1069,6 +1072,7 @@ public class SectionTree {
     }
 
     if (appliedChanges) {
+      mTarget.notifyChangeSetComplete();
       dataBound();
     }
 

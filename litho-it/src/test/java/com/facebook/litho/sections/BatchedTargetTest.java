@@ -323,6 +323,12 @@ public class BatchedTargetTest {
     verify(mMockSectionsDebugLogger).logMove("", 2, 3, Thread.currentThread().getName());
   }
 
+  @Test
+  public void testNotifyChangeSetCompleteForwarded() {
+    mTarget.notifyChangeSetComplete();
+    verify(mMockTarget).notifyChangeSetComplete();
+  }
+
   private List<RenderInfo> dummyComponentInfos(int count) {
     ArrayList<RenderInfo> renderInfos = new ArrayList<>(count);
     for (int i = 0; i < count; i++) {

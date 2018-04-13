@@ -50,6 +50,7 @@ public class TestTarget implements SectionTree.Target {
   int mNumChanges = 0;
   int mFocusTo = -1;
   int mFocusToOffset = -1;
+  boolean mWasNotifyChangeSetCompleteCalled = false;
 
   public List<Operation> getOperations() {
     return mOperations;
@@ -61,6 +62,10 @@ public class TestTarget implements SectionTree.Target {
 
   public boolean wereChangesHandled() {
     return !mOperations.isEmpty();
+  }
+
+  public boolean wasNotifyChangeSetCompleteCalled() {
+    return mWasNotifyChangeSetCompleteCalled;
   }
 
   @Override
@@ -108,6 +113,11 @@ public class TestTarget implements SectionTree.Target {
   }
 
   @Override
+  public void notifyChangeSetComplete() {
+    mWasNotifyChangeSetCompleteCalled = true;
+  }
+
+  @Override
   public void requestFocus(int index) {
     mFocusTo = index;
   }
@@ -126,6 +136,7 @@ public class TestTarget implements SectionTree.Target {
   public void clear() {
     mOperations.clear();
     mNumChanges = 0;
+    mWasNotifyChangeSetCompleteCalled = false;
   }
 
   public int getFocusedTo() {
