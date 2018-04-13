@@ -23,6 +23,7 @@ import static com.facebook.litho.widget.ComponentRenderInfo.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -1858,6 +1859,7 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -1879,6 +1881,7 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -1900,6 +1903,7 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -1942,6 +1946,7 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -1984,6 +1989,7 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -2051,6 +2057,7 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     when(layoutInfo.findFirstFullyVisibleItemPosition()).thenReturn(0);
@@ -2080,6 +2087,7 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -2134,6 +2142,7 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 3);
@@ -2201,12 +2210,83 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
     // Just make sure we don't crash
+  }
+
+  @Test
+  public void testDoesNotFillViewportOnMainThread() {
+    ComponentsConfiguration.fillListViewport = true;
+
+    final LayoutInfo layoutInfo = mock(LayoutInfo.class);
+    setupBaseLayoutInfoMock(layoutInfo, OrientationHelper.HORIZONTAL);
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(layoutInfo)
+            .build(mComponentContext);
+
+    when(layoutInfo.findFirstFullyVisibleItemPosition()).thenReturn(0);
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(250, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    verify(layoutInfo, never()).createViewportFiller(anyInt(), anyInt());
+  }
+
+  @Test
+  public void testRemeasureAfterInsertFills() {
+    ComponentsConfiguration.fillListViewport = true;
+
+    final LayoutInfo layoutInfo = mock(LayoutInfo.class);
+    setupBaseLayoutInfoMock(layoutInfo, OrientationHelper.HORIZONTAL);
+
+    final RecyclerView recyclerView = mock(RecyclerView.class);
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(layoutInfo)
+            .allowFillViewportOnMainForTest(true)
+            .build(mComponentContext);
+
+    recyclerBinder.mount(recyclerView);
+
+    // Simulate the remeasure runnable
+    doAnswer(
+            new Answer() {
+              @Override
+              public Void answer(InvocationOnMock invocation) throws Throwable {
+                recyclerBinder.measure(
+                    new Size(),
+                    makeSizeSpec(250, EXACTLY),
+                    makeSizeSpec(0, SizeSpec.UNSPECIFIED),
+                    mock(EventHandler.class));
+                return null;
+              }
+            })
+        .when(recyclerView)
+        .postOnAnimation(any(Runnable.class));
+
+    recyclerBinder.measure(
+        new Size(),
+        makeSizeSpec(250, EXACTLY),
+        makeSizeSpec(0, SizeSpec.UNSPECIFIED),
+        mock(EventHandler.class));
+
+    verify(layoutInfo, never()).createViewportFiller(anyInt(), anyInt());
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
+
+    verify(layoutInfo).createViewportFiller(anyInt(), anyInt());
   }
 
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {

@@ -86,6 +86,7 @@ public class RecyclerBinder
   private final @Nullable LithoViewFactory mLithoViewFactory;
   private final ComponentTreeHolderFactory mComponentTreeHolderFactory;
   private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
+  private final boolean mAllowFillViewportOnMainForTest;
 
   // Data structure to be used to hold Components and ComponentTreeHolders before adding them to
   // the RecyclerView. This happens in the case of inserting something inside the current working
@@ -258,6 +259,7 @@ public class RecyclerBinder
     private boolean customViewTypeEnabled;
     private int componentViewType;
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
+    private boolean allowFillViewportOnMainForTest;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -384,6 +386,13 @@ public class RecyclerBinder
       return this;
     }
 
+    /** Method for tests to allow fillListViewport to be called on the main thread. */
+    @VisibleForTesting
+    Builder allowFillViewportOnMainForTest(boolean allowFillViewportOnMainForTest) {
+      this.allowFillViewportOnMainForTest = allowFillViewportOnMainForTest;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext = c;
@@ -423,6 +432,7 @@ public class RecyclerBinder
     mHasDynamicItemHeight =
         mLayoutInfo.getScrollDirection() == HORIZONTAL ? builder.hasDynamicItemHeight : false;
     mInsertPostAsyncLayoutEnabled = builder.insertPostAsyncLayoutEnabled;
+    mAllowFillViewportOnMainForTest = builder.allowFillViewportOnMainForTest;
 
     mViewportManager =
         new ViewportManager(
@@ -818,6 +828,12 @@ public class RecyclerBinder
               getActualChildrenWidthSpec(holder),
               getActualChildrenHeightSpec(holder),
               mLayoutInfo.getScrollDirection());
+
+          if (SectionsDebug.ENABLED) {
+            Log.d(
+                SectionsDebug.TAG,
+                "(" + hashCode() + ") initializing range on main thread, will not fill viewport");
+          }
         }
       }
     }
@@ -955,6 +971,7 @@ public class RecyclerBinder
             && mCurrentFirstVisiblePosition < mComponentTreeHolders.size();
 
     final int positionToComputeLayout = findFirstComponentPosition();
+    boolean doFillViewportAfterFinishingMeasure = false;
     if (shouldInitRange && positionToComputeLayout >= 0) {
       initRange(
           SizeSpec.getSize(widthSpec),
@@ -963,6 +980,7 @@ public class RecyclerBinder
           getActualChildrenWidthSpec(mComponentTreeHolders.get(positionToComputeLayout)),
           getActualChildrenHeightSpec(mComponentTreeHolders.get(positionToComputeLayout)),
           scrollDirection);
+      doFillViewportAfterFinishingMeasure = true;
     }
 
     // At this point we might still not have a range. In this situation we should return the best
@@ -1018,10 +1036,25 @@ public class RecyclerBinder
     }
 
     mMeasuredSize = new Size(outSize.width, outSize.height);
-    final boolean wasMeasured = mIsMeasured.getAndSet(true);
+    mIsMeasured.set(true);
 
-    if (!wasMeasured && shouldFillListViewport()) {
+    // If we were in a position to recompute range, we are also in a position to re-fill the
+    // viewport
+    if (doFillViewportAfterFinishingMeasure
+        && shouldFillListViewport()
+        && (mAllowFillViewportOnMainForTest || !ThreadUtils.isMainThread())) {
       fillListViewport();
+    } else if (SectionsDebug.ENABLED) {
+      Log.d(
+          SectionsDebug.TAG,
+          "("
+              + hashCode()
+              + ") Not filling viewport from measure - requested: "
+              + doFillViewportAfterFinishingMeasure
+              + ", supported: "
+              + shouldFillListViewport()
+              + ", isMainThread: "
+              + ThreadUtils.isMainThread());
     }
 
     if (mRange != null) {
