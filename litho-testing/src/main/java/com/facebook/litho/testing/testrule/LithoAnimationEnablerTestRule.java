@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.testing;
+package com.facebook.litho.testing.testrule;
 
 import com.facebook.litho.config.ComponentsConfiguration;
 import org.junit.rules.TestWatcher;
