@@ -76,4 +76,4 @@ Please also read our [Coding Style](http://fblitho.com/docs/best-practices#codin
 
 ## License
 
-Litho is BSD-licensed. We also provide an additional patent grant.
+Litho is licensed under the [Apache 2.0 License](LICENSE).

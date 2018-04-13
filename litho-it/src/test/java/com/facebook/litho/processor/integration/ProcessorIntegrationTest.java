@@ -1,10 +1,17 @@
 /*
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.processor.integration;
@@ -42,7 +49,7 @@ public class ProcessorIntegrationTest {
                 + "com.facebook.litho.annotations.OnCreateLayout should be of type "
                 + "com.facebook.litho.ComponentContext")
         .in(javaFileObject)
-        .onLine(21);
+        .onLine(28);
   }
 
   @Test
@@ -255,7 +262,7 @@ public class ProcessorIntegrationTest {
         .withErrorContaining(
             "Specs annotated with @TestSpecs must be interfaces and cannot be of kind CLASS.")
         .in(javaFileObject)
-        .onLine(16);
+        .onLine(23);
   }
 
   @Test
@@ -275,6 +282,6 @@ public class ProcessorIntegrationTest {
         .withErrorContaining(
             "TestSpec interfaces must not contain any members. Please remove these function declarations: ()void test, ()java.util.List<java.lang.Integer> list")
         .in(javaFileObject)
-        .onLine(17);
+        .onLine(24);
   }
 }

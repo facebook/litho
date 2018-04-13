@@ -71,4 +71,4 @@ Most importantly, be consistent with existing code.  Look around the codebase an
 
 ## License
 
-By contributing to Litho, you agree that your contributions will be licensed under its BSD license.
+By contributing to Litho, you agree that your contributions will be licensed under its Apache-2 license.
