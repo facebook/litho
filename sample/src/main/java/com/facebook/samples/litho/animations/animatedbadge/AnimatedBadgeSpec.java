@@ -54,12 +54,14 @@ public class AnimatedBadgeSpec {
   private static final String TRANSITION_KEY_BADGE_BLUE = "badge_blue";
 
   @OnCreateLayout
-  static Component onCreateLayout(
-      ComponentContext c, @State boolean expanded1, @State boolean expanded2) {
+  static Component onCreateLayout(ComponentContext c, @State int state) {
+    final boolean expanded1 = state == 1 || state == 2;
+    final boolean expanded2 = state == 2 || state == 3;
     return Column.create(c)
         .paddingDip(YogaEdge.ALL, 8)
         .child(Row.create(c).marginDip(YogaEdge.TOP, 8).child(buildComment1(c, expanded1)))
         .child(Row.create(c).marginDip(YogaEdge.TOP, 16).child(buildComment2(c, expanded2)))
+        .clickHandler(AnimatedBadge.onClick(c))
         .build();
   }
 
@@ -103,7 +105,6 @@ public class AnimatedBadgeSpec {
                                 .textSizeDip(12)
                                 .textColor(Color.BLUE)
                                 .text("+1"))
-                        .clickHandler(AnimatedBadge.onClick1(c))
                         .background(buildRoundedRect(c, Color.WHITE, 12))))
         .child(Text.create(c).textSizeSp(18).text("So awesome!"))
         .background(buildRoundedRect(c, 0xFFDDDDDD, 20))
@@ -150,7 +151,6 @@ public class AnimatedBadgeSpec {
                                 .heightDip(18)
                                 .widthDip(18)
                                 .background(buildRoundedRect(c, 0xFFFFB74B, 9)))
-                        .clickHandler(AnimatedBadge.onClick2(c))
                         .background(buildRoundedRect(c, Color.WHITE, 12))))
         .child(Text.create(c).textSizeSp(18).text("So awesome!"))
         .background(buildRoundedRect(c, 0xFFDDDDDD, 20))
@@ -158,23 +158,13 @@ public class AnimatedBadgeSpec {
   }
 
   @OnEvent(ClickEvent.class)
-  static void onClick1(ComponentContext c) {
-    AnimatedBadge.toggleExpanded1(c);
+  static void onClick(ComponentContext c) {
+    AnimatedBadge.updateState(c);
   }
 
   @OnUpdateState
-  static void toggleExpanded1(StateValue<Boolean> expanded1) {
-    expanded1.set(!expanded1.get());
-  }
-
-  @OnEvent(ClickEvent.class)
-  static void onClick2(ComponentContext c) {
-    AnimatedBadge.toggleExpanded2(c);
-  }
-
-  @OnUpdateState
-  static void toggleExpanded2(StateValue<Boolean> expanded2) {
-    expanded2.set(!expanded2.get());
+  static void updateState(StateValue<Integer> state) {
+    state.set((state.get() + 1) % 4);
   }
 
   @OnCreateTransition
