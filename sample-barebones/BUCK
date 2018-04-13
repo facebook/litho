@@ -3,7 +3,6 @@
 #
 # This source code is licensed under the license found in the
 # LICENSE-examples file in the root directory of this source tree.
-
 include_defs("//LITHO_DEFS")
 
 android_binary(
@@ -13,6 +12,15 @@ android_binary(
     manifest = "src/main/AndroidManifest.xml",
     deps = [
         LITHO_SAMPLE_BAREBONES_JAVA,
+    ],
+)
+
+fb_android_resource(
+    name = "res",
+    package = "com.facebook.samples.lithobarebones",
+    res = "src/main/res",
+    visibility = [
+        "PUBLIC",
     ],
 )
 
