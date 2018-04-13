@@ -16,19 +16,24 @@
 
 package com.facebook.litho.widget;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemAnimator;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.support.v7.widget.SnapHelper;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.Output;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.ArrayList;
 import java.util.List;
@@ -124,6 +129,30 @@ public class RecyclerSpecTest {
     verify(mSectionsRecyclerView).setOnRefreshListener(null);
   }
 
+  @Test
+  public void testUpdateStateAsyncWithRemeasureEvent() {
+    final Recycler recycler = Recycler.create(mComponentContext).binder(mock(Binder.class)).build();
+    final TestComponentContext testComponentContext =
+        new TestComponentContext(mComponentContext, recycler);
+
+    ComponentsConfiguration.updateMeasureAsync = true;
+
+    RecyclerSpec.onRemeasure(testComponentContext, 0);
+    assertThat(testComponentContext.isUpdateStateAsync()).isTrue();
+  }
+
+  @Test
+  public void testUpdateStateSyncWithRemeasureEvent() {
+    final Recycler recycler = Recycler.create(mComponentContext).binder(mock(Binder.class)).build();
+    final TestComponentContext testComponentContext =
+        new TestComponentContext(mComponentContext, recycler);
+
+    ComponentsConfiguration.updateMeasureAsync = false;
+
+    RecyclerSpec.onRemeasure(testComponentContext, 0);
+    assertThat(testComponentContext.isUpdateStateAsync()).isFalse();
+  }
+
   private static List<RecyclerView.OnScrollListener> createListOfScrollListeners(int size) {
     List<RecyclerView.OnScrollListener> onScrollListeners = new ArrayList<>(size);
     for (int i = 0; i < size; i++) {
@@ -131,5 +160,38 @@ public class RecyclerSpecTest {
     }
 
     return onScrollListeners;
+  }
+
+  private static class TestComponentContext extends ComponentContext {
+
+    private Recycler mRecycler;
+    private boolean mIsUpdateStateAsync = false;
+
+    public TestComponentContext(Context context, Recycler recycler) {
+      super(context);
+
+      mRecycler = recycler;
+    }
+
+    @Override
+    public Component getComponentScope() {
+      return mRecycler;
+    }
+
+    @Override
+    public void updateStateSync(ComponentLifecycle.StateUpdate stateUpdate) {
+      super.updateStateSync(stateUpdate);
+      mIsUpdateStateAsync = false;
+    }
+
+    @Override
+    public void updateStateAsync(ComponentLifecycle.StateUpdate stateUpdate) {
+      super.updateStateAsync(stateUpdate);
+      mIsUpdateStateAsync = true;
+    }
+
+    public boolean isUpdateStateAsync() {
+      return mIsUpdateStateAsync;
+    }
   }
 }
