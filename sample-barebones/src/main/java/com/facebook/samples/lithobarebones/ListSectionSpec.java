@@ -11,10 +11,14 @@
  */
 package com.facebook.samples.lithobarebones;
 
-import static com.facebook.litho.sections.widget.ListRecyclerConfiguration.SNAP_TO_CENTER;
-
+import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.LinearLayoutManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.sections.Children;
@@ -26,13 +30,28 @@ import com.facebook.litho.sections.common.RenderEvent;
 import com.facebook.litho.sections.common.SingleComponentSection;
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
+import com.facebook.litho.viewcompat.SimpleViewBinder;
+import com.facebook.litho.viewcompat.ViewCreator;
 import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RenderInfo;
+import com.facebook.litho.widget.ViewRenderInfo;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.facebook.litho.sections.widget.ListRecyclerConfiguration.SNAP_TO_CENTER;
+
 @GroupSectionSpec
 class ListSectionSpec {
+
+  // It's important for the view creator to be defined only once as the recycling for views is driven by the instance
+  // of the view creator that was used to create them.
+  private final static ViewCreator VIEW_CREATOR = new ViewCreator() {
+    @Override
+    public View createView(Context c, ViewGroup parent) {
+      return LayoutInflater.from(c).inflate(R.layout.simple_view, null);
+    }
+  };
 
   @OnCreateChildren
   static Children onCreateChildren(final SectionContext c) {
@@ -61,6 +80,19 @@ class ListSectionSpec {
 
   @OnEvent(RenderEvent.class)
   static RenderInfo onRender(final SectionContext c, @FromEvent Integer model) {
+    if (model.intValue() == 1) {
+      return ViewRenderInfo
+          .create()
+          .viewBinder(new SimpleViewBinder<TextView>() {
+            @Override
+            public void bind(TextView textView) {
+              textView.setText("I'm a view in a Litho world");
+            }
+          })
+          .viewCreator(VIEW_CREATOR)
+          .build();
+    }
+
     return ComponentRenderInfo.create()
         .component(
             ListItem.create(c)
