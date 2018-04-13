@@ -35,6 +35,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
 
   @Nullable private final DependencyInjectionHelperFactory mDependencyInjectionHelperFactory;
   private final List<SpecModelFactory> mSpecModelFactories;
+  private final boolean mShouldSavePropNames;
   private PropNameInterStageStore mPropNameInterStageStore;
   private RunMode mRunMode;
 
@@ -49,8 +50,16 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
   protected AbstractComponentsProcessor(
       List<SpecModelFactory> specModelFactories,
       DependencyInjectionHelperFactory dependencyInjectionHelperFactory) {
+    this(specModelFactories, dependencyInjectionHelperFactory, true);
+  }
+
+  protected AbstractComponentsProcessor(
+      List<SpecModelFactory> specModelFactories,
+      DependencyInjectionHelperFactory dependencyInjectionHelperFactory,
+      boolean shouldSavePropNames) {
     mSpecModelFactories = specModelFactories;
     mDependencyInjectionHelperFactory = dependencyInjectionHelperFactory;
+    mShouldSavePropNames = shouldSavePropNames;
   }
 
   @Override
@@ -120,6 +129,8 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
   }
 
   private void afterGenerate(SpecModel specModel) throws IOException {
-    mInterStageStore.getPropNameInterStageStore().saveNames(specModel);
+    if (mShouldSavePropNames) {
+      mInterStageStore.getPropNameInterStageStore().saveNames(specModel);
+    }
   }
 }
