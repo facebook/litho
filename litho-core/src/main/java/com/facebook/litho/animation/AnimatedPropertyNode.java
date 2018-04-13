@@ -9,8 +9,11 @@
 
 package com.facebook.litho.animation;
 
+import android.graphics.drawable.Drawable;
 import com.facebook.litho.OutputUnitsAffinityGroup;
 import com.facebook.litho.dataflow.ValueNode;
+import java.lang.ref.WeakReference;
+import javax.annotation.Nullable;
 
 /**
  * A ValueNode that allows getting and/or setting the value of a specific property (x, y, scale,
@@ -23,35 +26,33 @@ import com.facebook.litho.dataflow.ValueNode;
 public class AnimatedPropertyNode extends ValueNode {
 
   private final AnimatedProperty mAnimatedProperty;
-  private OutputUnitsAffinityGroup<Object> mMountContentGroup;
+  private final OutputUnitsAffinityGroup<WeakReference<Object>> mMountContentGroup =
+      new OutputUnitsAffinityGroup<>();
 
   public AnimatedPropertyNode(
       OutputUnitsAffinityGroup<Object> mountContentGroup, AnimatedProperty animatedProperty) {
-    mMountContentGroup = mountContentGroup;
+    setMountContentGroupInner(mountContentGroup);
     mAnimatedProperty = animatedProperty;
   }
 
   /** Sets the mount content that this {@link AnimatedPropertyNode} updates a value on. */
   public void setMountContentGroup(OutputUnitsAffinityGroup<Object> mountContentGroup) {
-    mMountContentGroup = mountContentGroup;
-    if (mountContentGroup != null) {
-      setValueInner(getValue());
-    }
+    setMountContentGroupInner(mountContentGroup);
+    setValueInner(getValue());
   }
 
   @Override
   public void setValue(float value) {
     super.setValue(value);
-    if (mMountContentGroup != null) {
-      setValueInner(value);
-    }
+    setValueInner(value);
   }
 
   @Override
   public float calculateValue(long frameTimeNanos) {
     boolean hasInput = hasInput();
+    final Object mountContent = resolveReference(mMountContentGroup.getMostSignificantUnit());
 
-    if (mMountContentGroup == null || mMountContentGroup.isEmpty()) {
+    if (mountContent == null) {
       if (hasInput) {
         return getInput().getValue();
       }
@@ -61,7 +62,6 @@ public class AnimatedPropertyNode extends ValueNode {
     }
 
     if (!hasInput) {
-      final Object mountContent = mMountContentGroup.getMostSignificantUnit();
       return mAnimatedProperty.get(mountContent);
     }
 
@@ -71,10 +71,39 @@ public class AnimatedPropertyNode extends ValueNode {
     return value;
   }
 
+  private void setMountContentGroupInner(OutputUnitsAffinityGroup<Object> mountContentGroup) {
+    mMountContentGroup.clean();
+    if (mountContentGroup == null) {
+      return;
+    }
+    for (int i = 0, size = mountContentGroup.size(); i < size; ++i) {
+      final WeakReference<Object> mountContentRef = new WeakReference<>(mountContentGroup.getAt(i));
+      mMountContentGroup.add(mountContentGroup.typeAt(i), mountContentRef);
+    }
+  }
+
   private void setValueInner(float value) {
     for (int i = 0, size = mMountContentGroup.size(); i < size; i++) {
-      final Object mountContent = mMountContentGroup.getAt(i);
-      mAnimatedProperty.set(mountContent, value);
+      final Object mountContent = resolveReference(mMountContentGroup.getAt(i));
+      if (mountContent != null) {
+        mAnimatedProperty.set(mountContent, value);
+      }
     }
+  }
+
+  @Nullable
+  private static Object resolveReference(WeakReference<Object> mountContentRef) {
+    final Object mountContent = mountContentRef != null ? mountContentRef.get() : null;
+    if (mountContent == null) {
+      return null;
+    }
+    if ((mountContent instanceof Drawable) && ((Drawable) mountContent).getCallback() == null) {
+      // MountContent have been already unmounted but we still hold reference to it, so let's clear
+      // up the reference and return null. Actual unmounting of a view can be deferred, so don't
+      // check it here
+      mountContentRef.clear();
+      return null;
+    }
+    return mountContent;
   }
 }
