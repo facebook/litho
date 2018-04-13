@@ -171,4 +171,7 @@ public class ComponentsConfiguration {
 
   /** Whether to fill list viewports in RecyclerBinder from measure(), but only for HScrolls. */
   public static boolean fillListViewportHScrollOnly = false;
+
+  /** Configuration for updating state asynchronously in Recycler when receiving remeasure event */
+  public static boolean updateMeasureAsync = false;
 }
