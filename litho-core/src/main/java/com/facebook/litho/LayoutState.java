@@ -1002,13 +1002,13 @@ class LayoutState {
 
   private static void addCurrentAffinityGroupToTransitionMapping(
       String transitionKey, LayoutState layoutState) {
-    if (layoutState.mCurrentLayoutOutputAffinityGroup == null) {
+    final OutputUnitsAffinityGroup<LayoutOutput> group =
+        layoutState.mCurrentLayoutOutputAffinityGroup;
+    if (group == null || group.isEmpty()) {
       return;
     }
 
-    if (layoutState.mTransitionKeyMapping.put(
-            transitionKey, layoutState.mCurrentLayoutOutputAffinityGroup)
-        != null) {
+    if (layoutState.mTransitionKeyMapping.put(transitionKey, group) != null) {
       throw new RuntimeException(
           "The transitionKey '"
               + transitionKey
