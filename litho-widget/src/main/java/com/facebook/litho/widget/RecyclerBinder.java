@@ -559,12 +559,9 @@ public class RecyclerBinder
     synchronized (this) {
       mComponentTreeHolders.add(position, holder);
       mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
-      maybeInitRangeOrRemeasureForMutation(position, holder);
     }
 
     mInternalAdapter.notifyItemInserted(position);
-
-    maybePostComputeRange();
 
     mViewportManager.setDataChangedIsVisible(
         mViewportManager.isInsertInVisibleRange(
@@ -584,32 +581,6 @@ public class RecyclerBinder
       // We are not mounted but we still need to post this. Just post on the main thread.
       mMainThreadHandler.removeCallbacks(mRemeasureRunnable);
       mMainThreadHandler.post(mRemeasureRunnable);
-    }
-  }
-
-  /**
-   * Whenever an item is inserted or updated, we should check whether we need to initialize the
-   * range or request a remeasure of the entire binder
-   */
-  @GuardedBy("this")
-  private void maybeInitRangeOrRemeasureForMutation(int position, ComponentTreeHolder holder) {
-    if (!mIsMeasured.get() || !holder.getRenderInfo().rendersComponent()) {
-      return;
-    }
-
-    if (mRequiresRemeasure.get()) {
-      requestRemeasure();
-      return;
-    }
-
-    if (mRange == null) {
-      initRange(
-          mMeasuredSize.width,
-          mMeasuredSize.height,
-          position,
-          getActualChildrenWidthSpec(holder),
-          getActualChildrenHeightSpec(holder),
-          mLayoutInfo.getScrollDirection());
     }
   }
 
@@ -638,13 +609,10 @@ public class RecyclerBinder
 
         mComponentTreeHolders.add(position + i, holder);
         mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
-        maybeInitRangeOrRemeasureForMutation(position + i, holder);
       }
     }
 
     mInternalAdapter.notifyItemRangeInserted(position, renderInfos.size());
-
-    maybePostComputeRange();
 
     mViewportManager.setDataChangedIsVisible(
         mViewportManager.isInsertInVisibleRange(
@@ -680,10 +648,6 @@ public class RecyclerBinder
 
       mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
       holder.setRenderInfo(renderInfo);
-
-      // Range might not have been initialized if all previous items were views and we update
-      // one of them to be a component.
-      maybeInitRangeOrRemeasureForMutation(position, holder);
     }
 
     // If this item is rendered with a view (or was rendered with a view before now) we need to
@@ -691,8 +655,6 @@ public class RecyclerBinder
     if (renderInfoWasView || renderInfo.rendersView()) {
       mInternalAdapter.notifyItemChanged(position);
     }
-
-    maybePostComputeRange();
 
     mViewportManager.setDataChangedIsVisible(mViewportManager.isUpdateInVisibleRange(position, 1));
   }
@@ -725,11 +687,8 @@ public class RecyclerBinder
 
         mRenderInfoViewCreatorController.maybeTrackViewCreator(newRenderInfo);
         holder.setRenderInfo(newRenderInfo);
-        maybeInitRangeOrRemeasureForMutation(position + i, holder);
       }
     }
-
-    maybePostComputeRange();
 
     mViewportManager.setDataChangedIsVisible(
         mViewportManager.isUpdateInVisibleRange(position, renderInfos.size()));
@@ -766,8 +725,6 @@ public class RecyclerBinder
     }
     mInternalAdapter.notifyItemMoved(fromPosition, toPosition);
 
-    maybePostComputeRange();
-
     mViewportManager.setDataChangedIsVisible(
         mViewportManager.isMoveInVisibleRange(fromPosition, toPosition, mRangeSize));
   }
@@ -792,8 +749,6 @@ public class RecyclerBinder
     mInternalAdapter.notifyItemRemoved(position);
 
     holder.release();
-
-    maybePostComputeRange();
 
     mViewportManager.setDataChangedIsVisible(mViewportManager.isRemoveInVisibleRange(position, 1));
   }
@@ -820,8 +775,6 @@ public class RecyclerBinder
     }
     mInternalAdapter.notifyItemRangeRemoved(position, count);
 
-    maybePostComputeRange();
-
     mViewportManager.setDataChangedIsVisible(
         mViewportManager.isRemoveInVisibleRange(position, count));
   }
@@ -836,6 +789,33 @@ public class RecyclerBinder
     if (SectionsDebug.ENABLED) {
       Log.d(SectionsDebug.TAG, "(" + hashCode() + ") notifyChangeSetComplete");
     }
+
+    synchronized (this) {
+      if (!mIsMeasured.get()) {
+        return;
+      }
+
+      if (mRequiresRemeasure.get()) {
+        requestRemeasure();
+        return;
+      }
+
+      if (mRange == null) {
+        int firstComponent = findFirstComponentPosition();
+        if (firstComponent >= 0) {
+          final ComponentTreeHolder holder = mComponentTreeHolders.get(firstComponent);
+          initRange(
+              mMeasuredSize.width,
+              mMeasuredSize.height,
+              firstComponent,
+              getActualChildrenWidthSpec(holder),
+              getActualChildrenHeightSpec(holder),
+              mLayoutInfo.getScrollDirection());
+        }
+      }
+    }
+
+    maybePostComputeRange();
   }
 
   /**
