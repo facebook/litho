@@ -1,3 +1,4 @@
+# BUILD FILE SYNTAX: SKYLARK
 prebuilt_jar(
     name = "diff-utils",
     binary_jar = ":diff-utils.jar",
