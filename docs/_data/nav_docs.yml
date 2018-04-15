@@ -38,6 +38,7 @@
   - id: sections-view-support
   - id: services
   - id: sections-architecture
+  - id: sections-working-ranges
 - title: Compatibility
   items:
   - id: styles
