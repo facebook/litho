@@ -86,13 +86,9 @@ public class DelegateMethodGenerator {
       DelegateMethodDescription methodDescription,
       SpecMethodModel<DelegateMethod, Void> delegateMethod) {
     final MethodSpec.Builder methodSpec =
-        MethodSpec.methodBuilder(methodDescription.name).addModifiers(methodDescription.accessType);
-
-    if (methodDescription.returnsParameterizedType) {
-      methodSpec.returns(delegateMethod.returnType);
-    } else {
-      methodSpec.returns(methodDescription.returnType);
-    }
+        MethodSpec.methodBuilder(methodDescription.name)
+            .addModifiers(methodDescription.accessType)
+            .returns(methodDescription.returnType);
 
     for (AnnotationSpec annotation : methodDescription.annotations) {
       methodSpec.addAnnotation(annotation);

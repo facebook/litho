@@ -62,7 +62,6 @@ public final class DelegateMethodDescription {
   public final ImmutableList<Class<? extends Annotation>> interStageInputAnnotations;
   public final ImmutableList<MethodSpec> extraMethods;
   public final ImmutableList<TypeName> exceptions;
-  public final boolean returnsParameterizedType;
 
   private DelegateMethodDescription(Builder builder) {
     annotations = builder.annotations;
@@ -75,7 +74,6 @@ public final class DelegateMethodDescription {
     interStageInputAnnotations = builder.interStageInputAnnotations;
     extraMethods = builder.extraMethods;
     exceptions = builder.exceptions;
-    returnsParameterizedType = builder.returnsParameterizedType;
   }
 
   public static Builder newBuilder() {
@@ -93,8 +91,7 @@ public final class DelegateMethodDescription {
         .optionalParameterTypes(methodDescription.optionalParameterTypes)
         .interStageInputAnnotations(methodDescription.interStageInputAnnotations)
         .extraMethods(methodDescription.extraMethods)
-        .exceptions(methodDescription.exceptions)
-        .returnsParameterizedType(methodDescription.returnsParameterizedType);
+        .exceptions(methodDescription.exceptions);
   }
 
   public static class Builder {
@@ -108,7 +105,6 @@ public final class DelegateMethodDescription {
     private ImmutableList<Class<? extends Annotation>> interStageInputAnnotations;
     private ImmutableList<MethodSpec> extraMethods;
     private ImmutableList<TypeName> exceptions;
-    private boolean returnsParameterizedType;
 
     private Builder() {
     }
@@ -168,15 +164,6 @@ public final class DelegateMethodDescription {
 
     public Builder exceptions(ImmutableList<TypeName> exceptions) {
       this.exceptions = exceptions;
-      return this;
-    }
-
-    /**
-     * If this is true, then the delegate method will have generics on it that we should take
-     * account of.
-     */
-    public Builder returnsParameterizedType(boolean returnsParameterizedType) {
-      this.returnsParameterizedType = returnsParameterizedType;
       return this;
     }
 
