@@ -62,7 +62,11 @@ or, if you prefer Gradle,
 Include these lines in your proguard-rules.pro
 ```
 -dontwarn com.facebook.fbui.**
--dontwarn com.facebook.litho.**
+-dontwarn android.text.StaticLayout
+-dontwarn android.view.DisplayList
+-dontwarn android.view.RenderNode
+-dontwarn android.view.DisplayListCanvas
+-dontwarn android.view.HardwareCanvas
 ```
 
 ## Contributing
