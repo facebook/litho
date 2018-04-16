@@ -300,6 +300,7 @@ public class ComponentTreeHolder {
     mPendingNewLayoutListener = null;
     mLastRequestedWidthSpec = UNINITIALIZED;
     mLastRequestedHeightSpec = UNINITIALIZED;
+    mLastMeasuredHeight = 0;
   }
 
   @GuardedBy("this")

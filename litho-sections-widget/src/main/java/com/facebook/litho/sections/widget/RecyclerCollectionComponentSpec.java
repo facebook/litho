@@ -147,6 +147,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true, resType = ResType.COLOR) int refreshProgressBarColor,
       @Prop(optional = true) LithoRecylerView.TouchInterceptor touchInterceptor,
       @Prop(optional = true) boolean setRootAsync,
+      @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,
       @State(canUpdateLazily = true) boolean hasSetSectionTreeRoot,
       @State RecyclerCollectionEventsController internalEventsController,
       @State LoadingState loadingState,
@@ -193,7 +194,7 @@ public class RecyclerCollectionComponentSpec {
             .refreshHandler(!canPTR ? null : RecyclerCollectionComponent.onRefresh(c, sectionTree))
             .pullToRefresh(canPTR)
             .itemDecoration(itemDecoration)
-            .canMeasure(canMeasureRecycler)
+            .canMeasure(canMeasureRecycler || recyclerConfiguration.isWrapContent())
             .horizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled)
             .verticalFadingEdgeEnabled(verticalFadingEdgeEnabled)
             .fadingEdgeLengthDip(fadingEdgeLength)
@@ -210,7 +211,7 @@ public class RecyclerCollectionComponentSpec {
             .flexShrink(0)
             .touchHandler(recyclerTouchEventHandler);
 
-    if (!canMeasureRecycler) {
+    if (!canMeasureRecycler && !recyclerConfiguration.isWrapContent()) {
       recycler.positionType(ABSOLUTE).positionPx(ALL, 0);
     }
 

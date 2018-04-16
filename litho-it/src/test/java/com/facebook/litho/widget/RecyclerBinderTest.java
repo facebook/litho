@@ -2289,6 +2289,114 @@ public class RecyclerBinderTest {
     verify(layoutInfo).createViewportFiller(anyInt(), anyInt());
   }
 
+  @Test
+  public void testWrappedHeightWithInsertItems() {
+    final int widthSpec = makeSizeSpec(100, EXACTLY);
+    final int heightSpec = makeSizeSpec(1200, AT_MOST);
+
+    final RecyclerBinder recyclerBinder =
+        prepareBinderWithMeasuredChildHeight(widthSpec, heightSpec, 8, 100);
+
+    final Size size = new Size();
+    recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    assertThat(size.height).isEqualTo(800);
+
+    // Append an item, the wrapped height should increase.
+    recyclerBinder.appendItem(
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).measuredHeight(200).build();
+          }
+        });
+    recyclerBinder.notifyChangeSetComplete();
+
+    recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    assertThat(size.height).isEqualTo(1000);
+
+    // Append an item, the wrapped height should be equal to the max height.
+    recyclerBinder.appendItem(
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).measuredHeight(220).build();
+          }
+        });
+    recyclerBinder.notifyChangeSetComplete();
+
+    recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    assertThat(size.height).isEqualTo(1200);
+  }
+
+  @Test
+  public void testWrappedHeightWithRemoveItems() {
+    final int widthSpec = makeSizeSpec(100, EXACTLY);
+    final int heightSpec = makeSizeSpec(1200, AT_MOST);
+    final RecyclerBinder recyclerBinder =
+        prepareBinderWithMeasuredChildHeight(widthSpec, heightSpec, 10, 100);
+
+    final Size size = new Size();
+    recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    assertThat(size.height).isEqualTo(1000);
+
+    recyclerBinder.removeRangeAt(0, 3);
+    recyclerBinder.notifyChangeSetComplete();
+
+    recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    assertThat(size.height).isEqualTo(700);
+
+    recyclerBinder.removeItemAt(0);
+    recyclerBinder.notifyChangeSetComplete();
+
+    recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    assertThat(size.height).isEqualTo(600);
+  }
+
+  @Test
+  public void testWrappedHeightWithUpdateItems() {
+    final int widthSpec = makeSizeSpec(100, EXACTLY);
+    final int heightSpec = makeSizeSpec(1200, AT_MOST);
+    final RecyclerBinder recyclerBinder =
+        prepareBinderWithMeasuredChildHeight(widthSpec, heightSpec, 10, 100);
+
+    final Size size = new Size();
+    recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    assertThat(size.height).isEqualTo(1000);
+
+    // Update a range of components
+    final List<RenderInfo> components = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          new InlineLayoutSpec() {
+            @Override
+            protected Component onCreateLayout(ComponentContext c) {
+              return TestDrawableComponent.create(c).measuredHeight(50).build();
+            }
+          };
+
+      components.add(ComponentRenderInfo.create().component(component).build());
+    }
+    recyclerBinder.updateRangeAt(0, components);
+    recyclerBinder.notifyChangeSetComplete();
+
+    recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    assertThat(size.height).isEqualTo(750);
+
+    // Update a single component
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).measuredHeight(200).build();
+          }
+        };
+    recyclerBinder.updateItemAt(5, component);
+    recyclerBinder.notifyChangeSetComplete();
+
+    recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    assertThat(size.height).isEqualTo(850);
+  }
+
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
     return new RecyclerBinder.Builder()
         .rangeRatio(RANGE_RATIO)
@@ -2348,6 +2456,32 @@ public class RecyclerBinderTest {
     mRecyclerBinder.removeItemAt(i);
     mRecyclerBinder.insertItemAt(i, components.get(i));
     mRecyclerBinder.notifyChangeSetComplete();
+  }
+
+  private RecyclerBinder prepareBinderWithMeasuredChildHeight(
+      int widthSpec, int heightSpec, int count, final int childHeight) {
+    RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().wrapContent(true).build(mComponentContext);
+
+    Size size = new Size();
+    recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+
+    final List<RenderInfo> components = new ArrayList<>();
+    for (int i = 0; i < count; i++) {
+      final Component component =
+          new InlineLayoutSpec() {
+            @Override
+            protected Component onCreateLayout(ComponentContext c) {
+              return TestDrawableComponent.create(c).measuredHeight(childHeight).build();
+            }
+          };
+
+      components.add(ComponentRenderInfo.create().component(component).build());
+    }
+    recyclerBinder.insertRangeAt(0, components);
+    recyclerBinder.notifyChangeSetComplete();
+
+    return recyclerBinder;
   }
 
   private static class TestComponentTreeHolder extends ComponentTreeHolder {
