@@ -27,6 +27,8 @@ import static org.mockito.Mockito.when;
 import android.support.v7.widget.GridLayoutManager;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
@@ -117,6 +119,62 @@ public class GridLayoutInfoTest {
 
     final int widthSpec = gridLayoutInfo.getChildWidthSpec(sizeSpec, renderInfo);
     assertThat(SizeSpec.getMode(widthSpec)).isEqualTo(UNSPECIFIED);
+  }
+
+  @Test
+  public void testComputeWrappedHeightOnVertical() {
+    /*
+     * -------------------
+     * | 200 | 200 | 200 |
+     * -------------------
+     * | 200 | 200 | 200 |
+     * -------------------
+     * | 200 | 200 | 200 |
+     * -------------------
+     * | 200 |
+     * -------
+     */
+    final GridLayoutInfo gridLayoutInfo = createGridLayoutInfo(VERTICAL, 3);
+    final int sizeSpec = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+
+    final List<ComponentTreeHolder> componentTreeHolders = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      final ComponentTreeHolder holder = mock(ComponentTreeHolder.class);
+      when(holder.getMeasuredHeight()).thenReturn(200);
+
+      componentTreeHolders.add(holder);
+    }
+
+    int measuredHeight =
+        gridLayoutInfo.computeWrappedHeight(SizeSpec.getSize(sizeSpec), componentTreeHolders);
+    assertThat(measuredHeight).isEqualTo(800);
+  }
+
+  @Test
+  public void testComputeWrappedHeightOnVerticalWrapped() {
+    /*
+     * -------------------
+     * | 200 | 200 | 200 |
+     * -------------------
+     * | 200 | 200 | 200 |
+     * -------------------
+     * | 200 | 200 | 200 |
+     * ~~~~~~~~~~~~~~~~~~~
+     */
+    final GridLayoutInfo gridLayoutInfo = createGridLayoutInfo(VERTICAL, 3);
+    final int sizeSpec = SizeSpec.makeSizeSpec(600, SizeSpec.AT_MOST);
+
+    final List<ComponentTreeHolder> componentTreeHolders = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      final ComponentTreeHolder holder = mock(ComponentTreeHolder.class);
+      when(holder.getMeasuredHeight()).thenReturn(200);
+
+      componentTreeHolders.add(holder);
+    }
+
+    int measuredHeight =
+        gridLayoutInfo.computeWrappedHeight(SizeSpec.getSize(sizeSpec), componentTreeHolders);
+    assertThat(measuredHeight).isEqualTo(600);
   }
 
   private static GridLayoutInfo createGridLayoutInfo(int direction, int spanCount) {

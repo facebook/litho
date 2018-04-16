@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.widget.RecyclerBinder.RecyclerViewLayoutManagerOverrideParams;
+import java.util.List;
 
 public class GridLayoutInfo implements LayoutInfo {
 
@@ -179,6 +180,37 @@ public class GridLayoutInfo implements LayoutInfo {
   public ViewportFiller createViewportFiller(int measuredWidth, int measuredHeight) {
     // TODO(t28219954): Implement ViewportFiller for GridLayout
     return null;
+  }
+
+  @Override
+  public int computeWrappedHeight(int maxHeight, List<ComponentTreeHolder> componentTreeHolders) {
+    final int itemCount = componentTreeHolders.size();
+    final int spanCount = mGridLayoutManager.getSpanCount();
+
+    int measuredHeight = 0;
+
+    switch (mGridLayoutManager.getOrientation()) {
+      case GridLayoutManager.VERTICAL:
+        for (int i = 0; i < itemCount; i += spanCount) {
+          final ComponentTreeHolder holder = componentTreeHolders.get(i);
+          int firstRowItemHeight = holder.getMeasuredHeight();
+
+          measuredHeight += firstRowItemHeight;
+          measuredHeight += LayoutInfoUtils.getTopDecorationHeight(mGridLayoutManager, i);
+          measuredHeight += LayoutInfoUtils.getBottomDecorationHeight(mGridLayoutManager, i);
+
+          if (measuredHeight > maxHeight) {
+            measuredHeight = maxHeight;
+            break;
+          }
+        }
+        return measuredHeight;
+
+      case GridLayoutManager.HORIZONTAL:
+      default:
+        throw new IllegalStateException(
+            "This method should only be called when orientation is vertical");
+    }
   }
 
   private class GridSpanSizeLookup extends GridLayoutManager.SpanSizeLookup {

@@ -19,6 +19,7 @@ package com.facebook.litho.widget;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
+import java.util.List;
 
 /**
  * An implementation of this interface will provide the {@link RecyclerBinder} with all the
@@ -84,6 +85,14 @@ public interface LayoutInfo extends ViewportInfo {
    *     pre-fill the RecyclerView.
    */
   ViewportFiller createViewportFiller(int measuredWidth, int measuredHeight);
+
+  /**
+   * @param maxHeight the max height of the parent {@link RecyclerSpec}.
+   * @param componentTreeHolders the list of {@link ComponentTreeHolder} in this {@link
+   *     RecyclerBinder}.
+   * @return the measured height of this {@link RecyclerBinder}.
+   */
+  int computeWrappedHeight(int maxHeight, List<ComponentTreeHolder> componentTreeHolders);
 
   interface RenderInfoCollection {
     RenderInfo getRenderInfoAt(int position);

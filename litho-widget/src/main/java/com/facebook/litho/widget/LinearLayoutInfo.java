@@ -26,6 +26,7 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutParams;
 import com.facebook.litho.SizeSpec;
+import java.util.List;
 
 /**
  * An implementation for {@link LayoutInfo} to implement linear lists with a
@@ -139,6 +140,12 @@ public class LinearLayoutInfo implements LayoutInfo {
   @Override
   public ViewportFiller createViewportFiller(int measuredWidth, int measuredHeight) {
     return new ViewportFiller(measuredWidth, measuredHeight, getScrollDirection());
+  }
+
+  @Override
+  public int computeWrappedHeight(int maxHeight, List<ComponentTreeHolder> componentTreeHolders) {
+    return LayoutInfoUtils.computeLinearLayoutWrappedHeight(
+        mLinearLayoutManager, maxHeight, componentTreeHolders);
   }
 
   private static class InternalLinearLayoutManager extends LinearLayoutManager {

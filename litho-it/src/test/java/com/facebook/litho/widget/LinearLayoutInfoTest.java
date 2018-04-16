@@ -22,10 +22,15 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.robolectric.RuntimeEnvironment.application;
 
 import android.support.v7.widget.LinearLayoutManager;
+import com.facebook.litho.SizeSpec;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -114,5 +119,59 @@ public class LinearLayoutInfoTest {
 
     final int widthSpec = linearLayoutInfo.getChildWidthSpec(sizeSpec, null);
     assertThat(makeSizeSpec(0, UNSPECIFIED)).isEqualTo(widthSpec);
+  }
+
+  @Test
+  public void testComputeWrappedHeightOnVertical() {
+    /*
+     * -------
+     * | 100 |
+     * ~~~~~~~
+     * ... x8
+     * ~~~~~~~
+     * | 100 |
+     * -------
+     */
+    final LinearLayoutInfo linearLayoutInfo = new LinearLayoutInfo(application, VERTICAL, false);
+    final int sizeSpec = SizeSpec.makeSizeSpec(1200, SizeSpec.AT_MOST);
+
+    final List<ComponentTreeHolder> componentTreeHolders = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      final ComponentTreeHolder holder = mock(ComponentTreeHolder.class);
+      when(holder.getMeasuredHeight()).thenReturn(100);
+      when(holder.isTreeValid()).thenReturn(true);
+
+      componentTreeHolders.add(holder);
+    }
+
+    int measuredHeight =
+        linearLayoutInfo.computeWrappedHeight(SizeSpec.getSize(sizeSpec), componentTreeHolders);
+    assertThat(measuredHeight).isEqualTo(1000);
+  }
+
+  @Test
+  public void testComputeWrappedHeightOnVerticalWrapped() {
+    /*
+     * -------
+     * | 100 |
+     * ~~~~~~~
+     * ... x7
+     * ~~~~~~~
+     */
+    final LinearLayoutInfo linearLayoutInfo = new LinearLayoutInfo(application, VERTICAL, false);
+    final int sizeSpec = SizeSpec.makeSizeSpec(800, SizeSpec.AT_MOST);
+
+    final List<ComponentTreeHolder> componentTreeHolders = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      final ComponentTreeHolder holder = mock(ComponentTreeHolder.class);
+      when(holder.getMeasuredHeight()).thenReturn(100);
+      when(holder.isTreeValid()).thenReturn(true);
+
+      componentTreeHolders.add(holder);
+    }
+
+    int measuredHeight =
+        linearLayoutInfo.computeWrappedHeight(SizeSpec.getSize(sizeSpec), componentTreeHolders);
+    assertThat(measuredHeight).isEqualTo(800);
   }
 }
