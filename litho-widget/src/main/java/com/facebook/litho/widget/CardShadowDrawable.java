@@ -38,10 +38,9 @@ class CardShadowDrawable extends Drawable {
   private final Paint mEdgeShadowPaint;
 
   private final Path mCornerShadowTopPath = new Path();
-  private final Paint mCornerShadowTopPaint;
-
   private final Path mCornerShadowBottomPath = new Path();
-  private final Paint mCornerShadowBottomPaint;
+
+  private final Paint mCornerShadowPaint;
 
   private float mCornerRadius;
   private float mShadowSize;
@@ -50,20 +49,16 @@ class CardShadowDrawable extends Drawable {
   private boolean mDirty = true;
 
   CardShadowDrawable() {
-    mCornerShadowTopPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-    mCornerShadowTopPaint.setStyle(Paint.Style.FILL);
+    mCornerShadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
+    mCornerShadowPaint.setStyle(Paint.Style.FILL);
 
-    mCornerShadowBottomPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-    mCornerShadowBottomPaint.setStyle(Paint.Style.FILL);
-
-    mEdgeShadowPaint = new Paint(mCornerShadowTopPaint);
+    mEdgeShadowPaint = new Paint(mCornerShadowPaint);
     mEdgeShadowPaint.setAntiAlias(false);
   }
 
   @Override
   public void setAlpha(int alpha) {
-    mCornerShadowTopPaint.setAlpha(alpha);
-    mCornerShadowBottomPaint.setAlpha(alpha);
+    mCornerShadowPaint.setAlpha(alpha);
     mEdgeShadowPaint.setAlpha(alpha);
   }
 
@@ -85,8 +80,7 @@ class CardShadowDrawable extends Drawable {
 
   @Override
   public void setColorFilter(ColorFilter cf) {
-    mCornerShadowTopPaint.setColorFilter(cf);
-    mCornerShadowBottomPaint.setColorFilter(cf);
+    mCornerShadowPaint.setColorFilter(cf);
     mEdgeShadowPaint.setColorFilter(cf);
   }
 
@@ -163,12 +157,23 @@ class CardShadowDrawable extends Drawable {
     final int shadowHorizontal = getShadowHorizontal(mRawShadowSize);
     final int shadowTop = getShadowTop(mRawShadowSize);
     final int shadowBottom = getShadowBottom(mRawShadowSize);
+    final float shadowCornerRadius = shadowHorizontal + mCornerRadius;
 
-    final RectF topInnerBounds = new RectF(
-        getShadowHorizontal(mRawShadowSize),
-        getShadowTop(mRawShadowSize),
-        getShadowHorizontal(mRawShadowSize) + 2 * mCornerRadius,
-        getShadowTop(mRawShadowSize) + 2 * mCornerRadius);
+    mCornerShadowPaint.setShader(
+        new RadialGradient(
+            shadowCornerRadius,
+            shadowCornerRadius,
+            shadowCornerRadius,
+            new int[] {mShadowStartColor, mShadowStartColor, mShadowEndColor},
+            new float[] {0f, .2f, 1f},
+            Shader.TileMode.CLAMP));
+
+    final RectF topInnerBounds =
+        new RectF(
+            shadowHorizontal,
+            shadowTop,
+            shadowHorizontal + 2 * mCornerRadius,
+            shadowTop + 2 * mCornerRadius);
 
     final RectF topOuterBounds = new RectF(0, 0, 2 * mCornerRadius, 2 * mCornerRadius);
 
@@ -183,14 +188,6 @@ class CardShadowDrawable extends Drawable {
     mCornerShadowTopPath.rLineTo(0, shadowTop);
     mCornerShadowTopPath.close();
 
-    mCornerShadowTopPaint.setShader(
-        new RadialGradient(
-            shadowHorizontal + mCornerRadius,
-            shadowTop + mCornerRadius + mRawShadowSize / 2,
-            mShadowSize,
-            new int[]{mShadowStartColor, mShadowStartColor, mShadowEndColor},
-            new float[]{0f, .2f, 1f},
-            Shader.TileMode.CLAMP));
 
     final RectF bottomInnerBounds = new RectF(
         getShadowHorizontal(mRawShadowSize),
@@ -211,26 +208,17 @@ class CardShadowDrawable extends Drawable {
     mCornerShadowBottomPath.rLineTo(0, shadowBottom);
     mCornerShadowBottomPath.close();
 
-    mCornerShadowBottomPaint.setShader(
-        new RadialGradient(
-            shadowHorizontal + mShadowSize / 2,
-            shadowBottom + (mShadowSize / 2),
-            mShadowSize,
-            new int[]{mShadowStartColor, mShadowStartColor, mShadowEndColor},
-            new float[]{0f, .2f, 1f},
-            Shader.TileMode.CLAMP));
-
     // We offset the content (shadowSize / 2) pixels up to make it more realistic.
     // This is why edge shadow shader has some extra space. When drawing bottom edge
     // shadow, we use that extra space.
     mEdgeShadowPaint.setShader(
         new LinearGradient(
             0,
-            mCornerRadius + mShadowSize,
+            shadowCornerRadius,
             0,
             0,
-            new int[]{mShadowStartColor, mShadowStartColor, mShadowEndColor},
-            new float[]{0f, .2f, 1f},
+            new int[] {mShadowStartColor, mShadowStartColor, mShadowEndColor},
+            new float[] {0f, .2f, 1f},
             Shader.TileMode.CLAMP));
 
     mEdgeShadowPaint.setAntiAlias(false);
@@ -240,28 +228,28 @@ class CardShadowDrawable extends Drawable {
     // left-top
     int saved = canvas.save();
     canvas.translate(bounds.left, bounds.top);
-    canvas.drawPath(mCornerShadowTopPath, mCornerShadowTopPaint);
+    canvas.drawPath(mCornerShadowTopPath, mCornerShadowPaint);
     canvas.restoreToCount(saved);
 
     // right-bottom
     saved = canvas.save();
     canvas.translate(bounds.right, bounds.bottom);
     canvas.scale(-1f, -1f);
-    canvas.drawPath(mCornerShadowBottomPath, mCornerShadowBottomPaint);
+    canvas.drawPath(mCornerShadowBottomPath, mCornerShadowPaint);
     canvas.restoreToCount(saved);
 
     // left-bottom
     saved = canvas.save();
     canvas.translate(bounds.left, bounds.bottom);
     canvas.scale(1f, -1f);
-    canvas.drawPath(mCornerShadowBottomPath, mCornerShadowBottomPaint);
+    canvas.drawPath(mCornerShadowBottomPath, mCornerShadowPaint);
     canvas.restoreToCount(saved);
 
     // right-top
     saved = canvas.save();
     canvas.translate(bounds.right, bounds.top);
     canvas.scale(-1f, 1f);
-    canvas.drawPath(mCornerShadowTopPath, mCornerShadowTopPaint);
+    canvas.drawPath(mCornerShadowTopPath, mCornerShadowPaint);
     canvas.restoreToCount(saved);
   }
 
