@@ -96,6 +96,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
             .layoutInfo(
                 new StaggeredGridLayoutInfo(mNumSpans, mOrientation, mReverseLayout, mGapStrategy))
             .layoutHandlerFactory(mRecyclerBinderConfiguration.getLayoutHandlerFactory())
+            .wrapContent(mRecyclerBinderConfiguration.isWrapContent())
             .build(c);
     return (T) new SectionBinderTarget(recyclerBinder);
   }
@@ -108,5 +109,10 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
   @Override
   public int getOrientation() {
     return mOrientation;
+  }
+
+  @Override
+  public boolean isWrapContent() {
+    return mRecyclerBinderConfiguration.isWrapContent();
   }
 }

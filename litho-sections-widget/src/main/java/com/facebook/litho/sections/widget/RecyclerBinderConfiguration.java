@@ -30,6 +30,7 @@ public class RecyclerBinderConfiguration {
   private final boolean mIsCircular;
   private boolean mHasDynamicItemHeight;
   private boolean mInsertPostAsyncLayoutEnabled;
+  private boolean mIsWrapContent;
 
   public RecyclerBinderConfiguration(double rangeRatio) {
     this(rangeRatio, null, false);
@@ -42,6 +43,14 @@ public class RecyclerBinderConfiguration {
   public RecyclerBinderConfiguration(
       double rangeRatio, LayoutHandlerFactory idleExecutor, boolean canPrefetchDisplayLists) {
     this(rangeRatio, idleExecutor, canPrefetchDisplayLists, false);
+  }
+
+  public RecyclerBinderConfiguration(
+      double rangeRatio,
+      LayoutHandlerFactory idleExecutor,
+      boolean canPrefetchDisplayLists,
+      boolean isCircular) {
+    this(rangeRatio, idleExecutor, canPrefetchDisplayLists, isCircular, false);
   }
 
   /**
@@ -59,16 +68,21 @@ public class RecyclerBinderConfiguration {
    * @param isCircular If true, the underlying RecyclerBinder will have a circular behaviour. Note:
    *     circular lists DO NOT support any operation that changes the size of items like insert,
    *     remove, insert range, remove range
+   * @param isWrapContent If true, the underlying RecyclerBinder will measure the parent height by
+   *     the height of children if the orientation is vertical, or measure the parent width by the
+   *     width of children if the orientation is horizontal.
    */
   public RecyclerBinderConfiguration(
       double rangeRatio,
       LayoutHandlerFactory idleExecutor,
       boolean canPrefetchDisplayLists,
-      boolean isCircular) {
+      boolean isCircular,
+      boolean isWrapContent) {
     mRangeRatio = rangeRatio > 0 ? rangeRatio : DEFAULT_RANGE;
     mLayoutHandlerFactory = idleExecutor;
     mCanPrefetchDisplayLists = canPrefetchDisplayLists;
     mIsCircular = isCircular;
+    mIsWrapContent = isWrapContent;
   }
 
   /**
@@ -103,6 +117,10 @@ public class RecyclerBinderConfiguration {
 
   public boolean isCircular() {
     return mIsCircular;
+  }
+
+  public boolean isWrapContent() {
+    return mIsWrapContent;
   }
 
   boolean hasDynamicItemHeight() {

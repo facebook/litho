@@ -35,4 +35,6 @@ public interface RecyclerConfiguration {
   SnapHelper getSnapHelper();
 
   int getOrientation();
+
+  boolean isWrapContent();
 }

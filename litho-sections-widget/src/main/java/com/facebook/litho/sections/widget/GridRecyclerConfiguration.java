@@ -101,6 +101,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
                 new GridLayoutInfo(
                     c, mNumColumns, mOrientation, mReverseLayout, mAllowMeasureOverride))
             .layoutHandlerFactory(mRecyclerBinderConfiguration.getLayoutHandlerFactory())
+            .wrapContent(mRecyclerBinderConfiguration.isWrapContent())
             .build(c);
     return (T) new SectionBinderTarget(recyclerBinder);
   }
@@ -113,5 +114,10 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   @Override
   public int getOrientation() {
     return mOrientation;
+  }
+
+  @Override
+  public boolean isWrapContent() {
+    return mRecyclerBinderConfiguration.isWrapContent();
   }
 }

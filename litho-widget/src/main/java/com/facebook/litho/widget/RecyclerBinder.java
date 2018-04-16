@@ -147,6 +147,7 @@ public class RecyclerBinder
 
   private final boolean mIsCircular;
   private final boolean mHasDynamicItemHeight;
+  private final boolean mWrapContent;
   private final boolean mInsertPostAsyncLayoutEnabled;
   private int mLastWidthSpec = UNINITIALIZED;
   private int mLastHeightSpec = UNINITIALIZED;
@@ -255,6 +256,7 @@ public class RecyclerBinder
     private LithoViewFactory lithoViewFactory;
     private boolean isCircular;
     private boolean hasDynamicItemHeight;
+    private boolean wrapContent;
     private boolean insertPostAsyncLayoutEnabled;
     private boolean customViewTypeEnabled;
     private int componentViewType;
@@ -316,6 +318,16 @@ public class RecyclerBinder
      */
     public Builder isCircular(boolean isCircular) {
       this.isCircular = isCircular;
+      return this;
+    }
+
+    /**
+     * If true, the underlying RecyclerBinder will measure the parent height by the height of
+     * children if the orientation is vertical, or measure the parent width by the width of children
+     * if the orientation is horizontal.
+     */
+    public Builder wrapContent(boolean wrapContent) {
+      this.wrapContent = wrapContent;
       return this;
     }
 
@@ -433,6 +445,7 @@ public class RecyclerBinder
         mLayoutInfo.getScrollDirection() == HORIZONTAL ? builder.hasDynamicItemHeight : false;
     mInsertPostAsyncLayoutEnabled = builder.insertPostAsyncLayoutEnabled;
     mAllowFillViewportOnMainForTest = builder.allowFillViewportOnMainForTest;
+    mWrapContent = builder.wrapContent;
 
     mViewportManager =
         new ViewportManager(

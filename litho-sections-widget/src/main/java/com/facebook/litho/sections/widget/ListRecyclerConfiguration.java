@@ -163,6 +163,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
             .layoutHandlerFactory(mRecyclerBinderConfiguration.getLayoutHandlerFactory())
             .canPrefetchDisplayLists(mRecyclerBinderConfiguration.canPrefetchDisplayLists())
             .isCircular(mRecyclerBinderConfiguration.isCircular())
+            .wrapContent(mRecyclerBinderConfiguration.isWrapContent())
             .hasDynamicItemHeight(mRecyclerBinderConfiguration.hasDynamicItemHeight())
             .insertPostAsyncLayoutEnabled(
                 mRecyclerBinderConfiguration.insertPostAsyncLayoutEnabled())
@@ -178,6 +179,11 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   @Override
   public int getOrientation() {
     return mOrientation;
+  }
+
+  @Override
+  public boolean isWrapContent() {
+    return mRecyclerBinderConfiguration.isWrapContent();
   }
 
   private static class DefaultLinearLayoutInfoFactory implements LinearLayoutInfoFactory {
