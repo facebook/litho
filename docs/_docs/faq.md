@@ -74,3 +74,14 @@ compilation unit, but sits in a different package.
 The easiest workaround for this is to help the compiler by moving
 either the referencing or the referenced component into a separate build module.
 Splitting build modules by package is considered a good practice with Buck.
+
+### Progurad
+Include these lines in your proguard-rules.pro
+```
+-dontwarn com.facebook.fbui.**
+-dontwarn android.text.StaticLayout
+-dontwarn android.view.DisplayList
+-dontwarn android.view.RenderNode
+-dontwarn android.view.DisplayListCanvas
+-dontwarn android.view.HardwareCanvas
+```
