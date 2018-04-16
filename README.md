@@ -56,6 +56,18 @@ To build and run (on an attached device/emulator) the sample app, execute
 or, if you prefer Gradle,
 
     $ ./gradlew :sample:installDebug
+    
+    
+## Progurad
+Include these lines in your proguard-rules.pro
+```
+-dontwarn com.facebook.fbui.**
+-dontwarn android.text.StaticLayout
+-dontwarn android.view.DisplayList
+-dontwarn android.view.RenderNode
+-dontwarn android.view.DisplayListCanvas
+-dontwarn android.view.HardwareCanvas
+```
 
 ## Contributing
 For pull requests, please see our [CONTRIBUTING](CONTRIBUTING.md) guide.
