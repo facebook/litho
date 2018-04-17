@@ -273,12 +273,14 @@ public class ComponentBodyGenerator {
     final ImmutableList<PropModel> props = specModel.getProps();
 
     for (PropModel prop : props) {
-      final FieldSpec.Builder fieldBuilder = FieldSpec.builder(prop.getTypeName(), prop.getName())
-          .addAnnotation(
-              AnnotationSpec.builder(Prop.class)
-                  .addMember("resType", "$T.$L", ResType.class, prop.getResType())
-                  .addMember("optional", "$L", prop.isOptional())
-                  .build());
+      final FieldSpec.Builder fieldBuilder =
+          FieldSpec.builder(prop.getTypeName(), prop.getName())
+              .addAnnotations(prop.getExternalAnnotations())
+              .addAnnotation(
+                  AnnotationSpec.builder(Prop.class)
+                      .addMember("resType", "$T.$L", ResType.class, prop.getResType())
+                      .addMember("optional", "$L", prop.isOptional())
+                      .build());
       if (prop.hasDefault(specModel.getPropDefaults())) {
         fieldBuilder.initializer("$L.$L", specModel.getSpecName(), prop.getName());
       }
