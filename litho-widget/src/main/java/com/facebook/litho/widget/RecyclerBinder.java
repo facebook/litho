@@ -189,7 +189,7 @@ public class RecyclerBinder
           // range.
           if (mMountedView == null || !mMountedView.hasPendingAdapterUpdates()) {
             mCountPostComputeRangeRunnableOnAnimation = 0;
-            computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition, mWrapContent);
+            computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
             return;
           }
 
@@ -204,7 +204,7 @@ public class RecyclerBinder
           if (mCountPostComputeRangeRunnableOnAnimation >= 3) {
             mCountPostComputeRangeRunnableOnAnimation = 0;
             logTooManyPostingAttempts();
-            computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition, mWrapContent);
+            computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
 
             return;
           }
@@ -1008,19 +1008,15 @@ public class RecyclerBinder
               "Recycler if dynamic measurement is not allowed");
         }
 
-        outSize.height =
-            mWrapContent
-                ? mLayoutInfo.computeWrappedHeight(
-                    SizeSpec.getSize(heightSpec), mComponentTreeHolders)
-                : SizeSpec.getSize(heightSpec);
+        outSize.height = SizeSpec.getSize(heightSpec);
 
         if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY || !canMeasure) {
           outSize.width = SizeSpec.getSize(widthSpec);
-          mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
+          mReMeasureEventEventHandler = null;
           mRequiresRemeasure.set(false);
         } else if (mRange != null) {
           outSize.width = mRange.measuredSize;
-          mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
+          mReMeasureEventEventHandler = null;
           mRequiresRemeasure.set(false);
         } else {
           outSize.width = 0;
@@ -1076,7 +1072,7 @@ public class RecyclerBinder
     }
 
     if (mRange != null) {
-      computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition, false);
+      computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
     }
   }
 
@@ -1548,11 +1544,11 @@ public class RecyclerBinder
       mMountedView.removeCallbacks(mComputeRangeRunnable);
       ViewCompat.postOnAnimation(mMountedView, mComputeRangeRunnable);
     } else {
-      computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition, mWrapContent);
+      computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
     }
   }
 
-  private void computeRange(int firstVisible, int lastVisible, boolean remeasure) {
+  private void computeRange(int firstVisible, int lastVisible) {
     final int rangeSize;
     final int rangeStart;
     final int rangeEnd;
@@ -1573,13 +1569,6 @@ public class RecyclerBinder
     }
 
     computeRangeLayout(treeHoldersSize, rangeStart, rangeEnd, mIsCircular);
-
-    synchronized (this) {
-      if (remeasure) {
-        mRequiresRemeasure.set(true);
-        requestRemeasure();
-      }
-    }
   }
 
   private void computeRangeLayout(
@@ -1613,12 +1602,7 @@ public class RecyclerBinder
       } else {
         if (i >= rangeStart && i <= rangeEnd) {
           if (!holder.isTreeValid()) {
-            if (mWrapContent) {
-              holder.computeLayoutSync(
-                  mComponentContext, childrenWidthSpec, childrenHeightSpec, sDummySize);
-            } else {
-              holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
-            }
+            holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
           }
         } else if (holder.isTreeValid() && !holder.getRenderInfo().isSticky()) {
           holder.acquireStateHandlerAndReleaseTree();
