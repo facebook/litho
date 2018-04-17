@@ -18,6 +18,7 @@ package com.facebook.litho.processor.integration.resources;
 
 import android.annotation.TargetApi;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.view.View;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
@@ -65,7 +66,7 @@ public class TestLayoutSpec<S extends View> implements TestTag {
   static <S extends View> Component onCreateLayout(
       ComponentContext context,
       @Prop(optional = true) boolean prop2,
-      @Prop Object prop3,
+      @Prop @Nullable Object prop3,
       @Prop char[] prop4,
       @State(canUpdateLazily = true) long state1,
       @State S state2,
@@ -80,7 +81,7 @@ public class TestLayoutSpec<S extends View> implements TestTag {
       ComponentContext c,
       @FromEvent View view,
       @Param int param1,
-      @Prop Object prop3,
+      @Prop @Nullable Object prop3,
       @Prop char prop5,
       @State(canUpdateLazily = true) long state1) {}
 
@@ -98,7 +99,7 @@ public class TestLayoutSpec<S extends View> implements TestTag {
   @OnCreateTransition
   static Transition onCreateTransition(
       ComponentContext c,
-      @Prop Object prop3,
+      @Prop @Nullable Object prop3,
       @State(canUpdateLazily = true) long state1,
       @State Diff<Integer> state3) {
     return Transition.parallel(Transition.create("testKey"));
