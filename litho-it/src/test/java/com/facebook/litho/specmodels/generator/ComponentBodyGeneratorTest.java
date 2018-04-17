@@ -20,6 +20,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import android.support.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
@@ -75,7 +76,7 @@ public class ComponentBodyGeneratorTest {
         @State int arg1,
         @Param Object arg2,
         @TreeProp long arg3,
-        @Prop Component arg4,
+        @Prop @Nullable Component arg4,
         @Prop List<Component> arg5,
         @Prop List<String> arg6,
         @TreeProp Set<List<Row>> arg7,
@@ -87,7 +88,7 @@ public class ComponentBodyGeneratorTest {
         @State int arg1,
         @Param Object arg2,
         @TreeProp long arg3,
-        @Prop Component arg4) {}
+        @Prop @Nullable Component arg4) {}
 
     @OnUpdateState
     public void testUpdateStateMethod() {}
@@ -207,7 +208,8 @@ public class ComponentBodyGeneratorTest {
                 + "boolean arg0 = TestSpec.arg0;\n");
     assertThat(dataHolder.getFieldSpecs().get(1).toString())
         .isEqualTo(
-            "@com.facebook.litho.annotations.Prop(\n"
+            "@android.support.annotation.Nullable\n"
+                + "@com.facebook.litho.annotations.Prop(\n"
                 + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
                 + "    optional = false\n"
                 + ")\n"

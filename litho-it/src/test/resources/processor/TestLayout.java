@@ -17,6 +17,7 @@
 package com.facebook.litho.processor.integration.resources;
 
 import android.annotation.TargetApi;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pools;
 import android.view.View;
@@ -80,6 +81,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
   )
   boolean prop2 = TestLayoutSpec.prop2;
 
+  @Nullable
   @Prop(
       resType = ResType.NONE,
       optional = false
@@ -579,7 +581,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return this;
     }
 
-    public Builder<S> prop3(Object prop3) {
+    public Builder<S> prop3(@Nullable Object prop3) {
       this.mTestLayout.prop3 = prop3;
       mRequired.set(2);
       return this;
