@@ -831,13 +831,13 @@ public class RecyclerBinder
       }
 
       if (mRange == null) {
-        int firstComponent = findFirstComponentPosition();
+        int firstComponent = findFirstComponentPosition(mComponentTreeHolders);
         if (firstComponent >= 0) {
           final ComponentTreeHolder holder = mComponentTreeHolders.get(firstComponent);
           initRange(
               mMeasuredSize.width,
               mMeasuredSize.height,
-              firstComponent,
+              holder,
               getActualChildrenWidthSpec(holder),
               getActualChildrenHeightSpec(holder),
               mLayoutInfo.getScrollDirection());
@@ -983,15 +983,16 @@ public class RecyclerBinder
             && !mComponentTreeHolders.isEmpty()
             && mCurrentFirstVisiblePosition < mComponentTreeHolders.size();
 
-    final int positionToComputeLayout = findFirstComponentPosition();
+    final int positionToComputeLayout = findFirstComponentPosition(mComponentTreeHolders);
     boolean doFillViewportAfterFinishingMeasure = false;
     if (shouldInitRange && positionToComputeLayout >= 0) {
+      final ComponentTreeHolder holder = mComponentTreeHolders.get(positionToComputeLayout);
       initRange(
           SizeSpec.getSize(widthSpec),
           SizeSpec.getSize(heightSpec),
-          positionToComputeLayout,
-          getActualChildrenWidthSpec(mComponentTreeHolders.get(positionToComputeLayout)),
-          getActualChildrenHeightSpec(mComponentTreeHolders.get(positionToComputeLayout)),
+          holder,
+          getActualChildrenWidthSpec(holder),
+          getActualChildrenHeightSpec(holder),
           scrollDirection);
       doFillViewportAfterFinishingMeasure = true;
     }
@@ -1152,10 +1153,9 @@ public class RecyclerBinder
     return numInserted;
   }
 
-  @GuardedBy("this")
-  private int findFirstComponentPosition() {
-    for (int i = 0, size = mComponentTreeHolders.size(); i < size; i++) {
-      if (mComponentTreeHolders.get(i).getRenderInfo().rendersComponent()) {
+  private static int findFirstComponentPosition(List<ComponentTreeHolder> holders) {
+    for (int i = 0, size = holders.size(); i < size; i++) {
+      if (holders.get(i).getRenderInfo().rendersComponent()) {
         return i;
       }
     }
@@ -1218,16 +1218,11 @@ public class RecyclerBinder
   private void initRange(
       int width,
       int height,
-      int positionToComputeLayout,
+      ComponentTreeHolder holder,
       int childrenWidthSpec,
       int childrenHeightSpec,
       int scrollDirection) {
-    if (positionToComputeLayout >= mComponentTreeHolders.size()) {
-      return;
-    }
-
     final Size size = new Size();
-    final ComponentTreeHolder holder = mComponentTreeHolders.get(positionToComputeLayout);
     holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, size);
 
     final int rangeSize = Math.max(
