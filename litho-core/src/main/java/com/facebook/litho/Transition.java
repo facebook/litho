@@ -150,6 +150,10 @@ public abstract class Transition {
     TransitionAnimationBinding createAnimation(PropertyAnimation propertyAnimation);
   }
 
+  /**
+   * @deprecated since we are planning to get rid of transition keys this API will be removed soon
+   */
+  @Deprecated
   public static ComponentTarget allKeys() {
     return new ComponentTarget(ComponentTargetType.ALL, null);
   }
