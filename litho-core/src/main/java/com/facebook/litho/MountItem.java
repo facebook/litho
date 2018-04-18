@@ -39,6 +39,7 @@ class MountItem {
   static final int FLAG_VIEW_ENABLED = 1 << 5;
   static final int FLAG_MATCH_HOST_BOUNDS = 1 << 6;
   static final int FLAG_VIEW_SELECTED = 1 << 7;
+  static final int FLAG_ONLY_SUPPORT_DISAPPEARING = 1 << 8;
 
   private NodeInfo mNodeInfo;
   private ViewNodeInfo mViewNodeInfo;
@@ -227,6 +228,18 @@ class MountItem {
 
     return (mNodeInfo != null && mNodeInfo.needsAccessibilityDelegate())
         || mComponent.implementsAccessibility();
+  }
+
+  void setOnlySupportsDisappearing(boolean onlySupportsDisappearing) {
+    if (onlySupportsDisappearing) {
+      mFlags |= FLAG_ONLY_SUPPORT_DISAPPEARING;
+    } else {
+      mFlags &= (~FLAG_ONLY_SUPPORT_DISAPPEARING);
+    }
+  }
+
+  boolean onlySupportsDisappearing() {
+    return (mFlags & FLAG_ONLY_SUPPORT_DISAPPEARING) != 0;
   }
 
   void release(ComponentContext context) {
