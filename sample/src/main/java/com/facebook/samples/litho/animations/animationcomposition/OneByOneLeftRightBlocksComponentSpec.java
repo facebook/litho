@@ -32,6 +32,13 @@ import com.facebook.yoga.YogaAlign;
 @LayoutSpec
 public class OneByOneLeftRightBlocksComponentSpec {
 
+  private static final String TRANSITION_KEY_RED = "red";
+  private static final String TRANSITION_KEY_BLUE = "blue";
+  private static final String TRANSITION_KEY_GREEN = "green";
+  private static final String[] ALL_TRANSITION_KEYS = {
+    TRANSITION_KEY_RED, TRANSITION_KEY_BLUE, TRANSITION_KEY_GREEN
+  };
+
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c, @State int state) {
     final boolean redLeft = state == 0 || state == 4 || state == 5;
@@ -46,7 +53,7 @@ public class OneByOneLeftRightBlocksComponentSpec {
                         .heightDip(40)
                         .widthDip(40)
                         .backgroundColor(Color.parseColor("#ee1111"))
-                        .transitionKey("red")
+                        .transitionKey(TRANSITION_KEY_RED)
                         .build()))
         .child(
             Column.create(c)
@@ -56,7 +63,7 @@ public class OneByOneLeftRightBlocksComponentSpec {
                         .heightDip(40)
                         .widthDip(40)
                         .backgroundColor(Color.parseColor("#1111ee"))
-                        .transitionKey("blue")
+                        .transitionKey(TRANSITION_KEY_BLUE)
                         .build()))
         .child(
             Column.create(c)
@@ -66,7 +73,7 @@ public class OneByOneLeftRightBlocksComponentSpec {
                         .heightDip(40)
                         .widthDip(40)
                         .backgroundColor(Color.parseColor("#11ee11"))
-                        .transitionKey("green")
+                        .transitionKey(TRANSITION_KEY_GREEN)
                         .build()))
         .clickHandler(OneByOneLeftRightBlocksComponent.onClick(c))
         .build();
@@ -84,7 +91,7 @@ public class OneByOneLeftRightBlocksComponentSpec {
 
   @OnCreateTransition
   static Transition onCreateTransition(ComponentContext c) {
-    return Transition.create(Transition.allKeys())
+    return Transition.create(ALL_TRANSITION_KEYS)
         .animate(AnimatedProperties.X, AnimatedProperties.Y, AnimatedProperties.ALPHA);
   }
 }
