@@ -77,5 +77,7 @@ public class RecyclerBinderOperationExecutor implements OperationExecutor {
           break;
       }
     }
+
+    mRecyclerBinder.notifyChangeSetComplete();
   }
 }
