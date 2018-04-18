@@ -18,6 +18,7 @@ package com.facebook.litho.animation;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import com.facebook.litho.AlphaHelper;
 import com.facebook.litho.AnimatableItem;
 import com.facebook.litho.BoundsHelper;
 import com.facebook.litho.ComponentHost;
@@ -327,7 +328,17 @@ public final class AnimatedProperties {
 
     @Override
     public float get(Object mountContent) {
-      return assertIsView(mountContent, this).getAlpha();
+      if (mountContent instanceof View) {
+        return ((View) mountContent).getAlpha();
+      } else if (!ComponentsConfiguration.doNotForceWrappingInViewForAnimation) {
+        throw new UnsupportedOperationException(
+            "Tried to get alpha of unsupported mount content: " + mountContent);
+      } else if (mountContent instanceof Drawable) {
+        return AlphaHelper.getAlpha((Drawable) mountContent);
+      } else {
+        throw new UnsupportedOperationException(
+            "Tried to get alpha of unsupported mount content: " + mountContent);
+      }
     }
 
     @Override
@@ -337,12 +348,22 @@ public final class AnimatedProperties {
 
     @Override
     public void set(Object mountContent, float value) {
-      assertIsView(mountContent, this).setAlpha(value);
+      if (mountContent instanceof View) {
+        ((View) mountContent).setAlpha(value);
+      } else if (!ComponentsConfiguration.doNotForceWrappingInViewForAnimation) {
+        throw new UnsupportedOperationException(
+            "Setting alpha on unsupported mount content: " + mountContent);
+      } else if (mountContent instanceof Drawable) {
+        AlphaHelper.setAlpha((Drawable) mountContent, value);
+      } else {
+        throw new UnsupportedOperationException(
+            "Setting alpha on unsupported mount content: " + mountContent);
+      }
     }
 
     @Override
     public void reset(Object mountContent) {
-      assertIsView(mountContent, this).setAlpha(1);
+      set(mountContent, 1);
     }
   }
 

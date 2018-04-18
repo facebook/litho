@@ -2201,10 +2201,7 @@ class LayoutState {
     if (!ComponentsConfiguration.doNotForceWrappingInViewForAnimation) {
       return true;
     }
-    return !isMountDrawableSpec(node.getRootComponent())
-        || node.getBackground() != null
-        || node.shouldDrawBorders()
-        || node.getForeground() != null;
+    return !isMountDrawableSpec(node.getRootComponent()) && node.getChildCount() > 0;
   }
 
   /**
