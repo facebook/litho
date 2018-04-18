@@ -298,6 +298,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
                 (componentTreeId >= 0) && (componentTreeId == mLastMountedComponentTreeId);
 
             final long startTime = System.nanoTime();
+            final String transitionKey = currentMountItem.getTransitionKey();
             final boolean itemUpdated = updateMountItemIfNeeded(
                 layoutOutput,
                 currentMountItem,
@@ -310,7 +311,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
               // This mount content might be animating and we may be remounting it as a different
               // component in the same tree, or as a component in a totally different tree so we
               // will reset animating content for its key
-              maybeRemoveAnimatingMountContent(layoutOutput.getTransitionKey());
+              maybeRemoveAnimatingMountContent(transitionKey);
             }
 
             if (mMountStats.isLoggingEnabled) {
