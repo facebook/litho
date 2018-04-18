@@ -131,7 +131,7 @@ public final class SpecModelImpl implements SpecModel {
             updateStateMethods);
     mInjectProps =
         injectProps.isEmpty()
-            ? getInjectProps(mRawInjectProps, cachedPropNames, mProps.size())
+            ? getInjectProps(mRawInjectProps, cachedPropNames, mRawProps.size())
             : injectProps;
     mPropDefaults = propDefaults;
     mTypeVariables = typeVariables;

@@ -26,6 +26,7 @@ import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +47,7 @@ public class SpecModelImplTest {
   SimpleMethodParamModel mMethodParamModel;
   TreePropModel mTreePropModel1;
   TreePropModel mTreePropModel2;
+  InjectPropModel mInjectPropModel;
 
   SpecMethodModel<DelegateMethod, Void> mMethodModel1;
   SpecMethodModel<DelegateMethod, Void> mMethodModel2;
@@ -98,6 +100,9 @@ public class SpecModelImplTest {
     mUnderlyingPropModel2 =
         new PropModel(
             MockMethodParamModel.newBuilder().name("differentName").build(), false, null, "");
+
+    mInjectPropModel =
+        new InjectPropModel(MockMethodParamModel.newBuilder().name("injectProp").build(), true);
 
     mTreePropModel1 =
         new TreePropModel(MockMethodParamModel.newBuilder().name("treeprop1").build());
@@ -247,5 +252,54 @@ public class SpecModelImplTest {
 
     assertThat(specModel.hasInjectedDependencies()).isTrue();
     assertThat(specModel.getDependencyInjectionHelper()).isSameAs(diGenerator);
+  }
+
+  @Test
+  public void testOffsetRegressionForInjectProp() {
+    final List<MethodParamModel> params1 = new ArrayList<>();
+    params1.add(mPropModel1);
+    params1.add(mPropModel2);
+    params1.add(mInjectPropModel);
+
+    final List<MethodParamModel> params2 = new ArrayList<>();
+    params2.add(mPropModel1);
+
+    final SpecMethodModel<DelegateMethod, Void> method1 =
+        SpecMethodModel.<DelegateMethod, Void>builder()
+            .annotations(ImmutableList.of())
+            .modifiers(ImmutableList.of())
+            .name("method1")
+            .returnTypeSpec(new TypeSpec(TypeName.BOOLEAN))
+            .methodParams(ImmutableList.copyOf(params1))
+            .build();
+    final SpecMethodModel<DelegateMethod, Void> method2 =
+        SpecMethodModel.<DelegateMethod, Void>builder()
+            .annotations(ImmutableList.of())
+            .modifiers(ImmutableList.of())
+            .name("method2")
+            .returnTypeSpec(new TypeSpec(TypeName.BOOLEAN))
+            .methodParams(ImmutableList.copyOf(params2))
+            .build();
+
+    DependencyInjectionHelper diGenerator = mock(DependencyInjectionHelper.class);
+    SpecModel specModel =
+        SpecModelImpl.newBuilder()
+            .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
+            .delegateMethods(ImmutableList.of(method1, method2))
+            .cachedPropNames(ImmutableList.of("savedOne", "savedTwo", "savedThree", "savedFour"))
+            .dependencyInjectionHelper(diGenerator)
+            .representedObject(new Object())
+            .build();
+
+    final ImmutableList<PropModel> props = specModel.getProps();
+    final ImmutableList<InjectPropModel> injectProps = specModel.getInjectProps();
+
+    assertThat(props).hasSize(3);
+    assertThat(injectProps).hasSize(1);
+
+    assertThat(props.stream().map(PropModel::getName).collect(Collectors.toList()))
+        .containsExactly("savedOne", "savedThree", "savedTwo");
+    assertThat(injectProps.stream().map(InjectPropModel::getName).collect(Collectors.toList()))
+        .containsExactly("savedFour");
   }
 }
