@@ -1,4 +1,4 @@
-load("//:LITHO_DEFS", "fb_java_library")
+load("//:LITHO_DEFS.bzl", "fb_java_library")
 
 fb_java_library(
     name = "guava",

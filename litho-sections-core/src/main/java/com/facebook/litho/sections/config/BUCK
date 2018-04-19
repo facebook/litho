@@ -3,7 +3,7 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-include_defs("//LITHO_DEFS")
+include_defs("//LITHO_DEFS.bzl")
 
 litho_android_library(
     name = "config",

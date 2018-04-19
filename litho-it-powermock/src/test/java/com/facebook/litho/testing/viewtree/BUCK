@@ -1,4 +1,4 @@
-include_defs("//LITHO_DEFS")
+include_defs("//LITHO_DEFS.bzl")
 
 components_robolectric_test(
     name = "viewtree",

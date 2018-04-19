@@ -2,7 +2,7 @@
 #
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
-load("//:LITHO_DEFS", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANNOTATIONS_TARGET", "LITHO_JAVAPOET_TARGET", "LITHO_JSR_TARGET", "make_dep_path", "fb_java_library")
+load("//:LITHO_DEFS.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANNOTATIONS_TARGET", "LITHO_JAVAPOET_TARGET", "LITHO_JSR_TARGET", "make_dep_path", "fb_java_library")
 
 fb_java_library(
     name = "specmodels",

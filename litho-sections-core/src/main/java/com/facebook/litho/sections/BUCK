@@ -4,7 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 # of patent rights can be found in the PATENTS file in the same directory.
 
-include_defs("//LITHO_DEFS")
+include_defs("//LITHO_DEFS.bzl")
 
 litho_android_library(
     name = "sections",

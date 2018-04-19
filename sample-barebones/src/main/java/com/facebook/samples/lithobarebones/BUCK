@@ -4,7 +4,7 @@
 # This source code is licensed under the license found in the
 # LICENSE-examples file in the root directory of this source tree.
 
-include_defs("//LITHO_DEFS")
+include_defs("//LITHO_DEFS.bzl")
 
 android_library(
     name = "lithobarebones",

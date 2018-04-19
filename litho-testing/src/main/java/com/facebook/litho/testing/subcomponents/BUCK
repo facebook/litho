@@ -3,7 +3,7 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//:LITHO_DEFS", "LITHO_ASSERTJ_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_YOGA_TARGET", "LITHO_ANDROIDSUPPORT_TARGET", "litho_android_library")
+load("//:LITHO_DEFS.bzl", "LITHO_ASSERTJ_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_YOGA_TARGET", "LITHO_ANDROIDSUPPORT_TARGET", "litho_android_library")
 
 litho_android_library(
     name = "subcomponents",
