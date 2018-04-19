@@ -285,6 +285,10 @@ public class LithoView extends ComponentHost {
     // If we're mounting a new ComponentTree, it probably has a different width/height but we don't
     // want to animate it.
     if (!mHasNewComponentTree && mComponentTree != null) {
+      // We might need to collect transitions before mount to know whether this LithoView has
+      // width or height animation.
+      mComponentTree.maybeCollectTransitions();
+
       if (mComponentTree.hasLithoViewWidthAnimation()) {
         // We expect width to animate
         width = upToDateWidth;

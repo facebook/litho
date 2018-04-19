@@ -136,6 +136,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private final SimpleArrayMap<String, OutputUnitsAffinityGroup<MountItem>>
       mDisappearingMountItems = new SimpleArrayMap<>();
   private @Nullable Transition mRootTransition;
+  private boolean mTransitionsHasBeenCollected = false;
 
   public MountState(LithoView view) {
     mIndexToItemMap = new LongSparseArray<>();
@@ -352,6 +353,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     mRootTransition = null;
+    mTransitionsHasBeenCollected = false;
     mIsDirty = false;
     mNeedsRemount = false;
     mIsFirstMountOfComponentTree = false;
@@ -2292,7 +2294,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     if (shouldAnimateTransitions(layoutState)) {
-      collectAllTransitions(layoutState, componentTree);
+      if (!mTransitionsHasBeenCollected) {
+        collectAllTransitions(layoutState, componentTree);
+      }
       if (hasTransitionsToAnimate()) {
         createNewTransitions(layoutState, mRootTransition);
       }
@@ -2764,6 +2768,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (layoutState.getTransitions() != null) {
       allTransitions.addAll(layoutState.getTransitions());
     }
+    componentTree.applyPreviousRenderData(layoutState);
     collectMountTimeTransitions(layoutState, allTransitions);
     componentTree.consumeStateUpdateTransitions(allTransitions);
 
@@ -2788,6 +2793,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     componentTree.setHasLithoViewHeightAnimation(hasLithoViewHeightAnimation);
 
     mRootTransition = TransitionManager.getRootTransition(allTransitions);
+    mTransitionsHasBeenCollected = true;
   }
 
   private static @Nullable void collectMountTimeTransitions(

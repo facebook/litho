@@ -436,6 +436,25 @@ public class ComponentTree {
     }
   }
 
+  /**
+   * If we have transition key on root component we might run bounds animation on LithoView which
+   * requires to know animating value in {@link LithoView#onMeasure(int, int)}. In such case we need
+   * to collect all transitions before mount happens but after layout computation is finalized.
+   */
+  void maybeCollectTransitions() {
+    assertMainThread();
+
+    final LayoutState layoutState = mMainThreadLayoutState;
+    if (layoutState == null || layoutState.getRootTransitionKey() == null) {
+      return;
+    }
+
+    final MountState mountState = mLithoView.getMountState();
+    if (mountState.isDirty()) {
+      mountState.collectAllTransitions(layoutState, this);
+    }
+  }
+
   void attach() {
     assertMainThread();
 
@@ -629,10 +648,6 @@ public class ComponentTree {
 
     mIsMounting = true;
 
-    if (isDirtyMount) {
-      applyPreviousRenderData(mMainThreadLayoutState);
-    }
-
     if (!mHasMounted) {
       mLithoView.getMountState().setIsFirstMountOfComponentTree();
       mHasMounted = true;
@@ -652,7 +667,7 @@ public class ComponentTree {
     }
   }
 
-  private void applyPreviousRenderData(LayoutState layoutState) {
+  void applyPreviousRenderData(LayoutState layoutState) {
     final List<Component> components = layoutState.getComponentsNeedingPreviousRenderData();
     if (components == null || components.isEmpty()) {
       return;
