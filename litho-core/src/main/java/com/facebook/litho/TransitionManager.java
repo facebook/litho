@@ -446,10 +446,7 @@ public class TransitionManager {
 
     final ArrayList<Transition> mergedList = new ArrayList<>();
 
-    final @Nullable ArrayList<Transition> layoutStateTransitions =
-        nextLayoutState.getTransitionContext() != null
-            ? nextLayoutState.getTransitionContext().getTransitions()
-            : null;
+    final @Nullable List<Transition> layoutStateTransitions = nextLayoutState.getTransitions();
 
     if (layoutStateTransitions != null) {
       mergedList.addAll(layoutStateTransitions);

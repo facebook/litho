@@ -165,7 +165,6 @@ class LayoutState {
   private static final int[] DRAWABLE_STATE_NOT_ENABLED = new int[]{};
 
   private volatile ComponentContext mContext;
-  private TransitionContext mTransitionContext;
 
   private Component mComponent;
 
@@ -218,6 +217,7 @@ class LayoutState {
   private @Nullable OutputUnitsAffinityGroup<LayoutOutput> mCurrentLayoutOutputAffinityGroup;
   private final SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>>
       mTransitionKeyMapping = new SimpleArrayMap<>();
+  private List<Transition> mTransitions;
   private boolean mHasLithoViewWidthAnimation = false;
   private boolean mHasLithoViewHeightAnimation = false;
   long mCalculateLayoutDuration;
@@ -718,7 +718,10 @@ class LayoutState {
       if (transitions != null) {
         for (int i = 0, size = transitions.size(); i < size; i++) {
           final Transition transition = transitions.get(i);
-          layoutState.getOrCreateTransitionContext().addTransition(transition);
+          if (layoutState.mTransitions == null) {
+            layoutState.mTransitions = new ArrayList<>();
+          }
+          TransitionUtils.addTransitions(transition, layoutState.mTransitions);
 
           if (layoutState.mLayoutRoot.hasTransitionKey()) {
             final String transitionKey = layoutState.mLayoutRoot.getTransitionKey();
@@ -2080,9 +2083,9 @@ class LayoutState {
       }
       clearLayoutStateOutputIdCalculator();
 
-      if (mTransitionContext != null) {
-        ComponentsPools.release(mTransitionContext);
-        mTransitionContext = null;
+      if (mTransitions != null) {
+        mTransitions.clear();
+        mTransitions = null;
       }
 
       // This should only ever be true in non-release builds as we need this for Stetho integration
@@ -2217,12 +2220,9 @@ class LayoutState {
     return mOutputsIdToPositionMap.get(layoutOutputId, -1);
   }
 
-  TransitionContext getTransitionContext() {
-    return mTransitionContext;
-  }
-
-  boolean hasTransitionContext() {
-    return (mTransitionContext != null);
+  @Nullable
+  List<Transition> getTransitions() {
+    return mTransitions;
   }
 
   /** Gets a mapping from transition key to a group of LayoutOutput. */
@@ -2238,13 +2238,6 @@ class LayoutState {
     layoutState.mMountableOutputs.add(layoutOutput);
     layoutState.mMountableOutputTops.add(layoutOutput);
     layoutState.mMountableOutputBottoms.add(layoutOutput);
-  }
-
-  private TransitionContext getOrCreateTransitionContext() {
-    if (mTransitionContext == null) {
-      mTransitionContext = ComponentsPools.acquireTransitionContext();
-    }
-    return mTransitionContext;
   }
 
   /**

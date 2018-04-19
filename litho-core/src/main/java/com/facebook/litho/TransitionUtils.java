@@ -20,6 +20,7 @@ import android.provider.Settings;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;
+import java.util.List;
 
 /** Utilities to interact with {@link Transition}. */
 class TransitionUtils {
@@ -81,5 +82,13 @@ class TransitionUtils {
             context.getContentResolver(), Settings.Global.ANIMATOR_DURATION_SCALE, 1f);
     return ComponentsConfiguration.forceEnableTransitionsForInstrumentationTests
         || animatorDurationScale != 0f;
+  }
+
+  static void addTransitions(Transition transition, List<Transition> outList) {
+    if (transition instanceof Transition.BaseTransitionUnitsBuilder) {
+      outList.addAll(((Transition.BaseTransitionUnitsBuilder) transition).getTransitionUnits());
+    } else {
+      outList.add(transition);
+    }
   }
 }

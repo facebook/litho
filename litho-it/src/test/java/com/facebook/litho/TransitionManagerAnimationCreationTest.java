@@ -407,12 +407,9 @@ public class TransitionManagerAnimationCreationTest {
       group.add(type, layoutOutput);
     }
 
-    final TransitionContext transitionContext = mock(TransitionContext.class);
-    when(transitionContext.getTransitions())
-        .thenReturn(transitions != null ? transitions.getChildren() : null);
-
     final LayoutState layoutState = mock(LayoutState.class);
-    when(layoutState.getTransitionContext()).thenReturn(transitionContext);
+    when(layoutState.getTransitions())
+        .thenReturn(transitions != null ? transitions.getChildren() : null);
     when(layoutState.getTransitionKeyMapping()).thenReturn(transitionKeyMapping);
     when(layoutState.getLayoutOutputsForTransitionKey(anyString()))
         .then(

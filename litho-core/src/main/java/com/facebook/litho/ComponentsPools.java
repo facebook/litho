@@ -132,9 +132,6 @@ public class ComponentsPools {
   static final RecyclePool<Edges> sEdgesPool =
       new RecyclePool<>("Edges", 30, true);
 
-  static final RecyclePool<TransitionContext> sTransitionContextPool =
-      new RecyclePool<>("TransitionContext", 2, true);
-
   static final RecyclePool<DisplayListDrawable> sDisplayListDrawablePool =
       new RecyclePool<>("DisplayListDrawable", 10, false);
 
@@ -422,15 +419,6 @@ public class ComponentsPools {
     return acquireStateHandler(null);
   }
 
-  static TransitionContext acquireTransitionContext() {
-    TransitionContext transitionContext = sTransitionContextPool.acquire();
-    if (transitionContext == null) {
-      transitionContext = new TransitionContext();
-    }
-
-    return transitionContext;
-  }
-
   public static TreeProps acquireTreeProps() {
     TreeProps treeProps = sTreePropsMapPool.acquire();
     if (treeProps == null) {
@@ -455,12 +443,6 @@ public class ComponentsPools {
   public static void release(TreeProps treeProps) {
     treeProps.reset();
     sTreePropsMapPool.release(treeProps);
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void release(TransitionContext transitionContext) {
-    transitionContext.reset();
-    sTransitionContextPool.release(transitionContext);
   }
 
   @ThreadSafe(enableChecks = false)
@@ -803,7 +785,6 @@ public class ComponentsPools {
     sDiffPool.clear();
     sComponentTreeBuilderPool.clear();
     sStateHandlerPool.clear();
-    sTransitionContextPool.clear();
     sTreePropsMapPool.clear();
     sLogEventPool.clear();
     sMountItemScrapArrayPool.clear();

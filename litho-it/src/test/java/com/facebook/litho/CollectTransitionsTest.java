@@ -75,7 +75,6 @@ public class CollectTransitionsTest {
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             LayoutState.CalculateLayoutSource.TEST);
-    assertThat(layoutState.getTransitionContext()).isNotNull();
-    assertThat(layoutState.getTransitionContext().getTransitions()).hasSize(2);
+    assertThat(layoutState.getTransitions()).hasSize(2);
   }
 }

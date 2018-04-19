@@ -2450,13 +2450,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
    *     LayoutState
    */
   private boolean hasTransitionsToAnimate(LayoutState newLayoutState) {
+    final boolean hasLayoutTimeTransitions =
+        newLayoutState.getTransitions() != null && !newLayoutState.getTransitions().isEmpty();
     final boolean hasMountTimeTransitions =
         mMountTimeTransitions != null && !mMountTimeTransitions.isEmpty();
     final boolean hasStateUpdateTransitions =
         mStateUpdateTransitions != null && !mStateUpdateTransitions.isEmpty();
-    return hasMountTimeTransitions
-        || hasStateUpdateTransitions
-        || newLayoutState.hasTransitionContext();
+    return hasLayoutTimeTransitions || hasMountTimeTransitions || hasStateUpdateTransitions;
   }
 
   @Override
