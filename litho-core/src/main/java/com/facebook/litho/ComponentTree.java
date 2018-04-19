@@ -167,9 +167,9 @@ public class ComponentTree {
   @GuardedBy("mCurrentCalculateLayoutRunnableLock")
   private @Nullable CalculateLayoutRunnable mCurrentCalculateLayoutRunnable;
 
-  private boolean mHasMounted;
-  private boolean mHasLithoViewWidthAnimation;
-  private boolean mHasLithoViewHeightAnimation;
+  boolean mHasMounted;
+  private boolean mHasNewLithoViewWidthAnimation;
+  private boolean mHasNewLithoViewHeightAnimation;
 
   // TODO(6606683): Enable recycling of mComponent.
   // We will need to ensure there are no background threads referencing mComponent. We'll need
@@ -587,8 +587,8 @@ public class ComponentTree {
     // We might be animating bounds of LithoView from 0 width/height on first mount, so we need to
     // make sure to initiate mounting so that the animation properties are applied.
     return !mHasMounted
-        && ((hasLithoViewHeightAnimation() && visibleBounds.height() == 0)
-            || (hasLithoViewWidthAnimation() && visibleBounds.width() == 0));
+        && ((hasNewLithoViewHeightAnimation() && visibleBounds.height() == 0)
+            || (hasNewLithoViewWidthAnimation() && visibleBounds.width() == 0));
   }
 
   private static void getLocationAndBoundsOnScreen(View view, int[] location, Rect bounds) {
@@ -601,30 +601,34 @@ public class ComponentTree {
 
   /**
    * @return whether the recently computed layout state defines a transition that animates the width
-   *     of the root component (and thus the LithoView).
+   *     of the root component (and thus the LithoView). This is used once during {@link
+   *     LithoView#onMeasure(int, int)} to identify whether to apply the animating value and reset
+   *     after that.
    */
   @ThreadConfined(ThreadConfined.UI)
-  boolean hasLithoViewWidthAnimation() {
-    return mHasLithoViewWidthAnimation;
+  boolean hasNewLithoViewWidthAnimation() {
+    return mHasNewLithoViewWidthAnimation;
   }
 
   /**
    * @return whether the recently computed layout state defines a transition that animates the
-   *     height of the root component (and thus the LithoView).
+   *     height of the root component (and thus the LithoView). This is used once during {@link
+   *     LithoView#onMeasure(int, int)} to identify whether to apply the animating value and reset
+   *     after that.
    */
   @ThreadConfined(ThreadConfined.UI)
-  boolean hasLithoViewHeightAnimation() {
-    return mHasLithoViewHeightAnimation;
+  boolean hasNewLithoViewHeightAnimation() {
+    return mHasNewLithoViewHeightAnimation;
   }
 
   @ThreadConfined(ThreadConfined.UI)
-  void setHasLithoViewWidthAnimation(boolean hasLithoViewWidthAnimation) {
-    mHasLithoViewWidthAnimation = hasLithoViewWidthAnimation;
+  void setHasNewLithoViewWidthAnimation(boolean hasNewLithoViewWidthAnimation) {
+    mHasNewLithoViewWidthAnimation = hasNewLithoViewWidthAnimation;
   }
 
   @ThreadConfined(ThreadConfined.UI)
-  void setHasLithoViewHeightAnimation(boolean hasLithoViewHeightAnimation) {
-    mHasLithoViewHeightAnimation = hasLithoViewHeightAnimation;
+  void setHasNewLithoViewHeightAnimation(boolean hasNewLithoViewHeightAnimation) {
+    mHasNewLithoViewHeightAnimation = hasNewLithoViewHeightAnimation;
   }
 
   /**

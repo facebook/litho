@@ -56,7 +56,7 @@ public class LithoView extends ComponentHost {
   private boolean mForceLayout;
   private boolean mSuppressMeasureComponentTree;
   private boolean mIsMeasuring = false;
-  private boolean mHasNewComponentTree = false;
+  private boolean mSkipBoundsAnimation = false;
   private int mAnimatedWidth = -1;
   private int mAnimatedHeight = -1;
   private OnDirtyMountListener mOnDirtyMountListener = null;
@@ -284,23 +284,25 @@ public class LithoView extends ComponentHost {
 
     // If we're mounting a new ComponentTree, it probably has a different width/height but we don't
     // want to animate it.
-    if (!mHasNewComponentTree && mComponentTree != null) {
+    if (!mSkipBoundsAnimation && mComponentTree != null) {
       // We might need to collect transitions before mount to know whether this LithoView has
       // width or height animation.
       mComponentTree.maybeCollectTransitions();
 
-      if (mComponentTree.hasLithoViewWidthAnimation()) {
+      if (mComponentTree.hasNewLithoViewWidthAnimation()) {
         // We expect width to animate
-        width = upToDateWidth;
+        width = mComponentTree.mHasMounted ? upToDateWidth : 0;
+        mComponentTree.setHasNewLithoViewWidthAnimation(false);
       }
-      if (mComponentTree.hasLithoViewHeightAnimation()) {
+      if (mComponentTree.hasNewLithoViewHeightAnimation()) {
         // We expect height to animate
-        height = upToDateHeight;
+        height = mComponentTree.mHasMounted ? upToDateHeight : 0;
+        mComponentTree.setHasNewLithoViewHeightAnimation(false);
       }
     }
     setMeasuredDimension(width, height);
 
-    mHasNewComponentTree = false;
+    mSkipBoundsAnimation = false;
     mIsMeasuring = false;
   }
 
@@ -417,8 +419,11 @@ public class LithoView extends ComponentHost {
       return;
     }
 
-    mHasNewComponentTree =
-        mComponentTree == null || componentTree == null || mComponentTree.mId != componentTree.mId;
+    mSkipBoundsAnimation =
+        mComponentTree != null
+            && componentTree != null
+            && mComponentTree.mId != componentTree.mId
+            && componentTree.mHasMounted;
     setMountStateDirty();
 
     if (mComponentTree != null) {
