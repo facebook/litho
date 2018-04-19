@@ -1170,12 +1170,16 @@ class LayoutState {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection(
-          new StringBuilder("LayoutState.calculate_")
-              .append(component.getSimpleName())
-              .append("_")
-              .append(sourceToString(source))
-              .toString());
+      ComponentsSystrace.beginSectionWithArgs(
+              new StringBuilder("LayoutState.calculate_")
+                  .append(component.getSimpleName())
+                  .append("_")
+                  .append(sourceToString(source))
+                  .toString())
+          .arg("treeId", componentTreeId)
+          .arg("widthSpec", SizeSpec.toString(widthSpec))
+          .arg("heightSpec", SizeSpec.toString(heightSpec))
+          .flush();
     }
 
     final LayoutState layoutState;
