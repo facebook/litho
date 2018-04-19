@@ -22,6 +22,7 @@ import android.view.ViewParent;
 import com.facebook.litho.config.ComponentsConfiguration;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 /**
@@ -51,14 +52,26 @@ class IncrementalMountHelper {
         final ViewPager viewPager = (ViewPager) viewParent;
         final IncrementalMountHelper.ViewPagerListener viewPagerListener =
             new ViewPagerListener(mComponentTree, viewPager);
-        ViewCompat.postOnAnimation(
-            viewPager,
-            new Runnable() {
-              @Override
-              public void run() {
-                viewPager.addOnPageChangeListener(viewPagerListener);
-              }
-            });
+
+        // We want to add the listener immediately, since otherwise we might navigate to a
+        // new tab in the ViewPager in this frame, and not mount the content. However, it is
+        // possible that we are adding a listener here because its parent is being mounted due to
+        // the ViewPager being scrolled (imagine a Recycler that is now on the screen and has to
+        // mount a child view). In those cases adding the listener for the child will get a
+        // ConcurrentModificationException, so we post it instead.
+        try {
+          viewPager.addOnPageChangeListener(viewPagerListener);
+        } catch (ConcurrentModificationException e) {
+          ViewCompat.postOnAnimation(
+              viewPager,
+              new Runnable() {
+                @Override
+                public void run() {
+                  viewPager.addOnPageChangeListener(viewPagerListener);
+                }
+              });
+        }
+
         mViewPagerListeners.add(viewPagerListener);
       }
 
