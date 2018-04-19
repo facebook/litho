@@ -439,36 +439,17 @@ public class TransitionManager {
     }
   }
 
-  static Transition getRootTransition(
-      LayoutState nextLayoutState,
-      @Nullable List<Transition> mountTimeTransitions,
-      @Nullable List<Transition> stateUpdateTransitions) {
-
-    final ArrayList<Transition> mergedList = new ArrayList<>();
-
-    final @Nullable List<Transition> layoutStateTransitions = nextLayoutState.getTransitions();
-
-    if (layoutStateTransitions != null) {
-      mergedList.addAll(layoutStateTransitions);
-    }
-
-    if (mountTimeTransitions != null) {
-      mergedList.addAll(mountTimeTransitions);
-    }
-
-    if (stateUpdateTransitions != null) {
-      mergedList.addAll(stateUpdateTransitions);
-    }
-
-    if (mergedList.isEmpty()) {
+  @Nullable
+  static Transition getRootTransition(List<Transition> allTransitions) {
+    if (allTransitions.isEmpty()) {
       return null;
     }
 
-    if (mergedList.size() == 1) {
-      return mergedList.get(0);
+    if (allTransitions.size() == 1) {
+      return allTransitions.get(0);
     }
 
-    return new ParallelTransitionSet(mergedList);
+    return new ParallelTransitionSet(allTransitions);
   }
 
   private void createTransitionAnimations(Transition rootTransition) {

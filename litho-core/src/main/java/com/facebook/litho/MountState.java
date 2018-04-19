@@ -60,6 +60,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.reference.Reference;
 import java.util.ArrayList;
@@ -134,8 +135,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private int[] mAnimationLockedIndices;
   private final SimpleArrayMap<String, OutputUnitsAffinityGroup<MountItem>>
       mDisappearingMountItems = new SimpleArrayMap<>();
-  private @Nullable ArrayList<Transition> mMountTimeTransitions;
-  private @Nullable List<Transition> mStateUpdateTransitions;
+  private @Nullable Transition mRootTransition;
 
   public MountState(LithoView view) {
     mIndexToItemMap = new LongSparseArray<>();
@@ -347,12 +347,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     maybeUpdateAnimatingMountContent();
-    if (shouldAnimateTransitions(layoutState) && hasTransitionsToAnimate(layoutState)) {
+    if (shouldAnimateTransitions(layoutState) && hasTransitionsToAnimate()) {
       mTransitionManager.runTransitions();
     }
 
-    mMountTimeTransitions = null;
-    mStateUpdateTransitions = null;
+    mRootTransition = null;
     mIsDirty = false;
     mNeedsRemount = false;
     mIsFirstMountOfComponentTree = false;
@@ -1010,7 +1009,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
    * Determine whether to apply disappear animation to the given {@link MountItem}
    */
   private boolean isItemDisappearing(LayoutState layoutState, int index) {
-    if (!shouldAnimateTransitions(layoutState) || !hasTransitionsToAnimate(layoutState)) {
+    if (!shouldAnimateTransitions(layoutState) || !hasTransitionsToAnimate()) {
       return false;
     }
 
@@ -2293,15 +2292,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     if (shouldAnimateTransitions(layoutState)) {
-      mMountTimeTransitions = collectMountTimeTransitions(layoutState);
-      mStateUpdateTransitions = componentTree.consumeStateUpdateTransitions();
-
-      if (hasTransitionsToAnimate(layoutState)) {
-        final Transition rootTransition =
-            TransitionManager.getRootTransition(
-                layoutState, mMountTimeTransitions, mStateUpdateTransitions);
-
-        createNewTransitions(layoutState, rootTransition);
+      collectAllTransitions(layoutState, componentTree);
+      if (hasTransitionsToAnimate()) {
+        createNewTransitions(layoutState, mRootTransition);
       }
     }
 
@@ -2449,14 +2442,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
    * @return whether we have any transitions to animate for the current mount of the given
    *     LayoutState
    */
-  private boolean hasTransitionsToAnimate(LayoutState newLayoutState) {
-    final boolean hasLayoutTimeTransitions =
-        newLayoutState.getTransitions() != null && !newLayoutState.getTransitions().isEmpty();
-    final boolean hasMountTimeTransitions =
-        mMountTimeTransitions != null && !mMountTimeTransitions.isEmpty();
-    final boolean hasStateUpdateTransitions =
-        mStateUpdateTransitions != null && !mStateUpdateTransitions.isEmpty();
-    return hasLayoutTimeTransitions || hasMountTimeTransitions || hasStateUpdateTransitions;
+  private boolean hasTransitionsToAnimate() {
+    return mRootTransition != null;
   }
 
   @Override
@@ -2766,30 +2753,61 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
-  private static @Nullable ArrayList<Transition> collectMountTimeTransitions(
-      LayoutState layoutState) {
+  /**
+   * Collect transitions from layout time, mount time and from state updates.
+   *
+   * @param layoutState that is going to be mounted.
+   */
+  void collectAllTransitions(LayoutState layoutState, ComponentTree componentTree) {
+    final ArrayList<Transition> allTransitions = new ArrayList<>();
+
+    if (layoutState.getTransitions() != null) {
+      allTransitions.addAll(layoutState.getTransitions());
+    }
+    collectMountTimeTransitions(layoutState, allTransitions);
+    componentTree.consumeStateUpdateTransitions(allTransitions);
+
+    boolean hasLithoViewWidthAnimation = false;
+    boolean hasLithoViewHeightAnimation = false;
+
+    final String rootTransitionKey = layoutState.getRootTransitionKey();
+
+    if (!TextUtils.isEmpty(rootTransitionKey)) {
+      for (int i = 0, size = allTransitions.size(); i < size; i++) {
+        final Transition transition = allTransitions.get(i);
+        hasLithoViewWidthAnimation |=
+            TransitionUtils.hasAnimationForProperty(
+                rootTransitionKey, transition, AnimatedProperties.WIDTH);
+        hasLithoViewHeightAnimation |=
+            TransitionUtils.hasAnimationForProperty(
+                rootTransitionKey, transition, AnimatedProperties.HEIGHT);
+      }
+    }
+
+    componentTree.setHasLithoViewWidthAnimation(hasLithoViewWidthAnimation);
+    componentTree.setHasLithoViewHeightAnimation(hasLithoViewHeightAnimation);
+
+    mRootTransition = TransitionManager.getRootTransition(allTransitions);
+  }
+
+  private static @Nullable void collectMountTimeTransitions(
+      LayoutState layoutState, List<Transition> outList) {
     final List<Component> componentsNeedingPreviousRenderData =
         layoutState.getComponentsNeedingPreviousRenderData();
 
     if (componentsNeedingPreviousRenderData == null) {
-      return null;
+      return;
     }
 
-    ArrayList<Transition> result = null;
     for (int i = 0, size = componentsNeedingPreviousRenderData.size(); i < size; i++) {
       final Component component = componentsNeedingPreviousRenderData.get(i);
       final Transition transition =
           component.onCreateTransition(component.getScopedContext());
 
       if (transition != null) {
-        if (result == null) {
-          result = new ArrayList<>();
-        }
-        result.add(transition);
+        outList.add(transition);
       }
     }
-
-    return result;
   }
 
   /**

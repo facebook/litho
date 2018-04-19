@@ -167,7 +167,9 @@ public class ComponentTree {
   @GuardedBy("mCurrentCalculateLayoutRunnableLock")
   private @Nullable CalculateLayoutRunnable mCurrentCalculateLayoutRunnable;
 
-  private boolean mHasMounted = false;
+  private boolean mHasMounted;
+  private boolean mHasLithoViewWidthAnimation;
+  private boolean mHasLithoViewHeightAnimation;
 
   // TODO(6606683): Enable recycling of mComponent.
   // We will need to ensure there are no background threads referencing mComponent. We'll need
@@ -578,18 +580,32 @@ public class ComponentTree {
         location[0], location[1], location[0] + view.getWidth(), location[1] + view.getHeight());
   }
 
-  /** @see LayoutState#hasLithoViewWidthAnimation() */
+  /**
+   * @return whether the recently computed layout state defines a transition that animates the width
+   *     of the root component (and thus the LithoView).
+   */
   @ThreadConfined(ThreadConfined.UI)
   boolean hasLithoViewWidthAnimation() {
-    assertMainThread();
-    return mMainThreadLayoutState != null && mMainThreadLayoutState.hasLithoViewWidthAnimation();
+    return mHasLithoViewWidthAnimation;
   }
 
-  /** @see LayoutState#hasLithoViewHeightAnimation() */
+  /**
+   * @return whether the recently computed layout state defines a transition that animates the
+   *     height of the root component (and thus the LithoView).
+   */
   @ThreadConfined(ThreadConfined.UI)
   boolean hasLithoViewHeightAnimation() {
-    assertMainThread();
-    return mMainThreadLayoutState != null && mMainThreadLayoutState.hasLithoViewHeightAnimation();
+    return mHasLithoViewHeightAnimation;
+  }
+
+  @ThreadConfined(ThreadConfined.UI)
+  void setHasLithoViewWidthAnimation(boolean hasLithoViewWidthAnimation) {
+    mHasLithoViewWidthAnimation = hasLithoViewWidthAnimation;
+  }
+
+  @ThreadConfined(ThreadConfined.UI)
+  void setHasLithoViewHeightAnimation(boolean hasLithoViewHeightAnimation) {
+    mHasLithoViewHeightAnimation = hasLithoViewHeightAnimation;
   }
 
   /**
@@ -1165,12 +1181,10 @@ public class ComponentTree {
     return StateHandler.acquireNewInstance(mStateHandler);
   }
 
-  synchronized @Nullable List<Transition> consumeStateUpdateTransitions() {
-    if (mStateHandler == null) {
-      return null;
+  synchronized @Nullable void consumeStateUpdateTransitions(List<Transition> outList) {
+    if (mStateHandler != null) {
+      mStateHandler.consumePendingStateUpdateTransitions(outList);
     }
-
-    return mStateHandler.consumePendingStateUpdateTransitions();
   }
 
   /**

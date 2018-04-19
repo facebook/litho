@@ -257,17 +257,15 @@ public class StateHandler {
   }
 
   @Nullable
-  synchronized List<Transition> consumePendingStateUpdateTransitions() {
+  synchronized void consumePendingStateUpdateTransitions(List<Transition> outList) {
     if (mPendingStateUpdateTransitions == null) {
-      return null;
+      return;
     }
 
-    final List<Transition> transitions = new ArrayList<>();
     for (List<Transition> pendingTransitions : mPendingStateUpdateTransitions.values()) {
-      transitions.addAll(pendingTransitions);
+      outList.addAll(pendingTransitions);
     }
     mPendingStateUpdateTransitions = null;
-    return transitions;
   }
 
   /**

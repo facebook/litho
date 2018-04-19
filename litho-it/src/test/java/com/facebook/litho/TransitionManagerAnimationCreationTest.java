@@ -31,6 +31,7 @@ import com.facebook.litho.animation.SpringTransition;
 import com.facebook.litho.animation.TransitionAnimationBinding;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.ArrayList;
+import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -85,7 +86,7 @@ public class TransitionManagerAnimationCreationTest {
         createMockLayoutOutput("test", 10, 10));
 
     mTransitionManager.setupTransitions(
-        current, next, TransitionManager.getRootTransition(next, null, null));
+        current, next, TransitionManager.getRootTransition(next.getTransitions()));
 
     assertThat(mCreatedAnimations).containsExactlyInAnyOrder(
         createPropertyAnimation("test", AnimatedProperties.X, 10));
@@ -105,7 +106,7 @@ public class TransitionManagerAnimationCreationTest {
             createMockLayoutOutput("test", 10, 10));
 
     mTransitionManager.setupTransitions(
-        current, next, TransitionManager.getRootTransition(next, null, null));
+        current, next, TransitionManager.getRootTransition(next.getTransitions()));
 
     assertThat(mCreatedAnimations).containsExactlyInAnyOrder(
         createPropertyAnimation("test", AnimatedProperties.X, 10),
@@ -126,7 +127,7 @@ public class TransitionManagerAnimationCreationTest {
             createMockLayoutOutput("test", 10, 0));
 
     mTransitionManager.setupTransitions(
-        current, next, TransitionManager.getRootTransition(next, null, null));
+        current, next, TransitionManager.getRootTransition(next.getTransitions()));
 
     assertThat(mCreatedAnimations).containsExactlyInAnyOrder(
         createPropertyAnimation("test", AnimatedProperties.X, 10));
@@ -147,7 +148,7 @@ public class TransitionManagerAnimationCreationTest {
         createMockLayoutOutput("test2", -10, -10));
 
     mTransitionManager.setupTransitions(
-        current, next, TransitionManager.getRootTransition(next, null, null));
+        current, next, TransitionManager.getRootTransition(next.getTransitions()));
 
     assertThat(mCreatedAnimations).containsExactlyInAnyOrder(
         createPropertyAnimation("test1", AnimatedProperties.X, 10),
@@ -169,7 +170,7 @@ public class TransitionManagerAnimationCreationTest {
         createMockLayoutOutput("test2", -10, -10));
 
     mTransitionManager.setupTransitions(
-        current, next, TransitionManager.getRootTransition(next, null, null));
+        current, next, TransitionManager.getRootTransition(next.getTransitions()));
 
     assertThat(mCreatedAnimations).containsExactlyInAnyOrder(
         createPropertyAnimation("test1", AnimatedProperties.X, 10),
@@ -194,7 +195,7 @@ public class TransitionManagerAnimationCreationTest {
             createMockLayoutOutput("test2", -10, -10));
 
     mTransitionManager.setupTransitions(
-        current, next, TransitionManager.getRootTransition(next, null, null));
+        current, next, TransitionManager.getRootTransition(next.getTransitions()));
 
     assertThat(mCreatedAnimations).containsExactlyInAnyOrder(
         createPropertyAnimation("test1", AnimatedProperties.X, 10),
@@ -218,7 +219,7 @@ public class TransitionManagerAnimationCreationTest {
             createMockLayoutOutput("test2", -10, -20, 50, 80));
 
     mTransitionManager.setupTransitions(
-        current, next, TransitionManager.getRootTransition(next, null, null));
+        current, next, TransitionManager.getRootTransition(next.getTransitions()));
 
     assertThat(mCreatedAnimations)
         .containsExactlyInAnyOrder(
@@ -246,7 +247,7 @@ public class TransitionManagerAnimationCreationTest {
             createMockLayoutOutput("test", 10, 0));
 
     mTransitionManager.setupTransitions(
-        current, next, TransitionManager.getRootTransition(next, null, null));
+        current, next, TransitionManager.getRootTransition(next.getTransitions()));
 
     assertThat(mCreatedAnimations).containsExactlyInAnyOrder(
         createPropertyAnimation("test", AnimatedProperties.X, 10));
@@ -268,7 +269,7 @@ public class TransitionManagerAnimationCreationTest {
             createMockLayoutOutput("appearing", 20, 0));
 
     mTransitionManager.setupTransitions(
-        null, next, TransitionManager.getRootTransition(next, null, null));
+        null, next, TransitionManager.getRootTransition(next.getTransitions()));
 
     assertThat(mCreatedAnimations)
         .containsExactlyInAnyOrder(createPropertyAnimation("appearing", AnimatedProperties.X, 20));
@@ -296,8 +297,11 @@ public class TransitionManagerAnimationCreationTest {
             .appearFrom(0)
             .animator(mTestVerificationAnimator));
 
+    final List<Transition> allTransitions = new ArrayList<>();
+    allTransitions.addAll(next.getTransitions());
+    allTransitions.addAll(mountTimeTransitions);
     mTransitionManager.setupTransitions(
-        current, next, TransitionManager.getRootTransition(next, mountTimeTransitions, null));
+        current, next, TransitionManager.getRootTransition(allTransitions));
 
     assertThat(mCreatedAnimations)
         .containsExactlyInAnyOrder(
@@ -327,7 +331,7 @@ public class TransitionManagerAnimationCreationTest {
             .animator(mTestVerificationAnimator));
 
     mTransitionManager.setupTransitions(
-        current, next, TransitionManager.getRootTransition(next, mountTimeTransitions, null));
+        current, next, TransitionManager.getRootTransition(mountTimeTransitions));
 
     assertThat(mCreatedAnimations)
         .containsExactlyInAnyOrder(
@@ -368,8 +372,12 @@ public class TransitionManagerAnimationCreationTest {
             createMockLayoutOutput("test1", 10, 20),
             createMockLayoutOutput("test2", -10, -20));
 
+    final List<Transition> allTransitions = new ArrayList<>();
+    allTransitions.addAll(next.getTransitions());
+    allTransitions.addAll(transitionsFromStateUpdate);
+
     mTransitionManager.setupTransitions(
-        current, next, TransitionManager.getRootTransition(next, null, transitionsFromStateUpdate));
+        current, next, TransitionManager.getRootTransition(allTransitions));
 
     assertThat(mCreatedAnimations.size()).isEqualTo(2);
 
