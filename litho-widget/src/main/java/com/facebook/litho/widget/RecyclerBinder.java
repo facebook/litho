@@ -1218,20 +1218,20 @@ public class RecyclerBinder
       int childrenWidthSpec,
       int childrenHeightSpec,
       int scrollDirection) {
-    final Size size = new Size();
-    holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, size);
+    ComponentsSystrace.beginSection("initRange");
+    try {
+      final Size size = new Size();
+      holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, size);
 
-    final int rangeSize = Math.max(
-        mLayoutInfo.approximateRangeSize(
-            size.width,
-            size.height,
-            width,
-            height),
-        1);
+      final int rangeSize =
+          Math.max(mLayoutInfo.approximateRangeSize(size.width, size.height, width, height), 1);
 
-    mRange = new RangeCalculationResult();
-    mRange.measuredSize = scrollDirection == HORIZONTAL ? size.height : size.width;
-    mRange.estimatedViewportCount = rangeSize;
+      mRange = new RangeCalculationResult();
+      mRange.measuredSize = scrollDirection == HORIZONTAL ? size.height : size.width;
+      mRange.estimatedViewportCount = rangeSize;
+    } finally {
+      ComponentsSystrace.endSection();
+    }
   }
 
   @GuardedBy("this")
