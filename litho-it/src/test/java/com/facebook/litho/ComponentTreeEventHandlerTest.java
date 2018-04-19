@@ -40,30 +40,55 @@ public class ComponentTreeEventHandlerTest {
   public void testNoDuplicateWhenEventHandlerIsReplacedInEventHandlerWrapper() {
     Component component = mock(Component.class);
     ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    EventHandlersController eventHandlersController = componentTree.getEventHandlersController();
 
     EventHandler eventHandler1 = mContext.newEventHandler(1);
     when(component.getGlobalKey()).thenReturn("component1");
 
     componentTree.recordEventHandler(component, eventHandler1);
-    componentTree.bindEventHandler(component);
-    componentTree.clearUnusedEventHandlers();
+    eventHandlersController.bindEventHandlers(mContext, component, component.getGlobalKey());
+    eventHandlersController.clearUnusedEventHandlers();
 
-    assertThat(componentTree.getEventHandlers().size()).isEqualTo(1);
+    assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
 
-    EventHandlersWrapper eventHandlersWrapper =
-        componentTree.getEventHandlers().values().iterator().next();
+    EventHandlersController.EventHandlersWrapper eventHandlersWrapper =
+        eventHandlersController.getEventHandlers().values().iterator().next();
 
-    assertThat(eventHandlersWrapper.eventHandlers.size()).isEqualTo(1);
+    assertThat(eventHandlersWrapper.getEventHandlers().size()).isEqualTo(1);
 
     EventHandler eventHandler2 = mContext.newEventHandler(1);
 
     componentTree.recordEventHandler(component, eventHandler2);
-    componentTree.bindEventHandler(component);
-    componentTree.clearUnusedEventHandlers();
+    eventHandlersController.bindEventHandlers(mContext, component, component.getGlobalKey());
+    eventHandlersController.clearUnusedEventHandlers();
 
-    assertThat(componentTree.getEventHandlers().size()).isEqualTo(1);
+    assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
 
-    eventHandlersWrapper = componentTree.getEventHandlers().values().iterator().next();
-    assertThat(eventHandlersWrapper.eventHandlers.size()).isEqualTo(1);
+    eventHandlersWrapper = eventHandlersController.getEventHandlers().values().iterator().next();
+    assertThat(eventHandlersWrapper.getEventHandlers().size()).isEqualTo(1);
+  }
+
+  @Test
+  public void testClearUnusedEntries() {
+    Component component = mock(Component.class);
+    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    EventHandlersController eventHandlersController = componentTree.getEventHandlersController();
+
+    EventHandler eventHandler1 = mContext.newEventHandler(1);
+    when(component.getGlobalKey()).thenReturn("component1");
+
+    componentTree.recordEventHandler(component, eventHandler1);
+    eventHandlersController.bindEventHandlers(mContext, component, component.getGlobalKey());
+    eventHandlersController.clearUnusedEventHandlers();
+
+    assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
+
+    when(component.getGlobalKey()).thenReturn("component2");
+    componentTree.setRoot(component);
+    componentTree.recordEventHandler(component, eventHandler1);
+    eventHandlersController.bindEventHandlers(mContext, component, component.getGlobalKey());
+    eventHandlersController.clearUnusedEventHandlers();
+
+    assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
   }
 }

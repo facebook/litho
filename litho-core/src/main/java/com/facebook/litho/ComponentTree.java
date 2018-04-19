@@ -51,8 +51,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -215,8 +213,7 @@ public class ComponentTree {
   @GuardedBy("this")
   private int mScheduleLayoutAfterMeasure;
 
-  @GuardedBy("mEventHandlers")
-  public final Map<String, EventHandlersWrapper> mEventHandlers = new LinkedHashMap<>();
+  private final EventHandlersController mEventHandlersController = new EventHandlersController();
 
   @GuardedBy("mEventTriggersContainer")
   private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
@@ -1009,56 +1006,8 @@ public class ComponentTree {
         CalculateLayoutSource.UPDATE_STATE);
   }
 
-  @VisibleForTesting
-  void bindEventHandler(Component component) {
-    final String key = component.getGlobalKey();
-
-    if (key == null) {
-      return;
-    }
-
-    synchronized (mEventHandlers) {
-      final EventHandlersWrapper eventHandlers = mEventHandlers.get(key);
-
-      if (eventHandlers == null) {
-        return;
-      }
-
-      // Mark that the list of event handlers for this component is still needed.
-      eventHandlers.boundInCurrentLayout = true;
-      eventHandlers.bindToDispatcherComponent(component);
-    }
-  }
-
-  @VisibleForTesting
-  void clearUnusedEventHandlers() {
-    synchronized (mEventHandlers) {
-      final Iterator iterator = mEventHandlers.keySet().iterator();
-      while (iterator.hasNext()) {
-        if (!mEventHandlers.get(iterator.next()).boundInCurrentLayout) {
-          iterator.remove();
-        }
-      }
-    }
-  }
-
   void recordEventHandler(Component component, EventHandler eventHandler) {
-    final String key = component.getGlobalKey();
-
-    if (key == null) {
-      return;
-    }
-
-    synchronized (mEventHandlers) {
-      EventHandlersWrapper eventHandlers = mEventHandlers.get(key);
-
-      if (eventHandlers == null) {
-        eventHandlers = new EventHandlersWrapper();
-        mEventHandlers.put(key, eventHandlers);
-      }
-
-      eventHandlers.addEventHandler(eventHandler);
-    }
+    mEventHandlersController.recordEventHandler(component.getGlobalKey(), eventHandler);
   }
 
   private void bindTriggerHandler(Component component) {
@@ -1514,11 +1463,12 @@ public class ComponentTree {
     clearUnusedTriggerHandlers();
 
     for (final Component component : components) {
-      bindEventHandler(component);
+      mEventHandlersController.bindEventHandlers(
+          component.getScopedContext(), component, component.getGlobalKey());
       bindTriggerHandler(component);
     }
 
-    clearUnusedEventHandlers();
+    mEventHandlersController.clearUnusedEventHandlers();
   }
 
   /**
@@ -1812,9 +1762,8 @@ public class ComponentTree {
   }
 
   @VisibleForTesting
-  @GuardedBy("mEventHandlers")
-  Map<String, EventHandlersWrapper> getEventHandlers() {
-    return mEventHandlers;
+  EventHandlersController getEventHandlersController() {
+    return mEventHandlersController;
   }
 
   private final class CalculateLayoutRunnable implements Runnable {
