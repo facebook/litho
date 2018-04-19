@@ -80,13 +80,13 @@ public class EventHandlersController {
   }
 
   @VisibleForTesting
-  synchronized Map<String, EventHandlersWrapper> getEventHandlers() {
+  public synchronized Map<String, EventHandlersWrapper> getEventHandlers() {
     return mEventHandlers;
   }
 
   /** Used to hold a dispatcher's event handlers. */
   @VisibleForTesting
-  static class EventHandlersWrapper {
+  public static class EventHandlersWrapper {
 
     private final SparseArrayCompat<EventHandler> mEventHandlers = new SparseArrayCompat<>();
 
@@ -109,7 +109,7 @@ public class EventHandlersController {
     }
 
     @VisibleForTesting
-    SparseArrayCompat<EventHandler> getEventHandlers() {
+    public SparseArrayCompat<EventHandler> getEventHandlers() {
       return mEventHandlers;
     }
   }

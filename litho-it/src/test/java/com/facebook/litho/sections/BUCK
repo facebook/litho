@@ -12,6 +12,7 @@ components_robolectric_test(
     target = "8",
     deps = [
         LITHO_ASSERTJ_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_TESTING_TARGET,
         LITHO_TESTING_ASSERTJ_TARGET,
         LITHO_GUAVA_TARGET,

@@ -31,6 +31,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 import android.support.annotation.UiThread;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import android.util.Log;
@@ -39,6 +40,7 @@ import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.EventHandlersController;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.LogEvent;
@@ -223,33 +225,13 @@ public class SectionTree {
   @GuardedBy("this")
   private Map<String, List<EventHandler>> mEventHandlers = new HashMap<>();
 
+  private final EventHandlersController mEventHandlersController = new EventHandlersController();
+
   @GuardedBy("this")
   private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
 
-  private synchronized void bindEventHandlers(Section section) {
-    if (!mEventHandlers.containsKey(section.getGlobalKey())) {
-      return;
-    }
-
-    for (EventHandler eventHandler : mEventHandlers.get(section.getGlobalKey())) {
-      eventHandler.mHasEventDispatcher = section;
-
-      // Params should only be null for tests
-      if (eventHandler.params != null) {
-        eventHandler.params[0] = section.getScopedContext();
-      }
-    }
-  }
-
-  synchronized void recordEventHandler(Section section, EventHandler eventHandler) {
-    final String key = section.getGlobalKey();
-
-    if (!mEventHandlers.containsKey(key)) {
-      List<EventHandler> list = new ArrayList<>();
-      mEventHandlers.put(key, list);
-    }
-
-    mEventHandlers.get(key).add(eventHandler);
+  void recordEventHandler(Section section, EventHandler eventHandler) {
+    mEventHandlersController.recordEventHandler(section.getGlobalKey(), eventHandler);
   }
 
   private synchronized void bindTriggerHandler(Section section) {
@@ -265,6 +247,11 @@ public class SectionTree {
 
   private synchronized void clearUnusedTriggerHandlers() {
     mEventTriggersContainer.clear();
+  }
+
+  @VisibleForTesting
+  EventHandlersController getEventHandlersController() {
+    return mEventHandlersController;
   }
 
   @Nullable
@@ -889,18 +876,22 @@ public class SectionTree {
               oldRoot.release();
             }
 
-            bindNewComponent(newRoot);
             bindTriggerHandler(newRoot);
           }
         }
 
         if (changeSetIsValid) {
+          if (newRoot != null) {
+            bindNewComponent(newRoot);
+          }
+
           final List<Section> removedComponents = changeSetState.getRemovedComponents();
           for (int i = 0, size = removedComponents.size(); i < size; i++) {
             final Section removedComponent = removedComponents.get(i);
             releaseRange(mLastRanges.remove(removedComponent.getGlobalKey()));
           }
 
+          mEventHandlersController.clearUnusedEventHandlers();
           postNewChangeSets();
         }
 
@@ -996,7 +987,8 @@ public class SectionTree {
 
   private void bindNewComponent(Section section) {
     section.bindService(section.getScopedContext());
-    bindEventHandlers(section);
+    mEventHandlersController.bindEventHandlers(
+        section.getScopedContext(), section, section.getGlobalKey());
 
     if (!section.isDiffSectionSpec()) {
       final List<Section> children = section.getChildren();
