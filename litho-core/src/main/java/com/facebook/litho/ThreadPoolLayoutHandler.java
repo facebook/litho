@@ -22,20 +22,22 @@ import java.util.concurrent.ThreadPoolExecutor;
 /** LayoutHandler implementation that uses a thread pool to calculate the layout. */
 public class ThreadPoolLayoutHandler implements LayoutHandler {
 
-  private final ThreadPoolExecutor mLayoutThreadPoolExecutor;
+  private static ThreadPoolExecutor sLayoutThreadPoolExecutor;
 
   public ThreadPoolLayoutHandler(LayoutThreadPoolConfiguration configuration) {
-    mLayoutThreadPoolExecutor =
-        new LayoutThreadPoolExecutor(
-            configuration.getCorePoolSize(),
-            configuration.getMaxPoolSize(),
-            configuration.getThreadPriority());
+    if (sLayoutThreadPoolExecutor == null) {
+      sLayoutThreadPoolExecutor =
+          new LayoutThreadPoolExecutor(
+              configuration.getCorePoolSize(),
+              configuration.getMaxPoolSize(),
+              configuration.getThreadPriority());
+    }
   }
 
   @Override
   public boolean post(Runnable runnable) {
     try {
-      mLayoutThreadPoolExecutor.execute(runnable);
+      sLayoutThreadPoolExecutor.execute(runnable);
       return true;
     } catch (RejectedExecutionException e) {
       throw new RuntimeException("Cannot execute layout calculation task; " + e);
@@ -44,7 +46,7 @@ public class ThreadPoolLayoutHandler implements LayoutHandler {
 
   @Override
   public void removeCallbacks(Runnable runnable) {
-    mLayoutThreadPoolExecutor.remove(runnable);
+    sLayoutThreadPoolExecutor.remove(runnable);
   }
 
   @Override
