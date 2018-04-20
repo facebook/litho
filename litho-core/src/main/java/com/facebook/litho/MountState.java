@@ -2811,7 +2811,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           component.onCreateTransition(component.getScopedContext());
 
       if (transition != null) {
-        outList.add(transition);
+        TransitionUtils.addTransitions(transition, outList);
       }
     }
   }

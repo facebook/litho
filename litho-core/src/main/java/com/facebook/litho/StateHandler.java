@@ -263,7 +263,9 @@ public class StateHandler {
     }
 
     for (List<Transition> pendingTransitions : mPendingStateUpdateTransitions.values()) {
-      outList.addAll(pendingTransitions);
+      for (int i = 0, size = pendingTransitions.size(); i < size; i++) {
+        TransitionUtils.addTransitions(pendingTransitions.get(i), outList);
+      }
     }
     mPendingStateUpdateTransitions = null;
   }
