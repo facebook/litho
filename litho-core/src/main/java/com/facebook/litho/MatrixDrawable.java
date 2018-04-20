@@ -156,15 +156,6 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
 
     final Rect bounds = getBounds();
 
-    if (ComponentsConfiguration.shortcutMatrixDrawable
-        && bounds.left == 0
-        && bounds.top == 0
-        && !mShouldClipRect
-        && mMatrix == null) {
-      mDrawable.draw(canvas);
-      return;
-    }
-
     final int saveCount = canvas.save();
     canvas.translate(bounds.left, bounds.top);
 

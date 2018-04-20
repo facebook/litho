@@ -114,9 +114,6 @@ public class ComponentsConfiguration {
    */
   public static boolean useGlobalKeys = true;
 
-  /** Whether MatrixDrawable draw call can be shortcutted to underlying drawable */
-  public static boolean shortcutMatrixDrawable = false;
-
   /** If true then the new version of the YogaEdgeWithInts will be used. */
   public static boolean useNewYogaEdge = false;
 
