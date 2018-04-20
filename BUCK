@@ -32,7 +32,7 @@ litho_android_library(
     ],
 )
 
-android_library(
+fb_core_android_library(
     name = "sections",
     exported_deps = [
         ":sections_core",

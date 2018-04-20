@@ -6,7 +6,7 @@
 
 include_defs("//LITHO_DEFS.bzl")
 
-android_library(
+fb_core_android_library(
     name = "lithobarebones",
     srcs = glob(["**/*.java"]),
     annotation_processor_deps = [

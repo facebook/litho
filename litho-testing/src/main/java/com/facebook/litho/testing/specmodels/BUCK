@@ -2,10 +2,9 @@
 #
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
+load("//:LITHO_DEFS.bzl", "LITHO_ASSERTJ_TARGET", "make_dep_path", "fb_core_android_library")
 
-load("//:LITHO_DEFS.bzl", "LITHO_ASSERTJ_TARGET", "make_dep_path")
-
-android_library(
+fb_core_android_library(
     name = "specmodels",
     srcs = glob(["*.java"]),
     exported_deps = [

@@ -23,7 +23,7 @@ fb_instrumentation_test(
     ],
 )
 
-android_library(
+fb_core_android_library(
     name = "testutil",
     srcs = glob(["MyComponentSpec.java"]),
     plugins = [

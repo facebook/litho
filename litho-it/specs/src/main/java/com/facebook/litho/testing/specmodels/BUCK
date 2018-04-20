@@ -5,7 +5,7 @@
 
 include_defs("//LITHO_DEFS.bzl")
 
-android_library(
+fb_core_android_library(
     name = "specmodels",
     srcs = glob(["*.java"]),
     annotation_processor_deps = [

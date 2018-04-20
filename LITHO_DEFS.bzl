@@ -149,7 +149,7 @@ def litho_android_library(name, srcs=None, *args, **kwargs):
 
   # This has no meaning in OSS.
   kwargs.pop('fblite', None)
-  android_library(name, srcs=srcs, *args, **kwargs)
+  native.android_library(name, srcs=srcs, *args, **kwargs)
 
 components_robolectric_powermock_test = components_robolectric_test
 
@@ -169,8 +169,11 @@ def fb_java_library(**kwargs):
 
 def fb_android_library(**kwargs):
     """Delegates to native android_library rule."""
-    android_library(**kwargs)
+    native.android_library(**kwargs)
 
 def fb_prebuilt_cxx_library(**kwargs):
     """Delegates to native prebuilt_cxx_library."""
     prebuilt_cxx_library(**kwargs)
+
+def fb_core_android_library(**kwargs):
+    native.android_library(**kwargs)

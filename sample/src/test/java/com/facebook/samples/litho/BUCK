@@ -30,7 +30,7 @@ components_robolectric_test(
     ],
 )
 
-android_library(
+fb_core_android_library(
     name = "testspecs",
     srcs = glob(["**/Test*ComponentSpec.java"]),
     annotation_processor_deps = [
