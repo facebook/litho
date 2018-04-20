@@ -1,3 +1,4 @@
+# BUILD FILE SYNTAX: SKYLARK
 load("//:LITHO_DEFS.bzl", "fb_java_library")
 
 fb_java_library(
