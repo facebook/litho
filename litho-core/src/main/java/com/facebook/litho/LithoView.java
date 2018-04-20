@@ -56,7 +56,7 @@ public class LithoView extends ComponentHost {
   private boolean mForceLayout;
   private boolean mSuppressMeasureComponentTree;
   private boolean mIsMeasuring = false;
-  private boolean mSkipBoundsAnimation = false;
+  private boolean mHasNewComponentTree = false;
   private int mAnimatedWidth = -1;
   private int mAnimatedHeight = -1;
   private OnDirtyMountListener mOnDirtyMountListener = null;
@@ -284,25 +284,23 @@ public class LithoView extends ComponentHost {
 
     // If we're mounting a new ComponentTree, it probably has a different width/height but we don't
     // want to animate it.
-    if (!mSkipBoundsAnimation && mComponentTree != null) {
+    if (!mHasNewComponentTree && mComponentTree != null) {
       // We might need to collect transitions before mount to know whether this LithoView has
       // width or height animation.
       mComponentTree.maybeCollectTransitions();
 
-      if (mComponentTree.hasNewLithoViewWidthAnimation()) {
+      if (mComponentTree.hasLithoViewWidthAnimation()) {
         // We expect width to animate
-        width = mComponentTree.mHasMounted ? upToDateWidth : 0;
-        mComponentTree.setHasNewLithoViewWidthAnimation(false);
+        width = upToDateWidth;
       }
-      if (mComponentTree.hasNewLithoViewHeightAnimation()) {
+      if (mComponentTree.hasLithoViewHeightAnimation()) {
         // We expect height to animate
-        height = mComponentTree.mHasMounted ? upToDateHeight : 0;
-        mComponentTree.setHasNewLithoViewHeightAnimation(false);
+        height = upToDateHeight;
       }
     }
     setMeasuredDimension(width, height);
 
-    mSkipBoundsAnimation = false;
+    mHasNewComponentTree = false;
     mIsMeasuring = false;
   }
 
@@ -419,11 +417,8 @@ public class LithoView extends ComponentHost {
       return;
     }
 
-    mSkipBoundsAnimation =
-        mComponentTree != null
-            && componentTree != null
-            && mComponentTree.mId != componentTree.mId
-            && componentTree.mHasMounted;
+    mHasNewComponentTree =
+        mComponentTree == null || componentTree == null || mComponentTree.mId != componentTree.mId;
     setMountStateDirty();
 
     if (mComponentTree != null) {

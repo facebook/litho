@@ -2789,8 +2789,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       }
     }
 
-    componentTree.setHasNewLithoViewWidthAnimation(hasLithoViewWidthAnimation);
-    componentTree.setHasNewLithoViewHeightAnimation(hasLithoViewHeightAnimation);
+    componentTree.setHasLithoViewWidthAnimation(hasLithoViewWidthAnimation);
+    componentTree.setHasLithoViewHeightAnimation(hasLithoViewHeightAnimation);
 
     mRootTransition = TransitionManager.getRootTransition(allTransitions);
     mTransitionsHasBeenCollected = true;
