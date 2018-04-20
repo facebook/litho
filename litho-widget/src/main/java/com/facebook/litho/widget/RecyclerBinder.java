@@ -101,7 +101,7 @@ public class RecyclerBinder
   private final ArrayList<AsyncOperation> mInsertsWaitingForInitialMeasure = new ArrayList<>();
 
   @GuardedBy("this")
-  private final Deque<AsyncOperation> mAsyncInserts = new ArrayDeque<>();
+  private final Deque<AsyncBatch> mAsyncBatches = new ArrayDeque<>();
 
   private final Runnable mRemeasureRunnable = new Runnable() {
     @Override
@@ -178,6 +178,9 @@ public class RecyclerBinder
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
   private volatile boolean mAsyncInsertsShouldWaitForMeasure = true;
+
+  @GuardedBy("this")
+  private @Nullable AsyncBatch mCurrentBatch = null;
 
   private final ViewportManager mViewportManager;
   private final ViewportChanged mViewportChangedListener =
@@ -551,37 +554,61 @@ public class RecyclerBinder
     ThreadUtils.assertMainThread();
 
     synchronized (this) {
-      boolean dataChangedIsVisible = false;
-      int numInserts = 0;
-      while (true) {
-        final AsyncOperation operation = mAsyncInserts.peekFirst();
-        if (operation == null || !operation.mHolder.hasCompletedLatestLayout()) {
+      boolean appliedBatch = false;
+      while (!mAsyncBatches.isEmpty()) {
+        final AsyncBatch batch = mAsyncBatches.peekFirst();
+        if (!isBatchReady(batch)) {
           break;
         }
 
-        mAsyncInserts.pollFirst();
+        mAsyncBatches.pollFirst();
+        applyBatch(batch);
 
-        mComponentTreeHolders.add(operation.mPosition, operation.mHolder);
-        mInternalAdapter.notifyItemInserted(operation.mPosition);
-
-        dataChangedIsVisible =
-            dataChangedIsVisible
-                || mViewportManager.isInsertInVisibleRange(
-                    operation.mPosition, 1, mRange != null ? mRange.estimatedViewportCount : -1);
-
-        numInserts++;
+        appliedBatch = true;
       }
 
-      if (numInserts > 0) {
+      if (appliedBatch) {
         maybeUpdateRangeOrRemeasureForMutation();
-        mViewportManager.setDataChangedIsVisible(dataChangedIsVisible);
       }
     }
   }
 
+  private static boolean isBatchReady(AsyncBatch batch) {
+    for (int i = 0, size = batch.mOperations.size(); i < size; i++) {
+      final AsyncOperation operation = batch.mOperations.get(i);
+      if (!operation.mHolder.hasCompletedLatestLayout()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  @GuardedBy("this")
+  @UiThread
+  private void applyBatch(AsyncBatch batch) {
+    boolean dataChangedIsVisible = false;
+
+    for (int i = 0, size = batch.mOperations.size(); i < size; i++) {
+      final AsyncOperation operation = batch.mOperations.get(i);
+      mComponentTreeHolders.add(operation.mPosition, operation.mHolder);
+      mInternalAdapter.notifyItemInserted(operation.mPosition);
+
+      dataChangedIsVisible =
+          dataChangedIsVisible
+              || mViewportManager.isInsertInVisibleRange(
+                  operation.mPosition, 1, mRange != null ? mRange.estimatedViewportCount : -1);
+    }
+
+    mViewportManager.setDataChangedIsVisible(dataChangedIsVisible);
+  }
+
   @GuardedBy("this")
   private void registerAsyncInsert(AsyncOperation operation) {
-    mAsyncInserts.addLast(operation);
+    if (mCurrentBatch == null) {
+      mCurrentBatch = new AsyncBatch();
+    }
+
+    mCurrentBatch.mOperations.add(operation);
 
     final ComponentTreeHolder holder = operation.mHolder;
     holder.setNewLayoutReadyListener(mAsyncLayoutReadyListener);
@@ -911,7 +938,15 @@ public class RecyclerBinder
       Log.d(SectionsDebug.TAG, "(" + hashCode() + ") notifyChangeSetComplete");
     }
 
+    closeCurrentBatch();
     maybeUpdateRangeOrRemeasureForMutation();
+  }
+
+  private synchronized void closeCurrentBatch() {
+    if (mCurrentBatch != null) {
+      mAsyncBatches.addLast(mCurrentBatch);
+      mCurrentBatch = null;
+    }
   }
 
   private synchronized void maybeUpdateRangeOrRemeasureForMutation() {
@@ -1259,6 +1294,7 @@ public class RecyclerBinder
     for (int i = numComputed; i < numInserts; i++) {
       registerAsyncInsert(mInsertsWaitingForInitialMeasure.get(i));
     }
+    closeCurrentBatch();
 
     mInsertsWaitingForInitialMeasure.clear();
 
@@ -1348,7 +1384,17 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private void updateAsyncInsertOperations() {
-    for (AsyncOperation operation : mAsyncInserts) {
+    for (AsyncBatch batch : mAsyncBatches) {
+      updateBatch(batch);
+    }
+    if (mCurrentBatch != null) {
+      updateBatch(mCurrentBatch);
+    }
+  }
+
+  @GuardedBy("this")
+  private void updateBatch(AsyncBatch batch) {
+    for (AsyncOperation operation : batch.mOperations) {
       final ComponentTreeHolder holder = operation.mHolder;
 
       // If there's an existing async layout that's compatible, this is a no-op. Otherwise, that
@@ -1892,6 +1938,12 @@ public class RecyclerBinder
       mPosition = position;
       mHolder = holder;
     }
+  }
+
+  /** A batch of {@link AsyncOperation}s that should be applied all at once. */
+  private static final class AsyncBatch {
+
+    private final ArrayList<AsyncOperation> mOperations = new ArrayList<>();
   }
 
   private class RangeScrollListener extends RecyclerView.OnScrollListener {

@@ -2480,6 +2480,37 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void testInsertAsyncWithSizeChangeBeforeBatchClosed() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final Component component =
+        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+    final ComponentRenderInfo renderInfo =
+        ComponentRenderInfo.create().component(component).build();
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+    recyclerBinder.insertItemAtAsync(0, renderInfo);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(500, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    recyclerBinder.notifyChangeSetComplete();
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
+
+    final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
+    assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
+    assertThat(holder.hasCompletedLatestLayout()).isTrue();
+    assertThat(holder.isTreeValid()).isTrue();
+    assertHasCompatibleLayout(
+        recyclerBinder, 0, makeSizeSpec(500, EXACTLY), makeSizeSpec(0, UNSPECIFIED));
+  }
+
+  @Test
   public void testInsertRangeAsync() {
     final int NUM_TO_INSERT = 5;
     final RecyclerBinder recyclerBinder =
@@ -2581,6 +2612,13 @@ public class RecyclerBinderTest {
       assertThat(holder.isTreeValid()).isTrue();
     }
 
+    // compute one layout to ensure batching behavior remains
+    mLayoutThreadShadowLooper.runOneTask();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
+
+    // finish computing all layouts - batch should now be applied
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
@@ -2613,6 +2651,49 @@ public class RecyclerBinderTest {
     mRecyclerBinder.insertRangeAtAsync(0, firstInsert);
     mRecyclerBinder.insertRangeAt(firstInsert.size(), secondInsert);
     mRecyclerBinder.notifyChangeSetComplete();
+  }
+
+  @Test
+  public void testInsertsDispatchedInBatch() {
+    final int NUM_TO_INSERT = 5;
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<Component> components = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < NUM_TO_INSERT; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      components.add(component);
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+    recyclerBinder.insertRangeAtAsync(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
+
+    // complete first layout
+    mLayoutThreadShadowLooper.runOneTask();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
+
+    // complete second layout
+    mLayoutThreadShadowLooper.runOneTask();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
+
+    // complete the rest of the layouts
+    for (int i = 2; i < NUM_TO_INSERT; i++) {
+      mLayoutThreadShadowLooper.runToEndOfTasks();
+    }
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
   }
 
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
