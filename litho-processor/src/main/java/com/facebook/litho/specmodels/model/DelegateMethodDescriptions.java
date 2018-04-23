@@ -53,6 +53,7 @@ import com.facebook.litho.annotations.OnPopulateExtraAccessibilityNode;
 import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
+import com.facebook.litho.annotations.ShouldAlwaysRemeasure;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.AnnotationSpec;
@@ -414,6 +415,16 @@ public final class DelegateMethodDescriptions {
                   FromBind.class))
           .build();
 
+  public static final DelegateMethodDescription SHOULD_ALWAYS_REMEASURE =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(TypeName.BOOLEAN)
+          .name("shouldAlwaysRemeasure")
+          .definedParameterTypes(ImmutableList.of())
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP))
+          .build();
+
   public static final Map<Class<? extends Annotation>, DelegateMethodDescription>
       LAYOUT_SPEC_DELEGATE_METHODS_MAP;
 
@@ -474,6 +485,7 @@ public final class DelegateMethodDescriptions {
         GetExtraAccessibilityNodeAt.class, GET_EXTRA_ACCESSIBILITY_NODE_AT);
     mountSpecDelegateMethodsMap.put(
         GetExtraAccessibilityNodesCount.class, GET_EXTRA_ACCESSIBILITY_NODES_COUNT);
+    mountSpecDelegateMethodsMap.put(ShouldAlwaysRemeasure.class, SHOULD_ALWAYS_REMEASURE);
     MOUNT_SPEC_DELEGATE_METHODS_MAP = Collections.unmodifiableMap(mountSpecDelegateMethodsMap);
 
     Map<Class<? extends Annotation>, Class<? extends Annotation>> interStageInputsMap =

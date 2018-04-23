@@ -150,7 +150,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
             outputHeight = nestedTree.getHeight();
           } else if (diffNode != null
               && diffNode.getLastWidthSpec() == widthSpec
-              && diffNode.getLastHeightSpec() == heightSpec) {
+              && diffNode.getLastHeightSpec() == heightSpec
+              && !component.shouldAlwaysRemeasure()) {
             outputWidth = (int) diffNode.getLastMeasuredWidth();
             outputHeight = (int) diffNode.getLastMeasuredHeight();
           } else {
@@ -829,6 +830,14 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @return true if the Component is using state, false otherwise.
    */
   protected boolean hasState() {
+    return false;
+  }
+
+  /**
+   * @return true if the Component should always be measured when receiving a remeasure event, false
+   *     otherwise.
+   */
+  protected boolean shouldAlwaysRemeasure() {
     return false;
   }
 }

@@ -30,9 +30,11 @@ import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.ShouldAlwaysRemeasure;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.RunMode;
+import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
@@ -119,6 +121,11 @@ public class MountSpecModelFactoryTest {
     static String testTrigger(@FromTrigger int integer, @Prop Object prop3) {
       return "";
     }
+
+    @ShouldAlwaysRemeasure
+    static boolean shouldAlwaysRemeasure(@Prop boolean prop4) {
+      return prop4;
+    }
   }
 
   @Test
@@ -148,9 +155,14 @@ public class MountSpecModelFactoryTest {
             "com.facebook.litho.specmodels.processor.MountSpecModelFactoryTest."
                 + "TestMountComponentName");
 
-    assertThat(mountSpecModel.getDelegateMethods()).hasSize(5);
+    assertThat(mountSpecModel.getDelegateMethods()).hasSize(6);
 
-    assertThat(mountSpecModel.getProps()).hasSize(5);
+    final SpecMethodModel<DelegateMethod, Void> shouldRemeasureMethod =
+        mountSpecModel.getDelegateMethods().get(5);
+    assertThat(shouldRemeasureMethod.name).isEqualToIgnoringCase("shouldAlwaysRemeasure");
+    assertThat(shouldRemeasureMethod.methodParams).hasSize(1);
+
+    assertThat(mountSpecModel.getProps()).hasSize(6);
     assertThat(mountSpecModel.getStateValues()).hasSize(2);
     assertThat(mountSpecModel.getInterStageInputs()).hasSize(1);
     assertThat(mountSpecModel.getTreeProps()).hasSize(1);
