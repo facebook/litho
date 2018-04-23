@@ -165,10 +165,15 @@ public class StateGenerator {
       boolean isAsync,
       boolean withTransitions) {
 
-    final String name =
-        isAsync && !withTransitions
-            ? updateStateMethod.name.toString() + "Async"
-            : updateStateMethod.name.toString();
+    final String name;
+    if (withTransitions) {
+      name = updateStateMethod.name.toString() + "WithTransition";
+    } else if (isAsync) {
+      name = updateStateMethod.name.toString() + "Async";
+    } else {
+      name = updateStateMethod.name.toString();
+    }
+
     final MethodSpec.Builder builder = MethodSpec.methodBuilder(name)
         .addModifiers(Modifier.PROTECTED, Modifier.STATIC)
         .addParameter(specModel.getContextClass(), "c");
