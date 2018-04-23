@@ -153,6 +153,18 @@ public class RecyclerSpecTest {
     assertThat(testComponentContext.isUpdateStateAsync()).isFalse();
   }
 
+  @Test
+  public void testShouldAlwaysRemeasure() {
+    final Binder<RecyclerView> binder = mock(Binder.class);
+    final Recycler recycler = Recycler.create(mComponentContext).binder(binder).build();
+
+    when(binder.isWrapContent()).thenReturn(false);
+    assertThat(recycler.shouldAlwaysRemeasure()).isFalse();
+
+    when(binder.isWrapContent()).thenReturn(true);
+    assertThat(recycler.shouldAlwaysRemeasure()).isTrue();
+  }
+
   private static List<RecyclerView.OnScrollListener> createListOfScrollListeners(int size) {
     List<RecyclerView.OnScrollListener> onScrollListeners = new ArrayList<>(size);
     for (int i = 0; i < size; i++) {

@@ -87,4 +87,7 @@ public interface Binder<V extends ViewGroup> {
    * @param viewportChangedListener
    */
   void setViewportChangedListener(@Nullable ViewportInfo.ViewportChanged viewportChangedListener);
+
+  /** Return true if wrap content is enabled, false otherwise. */
+  boolean isWrapContent();
 }

@@ -149,6 +149,11 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
     mRecyclerBinder.removeRangeAt(index, count);
   }
 
+  @Override
+  public boolean isWrapContent() {
+    return mRecyclerBinder.isWrapContent();
+  }
+
   public void clear() {
     mRecyclerBinder.removeRangeAt(0, mRecyclerBinder.getItemCount());
   }

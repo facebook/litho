@@ -437,6 +437,11 @@ public class RecyclerBinder
     }
   }
 
+  @Override
+  public boolean isWrapContent() {
+    return mWrapContent;
+  }
+
   private RecyclerBinder(Builder builder) {
     mComponentContext = builder.componentContext;
     mComponentTreeHolderFactory = builder.componentTreeHolderFactory;

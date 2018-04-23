@@ -50,6 +50,7 @@ import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
+import com.facebook.litho.annotations.ShouldAlwaysRemeasure;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -406,6 +407,11 @@ class RecyclerSpec {
     // We don't really need to update a state here. This state update is only really used to force
     // a re-layout on the tree containing this Recycler.
     measureVersion.set(measureVer);
+  }
+
+  @ShouldAlwaysRemeasure
+  protected static boolean shouldAlwaysRemeasure(@Prop Binder<RecyclerView> binder) {
+    return binder.isWrapContent();
   }
 
   public static class NoUpdateItemAnimator extends DefaultItemAnimator {
