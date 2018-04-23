@@ -118,6 +118,7 @@ static void updateMultipleStates(
 ```
 
 ## Calling state updates
+
 For each `@OnUpdateState` method in your spec, the generated component will have two methods that will delegate to the `@OnUpdateState` method under the hood:
 * a static method with the same name, which will synchronously apply the state updates.
 * a static method with the same name and an *Async* suffix, which will asynchronously trigger the state updates.
@@ -159,9 +160,12 @@ public class CheckboxSpec {
 This is what you need to keep in mind when calling state update methods:
 
 * When calling a state update method, the `ComponentContext` instance passed as first parameter must always be the one that is passed down as parameter in the lifecycle method in which the update state is triggered. This context contains important information about the currently known state values and it's important for transferring these values from the old components to the new ones during new layout calculations.
-* In `LayoutSpecs`, You should avoid calling state update methods in `onCreateLayout`, unless you are absolutely certain they will happen only a deterministic, small number of times.
+* In `LayoutSpecs`, you should avoid calling state update methods in `onCreateLayout`, unless you are absolutely certain they will happen only a deterministic, small number of times.
 Every call to a state update method will trigger a new layout calculation on the ComponentTree, which in turn will call `onCreateLayout` on all its components, so it's rather easy to go into an infinite loop. You should consider whether a lazy state update (described below) wouldn't be more appropriate for your use case.
 * In `MountSpecs`, you should never call update state methods from `bind` and `mount` methods. If you need to update a state value in those methods, you should instead use a lazy state update, described below.
+* State is a concept local to components. You cannot call a state update method
+  from outside a component. [Props](/docs/props) are the mechanism to update a
+  component based on outside changes. You can read more about that [here](https://fblitho.com/docs/best-practices#props-vs-state).
 
 ## Keys and identifying components
 The framework sets a key on each component, based on its type and the key of its parent. This key is used to determine which component we want to update when calling a state update and finding this component when traversing the tree.
