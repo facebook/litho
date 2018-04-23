@@ -234,7 +234,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
                 (S) mStateContainer.state2,
                 (int) mStateContainer.state3,
                 (TestTreeProp) treeProp,
-                (Component) child);
+                (Component) child,
+                (boolean) getOrCreateCommonProps().getEnabled());
     return _result;
   }
 

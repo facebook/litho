@@ -35,6 +35,7 @@ import com.facebook.litho.Output;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
+import com.facebook.litho.annotations.CommonProp;
 import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.FromMeasure;
@@ -118,7 +119,8 @@ public class TestMountSpec<S extends View> implements TestTag {
       @State(canUpdateLazily = true) long state1,
       @State S state2,
       @FromMeasure Long measureOutput,
-      @TreeProp TestTreeProp treeProp) {}
+      @TreeProp TestTreeProp treeProp,
+      @CommonProp float aspectRatio) {}
 
   @OnUnmount
   static void onUnmount(ComponentContext c, Drawable v, @Prop long prop8) {}

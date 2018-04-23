@@ -293,7 +293,8 @@ public final class TestMount<S extends View> extends Component implements TestTa
         (long) mStateContainer.state1,
         (S) mStateContainer.state2,
         (Long) measureOutput,
-        (TestTreeProp) treeProp);
+        (TestTreeProp) treeProp,
+        (float) getOrCreateCommonProps().getAspectRatio());
   }
 
   @Override

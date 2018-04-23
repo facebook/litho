@@ -27,6 +27,7 @@ import com.facebook.litho.Diff;
 import com.facebook.litho.Output;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
+import com.facebook.litho.annotations.CommonProp;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.FromTrigger;
 import com.facebook.litho.annotations.LayoutSpec;
@@ -72,7 +73,8 @@ public class TestLayoutSpec<S extends View> implements TestTag {
       @State S state2,
       @State int state3,
       @TreeProp TestTreeProp treeProp,
-      @Prop Component child) {
+      @Prop Component child,
+      @CommonProp boolean enabled) {
     return null;
   }
 

@@ -47,6 +47,8 @@ public class SpecModelValidation {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(
         validateSpecModel(specModel, PropValidation.COMMON_PROP_NAMES, runMode));
+    validationErrors.addAll(
+        CommonPropValidation.validate(specModel, CommonPropValidation.VALID_COMMON_PROPS));
     validationErrors.addAll(PureRenderValidation.validate(specModel));
     validationErrors.addAll(DelegateMethodValidation.validateLayoutSpecModel(specModel));
     return validationErrors;
@@ -57,6 +59,8 @@ public class SpecModelValidation {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(
         validateSpecModel(specModel, PropValidation.COMMON_PROP_NAMES, runMode));
+    validationErrors.addAll(
+        CommonPropValidation.validate(specModel, CommonPropValidation.VALID_COMMON_PROPS));
     validationErrors.addAll(PureRenderValidation.validate(specModel));
     validationErrors.addAll(DelegateMethodValidation.validateMountSpecModel(specModel));
     validationErrors.addAll(validateGetMountType(specModel));

@@ -19,6 +19,7 @@ package com.facebook.litho.specmodels.model;
 import static com.facebook.litho.specmodels.model.SpecMethodModelValidation.validateMethodIsStatic;
 import static com.facebook.litho.specmodels.model.SpecMethodModelValidation.validateMethodName;
 
+import com.facebook.litho.annotations.CommonProp;
 import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -365,6 +366,8 @@ public class DelegateMethodValidation {
         return methodParamModel instanceof DiffPropModel;
       case TREE_PROP:
         return MethodParamModelUtils.isAnnotatedWith(methodParamModel, TreeProp.class);
+      case COMMON_PROP:
+        return MethodParamModelUtils.isAnnotatedWith(methodParamModel, CommonProp.class);
       case STATE:
         return methodParamModel instanceof StateParamModel;
       case DIFF_STATE:
@@ -444,6 +447,8 @@ public class DelegateMethodValidation {
         return "@Prop Diff<T> somePropName";
       case TREE_PROP:
         return "@TreeProp T someTreePropName";
+      case COMMON_PROP:
+        return "@CommonProp T someCommonProp";
       case STATE:
         return "@State T someStateName";
       case DIFF_STATE:
