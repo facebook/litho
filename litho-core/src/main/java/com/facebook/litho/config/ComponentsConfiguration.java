@@ -171,4 +171,7 @@ public class ComponentsConfiguration {
 
   /** Configuration for updating state asynchronously in Recycler when receiving remeasure event */
   public static boolean updateMeasureAsync = false;
+
+  /** Configuration for lazifying state of ComponentHost */
+  public static boolean lazyComponentHost = false;
 }
