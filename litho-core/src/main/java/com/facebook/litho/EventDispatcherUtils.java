@@ -189,8 +189,7 @@ class EventDispatcherUtils {
   }
 
   static boolean dispatchOnInterceptTouch(
-      EventHandler<InterceptTouchEvent> interceptTouchHandler,
-      MotionEvent event) {
+      EventHandler<InterceptTouchEvent> interceptTouchHandler, View view, MotionEvent event) {
     assertMainThread();
 
     if (sInterceptTouchEvent == null) {
@@ -198,6 +197,7 @@ class EventDispatcherUtils {
     }
 
     sInterceptTouchEvent.motionEvent = event;
+    sInterceptTouchEvent.view = view;
 
     final EventDispatcher eventDispatcher =
         interceptTouchHandler.mHasEventDispatcher.getEventDispatcher();
@@ -205,6 +205,7 @@ class EventDispatcherUtils {
         (boolean) eventDispatcher.dispatchOnEvent(interceptTouchHandler, sInterceptTouchEvent);
 
     sInterceptTouchEvent.motionEvent = null;
+    sInterceptTouchEvent.view = null;
 
     return returnValue;
   }

@@ -515,7 +515,7 @@ public class ComponentHost extends ViewGroup {
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
     if (mOnInterceptTouchEventHandler != null) {
-      return EventDispatcherUtils.dispatchOnInterceptTouch(mOnInterceptTouchEventHandler, ev);
+      return EventDispatcherUtils.dispatchOnInterceptTouch(mOnInterceptTouchEventHandler, this, ev);
     }
 
     return super.onInterceptTouchEvent(ev);

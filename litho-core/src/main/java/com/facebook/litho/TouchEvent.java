@@ -31,7 +31,7 @@ import com.facebook.litho.annotations.Event;
  *  static boolean onTouch(
  *     {@literal @}FromEvent View view,
  *     {@literal @}FromEvent MotionEvent motionEvent,
- *     {@literal @}Param Param someParam
+ *     {@literal @}Param Param someParam,
  *     {@literal @}Prop Prop someProp) {
  *    if (shouldHandleEvent(someParam, someProp)) {
  *      handleEvent(view, motionEvent);

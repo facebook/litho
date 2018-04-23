@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.annotations.Event;
 
@@ -30,16 +31,18 @@ import com.facebook.litho.annotations.Event;
  * <pre>
  * {@code
  *
- * @OnEvent(InterceptTouchEvent.class)
+ * {@literal @}OnEvent(InterceptTouchEvent.class)
  * static boolean onInterceptTouchEvent(
- *     @FromEvent MotionEvent motionEvent,
- *     @Param Param someParam
- *     @Prop Prop someProp) {
+ *     {@literal @}FromEvent View view,
+ *     {@literal @}FromEvent MotionEvent motionEvent,
+ *     {@literal @}Param Param someParam,
+ *     {@literal @}Prop Prop someProp) {
  *   return shouldInterceptEvent(someParam, someProp);
  * }
  * </pre>
  */
 @Event(returnType = boolean.class)
 public class InterceptTouchEvent {
+  public View view;
   public MotionEvent motionEvent;
 }
