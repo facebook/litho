@@ -33,28 +33,97 @@ jobs:
             - ~/buck
             - ~/android-sdk
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "gradle.properties" }}
-      - run:
-          name: Run Tests
-          command: |
-            export PATH="$HOME/buck/bin:$PATH"
-            echo "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap" >> .buckjavaargs.local
-            buck build sample --num-threads=4
-            buck build sample-barebones --num-threads=4
-            buck build sample-codelab --num-threads=4
-            buck test litho-it/src/test/... --num-threads=4
-            buck test litho-it-powermock/src/test/... --num-threads=4
-            ./gradlew test
-            ./gradlew :sample-kotlin:assembleDebug
+  buck_sample_build:
+    steps:
+      - run: 
+        name: Build sample with BUCK
+        command: |
+          buck build sample --num-threads=4
+  buck_sample_barebones_build:
+    steps:
+      - run: 
+        name: Build sample-barebones with BUCK
+        command: |
+          buck build sample-barebones --num-threads=4
+  buck_sample_codelab_build:
+    steps:
+      - run: 
+        name: Build sample-codelab with BUCK
+        command: |
+          buck build sample-codelab --num-threads=4
+  buck_litho_it_tests_run:
+    steps:
+      - run: 
+        name: Run litho-it tests with BUCK
+        command: |
+          buck test litho-it/src/test/... --num-threads=4
+  buck_litho_it_powermock_tests_run:
+    steps:
+      - run: 
+        name: Run lith-it-powermock tests with BUCK
+        command: |
+          buck test litho-it-powermock/src/test/... --num-threads=4
+  gradle_tests_run:
+    steps:
+      - run: 
+        name: Run tests with Gradle
+        command: |
+          ./gradlew test
+  gradle_sample_kotlin_build:
+    steps:
+      - run: 
+        name: Build sample-kotlin with Gradle
+        command: |
+          ./gradlew :sample-kotlin:assembleDebug
+  publish_snapshot:
+    steps:
       - run:
           name: Publish Snapshot
           command: scripts/circle-ci-publish-snapshot.sh
-      - run:
-          name: Save test results
-          command: |
-            mkdir -p ~/junit/
-            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/junit/ \;
-          when: always
-      - store_test_results:
-          path: ~/junit
-      - store_artifacts:
-          path: ~/junit
+  save_test_results:
+    - run:
+        name: Save test results
+        command: |
+          mkdir -p ~/junit/
+          find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/junit/ \;
+        when: always
+    - store_test_results:
+        path: ~/junit
+    - store_artifacts:
+        path: ~/junit
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - buck_sample_build:
+          requires:
+            - build
+      - buck_sample_barebones_build:
+          requires:
+            - build
+      - buck_sample_codelab_build:
+          requires:
+            - build
+      - buck_litho_it_tests_run:
+          requires:
+            - build
+      - buck_litho_it_powermock_tests_run:
+          requires:
+            - build
+      - gradle_tests_run:
+          requires:
+            - build
+      - gradle_sample_kotlin_build:
+          requires:
+            - build
+      - publish_snapshot:
+          requires:
+            - buck_litho_it_tests_run
+            - buck_litho_it_powermock_tests_run
+            - gradle_tests_run
+      - save_test_results:
+          requires:
+            - buck_litho_it_tests_run
+            - buck_litho_it_powermock_tests_run
+            - gradle_tests_run
