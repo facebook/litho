@@ -36,7 +36,7 @@ repository: "facebook/litho"
 
 # These can be used in documentation with e.g. {{site.litho-version}}
 litho-version: 0.14.0
-litho-snapshot-version: 0.13.2-SNAPSHOT
+litho-snapshot-version: 0.14.1-SNAPSHOT
 
 # Use these color settings to determine your colour scheme for the site.
 color:
