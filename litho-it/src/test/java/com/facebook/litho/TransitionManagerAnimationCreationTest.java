@@ -139,13 +139,14 @@ public class TransitionManagerAnimationCreationTest {
         Transition.parallel(),
         createMockLayoutOutput("test1", 0, 0),
         createMockLayoutOutput("test2", 0, 0));
-    final LayoutState next = createMockLayoutState(
-        Transition.parallel(
-            Transition.create(Transition.allKeys())
-                .animate(AnimatedProperties.X)
-                .animator(mTestVerificationAnimator)),
-        createMockLayoutOutput("test1", 10, 10),
-        createMockLayoutOutput("test2", -10, -10));
+    final LayoutState next =
+        createMockLayoutState(
+            Transition.parallel(
+                Transition.create("test1", "test2")
+                    .animate(AnimatedProperties.X)
+                    .animator(mTestVerificationAnimator)),
+            createMockLayoutOutput("test1", 10, 10),
+            createMockLayoutOutput("test2", -10, -10));
 
     mTransitionManager.setupTransitions(
         current, next, TransitionManager.getRootTransition(next.getTransitions()));
@@ -168,31 +169,6 @@ public class TransitionManagerAnimationCreationTest {
                 .animator(mTestVerificationAnimator)),
         createMockLayoutOutput("test1", 10, 10),
         createMockLayoutOutput("test2", -10, -10));
-
-    mTransitionManager.setupTransitions(
-        current, next, TransitionManager.getRootTransition(next.getTransitions()));
-
-    assertThat(mCreatedAnimations).containsExactlyInAnyOrder(
-        createPropertyAnimation("test1", AnimatedProperties.X, 10),
-        createPropertyAnimation("test1", AnimatedProperties.Y, 10),
-        createPropertyAnimation("test2", AnimatedProperties.X, -10),
-        createPropertyAnimation("test2", AnimatedProperties.Y, -10));
-  }
-
-  @Test
-  public void testAllKeysAllPropertiesAnimation() {
-    final LayoutState current = createMockLayoutState(
-        Transition.parallel(),
-        createMockLayoutOutput("test1", 0, 0),
-        createMockLayoutOutput("test2", 0, 0));
-    final LayoutState next =
-        createMockLayoutState(
-            Transition.parallel(
-                Transition.create(Transition.allKeys())
-                    .animate(AnimatedProperties.X, AnimatedProperties.Y)
-                    .animator(mTestVerificationAnimator)),
-            createMockLayoutOutput("test1", 10, 10),
-            createMockLayoutOutput("test2", -10, -10));
 
     mTransitionManager.setupTransitions(
         current, next, TransitionManager.getRootTransition(next.getTransitions()));
@@ -359,14 +335,14 @@ public class TransitionManagerAnimationCreationTest {
         };
     final ArrayList<Transition> transitionsFromStateUpdate = new ArrayList<>();
     transitionsFromStateUpdate.add(
-        Transition.create(Transition.allKeys())
+        Transition.create("test1", "test2")
             .animate(AnimatedProperties.Y)
             .animator(animatorForStateUpdate));
 
     final LayoutState next =
         createMockLayoutState(
             Transition.parallel(
-                Transition.create(Transition.allKeys())
+                Transition.create("test1", "test2")
                     .animate(AnimatedProperties.X)
                     .animator(mTestVerificationAnimator)),
             createMockLayoutOutput("test1", 10, 20),

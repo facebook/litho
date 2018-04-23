@@ -151,14 +151,6 @@ public abstract class Transition {
   }
 
   /**
-   * @deprecated since we are planning to get rid of transition keys this API will be removed soon
-   */
-  @Deprecated
-  public static ComponentTarget allKeys() {
-    return new ComponentTarget(ComponentTargetType.ALL, null);
-  }
-
-  /**
    * Creates a Transition for the component with the given transition key.
    */
   public static TransitionUnitsBuilder create(String key) {
