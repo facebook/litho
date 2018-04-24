@@ -147,14 +147,14 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true, resType = ResType.COLOR) int refreshProgressBarColor,
       @Prop(optional = true) LithoRecylerView.TouchInterceptor touchInterceptor,
       @Prop(optional = true) boolean setRootAsync,
+      @Prop(optional = true) boolean disablePTR,
       @State(canUpdateLazily = true) boolean hasSetSectionTreeRoot,
       @State RecyclerCollectionEventsController internalEventsController,
       @State LoadingState loadingState,
       @State Binder<RecyclerView> binder,
       @State SectionTree sectionTree,
       @State RecyclerCollectionLoadEventsHandler recyclerCollectionLoadEventsHandler,
-      @State SnapHelper snapHelper,
-      @State boolean canPTR) {
+      @State SnapHelper snapHelper) {
 
     // This is a side effect from OnCreateLayout, so it's inherently prone to race conditions:
     recyclerCollectionLoadEventsHandler.setLoadEventsHandler(loadEventsHandler);
@@ -176,6 +176,9 @@ public class RecyclerCollectionComponentSpec {
     if (shouldHideComponent) {
       return null;
     }
+
+    final boolean canPTR =
+        recyclerConfiguration.getOrientation() != OrientationHelper.HORIZONTAL && !disablePTR;
 
     final Recycler.Builder recycler =
         Recycler.create(c)
@@ -260,14 +263,12 @@ public class RecyclerCollectionComponentSpec {
       // It's intended to be a temporary workaround, not something you should use often.
       @Prop(optional = true) boolean ignoreLoadingUpdates,
       @Prop(optional = true) String sectionTreeTag,
-      @Prop(optional = true) boolean disablePTR,
       StateValue<SnapHelper> snapHelper,
       StateValue<SectionTree> sectionTree,
       StateValue<RecyclerCollectionLoadEventsHandler> recyclerCollectionLoadEventsHandler,
       StateValue<Binder<RecyclerView>> binder,
       StateValue<LoadingState> loadingState,
-      StateValue<RecyclerCollectionEventsController> internalEventsController,
-      StateValue<Boolean> canPTR) {
+      StateValue<RecyclerCollectionEventsController> internalEventsController) {
 
     E targetBinder = recyclerConfiguration.buildTarget(c);
 
@@ -323,9 +324,6 @@ public class RecyclerCollectionComponentSpec {
     } else {
       loadingState.set(LoadingState.LOADING);
     }
-
-    canPTR.set(
-        recyclerConfiguration.getOrientation() != OrientationHelper.HORIZONTAL && !disablePTR);
   }
 
   @OnUpdateState
