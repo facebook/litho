@@ -57,10 +57,12 @@ import com.facebook.litho.Size;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
+import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
+import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.OnUpdateState;
@@ -74,6 +76,7 @@ import com.facebook.litho.utils.MeasureUtils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Component that renders an {@link EditText}.
@@ -393,7 +396,10 @@ class EditTextSpec {
       @Prop(optional = true) boolean requestFocus,
       @Prop(optional = true) int cursorDrawableRes,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
+      @State AtomicReference<EditTextTextChangedEventHandler> mountedView,
       @State(canUpdateLazily = true) String input) {
+
+    mountedView.set(editText);
 
     initEditText(
         editText,
@@ -454,11 +460,30 @@ class EditTextSpec {
   }
 
   @OnUnmount
-  static void onUnmount(ComponentContext c, EditTextTextChangedEventHandler editText) {}
+  static void onUnmount(ComponentContext c, EditTextTextChangedEventHandler editText, @State AtomicReference<EditTextTextChangedEventHandler> mountedView) {
+    mountedView.set(null);
+  }
+
+  @OnTrigger(RequestFocusEvent.class)
+  static void requestFocus(
+      ComponentContext c,
+      @State AtomicReference<EditTextTextChangedEventHandler> mountedView) {
+    EditTextTextChangedEventHandler eventHandler = mountedView.get();
+    if (eventHandler != null) {
+      eventHandler.requestFocus();
+    }
+  }
 
   @OnUpdateState
   static void updateInput(StateValue<String> input, @Param String newInput) {
     input.set(newInput);
+  }
+
+  @OnCreateInitialState
+  static void onCreateInitialState(
+      final ComponentContext c,
+      StateValue<AtomicReference<EditTextTextChangedEventHandler>> mountedView) {
+    mountedView.set(new AtomicReference<EditTextTextChangedEventHandler>());
   }
 
   private static void initEditText(
