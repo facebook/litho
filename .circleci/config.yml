@@ -82,7 +82,7 @@ jobs:
           command: scripts/circle-ci-publish-snapshot.sh
   save_test_results:
     - run:
-        name: Save test results
+        name: Save test results in junit folder
         command: |
           mkdir -p ~/junit/
           find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/junit/ \;
