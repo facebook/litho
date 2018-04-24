@@ -216,6 +216,11 @@ public class TransitionManager {
    */
   void setupTransitions(
       LayoutState currentLayoutState, LayoutState nextLayoutState, Transition rootTransition) {
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("TransitionManager.setupTransition");
+    }
+
     for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
       mAnimationStates.valueAt(i).seenInLastTransition = false;
     }
@@ -264,6 +269,10 @@ public class TransitionManager {
     // If we recorded any mount content diffs that didn't result in an animation being created for
     // that transition key, clean them up now.
     cleanupNonAnimatingAnimationStates();
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
   }
 
   /**

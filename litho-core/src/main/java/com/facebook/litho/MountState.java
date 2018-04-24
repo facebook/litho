@@ -2278,6 +2278,16 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       throw new RuntimeException("Should only process transitions on dirty mounts");
     }
 
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      String logTag = componentTree.getContext().getLogTag();
+      if (logTag == null) {
+        ComponentsSystrace.beginSection("MountState.updateTransitions");
+      } else {
+        ComponentsSystrace.beginSection("MountState.updateTransitions:" + logTag);
+      }
+    }
+
     // If this is a new component tree but isn't the first time it's been mounted, then we shouldn't
     // do any transition animations for changed mount content as it's just being remounted on a
     // new LithoView.
@@ -2305,6 +2315,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     mAnimationLockedIndices = null;
     if (!mAnimatingTransitionKeys.isEmpty()) {
       regenerateAnimationLockedIndices(layoutState);
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
     }
   }
 
