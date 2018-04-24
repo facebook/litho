@@ -38,7 +38,7 @@ public class CompositePathEffectBorderSpec {
                 .color(YogaEdge.RIGHT, NiceColor.GREEN)
                 .color(YogaEdge.BOTTOM, NiceColor.BLUE)
                 .dashEffect(new float[] {10f, 5f}, 0f)
-                .cornerEffect(20f)
+                .radiusDip(20f)
                 .build())
         .build();
   }

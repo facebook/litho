@@ -37,7 +37,7 @@ public class AlternateColorCornerPathEffectBorderSpec {
                 .color(YogaEdge.TOP, NiceColor.ORANGE)
                 .color(YogaEdge.RIGHT, NiceColor.GREEN)
                 .color(YogaEdge.BOTTOM, NiceColor.BLUE)
-                .cornerEffect(20f)
+                .radiusDip(20f)
                 .build())
         .build();
   }
