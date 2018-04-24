@@ -174,4 +174,7 @@ public class ComponentsConfiguration {
 
   /** Configuration for lazifying state of ComponentHost */
   public static boolean lazyComponentHost = false;
+
+  /** Configuration for swapping the adapter on mount/unmount */
+  public static boolean enableSwapAdapter = false;
 }

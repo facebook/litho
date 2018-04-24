@@ -1583,7 +1583,11 @@ public class RecyclerBinder
     final LayoutManager layoutManager = mLayoutInfo.getLayoutManager();
 
     view.setLayoutManager(layoutManager);
-    view.setAdapter(mInternalAdapter);
+    if (ComponentsConfiguration.enableSwapAdapter) {
+      view.swapAdapter(mInternalAdapter, false);
+    } else {
+      view.setAdapter(mInternalAdapter);
+    }
     view.addOnScrollListener(mRangeScrollListener);
     view.addOnScrollListener(mViewportManager.getScrollListener());
 
@@ -1657,7 +1661,11 @@ public class RecyclerBinder
 
     view.removeOnScrollListener(mRangeScrollListener);
     view.removeOnScrollListener(mViewportManager.getScrollListener());
-    view.setAdapter(null);
+    if (ComponentsConfiguration.enableSwapAdapter) {
+      view.swapAdapter(null, false);
+    } else {
+      view.setAdapter(null);
+    }
     view.setLayoutManager(null);
 
     mViewportManager.removeViewportChangedListener(mViewportChangedListener);
