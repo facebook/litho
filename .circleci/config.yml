@@ -1,58 +1,282 @@
-version: 2
+version: 2.0
+
+container_config: &container_config
+  docker:
+    - image: passy/android-circleci-litho:v27-2
+  working_directory: ~/litho-working-dir
+  environment:
+    # Borrowed from https://github.com/chrisbanes/tivi/blob/master/.circleci/config.yml
+    # Sometimes gradle_tests_run job would fail with OOM error from CI. This is an attempt to fix it!
+    _JAVA_OPTIONS: "-Xmx1500m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2"
+    TERM: 'dumb'
+    ANDROID_HOME: '/home/circleci/android-sdk'
+    ANDROID_NDK_REPOSITORY: "/home/circleci/android-ndk"
+
+gradle_caches_path: &gradle_caches_path
+  ~/.gradle/caches
+
+gradle_wrapper_path: &gradle_wrapper_path
+  ~/.gradle/wrapper
+
+buck_path: &buck_path
+  ~/buck
+
+android_sdk_path: &android_sdk_path
+  ~/android-sdk
+
+attach_workspace: &attach_workspace
+  attach_workspace:
+    at: ~/litho-working-dir/workspace
+
+repo_cache_key: &repo_cache_key
+  key: jars-{{ checksum "workspace/repo/build.gradle" }}-{{ checksum  "workspace/repo/gradle.properties" }}
+
+restore_repo: &restore_repo
+  restore_cache:
+    <<: *repo_cache_key
+
+setup_buck: &setup_buck
+  name: Set up BUCK
+  command: echo "export PATH=$HOME/buck/bin:$PATH" >> $BASH_ENV
+
+setup_keys: &setup_keys
+  name: Set up keys
+  command: "[ -n \"$KEY\" ] && openssl aes-256-cbc -d -in scripts/setup-keys.enc -k $KEY >> gradle.properties || true"
+
+unset_key: &unset_key
+  name: Unset key
+  command: "export KEY=\"<unset>\""
+
+download_gradle_dependencies: &download_gradle_dependencies
+  name: Download Gradle dependencies
+  command: ./workspace/repo/gradlew dependencies --no-daemon
+
+download_buck_dependencies: &download_buck_dependencies
+  name: Buck Dependencies
+  command: |
+    cd workspace/repo
+    $HOME/buck/bin/buck fetch //...
+
+save_litho_gradle_tests_results: &save_litho_gradle_tests_results
+  name: Save Litho Gradle tests results
+  command: |
+    cd workspace
+    mkdir -p junit
+    cd repo
+    find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/litho-working-dir/workspace/junit/ \;
+  when: always
+
+save_litho_buck_tests_results: &save_litho_buck_tests_results
+  name: Save Litho BUCK tests results
+  command: |
+    cd workspace
+    mkdir -p junit
+    cd repo
+    find . -type f -name "litho_it_*tests*.xml" -exec cp {} ~/litho-working-dir/workspace/junit/ \;
+  when: always
+
+store_litho_tests_results: &store_litho_tests_results
+  store_test_results:
+    path: ~/litho-working-dir/workspace/junit
+
+store_litho_artifacts: &store_litho_artifacts
+  store_artifacts:
+    path: ~/litho-working-dir/workspace/junit
+
 jobs:
-  build:
-    environment:
-      TERM: 'dumb'
-      ANDROID_HOME: '/home/circleci/android-sdk'
-      ANDROID_NDK_REPOSITORY: "/home/circleci/android-ndk"
-    docker:
-      - image: passy/android-circleci-litho:v27-3
-    resource_class: large
+  checkout_code:
+    <<: *container_config
     steps:
-      - checkout
-      - run:
-          name: Set up keys
-          command: "[ -n \"$KEY\" ] && openssl aes-256-cbc -d -in scripts/setup-keys.enc -k $KEY >> gradle.properties || true"
-      - run:
-          name: Unset key
-          command: "export KEY=\"<unset>\""
-      - restore_cache:
-          key: jars-v2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
-      - run:
-          name: Set up Buck
-          command: echo "export PATH=$HOME/buck/bin:$PATH" >> $BASH_ENV
-      - run:
-          name: Gradle Dependencies
-          command: ./gradlew androidDependencies
-      - run:
-          name: Buck Dependencies
-          command: $HOME/buck/bin/buck fetch //...
-      - save_cache:
+      - run: mkdir -p workspace
+      - run: mkdir -p repo
+      - checkout:
+          path: workspace/repo
+      - persist_to_workspace:
+          root: workspace
           paths:
-            - ~/.gradle
-          key: jars-v2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
+            - repo
+  build:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *repo_cache_key
       - run:
-          name: Run Tests
+          <<: *setup_keys
+      - run:
+          <<: *unset_key
+      - run:
+          <<: *download_gradle_dependencies
+      - run:
+          <<: *setup_buck
+      - run:
+          <<: *download_buck_dependencies
+      - save_cache:
+          <<: *repo_cache_key
+          paths:
+            - *gradle_caches_path
+            - *gradle_wrapper_path
+            - *buck_path
+            - *android_sdk_path
+
+  buck_sample_build:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *repo_cache_key
+      - run:
+          <<: *setup_buck
+      - run:
+          name: Build sample with BUCK
           command: |
-            export PATH="$HOME/buck/bin:$PATH"
-            echo "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap" >> .buckjavaargs.local
+            cd workspace/repo
+            buck fetch //...
             buck build sample --num-threads=4
+
+  buck_sample_barebones_build:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *repo_cache_key
+      - run:
+          <<: *setup_buck
+      - run:
+          name: Build sample-barebones with BUCK
+          command: |
+            cd workspace/repo
+            buck fetch //...
             buck build sample-barebones --num-threads=4
+
+  buck_sample_codelab_build:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *repo_cache_key
+      - run:
+          <<: *setup_buck
+      - run:
+          name: Build sample-codelab with BUCK
+          command: |
+            cd workspace/repo
+            buck fetch //...
             buck build sample-codelab --num-threads=4
-            buck test litho-it/src/test/... --num-threads=4
-            buck test litho-it-powermock/src/test/... --num-threads=4
-            ./gradlew test
-            ./gradlew :sample-kotlin:assembleDebug
+
+  gradle_sample_kotlin_build:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *repo_cache_key
+      - run:
+          <<: *setup_buck
+      - run:
+          name: Build sample-kotlin with Gradle
+          command: |
+            cd workspace/repo
+            ./gradlew :sample-kotlin:assembleDebug --no-daemon --max-workers 2
+
+  buck_litho_it_tests_run:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *repo_cache_key
+      - run:
+          <<: *setup_buck
+      - run:
+          name: Run litho-it tests with BUCK
+          command: |
+            cd workspace/repo
+            buck fetch //...
+            buck test litho-it/src/test/... --num-threads=4 --xml litho_it_tests.xml
+      - run:
+          <<: *save_litho_buck_tests_results
+      - *store_litho_tests_results
+      - *store_litho_artifacts
+
+  buck_litho_it_powermock_tests_run:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *repo_cache_key
+      - run:
+          <<: *setup_buck
+      - run:
+          name: Run lith-it-powermock tests with BUCK
+          command: |
+            cd workspace/repo
+            buck fetch //...
+            buck test litho-it-powermock/src/test/... --num-threads=4 --xml litho_it_powermock_tests.xml
+      - run:
+          <<: *save_litho_buck_tests_results
+      - *store_litho_tests_results
+      - *store_litho_artifacts
+
+  gradle_tests_run:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *repo_cache_key
+      - run:
+          <<: *setup_buck
+      - run:
+          name: Run tests with Gradle
+          command: |
+            cd workspace/repo
+            ./gradlew test --no-daemon --max-workers 2
+      - run:
+          <<: *save_litho_gradle_tests_results
+      - *store_litho_tests_results
+      - *store_litho_artifacts
+
+  publish_snapshot:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *repo_cache_key
       - run:
           name: Publish Snapshot
-          command: scripts/circle-ci-publish-snapshot.sh
-      - run:
-          name: Save test results
           command: |
-            mkdir -p ~/junit/
-            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/junit/ \;
-          when: always
-      - store_test_results:
-          path: ~/junit
-      - store_artifacts:
-          path: ~/junit
+            cd workspace/repo
+            scripts/circle-ci-publish-snapshot.sh
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - checkout_code
+      - build:
+          requires:
+            - checkout_code
+      - buck_sample_build:
+          requires:
+            - build
+      - buck_sample_barebones_build:
+          requires:
+            - build
+      - buck_sample_codelab_build:
+          requires:
+            - build
+      - gradle_sample_kotlin_build:
+          requires:
+            - build
+      - buck_litho_it_tests_run:
+          requires:
+            - build
+      - buck_litho_it_powermock_tests_run:
+          requires:
+            - build
+      - gradle_tests_run:
+          requires:
+            - build
+      - publish_snapshot:
+          requires:
+            - buck_litho_it_tests_run
+            - buck_litho_it_powermock_tests_run
+            - gradle_tests_run
