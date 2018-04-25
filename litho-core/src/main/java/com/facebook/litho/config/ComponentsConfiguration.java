@@ -123,12 +123,6 @@ public class ComponentsConfiguration {
   /** If true then the new version of the YogaEdgeWithInts will be used. */
   public static boolean useNewYogaEdge = false;
 
-  /**
-   * Used to simulate the impact of longer layout calculations for state updates by delaying the
-   * estimated time with this percentage.
-   */
-  public static long longerStateUpdatePercentage = 0;
-
   /** The default priority for threads that perform background layout calculations. */
   public static final int DEFAULT_BACKGROUND_THREAD_PRIORITY = 5;
 
@@ -162,12 +156,6 @@ public class ComponentsConfiguration {
    * single default thread will be used for background layout.
    */
   public static LayoutThreadPoolConfiguration threadPoolForBackgroundThreadsConfig = null;
-
-  public static Set<String> enabledForSplitLayout = new HashSet<>();
-  public static boolean isSplitLayoutEnabled;
-  public static boolean isMainThreadSplitLayoutEnabled;
-  public static LayoutThreadPoolConfiguration splitLayoutMainThreadPoolConfiguration = null;
-  public static LayoutThreadPoolConfiguration splitLayoutBackgroundThreadPoolConfiguration = null;
 
   /** Whether to fill list viewports in RecyclerBinder from measure(). */
   public static boolean fillListViewport = false;

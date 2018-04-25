@@ -1704,7 +1704,6 @@ public class ComponentTree {
       @Nullable DiffNode diffNode,
       @CalculateLayoutSource int source) {
     final ComponentContext contextWithStateHandler;
-    int simulateDelayNano = 0;
 
     synchronized (this) {
       final KeyHandler keyHandler =
@@ -1714,21 +1713,10 @@ public class ComponentTree {
 
       contextWithStateHandler =
           new ComponentContext(context, StateHandler.acquireNewInstance(mStateHandler), keyHandler);
-
-      if (mMainThreadLayoutState != null && source == CalculateLayoutSource.UPDATE_STATE) {
-        simulateDelayNano =
-            (int)
-                (mMainThreadLayoutState.mCalculateLayoutDuration
-                    * ComponentsConfiguration.longerStateUpdatePercentage
-                    / 100);
-      }
     }
 
     if (lock != null) {
       synchronized (lock) {
-        if (source == CalculateLayoutSource.UPDATE_STATE) {
-          maybeDelayStateUpdateLayout(simulateDelayNano);
-        }
 
         return LayoutState.calculate(
             contextWithStateHandler,
@@ -1745,10 +1733,6 @@ public class ComponentTree {
       }
     } else {
 
-      if (source == CalculateLayoutSource.UPDATE_STATE) {
-        maybeDelayStateUpdateLayout(simulateDelayNano);
-      }
-
       return LayoutState.calculate(
           contextWithStateHandler,
           root,
@@ -1761,18 +1745,6 @@ public class ComponentTree {
           mCanCacheDrawingDisplayLists,
           mShouldClipChildren,
           source);
-    }
-  }
-
-  private static void maybeDelayStateUpdateLayout(int delayNano) {
-    if (delayNano == 0) {
-      return;
-    }
-
-    try {
-      Thread.sleep(delayNano / 1000000, delayNano % 1000000);
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
     }
   }
 
