@@ -170,7 +170,6 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
     @Override
     protected void release() {
       super.release();
-
       mState = null;
       sBuilderPool.release(this);
     }

@@ -105,7 +105,7 @@ public class MatcherGeneratorTest {
     final TypeSpec matcherSpec = holder.getTypeSpecs().get(0);
 
     assertThat(matcherSpec.name).isEqualTo("Matcher");
-    assertThat(matcherSpec.fieldSpecs).hasSize(2);
+    assertThat(matcherSpec.fieldSpecs).hasSize(3);
 
     assertThat(matcherSpec.methodSpecs.stream().map(m -> m.name).toArray())
         .hasSameElementsAs(
@@ -163,7 +163,7 @@ public class MatcherGeneratorTest {
     final TypeSpec matcherSpec = holder.getTypeSpecs().get(0);
 
     assertThat(matcherSpec.name).isEqualTo("Matcher");
-    assertThat(matcherSpec.fieldSpecs).hasSize(2);
+    assertThat(matcherSpec.fieldSpecs).hasSize(3);
 
     assertThat(matcherSpec.methodSpecs.stream().map(m -> m.name).toArray())
         .hasSameElementsAs(

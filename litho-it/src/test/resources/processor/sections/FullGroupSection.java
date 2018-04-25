@@ -435,25 +435,25 @@ final class FullGroupSection<T> extends Section implements TestTag {
     }
 
     public Builder<T> prop4Res(@StringRes int resId) {
-      this.mFullGroupSection.prop4 = resolveStringRes(resId);
+      this.mFullGroupSection.prop4 = mResourceResolver.resolveStringRes(resId);
       mRequired.set(2);
       return this;
     }
 
     public Builder<T> prop4Res(@StringRes int resId, Object... formatArgs) {
-      this.mFullGroupSection.prop4 = resolveStringRes(resId, formatArgs);
+      this.mFullGroupSection.prop4 = mResourceResolver.resolveStringRes(resId, formatArgs);
       mRequired.set(2);
       return this;
     }
 
     public Builder<T> prop4Attr(@AttrRes int attrResId, @StringRes int defResId) {
-      this.mFullGroupSection.prop4 = resolveStringAttr(attrResId, defResId);
+      this.mFullGroupSection.prop4 = mResourceResolver.resolveStringAttr(attrResId, defResId);
       mRequired.set(2);
       return this;
     }
 
     public Builder<T> prop4Attr(@AttrRes int attrResId) {
-      this.mFullGroupSection.prop4 = resolveStringAttr(attrResId, 0);
+      this.mFullGroupSection.prop4 = mResourceResolver.resolveStringAttr(attrResId, 0);
       mRequired.set(2);
       return this;
     }

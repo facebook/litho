@@ -605,18 +605,18 @@ public abstract class Component extends ComponentLifecycle
    * @param <T> the type of this builder. Required to ensure methods defined here in the abstract
    *     class correctly return the type of the concrete subclass.
    */
-  public abstract static class Builder<T extends Builder<T>> extends ResourceResolver {
+  public abstract static class Builder<T extends Builder<T>> {
 
     private ComponentContext mContext;
     private Component mComponent;
+    protected ResourceResolver mResourceResolver;
 
     protected void init(
         ComponentContext c,
         @AttrRes int defStyleAttr,
         @StyleRes int defStyleRes,
         Component component) {
-      super.init(c, c.getResourceCache());
-
+      mResourceResolver = new ResourceResolver(c);
       mComponent = component;
       mContext = c;
 
@@ -656,12 +656,10 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
-    @Override
     protected void release() {
-      super.release();
-
       mContext = null;
       mComponent = null;
+      mResourceResolver = null;
     }
 
     /**
@@ -803,7 +801,7 @@ public abstract class Component extends ComponentLifecycle
 
     /** @see #flexBasisPx */
     public T flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-      return flexBasisPx(resolveDimenSizeAttr(resId, defaultResId));
+      return flexBasisPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
     /** @see #flexBasisPx */
@@ -813,12 +811,12 @@ public abstract class Component extends ComponentLifecycle
 
     /** @see #flexBasisPx */
     public T flexBasisRes(@DimenRes int resId) {
-      return flexBasisPx(resolveDimenSizeRes(resId));
+      return flexBasisPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
     /** @see #flexBasisPx */
     public T flexBasisDip(@Dimension(unit = DP) float flexBasis) {
-      return flexBasisPx(dipsToPixels(flexBasis));
+      return flexBasisPx(mResourceResolver.dipsToPixels(flexBasis));
     }
 
     public T importantForAccessibility(int importantForAccessibility) {
@@ -850,7 +848,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T marginAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
-      return marginPx(edge, resolveDimenSizeAttr(resId, defaultResId));
+      return marginPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
     public T marginAttr(YogaEdge edge, @AttrRes int resId) {
@@ -858,11 +856,11 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T marginRes(YogaEdge edge, @DimenRes int resId) {
-      return marginPx(edge, resolveDimenSizeRes(resId));
+      return marginPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
     }
 
     public T marginDip(YogaEdge edge, @Dimension(unit = DP) float margin) {
-      return marginPx(edge, dipsToPixels(margin));
+      return marginPx(edge, mResourceResolver.dipsToPixels(margin));
     }
 
     public T paddingPx(YogaEdge edge, @Px int padding) {
@@ -877,7 +875,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T paddingAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
-      return paddingPx(edge, resolveDimenSizeAttr(resId, defaultResId));
+      return paddingPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
     public T paddingAttr(YogaEdge edge, @AttrRes int resId) {
@@ -885,11 +883,11 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T paddingRes(YogaEdge edge, @DimenRes int resId) {
-      return paddingPx(edge, resolveDimenSizeRes(resId));
+      return paddingPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
     }
 
     public T paddingDip(YogaEdge edge, @Dimension(unit = DP) float padding) {
-      return paddingPx(edge, dipsToPixels(padding));
+      return paddingPx(edge, mResourceResolver.dipsToPixels(padding));
     }
 
     public T border(Border border) {
@@ -919,7 +917,7 @@ public abstract class Component extends ComponentLifecycle
 
     /** @see #positionPx */
     public T positionAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
-      return positionPx(edge, resolveDimenSizeAttr(resId, defaultResId));
+      return positionPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
     /** @see #positionPx */
@@ -929,12 +927,12 @@ public abstract class Component extends ComponentLifecycle
 
     /** @see #positionPx */
     public T positionRes(YogaEdge edge, @DimenRes int resId) {
-      return positionPx(edge, resolveDimenSizeRes(resId));
+      return positionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
     }
 
     /** @see #positionPx */
     public T positionDip(YogaEdge edge, @Dimension(unit = DP) float position) {
-      return positionPx(edge, dipsToPixels(position));
+      return positionPx(edge, mResourceResolver.dipsToPixels(position));
     }
 
     public T widthPx(@Px int width) {
@@ -949,11 +947,11 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T widthRes(@DimenRes int resId) {
-      return widthPx(resolveDimenSizeRes(resId));
+      return widthPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
     public T widthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-      return widthPx(resolveDimenSizeAttr(resId, defaultResId));
+      return widthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
     public T widthAttr(@AttrRes int resId) {
@@ -961,7 +959,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T widthDip(@Dimension(unit = DP) float width) {
-      return widthPx(dipsToPixels(width));
+      return widthPx(mResourceResolver.dipsToPixels(width));
     }
 
     public T minWidthPx(@Px int minWidth) {
@@ -976,7 +974,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-      return minWidthPx(resolveDimenSizeAttr(resId, defaultResId));
+      return minWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
     public T minWidthAttr(@AttrRes int resId) {
@@ -984,11 +982,11 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T minWidthRes(@DimenRes int resId) {
-      return minWidthPx(resolveDimenSizeRes(resId));
+      return minWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
     public T minWidthDip(@Dimension(unit = DP) float minWidth) {
-      return minWidthPx(dipsToPixels(minWidth));
+      return minWidthPx(mResourceResolver.dipsToPixels(minWidth));
     }
 
     public T maxWidthPx(@Px int maxWidth) {
@@ -1003,7 +1001,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-      return maxWidthPx(resolveDimenSizeAttr(resId, defaultResId));
+      return maxWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
     public T maxWidthAttr(@AttrRes int resId) {
@@ -1011,11 +1009,11 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T maxWidthRes(@DimenRes int resId) {
-      return maxWidthPx(resolveDimenSizeRes(resId));
+      return maxWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
     public T maxWidthDip(@Dimension(unit = DP) float maxWidth) {
-      return maxWidthPx(dipsToPixels(maxWidth));
+      return maxWidthPx(mResourceResolver.dipsToPixels(maxWidth));
     }
 
     public T heightPx(@Px int height) {
@@ -1030,11 +1028,11 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T heightRes(@DimenRes int resId) {
-      return heightPx(resolveDimenSizeRes(resId));
+      return heightPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
     public T heightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-      return heightPx(resolveDimenSizeAttr(resId, defaultResId));
+      return heightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
     public T heightAttr(@AttrRes int resId) {
@@ -1042,7 +1040,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T heightDip(@Dimension(unit = DP) float height) {
-      return heightPx(dipsToPixels(height));
+      return heightPx(mResourceResolver.dipsToPixels(height));
     }
 
     public T minHeightPx(@Px int minHeight) {
@@ -1057,7 +1055,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-      return minHeightPx(resolveDimenSizeAttr(resId, defaultResId));
+      return minHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
     public T minHeightAttr(@AttrRes int resId) {
@@ -1065,11 +1063,11 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T minHeightRes(@DimenRes int resId) {
-      return minHeightPx(resolveDimenSizeRes(resId));
+      return minHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
     public T minHeightDip(@Dimension(unit = DP) float minHeight) {
-      return minHeightPx(dipsToPixels(minHeight));
+      return minHeightPx(mResourceResolver.dipsToPixels(minHeight));
     }
 
     public T maxHeightPx(@Px int maxHeight) {
@@ -1084,7 +1082,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-      return maxHeightPx(resolveDimenSizeAttr(resId, defaultResId));
+      return maxHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
     public T maxHeightAttr(@AttrRes int resId) {
@@ -1092,11 +1090,11 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T maxHeightRes(@DimenRes int resId) {
-      return maxHeightPx(resolveDimenSizeRes(resId));
+      return maxHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
     public T maxHeightDip(@Dimension(unit = DP) float maxHeight) {
-      return maxHeightPx(dipsToPixels(maxHeight));
+      return maxHeightPx(mResourceResolver.dipsToPixels(maxHeight));
     }
 
     public T aspectRatio(float aspectRatio) {
@@ -1110,7 +1108,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T touchExpansionAttr(YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
-      return touchExpansionPx(edge, resolveDimenSizeAttr(resId, defaultResId));
+      return touchExpansionPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
     public T touchExpansionAttr(YogaEdge edge, @AttrRes int resId) {
@@ -1118,11 +1116,11 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T touchExpansionRes(YogaEdge edge, @DimenRes int resId) {
-      return touchExpansionPx(edge, resolveDimenSizeRes(resId));
+      return touchExpansionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
     }
 
     public T touchExpansionDip(YogaEdge edge, @Dimension(unit = DP) float touchExpansion) {
-      return touchExpansionPx(edge, dipsToPixels(touchExpansion));
+      return touchExpansionPx(edge, mResourceResolver.dipsToPixels(touchExpansion));
     }
 
     /** @deprecated just use {@link #background(Drawable)} instead. */
@@ -1141,7 +1139,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
-      return backgroundRes(resolveResIdAttr(resId, defaultResId));
+      return backgroundRes(mResourceResolver.resolveResIdAttr(resId, defaultResId));
     }
 
     public T backgroundAttr(@AttrRes int resId) {
@@ -1166,7 +1164,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
-      return foregroundRes(resolveResIdAttr(resId, defaultResId));
+      return foregroundRes(mResourceResolver.resolveResIdAttr(resId, defaultResId));
     }
 
     public T foregroundAttr(@AttrRes int resId) {
@@ -1298,7 +1296,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T shadowElevationAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-      return shadowElevationPx(resolveDimenSizeAttr(resId, defaultResId));
+      return shadowElevationPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
     public T shadowElevationAttr(@AttrRes int resId) {
@@ -1306,11 +1304,11 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T shadowElevationRes(@DimenRes int resId) {
-      return shadowElevationPx(resolveDimenSizeRes(resId));
+      return shadowElevationPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
     public T shadowElevationDip(@Dimension(unit = DP) float shadowElevation) {
-      return shadowElevationPx(dipsToPixels(shadowElevation));
+      return shadowElevationPx(mResourceResolver.dipsToPixels(shadowElevation));
     }
 
     public T outlineProvider(ViewOutlineProvider outlineProvider) {

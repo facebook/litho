@@ -49,6 +49,7 @@ import javax.lang.model.element.Modifier;
 public final class MatcherGenerator {
 
   private static final String BUILDER = "Matcher";
+  private static final String RESOURCE_RESOLVER = "mResourceResolver";
   private static final ClassName BUILDER_CLASS_NAME = ClassName.bestGuess(BUILDER);
 
   private MatcherGenerator() {}
@@ -93,7 +94,11 @@ public final class MatcherGenerator {
         TypeSpec.classBuilder(BUILDER)
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
             .superclass(
-                ParameterizedTypeName.get(ClassNames.BASE_MATCHER, getMatcherType(specModel)));
+                ParameterizedTypeName.get(ClassNames.BASE_MATCHER, getMatcherType(specModel)))
+            .addField(
+                FieldSpec.builder(
+                        ClassNames.RESOURCE_RESOLVER, RESOURCE_RESOLVER, Modifier.PROTECTED)
+                    .build());
 
     if (!specModel.getTypeVariables().isEmpty()) {
       propsBuilderClassBuilder.addTypeVariables(specModel.getTypeVariables());
@@ -102,7 +107,7 @@ public final class MatcherGenerator {
     final MethodSpec constructor =
         MethodSpec.constructorBuilder()
             .addParameter(specModel.getContextClass(), "c")
-            .addStatement("super.init(c, c.getResourceCache())")
+            .addStatement("$L = new $T(c)", RESOURCE_RESOLVER, ClassNames.RESOURCE_RESOLVER)
             .build();
 
     propsBuilderClassBuilder.addMethod(constructor);
@@ -397,7 +402,8 @@ public final class MatcherGenerator {
         prop.getName() + "Res",
         Collections.singletonList(
             parameter(prop, TypeName.INT, "resId", annotation(annotationClassName))),
-        "$L(resId)",
+        "$L.$L(resId)",
+        RESOURCE_RESOLVER,
         resolver + "Res");
   }
 
@@ -415,7 +421,8 @@ public final class MatcherGenerator {
             Arrays.asList(
                 parameter(prop, TypeName.INT, "resId", annotation(annotationClassName)),
                 ParameterSpec.builder(ArrayTypeName.of(varargsType), varargsName).build()),
-            "$L(resId, " + varargsName + ")",
+            "$L.$L(resId, " + varargsName + ")",
+            RESOURCE_RESOLVER,
             resolver + "Res")
         .varargs(true)
         .build();
@@ -436,7 +443,8 @@ public final class MatcherGenerator {
             Arrays.asList(
                 parameter(prop, TypeName.INT, "attrResId", annotation(ClassNames.ATTR_RES)),
                 parameter(prop, TypeName.INT, "defResId", annotation(annotationClassName))),
-            "$L(attrResId, defResId)",
+            "$L.$L(attrResId, defResId)",
+            RESOURCE_RESOLVER,
             resolver + "Attr"));
 
     dataHolder.addMethod(
@@ -446,7 +454,8 @@ public final class MatcherGenerator {
             prop.getName() + "Attr",
             Collections.singletonList(
                 parameter(prop, TypeName.INT, "attrResId", annotation(ClassNames.ATTR_RES))),
-            "$L(attrResId, 0)",
+            "$L.$L(attrResId, 0)",
+            RESOURCE_RESOLVER,
             resolver + "Attr"));
 
     return dataHolder.build();
@@ -473,7 +482,8 @@ public final class MatcherGenerator {
         prop,
         prop.getName() + "Dip",
         Collections.singletonList(parameter(prop, TypeName.FLOAT, "dips", dipAnnotation)),
-        "dipsToPixels(dips)");
+        "$L.dipsToPixels(dips)",
+        RESOURCE_RESOLVER);
   }
 
   private static MethodSpec sipBuilder(SpecModel specModel, final PropModel prop) {
@@ -487,7 +497,8 @@ public final class MatcherGenerator {
         prop,
         prop.getName() + "Sp",
         Collections.singletonList(parameter(prop, TypeName.FLOAT, "sips", spAnnotation)),
-        "sipsToPixels(sips)");
+        "$L.sipsToPixels(sips)",
+        RESOURCE_RESOLVER);
   }
 
   private static MethodSpec builderBuilder(

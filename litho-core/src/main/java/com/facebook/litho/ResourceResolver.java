@@ -38,23 +38,28 @@ public class ResourceResolver {
   // allocate a new int[] for each call.
   private final int[] mAttrs = new int[1];
 
-  public final void init(ComponentContext context, ResourceCache resourceCache) {
-    mResources = context.getResources();
-    mTheme = context.getTheme();
-    mResourceCache = resourceCache;
+  public ResourceResolver(ComponentContext context) {
+    // Only temporary whilst conversion is underway.
+    init(context);
   }
 
-  protected final int dipsToPixels(float dips) {
+  public void init(ComponentContext context) {
+    mResources = context.getResources();
+    mTheme = context.getTheme();
+    mResourceCache = context.getResourceCache();
+  }
+
+  public int dipsToPixels(float dips) {
     final float scale = mResources.getDisplayMetrics().density;
     return FastMath.round(dips * scale);
   }
 
-  protected final int sipsToPixels(float dips) {
+  public int sipsToPixels(float dips) {
     final float scale = mResources.getDisplayMetrics().scaledDensity;
     return FastMath.round(dips * scale);
   }
 
-  protected final String resolveStringRes(@StringRes int resId) {
+  public String resolveStringRes(@StringRes int resId) {
     if (resId != 0) {
       String cached = mResourceCache.get(resId);
       if (cached != null) {
@@ -70,12 +75,12 @@ public class ResourceResolver {
     return null;
   }
 
-  protected final String resolveStringRes(@StringRes int resId, Object... formatArgs) {
+  public String resolveStringRes(@StringRes int resId, Object... formatArgs) {
     return resId != 0 ? mResources.getString(resId, formatArgs) : null;
   }
 
   @Nullable
-  protected final String[] resolveStringArrayRes(@ArrayRes int resId) {
+  public String[] resolveStringArrayRes(@ArrayRes int resId) {
     if (resId != 0) {
       String[] cached = mResourceCache.get(resId);
       if (cached != null) {
@@ -91,7 +96,7 @@ public class ResourceResolver {
     return null;
   }
 
-  protected final int resolveIntRes(@IntegerRes int resId) {
+  public int resolveIntRes(@IntegerRes int resId) {
     if (resId != 0) {
       Integer cached = mResourceCache.get(resId);
       if (cached != null) {
@@ -125,7 +130,7 @@ public class ResourceResolver {
   }
 
   @Nullable
-  protected final Integer[] resolveIntegerArrayRes(@ArrayRes int resId) {
+  public Integer[] resolveIntegerArrayRes(@ArrayRes int resId) {
     int[] resIds = resolveIntArrayRes(resId);
     if (resIds == null) return null;
     Integer[] result = new Integer[resIds.length];
@@ -135,7 +140,7 @@ public class ResourceResolver {
     return result;
   }
 
-  protected final boolean resolveBoolRes(@BoolRes int resId) {
+  public boolean resolveBoolRes(@BoolRes int resId) {
     if (resId != 0) {
       Boolean cached = mResourceCache.get(resId);
       if (cached != null) {
@@ -151,7 +156,7 @@ public class ResourceResolver {
     return false;
   }
 
-  protected final int resolveColorRes(@ColorRes int resId) {
+  public int resolveColorRes(@ColorRes int resId) {
     if (resId != 0) {
       Integer cached = mResourceCache.get(resId);
       if (cached != null) {
@@ -167,7 +172,7 @@ public class ResourceResolver {
     return 0;
   }
 
-  protected final int resolveDimenSizeRes(@DimenRes int resId) {
+  public int resolveDimenSizeRes(@DimenRes int resId) {
     if (resId != 0) {
       Integer cached = mResourceCache.get(resId);
       if (cached != null) {
@@ -183,7 +188,7 @@ public class ResourceResolver {
     return 0;
   }
 
-  protected final int resolveDimenOffsetRes(@DimenRes int resId) {
+  public int resolveDimenOffsetRes(@DimenRes int resId) {
     if (resId != 0) {
       Integer cached = mResourceCache.get(resId);
       if (cached != null) {
@@ -199,7 +204,7 @@ public class ResourceResolver {
     return 0;
   }
 
-  protected final float resolveFloatRes(@DimenRes int resId) {
+  public float resolveFloatRes(@DimenRes int resId) {
     if (resId != 0) {
       Float cached = mResourceCache.get(resId);
       if (cached != null) {
@@ -216,7 +221,7 @@ public class ResourceResolver {
   }
 
   @Nullable
-  protected final Drawable resolveDrawableRes(@DrawableRes int resId) {
+  public Drawable resolveDrawableRes(@DrawableRes int resId) {
     if (resId == 0) {
       return null;
     }
@@ -224,7 +229,7 @@ public class ResourceResolver {
     return mResources.getDrawable(resId);
   }
 
-  protected final String resolveStringAttr(@AttrRes int attrResId, @StringRes int defResId) {
+  public String resolveStringAttr(@AttrRes int attrResId, @StringRes int defResId) {
     mAttrs[0] = attrResId;
     TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
 
@@ -241,7 +246,7 @@ public class ResourceResolver {
   }
 
   @Nullable
-  public final String[] resolveStringArrayAttr(@AttrRes int attrResId, @ArrayRes int defResId) {
+  public String[] resolveStringArrayAttr(@AttrRes int attrResId, @ArrayRes int defResId) {
     mAttrs[0] = attrResId;
     TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
 
@@ -252,7 +257,7 @@ public class ResourceResolver {
     }
   }
 
-  protected final int resolveIntAttr(@AttrRes int attrResId, @IntegerRes int defResId) {
+  public int resolveIntAttr(@AttrRes int attrResId, @IntegerRes int defResId) {
     mAttrs[0] = attrResId;
     TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
 
@@ -264,7 +269,7 @@ public class ResourceResolver {
   }
 
   @Nullable
-  public final int[] resolveIntArrayAttr(@AttrRes int attrResId, @ArrayRes int defResId) {
+  public int[] resolveIntArrayAttr(@AttrRes int attrResId, @ArrayRes int defResId) {
     mAttrs[0] = attrResId;
     TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
 
@@ -276,8 +281,7 @@ public class ResourceResolver {
   }
 
   @Nullable
-  protected final Integer[] resolveIntegerArrayAttr(
-      @AttrRes int attrResId, @ArrayRes int defResId) {
+  public Integer[] resolveIntegerArrayAttr(@AttrRes int attrResId, @ArrayRes int defResId) {
     int[] resIds = resolveIntArrayAttr(attrResId, defResId);
     if (resIds == null) return null;
     Integer[] result = new Integer[resIds.length];
@@ -287,7 +291,7 @@ public class ResourceResolver {
     return result;
   }
 
-  protected final boolean resolveBoolAttr(@AttrRes int attrResId, @BoolRes int defResId) {
+  public boolean resolveBoolAttr(@AttrRes int attrResId, @BoolRes int defResId) {
     mAttrs[0] = attrResId;
     TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
 
@@ -298,7 +302,7 @@ public class ResourceResolver {
     }
   }
 
-  protected final int resolveColorAttr(@AttrRes int attrResId, @ColorRes int defResId) {
+  public int resolveColorAttr(@AttrRes int attrResId, @ColorRes int defResId) {
     mAttrs[0] = attrResId;
     TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
 
@@ -309,7 +313,7 @@ public class ResourceResolver {
     }
   }
 
-  protected final int resolveDimenSizeAttr(@AttrRes int attrResId, @DimenRes int defResId) {
+  public int resolveDimenSizeAttr(@AttrRes int attrResId, @DimenRes int defResId) {
     mAttrs[0] = attrResId;
     TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
 
@@ -320,7 +324,7 @@ public class ResourceResolver {
     }
   }
 
-  protected final int resolveDimenOffsetAttr(@AttrRes int attrResId, @DimenRes int defResId) {
+  public int resolveDimenOffsetAttr(@AttrRes int attrResId, @DimenRes int defResId) {
     mAttrs[0] = attrResId;
     TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
 
@@ -331,7 +335,7 @@ public class ResourceResolver {
     }
   }
 
-  protected final float resolveFloatAttr(@AttrRes int attrResId, @DimenRes int defResId) {
+  public float resolveFloatAttr(@AttrRes int attrResId, @DimenRes int defResId) {
     mAttrs[0] = attrResId;
     TypedArray a = mTheme.obtainStyledAttributes(mAttrs);
 
@@ -343,9 +347,7 @@ public class ResourceResolver {
   }
 
   @Nullable
-  protected final Drawable resolveDrawableAttr(
-      @AttrRes int attrResId,
-      @DrawableRes int defResId) {
+  public Drawable resolveDrawableAttr(@AttrRes int attrResId, @DrawableRes int defResId) {
     if (attrResId == 0) {
       return null;
     }
@@ -371,11 +373,7 @@ public class ResourceResolver {
     }
   }
 
-  protected void release() {
-    internalRelease();
-  }
-
-  void internalRelease() {
+  public final void release() {
     mResources = null;
     mTheme = null;
     mResourceCache = null;

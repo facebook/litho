@@ -26,6 +26,7 @@ import com.facebook.litho.BaseMatcher;
 import com.facebook.litho.BaseMatcherBuilder;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ResourceResolver;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import javax.annotation.Nullable;
 import org.assertj.core.api.Condition;
@@ -45,6 +46,8 @@ public final class BasicTestSample implements BasicTestSampleSpec {
   }
 
   public static class Matcher extends BaseMatcher<Matcher> {
+    protected ResourceResolver mResourceResolver;
+
     @Nullable Condition<InspectableComponent> mChildComponentMatcher;
 
     @Nullable org.hamcrest.Matcher<Component> mChildMatcher;
@@ -57,7 +60,7 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     @Nullable org.hamcrest.Matcher<String> mMyStringPropMatcher;
 
     Matcher(ComponentContext c) {
-      super.init(c, c.getResourceCache());
+      mResourceResolver = new ResourceResolver(c);
     }
 
     public Matcher child(Condition<InspectableComponent> matcher) {
@@ -91,22 +94,27 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     }
 
     public Matcher myDimenSizePropRes(@DimenRes int resId) {
-      this.mMyDimenSizePropMatcher = org.hamcrest.core.Is.is((float) resolveDimenSizeRes(resId));
+      this.mMyDimenSizePropMatcher =
+          org.hamcrest.core.Is.is((float) mResourceResolver.resolveDimenSizeRes(resId));
       return this;
     }
 
     public Matcher myDimenSizePropAttr(@AttrRes int attrResId, @DimenRes int defResId) {
-      this.mMyDimenSizePropMatcher = org.hamcrest.core.Is.is((float) resolveDimenSizeAttr(attrResId, defResId));
+      this.mMyDimenSizePropMatcher =
+          org.hamcrest.core.Is.is(
+              (float) mResourceResolver.resolveDimenSizeAttr(attrResId, defResId));
       return this;
     }
 
     public Matcher myDimenSizePropAttr(@AttrRes int attrResId) {
-      this.mMyDimenSizePropMatcher = org.hamcrest.core.Is.is((float) resolveDimenSizeAttr(attrResId, 0));
+      this.mMyDimenSizePropMatcher =
+          org.hamcrest.core.Is.is((float) mResourceResolver.resolveDimenSizeAttr(attrResId, 0));
       return this;
     }
 
     public Matcher myDimenSizePropDip(@Dimension(unit = Dimension.DP) float dips) {
-      this.mMyDimenSizePropMatcher = org.hamcrest.core.Is.is((float) dipsToPixels(dips));
+      this.mMyDimenSizePropMatcher =
+          org.hamcrest.core.Is.is((float) mResourceResolver.dipsToPixels(dips));
       return this;
     }
 
@@ -121,19 +129,20 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     }
 
     public Matcher myRequiredColorPropRes(@ColorRes int resId) {
-      this.mMyRequiredColorPropMatcher = org.hamcrest.core.Is.is((int) resolveColorRes(resId));
+      this.mMyRequiredColorPropMatcher =
+          org.hamcrest.core.Is.is((int) mResourceResolver.resolveColorRes(resId));
       return this;
     }
 
     public Matcher myRequiredColorPropAttr(@AttrRes int attrResId, @ColorRes int defResId) {
       this.mMyRequiredColorPropMatcher =
-          org.hamcrest.core.Is.is((int) resolveColorAttr(attrResId, defResId));
+          org.hamcrest.core.Is.is((int) mResourceResolver.resolveColorAttr(attrResId, defResId));
       return this;
     }
 
     public Matcher myRequiredColorPropAttr(@AttrRes int attrResId) {
       this.mMyRequiredColorPropMatcher =
-          org.hamcrest.core.Is.is((int) resolveColorAttr(attrResId, 0));
+          org.hamcrest.core.Is.is((int) mResourceResolver.resolveColorAttr(attrResId, 0));
       return this;
     }
 

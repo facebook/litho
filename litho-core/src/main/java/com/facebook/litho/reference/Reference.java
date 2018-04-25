@@ -31,11 +31,17 @@ import com.facebook.litho.ResourceResolver;
 @Deprecated
 public abstract class Reference<L> {
 
-  public abstract static class Builder<L> extends ResourceResolver {
+  public abstract static class Builder<L> {
+    protected ResourceResolver mResourceResolver;
+
     public abstract Reference<L> build();
 
     public final void init(ComponentContext c, Reference<L> reference) {
-      super.init(c, c.getResourceCache());
+      mResourceResolver = new ResourceResolver(c);
+    }
+
+    protected void release() {
+      mResourceResolver = null;
     }
   }
 

@@ -48,6 +48,7 @@ import javax.lang.model.element.Modifier;
 public class BuilderGenerator {
 
   private static final String BUILDER = "Builder";
+  private static final String RESOURCE_RESOLVER = "mResourceResolver";
   private static final String BUILDER_POOL_FIELD = "sBuilderPool";
   private static final ClassName BUILDER_CLASS_NAME = ClassName.bestGuess(BUILDER);
   private static final String CONTEXT_MEMBER_NAME = "mContext";
@@ -412,41 +413,29 @@ public class BuilderGenerator {
             attrBuilders(specModel, prop, requiredIndex, ClassNames.COLOR_RES, "resolveColor"));
         break;
       case DIMEN_SIZE:
-        final String sizeResolverName =
-            !prop.hasVarArgs() && prop.getTypeName().equals(ClassName.FLOAT.box())
-                ? "(float) resolveDimenSize"
-                : "resolveDimenSize";
         dataHolder.addTypeSpecDataHolder(pxBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(
-            resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, sizeResolverName));
+            resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
         dataHolder.addTypeSpecDataHolder(
-            attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, sizeResolverName));
+            attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
         dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
         break;
       case DIMEN_TEXT:
-        final String textResolverName =
-            !prop.hasVarArgs() && prop.getTypeName().equals(ClassName.FLOAT.box())
-                ? "(float) resolveDimenSize"
-                : "resolveDimenSize";
         dataHolder.addTypeSpecDataHolder(pxBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(
-            resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, textResolverName));
+            resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
         dataHolder.addTypeSpecDataHolder(
-            attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, textResolverName));
+            attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
         dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(sipBuilders(specModel, prop, requiredIndex));
         break;
       case DIMEN_OFFSET:
-        final String offsetResolverName =
-            !prop.hasVarArgs() && prop.getTypeName().equals(ClassName.FLOAT.box())
-                ? "(float) resolveDimenSize"
-                : "resolveDimenSize";
         dataHolder.addTypeSpecDataHolder(pxBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(sipBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(
-            resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, offsetResolverName));
+            resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
         dataHolder.addTypeSpecDataHolder(
-            attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, offsetResolverName));
+            attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
         dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
         break;
       case FLOAT:
@@ -662,6 +651,9 @@ public class BuilderGenerator {
     final boolean hasVarArgs = prop.hasVarArgs();
     final String name = hasVarArgs ? prop.getVarArgsSingleName() : prop.getName();
 
+    final String typeCast =
+        !prop.hasVarArgs() && prop.getTypeName().equals(ClassName.FLOAT.box()) ? "(float) " : "";
+
     dataHolder.addMethod(
         resTypeRegularBuilder(
                 specModel,
@@ -670,7 +662,9 @@ public class BuilderGenerator {
                 name + "Res",
                 Arrays.asList(
                     parameter(prop, TypeName.INT, "resId", annotation(annotationClassName))),
-                "$L(resId)",
+                "$L$L.$L(resId)",
+                typeCast,
+                RESOURCE_RESOLVER,
                 resolver + "Res")
             .build());
 
@@ -686,7 +680,9 @@ public class BuilderGenerator {
                           prop,
                           ParameterizedTypeName.get(ClassNames.LIST, TypeName.INT.box()),
                           "resIds")),
-                  "$L(resIds.get(i))",
+                  "$L$L.$L(resIds.get(i))",
+                  typeCast,
+                  RESOURCE_RESOLVER,
                   resolver + "Res")
               .build());
     }
@@ -714,8 +710,10 @@ public class BuilderGenerator {
                 Arrays.asList(
                     parameter(prop, TypeName.INT, "resId", annotation(annotationClassName)),
                     ParameterSpec.builder(ArrayTypeName.of(varargsType), varargsName).build()),
-                "$L(resId, $N)",
-                resolver + "Res", varargsName)
+                "$L.$L(resId, $L)",
+                RESOURCE_RESOLVER,
+                resolver + "Res",
+                varargsName)
             .varargs(true)
             .build());
 
@@ -733,8 +731,10 @@ public class BuilderGenerator {
                           "resIds",
                           annotation(annotationClassName)),
                       ParameterSpec.builder(ArrayTypeName.of(varargsType), varargsName).build()),
-                  "$L(resIds.get(i), $N)",
-                  resolver + "Res", varargsName)
+                  "$L.$L(resIds.get(i), $L)",
+                  RESOURCE_RESOLVER,
+                  resolver + "Res",
+                  varargsName)
               .varargs(true)
               .build());
     }
@@ -751,6 +751,8 @@ public class BuilderGenerator {
     final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
     final boolean hasVarArgs = prop.hasVarArgs();
     final String name = hasVarArgs ? prop.getVarArgsSingleName() : prop.getName();
+    final String typeCast =
+        !prop.hasVarArgs() && prop.getTypeName().equals(ClassName.FLOAT.box()) ? "(float) " : "";
 
     dataHolder.addMethod(
         resTypeRegularBuilder(
@@ -761,7 +763,9 @@ public class BuilderGenerator {
                 Arrays.asList(
                     parameter(prop, TypeName.INT, "attrResId", annotation(ClassNames.ATTR_RES)),
                     parameter(prop, TypeName.INT, "defResId", annotation(annotationClassName))),
-                "$L(attrResId, defResId)",
+                "$L$L.$L(attrResId, defResId)",
+                typeCast,
+                RESOURCE_RESOLVER,
                 resolver + "Attr")
             .build());
 
@@ -773,7 +777,9 @@ public class BuilderGenerator {
                 name + "Attr",
                 Arrays.asList(
                     parameter(prop, TypeName.INT, "attrResId", annotation(ClassNames.ATTR_RES))),
-                "$L(attrResId, 0)",
+                "$L$L.$L(attrResId, 0)",
+                typeCast,
+                RESOURCE_RESOLVER,
                 resolver + "Attr")
             .build());
 
@@ -790,7 +796,9 @@ public class BuilderGenerator {
                           ParameterizedTypeName.get(ClassNames.LIST, TypeName.INT.box()),
                           "attrResIds"),
                       parameter(prop, TypeName.INT, "defResId", annotation(annotationClassName))),
-                  "$L(attrResIds.get(i), defResId)",
+                  "$L$L.$L(attrResIds.get(i), defResId)",
+                  typeCast,
+                  RESOURCE_RESOLVER,
                   resolver + "Attr")
               .build());
 
@@ -805,7 +813,9 @@ public class BuilderGenerator {
                           prop,
                           ParameterizedTypeName.get(ClassNames.LIST, TypeName.INT.box()),
                           "attrResIds")),
-                  "$L(attrResIds.get(i), 0)",
+                  "$L$L.$L(attrResIds.get(i), 0)",
+                  typeCast,
+                  RESOURCE_RESOLVER,
                   resolver + "Attr")
               .build());
     }
@@ -858,8 +868,8 @@ public class BuilderGenerator {
     final String name = hasVarArgs ? prop.getVarArgsSingleName() : prop.getName();
     final String statement =
         !prop.hasVarArgs() && prop.getTypeName().equals(ClassName.FLOAT.box())
-            ? "(float) dipsToPixels(dip)"
-            : "dipsToPixels(dip)";
+            ? "(float) mResourceResolver.dipsToPixels(dip)"
+            : "mResourceResolver.dipsToPixels(dip)";
 
     AnnotationSpec dipAnnotation = AnnotationSpec.builder(ClassNames.DIMENSION)
         .addMember("unit", "$T.DP", ClassNames.DIMENSION)
@@ -887,7 +897,7 @@ public class BuilderGenerator {
                           prop,
                           ParameterizedTypeName.get(ClassNames.LIST, TypeName.FLOAT.box()),
                           "dips")),
-                  "dipsToPixels(dips.get(i))")
+                  "mResourceResolver.dipsToPixels(dips.get(i))")
               .build());
     }
 
@@ -901,8 +911,8 @@ public class BuilderGenerator {
     final String name = hasVarArgs ? prop.getVarArgsSingleName() : prop.getName();
     final String statement =
         !prop.hasVarArgs() && prop.getTypeName().equals(ClassName.FLOAT.box())
-            ? "(float) sipsToPixels(sip)"
-            : "sipsToPixels(sip)";
+            ? "(float) mResourceResolver.sipsToPixels(sip)"
+            : "mResourceResolver.sipsToPixels(sip)";
 
     AnnotationSpec spAnnotation = AnnotationSpec.builder(ClassNames.DIMENSION)
         .addMember("unit", "$T.SP", ClassNames.DIMENSION)
@@ -930,7 +940,7 @@ public class BuilderGenerator {
                           prop,
                           ParameterizedTypeName.get(ClassNames.LIST, TypeName.FLOAT.box()),
                           "sips")),
-                  "sipsToPixels(sips.get(i))")
+                  "mResourceResolver.sipsToPixels(sips.get(i))")
               .build());
     }
     return dataHolder.build();
@@ -1299,10 +1309,12 @@ public class BuilderGenerator {
     if (propDefaultModel.isResResolvable()) {
       return String.format(
           builtInitializer
+              .append(RESOURCE_RESOLVER)
+              .append('.')
               .append(resourceResolveMethodName)
-              .append("(")
+              .append('(')
               .append(propDefaultModel.getResId())
-              .append(")")
+              .append(')')
               .toString(),
           specModel.getSpecName(),
           propDefaultModel.getName());

@@ -693,25 +693,25 @@ public final class TestMount<S extends View> extends Component implements TestTa
     }
 
     public Builder<S> prop7Res(@StringRes int resId) {
-      this.mTestMount.prop7 = resolveStringRes(resId);
+      this.mTestMount.prop7 = mResourceResolver.resolveStringRes(resId);
       mRequired.set(5);
       return this;
     }
 
     public Builder<S> prop7Res(@StringRes int resId, Object... formatArgs) {
-      this.mTestMount.prop7 = resolveStringRes(resId, formatArgs);
+      this.mTestMount.prop7 = mResourceResolver.resolveStringRes(resId, formatArgs);
       mRequired.set(5);
       return this;
     }
 
     public Builder<S> prop7Attr(@AttrRes int attrResId, @StringRes int defResId) {
-      this.mTestMount.prop7 = resolveStringAttr(attrResId, defResId);
+      this.mTestMount.prop7 = mResourceResolver.resolveStringAttr(attrResId, defResId);
       mRequired.set(5);
       return this;
     }
 
     public Builder<S> prop7Attr(@AttrRes int attrResId) {
-      this.mTestMount.prop7 = resolveStringAttr(attrResId, 0);
+      this.mTestMount.prop7 = mResourceResolver.resolveStringAttr(attrResId, 0);
       mRequired.set(5);
       return this;
     }

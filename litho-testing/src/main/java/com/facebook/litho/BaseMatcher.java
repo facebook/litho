@@ -23,7 +23,7 @@ import org.hamcrest.core.Is;
  * Base class used to share common properties used in TestSpec builders. Mirrors relevant properties
  * from {@link com.facebook.litho.Component.Builder}.
  */
-public abstract class BaseMatcher<T extends BaseMatcher<T>> extends ResourceResolver {
+public abstract class BaseMatcher<T extends BaseMatcher<T>> {
   @Nullable Matcher<EventHandler<ClickEvent>> mClickHandlerMatcher;
   @Nullable Matcher<EventHandler<LongClickEvent>> mLongClickHandlerMatcher;
   @Nullable Matcher<EventHandler<FocusChangedEvent>> mFocusChangeHandlerMatcher;

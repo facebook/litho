@@ -82,13 +82,14 @@ public abstract class Section extends SectionLifecycle
    * should be set every time a parent might have more children with the same {@link
    * SectionLifecycle}.
    */
-  public abstract static class Builder<T extends Builder<T>> extends ResourceResolver {
+  public abstract static class Builder<T extends Builder<T>> {
 
     private Section mSection;
+    protected ResourceResolver mResourceResolver;
 
     protected void init(SectionContext context, Section section) {
-      super.init(context, context.getResourceCache());
       mSection = section;
+      mResourceResolver = new ResourceResolver(context);
     }
 
     /** Sets the key of this {@link Section} local to his parent. */
@@ -109,10 +110,10 @@ public abstract class Section extends SectionLifecycle
      */
     public abstract Section build();
 
-    @Override
     protected void release() {
-      super.release();
       mSection = null;
+      mResourceResolver.release();
+      mResourceResolver = null;
     }
 
     /**
