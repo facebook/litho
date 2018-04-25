@@ -30,9 +30,13 @@ public class TestComponentsLogger extends BaseComponentsLogger {
       onEvent(event);
     }
   }
-
   @Override
   public boolean isTracing(LogEvent logEvent) {
+    return true;
+  }
+
+  @Override
+  public boolean isTracing(PerfEvent logEvent) {
     return true;
   }
 
@@ -40,12 +44,18 @@ public class TestComponentsLogger extends BaseComponentsLogger {
   public void onPerformanceEventStarted(LogEvent event) {}
 
   @Override
-  public void onPerformanceEventEnded(LogEvent event) {
-
-  }
+  public void onPerformanceEventEnded(LogEvent event) {}
 
   @Override
   public void onEvent(LogEvent event) {
 
   }
+
+  @Override
+  public PerfEvent newBetterPerformanceEvent(int eventId) {
+    return new NoOpPerfEvent();
+  }
+
+  @Override
+  public void betterLog(PerfEvent event) {}
 }

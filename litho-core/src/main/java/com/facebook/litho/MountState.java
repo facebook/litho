@@ -236,8 +236,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     LogEvent mountEvent = null;
-    if (logger != null) {
+    PerfEvent mountPerfEvent = null;
+    if (logger != null && !ComponentsConfiguration.useBetterPerfLogger) {
       mountEvent = logger.newPerformanceEvent(EVENT_MOUNT);
+    }
+
+    if (logger != null && ComponentsConfiguration.useBetterPerfLogger) {
+      mountPerfEvent = logger.newBetterPerformanceEvent(EVENT_MOUNT);
     }
 
     if (mIsDirty) {
@@ -251,7 +256,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     mMountStats.reset();
-    if (logger != null && mountEvent != null && logger.isTracing(mountEvent)) {
+    if (logger != null
+        && ((mountEvent != null && logger.isTracing(mountEvent))
+            || (mountPerfEvent != null && logger.isTracing(mountPerfEvent)))) {
       mMountStats.enableLogging();
     }
 
@@ -375,7 +382,23 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     suppressInvalidationsOnHosts(false);
 
-    if (mMountStats.isLoggingEnabled) {
+    logMountPerfEvent(componentTree, logger, mountEvent, mountPerfEvent);
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
+  }
+
+  private void logMountPerfEvent(
+      ComponentTree componentTree,
+      ComponentsLogger logger,
+      LogEvent mountEvent,
+      PerfEvent mountPerfEvent) {
+    if (!mMountStats.isLoggingEnabled) {
+      return;
+    }
+
+    if (mountEvent != null) {
       mountEvent.addParam(PARAM_LOG_TAG, componentTree.getContext().getLogTag());
       mountEvent.addParam(PARAM_MOUNTED_COUNT, String.valueOf(mMountStats.mountedCount));
       mountEvent.addJsonParam(PARAM_MOUNTED_CONTENT, mMountStats.mountedNames);
@@ -400,8 +423,37 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       logger.log(mountEvent);
     }
 
-    if (isTracing) {
-      ComponentsSystrace.endSection();
+    if (mountPerfEvent != null) {
+      mountPerfEvent.markerAnnotate(PARAM_LOG_TAG, componentTree.getContext().getLogTag());
+      mountPerfEvent.markerAnnotate(PARAM_MOUNTED_COUNT, mMountStats.mountedCount);
+      mountPerfEvent.markerAnnotate(
+          PARAM_MOUNTED_CONTENT, mMountStats.mountedNames.toArray(new String[0]));
+      mountPerfEvent.markerAnnotate(
+          PARAM_MOUNTED_TIME, mMountStats.mountTimes.toArray(new Double[0]));
+
+      mountPerfEvent.markerAnnotate(PARAM_UNMOUNTED_COUNT, mMountStats.unmountedCount);
+      mountPerfEvent.markerAnnotate(
+          PARAM_UNMOUNTED_CONTENT, mMountStats.unmountedNames.toArray(new String[0]));
+      mountPerfEvent.markerAnnotate(
+          PARAM_UNMOUNTED_TIME, mMountStats.unmountedTimes.toArray(new Double[0]));
+
+      mountPerfEvent.markerAnnotate(PARAM_UPDATED_COUNT, mMountStats.updatedCount);
+      mountPerfEvent.markerAnnotate(
+          PARAM_UPDATED_CONTENT, mMountStats.updatedNames.toArray(new String[0]));
+      mountPerfEvent.markerAnnotate(
+          PARAM_UPDATED_TIME, mMountStats.updatedTimes.toArray(new Double[0]));
+
+      mountPerfEvent.markerAnnotate(
+          PARAM_VISIBILITY_HANDLERS_TOTAL_TIME, mMountStats.visibilityHandlersTotalTime);
+      mountPerfEvent.markerAnnotate(
+          PARAM_VISIBILITY_HANDLER, mMountStats.visibilityHandlerNames.toArray(new String[0]));
+      mountPerfEvent.markerAnnotate(
+          PARAM_VISIBILITY_HANDLER_TIME, mMountStats.visibilityHandlerTimes.toArray(new Double[0]));
+
+      mountPerfEvent.markerAnnotate(PARAM_NO_OP_COUNT, mMountStats.noOpCount);
+      mountPerfEvent.markerAnnotate(PARAM_IS_DIRTY, mIsDirty);
+
+      logger.betterLog(mountPerfEvent);
     }
   }
 

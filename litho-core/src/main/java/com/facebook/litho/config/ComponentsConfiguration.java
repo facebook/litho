@@ -62,6 +62,12 @@ public class ComponentsConfiguration {
   public static boolean isDebugModeEnabled = IS_INTERNAL_BUILD;
 
   /**
+   * Use the new version of the performance logger which aims to be lower-overhead, reducing memory
+   * pressure. This is still experimental and doesn't fully replace the old interface yet.
+   */
+  public static boolean useBetterPerfLogger = false;
+
+  /**
    * Debug option to highlight interactive areas in mounted components.
    */
   public static boolean debugHighlightInteractiveBounds = false;
