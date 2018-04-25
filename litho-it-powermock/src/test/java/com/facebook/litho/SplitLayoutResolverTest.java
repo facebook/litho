@@ -19,7 +19,7 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
@@ -55,7 +55,7 @@ public class SplitLayoutResolverTest {
   @Rule public PowerMockRule mPowerMockRule = new PowerMockRule();
 
   private Component mComponent;
-  private static String splitTag = "test_split_tag";
+  private static final String splitTag = "test_split_tag";
   private LayoutThreadPoolConfiguration mMainConfig;
   private LayoutThreadPoolConfiguration mBgConfig;
   private Set<String> mEnabledComponent;
@@ -133,10 +133,10 @@ public class SplitLayoutResolverTest {
     tree.setRootAndSizeSpec(
         mComponent, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY), new Size());
 
-    verify(mainService, times(1)).submit(any(Runnable.class), eq(0));
-    verify(mainService, times(1)).submit(any(Runnable.class), eq(1));
-    verify(mainService, times(0)).submit(any(Runnable.class), eq(2));
-    verify(bgService, times(0)).submit(any(Runnable.class), any());
+    verify(mainService).submit(any(Runnable.class), eq(0));
+    verify(mainService).submit(any(Runnable.class), eq(1));
+    verify(mainService, never()).submit(any(Runnable.class), eq(2));
+    verify(bgService, never()).submit(any(Runnable.class), any());
   }
 
   @Test
@@ -155,10 +155,10 @@ public class SplitLayoutResolverTest {
         mComponent, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
     mLayoutThreadShadowLooper.runOneTask();
 
-    verify(bgService, times(1)).submit(any(Runnable.class), eq(0));
-    verify(bgService, times(1)).submit(any(Runnable.class), eq(1));
-    verify(bgService, times(0)).submit(any(Runnable.class), eq(2));
-    verify(mainService, times(0)).submit(any(Runnable.class), any());
+    verify(bgService).submit(any(Runnable.class), eq(0));
+    verify(bgService).submit(any(Runnable.class), eq(1));
+    verify(bgService, never()).submit(any(Runnable.class), eq(2));
+    verify(mainService, never()).submit(any(Runnable.class), any());
   }
 
   @Test
@@ -177,6 +177,6 @@ public class SplitLayoutResolverTest {
 
     mLayoutThreadShadowLooper.runOneTask();
 
-    verify(bgService, times(0)).submit(any(Runnable.class), eq(0));
+    verify(bgService, never()).submit(any(Runnable.class), eq(0));
   }
 }
