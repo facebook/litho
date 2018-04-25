@@ -2697,6 +2697,69 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
   }
 
+  @Test
+  public void testRemoveAsync() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final Component component =
+        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+    final ComponentRenderInfo renderInfo =
+        ComponentRenderInfo.create().component(component).build();
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+    recyclerBinder.insertItemAtAsync(0, renderInfo);
+    recyclerBinder.notifyChangeSetComplete();
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
+
+    recyclerBinder.removeItemAtAsync(0);
+    recyclerBinder.notifyChangeSetComplete();
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
+  }
+
+  @Test
+  public void testRemoveAsyncMixedWithInserts() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<Component> components = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 4; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      components.add(component);
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+    recyclerBinder.insertItemAtAsync(0, renderInfos.get(0));
+    recyclerBinder.insertItemAtAsync(1, renderInfos.get(1));
+    recyclerBinder.notifyChangeSetComplete();
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
+
+    recyclerBinder.insertItemAtAsync(0, renderInfos.get(2));
+    recyclerBinder.removeItemAtAsync(0);
+    recyclerBinder.insertItemAtAsync(2, renderInfos.get(3));
+    recyclerBinder.notifyChangeSetComplete();
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(3);
+    assertThat(recyclerBinder.getComponentTreeHolderAt(0).getRenderInfo().getComponent())
+        .isEqualTo(components.get(0));
+    assertThat(recyclerBinder.getComponentTreeHolderAt(1).getRenderInfo().getComponent())
+        .isEqualTo(components.get(1));
+    assertThat(recyclerBinder.getComponentTreeHolderAt(2).getRenderInfo().getComponent())
+        .isEqualTo(components.get(3));
+  }
+
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
     return new RecyclerBinder.Builder()
         .rangeRatio(RANGE_RATIO)

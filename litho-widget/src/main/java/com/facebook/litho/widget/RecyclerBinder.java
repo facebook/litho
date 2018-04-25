@@ -158,7 +158,7 @@ public class RecyclerBinder
       new ComponentTree.NewLayoutStateReadyListener() {
         @Override
         public void onNewLayoutStateReady(ComponentTree componentTree) {
-          onAsyncLayoutReady();
+          applyReadyBatches();
         }
       };
 
@@ -568,7 +568,7 @@ public class RecyclerBinder
   }
 
   @UiThread
-  private void onAsyncLayoutReady() {
+  private void applyReadyBatches() {
     ThreadUtils.assertMainThread();
 
     synchronized (this) {
@@ -611,6 +611,9 @@ public class RecyclerBinder
       switch (operation.mOperation) {
         case Operation.INSERT:
           applyAsyncInsert((AsyncInsertOperation) operation);
+          break;
+        case Operation.REMOVE:
+          removeItemAt(((AsyncRemoveOperation) operation).mPosition);
           break;
         default:
           throw new RuntimeException("Unhandled operation type: " + operation.mOperation);
@@ -664,11 +667,13 @@ public class RecyclerBinder
   public final void removeItemAtAsync(int position) {
     ThreadUtils.assertMainThread();
 
-    // If the binder has not been measured yet we simply fall back on the sync implementation as
-    // nothing will really happen until we compute the first range.
-    if (!mIsMeasured.get()) {
-      removeItemAt(position);
-      return;
+    if (SectionsDebug.ENABLED) {
+      Log.d(SectionsDebug.TAG, "(" + hashCode() + ") removeItemAtAsync " + position);
+    }
+
+    final AsyncRemoveOperation asyncRemoveOperation = new AsyncRemoveOperation(position);
+    synchronized (this) {
+      addToCurrentBatch(asyncRemoveOperation);
     }
   }
 
@@ -966,6 +971,7 @@ public class RecyclerBinder
     }
 
     closeCurrentBatch();
+    applyReadyBatches();
     maybeUpdateRangeOrRemeasureForMutation();
   }
 
@@ -1984,6 +1990,16 @@ public class RecyclerBinder
       super(Operation.INSERT);
       mPosition = position;
       mHolder = holder;
+    }
+  }
+
+  private static final class AsyncRemoveOperation extends AsyncOperation {
+
+    private final int mPosition;
+
+    public AsyncRemoveOperation(int position) {
+      super(Operation.REMOVE);
+      mPosition = position;
     }
   }
 
