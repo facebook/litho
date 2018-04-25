@@ -98,7 +98,8 @@ public class RecyclerBinder
   private final AtomicBoolean mRequiresRemeasure = new AtomicBoolean(false);
 
   @GuardedBy("this")
-  private final ArrayList<AsyncOperation> mInsertsWaitingForInitialMeasure = new ArrayList<>();
+  private final ArrayList<AsyncInsertOperation> mInsertsWaitingForInitialMeasure =
+      new ArrayList<>();
 
   @GuardedBy("this")
   private final Deque<AsyncBatch> mAsyncBatches = new ArrayDeque<>();
@@ -518,7 +519,7 @@ public class RecyclerBinder
 
     assertNoInsertOperationIfCircular();
 
-    final AsyncOperation operation = createAsyncInsertOperation(position, renderInfo);
+    final AsyncInsertOperation operation = createAsyncInsertOperation(position, renderInfo);
 
     synchronized (this) {
       mHasAsyncOperations = true;
@@ -551,7 +552,7 @@ public class RecyclerBinder
       mHasAsyncOperations = true;
 
       for (int i = 0, size = renderInfos.size(); i < size; i++) {
-        final AsyncOperation operation =
+        final AsyncInsertOperation operation =
             createAsyncInsertOperation(position + i, renderInfos.get(i));
 
         // If the binder has not been measured yet, we will compute an initial page of content based
@@ -593,7 +594,8 @@ public class RecyclerBinder
   private static boolean isBatchReady(AsyncBatch batch) {
     for (int i = 0, size = batch.mOperations.size(); i < size; i++) {
       final AsyncOperation operation = batch.mOperations.get(i);
-      if (!operation.mHolder.hasCompletedLatestLayout()) {
+      if (operation instanceof AsyncInsertOperation
+          && !((AsyncInsertOperation) operation).mHolder.hasCompletedLatestLayout()) {
         return false;
       }
     }
@@ -603,29 +605,31 @@ public class RecyclerBinder
   @GuardedBy("this")
   @UiThread
   private void applyBatch(AsyncBatch batch) {
-    boolean dataChangedIsVisible = false;
-
     for (int i = 0, size = batch.mOperations.size(); i < size; i++) {
       final AsyncOperation operation = batch.mOperations.get(i);
-      mComponentTreeHolders.add(operation.mPosition, operation.mHolder);
-      mInternalAdapter.notifyItemInserted(operation.mPosition);
 
-      dataChangedIsVisible =
-          dataChangedIsVisible
-              || mViewportManager.isInsertInVisibleRange(
-                  operation.mPosition, 1, mRange != null ? mRange.estimatedViewportCount : -1);
+      switch (operation.mOperation) {
+        case Operation.INSERT:
+          applyAsyncInsert((AsyncInsertOperation) operation);
+          break;
+        default:
+          throw new RuntimeException("Unhandled operation type: " + operation.mOperation);
+      }
     }
-
-    mViewportManager.setDataChangedIsVisible(dataChangedIsVisible);
   }
 
   @GuardedBy("this")
-  private void registerAsyncInsert(AsyncOperation operation) {
-    if (mCurrentBatch == null) {
-      mCurrentBatch = new AsyncBatch();
-    }
+  @UiThread
+  private void applyAsyncInsert(AsyncInsertOperation operation) {
+    mComponentTreeHolders.add(operation.mPosition, operation.mHolder);
+    mInternalAdapter.notifyItemInserted(operation.mPosition);
+    mViewportManager.isInsertInVisibleRange(
+        operation.mPosition, 1, mRange != null ? mRange.estimatedViewportCount : -1);
+  }
 
-    mCurrentBatch.mOperations.add(operation);
+  @GuardedBy("this")
+  private void registerAsyncInsert(AsyncInsertOperation operation) {
+    addToCurrentBatch(operation);
 
     final ComponentTreeHolder holder = operation.mHolder;
     holder.setNewLayoutReadyListener(mAsyncLayoutReadyListener);
@@ -666,8 +670,14 @@ public class RecyclerBinder
       removeItemAt(position);
       return;
     }
+  }
 
-    //TODO t15827349 implement async operations in RecyclerBinder.
+  @GuardedBy("this")
+  private void addToCurrentBatch(AsyncOperation operation) {
+    if (mCurrentBatch == null) {
+      mCurrentBatch = new AsyncBatch();
+    }
+    mCurrentBatch.mOperations.add(operation);
   }
 
   /**
@@ -1287,10 +1297,7 @@ public class RecyclerBinder
     final int numInserts = mInsertsWaitingForInitialMeasure.size();
     final ArrayList<ComponentTreeHolder> holdersForInsert = new ArrayList<>(numInserts);
     for (int i = 0; i < numInserts; i++) {
-      final AsyncOperation operation = mInsertsWaitingForInitialMeasure.get(i);
-      if (operation.mOperation != Operation.INSERT) {
-        throw new RuntimeException("Only expected inserts, got " + operation.mOperation);
-      }
+      final AsyncInsertOperation operation = mInsertsWaitingForInitialMeasure.get(i);
 
       if (i != operation.mPosition) {
         throw new RuntimeException(
@@ -1412,14 +1419,22 @@ public class RecyclerBinder
   @GuardedBy("this")
   private void updateBatch(AsyncBatch batch) {
     for (AsyncOperation operation : batch.mOperations) {
-      final ComponentTreeHolder holder = operation.mHolder;
+      if (!(operation instanceof AsyncInsertOperation)) {
+        continue;
+      }
 
-      // If there's an existing async layout that's compatible, this is a no-op. Otherwise, that
-      // computation will be canceled (if it hasn't started) and this new one will run.
-      final int widthSpec = getActualChildrenWidthSpec(holder);
-      final int heightSpec = getActualChildrenHeightSpec(holder);
-      holder.computeLayoutAsync(mComponentContext, widthSpec, heightSpec);
+      final ComponentTreeHolder holder = ((AsyncInsertOperation) operation).mHolder;
+      computeLayoutAsync(holder);
     }
+  }
+
+  @GuardedBy("this")
+  private void computeLayoutAsync(ComponentTreeHolder holder) {
+    // If there's an existing async layout that's compatible, this is a no-op. Otherwise, that
+    // computation will be canceled (if it hasn't started) and this new one will run.
+    final int widthSpec = getActualChildrenWidthSpec(holder);
+    final int heightSpec = getActualChildrenHeightSpec(holder);
+    holder.computeLayoutAsync(mComponentContext, widthSpec, heightSpec);
   }
 
   private static int findFirstComponentPosition(List<ComponentTreeHolder> holders) {
@@ -1432,11 +1447,10 @@ public class RecyclerBinder
     return -1;
   }
 
-  private static int findFirstAsyncComponentInsert(List<AsyncOperation> operations) {
+  private static int findFirstAsyncComponentInsert(List<AsyncInsertOperation> operations) {
     for (int i = 0, size = operations.size(); i < size; i++) {
-      final AsyncOperation operation = operations.get(i);
-      if (operation.mOperation == Operation.INSERT
-          && operation.mHolder.getRenderInfo().rendersComponent()) {
+      final AsyncInsertOperation operation = operations.get(i);
+      if (operation.mHolder.getRenderInfo().rendersComponent()) {
         return i;
       }
     }
@@ -1936,9 +1950,9 @@ public class RecyclerBinder
     return mLayoutInfo.getChildHeightSpec(mLastHeightSpec, treeHolder.getRenderInfo());
   }
 
-  private AsyncOperation createAsyncInsertOperation(int position, RenderInfo renderInfo) {
+  private AsyncInsertOperation createAsyncInsertOperation(int position, RenderInfo renderInfo) {
     final ComponentTreeHolder holder = createComponentTreeHolder(renderInfo);
-    return new AsyncOperation(Operation.INSERT, position, holder);
+    return new AsyncInsertOperation(position, holder);
   }
 
   /** Async operation types. */
@@ -1952,14 +1966,22 @@ public class RecyclerBinder
   }
 
   /** An operation received from one of the *Async methods, pending execution. */
-  private static final class AsyncOperation {
+  private abstract static class AsyncOperation {
 
     private final int mOperation;
+
+    public AsyncOperation(int operation) {
+      mOperation = operation;
+    }
+  }
+
+  private static final class AsyncInsertOperation extends AsyncOperation {
+
     private final int mPosition;
     private final ComponentTreeHolder mHolder;
 
-    public AsyncOperation(int operation, int position, ComponentTreeHolder holder) {
-      mOperation = operation;
+    public AsyncInsertOperation(int position, ComponentTreeHolder holder) {
+      super(Operation.INSERT);
       mPosition = position;
       mHolder = holder;
     }
