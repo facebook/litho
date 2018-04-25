@@ -38,10 +38,7 @@ public class ResourceResolver {
   // allocate a new int[] for each call.
   private final int[] mAttrs = new int[1];
 
-  public ResourceResolver(ComponentContext context) {
-    // Only temporary whilst conversion is underway.
-    init(context);
-  }
+  ResourceResolver() {}
 
   public void init(ComponentContext context) {
     mResources = context.getResources();

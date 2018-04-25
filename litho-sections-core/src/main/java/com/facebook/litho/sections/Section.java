@@ -18,6 +18,7 @@ package com.facebook.litho.sections;
 
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pair;
+import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTriggersContainer;
@@ -89,7 +90,7 @@ public abstract class Section extends SectionLifecycle
 
     protected void init(SectionContext context, Section section) {
       mSection = section;
-      mResourceResolver = new ResourceResolver(context);
+      mResourceResolver = ComponentsPools.acquireResourceResolver(context);
     }
 
     /** Sets the key of this {@link Section} local to his parent. */
@@ -112,7 +113,7 @@ public abstract class Section extends SectionLifecycle
 
     protected void release() {
       mSection = null;
-      mResourceResolver.release();
+      ComponentsPools.release(mResourceResolver);
       mResourceResolver = null;
     }
 

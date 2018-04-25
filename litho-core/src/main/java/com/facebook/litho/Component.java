@@ -616,7 +616,7 @@ public abstract class Component extends ComponentLifecycle
         @AttrRes int defStyleAttr,
         @StyleRes int defStyleRes,
         Component component) {
-      mResourceResolver = new ResourceResolver(c);
+      mResourceResolver = ComponentsPools.acquireResourceResolver(c);
       mComponent = component;
       mContext = c;
 
@@ -659,6 +659,8 @@ public abstract class Component extends ComponentLifecycle
     protected void release() {
       mContext = null;
       mComponent = null;
+
+      ComponentsPools.release(mResourceResolver);
       mResourceResolver = null;
     }
 

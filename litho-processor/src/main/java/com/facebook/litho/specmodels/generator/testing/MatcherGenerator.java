@@ -107,7 +107,10 @@ public final class MatcherGenerator {
     final MethodSpec constructor =
         MethodSpec.constructorBuilder()
             .addParameter(specModel.getContextClass(), "c")
-            .addStatement("$L = new $T(c)", RESOURCE_RESOLVER, ClassNames.RESOURCE_RESOLVER)
+            .addStatement(
+                "$L = $T.acquireResourceResolver(c)",
+                RESOURCE_RESOLVER,
+                ClassNames.COMPONENTS_POOLS)
             .build();
 
     propsBuilderClassBuilder.addMethod(constructor);
@@ -123,7 +126,8 @@ public final class MatcherGenerator {
 
     propsBuilderClassBuilder
         .addMethod(generateBuildMethod(specModel))
-        .addMethod(generateGetThisMethod(specModel));
+        .addMethod(generateGetThisMethod(specModel))
+        .addMethod(generateReleaseMethod(specModel));
 
     return TypeSpecDataHolder.newBuilder().addType(propsBuilderClassBuilder.build()).build();
   }
@@ -621,6 +625,14 @@ public final class MatcherGenerator {
     return builder;
   }
 
+  private static MethodSpec generateReleaseMethod(SpecModel specModel) {
+    return MethodSpec.methodBuilder("release")
+        .addModifiers(Modifier.PRIVATE)
+        .addStatement("$T.release($N)", ClassNames.COMPONENTS_POOLS, RESOURCE_RESOLVER)
+        .addStatement("$N = null", RESOURCE_RESOLVER)
+        .build();
+  }
+
   private static <T extends SpecModel & HasEnclosedSpecModel> CodeBlock generateMatchMethodBody(
       final T specModel) {
     final CodeBlock.Builder builder = CodeBlock.builder();
@@ -672,7 +684,7 @@ public final class MatcherGenerator {
               MatcherGenerator::generateInjectedFieldExtractorBlock));
     }
 
-    builder.addStatement("return true");
+    builder.addStatement("release()").addStatement("return true");
 
     return builder.build();
   }

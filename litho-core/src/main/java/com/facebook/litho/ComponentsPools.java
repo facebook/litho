@@ -117,6 +117,9 @@ public class ComponentsPools {
   static final RecyclePool<ComponentTree.Builder> sComponentTreeBuilderPool =
       new RecyclePool<>("ComponentTree.Builder", 2, true);
 
+  static final RecyclePool<ResourceResolver> sResourceResolverPool =
+      new RecyclePool<>("ResourceResolver", 2, true);
+
   static final RecyclePool<StateHandler> sStateHandlerPool =
       new RecyclePool<>("StateHandler", 10, true);
 
@@ -404,6 +407,17 @@ public class ComponentsPools {
     return componentTreeBuilder;
   }
 
+  public static ResourceResolver acquireResourceResolver(ComponentContext c) {
+    ResourceResolver resourceResolver = sResourceResolverPool.acquire();
+    if (resourceResolver == null) {
+      resourceResolver = new ResourceResolver();
+    }
+
+    resourceResolver.init(c);
+
+    return resourceResolver;
+  }
+
   static StateHandler acquireStateHandler(@Nullable StateHandler fromStateHandler) {
     StateHandler stateHandler = sStateHandlerPool.acquire();
     if (stateHandler == null) {
@@ -449,6 +463,12 @@ public class ComponentsPools {
   static void release(ComponentTree.Builder componentTreeBuilder) {
     componentTreeBuilder.release();
     sComponentTreeBuilderPool.release(componentTreeBuilder);
+  }
+
+  @ThreadSafe(enableChecks = false)
+  public static void release(ResourceResolver resourceResolver) {
+    resourceResolver.release();
+    sResourceResolverPool.release(resourceResolver);
   }
 
   @ThreadSafe(enableChecks = false)
@@ -784,6 +804,7 @@ public class ComponentsPools {
     sDiffNodePool.clear();
     sDiffPool.clear();
     sComponentTreeBuilderPool.clear();
+    sResourceResolverPool.clear();
     sStateHandlerPool.clear();
     sTreePropsMapPool.clear();
     sLogEventPool.clear();
