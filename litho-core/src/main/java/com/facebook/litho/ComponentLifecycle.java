@@ -223,7 +223,17 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   @ThreadSafe(enableChecks = false)
   public Object createMountContent(ComponentContext c) {
-    return onCreateMountContent(c);
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("createMountContent:" + ((Component) this).getSimpleName());
+    }
+    try {
+      return onCreateMountContent(c);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
   }
 
   void mount(ComponentContext c, Object convertContent) {
