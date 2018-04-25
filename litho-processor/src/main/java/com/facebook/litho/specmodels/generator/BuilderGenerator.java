@@ -49,7 +49,6 @@ public class BuilderGenerator {
 
   private static final String BUILDER = "Builder";
   private static final String RESOURCE_RESOLVER = "mResourceResolver";
-  private static final String BUILDER_POOL_FIELD = "sBuilderPool";
   private static final ClassName BUILDER_CLASS_NAME = ClassName.bestGuess(BUILDER);
   private static final String CONTEXT_MEMBER_NAME = "mContext";
   private static final String CONTEXT_PARAM_NAME = "context";
@@ -69,24 +68,13 @@ public class BuilderGenerator {
   static TypeSpecDataHolder generateFactoryMethods(SpecModel specModel) {
     final TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
 
-    final ParameterizedTypeName synchronizedPoolClass =
-        ParameterizedTypeName.get(ClassNames.SYNCHRONIZED_POOL, BUILDER_CLASS_NAME);
-
-    final FieldSpec.Builder poolField =
-        FieldSpec.builder(synchronizedPoolClass, BUILDER_POOL_FIELD)
-            .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-            .initializer("new $T(2)", synchronizedPoolClass);
-
     final MethodSpec.Builder factoryMethod =
         MethodSpec.methodBuilder("create")
             .addModifiers(Modifier.PUBLIC)
             .addModifiers(hasStaticCreate(specModel) ? Modifier.STATIC : Modifier.FINAL)
             .returns(getBuilderType(specModel))
             .addParameter(specModel.getContextClass(), "context")
-            .addStatement("$T builder = $L.acquire()", BUILDER_CLASS_NAME, BUILDER_POOL_FIELD)
-            .beginControlFlow("if (builder == null)")
-            .addStatement("builder = new $T()", BUILDER_CLASS_NAME)
-            .endControlFlow();
+            .addStatement("final $1T builder = new $1T()", BUILDER_CLASS_NAME);
 
     if (hasStaticCreate(specModel) && !specModel.getTypeVariables().isEmpty()) {
       factoryMethod.addTypeVariables(specModel.getTypeVariables());
@@ -115,13 +103,8 @@ public class BuilderGenerator {
 
     factoryMethod.addStatement("return builder");
 
-    if (!specModel.hasInjectedDependencies() || specModel.getTypeVariables().isEmpty()) {
-      poolField.addModifiers(Modifier.STATIC);
-    }
-
     return dataHolder
         .addMethod(factoryMethod.build())
-        .addField(poolField.build())
         .build();
   }
 
@@ -1296,7 +1279,6 @@ public class BuilderGenerator {
         .addStatement("super.release()")
         .addStatement(getComponentMemberInstanceName(specModel) + " = null")
         .addStatement(CONTEXT_MEMBER_NAME + " = null")
-        .addStatement("$L.release(this)", BUILDER_POOL_FIELD)
         .build();
   }
 

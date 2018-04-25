@@ -51,9 +51,6 @@ import java.util.BitSet;
  * @see com.facebook.litho.sections.processor.integration.resources.FullGroupSectionSpec
  */
 final class FullGroupSection<T> extends Section implements TestTag {
-  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
-      new Pools.SynchronizedPool<Builder>(2);
-
   static final Pools.SynchronizedPool<TestEvent> sTestEventPool =
       new Pools.SynchronizedPool<TestEvent>(2);
 
@@ -147,10 +144,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
   }
 
   public static <T> Builder<T> create(SectionContext context) {
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
+    final Builder builder = new Builder();
     FullGroupSection instance = new FullGroupSection();
     builder.init(context, instance);
     return builder;
@@ -491,7 +485,6 @@ final class FullGroupSection<T> extends Section implements TestTag {
       super.release();
       mFullGroupSection = null;
       mContext = null;
-      sBuilderPool.release(this);
     }
   }
 

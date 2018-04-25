@@ -16,7 +16,6 @@
 
 package com.facebook.litho.processor.integration.resources;
 
-import android.support.v4.util.Pools;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -33,8 +32,6 @@ import java.util.BitSet;
  * @see com.facebook.litho.processor.integration.resources.SimpleMountSpec
  */
 public final class SimpleMount extends Component {
-  private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
-
   @Prop(resType = ResType.NONE, optional = false)
   Component content;
 
@@ -128,10 +125,7 @@ public final class SimpleMount extends Component {
   }
 
   public static Builder create(ComponentContext context, int defStyleAttr, int defStyleRes) {
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
+    final Builder builder = new Builder();
     SimpleMount instance = new SimpleMount();
     builder.init(context, defStyleAttr, defStyleRes, instance);
     return builder;
@@ -192,7 +186,6 @@ public final class SimpleMount extends Component {
       super.release();
       mSimpleMount = null;
       mContext = null;
-      sBuilderPool.release(this);
     }
   }
 }

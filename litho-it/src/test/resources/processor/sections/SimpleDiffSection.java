@@ -16,7 +16,6 @@
 
 package com.facebook.litho.sections.processor.integration.resources;
 
-import android.support.v4.util.Pools;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.sections.ChangeSet;
 import com.facebook.litho.sections.LoadingEvent;
@@ -25,9 +24,6 @@ import com.facebook.litho.sections.SectionContext;
 
 /** @see com.facebook.litho.sections.processor.integration.resources.SimpleDiffSectionSpec */
 public final class SimpleDiffSection extends Section {
-  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
-      new Pools.SynchronizedPool<Builder>(2);
-
   private SimpleDiffSection() {
     super("SimpleDiffSection");
   }
@@ -45,10 +41,7 @@ public final class SimpleDiffSection extends Section {
   }
 
   public static Builder create(SectionContext context) {
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
+    final Builder builder = new Builder();
     SimpleDiffSection instance = new SimpleDiffSection();
     builder.init(context, instance);
     return builder;
@@ -105,7 +98,6 @@ public final class SimpleDiffSection extends Section {
       super.release();
       mSimpleDiffSection = null;
       mContext = null;
-      sBuilderPool.release(this);
     }
   }
 }

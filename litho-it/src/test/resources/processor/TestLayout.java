@@ -57,8 +57,6 @@ import java.util.BitSet;
 public final class TestLayout<S extends View> extends Component implements TestTag {
   static final Pools.SynchronizedPool<TestEvent> sTestEventPool = new Pools.SynchronizedPool<TestEvent>(2);
 
-  private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
-
   private TestLayoutStateContainer mStateContainer;
 
   private TestLayoutRenderData mPreviousRenderData;
@@ -482,10 +480,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
   public static <S extends View> Builder<S> create(
       ComponentContext context, int defStyleAttr, int defStyleRes) {
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
+    final Builder builder = new Builder();
     TestLayout instance = new TestLayout();
     builder.init(context, defStyleAttr, defStyleRes, instance);
     return builder;
@@ -646,7 +641,6 @@ public final class TestLayout<S extends View> extends Component implements TestT
       super.release();
       mTestLayout = null;
       mContext = null;
-      sBuilderPool.release(this);
     }
   }
 }

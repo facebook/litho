@@ -45,9 +45,6 @@ import java.util.List;
  * @see com.facebook.litho.sections.processor.integration.resources.FullDiffSectionSpec
  */
 public final class FullDiffSection<T> extends Section implements TestTag {
-  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
-      new Pools.SynchronizedPool<Builder>(2);
-
   static final Pools.SynchronizedPool<TestEvent> sTestEventPool =
       new Pools.SynchronizedPool<TestEvent>(2);
 
@@ -129,10 +126,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   }
 
   public static <T> Builder<T> create(SectionContext context) {
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
+    final Builder builder = new Builder();
     FullDiffSection instance = new FullDiffSection();
     builder.init(context, instance);
     return builder;
@@ -416,7 +410,6 @@ public final class FullDiffSection<T> extends Section implements TestTag {
       super.release();
       mFullDiffSection = null;
       mContext = null;
-      sBuilderPool.release(this);
     }
   }
 

@@ -136,20 +136,13 @@ public class BuilderGeneratorTest {
         .isEqualTo(
             "public static Builder create(com.facebook.litho.ComponentContext context, int defStyleAttr,\n"
                 + "    int defStyleRes) {\n"
-                + "  Builder builder = sBuilderPool.acquire();\n"
-                + "  if (builder == null) {\n"
-                + "    builder = new Builder();\n"
-                + "  }\n"
+                + "  final Builder builder = new Builder();\n"
                 + "  Test instance = new Test();\n"
                 + "  builder.init(context, defStyleAttr, defStyleRes, instance);\n"
                 + "  return builder;\n"
                 + "}\n");
 
-    assertThat(dataHolder.getFieldSpecs()).hasSize(1);
-    assertThat(dataHolder.getFieldSpecs().get(0).toString())
-        .isEqualTo(
-            "private static final android.support.v4.util.Pools.SynchronizedPool<Builder> sBuilderPool = new android.support.v4.util.Pools.SynchronizedPool<Builder>(2);\n");
-
+    assertThat(dataHolder.getFieldSpecs()).hasSize(0);
     assertThat(dataHolder.getTypeSpecs()).hasSize(1);
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
@@ -248,7 +241,6 @@ public class BuilderGeneratorTest {
                 + "    super.release();\n"
                 + "    mTest = null;\n"
                 + "    mContext = null;\n"
-                + "    sBuilderPool.release(this);\n"
                 + "  }\n"
                 + "}\n");
   }
@@ -448,7 +440,6 @@ public class BuilderGeneratorTest {
                 + "    super.release();\n"
                 + "    mTestResTypeWithVarArgs = null;\n"
                 + "    mContext = null;\n"
-                + "    sBuilderPool.release(this);\n"
                 + "  }\n"
                 + "}\n");
   }
@@ -534,7 +525,6 @@ public class BuilderGeneratorTest {
                 + "    super.release();\n"
                 + "    mTestDimenResTypeWithBoxFloatArg = null;\n"
                 + "    mContext = null;\n"
-                + "    sBuilderPool.release(this);\n"
                 + "  }\n"
                 + "}\n");
   }

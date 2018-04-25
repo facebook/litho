@@ -16,7 +16,6 @@
 
 package com.facebook.litho.sections.processor.integration.resources;
 
-import android.support.v4.util.Pools;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.LoadingEvent;
@@ -25,9 +24,6 @@ import com.facebook.litho.sections.SectionContext;
 
 /** @see com.facebook.litho.sections.processor.integration.resources.SimpleGroupSectionSpec */
 public final class SimpleGroupSection extends Section {
-  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
-      new Pools.SynchronizedPool<Builder>(2);
-
   private SimpleGroupSection() {
     super("SimpleGroupSection");
   }
@@ -45,10 +41,7 @@ public final class SimpleGroupSection extends Section {
   }
 
   public static Builder create(SectionContext context) {
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
+    final Builder builder = new Builder();
     SimpleGroupSection instance = new SimpleGroupSection();
     builder.init(context, instance);
     return builder;
@@ -98,7 +91,6 @@ public final class SimpleGroupSection extends Section {
       super.release();
       mSimpleGroupSection = null;
       mContext = null;
-      sBuilderPool.release(this);
     }
   }
 }

@@ -62,8 +62,6 @@ import java.util.BitSet;
 public final class TestMount<S extends View> extends Component implements TestTag {
   static final Pools.SynchronizedPool<TestEvent> sTestEventPool = new Pools.SynchronizedPool<TestEvent>(2);
 
-  private static final Pools.SynchronizedPool<Builder> sBuilderPool = new Pools.SynchronizedPool<Builder>(2);
-
   private TestMountStateContainer mStateContainer;
 
   @Prop(
@@ -593,10 +591,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   public static <S extends View> Builder<S> create(
       ComponentContext context, int defStyleAttr, int defStyleRes) {
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
+    final Builder builder = new Builder();
     TestMount instance = new TestMount();
     builder.init(context, defStyleAttr, defStyleRes, instance);
     return builder;
@@ -765,7 +760,6 @@ public final class TestMount<S extends View> extends Component implements TestTa
       super.release();
       mTestMount = null;
       mContext = null;
-      sBuilderPool.release(this);
     }
   }
 }
