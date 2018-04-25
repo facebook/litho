@@ -120,5 +120,11 @@ public interface LayoutInfo extends ViewportInfo {
      * #wantsMore()}
      */
     void add(RenderInfo renderInfo, int width, int height);
+
+    /**
+     * Return the fill along the main axis (i.e. height for VERTICAL and width for HORIZONTAL), this
+     * method is available after {@link ViewportFiller#add(RenderInfo, int, int)} is called.
+     */
+    int getFill();
   }
 }

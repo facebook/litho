@@ -174,4 +174,16 @@ public class LinearLayoutInfoTest {
         linearLayoutInfo.computeWrappedHeight(SizeSpec.getSize(sizeSpec), componentTreeHolders);
     assertThat(measuredHeight).isEqualTo(800);
   }
+
+  @Test
+  public void testViewportFiller() {
+    LinearLayoutInfo.ViewportFiller viewportFiller =
+        new LinearLayoutInfo.ViewportFiller(100, 100, VERTICAL);
+
+    for (int i = 0; i < 8; i++) {
+      viewportFiller.add(mock(RenderInfo.class), 100, 10);
+    }
+
+    assertThat(viewportFiller.getFill()).isEqualTo(80);
+  }
 }

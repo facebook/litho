@@ -201,5 +201,10 @@ public class LinearLayoutInfo implements LayoutInfo {
     public void add(RenderInfo renderInfo, int width, int height) {
       mFill += mOrientation == VERTICAL ? height : width;
     }
+
+    @Override
+    public int getFill() {
+      return mFill;
+    }
   }
 }
