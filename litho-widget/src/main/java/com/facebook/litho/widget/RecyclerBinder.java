@@ -615,6 +615,10 @@ public class RecyclerBinder
         case Operation.REMOVE:
           removeItemAt(((AsyncRemoveOperation) operation).mPosition);
           break;
+        case Operation.MOVE:
+          final AsyncMoveOperation moveOperation = (AsyncMoveOperation) operation;
+          moveItem(moveOperation.mFromPosition, moveOperation.mToPosition);
+          break;
         default:
           throw new RuntimeException("Unhandled operation type: " + operation.mOperation);
       }
@@ -649,14 +653,17 @@ public class RecyclerBinder
   public final void moveItemAsync(int fromPosition, int toPosition) {
     ThreadUtils.assertMainThread();
 
-    // If the binder has not been measured yet we simply fall back on the sync implementation as
-    // nothing will really happen until we compute the first range.
-    if (!mIsMeasured.get()) {
-      moveItem(fromPosition, toPosition);
-      return;
+    if (SectionsDebug.ENABLED) {
+      Log.d(
+          SectionsDebug.TAG,
+          "(" + hashCode() + ") moveItemAsync " + fromPosition + " to " + toPosition);
     }
 
-    //TODO t15827349 implement async operations in RecyclerBinder.
+    final AsyncMoveOperation operation = new AsyncMoveOperation(fromPosition, toPosition);
+    synchronized (this) {
+      // TODO(t28619782): When moving a CT into range, do an async prepare
+      addToCurrentBatch(operation);
+    }
   }
 
   /**
@@ -1962,13 +1969,12 @@ public class RecyclerBinder
   }
 
   /** Async operation types. */
-  @IntDef({Operation.INSERT, Operation.UPDATE, Operation.REMOVE, Operation.MOVE})
+  @IntDef({Operation.INSERT, Operation.REMOVE, Operation.MOVE})
   @Retention(RetentionPolicy.SOURCE)
   private @interface Operation {
     int INSERT = 0;
-    int UPDATE = 1;
-    int REMOVE = 2;
-    int MOVE = 3;
+    int REMOVE = 1;
+    int MOVE = 2;
   }
 
   /** An operation received from one of the *Async methods, pending execution. */
@@ -2000,6 +2006,18 @@ public class RecyclerBinder
     public AsyncRemoveOperation(int position) {
       super(Operation.REMOVE);
       mPosition = position;
+    }
+  }
+
+  private static final class AsyncMoveOperation extends AsyncOperation {
+
+    private final int mFromPosition;
+    private final int mToPosition;
+
+    public AsyncMoveOperation(int fromPosition, int toPosition) {
+      super(Operation.MOVE);
+      mFromPosition = fromPosition;
+      mToPosition = toPosition;
     }
   }
 
