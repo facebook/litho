@@ -76,6 +76,10 @@ public class ComponentRenderInfo extends RenderInfo {
       return this;
     }
 
+    public Builder component(Component.Builder builder) {
+      return component(builder.build());
+    }
+
     public ComponentRenderInfo build() {
       final ComponentRenderInfo renderInfo = new ComponentRenderInfo(this);
       release();
