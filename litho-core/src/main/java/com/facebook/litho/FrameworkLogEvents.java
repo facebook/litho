@@ -16,6 +16,10 @@
 
 package com.facebook.litho;
 
+import android.support.annotation.IntDef;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Set of events and event params logged by the framework if a {@link ComponentsLogger} was
  * supplied to the {@link ComponentContext} used to create the tree.
@@ -38,6 +42,28 @@ public interface FrameworkLogEvents {
   int EVENT_SECTIONS_ON_CREATE_CHILDREN = 14;
   int EVENT_SECTIONS_SET_ROOT = 15;
   int EVENT_CALCULATE_LAYOUT_STATE = 16;
+
+  @IntDef({
+    FrameworkLogEvents.EVENT_CREATE_LAYOUT,
+    FrameworkLogEvents.EVENT_CSS_LAYOUT,
+    FrameworkLogEvents.EVENT_COLLECT_RESULTS,
+    FrameworkLogEvents.EVENT_LAYOUT_CALCULATE,
+    FrameworkLogEvents.EVENT_PREPARE_PART_DEFINITION,
+    FrameworkLogEvents.EVENT_PREPARE_MOUNT,
+    FrameworkLogEvents.EVENT_MOUNT,
+    FrameworkLogEvents.EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH,
+    FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT,
+    FrameworkLogEvents.EVENT_ERROR,
+    FrameworkLogEvents.EVENT_WARNING,
+    FrameworkLogEvents.EVENT_SECTIONS_CREATE_NEW_TREE,
+    FrameworkLogEvents.EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF,
+    FrameworkLogEvents.EVENT_SECTIONS_GENERATE_CHANGESET,
+    FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN,
+    FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT,
+    FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE,
+  })
+  @Retention(RetentionPolicy.SOURCE)
+  @interface LogEventId {}
 
   String PARAM_COMPONENT = "component";
   String PARAM_LOG_TAG = "log_tag";
