@@ -31,6 +31,7 @@ public class RecyclerBinderConfiguration {
   private boolean mHasDynamicItemHeight;
   private boolean mInsertPostAsyncLayoutEnabled;
   private boolean mIsWrapContent;
+  private String mSplitLayoutTag;
 
   public RecyclerBinderConfiguration(double rangeRatio) {
     this(rangeRatio, null, false);
@@ -103,6 +104,11 @@ public class RecyclerBinderConfiguration {
     mInsertPostAsyncLayoutEnabled = insertPostAsyncLayoutEnabled;
   }
 
+  /** Experimental feature, do not enable! */
+  public void setSplitLayoutTag(String splitLayoutTag) {
+    mSplitLayoutTag = splitLayoutTag;
+  }
+
   public double getRangeRatio() {
     return mRangeRatio;
   }
@@ -129,5 +135,9 @@ public class RecyclerBinderConfiguration {
 
   boolean insertPostAsyncLayoutEnabled() {
     return mInsertPostAsyncLayoutEnabled;
+  }
+
+  public String getSplitLayoutTag() {
+    return mSplitLayoutTag;
   }
 }

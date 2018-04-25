@@ -134,8 +134,6 @@ public abstract class Component extends ComponentLifecycle
     if (!ComponentsConfiguration.lazyInitializeComponent) {
       mChildCounters = new HashMap<>();
       mKey = Integer.toString(getTypeId());
-      mSplitChildrenLayoutInThreadPool =
-          SplitBackgroundLayoutConfiguration.canSplitChildrenLayouts(this);
     }
   }
 
@@ -454,6 +452,9 @@ public abstract class Component extends ComponentLifecycle
 
   private void setSplitLayoutOnThreadPoolStatus(
       ComponentContext parentContext, boolean shouldForwardSplitLayoutStatus) {
+    mSplitChildrenLayoutInThreadPool =
+        SplitBackgroundLayoutConfiguration.canSplitChildrenLayouts(parentContext, this);
+
     final Component parent = parentContext.getComponentScope();
     if (parent == null) {
       return;

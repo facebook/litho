@@ -69,6 +69,7 @@ public class ComponentTreeHolder {
   private LayoutHandler mPreallocateMountContentHandler;
   private boolean mCanPreallocateOnDefaultHandler;
   private boolean mShouldPreallocatePerMountSpec;
+  private String mSplitLayoutTag;
 
   interface ComponentTreeMeasureListenerFactory {
     MeasureListener create(ComponentTreeHolder holder);
@@ -87,6 +88,7 @@ public class ComponentTreeHolder {
         null, /* preallocateMountContentHandler */
         false, /* canPreallocateOnDefaultHandler */
         false, /* shouldPreallocatePerMountSpec */
+        null,
         null);
   }
 
@@ -95,7 +97,8 @@ public class ComponentTreeHolder {
       LayoutHandler layoutHandler,
       boolean canPrefetchDisplayLists,
       boolean canCacheDrawingDisplayLists,
-      ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory) {
+      ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
+      String splitLayoutTag) {
     return acquire(
         renderInfo,
         layoutHandler,
@@ -104,7 +107,8 @@ public class ComponentTreeHolder {
         null, /* preallocateMountContentHandler */
         false, /* canPreallocateOnDefaultHandler */
         false, /* shouldPreallocatePerMountSpec */
-        componentTreeMeasureListenerFactory);
+        componentTreeMeasureListenerFactory,
+        splitLayoutTag);
   }
 
   public static ComponentTreeHolder acquire(
@@ -123,6 +127,7 @@ public class ComponentTreeHolder {
         preallocateMountContentHandler,
         canPreallocateOnDefaultHandler,
         shouldPreallocatePerMountSpec,
+        null,
         null);
   }
 
@@ -137,7 +142,8 @@ public class ComponentTreeHolder {
       @Nullable LayoutHandler preallocateMountContentHandler,
       boolean canPreallocateOnDefaultHandler,
       boolean shouldPreallocatePerMountSpec,
-      final ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory) {
+      final ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
+      String splitLayoutTag) {
     ComponentTreeHolder componentTreeHolder = sComponentTreeHoldersPool.acquire();
     if (componentTreeHolder == null) {
       componentTreeHolder = new ComponentTreeHolder();
@@ -150,6 +156,7 @@ public class ComponentTreeHolder {
     componentTreeHolder.mCanPreallocateOnDefaultHandler = canPreallocateOnDefaultHandler;
     componentTreeHolder.mShouldPreallocatePerMountSpec = shouldPreallocatePerMountSpec;
     componentTreeHolder.mComponentTreeMeasureListenerFactory = componentTreeMeasureListenerFactory;
+    componentTreeHolder.mSplitLayoutTag = splitLayoutTag;
 
     return componentTreeHolder;
   }
@@ -321,6 +328,7 @@ public class ComponentTreeHolder {
                   mComponentTreeMeasureListenerFactory == null
                       ? null
                       : mComponentTreeMeasureListenerFactory.create(this))
+              .splitLayoutTag(mSplitLayoutTag)
               .build();
       if (mPendingNewLayoutListener != null) {
         mComponentTree.setNewLayoutStateReadyListener(mPendingNewLayoutListener);

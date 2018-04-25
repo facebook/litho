@@ -234,6 +234,14 @@ public class ComponentContext extends ContextWrapper {
     return mLogTag;
   }
 
+  public @Nullable String getSplitLayoutTag() {
+    if (mComponentTree == null) {
+      return null;
+    }
+
+    return mComponentTree.getSplitLayoutTag();
+  }
+
   @Nullable
   public ComponentsLogger getLogger() {
     return mLogger;

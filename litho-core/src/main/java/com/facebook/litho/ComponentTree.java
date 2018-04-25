@@ -83,6 +83,7 @@ public class ComponentTree {
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
   private static final int SCHEDULE_LAYOUT_SYNC = 2;
   private final MeasureListener mMeasureListener;
+  private final @Nullable String mSplitLayoutTag;
   private boolean mReleased;
   private String mReleasedComponent;
 
@@ -252,6 +253,7 @@ public class ComponentTree {
     mShouldClipChildren = builder.shouldClipChildren;
     mHasMounted = builder.hasMounted;
     mMeasureListener = builder.mMeasureListener;
+    mSplitLayoutTag = builder.splitLayoutTag;
 
     if (mLayoutThreadHandler == null) {
       mLayoutThreadHandler =
@@ -287,6 +289,11 @@ public class ComponentTree {
         ComponentsConfiguration.USE_INCREMENTAL_MOUNT_HELPER
             ? new IncrementalMountHelper(this)
             : null;
+  }
+
+  @Nullable
+  String getSplitLayoutTag() {
+    return mSplitLayoutTag;
   }
 
   @Nullable
@@ -1835,6 +1842,7 @@ public class ComponentTree {
     private MeasureListener mMeasureListener;
     private boolean shouldPreallocatePerMountSpec;
     private boolean canPreallocateOnDefaultHandler;
+    private String splitLayoutTag;
 
     protected Builder() {
     }
@@ -2032,6 +2040,16 @@ public class ComponentTree {
 
     public Builder measureListener(MeasureListener measureListener) {
       this.mMeasureListener = measureListener;
+      return this;
+    }
+
+    /**
+     * Sets a tag on this ComponentTree that will be used to identify a configuration for splitting
+     * layout on multiple threads. If not set, layout splitting will not be enabled for components
+     * in this tree.
+     */
+    public Builder splitLayoutTag(String splitTag) {
+      this.splitLayoutTag = splitTag;
       return this;
     }
 

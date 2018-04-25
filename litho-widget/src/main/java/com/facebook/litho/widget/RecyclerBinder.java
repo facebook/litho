@@ -125,6 +125,7 @@ public class RecyclerBinder
           return getMeasureListener(holder);
         }
       };
+  private String mSplitLayoutTag;
 
   private MeasureListener getMeasureListener(final ComponentTreeHolder holder) {
     return new MeasureListener() {
@@ -242,7 +243,8 @@ public class RecyclerBinder
         LayoutHandler layoutHandler,
         boolean canPrefetchDisplayLists,
         boolean canCacheDrawingDisplayLists,
-        ComponentTreeMeasureListenerFactory measureListenerFactory);
+        ComponentTreeMeasureListenerFactory measureListenerFactory,
+        String splitLayoutTag);
   }
 
   static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
@@ -253,13 +255,15 @@ public class RecyclerBinder
             LayoutHandler layoutHandler,
             boolean canPrefetchDisplayLists,
             boolean canCacheDrawingDisplayLists,
-            ComponentTreeMeasureListenerFactory measureListenerFactory) {
+            ComponentTreeMeasureListenerFactory measureListenerFactory,
+            String splitLayoutTag) {
           return ComponentTreeHolder.acquire(
               renderInfo,
               layoutHandler,
               canPrefetchDisplayLists,
               canCacheDrawingDisplayLists,
-              measureListenerFactory);
+              measureListenerFactory,
+              splitLayoutTag);
         }
       };
 
@@ -282,6 +286,7 @@ public class RecyclerBinder
     private int componentViewType;
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
     private boolean allowFillViewportOnMainForTest;
+    private String splitLayoutTag;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -425,6 +430,11 @@ public class RecyclerBinder
       return this;
     }
 
+    public Builder splitLayoutTag(String splitLayoutTag) {
+      this.splitLayoutTag = splitLayoutTag;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext = c;
@@ -476,6 +486,8 @@ public class RecyclerBinder
             mCurrentLastVisiblePosition,
             builder.layoutInfo,
             mMainThreadHandler);
+
+    mSplitLayoutTag = builder.splitLayoutTag;
   }
 
   /**
@@ -2142,7 +2154,8 @@ public class RecyclerBinder
             : null,
         mCanPrefetchDisplayLists,
         mCanCacheDrawingDisplayLists,
-        mHasDynamicItemHeight ? mComponentTreeMeasureListenerFactory : null);
+        mHasDynamicItemHeight ? mComponentTreeMeasureListenerFactory : null,
+        mSplitLayoutTag);
   }
 
   private void logTooManyPostingAttempts() {

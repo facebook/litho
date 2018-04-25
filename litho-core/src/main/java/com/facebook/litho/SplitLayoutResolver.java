@@ -16,44 +16,103 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
-import static com.facebook.litho.config.ComponentsConfiguration.splitLayoutBackgroundThreadPoolConfiguration;
-import static com.facebook.litho.config.ComponentsConfiguration.splitLayoutMainThreadPoolConfiguration;
 
 import android.os.Looper;
+import android.support.annotation.GuardedBy;
+import android.support.annotation.VisibleForTesting;
+import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.config.LayoutThreadPoolConfiguration;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorCompletionService;
+import javax.annotation.Nullable;
 
 /**
  * Creates tasks for calculating the layout of a component's children on different threads and
  * commits the results to the parent's internal node when they are finished.
  */
+@ThreadSafe
 public class SplitLayoutResolver {
 
-  private static final ExecutorCompletionService mainService;
-  private static final ExecutorCompletionService bgService;
+  @GuardedBy("SplitLayoutResolver.class")
+  private static final Map<String, SplitLayoutResolver> sSplitLayoutResolvers = new HashMap<>();
 
-  static {
-    // TODO mihaelao T27032479 Set proper pool sizes when configuring the experiment.
-    final LayoutThreadPoolExecutor mainExecutor =
-        new LayoutThreadPoolExecutor(
-            splitLayoutMainThreadPoolConfiguration.getCorePoolSize(),
-            splitLayoutMainThreadPoolConfiguration.getMaxPoolSize(),
-            splitLayoutMainThreadPoolConfiguration.getThreadPriority());
-    final LayoutThreadPoolExecutor bgExecutor =
-        new LayoutThreadPoolExecutor(
-            splitLayoutBackgroundThreadPoolConfiguration.getCorePoolSize(),
-            splitLayoutBackgroundThreadPoolConfiguration.getMaxPoolSize(),
-            splitLayoutBackgroundThreadPoolConfiguration.getThreadPriority());
-    mainService = new ExecutorCompletionService(mainExecutor);
-    bgService = new ExecutorCompletionService(bgExecutor);
+  private final Set<String> mEnabledComponents = new LinkedHashSet<>();
+  private @Nullable ExecutorCompletionService mainService;
+  private @Nullable ExecutorCompletionService bgService;
+
+  /**
+   * Create a SplitLayoutResolver that will be used to split layout where possible in ComponentTrees
+   * with the given split tag. If a configuration already exists for the same split tag, it uses
+   * that one.
+   *
+   * @param tag split tag
+   * @param mainThreadPoolConfig configuration for splitting main thread layouts
+   * @param bgThreadPoolConfig configuration for splitting background thread layouts
+   */
+  public static synchronized void createForTag(
+      String tag,
+      @Nullable LayoutThreadPoolConfiguration mainThreadPoolConfig,
+      @Nullable LayoutThreadPoolConfiguration bgThreadPoolConfig,
+      Set<String> enabledComponents) {
+    if (sSplitLayoutResolvers.containsKey(tag)) {
+      return;
+    }
+
+    sSplitLayoutResolvers.put(
+        tag, new SplitLayoutResolver(mainThreadPoolConfig, bgThreadPoolConfig, enabledComponents));
+  }
+
+  private SplitLayoutResolver(
+      @Nullable LayoutThreadPoolConfiguration mainThreadPoolConfig,
+      @Nullable LayoutThreadPoolConfiguration bgThreadPoolConfig,
+      Set<String> enabledComponents) {
+    if (mainThreadPoolConfig != null) {
+      final LayoutThreadPoolExecutor mainExecutor =
+          new LayoutThreadPoolExecutor(
+              mainThreadPoolConfig.getCorePoolSize(),
+              mainThreadPoolConfig.getMaxPoolSize(),
+              mainThreadPoolConfig.getThreadPriority());
+      mainService = new ExecutorCompletionService(mainExecutor);
+    }
+
+    if (bgThreadPoolConfig != null) {
+      final LayoutThreadPoolExecutor bgExecutor =
+          new LayoutThreadPoolExecutor(
+              bgThreadPoolConfig.getCorePoolSize(),
+              bgThreadPoolConfig.getMaxPoolSize(),
+              bgThreadPoolConfig.getThreadPriority());
+      bgService = new ExecutorCompletionService(bgExecutor);
+    }
+
+    if (enabledComponents != null) {
+      mEnabledComponents.addAll(enabledComponents);
+    }
+  }
+
+  static boolean isComponentEnabledForSplitting(ComponentContext c, Component component) {
+    final SplitLayoutResolver resolver = getResolver(c);
+    return resolver != null
+        && resolver.mEnabledComponents.contains(component.getClass().getSimpleName());
   }
 
   /**
    * Execute each child layout on a thread from one of the pools, depending which thread layout was
-   * called from.
+   * called from. Returns false if the configuration does not allow splitting layout on the caller
+   * thread.
    */
-  static void resolveLayouts(List<Component> children, final InternalNode node) {
-    final ExecutorCompletionService service = ThreadUtils.isMainThread() ? mainService : bgService;
+  static boolean resolveLayouts(
+      ComponentContext c, List<Component> children, final InternalNode node) {
+    final SplitLayoutResolver resolver = getResolver(c);
+    if (resolver == null || !resolver.canSplitLayoutOnCurrentThread()) {
+      return false;
+    }
+
+    final ExecutorCompletionService service =
+        ThreadUtils.isMainThread() ? resolver.mainService : resolver.bgService;
 
     final InternalNode[] results = new InternalNode[children.size()];
     int size = children.size();
@@ -72,7 +131,6 @@ public class SplitLayoutResolver {
               results[finalI] = getChildLayout(node.getContext(), child);
             }
           };
-
       service.submit(runnable, i - 1);
     }
 
@@ -92,9 +150,36 @@ public class SplitLayoutResolver {
     for (int i = 0; i < results.length; i++) {
       node.child(results[i]);
     }
+
+    return true;
   }
 
   private static InternalNode getChildLayout(ComponentContext c, Component child) {
     return child != null ? Layout.create(c, child) : NULL_LAYOUT;
+  }
+
+  private boolean canSplitLayoutOnCurrentThread() {
+    return ThreadUtils.isMainThread() ? mainService != null : bgService != null;
+  }
+
+  private static @Nullable SplitLayoutResolver getResolver(ComponentContext c) {
+    final String splitTag = c.getSplitLayoutTag();
+    if (splitTag == null) {
+      return null;
+    }
+
+    synchronized ("SplitLayoutResolver.class") {
+      return sSplitLayoutResolvers.get(splitTag);
+    }
+  }
+
+  @VisibleForTesting
+  static void clearTag(String tag) {
+    sSplitLayoutResolvers.remove(tag);
+  }
+
+  @VisibleForTesting
+  static SplitLayoutResolver getForTag(String tag) {
+    return sSplitLayoutResolvers.get(tag);
   }
 }

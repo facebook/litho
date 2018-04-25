@@ -167,6 +167,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
             .hasDynamicItemHeight(mRecyclerBinderConfiguration.hasDynamicItemHeight())
             .insertPostAsyncLayoutEnabled(
                 mRecyclerBinderConfiguration.insertPostAsyncLayoutEnabled())
+            .splitLayoutTag(mRecyclerBinderConfiguration.getSplitLayoutTag())
             .build(c);
     return (T) new SectionBinderTarget(recyclerBinder);
   }
