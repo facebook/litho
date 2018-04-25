@@ -51,6 +51,10 @@ allprojects {
    * See https://discuss.gradle.org/t/gradle-not-compiles-with-solder-tooling-jar/7583/20
    */
   tasks.withType(JavaCompile) { options.fork = true }
+
+  tasks.withType(JavaCompile) {
+      options.compilerArgs += [ '-Xep:GuardedBy:WARN' ]
+  }
 }
 
 ext {
