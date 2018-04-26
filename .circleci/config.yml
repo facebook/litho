@@ -12,6 +12,18 @@ container_config: &container_config
     ANDROID_HOME: '/home/circleci/android-sdk'
     ANDROID_NDK_REPOSITORY: "/home/circleci/android-ndk"
 
+circle_ci_android_container_config: &circle_ci_android_container_config
+  docker:
+    - image: circleci/android:api-27-alpha
+  working_directory: ~/litho-working-dir
+  environment:
+    # Borrowed from https://github.com/chrisbanes/tivi/blob/master/.circleci/config.yml 
+    # Sometimes gradle_tests_run job would fail with OOM error from CI. This is an attempt to fix it!
+    _JAVA_OPTIONS: "-Xmx1500m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2"
+    TERM: 'dumb'
+    ANDROID_HOME: '/home/circleci/litho-working-dir/workspace/android-sdk'
+    ANDROID_NDK_REPOSITORY: '/home/circleci/litho-working-dir/workspace/android-ndk'
+
 gradle_caches_path: &gradle_caches_path
   ~/.gradle/caches
 
@@ -29,7 +41,7 @@ attach_workspace: &attach_workspace
     at: ~/litho-working-dir/workspace
 
 repo_cache_key: &repo_cache_key
-  key: jars-{{ checksum "workspace/repo/build.gradle" }}-{{ checksum  "workspace/repo/gradle.properties" }}
+  key: v1-jars-{{ checksum "workspace/repo/build.gradle" }}-{{ checksum  "workspace/repo/gradle.properties" }}
 
 restore_repo: &restore_repo
   restore_cache:
@@ -37,7 +49,7 @@ restore_repo: &restore_repo
 
 setup_buck: &setup_buck
   name: Set up BUCK
-  command: echo "export PATH=$HOME/buck/bin:$PATH" >> $BASH_ENV
+  command: echo "export PATH=$HOME/litho-working-dir/workspace/buck/bin:$PATH" >> $BASH_ENV
 
 setup_keys: &setup_keys
   name: Set up keys
@@ -55,7 +67,7 @@ download_buck_dependencies: &download_buck_dependencies
   name: Buck Dependencies
   command: |
     cd workspace/repo
-    $HOME/buck/bin/buck fetch //...
+    $HOME/litho-working-dir/workspace/buck/bin/buck fetch //...
 
 save_litho_gradle_tests_results: &save_litho_gradle_tests_results
   name: Save Litho Gradle tests results
@@ -89,14 +101,20 @@ jobs:
     steps:
       - run: mkdir -p workspace
       - run: mkdir -p repo
+      - run: mv $HOME/buck/ ~/litho-working-dir/workspace/
+      - run: mv $HOME/android-sdk/ ~/litho-working-dir/workspace/
+      - run: mv $HOME/android-ndk/ ~/litho-working-dir/workspace/
       - checkout:
           path: workspace/repo
       - persist_to_workspace:
           root: workspace
           paths:
             - repo
+            - buck
+            - android-sdk
+            - android-ndk
   build:
-    <<: *container_config
+    <<: *circle_ci_android_container_config
     steps:
       - *attach_workspace
       - restore_cache:
@@ -116,11 +134,9 @@ jobs:
           paths:
             - *gradle_caches_path
             - *gradle_wrapper_path
-            - *buck_path
-            - *android_sdk_path
 
   buck_sample_build:
-    <<: *container_config
+    <<: *circle_ci_android_container_config
     steps:
       - *attach_workspace
       - restore_cache:
@@ -135,7 +151,7 @@ jobs:
             buck build sample --num-threads=4
 
   buck_sample_barebones_build:
-    <<: *container_config
+    <<: *circle_ci_android_container_config
     steps:
       - *attach_workspace
       - restore_cache:
@@ -150,7 +166,7 @@ jobs:
             buck build sample-barebones --num-threads=4
 
   buck_sample_codelab_build:
-    <<: *container_config
+    <<: *circle_ci_android_container_config
     steps:
       - *attach_workspace
       - restore_cache:
@@ -165,7 +181,7 @@ jobs:
             buck build sample-codelab --num-threads=4
 
   gradle_sample_kotlin_build:
-    <<: *container_config
+    <<: *circle_ci_android_container_config
     steps:
       - *attach_workspace
       - restore_cache:
@@ -179,7 +195,7 @@ jobs:
             ./gradlew :sample-kotlin:assembleDebug --no-daemon --max-workers 2
 
   buck_litho_it_tests_run:
-    <<: *container_config
+    <<: *circle_ci_android_container_config
     steps:
       - *attach_workspace
       - restore_cache:
@@ -198,7 +214,7 @@ jobs:
       - *store_litho_artifacts
 
   buck_litho_it_powermock_tests_run:
-    <<: *container_config
+    <<: *circle_ci_android_container_config
     steps:
       - *attach_workspace
       - restore_cache:
@@ -217,7 +233,7 @@ jobs:
       - *store_litho_artifacts
 
   gradle_tests_run:
-    <<: *container_config
+    <<: *circle_ci_android_container_config
     steps:
       - *attach_workspace
       - restore_cache:
@@ -235,11 +251,9 @@ jobs:
       - *store_litho_artifacts
 
   publish_snapshot:
-    <<: *container_config
+    <<: *circle_ci_android_container_config
     steps:
       - *attach_workspace
-      - restore_cache:
-          <<: *repo_cache_key
       - run:
           name: Publish Snapshot
           command: |
