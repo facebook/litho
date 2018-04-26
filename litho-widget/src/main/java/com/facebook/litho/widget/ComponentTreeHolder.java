@@ -70,6 +70,7 @@ public class ComponentTreeHolder {
   private boolean mCanPreallocateOnDefaultHandler;
   private boolean mShouldPreallocatePerMountSpec;
   private String mSplitLayoutTag;
+  private boolean mIsInserted = true;
 
   interface ComponentTreeMeasureListenerFactory {
     MeasureListener create(ComponentTreeHolder holder);
@@ -293,6 +294,16 @@ public class ComponentTreeHolder {
                 mLastRequestedWidthSpec, mLastRequestedHeightSpec));
   }
 
+  /** @return whether this ComponentTreeHolder has been inserted into the adapter yet. */
+  public synchronized boolean isInserted() {
+    return mIsInserted;
+  }
+
+  /** Set whether this ComponentTreeHolder has been inserted into the adapter. */
+  public synchronized void setInserted(boolean inserted) {
+    mIsInserted = inserted;
+  }
+
   public synchronized void release() {
     releaseTree();
     clearStateHandler();
@@ -307,6 +318,7 @@ public class ComponentTreeHolder {
     mPendingNewLayoutListener = null;
     mLastRequestedWidthSpec = UNINITIALIZED;
     mLastRequestedHeightSpec = UNINITIALIZED;
+    mIsInserted = true;
   }
 
   @GuardedBy("this")

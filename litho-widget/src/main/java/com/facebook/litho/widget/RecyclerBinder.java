@@ -84,6 +84,9 @@ public class RecyclerBinder
   @GuardedBy("this")
   private final List<ComponentTreeHolder> mComponentTreeHolders = new ArrayList<>();
 
+  @GuardedBy("this")
+  private final List<ComponentTreeHolder> mAsyncComponentTreeHolders = new ArrayList<>();
+
   private final LayoutInfo mLayoutInfo;
   private final RecyclerView.Adapter mInternalAdapter;
   private final ComponentContext mComponentContext;
@@ -499,14 +502,37 @@ public class RecyclerBinder
   public final void updateItemAtAsync(int position, RenderInfo renderInfo) {
     ThreadUtils.assertMainThread();
 
-    // If the binder has not been measured yet we simply fall back on the sync implementation as
-    // nothing will really happen until we compute the first range.
-    if (!mIsMeasured.get()) {
-      updateItemAt(position, renderInfo);
-      return;
+    if (SectionsDebug.ENABLED) {
+      Log.d(SectionsDebug.TAG, "(" + hashCode() + ") updateItemAtAsync " + position);
     }
 
-    //TODO t15827349 implement async operations in RecyclerBinder.
+    final ComponentTreeHolder holder;
+    final boolean renderInfoWasView;
+    final int indexInComponentTreeHolders;
+    synchronized (this) {
+      holder = mAsyncComponentTreeHolders.get(position);
+      renderInfoWasView = holder.getRenderInfo().rendersView();
+
+      mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
+      holder.setRenderInfo(renderInfo);
+
+      if (holder.isInserted()) {
+        // If it's inserted, we can just count on the normal range computation re-computing this
+        indexInComponentTreeHolders = mComponentTreeHolders.indexOf(holder);
+        mViewportManager.setDataChangedIsVisible(
+            mViewportManager.isUpdateInVisibleRange(indexInComponentTreeHolders, 1));
+      } else {
+        indexInComponentTreeHolders = -1;
+
+        // TODO(T28668712): Handle updates outside of range
+        computeLayoutAsync(holder);
+      }
+    }
+
+    if (indexInComponentTreeHolders >= 0
+        && (renderInfoWasView || holder.getRenderInfo().rendersView())) {
+      mInternalAdapter.notifyItemChanged(indexInComponentTreeHolders);
+    }
   }
 
   /**
@@ -523,6 +549,8 @@ public class RecyclerBinder
 
     synchronized (this) {
       mHasAsyncOperations = true;
+
+      mAsyncComponentTreeHolders.add(position, operation.mHolder);
 
       // If the binder has not been measured yet, we will compute an initial page of content based
       // on the measured size of this RecyclerBinder synchronously during measure, and the rest will
@@ -554,6 +582,8 @@ public class RecyclerBinder
       for (int i = 0, size = renderInfos.size(); i < size; i++) {
         final AsyncInsertOperation operation =
             createAsyncInsertOperation(position + i, renderInfos.get(i));
+
+        mAsyncComponentTreeHolders.add(position + i, operation.mHolder);
 
         // If the binder has not been measured yet, we will compute an initial page of content based
         // on the measured size of this RecyclerBinder synchronously during measure, and the rest
@@ -629,6 +659,7 @@ public class RecyclerBinder
   @UiThread
   private void applyAsyncInsert(AsyncInsertOperation operation) {
     mComponentTreeHolders.add(operation.mPosition, operation.mHolder);
+    operation.mHolder.setInserted(true);
     mInternalAdapter.notifyItemInserted(operation.mPosition);
     mViewportManager.isInsertInVisibleRange(
         operation.mPosition, 1, mRange != null ? mRange.estimatedViewportCount : -1);
@@ -661,6 +692,8 @@ public class RecyclerBinder
 
     final AsyncMoveOperation operation = new AsyncMoveOperation(fromPosition, toPosition);
     synchronized (this) {
+      mAsyncComponentTreeHolders.add(toPosition, mAsyncComponentTreeHolders.remove(fromPosition));
+
       // TODO(t28619782): When moving a CT into range, do an async prepare
       addToCurrentBatch(operation);
     }
@@ -680,6 +713,7 @@ public class RecyclerBinder
 
     final AsyncRemoveOperation asyncRemoveOperation = new AsyncRemoveOperation(position);
     synchronized (this) {
+      mAsyncComponentTreeHolders.remove(position);
       addToCurrentBatch(asyncRemoveOperation);
     }
   }
@@ -1413,7 +1447,9 @@ public class RecyclerBinder
 
     synchronized (this) {
       for (int i = 0, size = toInsert.size(); i < size; i++) {
-        mComponentTreeHolders.add(i, toInsert.get(i));
+        final ComponentTreeHolder holder = toInsert.get(i);
+        holder.setInserted(true);
+        mComponentTreeHolders.add(i, holder);
         mInternalAdapter.notifyItemInserted(i);
       }
     }
@@ -1965,6 +2001,7 @@ public class RecyclerBinder
 
   private AsyncInsertOperation createAsyncInsertOperation(int position, RenderInfo renderInfo) {
     final ComponentTreeHolder holder = createComponentTreeHolder(renderInfo);
+    holder.setInserted(false);
     return new AsyncInsertOperation(position, holder);
   }
 
