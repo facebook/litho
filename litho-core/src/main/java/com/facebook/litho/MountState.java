@@ -1024,17 +1024,25 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final String logTag = component.getContext().getLogTag();
 
     LogEvent prepareEvent = null;
-    if (logger != null) {
+    PerfEvent preparePerfEvent = null;
+    if (logger != null && !ComponentsConfiguration.useBetterPerfLogger) {
       prepareEvent = logger.newPerformanceEvent(EVENT_PREPARE_MOUNT);
+    } else if (logger != null && ComponentsConfiguration.useBetterPerfLogger) {
+      preparePerfEvent = logger.newBetterPerformanceEvent(EVENT_PREPARE_MOUNT);
     }
 
-    PrepareMountStats stats = unmountOrMoveOldItems(layoutState);
+    final PrepareMountStats stats = unmountOrMoveOldItems(layoutState);
 
-    if (logger != null) {
+    if (prepareEvent != null) {
       prepareEvent.addParam(PARAM_LOG_TAG, logTag);
       prepareEvent.addParam(PARAM_UNMOUNTED_COUNT, String.valueOf(stats.unmountedCount));
       prepareEvent.addParam(PARAM_MOVED_COUNT, String.valueOf(stats.movedCount));
       prepareEvent.addParam(PARAM_UNCHANGED_COUNT, String.valueOf(stats.unchangedCount));
+    } else if (preparePerfEvent != null) {
+      preparePerfEvent.markerAnnotate(PARAM_LOG_TAG, logTag);
+      preparePerfEvent.markerAnnotate(PARAM_UNMOUNTED_COUNT, stats.unmountedCount);
+      preparePerfEvent.markerAnnotate(PARAM_MOVED_COUNT, stats.movedCount);
+      preparePerfEvent.markerAnnotate(PARAM_UNCHANGED_COUNT, stats.unchangedCount);
     }
 
     if (mHostsByMarker.get(ROOT_HOST_ID) == null) {
@@ -1045,7 +1053,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       mIndexToItemMap.put(ROOT_HOST_ID, mRootHostMountItem);
     }
 
-    int outputCount = layoutState.getMountableOutputCount();
+    final int outputCount = layoutState.getMountableOutputCount();
     if (mLayoutOutputsIds == null || outputCount != mLayoutOutputsIds.length) {
       mLayoutOutputsIds = new long[layoutState.getMountableOutputCount()];
     }
@@ -1054,8 +1062,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       mLayoutOutputsIds[i] = layoutState.getMountableOutputAt(i).getId();
     }
 
-    if (logger != null) {
+    if (prepareEvent != null) {
       logger.log(prepareEvent);
+    } else if (preparePerfEvent != null) {
+      logger.betterLog(preparePerfEvent);
     }
   }
 
