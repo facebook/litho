@@ -1840,11 +1840,13 @@ public class ComponentTree {
 
     /**
      * Whether or not to enable the incremental mount optimization. True by default.
-     * In order to use incremental mount you should disable mount diffing.
      *
-     * @Deprecated We will remove this option soon, please consider turning it on (which is on by
-     * default)
+     * <p>IMPORTANT: if you set this to false, visibility events will not fire.
+     *
+     * @deprecated Please don't use this unless you really need to. It is intended that this option
+     *     be removed in the future.
      */
+    @Deprecated
     public Builder incrementalMount(boolean isEnabled) {
       incrementalMountEnabled = isEnabled;
       return this;
