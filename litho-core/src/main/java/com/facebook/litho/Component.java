@@ -131,10 +131,6 @@ public abstract class Component extends ComponentLifecycle
   protected Component(String simpleName, Object type) {
     super(type);
     mSimpleName = simpleName;
-    if (!ComponentsConfiguration.lazyInitializeComponent) {
-      mChildCounters = new HashMap<>();
-      mKey = Integer.toString(getTypeId());
-    }
   }
 
   /** Mostly used by logging to provide more readable messages. */
@@ -298,9 +294,6 @@ public abstract class Component extends ComponentLifecycle
     try {
       final Component component = (Component) super.clone();
       component.mIsLayoutStarted = false;
-      if (!ComponentsConfiguration.lazyInitializeComponent) {
-        component.mChildCounters = new HashMap<>();
-      }
       component.mHasManualKey = false;
 
       return component;
