@@ -1818,6 +1818,11 @@ public class RecyclerBinder
 
   @UiThread
   public void scrollToPosition(int position, boolean smoothScroll) {
+    if (mHasAsyncOperations) {
+      throw new RuntimeException(
+          "TODO(T28718173): requestFocus not permitted with async operations yet.");
+    }
+
     if (mMountedView == null) {
       mCurrentFirstVisiblePosition = position;
       return;
@@ -1832,6 +1837,11 @@ public class RecyclerBinder
 
   @UiThread
   public void scrollToPositionWithOffset(int position, int offset) {
+    if (mHasAsyncOperations) {
+      throw new RuntimeException(
+          "TODO(T28718173): requestFocus not permitted with async operations yet.");
+    }
+
     if (mMountedView == null || !(mMountedView.getLayoutManager() instanceof LinearLayoutManager)) {
       mCurrentFirstVisiblePosition = position;
       mCurrentOffset = offset;
