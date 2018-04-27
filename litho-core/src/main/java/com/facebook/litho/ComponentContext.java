@@ -200,11 +200,11 @@ public class ComponentContext extends ContextWrapper {
     mComponentTree.updateStateLazy(mComponentScope.getGlobalKey(), stateUpdate);
   }
 
-  public void enterNoStateUpdatesMethod(String noStateUpdatesMethod) {
+  void enterNoStateUpdatesMethod(String noStateUpdatesMethod) {
     mNoStateUpdatesMethod = noStateUpdatesMethod;
   }
 
-  public void exitNoStateUpdatesMethod() {
+  void exitNoStateUpdatesMethod() {
     mNoStateUpdatesMethod = null;
   }
 
