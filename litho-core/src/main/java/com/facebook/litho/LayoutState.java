@@ -1568,16 +1568,23 @@ class LayoutState {
     final ComponentsLogger logger = context.getLogger();
 
     LogEvent createLayoutEvent = null;
-    if (logger != null) {
+    PerfEvent createLayoutPerfEvent = null;
+    if (logger != null && !ComponentsConfiguration.useBetterPerfLogger) {
       createLayoutEvent = logger.newPerformanceEvent(EVENT_CREATE_LAYOUT);
       createLayoutEvent.addParam(PARAM_LOG_TAG, context.getLogTag());
       createLayoutEvent.addParam(PARAM_COMPONENT, component.getSimpleName());
+    } else if (logger != null && ComponentsConfiguration.useBetterPerfLogger) {
+      createLayoutPerfEvent = logger.newBetterPerformanceEvent(EVENT_CREATE_LAYOUT);
+      createLayoutPerfEvent.markerAnnotate(PARAM_LOG_TAG, context.getLogTag());
+      createLayoutPerfEvent.markerAnnotate(PARAM_COMPONENT, component.getSimpleName());
     }
 
     final InternalNode root = component.createLayout(context, true /* resolveNestedTree */);
 
-    if (logger != null) {
+    if (createLayoutEvent != null) {
       logger.log(createLayoutEvent);
+    } else if (createLayoutPerfEvent != null) {
+      logger.betterLog(createLayoutPerfEvent);
     }
 
     return root;
