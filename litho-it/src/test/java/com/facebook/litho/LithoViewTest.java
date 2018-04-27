@@ -30,6 +30,7 @@ import static org.mockito.Mockito.verify;
 import static org.robolectric.RuntimeEnvironment.application;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.graphics.Rect;
 import android.view.ViewGroup;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.assertj.LithoViewAssert;
@@ -161,7 +162,7 @@ public class LithoViewTest {
     // Clear requestLayout flag
     mLithoView.layout(0, 0, 100, 100);
 
-    mLithoView.performIncrementalMount();
+    mLithoView.performIncrementalMount(new Rect(0, 0, 100, 100), true);
   }
 
   @Test

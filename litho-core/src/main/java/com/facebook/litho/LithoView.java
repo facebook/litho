@@ -643,7 +643,7 @@ public class LithoView extends ComponentHost {
   }
 
   public void performIncrementalMount() {
-    if (mComponentTree == null || !checkMainThreadLayoutStateForIncrementalMount()) {
+    if (mComponentTree == null || mComponentTree.getMainThreadLayoutState() == null) {
       return;
     }
 
