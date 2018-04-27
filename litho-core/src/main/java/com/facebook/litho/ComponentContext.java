@@ -381,4 +381,13 @@ public class ComponentContext extends ContextWrapper {
       setDefStyle(0, 0);
     }
   }
+
+  /**
+   * Checks if incremental mount is enabled given a ComponentContext, so you can throw an error if
+   * you require that incremental mount is enabled (e.g. you use visibility callbacks). This is
+   * static to avoid polluting the ComponentContext API.
+   */
+  public static boolean isIncrementalMountEnabled(ComponentContext c) {
+    return c.getComponentTree().isIncrementalMountEnabled();
+  }
 }
