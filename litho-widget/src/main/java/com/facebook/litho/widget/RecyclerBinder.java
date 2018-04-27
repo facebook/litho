@@ -441,7 +441,7 @@ public class RecyclerBinder
 
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
-      componentContext = c;
+      componentContext = new ComponentContext(c.getBaseContext());
 
       if (layoutInfo == null) {
         layoutInfo = new LinearLayoutInfo(c, VERTICAL, false);
