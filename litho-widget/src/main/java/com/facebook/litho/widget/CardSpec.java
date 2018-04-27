@@ -104,13 +104,15 @@ class CardSpec {
                         .positionType(ABSOLUTE)
                         .positionPx(ALL, 0)))
         .child(
-            CardShadow.create(c)
-                .shadowStartColor(shadowStartColor)
-                .shadowEndColor(shadowEndColor)
-                .cornerRadiusPx(cornerRadius)
-                .shadowSizePx(elevation)
-                .positionType(ABSOLUTE)
-                .positionPx(ALL, 0))
+            elevation > 0
+                ? CardShadow.create(c)
+                    .shadowStartColor(shadowStartColor)
+                    .shadowEndColor(shadowEndColor)
+                    .cornerRadiusPx(cornerRadius)
+                    .shadowSizePx(elevation)
+                    .positionType(ABSOLUTE)
+                    .positionPx(ALL, 0)
+                : null)
         .build();
   }
 }
