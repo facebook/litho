@@ -44,6 +44,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -122,7 +123,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @MountSpec(
   isPureRender = true,
-  events = {TextChangedEvent.class, SelectionChangedEvent.class}
+  events = {TextChangedEvent.class, SelectionChangedEvent.class, KeyUpEvent.class}
 )
 class EditTextSpec {
 
@@ -354,14 +355,14 @@ class EditTextSpec {
   }
 
   @OnCreateMountContent
-  protected static EditTextTextChangedEventHandler onCreateMountContent(ComponentContext c) {
-    return new EditTextTextChangedEventHandler(c);
+  protected static EditTextWithEventHandlers onCreateMountContent(ComponentContext c) {
+    return new EditTextWithEventHandlers(c);
   }
 
   @OnMount
   static void onMount(
       final ComponentContext c,
-      EditTextTextChangedEventHandler editText,
+      EditTextWithEventHandlers editText,
       @Prop(optional = true, resType = ResType.STRING) CharSequence text,
       @Prop(optional = true, resType = ResType.STRING) CharSequence hint,
       @Prop(optional = true) TextUtils.TruncateAt ellipsize,
@@ -396,7 +397,7 @@ class EditTextSpec {
       @Prop(optional = true) boolean requestFocus,
       @Prop(optional = true) int cursorDrawableRes,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
-      @State AtomicReference<EditTextTextChangedEventHandler> mountedView,
+      @State AtomicReference<EditTextWithEventHandlers> mountedView,
       @State(canUpdateLazily = true) String input) {
 
     mountedView.set(editText);
@@ -442,33 +443,36 @@ class EditTextSpec {
   @OnBind
   static void onBind(
       ComponentContext c,
-      EditTextTextChangedEventHandler editText,
+      EditTextWithEventHandlers editText,
       @Prop(optional = true) EditTextStateUpdatePolicy stateUpdatePolicy) {
     editText.setComponentContext(c);
     editText.setTextChangedEventHandler(
         com.facebook.litho.widget.EditText.getTextChangedEventHandler(c));
     editText.setSelectionChangedEventHandler(
         com.facebook.litho.widget.EditText.getSelectionChangedEventHandler(c));
+    editText.setKeyUpEventHandler(com.facebook.litho.widget.EditText.getKeyUpEventHandler(c));
     editText.setStateUpdatePolicy(stateUpdatePolicy);
     editText.attachWatcher();
   }
 
   @OnUnbind
-  static void onUnbind(ComponentContext c, EditTextTextChangedEventHandler editText) {
+  static void onUnbind(ComponentContext c, EditTextWithEventHandlers editText) {
     editText.detachWatcher();
     editText.clear();
   }
 
   @OnUnmount
-  static void onUnmount(ComponentContext c, EditTextTextChangedEventHandler editText, @State AtomicReference<EditTextTextChangedEventHandler> mountedView) {
+  static void onUnmount(
+      ComponentContext c,
+      EditTextWithEventHandlers editText,
+      @State AtomicReference<EditTextWithEventHandlers> mountedView) {
     mountedView.set(null);
   }
 
   @OnTrigger(RequestFocusEvent.class)
   static void requestFocus(
-      ComponentContext c,
-      @State AtomicReference<EditTextTextChangedEventHandler> mountedView) {
-    EditTextTextChangedEventHandler eventHandler = mountedView.get();
+      ComponentContext c, @State AtomicReference<EditTextWithEventHandlers> mountedView) {
+    EditTextWithEventHandlers eventHandler = mountedView.get();
     if (eventHandler != null) {
       eventHandler.requestFocus();
     }
@@ -482,8 +486,8 @@ class EditTextSpec {
   @OnCreateInitialState
   static void onCreateInitialState(
       final ComponentContext c,
-      StateValue<AtomicReference<EditTextTextChangedEventHandler>> mountedView) {
-    mountedView.set(new AtomicReference<EditTextTextChangedEventHandler>());
+      StateValue<AtomicReference<EditTextWithEventHandlers>> mountedView) {
+    mountedView.set(new AtomicReference<EditTextWithEventHandlers>());
   }
 
   private static void initEditText(
@@ -638,14 +642,15 @@ class EditTextSpec {
     }
   }
 
-  static class EditTextTextChangedEventHandler extends EditText {
+  static class EditTextWithEventHandlers extends EditText {
     private final TextWatcher mTextWatcher;
     private ComponentContext mComponentContext;
     private EditTextStateUpdatePolicy mStateUpdatePolicy;
     private EventHandler mTextChangedEventHandler;
     private EventHandler mSelectionChangedEventHandler;
+    private EventHandler mKeyUpEventHandler;
 
-    EditTextTextChangedEventHandler(Context context) {
+    EditTextWithEventHandlers(Context context) {
       super(context);
       this.mTextWatcher =
           new TextWatcher() {
@@ -689,6 +694,14 @@ class EditTextSpec {
       }
     }
 
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+      if (mKeyUpEventHandler != null) {
+        com.facebook.litho.widget.EditText.dispatchKeyUpEvent(mKeyUpEventHandler, keyCode);
+      }
+      return super.onKeyUp(keyCode, event);
+    }
+
     void setStateUpdatePolicy(EditTextStateUpdatePolicy stateUpdatePolicy) {
       mStateUpdatePolicy = stateUpdatePolicy;
     }
@@ -701,8 +714,12 @@ class EditTextSpec {
       mTextChangedEventHandler = textChangedEventHandler;
     }
 
-    public void setSelectionChangedEventHandler(EventHandler selectionChangedEventHandler) {
+    void setSelectionChangedEventHandler(EventHandler selectionChangedEventHandler) {
       mSelectionChangedEventHandler = selectionChangedEventHandler;
+    }
+
+    void setKeyUpEventHandler(EventHandler keyUpEventHandler) {
+      mKeyUpEventHandler = keyUpEventHandler;
     }
 
     void clear() {
@@ -710,6 +727,7 @@ class EditTextSpec {
       mComponentContext = null;
       mTextChangedEventHandler = null;
       mSelectionChangedEventHandler = null;
+      mKeyUpEventHandler = null;
     }
 
     void attachWatcher() {
