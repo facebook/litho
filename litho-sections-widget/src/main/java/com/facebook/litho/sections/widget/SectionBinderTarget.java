@@ -130,7 +130,11 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
 
   @Override
   public void move(int fromPosition, int toPosition) {
-    mRecyclerBinder.moveItem(fromPosition, toPosition);
+    if (mUseAsyncMutations) {
+      mRecyclerBinder.moveItemAsync(fromPosition, toPosition);
+    } else {
+      mRecyclerBinder.moveItem(fromPosition, toPosition);
+    }
   }
 
   @Override
@@ -155,12 +159,20 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
 
   @Override
   public void delete(int index) {
-    mRecyclerBinder.removeItemAt(index);
+    if (mUseAsyncMutations) {
+      mRecyclerBinder.removeItemAtAsync(index);
+    } else {
+      mRecyclerBinder.removeItemAt(index);
+    }
   }
 
   @Override
   public void deleteRange(int index, int count) {
-    mRecyclerBinder.removeRangeAt(index, count);
+    if (mUseAsyncMutations) {
+      mRecyclerBinder.removeRangeAtAsync(index, count);
+    } else {
+      mRecyclerBinder.removeRangeAt(index, count);
+    }
   }
 
   @Override
@@ -169,6 +181,10 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   }
 
   public void clear() {
+    // Implement async version
+    if (mUseAsyncMutations) {
+      throw new RuntimeException("clear() is not supported yet for async mutations");
+    }
     mRecyclerBinder.removeRangeAt(0, mRecyclerBinder.getItemCount());
   }
 }

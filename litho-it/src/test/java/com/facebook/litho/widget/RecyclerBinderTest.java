@@ -3134,6 +3134,40 @@ public class RecyclerBinderTest {
     assertComponentAtEquals(recyclerBinder, 6, components.get(4));
   }
 
+  @Test
+  public void testRemoveRangeAtAsync() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<Component> components = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 7; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      components.add(component);
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+    recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(0, 5));
+    recyclerBinder.notifyChangeSetComplete();
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(5);
+
+    recyclerBinder.insertItemAtAsync(0, renderInfos.get(5));
+    recyclerBinder.removeRangeAtAsync(0, 3);
+    recyclerBinder.insertItemAtAsync(0, renderInfos.get(6));
+    recyclerBinder.notifyChangeSetComplete();
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(4);
+    assertComponentAtEquals(recyclerBinder, 0, components.get(6));
+    assertComponentAtEquals(recyclerBinder, 1, components.get(2));
+    assertComponentAtEquals(recyclerBinder, 2, components.get(3));
+    assertComponentAtEquals(recyclerBinder, 3, components.get(4));
+  }
+
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
     return new RecyclerBinder.Builder()
         .rangeRatio(RANGE_RATIO)

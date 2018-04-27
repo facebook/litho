@@ -670,6 +670,11 @@ public class RecyclerBinder
         case Operation.REMOVE:
           removeItemAt(((AsyncRemoveOperation) operation).mPosition);
           break;
+        case Operation.REMOVE_RANGE:
+          final AsyncRemoveRangeOperation removeRangeOperation =
+              (AsyncRemoveRangeOperation) operation;
+          removeRangeAt(removeRangeOperation.mPosition, removeRangeOperation.mCount);
+          break;
         case Operation.MOVE:
           final AsyncMoveOperation moveOperation = (AsyncMoveOperation) operation;
           moveItem(moveOperation.mFromPosition, moveOperation.mToPosition);
@@ -740,6 +745,33 @@ public class RecyclerBinder
     synchronized (this) {
       mAsyncComponentTreeHolders.remove(position);
       addToCurrentBatch(asyncRemoveOperation);
+    }
+  }
+
+  /**
+   * Removes count items starting from position. If there are other pending operations on this
+   * binder this will only be executed when all the operations have been completed (to ensure index
+   * consistency).
+   */
+  @UiThread
+  public final void removeRangeAtAsync(int position, int count) {
+    ThreadUtils.assertMainThread();
+
+    assertNoRemoveOperationIfCircular(count);
+
+    if (SectionsDebug.ENABLED) {
+      Log.d(
+          SectionsDebug.TAG,
+          "(" + hashCode() + ") removeRangeAtAsync " + position + ", size: " + count);
+    }
+
+    final AsyncRemoveRangeOperation operation = new AsyncRemoveRangeOperation(position, count);
+    synchronized (this) {
+      for (int i = 0; i < count; i++) {
+        // TODO(t28712163): Cancel pending layouts for async inserts
+        mAsyncComponentTreeHolders.remove(position);
+      }
+      addToCurrentBatch(operation);
     }
   }
 
@@ -2031,12 +2063,13 @@ public class RecyclerBinder
   }
 
   /** Async operation types. */
-  @IntDef({Operation.INSERT, Operation.REMOVE, Operation.MOVE})
+  @IntDef({Operation.INSERT, Operation.REMOVE, Operation.REMOVE_RANGE, Operation.MOVE})
   @Retention(RetentionPolicy.SOURCE)
   private @interface Operation {
     int INSERT = 0;
     int REMOVE = 1;
-    int MOVE = 2;
+    int REMOVE_RANGE = 2;
+    int MOVE = 3;
   }
 
   /** An operation received from one of the *Async methods, pending execution. */
@@ -2068,6 +2101,18 @@ public class RecyclerBinder
     public AsyncRemoveOperation(int position) {
       super(Operation.REMOVE);
       mPosition = position;
+    }
+  }
+
+  private static final class AsyncRemoveRangeOperation extends AsyncOperation {
+
+    private final int mPosition;
+    private final int mCount;
+
+    public AsyncRemoveRangeOperation(int position, int count) {
+      super(Operation.REMOVE_RANGE);
+      mPosition = position;
+      mCount = count;
     }
   }
 
