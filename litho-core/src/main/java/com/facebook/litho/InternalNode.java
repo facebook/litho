@@ -1032,6 +1032,10 @@ class InternalNode implements ComponentLayout {
     return mTransitionKey;
   }
 
+  boolean hasTransitionKey() {
+    return !TextUtils.isEmpty(mTransitionKey);
+  }
+
   @Nullable
   ArrayList<Transition> getTransitions() {
     return mTransitions;

@@ -126,7 +126,8 @@ public final class AnimatedProperties {
         final View view = (View) mountContent;
         float parentX = getPositionRelativeToLithoView((View) view.getParent(), true);
         view.setX(value - parentX);
-      } else if (ComponentsConfiguration.doNotForceWrappingInViewForAnimation
+      } else if ((ComponentsConfiguration.doNotForceWrappingInViewForAnimation
+              || ComponentsConfiguration.assignTransitionKeysToAllOutputs)
           && (mountContent instanceof Drawable)) {
         final Drawable drawable = (Drawable) mountContent;
         float parentX = getPositionRelativeToLithoView(getHostView(drawable), true);
@@ -173,7 +174,8 @@ public final class AnimatedProperties {
         final View view = (View) mountContent;
         float parentY = getPositionRelativeToLithoView((View) view.getParent(), false);
         view.setY(value - parentY);
-      } else if (ComponentsConfiguration.doNotForceWrappingInViewForAnimation
+      } else if ((ComponentsConfiguration.doNotForceWrappingInViewForAnimation
+              || ComponentsConfiguration.assignTransitionKeysToAllOutputs)
           && (mountContent instanceof Drawable)) {
         final Drawable drawable = (Drawable) mountContent;
         float parentY = getPositionRelativeToLithoView(getHostView(drawable), false);
@@ -233,7 +235,8 @@ public final class AnimatedProperties {
                 animatingDrawables.get(index), width, height);
           }
         }
-      } else if (!ComponentsConfiguration.doNotForceWrappingInViewForAnimation) {
+      } else if (!ComponentsConfiguration.doNotForceWrappingInViewForAnimation
+          && !ComponentsConfiguration.assignTransitionKeysToAllOutputs) {
         throw new UnsupportedOperationException(
             "Setting width on unsupported mount content: " + mountContent);
       } else if (mountContent instanceof View) {
@@ -295,7 +298,8 @@ public final class AnimatedProperties {
                 animatingDrawables.get(index), width, height);
           }
         }
-      } else if (!ComponentsConfiguration.doNotForceWrappingInViewForAnimation) {
+      } else if (!ComponentsConfiguration.doNotForceWrappingInViewForAnimation
+          && !ComponentsConfiguration.assignTransitionKeysToAllOutputs) {
         throw new UnsupportedOperationException(
             "Setting height on unsupported mount content: " + mountContent);
       } else if (mountContent instanceof View) {

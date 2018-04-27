@@ -22,8 +22,6 @@ import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 
 import com.facebook.litho.BuildConfig;
 import com.facebook.yoga.YogaLogger;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Configuration for the Components library.
@@ -166,4 +164,7 @@ public class ComponentsConfiguration {
 
   /** Configuration for swapping the adapter on mount/unmount */
   public static boolean enableSwapAdapter = false;
+
+  /** Assign transition keys to all LayoutOutputs, this enables Transition.allLayout() */
+  public static boolean assignTransitionKeysToAllOutputs = false;
 }

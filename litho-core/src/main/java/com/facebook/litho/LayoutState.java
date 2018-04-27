@@ -380,8 +380,8 @@ class LayoutState {
       flags |= FLAG_MATCH_HOST_BOUNDS;
     } else {
       // If there is a host view, the transition key will be set on the view's layout output
-      final String transitionKey = node.getTransitionKey();
-      if (!TextUtils.isEmpty(transitionKey)) {
+      final String transitionKey = getTransitionKeyForNode(node);
+      if (transitionKey != null) {
         layoutOutput.setTransitionKey(transitionKey);
       }
     }
@@ -621,17 +621,17 @@ class LayoutState {
 
     final OutputUnitsAffinityGroup<LayoutOutput> currentLayoutOutputAffinityGroup =
         layoutState.mCurrentLayoutOutputAffinityGroup;
+
+    final String transitionKey = getTransitionKeyForNode(node);
     layoutState.mCurrentLayoutOutputAffinityGroup =
-        TextUtils.isEmpty(node.getTransitionKey())
-            ? null
-            : new OutputUnitsAffinityGroup<LayoutOutput>();
+        transitionKey != null ? new OutputUnitsAffinityGroup<LayoutOutput>() : null;
 
     int hostLayoutPosition = -1;
 
     // 1. Insert a host LayoutOutput if we have some interactive content to be attached to.
     if (needsHostView) {
       hostLayoutPosition = addHostLayoutOutput(node, layoutState, diffNode);
-      addCurrentAffinityGroupToTransitionMapping(node.getTransitionKey(), layoutState);
+      addCurrentAffinityGroupToTransitionMapping(transitionKey, layoutState);
 
       layoutState.mCurrentLevel++;
       layoutState.mCurrentHostMarker =
@@ -872,7 +872,7 @@ class LayoutState {
     }
     layoutState.mShouldDuplicateParentState = shouldDuplicateParentState;
 
-    addCurrentAffinityGroupToTransitionMapping(node.getTransitionKey(), layoutState);
+    addCurrentAffinityGroupToTransitionMapping(transitionKey, layoutState);
     layoutState.mCurrentLayoutOutputAffinityGroup = currentLayoutOutputAffinityGroup;
   }
 
@@ -2300,5 +2300,15 @@ class LayoutState {
     }
 
     mWorkingRangeContainer.dispatchOnExitedRangeIfNeeded(stateHandler);
+  }
+
+  private static String getTransitionKeyForNode(InternalNode node) {
+    if (node.hasTransitionKey()) {
+      return node.getTransitionKey();
+    }
+    if (ComponentsConfiguration.assignTransitionKeysToAllOutputs) {
+      return node.getRootComponent().getGlobalKey();
+    }
+    return null;
   }
 }
