@@ -148,33 +148,29 @@ public class StartSnapHelper extends SnapHelper {
       @NonNull RecyclerView.LayoutManager layoutManager,
       @NonNull View targetView,
       OrientationHelper helper) {
-    final int childCenter = helper.getDecoratedStart(targetView);
-    final int containerCenter;
-    if (layoutManager.getClipToPadding()) {
-      containerCenter = helper.getStartAfterPadding();
-    } else {
-      containerCenter = 0;
-    }
-    return childCenter - containerCenter;
+    final int childStart = helper.getDecoratedStart(targetView);
+    final int containerStart = helper.getStartAfterPadding();
+    return childStart - containerStart;
   }
 
   /**
-   * Return the child view that is currently closest to the center of this parent.
+   * Return the child view that is currently closest to the start of this parent.
    *
    * @param layoutManager The {@link LayoutManager} associated with the attached {@link
    *     RecyclerView}.
    * @param helper The relevant {@link OrientationHelper} for the attached {@link RecyclerView}.
-   * @return the child view that is currently closest to the center of this parent.
+   * @return the child view that is currently closest to the start of this parent.
    */
   @Nullable
-  private static View findViewClosestToStart(LayoutManager layoutManager, OrientationHelper helper) {
+  private static View findViewClosestToStart(
+      LayoutManager layoutManager, OrientationHelper helper) {
     int childCount = layoutManager.getChildCount();
     if (childCount == 0) {
       return null;
     }
 
     View closestChild = null;
-    final int start = layoutManager.getClipToPadding() ? helper.getStartAfterPadding() : 0;
+    final int start = helper.getStartAfterPadding();
     int absClosest = Integer.MAX_VALUE;
 
     for (int i = 0; i < childCount; i++) {
@@ -201,7 +197,7 @@ public class StartSnapHelper extends SnapHelper {
     }
 
     View closestChild = null;
-    final int start = layoutManager.getClipToPadding() ? helper.getStartAfterPadding() : 0;
+    final int start = helper.getStartAfterPadding();
     int absClosest = Integer.MAX_VALUE;
 
     for (int i = 0; i < childCount; i++) {
