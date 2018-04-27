@@ -167,4 +167,10 @@ public class ComponentsConfiguration {
 
   /** Assign transition keys to all LayoutOutputs, this enables Transition.allLayout() */
   public static boolean assignTransitionKeysToAllOutputs = false;
+
+  /**
+   * If false, we won't create state handlers. It's highly discouraged to to change this to false,
+   * unless you handle all your updates outside of the litho framework
+   */
+  public static boolean useStateHandlers = true;
 }

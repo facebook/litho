@@ -1274,9 +1274,8 @@ public class ComponentTree {
       @CalculateLayoutSource int source) {
 
     synchronized (this) {
-
       final Map<String, List<StateUpdate>> pendingStateUpdates =
-          mStateHandler.getPendingStateUpdates();
+          mStateHandler == null ? null : mStateHandler.getPendingStateUpdates();
       if (pendingStateUpdates != null && pendingStateUpdates.size() > 0 && root != null) {
         root = root.makeShallowCopyWithNewId();
       }

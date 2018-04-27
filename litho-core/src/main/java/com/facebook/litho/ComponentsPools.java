@@ -429,6 +429,7 @@ public class ComponentsPools {
     return stateHandler;
   }
 
+  @Nullable
   static StateHandler acquireStateHandler() {
     return acquireStateHandler(null);
   }

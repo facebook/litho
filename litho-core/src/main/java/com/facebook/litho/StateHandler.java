@@ -22,6 +22,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.Pools;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentLifecycle.StateContainer;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,14 +38,26 @@ public class StateHandler {
   private static final int INITIAL_MAP_CAPACITY = 4;
   private static final int POOL_CAPACITY = 10;
 
-  private static final Pools.SynchronizedPool<List<StateUpdate>> sStateUpdatesListPool =
-      new Pools.SynchronizedPool<>(POOL_CAPACITY);
-  private static final
-  Pools.SynchronizedPool<Map<String, List<StateUpdate>>> sPendingStateUpdatesMapPool =
-      new Pools.SynchronizedPool<>(POOL_CAPACITY);
-  private static final
-  Pools.SynchronizedPool<Map<String, StateContainer>> sStateContainersMapPool =
-      new Pools.SynchronizedPool<>(POOL_CAPACITY);
+  @Nullable private static final Pools.SynchronizedPool<List<StateUpdate>> sStateUpdatesListPool;
+
+  @Nullable
+  private static final Pools.SynchronizedPool<Map<String, List<StateUpdate>>>
+      sPendingStateUpdatesMapPool;
+
+  @Nullable
+  private static final Pools.SynchronizedPool<Map<String, StateContainer>> sStateContainersMapPool;
+
+  static {
+    if (ComponentsConfiguration.useStateHandlers) {
+      sStateUpdatesListPool = new Pools.SynchronizedPool<>(POOL_CAPACITY);
+      sPendingStateUpdatesMapPool = new Pools.SynchronizedPool<>(POOL_CAPACITY);
+      sStateContainersMapPool = new Pools.SynchronizedPool<>(POOL_CAPACITY);
+    } else {
+      sStateUpdatesListPool = null;
+      sPendingStateUpdatesMapPool = null;
+      sStateContainersMapPool = null;
+    }
+  }
 
   /**
    * List of state updates that will be applied during the next layout pass.
@@ -76,7 +89,9 @@ public class StateHandler {
   }
 
   public static StateHandler acquireNewInstance(@Nullable StateHandler stateHandler) {
-    return ComponentsPools.acquireStateHandler(stateHandler);
+    return ComponentsConfiguration.useStateHandlers
+        ? ComponentsPools.acquireStateHandler(stateHandler)
+        : null;
   }
 
   public synchronized boolean isEmpty() {

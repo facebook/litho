@@ -36,7 +36,7 @@ public class ComponentContext extends ContextWrapper {
 
   private final String mLogTag;
   private final ComponentsLogger mLogger;
-  private final StateHandler mStateHandler;
+  @Nullable private final StateHandler mStateHandler;
   private final KeyHandler mKeyHandler;
   private String mNoStateUpdatesMethod;
 
