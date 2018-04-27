@@ -90,27 +90,28 @@ class CardSpec {
     final int shadowHorizontal = getShadowHorizontal(elevation);
 
     return Column.create(c)
-        .child(
-            Column.create(c)
-                .marginPx(HORIZONTAL, shadowHorizontal)
-                .marginPx(TOP, shadowTop)
-                .marginPx(BOTTOM, shadowBottom)
-                .backgroundColor(cardBackgroundColor)
-                .child(content)
                 .child(
-                    CardClip.create(c)
-                        .clippingColor(clippingColor)
-                        .cornerRadiusPx(cornerRadius)
-                        .positionType(ABSOLUTE)
-                        .positionPx(ALL, 0)))
-        .child(
-            CardShadow.create(c)
-                .shadowStartColor(shadowStartColor)
-                .shadowEndColor(shadowEndColor)
-                .cornerRadiusPx(cornerRadius)
-                .shadowSizePx(elevation)
-                .positionType(ABSOLUTE)
-                .positionPx(ALL, 0))
-        .build();
+                        Column.create(c)
+                                .marginPx(HORIZONTAL, shadowHorizontal)
+                                .marginPx(TOP, shadowTop)
+                                .marginPx(BOTTOM, shadowBottom)
+                                .backgroundColor(cardBackgroundColor)
+                                .child(content)
+                                .child(
+                                        CardClip.create(c)
+                                                .clippingColor(clippingColor)
+                                                .cornerRadiusPx(cornerRadius)
+                                                .positionType(ABSOLUTE)
+                                                .positionPx(ALL, 0)))
+                .child(elevation > 0 ?
+                        CardShadow.create(c)
+                                .shadowStartColor(shadowStartColor)
+                                .shadowEndColor(shadowEndColor)
+                                .cornerRadiusPx(cornerRadius)
+                                .shadowSizePx(elevation)
+                                .positionType(ABSOLUTE)
+                                .positionPx(ALL, 0)
+                        : null)
+                .build();
   }
 }
