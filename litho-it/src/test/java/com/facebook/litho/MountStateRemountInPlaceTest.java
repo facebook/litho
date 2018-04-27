@@ -309,8 +309,6 @@ public class MountStateRemountInPlaceTest {
                         return Column.create(c).child(firstComponent).build();
                       }
                     })
-                .incrementalMount(false)
-                .layoutDiffing(false)
                 .build(),
             makeMeasureSpec(100, AT_MOST),
             makeMeasureSpec(100, AT_MOST));
@@ -357,8 +355,6 @@ public class MountStateRemountInPlaceTest {
                         return Column.create(c).child(firstComponent).build();
                       }
                     })
-                .incrementalMount(false)
-                .layoutDiffing(false)
                 .build(),
             makeMeasureSpec(100, EXACTLY),
             makeMeasureSpec(100, EXACTLY));
@@ -405,8 +401,6 @@ public class MountStateRemountInPlaceTest {
                         return Column.create(c).child(firstComponent).build();
                       }
                     })
-                .incrementalMount(false)
-                .layoutDiffing(false)
                 .build(),
             makeMeasureSpec(100, EXACTLY),
             makeMeasureSpec(100, EXACTLY));
@@ -552,8 +546,6 @@ public class MountStateRemountInPlaceTest {
                     return Column.create(c).child(secondComponent).build();
                   }
                 })
-            .incrementalMount(false)
-            .layoutDiffing(false)
             .build();
     secondTree.setSizeSpec(100, 100);
 
@@ -621,8 +613,6 @@ public class MountStateRemountInPlaceTest {
                     return Column.create(c).child(secondComponent).build();
                   }
                 })
-            .incrementalMount(false)
-            .layoutDiffing(false)
             .build();
     secondTree.setSizeSpec(100, 100);
 
@@ -636,13 +626,9 @@ public class MountStateRemountInPlaceTest {
   @Test
   public void testRemountSameSubTreeWithDifferentParentHost() {
     final TestComponent firstComponent =
-        TestDrawableComponent.create(
-            mContext,
-            false,
-            true,
-            true,
-            false,
-            false)
+        TestDrawableComponent.create(mContext, false, true, true, false, false)
+            .widthPx(100)
+            .heightPx(100)
             .build();
 
     InlineLayoutSpec firstLayout =
@@ -653,16 +639,20 @@ public class MountStateRemountInPlaceTest {
                 .child(
                     Column.create(c)
                         .clickHandler(c.newEventHandler(3))
-                        .child(Text.create(c).text("test")))
+                        .child(Text.create(c).widthPx(100).heightPx(100).text("test")))
                 .child(
                     Column.create(c)
                         .clickHandler(c.newEventHandler(2))
-                        .child(Text.create(c).text("test2"))
+                        .child(Text.create(c).widthPx(100).heightPx(100).text("test2"))
                         .child(
                             Column.create(c)
                                 .clickHandler(c.newEventHandler(1))
                                 .child(firstComponent)
-                                .child(SolidColor.create(c).color(Color.GREEN))))
+                                .child(
+                                    SolidColor.create(c)
+                                        .widthPx(100)
+                                        .heightPx(100)
+                                        .color(Color.GREEN))))
                 .build();
           }
         };
@@ -675,24 +665,25 @@ public class MountStateRemountInPlaceTest {
                 .child(
                     Column.create(c)
                         .clickHandler(c.newEventHandler(3))
-                        .child(Text.create(c).text("test"))
+                        .child(Text.create(c).widthPx(100).heightPx(100).text("test"))
                         .child(
                             Column.create(c)
                                 .clickHandler(c.newEventHandler(1))
                                 .child(firstComponent)
-                                .child(SolidColor.create(c).color(Color.GREEN))))
+                                .child(
+                                    SolidColor.create(c)
+                                        .widthPx(100)
+                                        .heightPx(100)
+                                        .color(Color.GREEN))))
                 .child(
                     Column.create(c)
                         .clickHandler(c.newEventHandler(2))
-                        .child(Text.create(c).text("test2")))
+                        .child(Text.create(c).widthPx(100).heightPx(100).text("test2")))
                 .build();
           }
         };
 
-    ComponentTree tree = ComponentTree.create(mContext, firstLayout)
-        .incrementalMount(false)
-        .layoutDiffing(false)
-        .build();
+    ComponentTree tree = ComponentTree.create(mContext, firstLayout).build();
     LithoView cv = new LithoView(mContext);
     ComponentTestHelper.mountComponent(cv, tree);
     tree.setRoot(secondLayout);

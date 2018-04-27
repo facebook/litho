@@ -70,10 +70,7 @@ public class DeprecatedLithoTooltipTest {
           }
         };
 
-    mComponentTree = ComponentTree.create(mContext, mComponent)
-        .incrementalMount(false)
-        .layoutDiffing(false)
-        .build();
+    mComponentTree = ComponentTree.create(mContext, mComponent).build();
 
     Whitebox.setInternalState(
         mComponent,

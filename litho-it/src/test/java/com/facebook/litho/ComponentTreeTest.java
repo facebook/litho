@@ -139,8 +139,6 @@ public class ComponentTreeTest {
   public void testCreate() {
     ComponentTree componentTree =
         ComponentTree.create(mContext, mComponent)
-            .incrementalMount(false)
-            .layoutDiffing(false)
             .build();
 
     creationCommonChecks(componentTree);
@@ -156,8 +154,6 @@ public class ComponentTreeTest {
   public void testSetSizeSpec() {
     ComponentTree componentTree =
         ComponentTree.create(mContext, mComponent)
-            .incrementalMount(false)
-            .layoutDiffing(false)
             .build();
     componentTree.setSizeSpec(mWidthSpec, mHeightSpec);
 
@@ -170,8 +166,6 @@ public class ComponentTreeTest {
   public void testSetSizeSpecAsync() {
     ComponentTree componentTree =
         create(mContext, mComponent)
-            .incrementalMount(false)
-            .layoutDiffing(false)
             .build();
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
 
@@ -197,8 +191,6 @@ public class ComponentTreeTest {
   public void testSetSizeSpecAsyncThenSyncBeforeRunningTask() {
     ComponentTree componentTree =
         ComponentTree.create(mContext, mComponent)
-            .incrementalMount(false)
-            .layoutDiffing(false)
             .build();
 
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
@@ -219,8 +211,6 @@ public class ComponentTreeTest {
   public void testSetSizeSpecAsyncThenSyncAfterRunningTask() {
     ComponentTree componentTree =
         ComponentTree.create(mContext, mComponent)
-            .incrementalMount(false)
-            .layoutDiffing(false)
             .build();
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
 
@@ -241,8 +231,6 @@ public class ComponentTreeTest {
   public void testSetSizeSpecWithOutput() {
     ComponentTree componentTree =
         ComponentTree.create(mContext, mComponent)
-            .incrementalMount(false)
-            .layoutDiffing(false)
             .build();
 
     Size size = new Size();
@@ -297,8 +285,6 @@ public class ComponentTreeTest {
   public void testSetCompatibleSizeSpec() {
     ComponentTree componentTree =
         create(mContext, mComponent)
-            .incrementalMount(false)
-            .layoutDiffing(false)
             .build();
 
     Size size = new Size();
@@ -329,8 +315,6 @@ public class ComponentTreeTest {
   public void testSetCompatibleSizeSpecWithDifferentRoot() {
     ComponentTree componentTree =
         create(mContext, mComponent)
-            .incrementalMount(false)
-            .layoutDiffing(false)
             .build();
 
     Size size = new Size();
@@ -362,8 +346,6 @@ public class ComponentTreeTest {
 
     ComponentTree componentTree =
         ComponentTree.create(mContext, component)
-            .incrementalMount(false)
-            .layoutDiffing(false)
             .build();
 
     componentTree.setRoot(mComponent);
@@ -386,8 +368,6 @@ public class ComponentTreeTest {
     ComponentTree componentTree1 = ComponentTree.create(
         mContext,
         component1)
-        .incrementalMount(false)
-        .layoutDiffing(false)
         .build();
 
     Component component2 = TestDrawableComponent.create(mContext)
@@ -395,8 +375,6 @@ public class ComponentTreeTest {
     ComponentTree componentTree2 = ComponentTree.create(
         mContext,
         component2)
-        .incrementalMount(false)
-        .layoutDiffing(false)
         .build();
 
     Assert.assertNull(getLithoView(componentTree1));
@@ -421,8 +399,6 @@ public class ComponentTreeTest {
     ComponentTree componentTree = create(
         mContext,
         component)
-        .incrementalMount(false)
-        .layoutDiffing(false)
         .build();
 
     LithoView lithoView = new LithoView(mContext);
@@ -443,8 +419,6 @@ public class ComponentTreeTest {
     ComponentTree componentTree = ComponentTree.create(
         mContext,
         component)
-        .incrementalMount(false)
-        .layoutDiffing(false)
         .build();
 
     // Attach first view.
@@ -469,8 +443,6 @@ public class ComponentTreeTest {
     ComponentTree componentTree = create(
         mContext,
         component)
-        .incrementalMount(false)
-        .layoutDiffing(false)
         .build();
 
     // Attach first view.

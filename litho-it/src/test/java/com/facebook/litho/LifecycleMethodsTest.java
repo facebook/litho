@@ -53,10 +53,7 @@ public class LifecycleMethodsTest {
     mComponent = LifecycleMethodsComponent.create(10);
 
     final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
-    mComponentTree = ComponentTree.create(c, mComponent)
-        .incrementalMount(false)
-        .layoutDiffing(false)
-        .build();
+    mComponentTree = ComponentTree.create(c, mComponent).build();
     mLithoView.setComponentTree(mComponentTree);
   }
 

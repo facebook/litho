@@ -19,7 +19,6 @@ package com.facebook.litho.processor.integration.resources;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Size;
 import com.facebook.litho.annotations.MountSpec;
@@ -48,15 +47,14 @@ class SimpleMountSpec {
 
   @OnMount
   static void onMount(ComponentContext c, LithoView lithoView, @Prop Component content) {
-    lithoView.setComponentTree(
-        ComponentTree.create(c, content).incrementalMount(false).layoutDiffing(false).build());
+    lithoView.setComponent(content);
   }
 
   @OnUnmount
   static void onUnmount(
       ComponentContext c,
       LithoView mountedView) {
-    mountedView.setComponentTree(null);
+    mountedView.setComponent(null);
   }
 }
 

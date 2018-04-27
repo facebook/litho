@@ -160,10 +160,7 @@ public class StateUpdatesTest {
             "getDefaultLayoutThreadLooper"));
     mTestComponent = new TestComponent();
 
-    mComponentTree = ComponentTree.create(mContext, mTestComponent)
-        .incrementalMount(false)
-        .layoutDiffing(false)
-        .build();
+    mComponentTree = ComponentTree.create(mContext, mTestComponent).build();
     final LithoView lithoView = new LithoView(mContext);
     lithoView.setComponentTree(mComponentTree);
     lithoView.onAttachedToWindow();
@@ -183,12 +180,8 @@ public class StateUpdatesTest {
             return Column.create(c).child(child1).child(child2).build();
           }
         };
-    final ComponentTree componentTree = ComponentTree.create(mContext, component)
-        .incrementalMount(false)
-        .layoutDiffing(false)
-        .build();
     final LithoView lithoView = new LithoView(mContext);
-    lithoView.setComponentTree(componentTree);
+    lithoView.setComponent(component);
     lithoView.onAttachedToWindow();
     ComponentTestHelper.measureAndLayout(lithoView);
   }
@@ -209,12 +202,8 @@ public class StateUpdatesTest {
                 .build();
           }
         };
-    final ComponentTree componentTree = ComponentTree.create(mContext, component)
-        .incrementalMount(false)
-        .layoutDiffing(false)
-        .build();
     final LithoView lithoView = new LithoView(mContext);
-    lithoView.setComponentTree(componentTree);
+    lithoView.setComponent(component);
     lithoView.onAttachedToWindow();
     ComponentTestHelper.measureAndLayout(lithoView);
   }

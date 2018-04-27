@@ -50,14 +50,8 @@ public class LithoViewTestHelperTest {
           }
         };
 
-    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
-    final ComponentTree componentTree = ComponentTree.create(c, component)
-        .incrementalMount(false)
-        .layoutDiffing(false)
-        .build();
-
     final LithoView lithoView = new LithoView(RuntimeEnvironment.application);
-    lithoView.setComponentTree(componentTree);
+    lithoView.setComponent(component);
     lithoView.measure(
         makeMeasureSpec(0, UNSPECIFIED),
         makeMeasureSpec(0, UNSPECIFIED));
@@ -82,19 +76,13 @@ public class LithoViewTestHelperTest {
                         .testKey("test-drawable")
                         .widthPx(100)
                         .heightPx(100))
-                .child(Text.create(c).text("Hello, World"))
+                .child(Text.create(c).widthPx(100).heightPx(100).text("Hello, World"))
                 .build();
           }
         };
 
-    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
-    final ComponentTree componentTree = ComponentTree.create(c, component)
-        .incrementalMount(false)
-        .layoutDiffing(false)
-        .build();
-
     final LithoView lithoView = new LithoView(RuntimeEnvironment.application);
-    lithoView.setComponentTree(componentTree);
+    lithoView.setComponent(component);
     lithoView.measure(
         makeMeasureSpec(0, UNSPECIFIED),
         makeMeasureSpec(0, UNSPECIFIED));
@@ -103,8 +91,8 @@ public class LithoViewTestHelperTest {
     final String string = LithoViewTestHelper.viewToString(lithoView);
     assertThat(string)
         .containsPattern(
-            "litho.InlineLayout\\{\\w+ V.E..... .. 0,0-100,100\\}\n"
+            "litho.InlineLayout\\{\\w+ V.E..... .. 0,0-100,200\\}\n"
                 + "  litho.TestDrawableComponent\\{\\w+ V.E..... .. 0,0-100,100 litho:id/test-drawable\\}\n"
-                + "  litho.Text\\{\\w+ V.E..... .. 0,100-100,100 text=\"Hello, World\"\\}");
+                + "  litho.Text\\{\\w+ V.E..... .. 0,100-100,200 text=\"Hello, World\"\\}");
   }
 }

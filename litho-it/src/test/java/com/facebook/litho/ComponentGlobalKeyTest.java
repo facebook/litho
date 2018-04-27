@@ -72,13 +72,9 @@ public class ComponentGlobalKeyTest {
 
   @Test
   public void testRootComponentGlobalKey() {
-    final Component component = TestDrawableComponent.create(mContext).build();
-    final ComponentTree componentTree =
-        ComponentTree.create(mContext, component)
-            .incrementalMount(false)
-            .layoutDiffing(false)
-            .build();
-    final LithoView lithoView = getLithoView(componentTree);
+    final Component component =
+        TestDrawableComponent.create(mContext).widthDip(10).heightDip(10).build();
+    final LithoView lithoView = getLithoView(component);
 
     Assert.assertEquals(
         lithoView.getMountItemAt(0).getComponent().getGlobalKey(), component.getKey());
@@ -86,13 +82,9 @@ public class ComponentGlobalKeyTest {
 
   @Test
   public void testRootComponentGlobalKeyManualKey() {
-    final Component component = TestDrawableComponent.create(mContext).key("someKey").build();
-    final ComponentTree componentTree =
-        ComponentTree.create(mContext, component)
-            .incrementalMount(false)
-            .layoutDiffing(false)
-            .build();
-    final LithoView lithoView = getLithoView(componentTree);
+    final Component component =
+        TestDrawableComponent.create(mContext).widthDip(10).heightDip(10).key("someKey").build();
+    final LithoView lithoView = getLithoView(component);
 
     Assert.assertEquals(lithoView.getMountItemAt(0).getComponent().getGlobalKey(), "someKey");
   }
@@ -107,12 +99,7 @@ public class ComponentGlobalKeyTest {
     final Component column = Column.create(mContext).build();
     final int columnSpecId = column.getTypeId();
 
-    final ComponentTree componentTree =
-        ComponentTree.create(mContext, component)
-            .incrementalMount(false)
-            .layoutDiffing(false)
-            .build();
-    final LithoView lithoView = getLithoView(componentTree);
+    final LithoView lithoView = getLithoView(component);
 
     // Text
     Assert.assertEquals(
@@ -167,12 +154,7 @@ public class ComponentGlobalKeyTest {
           }
         };
 
-    final ComponentTree componentTree =
-        ComponentTree.create(mContext, component)
-            .incrementalMount(false)
-            .layoutDiffing(false)
-            .build();
-    getLithoView(componentTree);
+    getLithoView(component);
 
     final LogEvent event = mComponentsLogger.newEvent(EVENT_WARNING);
 
@@ -201,12 +183,7 @@ public class ComponentGlobalKeyTest {
           }
         };
 
-    final ComponentTree componentTree =
-        ComponentTree.create(mContext, component)
-            .incrementalMount(false)
-            .layoutDiffing(false)
-            .build();
-    getLithoView(componentTree);
+    getLithoView(component);
 
     final LogEvent event = mComponentsLogger.newEvent(EVENT_WARNING);
 
@@ -229,8 +206,8 @@ public class ComponentGlobalKeyTest {
           @OnCreateLayout
           protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
-                .child(Text.create(mContext).text(""))
-                .child(Text.create(mContext).text(""))
+                .child(Text.create(mContext).widthDip(10).heightDip(10).text(""))
+                .child(Text.create(mContext).widthDip(10).heightDip(10).text(""))
                 .build();
           }
         };
@@ -241,12 +218,7 @@ public class ComponentGlobalKeyTest {
     final Component column = Column.create(mContext).build();
     final int columnTypeId = column.getTypeId();
 
-    final ComponentTree componentTree =
-        ComponentTree.create(mContext, component)
-            .incrementalMount(false)
-            .layoutDiffing(false)
-            .build();
-    final LithoView lithoView = getLithoView(componentTree);
+    final LithoView lithoView = getLithoView(component);
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId),
@@ -264,8 +236,12 @@ public class ComponentGlobalKeyTest {
           @OnCreateLayout
           protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
-                .child(Column.create(mContext).child(Text.create(c).text("")))
-                .child(Column.create(mContext).child(Text.create(c).text("")))
+                .child(
+                    Column.create(mContext)
+                        .child(Text.create(c).widthDip(10).heightDip(10).text("")))
+                .child(
+                    Column.create(mContext)
+                        .child(Text.create(c).widthDip(10).heightDip(10).text("")))
                 .build();
           }
         };
@@ -276,12 +252,7 @@ public class ComponentGlobalKeyTest {
     final Component column = Column.create(mContext).build();
     final int columnTypeId = column.getTypeId();
 
-    final ComponentTree componentTree =
-        ComponentTree.create(mContext, component)
-            .incrementalMount(false)
-            .layoutDiffing(false)
-            .build();
-    final LithoView lithoView = getLithoView(componentTree);
+    final LithoView lithoView = getLithoView(component);
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, columnTypeId, textSpecId),
@@ -300,8 +271,8 @@ public class ComponentGlobalKeyTest {
           @OnCreateLayout
           protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
-                .child(Text.create(mContext).text(""))
-                .child(Text.create(mContext).text(""))
+                .child(Text.create(mContext).widthDip(10).heightDip(10).text(""))
+                .child(Text.create(mContext).widthDip(10).heightDip(10).text(""))
                 .build();
           }
         };
@@ -313,8 +284,8 @@ public class ComponentGlobalKeyTest {
           protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
                 .child(component)
-                .child(Text.create(mContext).text(""))
-                .child(Text.create(mContext).text(""))
+                .child(Text.create(mContext).widthDip(10).heightDip(10).text("test"))
+                .child(Text.create(mContext).widthDip(10).heightDip(10).text("test"))
                 .build();
           }
         };
@@ -326,9 +297,7 @@ public class ComponentGlobalKeyTest {
     final Component column = Column.create(mContext).build();
     final int columnTypeId = column.getTypeId();
 
-    final ComponentTree componentTree =
-        ComponentTree.create(mContext, root).incrementalMount(false).layoutDiffing(false).build();
-    LithoView lithoView = getLithoView(componentTree);
+    LithoView lithoView = getLithoView(root);
 
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
@@ -354,9 +323,7 @@ public class ComponentGlobalKeyTest {
     final int nestedLayoutSpecId = layoutSpecId - 1;
     final int columnSpecId = Column.create(mContext).build().getTypeId();
 
-    final ComponentTree componentTree =
-        ComponentTree.create(mContext, root).incrementalMount(false).layoutDiffing(false).build();
-    final LithoView lithoView = getLithoView(componentTree);
+    final LithoView lithoView = getLithoView(root);
 
     final String rootGlobalKey = ComponentKeyUtils.getKeyWithSeparator(layoutSpecId);
     final String nestedLayoutGlobalKey =
@@ -385,9 +352,9 @@ public class ComponentGlobalKeyTest {
     return lithoView.getMountItemAt(index).getComponent();
   }
 
-  private LithoView getLithoView(ComponentTree componentTree) {
+  private LithoView getLithoView(Component component) {
     LithoView lithoView = new LithoView(mContext);
-    lithoView.setComponentTree(componentTree);
+    lithoView.setComponent(component);
     lithoView.measure(
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
@@ -409,12 +376,16 @@ public class ComponentGlobalKeyTest {
           protected Component onCreateLayout(ComponentContext c) {
 
             return Column.create(c)
-                .child(TestViewComponent.create(c).key("[TestViewComponent1]"))
+                .child(
+                    TestViewComponent.create(c)
+                        .widthDip(10)
+                        .heightDip(10)
+                        .key("[TestViewComponent1]"))
                 .child(
                     Column.create(c)
                         .backgroundColor(color)
-                        .child(CardClip.create(c).key("[CardClip1]")))
-                .child(Text.create(c).text("Test").key("[Text1]"))
+                        .child(CardClip.create(c).widthDip(10).heightDip(10).key("[CardClip1]")))
+                .child(Text.create(c).text("Test").widthDip(10).heightDip(10).key("[Text1]"))
                 .build();
           }
         };
@@ -427,13 +398,17 @@ public class ComponentGlobalKeyTest {
           protected Component onCreateLayout(ComponentContext c) {
 
             return Column.create(c)
-                .child(Text.create(c).text("test").key("[Text2]"))
+                .child(Text.create(c).text("test").widthDip(10).heightDip(10).key("[Text2]"))
                 .child(testGlobalKeyChildComponent)
                 .child(
                     Column.create(c)
                         .backgroundColor(color)
-                        .child(CardClip.create(c).key("[CardClip2]")))
-                .child(TestViewComponent.create(c).key("[TestViewComponent2]"))
+                        .child(CardClip.create(c).widthDip(10).heightDip(10).key("[CardClip2]")))
+                .child(
+                    TestViewComponent.create(c)
+                        .widthDip(10)
+                        .heightDip(10)
+                        .key("[TestViewComponent2]"))
                 .build();
           }
         };

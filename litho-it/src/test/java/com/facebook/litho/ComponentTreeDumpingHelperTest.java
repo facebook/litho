@@ -51,11 +51,7 @@ public class ComponentTreeDumpingHelperTest {
         };
 
     ComponentContext componentContext = new ComponentContext(RuntimeEnvironment.application);
-    final ComponentTree componentTree =
-        ComponentTree.create(componentContext, component)
-            .incrementalMount(false)
-            .layoutDiffing(false)
-            .build();
+    final ComponentTree componentTree = ComponentTree.create(componentContext, component).build();
 
     componentContext = ComponentContext.withComponentTree(componentContext, componentTree);
 

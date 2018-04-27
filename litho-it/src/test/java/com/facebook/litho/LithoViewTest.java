@@ -19,7 +19,6 @@ package com.facebook.litho;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
-import static com.facebook.litho.ComponentTree.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -62,14 +61,8 @@ public class LithoViewTest {
           }
         };
 
-    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
-    final ComponentTree componentTree = ComponentTree.create(c, component)
-        .incrementalMount(false)
-        .layoutDiffing(false)
-        .build();
-
     mLithoView = new LithoView(RuntimeEnvironment.application);
-    mLithoView.setComponentTree(componentTree);
+    mLithoView.setComponent(component);
   }
 
   @Test
@@ -110,12 +103,7 @@ public class LithoViewTest {
         };
 
     LithoView nullLithoView = new LithoView(application);
-    nullLithoView.setComponentTree(
-        create(
-            new ComponentContext(application),
-            component)
-            .incrementalMount(false)
-            .build());
+    nullLithoView.setComponent(component);
 
     nullLithoView.measure(
         makeMeasureSpec(0, UNSPECIFIED),
@@ -185,12 +173,8 @@ public class LithoViewTest {
           }
         };
 
-    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
-    final ComponentTree componentTree =
-        ComponentTree.create(c, component).incrementalMount(false).layoutDiffing(false).build();
-
     mLithoView = new LithoView(RuntimeEnvironment.application);
-    mLithoView.setComponentTree(componentTree);
+    mLithoView.setComponent(component);
 
     mLithoView.setLayoutParams(new ViewGroup.LayoutParams(0, 200));
     mLithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(200, EXACTLY));
@@ -218,12 +202,8 @@ public class LithoViewTest {
           }
         };
 
-    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
-    final ComponentTree componentTree =
-        ComponentTree.create(c, component).incrementalMount(false).layoutDiffing(false).build();
-
     mLithoView = new LithoView(RuntimeEnvironment.application);
-    mLithoView.setComponentTree(componentTree);
+    mLithoView.setComponent(component);
 
     mLithoView.setLayoutParams(
         new RecyclerViewLayoutManagerOverrideParams(
