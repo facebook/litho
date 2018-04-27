@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.widget;
 
+import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.widget.LayoutHandlerFactory;
 import com.facebook.litho.widget.RecyclerBinder;
 
@@ -32,6 +33,7 @@ public class RecyclerBinderConfiguration {
   private boolean mInsertPostAsyncLayoutEnabled;
   private boolean mIsWrapContent;
   private String mSplitLayoutTag;
+  private boolean mUseAsyncMutations = SectionsConfiguration.asyncMutations;
 
   public RecyclerBinderConfiguration(double rangeRatio) {
     this(rangeRatio, null, false);
@@ -109,6 +111,10 @@ public class RecyclerBinderConfiguration {
     mSplitLayoutTag = splitLayoutTag;
   }
 
+  public void setUseAsyncMutations(boolean useAsyncMutations) {
+    mUseAsyncMutations = useAsyncMutations;
+  }
+
   public double getRangeRatio() {
     return mRangeRatio;
   }
@@ -139,5 +145,9 @@ public class RecyclerBinderConfiguration {
 
   public String getSplitLayoutTag() {
     return mSplitLayoutTag;
+  }
+
+  public boolean getUseAsyncMutations() {
+    return mUseAsyncMutations;
   }
 }

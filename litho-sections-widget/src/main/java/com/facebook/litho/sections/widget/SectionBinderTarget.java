@@ -36,9 +36,15 @@ import java.util.List;
 public class SectionBinderTarget implements Target, Binder<RecyclerView> {
 
   private final RecyclerBinder mRecyclerBinder;
+  private final boolean mUseAsyncMutations;
 
   public SectionBinderTarget(RecyclerBinder recyclerBinder) {
+    this(recyclerBinder, SectionsConfiguration.asyncMutations);
+  }
+
+  public SectionBinderTarget(RecyclerBinder recyclerBinder, boolean useAsyncMutations) {
     mRecyclerBinder = recyclerBinder;
+    mUseAsyncMutations = useAsyncMutations;
   }
 
   @Override
@@ -87,7 +93,7 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
 
   @Override
   public void insert(int index, RenderInfo renderInfo) {
-    if (SectionsConfiguration.asyncMutations) {
+    if (mUseAsyncMutations) {
       mRecyclerBinder.insertItemAtAsync(index, renderInfo);
     } else {
       mRecyclerBinder.insertItemAt(index, renderInfo);
@@ -96,7 +102,7 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
 
   @Override
   public void insertRange(int index, int count, List<RenderInfo> renderInfos) {
-    if (SectionsConfiguration.asyncMutations) {
+    if (mUseAsyncMutations) {
       mRecyclerBinder.insertRangeAtAsync(index, renderInfos);
     } else {
       mRecyclerBinder.insertRangeAt(index, renderInfos);

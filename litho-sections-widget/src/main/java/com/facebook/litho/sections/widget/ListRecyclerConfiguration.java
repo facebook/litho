@@ -169,7 +169,9 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
                 mRecyclerBinderConfiguration.insertPostAsyncLayoutEnabled())
             .splitLayoutTag(mRecyclerBinderConfiguration.getSplitLayoutTag())
             .build(c);
-    return (T) new SectionBinderTarget(recyclerBinder);
+    return (T)
+        new SectionBinderTarget(
+            recyclerBinder, mRecyclerBinderConfiguration.getUseAsyncMutations());
   }
 
   @Override
