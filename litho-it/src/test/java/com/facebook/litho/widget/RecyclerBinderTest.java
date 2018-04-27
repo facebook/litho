@@ -111,6 +111,11 @@ public class RecyclerBinderTest {
         }
       };
 
+  private static final int SCROLL_RESTORATION_VIEW_POSITION = 1;
+  private static final int SCROLL_RESTORATION_RECYCLER_VIEW_SIZE = 30;
+  private static final int SCROLL_RESTORATION_PADDING_EDGE = 20;
+  private static final int SCROLL_RESTORATION_ITEM_EDGE = 10;
+
   private interface ViewCreatorProvider {
     ViewCreator get();
   }
@@ -372,6 +377,87 @@ public class RecyclerBinderTest {
     verify(recyclerView).setAdapter(null);
     verify(mLayoutInfo).setRenderInfoCollection(null);
     verify(recyclerView, times(2)).removeOnScrollListener(any(OnScrollListener.class));
+  }
+
+  @Test
+  public void testScrollRestorationVertical() {
+    testScrollRestoration(true /* verticalScroll */, false /* reverseLayout */);
+  }
+
+  @Test
+  public void testScrollRestorationVerticalReversed() {
+    testScrollRestoration(true /* verticalScroll */, true /* reverseLayout */);
+  }
+
+  @Test
+  public void testScrollRestorationHorizontal() {
+    testScrollRestoration(false /* verticalScroll */, false /* reverseLayout */);
+  }
+
+  @Test
+  public void testScrollRestorationHorizontalReversed() {
+    testScrollRestoration(false /* verticalScroll */, true /* reverseLayout */);
+  }
+
+  private void testScrollRestoration(boolean verticalScroll, boolean reverseLayout) {
+    View firstView = mock(View.class);
+
+    LinearLayoutManager layoutManager = mock(LinearLayoutManager.class);
+    when(layoutManager.findViewByPosition(SCROLL_RESTORATION_VIEW_POSITION)).thenReturn(firstView);
+    when(layoutManager.getReverseLayout()).thenReturn(reverseLayout);
+
+    RecyclerView recyclerView = mock(RecyclerView.class);
+    when(recyclerView.getLayoutManager()).thenReturn(layoutManager);
+
+    final LayoutInfo layoutInfo = mock(LayoutInfo.class);
+    when(layoutInfo.getScrollDirection())
+        .thenReturn(verticalScroll ? OrientationHelper.VERTICAL : OrientationHelper.HORIZONTAL);
+    when(layoutInfo.getLayoutManager()).thenReturn(layoutManager);
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(layoutInfo)
+            .build(mComponentContext);
+
+    // Arbitrary relevant dimensions for the RecyclerView, its padding, and the item view.
+    final int recyclerViewSize = SCROLL_RESTORATION_RECYCLER_VIEW_SIZE;
+    final int paddingEdge = SCROLL_RESTORATION_PADDING_EDGE;
+    final int itemEdge = SCROLL_RESTORATION_ITEM_EDGE;
+
+    final int paddingSize = reverseLayout ? recyclerViewSize - paddingEdge : paddingEdge;
+    final int trueOffset = reverseLayout ? paddingEdge - itemEdge : itemEdge - paddingEdge;
+
+    if (verticalScroll) {
+      if (reverseLayout) {
+        when(recyclerView.getHeight()).thenReturn(recyclerViewSize);
+        when(layoutManager.getPaddingBottom()).thenReturn(paddingSize);
+        when(layoutManager.getDecoratedBottom(firstView)).thenReturn(itemEdge);
+      } else {
+        when(layoutManager.getPaddingTop()).thenReturn(paddingSize);
+        when(layoutManager.getDecoratedTop(firstView)).thenReturn(itemEdge);
+      }
+    } else {
+      if (reverseLayout) {
+        when(recyclerView.getWidth()).thenReturn(recyclerViewSize);
+        when(layoutManager.getPaddingRight()).thenReturn(paddingSize);
+        when(layoutManager.getDecoratedRight(firstView)).thenReturn(itemEdge);
+      } else {
+        when(layoutManager.getPaddingLeft()).thenReturn(paddingSize);
+        when(layoutManager.getDecoratedLeft(firstView)).thenReturn(itemEdge);
+      }
+    }
+
+    recyclerBinder.mount(recyclerView);
+    // Tell the RecyclerBinder to use our arbitrary position for scroll restoration.
+    recyclerBinder.onNewVisibleRange(
+        SCROLL_RESTORATION_VIEW_POSITION, SCROLL_RESTORATION_VIEW_POSITION);
+    // Unmount the RecyclerView, causing the current scroll offset to be stored.
+    recyclerBinder.unmount(recyclerView);
+    // Remount the RecyclerView, causing it to scroll using the stored scroll offset.
+    recyclerBinder.mount(recyclerView);
+
+    verify(layoutManager).scrollToPositionWithOffset(SCROLL_RESTORATION_VIEW_POSITION, trueOffset);
   }
 
   @Test

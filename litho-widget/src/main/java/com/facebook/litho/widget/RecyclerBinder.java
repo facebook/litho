@@ -1781,12 +1781,32 @@ public class RecyclerBinder
   public void unmount(RecyclerView view) {
     ThreadUtils.assertMainThread();
 
-    final View firstView = view.getChildAt(0);
+    final LayoutManager layoutManager = mLayoutInfo.getLayoutManager();
+    final View firstView = layoutManager.findViewByPosition(mCurrentFirstVisiblePosition);
 
     if (firstView != null) {
-      mCurrentOffset = mLayoutInfo.getScrollDirection() == HORIZONTAL
-          ? mLayoutInfo.getLayoutManager().getDecoratedLeft(firstView)
-          : mLayoutInfo.getLayoutManager().getDecoratedTop(firstView);
+      final boolean reverseLayout;
+      if (layoutManager instanceof LinearLayoutManager) {
+        reverseLayout = ((LinearLayoutManager) layoutManager).getReverseLayout();
+      } else {
+        reverseLayout = false;
+      }
+
+      if (mLayoutInfo.getScrollDirection() == HORIZONTAL) {
+        mCurrentOffset =
+            reverseLayout
+                ? view.getWidth()
+                    - layoutManager.getPaddingRight()
+                    - layoutManager.getDecoratedRight(firstView)
+                : layoutManager.getDecoratedLeft(firstView) - layoutManager.getPaddingLeft();
+      } else {
+        mCurrentOffset =
+            reverseLayout
+                ? view.getHeight()
+                    - layoutManager.getPaddingBottom()
+                    - layoutManager.getDecoratedBottom(firstView)
+                : layoutManager.getDecoratedTop(firstView) - layoutManager.getPaddingTop();
+      }
     } else {
       mCurrentOffset = 0;
     }
