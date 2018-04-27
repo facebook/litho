@@ -44,14 +44,7 @@ public class AnimatedBadgeSpec {
   private static final Transition.TransitionAnimator ANIMATOR =
       Transition.timing(ANIMATION_DURATION);
 
-  private static final String TRANSITION_KEY_OUTER_CONTAINER_1 = "outer_container_1";
-  private static final String TRANSITION_KEY_CONTAINER_1 = "container_1";
   private static final String TRANSITION_KEY_TEXT = "text";
-  private static final String TRANSITION_KEY_BADGE = "badge";
-  private static final String TRANSITION_KEY_OUTER_CONTAINER_2 = "outer_container_2";
-  private static final String TRANSITION_KEY_CONTAINER_2 = "container_2";
-  private static final String TRANSITION_KEY_BADGE_GREEN = "badge_green";
-  private static final String TRANSITION_KEY_BADGE_BLUE = "badge_blue";
 
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c, @State int state) {
@@ -67,7 +60,6 @@ public class AnimatedBadgeSpec {
 
   static Component buildComment1(ComponentContext c, boolean expanded) {
     return Column.create(c)
-        .transitionKey(TRANSITION_KEY_OUTER_CONTAINER_1)
         .paddingDip(YogaEdge.ALL, 8)
         .child(
             Row.create(c)
@@ -79,7 +71,6 @@ public class AnimatedBadgeSpec {
                         .text("Cristobal Castilla"))
                 .child(
                     Row.create(c)
-                        .transitionKey(TRANSITION_KEY_CONTAINER_1)
                         .marginDip(YogaEdge.LEFT, 8)
                         .paddingDip(YogaEdge.ALL, 3)
                         .alignItems(YogaAlign.CENTER)
@@ -92,14 +83,17 @@ public class AnimatedBadgeSpec {
                             !expanded
                                 ? null
                                 : Text.create(c)
-                                    .transitionKey(TRANSITION_KEY_TEXT)
+                                    .transitionKey(
+                                        TRANSITION_KEY_TEXT) // still need transition keys for
+                                    // appear/disappear animations
+                                    .key("text") // need this to prevent the global key of "+1" Text
+                                    // from changing
                                     .marginDip(YogaEdge.LEFT, 8)
                                     .clipToBounds(true)
                                     .textSizeDip(12)
                                     .text("Top Follower"))
                         .child(
                             Text.create(c)
-                                .transitionKey(TRANSITION_KEY_BADGE)
                                 .marginDip(YogaEdge.LEFT, 8)
                                 .marginDip(YogaEdge.RIGHT, 4)
                                 .textSizeDip(12)
@@ -113,7 +107,6 @@ public class AnimatedBadgeSpec {
 
   static Component buildComment2(ComponentContext c, boolean expanded) {
     return Column.create(c)
-        .transitionKey(TRANSITION_KEY_OUTER_CONTAINER_2)
         .paddingDip(YogaEdge.ALL, 8)
         .child(
             Row.create(c)
@@ -125,14 +118,12 @@ public class AnimatedBadgeSpec {
                         .text("Cristobal Castilla"))
                 .child(
                     Row.create(c)
-                        .transitionKey(TRANSITION_KEY_CONTAINER_2)
                         .widthDip(expanded ? 48 : 24)
                         .marginDip(YogaEdge.LEFT, 8)
                         .paddingDip(YogaEdge.ALL, 3)
                         .alignItems(YogaAlign.CENTER)
                         .child(
                             Column.create(c)
-                                .transitionKey(TRANSITION_KEY_BADGE_BLUE)
                                 .positionType(YogaPositionType.ABSOLUTE)
                                 .positionDip(YogaEdge.LEFT, expanded ? 27 : 3)
                                 .heightDip(18)
@@ -140,7 +131,6 @@ public class AnimatedBadgeSpec {
                                 .background(buildRoundedRect(c, 0xFFB2CFE5, 9)))
                         .child(
                             Column.create(c)
-                                .transitionKey(TRANSITION_KEY_BADGE_GREEN)
                                 .positionType(YogaPositionType.ABSOLUTE)
                                 .positionDip(YogaEdge.LEFT, expanded ? 15 : 3)
                                 .heightDip(18)
@@ -170,17 +160,7 @@ public class AnimatedBadgeSpec {
   @OnCreateTransition
   static Transition onCreateTransition(ComponentContext c) {
     return Transition.parallel(
-        Transition.create(
-                TRANSITION_KEY_CONTAINER_1,
-                TRANSITION_KEY_OUTER_CONTAINER_1,
-                TRANSITION_KEY_CONTAINER_2,
-                TRANSITION_KEY_OUTER_CONTAINER_2)
-            .animate(AnimatedProperties.WIDTH)
-            .animator(ANIMATOR),
-        Transition.create(
-                TRANSITION_KEY_BADGE, TRANSITION_KEY_BADGE_GREEN, TRANSITION_KEY_BADGE_BLUE)
-            .animate(AnimatedProperties.X)
-            .animator(ANIMATOR),
+        Transition.allLayout().animator(ANIMATOR),
         Transition.create(TRANSITION_KEY_TEXT)
             .animate(AnimatedProperties.WIDTH)
             .appearFrom(0f)

@@ -15,15 +15,30 @@ package com.facebook.samples.litho.animations.animatedbadge;
 import android.os.Bundle;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.samples.litho.NavigatableDemoActivity;
 
 public class AnimatedBadgeActivity extends NavigatableDemoActivity {
+
+  private boolean mPrevAssignTransitionKeysToAllOutputs;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    mPrevAssignTransitionKeysToAllOutputs =
+        ComponentsConfiguration.assignTransitionKeysToAllOutputs;
+    ComponentsConfiguration.assignTransitionKeysToAllOutputs = true;
+
     setContentView(
         LithoView.create(this, AnimatedBadge.create(new ComponentContext(this)).build()));
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+
+    ComponentsConfiguration.assignTransitionKeysToAllOutputs =
+        mPrevAssignTransitionKeysToAllOutputs;
   }
 }
