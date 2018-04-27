@@ -506,6 +506,31 @@ public class RecyclerBinder
       Log.d(SectionsDebug.TAG, "(" + hashCode() + ") updateItemAtAsync " + position);
     }
 
+    updateItemAtAsyncInner(position, renderInfo);
+  }
+
+  /**
+   * Update the items starting from the given index position. The {@link RecyclerView} will only be
+   * notified of the item being updated after a layout calculation has been completed for the new
+   * {@link Component}.
+   */
+  @UiThread
+  public final void updateRangeAtAsync(int position, List<RenderInfo> renderInfos) {
+    ThreadUtils.assertMainThread();
+
+    if (SectionsDebug.ENABLED) {
+      Log.d(
+          SectionsDebug.TAG,
+          "(" + hashCode() + ") updateRangeAtAsync " + position + ", count: " + renderInfos.size());
+    }
+
+    for (int i = 0, size = renderInfos.size(); i < size; i++) {
+      updateItemAtAsyncInner(position + i, renderInfos.get(i));
+    }
+  }
+
+  @UiThread
+  private void updateItemAtAsyncInner(int position, RenderInfo renderInfo) {
     final ComponentTreeHolder holder;
     final boolean renderInfoWasView;
     final int indexInComponentTreeHolders;

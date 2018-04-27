@@ -111,13 +111,21 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
 
   @Override
   public void update(int index, RenderInfo renderInfo) {
-    mRecyclerBinder.updateItemAt(index, renderInfo);
+    if (mUseAsyncMutations) {
+      mRecyclerBinder.updateItemAtAsync(index, renderInfo);
+    } else {
+      mRecyclerBinder.updateItemAt(index, renderInfo);
+    }
   }
 
   @Override
   public void updateRange(
       int index, int count, List<RenderInfo> renderInfos) {
-    mRecyclerBinder.updateRangeAt(index, renderInfos);
+    if (mUseAsyncMutations) {
+      mRecyclerBinder.updateRangeAtAsync(index, renderInfos);
+    } else {
+      mRecyclerBinder.updateRangeAt(index, renderInfos);
+    }
   }
 
   @Override
