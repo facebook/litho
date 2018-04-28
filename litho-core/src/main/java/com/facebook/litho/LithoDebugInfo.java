@@ -30,7 +30,7 @@ public final class LithoDebugInfo {
 
   /** @return a list of active recycling pools used within Litho. */
   public static List<PoolWithDebugInfo> getPools() {
-    final List<PoolWithDebugInfo> pools = new ArrayList<>();
+    List<PoolWithDebugInfo> pools = new ArrayList<>();
 
     pools.addAll(ComponentsPools.getMountContentPools());
     pools.add(ComponentsPools.sLayoutStatePool);
@@ -46,7 +46,6 @@ public final class LithoDebugInfo {
     pools.add(ComponentsPools.sDiffNodePool);
     pools.add(ComponentsPools.sDiffPool);
     pools.add(ComponentsPools.sComponentTreeBuilderPool);
-    pools.add(ComponentsPools.sResourceResolverPool);
     pools.add(ComponentsPools.sStateHandlerPool);
     pools.add(ComponentsPools.sMountItemScrapArrayPool);
     pools.add(ComponentsPools.sRectFPool);

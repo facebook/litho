@@ -17,7 +17,6 @@
 package com.facebook.litho.reference;
 
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.ResourceResolver;
 
 /**
@@ -38,11 +37,10 @@ public abstract class Reference<L> {
     public abstract Reference<L> build();
 
     public final void init(ComponentContext c, Reference<L> reference) {
-      mResourceResolver = ComponentsPools.acquireResourceResolver(c);
+      mResourceResolver = new ResourceResolver(c);
     }
 
     protected void release() {
-      ComponentsPools.release(mResourceResolver);
       mResourceResolver = null;
     }
   }

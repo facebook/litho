@@ -19,7 +19,6 @@ package com.facebook.litho.processor.integration.resources;
 import com.facebook.litho.BaseMatcher;
 import com.facebook.litho.BaseMatcherBuilder;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.ResourceResolver;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import org.assertj.core.api.Condition;
@@ -39,7 +38,7 @@ public final class SimpleTestSample implements SimpleTestSampleSpec {
     protected ResourceResolver mResourceResolver;
 
     Matcher(ComponentContext c) {
-      mResourceResolver = ComponentsPools.acquireResourceResolver(c);
+      mResourceResolver = new ResourceResolver(c);
     }
 
     public Condition<InspectableComponent> build() {
@@ -59,7 +58,6 @@ public final class SimpleTestSample implements SimpleTestSampleSpec {
               final com.facebook.litho.processor.integration.resources.SimpleLayout impl =
                   (com.facebook.litho.processor.integration.resources.SimpleLayout)
                       value.getComponent();
-              release();
               return true;
             }
           };
@@ -69,11 +67,6 @@ public final class SimpleTestSample implements SimpleTestSampleSpec {
     @Override
     public Matcher getThis() {
       return this;
-    }
-
-    private void release() {
-      ComponentsPools.release(mResourceResolver);
-      mResourceResolver = null;
     }
   }
 }

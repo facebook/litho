@@ -26,7 +26,6 @@ import com.facebook.litho.BaseMatcher;
 import com.facebook.litho.BaseMatcherBuilder;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.ResourceResolver;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import javax.annotation.Nullable;
@@ -61,7 +60,7 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     @Nullable org.hamcrest.Matcher<String> mMyStringPropMatcher;
 
     Matcher(ComponentContext c) {
-      mResourceResolver = ComponentsPools.acquireResourceResolver(c);
+      mResourceResolver = new ResourceResolver(c);
     }
 
     public Matcher child(Condition<InspectableComponent> matcher) {
@@ -216,7 +215,6 @@ public final class BasicTestSample implements BasicTestSampleSpec {
                         mMyStringPropMatcher, propValueMyStringProp));
                 return false;
               }
-              release();
               return true;
             }
           };
@@ -226,11 +224,6 @@ public final class BasicTestSample implements BasicTestSampleSpec {
     @Override
     public Matcher getThis() {
       return this;
-    }
-
-    private void release() {
-      ComponentsPools.release(mResourceResolver);
-      mResourceResolver = null;
     }
   }
 }

@@ -45,7 +45,6 @@ fb_core_android_library(
     deps = [
         make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho"),
         LITHO_JAVA_TARGET,
-        LITHO_YOGA_TARGET,
         LITHO_ANNOTATIONS_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_TESTING_TARGET,

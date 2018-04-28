@@ -166,7 +166,7 @@ public class Border {
     private int mNumPathEffects;
 
     Builder(ComponentContext context) {
-      mResourceResolver = ComponentsPools.acquireResourceResolver(context);
+      mResourceResolver = new ResourceResolver(context);
       mBorder = new Border();
     }
 
@@ -493,7 +493,7 @@ public class Border {
 
     public Border build() {
       checkNotBuilt();
-      ComponentsPools.release(mResourceResolver);
+      mResourceResolver.release();
       mResourceResolver = null;
 
       if (mNumPathEffects == MAX_PATH_EFFECTS) {
