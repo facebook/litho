@@ -156,7 +156,7 @@ components_robolectric_powermock_test = components_robolectric_test
 
 def fb_xplat_cxx_library(*args, **kwargs):
     """Delegates to cxx_library for OSS project."""
-    cxx_library(*args, **kwargs)
+    native.cxx_library(*args, **kwargs)
 
 
 def fb_android_resource(**kwargs):
@@ -165,7 +165,7 @@ def fb_android_resource(**kwargs):
 
 def fb_java_library(**kwargs):
     """Delegates to native java_library rule."""
-    java_library(**kwargs)
+    native.java_library(**kwargs)
 
 def fb_android_library(**kwargs):
     """Delegates to native android_library rule."""
@@ -173,7 +173,122 @@ def fb_android_library(**kwargs):
 
 def fb_prebuilt_cxx_library(**kwargs):
     """Delegates to native prebuilt_cxx_library."""
-    prebuilt_cxx_library(**kwargs)
+    native.prebuilt_cxx_library(**kwargs)
 
 def fb_core_android_library(**kwargs):
     native.android_library(**kwargs)
+
+def define_fbjni_targets():
+    # This target is only used in open source
+    fb_prebuilt_cxx_library(
+        name="ndklog",
+        exported_platform_linker_flags=[
+            (
+                "^android.*",
+                ["-llog"],
+            ),
+        ],
+        header_only=True,
+        visibility=LITHO_VISIBILITY,
+    )
+
+    fb_xplat_cxx_library(
+        name='jni',
+        soname='libfb.$(ext)',
+        srcs=native.glob(
+            [
+                'src/main/cpp/*.cpp', 'src/main/cpp/jni/*.cpp',
+                'src/main/cpp/lyra/*.cpp'
+            ]
+        ),
+        header_namespace='',
+        compiler_flags=[
+            '-fno-omit-frame-pointer',
+            '-fexceptions',
+            '-Wall',
+            '-std=c++11',
+            '-DDISABLE_CPUCAP',
+            '-DDISABLE_XPLAT',
+        ],
+        exported_headers=subdir_glob(
+            [
+                ('src/main/cpp/include', 'fb/**/*.h'),
+                ('src/main/cpp/include', 'jni/*.h'),
+            ]
+        ),
+        deps=[
+            LITHO_JNI_TARGET,
+            ":ndklog",
+        ],
+        visibility=LITHO_VISIBILITY,
+    )
+
+# This target is only used in open source and will break the monobuild
+# because we cannot define `soname` multiple times.
+def define_yogajni_targets():
+    fb_prebuilt_cxx_library(
+        name="ndklog",
+        exported_platform_linker_flags=[
+            (
+                "^android.*",
+                ["-llog"],
+            ),
+        ],
+        header_only=True,
+        visibility=LITHO_VISIBILITY,
+    )
+
+    fb_xplat_cxx_library(
+        name='jni',
+        soname='libyoga.$(ext)',
+        srcs=native.glob(['src/main/cpp/jni/*.cpp']),
+        header_namespace='',
+        compiler_flags=[
+            '-fno-omit-frame-pointer',
+            '-fexceptions',
+            '-Wall',
+            '-Werror',
+            '-O3',
+            '-std=c++11',
+        ],
+        deps=[
+            make_dep_path("lib/yoga/src/main/cpp:yoga"),
+            LITHO_FBJNI_TARGET,
+            ":ndklog",
+        ],
+        visibility=LITHO_VISIBILITY,
+    )
+
+# This target is only used in open source and will break the monobuild
+# because we cannot define `soname` multiple times.
+def define_cpp_yoga_targets():
+    fb_prebuilt_cxx_library(
+        name="ndklog",
+        exported_platform_linker_flags=[
+            (
+                "^android.*",
+                ["-llog"],
+            ),
+        ],
+        header_only=True,
+        visibility=LITHO_VISIBILITY,
+    )
+    fb_xplat_cxx_library(
+        name="yoga",
+        srcs=native.glob(["yoga/*.cpp"]),
+        deps=[
+            ":ndklog",
+        ],
+        compiler_flags=[
+            "-fno-omit-frame-pointer",
+            "-fexceptions",
+            "-Wall",
+            "-Werror",
+            "-std=c++1y",
+            "-O3",
+        ],
+        exported_headers=native.glob(["yoga/*.h"]),
+        force_static=True,
+        header_namespace="",
+        visibility=LITHO_VISIBILITY,
+    )

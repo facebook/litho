@@ -1,41 +1,9 @@
+# BUILD FILE SYNTAX: SKYLARK
 # Copyright (c) 2017-present, Facebook, Inc.
 #
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-include_defs("//LITHO_DEFS.bzl")
+load("//:LITHO_DEFS.bzl", "define_cpp_yoga_targets")
 
-# This target is only used in open source and will break the monobuild
-# because we cannot define `soname` multiple times.
-if LITHO_IS_OSS_BUILD:
-  fb_prebuilt_cxx_library(
-      name = "ndklog",
-      exported_platform_linker_flags = [
-          (
-              "^android.*",
-              ["-llog"],
-          ),
-      ],
-      header_only = True,
-      visibility = LITHO_VISIBILITY,
-  )
-
-  fb_xplat_cxx_library(
-      name = "yoga",
-      srcs = glob(["yoga/*.cpp"]),
-      deps = [
-        ":ndklog",
-      ],
-      compiler_flags = [
-          "-fno-omit-frame-pointer",
-          "-fexceptions",
-          "-Wall",
-          "-Werror",
-          "-std=c++1y",
-          "-O3",
-      ],
-      exported_headers = glob(["yoga/*.h"]),
-      force_static = True,
-      header_namespace = "",
-      visibility = LITHO_VISIBILITY,
-  )
+define_cpp_yoga_targets()
