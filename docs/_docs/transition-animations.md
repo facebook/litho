@@ -64,6 +64,74 @@ The end result is the following:
 - The key `"red"` referenced in `Transition.create` in `@OnCreateTransition` is matched with the `transitionKey` prop from `@OnCreateLayout`: the transition key transitions to be targeted at specific components, and also allows Litho to identify a component as being the same across multiple renders.
 - The use of a builder pattern: `Transition.create` allows you to start declaring a transition on a key or set of keys. It supports one or more `.animate()` calls which specify a property or set of properties to animate. See the targeting section below.
 
+## Imperative Animations
+
+While declarative animations gives flexibility to react to any prop or state updates that change the UI, sometimes it would be convenient to trigger specific animation for specific actions. Let's consider example that is similar to the one above, but uses state value to change the UI:
+
+```java
+@OnCreateLayout
+static Component onCreateLayout(
+    ComponentContext c,
+    @State boolean left) {
+  return Row.create(c)
+      .positionPx(YogaEdge.LEFT, left ? 0 : 100)
+      .backgroundColor(Color.RED)
+      .transitionKey("red")
+      .clickHandler(SampleComponent.onClick(c))
+      .build();
+}
+
+@OnEvent(ClickEvent.class)
+static void onClick(ComponentContext c, @State boolean left) {
+  SampleComponent.updatePosition(c, !left);
+}
+
+@OnUpdateState
+static void updatePosition(StateValue<Boolean> left, @Param boolean onLeft) {
+  left.set(onLeft);
+}
+```
+
+Declaring animation would be similar to the previous example:
+
+```java
+@OnCreateTransition
+static Transition onCreateTransition(ComponentContext c) {
+  return Transition.create("red")
+      .animate(AnimatedProperties.X);
+}
+```
+<br/>
+And it will behave similarly:
+<video loop autoplay class="video" style="width: 600px; height: 100%;">
+  <source type="video/mp4" src="/static/videos/blocks_demo_animation.mov"></source>
+  <p>Your browser does not support the video element.</p>
+</video>
+
+<br/>
+Triggering animation above was implicit in the sense that click action triggers state update and resulting relayout applies the declared transition animation. While we want to animate on click action, this transition can be applied on any change of `X` property which might not have been from click action. There is no explicit connection between click action and applying transition.
+
+### `@OnUpdateStateWithTransition` API
+
+`@OnUpdateStateWithTransition` API allows to bind specific state update to specific transitions making connection more explicit. This API combines two lifecycle methods into one:
+
+```
+@OnUpdateStateWithTransition
+static Transition updatePosition(StateValue<Boolean> left, @Param boolean onLeft) {
+  left.set(onLeft);
+  return Transition.create("red")
+      .animate(AnimatedProperties.X);
+}
+```
+
+This makes sure that transition returned in this method is applied only when this state update is applied. 
+<br/>
+
+While this API is meant to be a convenient way of declaring transitions for state update, its usecase is not limited by that. It can be really useful when you have multiple state updates and for each of them you might need to declare different transition animations.
+<br/>
+
+***Note:*** Currently imperative way of declaring transitions is limited to state updates only. Triggering transition on specific prop update is not yet supported.
+
 ## Features
 
 - *Interruptible*: Animations can be interrupted and driven to a new ending value automatically
