@@ -111,11 +111,11 @@ And it will behave similarly:
 <br/>
 Triggering animation above was implicit in the sense that click action triggers state update and resulting relayout applies the declared transition animation. While we want to animate on click action, this transition can be applied on any change of `X` property which might not have been from click action. There is no explicit connection between click action and applying transition.
 
-### `@OnUpdateStateWithTransition` API
+### `@OnUpdateStateWithTransition`
 
 `@OnUpdateStateWithTransition` API allows to bind specific state update to specific transitions making connection more explicit. This API combines two lifecycle methods into one:
 
-```
+```java
 @OnUpdateStateWithTransition
 static Transition updatePosition(StateValue<Boolean> left, @Param boolean onLeft) {
   left.set(onLeft);
