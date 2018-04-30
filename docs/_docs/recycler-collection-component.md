@@ -89,7 +89,7 @@ Whenever possible, you should specify an exact height on the `RecyclerCollection
 
 ### Pull to refresh
 `RecyclerCollectionComponent` enables pull-to-refresh by default and sends an event handler to the underlying `Recycler` that will trigger a refresh on the SectionTree.
- To disable this functionality you need to set the `disablePTR` prop to false:
+ To disable this functionality you need to set the `disablePTR` prop to true:
 
 ```java
 final Component component =
