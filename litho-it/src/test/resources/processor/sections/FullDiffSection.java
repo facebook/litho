@@ -140,6 +140,16 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     mStateContainer.state1 = prevStateContainer.state1;
   }
 
+  protected static void updateState(SectionContext c, Object param) {
+    Section _component = c.getSectionScope();
+    if (_component == null) {
+      return;
+    }
+    FullDiffSection.UpdateStateStateUpdate _stateUpdate =
+        ((FullDiffSection) _component).createUpdateStateStateUpdate(param);
+    c.updateStateSync(_stateUpdate);
+  }
+
   protected static void updateStateAsync(SectionContext c, Object param) {
     Section _component = c.getSectionScope();
     if (_component == null) {
@@ -150,7 +160,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     c.updateStateAsync(_stateUpdate);
   }
 
-  protected static void updateState(SectionContext c, Object param) {
+  protected static void updateStateSync(SectionContext c, Object param) {
     Section _component = c.getSectionScope();
     if (_component == null) {
       return;

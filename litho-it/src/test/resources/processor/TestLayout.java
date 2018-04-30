@@ -411,6 +411,16 @@ public final class TestLayout<S extends View> extends Component implements TestT
     mStateContainer.state3 = prevStateContainer.state3;
   }
 
+  protected static void updateCurrentState(ComponentContext c, int someParam) {
+    Component _component = c.getComponentScope();
+    if (_component == null) {
+      return;
+    }
+    TestLayout.UpdateCurrentStateStateUpdate _stateUpdate =
+        ((TestLayout) _component).createUpdateCurrentStateStateUpdate(someParam);
+    c.updateStateSync(_stateUpdate);
+  }
+
   protected static void updateCurrentStateAsync(ComponentContext c, int someParam) {
     Component _component = c.getComponentScope();
     if (_component == null) {
@@ -420,7 +430,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     c.updateStateAsync(_stateUpdate);
   }
 
-  protected static void updateCurrentState(ComponentContext c, int someParam) {
+  protected static void updateCurrentStateSync(ComponentContext c, int someParam) {
     Component _component = c.getComponentScope();
     if (_component == null) {
       return;

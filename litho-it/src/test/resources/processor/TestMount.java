@@ -548,6 +548,16 @@ public final class TestMount<S extends View> extends Component implements TestTa
     mStateContainer.state2 = prevStateContainer.state2;
   }
 
+  protected static void updateCurrentState(ComponentContext c, int someParam) {
+    Component _component = c.getComponentScope();
+    if (_component == null) {
+      return;
+    }
+    TestMount.UpdateCurrentStateStateUpdate _stateUpdate =
+        ((TestMount) _component).createUpdateCurrentStateStateUpdate(someParam);
+    c.updateStateSync(_stateUpdate);
+  }
+
   protected static void updateCurrentStateAsync(ComponentContext c, int someParam) {
     Component _component = c.getComponentScope();
     if (_component == null) {
@@ -557,7 +567,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
     c.updateStateAsync(_stateUpdate);
   }
 
-  protected static void updateCurrentState(ComponentContext c, int someParam) {
+  protected static void updateCurrentStateSync(ComponentContext c, int someParam) {
     Component _component = c.getComponentScope();
     if (_component == null) {
       return;

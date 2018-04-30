@@ -159,6 +159,16 @@ final class FullGroupSection<T> extends Section implements TestTag {
     mStateContainer.state2 = prevStateContainer.state2;
   }
 
+  protected static void updateState(SectionContext c, Object param) {
+    Section _component = c.getSectionScope();
+    if (_component == null) {
+      return;
+    }
+    FullGroupSection.UpdateStateStateUpdate _stateUpdate =
+        ((FullGroupSection) _component).createUpdateStateStateUpdate(param);
+    c.updateStateSync(_stateUpdate);
+  }
+
   protected static void updateStateAsync(SectionContext c, Object param) {
     Section _component = c.getSectionScope();
     if (_component == null) {
@@ -169,7 +179,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
     c.updateStateAsync(_stateUpdate);
   }
 
-  protected static void updateState(SectionContext c, Object param) {
+  protected static void updateStateSync(SectionContext c, Object param) {
     Section _component = c.getSectionScope();
     if (_component == null) {
       return;

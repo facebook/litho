@@ -237,9 +237,20 @@ public class StateGeneratorTest {
     TypeSpecDataHolder dataHolder =
         StateGenerator.generateOnStateUpdateMethods(mSpecModelWithState);
 
-    assertThat(dataHolder.getMethodSpecs()).hasSize(2);
+    assertThat(dataHolder.getMethodSpecs()).hasSize(3);
 
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "protected static void updateCurrentState(com.facebook.litho.ComponentContext c) {\n"
+                + "  com.facebook.litho.Component _component = c.getComponentScope();\n"
+                + "  if (_component == null) {\n"
+                + "    return;\n"
+                + "  }\n"
+                + "  TestWithState.UpdateCurrentStateStateUpdate _stateUpdate = ((TestWithState) _component).createUpdateCurrentStateStateUpdate();\n"
+                + "  c.updateStateSync(_stateUpdate);\n"
+                + "}\n");
+
+    assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
             "protected static void updateCurrentStateAsync(com.facebook.litho.ComponentContext c) {\n"
                 + "  com.facebook.litho.Component _component = c.getComponentScope();\n"
@@ -250,9 +261,9 @@ public class StateGeneratorTest {
                 + "  c.updateStateAsync(_stateUpdate);\n"
                 + "}\n");
 
-    assertThat(dataHolder.getMethodSpecs().get(1).toString())
+    assertThat(dataHolder.getMethodSpecs().get(2).toString())
         .isEqualTo(
-            "protected static void updateCurrentState(com.facebook.litho.ComponentContext c) {\n"
+            "protected static void updateCurrentStateSync(com.facebook.litho.ComponentContext c) {\n"
                 + "  com.facebook.litho.Component _component = c.getComponentScope();\n"
                 + "  if (_component == null) {\n"
                 + "    return;\n"

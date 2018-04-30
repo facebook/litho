@@ -48,6 +48,13 @@ public class StateGenerator {
   private static final String STATE_UPDATE_METHOD_NAME = "updateState";
   private static final String LAZY_STATE_UPDATE_VALUE_PARAM = "lazyUpdateValue";
 
+  private enum StateUpdateType {
+    DEFAULT,
+    SYNC,
+    ASYNC,
+    WITH_TRANSITION,
+  }
+
   private StateGenerator() {
   }
 
@@ -143,16 +150,19 @@ public class StateGenerator {
     for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod :
         specModel.getUpdateStateMethods()) {
       dataHolder.addTypeSpecDataHolder(
-          generateOnStateUpdateMethod(specModel, updateStateMethod, true, false));
+          generateOnStateUpdateMethod(specModel, updateStateMethod, StateUpdateType.DEFAULT));
       dataHolder.addTypeSpecDataHolder(
-          generateOnStateUpdateMethod(specModel, updateStateMethod, false, false));
+          generateOnStateUpdateMethod(specModel, updateStateMethod, StateUpdateType.ASYNC));
+      dataHolder.addTypeSpecDataHolder(
+          generateOnStateUpdateMethod(specModel, updateStateMethod, StateUpdateType.SYNC));
     }
 
     if (hasUpdateStateWithTransition(specModel)) {
       for (SpecMethodModel<UpdateStateMethod, Void> updateStateWithTransitionMethod :
           specModel.getUpdateStateWithTransitionMethods()) {
         dataHolder.addTypeSpecDataHolder(
-            generateOnStateUpdateMethod(specModel, updateStateWithTransitionMethod, true, true));
+            generateOnStateUpdateMethod(
+                specModel, updateStateWithTransitionMethod, StateUpdateType.WITH_TRANSITION));
       }
     }
 
@@ -162,16 +172,24 @@ public class StateGenerator {
   static TypeSpecDataHolder generateOnStateUpdateMethod(
       SpecModel specModel,
       SpecMethodModel<UpdateStateMethod, Void> updateStateMethod,
-      boolean isAsync,
-      boolean withTransitions) {
+      StateUpdateType stateUpdateType) {
 
     final String name;
-    if (withTransitions) {
-      name = updateStateMethod.name.toString() + "WithTransition";
-    } else if (isAsync) {
-      name = updateStateMethod.name.toString() + "Async";
-    } else {
-      name = updateStateMethod.name.toString();
+    switch (stateUpdateType) {
+      case DEFAULT:
+        name = updateStateMethod.name.toString();
+        break;
+      case ASYNC:
+        name = updateStateMethod.name.toString() + "Async";
+        break;
+      case SYNC:
+        name = updateStateMethod.name.toString() + "Sync";
+        break;
+      case WITH_TRANSITION:
+        name = updateStateMethod.name.toString() + "WithTransition";
+        break;
+      default:
+        throw new RuntimeException("Unhandled state update type: " + stateUpdateType);
     }
 
     final MethodSpec.Builder builder = MethodSpec.methodBuilder(name)
@@ -214,12 +232,20 @@ public class StateGenerator {
     codeBlockBuilder.add(");\n");
 
     builder.addCode(codeBlockBuilder.build());
-    if (withTransitions) {
-      builder.addStatement("c.updateStateWithTransition(_stateUpdate)");
-    } else if (isAsync) {
-      builder.addStatement("c.updateStateAsync(_stateUpdate)");
-    } else {
-      builder.addStatement("c.updateStateSync(_stateUpdate)");
+
+    switch (stateUpdateType) {
+      case DEFAULT:
+      case SYNC:
+        builder.addStatement("c.updateStateSync(_stateUpdate)");
+        break;
+      case ASYNC:
+        builder.addStatement("c.updateStateAsync(_stateUpdate)");
+        break;
+      case WITH_TRANSITION:
+        builder.addStatement("c.updateStateWithTransition(_stateUpdate)");
+        break;
+      default:
+        throw new RuntimeException("Unhandled state update type: " + stateUpdateType);
     }
 
     return TypeSpecDataHolder.newBuilder().addMethod(builder.build()).build();
