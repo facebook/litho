@@ -21,6 +21,7 @@ import android.support.test.InstrumentationRegistry;
 import android.view.ViewGroup;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.espresso.LithoActivityTestRule;
 
@@ -65,6 +66,19 @@ public class ComponentActivityTestRule extends LithoActivityTestRule<ComponentAc
           @Override
           public void run() {
             getActivity().setComponent(component);
+          }
+        });
+    instrumentation.waitForIdleSync();
+  }
+
+  /** Set ComponentTree for the Activity to display. */
+  public void setComponentTree(final ComponentTree componentTree) {
+    final Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+    instrumentation.runOnMainSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            getActivity().setComponentTree(componentTree);
           }
         });
     instrumentation.waitForIdleSync();

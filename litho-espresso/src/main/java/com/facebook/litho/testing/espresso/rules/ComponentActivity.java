@@ -18,6 +18,7 @@ package com.facebook.litho.testing.espresso.rules;
 
 import android.support.v7.app.AppCompatActivity;
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
 
 /**
@@ -28,5 +29,12 @@ public class ComponentActivity extends AppCompatActivity {
   /** Sets or replaces the Component being rendered in this Activity. */
   public void setComponent(Component component) {
     setContentView(LithoView.create(this, component));
+  }
+
+  /** Sets or replaces the ComponentTree being rendered in this Activity. */
+  public void setComponentTree(ComponentTree componentTree) {
+    final LithoView lithoView = new LithoView(this);
+    lithoView.setComponentTree(componentTree);
+    setContentView(lithoView);
   }
 }
