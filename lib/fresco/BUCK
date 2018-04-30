@@ -14,8 +14,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = "fresco-binary-aar",
-    sha1 = "f4415e8676eef4d12fdc8ddbd784bb752cf0c5e3",
-    url = "mvn:com.facebook.fresco:fresco:aar:1.9.0",
+    sha1 = "c6ed3f696ed47dca3b20d4ffbd0600c94b9119b2",
+    url = "mvn:com.facebook.fresco:fresco:aar:1.8.1",
 )
 
 android_prebuilt_aar(
