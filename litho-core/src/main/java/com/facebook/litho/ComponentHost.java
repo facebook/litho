@@ -44,6 +44,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -254,7 +255,7 @@ public class ComponentHost extends ViewGroup {
   }
 
   boolean hasDisappearingItems() {
-    return mDisappearingItems != null && mDisappearingItems.size() > 0;
+    return mDisappearingItems != null && !mDisappearingItems.isEmpty();
   }
 
   List<String> getDisappearingItemKeys() {
@@ -356,7 +357,9 @@ public class ComponentHost extends ViewGroup {
    * @return list of drawables that are mounted on this host.
    */
   public List<Drawable> getDrawables() {
-    ensureDrawableMountItems();
+    if (mDrawableMountItems == null || mDrawableMountItems.size() == 0) {
+      return Collections.emptyList();
+    }
 
     final List<Drawable> drawables = new ArrayList<>(mDrawableMountItems.size());
     for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
@@ -640,10 +643,10 @@ public class ComponentHost extends ViewGroup {
   }
 
   public List<CharSequence> getContentDescriptions() {
-    ensureDrawableMountItems();
-
     final List<CharSequence> contentDescriptions = new ArrayList<>();
-    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
+    for (int i = 0, size = mDrawableMountItems == null ? 0 : mDrawableMountItems.size();
+        i < size;
+        i++) {
       final NodeInfo nodeInfo = mDrawableMountItems.valueAt(i).getNodeInfo();
       if (nodeInfo == null) {
         continue;
@@ -720,8 +723,9 @@ public class ComponentHost extends ViewGroup {
     // Everything from mMountItems was drawn at this point. Then ViewGroup took care of drawing
     // disappearing views, as they still added as children. Thus the only thing left to draw is
     // disappearing drawables
-    ensureDisappearingItems();
-    for (int index = 0, size = mDisappearingItems.size(); index < size; ++index) {
+    for (int index = 0, size = mDisappearingItems == null ? 0 : mDisappearingItems.size();
+        index < size;
+        ++index) {
       final Object content = mDisappearingItems.get(index).getContent();
       if (content instanceof Drawable) {
         ((Drawable) content).draw(canvas);
@@ -752,10 +756,10 @@ public class ComponentHost extends ViewGroup {
     boolean handled = false;
 
     if (isEnabled()) {
-      ensureDrawableMountItems();
-
       // Iterate drawable from last to first to respect drawing order.
-      for (int i = mDrawableMountItems.size() - 1; i >= 0; i--) {
+      for (int i = ((mDrawableMountItems == null) ? 0 : mDrawableMountItems.size()) - 1;
+          i >= 0;
+          i--) {
         final MountItem item = mDrawableMountItems.valueAt(i);
 
         if (item.getContent() instanceof Touchable && !isTouchableDisabled(item.getFlags())) {
@@ -820,8 +824,9 @@ public class ComponentHost extends ViewGroup {
   protected void drawableStateChanged() {
     super.drawableStateChanged();
 
-    ensureDrawableMountItems();
-    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
+    for (int i = 0, size = (mDrawableMountItems == null) ? 0 : mDrawableMountItems.size();
+        i < size;
+        i++) {
       final MountItem mountItem = mDrawableMountItems.valueAt(i);
       ComponentHostUtils.maybeSetDrawableState(
           this,
@@ -835,8 +840,9 @@ public class ComponentHost extends ViewGroup {
   public void jumpDrawablesToCurrentState() {
     super.jumpDrawablesToCurrentState();
 
-    ensureDrawableMountItems();
-    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
+    for (int i = 0, size = (mDrawableMountItems == null) ? 0 : mDrawableMountItems.size();
+        i < size;
+        i++) {
       final Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getContent();
       DrawableCompat.jumpToCurrentState(drawable);
     }
@@ -846,7 +852,9 @@ public class ComponentHost extends ViewGroup {
   public void setVisibility(int visibility) {
     super.setVisibility(visibility);
 
-    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
+    for (int i = 0, size = (mDrawableMountItems == null) ? 0 : mDrawableMountItems.size();
+        i < size;
+        i++) {
       final Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getContent();
       drawable.setVisible(visibility == View.VISIBLE, false);
     }
@@ -1115,8 +1123,9 @@ public class ComponentHost extends ViewGroup {
   public @Nullable List<Drawable> getLinkedDrawablesForAnimation() {
     List<Drawable> drawables = null;
 
-    ensureDrawableMountItems();
-    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
+    for (int i = 0, size = (mDrawableMountItems == null) ? 0 : mDrawableMountItems.size();
+        i < size;
+        i++) {
       final MountItem mountItem = mDrawableMountItems.valueAt(i);
       if ((mountItem.getFlags() & MountItem.FLAG_MATCH_HOST_BOUNDS) != 0) {
         if (drawables == null) {
@@ -1138,18 +1147,17 @@ public class ComponentHost extends ViewGroup {
       mChildDrawingOrder = new int[childCount + 5];
     }
 
-    ensureViewMountItems();
-
     int index = 0;
-    final int viewMountItemCount = mViewMountItems.size();
+    final int viewMountItemCount = mViewMountItems == null ? 0 : mViewMountItems.size();
     for (int i = 0; i < viewMountItemCount; i++) {
       final View child = (View) mViewMountItems.valueAt(i).getContent();
       mChildDrawingOrder[index++] = indexOfChild(child);
     }
 
     // Draw disappearing items on top of mounted views.
-    ensureDisappearingItems();
-    for (int i = 0, size = mDisappearingItems.size(); i < size; i++) {
+    for (int i = 0, size = mDisappearingItems == null ? 0 : mDisappearingItems.size();
+        i < size;
+        i++) {
       final Object child = mDisappearingItems.get(i).getContent();
       if (child instanceof View) {
         mChildDrawingOrder[index++] = indexOfChild((View) child);
@@ -1270,11 +1278,9 @@ public class ComponentHost extends ViewGroup {
     }
 
     private void start(Canvas canvas) {
-      ensureMountItems();
-
       mCanvas = canvas;
       mDrawIndex = 0;
-      mItemsToDraw = mMountItems.size();
+      mItemsToDraw = mMountItems == null ? 0 : mMountItems.size();
     }
 
     private boolean isRunning() {
@@ -1286,7 +1292,9 @@ public class ComponentHost extends ViewGroup {
         return;
       }
 
-      for (int i = mDrawIndex, size = mMountItems.size(); i < size; i++) {
+      for (int i = mDrawIndex, size = (mMountItems == null) ? 0 : mMountItems.size();
+          i < size;
+          i++) {
         final MountItem mountItem = mMountItems.valueAt(i);
 
         final Object content = mountItem.getDisplayListDrawable() != null ?
@@ -1343,9 +1351,9 @@ public class ComponentHost extends ViewGroup {
       CharSequence contentDesc = null;
       if (!TextUtils.isEmpty(getContentDescription())) {
         contentDesc = getContentDescription();
-      } else if (getContentDescriptions().size() != 0) {
+      } else if (!getContentDescriptions().isEmpty()) {
         contentDesc = TextUtils.join(", ", getContentDescriptions());
-      } else if (getTextContent().getTextItems().size() != 0) {
+      } else if (!getTextContent().getTextItems().isEmpty()) {
         contentDesc = TextUtils.join(", ", getTextContent().getTextItems());
       }
 

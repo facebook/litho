@@ -63,6 +63,9 @@ class ComponentHostUtils {
       int index,
       SparseArrayCompat<T> items,
       SparseArrayCompat<T> scrapItems) {
+    if (items == null || scrapItems == null) {
+      return;
+    }
     final T value = items.get(index);
     if (value != null) {
       scrapItems.put(index, value);
