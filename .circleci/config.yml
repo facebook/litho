@@ -6,7 +6,7 @@ jobs:
       ANDROID_HOME: '/home/circleci/android-sdk'
       ANDROID_NDK_REPOSITORY: "/home/circleci/android-ndk"
     docker:
-      - image: passy/android-circleci-litho:v27-2
+      - image: passy/android-circleci-litho:v27-3
     resource_class: large
     steps:
       - checkout
@@ -30,8 +30,6 @@ jobs:
       - save_cache:
           paths:
             - ~/.gradle
-            - ~/buck
-            - ~/android-sdk
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "gradle.properties" }}
       - run:
           name: Run Tests
