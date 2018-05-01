@@ -2,7 +2,7 @@ version: 2.0
 
 container_config: &container_config
   docker:
-    - image: passy/android-circleci-litho:v27-2
+    - image: passy/android-circleci-litho:v27-3
   working_directory: ~/litho-working-dir
   environment:
     # Borrowed from https://github.com/chrisbanes/tivi/blob/master/.circleci/config.yml
@@ -30,18 +30,12 @@ gradle_caches_path: &gradle_caches_path
 gradle_wrapper_path: &gradle_wrapper_path
   ~/.gradle/wrapper
 
-buck_path: &buck_path
-  ~/buck
-
-android_sdk_path: &android_sdk_path
-  ~/android-sdk
-
 attach_workspace: &attach_workspace
   attach_workspace:
     at: ~/litho-working-dir/workspace
 
 repo_cache_key: &repo_cache_key
-  key: v1-jars-{{ checksum "workspace/repo/build.gradle" }}-{{ checksum  "workspace/repo/gradle.properties" }}
+  key: v2-jars-{{ checksum "workspace/repo/build.gradle" }}-{{ checksum  "workspace/repo/gradle.properties" }}
 
 restore_repo: &restore_repo
   restore_cache:
