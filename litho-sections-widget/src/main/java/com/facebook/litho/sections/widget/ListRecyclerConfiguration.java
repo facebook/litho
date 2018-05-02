@@ -22,6 +22,7 @@ import static android.support.v7.widget.LinearSmoothScroller.SNAP_TO_START;
 import android.content.Context;
 import android.support.annotation.IntDef;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
@@ -42,7 +43,11 @@ import javax.annotation.Nullable;
 public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<RecyclerView>>
     implements RecyclerConfiguration {
 
+  /* This snap mode will cause a PagerSnapHelper to be used */
   public static final int SNAP_TO_CENTER = Integer.MAX_VALUE;
+  /* This snap mode will cause a LinearSnapHelper to be used */
+  public static final int SNAP_TO_CENTER_CHILD = Integer.MAX_VALUE - 1;
+  /* No snap helper is required */
   public static final int SNAP_NONE = Integer.MIN_VALUE;
 
   private static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
@@ -51,13 +56,13 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   private static final LinearLayoutInfoFactory LINEAR_LAYOUT_INFO_FACTORY =
       new DefaultLinearLayoutInfoFactory();
 
-  @IntDef({SNAP_NONE, SNAP_TO_END, SNAP_TO_START, SNAP_TO_CENTER})
+  @IntDef({SNAP_NONE, SNAP_TO_END, SNAP_TO_START, SNAP_TO_CENTER, SNAP_TO_CENTER_CHILD})
   @Retention(RetentionPolicy.SOURCE)
   public @interface SnapMode {}
 
   private final int mOrientation;
   private final boolean mReverseLayout;
-  private final @Nullable SnapHelper mSnapHelper;
+  private final @SnapMode int mSnapMode;
   private final RecyclerBinderConfiguration mRecyclerBinderConfiguration;
   private final LinearLayoutInfoFactory mLinearLayoutInfoFactory;
 
@@ -70,9 +75,9 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     return new ListRecyclerConfiguration(
         LinearLayoutManager.VERTICAL,
         false,
+        SNAP_NONE,
         recyclerBinderConfiguration,
-        LINEAR_LAYOUT_INFO_FACTORY,
-        null);
+        LINEAR_LAYOUT_INFO_FACTORY);
   }
 
   public ListRecyclerConfiguration() {
@@ -89,16 +94,6 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
         reverseLayout,
         snapMode,
         RECYCLER_BINDER_CONFIGURATION);
-  }
-
-  public ListRecyclerConfiguration(
-      int orientation, boolean reverseLayout, @Nullable SnapHelper snapHelper) {
-    this(
-        orientation,
-        reverseLayout,
-        RECYCLER_BINDER_CONFIGURATION,
-        LINEAR_LAYOUT_INFO_FACTORY,
-        snapHelper);
   }
 
   public ListRecyclerConfiguration(
@@ -120,28 +115,12 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       @SnapMode int snapMode,
       @Nullable RecyclerBinderConfiguration recyclerBinderConfiguration,
       @Nullable LinearLayoutInfoFactory linearLayoutInfoFactory) {
-    this(
-        orientation,
-        reverseLayout,
-        recyclerBinderConfiguration,
-        linearLayoutInfoFactory,
-        snapMode == SNAP_TO_CENTER
-            ? new PagerSnapHelper()
-            : snapMode == SNAP_TO_START ? new StartSnapHelper() : null);
-  }
-
-  public ListRecyclerConfiguration(
-      int orientation,
-      boolean reverseLayout,
-      @Nullable RecyclerBinderConfiguration recyclerBinderConfiguration,
-      @Nullable LinearLayoutInfoFactory linearLayoutInfoFactory,
-      @Nullable SnapHelper snapHelper) {
-    if (orientation != OrientationHelper.HORIZONTAL && snapHelper != null) {
+    if (orientation != OrientationHelper.HORIZONTAL && snapMode != SNAP_NONE) {
       throw new UnsupportedOperationException("Snapping is only implemented for horizontal lists");
     }
     mOrientation = orientation;
     mReverseLayout = reverseLayout;
-    mSnapHelper = snapHelper;
+    mSnapMode = snapMode;
     mRecyclerBinderConfiguration = recyclerBinderConfiguration == null
         ? RECYCLER_BINDER_CONFIGURATION
         : recyclerBinderConfiguration;
@@ -176,7 +155,21 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
 
   @Override
   public @Nullable SnapHelper getSnapHelper() {
-    return mSnapHelper;
+    switch (mSnapMode) {
+      case SNAP_TO_CENTER:
+        return new PagerSnapHelper();
+
+      case SNAP_TO_START:
+        return new StartSnapHelper();
+
+      case SNAP_TO_CENTER_CHILD:
+        return new LinearSnapHelper();
+
+      case SNAP_TO_END:
+      case SNAP_NONE:
+      default:
+        return null;
+    }
   }
 
   @Override
