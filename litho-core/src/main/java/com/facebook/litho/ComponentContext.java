@@ -171,7 +171,11 @@ public class ComponentContext extends ContextWrapper {
       return;
     }
 
-    mComponentTree.updateStateSync(mComponentScope.getGlobalKey(), stateUpdate);
+    if (ComponentsConfiguration.updateStateAsync) {
+      mComponentTree.updateStateAsync(mComponentScope.getGlobalKey(), stateUpdate);
+    } else {
+      mComponentTree.updateStateSync(mComponentScope.getGlobalKey(), stateUpdate);
+    }
   }
 
   /**
