@@ -33,7 +33,6 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.Output;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.ArrayList;
 import java.util.List;
@@ -135,22 +134,8 @@ public class RecyclerSpecTest {
     final TestComponentContext testComponentContext =
         new TestComponentContext(mComponentContext, recycler);
 
-    ComponentsConfiguration.updateMeasureAsync = true;
-
     RecyclerSpec.onRemeasure(testComponentContext, 0);
     assertThat(testComponentContext.isUpdateStateAsync()).isTrue();
-  }
-
-  @Test
-  public void testUpdateStateSyncWithRemeasureEvent() {
-    final Recycler recycler = Recycler.create(mComponentContext).binder(mock(Binder.class)).build();
-    final TestComponentContext testComponentContext =
-        new TestComponentContext(mComponentContext, recycler);
-
-    ComponentsConfiguration.updateMeasureAsync = false;
-
-    RecyclerSpec.onRemeasure(testComponentContext, 0);
-    assertThat(testComponentContext.isUpdateStateAsync()).isFalse();
   }
 
   @Test

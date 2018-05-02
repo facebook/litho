@@ -53,7 +53,6 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldAlwaysRemeasure;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.List;
 
 /**
@@ -389,11 +388,7 @@ class RecyclerSpec {
 
   @OnEvent(ReMeasureEvent.class)
   protected static void onRemeasure(ComponentContext c, @State int measureVersion) {
-    if (ComponentsConfiguration.updateMeasureAsync) {
-      Recycler.onUpdateMeasureAsync(c, measureVersion + 1);
-    } else {
-      Recycler.onUpdateMeasure(c, measureVersion + 1);
-    }
+    Recycler.onUpdateMeasureAsync(c, measureVersion + 1);
   }
 
   @OnCreateInitialState
