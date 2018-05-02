@@ -17,7 +17,7 @@ jobs:
           name: Unset key
           command: "export KEY=\"<unset>\""
       - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "gradle.properties" }}
+          key: jars-v2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
       - run:
           name: Set up Buck
           command: echo "export PATH=$HOME/buck/bin:$PATH" >> $BASH_ENV
@@ -30,7 +30,7 @@ jobs:
       - save_cache:
           paths:
             - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "gradle.properties" }}
+          key: jars-v2-{{ checksum "build.gradle" }}-{{ checksum "gradle.properties" }}
       - run:
           name: Run Tests
           command: |
