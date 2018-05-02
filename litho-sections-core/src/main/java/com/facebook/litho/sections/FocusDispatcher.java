@@ -51,6 +51,16 @@ class FocusDispatcher {
     requestFocusWithOffset(index, 0);
   }
 
+  @UiThread
+  void requestSmoothFocus(int index) {
+    if (shouldDispatchRequests()) {
+      mTarget.requestSmoothFocus(index);
+      return;
+    }
+
+    queueRequest(index, 0);
+  }
+
   /**
    * Request focus to a specific index position with an offset.
    *

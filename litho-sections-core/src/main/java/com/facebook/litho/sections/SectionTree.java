@@ -640,6 +640,17 @@ public class SectionTree {
         });
   }
 
+  void requestSmoothFocus(final Section section, final int index) {
+    focusRequestOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            checkFocusValidity(section.getGlobalKey(), index);
+            mFocusDispatcher.requestSmoothFocus(index);
+          }
+        });
+  }
+
   @UiThread
   private void checkFocusValidity(String sectionKey, int index) {
     if (mSectionPositionInfo == null) {

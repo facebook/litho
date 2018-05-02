@@ -370,4 +370,15 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
 
     sectionTree.requestFocusWithOffset(globalKey, index, offset);
   }
+
+  public static void requestSmoothFocus(SectionContext c, int index) {
+    final Section scopedSection = c.getSectionScope();
+    final SectionTree sectionTree = c.getSectionTree();
+
+    if (scopedSection == null || sectionTree == null) {
+      return;
+    }
+
+    sectionTree.requestSmoothFocus(scopedSection, index);
+  }
 }
