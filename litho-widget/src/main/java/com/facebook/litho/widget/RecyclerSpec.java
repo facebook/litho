@@ -103,7 +103,7 @@ class RecyclerSpec {
         measureOutput,
         widthSpec,
         heightSpec,
-        canMeasure ? Recycler.onRemeasure(c) : null);
+        (canMeasure || binder.isWrapContent()) ? Recycler.onRemeasure(c) : null);
   }
 
   @OnBoundsDefined

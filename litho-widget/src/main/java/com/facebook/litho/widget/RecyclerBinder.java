@@ -1217,7 +1217,7 @@ public class RecyclerBinder
               widthSpec,
               mMeasuredSize.width)) {
             outSize.width = mMeasuredSize.width;
-            outSize.height = SizeSpec.getSize(heightSpec);
+            outSize.height = mWrapContent ? mMeasuredSize.height : SizeSpec.getSize(heightSpec);
 
             return;
           }
@@ -1227,7 +1227,7 @@ public class RecyclerBinder
               mLastHeightSpec,
               heightSpec,
               mMeasuredSize.height)) {
-            outSize.width = SizeSpec.getSize(widthSpec);
+            outSize.width = mWrapContent ? mMeasuredSize.width : SizeSpec.getSize(widthSpec);
             outSize.height = mMeasuredSize.height;
 
             return;
@@ -1281,6 +1281,8 @@ public class RecyclerBinder
     // At this point we might still not have a range. In this situation we should return the best
     // size we can detect from the size spec and update it when the first item comes in.
     final boolean canMeasure = reMeasureEventHandler != null;
+    final int measuredWidth;
+    final int measuredHeight;
 
     switch (scrollDirection) {
       case OrientationHelper.VERTICAL:
@@ -1289,62 +1291,67 @@ public class RecyclerBinder
               "Recycler if dynamic measurement is not allowed");
         }
 
-        outSize.height = SizeSpec.getSize(heightSpec);
+        measuredHeight = SizeSpec.getSize(heightSpec);
 
         if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY || !canMeasure) {
-          outSize.width = SizeSpec.getSize(widthSpec);
-          mReMeasureEventEventHandler = null;
-          mRequiresRemeasure.set(false);
+          measuredWidth = SizeSpec.getSize(widthSpec);
+          mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
+          mRequiresRemeasure.set(mWrapContent);
           mAsyncInsertsShouldWaitForMeasure = false;
         } else if (mRange != null) {
-          outSize.width = mRange.measuredSize;
-          mReMeasureEventEventHandler = null;
-          mRequiresRemeasure.set(false);
+          measuredWidth = mRange.measuredSize;
+          mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
+          mRequiresRemeasure.set(mWrapContent);
           mAsyncInsertsShouldWaitForMeasure = false;
         } else {
-          outSize.width = 0;
+          measuredWidth = 0;
           mRequiresRemeasure.set(true);
           mReMeasureEventEventHandler = reMeasureEventHandler;
         }
-
         break;
+
       case OrientationHelper.HORIZONTAL:
+      default:
         if (!canMeasure && SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
           throw new IllegalStateException("Can't use Unspecified height on an horizontal " +
               "scrolling Recycler if dynamic measurement is not allowed");
         }
 
-        outSize.width = SizeSpec.getSize(widthSpec);
+        measuredWidth = SizeSpec.getSize(widthSpec);
 
         if (SizeSpec.getMode(heightSpec) == SizeSpec.EXACTLY || !canMeasure) {
-          outSize.height = SizeSpec.getSize(heightSpec);
-          mReMeasureEventEventHandler = mHasDynamicItemHeight ? reMeasureEventHandler : null;
-          mRequiresRemeasure.set(mHasDynamicItemHeight);
+          measuredHeight = SizeSpec.getSize(heightSpec);
+          mReMeasureEventEventHandler =
+              (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
+          mRequiresRemeasure.set(mHasDynamicItemHeight || mWrapContent);
           mAsyncInsertsShouldWaitForMeasure = false;
         } else if (mRange != null) {
-          outSize.height = mRange.measuredSize;
-          mReMeasureEventEventHandler = mHasDynamicItemHeight ? reMeasureEventHandler : null;
-          mRequiresRemeasure.set(mHasDynamicItemHeight);
+          measuredHeight = mRange.measuredSize;
+          mReMeasureEventEventHandler =
+              (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
+          mRequiresRemeasure.set(mHasDynamicItemHeight || mWrapContent);
           mAsyncInsertsShouldWaitForMeasure = false;
         } else {
-          outSize.height = 0;
+          measuredHeight = 0;
           mRequiresRemeasure.set(true);
           mReMeasureEventEventHandler = reMeasureEventHandler;
         }
         break;
     }
 
-    mMeasuredSize = new Size(outSize.width, outSize.height);
-    mIsMeasured.set(true);
+    final boolean fillListViewport =
+        doFillViewportAfterFinishingMeasure
+            && shouldFillListViewport()
+            && (mAllowFillViewportOnMainForTest || !ThreadUtils.isMainThread());
+
+    final Size wrapSize = mWrapContent ? new Size() : null;
 
     // If we were in a position to recompute range, we are also in a position to re-fill the
     // viewport
     if (doFillViewportAfterFinishingMeasure && !mInsertsWaitingForInitialMeasure.isEmpty()) {
-      fillAdapterWithInitialLayouts();
-    } else if (doFillViewportAfterFinishingMeasure
-        && shouldFillListViewport()
-        && (mAllowFillViewportOnMainForTest || !ThreadUtils.isMainThread())) {
-      fillListViewport();
+      fillAdapterWithInitialLayouts(measuredWidth, measuredHeight, wrapSize);
+    } else if (mWrapContent || fillListViewport) {
+      fillListViewport(measuredWidth, measuredHeight, wrapSize);
     } else if (SectionsDebug.ENABLED) {
       Log.d(
           SectionsDebug.TAG,
@@ -1357,6 +1364,12 @@ public class RecyclerBinder
               + ", isMainThread: "
               + ThreadUtils.isMainThread());
     }
+
+    outSize.width = mWrapContent ? wrapSize.width : measuredWidth;
+    outSize.height = mWrapContent ? wrapSize.height : measuredHeight;
+
+    mMeasuredSize = new Size(outSize.width, outSize.height);
+    mIsMeasured.set(true);
 
     updateAsyncInsertOperations();
 
@@ -1372,7 +1385,7 @@ public class RecyclerBinder
   }
 
   @GuardedBy("this")
-  private void fillListViewport() {
+  private void fillListViewport(int maxWidth, int maxHeight, @Nullable Size outSize) {
     ComponentsSystrace.beginSection("fillListViewport");
     final int firstVisiblePosition = mLayoutInfo.findFirstVisibleItemPosition();
 
@@ -1380,13 +1393,14 @@ public class RecyclerBinder
     final int startIndex =
         firstVisiblePosition != RecyclerView.NO_POSITION ? firstVisiblePosition : 0;
 
-    computeLayoutsToFillListViewport(mComponentTreeHolders, startIndex);
+    computeLayoutsToFillListViewport(
+        mComponentTreeHolders, startIndex, maxWidth, maxHeight, outSize);
 
     ComponentsSystrace.endSection();
   }
 
   @GuardedBy("this")
-  private void fillAdapterWithInitialLayouts() {
+  private void fillAdapterWithInitialLayouts(int maxWidth, int maxHeight, @Nullable Size outSize) {
     ComponentsSystrace.beginSection("fillAdapterWithInitialLayouts");
     if (mComponentTreeHolders.size() > 0) {
       throw new RuntimeException(
@@ -1414,7 +1428,8 @@ public class RecyclerBinder
       holdersForInsert.add(operation.mHolder);
     }
 
-    final int numComputed = computeLayoutsToFillListViewport(holdersForInsert, 0);
+    final int numComputed =
+        computeLayoutsToFillListViewport(holdersForInsert, 0, maxWidth, maxHeight, outSize);
     if (numComputed > 0) {
       maybePostInsertInitialLayoutsIntoAdapter(holdersForInsert.subList(0, numComputed));
     }
@@ -1430,18 +1445,21 @@ public class RecyclerBinder
   }
 
   @GuardedBy("this")
-  private int computeLayoutsToFillListViewport(List<ComponentTreeHolder> holders, int offset) {
-    final int width = mMeasuredSize.width;
-    final int height = mMeasuredSize.height;
-    final LayoutInfo.ViewportFiller filler = mLayoutInfo.createViewportFiller(width, height);
+  private int computeLayoutsToFillListViewport(
+      List<ComponentTreeHolder> holders,
+      int offset,
+      int maxWidth,
+      int maxHeight,
+      @Nullable Size outputSize) {
+    final LayoutInfo.ViewportFiller filler = mLayoutInfo.createViewportFiller(maxWidth, maxHeight);
     if (filler == null) {
       return 0;
     }
 
     ComponentsSystrace.beginSection("computeLayoutsToFillListViewport");
 
-    final int widthSpec = SizeSpec.makeSizeSpec(width, SizeSpec.EXACTLY);
-    final int heightSpec = SizeSpec.makeSizeSpec(height, SizeSpec.EXACTLY);
+    final int widthSpec = SizeSpec.makeSizeSpec(maxWidth, SizeSpec.EXACTLY);
+    final int heightSpec = SizeSpec.makeSizeSpec(maxHeight, SizeSpec.EXACTLY);
     final Size outSize = new Size();
 
     int numInserted = 0;
@@ -1466,6 +1484,17 @@ public class RecyclerBinder
 
       index++;
       numInserted++;
+    }
+
+    if (outputSize != null) {
+      final int fill = filler.getFill();
+      if (mLayoutInfo.getScrollDirection() == VERTICAL) {
+        outputSize.width = maxWidth;
+        outputSize.height = Math.min(fill, maxHeight);
+      } else {
+        outputSize.width = Math.min(fill, maxWidth);
+        outputSize.height = maxHeight;
+      }
     }
 
     ComponentsSystrace.endSection();
