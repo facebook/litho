@@ -14,8 +14,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = "fresco-binary-aar",
-    sha1 = "c6ed3f696ed47dca3b20d4ffbd0600c94b9119b2",
-    url = "mvn:com.facebook.fresco:fresco:aar:1.8.1",
+    sha1 = "f4415e8676eef4d12fdc8ddbd784bb752cf0c5e3",
+    url = "mvn:com.facebook.fresco:fresco:aar:1.9.0",
 )
 
 android_prebuilt_aar(
@@ -26,8 +26,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = "drawee-binary-aar",
-    sha1 = "6bc689901ddcac8f3df5ba4db1f8aabeb8e80107",
-    url = "mvn:com.facebook.fresco:drawee:aar:1.8.1",
+    sha1 = "e0c3b0fa64fc7525f05a852476bc8723ae6ddc90",
+    url = "mvn:com.facebook.fresco:drawee:aar:1.9.0",
 )
 
 litho_android_library(
@@ -48,8 +48,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = "imagepipeline-base-aar",
-    sha1 = "42fd80c46a853850dfc0d71808b982fef401c841",
-    url = "mvn:com.facebook.fresco:imagepipeline-base:aar:1.8.1",
+    sha1 = "8034e5c8a75385bd20e72ff51489b0673029fcf7",
+    url = "mvn:com.facebook.fresco:imagepipeline-base:aar:1.9.0",
 )
 
 android_prebuilt_aar(
@@ -60,8 +60,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = "imagepipeline-aar",
-    sha1 = "06a2a4c3e1d9a7fb7d7f1ad14db63e2d32ef0b61",
-    url = "mvn:com.facebook.fresco:imagepipeline:aar:1.8.1",
+    sha1 = "8043733b1bf3713d3a3c7fc7896205c96c050fd7",
+    url = "mvn:com.facebook.fresco:imagepipeline:aar:1.9.0",
 )
 
 prebuilt_jar(
