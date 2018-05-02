@@ -136,7 +136,7 @@ While this API is meant to be a convenient way of declaring transitions for stat
 
 - *Interruptible*: Animations can be interrupted and driven to a new ending value automatically
 - *Declarative*: The framework handles and drives the animations for you, meaning you get 60fps, interruptible animations without extra work.
-- *Current Properties*: Currently supports animating `X`, `Y`, `SCALE`, and `ALPHA`. We hope to support `WIDTH` and `HEIGHT` in the near future.
+- *Current Properties*: Currently supports animating `X`, `Y`, `WIDTH`, `HEIGHT`, `SCALE`, and `ALPHA`. 
 
 <br />
 <video loop autoplay class="video" style="width: 600px; height: 100%;">
