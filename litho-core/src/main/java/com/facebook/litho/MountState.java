@@ -81,7 +81,7 @@ import java.util.Map;
 @ThreadConfined(ThreadConfined.UI)
 class MountState implements TransitionManager.OnAnimationCompleteListener {
 
-  static final int ROOT_HOST_ID = 0;
+  static final long ROOT_HOST_ID = 0L;
   private static final double NS_IN_MS = 1000000.0;
 
   // Holds the current list of mounted items.
@@ -101,7 +101,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   // and populated during test runs.
   private final Map<String, Deque<TestItem>> mTestItemMap;
 
-  private @Nullable long[] mLayoutOutputsIds;
+  @Nullable private long[] mLayoutOutputsIds;
 
   // True if we are receiving a new LayoutState and we need to completely
   // refresh the content of the HostComponent. Always set from the main thread.
@@ -947,7 +947,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         ((View) content).getHeight();
   }
 
-  private void updateBoundsForMountedLayoutOutput(LayoutOutput layoutOutput, MountItem item) {
+  private static void updateBoundsForMountedLayoutOutput(
+      LayoutOutput layoutOutput, MountItem item) {
     // MountState should never update the bounds of the top-level host as this
     // should be done by the ViewGroup containing the LithoView.
     if (layoutOutput.getId() == ROOT_HOST_ID) {
@@ -2451,7 +2452,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     // Update parents
     long hostId = layoutState.getMountableOutputAt(index).getHostMarker();
     while (hostId != ROOT_HOST_ID) {
-      int hostIndex = layoutState.getLayoutOutputPositionForId(hostId);
+      final int hostIndex = layoutState.getLayoutOutputPositionForId(hostId);
       if (increment) {
         mAnimationLockedIndices[hostIndex]++;
       } else {
