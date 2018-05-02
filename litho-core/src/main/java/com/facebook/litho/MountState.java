@@ -23,10 +23,8 @@ import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibility
 import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_MOUNT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PREPARE_MOUNT;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_DIRTY;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_COUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_TIME;
@@ -911,54 +909,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       if (updateState == LayoutOutput.STATE_UPDATED) {
 
         // Check for incompatible ReferenceLifecycle.
-        if (currentLifecycle instanceof DrawableComponent
+        return currentLifecycle instanceof DrawableComponent
             && nextLifecycle instanceof DrawableComponent
-            && currentLifecycle.shouldComponentUpdate(currentComponent, nextComponent)) {
+            && currentLifecycle.shouldComponentUpdate(currentComponent, nextComponent);
 
-          if (logger != null) {
-            LayoutOutputLog logObj = new LayoutOutputLog();
-
-            logObj.currentId = indexToItemMap.keyAt(
-                indexToItemMap.indexOfValue(currentMountItem));
-            logObj.currentLifecycle = currentLifecycle.toString();
-
-            logObj.nextId = layoutOutput.getId();
-            logObj.nextLifecycle = nextLifecycle.toString();
-
-            for (int i = 0; i < layoutOutputsIds.length; i++) {
-              if (layoutOutputsIds[i] == logObj.currentId) {
-                if (logObj.currentIndex == -1) {
-                  logObj.currentIndex = i;
-                }
-
-                logObj.currentLastDuplicatedIdIndex = i;
-              }
-            }
-
-            if (logObj.nextId == logObj.currentId) {
-              logObj.nextIndex = logObj.currentIndex;
-              logObj.nextLastDuplicatedIdIndex = logObj.currentLastDuplicatedIdIndex;
-            } else {
-              for (int i = 0; i < layoutOutputsIds.length; i++) {
-                if (layoutOutputsIds[i] == logObj.nextId) {
-                  if (logObj.nextIndex == -1) {
-                    logObj.nextIndex = i;
-                  }
-
-                  logObj.nextLastDuplicatedIdIndex = i;
-                }
-              }
-            }
-
-            final LogEvent mismatchEvent = logger.newEvent(EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH);
-            mismatchEvent.addParam(PARAM_MESSAGE, logObj.toString());
-            logger.log(mismatchEvent);
-          }
-
-          return true;
-        }
-
-        return false;
       } else if (updateState == LayoutOutput.STATE_DIRTY) {
         return true;
       }

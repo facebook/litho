@@ -32,7 +32,7 @@ public interface FrameworkLogEvents {
   int EVENT_PREPARE_PART_DEFINITION = 4;
   int EVENT_PREPARE_MOUNT = 5;
   int EVENT_MOUNT = 6;
-  int EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH = 7;
+  // Previously EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH = 7; Now unused.
   int EVENT_PRE_ALLOCATE_MOUNT_CONTENT = 8;
   int EVENT_ERROR = 9;
   int EVENT_WARNING = 10;
@@ -51,7 +51,6 @@ public interface FrameworkLogEvents {
     FrameworkLogEvents.EVENT_PREPARE_PART_DEFINITION,
     FrameworkLogEvents.EVENT_PREPARE_MOUNT,
     FrameworkLogEvents.EVENT_MOUNT,
-    FrameworkLogEvents.EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH,
     FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT,
     FrameworkLogEvents.EVENT_ERROR,
     FrameworkLogEvents.EVENT_WARNING,
