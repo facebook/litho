@@ -40,7 +40,6 @@ dependencies {
     // compileOnly dependencies
     compileOnly deps.jsr305
     compileOnly deps.inferAnnotations
-    
 
     // Android Support Library
     compileOnly deps.supportAnnotations
@@ -49,10 +48,6 @@ dependencies {
 }
 
 apply from: rootProject.file('gradle/release.gradle')
-
-tasks.withType(JavaCompile) {
-    options.compilerArgs += [ '-Xep:GuardedBy:WARN' ]
-}
 
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs

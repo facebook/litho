@@ -53,10 +53,6 @@ dependencies {
 
 apply from: rootProject.file('gradle/release.gradle')
 
-tasks.withType(JavaCompile) {
-    options.compilerArgs += [ '-Xep:GuardedBy:WARN' ]
-}
-
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
     classifier = 'sources'

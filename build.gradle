@@ -17,10 +17,6 @@ buildscript {
     }
 }
 
-plugins {
-    id 'net.ltgt.errorprone' version '0.0.13' apply false
-}
-
 apply plugin: 'com.github.ben-manes.versions'
 
 subprojects {
@@ -38,23 +34,6 @@ subprojects {
             environment 'DYLD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
         }
     }
-
-    apply plugin: 'net.ltgt.errorprone'
-}
-
-allprojects {
-  /* Prevents sporadic compilation error:
-   * 'Bad service configuration file, or exception thrown while constructing
-   *  Processor object: javax.annotation.processing.Processor: Error reading
-   *  configuration file'
-   *
-   * See https://discuss.gradle.org/t/gradle-not-compiles-with-solder-tooling-jar/7583/20
-   */
-  tasks.withType(JavaCompile) { options.fork = true }
-
-  tasks.withType(JavaCompile) {
-      options.compilerArgs += [ '-Xep:GuardedBy:WARN' ]
-  }
 }
 
 ext {
