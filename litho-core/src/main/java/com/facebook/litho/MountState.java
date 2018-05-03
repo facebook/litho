@@ -250,7 +250,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
       // Prepare the data structure for the new LayoutState and removes mountItems
       // that are not present anymore if isUpdateMountInPlace is enabled.
-      prepareMount(layoutState);
+      if (mountPerfEvent != null) {
+        mountPerfEvent.markerPoint("PREPARE_MOUNT_START");
+      }
+      prepareMount(layoutState, mountPerfEvent);
+      if (mountPerfEvent != null) {
+        mountPerfEvent.markerPoint("PREPARE_MOUNT_END");
+      }
     }
 
     mMountStats.reset();
@@ -372,7 +378,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     if (processVisibilityOutputs) {
       ComponentsSystrace.beginSection("processVisibilityOutputs");
-      processVisibilityOutputs(layoutState, localVisibleRect);
+      processVisibilityOutputs(layoutState, localVisibleRect, mountPerfEvent);
       ComponentsSystrace.endSection();
     }
 
@@ -512,14 +518,19 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
-  private void processVisibilityOutputs(LayoutState layoutState, Rect localVisibleRect) {
+  private void processVisibilityOutputs(
+      LayoutState layoutState, Rect localVisibleRect, @Nullable PerfEvent mountPerfEvent) {
     if (localVisibleRect == null) {
       return;
     }
 
+    if (mountPerfEvent != null) {
+      mountPerfEvent.markerPoint("VISIBILITY_HANDLERS_START");
+    }
+
     final boolean isDoingPerfLog = mMountStats.isLoggingEnabled;
     final boolean isTracing = ComponentsSystrace.isTracing();
-    final long totalStartTime = isDoingPerfLog ? System.nanoTime() : 0;
+    final long totalStartTime = isDoingPerfLog ? System.nanoTime() : 0L;
     for (int j = 0, size = layoutState.getVisibilityOutputCount(); j < size; j++) {
       final VisibilityOutput visibilityOutput = layoutState.getVisibilityOutputAt(j);
       if (isTracing) {
@@ -643,6 +654,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     if (isDoingPerfLog) {
       mMountStats.visibilityHandlersTotalTime = (System.nanoTime() - totalStartTime) / NS_IN_MS;
+    }
+
+    if (mountPerfEvent != null) {
+      mountPerfEvent.markerPoint("VISIBILITY_HANDLERS_END");
     }
   }
 
@@ -969,21 +984,16 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         forceTraversal /* force */);
   }
 
-  /**
-   * Prepare the {@link MountState} to mount a new {@link LayoutState}.
-   */
+  /** Prepare the {@link MountState} to mount a new {@link LayoutState}. */
   @SuppressWarnings("unchecked")
-  private void prepareMount(LayoutState layoutState) {
+  private void prepareMount(LayoutState layoutState, @Nullable PerfEvent perfEvent) {
     final ComponentTree component = mLithoView.getComponentTree();
     final ComponentsLogger logger = component.getContext().getLogger();
     final String logTag = component.getContext().getLogTag();
 
     LogEvent prepareEvent = null;
-    PerfEvent preparePerfEvent = null;
     if (logger != null && !ComponentsConfiguration.useBetterPerfLogger) {
       prepareEvent = logger.newPerformanceEvent(EVENT_PREPARE_MOUNT);
-    } else if (logger != null && ComponentsConfiguration.useBetterPerfLogger) {
-      preparePerfEvent = logger.newBetterPerformanceEvent(EVENT_PREPARE_MOUNT);
     }
 
     final PrepareMountStats stats = unmountOrMoveOldItems(layoutState);
@@ -993,11 +1003,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       prepareEvent.addParam(PARAM_UNMOUNTED_COUNT, String.valueOf(stats.unmountedCount));
       prepareEvent.addParam(PARAM_MOVED_COUNT, String.valueOf(stats.movedCount));
       prepareEvent.addParam(PARAM_UNCHANGED_COUNT, String.valueOf(stats.unchangedCount));
-    } else if (preparePerfEvent != null) {
-      preparePerfEvent.markerAnnotate(PARAM_LOG_TAG, logTag);
-      preparePerfEvent.markerAnnotate(PARAM_UNMOUNTED_COUNT, stats.unmountedCount);
-      preparePerfEvent.markerAnnotate(PARAM_MOVED_COUNT, stats.movedCount);
-      preparePerfEvent.markerAnnotate(PARAM_UNCHANGED_COUNT, stats.unchangedCount);
+    } else if (perfEvent != null) {
+      perfEvent.markerAnnotate(PARAM_UNMOUNTED_COUNT, stats.unmountedCount);
+      perfEvent.markerAnnotate(PARAM_MOVED_COUNT, stats.movedCount);
+      perfEvent.markerAnnotate(PARAM_UNCHANGED_COUNT, stats.unchangedCount);
     }
 
     if (mHostsByMarker.get(ROOT_HOST_ID) == null) {
@@ -1019,8 +1028,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     if (prepareEvent != null) {
       logger.log(prepareEvent);
-    } else if (preparePerfEvent != null) {
-      logger.betterLog(preparePerfEvent);
     }
   }
 

@@ -47,5 +47,8 @@ public class NoOpPerfEvent implements PerfEvent {
   public void markerAnnotate(String annotationKey, int[] annotationValue) {}
 
   @Override
+  public void markerPoint(String eventName) {}
+
+  @Override
   public void markerAnnotate(String annotationKey, double annotationValue) {}
 }

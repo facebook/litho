@@ -51,4 +51,9 @@ public interface PerfEvent {
 
   /** @see #markerAnnotate(String, String) */
   void markerAnnotate(String annotationKey, int[] annotationValue);
+
+  /**
+   * Annotate the current event with a sub-routing at the point of invocation under the given name.
+   */
+  void markerPoint(String eventName);
 }
