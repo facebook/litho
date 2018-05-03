@@ -195,11 +195,11 @@ class LayoutState {
   private int mCurrentLevel = 0;
 
   // Holds the current host marker in the layout tree.
-  private long mCurrentHostMarker = -1;
+  private long mCurrentHostMarker = -1L;
   private int mCurrentHostOutputPosition = -1;
 
   private boolean mShouldDuplicateParentState = true;
-  private @NodeInfo.EnabledState int mParentEnabledState = ENABLED_UNSET;
+  @NodeInfo.EnabledState private short mParentEnabledState = ENABLED_UNSET;
 
   private boolean mShouldGenerateDiffTree = false;
   private int mComponentTreeId = -1;
@@ -211,8 +211,8 @@ class LayoutState {
   private boolean mCanPrefetchDisplayLists;
   private boolean mCanCacheDrawingDisplayLists;
   private boolean mClipChildren = true;
-  private ArrayList<Component> mComponentsNeedingPreviousRenderData;
-  private @Nullable OutputUnitsAffinityGroup<LayoutOutput> mCurrentLayoutOutputAffinityGroup;
+  private List<Component> mComponentsNeedingPreviousRenderData;
+  @Nullable private OutputUnitsAffinityGroup<LayoutOutput> mCurrentLayoutOutputAffinityGroup;
   private final SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>>
       mTransitionKeyMapping = new SimpleArrayMap<>();
   private List<Transition> mTransitions;
@@ -735,7 +735,7 @@ class LayoutState {
 
     layoutState.mCurrentX += node.getX();
     layoutState.mCurrentY += node.getY();
-    final @NodeInfo.EnabledState int parentEnabledState = layoutState.mParentEnabledState;
+    @NodeInfo.EnabledState final short parentEnabledState = layoutState.mParentEnabledState;
     layoutState.mParentEnabledState = (node.getNodeInfo() != null)
         ? node.getNodeInfo().getEnabledState()
         : ENABLED_UNSET;
