@@ -639,8 +639,8 @@ public class RecyclerBinderTest {
     }
     mRecyclerBinder.notifyChangeSetComplete();
 
-    verify(recyclerView).removeCallbacks(any(Runnable.class));
-    verify(recyclerView).postOnAnimation(any(Runnable.class));
+    verify(recyclerView).removeCallbacks(mRecyclerBinder.mRemeasureRunnable);
+    verify(recyclerView).postOnAnimation(mRecyclerBinder.mRemeasureRunnable);
   }
 
   @Test
@@ -662,8 +662,8 @@ public class RecyclerBinderTest {
     mRecyclerBinder.insertRangeAt(0, components);
     mRecyclerBinder.notifyChangeSetComplete();
 
-    verify(recyclerView).removeCallbacks(any(Runnable.class));
-    verify(recyclerView).postOnAnimation(any(Runnable.class));
+    verify(recyclerView).removeCallbacks(mRecyclerBinder.mRemeasureRunnable);
+    verify(recyclerView).postOnAnimation(mRecyclerBinder.mRemeasureRunnable);
   }
 
   @Test
@@ -693,8 +693,8 @@ public class RecyclerBinderTest {
     }
     mRecyclerBinder.notifyChangeSetComplete();
 
-    verify(recyclerView).removeCallbacks(any(Runnable.class));
-    verify(recyclerView).postOnAnimation(any(Runnable.class));
+    verify(recyclerView).removeCallbacks(mRecyclerBinder.mRemeasureRunnable);
+    verify(recyclerView).postOnAnimation(mRecyclerBinder.mRemeasureRunnable);
   }
 
   @Test
@@ -725,8 +725,8 @@ public class RecyclerBinderTest {
     mRecyclerBinder.updateRangeAt(0, updatedComponents);
     mRecyclerBinder.notifyChangeSetComplete();
 
-    verify(recyclerView).removeCallbacks(any(Runnable.class));
-    verify(recyclerView).postOnAnimation(any(Runnable.class));
+    verify(recyclerView).removeCallbacks(mRecyclerBinder.mRemeasureRunnable);
+    verify(recyclerView).postOnAnimation(mRecyclerBinder.mRemeasureRunnable);
   }
 
     @Test
@@ -748,8 +748,8 @@ public class RecyclerBinderTest {
       }
     mRecyclerBinder.notifyChangeSetComplete();
 
-      verify(recyclerView, never()).removeCallbacks(any(Runnable.class));
-      verify(recyclerView, never()).postOnAnimation(any(Runnable.class));
+    verify(recyclerView, never()).removeCallbacks(mRecyclerBinder.mRemeasureRunnable);
+    verify(recyclerView, never()).postOnAnimation(mRecyclerBinder.mRemeasureRunnable);
     }
 
   @Test
@@ -2372,7 +2372,7 @@ public class RecyclerBinderTest {
               }
             })
         .when(recyclerView)
-        .postOnAnimation(any(Runnable.class));
+        .postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     recyclerBinder.measure(
         new Size(),
@@ -2518,7 +2518,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
 
-    verify(recyclerView).postOnAnimation(any(Runnable.class));
+    verify(recyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     // Manually invoke the remeasure
     recyclerBinder.measure(

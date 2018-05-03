@@ -107,14 +107,17 @@ public class RecyclerBinder
   @GuardedBy("this")
   private final Deque<AsyncBatch> mAsyncBatches = new ArrayDeque<>();
 
-  private final Runnable mRemeasureRunnable = new Runnable() {
-    @Override
-    public void run() {
-      if (mReMeasureEventEventHandler != null) {
-        mReMeasureEventEventHandler.dispatchEvent(new ReMeasureEvent());
-      }
-    }
-  };
+  @VisibleForTesting
+  final Runnable mRemeasureRunnable =
+      new Runnable() {
+        @Override
+        public void run() {
+          if (mReMeasureEventEventHandler != null) {
+            mReMeasureEventEventHandler.dispatchEvent(new ReMeasureEvent());
+          }
+        }
+      };
+
   private final Runnable mNotifyDatasetChangedRunnable = new Runnable() {
     @Override
     public void run() {
@@ -159,8 +162,26 @@ public class RecyclerBinder
 
   private final ComponentTree.NewLayoutStateReadyListener mAsyncLayoutReadyListener =
       new ComponentTree.NewLayoutStateReadyListener() {
+
+        @UiThread
         @Override
         public void onNewLayoutStateReady(ComponentTree componentTree) {
+          if (mMountedView == null) {
+            applyReadyBatches();
+          } else {
+            // When mounted, always apply binder mutations on frame boundaries
+            ViewCompat.postOnAnimation(mMountedView, mApplyReadyBatchesRunnable);
+          }
+        }
+      };
+
+  @VisibleForTesting
+  final Runnable mApplyReadyBatchesRunnable =
+      new Runnable() {
+
+        @UiThread
+        @Override
+        public void run() {
           applyReadyBatches();
         }
       };

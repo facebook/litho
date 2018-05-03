@@ -20,8 +20,8 @@ import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -42,6 +42,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
@@ -55,10 +57,12 @@ public class RecyclerBinderWrapContentTest {
 
   private ComponentContext mComponentContext;
   private ShadowLooper mLayoutThreadShadowLooper;
+  private RecyclerView mRecyclerView;
 
   @Before
   public void setup() throws Exception {
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+    mRecyclerView = mock(RecyclerView.class);
 
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
@@ -72,8 +76,7 @@ public class RecyclerBinderWrapContentTest {
             .rangeRatio(RANGE_RATIO)
             .wrapContent(true)
             .build(mComponentContext);
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    recyclerBinder.mount(mRecyclerView);
 
     final Component component =
         TestDrawableComponent.create(mComponentContext).measuredHeight(100).build();
@@ -101,7 +104,7 @@ public class RecyclerBinderWrapContentTest {
     }
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView, times(10)).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView, times(10)).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
     assertThat(size.height).isEqualTo(1000);
@@ -115,8 +118,7 @@ public class RecyclerBinderWrapContentTest {
             .rangeRatio(RANGE_RATIO)
             .wrapContent(true)
             .build(mComponentContext);
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    recyclerBinder.mount(mRecyclerView);
 
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_INSERT; i++) {
@@ -146,7 +148,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.notifyChangeSetComplete();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
     assertThat(size.height).isEqualTo(1000);
@@ -161,14 +163,13 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.VERTICAL, 100);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeItemAt(0);
     recyclerBinder.notifyChangeSetComplete();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
@@ -184,14 +185,13 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.VERTICAL, 100);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeRangeAt(0, 3);
     recyclerBinder.notifyChangeSetComplete();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
@@ -207,8 +207,7 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.VERTICAL, 100);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    recyclerBinder.mount(mRecyclerView);
 
     final Component newComponent =
         new InlineLayoutSpec() {
@@ -221,7 +220,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.notifyChangeSetComplete();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
@@ -238,8 +237,7 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.VERTICAL, 100);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    recyclerBinder.mount(mRecyclerView);
 
     final ArrayList<RenderInfo> newRenderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_UPDATE; i++) {
@@ -251,7 +249,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.notifyChangeSetComplete();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
@@ -266,8 +264,8 @@ public class RecyclerBinderWrapContentTest {
             .wrapContent(true)
             .build(mComponentContext);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
+    recyclerBinder.mount(mRecyclerView);
 
     final Component component =
         TestDrawableComponent.create(mComponentContext).measuredHeight(100).build();
@@ -297,7 +295,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView, atLeast(10)).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView, atLeast(10)).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
     assertThat(size.height).isEqualTo(1000);
@@ -312,8 +310,8 @@ public class RecyclerBinderWrapContentTest {
             .wrapContent(true)
             .build(mComponentContext);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
+    recyclerBinder.mount(mRecyclerView);
 
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_INSERT; i++) {
@@ -347,7 +345,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView, atLeast(1)).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView, atLeast(1)).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
     assertThat(size.height).isEqualTo(1000);
@@ -362,8 +360,7 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.VERTICAL, 100, true);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeItemAtAsync(0);
     recyclerBinder.notifyChangeSetComplete();
@@ -371,7 +368,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView, atLeast(1)).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView, atLeast(1)).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
@@ -387,8 +384,7 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.VERTICAL, 100, true);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeRangeAtAsync(0, 3);
     recyclerBinder.notifyChangeSetComplete();
@@ -396,7 +392,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView, atLeast(1)).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView, atLeast(1)).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
@@ -412,8 +408,7 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.VERTICAL, 100, true);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    recyclerBinder.mount(mRecyclerView);
 
     final Component newComponent =
         new InlineLayoutSpec() {
@@ -430,7 +425,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView, atLeast(1)).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView, atLeast(1)).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
@@ -447,8 +442,7 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.VERTICAL, 100, true);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    recyclerBinder.mount(mRecyclerView);
 
     final ArrayList<RenderInfo> newRenderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_UPDATE; i++) {
@@ -462,7 +456,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView, atLeast(1)).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView, atLeast(1)).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
@@ -479,8 +473,7 @@ public class RecyclerBinderWrapContentTest {
             .wrapContent(true)
             .build(mComponentContext);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    recyclerBinder.mount(mRecyclerView);
 
     final Component component =
         TestDrawableComponent.create(mComponentContext).measuredWidth(100).build();
@@ -506,7 +499,7 @@ public class RecyclerBinderWrapContentTest {
     }
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView, times(10)).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView, times(10)).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
     assertThat(size.width).isEqualTo(1000);
@@ -523,8 +516,7 @@ public class RecyclerBinderWrapContentTest {
             .wrapContent(true)
             .build(mComponentContext);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    recyclerBinder.mount(mRecyclerView);
 
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_INSERT; i++) {
@@ -554,7 +546,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.notifyChangeSetComplete();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
     assertThat(size.width).isEqualTo(1000);
@@ -569,14 +561,13 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.HORIZONTAL, 100);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeItemAt(0);
     recyclerBinder.notifyChangeSetComplete();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
@@ -592,14 +583,13 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.HORIZONTAL, 100);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeRangeAt(0, 3);
     recyclerBinder.notifyChangeSetComplete();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
@@ -615,8 +605,7 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.HORIZONTAL, 100);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    recyclerBinder.mount(mRecyclerView);
 
     final Component newComponent =
         new InlineLayoutSpec() {
@@ -629,7 +618,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.notifyChangeSetComplete();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
@@ -646,8 +635,7 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.HORIZONTAL, 100);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    recyclerBinder.mount(mRecyclerView);
 
     final ArrayList<RenderInfo> newRenderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_UPDATE; i++) {
@@ -659,7 +647,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.notifyChangeSetComplete();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
@@ -676,8 +664,8 @@ public class RecyclerBinderWrapContentTest {
             .wrapContent(true)
             .build(mComponentContext);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
+    recyclerBinder.mount(mRecyclerView);
 
     final Component component =
         TestDrawableComponent.create(mComponentContext).measuredWidth(100).build();
@@ -707,7 +695,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView, times(20)).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView, times(20)).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
     assertThat(size.width).isEqualTo(1000);
@@ -724,8 +712,8 @@ public class RecyclerBinderWrapContentTest {
             .wrapContent(true)
             .build(mComponentContext);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
+    recyclerBinder.mount(mRecyclerView);
 
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_INSERT; i++) {
@@ -759,7 +747,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView, times(2)).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView, times(2)).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
     assertThat(size.width).isEqualTo(1000);
@@ -774,8 +762,8 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.HORIZONTAL, 100, true);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
+    recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeItemAt(0);
     recyclerBinder.notifyChangeSetComplete();
@@ -783,7 +771,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView, atLeast(1)).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView, atLeast(1)).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
@@ -799,8 +787,8 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.HORIZONTAL, 100, true);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
+    recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeRangeAt(0, 3);
     recyclerBinder.notifyChangeSetComplete();
@@ -808,7 +796,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView, atLeast(1)).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView, atLeast(1)).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
@@ -824,8 +812,8 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.HORIZONTAL, 100, true);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
+    recyclerBinder.mount(mRecyclerView);
 
     final Component newComponent =
         new InlineLayoutSpec() {
@@ -840,7 +828,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView, atLeast(1)).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView, atLeast(1)).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
@@ -857,8 +845,8 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.HORIZONTAL, 100, true);
 
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-    recyclerBinder.mount(recyclerView);
+    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
+    recyclerBinder.mount(mRecyclerView);
 
     final ArrayList<RenderInfo> newRenderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_UPDATE; i++) {
@@ -872,11 +860,25 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verify(recyclerView, atLeast(1)).postOnAnimation(any(Runnable.class));
+    verify(mRecyclerView, atLeast(1)).postOnAnimation(recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
     assertThat(size.width).isEqualTo(550);
+  }
+
+  private void mockRecyclerBinderToCallApplyBatches(
+      RecyclerView recyclerView, RecyclerBinder recyclerBinder) {
+    doAnswer(
+            new Answer() {
+              @Override
+              public Void answer(InvocationOnMock invocation) {
+                ((Runnable) invocation.getArguments()[0]).run();
+                return null;
+              }
+            })
+        .when(mRecyclerView)
+        .postOnAnimation(recyclerBinder.mApplyReadyBatchesRunnable);
   }
 
   private RecyclerBinder prepareBinderWithMeasuredChildSize(
