@@ -32,6 +32,7 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.annotations.CommonProp;
 import com.facebook.litho.annotations.FromBind;
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.MountSpec;
@@ -154,14 +155,15 @@ class RecyclerSpec {
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
       @Prop(optional = true) @IdRes int recyclerViewId,
-      @Prop(optional = true) int overScrollMode) {
+      @Prop(optional = true) int overScrollMode,
+      @CommonProp CharSequence contentDescription) {
     final RecyclerView recyclerView = sectionsRecycler.getRecyclerView();
 
     if (recyclerView == null) {
       throw new IllegalStateException(
           "RecyclerView not found, it should not be removed from SwipeRefreshLayout");
     }
-
+    recyclerView.setContentDescription(contentDescription);
     sectionsRecycler.setColorSchemeColors(refreshProgressBarColor);
     recyclerView.setHasFixedSize(hasFixedSize);
     recyclerView.setClipToPadding(clipToPadding);
@@ -199,6 +201,9 @@ class RecyclerSpec {
       @Prop(optional = true) LithoRecylerView.TouchInterceptor touchInterceptor,
       @FromPrepare OnRefreshListener onRefreshListener,
       Output<ItemAnimator> oldAnimator) {
+
+    // contentDescription should be set on the recyclerView itself, and not the sectionsRecycler.
+    sectionsRecycler.setContentDescription(null);
 
     sectionsRecycler.setEnabled(pullToRefresh && onRefreshListener != null);
     sectionsRecycler.setOnRefreshListener(onRefreshListener);
