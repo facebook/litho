@@ -147,7 +147,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     }
     FullDiffSection.UpdateStateStateUpdate _stateUpdate =
         ((FullDiffSection) _component).createUpdateStateStateUpdate(param);
-    c.updateStateSync(_stateUpdate);
+    c.updateStateSync(_stateUpdate, "FullDiffSection.updateState");
   }
 
   protected static void updateStateAsync(SectionContext c, Object param) {
@@ -157,7 +157,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     }
     FullDiffSection.UpdateStateStateUpdate _stateUpdate =
         ((FullDiffSection) _component).createUpdateStateStateUpdate(param);
-    c.updateStateAsync(_stateUpdate);
+    c.updateStateAsync(_stateUpdate, "FullDiffSection.updateState");
   }
 
   protected static void updateStateSync(SectionContext c, Object param) {
@@ -167,7 +167,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     }
     FullDiffSection.UpdateStateStateUpdate _stateUpdate =
         ((FullDiffSection) _component).createUpdateStateStateUpdate(param);
-    c.updateStateSync(_stateUpdate);
+    c.updateStateSync(_stateUpdate, "FullDiffSection.updateState");
   }
 
   public static EventHandler getTestEventHandler(SectionContext context) {

@@ -176,14 +176,14 @@ public class RecyclerSpecTest {
     }
 
     @Override
-    public void updateStateSync(ComponentLifecycle.StateUpdate stateUpdate) {
-      super.updateStateSync(stateUpdate);
+    public void updateStateSync(ComponentLifecycle.StateUpdate stateUpdate, String attribution) {
+      super.updateStateSync(stateUpdate, attribution);
       mIsUpdateStateAsync = false;
     }
 
     @Override
-    public void updateStateAsync(ComponentLifecycle.StateUpdate stateUpdate) {
-      super.updateStateAsync(stateUpdate);
+    public void updateStateAsync(ComponentLifecycle.StateUpdate stateUpdate, String attribution) {
+      super.updateStateAsync(stateUpdate, attribution);
       mIsUpdateStateAsync = true;
     }
 

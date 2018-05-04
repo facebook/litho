@@ -247,7 +247,7 @@ public class StateGeneratorTest {
                 + "    return;\n"
                 + "  }\n"
                 + "  TestWithState.UpdateCurrentStateStateUpdate _stateUpdate = ((TestWithState) _component).createUpdateCurrentStateStateUpdate();\n"
-                + "  c.updateStateSync(_stateUpdate);\n"
+                + "  c.updateStateSync(_stateUpdate, \"TestWithState.updateCurrentState\");\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
@@ -258,7 +258,7 @@ public class StateGeneratorTest {
                 + "    return;\n"
                 + "  }\n"
                 + "  TestWithState.UpdateCurrentStateStateUpdate _stateUpdate = ((TestWithState) _component).createUpdateCurrentStateStateUpdate();\n"
-                + "  c.updateStateAsync(_stateUpdate);\n"
+                + "  c.updateStateAsync(_stateUpdate, \"TestWithState.updateCurrentState\");\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(2).toString())
@@ -269,7 +269,7 @@ public class StateGeneratorTest {
                 + "    return;\n"
                 + "  }\n"
                 + "  TestWithState.UpdateCurrentStateStateUpdate _stateUpdate = ((TestWithState) _component).createUpdateCurrentStateStateUpdate();\n"
-                + "  c.updateStateSync(_stateUpdate);\n"
+                + "  c.updateStateSync(_stateUpdate, \"TestWithState.updateCurrentState\");\n"
                 + "}\n");
   }
 
@@ -288,7 +288,7 @@ public class StateGeneratorTest {
                 + "    return;\n"
                 + "  }\n"
                 + "  TestWithStateWithTransition.UpdateCurrentStateStateUpdate _stateUpdate = ((TestWithStateWithTransition) _component).createUpdateCurrentStateStateUpdate();\n"
-                + "  c.updateStateWithTransition(_stateUpdate);\n"
+                + "  c.updateStateWithTransition(_stateUpdate, \"TestWithStateWithTransition.updateCurrentState\");\n"
                 + "}\n");
   }
 

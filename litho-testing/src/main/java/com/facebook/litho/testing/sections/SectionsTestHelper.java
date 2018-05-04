@@ -96,7 +96,7 @@ public class SectionsTestHelper extends Section {
               }
             })
         .when(spyContext)
-        .updateStateSync(any(StateUpdate.class));
+        .updateStateSync(any(StateUpdate.class), any(String.class));
 
     doAnswer(
             new Answer() {

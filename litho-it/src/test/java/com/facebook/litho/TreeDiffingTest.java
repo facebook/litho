@@ -474,7 +474,8 @@ public class TreeDiffingTest {
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             null,
-            LayoutState.CalculateLayoutSource.TEST);
+            LayoutState.CalculateLayoutSource.TEST,
+            null);
 
     assertOutputsState(state, LayoutOutput.STATE_UNKNOWN);
 
@@ -487,7 +488,8 @@ public class TreeDiffingTest {
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             state.getDiffTree(),
-            LayoutState.CalculateLayoutSource.TEST);
+            LayoutState.CalculateLayoutSource.TEST,
+            null);
 
     assertOutputsState(secondState, LayoutOutput.STATE_UPDATED);
 
@@ -500,7 +502,8 @@ public class TreeDiffingTest {
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             secondState.getDiffTree(),
-            LayoutState.CalculateLayoutSource.TEST);
+            LayoutState.CalculateLayoutSource.TEST,
+            null);
 
     assertOutputsState(thirdState, LayoutOutput.STATE_DIRTY);
   }
@@ -522,7 +525,8 @@ public class TreeDiffingTest {
             makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             null,
-            LayoutState.CalculateLayoutSource.TEST);
+            LayoutState.CalculateLayoutSource.TEST,
+            null);
 
     assertOutputsState(state, STATE_UNKNOWN);
 
@@ -535,7 +539,8 @@ public class TreeDiffingTest {
             makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             state.getDiffTree(),
-            LayoutState.CalculateLayoutSource.TEST);
+            LayoutState.CalculateLayoutSource.TEST,
+            null);
 
     assertThat(5).isEqualTo(secondState.getMountableOutputCount());
     assertOutputsState(secondState, STATE_UPDATED);
@@ -549,7 +554,8 @@ public class TreeDiffingTest {
             makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             secondState.getDiffTree(),
-            LayoutState.CalculateLayoutSource.TEST);
+            LayoutState.CalculateLayoutSource.TEST,
+            null);
 
     assertThat(5).isEqualTo(thirdState.getMountableOutputCount());
     assertThat(thirdState.getMountableOutputAt(1).getUpdateState()).isEqualTo(STATE_DIRTY);
@@ -576,7 +582,8 @@ public class TreeDiffingTest {
             makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             null,
-            LayoutState.CalculateLayoutSource.TEST);
+            LayoutState.CalculateLayoutSource.TEST,
+            null);
 
     assertThat(state.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_UNKNOWN);
 
@@ -589,7 +596,8 @@ public class TreeDiffingTest {
             makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             state.getDiffTree(),
-            LayoutState.CalculateLayoutSource.TEST);
+            LayoutState.CalculateLayoutSource.TEST,
+            null);
 
     assertThat(secondState.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_UPDATED);
 
@@ -602,7 +610,8 @@ public class TreeDiffingTest {
             makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             secondState.getDiffTree(),
-            LayoutState.CalculateLayoutSource.TEST);
+            LayoutState.CalculateLayoutSource.TEST,
+            null);
 
     assertThat(thirdState.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_DIRTY);
   }
@@ -623,7 +632,8 @@ public class TreeDiffingTest {
             makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             null,
-            LayoutState.CalculateLayoutSource.TEST);
+            LayoutState.CalculateLayoutSource.TEST,
+            null);
 
     assertOutputsState(state, STATE_UNKNOWN);
 
@@ -636,7 +646,8 @@ public class TreeDiffingTest {
             makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             state.getDiffTree(),
-            LayoutState.CalculateLayoutSource.TEST);
+            LayoutState.CalculateLayoutSource.TEST,
+            null);
 
     assertThat(6).isEqualTo(secondState.getMountableOutputCount());
     assertThat(STATE_DIRTY).isEqualTo(secondState.getMountableOutputAt(0).getUpdateState());
@@ -879,7 +890,8 @@ public class TreeDiffingTest {
         false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */,
         false /* persistInternalNodeTree */,
-        LayoutState.CalculateLayoutSource.TEST);
+        LayoutState.CalculateLayoutSource.TEST,
+        null);
   }
 
   private static LayoutState calculateLayoutStateWithDiffing(
@@ -900,7 +912,8 @@ public class TreeDiffingTest {
         false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */,
         false /* persistInternalNodeTree */,
-        LayoutState.CalculateLayoutSource.TEST);
+        LayoutState.CalculateLayoutSource.TEST,
+        null);
   }
 
   private static void assertOutputsState(

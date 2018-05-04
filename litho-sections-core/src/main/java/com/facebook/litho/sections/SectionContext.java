@@ -74,7 +74,7 @@ public class SectionContext extends ComponentContext {
    *
    * @param stateUpdate state update to perform
    */
-  public void updateStateSync(StateUpdate stateUpdate) {
+  public void updateStateSync(StateUpdate stateUpdate, String attribution) {
     final Section section = mScope.get();
     final SectionTree sectionTree = mSectionTree;
     if (sectionTree == null || section == null) {
@@ -99,9 +99,10 @@ public class SectionContext extends ComponentContext {
 
   /**
    * Notify the {@link SectionTree} that it needs to asynchronously perform a state update.
+   *
    * @param stateUpdate state update to perform
    */
-  public void updateStateAsync(StateUpdate stateUpdate) {
+  public void updateStateAsync(StateUpdate stateUpdate, String attribution) {
     final Section section = mScope.get();
     final SectionTree sectionTree = mSectionTree;
     if (sectionTree == null || section == null) {

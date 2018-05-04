@@ -233,20 +233,25 @@ public class StateGenerator {
 
     builder.addCode(codeBlockBuilder.build());
 
+    final String stateUpdateAttribution =
+        '"' + specModel.getComponentName() + "." + updateStateMethod.name.toString() + '"';
+    final String stateUpdateMethod;
     switch (stateUpdateType) {
       case DEFAULT:
       case SYNC:
-        builder.addStatement("c.updateStateSync(_stateUpdate)");
+        stateUpdateMethod = "updateStateSync";
         break;
       case ASYNC:
-        builder.addStatement("c.updateStateAsync(_stateUpdate)");
+        stateUpdateMethod = "updateStateAsync";
         break;
       case WITH_TRANSITION:
-        builder.addStatement("c.updateStateWithTransition(_stateUpdate)");
+        stateUpdateMethod = "updateStateWithTransition";
         break;
       default:
         throw new RuntimeException("Unhandled state update type: " + stateUpdateType);
     }
+    builder.addStatement(
+        "c." + stateUpdateMethod + "(_stateUpdate, " + stateUpdateAttribution + ")");
 
     return TypeSpecDataHolder.newBuilder().addMethod(builder.build()).build();
   }

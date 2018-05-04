@@ -164,7 +164,7 @@ public class ComponentContext extends ContextWrapper {
    *
    * @param stateUpdate state update to perform
    */
-  public void updateStateSync(ComponentLifecycle.StateUpdate stateUpdate) {
+  public void updateStateSync(ComponentLifecycle.StateUpdate stateUpdate, String attribution) {
     checkIfNoStateUpdatesMethod();
 
     if (mComponentTree == null) {
@@ -172,28 +172,30 @@ public class ComponentContext extends ContextWrapper {
     }
 
     if (ComponentsConfiguration.updateStateAsync) {
-      mComponentTree.updateStateAsync(mComponentScope.getGlobalKey(), stateUpdate);
+      mComponentTree.updateStateAsync(mComponentScope.getGlobalKey(), stateUpdate, attribution);
     } else {
-      mComponentTree.updateStateSync(mComponentScope.getGlobalKey(), stateUpdate);
+      mComponentTree.updateStateSync(mComponentScope.getGlobalKey(), stateUpdate, attribution);
     }
   }
 
   /**
    * Notify the Component Tree that it needs to asynchronously perform a state update.
+   *
    * @param stateUpdate state update to perform
    */
-  public void updateStateAsync(ComponentLifecycle.StateUpdate stateUpdate) {
+  public void updateStateAsync(ComponentLifecycle.StateUpdate stateUpdate, String attribution) {
     checkIfNoStateUpdatesMethod();
 
     if (mComponentTree == null) {
       return;
     }
 
-    mComponentTree.updateStateAsync(mComponentScope.getGlobalKey(), stateUpdate);
+    mComponentTree.updateStateAsync(mComponentScope.getGlobalKey(), stateUpdate, attribution);
   }
 
-  public void updateStateWithTransition(ComponentLifecycle.StateUpdate stateUpdate) {
-    updateStateAsync(stateUpdate);
+  public void updateStateWithTransition(
+      ComponentLifecycle.StateUpdate stateUpdate, String attribution) {
+    updateStateAsync(stateUpdate, attribution);
   }
 
   public void updateStateLazy(ComponentLifecycle.StateUpdate stateUpdate) {

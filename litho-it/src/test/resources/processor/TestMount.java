@@ -555,7 +555,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
     }
     TestMount.UpdateCurrentStateStateUpdate _stateUpdate =
         ((TestMount) _component).createUpdateCurrentStateStateUpdate(someParam);
-    c.updateStateSync(_stateUpdate);
+    c.updateStateSync(_stateUpdate, "TestMount.updateCurrentState");
   }
 
   protected static void updateCurrentStateAsync(ComponentContext c, int someParam) {
@@ -564,7 +564,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
       return;
     }
     TestMount.UpdateCurrentStateStateUpdate _stateUpdate = ((TestMount) _component).createUpdateCurrentStateStateUpdate(someParam);
-    c.updateStateAsync(_stateUpdate);
+    c.updateStateAsync(_stateUpdate, "TestMount.updateCurrentState");
   }
 
   protected static void updateCurrentStateSync(ComponentContext c, int someParam) {
@@ -573,7 +573,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
       return;
     }
     TestMount.UpdateCurrentStateStateUpdate _stateUpdate = ((TestMount) _component).createUpdateCurrentStateStateUpdate(someParam);
-    c.updateStateSync(_stateUpdate);
+    c.updateStateSync(_stateUpdate, "TestMount.updateCurrentState");
   }
 
   protected static void lazyUpdateState1(ComponentContext c, final long lazyUpdateValue) {

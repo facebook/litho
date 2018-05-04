@@ -418,7 +418,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
     TestLayout.UpdateCurrentStateStateUpdate _stateUpdate =
         ((TestLayout) _component).createUpdateCurrentStateStateUpdate(someParam);
-    c.updateStateSync(_stateUpdate);
+    c.updateStateSync(_stateUpdate, "TestLayout.updateCurrentState");
   }
 
   protected static void updateCurrentStateAsync(ComponentContext c, int someParam) {
@@ -427,7 +427,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return;
     }
     TestLayout.UpdateCurrentStateStateUpdate _stateUpdate = ((TestLayout) _component).createUpdateCurrentStateStateUpdate(someParam);
-    c.updateStateAsync(_stateUpdate);
+    c.updateStateAsync(_stateUpdate, "TestLayout.updateCurrentState");
   }
 
   protected static void updateCurrentStateSync(ComponentContext c, int someParam) {
@@ -436,7 +436,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       return;
     }
     TestLayout.UpdateCurrentStateStateUpdate _stateUpdate = ((TestLayout) _component).createUpdateCurrentStateStateUpdate(someParam);
-    c.updateStateSync(_stateUpdate);
+    c.updateStateSync(_stateUpdate, "TestLayout.updateCurrentState");
   }
 
   protected static void lazyUpdateState1(ComponentContext c, final long lazyUpdateValue) {

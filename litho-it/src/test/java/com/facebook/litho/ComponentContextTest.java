@@ -40,12 +40,12 @@ public class ComponentContextTest {
 
   @Test
   public void testUpdateStateAsync() {
-    mTestComponentContext.updateStateAsync(mock(StateUpdate.class));
+    mTestComponentContext.updateStateAsync(mock(StateUpdate.class), "test");
     assertThat(mTestComponentContext.isUpdateStateAsync()).isTrue();
 
     ComponentsConfiguration.updateStateAsync = true;
 
-    mTestComponentContext.updateStateSync(mock(StateUpdate.class));
+    mTestComponentContext.updateStateSync(mock(StateUpdate.class), "test");
     assertThat(mTestComponentContext.isUpdateStateAsync()).isTrue();
   }
 
@@ -53,7 +53,7 @@ public class ComponentContextTest {
   public void testUpdateStateSync() {
     ComponentsConfiguration.updateStateAsync = false;
 
-    mTestComponentContext.updateStateSync(mock(StateUpdate.class));
+    mTestComponentContext.updateStateSync(mock(StateUpdate.class), "test");
     assertThat(mTestComponentContext.isUpdateStateAsync()).isFalse();
   }
 
@@ -66,8 +66,8 @@ public class ComponentContextTest {
     }
 
     @Override
-    public void updateStateAsync(StateUpdate stateUpdate) {
-      super.updateStateAsync(stateUpdate);
+    public void updateStateAsync(StateUpdate stateUpdate, String attribution) {
+      super.updateStateAsync(stateUpdate, attribution);
 
       mIsUpdateStateAsync = true;
     }

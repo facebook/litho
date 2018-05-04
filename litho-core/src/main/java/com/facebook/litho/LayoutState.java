@@ -1137,7 +1137,8 @@ class LayoutState {
         false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */,
         false /* persistInternalNodeTree */,
-        source);
+        source,
+        null);
   }
 
   static LayoutState calculate(
@@ -1152,13 +1153,17 @@ class LayoutState {
       boolean canCacheDrawingDisplayLists,
       boolean clipChildren,
       boolean persistInternalNodeTree,
-      @CalculateLayoutSource int source) {
+      @CalculateLayoutSource int source,
+      @Nullable String extraAttribution) {
 
     final ComponentsLogger logger = c.getLogger();
     LogEvent logLayoutState = null;
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
+      if (extraAttribution != null) {
+        ComponentsSystrace.beginSection("extra:" + extraAttribution);
+      }
       ComponentsSystrace.beginSectionWithArgs(
               new StringBuilder("LayoutState.calculate_")
                   .append(component.getSimpleName())
@@ -1289,6 +1294,9 @@ class LayoutState {
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();
+        if (extraAttribution != null) {
+          ComponentsSystrace.endSection();
+        }
       }
     }
 

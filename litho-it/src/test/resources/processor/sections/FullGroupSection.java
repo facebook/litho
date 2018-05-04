@@ -166,7 +166,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
     }
     FullGroupSection.UpdateStateStateUpdate _stateUpdate =
         ((FullGroupSection) _component).createUpdateStateStateUpdate(param);
-    c.updateStateSync(_stateUpdate);
+    c.updateStateSync(_stateUpdate, "FullGroupSection.updateState");
   }
 
   protected static void updateStateAsync(SectionContext c, Object param) {
@@ -176,7 +176,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
     }
     FullGroupSection.UpdateStateStateUpdate _stateUpdate =
         ((FullGroupSection) _component).createUpdateStateStateUpdate(param);
-    c.updateStateAsync(_stateUpdate);
+    c.updateStateAsync(_stateUpdate, "FullGroupSection.updateState");
   }
 
   protected static void updateStateSync(SectionContext c, Object param) {
@@ -186,7 +186,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
     }
     FullGroupSection.UpdateStateStateUpdate _stateUpdate =
         ((FullGroupSection) _component).createUpdateStateStateUpdate(param);
-    c.updateStateSync(_stateUpdate);
+    c.updateStateSync(_stateUpdate, "FullGroupSection.updateState");
   }
 
   protected static void lazyUpdateState2(SectionContext c, final Object lazyUpdateValue) {
