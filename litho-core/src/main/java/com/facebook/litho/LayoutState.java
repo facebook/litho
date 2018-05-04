@@ -1136,6 +1136,7 @@ class LayoutState {
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */,
+        false /* persistInternalNodeTree */,
         source);
   }
 
@@ -1150,6 +1151,7 @@ class LayoutState {
       boolean canPrefetchDisplayLists,
       boolean canCacheDrawingDisplayLists,
       boolean clipChildren,
+      boolean persistInternalNodeTree,
       @CalculateLayoutSource int source) {
 
     final ComponentsLogger logger = c.getLogger();
@@ -1264,7 +1266,8 @@ class LayoutState {
         ComponentsSystrace.endSection();
       }
 
-      if (!ComponentsConfiguration.isDebugModeEnabled
+      if (!persistInternalNodeTree
+          && !ComponentsConfiguration.isDebugModeEnabled
           && !ComponentsConfiguration.isEndToEndTestRun
           && layoutState.mLayoutRoot != null) {
         releaseNodeTree(layoutState.mLayoutRoot, false /* isNestedTree */);

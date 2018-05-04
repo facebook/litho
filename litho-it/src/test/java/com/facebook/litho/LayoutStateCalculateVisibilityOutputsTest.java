@@ -275,6 +275,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */,
+        false,
         LayoutState.CalculateLayoutSource.TEST);
   }
 }

@@ -63,6 +63,7 @@ public class TestComponentTree extends ComponentTree {
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */,
+        false /* persistInternalNodeTree */,
         source);
   }
 

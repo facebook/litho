@@ -142,6 +142,7 @@ public class ComponentTree {
   private final boolean mCanPrefetchDisplayLists;
   private final boolean mCanCacheDrawingDisplayLists;
   private final boolean mShouldClipChildren;
+  private final boolean mPersistInternalNodeTree;
 
   @Nullable private LayoutHandler mPreAllocateMountContentHandler;
 
@@ -254,6 +255,7 @@ public class ComponentTree {
     mHasMounted = builder.hasMounted;
     mMeasureListener = builder.mMeasureListener;
     mSplitLayoutTag = builder.splitLayoutTag;
+    mPersistInternalNodeTree = builder.persistInternalNodeTree;
 
     if (mLayoutThreadHandler == null) {
       mLayoutThreadHandler =
@@ -1715,7 +1717,6 @@ public class ComponentTree {
 
     if (lock != null) {
       synchronized (lock) {
-
         return LayoutState.calculate(
             contextWithStateHandler,
             root,
@@ -1727,6 +1728,7 @@ public class ComponentTree {
             mCanPrefetchDisplayLists,
             mCanCacheDrawingDisplayLists,
             mShouldClipChildren,
+            mPersistInternalNodeTree,
             source);
       }
     } else {
@@ -1742,6 +1744,7 @@ public class ComponentTree {
           mCanPrefetchDisplayLists,
           mCanCacheDrawingDisplayLists,
           mShouldClipChildren,
+          mPersistInternalNodeTree,
           source);
     }
   }
@@ -1813,6 +1816,7 @@ public class ComponentTree {
     private boolean shouldPreallocatePerMountSpec;
     private boolean canPreallocateOnDefaultHandler;
     private String splitLayoutTag;
+    private boolean persistInternalNodeTree = false;
 
     protected Builder() {
     }
@@ -1843,6 +1847,8 @@ public class ComponentTree {
       shouldClipChildren = true;
       hasMounted = false;
       preAllocateMountContentHandler = null;
+      splitLayoutTag = null;
+      persistInternalNodeTree = false;
     }
 
     /**
@@ -2022,6 +2028,15 @@ public class ComponentTree {
      */
     public Builder splitLayoutTag(String splitTag) {
       this.splitLayoutTag = splitTag;
+      return this;
+    }
+
+    /**
+     * Whether to persist the InternalNode tree after calculating layout. This is only used for
+     * testing performance impact right now and should not be used.
+     */
+    public Builder persistInternalNodeTree(boolean persistInternalNodeTree) {
+      this.persistInternalNodeTree = persistInternalNodeTree;
       return this;
     }
 
