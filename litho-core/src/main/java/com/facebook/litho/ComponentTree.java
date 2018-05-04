@@ -1274,6 +1274,14 @@ public class ComponentTree {
       @CalculateLayoutSource int source) {
 
     synchronized (this) {
+      if (mReleased) {
+        // If this is coming from a background thread, we may have been released from the main
+        // thread. In that case, do nothing.
+        //
+        // NB: This is only safe because we don't re-use released ComponentTrees.
+        return;
+      }
+
       final Map<String, List<StateUpdate>> pendingStateUpdates =
           mStateHandler == null ? null : mStateHandler.getPendingStateUpdates();
       if (pendingStateUpdates != null && pendingStateUpdates.size() > 0 && root != null) {

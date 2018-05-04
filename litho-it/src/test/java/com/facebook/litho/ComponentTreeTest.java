@@ -510,6 +510,16 @@ public class ComponentTreeTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
+  @Test
+  public void testSetRootAfterRelease() {
+    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+
+    componentTree.release();
+
+    // Verify we don't crash
+    componentTree.setRoot(TestDrawableComponent.create(mContext).build());
+  }
+
   private static LithoView getLithoView(ComponentTree componentTree) {
     return Whitebox.getInternalState(componentTree, "mLithoView");
   }
