@@ -16,10 +16,13 @@
 
 package com.facebook.litho.widget;
 
+import android.support.annotation.Nullable;
 import android.support.v4.util.Pools;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.EventHandler;
+import com.facebook.litho.RenderCompleteEvent;
 
 /** {@link RenderInfo} that can render components. */
 public class ComponentRenderInfo extends RenderInfo {
@@ -27,6 +30,7 @@ public class ComponentRenderInfo extends RenderInfo {
   private static final Pools.Pool<Builder> sBuilderPool = new Pools.SynchronizedPool<>(2);
 
   private final Component mComponent;
+  @Nullable private final EventHandler<RenderCompleteEvent> mRenderCompleteEventHandler;
 
   public static Builder create() {
     Builder builder = sBuilderPool.acquire();
@@ -45,6 +49,7 @@ public class ComponentRenderInfo extends RenderInfo {
     }
 
     mComponent = builder.component;
+    mRenderCompleteEventHandler = builder.renderCompleteEventHandler;
   }
 
   /** Create empty {@link ComponentRenderInfo}. */
@@ -55,6 +60,12 @@ public class ComponentRenderInfo extends RenderInfo {
   @Override
   public Component getComponent() {
     return mComponent;
+  }
+
+  @Override
+  @Nullable
+  public EventHandler<RenderCompleteEvent> getRenderCompleteEventHandler() {
+    return mRenderCompleteEventHandler;
   }
 
   @Override
@@ -69,10 +80,17 @@ public class ComponentRenderInfo extends RenderInfo {
 
   public static class Builder extends RenderInfo.Builder<Builder> {
     private Component component;
+    private EventHandler<RenderCompleteEvent> renderCompleteEventHandler;
 
     /** Specify {@link Component} that will be rendered as an item of the list. */
     public Builder component(Component component) {
       this.component = component;
+      return this;
+    }
+
+    public Builder renderCompleteHandler(
+        EventHandler<RenderCompleteEvent> renderCompleteEventHandler) {
+      this.renderCompleteEventHandler = renderCompleteEventHandler;
       return this;
     }
 
@@ -91,6 +109,7 @@ public class ComponentRenderInfo extends RenderInfo {
     void release() {
       super.release();
       component = null;
+      renderCompleteEventHandler = null;
       sBuilderPool.release(this);
     }
   }

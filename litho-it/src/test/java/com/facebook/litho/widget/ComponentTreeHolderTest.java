@@ -24,6 +24,8 @@ import android.os.Looper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.EventHandler;
+import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -44,6 +46,7 @@ public class ComponentTreeHolderTest {
 
   private ComponentContext mContext;
   private Component mComponent;
+  private EventHandler<RenderCompleteEvent> mRenderCompleteEventHandler;
   private ComponentRenderInfo mComponentRenderInfo;
   private ViewRenderInfo mViewRenderInfo;
   private ShadowLooper mLayoutThreadShadowLooper;
@@ -56,7 +59,12 @@ public class ComponentTreeHolderTest {
   public void setUp() throws Exception {
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mComponent = TestDrawableComponent.create(mContext).build();
-    mComponentRenderInfo = ComponentRenderInfo.create().component(mComponent).build();
+    mRenderCompleteEventHandler = (EventHandler<RenderCompleteEvent>) mock(EventHandler.class);
+    mComponentRenderInfo =
+        ComponentRenderInfo.create()
+            .component(mComponent)
+            .renderCompleteHandler(mRenderCompleteEventHandler)
+            .build();
     mViewRenderInfo =
         ViewRenderInfo.create()
             .customViewType(0)
@@ -163,6 +171,12 @@ public class ComponentTreeHolderTest {
         mock(ComponentTree.NewLayoutStateReadyListener.class);
 
     holder.setNewLayoutReadyListener(listener);
+  }
+
+  @Test
+  public void testGetRenderCompleteHandlerDoesNotCrash() {
+    ComponentTreeHolder holder = createComponentTreeHolder(mComponentRenderInfo);
+    holder.getRenderInfo().getRenderCompleteEventHandler();
   }
 
   private ComponentTreeHolder createComponentTreeHolder(RenderInfo info) {

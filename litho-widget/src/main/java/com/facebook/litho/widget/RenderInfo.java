@@ -18,6 +18,8 @@ package com.facebook.litho.widget;
 
 import android.support.v4.util.SimpleArrayMap;
 import com.facebook.litho.Component;
+import com.facebook.litho.EventHandler;
+import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 import javax.annotation.Nullable;
@@ -93,6 +95,17 @@ public abstract class RenderInfo {
    *     {@link #rendersComponent()} should be queried first before accessing.
    */
   public Component getComponent() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * @return Valid {@link EventHandler<RenderCompleteEvent>} if {@link RenderInfo} was created
+   *     through {@link ComponentRenderInfo#create()}, otherwise it will throw {@link
+   *     UnsupportedOperationException}.
+   */
+  @Nullable
+  public EventHandler<RenderCompleteEvent> getRenderCompleteEventHandler() {
+    // TODO(T28620590): Support RenderCompleteEvent handler for ViewRenderInfo
     throw new UnsupportedOperationException();
   }
 
