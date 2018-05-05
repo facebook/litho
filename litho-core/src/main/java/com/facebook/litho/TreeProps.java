@@ -36,7 +36,7 @@ public class TreeProps {
     mMap.put(key, value);
   }
 
-  public <T> T get(Class key) {
+  public <T> T get(Class<T> key) {
     return (T) mMap.get(key);
   }
 
