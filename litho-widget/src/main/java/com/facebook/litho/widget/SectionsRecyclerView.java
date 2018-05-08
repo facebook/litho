@@ -53,6 +53,13 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
         return childCount - 1 - i;
       }
     });
+    // ViewCache doesn't work well with RecyclerBinder which assumes that whenever item comes back
+    // to viewport it should be rebound which does not happen with ViewCache. Consider this case:
+    // LithoView goes out of screen and it is added to ViewCache, then its ComponentTree is assigned
+    // to another LV which means our LithoView's ComponentTree reference is nullified. It comes back
+    // to screen and it is not rebound therefore we will see 0 height LithoView which actually
+    // happened in multiple product surfaces. Disabling it fixes the issue.
+    mRecyclerView.setItemViewCacheSize(0);
 
     addView(mRecyclerView);
     mStickyHeader = new LithoView(new ComponentContext(getContext()), null);
