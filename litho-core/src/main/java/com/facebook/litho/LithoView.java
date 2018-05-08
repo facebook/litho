@@ -51,7 +51,10 @@ public class LithoView extends ComponentHost {
   private ComponentTree mComponentTree;
   private final MountState mMountState;
   private boolean mIsAttached;
-  private final Rect mPreviousMountBounds = new Rect();
+  // The bounds of the visible rect that was used for the previous incremental mount.
+  private final Rect mPreviousMountVisibleRectBounds = new Rect();
+  // The view bounds when the previous incremental mount occurred.
+  private final Rect mPreviousMountViewBounds = new Rect();
 
   private boolean mForceLayout;
   private boolean mSuppressMeasureComponentTree;
@@ -325,11 +328,12 @@ public class LithoView extends ComponentHost {
 
       boolean wasMountTriggered = mComponentTree.layout();
 
-      final boolean isRectSame = mPreviousMountBounds != null
-          && mPreviousMountBounds.left == left
-          && mPreviousMountBounds.top == top
-          && mPreviousMountBounds.right == right
-          && mPreviousMountBounds.bottom == bottom;
+      final boolean isRectSame =
+          mPreviousMountViewBounds != null
+              && mPreviousMountViewBounds.left == left
+              && mPreviousMountViewBounds.top == top
+              && mPreviousMountViewBounds.right == right
+              && mPreviousMountViewBounds.bottom == bottom;
 
       // If this happens the LithoView might have moved on Screen without a scroll event
       // triggering incremental mount. We trigger one here to be sure all the content is visible.
@@ -576,12 +580,12 @@ public class LithoView extends ComponentHost {
     final int left = getLeft() + translationX;
     final int right = getRight() + translationX;
 
-    if (left >= 0 &&
-        top >= 0 &&
-        right <= parentWidth &&
-        bottom <= parentHeight &&
-        mPreviousMountBounds.width() == getWidth() &&
-        mPreviousMountBounds.height() == getHeight()) {
+    if (left >= 0
+        && top >= 0
+        && right <= parentWidth
+        && bottom <= parentHeight
+        && mPreviousMountVisibleRectBounds.width() == getWidth()
+        && mPreviousMountVisibleRectBounds.height() == getHeight()) {
       // View is fully visible, and has already been completely mounted.
       return;
     }
@@ -685,10 +689,12 @@ public class LithoView extends ComponentHost {
     }
 
     if (currentVisibleArea == null) {
-      mPreviousMountBounds.setEmpty();
+      mPreviousMountVisibleRectBounds.setEmpty();
     } else {
-      mPreviousMountBounds.set(currentVisibleArea);
+      mPreviousMountVisibleRectBounds.set(currentVisibleArea);
     }
+
+    mPreviousMountViewBounds.set(getLeft(), getTop(), getRight(), getBottom());
 
     mMountState.mount(layoutState, currentVisibleArea, processVisibilityOutputs);
 
@@ -699,16 +705,18 @@ public class LithoView extends ComponentHost {
 
   public void unmountAllItems() {
     mMountState.unmountAllItems();
-    mPreviousMountBounds.setEmpty();
+    mPreviousMountVisibleRectBounds.setEmpty();
+    mPreviousMountViewBounds.setEmpty();
   }
 
   public Rect getPreviousMountBounds() {
-    return mPreviousMountBounds;
+    return mPreviousMountVisibleRectBounds;
   }
 
   void setMountStateDirty() {
     mMountState.setDirty();
-    mPreviousMountBounds.setEmpty();
+    mPreviousMountVisibleRectBounds.setEmpty();
+    mPreviousMountViewBounds.setEmpty();
   }
 
   boolean isMountStateDirty() {
