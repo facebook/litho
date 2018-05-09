@@ -265,7 +265,7 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
       SectionContext context,
       boolean isEmpty,
       LoadingEvent.LoadingState loadingState,
-      Throwable t) {
+      @Nullable Throwable t) {
     final EventHandler<LoadingEvent> loadingEventHandler = getLoadingEventHandler(context);
 
     if (loadingEventHandler != null) {
