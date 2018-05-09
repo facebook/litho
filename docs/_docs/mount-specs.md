@@ -11,16 +11,17 @@ Mount specs should only be created when you need to integrate your own views/dra
 
 Mount spec classes should be annotated with `@MountSpec` and implement at least an `@OnCreateMountContent` method. The other methods listed below are optional.
 
-The life cycle of mount spec components is as follows:
+The lifecycle of mount spec components is as follows:
+[`BG` = occurs on BG thread when possible -- do not modify the view hierarchy, `UI` = can occur on UI thread, `PC` = Performance critical -- put as little work in it as possible, use `BG` methods instead]
 
-- Run `@OnPrepare` once, before layout calculation.
-- Run `@OnMeasure` optionally during layout calculation.
-- Run `@OnBoundsDefined` once, after layout calculation.
-- Run `@OnCreateMountContent` before the component is attached to a hosting view.
-- Run `@OnMount` before the component is attached to a hosting view.
-- Run `@OnBind` after the component is attached to a hosting view.
-- Run `@OnUnbind` before the component is detached from a hosting view.
-- Run `@OnUnmount` optionally after the component is detached from a hosting view.
+- Run `@OnPrepare` once, before layout calculation. `BG`/`UI`
+- Run `@OnMeasure` optionally during layout calculation. This will **not** be called if Yoga has already determined your component's bounds (e.g. a static width/height was set on the component). `BG`/`UI`
+- Run `@OnBoundsDefined` once, after layout calculation. This will be called whether or not `@OnMeasure` was called. `BG`/`UI`
+- Run `@OnCreateMountContent` before the component is attached to a hosting view. This content may be reused for other instances of this component. `UI`
+- Run `@OnMount` before the component is attached to a hosting view. This will happen when the component is about to become visible when incremental mount is enabled (it is enabled by default). `UI`/`PC`
+- Run `@OnBind` after the component is attached to a hosting view. `UI`/`PC`
+- Run `@OnUnbind` before the component is detached from a hosting view. `UI`/`PC`
+- Run `@OnUnmount` optionally after the component is detached from a hosting view. See incremental mount notes on `@OnMount`: they apply in reverse here. `UI`/`PC`
 
 ## Mounting
 
