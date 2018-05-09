@@ -1,16 +1,131 @@
 version: 2.0
+aliases:
+  # NDK Cache aliases
+  - &restore-cache-ndk
+    keys:
+      - v1-android-ndk-{{ arch }}-r15c-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
+  - &save-cache-ndk
+    paths:
+      - /opt/ndk
+    key: v1-android-ndk-{{ arch }}-r15c-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
 
-container_config: &container_config
-  docker:
-    - image: passy/android-circleci-litho:v27-3
-  working_directory: ~/litho-working-dir
-  environment:
-    # Borrowed from https://github.com/chrisbanes/tivi/blob/master/.circleci/config.yml
-    # Sometimes gradle_tests_run job would fail with OOM error from CI. This is an attempt to fix it!
-    _JAVA_OPTIONS: "-Xmx1500m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2"
-    TERM: 'dumb'
-    ANDROID_HOME: '/home/circleci/android-sdk'
-    ANDROID_NDK_REPOSITORY: "/home/circleci/android-ndk"
+  # SDK Cache aliases
+  - &restore-cache-android-packages
+    keys:
+      - v1-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
+  - &save-cache-android-packages
+    paths:
+      - /opt/android/sdk
+    key: v1-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
+
+  # BUCK Cache aliases
+  - &restore-cache-buck
+    keys:
+      - v2-buck-{{ arch }}-master
+  - &save-cache-buck
+    paths:
+      - workspace/buck
+    key: v2-buck-{{ arch }}-master
+
+  # Build dependencies Cache aliases
+  - &restore-cache-apt
+    keys:
+      - v1-apt-{{ arch }}-{{ .Branch }}-{{ checksum "workspace/repo/scripts/apt-get-android-deps.sh" }}
+  - &save-cache-apt
+    paths:
+      - ~/vendor/apt
+    key: v1-apt-{{ arch }}-{{ .Branch }}-{{ checksum "workspace/repo/scripts/apt-get-android-deps.sh" }}
+
+  # Repo Cache aliases
+  - &restore-repo-cache
+    keys:
+      - v2-jars-{{ checksum "workspace/repo/build.gradle" }}-{{ checksum  "workspace/repo/gradle.properties" }}
+  - &save-repo-cache
+    paths:
+      - ~/.gradle/caches
+      - ~/.gradle/wrapper
+    key: v2-jars-{{ checksum "workspace/repo/build.gradle" }}-{{ checksum  "workspace/repo/gradle.properties" }}
+
+  # Install Android NDK packages needed
+  - &install-ndk
+    name: Install Android NDK
+    command: source $HOME/litho-working-dir/workspace/repo/scripts/circle-ci-android-setup.sh && getAndroidNDK
+
+  # Install Android SDK packages needed
+  - &install-android-packages
+    name: Install Android SDK Packages
+    command: source $HOME/litho-working-dir/workspace/repo/scripts/circle-ci-android-setup.sh && installAndroidSDK
+
+  # Install build dependencies
+  - &install-android-build-dependencies
+    name: Install Android Build Dependencies
+    command: $HOME/litho-working-dir/workspace/repo/scripts/apt-get-android-deps.sh
+
+  #  Create Android NDK directory
+  - &create-android-ndk-dir
+    name: Create Android NDK Directory
+    command: |
+      if [[ ! -e /opt/ndk ]]; then
+        sudo mkdir /opt/ndk
+      fi
+      sudo chown ${USER:=$(/usr/bin/id -run)}:$USER /opt/ndk
+
+  # Download and build BUCK
+  - &download-buck
+    name: Install BUCK
+    command: |
+      if [[ ! -e $HOME/litho-working-dir/workspace/buck ]]; then
+        git clone https://github.com/facebook/buck.git $HOME/litho-working-dir/workspace/buck --branch master --depth=1
+      fi
+      cd $HOME/litho-working-dir/workspace/buck && ant
+      $HOME/litho-working-dir/workspace/buck/bin/buck --version
+
+  # Export BUCK in PATH
+  - &setup-buck
+    name: Set up BUCK
+    command: echo "export PATH=$HOME/litho-working-dir/workspace/buck/bin:$PATH" >> $BASH_ENV
+
+  # Setup KEY
+  - &setup-keys
+    name: Set up keys
+    command: "[ -n \"$KEY\" ] && openssl aes-256-cbc -d -in scripts/setup-keys.enc -k $KEY >> gradle.properties || true"
+
+  # Unset KEY
+  - &unset-key
+    name: Unset key
+    command: "export KEY=\"<unset>\""
+
+  # Download project Gradle dependencies
+  - &download-gradle-dependencies
+    name: Download Gradle dependencies
+    command: ./workspace/repo/gradlew dependencies --no-daemon
+  
+  # Download project BUCK dependencies
+  - &download-buck-dependencies
+    name: Buck Dependencies
+    command: |
+      cd workspace/repo
+      $HOME/litho-working-dir/workspace/buck/bin/buck fetch //...
+
+  # Save Litho BUCK test results
+  - &save-litho-buck-tests-results
+    name: Save Litho BUCK tests results
+    command: |
+      cd workspace
+      mkdir -p junit
+      cd repo
+      find . -type f -name "litho_it_*tests*.xml" -exec cp {} ~/litho-working-dir/workspace/junit/ \;
+    when: always
+
+  # Save Litho Gradle test results
+  - &save-litho-gradle-tests-results
+    name: Save Litho Gradle tests results
+    command: |
+      cd workspace
+      mkdir -p junit
+      cd repo
+      find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/litho-working-dir/workspace/junit/ \;
+    when: always
 
 circle_ci_android_container_config: &circle_ci_android_container_config
   docker:
@@ -21,65 +136,11 @@ circle_ci_android_container_config: &circle_ci_android_container_config
     # Sometimes gradle_tests_run job would fail with OOM error from CI. This is an attempt to fix it!
     _JAVA_OPTIONS: "-Xmx1500m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2"
     TERM: 'dumb'
-    ANDROID_HOME: '/home/circleci/litho-working-dir/workspace/android-sdk'
-    ANDROID_NDK_REPOSITORY: '/home/circleci/litho-working-dir/workspace/android-ndk'
-
-gradle_caches_path: &gradle_caches_path
-  ~/.gradle/caches
-
-gradle_wrapper_path: &gradle_wrapper_path
-  ~/.gradle/wrapper
+    ANDROID_NDK_REPOSITORY: '/opt/ndk'
 
 attach_workspace: &attach_workspace
   attach_workspace:
     at: ~/litho-working-dir/workspace
-
-repo_cache_key: &repo_cache_key
-  key: v2-jars-{{ checksum "workspace/repo/build.gradle" }}-{{ checksum  "workspace/repo/gradle.properties" }}
-
-restore_repo: &restore_repo
-  restore_cache:
-    <<: *repo_cache_key
-
-setup_buck: &setup_buck
-  name: Set up BUCK
-  command: echo "export PATH=$HOME/litho-working-dir/workspace/buck/bin:$PATH" >> $BASH_ENV
-
-setup_keys: &setup_keys
-  name: Set up keys
-  command: "[ -n \"$KEY\" ] && openssl aes-256-cbc -d -in scripts/setup-keys.enc -k $KEY >> gradle.properties || true"
-
-unset_key: &unset_key
-  name: Unset key
-  command: "export KEY=\"<unset>\""
-
-download_gradle_dependencies: &download_gradle_dependencies
-  name: Download Gradle dependencies
-  command: ./workspace/repo/gradlew dependencies --no-daemon
-
-download_buck_dependencies: &download_buck_dependencies
-  name: Buck Dependencies
-  command: |
-    cd workspace/repo
-    $HOME/litho-working-dir/workspace/buck/bin/buck fetch //...
-
-save_litho_gradle_tests_results: &save_litho_gradle_tests_results
-  name: Save Litho Gradle tests results
-  command: |
-    cd workspace
-    mkdir -p junit
-    cd repo
-    find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/litho-working-dir/workspace/junit/ \;
-  when: always
-
-save_litho_buck_tests_results: &save_litho_buck_tests_results
-  name: Save Litho BUCK tests results
-  command: |
-    cd workspace
-    mkdir -p junit
-    cd repo
-    find . -type f -name "litho_it_*tests*.xml" -exec cp {} ~/litho-working-dir/workspace/junit/ \;
-  when: always
 
 store_litho_tests_results: &store_litho_tests_results
   store_test_results:
@@ -91,52 +152,68 @@ store_litho_artifacts: &store_litho_artifacts
 
 jobs:
   checkout_code:
-    <<: *container_config
+    <<: *circle_ci_android_container_config
     steps:
+      # Create folders needed
       - run: mkdir -p workspace
       - run: mkdir -p repo
-      - run: mv $HOME/buck/ ~/litho-working-dir/workspace/
-      - run: mv $HOME/android-sdk/ ~/litho-working-dir/workspace/
-      - run: mv $HOME/android-ndk/ ~/litho-working-dir/workspace/
+      
+      # Checkout code into repo
       - checkout:
           path: workspace/repo
+      
+      # Manage Android NDK caches
+      - run: *create-android-ndk-dir
+      - restore-cache: *restore-cache-ndk
+      - run: *install-ndk
+      - save-cache: *save-cache-ndk
+
+      # Manage Android build depencies caches
+      - restore-cache: *restore-cache-apt
+      - run: *install-android-build-dependencies
+      - save-cache: *save-cache-apt
+
+      # Manage Android SDK caches
+      - restore-cache: *restore-cache-android-packages
+      - run: *install-android-packages
+      - save-cache: *save-cache-android-packages
+
+      # Manage BUCK caches
+      - restore-cache: *restore-cache-buck
+      - run: *download-buck
+      - save-cache: *save-cache-buck
+      
+      # Persist repo code
       - persist_to_workspace:
           root: workspace
           paths:
             - repo
-            - buck
-            - android-sdk
-            - android-ndk
+      
   build:
     <<: *circle_ci_android_container_config
     steps:
       - *attach_workspace
-      - restore_cache:
-          <<: *repo_cache_key
-      - run:
-          <<: *setup_keys
-      - run:
-          <<: *unset_key
-      - run:
-          <<: *download_gradle_dependencies
-      - run:
-          <<: *setup_buck
-      - run:
-          <<: *download_buck_dependencies
-      - save_cache:
-          <<: *repo_cache_key
-          paths:
-            - *gradle_caches_path
-            - *gradle_wrapper_path
+      - run: *create-android-ndk-dir
+      - restore-cache: *restore-cache-ndk
+      - restore-cache: *restore-cache-buck
+      - restore_cache: *restore-repo-cache
+      - run: *setup-keys
+      - run: *unset-key
+      - run: *download-gradle-dependencies
+      - run: *setup-buck
+      - run: *download-buck-dependencies
+      - save_cache: *save-repo-cache
 
   buck_sample_build:
     <<: *circle_ci_android_container_config
     steps:
       - *attach_workspace
-      - restore_cache:
-          <<: *repo_cache_key
-      - run:
-          <<: *setup_buck
+      - run: *create-android-ndk-dir
+      - restore_cache: *restore-repo-cache
+      - restore-cache: *restore-cache-ndk
+      - restore-cache: *restore-cache-buck
+      - restore-cache: *restore-cache-android-packages
+      - run: *setup-buck
       - run:
           name: Build sample with BUCK
           command: |
@@ -148,10 +225,12 @@ jobs:
     <<: *circle_ci_android_container_config
     steps:
       - *attach_workspace
-      - restore_cache:
-          <<: *repo_cache_key
-      - run:
-          <<: *setup_buck
+      - run: *create-android-ndk-dir
+      - restore_cache: *restore-repo-cache
+      - restore-cache: *restore-cache-ndk
+      - restore-cache: *restore-cache-buck
+      - restore-cache: *restore-cache-android-packages
+      - run: *setup-buck
       - run:
           name: Build sample-barebones with BUCK
           command: |
@@ -163,10 +242,12 @@ jobs:
     <<: *circle_ci_android_container_config
     steps:
       - *attach_workspace
-      - restore_cache:
-          <<: *repo_cache_key
-      - run:
-          <<: *setup_buck
+      - run: *create-android-ndk-dir
+      - restore_cache: *restore-repo-cache
+      - restore-cache: *restore-cache-ndk
+      - restore-cache: *restore-cache-buck
+      - restore-cache: *restore-cache-android-packages
+      - run: *setup-buck
       - run:
           name: Build sample-codelab with BUCK
           command: |
@@ -178,10 +259,12 @@ jobs:
     <<: *circle_ci_android_container_config
     steps:
       - *attach_workspace
-      - restore_cache:
-          <<: *repo_cache_key
-      - run:
-          <<: *setup_buck
+      - run: *create-android-ndk-dir
+      - restore_cache: *restore-repo-cache
+      - restore-cache: *restore-cache-ndk
+      - restore-cache: *restore-cache-buck
+      - restore-cache: *restore-cache-android-packages
+      - run: *setup-buck
       - run:
           name: Build sample-kotlin with Gradle
           command: |
@@ -192,18 +275,19 @@ jobs:
     <<: *circle_ci_android_container_config
     steps:
       - *attach_workspace
-      - restore_cache:
-          <<: *repo_cache_key
-      - run:
-          <<: *setup_buck
+      - run: *create-android-ndk-dir
+      - restore_cache: *restore-repo-cache
+      - restore-cache: *restore-cache-ndk
+      - restore-cache: *restore-cache-buck
+      - restore-cache: *restore-cache-android-packages
+      - run: *setup-buck
       - run:
           name: Run litho-it tests with BUCK
           command: |
             cd workspace/repo
             buck fetch //...
             buck test litho-it/src/test/... --num-threads=4 --xml litho_it_tests.xml
-      - run:
-          <<: *save_litho_buck_tests_results
+      - run: *save-litho-buck-tests-results
       - *store_litho_tests_results
       - *store_litho_artifacts
 
@@ -211,18 +295,19 @@ jobs:
     <<: *circle_ci_android_container_config
     steps:
       - *attach_workspace
-      - restore_cache:
-          <<: *repo_cache_key
-      - run:
-          <<: *setup_buck
+      - run: *create-android-ndk-dir
+      - restore_cache: *restore-repo-cache
+      - restore-cache: *restore-cache-ndk
+      - restore-cache: *restore-cache-buck
+      - restore-cache: *restore-cache-android-packages
+      - run: *setup-buck
       - run:
           name: Run lith-it-powermock tests with BUCK
           command: |
             cd workspace/repo
             buck fetch //...
             buck test litho-it-powermock/src/test/... --num-threads=4 --xml litho_it_powermock_tests.xml
-      - run:
-          <<: *save_litho_buck_tests_results
+      - run: *save-litho-buck-tests-results
       - *store_litho_tests_results
       - *store_litho_artifacts
 
@@ -230,17 +315,18 @@ jobs:
     <<: *circle_ci_android_container_config
     steps:
       - *attach_workspace
-      - restore_cache:
-          <<: *repo_cache_key
-      - run:
-          <<: *setup_buck
+      - run: *create-android-ndk-dir
+      - restore_cache: *restore-repo-cache
+      - restore-cache: *restore-cache-ndk
+      - restore-cache: *restore-cache-buck
+      - restore-cache: *restore-cache-android-packages
+      - run: *setup-buck
       - run:
           name: Run tests with Gradle
           command: |
             cd workspace/repo
             ./gradlew test --no-daemon --max-workers 2
-      - run:
-          <<: *save_litho_gradle_tests_results
+      - run: *save-litho-gradle-tests-results
       - *store_litho_tests_results
       - *store_litho_artifacts
 

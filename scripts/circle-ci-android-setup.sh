@@ -22,29 +22,29 @@ function installsdk() {
   echo y | "$ANDROID_HOME"/tools/bin/sdkmanager $PROXY_ARGS "$@"
 }
 
+function getAndroidNDK {
+  NDK_HOME="/opt/ndk"
+  DEPS="$NDK_HOME/installed-dependencies"
+
+  if [ ! -e $DEPS ]; then
+    cd $NDK_HOME
+    echo "Downloading NDK..."
+    curl -o ndk.zip https://dl.google.com/android/repository/android-ndk-r15c-linux-x86_64.zip
+    unzip -o -q ndk.zip
+    echo "Installed Android NDK at $NDK_HOME"
+    touch $DEPS
+    rm ndk.zip
+  fi
+}
+
 function installAndroidSDK {
-  if [[ ! -d "$HOME/android-sdk" ]]; then
-    TMP=/tmp/sdk$$.zip
-    download 'https://dl.google.com/android/repository/tools_r25.2.3-linux.zip' $TMP
-    unzip -qod "$HOME/android-sdk" $TMP
-    rm $TMP
-  fi
-
-  export ANDROID_NDK_REPOSITORY=$HOME/android-ndk
-  if [[ ! -d "$ANDROID_NDK_REPOSITORY/android-ndk-r15c" ]]; then
-    TMP=/tmp/ndk$$.zip
-    mkdir -p "$ANDROID_NDK_REPOSITORY"
-    download 'https://dl.google.com/android/repository/android-ndk-r15c-linux-x86_64.zip' $TMP
-    unzip -qod "$ANDROID_NDK_REPOSITORY" "$TMP"
-    rm $TMP
-  fi
-
-  export ANDROID_HOME=$HOME/android-sdk
   export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$PATH"
 
   mkdir -p $ANDROID_HOME/licenses/
   echo > $ANDROID_HOME/licenses/android-sdk-license
   echo -n d56f5187479451eabf01fb78af6dfcb131a6481e > $ANDROID_HOME/licenses/android-sdk-license
+
+  ls -la $ANDROID_HOME
 
   installsdk 'build-tools;25.0.3' 'build-tools;26.0.2' 'platforms;android-25' 'platforms;android-26' 'ndk-bundle' 'extras;android;m2repository'
 }
