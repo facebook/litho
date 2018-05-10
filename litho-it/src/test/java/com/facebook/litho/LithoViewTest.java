@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static android.view.View.MeasureSpec.AT_MOST;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
@@ -23,18 +24,25 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.RuntimeEnvironment.application;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Rect;
+import android.util.DisplayMetrics;
 import android.view.ViewGroup;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.assertj.LithoViewAssert;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -63,6 +71,11 @@ public class LithoViewTest {
 
     mLithoView = new LithoView(RuntimeEnvironment.application);
     mLithoView.setComponent(component);
+  }
+
+  @After
+  public void tearDown() {
+    ComponentsConfiguration.doubleMeasureCorrection = false;
   }
 
   @Test
@@ -221,6 +234,84 @@ public class LithoViewTest {
     shadow.callOnAttachedToWindow();
 
     assertThat(getInternalMountItems(mLithoView)).hasSize(2);
+  }
+
+  @Test
+  public void testCorrectsDoubleMeasureBug() {
+    ComponentsConfiguration.doubleMeasureCorrection = true;
+
+    mLithoView = setupLithoViewForDoubleMeasureTest(411, 2.625f, 1080);
+    mLithoView.measure(makeMeasureSpec(1079, EXACTLY), makeMeasureSpec(100, EXACTLY));
+
+    assertThat(mLithoView.getMeasuredWidth()).isEqualTo(1080);
+    assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
+  }
+
+  @Test
+  public void testCorrectsDoubleMeasureBugWithAtMost() {
+    ComponentsConfiguration.doubleMeasureCorrection = true;
+
+    mLithoView = setupLithoViewForDoubleMeasureTest(411, 2.625f, 1080);
+    mLithoView.measure(makeMeasureSpec(1079, AT_MOST), makeMeasureSpec(100, EXACTLY));
+
+    assertThat(mLithoView.getMeasuredWidth()).isEqualTo(1080);
+    assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
+  }
+
+  @Test
+  public void testNoCorrectionWhenBugIsNotMatched() {
+    ComponentsConfiguration.doubleMeasureCorrection = true;
+
+    mLithoView = setupLithoViewForDoubleMeasureTest(411, 2f, 1080);
+    mLithoView.measure(makeMeasureSpec(1079, EXACTLY), makeMeasureSpec(100, EXACTLY));
+
+    assertThat(mLithoView.getMeasuredWidth()).isEqualTo(1079);
+    assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
+  }
+
+  @Test
+  public void testNoCorrectionWhenBugIsNotMatched2() {
+    ComponentsConfiguration.doubleMeasureCorrection = true;
+
+    mLithoView = setupLithoViewForDoubleMeasureTest(411, 2.625f, 1080);
+    mLithoView.measure(makeMeasureSpec(1078, EXACTLY), makeMeasureSpec(100, EXACTLY));
+
+    assertThat(mLithoView.getMeasuredWidth()).isEqualTo(1078);
+    assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
+  }
+
+  @Test
+  public void testNoCorrectionWithConfigOff() {
+    ComponentsConfiguration.doubleMeasureCorrection = false;
+
+    mLithoView = setupLithoViewForDoubleMeasureTest(411, 2.625f, 1080);
+    mLithoView.measure(makeMeasureSpec(1079, EXACTLY), makeMeasureSpec(100, EXACTLY));
+
+    assertThat(mLithoView.getMeasuredWidth()).isEqualTo(1079);
+    assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
+  }
+
+  private LithoView setupLithoViewForDoubleMeasureTest(
+      int screenWidthDp, float density, int screenWidthPx) {
+    final ComponentContext context = spy(new ComponentContext(RuntimeEnvironment.application));
+    final Resources resources = spy(context.getResources());
+
+    doReturn(resources).when(context).getResources();
+
+    final Configuration configuration = new Configuration();
+    configuration.setTo(resources.getConfiguration());
+
+    final DisplayMetrics displayMetrics = new DisplayMetrics();
+    displayMetrics.setTo(resources.getDisplayMetrics());
+
+    doReturn(configuration).when(resources).getConfiguration();
+    doReturn(displayMetrics).when(resources).getDisplayMetrics();
+
+    configuration.screenWidthDp = screenWidthDp;
+    displayMetrics.density = density;
+    displayMetrics.widthPixels = screenWidthPx;
+
+    return new LithoView(context);
   }
 
   private static class RecyclerViewLayoutManagerOverrideParams extends ViewGroup.LayoutParams

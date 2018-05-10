@@ -173,4 +173,7 @@ public class ComponentsConfiguration {
    * unless you handle all your updates outside of the litho framework
    */
   public static boolean useStateHandlers = true;
+
+  /** Enable workaround for double measure with different widths bug in Android. */
+  public static boolean doubleMeasureCorrection = false;
 }
