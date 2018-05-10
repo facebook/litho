@@ -353,14 +353,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       onPrepare(context);
     }
 
-    final TreeProps contextTreeProps = context.getTreeProps();
-    if (contextTreeProps != parentTreeProps) {
-      if (contextTreeProps != null) {
-        ComponentsPools.release(contextTreeProps);
-      }
-      context.setTreeProps(parentTreeProps);
-    }
-
     if (component.mWorkingRangeRegistrations != null
         && !component.mWorkingRangeRegistrations.isEmpty()) {
       node.addWorkingRanges(component.mWorkingRangeRegistrations);
