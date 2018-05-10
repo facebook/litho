@@ -142,9 +142,9 @@ class TextSpec {
   private static final int DEFAULT_EMS = -1;
   private static final int DEFAULT_MIN_WIDTH = 0;
   private static final int DEFAULT_MAX_WIDTH = Integer.MAX_VALUE;
-  private static final int DEFAULT_BREAK_STRATEGY = -1;
+  private static final int DEFAULT_BREAK_STRATEGY = 0; // BREAK_STRATEGY_SIMPLE (AOSP Default)
   private static final int DEFAULT_HYPHENATION_FREQUENCY = -1;
-  private static final int DEFAULT_JUSTIFICATION_MODE = 0; // JUSTIFICATION_MODE_NONE
+  private static final int DEFAULT_JUSTIFICATION_MODE = 0; // JUSTIFICATION_MODE_NONE (AOSP Default)
 
   private static final int[][] DEFAULT_TEXT_COLOR_STATE_LIST_STATES = {{0}};
   private static final int[] DEFAULT_TEXT_COLOR_STATE_LIST_COLORS = {Color.BLACK};
@@ -583,11 +583,8 @@ class TextSpec {
         .setTextSpacingMultiplier(spacingMultiplier)
         .setAlignment(textAlignment)
         .setLinkColor(linkColor)
-        .setJustificationMode(justificationMode);
-
-    if (breakStrategy != DEFAULT_BREAK_STRATEGY) {
-      layoutBuilder.setBreakStrategy(breakStrategy);
-    }
+        .setJustificationMode(justificationMode)
+        .setBreakStrategy(breakStrategy);
 
     if (hyphenationFrequency != DEFAULT_HYPHENATION_FREQUENCY) {
       layoutBuilder.setHyphenationFrequency(hyphenationFrequency);
