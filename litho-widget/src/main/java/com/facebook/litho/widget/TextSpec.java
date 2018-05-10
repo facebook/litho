@@ -113,6 +113,7 @@ import com.facebook.yoga.YogaDirection;
  * @prop textAlignment Alignment of the text within its container.
  * @prop breakStrategy Break strategy to use for multi-line text.
  * @prop hyphenationFrequency How frequently to hyphenate text.
+ * @prop justificationMode How to justify the text. See {@link android.text.Layout}
  * @prop glyphWarming If set, pre-renders the text to an off-screen Canvas to boost performance.
  * @prop textDirection Heuristic to use to determine the direction of the text.
  * @prop shouldIncludeFontPadding If set, uses extra padding for ascenders and descenders.
@@ -143,6 +144,7 @@ class TextSpec {
   private static final int DEFAULT_MAX_WIDTH = Integer.MAX_VALUE;
   private static final int DEFAULT_BREAK_STRATEGY = -1;
   private static final int DEFAULT_HYPHENATION_FREQUENCY = -1;
+  private static final int DEFAULT_JUSTIFICATION_MODE = 0; // JUSTIFICATION_MODE_NONE
 
   private static final int[][] DEFAULT_TEXT_COLOR_STATE_LIST_STATES = {{0}};
   private static final int[] DEFAULT_TEXT_COLOR_STATE_LIST_COLORS = {Color.BLACK};
@@ -171,6 +173,7 @@ class TextSpec {
   @PropDefault protected static final Alignment textAlignment = ALIGN_NORMAL;
   @PropDefault protected static final int breakStrategy = DEFAULT_BREAK_STRATEGY;
   @PropDefault protected static final int hyphenationFrequency = DEFAULT_HYPHENATION_FREQUENCY;
+  @PropDefault protected static final int justificationMode = DEFAULT_JUSTIFICATION_MODE;
   @PropDefault protected static final int highlightStartOffset = -1;
   @PropDefault protected static final int highlightEndOffset = -1;
   @PropDefault protected static final boolean clipToBounds = true;
@@ -203,6 +206,7 @@ class TextSpec {
       Output<Alignment> textAlignment,
       Output<Integer> breakStrategy,
       Output<Integer> hyphenationFrequency,
+      Output<Integer> justificationMode,
       Output<Integer> textStyle,
       Output<Float> shadowRadius,
       Output<Float> shadowDx,
@@ -245,6 +249,7 @@ class TextSpec {
           textAlignment,
           breakStrategy,
           hyphenationFrequency,
+          justificationMode,
           textStyle,
           shadowRadius,
           shadowDx,
@@ -279,6 +284,7 @@ class TextSpec {
         textAlignment,
         breakStrategy,
         hyphenationFrequency,
+        justificationMode,
         textStyle,
         shadowRadius,
         shadowDx,
@@ -310,6 +316,7 @@ class TextSpec {
       Output<Alignment> textAlignment,
       Output<Integer> breakStrategy,
       Output<Integer> hyphenationFrequency,
+      Output<Integer> justificationMode,
       Output<Integer> textStyle,
       Output<Float> shadowRadius,
       Output<Float> shadowDx,
@@ -383,6 +390,9 @@ class TextSpec {
       } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
           && attr == R.styleable.Text_android_hyphenationFrequency) {
         hyphenationFrequency.set(a.getInt(attr, DEFAULT_HYPHENATION_FREQUENCY));
+      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+          && attr == R.styleable.Text_android_justificationMode) {
+        justificationMode.set(a.getInt(attr, DEFAULT_JUSTIFICATION_MODE));
       }
     }
 
@@ -424,6 +434,7 @@ class TextSpec {
       @Prop(optional = true) Alignment textAlignment,
       @Prop(optional = true) int breakStrategy,
       @Prop(optional = true) int hyphenationFrequency,
+      @Prop(optional = true) int justificationMode,
       @Prop(optional = true) boolean glyphWarming,
       @Prop(optional = true) TextDirectionHeuristicCompat textDirection,
       Output<Layout> measureLayout,
@@ -467,6 +478,7 @@ class TextSpec {
             context.getResources().getDisplayMetrics().density,
             breakStrategy,
             hyphenationFrequency,
+            justificationMode,
             textDirection);
 
     measureLayout.set(newLayout);
@@ -532,6 +544,7 @@ class TextSpec {
       float density,
       int breakStrategy,
       int hyphenationFrequency,
+      int justificationMode,
       TextDirectionHeuristicCompat textDirection) {
     Layout newLayout;
 
@@ -569,7 +582,8 @@ class TextSpec {
         .setTextSpacingExtra(extraSpacing)
         .setTextSpacingMultiplier(spacingMultiplier)
         .setAlignment(textAlignment)
-        .setLinkColor(linkColor);
+        .setLinkColor(linkColor)
+        .setJustificationMode(justificationMode);
 
     if (breakStrategy != DEFAULT_BREAK_STRATEGY) {
       layoutBuilder.setBreakStrategy(breakStrategy);
@@ -788,6 +802,7 @@ class TextSpec {
               c.getResources().getDisplayMetrics().density,
               breakStrategy,
               hyphenationFrequency,
+              justificationMode,
               textDirection));
     }
 

@@ -50,6 +50,7 @@
     <attr name="android:imeOptions" />
     <attr name="android:breakStrategy" />
     <attr name="android:hyphenationFrequency" />
+    <attr name="android:justificationMode" />
   </declare-styleable>
 
   <declare-styleable name="Image">

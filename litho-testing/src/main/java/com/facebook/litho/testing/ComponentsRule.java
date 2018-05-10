@@ -135,6 +135,7 @@ public class ComponentsRule implements TestRule {
           android.R.attr.imeOptions,
           android.R.attr.breakStrategy,
           android.R.attr.hyphenationFrequency,
+          android.R.attr.justificationMode,
         },
         /* srcPos */ 0,
         R.styleable.Text,
