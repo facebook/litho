@@ -847,6 +847,9 @@ public class SectionTree {
       // Checking nextRoot is enough here since whenever we enqueue a new state update we also
       // re-assign nextRoot.
       while (nextRoot != null) {
+        if (isTracing) {
+          ComponentsSystrace.beginSection("calculateNewChangeSet");
+        }
         final ChangeSetState changeSetState =
             calculateNewChangeSet(
                 mContext,
@@ -855,6 +858,9 @@ public class SectionTree {
                 pendingStateUpdates.mAllStateUpdates,
                 mSectionsDebugLogger,
                 mTag);
+        if (isTracing) {
+          ComponentsSystrace.endSection();
+        }
 
         final boolean changeSetIsValid;
         Section oldRoot = null;
@@ -1043,50 +1049,71 @@ public class SectionTree {
       mPendingChangeSets.clear();
     }
 
-    boolean appliedChanges = false;
-    for (int i = 0, size = changeSets.size(); i < size; i++) {
-      final ChangeSet changeSet = changeSets.get(i);
+    final boolean isTracing = ComponentsSystrace.isTracing();
 
-      if (changeSet.getChangeCount() > 0) {
-        for (int j = 0, changeSize = changeSet.getChangeCount(); j < changeSize; j++) {
-          final Change change = changeSet.getChangeAt(j);
-          switch (change.getType()) {
-            case Change.INSERT:
-              appliedChanges = true;
-              mTarget.insert(change.getIndex(), change.getRenderInfo());
-              break;
-            case Change.INSERT_RANGE:
-              appliedChanges = true;
-              mTarget.insertRange(change.getIndex(), change.getCount(), change.getRenderInfos());
-              break;
-            case Change.UPDATE:
-              appliedChanges = true;
-              mTarget.update(change.getIndex(), change.getRenderInfo());
-              break;
-            case Change.UPDATE_RANGE:
-              appliedChanges = true;
-              mTarget.updateRange(change.getIndex(), change.getCount(), change.getRenderInfos());
-              break;
-            case Change.DELETE:
-              appliedChanges = true;
-              mTarget.delete(change.getIndex());
-              break;
-            case Change.DELETE_RANGE:
-              appliedChanges = true;
-              mTarget.deleteRange(change.getIndex(), change.getCount());
-              break;
-            case Change.MOVE:
-              appliedChanges = true;
-              mTarget.move(change.getIndex(), change.getToIndex());
+    if (isTracing) {
+      ComponentsSystrace.beginSection("applyChangesetToTarget");
+    }
+    boolean appliedChanges = false;
+    try {
+      for (int i = 0, size = changeSets.size(); i < size; i++) {
+        final ChangeSet changeSet = changeSets.get(i);
+
+        if (changeSet.getChangeCount() > 0) {
+          for (int j = 0, changeSize = changeSet.getChangeCount(); j < changeSize; j++) {
+            final Change change = changeSet.getChangeAt(j);
+            switch (change.getType()) {
+              case Change.INSERT:
+                appliedChanges = true;
+                mTarget.insert(change.getIndex(), change.getRenderInfo());
+                break;
+              case Change.INSERT_RANGE:
+                appliedChanges = true;
+                mTarget.insertRange(change.getIndex(), change.getCount(), change.getRenderInfos());
+                break;
+              case Change.UPDATE:
+                appliedChanges = true;
+                mTarget.update(change.getIndex(), change.getRenderInfo());
+                break;
+              case Change.UPDATE_RANGE:
+                appliedChanges = true;
+                mTarget.updateRange(change.getIndex(), change.getCount(), change.getRenderInfos());
+                break;
+              case Change.DELETE:
+                appliedChanges = true;
+                mTarget.delete(change.getIndex());
+                break;
+              case Change.DELETE_RANGE:
+                appliedChanges = true;
+                mTarget.deleteRange(change.getIndex(), change.getCount());
+                break;
+              case Change.MOVE:
+                appliedChanges = true;
+                mTarget.move(change.getIndex(), change.getToIndex());
+            }
           }
+          mTarget.dispatchLastEvent();
         }
-        mTarget.dispatchLastEvent();
+      }
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
       }
     }
 
     if (appliedChanges) {
       mTarget.notifyChangeSetComplete();
-      dataBound();
+
+      if (isTracing) {
+        ComponentsSystrace.beginSection("dataBound");
+      }
+      try {
+        dataBound();
+      } finally {
+        if (isTracing) {
+          ComponentsSystrace.endSection();
+        }
+      }
     }
 
     if (mFocusDispatcher.isLoadingCompleted()) {
@@ -1112,15 +1139,33 @@ public class SectionTree {
               logger, context.getLogTag(), EVENT_SECTIONS_CREATE_NEW_TREE, currentRoot, nextRoot);
     }
 
-    createNewTreeAndApplyStateUpdates(
-        context, currentRoot, nextRoot, pendingStateUpdates, sectionsDebugLogger, sectionTreeTag);
-
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("createTree");
+    }
+    try {
+      createNewTreeAndApplyStateUpdates(
+          context, currentRoot, nextRoot, pendingStateUpdates, sectionsDebugLogger, sectionTreeTag);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
     if (logger != null) {
       logger.log(logEvent);
     }
 
-    return ChangeSetState.generateChangeSet(
-        context, currentRoot, nextRoot, sectionsDebugLogger, sectionTreeTag, "", "");
+    if (isTracing) {
+      ComponentsSystrace.beginSection("ChangeSetState.generateChangeSet");
+    }
+    try {
+      return ChangeSetState.generateChangeSet(
+          context, currentRoot, nextRoot, sectionsDebugLogger, sectionTreeTag, "", "");
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
   }
 
   /**
