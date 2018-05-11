@@ -24,7 +24,11 @@ import com.facebook.litho.BuildConfig;
 import com.facebook.yoga.YogaLogger;
 
 /**
- * Configuration for the Components library.
+ * Hi there, traveller! This configuration class is not meant to be used by end-users of Litho. It
+ * contains mainly flags for features that are either under active development and not ready for
+ * public consumption, or for use in experiments.
+ *
+ * These values are safe defaults and should not require manual changes.
  */
 public class ComponentsConfiguration {
 
