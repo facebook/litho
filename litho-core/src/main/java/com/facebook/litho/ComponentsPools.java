@@ -62,38 +62,36 @@ public class ComponentsPools {
   private ComponentsPools() {
   }
 
-  // FUTURE: tune pool max sizes
-
   private static final Object sMountContentLock = new Object();
   private static final Object sYogaConfigLock = new Object();
 
   static final RecyclePool<LayoutState> sLayoutStatePool =
-      new RecyclePool<>("LayoutState", 64, true);
+      new RecyclePool<>("LayoutState", PoolsConfig.sLayoutStateSize, true);
 
   static final RecyclePool<InternalNode> sInternalNodePool =
-      new RecyclePool<>("InternalNode", 256, true);
+      new RecyclePool<>("InternalNode", PoolsConfig.sInternalNodeSize, true);
 
   static final RecyclePool<NodeInfo> sNodeInfoPool =
-      new RecyclePool<>("NodeInfo", 256, true);
+      new RecyclePool<>("NodeInfo", PoolsConfig.sNodeInfoSize, true);
 
   static final RecyclePool<ViewNodeInfo> sViewNodeInfoPool =
       new RecyclePool<>("ViewNodeInfo", 64, true);
 
   static final RecyclePool<YogaNode> sYogaNodePool =
-      new RecyclePool<>("YogaNode", 256, true);
+      new RecyclePool<>("YogaNode", PoolsConfig.sYogaNodeSize, true);
 
   static final RecyclePool<MountItem> sMountItemPool =
       new RecyclePool<>("MountItem", 256, true);
+
+  static final RecyclePool<LayoutOutput> sLayoutOutputPool =
+      new RecyclePool<>("LayoutOutput", PoolsConfig.sLayoutOutputSize, true);
 
   @GuardedBy("sMountContentLock")
   private static final Map<Context, SparseArray<MountContentPool>> sMountContentPoolsByContext =
       new HashMap<>(4);
 
-  static final RecyclePool<LayoutOutput> sLayoutOutputPool =
-      new RecyclePool<>("LayoutOutput", 256, true);
-
   static final RecyclePool<DisplayListContainer> sDisplayListContainerPool =
-      new RecyclePool<>("DisplayListContainer", 64, true);
+      new RecyclePool<>("DisplayListContainer", PoolsConfig.sDisplayListContainerSize, true);
 
   static final RecyclePool<VisibilityOutput> sVisibilityOutputPool =
       new RecyclePool<>("VisibilityOutput", 64, true);
@@ -109,7 +107,7 @@ public class ComponentsPools {
       new RecyclePool<>("Output", 20, true);
 
   static final RecyclePool<DiffNode> sDiffNodePool =
-      new RecyclePool<>("DiffNode", 256, true);
+      new RecyclePool<>("DiffNode", PoolsConfig.sDiffNodeSize, true);
 
   static final RecyclePool<Diff<?>> sDiffPool =
       new RecyclePool<>("Diff", 20, true);
