@@ -457,6 +457,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       mountPerfEvent.markerAnnotate(PARAM_NO_OP_COUNT, mMountStats.noOpCount);
       mountPerfEvent.markerAnnotate(PARAM_IS_DIRTY, mIsDirty);
 
+      LogTreePopulator.populatePerfEventFromLogger(
+          componentTree.getContext(), logger, mountPerfEvent);
+
       logger.betterLog(mountPerfEvent);
     }
   }

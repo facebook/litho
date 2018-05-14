@@ -16,8 +16,10 @@
 
 package com.facebook.litho;
 
+import android.support.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -86,4 +88,10 @@ public abstract class BaseComponentsLogger implements ComponentsLogger {
    * Log a non-performance event.
    */
   public abstract void onEvent(LogEvent event);
+
+  @Nullable
+  @Override
+  public Map<String, String> getExtraAnnotations(TreeProps treeProps) {
+    return null;
+  }
 }

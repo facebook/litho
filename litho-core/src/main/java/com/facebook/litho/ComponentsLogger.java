@@ -16,13 +16,14 @@
 
 package com.facebook.litho;
 
+import android.support.annotation.Nullable;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * An interface for logging events and performance events in litho as well as in user defined
- * components. The ComponentsLogger is set on the {@link ComponentContext}.
- * See {@link FrameworkLogEvents} for a list of events and parameters
- * logged internally by litho.
+ * components. The ComponentsLogger is set on the {@link ComponentContext}. See {@link
+ * FrameworkLogEvents} for a list of events and parameters logged internally by Litho.
  */
 public interface ComponentsLogger {
 
@@ -61,6 +62,17 @@ public interface ComponentsLogger {
    * @see #getKeyCollisionStackTraceKeywords()
    */
   Set<String> getKeyCollisionStackTraceBlacklist();
+
+  /**
+   * Provide additional log metadata based on the tree props of the component hierarchy currently
+   * being logged. This can be useful if information about the component hierarchy is needed.
+   *
+   * @param treeProps The treeprops available in the hierarchy.
+   * @return Null for efficiency purposes when no data needs to be logged, associative map
+   *     otherwise.
+   */
+  @Nullable
+  Map<String, String> getExtraAnnotations(TreeProps treeProps);
 
   /** @return whether this event is being traced and getting logged. */
   boolean isTracing(LogEvent logEvent);
