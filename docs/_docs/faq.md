@@ -17,8 +17,8 @@ To do this, add a section like this to your Gradle file after the dependency dec
 ```gradle
 configurations.all {
   exclude group: 'com.facebook.yoga', module: 'yoga'
-  exclude group: 'com.facebook.litho', module: 'litho-annotations'
-  resolutionStrategy.force 'com.google.code.findbugs:jsr305:1.3.9'
+  exclude group: 'com.facebook.infer.annotation', module: 'infer-annotation'
+  exclude group: 'com.google.code.findbugs', module: 'jsr305'
 }
 ```
 
