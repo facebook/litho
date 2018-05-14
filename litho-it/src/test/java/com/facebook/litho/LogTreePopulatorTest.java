@@ -16,14 +16,17 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.support.annotation.Nullable;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,6 +87,34 @@ public class LogTreePopulatorTest {
     LogTreePopulator.populatePerfEventFromLogger(mContext, logger, event);
 
     verify(event, never()).markerAnnotate(anyString(), anyString());
+  }
+
+  @Test
+  public void testGetAnnotationBundleFromLogger() {
+    final BaseComponentsLogger logger =
+        new TestComponentsLogger() {
+          @Nullable
+          @Override
+          public Map<String, String> getExtraAnnotations(TreeProps treeProps) {
+            final Object o = treeProps.get(MyKey.class);
+
+            final Map<String, String> map = new LinkedHashMap<>(2);
+            map.put("my_key", String.valueOf((int) o));
+            map.put("other_key", "value");
+
+            return map;
+          }
+        };
+
+    final TreeProps treeProps = new TreeProps();
+    final Component component = mock(Component.class);
+    when(component.getScopedContext()).thenReturn(mContext);
+
+    treeProps.put(MyKey.class, 1337);
+    mContext.setTreeProps(treeProps);
+
+    final String res = LogTreePopulator.getAnnotationBundleFromLogger(component, logger);
+    assertThat(res).isEqualTo("my_key:1337:other_key:value:");
   }
 
   private static class MyKey {}
