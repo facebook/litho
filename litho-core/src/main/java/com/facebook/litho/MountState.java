@@ -27,6 +27,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_DIRTY;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_EXTRAS;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_TIME;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOVED_COUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_NO_OP_COUNT;
@@ -440,6 +441,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           PARAM_UNMOUNTED_CONTENT, mMountStats.unmountedNames.toArray(new String[0]));
       mountPerfEvent.markerAnnotate(
           PARAM_UNMOUNTED_TIME, mMountStats.unmountedTimes.toArray(new Double[0]));
+      mountPerfEvent.markerAnnotate(
+          PARAM_MOUNTED_EXTRAS, mMountStats.extras.toArray(new String[0]));
 
       mountPerfEvent.markerAnnotate(PARAM_UPDATED_COUNT, mMountStats.updatedCount);
       mountPerfEvent.markerAnnotate(
@@ -1242,6 +1245,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       mMountStats.mountTimes.add((System.nanoTime() - startTime) / NS_IN_MS);
       mMountStats.mountedNames.add(component.getSimpleName());
       mMountStats.mountedCount++;
+      mMountStats.extras.add(
+          LogTreePopulator.getAnnotationBundleFromLogger(component, context.getLogger()));
     }
   }
 
@@ -2547,6 +2552,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     private List<String> unmountedNames;
     private List<String> updatedNames;
     private List<String> visibilityHandlerNames;
+    private List<String> extras;
 
     private List<Double> mountTimes;
     private List<Double> unmountedTimes;
@@ -2572,6 +2578,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         unmountedNames = new ArrayList<>();
         updatedNames = new ArrayList<>();
         visibilityHandlerNames = new ArrayList<>();
+        extras = new ArrayList<>();
 
         mountTimes = new ArrayList<>();
         unmountedTimes = new ArrayList<>();
@@ -2592,6 +2599,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         unmountedNames.clear();
         updatedNames.clear();
         visibilityHandlerNames.clear();
+        extras.clear();
 
         mountTimes.clear();
         unmountedTimes.clear();

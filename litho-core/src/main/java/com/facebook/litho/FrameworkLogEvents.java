@@ -77,6 +77,7 @@ public interface FrameworkLogEvents {
   String PARAM_UNCHANGED_COUNT = "unchanged_count";
   String PARAM_MOUNTED_COUNT = "mounted_count";
   String PARAM_MOUNTED_CONTENT = "mounted_content";
+  String PARAM_MOUNTED_EXTRAS = "mounted_extras";
   String PARAM_MOUNTED_TIME = "mounted_time_ms";
   String PARAM_UPDATED_COUNT = "updated_count";
   String PARAM_UPDATED_CONTENT = "updated_content";

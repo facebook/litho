@@ -1588,6 +1588,7 @@ class LayoutState {
       createLayoutPerfEvent = logger.newBetterPerformanceEvent(EVENT_CREATE_LAYOUT);
       createLayoutPerfEvent.markerAnnotate(PARAM_LOG_TAG, context.getLogTag());
       createLayoutPerfEvent.markerAnnotate(PARAM_COMPONENT, component.getSimpleName());
+      LogTreePopulator.populatePerfEventFromLogger(context, logger, createLayoutPerfEvent);
     }
 
     final InternalNode root = component.createLayout(context, true /* resolveNestedTree */);
