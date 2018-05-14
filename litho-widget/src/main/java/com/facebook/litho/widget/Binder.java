@@ -16,10 +16,10 @@
 
 package com.facebook.litho.widget;
 
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Size;
@@ -57,15 +57,14 @@ public interface Binder<V extends ViewGroup> {
   ComponentTree getComponentAt(int position);
 
   /**
-   * Call this method before the {@link View} is mounted, i.e. within
-   * {@link com.facebook.litho.ComponentLifecycle#onMount(Context, Object, Component)}
+   * Call this method before the {@link View} is mounted, i.e. within {@link
+   * com.facebook.litho.ComponentLifecycle#onMount(ComponentContext, Object)})}
    */
   void mount(V view);
 
   /**
-   * Bind this {@link Binder} to a {@link View}. Remember to call
-   * {@link #notifyDataSetChanged()} when your {@link Component}s are
-   * ready to be used.
+   * Bind this {@link Binder} to a {@link View}. Remember to call {@link
+   * ViewGroup#notifyDataSetChanged()} when your {@link Component}s are ready to be used.
    */
   void bind(V view);
 
