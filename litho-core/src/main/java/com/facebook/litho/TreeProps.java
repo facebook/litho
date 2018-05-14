@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -36,6 +37,7 @@ public class TreeProps {
     mMap.put(key, value);
   }
 
+  @Nullable
   public <T> T get(Class<T> key) {
     return (T) mMap.get(key);
   }
