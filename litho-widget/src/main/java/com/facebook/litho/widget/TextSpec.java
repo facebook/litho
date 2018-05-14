@@ -585,13 +585,16 @@ class TextSpec {
         .setIncludeFontPadding(shouldIncludeFontPadding)
         .setTextSpacingExtra(extraSpacing)
         .setTextSpacingMultiplier(spacingMultiplier)
-        .setLetterSpacing(letterSpacing)
         .setAlignment(textAlignment)
         .setLinkColor(linkColor)
         .setJustificationMode(justificationMode)
         .setBreakStrategy(breakStrategy)
         .setHyphenationFrequency(hyphenationFrequency);
 
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      layoutBuilder.setLetterSpacing(letterSpacing);
+    }
+    
     if (minEms != DEFAULT_EMS) {
       layoutBuilder.setMinEms(minEms);
     } else {
