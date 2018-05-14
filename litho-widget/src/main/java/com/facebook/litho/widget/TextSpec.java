@@ -430,6 +430,7 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float extraSpacing,
       @Prop(optional = true, resType = ResType.FLOAT) float spacingMultiplier,
+      @Prop(optional = true, resType = ResType.FLOAT) float letterSpacing,
       @Prop(optional = true) int textStyle,
       @Prop(optional = true) Typeface typeface,
       @Prop(optional = true) Alignment textAlignment,
@@ -467,6 +468,7 @@ class TextSpec {
             textSize,
             extraSpacing,
             spacingMultiplier,
+            letterSpacing,
             textStyle,
             typeface,
             textAlignment,
@@ -533,6 +535,7 @@ class TextSpec {
       int textSize,
       float extraSpacing,
       float spacingMultiplier,
+      float letterSpacing,
       int textStyle,
       Typeface typeface,
       Alignment textAlignment,
@@ -582,6 +585,7 @@ class TextSpec {
         .setIncludeFontPadding(shouldIncludeFontPadding)
         .setTextSpacingExtra(extraSpacing)
         .setTextSpacingMultiplier(spacingMultiplier)
+        .setLetterSpacing(letterSpacing)
         .setAlignment(textAlignment)
         .setLinkColor(linkColor)
         .setJustificationMode(justificationMode)
@@ -730,6 +734,7 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float extraSpacing,
       @Prop(optional = true, resType = ResType.FLOAT) float spacingMultiplier,
+      @Prop(optional = true, resType = ResType.FLOAT) float letterSpacing,
       @Prop(optional = true) VerticalGravity verticalGravity,
       @Prop(optional = true) int textStyle,
       @Prop(optional = true) Typeface typeface,
@@ -785,6 +790,7 @@ class TextSpec {
               textSize,
               extraSpacing,
               spacingMultiplier,
+              letterSpacing,
               textStyle,
               typeface,
               textAlignment,
