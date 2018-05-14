@@ -27,7 +27,7 @@ import org.json.JSONArray;
  * event from the {@link ComponentsLogger} and they are recycled when logged and should not be
  * re-used.
  */
-public final class LogEvent {
+public class LogEvent {
   private final SimpleArrayMap<String, Object> mParams = new SimpleArrayMap<>();
   private int mEventId = -1;
   private boolean mIsPerformanceEvent = false;

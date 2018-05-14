@@ -16,11 +16,16 @@
 
 package com.facebook.litho;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * In test environments we don't want to recycle the events as mockity hold on to them.
- * We therefor override log() to not call release. 
+ * In test environments we don't want to recycle the events as mockity hold on to them. We therefor
+ * override log() to not call release.
  */
 public class TestComponentsLogger extends BaseComponentsLogger {
+
+  private final List<PerfEvent> mLoggedPerfEvents = new LinkedList<>();
 
   @Override
   public void log(LogEvent event) {
@@ -30,6 +35,7 @@ public class TestComponentsLogger extends BaseComponentsLogger {
       onEvent(event);
     }
   }
+
   @Override
   public boolean isTracing(LogEvent logEvent) {
     return true;
@@ -47,15 +53,19 @@ public class TestComponentsLogger extends BaseComponentsLogger {
   public void onPerformanceEventEnded(LogEvent event) {}
 
   @Override
-  public void onEvent(LogEvent event) {
+  public void onEvent(LogEvent event) {}
 
+  @Override
+  public PerfEvent newBetterPerformanceEvent(@FrameworkLogEvents.LogEventId int eventId) {
+    return new TestPerfEvent(eventId);
   }
 
   @Override
-  public PerfEvent newBetterPerformanceEvent(int eventId) {
-    return new NoOpPerfEvent();
+  public void betterLog(PerfEvent event) {
+    mLoggedPerfEvents.add(event);
   }
 
-  @Override
-  public void betterLog(PerfEvent event) {}
+  public List<PerfEvent> getLoggedPerfEvents() {
+    return mLoggedPerfEvents;
+  }
 }
