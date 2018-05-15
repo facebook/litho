@@ -334,8 +334,6 @@ public class ComponentContext extends ContextWrapper {
       }
     }
 
-    component.getScopedContext().setTreeProps(null);
-
     return node;
   }
 
