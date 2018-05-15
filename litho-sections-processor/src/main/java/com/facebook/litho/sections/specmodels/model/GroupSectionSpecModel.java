@@ -308,6 +308,11 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
+  public boolean shouldGenerateCopyMethod() {
+    return true;
+  }
+
+  @Override
   public DependencyInjectionHelper getDependencyInjectionHelper() {
     return mSpecModel.getDependencyInjectionHelper();
   }

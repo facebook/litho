@@ -398,6 +398,11 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   @Override
+  public boolean shouldGenerateCopyMethod() {
+    throw new RuntimeException("Don't delegate to this method!");
+  }
+
+  @Override
   public TypeSpec generate() {
     throw new RuntimeException("Don't delegate to this method!");
   }

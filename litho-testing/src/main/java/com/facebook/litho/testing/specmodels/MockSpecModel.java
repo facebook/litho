@@ -398,6 +398,11 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     return true;
   }
 
+  @Override
+  public boolean shouldGenerateCopyMethod() {
+    return true;
+  }
+
   @Nullable
   @Override
   public DependencyInjectionHelper getDependencyInjectionHelper() {

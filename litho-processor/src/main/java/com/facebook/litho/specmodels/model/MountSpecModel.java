@@ -306,6 +306,11 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public boolean shouldGenerateCopyMethod() {
+    return true;
+  }
+
+  @Override
   public DependencyInjectionHelper getDependencyInjectionHelper() {
     return mSpecModel.getDependencyInjectionHelper();
   }

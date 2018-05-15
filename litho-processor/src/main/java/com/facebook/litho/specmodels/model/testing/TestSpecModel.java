@@ -299,6 +299,11 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   }
 
   @Override
+  public boolean shouldGenerateCopyMethod() {
+    return true;
+  }
+
+  @Override
   @Nullable
   public DependencyInjectionHelper getDependencyInjectionHelper() {
     return mSpecModel.getDependencyInjectionHelper();
