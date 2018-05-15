@@ -181,6 +181,7 @@ class LayoutState {
   private List<TestOutput> mTestOutputs;
 
   @Nullable InternalNode mLayoutRoot;
+  @Nullable String mRootTransitionKey;
 
   private DiffNode mDiffTreeRoot;
   // Reference count will be initialized to 1 in init().
@@ -1247,6 +1248,7 @@ class LayoutState {
       }
 
       layoutState.mLayoutRoot = root;
+      layoutState.mRootTransitionKey = root.getTransitionKey();
 
       if (isTracing) {
         ComponentsSystrace.beginSection("collectResults:" + component.getSimpleName());
@@ -2099,6 +2101,8 @@ class LayoutState {
         mLayoutRoot = null;
       }
 
+      mRootTransitionKey = null;
+
       if (mComponentsNeedingPreviousRenderData != null) {
         mComponentsNeedingPreviousRenderData.clear();
       }
@@ -2290,7 +2294,7 @@ class LayoutState {
 
   @Nullable
   String getRootTransitionKey() {
-    return mLayoutRoot == null ? null : mLayoutRoot.getTransitionKey();
+    return mRootTransitionKey;
   }
 
   void checkWorkingRangeAndDispatch(
