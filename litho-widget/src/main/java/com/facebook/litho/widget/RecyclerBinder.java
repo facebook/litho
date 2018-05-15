@@ -95,7 +95,6 @@ public class RecyclerBinder
   private final @Nullable LithoViewFactory mLithoViewFactory;
   private final ComponentTreeHolderFactory mComponentTreeHolderFactory;
   private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
-  private final boolean mAllowFillViewportOnMainForTest;
   private final float mRangeRatio;
   private final AtomicBoolean mIsMeasured = new AtomicBoolean(false);
   private final AtomicBoolean mRequiresRemeasure = new AtomicBoolean(false);
@@ -310,7 +309,6 @@ public class RecyclerBinder
     private boolean customViewTypeEnabled;
     private int componentViewType;
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
-    private boolean allowFillViewportOnMainForTest;
     private String splitLayoutTag;
 
     /**
@@ -448,13 +446,6 @@ public class RecyclerBinder
       return this;
     }
 
-    /** Method for tests to allow fillListViewport to be called on the main thread. */
-    @VisibleForTesting
-    Builder allowFillViewportOnMainForTest(boolean allowFillViewportOnMainForTest) {
-      this.allowFillViewportOnMainForTest = allowFillViewportOnMainForTest;
-      return this;
-    }
-
     public Builder splitLayoutTag(String splitLayoutTag) {
       this.splitLayoutTag = splitLayoutTag;
       return this;
@@ -502,7 +493,6 @@ public class RecyclerBinder
     mHasDynamicItemHeight =
         mLayoutInfo.getScrollDirection() == HORIZONTAL ? builder.hasDynamicItemHeight : false;
     mInsertPostAsyncLayoutEnabled = builder.insertPostAsyncLayoutEnabled;
-    mAllowFillViewportOnMainForTest = builder.allowFillViewportOnMainForTest;
     mWrapContent = builder.wrapContent;
 
     mViewportManager =
@@ -1361,10 +1351,7 @@ public class RecyclerBinder
     }
 
     final boolean fillListViewport =
-        doFillViewportAfterFinishingMeasure
-            && shouldFillListViewport()
-            && (mAllowFillViewportOnMainForTest || !ThreadUtils.isMainThread());
-
+        doFillViewportAfterFinishingMeasure && shouldFillListViewport();
     final Size wrapSize = mWrapContent ? new Size() : null;
 
     // If we were in a position to recompute range, we are also in a position to re-fill the

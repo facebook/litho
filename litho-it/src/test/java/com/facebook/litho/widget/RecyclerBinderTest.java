@@ -1957,7 +1957,6 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
-            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -1979,7 +1978,6 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
-            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -2001,7 +1999,6 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
-            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -2044,7 +2041,6 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
-            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -2087,7 +2083,6 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
-            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -2155,7 +2150,6 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
-            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     when(layoutInfo.findFirstFullyVisibleItemPosition()).thenReturn(0);
@@ -2185,7 +2179,6 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
-            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -2240,7 +2233,6 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
-            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 3);
@@ -2308,36 +2300,12 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
-            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
     // Just make sure we don't crash
-  }
-
-  @Test
-  public void testDoesNotFillViewportOnMainThread() {
-    ComponentsConfiguration.fillListViewport = true;
-
-    final LayoutInfo layoutInfo = mock(LayoutInfo.class);
-    setupBaseLayoutInfoMock(layoutInfo, OrientationHelper.HORIZONTAL);
-
-    final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder()
-            .rangeRatio(RANGE_RATIO)
-            .layoutInfo(layoutInfo)
-            .build(mComponentContext);
-
-    when(layoutInfo.findFirstFullyVisibleItemPosition()).thenReturn(0);
-
-    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
-
-    recyclerBinder.measure(
-        new Size(), makeSizeSpec(250, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
-
-    verify(layoutInfo, never()).createViewportFiller(anyInt(), anyInt());
   }
 
   @Test
@@ -2353,7 +2321,6 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
-            .allowFillViewportOnMainForTest(true)
             .build(mComponentContext);
 
     recyclerBinder.mount(recyclerView);
