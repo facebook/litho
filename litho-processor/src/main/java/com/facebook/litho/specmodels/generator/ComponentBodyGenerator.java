@@ -427,7 +427,7 @@ public class ComponentBodyGenerator {
     final ImmutableList<InterStageInputParamModel> interStageInputs =
         specModel.getInterStageInputs();
 
-    if (!interStageInputs.isEmpty()) {
+    if (specModel.shouldGenerateCopyMethod() && !interStageInputs.isEmpty()) {
       final String className = specModel.getComponentName();
       final String instanceName = getInstanceRefName(specModel);
       final MethodSpec.Builder copyInterStageComponentBuilder =
@@ -501,6 +501,10 @@ public class ComponentBodyGenerator {
 
   static TypeSpecDataHolder generateMakeShallowCopy(SpecModel specModel, boolean hasState) {
     TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
+
+    if (!specModel.shouldGenerateCopyMethod()) {
+      return typeSpecDataHolder.build();
+    }
 
     final List<MethodParamModel> componentsInImpl = findComponentsInImpl(specModel);
     final ImmutableList<InterStageInputParamModel> interStageComponentVariables =
