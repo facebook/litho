@@ -15,5 +15,5 @@ fb_android_library(
     srcs = glob([
         "src/**/*.java",
     ]),
-    visibility = LITHO_VISIBILITY,
+    visibility = ["PUBLIC"],
 )
