@@ -636,7 +636,8 @@ public class DelegateMethodValidationTest {
                     .build()));
 
     final List<SpecModelValidationError> validationErrors =
-        DelegateMethodValidation.validateMethods(mLayoutSpecModel, map);
+        DelegateMethodValidation.validateMethods(
+            mLayoutSpecModel, map, DelegateMethodDescriptions.INTER_STAGE_INPUTS_MAP);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
     assertThat(validationErrors.get(0).message)

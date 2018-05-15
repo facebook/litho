@@ -23,6 +23,7 @@ import com.facebook.litho.specmodels.model.DelegateMethodValidation;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class SpecModelValidation {
@@ -36,7 +37,9 @@ public class SpecModelValidation {
     validationErrors.addAll(validateSpecModel(specModel, SECTIONS_RESERVED_PROP_NAMES, runMode));
     validationErrors.addAll(
         DelegateMethodValidation.validateMethods(
-            specModel, DelegateMethodDescriptions.getGroupSectionSpecDelegatesMap(specModel)));
+            specModel,
+            DelegateMethodDescriptions.getGroupSectionSpecDelegatesMap(specModel),
+            Collections.unmodifiableMap(Collections.emptyMap())));
     return validationErrors;
   }
 
@@ -46,7 +49,9 @@ public class SpecModelValidation {
     validationErrors.addAll(validateSpecModel(specModel, SECTIONS_RESERVED_PROP_NAMES, runMode));
     validationErrors.addAll(
         DelegateMethodValidation.validateMethods(
-            specModel, DelegateMethodDescriptions.getDiffSectionSpecDelegatesMap(specModel)));
+            specModel,
+            DelegateMethodDescriptions.getDiffSectionSpecDelegatesMap(specModel),
+            Collections.unmodifiableMap(Collections.emptyMap())));
     return validationErrors;
   }
 }

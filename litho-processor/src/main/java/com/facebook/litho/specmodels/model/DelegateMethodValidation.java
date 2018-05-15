@@ -49,7 +49,10 @@ public class DelegateMethodValidation {
       LayoutSpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(
-        validateMethods(specModel, DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP));
+        validateMethods(
+            specModel,
+            DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP,
+            DelegateMethodDescriptions.INTER_STAGE_INPUTS_MAP));
 
     final SpecMethodModel<DelegateMethod, Void> onCreateLayoutModel =
         SpecModelUtils.getMethodModelWithAnnotation(specModel, OnCreateLayout.class);
@@ -78,7 +81,10 @@ public class DelegateMethodValidation {
   static List<SpecModelValidationError> validateMountSpecModel(MountSpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(
-        validateMethods(specModel, DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP));
+        validateMethods(
+            specModel,
+            DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP,
+            DelegateMethodDescriptions.INTER_STAGE_INPUTS_MAP));
 
     final SpecMethodModel<DelegateMethod, Void> onCreateMountContentModel =
         SpecModelUtils.getMethodModelWithAnnotation(specModel, OnCreateMountContent.class);
@@ -112,7 +118,8 @@ public class DelegateMethodValidation {
 
   public static List<SpecModelValidationError> validateMethods(
       SpecModel specModel,
-      Map<Class<? extends Annotation>, DelegateMethodDescription> delegateMethodDescriptions) {
+      Map<Class<? extends Annotation>, DelegateMethodDescription> delegateMethodDescriptions,
+      Map<Class<? extends Annotation>, Class<? extends Annotation>> interStageInputsMap) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : specModel.getDelegateMethods()) {
@@ -168,7 +175,7 @@ public class DelegateMethodValidation {
                         + delegateMethodDescription.interStageInputAnnotations));
           } else {
             final Class<? extends Annotation> interStageOutputMethodAnnotation =
-                DelegateMethodDescriptions.INTER_STAGE_INPUTS_MAP.get(annotation.annotationType());
+                interStageInputsMap.get(annotation.annotationType());
 
             final SpecMethodModel<DelegateMethod, Void> interStageOutputMethod =
                 SpecModelUtils.getMethodModelWithAnnotation(
