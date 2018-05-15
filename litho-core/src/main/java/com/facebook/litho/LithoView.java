@@ -633,7 +633,8 @@ public class LithoView extends ComponentHost {
 
     final Rect rect = ComponentsPools.acquireRect();
     final boolean isEmpty;
-    if (ComponentsConfiguration.lithoViewIncrementalMountUsesLocalVisibleBounds) {
+    if ((mComponentTree != null && mComponentTree.useExactRectForVisibilityEvents())
+        || ComponentsConfiguration.lithoViewIncrementalMountUsesLocalVisibleBounds) {
       isEmpty = !getLocalVisibleRect(rect);
     } else {
       rect.set(

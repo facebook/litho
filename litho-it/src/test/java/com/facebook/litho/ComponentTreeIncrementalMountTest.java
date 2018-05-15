@@ -45,6 +45,7 @@ import org.robolectric.RuntimeEnvironment;
 public class ComponentTreeIncrementalMountTest {
   private LithoView mLithoView;
   private ComponentTree mComponentTree;
+  private ComponentContext mComponentContext;
 
   private final Rect mMountedRect = new Rect();
 
@@ -52,10 +53,11 @@ public class ComponentTreeIncrementalMountTest {
 
   @Before
   public void setup() {
-    ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
+    mComponentContext = new ComponentContext(RuntimeEnvironment.application);
     mComponentTree =
         ComponentTree.create(
-                context, TestDrawableComponent.create(context).color(Color.BLACK).build())
+                mComponentContext,
+                TestDrawableComponent.create(mComponentContext).color(Color.BLACK).build())
             .layoutDiffing(false)
             .build();
 
@@ -141,6 +143,34 @@ public class ComponentTreeIncrementalMountTest {
 
     mComponentTree.incrementalMountComponent();
     assertThat(mMountedRect).isEqualTo(new Rect(0, 0, 10, 5));
+  }
+
+  @Test
+  public void testGetLocalVisibleBoundsWithExactRect() {
+    mComponentTree =
+        ComponentTree.create(
+                mComponentContext,
+                TestDrawableComponent.create(mComponentContext).color(Color.BLACK).build())
+            .useExactRectForVisibilityEvents()
+            .build();
+
+    Whitebox.setInternalState(mComponentTree, "mLithoView", mLithoView);
+    Whitebox.setInternalState(mComponentTree, "mMainThreadLayoutState", mock(LayoutState.class));
+
+    doAnswer(
+            new Answer<Boolean>() {
+              @Override
+              public Boolean answer(InvocationOnMock invocation) throws Throwable {
+                Rect rect = (Rect) invocation.getArguments()[0];
+                rect.set(new Rect(10, 5, 20, 15));
+                return true;
+              }
+            })
+        .when(mLithoView)
+        .getLocalVisibleRect(any(Rect.class));
+
+    mComponentTree.incrementalMountComponent();
+    assertThat(mMountedRect).isEqualTo(new Rect(10, 5, 20, 15));
   }
 
   private void setupIncrementalMountTest(
