@@ -122,6 +122,9 @@ import com.facebook.yoga.YogaDirection;
  *     bounds user can click to be able to trigger ClickableSpan's click action. This could be
  *     useful in a densely lined text with links like 'Continue reading ...' in NewsFeed to be able
  *     to click that easily.
+ * @prop spanListener Listener to override click and/or longclick actions of spannables extracted
+ *     from text. This can be used to avoid memory leaks if the click/long click actions require a
+ *     context, since spannables are stored statically in memory.
  * @prop clipToBounds If the text should be clipped inside component bounds. Default: {@code true}
  */
 @MountSpec(
@@ -851,6 +854,7 @@ class TextSpec {
       @Prop(optional = true) int highlightEndOffset,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) float clickableSpanExpandedOffset,
       @Prop(optional = true) boolean clipToBounds,
+      @Prop(optional = true) ClickableSpanListener spanListener,
       @FromBoundsDefined Layout textLayout,
       @FromBoundsDefined Float textLayoutTranslationY,
       @FromBoundsDefined ClickableSpan[] clickableSpans,
@@ -876,6 +880,7 @@ class TextSpec {
         highlightColor,
         clickableSpans,
         imageSpans,
+        spanListener,
         textOffsetOnTouchListener,
         highlightStartOffset,
         highlightEndOffset,

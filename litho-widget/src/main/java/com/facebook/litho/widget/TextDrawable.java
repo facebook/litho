@@ -76,6 +76,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   private boolean mLongClickActivated;
   private @Nullable Handler mLongClickHandler;
   private @Nullable LongClickRunnable mLongClickRunnable;
+  private @Nullable ClickableSpanListener mSpanListener;
 
   @Override
   public void draw(Canvas canvas) {
@@ -169,7 +170,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
 
     if (action == ACTION_UP) {
       clearSelection();
-      if (clickActivationAllowed) {
+      if (clickActivationAllowed
+          && (mSpanListener == null || !mSpanListener.onClick(clickedSpan, view))) {
         clickedSpan.onClick(view);
       }
     } else if (action == ACTION_DOWN) {
@@ -254,11 +256,25 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       Layout layout,
       int userColor,
       ClickableSpan[] clickableSpans) {
-    mount(text, layout, 0, false, null, userColor, 0, clickableSpans, null, null, -1, -1, 0f);
+    mount(text, layout, 0, false, null, userColor, 0, clickableSpans, null, null, null, -1, -1, 0f);
   }
 
   public void mount(CharSequence text, Layout layout, int userColor, int highlightColor) {
-    mount(text, layout, 0, false, null, userColor, highlightColor, null, null, null, -1, -1, 0f);
+    mount(
+        text,
+        layout,
+        0,
+        false,
+        null,
+        userColor,
+        highlightColor,
+        null,
+        null,
+        null,
+        null,
+        -1,
+        -1,
+        0f);
   }
 
   public void mount(
@@ -280,6 +296,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         clickableSpans,
         null,
         null,
+        null,
         -1,
         -1,
         0f);
@@ -295,6 +312,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       int highlightColor,
       ClickableSpan[] clickableSpans,
       ImageSpan[] imageSpans,
+      ClickableSpanListener spanListener,
       TextOffsetOnTouchListener textOffsetOnTouchListener,
       int highlightStartOffset,
       int highlightEndOffset,
@@ -307,6 +325,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     if (mLongClickHandler == null && containsLongClickableSpan(clickableSpans)) {
       mLongClickHandler = new Handler();
     }
+    mSpanListener = spanListener;
     mTextOffsetOnTouchListener = textOffsetOnTouchListener;
     mShouldHandleTouch = (clickableSpans != null && clickableSpans.length > 0);
     mHighlightColor = highlightColor;
@@ -365,6 +384,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     mClickableSpans = null;
     mShouldHandleTouch = false;
     mHighlightColor = 0;
+    mSpanListener = null;
     mTextOffsetOnTouchListener = null;
     mColorStateList = null;
     mUserColor = 0;
@@ -631,7 +651,10 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
 
     @Override
     public void run() {
-      mLongClickActivated = longClickableSpan.onLongClick(longClickableSpanView);
+      mLongClickActivated =
+          (mSpanListener != null
+                  && mSpanListener.onLongClick(longClickableSpan, longClickableSpanView))
+              || longClickableSpan.onLongClick(longClickableSpanView);
     }
   }
 }
