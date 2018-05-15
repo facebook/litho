@@ -322,7 +322,7 @@ public final class DelegateMethodDescriptions {
           .returnType(TypeName.BOOLEAN)
           .name("shouldUpdate")
           .definedParameterTypes(ImmutableList.of())
-          .optionalParameterTypes(ImmutableList.of(DIFF_PROP, DIFF_STATE))
+          .optionalParameterTypes(ImmutableList.of(DIFF_PROP, DIFF_STATE, INJECT_PROP))
           .build();
 
   public static final DelegateMethodDescription ON_POPULATE_ACCESSIBILITY_NODE =
