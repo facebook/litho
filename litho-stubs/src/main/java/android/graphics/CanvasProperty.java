@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright 2018-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package android.graphics;
 
-apply plugin: 'com.android.library'
+public class CanvasProperty<T> {
 
-android {
-    compileSdkVersion rootProject.compileSdkVersion
-    buildToolsVersion rootProject.buildToolsVersion
+  public static CanvasProperty<Float> createFloat(float initialValue) {
+    throw new RuntimeException("Stub!");
+  }
+
+  public static CanvasProperty<Paint> createPaint(Paint initialValue) {
+    throw new RuntimeException("Stub!");
+  }
 }

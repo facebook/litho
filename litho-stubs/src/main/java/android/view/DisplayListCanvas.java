@@ -16,8 +16,31 @@
 
 package android.view;
 
+import android.graphics.CanvasProperty;
+import android.graphics.Paint;
+
 public class DisplayListCanvas {
+  
   public void drawRenderNode(RenderNode renderNode) {
+    throw new RuntimeException("Stub!");
+  }
+
+  public void drawCircle(
+      CanvasProperty<Float> cx,
+      CanvasProperty<Float> cy,
+      CanvasProperty<Float> radius,
+      CanvasProperty<Paint> paint) {
+    throw new RuntimeException("Stub!");
+  }
+
+  public void drawRoundRect(
+      CanvasProperty<Float> left,
+      CanvasProperty<Float> top,
+      CanvasProperty<Float> right,
+      CanvasProperty<Float> bottom,
+      CanvasProperty<Float> rx,
+      CanvasProperty<Float> ry,
+      CanvasProperty<Paint> paint) {
     throw new RuntimeException("Stub!");
   }
 }
