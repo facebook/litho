@@ -76,6 +76,8 @@ public class LithoViewTest {
   @After
   public void tearDown() {
     ComponentsConfiguration.doubleMeasureCorrection = false;
+    ComponentsConfiguration.lazyLayoutForExactSpec = false;
+    ComponentsConfiguration.isDebugModeEnabled = ComponentsConfiguration.IS_INTERNAL_BUILD;
   }
 
   @Test
@@ -153,8 +155,10 @@ public class LithoViewTest {
 
   @Test
   public void testThrowWhenMainThreadLayoutStateIsNullAndLayoutNotRequested() {
+    ComponentsConfiguration.isDebugModeEnabled = true;
+
     mExpectedException.expect(RuntimeException.class);
-    mExpectedException.expectMessage("hasn't requested layout");
+    mExpectedException.expectMessage("Unexpectedly trying to layout without a LayoutState");
 
     final ComponentTree mockComponentTree = mock(ComponentTree.class);
 
@@ -289,6 +293,52 @@ public class LithoViewTest {
 
     assertThat(mLithoView.getMeasuredWidth()).isEqualTo(1079);
     assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
+  }
+
+  @Test
+  public void testMeasureComputesLayoutStateWhenSpecsAreExactNotInConfig() {
+    ComponentsConfiguration.lazyLayoutForExactSpec = false;
+
+    mLithoView = new LithoView(RuntimeEnvironment.application);
+    mLithoView.setComponent(TestDrawableComponent.create(mLithoView.getComponentContext()).build());
+    mLithoView.measure(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
+
+    assertThat(mLithoView.getMeasuredWidth()).isEqualTo(100);
+    assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
+    assertThat(mLithoView.getComponentTree().getMainThreadLayoutState()).isNotNull();
+  }
+
+  @Test
+  public void testMeasureDoesNotComputeLayoutStateWhenSpecsAreExact() {
+    ComponentsConfiguration.lazyLayoutForExactSpec = true;
+
+    mLithoView = new LithoView(RuntimeEnvironment.application);
+    mLithoView.setComponent(TestDrawableComponent.create(mLithoView.getComponentContext()).build());
+    mLithoView.measure(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
+
+    assertThat(mLithoView.getMeasuredWidth()).isEqualTo(100);
+    assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
+    assertThat(mLithoView.getComponentTree().getMainThreadLayoutState()).isNull();
+
+    mLithoView.layout(0, 0, 50, 50);
+
+    final LayoutState layoutState = mLithoView.getComponentTree().getMainThreadLayoutState();
+    assertThat(layoutState).isNotNull();
+    assertThat(layoutState.isCompatibleSize(50, 50)).isTrue();
+  }
+
+  @Test
+  public void testMeasureComputesLayoutStateWhenSpecsAreNotExact() {
+    ComponentsConfiguration.lazyLayoutForExactSpec = true;
+
+    mLithoView = new LithoView(RuntimeEnvironment.application);
+    mLithoView.setComponent(
+        TestDrawableComponent.create(mLithoView.getComponentContext()).heightPx(100).build());
+    mLithoView.measure(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, AT_MOST));
+
+    assertThat(mLithoView.getMeasuredWidth()).isEqualTo(100);
+    assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
+    assertThat(mLithoView.getComponentTree().getMainThreadLayoutState()).isNotNull();
   }
 
   private LithoView setupLithoViewForDoubleMeasureTest(

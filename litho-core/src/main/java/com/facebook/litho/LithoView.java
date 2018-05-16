@@ -81,6 +81,7 @@ public class LithoView extends ComponentHost {
   private ComponentTree mTemporaryDetachedComponent;
   private int mTransientStateCount;
   private boolean mDoesOwnIncrementalMount;
+  private boolean mDoMeasureInLayout;
 
   /**
    * Create a new {@link LithoView} instance and initialize it
@@ -282,6 +283,16 @@ public class LithoView extends ComponentHost {
       mTemporaryDetachedComponent = null;
     }
 
+    if (ComponentsConfiguration.lazyLayoutForExactSpec) {
+      if (!mForceLayout
+          && SizeSpec.getMode(widthMeasureSpec) == SizeSpec.EXACTLY
+          && SizeSpec.getMode(heightMeasureSpec) == SizeSpec.EXACTLY) {
+        mDoMeasureInLayout = true;
+        setMeasuredDimension(width, height);
+        return;
+      }
+    }
+
     mIsMeasuring = true;
 
     if (mComponentTree != null && !mSuppressMeasureComponentTree) {
@@ -291,6 +302,7 @@ public class LithoView extends ComponentHost {
 
       width = sLayoutSize[0];
       height = sLayoutSize[1];
+      mDoMeasureInLayout = false;
     }
 
     // If we're mounting a new ComponentTree, it probably has a different width/height but we don't
@@ -357,14 +369,20 @@ public class LithoView extends ComponentHost {
             "Trying to layout a LithoView holding onto a released ComponentTree");
       }
 
-      if (!ComponentsConfiguration.IS_INTERNAL_BUILD
-          && mComponentTree.getMainThreadLayoutState() == null) {
+      if (mDoMeasureInLayout || mComponentTree.getMainThreadLayoutState() == null) {
+        if (!mDoMeasureInLayout && ComponentsConfiguration.isDebugModeEnabled) {
+          throw new RuntimeException(
+              "Unexpectedly trying to layout without a LayoutState computed on the ComponentTree! You found a very weird crash that the Litho team is interested in! If this is reproducible, please let us know!");
+        }
+
         // Call measure so that we get a layout state that we can use for layout.
         mComponentTree.measure(
             MeasureSpec.makeMeasureSpec(right - left, MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(bottom - top, MeasureSpec.EXACTLY),
-            new int[2],
+            sLayoutSize,
             false);
+        mHasNewComponentTree = false;
+        mDoMeasureInLayout = false;
       }
 
       boolean wasMountTriggered = mComponentTree.layout();
