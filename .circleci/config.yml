@@ -334,6 +334,12 @@ jobs:
     <<: *circle_ci_android_container_config
     steps:
       - *attach_workspace
+      - run: *create-android-ndk-dir
+      - restore_cache: *restore-repo-cache
+      - restore-cache: *restore-cache-ndk
+      - restore-cache: *restore-cache-buck
+      - restore-cache: *restore-cache-android-packages
+      - run: *setup-buck
       - run:
           name: Publish Snapshot
           command: |
