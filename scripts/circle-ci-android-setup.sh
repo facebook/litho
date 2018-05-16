@@ -42,7 +42,7 @@ function getAndroidNDK {
     echo "Downloading NDK..."
     TMP=/tmp/ndk$$.zip
     download https://dl.google.com/android/repository/android-ndk-r15c-linux-x86_64.zip "$TMP"
-    unzip -qod "$TMP"
+    unzip -qo "$TMP"
     echo "Installed Android NDK at $NDK_HOME"
     touch $DEPS
     rm "$TMP"
