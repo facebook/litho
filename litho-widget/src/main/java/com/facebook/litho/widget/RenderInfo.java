@@ -16,12 +16,14 @@
 
 package com.facebook.litho.widget;
 
-import android.support.v4.util.SimpleArrayMap;
 import com.facebook.litho.Component;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
@@ -44,8 +46,8 @@ public abstract class RenderInfo {
   private static final String SPAN_SIZE = "span_size";
   private static final String IS_FULL_SPAN = "is_full_span";
 
-  private final @Nullable SimpleArrayMap<String, Object> mCustomAttributes;
-  private @Nullable SimpleArrayMap<String, Object> mDebugInfo;
+  private final @Nullable Map<String, Object> mCustomAttributes;
+  private @Nullable Map<String, Object> mDebugInfo;
 
   RenderInfo(Builder builder) {
     mCustomAttributes = builder.mCustomAttributes;
@@ -159,7 +161,7 @@ public abstract class RenderInfo {
 
   public void addDebugInfo(String key, Object value) {
     if (mDebugInfo == null) {
-      mDebugInfo = new SimpleArrayMap<>();
+      mDebugInfo = Collections.synchronizedMap(new HashMap<String, Object>());
     }
 
     mDebugInfo.put(key, value);
@@ -186,7 +188,7 @@ public abstract class RenderInfo {
 
   public abstract static class Builder<T> {
 
-    private @Nullable SimpleArrayMap<String, Object> mCustomAttributes;
+    private @Nullable Map<String, Object> mCustomAttributes;
 
     public T isSticky(boolean isSticky) {
       return customAttribute(IS_STICKY, isSticky);
@@ -202,7 +204,7 @@ public abstract class RenderInfo {
 
     public T customAttribute(String key, Object value) {
       if (mCustomAttributes == null) {
-        mCustomAttributes = new SimpleArrayMap<>();
+        mCustomAttributes = Collections.synchronizedMap(new HashMap<String, Object>());
       }
       mCustomAttributes.put(key, value);
 
