@@ -88,12 +88,9 @@ aliases:
   # Setup KEY
   - &setup-keys
     name: Set up keys
-    command: "[ -n \"$KEY\" ] && openssl aes-256-cbc -d -in scripts/setup-keys.enc -k $KEY >> gradle.properties || true"
-
-  # Unset KEY
-  - &unset-key
-    name: Unset key
-    command: "export KEY=\"<unset>\""
+    command: |
+      cd workspace/repo
+      [ -n \"$KEY\" ] && openssl aes-256-cbc -d -in scripts/setup-keys.enc -k $KEY >> gradle.properties || true
 
   # Download project Gradle dependencies
   - &download-gradle-dependencies
@@ -197,8 +194,6 @@ jobs:
       - restore-cache: *restore-cache-ndk
       - restore-cache: *restore-cache-buck
       - restore_cache: *restore-repo-cache
-      - run: *setup-keys
-      - run: *unset-key
       - run: *download-gradle-dependencies
       - run: *setup-buck
       - run: *download-buck-dependencies
@@ -339,6 +334,7 @@ jobs:
       - restore-cache: *restore-cache-ndk
       - restore-cache: *restore-cache-buck
       - restore-cache: *restore-cache-android-packages
+      - run: *setup-keys
       - run: *setup-buck
       - run:
           name: Publish Snapshot
