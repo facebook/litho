@@ -39,6 +39,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.v4.text.TextDirectionHeuristicCompat;
 import android.support.v4.text.TextDirectionHeuristicsCompat;
 import android.support.v4.util.Pools.SynchronizedPool;
@@ -413,7 +414,7 @@ class TextSpec {
       int widthSpec,
       int heightSpec,
       Size size,
-      @Prop(resType = ResType.STRING) CharSequence text,
+      @Prop(resType = ResType.STRING) @Nullable CharSequence text,
       @Prop(optional = true) TruncateAt ellipsize,
       @Prop(optional = true, resType = ResType.BOOL) boolean shouldIncludeFontPadding,
       @Prop(optional = true, resType = ResType.INT) int minLines,
@@ -435,7 +436,7 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.FLOAT) float spacingMultiplier,
       @Prop(optional = true, resType = ResType.FLOAT) float letterSpacing,
       @Prop(optional = true) int textStyle,
-      @Prop(optional = true) Typeface typeface,
+      @Prop(optional = true) @Nullable Typeface typeface,
       @Prop(optional = true) Alignment textAlignment,
       @Prop(optional = true) int breakStrategy,
       @Prop(optional = true) int hyphenationFrequency,
@@ -597,7 +598,7 @@ class TextSpec {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       layoutBuilder.setLetterSpacing(letterSpacing);
     }
-    
+
     if (minEms != DEFAULT_EMS) {
       layoutBuilder.setMinEms(minEms);
     } else {
