@@ -68,6 +68,7 @@ public class ExpandableElementRootComponentSpec {
                         .textSizeSp(20)
                         .flexGrow(1)
                         .alignSelf(YogaAlign.CENTER)
+                        .testKey("INSERT")
                         .textAlignment(Layout.Alignment.ALIGN_CENTER)
                         .clickHandler(ExpandableElementRootComponent.onClick(c, true)))
                 .child(

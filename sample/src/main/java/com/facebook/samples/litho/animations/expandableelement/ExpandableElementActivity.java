@@ -20,7 +20,7 @@ import java.util.Arrays;
 
 public class ExpandableElementActivity extends NavigatableDemoActivity {
 
-  private static final Message[] MESSAGES =
+  public static final Message[] MESSAGES =
       new Message[] {
         new Message(
             true,
