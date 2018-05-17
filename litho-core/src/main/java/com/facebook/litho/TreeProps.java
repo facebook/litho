@@ -17,11 +17,11 @@
 package com.facebook.litho;
 
 import android.support.annotation.Nullable;
+import android.support.v4.util.ArrayMap;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.TreeProp;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -31,7 +31,7 @@ import java.util.Map;
 @ThreadConfined(ThreadConfined.ANY)
 public class TreeProps {
 
-  private final Map<Class, Object> mMap = Collections.synchronizedMap(new HashMap<Class, Object>());
+  private final Map<Class, Object> mMap = Collections.synchronizedMap(new ArrayMap<Class, Object>());
 
   public void put(Class key, Object value) {
     mMap.put(key, value);
