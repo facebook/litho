@@ -376,3 +376,6 @@ workflows:
             - buck_litho_it_tests_run
             - buck_litho_it_powermock_tests_run
             - gradle_tests_run
+          filters:
+            branches:
+              only: master
