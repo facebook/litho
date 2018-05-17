@@ -64,6 +64,7 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
+import javax.annotation.Nullable;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 @MountSpec(
@@ -127,12 +128,12 @@ public class TestMountSpec<S extends View> implements TestTag {
 
   @OnPopulateAccessibilityNode
   static void onPopulateAccessibilityNode(
-      AccessibilityNodeInfoCompat node, @Prop(resType = STRING) CharSequence prop7) {}
+      AccessibilityNodeInfoCompat node, @Prop(resType = STRING) @Nullable CharSequence prop7) {}
 
   @GetExtraAccessibilityNodesCount
   static int getExtraAccessibilityNodesCount(
       @Prop int prop1,
-      @Prop(resType = STRING) CharSequence prop7,
+      @Prop(resType = STRING) @Nullable CharSequence prop7,
       @FromBoundsDefined Integer boundsDefinedOutput) {
     return 1;
   }
@@ -144,7 +145,7 @@ public class TestMountSpec<S extends View> implements TestTag {
       int componentBoundsLeft,
       int componentBoundsTop,
       @Prop Object prop3,
-      @Prop(resType = STRING) CharSequence prop7,
+      @Prop(resType = STRING) @Nullable CharSequence prop7,
       @FromBoundsDefined Integer boundsDefinedOutput) {}
 
   @GetExtraAccessibilityNodeAt
@@ -152,7 +153,7 @@ public class TestMountSpec<S extends View> implements TestTag {
       int x,
       int y,
       @Prop Object prop3,
-      @Prop(resType = STRING) CharSequence prop7,
+      @Prop(resType = STRING) @Nullable CharSequence prop7,
       @FromBoundsDefined Integer boundsDefinedOutput) {
     return 0;
   }

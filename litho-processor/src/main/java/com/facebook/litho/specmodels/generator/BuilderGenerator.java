@@ -644,7 +644,8 @@ public class BuilderGenerator {
                 requiredIndex,
                 name + "Res",
                 Arrays.asList(
-                    parameter(prop, TypeName.INT, "resId", annotation(annotationClassName))),
+                    parameterWithoutNullableAnnotation(
+                        prop, TypeName.INT, "resId", annotation(annotationClassName))),
                 "$L$L.$L(resId)",
                 typeCast,
                 RESOURCE_RESOLVER,
@@ -659,7 +660,7 @@ public class BuilderGenerator {
                   requiredIndex,
                   prop.getName() + "Res",
                   Arrays.asList(
-                      parameter(
+                      parameterWithoutNullableAnnotation(
                           prop,
                           ParameterizedTypeName.get(ClassNames.LIST, TypeName.INT.box()),
                           "resIds")),
@@ -691,7 +692,8 @@ public class BuilderGenerator {
                 requiredIndex,
                 name + "Res",
                 Arrays.asList(
-                    parameter(prop, TypeName.INT, "resId", annotation(annotationClassName)),
+                    parameterWithoutNullableAnnotation(
+                        prop, TypeName.INT, "resId", annotation(annotationClassName)),
                     ParameterSpec.builder(ArrayTypeName.of(varargsType), varargsName).build()),
                 "$L.$L(resId, $L)",
                 RESOURCE_RESOLVER,
@@ -708,7 +710,7 @@ public class BuilderGenerator {
                   requiredIndex,
                   prop.getName() + "Res",
                   Arrays.asList(
-                      parameter(
+                      parameterWithoutNullableAnnotation(
                           prop,
                           ParameterizedTypeName.get(ClassNames.LIST, TypeName.INT.box()),
                           "resIds",
@@ -744,8 +746,10 @@ public class BuilderGenerator {
                 requiredIndex,
                 name + "Attr",
                 Arrays.asList(
-                    parameter(prop, TypeName.INT, "attrResId", annotation(ClassNames.ATTR_RES)),
-                    parameter(prop, TypeName.INT, "defResId", annotation(annotationClassName))),
+                    parameterWithoutNullableAnnotation(
+                        prop, TypeName.INT, "attrResId", annotation(ClassNames.ATTR_RES)),
+                    parameterWithoutNullableAnnotation(
+                        prop, TypeName.INT, "defResId", annotation(annotationClassName))),
                 "$L$L.$L(attrResId, defResId)",
                 typeCast,
                 RESOURCE_RESOLVER,
@@ -759,7 +763,8 @@ public class BuilderGenerator {
                 requiredIndex,
                 name + "Attr",
                 Arrays.asList(
-                    parameter(prop, TypeName.INT, "attrResId", annotation(ClassNames.ATTR_RES))),
+                    parameterWithoutNullableAnnotation(
+                        prop, TypeName.INT, "attrResId", annotation(ClassNames.ATTR_RES))),
                 "$L$L.$L(attrResId, 0)",
                 typeCast,
                 RESOURCE_RESOLVER,
@@ -774,11 +779,12 @@ public class BuilderGenerator {
                   requiredIndex,
                   prop.getName() + "Attr",
                   Arrays.asList(
-                      parameter(
+                      parameterWithoutNullableAnnotation(
                           prop,
                           ParameterizedTypeName.get(ClassNames.LIST, TypeName.INT.box()),
                           "attrResIds"),
-                      parameter(prop, TypeName.INT, "defResId", annotation(annotationClassName))),
+                      parameterWithoutNullableAnnotation(
+                          prop, TypeName.INT, "defResId", annotation(annotationClassName))),
                   "$L$L.$L(attrResIds.get(i), defResId)",
                   typeCast,
                   RESOURCE_RESOLVER,
@@ -792,7 +798,7 @@ public class BuilderGenerator {
                   requiredIndex,
                   prop.getName() + "Attr",
                   Arrays.asList(
-                      parameter(
+                      parameterWithoutNullableAnnotation(
                           prop,
                           ParameterizedTypeName.get(ClassNames.LIST, TypeName.INT.box()),
                           "attrResIds")),
@@ -819,10 +825,13 @@ public class BuilderGenerator {
                 requiredIndex,
                 name + "Px",
                 Arrays.asList(
-                    parameter(
+                    parameterWithoutNullableAnnotation(
                         prop,
                         hasVarArgs
-                            ? ((ParameterizedTypeName) prop.getTypeName()).typeArguments.get(0).unbox()
+                            ? ((ParameterizedTypeName) prop.getTypeName())
+                                .typeArguments
+                                .get(0)
+                                .unbox()
                             : prop.getTypeName().unbox(),
                         name,
                         annotation(ClassNames.PX))),
@@ -836,7 +845,8 @@ public class BuilderGenerator {
                   prop,
                   requiredIndex,
                   prop.getName() + "Px",
-                  Arrays.asList(parameter(prop, prop.getTypeName(), prop.getName())),
+                  Arrays.asList(
+                      parameterWithoutNullableAnnotation(prop, prop.getTypeName(), prop.getName())),
                   prop.getName() + ".get(i)")
               .build());
     }
@@ -864,7 +874,8 @@ public class BuilderGenerator {
                 prop,
                 requiredIndex,
                 name + "Dip",
-                Arrays.asList(parameter(prop, TypeName.FLOAT, "dip", dipAnnotation)),
+                Arrays.asList(
+                    parameterWithoutNullableAnnotation(prop, TypeName.FLOAT, "dip", dipAnnotation)),
                 statement)
             .build());
 
@@ -876,7 +887,7 @@ public class BuilderGenerator {
                   requiredIndex,
                   prop.getName() + "Dip",
                   Arrays.asList(
-                      parameter(
+                      parameterWithoutNullableAnnotation(
                           prop,
                           ParameterizedTypeName.get(ClassNames.LIST, TypeName.FLOAT.box()),
                           "dips")),
@@ -907,7 +918,8 @@ public class BuilderGenerator {
                 prop,
                 requiredIndex,
                 name + "Sp",
-                Arrays.asList(parameter(prop, TypeName.FLOAT, "sip", spAnnotation)),
+                Arrays.asList(
+                    parameterWithoutNullableAnnotation(prop, TypeName.FLOAT, "sip", spAnnotation)),
                 statement)
             .build());
 
@@ -919,7 +931,7 @@ public class BuilderGenerator {
                   requiredIndex,
                   prop.getName() + "Sp",
                   Arrays.asList(
-                      parameter(
+                      parameterWithoutNullableAnnotation(
                           prop,
                           ParameterizedTypeName.get(ClassNames.LIST, TypeName.FLOAT.box()),
                           "sips")),
@@ -972,14 +984,33 @@ public class BuilderGenerator {
     }
   }
 
+  private static ParameterSpec parameterWithoutNullableAnnotation(
+      PropModel prop, TypeName type, String name, AnnotationSpec... extraAnnotations) {
+    List<AnnotationSpec> externalAnnotations = new ArrayList<>();
+    for (AnnotationSpec annotationSpec : prop.getExternalAnnotations()) {
+      if (!annotationSpec.type.toString().contains("Nullable")) {
+        externalAnnotations.add(annotationSpec);
+      }
+    }
+
+    return parameter(type, name, externalAnnotations, extraAnnotations);
+  }
+
   private static ParameterSpec parameter(
       PropModel prop,
       TypeName type,
       String name,
       AnnotationSpec... extraAnnotations) {
+    return parameter(type, name, prop.getExternalAnnotations(), extraAnnotations);
+  }
+
+  private static ParameterSpec parameter(
+      TypeName type,
+      String name,
+      List<AnnotationSpec> externalAnnotations,
+      AnnotationSpec... extraAnnotations) {
     final ParameterSpec.Builder builder =
-        ParameterSpec.builder(type, name)
-            .addAnnotations(prop.getExternalAnnotations());
+        ParameterSpec.builder(type, name).addAnnotations(externalAnnotations);
 
     for (AnnotationSpec annotation : extraAnnotations) {
       builder.addAnnotation(annotation);

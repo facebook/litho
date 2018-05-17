@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright 2018-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.facebook.litho.processor.integration.resources;
 
 import android.annotation.TargetApi;
@@ -46,6 +45,7 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import java.util.Arrays;
 import java.util.BitSet;
+import javax.annotation.Nullable;
 
 /**
  * @prop-required prop1 int
@@ -100,10 +100,8 @@ public final class TestMount<S extends View> extends Component implements TestTa
   )
   long prop6;
 
-  @Prop(
-      resType = ResType.STRING,
-      optional = false
-  )
+  @Nullable
+  @Prop(resType = ResType.STRING, optional = false)
   CharSequence prop7;
 
   @Prop(
@@ -470,7 +468,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
           dispatchErrorEvent(
               (com.facebook.litho.ComponentContext) eventHandler.params[0],
               (com.facebook.litho.ErrorEvent) eventState);
-        return null;
+          return null;
         }
       default:
         return null;
@@ -691,7 +689,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
       return this;
     }
 
-    public Builder<S> prop7(CharSequence prop7) {
+    public Builder<S> prop7(@Nullable CharSequence prop7) {
       this.mTestMount.prop7 = prop7;
       mRequired.set(5);
       return this;
