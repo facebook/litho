@@ -26,41 +26,41 @@ import java.util.List;
 class TransitionUtils {
 
   /**
-   * @return whether the given Transition object specifies an animation property on the given
-   *     transition key.
+   * Collects info about root component bounds animation, specifically whether it has animations for
+   * width and height also {@link Transition.TransitionUnit} for appear animation if such is
+   * defined.
    */
-  public static boolean hasAnimationForProperty(
-      String transitionKey, Transition transition, AnimatedProperty property) {
+  static void collectRootBoundsTransitions(
+      String rootTransitionKey,
+      Transition transition,
+      AnimatedProperty property,
+      Transition.RootBoundsTransition outRootBoundsTransition) {
     if (transition instanceof TransitionSet) {
       ArrayList<Transition> children = ((TransitionSet) transition).getChildren();
       for (int i = 0, size = children.size(); i < size; i++) {
-        if (hasAnimationForProperty(transitionKey, children.get(i), property)) {
-          return true;
+        collectRootBoundsTransitions(
+            rootTransitionKey, children.get(i), property, outRootBoundsTransition);
+      }
+    } else if (transition instanceof Transition.TransitionUnit) {
+      final Transition.TransitionUnit transitionUnit = (Transition.TransitionUnit) transition;
+      if (transitionUnit.targetsKey(rootTransitionKey)
+          && transitionUnit.targetsProperty(property)) {
+        outRootBoundsTransition.hasTransition = true;
+        if (transitionUnit.hasAppearAnimation()) {
+          outRootBoundsTransition.appearTransition = transitionUnit;
         }
       }
-
-      return false;
-    }
-
-    if (transition instanceof Transition.TransitionUnit) {
-      final Transition.TransitionUnit transitionUnit = (Transition.TransitionUnit) transition;
-      return transitionUnit.targetsKey(transitionKey) && (transitionUnit.targetsProperty(property));
-    }
-
-    if (transition instanceof Transition.BaseTransitionUnitsBuilder) {
+    } else if (transition instanceof Transition.BaseTransitionUnitsBuilder) {
       final Transition.BaseTransitionUnitsBuilder builder =
           (Transition.BaseTransitionUnitsBuilder) transition;
       ArrayList<Transition.TransitionUnit> units = builder.getTransitionUnits();
       for (int i = 0, size = units.size(); i < size; i++) {
-        if (hasAnimationForProperty(transitionKey, units.get(i), property)) {
-          return true;
-        }
+        collectRootBoundsTransitions(
+            rootTransitionKey, units.get(i), property, outRootBoundsTransition);
       }
-
-      return false;
+    } else {
+      throw new RuntimeException("Unhandled transition type: " + transition);
     }
-
-    throw new RuntimeException("Unhandled transition type: " + transition);
   }
 
   static boolean areTransitionsEnabled(Context context) {

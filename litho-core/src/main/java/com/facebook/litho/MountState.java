@@ -2821,25 +2821,27 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     collectMountTimeTransitions(layoutState, allTransitions);
     componentTree.consumeStateUpdateTransitions(allTransitions);
 
-    boolean hasLithoViewWidthAnimation = false;
-    boolean hasLithoViewHeightAnimation = false;
+    Transition.RootBoundsTransition rootWidthTransition = new Transition.RootBoundsTransition();
+    Transition.RootBoundsTransition rootHeightTransition = new Transition.RootBoundsTransition();
 
     final String rootTransitionKey = layoutState.getRootTransitionKey();
 
     if (!TextUtils.isEmpty(rootTransitionKey)) {
       for (int i = 0, size = allTransitions.size(); i < size; i++) {
         final Transition transition = allTransitions.get(i);
-        hasLithoViewWidthAnimation |=
-            TransitionUtils.hasAnimationForProperty(
-                rootTransitionKey, transition, AnimatedProperties.WIDTH);
-        hasLithoViewHeightAnimation |=
-            TransitionUtils.hasAnimationForProperty(
-                rootTransitionKey, transition, AnimatedProperties.HEIGHT);
+        TransitionUtils.collectRootBoundsTransitions(
+            rootTransitionKey, transition, AnimatedProperties.WIDTH, rootWidthTransition);
+
+        TransitionUtils.collectRootBoundsTransitions(
+            rootTransitionKey, transition, AnimatedProperties.HEIGHT, rootHeightTransition);
       }
     }
 
-    componentTree.setHasLithoViewWidthAnimation(hasLithoViewWidthAnimation);
-    componentTree.setHasLithoViewHeightAnimation(hasLithoViewHeightAnimation);
+    rootWidthTransition = rootWidthTransition.hasTransition ? rootWidthTransition : null;
+    rootHeightTransition = rootHeightTransition.hasTransition ? rootHeightTransition : null;
+
+    componentTree.setRootWidthAnimation(rootWidthTransition);
+    componentTree.setRootHeightAnimation(rootHeightTransition);
 
     mRootTransition = TransitionManager.getRootTransition(allTransitions);
     mTransitionsHasBeenCollected = true;

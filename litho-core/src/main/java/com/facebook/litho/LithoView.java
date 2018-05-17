@@ -305,20 +305,26 @@ public class LithoView extends ComponentHost {
       mDoMeasureInLayout = false;
     }
 
-    // If we're mounting a new ComponentTree, it probably has a different width/height but we don't
-    // want to animate it.
-    if (!mHasNewComponentTree && mComponentTree != null) {
+    final boolean canAnimateRootBounds =
+        !mSuppressMeasureComponentTree
+            && mComponentTree != null
+            && (!mHasNewComponentTree || !mComponentTree.hasMounted());
+
+    if (canAnimateRootBounds) {
       // We might need to collect transitions before mount to know whether this LithoView has
       // width or height animation.
       mComponentTree.maybeCollectTransitions();
 
-      if (mComponentTree.hasLithoViewWidthAnimation()) {
-        // We expect width to animate
-        width = upToDateWidth;
+      final int initialAnimatedWidth =
+          mComponentTree.getInitialAnimatedLithoViewWidth(upToDateWidth, mHasNewComponentTree);
+      if (initialAnimatedWidth != -1) {
+        width = initialAnimatedWidth;
       }
-      if (mComponentTree.hasLithoViewHeightAnimation()) {
-        // We expect height to animate
-        height = upToDateHeight;
+
+      final int initialAnimatedHeight =
+          mComponentTree.getInitialAnimatedLithoViewHeight(upToDateHeight, mHasNewComponentTree);
+      if (initialAnimatedHeight != -1) {
+        height = initialAnimatedHeight;
       }
     }
     setMeasuredDimension(width, height);

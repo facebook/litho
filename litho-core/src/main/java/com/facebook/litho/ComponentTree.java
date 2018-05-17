@@ -45,6 +45,8 @@ import android.view.ViewParent;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.animation.AnimatedProperties;
+import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
 import java.lang.annotation.Retention;
@@ -169,8 +171,16 @@ public class ComponentTree {
   private @Nullable CalculateLayoutRunnable mCurrentCalculateLayoutRunnable;
 
   private volatile boolean mHasMounted;
-  private boolean mHasLithoViewWidthAnimation;
-  private boolean mHasLithoViewHeightAnimation;
+
+  /** Transition that animates width of root component (LithoView). */
+  @ThreadConfined(ThreadConfined.UI)
+  @Nullable
+  Transition.RootBoundsTransition mRootWidthAnimation;
+
+  /** Transition that animates height of root component (LithoView). */
+  @ThreadConfined(ThreadConfined.UI)
+  @Nullable
+  Transition.RootBoundsTransition mRootHeightAnimation;
 
   // TODO(6606683): Enable recycling of mComponent.
   // We will need to ensure there are no background threads referencing mComponent. We'll need
@@ -566,11 +576,20 @@ public class ComponentTree {
     // not in "depth order", this variable cannot be static.
     final Rect currentVisibleArea = ComponentsPools.acquireRect();
 
-    if (getVisibleRect(currentVisibleArea)) {
+    if (getVisibleRect(currentVisibleArea)
+        // It might not be yet visible but animating from 0 height/width in which case we still need
+        // to mount them to trigger animation.
+        || animatingRootBoundsFromZero(currentVisibleArea)) {
       mountComponent(currentVisibleArea, true);
     }
     // if false: no-op, doesn't have visible area, is not ready or not attached
     ComponentsPools.release(currentVisibleArea);
+  }
+
+  private boolean animatingRootBoundsFromZero(Rect currentVisibleArea) {
+    return !mHasMounted
+        && ((mRootHeightAnimation != null && currentVisibleArea.height() == 0)
+            || (mRootWidthAnimation != null && currentVisibleArea.width() == 0));
   }
 
   private boolean getVisibleRect(Rect visibleBounds) {
@@ -606,31 +625,60 @@ public class ComponentTree {
   }
 
   /**
-   * @return whether the recently computed layout state defines a transition that animates the width
-   *     of the root component (and thus the LithoView).
+   * @return the width value that LithoView should be animating from. If this returns non-negative
+   *     value, we will override the measured width with this value so that initial animated value
+   *     is correctly applied.
    */
   @ThreadConfined(ThreadConfined.UI)
-  boolean hasLithoViewWidthAnimation() {
-    return mHasLithoViewWidthAnimation;
+  int getInitialAnimatedLithoViewWidth(int currentAnimatedWidth, boolean hasNewComponentTree) {
+    return getInitialAnimatedLithoViewDimension(
+        currentAnimatedWidth, hasNewComponentTree, mRootWidthAnimation, AnimatedProperties.WIDTH);
   }
 
   /**
-   * @return whether the recently computed layout state defines a transition that animates the
-   *     height of the root component (and thus the LithoView).
+   * @return the height value that LithoView should be animating from. If this returns non-negative
+   *     value, we will override the measured height with this value so that initial animated value
+   *     is correctly applied.
    */
   @ThreadConfined(ThreadConfined.UI)
-  boolean hasLithoViewHeightAnimation() {
-    return mHasLithoViewHeightAnimation;
+  int getInitialAnimatedLithoViewHeight(int currentAnimatedHeight, boolean hasNewComponentTree) {
+    return getInitialAnimatedLithoViewDimension(
+        currentAnimatedHeight,
+        hasNewComponentTree,
+        mRootHeightAnimation,
+        AnimatedProperties.HEIGHT);
+  }
+
+  private int getInitialAnimatedLithoViewDimension(
+      int currentAnimatedDimension,
+      boolean hasNewComponentTree,
+      @Nullable Transition.RootBoundsTransition rootBoundsTransition,
+      AnimatedProperty property) {
+    if (rootBoundsTransition == null) {
+      return -1;
+    }
+
+    if (!mHasMounted && rootBoundsTransition.appearTransition != null) {
+      return (int)
+          Transition.getRootAppearFromValue(
+              rootBoundsTransition.appearTransition, mMainThreadLayoutState, property);
+    }
+
+    if (mHasMounted && !hasNewComponentTree) {
+      return currentAnimatedDimension;
+    }
+
+    return -1;
   }
 
   @ThreadConfined(ThreadConfined.UI)
-  void setHasLithoViewWidthAnimation(boolean hasLithoViewWidthAnimation) {
-    mHasLithoViewWidthAnimation = hasLithoViewWidthAnimation;
+  void setRootWidthAnimation(@Nullable Transition.RootBoundsTransition rootWidthAnimation) {
+    mRootWidthAnimation = rootWidthAnimation;
   }
 
   @ThreadConfined(ThreadConfined.UI)
-  void setHasLithoViewHeightAnimation(boolean hasLithoViewHeightAnimation) {
-    mHasLithoViewHeightAnimation = hasLithoViewHeightAnimation;
+  void setRootHeightAnimation(@Nullable Transition.RootBoundsTransition rootHeightAnimation) {
+    mRootHeightAnimation = rootHeightAnimation;
   }
 
   /**
@@ -667,6 +715,8 @@ public class ComponentTree {
     }
 
     mIsMounting = false;
+    mRootHeightAnimation = null;
+    mRootWidthAnimation = null;
 
     if (isDirtyMount) {
       mLithoView.onDirtyMountComplete();

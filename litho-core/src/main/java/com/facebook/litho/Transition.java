@@ -19,11 +19,13 @@ import android.view.animation.Interpolator;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.AnimatedProperty;
+import com.facebook.litho.animation.AnimatedPropertyNode;
 import com.facebook.litho.animation.AnimationBinding;
 import com.facebook.litho.animation.DimensionValue;
 import com.facebook.litho.animation.FloatValue;
 import com.facebook.litho.animation.PropertyAnimation;
 import com.facebook.litho.animation.PropertyHandle;
+import com.facebook.litho.animation.Resolver;
 import com.facebook.litho.animation.RuntimeValue;
 import com.facebook.litho.animation.SpringTransition;
 import com.facebook.litho.animation.TimingTransition;
@@ -532,5 +534,50 @@ public abstract class Transition {
     public TransitionAnimationBinding createAnimation(PropertyAnimation propertyAnimation) {
       return new TimingTransition(mDurationMs, propertyAnimation, mInterpolator);
     }
+  }
+
+  /**
+   * Separate resolver for root component to extract the start value of appear animation of its
+   * width/height that we will set in {@link LithoView#onMeasure(int, int)}.
+   */
+  private static class RootItemResolver implements Resolver {
+
+    private final LayoutState mLayoutState;
+    private final AnimatedProperty mAnimatedProperty;
+
+    private RootItemResolver(LayoutState layoutState, AnimatedProperty animatedProperty) {
+      mLayoutState = layoutState;
+      mAnimatedProperty = animatedProperty;
+    }
+
+    @Override
+    public float getCurrentState(PropertyHandle propertyHandle) {
+      final LayoutOutput root = mLayoutState.getMountableOutputAt(0);
+      return mAnimatedProperty.get(root);
+    }
+
+    @Override
+    public AnimatedPropertyNode getAnimatedPropertyNode(PropertyHandle propertyHandle) {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  static float getRootAppearFromValue(
+      TransitionUnit transition, LayoutState layoutState, AnimatedProperty property) {
+    final RootItemResolver resolver = new RootItemResolver(layoutState, property);
+    final String rootTransitionKey = layoutState.getRootTransitionKey();
+    return transition
+        .getAppearFrom()
+        .resolve(resolver, new PropertyHandle(rootTransitionKey, property));
+  }
+
+  /**
+   * Contains information about whether root component has bounds transition and if so whether it
+   * defines appear animation as well. The latter is useful to extract from which value we should
+   * animate from so that in {@link LithoView#onMeasure(int, int)} we can set initial value.
+   */
+  static class RootBoundsTransition {
+    boolean hasTransition;
+    TransitionUnit appearTransition;
   }
 }
