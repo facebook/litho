@@ -84,6 +84,22 @@ public class ComponentTreeHolderTest {
   }
 
   @Test
+  public void testRetainAnimationStateAfterExitingRange() {
+    ComponentTreeHolder holder = createComponentTreeHolder(mComponentRenderInfo);
+    holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
+    assertThat(holder.getComponentTree().hasMounted()).isFalse();
+    Whitebox.setInternalState(holder.getComponentTree(), "mHasMounted", true);
+
+    // component goes out of range
+    holder.acquireStateAndReleaseTree();
+    assertThat(holder.getComponentTree()).isNull();
+
+    // component comes back within range
+    holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
+    assertThat(holder.getComponentTree().hasMounted()).isTrue();
+  }
+
+  @Test
   public void testHasCompletedLatestLayoutForSyncRender() {
     ComponentTreeHolder holder = createComponentTreeHolder(mComponentRenderInfo);
     holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());

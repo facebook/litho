@@ -1010,7 +1010,7 @@ public class RecyclerBinder
     final boolean isTreeValid = holder.isTreeValid();
 
     if (isTreeValid && !isNewPositionInRange) {
-      holder.acquireStateHandlerAndReleaseTree();
+      holder.acquireStateAndReleaseTree();
     }
     mInternalAdapter.notifyItemMoved(fromPosition, toPosition);
 
@@ -2085,7 +2085,7 @@ public class RecyclerBinder
             holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
           }
         } else if (holder.isTreeValid() && !holder.getRenderInfo().isSticky()) {
-          holder.acquireStateHandlerAndReleaseTree();
+          holder.acquireStateAndReleaseTree();
         }
       }
     }

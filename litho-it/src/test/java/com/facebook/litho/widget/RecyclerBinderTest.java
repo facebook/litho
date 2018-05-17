@@ -3327,7 +3327,7 @@ public class RecyclerBinderTest {
     }
 
     @Override
-    public synchronized void acquireStateHandlerAndReleaseTree() {
+    public synchronized void acquireStateAndReleaseTree() {
       mComponentTree = null;
       mTreeValid = false;
       mLayoutAsyncCalled = false;

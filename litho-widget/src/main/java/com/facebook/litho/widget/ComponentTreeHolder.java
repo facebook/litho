@@ -71,6 +71,7 @@ public class ComponentTreeHolder {
   private boolean mShouldPreallocatePerMountSpec;
   private String mSplitLayoutTag;
   private boolean mIsInserted = true;
+  private boolean mHasMounted = false;
 
   interface ComponentTreeMeasureListenerFactory {
     MeasureListener create(ComponentTreeHolder holder);
@@ -162,8 +163,9 @@ public class ComponentTreeHolder {
     return componentTreeHolder;
   }
 
-  public synchronized void acquireStateHandlerAndReleaseTree() {
+  public synchronized void acquireStateAndReleaseTree() {
     acquireStateHandler();
+    acquireAnimationState();
     releaseTree();
   }
 
@@ -319,6 +321,7 @@ public class ComponentTreeHolder {
     mLastRequestedWidthSpec = UNINITIALIZED;
     mLastRequestedHeightSpec = UNINITIALIZED;
     mIsInserted = true;
+    mHasMounted = false;
   }
 
   @GuardedBy("this")
@@ -341,6 +344,7 @@ public class ComponentTreeHolder {
                       ? null
                       : mComponentTreeMeasureListenerFactory.create(this))
               .splitLayoutTag(mSplitLayoutTag)
+              .hasMounted(mHasMounted)
               .build();
       if (mPendingNewLayoutListener != null) {
         mComponentTree.setNewLayoutStateReadyListener(mPendingNewLayoutListener);
@@ -365,5 +369,14 @@ public class ComponentTreeHolder {
     }
 
     mStateHandler = mComponentTree.acquireStateHandler();
+  }
+
+  @GuardedBy("this")
+  private void acquireAnimationState() {
+    if (mComponentTree == null) {
+      return;
+    }
+
+    mHasMounted = mComponentTree.hasMounted();
   }
 }

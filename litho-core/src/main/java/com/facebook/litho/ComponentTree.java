@@ -168,7 +168,7 @@ public class ComponentTree {
   @GuardedBy("mCurrentCalculateLayoutRunnableLock")
   private @Nullable CalculateLayoutRunnable mCurrentCalculateLayoutRunnable;
 
-  private boolean mHasMounted;
+  private volatile boolean mHasMounted;
   private boolean mHasLithoViewWidthAnimation;
   private boolean mHasLithoViewHeightAnimation;
 
@@ -368,6 +368,11 @@ public class ComponentTree {
       // main thread layout so that we don't force main thread re-layout.
       return true;
     }
+  }
+
+  /** Whether this ComponentTree has been mounted at least once. */
+  public boolean hasMounted() {
+    return mHasMounted;
   }
 
   public void setNewLayoutStateReadyListener(NewLayoutStateReadyListener listener) {
