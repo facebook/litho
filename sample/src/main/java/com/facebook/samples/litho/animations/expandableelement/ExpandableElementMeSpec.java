@@ -11,6 +11,8 @@
  */
 package com.facebook.samples.litho.animations.expandableelement;
 
+import static com.facebook.samples.litho.animations.expandableelement.ExpandableElementUtil.TRANSITION_MSG_PARENT;
+
 import android.graphics.Color;
 import android.support.annotation.Nullable;
 import com.facebook.litho.ClickEvent;
@@ -46,7 +48,7 @@ public class ExpandableElementMeSpec {
     final boolean isExpanded = expanded == null ? false : expanded;
     return Column.create(c)
         .paddingDip(YogaEdge.TOP, 8)
-        .transitionKey(ExpandableElementUtil.TRANSITION_MSG_PARENT)
+        .transitionKey(TRANSITION_MSG_PARENT)
         .clickHandler(ExpandableElementMe.onClick(c))
         .child(ExpandableElementUtil.maybeCreateTopDetailComponent(c, isExpanded, timestamp))
         .child(
@@ -75,13 +77,17 @@ public class ExpandableElementMeSpec {
 
   @Nullable
   @OnCreateTransition
-  static Transition onCreateTransition(ComponentContext c, @State Boolean expanded) {
-    if (expanded == null) {
+  static Transition onCreateTransition(
+      ComponentContext c,
+      @State Boolean expanded,
+      @Prop(optional = true) boolean forceAnimateOnAppear) {
+    if (!forceAnimateOnAppear && expanded == null) {
       return null;
     }
 
     return Transition.parallel(
         Transition.allLayout(),
+        Transition.create(TRANSITION_MSG_PARENT).animate(AnimatedProperties.HEIGHT).appearFrom(0),
         Transition.create(ExpandableElementUtil.TRANSITION_TOP_DETAIL)
             .animate(AnimatedProperties.HEIGHT)
             .appearFrom(0)

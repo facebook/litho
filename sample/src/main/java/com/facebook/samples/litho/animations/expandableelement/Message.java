@@ -22,12 +22,23 @@ public class Message {
   private final String mMessage;
   private final boolean mSeen;
   private final String mTimestamp;
+  private final boolean mForceAnimateOnAppear;
 
   public Message(boolean isMe, String message, boolean seen, String timestamp) {
     mIsMe = isMe;
     mMessage = message;
     mSeen = seen;
     mTimestamp = timestamp;
+    mForceAnimateOnAppear = false;
+  }
+
+  public Message(
+      boolean isMe, String message, boolean seen, String timestamp, boolean forceAnimateOnInsert) {
+    mIsMe = isMe;
+    mMessage = message;
+    mSeen = seen;
+    mTimestamp = timestamp;
+    mForceAnimateOnAppear = forceAnimateOnInsert;
   }
 
   public RenderInfo createComponent(ComponentContext c) {
@@ -37,6 +48,7 @@ public class Message {
                 .messageText(mMessage)
                 .timestamp(mTimestamp)
                 .seen(mSeen)
+                .forceAnimateOnAppear(mForceAnimateOnAppear)
                 .build()
             : ExpandableElementOther.create(c)
                 .messageText(mMessage)

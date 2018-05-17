@@ -84,7 +84,7 @@ public class ExpandableElementActivity extends NavigatableDemoActivity {
         LithoView.create(
             this,
             ExpandableElementRootComponent.create(new ComponentContext(this))
-                .messages(Arrays.asList(MESSAGES))
+                .initialMessages(Arrays.asList(MESSAGES))
                 .build());
     setContentView(lithoView);
   }
