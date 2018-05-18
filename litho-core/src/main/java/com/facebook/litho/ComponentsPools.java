@@ -560,7 +560,8 @@ public class ComponentsPools {
    * Pre-allocates mount content for this component type within the pool for this context unless the
    * pre-allocation limit has been hit in which case we do nothing.
    */
-  static void maybePreallocateContent(ComponentContext context, ComponentLifecycle lifecycle) {
+  public static void maybePreallocateContent(
+      ComponentContext context, ComponentLifecycle lifecycle) {
     final MountContentPool pool = getMountContentPool(context, lifecycle);
     if (pool != null) {
       pool.maybePreallocateContent(context, lifecycle);
