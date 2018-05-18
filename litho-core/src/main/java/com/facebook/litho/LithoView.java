@@ -41,7 +41,6 @@ import javax.annotation.Nullable;
 /**
  * A {@link ViewGroup} that can host the mounted state of a {@link Component}.
  */
-@DoNotStrip
 public class LithoView extends ComponentHost {
 
   public interface OnDirtyMountListener {
