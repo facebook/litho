@@ -62,7 +62,7 @@ object LithoFeedSectionSpec {
       @Prop decades: List<Decade>) {
     val threshold = 2
     if (totalCount - lastVisible < threshold) {
-      fetcher.invoke(decades.last().year)
+      fetcher(decades.last().year)
     }
   }
 }
