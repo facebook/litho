@@ -26,6 +26,7 @@ import com.facebook.yoga.YogaEdge.ALL
 
 @LayoutSpec
 object FooterComponentSpec {
+
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,

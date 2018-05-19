@@ -29,6 +29,7 @@ import com.fblitho.lithoktsample.lithography.components.SingleImageComponent
 
 @GroupSectionSpec
 object ImagesSectionSpec {
+
   @OnCreateChildren
   fun onCreateChildren(c: SectionContext, @Prop images: List<String>): Children =
       Children.create()

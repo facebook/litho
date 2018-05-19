@@ -25,12 +25,13 @@ import com.fblitho.lithoktsample.lithography.data.Fetcher
 
 @GroupSectionSpec
 object LithoFeedSectionSpec {
+
   @OnCreateChildren
   fun onCreateChildren(c: SectionContext,
                        @Prop decades: List<Decade>,
                        @Prop loading: Boolean): Children {
     val children = Children.create()
-
+    
     decades.forEach {
       children.child(
           DecadeSection.create(c)
