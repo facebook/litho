@@ -31,14 +31,15 @@ object LithoFeedSectionSpec {
                        @Prop decades: List<Decade>,
                        @Prop loading: Boolean): Children {
     val children = Children.create()
-    
-    decades.forEach {
-      children.child(
-          DecadeSection.create(c)
-              .decade(it)
-              .key("${it.year}")
-              .build())
-    }
+    val decadeSections = decades
+            .map {
+              DecadeSection.create(c)
+                  .decade(it)
+                  .key("${it.year}")
+                  .build()
+            }
+
+    children.child(decadeSections)
 
     if (loading) {
       children.child(
