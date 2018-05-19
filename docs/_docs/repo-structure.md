@@ -24,8 +24,7 @@ The source for the finished product of the [barebones tutorial](/docs/tutorial) 
 
 ### `/sample-barebones-kotlin/`
 
-This folder contains - you guess it! - a Kotlin version of the previous
-barebones sample to demonstrate how to use Litho and Kotlin together.
+This folder contains - you guess it! - a Kotlin version of the previous barebones sample to demonstrate how to use Litho and Kotlin together.
 
 ### `/sample-codelab/`
 
@@ -37,6 +36,10 @@ The source for the codelab tutorial is found here. The codelab has 3 parts:
 ### `/sample/`
 
 Under this directory is found code for the Litho sample app.  This includes the playground, which you should use for all testing/bug reporting.
+
+### `/sample-kotlin/`
+
+This directory contains a Kotlin version of the previous sample project.
 
 ### `/litho-*/`
 

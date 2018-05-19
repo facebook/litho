@@ -42,7 +42,7 @@ object FeedItemComponentSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop artist: Artist) =
+      @Prop artist: Artist): Component =
       Column.create(c)
           .child(
               Column.create(c)
