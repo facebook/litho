@@ -375,11 +375,6 @@ public class LithoView extends ComponentHost {
       }
 
       if (mDoMeasureInLayout || mComponentTree.getMainThreadLayoutState() == null) {
-        if (!mDoMeasureInLayout && ComponentsConfiguration.isDebugModeEnabled) {
-          throw new RuntimeException(
-              "Unexpectedly trying to layout without a LayoutState computed on the ComponentTree! You found a very weird crash that the Litho team is interested in! If this is reproducible, please let us know!");
-        }
-
         // Call measure so that we get a layout state that we can use for layout.
         mComponentTree.measure(
             MeasureSpec.makeMeasureSpec(right - left, MeasureSpec.EXACTLY),

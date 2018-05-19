@@ -154,23 +154,6 @@ public class LithoViewTest {
   }
 
   @Test
-  public void testThrowWhenMainThreadLayoutStateIsNullAndLayoutNotRequested() {
-    ComponentsConfiguration.isDebugModeEnabled = true;
-
-    mExpectedException.expect(RuntimeException.class);
-    mExpectedException.expectMessage("Unexpectedly trying to layout without a LayoutState");
-
-    final ComponentTree mockComponentTree = mock(ComponentTree.class);
-
-    mLithoView.setComponentTree(mockComponentTree);
-
-    // Clear requestLayout flag
-    mLithoView.layout(0, 0, 100, 100);
-
-    mLithoView.performIncrementalMount(new Rect(0, 0, 100, 100), true);
-  }
-
-  @Test
   public void testDontThrowWhenLayoutStateIsNull() {
     final ComponentTree mockComponentTree = mock(ComponentTree.class);
 
