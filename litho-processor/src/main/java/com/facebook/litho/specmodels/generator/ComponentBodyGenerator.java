@@ -33,6 +33,7 @@ import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
+import com.facebook.litho.specmodels.model.SpecElementType;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
@@ -282,13 +283,27 @@ public class ComponentBodyGenerator {
                       .addMember("optional", "$L", prop.isOptional())
                       .build());
       if (prop.hasDefault(specModel.getPropDefaults())) {
-        fieldBuilder.initializer("$L.$L", specModel.getSpecName(), prop.getName());
+        assignInitializer(fieldBuilder, specModel, prop);
       }
 
       typeSpecDataHolder.addField(fieldBuilder.build());
     }
 
     return typeSpecDataHolder.build();
+  }
+
+  private static void assignInitializer(
+      FieldSpec.Builder fieldBuilder, SpecModel specModel, PropModel prop) {
+
+    if (specModel.getSpecElementType() == SpecElementType.KOTLIN_SINGLETON) {
+      final String propName = prop.getName();
+      final String propAccessor =
+          "get" + propName.substring(0, 1).toUpperCase() + propName.substring(1) + "()";
+
+      fieldBuilder.initializer("$L.$L.$L", specModel.getSpecName(), "INSTANCE", propAccessor);
+    } else {
+      fieldBuilder.initializer("$L.$L", specModel.getSpecName(), prop.getName());
+    }
   }
 
   public static TypeSpecDataHolder generateInjectedFields(SpecModel specModel) {
