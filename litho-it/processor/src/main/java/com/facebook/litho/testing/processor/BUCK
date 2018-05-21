@@ -5,9 +5,9 @@
 # LICENSE file in the root directory of this source tree.
 load(
     "//:LITHO_DEFS.bzl",
+    "LITHO_PROCESSOR_LIB_TARGET",
     "fb_java_library",
     "make_dep_path",
-    "LITHO_PROCESSOR_LIB_TARGET",
 )
 
 fb_java_library(
