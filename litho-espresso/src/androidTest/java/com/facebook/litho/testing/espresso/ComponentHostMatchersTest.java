@@ -66,16 +66,18 @@ public class ComponentHostMatchersTest {
         mTextComponent)
         .build();
     mView = new LithoView(mComponentContext);
-    mView.setComponentTree(tree);
-    ViewHelpers.setupView(mView)
-        .setExactWidthPx(200)
-        .setExactHeightPx(100)
-        .layout();
+    mUiThreadRule.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            mView.setComponentTree(tree);
+            ViewHelpers.setupView(mView).setExactWidthPx(200).setExactHeightPx(100).layout();
+          }
+        });
   }
 
   @Test
   public void testContentDescriptionMatching() throws Throwable {
-
     assertThat(
         mView,
         componentHostWithText("foobar"));
