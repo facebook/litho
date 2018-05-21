@@ -36,6 +36,7 @@ import com.fblitho.lithoktsample.lithography.sections.ImagesSection
 
 @LayoutSpec
 object FeedItemComponentSpec {
+
   private val recyclerConfiguration: ListRecyclerConfiguration<SectionBinderTarget> =
       ListRecyclerConfiguration(LinearLayout.HORIZONTAL, false, SNAP_TO_CENTER)
 
