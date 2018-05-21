@@ -585,7 +585,9 @@ class EditTextSpec {
     editText.setClickable(editable);
     editText.setLongClickable(editable);
     editText.setCursorVisible(editable);
-    if (selection > -1) {
+    @Nullable Editable editableText = editText.getText();
+    int textLength = editableText != null ? editableText.length() : -1;
+    if (selection > -1 && selection <= textLength) {
       editText.setSelection(selection);
     }
 
