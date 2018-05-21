@@ -26,6 +26,7 @@ import com.fblitho.lithoktsample.lithography.data.Decade
 
 @LayoutSpec
 object DecadeSeparatorSpec {
+
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,

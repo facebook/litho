@@ -25,19 +25,21 @@ import com.fblitho.lithoktsample.lithography.data.Fetcher
 
 @GroupSectionSpec
 object LithoFeedSectionSpec {
+
   @OnCreateChildren
   fun onCreateChildren(c: SectionContext,
                        @Prop decades: List<Decade>,
                        @Prop loading: Boolean): Children {
     val children = Children.create()
+    val decadeSections = decades
+            .map {
+              DecadeSection.create(c)
+                  .decade(it)
+                  .key("${it.year}")
+                  .build()
+            }
 
-    decades.forEach {
-      children.child(
-          DecadeSection.create(c)
-              .decade(it)
-              .key("${it.year}")
-              .build())
-    }
+    children.child(decadeSections)
 
     if (loading) {
       children.child(
@@ -60,7 +62,7 @@ object LithoFeedSectionSpec {
       @Prop decades: List<Decade>) {
     val threshold = 2
     if (totalCount - lastVisible < threshold) {
-      fetcher.invoke(decades.last().year)
+      fetcher(decades.last().year)
     }
   }
 }

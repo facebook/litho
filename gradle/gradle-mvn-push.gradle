@@ -20,7 +20,7 @@ version = VERSION_NAME
 group = GROUP
 
 def isReleaseBuild() {
-  return VERSION_NAME.contains('SNAPSHOT') == false
+  return !VERSION_NAME.contains('SNAPSHOT')
 }
 
 def getReleaseRepositoryUrl() {

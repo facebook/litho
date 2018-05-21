@@ -24,13 +24,13 @@ import com.facebook.litho.widget.Text
 
 @LayoutSpec
 object ListItemSpec {
+  
   @OnCreateLayout
-  internal fun onCreateLayout(
+  fun onCreateLayout(
       c: ComponentContext,
       @Prop color: Int,
       @Prop title: String,
-      @Prop subtitle: String): Component {
-    return Column.create(c)
+      @Prop subtitle: String): Component = Column.create(c)
         .paddingDip(ALL, 16f)
         .backgroundColor(color)
         .child(
@@ -42,5 +42,4 @@ object ListItemSpec {
                 .text(subtitle)
                 .textSizeSp(20f))
         .build()
-  }
 }

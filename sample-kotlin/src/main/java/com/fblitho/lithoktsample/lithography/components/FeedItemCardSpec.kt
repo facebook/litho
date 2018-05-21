@@ -26,6 +26,7 @@ import com.fblitho.lithoktsample.lithography.data.Artist
 
 @LayoutSpec
 object FeedItemCardSpec {
+
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
