@@ -20,9 +20,7 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.widget.ImageView.ScaleType;
-import com.facebook.litho.AccessibilityRole;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
@@ -40,7 +38,6 @@ import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
-import com.facebook.litho.annotations.OnPopulateAccessibilityNode;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
@@ -186,10 +183,5 @@ class ImageSpec {
       @Prop(resType = ResType.DRAWABLE) Diff<Drawable> drawable) {
     return (scaleType.getNext() != scaleType.getPrevious()) ||
         drawable.getNext() != drawable.getPrevious();
-  }
-
-  @OnPopulateAccessibilityNode
-  static void onPopulateAccessibilityNode(AccessibilityNodeInfoCompat node) {
-    node.setClassName(AccessibilityRole.IMAGE);
   }
 }
