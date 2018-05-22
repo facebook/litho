@@ -22,6 +22,7 @@ import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnCreateChildren;
+import com.facebook.litho.sections.common.SingleComponentSection;
 
 /**
  * Used in TreePropSectionTest.
@@ -45,6 +46,13 @@ public class TreePropSectionTestLeafGroupSpec {
     }
     resultPropB.mProp = propB;
 
-    return Children.create().build();
+    return Children.create()
+        .child(
+            SingleComponentSection.create(c)
+                .component(
+                    TreePropSectionTestLeafLayout.create(c)
+                        .resultPropA(resultPropA)
+                        .resultPropB(resultPropB)))
+        .build();
   }
 }

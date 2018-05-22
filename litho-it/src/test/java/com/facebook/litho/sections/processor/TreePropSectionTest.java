@@ -19,6 +19,7 @@ package com.facebook.litho.sections.processor;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 
 import android.app.Activity;
+import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.testing.sections.TestTarget;
