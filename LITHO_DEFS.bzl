@@ -3,9 +3,11 @@ LITHO_ROOT = "//"
 LITHO_VISIBILITY = [
     "PUBLIC",
 ]
+
 LITHO_TESTING_UTIL_VISIBILITY = [
     "PUBLIC",
 ]
+
 LITHO_IS_OSS_BUILD = True
 
 def make_dep_path(pth):
@@ -15,28 +17,51 @@ LITHO_ROOT_TARGET = make_dep_path(":components")
 
 # Java source
 LITHO_JAVA_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho:litho")
+
 LITHO_ANNOTATIONS_TARGET = make_dep_path("litho-annotations/src/main/java/com/facebook/litho/annotations:annotations")
+
 LITHO_CONFIG_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/config:config")
+
 LITHO_DISPLAYLISTSTUBS_TARGET = make_dep_path("litho-stubs:stubs")
+
 LITHO_VIEWCOMPAT_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/viewcompat:viewcompat")
+
 LITHO_UTILS_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/utils:utils")
+
 LITHO_WIDGET_ACCESSIBILITIES_TARGET = make_dep_path("litho-widget/src/main/java/com/facebook/litho/widget/accessibility:accessibility")
+
 LITHO_WIDGET_TARGET = make_dep_path("litho-widget/src/main/java/com/facebook/litho/widget:widget")
+
 LITHO_LITHO_FRESCO_TARGET = make_dep_path("litho-fresco/src/main/java/com/facebook/litho/fresco:fresco")
+
 LITHO_TESTING_CORE_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho")
+
 LITHO_TESTING_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:testing")
+
 LITHO_TESTING_ASSERTJ_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj")
+
 LITHO_TESTING_HELPER_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/helper:helper")
+
 LITHO_TESTING_SUBCOMPONENTS_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/subcomponents:subcomponents")
+
 LITHO_TESTING_WIDGET_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/widget:widget")
+
 LITHO_TESTING_ESPRESSO_TARGET = make_dep_path("litho-espresso/src/main/java/com/facebook/litho/testing/espresso:espresso")
+
 LITHO_TEST_RES = make_dep_path("litho-it/src/main:res")
+
 LITHO_SECTIONS_TARGET = make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections:sections")
+
 LITHO_SECTIONS_COMMON_TARGET = make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/common:common")
+
 LITHO_SECTIONS_WIDGET_TARGET = make_dep_path("litho-sections-widget/src/main/java/com/facebook/litho/sections/widget:widget")
+
 LITHO_SECTIONS_ANNOTATIONS_TARGET = make_dep_path("litho-sections-annotations/src/main/java/com/facebook/litho/sections/annotations:annotations")
+
 LITHO_SECTIONS_PROCESSOR_TARGET = make_dep_path("litho-sections-processor/src/main/java/com/facebook/litho/sections/specmodels/processor:processor")
+
 LITHO_SECTIONS_CONFIG_TARGET = make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/config:config")
+
 LITHO_FBJNI_JAVA_TARGET = make_dep_path("lib/fbjni/src/main/java/com/facebook/jni:jni")
 
 # Test source
@@ -50,53 +75,92 @@ LITHO_RES_TARGET = make_dep_path("litho-core:res")
 
 # Libraries
 LITHO_INFERANNOTATIONS_TARGET = make_dep_path("lib/infer-annotations:infer-annotations")
+
 LITHO_JSR_TARGET = make_dep_path("lib/jsr-305:jsr-305")
+
 LITHO_ANDROIDSUPPORT_TARGET = make_dep_path("lib/android-support:android-support")
+
 LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET = make_dep_path("lib/android-support:android-support-recyclerview")
+
 LITHO_ANDROIDSUPPORT_APPCOMPAT_TARGET = make_dep_path("lib/appcompat:appcompat")
+
 LITHO_ANDROIDSUPPORT_TESTING_TARGET = make_dep_path("lib/android-support:android-support-testing")
+
 LITHO_YOGA_TARGET = make_dep_path("lib/yoga:yoga")
+
 LITHO_YOGAJNI_TARGET = make_dep_path("lib/yogajni:jni")
+
 LITHO_BUILD_CONFIG_TARGET = make_dep_path(":build_config")
+
 LITHO_COMMONS_CLI_TARGET = make_dep_path("lib/commons-cli:commons-cli")
+
 LITHO_TEXTLAYOUTBUILDER_TARGET = make_dep_path("lib/textlayoutbuilder:textlayoutbuilder")
+
 LITHO_JAVAPOET_TARGET = make_dep_path("lib/javapoet:javapoet")
+
 LITHO_FBCORE_TARGET = make_dep_path("lib/fbcore:fbcore")
+
 LITHO_SOLOADER_TARGET = make_dep_path("lib/soloader:soloader")
+
 LITHO_ASSERTJ_TARGET = make_dep_path("lib/assertj:assertj")
+
 LITHO_COMPILE_TESTING_TARGET = make_dep_path("lib/compile-testing:compile-testing")
+
 LITHO_TRUTH_TARGET = make_dep_path("lib/truth:truth")
+
 LITHO_MOCKITO_TARGET = make_dep_path("lib/mockito:mockito")
+
 LITHO_POWERMOCK_REFLECT_TARGET = make_dep_path("lib/powermock:powermock-reflect")
+
 LITHO_POWERMOCK_MOCKITO_TARGET = make_dep_path("lib/powermock:powermock-mockito")
+
 LITHO_JNI_TARGET = make_dep_path("lib/jni-hack:jni-hack")
+
 LITHO_FBJNI_TARGET = make_dep_path("lib/fbjni:jni")
+
 LITHO_GUAVA_TARGET = make_dep_path("lib/guava:guava")
+
 LITHO_DIFFUTILS_TARGET = make_dep_path("lib/diff-utils:diff-utils")
+
 LITHO_ESPRESSO_TARGET = make_dep_path("lib/espresso:espresso")
+
 LITHO_SCREENSHOT_TARGET = make_dep_path("lib/screenshot:screenshot")
+
 LITHO_JAVAC_TOOLS_TARGET = make_dep_path("lib/javac-tools:javac-tools")
 
 # Fresco
 LITHO_FRESCO_TARGET = make_dep_path("lib/fresco:fresco")
+
 LITHO_ROBOLECTRIC_TARGET = make_dep_path("lib/robolectric3:robolectric3")
+
 LITHO_JUNIT_TARGET = make_dep_path("lib/junit:junit")
+
 LITHO_HAMCREST_LIBRARY_TARGET = make_dep_path("lib/hamcrest:hamcrest")
+
 LITHO_HAMCREST_CORE_TARGET = make_dep_path("lib/hamcrest:hamcrest")
 
 # Annotation processors
 LITHO_PROCESSOR_TARGET = make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor")
+
 LITHO_PROCESSOR_LIB_TARGET = make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor-lib")
+
 LITHO_SECTIONS_PROCESSOR_LIB_TARGET = make_dep_path("litho-sections-processor/src/main/java/com/facebook/litho/sections/specmodels/processor:processor-lib")
 
 # Sample app
 LITHO_SAMPLE_JAVA = make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho")
+
 LITHO_SAMPLE_APP_TARGET = make_dep_path("sample/src/oss-only/java/com/facebook/samples/litho:litho")
+
 LITHO_SAMPLE_APP_EXTRAS = []
+
 LITHO_SAMPLE_BAREBONES_JAVA = make_dep_path("sample-barebones/src/main/java/com/facebook/samples/lithobarebones:lithobarebones")
+
 LITHO_SAMPLE_BAREBONES_RES = make_dep_path("sample-barebones:res")
+
 LITHO_SAMPLE_CODELAB_JAVA = make_dep_path("sample-codelab/src/main/java/com/facebook/samples/lithocodelab:lithocodelab")
+
 LITHO_SAMPLE_CODELAB_RES = make_dep_path("sample-codelab:res")
+
 LITHO_SAMPLE_RES = make_dep_path("sample:res")
 
 # Other targets
@@ -104,13 +168,17 @@ LITHO_OSS_TARGET = make_dep_path(":components")
 
 # Targets that sometimes exist and sometimes don't
 LITHO_TEXTLAYOUTBUILDER_UTILS_TARGET = []
+
 LITHO_FRESCO_TARGETS = [
     make_dep_path("lib/fbcore:fbcore"),
     make_dep_path("lib/fresco:fresco-drawee"),
     make_dep_path("lib/fresco:fresco"),
 ]
+
 LITHO_FRESCO_PIPELINE_TARGET = [make_dep_path("lib/fresco:imagepipeline")]
+
 LITHO_FRESCO_CONTROLLER_TARGET = []
+
 LITHO_FRESCO_INTERFACES_TARGET = []
 
 def components_robolectric_test(
