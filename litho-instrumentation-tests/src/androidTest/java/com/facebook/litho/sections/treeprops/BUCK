@@ -1,0 +1,26 @@
+load(
+    "//:LITHO_DEFS.bzl",
+    "fb_instrumentation_test",
+    "make_dep_path",
+    "LITHO_ESPRESSO_TARGET",
+    "LITHO_JUNIT_TARGET",
+    "LITHO_JUNIT_TARGET",
+    "LITHO_ANDROIDSUPPORT_TESTING_TARGET",
+    "LITHO_TESTING_ESPRESSO_TARGET",
+    "LITHO_BUILD_CONFIG_TARGET",
+)
+
+fb_instrumentation_test(
+    name = "treeprops",
+    srcs = glob(["*Test.java"]),
+    manifest = "AndroidManifest.xml",
+    deps = [
+        make_dep_path("litho-instrumentation-tests/src/main/java/com/facebook/litho/sections/treeprops:treeprops"),
+        LITHO_ESPRESSO_TARGET,
+        LITHO_JUNIT_TARGET,
+        LITHO_JUNIT_TARGET,
+        LITHO_ANDROIDSUPPORT_TESTING_TARGET,
+        LITHO_TESTING_ESPRESSO_TARGET,
+        LITHO_BUILD_CONFIG_TARGET,
+    ],
+)

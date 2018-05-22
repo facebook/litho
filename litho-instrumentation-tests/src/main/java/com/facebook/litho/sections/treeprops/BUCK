@@ -26,10 +26,8 @@ fb_core_android_library(
         LITHO_PROCESSOR_TARGET,
         LITHO_SECTIONS_PROCESSOR_TARGET,
     ],
-    source = "8",
-    target = "8",
     visibility = [
-        make_dep_path("litho-it/src/test/..."),
+        make_dep_path("litho-instrumentation-tests/src/androidTest/..."),
     ],
     deps = [
         LITHO_JSR_TARGET,

@@ -29,6 +29,7 @@ LITHO_TESTING_ASSERTJ_TARGET = make_dep_path("litho-testing/src/main/java/com/fa
 LITHO_TESTING_HELPER_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/helper:helper")
 LITHO_TESTING_SUBCOMPONENTS_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/subcomponents:subcomponents")
 LITHO_TESTING_WIDGET_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/widget:widget")
+LITHO_TESTING_ESPRESSO_TARGET = make_dep_path("litho-espresso/src/main/java/com/facebook/litho/testing/espresso:espresso")
 LITHO_TEST_RES = make_dep_path("litho-it/src/main:res")
 LITHO_SECTIONS_TARGET = make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections:sections")
 LITHO_SECTIONS_COMMON_TARGET = make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/common:common")
@@ -170,6 +171,13 @@ def fb_android_library(**kwargs):
 def fb_prebuilt_cxx_library(**kwargs):
     """Delegates to native prebuilt_cxx_library."""
     native.prebuilt_cxx_library(**kwargs)
+
+def fb_instrumentation_test(**kwargs):
+    """
+    We don't support this in the OSS build for now.
+    Please use Gradle instead.
+    """
+    pass
 
 def fb_core_android_library(**kwargs):
     native.android_library(**kwargs)
