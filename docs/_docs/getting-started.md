@@ -10,7 +10,7 @@ permalink: /docs/getting-started
 {% capture buck %}{% include_relative getting-started/buck.md %}{% endcapture %}
 {% capture testing %}{% include_relative getting-started/testing.md %}{% endcapture %}
 
-{{gradle | markdownify }}
-{{gradle-kt | markdownify }}
-{{buck | markdownify }}
-{{testing | markdownify }}
+{{ gradle | markdownify }}
+{{ gradle-kt | markdownify }}
+{{ buck | markdownify }}
+{{ testing | markdownify }}
