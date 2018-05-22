@@ -53,7 +53,7 @@ class MountItem {
 
   // ComponentHost flags defined in the LayoutOutput specifying
   // the behaviour of this item when mounted.
-  private int mFlags;
+  private int mLayoutFlags;
 
   void init(LayoutOutput layoutOutput, MountItem mountItem) {
     init(
@@ -92,13 +92,13 @@ class MountItem {
       NodeInfo nodeInfo,
       ViewNodeInfo viewNodeInfo,
       @Nullable DisplayListDrawable displayListDrawable,
-      int flags,
+      int layoutFlags,
       int importantForAccessibility,
       String transitionKey) {
     mComponent = component;
     mContent = content;
     mHost = host;
-    mFlags = flags;
+    mLayoutFlags = layoutFlags;
     mImportantForAccessibility = importantForAccessibility;
     mDisplayListDrawable = displayListDrawable;
     mTransitionKey = transitionKey;
@@ -125,23 +125,23 @@ class MountItem {
       final View view = (View) mContent;
 
       if (view.isClickable()) {
-        mFlags |= FLAG_VIEW_CLICKABLE;
+        mLayoutFlags |= FLAG_VIEW_CLICKABLE;
       }
 
       if (view.isLongClickable()) {
-        mFlags |= FLAG_VIEW_LONG_CLICKABLE;
+        mLayoutFlags |= FLAG_VIEW_LONG_CLICKABLE;
       }
 
       if (view.isFocusable()) {
-        mFlags |= FLAG_VIEW_FOCUSABLE;
+        mLayoutFlags |= FLAG_VIEW_FOCUSABLE;
       }
 
       if (view.isEnabled()) {
-        mFlags |= FLAG_VIEW_ENABLED;
+        mLayoutFlags |= FLAG_VIEW_ENABLED;
       }
 
       if (view.isSelected()) {
-        mFlags |= FLAG_VIEW_SELECTED;
+        mLayoutFlags |= FLAG_VIEW_SELECTED;
       }
     }
   }
@@ -192,8 +192,8 @@ class MountItem {
     return mContent;
   }
 
-  int getFlags() {
-    return mFlags;
+  int getLayoutFlags() {
+    return mLayoutFlags;
   }
 
   int getImportantForAccessibility() {
@@ -232,14 +232,14 @@ class MountItem {
 
   void setOnlySupportsDisappearing(boolean onlySupportsDisappearing) {
     if (onlySupportsDisappearing) {
-      mFlags |= FLAG_ONLY_SUPPORT_DISAPPEARING;
+      mLayoutFlags |= FLAG_ONLY_SUPPORT_DISAPPEARING;
     } else {
-      mFlags &= (~FLAG_ONLY_SUPPORT_DISAPPEARING);
+      mLayoutFlags &= (~FLAG_ONLY_SUPPORT_DISAPPEARING);
     }
   }
 
   boolean onlySupportsDisappearing() {
-    return (mFlags & FLAG_ONLY_SUPPORT_DISAPPEARING) != 0;
+    return (mLayoutFlags & FLAG_ONLY_SUPPORT_DISAPPEARING) != 0;
   }
 
   void release(ComponentContext context) {
@@ -263,7 +263,7 @@ class MountItem {
     mComponent = null;
     mHost = null;
     mContent = null;
-    mFlags = 0;
+    mLayoutFlags = 0;
     mIsBound = false;
     mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
     mTransitionKey = null;

@@ -116,7 +116,7 @@ public class MountItemTest {
     assertThat(mMountItem.getNodeInfo().getClickHandler()).isSameAs(mClickHandler);
     assertThat(mMountItem.getNodeInfo().getFocusChangeHandler()).isSameAs(mFocusChangeHandler);
     assertThat(mMountItem.getNodeInfo().getTouchHandler()).isSameAs(mTouchHandler);
-    assertThat(mMountItem.getFlags()).isEqualTo(mFlags);
+    assertThat(mMountItem.getLayoutFlags()).isEqualTo(mFlags);
     assertThat(mMountItem.getImportantForAccessibility())
         .isEqualTo(IMPORTANT_FOR_ACCESSIBILITY_YES);
   }
@@ -215,7 +215,7 @@ public class MountItemTest {
     assertThat(mMountItem.getHost()).isNull();
     assertThat(mMountItem.getContent()).isNull();
     assertThat(mMountItem.getNodeInfo()).isNull();
-    assertThat(mMountItem.getFlags()).isEqualTo(0);
+    assertThat(mMountItem.getLayoutFlags()).isEqualTo(0);
     assertThat(mMountItem.getImportantForAccessibility())
         .isEqualTo(IMPORTANT_FOR_ACCESSIBILITY_AUTO);
   }

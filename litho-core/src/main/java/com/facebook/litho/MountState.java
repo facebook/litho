@@ -896,7 +896,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       maybeSetDrawableState(
           currentMountItem.getHost(),
           (Drawable) currentMountItem.getContent(),
-          currentMountItem.getFlags(),
+          currentMountItem.getLayoutFlags(),
           currentMountItem.getNodeInfo());
     }
 
@@ -1417,8 +1417,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       unsetRotation(view, nodeInfo);
     }
 
-    view.setClickable(MountItem.isViewClickable(item.getFlags()));
-    view.setLongClickable(MountItem.isViewLongClickable(item.getFlags()));
+    view.setClickable(MountItem.isViewClickable(item.getLayoutFlags()));
+    view.setLongClickable(MountItem.isViewLongClickable(item.getLayoutFlags()));
 
     unsetFocusable(view, item);
     unsetEnabled(view, item);
@@ -1789,7 +1789,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static void unsetFocusable(View view, MountItem mountItem) {
-    view.setFocusable(MountItem.isViewFocusable(mountItem.getFlags()));
+    view.setFocusable(MountItem.isViewFocusable(mountItem.getLayoutFlags()));
   }
 
   private static void setEnabled(View view, @NodeInfo.EnabledState short enabledState) {
@@ -1801,7 +1801,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static void unsetEnabled(View view, MountItem mountItem) {
-    view.setEnabled(MountItem.isViewEnabled(mountItem.getFlags()));
+    view.setEnabled(MountItem.isViewEnabled(mountItem.getLayoutFlags()));
   }
 
   private static void setSelected(View view, @NodeInfo.SelectedState short selectedState) {
@@ -1813,7 +1813,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static void unsetSelected(View view, MountItem mountItem) {
-    view.setSelected(MountItem.isViewSelected(mountItem.getFlags()));
+    view.setSelected(MountItem.isViewSelected(mountItem.getLayoutFlags()));
   }
 
   private static void setScale(View view, NodeInfo nodeInfo) {

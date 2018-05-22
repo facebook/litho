@@ -148,7 +148,7 @@ public class ComponentHost extends ViewGroup {
     } else if (content instanceof View) {
       ensureViewMountItems();
       mViewMountItems.put(index, mountItem);
-      mountView((View) content, mountItem.getFlags());
+      mountView((View) content, mountItem.getLayoutFlags());
       maybeRegisterTouchExpansion(index, mountItem);
     }
 
@@ -762,7 +762,7 @@ public class ComponentHost extends ViewGroup {
           i--) {
         final MountItem item = mDrawableMountItems.valueAt(i);
 
-        if (item.getContent() instanceof Touchable && !isTouchableDisabled(item.getFlags())) {
+        if (item.getContent() instanceof Touchable && !isTouchableDisabled(item.getLayoutFlags())) {
           final Touchable t = (Touchable) item.getContent();
           if (t.shouldHandleTouchEvent(event) && t.onTouchEvent(event, this)) {
             handled = true;
@@ -831,7 +831,7 @@ public class ComponentHost extends ViewGroup {
       ComponentHostUtils.maybeSetDrawableState(
           this,
           (Drawable) mountItem.getContent(),
-          mountItem.getFlags(),
+          mountItem.getLayoutFlags(),
           mountItem.getNodeInfo());
     }
   }
@@ -1132,7 +1132,7 @@ public class ComponentHost extends ViewGroup {
         i < size;
         i++) {
       final MountItem mountItem = mDrawableMountItems.valueAt(i);
-      if ((mountItem.getFlags() & MountItem.FLAG_MATCH_HOST_BOUNDS) != 0) {
+      if ((mountItem.getLayoutFlags() & MountItem.FLAG_MATCH_HOST_BOUNDS) != 0) {
         if (drawables == null) {
           drawables = new ArrayList<>();
         }
@@ -1208,7 +1208,7 @@ public class ComponentHost extends ViewGroup {
         this,
         displayListDrawable != null ? displayListDrawable : drawable,
         bounds,
-        mountItem.getFlags(),
+        mountItem.getLayoutFlags(),
         mountItem.getNodeInfo());
   }
 
