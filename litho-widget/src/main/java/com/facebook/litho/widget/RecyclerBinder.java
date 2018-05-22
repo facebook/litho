@@ -555,8 +555,8 @@ public class RecyclerBinder
       if (holder.isInserted()) {
         // If it's inserted, we can just count on the normal range computation re-computing this
         indexInComponentTreeHolders = mComponentTreeHolders.indexOf(holder);
-        mViewportManager.setDataChangedIsVisible(
-            mViewportManager.isUpdateInVisibleRange(indexInComponentTreeHolders, 1));
+        mViewportManager.setShouldUpdate(
+            mViewportManager.updateAffectsVisibleRange(indexInComponentTreeHolders, 1));
       } else {
         indexInComponentTreeHolders = -1;
 
@@ -702,7 +702,7 @@ public class RecyclerBinder
     mComponentTreeHolders.add(operation.mPosition, operation.mHolder);
     operation.mHolder.setInserted(true);
     mInternalAdapter.notifyItemInserted(operation.mPosition);
-    mViewportManager.isInsertInVisibleRange(
+    mViewportManager.insertAffectsVisibleRange(
         operation.mPosition, 1, mRange != null ? mRange.estimatedViewportCount : -1);
   }
 
@@ -849,8 +849,8 @@ public class RecyclerBinder
 
     mInternalAdapter.notifyItemInserted(position);
 
-    mViewportManager.setDataChangedIsVisible(
-        mViewportManager.isInsertInVisibleRange(
+    mViewportManager.setShouldUpdate(
+        mViewportManager.insertAffectsVisibleRange(
             position, 1, mRange != null ? mRange.estimatedViewportCount : -1));
   }
 
@@ -903,8 +903,8 @@ public class RecyclerBinder
 
     mInternalAdapter.notifyItemRangeInserted(position, renderInfos.size());
 
-    mViewportManager.setDataChangedIsVisible(
-        mViewportManager.isInsertInVisibleRange(
+    mViewportManager.setShouldUpdate(
+        mViewportManager.insertAffectsVisibleRange(
             position, renderInfos.size(), mRange != null ? mRange.estimatedViewportCount : -1));
   }
 
@@ -945,7 +945,7 @@ public class RecyclerBinder
       mInternalAdapter.notifyItemChanged(position);
     }
 
-    mViewportManager.setDataChangedIsVisible(mViewportManager.isUpdateInVisibleRange(position, 1));
+    mViewportManager.setShouldUpdate(mViewportManager.updateAffectsVisibleRange(position, 1));
   }
 
   /**
@@ -979,8 +979,8 @@ public class RecyclerBinder
       }
     }
 
-    mViewportManager.setDataChangedIsVisible(
-        mViewportManager.isUpdateInVisibleRange(position, renderInfos.size()));
+    mViewportManager.setShouldUpdate(
+        mViewportManager.updateAffectsVisibleRange(position, renderInfos.size()));
   }
 
   /**
@@ -1014,8 +1014,8 @@ public class RecyclerBinder
     }
     mInternalAdapter.notifyItemMoved(fromPosition, toPosition);
 
-    mViewportManager.setDataChangedIsVisible(
-        mViewportManager.isMoveInVisibleRange(fromPosition, toPosition, mRangeSize));
+    mViewportManager.setShouldUpdate(
+        mViewportManager.moveAffectsVisibleRange(fromPosition, toPosition, mRangeSize));
   }
 
   /**
@@ -1039,7 +1039,7 @@ public class RecyclerBinder
 
     holder.release();
 
-    mViewportManager.setDataChangedIsVisible(mViewportManager.isRemoveInVisibleRange(position, 1));
+    mViewportManager.setShouldUpdate(mViewportManager.removeAffectsVisibleRange(position, 1));
   }
 
   /**
@@ -1064,8 +1064,7 @@ public class RecyclerBinder
     }
     mInternalAdapter.notifyItemRangeRemoved(position, count);
 
-    mViewportManager.setDataChangedIsVisible(
-        mViewportManager.isRemoveInVisibleRange(position, count));
+    mViewportManager.setShouldUpdate(mViewportManager.removeAffectsVisibleRange(position, count));
   }
 
   /**

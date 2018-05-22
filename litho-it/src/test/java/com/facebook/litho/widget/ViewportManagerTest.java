@@ -55,7 +55,7 @@ public class ViewportManagerTest {
     setFullyVisibleItemPositionInMockedLayoutManager(1, 4);
     setTotalItemInMockedLayoutManager(20);
 
-    viewportManager.setDataChangedIsVisible(false);
+    viewportManager.setShouldUpdate(false);
     viewportManager.onViewportChanged(SCROLLING);
 
     verify(mViewportChangedListener).viewportChanged(0, 5, 1, 4, SCROLLING);
@@ -70,7 +70,7 @@ public class ViewportManagerTest {
     setFullyVisibleItemPositionInMockedLayoutManager(-1, -1);
     setTotalItemInMockedLayoutManager(20);
 
-    viewportManager.setDataChangedIsVisible(true);
+    viewportManager.setShouldUpdate(true);
     viewportManager.onViewportChanged(SCROLLING);
 
     verify(mViewportChangedListener).viewportChanged(1, 2, -1, -1, SCROLLING);
@@ -84,7 +84,7 @@ public class ViewportManagerTest {
     setFullyVisibleItemPositionInMockedLayoutManager(7, 18);
     setTotalItemInMockedLayoutManager(20);
 
-    viewportManager.setDataChangedIsVisible(true);
+    viewportManager.setShouldUpdate(true);
     viewportManager.onViewportChanged(DATA_CHANGES);
 
     verify(mViewportChangedListener).viewportChanged(5, 20, 7, 18, DATA_CHANGES);
@@ -101,7 +101,7 @@ public class ViewportManagerTest {
     setFullyVisibleItemPositionInMockedLayoutManager(7, 9);
     setTotalItemInMockedLayoutManager(13);
 
-    viewportManager.setDataChangedIsVisible(false);
+    viewportManager.setShouldUpdate(false);
     viewportManager.onViewportChanged(SCROLLING);
 
     verifyZeroInteractions(mViewportChangedListener);
@@ -116,7 +116,7 @@ public class ViewportManagerTest {
     setFullyVisibleItemPositionInMockedLayoutManager(7, 9);
     setTotalItemInMockedLayoutManager(12);
 
-    viewportManager.setDataChangedIsVisible(true);
+    viewportManager.setShouldUpdate(true);
     viewportManager.onViewportChanged(DATA_CHANGES);
 
     verify(mViewportChangedListener).viewportChanged(5, 10, 7, 9, DATA_CHANGES);
@@ -132,91 +132,93 @@ public class ViewportManagerTest {
     setFullyVisibleItemPositionInMockedLayoutManager(-1, -1);
     setTotalItemInMockedLayoutManager(12);
 
-    viewportManager.setDataChangedIsVisible(false);
+    viewportManager.setShouldUpdate(false);
     viewportManager.onViewportChanged(SCROLLING);
 
     verify(mViewportChangedListener).viewportChanged(6, 7, -1, -1, SCROLLING);
   }
 
   @Test
-  public void testInsertInVisibleRange() {
-    ViewportManager viewportManager = getViewportManager(1, 6);
-    boolean isInRange = viewportManager.isInsertInVisibleRange(7, 2, 7);
-    assertThat(isInRange).isTrue();
+  public void testInsertAffectsVisibleRange() {
+    ViewportManager viewportManager = getViewportManager(5, 10);
+    // fully above viewport
+    assertThat(viewportManager.insertAffectsVisibleRange(1, 2, 5)).isTrue();
+    // last insert within viewport
+    assertThat(viewportManager.insertAffectsVisibleRange(1, 6, 5)).isTrue();
+    // insert positions fully cover viewport
+    assertThat(viewportManager.insertAffectsVisibleRange(1, 20, 5)).isTrue();
+    // position within viewport
+    assertThat(viewportManager.insertAffectsVisibleRange(5, 1, 5)).isTrue();
+    assertThat(viewportManager.insertAffectsVisibleRange(7, 2, 5)).isTrue();
+    // position within extended viewport
+    assertThat(viewportManager.insertAffectsVisibleRange(11, 2, 7)).isTrue();
+    // fully below viewport
+    assertThat(viewportManager.insertAffectsVisibleRange(11, 2, 6)).isFalse();
+    assertThat(viewportManager.insertAffectsVisibleRange(18, 2, 5)).isFalse();
   }
 
   @Test
-  public void testInsertNotInVisibleRange() {
-    ViewportManager viewportManager = getViewportManager(1, 6);
-    boolean isInRange = viewportManager.isInsertInVisibleRange(7, 2, 6);
-    assertThat(isInRange).isFalse();
+  public void testUpdateAffectsVisibleRange() {
+    ViewportManager viewportManager = getViewportManager(5, 10);
+    // fully above viewport
+    assertThat(viewportManager.updateAffectsVisibleRange(1, 2)).isFalse();
+    // last update within viewport
+    assertThat(viewportManager.updateAffectsVisibleRange(1, 6)).isTrue();
+    // update positions fully cover viewport
+    assertThat(viewportManager.updateAffectsVisibleRange(1, 20)).isTrue();
+    // position within viewport
+    assertThat(viewportManager.updateAffectsVisibleRange(5, 1)).isTrue();
+    assertThat(viewportManager.updateAffectsVisibleRange(7, 2)).isTrue();
+    // fully below viewport
+    assertThat(viewportManager.updateAffectsVisibleRange(11, 2)).isFalse();
+    assertThat(viewportManager.updateAffectsVisibleRange(18, 2)).isFalse();
   }
 
   @Test
-  public void testUpdateInVisibleRange() {
-    ViewportManager viewportManager = getViewportManager(1, 6);
-    boolean isInRange = viewportManager.isUpdateInVisibleRange(5, 2);
-    assertThat(isInRange).isTrue();
+  public void testMoveAffectsVisibleRange() {
+    ViewportManager viewportManager = getViewportManager(5, 10);
+    // either is within viewport
+    assertThat(viewportManager.moveAffectsVisibleRange(12, 9, 6)).isTrue();
+    assertThat(viewportManager.moveAffectsVisibleRange(9, 12, 6)).isTrue();
+    // both is within viewport
+    assertThat(viewportManager.moveAffectsVisibleRange(6, 7, 6)).isTrue();
+    // neither is within viewport
+    assertThat(viewportManager.moveAffectsVisibleRange(11, 13, 6)).isFalse();
+    assertThat(viewportManager.moveAffectsVisibleRange(1, 3, 6)).isFalse();
   }
 
   @Test
-  public void testUpdateNotInVisibleRange() {
-    ViewportManager viewportManager = getViewportManager(1, 6);
-    boolean isInRange = viewportManager.isUpdateInVisibleRange(7, 2);
-    assertThat(isInRange).isFalse();
-  }
-
-  @Test
-  public void testMoveInVisibleRange() {
-    ViewportManager viewportManager = getViewportManager(1, 6);
-    boolean isInRange = viewportManager.isMoveInVisibleRange(8, 5, 6);
-    assertThat(isInRange).isTrue();
-
-    viewportManager = getViewportManager(1, 6);
-    isInRange = viewportManager.isMoveInVisibleRange(5, 8, 6);
-    assertThat(isInRange).isTrue();
-  }
-
-  @Test
-  public void testMoveNotInVisibleRange() {
-    ViewportManager viewportManager = getViewportManager(1, 6);
-    boolean isInRange = viewportManager.isMoveInVisibleRange(7, 9, 6);
-    assertThat(isInRange).isFalse();
-  }
-
-  @Test
-  public void testRemoveInVisibleRange() {
-    ViewportManager viewportManager = getViewportManager(1, 6);
-    boolean isInRange = viewportManager.isRemoveInVisibleRange(6, 2);
-    assertThat(isInRange).isTrue();
-
-    getViewportManager(3, 6);
-    isInRange = viewportManager.isRemoveInVisibleRange(2, 2);
-    assertThat(isInRange).isTrue();
-  }
-
-  @Test
-  public void testRemoveNotInVisibleRange() {
-    ViewportManager viewportManager = getViewportManager(3, 6);
-    boolean isInRange = viewportManager.isRemoveInVisibleRange(2, 1);
-    assertThat(isInRange).isFalse();
+  public void testRemoveAffectsVisibleRange() {
+    ViewportManager viewportManager = getViewportManager(5, 10);
+    // fully above viewport
+    assertThat(viewportManager.removeAffectsVisibleRange(1, 2)).isTrue();
+    // last remove within viewport
+    assertThat(viewportManager.removeAffectsVisibleRange(1, 6)).isTrue();
+    // remove positions fully cover viewport
+    assertThat(viewportManager.removeAffectsVisibleRange(1, 20)).isTrue();
+    // position within viewport
+    assertThat(viewportManager.removeAffectsVisibleRange(5, 1)).isTrue();
+    assertThat(viewportManager.removeAffectsVisibleRange(7, 2)).isTrue();
+    // fully below viewport
+    assertThat(viewportManager.removeAffectsVisibleRange(11, 2)).isFalse();
+    assertThat(viewportManager.removeAffectsVisibleRange(18, 2)).isFalse();
   }
 
   @Test
   public void testChangeSetIsVisibleForInitialisation() {
     ViewportManager viewportManager = getViewportManager(-1, 2);
 
-    assertThat(viewportManager.isInsertInVisibleRange(6, 2, -1)).isTrue();
-    assertThat(viewportManager.isUpdateInVisibleRange(6, 2)).isTrue();
-    assertThat(viewportManager.isMoveInVisibleRange(6, 2, 10)).isTrue();
-    assertThat(viewportManager.isRemoveInVisibleRange(6, 2)).isTrue();
+    assertThat(viewportManager.insertAffectsVisibleRange(6, 2, -1)).isTrue();
+    assertThat(viewportManager.updateAffectsVisibleRange(6, 2)).isTrue();
+    assertThat(viewportManager.moveAffectsVisibleRange(6, 2, 10)).isTrue();
+    assertThat(viewportManager.removeAffectsVisibleRange(6, 2)).isTrue();
 
     viewportManager = getViewportManager(1, -1);
 
-    assertThat(viewportManager.isInsertInVisibleRange(6, 2, 10)).isTrue();
-    assertThat(viewportManager.isUpdateInVisibleRange(6, 2)).isTrue();
-    assertThat(viewportManager.isMoveInVisibleRange(6, 2, -1)).isTrue();
-    assertThat(viewportManager.isRemoveInVisibleRange(6, 2)).isTrue();
+    assertThat(viewportManager.insertAffectsVisibleRange(6, 2, 10)).isTrue();
+    assertThat(viewportManager.updateAffectsVisibleRange(6, 2)).isTrue();
+    assertThat(viewportManager.moveAffectsVisibleRange(6, 2, -1)).isTrue();
+    assertThat(viewportManager.removeAffectsVisibleRange(6, 2)).isTrue();
   }
 
   private void setVisibleItemPositionInMockedLayoutManager(
@@ -239,11 +241,10 @@ public class ViewportManagerTest {
     when(mLayoutInfo.getItemCount()).thenReturn(totalItem);
   }
 
-  private ViewportManager getViewportManager(
-      int firstFullyVisiblePosition, int lastFullyVisiblePosition) {
+  private ViewportManager getViewportManager(int firstVisiblePosition, int lastVisiblePosition) {
     ViewportManager viewportManager =
         new ViewportManager(
-            firstFullyVisiblePosition, lastFullyVisiblePosition, mLayoutInfo, mMainThreadHandler);
+            firstVisiblePosition, lastVisiblePosition, mLayoutInfo, mMainThreadHandler);
     viewportManager.addViewportChangedListener(mViewportChangedListener);
 
     return viewportManager;

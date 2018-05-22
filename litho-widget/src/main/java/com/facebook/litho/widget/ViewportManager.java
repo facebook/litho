@@ -43,7 +43,8 @@ final class ViewportManager {
   private int mCurrentFirstFullyVisiblePosition;
   private int mCurrentLastFullyVisiblePosition;
   private int mTotalItemCount;
-  private boolean mIsDataChangedVisible;
+  /** Whether first/last visible positions should be updated */
+  private boolean mShouldUpdate;
 
   @Nullable private List<ViewportChanged> mViewportChangedListeners;
 
@@ -107,8 +108,8 @@ final class ViewportManager {
       return;
     }
 
-
-    for (ViewportChanged viewportChangedListener : mViewportChangedListeners) {
+    for (int i = 0, size = mViewportChangedListeners.size(); i < size; i++) {
+      final ViewportChanged viewportChangedListener = mViewportChangedListeners.get(i);
       viewportChangedListener.viewportChanged(
           firstVisiblePosition,
           lastVisiblePosition,
@@ -117,45 +118,32 @@ final class ViewportManager {
           state);
     }
 
-    resetDataChangedIsVisible();
+    mShouldUpdate = false;
   }
 
   @UiThread
-  void setDataChangedIsVisible(boolean isUpdated) {
-    mIsDataChangedVisible = mIsDataChangedVisible || isUpdated;
-    if (mIsDataChangedVisible) {
+  void setShouldUpdate(boolean shouldUpdate) {
+    mShouldUpdate = mShouldUpdate || shouldUpdate;
+    if (mShouldUpdate) {
       putViewportChangedRunnableToEndOfUIThreadQueue();
     }
   }
 
   @UiThread
-  void resetDataChangedIsVisible() {
-    mIsDataChangedVisible = false;
-  }
-
-  @UiThread
-  boolean isInsertInVisibleRange(int position, int size, int viewportCount) {
-    if (shouldForceDataChangedIsVisibleToTrue() || viewportCount == -1) {
+  boolean insertAffectsVisibleRange(int position, int size, int viewportCount) {
+    if (shouldUpdate() || viewportCount == -1) {
       return true;
     }
 
-    final int lastPosition =
-        (mCurrentFirstVisiblePosition + viewportCount - 1 > mCurrentLastVisiblePosition)
-            ? mCurrentFirstVisiblePosition + viewportCount - 1
-            : mCurrentLastVisiblePosition;
+    final int lastVisiblePosition =
+        Math.max(mCurrentFirstVisiblePosition + viewportCount - 1, mCurrentLastVisiblePosition);
 
-    for (int index = position; index < position + size; ++index) {
-      if (mCurrentFirstVisiblePosition <= index && index <= lastPosition) {
-        return true;
-      }
-    }
-
-    return false;
+    return position <= lastVisiblePosition;
   }
 
   @UiThread
-  boolean isUpdateInVisibleRange(int position, int size) {
-    if (shouldForceDataChangedIsVisibleToTrue()) {
+  boolean updateAffectsVisibleRange(int position, int size) {
+    if (shouldUpdate()) {
       return true;
     }
 
@@ -169,8 +157,8 @@ final class ViewportManager {
   }
 
   @UiThread
-  boolean isMoveInVisibleRange(int fromPosition, int toPosition, int viewportCount) {
-    if (shouldForceDataChangedIsVisibleToTrue() || viewportCount == -1) {
+  boolean moveAffectsVisibleRange(int fromPosition, int toPosition, int viewportCount) {
+    if (shouldUpdate() || viewportCount == -1) {
       return true;
     }
 
@@ -186,24 +174,16 @@ final class ViewportManager {
   }
 
   @UiThread
-  boolean isRemoveInVisibleRange(int position, int size) {
-    if (shouldForceDataChangedIsVisibleToTrue()) {
+  boolean removeAffectsVisibleRange(int position, int size) {
+    if (shouldUpdate()) {
       return true;
     }
 
-    for (int index = position; index < position + size; ++index) {
-      if (mCurrentFirstVisiblePosition <= index && index <= mCurrentLastVisiblePosition) {
-        return true;
-      }
-    }
-
-    return false;
+    return position <= mCurrentLastVisiblePosition;
   }
 
-  private boolean shouldForceDataChangedIsVisibleToTrue() {
-    return mCurrentFirstVisiblePosition < 0
-        || mCurrentLastVisiblePosition < 0
-        || mIsDataChangedVisible;
+  private boolean shouldUpdate() {
+    return mCurrentFirstVisiblePosition < 0 || mCurrentLastVisiblePosition < 0 || mShouldUpdate;
   }
 
   private void putViewportChangedRunnableToEndOfUIThreadQueue() {
