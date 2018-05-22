@@ -12,8 +12,8 @@ android_prebuilt_aar(
 
 remote_file(
     name = "android-support-test-rules.aar",
-    sha1 = "f62d39eb9fede7f037699965d10188d992e835f6",
-    url = "mvn:com.android.support.test:rules:aar:0.5",
+    sha1 = "e504eb786542af6c2f57242375350fcdd4a35b1f",
+    url = "mvn:com.android.support.test:rules:aar:1.0.2",
 )
 
 android_prebuilt_aar(
@@ -23,8 +23,19 @@ android_prebuilt_aar(
 
 remote_file(
     name = "android-support-test-runner.aar",
-    sha1 = "73f9e89fcb4c1a43a0894e294f6efa3df7b72a2c",
-    url = "mvn:com.android.support.test:runner:aar:0.5",
+    sha1 = "f88e837a5fdf63ed6c9d9852816d929f958cbec7",
+    url = "mvn:com.android.support.test:runner:aar:1.0.2",
+)
+
+android_prebuilt_aar(
+    name = "android-support-test-monitor-aar",
+    aar = ":android-support-test-monitor.aar",
+)
+
+remote_file(
+    name = "android-support-test-monitor.aar",
+    sha1 = "efc2ae9c93cc1d234be35a2406a9a423b6ee5d75",
+    url = "mvn:com.android.support.test:monitor:aar:1.0.2",
 )
 
 android_prebuilt_aar(
@@ -120,6 +131,7 @@ fb_java_library(
 litho_android_library(
     name = "android-support-testing",
     exported_deps = [
+        ":android-support-test-monitor-aar",
         ":android-support-test-rules-aar",
         ":android-support-test-runner-aar",
     ],

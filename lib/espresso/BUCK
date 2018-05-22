@@ -21,6 +21,6 @@ android_prebuilt_aar(
 
 remote_file(
     name = "espresso-core-aar",
-    sha1 = "9463febe11441cdbae07a5b6cddff972279ae991",
-    url = "mvn:com.android.support.test.espresso:espresso-core:aar:2.2.2",
+    sha1 = "4625e05585025ac9feee0ca2e29557ca61d4789e",
+    url = "mvn:com.android.support.test.espresso:espresso-core:aar:3.0.2",
 )
