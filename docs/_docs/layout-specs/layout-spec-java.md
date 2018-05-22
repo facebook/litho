@@ -9,12 +9,12 @@ Let's start with a simple example:
 ```java
 @LayoutSpec
 public class MyComponentSpec {
+
   @OnCreateLayout
   static Component onCreateLayout(
       ComponentContext c,
       @Prop int color,
       @Prop String title) {
-
       return Row.create(c)
           .alignItems(CENTER)
           .child(

@@ -1,7 +1,7 @@
 ---
 docid: layout-specs
 title: Layout Specs
-layout: docs
+layout: layout-specs
 permalink: /docs/layout-specs
 ---
 
