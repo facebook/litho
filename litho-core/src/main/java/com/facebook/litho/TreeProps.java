@@ -42,10 +42,6 @@ public class TreeProps {
     return (T) mMap.get(key);
   }
 
-  public Map<Class, Object> toMap() {
-    return Collections.unmodifiableMap(mMap);
-  }
-
   /**
    * Whenever a Spec sets tree props, the TreeProps map from the parent is copied.
    *
@@ -55,7 +51,7 @@ public class TreeProps {
   public static TreeProps copy(TreeProps source) {
     final TreeProps newProps = ComponentsPools.acquireTreeProps();
     if (source != null) {
-      newProps.mMap.putAll((Map<? extends Class, ?>) source.mMap);
+      newProps.mMap.putAll(source.mMap);
     }
 
     return newProps;
