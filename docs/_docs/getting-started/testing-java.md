@@ -1,4 +1,4 @@
-<block class="gradle buck" />
+<block class="testing-java" />
 
 ## Testing your Installation
 
