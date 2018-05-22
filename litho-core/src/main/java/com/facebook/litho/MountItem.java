@@ -31,15 +31,16 @@ import com.facebook.litho.displaylist.DisplayList;
  */
 class MountItem {
 
-  static final int FLAG_DUPLICATE_PARENT_STATE = 1 << 0;
-  static final int FLAG_DISABLE_TOUCHABLE = 1 << 1;
-  static final int FLAG_VIEW_CLICKABLE = 1 << 2;
-  static final int FLAG_VIEW_LONG_CLICKABLE = 1 << 3;
-  static final int FLAG_VIEW_FOCUSABLE = 1 << 4;
-  static final int FLAG_VIEW_ENABLED = 1 << 5;
-  static final int FLAG_MATCH_HOST_BOUNDS = 1 << 6;
-  static final int FLAG_VIEW_SELECTED = 1 << 7;
-  static final int FLAG_ONLY_SUPPORT_DISAPPEARING = 1 << 8;
+  static final int LAYOUT_FLAG_DUPLICATE_PARENT_STATE = 1 << 0;
+  static final int LAYOUT_FLAG_DISABLE_TOUCHABLE = 1 << 1;
+  static final int LAYOUT_FLAG_MATCH_HOST_BOUNDS = 1 << 2;
+  static final int LAYOUT_FLAG_ONLY_SUPPORT_DISAPPEARING = 1 << 3;
+
+  private static final int FLAG_VIEW_CLICKABLE = 1 << 0;
+  private static final int FLAG_VIEW_LONG_CLICKABLE = 1 << 1;
+  private static final int FLAG_VIEW_FOCUSABLE = 1 << 2;
+  private static final int FLAG_VIEW_ENABLED = 1 << 3;
+  private static final int FLAG_VIEW_SELECTED = 1 << 4;
 
   private NodeInfo mNodeInfo;
   private ViewNodeInfo mViewNodeInfo;
@@ -54,6 +55,9 @@ class MountItem {
   // ComponentHost flags defined in the LayoutOutput specifying
   // the behaviour of this item when mounted.
   private int mLayoutFlags;
+
+  // Flags that track view-related behaviour of mounted view content.
+  private int mMountViewFlags;
 
   void init(LayoutOutput layoutOutput, MountItem mountItem) {
     init(
@@ -125,23 +129,23 @@ class MountItem {
       final View view = (View) mContent;
 
       if (view.isClickable()) {
-        mLayoutFlags |= FLAG_VIEW_CLICKABLE;
+        mMountViewFlags |= FLAG_VIEW_CLICKABLE;
       }
 
       if (view.isLongClickable()) {
-        mLayoutFlags |= FLAG_VIEW_LONG_CLICKABLE;
+        mMountViewFlags |= FLAG_VIEW_LONG_CLICKABLE;
       }
 
       if (view.isFocusable()) {
-        mLayoutFlags |= FLAG_VIEW_FOCUSABLE;
+        mMountViewFlags |= FLAG_VIEW_FOCUSABLE;
       }
 
       if (view.isEnabled()) {
-        mLayoutFlags |= FLAG_VIEW_ENABLED;
+        mMountViewFlags |= FLAG_VIEW_ENABLED;
       }
 
       if (view.isSelected()) {
-        mLayoutFlags |= FLAG_VIEW_SELECTED;
+        mMountViewFlags |= FLAG_VIEW_SELECTED;
       }
     }
   }
@@ -232,14 +236,14 @@ class MountItem {
 
   void setOnlySupportsDisappearing(boolean onlySupportsDisappearing) {
     if (onlySupportsDisappearing) {
-      mLayoutFlags |= FLAG_ONLY_SUPPORT_DISAPPEARING;
+      mLayoutFlags |= LAYOUT_FLAG_ONLY_SUPPORT_DISAPPEARING;
     } else {
-      mLayoutFlags &= (~FLAG_ONLY_SUPPORT_DISAPPEARING);
+      mLayoutFlags &= (~LAYOUT_FLAG_ONLY_SUPPORT_DISAPPEARING);
     }
   }
 
   boolean onlySupportsDisappearing() {
-    return (mLayoutFlags & FLAG_ONLY_SUPPORT_DISAPPEARING) != 0;
+    return (mLayoutFlags & LAYOUT_FLAG_ONLY_SUPPORT_DISAPPEARING) != 0;
   }
 
   void release(ComponentContext context) {
@@ -264,50 +268,43 @@ class MountItem {
     mHost = null;
     mContent = null;
     mLayoutFlags = 0;
+    mMountViewFlags = 0;
     mIsBound = false;
     mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
     mTransitionKey = null;
   }
 
   static boolean isDuplicateParentState(int flags) {
-    return (flags & FLAG_DUPLICATE_PARENT_STATE) == FLAG_DUPLICATE_PARENT_STATE;
+    return (flags & LAYOUT_FLAG_DUPLICATE_PARENT_STATE) == LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
   }
 
   static boolean isTouchableDisabled(int flags) {
-    return (flags & FLAG_DISABLE_TOUCHABLE) == FLAG_DISABLE_TOUCHABLE;
+    return (flags & LAYOUT_FLAG_DISABLE_TOUCHABLE) == LAYOUT_FLAG_DISABLE_TOUCHABLE;
   }
 
-  /**
-   * @return Whether the view associated with this MountItem is clickable.
-   */
-  static boolean isViewClickable(int flags) {
-    return (flags & FLAG_VIEW_CLICKABLE) == FLAG_VIEW_CLICKABLE;
+  /** @return Whether the view associated with this MountItem is clickable. */
+  boolean isViewClickable() {
+    return (mMountViewFlags & FLAG_VIEW_CLICKABLE) == FLAG_VIEW_CLICKABLE;
   }
 
-  /**
-   * @return Whether the view associated with this MountItem is long clickable.
-   */
-  static boolean isViewLongClickable(int flags) {
-    return (flags & FLAG_VIEW_LONG_CLICKABLE) == FLAG_VIEW_LONG_CLICKABLE;
+  /** @return Whether the view associated with this MountItem is long clickable. */
+  boolean isViewLongClickable() {
+    return (mMountViewFlags & FLAG_VIEW_LONG_CLICKABLE) == FLAG_VIEW_LONG_CLICKABLE;
   }
 
-  /**
-   * @return Whether the view associated with this MountItem is setFocusable.
-   */
-  static boolean isViewFocusable(int flags) {
-    return (flags & FLAG_VIEW_FOCUSABLE) == FLAG_VIEW_FOCUSABLE;
+  /** @return Whether the view associated with this MountItem is setFocusable. */
+  boolean isViewFocusable() {
+    return (mMountViewFlags & FLAG_VIEW_FOCUSABLE) == FLAG_VIEW_FOCUSABLE;
   }
 
-  /**
-   * @return Whether the view associated with this MountItem is setEnabled.
-   */
-  static boolean isViewEnabled(int flags) {
-    return (flags & FLAG_VIEW_ENABLED) == FLAG_VIEW_ENABLED;
+  /** @return Whether the view associated with this MountItem is setEnabled. */
+  boolean isViewEnabled() {
+    return (mMountViewFlags & FLAG_VIEW_ENABLED) == FLAG_VIEW_ENABLED;
   }
 
   /** @return Whether the view associated with this MountItem is setSelected. */
-  static boolean isViewSelected(int flags) {
-    return (flags & FLAG_VIEW_SELECTED) == FLAG_VIEW_SELECTED;
+  boolean isViewSelected() {
+    return (mMountViewFlags & FLAG_VIEW_SELECTED) == FLAG_VIEW_SELECTED;
   }
 
   /**

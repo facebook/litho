@@ -38,9 +38,9 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_STATE_SOURCE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
-import static com.facebook.litho.MountItem.FLAG_DISABLE_TOUCHABLE;
-import static com.facebook.litho.MountItem.FLAG_DUPLICATE_PARENT_STATE;
-import static com.facebook.litho.MountItem.FLAG_MATCH_HOST_BOUNDS;
+import static com.facebook.litho.MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE;
+import static com.facebook.litho.MountItem.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
+import static com.facebook.litho.MountItem.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static com.facebook.litho.MountState.ROOT_HOST_ID;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
@@ -367,18 +367,18 @@ class LayoutState {
       b -= paddingBottom;
 
       if (node.getNodeInfo() != null && node.getNodeInfo().getEnabledState() == ENABLED_SET_FALSE) {
-        flags |= FLAG_DISABLE_TOUCHABLE;
+        flags |= LAYOUT_FLAG_DISABLE_TOUCHABLE;
       }
     }
 
     layoutOutput.setBounds(l, t, r, b);
 
     if (duplicateParentState) {
-      flags |= FLAG_DUPLICATE_PARENT_STATE;
+      flags |= LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
     }
 
     if (hasHostView) {
-      flags |= FLAG_MATCH_HOST_BOUNDS;
+      flags |= LAYOUT_FLAG_MATCH_HOST_BOUNDS;
     } else {
       // If there is a host view, the transition key will be set on the view's layout output
       final String transitionKey = getTransitionKeyForNode(node);
@@ -1557,7 +1557,7 @@ class LayoutState {
       return output;
     }
 
-    if ((output.getFlags() & FLAG_DUPLICATE_PARENT_STATE) != 0) {
+    if ((output.getFlags() & LAYOUT_FLAG_DUPLICATE_PARENT_STATE) != 0) {
       final int parentPosition = layoutState.getLayoutOutputPositionForId(output.getHostMarker());
       if (parentPosition >= 0) {
         final LayoutOutput parent = layoutState.mMountableOutputs.get(parentPosition);

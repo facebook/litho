@@ -24,8 +24,8 @@ import static android.view.View.INVISIBLE;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static android.view.View.VISIBLE;
-import static com.facebook.litho.MountItem.FLAG_DUPLICATE_PARENT_STATE;
-import static com.facebook.litho.MountItem.FLAG_MATCH_HOST_BOUNDS;
+import static com.facebook.litho.MountItem.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
+import static com.facebook.litho.MountItem.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -234,12 +234,15 @@ public class ComponentHostTest {
     assertThat(mHost.getMountItemAt(2)).isNull();
 
     MountItem mountItem1 = mount(0, new ColorDrawable());
-    MountItem mountItem2 = mount(1, new TouchableDrawable(), MountItem.FLAG_DISABLE_TOUCHABLE);
+    MountItem mountItem2 =
+        mount(1, new TouchableDrawable(), MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE);
     MountItem mountItem3 = mount(2, new View(mContext));
     MountItem mountItem4 = mount(4, spy(new TouchableDrawable()));
-    MountItem mountItem5 = mount(5, new TouchableDrawable(), MountItem.FLAG_DISABLE_TOUCHABLE);
+    MountItem mountItem5 =
+        mount(5, new TouchableDrawable(), MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE);
     MountItem mountItem6 = mount(7, new View(mContext));
-    MountItem mountItem7 = mount(8, new TouchableDrawable(), MountItem.FLAG_DISABLE_TOUCHABLE);
+    MountItem mountItem7 =
+        mount(8, new TouchableDrawable(), MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE);
 
     assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem1);
     assertThat(mHost.getMountItemAt(1)).isEqualTo(mountItem2);
@@ -318,7 +321,7 @@ public class ComponentHostTest {
     when(d2.getBounds()).thenReturn(new Rect());
     when(d2.isStateful()).thenReturn(true);
 
-    mount(0, d2, FLAG_DUPLICATE_PARENT_STATE);
+    mount(0, d2, LAYOUT_FLAG_DUPLICATE_PARENT_STATE);
     verify(d2, times(1)).setState(eq(mHost.getDrawableState()));
 
     mHost.setSelected(true);
@@ -343,7 +346,7 @@ public class ComponentHostTest {
     mount(0, v1);
 
     View v2 = mock(View.class);
-    mount(1, v2, FLAG_DUPLICATE_PARENT_STATE);
+    mount(1, v2, LAYOUT_FLAG_DUPLICATE_PARENT_STATE);
 
     verify(v1, times(1)).setDuplicateParentStateEnabled(eq(false));
     verify(v2, times(1)).setDuplicateParentStateEnabled(eq(true));
@@ -776,13 +779,13 @@ public class ComponentHostTest {
   @Test
   public void testGetLinkedDrawableForAnimation() {
     Drawable d1 = new ColorDrawable();
-    MountItem mountItem1 = mount(0, d1, FLAG_MATCH_HOST_BOUNDS);
+    MountItem mountItem1 = mount(0, d1, LAYOUT_FLAG_MATCH_HOST_BOUNDS);
 
     Drawable d2 = new ColorDrawable();
     MountItem mountItem2 = mount(1, d2);
 
     Drawable d3 = new ColorDrawable();
-    MountItem mountItem3 = mount(2, d3, FLAG_MATCH_HOST_BOUNDS);
+    MountItem mountItem3 = mount(2, d3, LAYOUT_FLAG_MATCH_HOST_BOUNDS);
 
     List<Drawable> drawables = mHost.getLinkedDrawablesForAnimation();
     assertThat(drawables).hasSize(2);

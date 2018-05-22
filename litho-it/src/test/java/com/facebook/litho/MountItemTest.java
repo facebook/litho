@@ -123,8 +123,7 @@ public class MountItemTest {
 
   @Test
   public void testFlags() {
-    mFlags =
-        MountItem.FLAG_DUPLICATE_PARENT_STATE;
+    mFlags = MountItem.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
     assertThat(MountItem.isDuplicateParentState(mFlags)).isTrue();
   }
 

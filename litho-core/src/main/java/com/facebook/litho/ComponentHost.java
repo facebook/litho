@@ -1132,7 +1132,7 @@ public class ComponentHost extends ViewGroup {
         i < size;
         i++) {
       final MountItem mountItem = mDrawableMountItems.valueAt(i);
-      if ((mountItem.getLayoutFlags() & MountItem.FLAG_MATCH_HOST_BOUNDS) != 0) {
+      if ((mountItem.getLayoutFlags() & MountItem.LAYOUT_FLAG_MATCH_HOST_BOUNDS) != 0) {
         if (drawables == null) {
           drawables = new ArrayList<>();
         }
