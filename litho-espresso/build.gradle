@@ -35,6 +35,7 @@ dependencies {
     implementation project(':litho-core')
 
     implementation deps.screenshot
+    implementation deps.supportTestRules
     implementation deps.supportEspresso
     implementation deps.supportAppCompat
     implementation deps.soloader
