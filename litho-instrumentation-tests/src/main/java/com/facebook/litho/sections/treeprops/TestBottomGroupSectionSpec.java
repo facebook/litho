@@ -25,7 +25,7 @@ import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.sections.common.SingleComponentSection;
 
 @GroupSectionSpec
-public class TestGroupSectionSpec {
+public class TestBottomGroupSectionSpec {
 
   @OnCreateChildren
   protected static Children onCreateChildren(SectionContext c) {
@@ -36,6 +36,8 @@ public class TestGroupSectionSpec {
 
   @OnCreateTreeProp
   static TestTreeProp onCreateTestTreeProp(SectionContext c, @TreeProp TestTreeProp t) {
-    return t == null ? new TestTreeProp("section") : TestTreeProp.append(t, "section");
+    return t == null
+        ? new TestTreeProp("bottom_section")
+        : TestTreeProp.append(t, "bottom_section");
   }
 }

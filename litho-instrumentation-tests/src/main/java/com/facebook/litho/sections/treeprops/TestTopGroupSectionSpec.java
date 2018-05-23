@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-present Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,28 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho.sections.treeprops;
 
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.facebook.litho.annotations.TreeProp;
+import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.SectionContext;
-import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
+import com.facebook.litho.sections.annotations.GroupSectionSpec;
+import com.facebook.litho.sections.annotations.OnCreateChildren;
 
-@LayoutSpec
-public class RootComponentSpec {
-  @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c) {
-    return RecyclerCollectionComponent.create(c)
-        .disablePTR(true)
-        .section(TestTopGroupSection.create(new SectionContext(c)).build())
-        .build();
+@GroupSectionSpec
+public class TestTopGroupSectionSpec {
+
+  @OnCreateChildren
+  protected static Children onCreateChildren(SectionContext c) {
+    return Children.create().child(TestBottomGroupSection.create(c).build()).build();
   }
 
   @OnCreateTreeProp
-  static TestTreeProp onCreateTestTreeProp(ComponentContext c) {
-    return new TestTreeProp("root");
+  static TestTreeProp onCreateTestTreeProp(SectionContext c, @TreeProp TestTreeProp t) {
+    return t == null ? new TestTreeProp("top_section") : TestTreeProp.append(t, "top_section");
   }
 }
