@@ -20,7 +20,7 @@ permalink: /docs/getting-started
 <article class="code-block" id="doc-buck">
     {{ buck | markdownify }}
 </article>
-<article class="code-block" id="doc-testing">
+<article class="code-block" id="doc-testing-java">
     {{ testing-java | markdownify }}
 </article>
 <article class="code-block" id="doc-testing-kt">
