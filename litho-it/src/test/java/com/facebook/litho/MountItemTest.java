@@ -123,8 +123,92 @@ public class MountItemTest {
 
   @Test
   public void testFlags() {
-    mFlags = MountItem.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
-    assertThat(MountItem.isDuplicateParentState(mFlags)).isTrue();
+    mFlags = MountItem.LAYOUT_FLAG_DUPLICATE_PARENT_STATE | MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE;
+
+    mMountItem = new MountItem();
+    mMountItem.init(
+        mComponent,
+        mComponentHost,
+        mContent,
+        mNodeInfo,
+        null,
+        null,
+        mFlags,
+        IMPORTANT_FOR_ACCESSIBILITY_YES,
+        null);
+
+    assertThat(MountItem.isDuplicateParentState(mMountItem.getLayoutFlags())).isTrue();
+    assertThat(MountItem.isTouchableDisabled(mMountItem.getLayoutFlags())).isTrue();
+    assertThat(mMountItem.onlySupportsDisappearing()).isFalse();
+
+    mFlags = MountItem.LAYOUT_FLAG_ONLY_SUPPORT_DISAPPEARING;
+    mMountItem = new MountItem();
+    mMountItem.init(
+        mComponent,
+        mComponentHost,
+        mContent,
+        mNodeInfo,
+        null,
+        null,
+        mFlags,
+        IMPORTANT_FOR_ACCESSIBILITY_YES,
+        null);
+
+    assertThat(MountItem.isDuplicateParentState(mMountItem.getLayoutFlags())).isFalse();
+    assertThat(MountItem.isTouchableDisabled(mMountItem.getLayoutFlags())).isFalse();
+    assertThat(mMountItem.onlySupportsDisappearing()).isTrue();
+  }
+
+  @Test
+  public void testViewFlags() {
+    View view = new View(RuntimeEnvironment.application);
+    view.setClickable(true);
+    view.setEnabled(true);
+    view.setLongClickable(true);
+    view.setFocusable(false);
+    view.setSelected(false);
+
+    mMountItem = new MountItem();
+    mMountItem.init(
+        mComponent,
+        mComponentHost,
+        view,
+        mNodeInfo,
+        null,
+        null,
+        mFlags,
+        IMPORTANT_FOR_ACCESSIBILITY_YES,
+        null);
+
+    assertThat(mMountItem.isViewClickable()).isTrue();
+    assertThat(mMountItem.isViewEnabled()).isTrue();
+    assertThat(mMountItem.isViewLongClickable()).isTrue();
+    assertThat(mMountItem.isViewFocusable()).isFalse();
+    assertThat(mMountItem.isViewSelected()).isFalse();
+
+    view.setClickable(false);
+    view.setEnabled(false);
+    view.setLongClickable(false);
+    view.setFocusable(true);
+    view.setSelected(true);
+
+    mMountItem = new MountItem();
+    mMountItem.init(
+        mComponent,
+        mComponentHost,
+        view,
+        mNodeInfo,
+        null,
+        null,
+        mFlags,
+        IMPORTANT_FOR_ACCESSIBILITY_YES,
+        null);
+
+    assertThat(mMountItem.isViewClickable()).isFalse();
+    assertThat(mMountItem.isViewEnabled()).isFalse();
+    assertThat(mMountItem.isViewLongClickable()).isFalse();
+    assertThat(mMountItem.isViewFocusable()).isTrue();
+    assertThat(mMountItem.isViewSelected()).isTrue();
   }
 
   @Test
@@ -205,6 +289,23 @@ public class MountItemTest {
   @Test
   public void testIsAccessibleWithNonAccessibleComponent() {
     assertThat(mMountItem.isAccessible()).isFalse();
+  }
+
+  @Test
+  public void testUpdateDoesntChangeFlags() {
+    LayoutOutput layoutOutput = new LayoutOutput();
+    layoutOutput.setNodeInfo(mNodeInfo);
+    final MountItem mountItem = new MountItem();
+    View view = new View(RuntimeEnvironment.application);
+
+    mountItem.init(mComponent, mComponentHost, view, layoutOutput, null);
+
+    assertThat(mountItem.isViewClickable()).isFalse();
+
+    view.setClickable(true);
+
+    mountItem.update(layoutOutput);
+    assertThat(mountItem.isViewClickable()).isFalse();
   }
 
   @Test

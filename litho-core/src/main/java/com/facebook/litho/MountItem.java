@@ -59,13 +59,31 @@ class MountItem {
   // Flags that track view-related behaviour of mounted view content.
   private int mMountViewFlags;
 
-  void init(LayoutOutput layoutOutput, MountItem mountItem) {
-    init(
-        layoutOutput.getComponent(),
-        mountItem.getHost(),
-        mountItem.getContent(),
-        layoutOutput,
-        mountItem.getDisplayListDrawable());
+  /**
+   * Call this method when assigning a new {@link LayoutOutput} to an existing MountItem. In this
+   * case we don't want to update mMountViewFlags since those flags are only used to determine the
+   * initial state of the view content, which we will have already done in init(). If it is done
+   * again now some of the values may be wrong (e.g. the Litho framework may add a click listener to
+   * a view that was not originally clickable.
+   */
+  void update(LayoutOutput layoutOutput) {
+    mComponent = layoutOutput.getComponent();
+    mLayoutFlags = layoutOutput.getFlags();
+    mImportantForAccessibility = layoutOutput.getImportantForAccessibility();
+    mDisplayListDrawable =
+        acquireDisplayListDrawableIfNeeded(
+            mContent, layoutOutput.getDisplayListContainer(), mDisplayListDrawable);
+    mTransitionKey = layoutOutput.getTransitionKey();
+
+    releaseNodeInfos();
+
+    if (layoutOutput.getNodeInfo() != null) {
+      mNodeInfo = layoutOutput.getNodeInfo().acquireRef();
+    }
+
+    if (layoutOutput.getViewNodeInfo() != null) {
+      mViewNodeInfo = layoutOutput.getViewNodeInfo().acquireRef();
+    }
   }
 
   void init(
@@ -99,6 +117,10 @@ class MountItem {
       int layoutFlags,
       int importantForAccessibility,
       String transitionKey) {
+    if (mHost != null) {
+      throw new RuntimeException("Calling init() on a MountItem that has not been released!");
+    }
+
     mComponent = component;
     mContent = content;
     mHost = host;
@@ -107,18 +129,8 @@ class MountItem {
     mDisplayListDrawable = displayListDrawable;
     mTransitionKey = transitionKey;
 
-    if (mNodeInfo != null) {
-      mNodeInfo.release();
-      mNodeInfo = null;
-    }
-
     if (nodeInfo != null) {
       mNodeInfo = nodeInfo.acquireRef();
-    }
-
-    if (mViewNodeInfo != null) {
-      mViewNodeInfo.release();
-      mViewNodeInfo = null;
     }
 
     if (viewNodeInfo != null) {
@@ -254,15 +266,7 @@ class MountItem {
       mDisplayListDrawable = null;
     }
 
-    if (mNodeInfo != null) {
-      mNodeInfo.release();
-      mNodeInfo = null;
-    }
-
-    if (mViewNodeInfo != null) {
-      mViewNodeInfo.release();
-      mViewNodeInfo = null;
-    }
+    releaseNodeInfos();
 
     mComponent = null;
     mHost = null;
@@ -272,6 +276,18 @@ class MountItem {
     mIsBound = false;
     mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
     mTransitionKey = null;
+  }
+
+  private void releaseNodeInfos() {
+    if (mNodeInfo != null) {
+      mNodeInfo.release();
+      mNodeInfo = null;
+    }
+
+    if (mViewNodeInfo != null) {
+      mViewNodeInfo.release();
+      mViewNodeInfo = null;
+    }
   }
 
   static boolean isDuplicateParentState(int flags) {

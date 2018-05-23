@@ -869,7 +869,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     // 4. Re initialize the MountItem internal state with the new attributes from LayoutOutput
-    currentMountItem.init(layoutOutput, currentMountItem);
+    currentMountItem.update(layoutOutput);
 
     // 5. If the mount item is not valid for this component update its content and view attributes.
     if (shouldUpdate) {
