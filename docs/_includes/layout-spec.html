@@ -4,8 +4,8 @@
     </header>
     <article class="post-content">
         <div class="toggler">
-            <a href="javascript:void(0);" class="button-layout-spec-java" onclick="display('configuration', 'layout-spec-java')">Java</a>
-            <a href="javascript:void(0);" class="button-layout-spec-kt" onclick="display('configuration', 'layout-spec-kt')">Kotlin</a>
+            <a href="#doc-layout-spec-java" class="toggler-button active">Java</a>
+            <a href="#doc-layout-spec-kt" class="toggler-button">Kotlin</a>
         </div>
         {{ content }}
         <block class="layout-spec-java layout-spec-kt" />
@@ -15,13 +15,4 @@
     </article>
     {% include doc_paging.html %}
 </div>
-<script type="text/javascript" src="scripts/code_language_toggler.js"></script>
-<script>
-    CODE_LANGUAGE_TOGGLER.init(window, document, ['layout-spec-java', 'layout-spec-kt'])
-    CODE_LANGUAGE_TOGGLER.initBlocks()
-    CODE_LANGUAGE_TOGGLER.loadFromHash()
-
-    function display(type, value) {
-        CODE_LANGUAGE_TOGGLER.display(type, value)
-    }
-</script>
+<script src="/js/code-toggler.js"></script>

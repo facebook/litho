@@ -1,5 +1,3 @@
-<block class="gradle" />
-
 ## Adding Litho to your Project
 
 We publish the Litho artifacts to Bintray's JCenter. To include Litho to your

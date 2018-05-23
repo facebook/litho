@@ -4,25 +4,15 @@
   </header>
   <article class="post-content">
     <div class="toggler">
-      <a href="javascript:void(0);" class="button-gradle" onclick="display('configuration', 'gradle')">Gradle/Java</a>
-      <a href="javascript:void(0);" class="button-gradle-kt" onclick="display('configuration', 'gradle-kt')">Gradle/Kotlin</a>
-      <a href="javascript:void(0);" class="button-buck" onclick="display('configuration', 'buck')">Buck/Java</a>
-      <a href="javascript:void(0);" class="button-testing-java" onclick="display('configuration', 'testing-java')">Testing/Java</a>
-      <a href="javascript:void(0);" class="button-testing-kt" onclick="display('configuration', 'testing-kt')">Testing/Kotlin</a>
+      <a href="#doc-gradle" class="toggler-button active">Gradle/Java</a>
+      <a href="#doc-gradle-kt" class="toggler-button">Gradle/Kotlin</a>
+      <a href="#doc-buck" class="toggler-button">Buck/Java</a>
+      <a href="#doc-testing-java" class="toggler-button">Testing/Java</a>
+      <a href="#doc-testing-kt" class="toggler-button">Testing/Kotlin</a>
     </div>
     {{ content }}
-    <block class="gradle gradle-kt buck testing-java testing-kt" />
     <p><a class="edit-page-link" href="https://github.com/{{ site.ghrepo }}/tree/master/docs/{{ page.path }}" target="_blank">Edit on GitHub</a></p>
   </article>
   {% include doc_paging.html %}
 </div>
-<script type="text/javascript" src="scripts/code_language_toggler.js"></script>
-<script>
-  CODE_LANGUAGE_TOGGLER.init(window, document, ['gradle','gradle-kt','buck','testing-java','testing-kt'])
-  CODE_LANGUAGE_TOGGLER.initBlocks()
-  CODE_LANGUAGE_TOGGLER.loadFromHash()
-
-  function display(type, value) {
-    CODE_LANGUAGE_TOGGLER.display(type, value)
-  }
-</script>
+<script src="/js/code-toggler.js" async></script>

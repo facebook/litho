@@ -1,5 +1,3 @@
-<block class="gradle-kt" />
-
 ## Adding Litho to your Kotlin Project
 
 > IMPORTANT: Kotlin support Litho is experimental at this point. You will

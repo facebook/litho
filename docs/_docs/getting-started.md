@@ -11,8 +11,18 @@ permalink: /docs/getting-started
 {% capture testing-java %}{% include_relative getting-started/testing-java.md %}{% endcapture %}
 {% capture testing-kt %}{% include_relative getting-started/testing-kt.md %}{% endcapture %}
 
-{{ gradle | markdownify }}
-{{ gradle-kt | markdownify }}
-{{ buck | markdownify }}
-{{ testing-java | markdownify }}
-{{ testing-kt | markdownify }}
+<article class="code-block active" id="doc-gradle">
+    {{ gradle | markdownify }}
+</article>
+<article class="code-block" id="doc-gradle-kt">
+    {{ gradle-kt | markdownify }}
+</article>
+<article class="code-block" id="doc-buck">
+    {{ buck | markdownify }}
+</article>
+<article class="code-block" id="doc-testing">
+    {{ testing-java | markdownify }}
+</article>
+<article class="code-block" id="doc-testing-kt">
+    {{ testing-kt | markdownify }}
+</article>

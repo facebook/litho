@@ -1,5 +1,3 @@
-<block class="testing-kt" />
-
 ## Testing your Installation
 
 You can test your install by adding a view created with Litho to an activity.

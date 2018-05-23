@@ -8,5 +8,9 @@ permalink: /docs/layout-specs
 {% capture layout-spec-java %}{% include_relative layout-specs/layout-spec-java.md %}{% endcapture %}
 {% capture layout-spec-kt %}{% include_relative layout-specs/layout-spec-kt.md %}{% endcapture %}
 
-{{ layout-spec-java | markdownify }}
-{{ layout-spec-kt | markdownify }}
+<article class="code-block active" id="doc-layout-spec-java">
+    {{ layout-spec-java | markdownify }}
+</article>
+<article class="code-block" id="doc-layout-spec-kt">
+    {{ layout-spec-kt | markdownify }}
+</article>

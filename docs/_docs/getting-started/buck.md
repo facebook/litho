@@ -1,5 +1,3 @@
-<block class="buck" />
-
 ## Adding Litho to your Project
 
 You can include Litho to your Android project via Buck by adding the following to your `BUCK` file:
