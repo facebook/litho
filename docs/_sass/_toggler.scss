@@ -34,7 +34,13 @@
 
 .display-configuration-gradle .toggler .button-gradle,
 .display-configuration-gradle-kt .toggler .button-gradle-kt,
-.display-configuration-buck .toggler .button-buck {
+.display-configuration-buck .toggler .button-buck,
+.display-configuration-testing-java .toggler .button-testing-java,
+.display-configuration-testing-kt .toggler .button-testing-kt,
+// Layout Specs
+.display-configuration-layout-spec-java .toggler .button-layout-spec-java,
+.display-configuration-layout-spec-kt .toggler .button-layout-spec-kt,
+{
   background: darken($litho-dark, 10%) !important;
   color: #fff !important;
 }
@@ -43,6 +49,11 @@ block {
 }
 .display-configuration-gradle .gradle,
 .display-configuration-gradle-kt .gradle-kt,
-.display-configuration-buck .buck {
+.display-configuration-buck .buck,
+.display-configuration-testing-java .testing-java,
+.display-configuration-testing-kt .testing-kt,
+// Layout Specs
+.display-configuration-layout-spec-java .layout-spec-java,
+.display-configuration-layout-spec-kt .layout-spec-kt, {
   display: block;
 }
