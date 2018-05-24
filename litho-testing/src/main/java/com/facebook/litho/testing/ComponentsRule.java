@@ -61,7 +61,7 @@ public class ComponentsRule implements TestRule {
    * TODO natthu: this is just a hack around a BUCK issue whereby BUCK only generates random array
    * values. Component tests require the correct values for the ComponentLayout styleable array in
    * order to bind props to the layout. The array that we define here needs to be kept up-to-date
-   * with the array defined in //android_res/com/facebook/components/res/values/attrs.xml.
+   * with the attrs defined in litho-core/src/main/res/*attrs.xml files.
    */
   static void setComponentStyleableAttributes() {
 
@@ -114,6 +114,7 @@ public class ComponentsRule implements TestRule {
           android.R.attr.textColorLink,
           android.R.attr.textColorHighlight,
           android.R.attr.textSize,
+          android.R.attr.lineSpacingExtra,
           android.R.attr.lineSpacingMultiplier,
           android.R.attr.ellipsize,
           android.R.attr.textAlignment,

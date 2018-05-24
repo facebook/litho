@@ -29,6 +29,7 @@
     <attr name="android:textColorLink" />
     <attr name="android:textColorHighlight" />
     <attr name="android:textSize" />
+    <attr name="android:lineSpacingExtra" />
     <attr name="android:lineSpacingMultiplier" />
     <attr name="android:ellipsize" />
     <attr name="android:textAlignment" />

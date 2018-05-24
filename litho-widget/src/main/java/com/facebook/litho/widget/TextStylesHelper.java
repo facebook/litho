@@ -54,6 +54,7 @@ public final class TextStylesHelper {
   public static void onLoadStyle(
       ComponentContext c,
       Output<TruncateAt> ellipsize,
+      Output<Float> extraSpacing,
       Output<Boolean> shouldIncludeFontPadding,
       Output<Float> spacingMultiplier,
       Output<Integer> minLines,
@@ -94,6 +95,7 @@ public final class TextStylesHelper {
       resolveStyleAttrsForTypedArray(
           a,
           ellipsize,
+          extraSpacing,
           shouldIncludeFontPadding,
           spacingMultiplier,
           minLines,
@@ -127,6 +129,7 @@ public final class TextStylesHelper {
     resolveStyleAttrsForTypedArray(
         a,
         ellipsize,
+        extraSpacing,
         shouldIncludeFontPadding,
         spacingMultiplier,
         minLines,
@@ -159,6 +162,7 @@ public final class TextStylesHelper {
   private static void resolveStyleAttrsForTypedArray(
       TypedArray a,
       Output<TruncateAt> ellipsize,
+      Output<Float> extraSpacing,
       Output<Boolean> shouldIncludeFontPadding,
       Output<Float> spacingMultiplier,
       Output<Integer> minLines,
@@ -224,6 +228,8 @@ public final class TextStylesHelper {
         highlightColor.set(a.getColor(attr, 0));
       } else if (attr == R.styleable.Text_android_textStyle) {
         textStyle.set(a.getInteger(attr, 0));
+      } else if (attr == R.styleable.Text_android_lineSpacingExtra) {
+        extraSpacing.set(Float.valueOf(a.getDimensionPixelOffset(attr, 0)));
       } else if (attr == R.styleable.Text_android_lineSpacingMultiplier) {
         spacingMultiplier.set(a.getFloat(attr, 0));
       } else if (attr == R.styleable.Text_android_shadowDx) {

@@ -180,6 +180,7 @@ class TextSpec {
   static void onLoadStyle(
       ComponentContext c,
       Output<TruncateAt> ellipsize,
+      Output<Float> extraSpacing,
       Output<Boolean> shouldIncludeFontPadding,
       Output<Float> spacingMultiplier,
       Output<Integer> minLines,
@@ -209,6 +210,7 @@ class TextSpec {
     TextStylesHelper.onLoadStyle(
         c,
         ellipsize,
+        extraSpacing,
         shouldIncludeFontPadding,
         spacingMultiplier,
         minLines,
