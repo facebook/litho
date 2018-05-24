@@ -34,7 +34,6 @@ class MountItem {
   static final int LAYOUT_FLAG_DUPLICATE_PARENT_STATE = 1 << 0;
   static final int LAYOUT_FLAG_DISABLE_TOUCHABLE = 1 << 1;
   static final int LAYOUT_FLAG_MATCH_HOST_BOUNDS = 1 << 2;
-  static final int LAYOUT_FLAG_ONLY_SUPPORT_DISAPPEARING = 1 << 3;
 
   private static final int FLAG_VIEW_CLICKABLE = 1 << 0;
   private static final int FLAG_VIEW_LONG_CLICKABLE = 1 << 1;
@@ -244,18 +243,6 @@ class MountItem {
 
     return (mNodeInfo != null && mNodeInfo.needsAccessibilityDelegate())
         || mComponent.implementsAccessibility();
-  }
-
-  void setOnlySupportsDisappearing(boolean onlySupportsDisappearing) {
-    if (onlySupportsDisappearing) {
-      mLayoutFlags |= LAYOUT_FLAG_ONLY_SUPPORT_DISAPPEARING;
-    } else {
-      mLayoutFlags &= (~LAYOUT_FLAG_ONLY_SUPPORT_DISAPPEARING);
-    }
-  }
-
-  boolean onlySupportsDisappearing() {
-    return (mLayoutFlags & LAYOUT_FLAG_ONLY_SUPPORT_DISAPPEARING) != 0;
   }
 
   void release(ComponentContext context) {

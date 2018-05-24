@@ -139,9 +139,8 @@ public class MountItemTest {
 
     assertThat(MountItem.isDuplicateParentState(mMountItem.getLayoutFlags())).isTrue();
     assertThat(MountItem.isTouchableDisabled(mMountItem.getLayoutFlags())).isTrue();
-    assertThat(mMountItem.onlySupportsDisappearing()).isFalse();
 
-    mFlags = MountItem.LAYOUT_FLAG_ONLY_SUPPORT_DISAPPEARING;
+    mFlags = 0;
     mMountItem = new MountItem();
     mMountItem.init(
         mComponent,
@@ -156,7 +155,6 @@ public class MountItemTest {
 
     assertThat(MountItem.isDuplicateParentState(mMountItem.getLayoutFlags())).isFalse();
     assertThat(MountItem.isTouchableDisabled(mMountItem.getLayoutFlags())).isFalse();
-    assertThat(mMountItem.onlySupportsDisappearing()).isTrue();
   }
 
   @Test
