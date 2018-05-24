@@ -110,13 +110,6 @@ public class ComponentsConfiguration {
    */
   public static boolean insertPostAsyncLayout = false;
 
-  /**
-   * If false, global keys will not be generated (litho level state updates won't work). It's highly
-   * discouraged to to change this to false, unless you handle all your updates outside of the litho
-   * framework
-   */
-  public static boolean useGlobalKeys = true;
-
   /** If true then the new version of the YogaEdgeWithInts will be used. */
   public static boolean useNewYogaEdge = false;
 
@@ -171,12 +164,6 @@ public class ComponentsConfiguration {
 
   /** Assign transition keys to all LayoutOutputs, this enables Transition.allLayout() */
   public static boolean assignTransitionKeysToAllOutputs = false;
-
-  /**
-   * If false, we won't create state handlers. It's highly discouraged to to change this to false,
-   * unless you handle all your updates outside of the litho framework
-   */
-  public static boolean useStateHandlers = true;
 
   /** Enable workaround for double measure with different widths bug in Android. */
   public static boolean doubleMeasureCorrection = false;
