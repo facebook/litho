@@ -24,7 +24,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-import android.os.Handler;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,13 +37,11 @@ public class ViewportManagerTest {
 
   private LayoutInfo mLayoutInfo;
   private ViewportInfo.ViewportChanged mViewportChangedListener;
-  private Handler mMainThreadHandler;
 
   @Before
   public void setup() {
     mLayoutInfo = mock(LayoutInfo.class);
     mViewportChangedListener = mock(ViewportInfo.ViewportChanged.class);
-    mMainThreadHandler = mock(Handler.class);
   }
 
   @Test
@@ -243,8 +240,7 @@ public class ViewportManagerTest {
 
   private ViewportManager getViewportManager(int firstVisiblePosition, int lastVisiblePosition) {
     ViewportManager viewportManager =
-        new ViewportManager(
-            firstVisiblePosition, lastVisiblePosition, mLayoutInfo, mMainThreadHandler);
+        new ViewportManager(firstVisiblePosition, lastVisiblePosition, mLayoutInfo);
     viewportManager.addViewportChangedListener(mViewportChangedListener);
 
     return viewportManager;

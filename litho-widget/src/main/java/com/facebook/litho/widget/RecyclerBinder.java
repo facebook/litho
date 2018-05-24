@@ -80,6 +80,7 @@ public class RecyclerBinder
   private static final int UNINITIALIZED = -1;
   private static final Size sDummySize = new Size();
   private static final String TAG = RecyclerBinder.class.getSimpleName();
+  private static final int POST_UPDATE_VIEWPORT_AND_COMPUTE_RANGE_MAX_ATTEMPTS = 3;
 
   @GuardedBy("this")
   private final List<ComponentTreeHolder> mComponentTreeHolders = new ArrayList<>();
@@ -193,8 +194,8 @@ public class RecyclerBinder
   private int mLastHeightSpec = UNINITIALIZED;
   private Size mMeasuredSize;
   private RecyclerView mMountedView;
-  private int mCurrentFirstVisiblePosition = RecyclerView.NO_POSITION;
-  private int mCurrentLastVisiblePosition = RecyclerView.NO_POSITION;
+  @VisibleForTesting int mCurrentFirstVisiblePosition = RecyclerView.NO_POSITION;
+  @VisibleForTesting int mCurrentLastVisiblePosition = RecyclerView.NO_POSITION;
   private int mCurrentOffset;
   private @Nullable RangeCalculationResult mRange;
   private StickyHeaderController mStickyHeaderController;
@@ -207,7 +208,7 @@ public class RecyclerBinder
   @GuardedBy("this")
   private @Nullable AsyncBatch mCurrentBatch = null;
 
-  private final ViewportManager mViewportManager;
+  @VisibleForTesting final ViewportManager mViewportManager;
   private final ViewportChanged mViewportChangedListener =
       new ViewportChanged() {
         @Override
@@ -222,18 +223,21 @@ public class RecyclerBinder
               firstVisibleIndex, lastVisibleIndex, firstFullyVisibleIndex, lastFullyVisibleIndex);
         }
       };
-  private int mCountPostComputeRangeRunnableOnAnimation;
+  private int mPostUpdateViewportAndComputeRangeAttempts;
 
   @VisibleForTesting final RenderInfoViewCreatorController mRenderInfoViewCreatorController;
 
-  private Runnable mComputeRangeRunnable =
+  private final Runnable mUpdateViewportAndComputeRangeRunnable =
       new Runnable() {
         @Override
         public void run() {
           // If mount hasn't happened or we don't have any pending updates, we're ready to compute
           // range.
           if (mMountedView == null || !mMountedView.hasPendingAdapterUpdates()) {
-            mCountPostComputeRangeRunnableOnAnimation = 0;
+            if (mViewportManager.shouldUpdate()) {
+              mViewportManager.onViewportChanged(State.DATA_CHANGES);
+            }
+            mPostUpdateViewportAndComputeRangeAttempts = 0;
             computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
             return;
           }
@@ -243,21 +247,25 @@ public class RecyclerBinder
           // to exit here, otherwise we keep posting this runnable to the next frame until it
           // becomes visible.
           if (!mMountedView.isAttachedToWindow() || mMountedView.getVisibility() == View.GONE) {
+            mPostUpdateViewportAndComputeRangeAttempts = 0;
             return;
           }
 
-          if (mCountPostComputeRangeRunnableOnAnimation >= 3) {
-            mCountPostComputeRangeRunnableOnAnimation = 0;
+          if (mPostUpdateViewportAndComputeRangeAttempts
+              >= POST_UPDATE_VIEWPORT_AND_COMPUTE_RANGE_MAX_ATTEMPTS) {
+            mPostUpdateViewportAndComputeRangeAttempts = 0;
             logTooManyPostingAttempts();
+            if (mViewportManager.shouldUpdate()) {
+              mViewportManager.onViewportChanged(State.DATA_CHANGES);
+            }
             computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
-
             return;
           }
 
           // If we have pending updates, wait until the sync operations are finished and try again
           // in the next frame.
-          mCountPostComputeRangeRunnableOnAnimation++;
-          ViewCompat.postOnAnimation(mMountedView, mComputeRangeRunnable);
+          mPostUpdateViewportAndComputeRangeAttempts++;
+          ViewCompat.postOnAnimation(mMountedView, mUpdateViewportAndComputeRangeRunnable);
         }
       };
 
@@ -497,10 +505,7 @@ public class RecyclerBinder
 
     mViewportManager =
         new ViewportManager(
-            mCurrentFirstVisiblePosition,
-            mCurrentLastVisiblePosition,
-            builder.layoutInfo,
-            mMainThreadHandler);
+            mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition, builder.layoutInfo);
 
     mSplitLayoutTag = builder.splitLayoutTag;
   }
@@ -1122,7 +1127,7 @@ public class RecyclerBinder
       }
     }
 
-    maybePostComputeRange();
+    maybePostUpdateViewportAndComputeRange();
   }
 
   /**
@@ -1984,7 +1989,8 @@ public class RecyclerBinder
   void onNewVisibleRange(int firstVisiblePosition, int lastVisiblePosition) {
     mCurrentFirstVisiblePosition = firstVisiblePosition;
     mCurrentLastVisiblePosition = lastVisiblePosition;
-    maybePostComputeRange();
+    mViewportManager.resetShouldUpdate();
+    maybePostUpdateViewportAndComputeRange();
   }
 
   @VisibleForTesting
@@ -2017,11 +2023,14 @@ public class RecyclerBinder
     }
   }
 
-  private void maybePostComputeRange() {
-    if ((ComponentsConfiguration.insertPostAsyncLayout || mInsertPostAsyncLayoutEnabled)
-        && mMountedView != null) {
-      mMountedView.removeCallbacks(mComputeRangeRunnable);
-      ViewCompat.postOnAnimation(mMountedView, mComputeRangeRunnable);
+  private void maybePostUpdateViewportAndComputeRange() {
+    if (mMountedView != null
+        && (ComponentsConfiguration.insertPostAsyncLayout
+            || mInsertPostAsyncLayoutEnabled
+            || mViewportManager.shouldUpdate())) {
+      mPostUpdateViewportAndComputeRangeAttempts = 0;
+      mMountedView.removeCallbacks(mUpdateViewportAndComputeRangeRunnable);
+      ViewCompat.postOnAnimation(mMountedView, mUpdateViewportAndComputeRangeRunnable);
     } else {
       computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
     }
@@ -2402,6 +2411,9 @@ public class RecyclerBinder
         messageBuilder.append("; ");
         messageBuilder.append("adapter has updates: ");
         messageBuilder.append(mMountedView.hasPendingAdapterUpdates());
+        messageBuilder.append("; ");
+        messageBuilder.append("viewport should update: ");
+        messageBuilder.append(mViewportManager.shouldUpdate());
         messageBuilder.append("; ");
         messageBuilder.append("mMountedView requested layout: ");
         messageBuilder.append(mMountedView.isLayoutRequested());

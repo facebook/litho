@@ -16,7 +16,6 @@
 
 package com.facebook.litho.widget;
 
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.v7.widget.RecyclerView;
@@ -43,34 +42,21 @@ final class ViewportManager {
   private int mCurrentFirstFullyVisiblePosition;
   private int mCurrentLastFullyVisiblePosition;
   private int mTotalItemCount;
-  /** Whether first/last visible positions should be updated */
   private boolean mShouldUpdate;
 
   @Nullable private List<ViewportChanged> mViewportChangedListeners;
 
   private final LayoutInfo mLayoutInfo;
-  private final Handler mMainThreadHandler;
   private final ViewportScrollListener mViewportScrollListener = new ViewportScrollListener();
-  private final Runnable mViewportChangedRunnable =
-      new Runnable() {
-        @Override
-        public void run() {
-          onViewportChanged(ViewportInfo.State.DATA_CHANGES);
-        }
-      };
 
   ViewportManager(
-      int currentFirstVisiblePosition,
-      int currentLastVisiblePosition,
-      LayoutInfo layoutInfo,
-      Handler mainThreadHandler) {
+      int currentFirstVisiblePosition, int currentLastVisiblePosition, LayoutInfo layoutInfo) {
     mCurrentFirstVisiblePosition = currentFirstVisiblePosition;
     mCurrentLastVisiblePosition = currentLastVisiblePosition;
     mCurrentFirstFullyVisiblePosition = layoutInfo.findFirstFullyVisibleItemPosition();
     mCurrentLastFullyVisiblePosition = layoutInfo.findLastFullyVisibleItemPosition();
     mTotalItemCount = layoutInfo.getItemCount();
     mLayoutInfo = layoutInfo;
-    mMainThreadHandler = mainThreadHandler;
   }
 
   /**
@@ -103,6 +89,7 @@ final class ViewportManager {
     mCurrentFirstFullyVisiblePosition = firstFullyVisibleItemPosition;
     mCurrentLastFullyVisiblePosition = lastFullyVisibleItemPosition;
     mTotalItemCount = totalItemCount;
+    mShouldUpdate = false;
 
     if (mViewportChangedListeners == null || mViewportChangedListeners.isEmpty()) {
       return;
@@ -117,16 +104,16 @@ final class ViewportManager {
           lastFullyVisibleItemPosition,
           state);
     }
-
-    mShouldUpdate = false;
   }
 
   @UiThread
   void setShouldUpdate(boolean shouldUpdate) {
     mShouldUpdate = mShouldUpdate || shouldUpdate;
-    if (mShouldUpdate) {
-      putViewportChangedRunnableToEndOfUIThreadQueue();
-    }
+  }
+
+  @UiThread
+  void resetShouldUpdate() {
+    mShouldUpdate = false;
   }
 
   @UiThread
@@ -182,13 +169,13 @@ final class ViewportManager {
     return position <= mCurrentLastVisiblePosition;
   }
 
-  private boolean shouldUpdate() {
+  /**
+   * Whether first/last visible positions should be updated. If this returns true, we should not do
+   * any computations based on current first/last visible positions until they are updated.
+   */
+  @UiThread
+  boolean shouldUpdate() {
     return mCurrentFirstVisiblePosition < 0 || mCurrentLastVisiblePosition < 0 || mShouldUpdate;
-  }
-
-  private void putViewportChangedRunnableToEndOfUIThreadQueue() {
-    mMainThreadHandler.removeCallbacks(mViewportChangedRunnable);
-    mMainThreadHandler.post(mViewportChangedRunnable);
   }
 
   @UiThread

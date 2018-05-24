@@ -1065,6 +1065,65 @@ public class RecyclerBinderTest {
     assertThat(holderMovedOutsideRange.mDidAcquireStateHandler).isTrue();
   }
 
+  void changeViewportTo(int firstVisiblePosition, int lastVisiblePosition) {
+    when(mLayoutInfo.findFirstVisibleItemPosition()).thenReturn(firstVisiblePosition);
+    when(mLayoutInfo.findLastVisibleItemPosition()).thenReturn(lastVisiblePosition);
+
+    mRecyclerBinder.mViewportManager.onViewportChanged(ViewportInfo.State.DATA_CHANGES);
+  }
+
+  @Test
+  public void testRemoveRangeAboveTheViewport() {
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
+    RecyclerView recyclerView = new RecyclerView(RuntimeEnvironment.application);
+    mRecyclerBinder.mount(recyclerView);
+
+    final int firstVisible = 40;
+    final int lastVisible = 50;
+    int rangeSize = lastVisible - firstVisible;
+
+    changeViewportTo(firstVisible, lastVisible);
+
+    assertThat(mRecyclerBinder.mViewportManager.shouldUpdate()).isFalse();
+
+    int removeRangeSize = rangeSize;
+    // Remove above the visible range
+    mRecyclerBinder.removeRangeAt(0, removeRangeSize);
+    mRecyclerBinder.notifyChangeSetComplete();
+
+    assertThat(mRecyclerBinder.mViewportManager.shouldUpdate()).isTrue();
+
+    // compute range not yet updated, range will be updated in next frame
+    assertThat(mRecyclerBinder.mCurrentFirstVisiblePosition).isEqualTo(firstVisible);
+    assertThat(mRecyclerBinder.mCurrentLastVisiblePosition).isEqualTo(lastVisible);
+  }
+
+  @Test
+  public void testRemoveRangeBelowTheViewport() {
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
+    RecyclerView recyclerView = new RecyclerView(RuntimeEnvironment.application);
+    mRecyclerBinder.mount(recyclerView);
+
+    final int firstVisible = 40;
+    final int lastVisible = 50;
+    int rangeSize = lastVisible - firstVisible;
+
+    changeViewportTo(firstVisible, lastVisible);
+
+    assertThat(mRecyclerBinder.mViewportManager.shouldUpdate()).isFalse();
+
+    int removeRangeSize = rangeSize;
+    // Remove below the visible range
+    mRecyclerBinder.removeRangeAt(lastVisible + 1, removeRangeSize);
+    mRecyclerBinder.notifyChangeSetComplete();
+
+    assertThat(mRecyclerBinder.mViewportManager.shouldUpdate()).isFalse();
+
+    // compute range has been updated and range did not change
+    assertThat(mRecyclerBinder.mCurrentFirstVisiblePosition).isEqualTo(firstVisible);
+    assertThat(mRecyclerBinder.mCurrentLastVisiblePosition).isEqualTo(lastVisible);
+  }
+
   @Test
   public void testInsertInRange() {
     final List<ComponentRenderInfo> components = prepareLoadedBinder();
