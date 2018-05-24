@@ -100,13 +100,27 @@ public class PropDefaultsExtractor {
 
     final String methodName = methodElement.getSimpleName().toString();
 
-    // If it looks like a KAPT and quacks like a KAPT ...
-    if (!methodName.endsWith("$annotations")
-        || methodElement.getReturnType().getKind() != TypeKind.VOID) {
-      return ImmutableList.of();
+    boolean isPropDefaultWithoutGet = methodName.endsWith("$annotations") &&
+        methodElement.getReturnType().getKind() == TypeKind.VOID;
+
+    final String baseName;
+
+    /*
+    * In case an [@PropDefault] annotated variable does not include `get` on the Kotlin
+    * annotation, we fallback to the previous method of identifying `PropDefault` values.
+    * Note here that this method is deprecated and might be removed from KAPT some time in
+    * future.
+    *
+    * If a user annotates that variable with `@get:PropDefault` we identify the
+    * `PropDefault` values through the accompanying `get` method of that variable.
+    * */
+    if (isPropDefaultWithoutGet) {
+      baseName = methodName.subSequence(0, methodName.indexOf('$')).toString();
+    } else {
+      String pureElementName = methodName.replaceFirst("get", "");
+      baseName = pureElementName.substring(0, 1).toLowerCase() + pureElementName.substring(1);
     }
 
-    final String baseName = methodName.subSequence(0, methodName.indexOf('$')).toString();
     final Optional<? extends Element> element =
         enclosedElement
             .getEnclosingElement()
