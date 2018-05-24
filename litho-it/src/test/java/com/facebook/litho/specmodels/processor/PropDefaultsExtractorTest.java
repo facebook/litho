@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.processor;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.annotations.PropDefault;
+import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.google.testing.compile.CompilationRule;
@@ -30,17 +31,41 @@ import org.junit.Test;
 public class PropDefaultsExtractorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 
-  static class TestClass {
+  static class TestClassWithoutGetAnnotation {
     private static final String title = "PROP_DEFAULT";
 
     @PropDefault
     public static void title$annotations() {}
   }
 
+  static class TestClassWithGet {
+    private static final String title = "PROP_DEFAULT";
+
+    @PropDefault
+    public final String getTitle() {
+      return title;
+    }
+  }
+
   @Test
-  public void testKotlinPropDefaultsExtraction() {
+  public void testKotlinPropDefaultsExtractionWithoutGetAnnotation() {
     final Elements elements = mCompilationRule.getElements();
-    final TypeElement element = elements.getTypeElement(TestClass.class.getCanonicalName());
+    final TypeElement element = elements
+        .getTypeElement(TestClassWithoutGetAnnotation.class.getCanonicalName());
+
+    final ImmutableList<PropDefaultModel> propDefaults =
+        PropDefaultsExtractor.getPropDefaults(element);
+
+    assertThat(propDefaults).hasSize(1);
+
+    assertThat(propDefaults.get(0).getName()).isEqualTo("title");
+  }
+
+  @Test
+  public void testKotlinPropDefaultsExtractionWithGetAnnotation() {
+    final Elements elements = mCompilationRule.getElements();
+    final TypeElement element = elements
+        .getTypeElement(TestClassWithGet.class.getCanonicalName());
 
     final ImmutableList<PropDefaultModel> propDefaults =
         PropDefaultsExtractor.getPropDefaults(element);
