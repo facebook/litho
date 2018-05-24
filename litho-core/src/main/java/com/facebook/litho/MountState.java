@@ -64,6 +64,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.reference.Reference;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1000,7 +1001,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       prepareEvent = logger.newPerformanceEvent(EVENT_PREPARE_MOUNT);
     }
 
-    final PrepareMountStats stats = unmountOrMoveOldItems(layoutState);
+    final List<Integer> disappearingItems = extractDisappearingItems(layoutState);
+    final PrepareMountStats stats = unmountOrMoveOldItems(layoutState, disappearingItems);
 
     if (prepareEvent != null) {
       prepareEvent.addParam(PARAM_LOG_TAG, logTag);
@@ -1057,18 +1059,160 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   /**
-   * Go over all the mounted items from the leaves to the root and unmount only the items that are
-   * not present in the new LayoutOutputs.
-   * If an item is still present but in a new position move the item inside its host.
-   * The condition where an item changed host doesn't need any special treatment here since we
-   * mark them as removed and re-added when calculating the new LayoutOutputs
+   * Takes care of disappearing items from the last mounted layout (re-mounts them to the root if
+   * needed, starts disappearing, removes them from mapping). Returns the list of ids, which for
+   * every disappearing subtree contains a pair [index of the root of the subtree, index of the last
+   * descendant of that subtree]
    */
-  private PrepareMountStats unmountOrMoveOldItems(LayoutState newLayoutState) {
+  private List<Integer> extractDisappearingItems(LayoutState newLayoutState) {
+    if (mLayoutOutputsIds == null) {
+      return Collections.emptyList();
+    }
+
+    List<Integer> indices = null;
+    int index = 0;
+    while (index < mLayoutOutputsIds.length) {
+      if (isItemDisappearing(newLayoutState, index)) {
+        final int lastDescendantIndex = findLastDescendantIndex(mLastMountedLayoutState, index);
+
+        // Go though disappearing subtree, mount everything that is not mounted yet
+        // That's okay to mount here *before* we call unmountOrMoveOldItems() and only passing
+        // last mount LayoutState
+        // This item representing the root of the disappearing subtree will be unmounted immediately
+        // after this cycle is over and will be moved to the root. If any if its parents have been
+        // mounted as well, they will get picked up in unmountOrMoveOldItems()
+        for (int j = index; j <= lastDescendantIndex; j++) {
+          final MountItem mountedItem = getItemAt(j);
+          if (mountedItem != null) {
+            // Item is already mounted - skip
+            continue;
+          }
+          final LayoutOutput layoutOutput = mLastMountedLayoutState.getMountableOutputAt(j);
+          mountLayoutOutput(j, layoutOutput, mLastMountedLayoutState);
+        }
+
+        // Reference to the root of the disappearing subtree
+        final MountItem disappearingItem = getItemAt(index);
+
+        // Moving item to the root
+        remountComponentHostToRootIfNeeded(index);
+
+        // Removing references of all the items of the disappearing subtree from mIndexToItemMap and
+        // mHostsByMaker
+        removeDisappearingItemMappings(index, lastDescendantIndex);
+
+        // Start animating disappearing
+        startUnmountDisappearingItem(disappearingItem, index);
+
+        if (indices == null) {
+          indices = new ArrayList<>(2);
+        }
+        indices.add(index);
+        indices.add(lastDescendantIndex);
+
+        index = lastDescendantIndex + 1;
+      } else {
+        index++;
+      }
+    }
+    return indices != null ? indices : Collections.<Integer>emptyList();
+  }
+
+  private void remountComponentHostToRootIfNeeded(int index) {
+    final ComponentHost rootHost = mHostsByMarker.get(ROOT_HOST_ID);
+    final MountItem item = getItemAt(index);
+    if (item.getHost() == rootHost) {
+      // Already mounted to the root
+      return;
+    }
+
+    final Object content = item.getContent();
+
+    // Before unmounting item get its position inside the root
+    int left = 0;
+    int top = 0;
+    int right;
+    int bottom;
+    // Get left/top position of the item's host first
+    ComponentHost componentHost = item.getHost();
+    while (componentHost != rootHost) {
+      left += componentHost.getLeft();
+      top += componentHost.getTop();
+      componentHost = (ComponentHost) componentHost.getParent();
+    }
+
+    if (content instanceof View) {
+      final View view = (View) content;
+      left += view.getLeft();
+      top += view.getTop();
+      right = left + view.getWidth();
+      bottom = top + view.getHeight();
+    } else {
+      final Rect bounds = ((Drawable) content).getBounds();
+      left += bounds.left;
+      right = left + bounds.width();
+      top += bounds.top;
+      bottom = top + bounds.height();
+    }
+
+    // Unmount from the current host
+    item.getHost().unmount(index, item);
+
+    // Apply new bounds to the content as it will be mounted in the root now
+    applyBoundsToMountContent(content, left, top, right, bottom, false);
+
+    // Mount to the root
+    rootHost.mount(index, item, sTempRect);
+
+    // Set new host to the MountItem
+    item.setHost(rootHost);
+  }
+
+  private void removeDisappearingItemMappings(int fromIndex, int toIndex) {
+    for (int i = fromIndex; i <= toIndex; i++) {
+      final MountItem item = getItemAt(i);
+
+      // We do not need this mapping for disappearing items.
+      mIndexToItemMap.remove(mLayoutOutputsIds[i]);
+
+      // Likewise we no longer need host mapping for disappearing items.
+      if (isHostSpec(item.getComponent())) {
+        mHostsByMarker.removeAt(mHostsByMarker.indexOfValue((ComponentHost) item.getContent()));
+      }
+    }
+  }
+
+  private void startUnmountDisappearingItem(MountItem item, int index) {
+    final String key = item.getTransitionKey();
+    OutputUnitsAffinityGroup<MountItem> disappearingGroup = mDisappearingMountItems.get(key);
+    if (disappearingGroup == null) {
+      disappearingGroup = new OutputUnitsAffinityGroup<>();
+      mDisappearingMountItems.put(key, disappearingGroup);
+    }
+    final @OutputUnitType int type =
+        LayoutStateOutputIdCalculator.getTypeFromId(mLayoutOutputsIds[index]);
+    disappearingGroup.add(type, item);
+
+    final ComponentHost host = item.getHost();
+    host.startUnmountDisappearingItem(index, item);
+  }
+
+  /**
+   * Go over all the mounted items from the leaves to the root and unmount only the items that are
+   * not present in the new LayoutOutputs. If an item is still present but in a new position move
+   * the item inside its host. The condition where an item changed host doesn't need any special
+   * treatment here since we mark them as removed and re-added when calculating the new
+   * LayoutOutputs
+   */
+  private PrepareMountStats unmountOrMoveOldItems(
+      LayoutState newLayoutState, List<Integer> disappearingItems) {
     mPrepareMountStats.reset();
 
     if (mLayoutOutputsIds == null) {
       return mPrepareMountStats;
     }
+
+    int disappearingItemsPointer = 0;
 
     // Traversing from the beginning since mLayoutOutputsIds unmounting won't remove entries there
     // but only from mIndexToItemMap. If an host changes we're going to unmount it and recursively
@@ -1077,33 +1221,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       final int newPosition = newLayoutState.getLayoutOutputPositionForId(mLayoutOutputsIds[i]);
       final MountItem oldItem = getItemAt(i);
 
-      // If an item is being unmounted and is doing a disappearing animation, don't actually unmount
-      // so that we can perform the disappear animation.
-      if (isItemDisappearing(newLayoutState, i)) {
-
-        final int lastDescendantOfItem = findLastDescendantIndex(mLastMountedLayoutState, i);
-
-        for (int j = i; j <= lastDescendantOfItem; j++) {
-          MountItem item = getItemAt(j);
-          if (item == null) {
-            final LayoutOutput layoutOutput = mLastMountedLayoutState.getMountableOutputAt(j);
-            mountLayoutOutput(j, layoutOutput, mLastMountedLayoutState);
-            item = getItemAt(j);
-          }
-
-          final String key = item.getTransitionKey();
-          if (key != null && mTransitionManager.isKeyDisappearing(key)) {
-            startUnmountDisappearingItem(j, key);
-          }
-        }
-
-        // Disassociate disappearing items from current mounted items. The layout tree will not
-        // contain disappearing items anymore, however they are kept separately in their hosts.
-        removeDisappearingItemMappings(i, lastDescendantOfItem);
-
-        // Skip this disappearing item and all its descendants. Do not unmount or move them yet.
-        // We will unmount them after animation is completed.
-        i = lastDescendantOfItem;
+      // Just skip disappearing items here
+      if (disappearingItems.size() > disappearingItemsPointer
+          && disappearingItems.get(disappearingItemsPointer) == i) {
+        // Updating i to the index of the last member of the disappearing subtree, so the whole
+        // subtree will be skipped, as it's been dealt with at extractDisappearingItems()
+        i = disappearingItems.get(disappearingItemsPointer + 1);
+        disappearingItemsPointer += 2;
         continue;
       }
 
@@ -1140,21 +1264,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     return mPrepareMountStats;
-  }
-
-  private void removeDisappearingItemMappings(int fromIndex, int toIndex) {
-    for (int i = fromIndex; i <= toIndex; i++) {
-      final MountItem item = getItemAt(i);
-
-      // We do not need this mapping for disappearing items.
-      mIndexToItemMap.remove(mLayoutOutputsIds[i]);
-
-      // Likewise we no longer need host mapping for disappearing items.
-      if (isHostSpec(item.getComponent())) {
-        mHostsByMarker
-            .removeAt(mHostsByMarker.indexOfValue((ComponentHost) item.getContent()));
-      }
-    }
   }
 
   private void updateMountedContent(
@@ -2219,26 +2328,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       item.setIsBound(false);
     }
     component.unmount(context, content);
-  }
-
-  private void startUnmountDisappearingItem(int index, String key) {
-    final MountItem item = getItemAt(index);
-
-    if (item == null) {
-      throw new RuntimeException("Item at index=" + index +" does not exist");
-    }
-
-    OutputUnitsAffinityGroup<MountItem> disappearingGroup = mDisappearingMountItems.get(key);
-    if (disappearingGroup == null) {
-      disappearingGroup = new OutputUnitsAffinityGroup<>();
-      mDisappearingMountItems.put(key, disappearingGroup);
-    }
-    final @OutputUnitType int type =
-        LayoutStateOutputIdCalculator.getTypeFromId(mLayoutOutputsIds[index]);
-    disappearingGroup.add(type, item);
-
-    final ComponentHost host = item.getHost();
-    host.startUnmountDisappearingItem(index, item);
   }
 
   private void endUnmountDisappearingItem(OutputUnitsAffinityGroup<MountItem> group) {

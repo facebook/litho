@@ -199,6 +199,10 @@ class MountItem {
     return mComponent;
   }
 
+  void setHost(ComponentHost host) {
+    mHost = host;
+  }
+
   ComponentHost getHost() {
     return mHost;
   }
