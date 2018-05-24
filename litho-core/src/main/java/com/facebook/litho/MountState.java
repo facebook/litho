@@ -742,6 +742,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void clearVisibilityItems() {
+    boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("MountState.clearVisibilityItems");
+    }
+
     for (int i = mVisibilityIdToItemMap.size() - 1; i >= 0; i--) {
       final VisibilityItem visibilityItem = mVisibilityIdToItemMap.valueAt(i);
       final EventHandler<InvisibleEvent> invisibleHandler = visibilityItem.getInvisibleHandler();
@@ -761,6 +766,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
       mVisibilityIdToItemMap.removeAt(i);
       ComponentsPools.release(visibilityItem);
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
     }
   }
 
@@ -2705,6 +2714,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return;
     }
 
+    boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("MountState.unbind");
+    }
+
     for (int i = 0, size = mLayoutOutputsIds.length; i < size; i++) {
       MountItem mountItem = getItemAt(i);
 
@@ -2718,6 +2732,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     clearVisibilityItems();
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
   }
 
   void detach() {

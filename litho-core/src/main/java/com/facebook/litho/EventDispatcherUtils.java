@@ -89,12 +89,21 @@ class EventDispatcherUtils {
   static void dispatchOnVisible(EventHandler<VisibleEvent> visibleHandler) {
     assertMainThread();
 
+    boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("EventDispatcherUtils.dispatchOnVisible");
+    }
+
     if (sVisibleEvent == null) {
       sVisibleEvent = new VisibleEvent();
     }
 
     final EventDispatcher eventDispatcher = visibleHandler.mHasEventDispatcher.getEventDispatcher();
     eventDispatcher.dispatchOnEvent(visibleHandler, sVisibleEvent);
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
   }
 
   static void dispatchOnFocused(EventHandler<FocusedVisibleEvent> focusedHandler) {
