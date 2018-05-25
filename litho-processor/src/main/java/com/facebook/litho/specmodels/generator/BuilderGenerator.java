@@ -545,7 +545,8 @@ public class BuilderGenerator {
             prop,
             requiredIndex,
             prop.getName(),
-            Arrays.asList(parameter(prop, getFieldTypeName(specModel, prop.getTypeName()),
+            Arrays.asList(parameter(prop, KotlinSpecUtils.getFieldTypeName(specModel, prop
+                    .getTypeName()),
                 prop.getName(), extraAnnotations)),
             prop.getName())
         .build();
@@ -601,7 +602,7 @@ public class BuilderGenerator {
 
     if (isKotlinSpec) {
       final boolean isNotJvmSuppressWildcardsAnnotated =
-          isNotJvmSuppressWildcardsAnnotated(rawVarArgType);
+          KotlinSpecUtils.isNotJvmSuppressWildcardsAnnotated(rawVarArgType);
 
       /*
       * If it is a JvmSuppressWildcards annotated type on a Kotlin Spec,
@@ -618,7 +619,7 @@ public class BuilderGenerator {
         } else {
           // Calculate appropriate ClassName
           final String pureTypeName = typeParts[2];
-          varArgTypeName = buildClassName(pureTypeName);
+          varArgTypeName = KotlinSpecUtils.buildClassName(pureTypeName);
         }
       }
     } else {
@@ -626,64 +627,6 @@ public class BuilderGenerator {
       varArgTypeName = varArgTypeArgumentTypeName;
     }
     return varArgTypeName;
-  }
-
-  private static TypeName getFieldTypeName(SpecModel specModel,
-      TypeName fieldTypeName) {
-
-    final boolean isKotlinSpec = specModel.getSpecElementType() == SpecElementType.KOTLIN_SINGLETON;
-
-    TypeName varArgTypeName;
-
-    if (isKotlinSpec) {
-      final String rawFieldType = fieldTypeName.toString();
-      final boolean isNotJvmSuppressWildcardsAnnotated =
-          KotlinSpecUtils.isNotJvmSuppressWildcardsAnnotated(rawFieldType);
-
-      /*
-       * If it is a JvmSuppressWildcards annotated type on a Kotlin Spec,
-       * we should fallback to previous type detection way.
-       * */
-      if (!isNotJvmSuppressWildcardsAnnotated) {
-        varArgTypeName = fieldTypeName;
-      } else {
-        String parameterizedFieldType = KotlinSpecUtils.getParameterizedFieldType(rawFieldType);
-
-        final String[] typeParts = parameterizedFieldType.split(" ");
-
-        // Just in case something has gone pretty wrong
-        if(typeParts.length < 3) {
-          varArgTypeName = fieldTypeName;
-        } else {
-          // Calculate appropriate ClassNames
-          final int indexOfStartDiamond = rawFieldType.indexOf("<");
-
-          final String fieldType = rawFieldType.substring(0, indexOfStartDiamond);
-          final ClassName rawType = KotlinSpecUtils.buildClassName(fieldType);
-
-          final String pureTypeName = typeParts[2];
-          final ClassName enclosedType = KotlinSpecUtils.buildClassName(pureTypeName);
-
-          varArgTypeName = ParameterizedTypeName.get(rawType, enclosedType);
-        }
-      }
-    } else {
-      // Fallback when it is a Java spec
-      varArgTypeName = fieldTypeName;
-    }
-    return varArgTypeName;
-  }
-
-  private static boolean isNotJvmSuppressWildcardsAnnotated(String type) {
-    return type.contains("extends");
-  }
-
-  private static ClassName buildClassName(String typeName) {
-    final int lastIndexOfDotForPackage = typeName.lastIndexOf('.');
-    final int lastIndexOfDotForClass = typeName.lastIndexOf('.') + 1;
-    final String packageName = typeName.substring(0, lastIndexOfDotForPackage);
-    final String className = typeName.substring(lastIndexOfDotForClass);
-    return ClassName.get(packageName, className);
   }
 
   private static MethodSpec varArgBuilderBuilder(

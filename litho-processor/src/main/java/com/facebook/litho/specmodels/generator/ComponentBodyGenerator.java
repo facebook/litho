@@ -275,7 +275,8 @@ public class ComponentBodyGenerator {
 
     for (PropModel prop : props) {
       final FieldSpec.Builder fieldBuilder =
-          FieldSpec.builder(getFieldTypeName(specModel, prop.getTypeName()), prop.getName())
+          FieldSpec.builder(KotlinSpecUtils.getFieldTypeName(specModel, prop.getTypeName()), prop
+              .getName())
               .addAnnotations(prop.getExternalAnnotations())
               .addAnnotation(
                   AnnotationSpec.builder(Prop.class)
@@ -304,52 +305,6 @@ public class ComponentBodyGenerator {
     } else {
       fieldBuilder.initializer("$L.$L", specModel.getSpecName(), prop.getName());
     }
-  }
-
-  private static TypeName getFieldTypeName(SpecModel specModel,
-      TypeName fieldTypeName) {
-
-    final boolean isKotlinSpec = specModel.getSpecElementType() == SpecElementType.KOTLIN_SINGLETON;
-
-    TypeName varArgTypeName;
-
-    if (isKotlinSpec) {
-      final String rawFieldType = fieldTypeName.toString();
-      final boolean isNotJvmSuppressWildcardsAnnotated =
-          KotlinSpecUtils.isNotJvmSuppressWildcardsAnnotated(rawFieldType);
-
-      /*
-       * If it is a JvmSuppressWildcards annotated type on a Kotlin Spec,
-       * we should fallback to previous type detection way.
-       * */
-      if (!isNotJvmSuppressWildcardsAnnotated) {
-        varArgTypeName = fieldTypeName;
-      } else {
-        String parameterizedFieldType = KotlinSpecUtils.getParameterizedFieldType(rawFieldType);
-
-        final String[] typeParts = parameterizedFieldType.split(" ");
-
-        // Just in case something has gone pretty wrong
-        if(typeParts.length < 3) {
-          varArgTypeName = fieldTypeName;
-        } else {
-          // Calculate appropriate ClassNames
-          final int indexOfStartDiamond = rawFieldType.indexOf("<");
-
-          final String fieldType = rawFieldType.substring(0, indexOfStartDiamond);
-          final ClassName rawType = KotlinSpecUtils.buildClassName(fieldType);
-
-          final String pureTypeName = typeParts[2];
-          final ClassName enclosedType = KotlinSpecUtils.buildClassName(pureTypeName);
-
-          varArgTypeName = ParameterizedTypeName.get(rawType, enclosedType);
-        }
-      }
-    } else {
-      // Fallback when it is a Java spec
-      varArgTypeName = fieldTypeName;
-    }
-    return varArgTypeName;
   }
 
   public static TypeSpecDataHolder generateInjectedFields(SpecModel specModel) {

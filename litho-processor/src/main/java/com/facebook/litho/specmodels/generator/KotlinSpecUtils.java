@@ -16,7 +16,11 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import com.facebook.litho.specmodels.model.SpecElementType;
+import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
 
 /*
 * Helper methods to ease the way with Kotlin generated code
@@ -42,5 +46,51 @@ public class KotlinSpecUtils {
     final int indexOfEndDiamond = type.indexOf(">");
 
     return type.substring(indexOfStartDiamond + 1, indexOfEndDiamond);
+  }
+
+  public static TypeName getFieldTypeName(SpecModel specModel,
+      TypeName fieldTypeName) {
+
+    final boolean isKotlinSpec = specModel.getSpecElementType() == SpecElementType.KOTLIN_SINGLETON;
+
+    TypeName varArgTypeName;
+
+    if (isKotlinSpec) {
+      final String rawFieldType = fieldTypeName.toString();
+      final boolean isNotJvmSuppressWildcardsAnnotated =
+          KotlinSpecUtils.isNotJvmSuppressWildcardsAnnotated(rawFieldType);
+
+      /*
+       * If it is a JvmSuppressWildcards annotated type on a Kotlin Spec,
+       * we should fallback to previous type detection way.
+       * */
+      if (!isNotJvmSuppressWildcardsAnnotated) {
+        varArgTypeName = fieldTypeName;
+      } else {
+        String parameterizedFieldType = KotlinSpecUtils.getParameterizedFieldType(rawFieldType);
+
+        final String[] typeParts = parameterizedFieldType.split(" ");
+
+        // Just in case something has gone pretty wrong
+        if(typeParts.length < 3) {
+          varArgTypeName = fieldTypeName;
+        } else {
+          // Calculate appropriate ClassNames
+          final int indexOfStartDiamond = rawFieldType.indexOf("<");
+
+          final String fieldType = rawFieldType.substring(0, indexOfStartDiamond);
+          final ClassName rawType = KotlinSpecUtils.buildClassName(fieldType);
+
+          final String pureTypeName = typeParts[2];
+          final ClassName enclosedType = KotlinSpecUtils.buildClassName(pureTypeName);
+
+          varArgTypeName = ParameterizedTypeName.get(rawType, enclosedType);
+        }
+      }
+    } else {
+      // Fallback when it is a Java spec
+      varArgTypeName = fieldTypeName;
+    }
+    return varArgTypeName;
   }
 }
