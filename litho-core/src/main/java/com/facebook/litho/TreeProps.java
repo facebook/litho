@@ -51,7 +51,9 @@ public class TreeProps {
   public static TreeProps copy(TreeProps source) {
     final TreeProps newProps = ComponentsPools.acquireTreeProps();
     if (source != null) {
-      newProps.mMap.putAll(source.mMap);
+      synchronized (source.mMap) {
+        newProps.mMap.putAll(source.mMap);
+      }
     }
 
     return newProps;
