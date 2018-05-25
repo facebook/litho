@@ -22,6 +22,7 @@ import static org.mockito.Mockito.mock;
 import com.facebook.litho.Transition;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
@@ -111,10 +112,30 @@ public class StateGeneratorTest {
     }
   }
 
+  @LayoutSpec
+  private static class TestWithLazyGeneric<T extends CharSequence> {
+    @OnCreateLayout
+    public void onCreateLayout(@State(canUpdateLazily = true) T arg0) {}
+
+    @OnUpdateState
+    void updateCurrentState() {}
+  }
+
+  @LayoutSpec
+  private static class TestWithLazyMethodGeneric {
+    @OnCreateLayout
+    public void onCreateLayout(@Prop int arg0) {}
+
+    @OnCreateInitialState
+    static <T> void onCreateInitialState(@State(canUpdateLazily = true) T arg1) {}
+  }
+
   private SpecModel mSpecModelWithState;
   private SpecModel mSpecModelWithoutState;
   private SpecModel mSpecModelWithStateWithTransition;
   private SpecModel mSpecModelWithBothStates;
+  private SpecModel mSpecModelWithLazyGeneric;
+  private SpecModel mSpecModelWithLazyMethodGeneric;
 
   @Before
   public void setUp() {
@@ -162,6 +183,30 @@ public class StateGeneratorTest {
             elements,
             types,
             typeElementWithBothStates,
+            mock(Messager.class),
+            RunMode.NORMAL,
+            null,
+            null);
+
+    final TypeElement typeElementWithLazyGeneric =
+        elements.getTypeElement(TestWithLazyGeneric.class.getCanonicalName());
+    mSpecModelWithLazyGeneric =
+        mLayoutSpecModelFactory.create(
+            elements,
+            types,
+            typeElementWithLazyGeneric,
+            mock(Messager.class),
+            RunMode.NORMAL,
+            null,
+            null);
+
+    final TypeElement typeElementWithLazyMethodGeneric =
+        elements.getTypeElement(TestWithLazyMethodGeneric.class.getCanonicalName());
+    mSpecModelWithLazyMethodGeneric =
+        mLayoutSpecModelFactory.create(
+            elements,
+            types,
+            typeElementWithLazyMethodGeneric,
             mock(Messager.class),
             RunMode.NORMAL,
             null,
@@ -404,6 +449,64 @@ public class StateGeneratorTest {
                 + "      com.facebook.litho.StateValue<java.lang.Boolean> arg4 = new com.facebook.litho.StateValue<java.lang.Boolean>();\n"
                 + "      arg4.set(lazyUpdateValue);\n"
                 + "      newComponentStateUpdate.mStateContainer.arg4 = arg4.get();\n"
+                + "    }\n"
+                + "  };\n"
+                + "  c.updateStateLazy(_stateUpdate);\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testGenerateLazyStateUpdateMethodsForGenerics() {
+    TypeSpecDataHolder dataHolder =
+        StateGenerator.generateLazyStateUpdateMethods(mSpecModelWithLazyGeneric);
+
+    assertThat(dataHolder.getMethodSpecs()).hasSize(1);
+
+    assertThat(dataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "protected static <T extends java.lang.CharSequence> void lazyUpdateArg0(com.facebook.litho.ComponentContext c,\n"
+                + "    final T lazyUpdateValue) {\n"
+                + "  com.facebook.litho.Component _component = c.getComponentScope();\n"
+                + "  if (_component == null) {\n"
+                + "    return;\n"
+                + "  }\n"
+                + "  com.facebook.litho.ComponentLifecycle.StateUpdate _stateUpdate = new com.facebook.litho.ComponentLifecycle.StateUpdate() {\n"
+                + "    @java.lang.Override\n"
+                + "    public void updateState(com.facebook.litho.ComponentLifecycle.StateContainer _stateContainer,\n"
+                + "        com.facebook.litho.Component newComponent) {\n"
+                + "      com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithLazyGen newComponentStateUpdate = (com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithLazyGen) newComponent;\n"
+                + "      com.facebook.litho.StateValue<T> arg0 = new com.facebook.litho.StateValue<T>();\n"
+                + "      arg0.set(lazyUpdateValue);\n"
+                + "      newComponentStateUpdate.mStateContainer.arg0 = arg0.get();\n"
+                + "    }\n"
+                + "  };\n"
+                + "  c.updateStateLazy(_stateUpdate);\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testGenerateLazyStateUpdateMethodsForGenericMethod() {
+    TypeSpecDataHolder dataHolder =
+        StateGenerator.generateLazyStateUpdateMethods(mSpecModelWithLazyMethodGeneric);
+
+    assertThat(dataHolder.getMethodSpecs()).hasSize(1);
+
+    assertThat(dataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "protected static <T> void lazyUpdateArg1(com.facebook.litho.ComponentContext c,\n"
+                + "    final T lazyUpdateValue) {\n"
+                + "  com.facebook.litho.Component _component = c.getComponentScope();\n"
+                + "  if (_component == null) {\n"
+                + "    return;\n"
+                + "  }\n"
+                + "  com.facebook.litho.ComponentLifecycle.StateUpdate _stateUpdate = new com.facebook.litho.ComponentLifecycle.StateUpdate() {\n"
+                + "    @java.lang.Override\n"
+                + "    public void updateState(com.facebook.litho.ComponentLifecycle.StateContainer _stateContainer,\n"
+                + "        com.facebook.litho.Component newComponent) {\n"
+                + "      com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithLazyMethodGen newComponentStateUpdate = (com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithLazyMethodGen) newComponent;\n"
+                + "      com.facebook.litho.StateValue<T> arg1 = new com.facebook.litho.StateValue<T>();\n"
+                + "      arg1.set(lazyUpdateValue);\n"
+                + "      newComponentStateUpdate.mStateContainer.arg1 = arg1.get();\n"
                 + "    }\n"
                 + "  };\n"
                 + "  c.updateStateLazy(_stateUpdate);\n"

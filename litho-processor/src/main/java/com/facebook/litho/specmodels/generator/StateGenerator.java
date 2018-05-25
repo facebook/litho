@@ -393,13 +393,15 @@ public class StateGenerator {
     final String newComponentImplName =
         STATE_UPDATE_NEW_COMPONENT_NAME + STATE_UPDATE_IMPL_NAME_SUFFIX;
 
-    final MethodSpec.Builder builder = MethodSpec.methodBuilder(
-        "lazyUpdate" +
-            stateValue.getName().substring(0, 1).toUpperCase(Locale.ROOT) +
-            stateValue.getName().substring(1))
-        .addModifiers(Modifier.PROTECTED, Modifier.STATIC)
-        .addParameter(specModel.getContextClass(), "c")
-        .addParameter(stateValue.getTypeName(), LAZY_STATE_UPDATE_VALUE_PARAM, Modifier.FINAL);
+    final MethodSpec.Builder builder =
+        MethodSpec.methodBuilder(
+                "lazyUpdate"
+                    + stateValue.getName().substring(0, 1).toUpperCase(Locale.ROOT)
+                    + stateValue.getName().substring(1))
+            .addModifiers(Modifier.PROTECTED, Modifier.STATIC)
+            .addParameter(specModel.getContextClass(), "c")
+            .addTypeVariables(MethodParamModelUtils.getTypeVariables(stateValue))
+            .addParameter(stateValue.getTypeName(), LAZY_STATE_UPDATE_VALUE_PARAM, Modifier.FINAL);
 
     builder.addStatement(
         "$T _component = c.get$LScope()",
