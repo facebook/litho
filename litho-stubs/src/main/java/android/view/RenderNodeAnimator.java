@@ -25,6 +25,18 @@ public class RenderNodeAnimator extends Animator {
 
   public static int PAINT_ALPHA;
   public static int PAINT_STROKE_WIDTH;
+  public static int TRANSLATION_X;
+  public static int TRANSLATION_Y;
+  public static int TRANSLATION_Z;
+  public static int SCALE_X;
+  public static int SCALE_Y;
+  public static int ROTATION;
+  public static int ROTATION_X;
+  public static int ROTATION_Y;
+  public static int X;
+  public static int Y;
+  public static int Z;
+  public static int ALPHA;
 
   public RenderNodeAnimator(int property, float finalValue) {
     throw new RuntimeException("Stub!");
