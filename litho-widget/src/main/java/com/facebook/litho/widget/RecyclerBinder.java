@@ -203,6 +203,7 @@ public class RecyclerBinder
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
   private volatile boolean mAsyncInsertsShouldWaitForMeasure = true;
+  private String mInvalidStateLogId;
 
   @GuardedBy("this")
   private @Nullable AsyncBatch mCurrentBatch = null;
@@ -1639,6 +1640,15 @@ public class RecyclerBinder
     }
   }
 
+  /**
+   * If non-null logId is provided we will log invalid state of the LithoView like height being 0
+   * while non-0 value was expected and similar other invalid cases.
+   */
+  @UiThread
+  public void setInvalidStateLogId(String logId) {
+    mInvalidStateLogId = logId;
+  }
+
   @GuardedBy("this")
   private void initRange(
       int width,
@@ -2243,6 +2253,7 @@ public class RecyclerBinder
       final RenderInfo renderInfo = componentTreeHolder.getRenderInfo();
       if (renderInfo.rendersComponent()) {
         final LithoView lithoView = (LithoView) holder.itemView;
+        lithoView.setInvalidStateLogId(mInvalidStateLogId);
         final int childrenWidthSpec = getActualChildrenWidthSpec(componentTreeHolder);
         final int childrenHeightSpec = getActualChildrenHeightSpec(componentTreeHolder);
         if (!componentTreeHolder.isTreeValid()) {
@@ -2313,6 +2324,7 @@ public class RecyclerBinder
         final LithoView lithoView = (LithoView) holder.itemView;
         lithoView.unmountAllItems();
         lithoView.setComponentTree(null);
+        lithoView.setInvalidStateLogId(null);
       } else {
         final ViewBinder viewBinder = holder.viewBinder;
         if (viewBinder != null) {

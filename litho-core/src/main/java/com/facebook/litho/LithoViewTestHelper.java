@@ -195,6 +195,29 @@ public class LithoViewTestHelper {
     }
   }
 
+  public static String toDebugString(@Nullable LithoView lithoView) {
+    if (lithoView == null) {
+      return "";
+    }
+
+    final String debugString = viewToString(lithoView, true);
+    return TextUtils.isEmpty(debugString) ? viewBoundsToString(lithoView) : debugString;
+  }
+
+  private static String viewBoundsToString(LithoView lithoView) {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("(");
+    sb.append(lithoView.getLeft());
+    sb.append(",");
+    sb.append(lithoView.getTop());
+    sb.append("-");
+    sb.append(lithoView.getRight());
+    sb.append(",");
+    sb.append(lithoView.getBottom());
+    sb.append(")");
+    return sb.toString();
+  }
+
   /**
    * Obtain a reference to a LithoView's internal layout root, if present. This is used to restore a
    * view's root after it has been freed for testing purposes.

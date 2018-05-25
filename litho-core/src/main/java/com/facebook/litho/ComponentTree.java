@@ -1723,6 +1723,11 @@ public class ComponentTree {
         && mHeightSpec != SIZE_UNINITIALIZED;
   }
 
+  @Nullable
+  synchronized String getSimpleName() {
+    return mRoot == null ? null : mRoot.getSimpleName();
+  }
+
   private static synchronized Looper getDefaultLayoutThreadLooper() {
     if (sDefaultLayoutThreadLooper == null) {
       final HandlerThread defaultThread =
