@@ -9,9 +9,6 @@ load("//:LITHO_DEFS.bzl", "LITHO_ASSERTJ_TARGET", "LITHO_DIFFUTILS_TARGET", "LIT
 litho_android_library(
     name = "viewtree",
     srcs = glob(["*.java"]),
-    exported_deps = [
-        LITHO_ASSERTJ_TARGET,
-    ],
     provided_deps = [
         LITHO_ROBOLECTRIC_TARGET,
     ],
@@ -27,5 +24,8 @@ litho_android_library(
         LITHO_JAVA_TARGET,
         LITHO_JSR_TARGET,
         LITHO_JUNIT_TARGET,
+    ],
+    exported_deps = [
+        LITHO_ASSERTJ_TARGET,
     ],
 )

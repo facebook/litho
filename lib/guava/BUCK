@@ -3,10 +3,10 @@ load("//:LITHO_DEFS.bzl", "fb_java_library")
 
 fb_java_library(
     name = "guava",
+    visibility = ["PUBLIC"],
     exported_deps = [
         ":guava-prebuilt",
     ],
-    visibility = ["PUBLIC"],
 )
 
 prebuilt_jar(

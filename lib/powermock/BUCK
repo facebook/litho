@@ -7,11 +7,11 @@ load("//:LITHO_DEFS.bzl", "fb_java_library", "make_dep_path")
 
 fb_java_library(
     name = "powermock-reflect",
+    visibility = ["PUBLIC"],
     exported_deps = [
         ":powermock-reflect-prebuilt",
         make_dep_path("lib/objenesis:objenesis"),
     ],
-    visibility = ["PUBLIC"],
 )
 
 prebuilt_jar(
@@ -27,6 +27,7 @@ remote_file(
 
 fb_java_library(
     name = "powermock-mockito",
+    visibility = ["PUBLIC"],
     exported_deps = [
         ":javassist-prebuilt",
         ":powermock-api-mockito",
@@ -38,7 +39,6 @@ fb_java_library(
         ":powermock-reflect",
         ":xstream-prebuilt",
     ],
-    visibility = ["PUBLIC"],
 )
 
 prebuilt_jar(

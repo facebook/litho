@@ -14,9 +14,6 @@ litho_android_library(
     annotation_processors = [
         "com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor",
     ],
-    exported_deps = [
-        LITHO_TESTING_CORE_TARGET,
-    ],
     visibility = ["PUBLIC"],
     deps = [
         LITHO_JAVA_TARGET,
@@ -30,5 +27,8 @@ litho_android_library(
         LITHO_JSR_TARGET,
         LITHO_HAMCREST_CORE_TARGET,
         LITHO_HAMCREST_LIBRARY_TARGET,
+    ],
+    exported_deps = [
+        LITHO_TESTING_CORE_TARGET,
     ],
 )

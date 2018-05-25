@@ -7,11 +7,11 @@ load("//:LITHO_DEFS.bzl", "LITHO_VISIBILITY", "fb_java_library")
 
 fb_java_library(
     name = "hamcrest",
+    visibility = LITHO_VISIBILITY,
     exported_deps = [
         ":hamcrest-core",
         ":hamcrest-library",
     ],
-    visibility = LITHO_VISIBILITY,
 )
 
 prebuilt_jar(

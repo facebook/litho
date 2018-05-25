@@ -7,10 +7,10 @@ load("//:LITHO_DEFS.bzl", "fb_java_library")
 
 fb_java_library(
     name = "objenesis",
+    visibility = ["PUBLIC"],
     exported_deps = [
         ":objenesis-prebuilt",
     ],
-    visibility = ["PUBLIC"],
 )
 
 prebuilt_jar(

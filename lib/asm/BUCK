@@ -7,6 +7,7 @@ load("//:LITHO_DEFS.bzl", "fb_java_library")
 
 fb_java_library(
     name = "asm",
+    visibility = ["PUBLIC"],
     exported_deps = [
         ":asm-analysis-prebuilt",
         ":asm-commons-prebuilt",
@@ -14,7 +15,6 @@ fb_java_library(
         ":asm-tree-prebuilt",
         ":asm-util-prebuilt",
     ],
-    visibility = ["PUBLIC"],
 )
 
 prebuilt_jar(

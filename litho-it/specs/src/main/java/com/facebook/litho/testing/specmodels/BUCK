@@ -14,9 +14,6 @@ fb_core_android_library(
     annotation_processors = [
         "com.facebook.litho.testing.processor.TestingDIComponentProcessor",
     ],
-    exported_deps = [
-        LITHO_TESTING_CORE_TARGET,
-    ],
     source = "8",
     target = "8",
     tests = [
@@ -39,5 +36,8 @@ fb_core_android_library(
         LITHO_TESTING_SUBCOMPONENTS_TARGET,
         LITHO_YOGA_TARGET,
         LITHO_WIDGET_TARGET,
+    ],
+    exported_deps = [
+        LITHO_TESTING_CORE_TARGET,
     ],
 )

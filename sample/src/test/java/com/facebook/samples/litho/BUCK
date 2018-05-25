@@ -39,9 +39,6 @@ fb_core_android_library(
     annotation_processors = [
         "com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor",
     ],
-    exported_deps = [
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho"),
-    ],
     deps = [
         make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho"),
         LITHO_JAVA_TARGET,
@@ -52,5 +49,8 @@ fb_core_android_library(
         LITHO_JSR_TARGET,
         LITHO_HAMCREST_CORE_TARGET,
         LITHO_HAMCREST_LIBRARY_TARGET,
+    ],
+    exported_deps = [
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho"),
     ],
 )

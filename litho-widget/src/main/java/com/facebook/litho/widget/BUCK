@@ -8,12 +8,12 @@ load("//:LITHO_DEFS.bzl", "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET", "LITHO_AND
 
 litho_android_library(
     name = "widget",
+    visibility = [
+        "PUBLIC",
+    ],
     exported_deps = [
         LITHO_TEXTLAYOUTBUILDER_TARGET,
         ":widget-bare",
-    ],
-    visibility = [
-        "PUBLIC",
     ],
 )
 

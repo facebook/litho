@@ -8,8 +8,6 @@ load("//:LITHO_DEFS.bzl", "LITHO_ASSERTJ_TARGET", "fb_core_android_library", "ma
 fb_core_android_library(
     name = "specmodels",
     srcs = glob(["*.java"]),
-    exported_deps = [
-    ],
     visibility = [
         "PUBLIC",
     ],
@@ -17,5 +15,7 @@ fb_core_android_library(
         LITHO_ASSERTJ_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
+    ],
+    exported_deps = [
     ],
 )

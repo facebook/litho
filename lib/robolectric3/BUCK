@@ -7,6 +7,7 @@ load("//:LITHO_DEFS.bzl", "fb_java_library", "make_dep_path")
 
 fb_java_library(
     name = "robolectric3",
+    visibility = ["PUBLIC"],
     exported_deps = [
         ":robolectric3-annotations-prebuilt",
         ":robolectric3-prebuilt",
@@ -20,7 +21,6 @@ fb_java_library(
         make_dep_path("lib/sqlite:sqlite"),
         make_dep_path("lib/vtd-xml:vtd-xml"),
     ],
-    visibility = ["PUBLIC"],
 )
 
 prebuilt_jar(

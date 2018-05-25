@@ -4,9 +4,6 @@ load("//:LITHO_DEFS.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ASSERTJ_TARGET",
 litho_android_library(
     name = "assertj",
     srcs = glob(["*.java"]),
-    exported_deps = [
-        LITHO_ASSERTJ_TARGET,
-    ],
     visibility = [
         "PUBLIC",
     ],
@@ -20,5 +17,8 @@ litho_android_library(
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/state:state"),
         LITHO_HAMCREST_CORE_TARGET,
+    ],
+    exported_deps = [
+        LITHO_ASSERTJ_TARGET,
     ],
 )

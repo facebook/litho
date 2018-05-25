@@ -7,41 +7,41 @@ include_defs("//LITHO_DEFS.bzl")
 
 litho_android_library(
     name = "components",
-    exported_deps = [
-        LITHO_JAVA_TARGET,
-        LITHO_ANDROIDSUPPORT_TARGET,
-        LITHO_YOGA_TARGET,
-    ],
     visibility = [
         "PUBLIC",
     ],
     deps = [
         LITHO_BUILD_CONFIG_TARGET,
     ],
+    exported_deps = [
+        LITHO_JAVA_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_YOGA_TARGET,
+    ],
 )
 
 litho_android_library(
     name = "sections_core",
+    visibility = [
+        "PUBLIC",
+    ],
     exported_deps = [
         ":components",
         LITHO_SECTIONS_TARGET,
         LITHO_SECTIONS_ANNOTATIONS_TARGET,
     ],
-    visibility = [
-        "PUBLIC",
-    ],
 )
 
 fb_core_android_library(
     name = "sections",
+    visibility = [
+        "PUBLIC",
+    ],
     exported_deps = [
         ":sections_core",
         LITHO_SECTIONS_COMMON_TARGET,
         LITHO_SECTIONS_WIDGET_TARGET,
         LITHO_WIDGET_TARGET,
-    ],
-    visibility = [
-        "PUBLIC",
     ],
 )
 

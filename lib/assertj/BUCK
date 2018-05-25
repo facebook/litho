@@ -7,10 +7,10 @@ load("//:LITHO_DEFS.bzl", "fb_java_library")
 
 fb_java_library(
     name = "assertj",
+    visibility = ["PUBLIC"],
     exported_deps = [
         ":assertj-core-prebuilt",
     ],
-    visibility = ["PUBLIC"],
 )
 
 prebuilt_jar(

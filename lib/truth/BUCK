@@ -7,10 +7,10 @@ load("//:LITHO_DEFS.bzl", "LITHO_VISIBILITY", "fb_java_library")
 
 fb_java_library(
     name = "truth",
+    visibility = LITHO_VISIBILITY,
     exported_deps = [
         ":truth-prebuilt",
     ],
-    visibility = LITHO_VISIBILITY,
 )
 
 prebuilt_jar(

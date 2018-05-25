@@ -7,11 +7,11 @@ load("//:LITHO_DEFS.bzl", "fb_java_library", "make_dep_path")
 
 fb_java_library(
     name = "mockito",
+    visibility = ["PUBLIC"],
     exported_deps = [
         ":mockito-core-prebuilt",
         make_dep_path("lib/objenesis:objenesis"),
     ],
-    visibility = ["PUBLIC"],
 )
 
 prebuilt_jar(

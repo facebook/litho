@@ -117,6 +117,7 @@ remote_file(
 
 fb_java_library(
     name = "android-support",
+    visibility = LITHO_VISIBILITY,
     exported_deps = [
         ":android-support-annotations-jar",
         ":android-support-compat-aar",
@@ -125,23 +126,22 @@ fb_java_library(
         ":android-support-fragment-aar",
         ":android-support-vector-drawable-aar",
     ],
-    visibility = LITHO_VISIBILITY,
 )
 
 litho_android_library(
     name = "android-support-testing",
+    visibility = LITHO_VISIBILITY,
     exported_deps = [
         ":android-support-test-monitor-aar",
         ":android-support-test-rules-aar",
         ":android-support-test-runner-aar",
     ],
-    visibility = LITHO_VISIBILITY,
 )
 
 litho_android_library(
     name = "android-support-recyclerview",
+    visibility = LITHO_VISIBILITY,
     exported_deps = [
         ":android-support-recyclerview-aar",
     ],
-    visibility = LITHO_VISIBILITY,
 )

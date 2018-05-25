@@ -7,11 +7,11 @@ load("//:LITHO_DEFS.bzl", "LITHO_VISIBILITY", "fb_core_android_library", "make_d
 
 fb_core_android_library(
     name = "espresso",
+    visibility = LITHO_VISIBILITY,
     exported_deps = [
         ":espresso-core-prebuilt",
         make_dep_path("lib/hamcrest:hamcrest"),
     ],
-    visibility = LITHO_VISIBILITY,
 )
 
 android_prebuilt_aar(

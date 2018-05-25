@@ -32,12 +32,12 @@ remote_file(
 
 litho_android_library(
     name = "imagepipeline",
+    visibility = LITHO_VISIBILITY,
     exported_deps = [
         ":bolts",
         ":imagepipeline-base",
         ":imagepipeline-core",
     ],
-    visibility = LITHO_VISIBILITY,
 )
 
 android_prebuilt_aar(

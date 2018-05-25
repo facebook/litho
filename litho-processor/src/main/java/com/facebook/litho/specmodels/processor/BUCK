@@ -29,18 +29,18 @@ java_annotation_processor(
 
 fb_java_library(
     name = "processor-lib",
+    tests = [
+        make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels/processor:processor"),
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
     exported_deps = [
         ":processor-lib-bare",
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/generator/testing:testing"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor/testing:testing"),
-    ],
-    tests = [
-        make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels/processor:processor"),
-    ],
-    visibility = [
-        "PUBLIC",
     ],
 )
 

@@ -7,10 +7,10 @@ load("//:LITHO_DEFS.bzl", "fb_java_library")
 
 fb_java_library(
     name = "sqlite",
+    visibility = ["PUBLIC"],
     exported_deps = [
         ":sqlite-prebuilt",
     ],
-    visibility = ["PUBLIC"],
 )
 
 prebuilt_jar(

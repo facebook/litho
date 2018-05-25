@@ -8,9 +8,6 @@ include_defs("//LITHO_DEFS.bzl")
 fb_core_android_library(
     name = "rules",
     srcs = glob(["*.java"]),
-    exported_deps = [
-        LITHO_ROOT + "litho-espresso/src/main/java/com/facebook/litho/testing/espresso:espresso",
-    ],
     visibility = [
         "PUBLIC",
     ],
@@ -21,5 +18,8 @@ fb_core_android_library(
         LITHO_ESPRESSO_TARGET,
         LITHO_JAVA_TARGET,
         LITHO_JUNIT_TARGET,
+    ],
+    exported_deps = [
+        LITHO_ROOT + "litho-espresso/src/main/java/com/facebook/litho/testing/espresso:espresso",
     ],
 )

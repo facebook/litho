@@ -18,8 +18,8 @@ remote_file(
 
 fb_java_library(
     name = "appcompat",
+    visibility = LITHO_VISIBILITY,
     exported_deps = [
         ":appcompat-aar",
     ],
-    visibility = LITHO_VISIBILITY,
 )

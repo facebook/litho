@@ -7,12 +7,12 @@ load("//:LITHO_DEFS.bzl", "LITHO_VISIBILITY", "fb_java_library")
 
 fb_java_library(
     name = "shadows-prebuilt-core",
-    exported_deps = [
-        ":shadows-core-16-jar",
-    ],
     visibility = [
         "//lib/robolectric3:robolectric3",
         "//libraries/components/lib/robolectric3:robolectric3",
+    ],
+    exported_deps = [
+        ":shadows-core-16-jar",
     ],
 )
 

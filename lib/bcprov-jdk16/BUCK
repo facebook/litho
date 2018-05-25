@@ -7,10 +7,10 @@ load("//:LITHO_DEFS.bzl", "fb_java_library")
 
 fb_java_library(
     name = "bcprov-jdk16",
+    visibility = ["PUBLIC"],
     exported_deps = [
         ":bcprov-jdk16-prebuilt",
     ],
-    visibility = ["PUBLIC"],
 )
 
 prebuilt_jar(

@@ -9,11 +9,6 @@ load("//:LITHO_DEFS.bzl", "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET", "LITHO_AND
 litho_android_library(
     name = "testing",
     srcs = glob(["*.java"]),
-    exported_deps = [
-        LITHO_TESTING_SUBCOMPONENTS_TARGET,
-        LITHO_TESTING_HELPER_TARGET,
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/state:state"),
-    ],
     provided_deps = [
         LITHO_ROBOLECTRIC_TARGET,
     ],
@@ -38,5 +33,10 @@ litho_android_library(
         LITHO_ASSERTJ_TARGET,
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         LITHO_ANDROIDSUPPORT_TESTING_TARGET,
+    ],
+    exported_deps = [
+        LITHO_TESTING_SUBCOMPONENTS_TARGET,
+        LITHO_TESTING_HELPER_TARGET,
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/state:state"),
     ],
 )

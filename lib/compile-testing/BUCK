@@ -7,13 +7,13 @@ load("//:LITHO_DEFS.bzl", "LITHO_VISIBILITY", "fb_java_library", "make_dep_path"
 
 fb_java_library(
     name = "compile-testing",
+    visibility = LITHO_VISIBILITY,
     exported_deps = [
         ":compile-testing-prebuilt",
         make_dep_path("lib/junit:junit"),
         make_dep_path("lib/guava:guava"),
         make_dep_path("lib/truth:truth"),
     ],
-    visibility = LITHO_VISIBILITY,
 )
 
 prebuilt_jar(

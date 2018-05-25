@@ -7,16 +7,16 @@ load("//:LITHO_DEFS.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANNOTATIONS_TARG
 
 fb_java_library(
     name = "specmodels",
-    exported_deps = [
-        ":specmodels-bare",
-        LITHO_JAVAPOET_TARGET,
-        LITHO_JSR_TARGET,
-    ],
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels:specmodels"),
     ],
     visibility = [
         "PUBLIC",
+    ],
+    exported_deps = [
+        ":specmodels-bare",
+        LITHO_JAVAPOET_TARGET,
+        LITHO_JSR_TARGET,
     ],
 )
 
@@ -30,9 +30,6 @@ fb_java_library(
             "*/testing/*.java",
         ]),
     ),
-    exported_deps = [
-        LITHO_ANNOTATIONS_TARGET,
-    ],
     provided_deps = [
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,
@@ -45,5 +42,8 @@ fb_java_library(
     deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
+    ],
+    exported_deps = [
+        LITHO_ANNOTATIONS_TARGET,
     ],
 )
