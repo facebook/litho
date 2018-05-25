@@ -244,7 +244,8 @@ public class LithoView extends ComponentHost {
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     if (ComponentsConfiguration.doubleMeasureCorrection) {
-      widthMeasureSpec = correctWidthSpecForAndroidDoubleMeasureBug(widthMeasureSpec);
+      widthMeasureSpec =
+          correctWidthSpecForAndroidDoubleMeasureBug(getResources(), widthMeasureSpec);
     }
 
     // mAnimatedWidth/mAnimatedHeight >= 0 if something is driving a width/height animation.
@@ -342,13 +343,12 @@ public class LithoView extends ComponentHost {
    * think the correct one is. Even though the double measure will still happen, the incorrect width
    * will not propagate to any vertical RecyclerViews contained within.
    */
-  private int correctWidthSpecForAndroidDoubleMeasureBug(int widthSpec) {
+  public static int correctWidthSpecForAndroidDoubleMeasureBug(Resources resources, int widthSpec) {
     final @SizeSpec.MeasureSpecMode int mode = SizeSpec.getMode(widthSpec);
     if (mode == SizeSpec.UNSPECIFIED) {
       return widthSpec;
     }
 
-    final Resources resources = getResources();
     final Configuration configuration = resources.getConfiguration();
     final DisplayMetrics displayMetrics = resources.getDisplayMetrics();
     final int screenWidthPx = displayMetrics.widthPixels;
