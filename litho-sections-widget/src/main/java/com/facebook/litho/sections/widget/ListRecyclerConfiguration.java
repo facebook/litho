@@ -144,8 +144,6 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
             .isCircular(mRecyclerBinderConfiguration.isCircular())
             .wrapContent(mRecyclerBinderConfiguration.isWrapContent())
             .hasDynamicItemHeight(mRecyclerBinderConfiguration.hasDynamicItemHeight())
-            .insertPostAsyncLayoutEnabled(
-                mRecyclerBinderConfiguration.insertPostAsyncLayoutEnabled())
             .splitLayoutTag(mRecyclerBinderConfiguration.getSplitLayoutTag())
             .build(c);
     return (T)

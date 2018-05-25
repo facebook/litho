@@ -189,7 +189,6 @@ public class RecyclerBinder
   private final boolean mIsCircular;
   private final boolean mHasDynamicItemHeight;
   private final boolean mWrapContent;
-  private final boolean mInsertPostAsyncLayoutEnabled;
   private int mLastWidthSpec = UNINITIALIZED;
   private int mLastHeightSpec = UNINITIALIZED;
   private Size mMeasuredSize;
@@ -313,7 +312,6 @@ public class RecyclerBinder
     private boolean isCircular;
     private boolean hasDynamicItemHeight;
     private boolean wrapContent;
-    private boolean insertPostAsyncLayoutEnabled;
     private boolean customViewTypeEnabled;
     private int componentViewType;
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
@@ -415,20 +413,6 @@ public class RecyclerBinder
     }
 
     /**
-     * TODO (T26795745): remove this once the experiment is finished.
-     *
-     * <p>Do not enable this. This is an experimental feature and your Section surface will take a
-     * perf hit if you use it.
-     *
-     * <p>If true, insert operations won't start async layout calculations for the items in range,
-     * instead these layout calculations will be posted to the next frame.
-     */
-    public Builder insertPostAsyncLayoutEnabled(boolean insertPostAsyncLayoutEnabled) {
-      this.insertPostAsyncLayoutEnabled = insertPostAsyncLayoutEnabled;
-      return this;
-    }
-
-    /**
      * Enable setting custom viewTypes on {@link ViewRenderInfo}s.
      *
      * <p>After this is set, all {@link ViewRenderInfo}s must be built with a custom viewType
@@ -500,7 +484,6 @@ public class RecyclerBinder
     mIsCircular = builder.isCircular;
     mHasDynamicItemHeight =
         mLayoutInfo.getScrollDirection() == HORIZONTAL ? builder.hasDynamicItemHeight : false;
-    mInsertPostAsyncLayoutEnabled = builder.insertPostAsyncLayoutEnabled;
     mWrapContent = builder.wrapContent;
 
     mViewportManager =
@@ -2026,7 +2009,6 @@ public class RecyclerBinder
   private void maybePostUpdateViewportAndComputeRange() {
     if (mMountedView != null
         && (ComponentsConfiguration.insertPostAsyncLayout
-            || mInsertPostAsyncLayoutEnabled
             || mViewportManager.shouldUpdate())) {
       mPostUpdateViewportAndComputeRangeAttempts = 0;
       mMountedView.removeCallbacks(mUpdateViewportAndComputeRangeRunnable);

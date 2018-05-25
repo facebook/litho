@@ -30,7 +30,6 @@ public class RecyclerBinderConfiguration {
   private final boolean mCanPrefetchDisplayLists;
   private final boolean mIsCircular;
   private boolean mHasDynamicItemHeight;
-  private boolean mInsertPostAsyncLayoutEnabled;
   private boolean mIsWrapContent;
   private String mSplitLayoutTag;
   private boolean mUseAsyncMutations = SectionsConfiguration.asyncMutations;
@@ -96,16 +95,6 @@ public class RecyclerBinderConfiguration {
     mHasDynamicItemHeight = hasDynamicItemHeight;
   }
 
-  /**
-   * TODO (T26795745): remove this once the experiment is finished.
-   *
-   * <p>Do not enable this. This is an experimental feature and your Section surface will take a
-   * perf hit if you use it.
-   */
-  public void setInsertPostAsyncLayoutEnabled(boolean insertPostAsyncLayoutEnabled) {
-    mInsertPostAsyncLayoutEnabled = insertPostAsyncLayoutEnabled;
-  }
-
   /** Experimental feature, do not enable! */
   public void setSplitLayoutTag(String splitLayoutTag) {
     mSplitLayoutTag = splitLayoutTag;
@@ -137,10 +126,6 @@ public class RecyclerBinderConfiguration {
 
   boolean hasDynamicItemHeight() {
     return mHasDynamicItemHeight;
-  }
-
-  boolean insertPostAsyncLayoutEnabled() {
-    return mInsertPostAsyncLayoutEnabled;
   }
 
   public String getSplitLayoutTag() {
