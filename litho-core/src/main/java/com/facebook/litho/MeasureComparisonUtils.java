@@ -66,21 +66,11 @@ public class MeasureComparisonUtils {
     final int oldSpecMode = SizeSpec.getMode(oldSizeSpec);
     final int oldSpecSize = SizeSpec.getSize(oldSizeSpec);
 
-    return oldSizeSpec == sizeSpec ||
-        newSizeIsExactAndMatchesOldMeasuredSize(
-            newSpecMode,
-            newSpecSize,
-            oldMeasuredSize) ||
-        oldSizeIsUnspecifiedAndStillFits(
-            oldSpecMode,
-            newSpecMode,
-            newSpecSize,
-            oldMeasuredSize) ||
-        newMeasureSizeIsStricterAndStillValid(
-            oldSpecMode,
-            newSpecMode,
-            oldSpecSize,
-            newSpecSize,
-            oldMeasuredSize);
+    return oldSizeSpec == sizeSpec
+        || (oldSpecMode == UNSPECIFIED && newSpecMode == UNSPECIFIED)
+        || newSizeIsExactAndMatchesOldMeasuredSize(newSpecMode, newSpecSize, oldMeasuredSize)
+        || oldSizeIsUnspecifiedAndStillFits(oldSpecMode, newSpecMode, newSpecSize, oldMeasuredSize)
+        || newMeasureSizeIsStricterAndStillValid(
+            oldSpecMode, newSpecMode, oldSpecSize, newSpecSize, oldMeasuredSize);
   }
 }
