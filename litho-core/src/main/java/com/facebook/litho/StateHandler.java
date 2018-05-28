@@ -22,6 +22,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.Pools;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentLifecycle.StateContainer;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,9 +48,15 @@ public class StateHandler {
   private static final Pools.SynchronizedPool<Map<String, StateContainer>> sStateContainersMapPool;
 
   static {
-    sStateUpdatesListPool = new Pools.SynchronizedPool<>(POOL_CAPACITY);
-    sPendingStateUpdatesMapPool = new Pools.SynchronizedPool<>(POOL_CAPACITY);
-    sStateContainersMapPool = new Pools.SynchronizedPool<>(POOL_CAPACITY);
+    if (ComponentsConfiguration.useStateHandlers) {
+      sStateUpdatesListPool = new Pools.SynchronizedPool<>(POOL_CAPACITY);
+      sPendingStateUpdatesMapPool = new Pools.SynchronizedPool<>(POOL_CAPACITY);
+      sStateContainersMapPool = new Pools.SynchronizedPool<>(POOL_CAPACITY);
+    } else {
+      sStateUpdatesListPool = null;
+      sPendingStateUpdatesMapPool = null;
+      sStateContainersMapPool = null;
+    }
   }
 
   /**
@@ -82,12 +89,9 @@ public class StateHandler {
   }
 
   public static StateHandler acquireNewInstance(@Nullable StateHandler stateHandler) {
-    return ComponentsPools.acquireStateHandler(stateHandler);
-  }
-
-  public static StateHandler acquireNewInstance(
-      @Nullable StateHandler stateHandler, boolean stateHandlersEnabled) {
-    return stateHandlersEnabled ? ComponentsPools.acquireStateHandler(stateHandler) : null;
+    return ComponentsConfiguration.useStateHandlers
+        ? ComponentsPools.acquireStateHandler(stateHandler)
+        : null;
   }
 
   public synchronized boolean isEmpty() {

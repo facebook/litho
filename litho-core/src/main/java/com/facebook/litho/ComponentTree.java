@@ -144,8 +144,6 @@ public class ComponentTree {
   private final boolean mCanCacheDrawingDisplayLists;
   private final boolean mShouldClipChildren;
   private final boolean mPersistInternalNodeTree;
-  private final boolean mUseGlobalKeys;
-  private final boolean mUseStateHandlers;
 
   @Nullable private LayoutHandler mPreAllocateMountContentHandler;
 
@@ -284,10 +282,9 @@ public class ComponentTree {
     }
 
     final StateHandler builderStateHandler = builder.stateHandler;
-    mStateHandler =
-        builderStateHandler == null
-            ? StateHandler.acquireNewInstance(null, builder.useStateHandlers)
-            : builderStateHandler;
+    mStateHandler = builderStateHandler == null
+        ? StateHandler.acquireNewInstance(null)
+        : builderStateHandler;
 
     if (builder.previousRenderState != null) {
       mPreviousRenderState = builder.previousRenderState;
@@ -304,9 +301,6 @@ public class ComponentTree {
         ComponentsConfiguration.USE_INCREMENTAL_MOUNT_HELPER
             ? new IncrementalMountHelper(this)
             : null;
-
-    mUseGlobalKeys = builder.useGlobalKeys;
-    mUseStateHandlers = builder.useStateHandlers;
   }
 
   @Nullable
@@ -939,10 +933,6 @@ public class ComponentTree {
     return mUseExactRectForVisibilityEvents;
   }
 
-  boolean useGlobalKeys() {
-    return mUseGlobalKeys;
-  }
-
   synchronized Component getRoot() {
     return mRoot;
   }
@@ -1288,7 +1278,7 @@ public class ComponentTree {
    * @return a copy of the state handler instance held by ComponentTree.
    */
   public synchronized StateHandler acquireStateHandler() {
-    return StateHandler.acquireNewInstance(mStateHandler, mUseStateHandlers);
+    return StateHandler.acquireNewInstance(mStateHandler);
   }
 
   synchronized @Nullable void consumeStateUpdateTransitions(List<Transition> outList) {
@@ -1816,15 +1806,12 @@ public class ComponentTree {
 
     synchronized (this) {
       final KeyHandler keyHandler =
-          (ComponentsConfiguration.isDebugModeEnabled || mUseGlobalKeys)
+          (ComponentsConfiguration.useGlobalKeys || ComponentsConfiguration.isDebugModeEnabled)
               ? new KeyHandler(mContext.getLogger())
               : null;
 
       contextWithStateHandler =
-          new ComponentContext(
-              context,
-              StateHandler.acquireNewInstance(mStateHandler, mUseStateHandlers),
-              keyHandler);
+          new ComponentContext(context, StateHandler.acquireNewInstance(mStateHandler), keyHandler);
     }
 
     if (lock != null) {
@@ -1946,8 +1933,6 @@ public class ComponentTree {
     private boolean canPreallocateOnDefaultHandler;
     private String splitLayoutTag;
     private boolean persistInternalNodeTree = false;
-    private boolean useGlobalKeys = true;
-    private boolean useStateHandlers = true;
 
     protected Builder() {
     }
@@ -1981,8 +1966,6 @@ public class ComponentTree {
       preAllocateMountContentHandler = null;
       splitLayoutTag = null;
       persistInternalNodeTree = false;
-      useGlobalKeys = true;
-      useStateHandlers = true;
     }
 
     /**
@@ -2181,26 +2164,6 @@ public class ComponentTree {
      */
     public Builder persistInternalNodeTree(boolean persistInternalNodeTree) {
       this.persistInternalNodeTree = persistInternalNodeTree;
-      return this;
-    }
-
-    /**
-     * Whether to use global keys when constructing an object. If false, global keys will not be
-     * generated (litho level state updates won't work). It's highly discouraged to to change this
-     * to false, unless you handle all your updates outside of the litho framework
-     */
-    public Builder useGlobalKeys(boolean useGlobalKeys) {
-      this.useGlobalKeys = useGlobalKeys;
-      return this;
-    }
-
-    /**
-     * Whether to use state handler when constructing an object. If false, we won't create state
-     * handlers. It's highly discouraged to to change this to false, unless you handle all your
-     * updates outside of the litho framework
-     */
-    public Builder useStateHandlers(boolean useStateHandlers) {
-      this.useStateHandlers = useStateHandlers;
       return this;
     }
 
