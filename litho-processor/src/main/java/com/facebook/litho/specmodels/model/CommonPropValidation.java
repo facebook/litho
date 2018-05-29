@@ -49,6 +49,7 @@ public class CommonPropValidation {
           new CommonPropModel("flexShrink", TypeName.FLOAT),
           new CommonPropModel("flexBasisPx", TypeName.INT),
           new CommonPropModel("duplicateParentState", TypeName.BOOLEAN),
+          new CommonPropModel("importantForAccessibility", TypeName.INT),
           new CommonPropModel("border", ClassName.bestGuess("com.facebook.litho.Border")),
           new CommonPropModel(
               "stateListAnimator", ClassName.bestGuess("android.animation.StateListAnimator")),
