@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 
 import android.support.annotation.Nullable;
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
@@ -117,8 +118,21 @@ public class ComponentBodyGeneratorTest {
     public void testUpdateStateWithTransitionMethod() {}
   }
 
+  @LayoutSpec
+  static class TestKotlinWildcardsSpec {
+    public static final TestKotlinWildcardsSpec INSTANCE = null;
+
+    @OnCreateLayout
+    public final Component onCreateLayout(
+        ComponentContext c,
+        @Prop(varArg = "number") java.util.List<? extends java.lang.Number> numbers) {
+      return null;
+    }
+  }
+
   private SpecModel mSpecModelDI;
   private SpecModel mSpecModelWithTransitionDI;
+  private SpecModel mKotlinWildcardsSpecModel;
 
   @Before
   public void setUp() {
@@ -135,6 +149,18 @@ public class ComponentBodyGeneratorTest {
     mSpecModelWithTransitionDI =
         mLayoutSpecModelFactory.create(
             elements, types, typeElementWithTransition, mMessager, RunMode.NORMAL, null, null);
+
+    TypeElement typeElementKotlinVarArgsWildcards =
+        elements.getTypeElement(TestKotlinWildcardsSpec.class.getCanonicalName());
+    mKotlinWildcardsSpecModel =
+        mLayoutSpecModelFactory.create(
+            elements,
+            types,
+            typeElementKotlinVarArgsWildcards,
+            mMessager,
+            RunMode.NORMAL,
+            null,
+            null);
   }
 
   @Test
@@ -214,6 +240,19 @@ public class ComponentBodyGeneratorTest {
                 + "    optional = false\n"
                 + ")\n"
                 + "com.facebook.litho.Component arg4;\n");
+  }
+
+  @Test
+  public void testGeneratePropsForKotlinWildcards() {
+    TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateProps(mKotlinWildcardsSpecModel);
+    assertThat(dataHolder.getFieldSpecs()).hasSize(1);
+    assertThat(dataHolder.getFieldSpecs().get(0).toString())
+        .isEqualTo(
+            "@com.facebook.litho.annotations.Prop(\n"
+                + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
+                + "    optional = false\n"
+                + ")\n"
+                + "java.util.List<java.lang.Number> numbers;\n");
   }
 
   @Test

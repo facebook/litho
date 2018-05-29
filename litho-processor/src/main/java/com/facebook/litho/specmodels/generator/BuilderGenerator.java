@@ -23,6 +23,7 @@ import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.facebook.litho.specmodels.model.PropModel;
+import com.facebook.litho.specmodels.model.SpecElementType;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.AnnotationSpec;
@@ -544,7 +545,12 @@ public class BuilderGenerator {
             prop,
             requiredIndex,
             prop.getName(),
-            Arrays.asList(parameter(prop, prop.getTypeName(), prop.getName(), extraAnnotations)),
+            Arrays.asList(
+                parameter(
+                    prop,
+                    KotlinSpecUtils.getFieldTypeName(specModel, prop.getTypeName()),
+                    prop.getName(),
+                    extraAnnotations)),
             prop.getName())
         .build();
   }
@@ -554,16 +560,16 @@ public class BuilderGenerator {
       PropModel prop,
       int requiredIndex,
       AnnotationSpec... extraAnnotations) {
-    ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) prop.getTypeName();
-    TypeName singleParameterType = parameterizedTypeName.typeArguments.get(0);
     String varArgName = prop.getVarArgsSingleName();
 
     final String propName = prop.getName();
     final String implMemberInstanceName = getComponentMemberInstanceName(specModel);
     final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getTypeName();
-    final ParameterizedTypeName listType = ParameterizedTypeName.get(
-        ClassName.get(ArrayList.class),
-        varArgType.typeArguments.get(0));
+    final TypeName varArgTypeArgumentTypeName = varArgType.typeArguments.get(0);
+    final TypeName varArgTypeName = getParameterTypeName(specModel, varArgTypeArgumentTypeName);
+
+    final ParameterizedTypeName listType =
+        ParameterizedTypeName.get(ClassName.get(ArrayList.class), varArgTypeName);
     CodeBlock codeBlock = CodeBlock.builder()
         .beginControlFlow("if ($L == null)", varArgName)
         .addStatement("return this")
@@ -579,13 +585,50 @@ public class BuilderGenerator {
         .build();
 
     return getMethodSpecBuilder(
-        specModel,
-        prop,
-        requiredIndex,
-        varArgName,
-        Arrays.asList(parameter(prop, singleParameterType, varArgName, extraAnnotations)),
-        codeBlock)
+            specModel,
+            prop,
+            requiredIndex,
+            varArgName,
+            Arrays.asList(parameter(prop, varArgTypeName, varArgName, extraAnnotations)),
+            codeBlock)
         .build();
+  }
+
+  private static TypeName getParameterTypeName(
+      SpecModel specModel, TypeName varArgTypeArgumentTypeName) {
+
+    final String rawVarArgType = varArgTypeArgumentTypeName.toString();
+    final boolean isKotlinSpec = specModel.getSpecElementType() == SpecElementType.KOTLIN_SINGLETON;
+
+    TypeName varArgTypeName;
+
+    if (isKotlinSpec) {
+      final boolean isNotJvmSuppressWildcardsAnnotated =
+          KotlinSpecUtils.isNotJvmSuppressWildcardsAnnotated(rawVarArgType);
+
+      /*
+       * If it is a JvmSuppressWildcards annotated type on a Kotlin Spec,
+       * we should fallback to previous type detection way.
+       * */
+      if (!isNotJvmSuppressWildcardsAnnotated) {
+        varArgTypeName = varArgTypeArgumentTypeName;
+      } else {
+        final String[] typeParts = rawVarArgType.split(" ");
+
+        // Just in case something has gone pretty wrong
+        if (typeParts.length < 3) {
+          varArgTypeName = varArgTypeArgumentTypeName;
+        } else {
+          // Calculate appropriate ClassName
+          final String pureTypeName = typeParts[2];
+          varArgTypeName = KotlinSpecUtils.buildClassName(pureTypeName);
+        }
+      }
+    } else {
+      // Fallback when it is a Java spec
+      varArgTypeName = varArgTypeArgumentTypeName;
+    }
+    return varArgTypeName;
   }
 
   private static MethodSpec varArgBuilderBuilder(

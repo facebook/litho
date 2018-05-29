@@ -275,7 +275,8 @@ public class ComponentBodyGenerator {
 
     for (PropModel prop : props) {
       final FieldSpec.Builder fieldBuilder =
-          FieldSpec.builder(prop.getTypeName(), prop.getName())
+          FieldSpec.builder(
+                  KotlinSpecUtils.getFieldTypeName(specModel, prop.getTypeName()), prop.getName())
               .addAnnotations(prop.getExternalAnnotations())
               .addAnnotation(
                   AnnotationSpec.builder(Prop.class)
