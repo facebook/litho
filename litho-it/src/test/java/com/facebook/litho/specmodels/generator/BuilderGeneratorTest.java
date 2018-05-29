@@ -18,6 +18,8 @@ package com.facebook.litho.specmodels.generator;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
@@ -88,9 +90,22 @@ public class BuilderGeneratorTest {
     public void dimenResTypeWithBoxFloatArg(@Prop(resType = ResType.DIMEN_TEXT) Float size) {}
   }
 
+  @LayoutSpec
+  static class TestKotlinVarArgSpec {
+    public static final TestKotlinVarArgSpec INSTANCE = null;
+
+    @OnCreateLayout
+    public final Component onCreateLayout(
+        ComponentContext c,
+        @Prop(varArg = "color") java.util.List<? extends android.graphics.Color> colors) {
+      return null;
+    }
+  }
+
   private SpecModel mSpecModel;
   private SpecModel mResTypeVarArgsSpecModel;
   private SpecModel mDimenResTypeWithBoxFloatArgSpecModel;
+  private SpecModel mKotlinWildcardsVarArgBuildersSpecModel;
 
   @Before
   public void setUp() {
@@ -120,6 +135,17 @@ public class BuilderGeneratorTest {
             RunMode.NORMAL,
             null,
             null);
+
+    TypeElement typeElementKotlinVarArgsWildcards = elements.getTypeElement(TestKotlinVarArgSpec
+        .class.getCanonicalName());
+    mKotlinWildcardsVarArgBuildersSpecModel = mLayoutSpecModelFactory.create(
+        elements,
+        types,
+        typeElementKotlinVarArgsWildcards,
+        mMessager,
+        RunMode.NORMAL,
+        null,
+        null);
   }
 
   @Test
@@ -527,5 +553,77 @@ public class BuilderGeneratorTest {
                 + "    mContext = null;\n"
                 + "  }\n"
                 + "}\n");
+  }
+
+  @Test
+  public void testKotlinVarArgWildcardsGenerate() {
+    TypeSpecDataHolder dataHolder =
+        BuilderGenerator.generate(mKotlinWildcardsVarArgBuildersSpecModel);
+    assertThat(dataHolder.getTypeSpecs()).hasSize(1);
+    assertThat(dataHolder.getTypeSpecs().get(0).toString())
+        .isEqualTo("public static class Builder extends com.facebook.litho.Component.Builder<Builder> {\n"
+            + "  private static final java.lang.String[] REQUIRED_PROPS_NAMES = new String[] {\"colors\"};\n"
+            + "\n"
+            + "  private static final int REQUIRED_PROPS_COUNT = 1;\n"
+            + "\n"
+            + "  TestKotlinVarArg mTestKotlinVarArg;\n"
+            + "\n"
+            + "  com.facebook.litho.ComponentContext mContext;\n"
+            + "\n"
+            + "  private final java.util.BitSet mRequired = new java.util.BitSet(REQUIRED_PROPS_COUNT);\n"
+            + "\n"
+            + "  private void init(com.facebook.litho.ComponentContext context, int defStyleAttr, int defStyleRes,\n"
+            + "      TestKotlinVarArg testKotlinVarArgRef) {\n"
+            + "    super.init(context, defStyleAttr, defStyleRes, testKotlinVarArgRef);\n"
+            + "    mTestKotlinVarArg = testKotlinVarArgRef;\n"
+            + "    mContext = context;\n"
+            + "    mRequired.clear();\n"
+            + "  }\n"
+            + "\n"
+            + "  public Builder color(android.graphics.Color color) {\n"
+            + "    if (color == null) {\n"
+            + "      return this;\n"
+            + "    }\n"
+            + "    if (this.mTestKotlinVarArg.colors == null) {\n"
+            + "      this.mTestKotlinVarArg.colors = new java.util.ArrayList<android.graphics.Color>();\n"
+            + "    }\n"
+            + "    this.mTestKotlinVarArg.colors.add(color);\n"
+            + "    mRequired.set(0);\n"
+            + "    return this;\n"
+            + "  }\n"
+            + "\n"
+            + "  public Builder colors(java.util.List<android.graphics.Color> colors) {\n"
+            + "    if (colors == null) {\n"
+            + "      return this;\n"
+            + "    }\n"
+            + "    if (this.mTestKotlinVarArg.colors == null || this.mTestKotlinVarArg.colors.isEmpty()) {\n"
+            + "      this.mTestKotlinVarArg.colors = colors;\n"
+            + "    } else {\n"
+            + "      this.mTestKotlinVarArg.colors.addAll(colors);\n"
+            + "    }\n"
+            + "    mRequired.set(0);\n"
+            + "    return this;\n"
+            + "  }\n"
+            + "\n"
+            + "  @java.lang.Override\n"
+            + "  public Builder getThis() {\n"
+            + "    return this;\n"
+            + "  }\n"
+            + "\n"
+            + "  @java.lang.Override\n"
+            + "  public com.facebook.litho.specmodels.generator.BuilderGeneratorTest.TestKotlinVarArg build() {\n"
+            + "    checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);\n"
+            + "    TestKotlinVarArg testKotlinVarArgRef = mTestKotlinVarArg;\n"
+            + "    release();\n"
+            + "    return testKotlinVarArgRef;\n"
+            + "  }\n"
+            + "\n"
+            + "  @java.lang.Override\n"
+            + "  protected void release() {\n"
+            + "    super.release();\n"
+            + "    mTestKotlinVarArg = null;\n"
+            + "    mContext = null;\n"
+            + "  }\n"
+            + "}\n");
   }
 }
