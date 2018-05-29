@@ -19,6 +19,7 @@ package com.facebook.litho.testing.specmodels;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
+import com.facebook.litho.specmodels.model.CommonPropDefaultModel;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
@@ -71,6 +72,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   private final ImmutableList<InjectPropModel> mRawInjectProps;
   private final ImmutableList<InjectPropModel> mInjectProps;
   private final ImmutableList<PropDefaultModel> mPropDefaults;
+  private final ImmutableList<CommonPropDefaultModel> mCommonPropDefaults;
   private final ImmutableList<TypeVariableName> mTypeVariables;
   private final ImmutableList<StateParamModel> mStateValues;
   private final ImmutableList<InterStageInputParamModel> mInterStageInputs;
@@ -119,6 +121,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       ImmutableList<InjectPropModel> rawInjectProps,
       ImmutableList<InjectPropModel> injectProps,
       ImmutableList<PropDefaultModel> propDefaults,
+      ImmutableList<CommonPropDefaultModel> commonPropDefaults,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<StateParamModel> stateValues,
       ImmutableList<InterStageInputParamModel> interStageInputs,
@@ -165,6 +168,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     mRawInjectProps = rawInjectProps;
     mInjectProps = injectProps;
     mPropDefaults = propDefaults;
+    mCommonPropDefaults = commonPropDefaults;
     mTypeVariables = typeVariables;
     mStateValues = stateValues;
     mInterStageInputs = interStageInputs;
@@ -276,6 +280,11 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   @Override
   public ImmutableList<PropDefaultModel> getPropDefaults() {
     return mPropDefaults;
+  }
+
+  @Override
+  public ImmutableList<CommonPropDefaultModel> getCommonPropDefaults() {
+    return mCommonPropDefaults;
   }
 
   @Override
@@ -466,6 +475,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     private ImmutableList<InjectPropModel> mRawInjectProps = ImmutableList.of();
     private ImmutableList<InjectPropModel> mInjectProps = ImmutableList.of();
     private ImmutableList<PropDefaultModel> mPropDefaults = ImmutableList.of();
+    private ImmutableList<CommonPropDefaultModel> mCommonPropDefaults = ImmutableList.of();
     private ImmutableList<TypeVariableName> mTypeVariables = ImmutableList.of();
     private ImmutableList<StateParamModel> mStateValues = ImmutableList.of();
     private ImmutableList<InterStageInputParamModel> mInterStageInputs = ImmutableList.of();
@@ -584,6 +594,11 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
 
     public Builder propDefaults(ImmutableList<PropDefaultModel> propDefaults) {
       mPropDefaults = propDefaults;
+      return this;
+    }
+
+    public Builder commonPropDefaults(ImmutableList<CommonPropDefaultModel> commonPropDefaults) {
+      mCommonPropDefaults = commonPropDefaults;
       return this;
     }
 
@@ -754,6 +769,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mRawInjectProps,
           mInjectProps,
           mPropDefaults,
+          mCommonPropDefaults,
           mTypeVariables,
           mStateValues,
           mInterStageInputs,
@@ -811,6 +827,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           && Objects.equals(mRawProps, builder.mRawProps)
           && Objects.equals(mProps, builder.mProps)
           && Objects.equals(mPropDefaults, builder.mPropDefaults)
+          && Objects.equals(mCommonPropDefaults, builder.mCommonPropDefaults)
           && Objects.equals(mTypeVariables, builder.mTypeVariables)
           && Objects.equals(mStateValues, builder.mStateValues)
           && Objects.equals(mInterStageInputs, builder.mInterStageInputs)
@@ -854,6 +871,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mUpdateStateWithTransitionMethods,
           mProps,
           mPropDefaults,
+          mCommonPropDefaults,
           mTypeVariables,
           mStateValues,
           mInterStageInputs,

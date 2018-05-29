@@ -87,6 +87,9 @@ public interface SpecModel {
   /** @return the set of prop defaults defined by the spec. */
   ImmutableList<PropDefaultModel> getPropDefaults();
 
+  /** @return the set of common prop defaults defined by the spec. */
+  ImmutableList<CommonPropDefaultModel> getCommonPropDefaults();
+
   /** @return the type variables that are defined by the spec. */
   ImmutableList<TypeVariableName> getTypeVariables();
 

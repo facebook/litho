@@ -58,6 +58,7 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<InjectPropModel> mInjectProps;
   private final ImmutableList<InjectPropModel> mRawInjectProps;
   private final ImmutableList<PropDefaultModel> mPropDefaults;
+  private final ImmutableList<CommonPropDefaultModel> mCommonPropDefaults;
   private final ImmutableList<TypeVariableName> mTypeVariables;
   private final ImmutableList<StateParamModel> mStateValues;
   private final ImmutableList<InterStageInputParamModel> mInterStageInputs;
@@ -90,6 +91,7 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<String> cachedPropNames,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
+      ImmutableList<CommonPropDefaultModel> commonPropDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
       ImmutableList<BuilderMethodModel> implicitBuilderMethods,
       ImmutableList<AnnotationSpec> classAnnotations,
@@ -134,6 +136,7 @@ public final class SpecModelImpl implements SpecModel {
             ? getInjectProps(mRawInjectProps, cachedPropNames, mRawProps.size())
             : injectProps;
     mPropDefaults = propDefaults;
+    mCommonPropDefaults = commonPropDefaults;
     mTypeVariables = typeVariables;
     mStateValues =
         getStateValues(
@@ -254,6 +257,11 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public ImmutableList<PropDefaultModel> getPropDefaults() {
     return mPropDefaults;
+  }
+
+  @Override
+  public ImmutableList<CommonPropDefaultModel> getCommonPropDefaults() {
+    return mCommonPropDefaults;
   }
 
   @Override
@@ -960,6 +968,7 @@ public final class SpecModelImpl implements SpecModel {
     private ImmutableList<String> mCachedPropNames;
     private ImmutableList<TypeVariableName> mTypeVariableNames;
     private ImmutableList<PropDefaultModel> mPropDefaultModels;
+    private ImmutableList<CommonPropDefaultModel> mCommonPropDefaultModels;
     private ImmutableList<EventDeclarationModel> mEventDeclarations;
     private ImmutableList<BuilderMethodModel> mBuilderMethodModels;
     private ImmutableList<AnnotationSpec> mClassAnnotations;
@@ -1052,6 +1061,12 @@ public final class SpecModelImpl implements SpecModel {
       return this;
     }
 
+    public Builder commonPropDefaults(
+        ImmutableList<CommonPropDefaultModel> commonPropDefaultModels) {
+      mCommonPropDefaultModels = commonPropDefaultModels;
+      return this;
+    }
+
     public Builder eventDeclarations(ImmutableList<EventDeclarationModel> eventDeclarations) {
       mEventDeclarations = eventDeclarations;
       return this;
@@ -1133,6 +1148,7 @@ public final class SpecModelImpl implements SpecModel {
           mCachedPropNames,
           mTypeVariableNames,
           mPropDefaultModels,
+          mCommonPropDefaultModels,
           mEventDeclarations,
           mBuilderMethodModels,
           mClassAnnotations,
@@ -1182,6 +1198,10 @@ public final class SpecModelImpl implements SpecModel {
 
       if (mPropDefaultModels == null) {
         mPropDefaultModels = ImmutableList.of();
+      }
+
+      if (mCommonPropDefaultModels == null) {
+        mCommonPropDefaultModels = ImmutableList.of();
       }
 
       if (mCachedPropNames == null) {

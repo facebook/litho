@@ -141,6 +141,7 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory {
             element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
         ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),
+        PropDefaultsExtractor.getCommonPropDefaults(element),
         EventDeclarationsExtractor.getEventDeclarations(
             elements, element, DiffSectionSpec.class, runMode),
         ImmutableList.of(BuilderMethodModel.KEY_BUILDER_METHOD, LOADING_EVENT_BUILDER_METHOD),

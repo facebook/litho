@@ -19,6 +19,7 @@ package com.facebook.litho.sections.specmodels.model;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
+import com.facebook.litho.specmodels.model.CommonPropDefaultModel;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
@@ -68,6 +69,7 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
+      ImmutableList<CommonPropDefaultModel> commonPropDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
       ImmutableList<AnnotationSpec> classAnnotations,
       ImmutableList<BuilderMethodModel> builderMethodModels,
@@ -90,6 +92,7 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
             .eventMethods(eventMethods)
             .triggerMethods(triggerMethods)
             .propDefaults(propDefaults)
+            .commonPropDefaults(commonPropDefaults)
             .eventDeclarations(eventDeclarations)
             .classAnnotations(classAnnotations)
             .extraBuilderMethods(builderMethodModels)
@@ -185,6 +188,11 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   @Override
   public ImmutableList<PropDefaultModel> getPropDefaults() {
     return mSpecModel.getPropDefaults();
+  }
+
+  @Override
+  public ImmutableList<CommonPropDefaultModel> getCommonPropDefaults() {
+    return mSpecModel.getCommonPropDefaults();
   }
 
   @Override
