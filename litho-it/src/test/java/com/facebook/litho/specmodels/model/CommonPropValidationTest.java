@@ -41,6 +41,11 @@ public class CommonPropValidationTest {
   private final Object mMethodParamObject3 = new Object();
   private final Object mMethodParamObject4 = new Object();
 
+  private final Object mCommonPropDefault1 = new Object();
+  private final Object mCommonPropDefault2 = new Object();
+  private final Object mCommonPropDefault3 = new Object();
+  private final Object mCommonPropDefault4 = new Object();
+
   @Before
   public void setup() {
     when(mSpecModel.getRepresentedObject()).thenReturn(mModelRepresentedObject);
@@ -87,7 +92,8 @@ public class CommonPropValidationTest {
                     .build()));
 
     final List<SpecModelValidationError> validationErrors =
-        CommonPropValidation.validate(mSpecModel, CommonPropValidation.VALID_COMMON_PROPS);
+        CommonPropValidation.validateCommonProps(
+            mSpecModel, CommonPropValidation.VALID_COMMON_PROPS);
     assertThat(validationErrors).hasSize(2);
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
     assertThat(validationErrors.get(0).message)
@@ -96,5 +102,50 @@ public class CommonPropValidationTest {
     assertThat(validationErrors.get(1).element).isEqualTo(mMethodParamObject4);
     assertThat(validationErrors.get(1).message)
         .isEqualTo("A common prop with name focusable must have type of: boolean");
+  }
+
+  @Test
+  public void testCommonPropDefaultNotValid() {
+    when(mSpecModel.getCommonPropDefaults())
+        .thenReturn(
+            ImmutableList.of(
+                new CommonPropDefaultModel(
+                    ClassName.bestGuess("java.lang.CharSequence"),
+                    "contentDescription",
+                    ImmutableList.of(Modifier.PROTECTED, Modifier.STATIC, Modifier.FINAL),
+                    mCommonPropDefault1),
+                new CommonPropDefaultModel(
+                    ClassName.bestGuess("java.lang.CharSequence"),
+                    "rubbish",
+                    ImmutableList.of(Modifier.PROTECTED, Modifier.STATIC, Modifier.FINAL),
+                    mCommonPropDefault2),
+                new CommonPropDefaultModel(
+                    TypeName.INT,
+                    "contentDescription",
+                    ImmutableList.of(Modifier.PROTECTED, Modifier.STATIC, Modifier.FINAL),
+                    mCommonPropDefault3),
+                new CommonPropDefaultModel(
+                    ClassName.bestGuess("java.lang.CharSequence"),
+                    "contentDescription",
+                    ImmutableList.of(Modifier.PROTECTED),
+                    mCommonPropDefault4)));
+
+    final List<SpecModelValidationError> validationErrors =
+        CommonPropValidation.validateCommonPropDefaults(mSpecModel);
+    assertThat(validationErrors).hasSize(3);
+
+    assertThat(validationErrors.get(0).element).isEqualTo(mCommonPropDefault2);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Common prop default with name rubbish is incorrectly defined - see CommonPropValidation.java for a list of common prop defaults that may be used.");
+
+    assertThat(validationErrors.get(1).element).isEqualTo(mCommonPropDefault3);
+    assertThat(validationErrors.get(1).message)
+        .isEqualTo(
+            "A common prop default with name contentDescription must have type of: java.lang.CharSequence");
+
+    assertThat(validationErrors.get(2).element).isEqualTo(mCommonPropDefault4);
+    assertThat(validationErrors.get(2).message)
+        .isEqualTo("Common prop defaults must be defined as protected, static and final");
   }
 }

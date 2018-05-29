@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright 2018-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.facebook.litho.processor.integration.resources;
 
 import android.annotation.TargetApi;
@@ -559,6 +558,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       mTestLayout = testLayoutRef;
       mContext = context;
       mRequired.clear();
+      contentDescription(TestLayoutSpec.contentDescription);
     }
 
     public Builder<S> child(Component child) {

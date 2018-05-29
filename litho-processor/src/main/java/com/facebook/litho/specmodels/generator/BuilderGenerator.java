@@ -19,6 +19,7 @@ package com.facebook.litho.specmodels.generator;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.CommonPropDefaultModel;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
@@ -229,6 +230,11 @@ public class BuilderGenerator {
               .build());
 
       initMethodSpec.addStatement("mRequired.clear()");
+    }
+
+    for (CommonPropDefaultModel commonPropDefault : specModel.getCommonPropDefaults()) {
+      initMethodSpec.addStatement(
+          "$L($L.$L)", commonPropDefault.mName, specModel.getSpecName(), commonPropDefault.mName);
     }
 
     propsBuilderClassBuilder.addMethod(initMethodSpec.build());

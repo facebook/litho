@@ -28,6 +28,7 @@ import com.facebook.litho.Output;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
 import com.facebook.litho.annotations.CommonProp;
+import com.facebook.litho.annotations.CommonPropDefault;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.FromTrigger;
 import com.facebook.litho.annotations.LayoutSpec;
@@ -50,6 +51,7 @@ import com.facebook.litho.annotations.TreeProp;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 public class TestLayoutSpec<S extends View> implements TestTag {
   @PropDefault protected static final boolean prop2 = true;
+  @CommonPropDefault protected static final CharSequence contentDescription = "content_description";
 
   @OnLoadStyle
   static void onLoadStyle(ComponentContext c, Output<Boolean> prop2, Output<Object> prop3) {}
