@@ -29,9 +29,12 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.Dimension;
+import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import com.facebook.yoga.YogaEdge;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Represents a collection of attributes that describe how a border should be applied to a layout
@@ -43,9 +46,19 @@ public class Border {
   static final int EDGE_BOTTOM = 3;
   static final int EDGE_COUNT = 4;
 
-  static final int DIM_X = 0;
-  static final int DIM_Y = 1;
-  static final int RADIUS_COUNT = 2;
+  @Retention(RetentionPolicy.SOURCE)
+  @IntDef(
+    flag = true,
+    value = {Corner.TOP_LEFT, Corner.TOP_RIGHT, Corner.BOTTOM_RIGHT, Corner.BOTTOM_LEFT}
+  )
+  public @interface Corner {
+    int TOP_LEFT = 0;
+    int TOP_RIGHT = 1;
+    int BOTTOM_RIGHT = 2;
+    int BOTTOM_LEFT = 3;
+  }
+
+  static final int RADIUS_COUNT = 4;
 
   final float[] mRadius = new float[RADIUS_COUNT];
   final int[] mEdgeWidths = new int[EDGE_COUNT];
@@ -237,29 +250,23 @@ public class Border {
       return widthPx(edge, mResourceResolver.resolveDimenSizeAttr(attrId, defaultResId));
     }
 
-    private void radiusPx(int dimension, int radius) {
-      if (dimension >= Border.RADIUS_COUNT) {
-        throw new IllegalArgumentException("Given invalid dimension index " + dimension);
-      }
-      mBorder.mRadius[dimension] = radius;
-    }
-
     /**
-     * Specifies the border radius in both X and Y dimensions
+     * Specifies the border radius for all corners
      *
-     * @param radius The desired border radius in both X and Y dimensions
+     * @param radius The desired border radius for all corners
      */
     public Builder radiusPx(@Px int radius) {
       checkNotBuilt();
-      radiusPx(Border.DIM_X, radius);
-      radiusPx(Border.DIM_Y, radius);
+      for (int i = 0; i < RADIUS_COUNT; ++i) {
+        mBorder.mRadius[i] = radius;
+      }
       return this;
     }
 
     /**
-     * Specifies the border radius in both X and Y dimensions
+     * Specifies the border radius for all corners
      *
-     * @param radius The desired border radius in both X and Y dimensions
+     * @param radius The desired border radius for all corners
      */
     public Builder radiusDip(@Dimension(unit = DP) float radius) {
       checkNotBuilt();
@@ -267,7 +274,7 @@ public class Border {
     }
 
     /**
-     * Specifies the border radius in both X and Y dimensions
+     * Specifies the border radius for all corners
      *
      * @param radiusRes The resource id to retrieve the border radius value from
      */
@@ -277,7 +284,7 @@ public class Border {
     }
 
     /**
-     * Specifies the border radius in both X and Y dimensions
+     * Specifies the border radius for all corners
      *
      * @param attrId The attribute id to retrieve the border radius value from
      */
@@ -286,7 +293,7 @@ public class Border {
     }
 
     /**
-     * Specifies the border radius in both X and Y dimensions
+     * Specifies the border radius for all corners
      *
      * @param attrId The attribute id to retrieve the border radius value from
      * @param defaultResId Default resource to utilize if the attribute is not set
@@ -297,105 +304,52 @@ public class Border {
     }
 
     /**
-     * Specifies the border radius in the X dimension
+     * Specifies the border radius for the given corner
      *
-     * @param radius The desired border radius in the X dimension
+     * @param corner The {@link Corner} to specify the radius of
+     * @param radius The desired radius
      */
-    public Builder radiusXPx(@Px int radius) {
+    public Builder radiusPx(@Corner int corner, @Px int radius) {
       checkNotBuilt();
-      radiusPx(Border.DIM_X, radius);
+      if (corner < 0 || corner >= RADIUS_COUNT) {
+        throw new IllegalArgumentException("Given invalid corner: " + corner);
+      }
+      mBorder.mRadius[corner] = radius;
       return this;
     }
 
     /**
-     * Specifies the border radius in the X dimension
+     * Specifies the border radius for the given corner
      *
-     * @param radius The desired border radius in the X dimension
+     * @param corner The {@link Corner} to specify the radius of
+     * @param radius The desired radius
      */
-    public Builder radiusXDip(@Dimension(unit = DP) float radius) {
+    public Builder radiusDip(@Corner int corner, @Dimension(unit = DP) float radius) {
       checkNotBuilt();
-      return radiusXPx(mResourceResolver.dipsToPixels(radius));
+      return radiusPx(corner, mResourceResolver.dipsToPixels(radius));
     }
 
     /**
-     * Specifies the border radius in the X dimension
+     * Specifies the border radius for the given corner
      *
-     * @param radiusRes The resource id to retrieve the border radius value from
+     * @param corner The {@link Corner} to specify the radius of
+     * @param res The desired dimension resource to use for the radius
      */
-    public Builder radiusXRes(@DimenRes int radiusRes) {
+    public Builder radiusRes(@Corner int corner, @DimenRes int res) {
       checkNotBuilt();
-      return radiusXPx(mResourceResolver.resolveDimenSizeRes(radiusRes));
+      return radiusPx(corner, mResourceResolver.resolveDimenSizeRes(res));
     }
 
     /**
-     * Specifies the border radius in the X dimension
+     * Specifies the border radius for the given corner
      *
-     * @param attrId The attribute id to retrieve the border radius value from
+     * @param corner The {@link Corner} to specify the radius of
+     * @param attrId The attribute ID to retrieve the radius from
+     * @param defaultResId Default resource ID to use if the attribute is not set
      */
-    public Builder radiusXAttr(@AttrRes int attrId) {
-      return radiusXAttr(attrId, 0);
-    }
-
-    /**
-     * Specifies the border radius in the X dimension
-     *
-     * @param attrId The attribute id to retrieve the border radius value from
-     * @param defaultResId Default resource to utilize if the attribute is not set
-     */
-    public Builder radiusXAttr(@AttrRes int attrId, @DimenRes int defaultResId) {
+    public Builder radiusAttr(@Corner int corner, @AttrRes int attrId, @DimenRes int defaultResId) {
       checkNotBuilt();
-      return radiusXPx(mResourceResolver.resolveDimenSizeAttr(attrId, defaultResId));
-    }
-
-    /**
-     * Specifies the border radius in the Y dimension
-     *
-     * @param radius The desired border radius in the Y dimension
-     */
-    public Builder radiusYPx(@Px int radius) {
-      checkNotBuilt();
-      radiusPx(Border.DIM_Y, radius);
-      return this;
-    }
-
-    /**
-     * Specifies the border radius in the Y dimension
-     *
-     * @param radius The desired border radius in the Y dimension
-     */
-    public Builder radiusYDip(@Dimension(unit = DP) float radius) {
-      checkNotBuilt();
-      return radiusYPx(mResourceResolver.dipsToPixels(radius));
-    }
-
-    /**
-     * Specifies the border radius in the Y dimension
-     *
-     * @param radiusRes The resource id to retrieve the border radius value from
-     */
-    public Builder radiusYRes(@DimenRes int radiusRes) {
-      checkNotBuilt();
-      return radiusYPx(mResourceResolver.resolveDimenSizeRes(radiusRes));
-    }
-
-    /**
-     * Specifies the border radius in the Y dimension
-     *
-     * @param attrId The attribute id to retrieve the border radius value from
-     */
-    public Builder radiusYAttr(@AttrRes int attrId) {
-      return radiusYAttr(attrId, 0);
-    }
-
-    /**
-     * Specifies the border radius in the Y dimension
-     *
-     * @param attrId The attribute id to retrieve the border radius value from
-     * @param defaultResId Default resource to utilize if the attribute is not set
-     */
-    public Builder radiusYAttr(@AttrRes int attrId, @DimenRes int defaultResId) {
-      checkNotBuilt();
-      return radiusYPx(mResourceResolver.resolveDimenSizeAttr(attrId, defaultResId));
+      return radiusPx(corner, mResourceResolver.resolveDimenSizeAttr(attrId, defaultResId));
     }
 
     /**
@@ -450,8 +404,7 @@ public class Border {
       if (radius < 0f) {
         throw new IllegalArgumentException("Can't have a negative radius value");
       }
-      mBorder.mRadius[DIM_X] = radius;
-      mBorder.mRadius[DIM_Y] = radius;
+      radiusPx(Math.round(radius));
       return this;
     }
 

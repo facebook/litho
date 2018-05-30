@@ -20,6 +20,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PathEffect;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
@@ -37,11 +38,13 @@ public class BorderColorDrawable extends Drawable {
   private static final RectF mClipBounds = new RectF();
   private static final RectF mDrawBounds = new RectF();
   private final Paint mPaint = new Paint();
+  private final Path mPath = new Path();
   private float mBorderLeftWidth;
   private float mBorderTopWidth;
   private float mBorderRightWidth;
   private float mBorderBottomWidth;
   private float[] mBorderRadius;
+  private boolean mDrawBorderWithPath;
   private @ColorInt int mBorderLeftColor;
   private @ColorInt int mBorderTopColor;
   private @ColorInt int mBorderRightColor;
@@ -71,11 +74,34 @@ public class BorderColorDrawable extends Drawable {
     mBorderRightColor = rightBorderColor;
     mBorderBottomColor = bottomBorderColor;
 
-    mBorderRadius = Arrays.copyOf(borderRadius, Border.RADIUS_COUNT);
+    mBorderRadius = Arrays.copyOf(borderRadius, borderRadius.length);
+    boolean hasRadius = false;
+    float lastRadius = 0f;
+    for (int i = 0; i < mBorderRadius.length; ++i) {
+      final float radius = mBorderRadius[i];
+      if (radius > 0f) {
+        hasRadius = true;
+      }
+      if (i == 0) {
+        lastRadius = radius;
+      } else if (lastRadius != radius) {
+        mDrawBorderWithPath = true;
+        break;
+      }
+    }
+
+    if (mDrawBorderWithPath) {
+      // Need to duplicate values because Android expects X / Y radii specified separately
+      float[] radii = new float[8];
+      for (int i = 0; i < 4; ++i) {
+        radii[i * 2] = mBorderRadius[i];
+        radii[i * 2 + 1] = mBorderRadius[i];
+      }
+      mBorderRadius = radii;
+    }
 
     mPaint.setPathEffect(pathEffect);
-    mPaint.setAntiAlias(
-        pathEffect != null || mBorderRadius[Border.DIM_X] > 0f || mBorderRadius[Border.DIM_Y] > 0f);
+    mPaint.setAntiAlias(pathEffect != null || hasRadius);
     mPaint.setStyle(Paint.Style.STROKE);
   }
 
@@ -111,7 +137,7 @@ public class BorderColorDrawable extends Drawable {
     mDrawBounds.inset(inset, inset);
     mPaint.setStrokeWidth(strokeWidth);
     mPaint.setColor(color);
-    drawBorder(canvas, mDrawBounds, mBorderRadius, mPaint);
+    drawBorder(canvas, mDrawBounds, path(), mBorderRadius, mPaint);
   }
 
   /** Special case, support for multi color with same widths */
@@ -138,7 +164,7 @@ public class BorderColorDrawable extends Drawable {
       canvas.rotate(-CLIP_ANGLE, 0f, 0f);
 
       mPaint.setColor(mBorderLeftColor);
-      drawBorder(canvas, mDrawBounds, mBorderRadius, mPaint);
+      drawBorder(canvas, mDrawBounds, path(), mBorderRadius, mPaint);
       canvas.restoreToCount(saveCount);
     }
 
@@ -151,7 +177,7 @@ public class BorderColorDrawable extends Drawable {
       canvas.rotate(CLIP_ANGLE, width, 0f);
 
       mPaint.setColor(mBorderRightColor);
-      drawBorder(canvas, mDrawBounds, mBorderRadius, mPaint);
+      drawBorder(canvas, mDrawBounds, path(), mBorderRadius, mPaint);
       canvas.restoreToCount(saveCount);
     }
 
@@ -170,7 +196,7 @@ public class BorderColorDrawable extends Drawable {
       canvas.clipRect(hypotenuse, 0f, width - hypotenuse, hypotenuse, Region.Op.UNION);
 
       mPaint.setColor(mBorderTopColor);
-      drawBorder(canvas, mDrawBounds, mBorderRadius, mPaint);
+      drawBorder(canvas, mDrawBounds, path(), mBorderRadius, mPaint);
       canvas.restoreToCount(saveCount);
     }
 
@@ -189,7 +215,7 @@ public class BorderColorDrawable extends Drawable {
       canvas.clipRect(hypotenuse, height - hypotenuse, width - hypotenuse, height, Region.Op.UNION);
 
       mPaint.setColor(mBorderBottomColor);
-      drawBorder(canvas, mDrawBounds, mBorderRadius, mPaint);
+      drawBorder(canvas, mDrawBounds, path(), mBorderRadius, mPaint);
       canvas.restoreToCount(saveCount);
     }
 
@@ -273,17 +299,27 @@ public class BorderColorDrawable extends Drawable {
 
     int saveCount = canvas.save();
     canvas.clipRect(mClipBounds);
-    drawBorder(canvas, mDrawBounds, mBorderRadius, mPaint);
+    drawBorder(canvas, mDrawBounds, path(), mBorderRadius, mPaint);
     canvas.restoreToCount(saveCount);
   }
 
-  private static void drawBorder(Canvas canvas, RectF bounds, float[] radii, Paint paint) {
+  private Path path() {
+    return mDrawBorderWithPath ? mPath : null;
+  }
+
+  private static void drawBorder(
+      Canvas canvas, RectF bounds, Path path, float[] radii, Paint paint) {
     float maxRadii = Math.min(bounds.width(), bounds.height()) / 2f;
-    canvas.drawRoundRect(
-        bounds,
-        Math.min(maxRadii, radii[Border.DIM_X]),
-        Math.min(maxRadii, radii[Border.DIM_Y]),
-        paint);
+    if (path == null) {
+      // All radii are the same
+      float radius = Math.min(maxRadii, radii[0]);
+      canvas.drawRoundRect(bounds, radius, radius, paint);
+    } else {
+      if (path.isEmpty()) {
+        path.addRoundRect(bounds, radii, Path.Direction.CW);
+      }
+      canvas.drawPath(path, paint);
+    }
   }
 
   @Override
