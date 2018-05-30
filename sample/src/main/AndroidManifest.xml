@@ -44,6 +44,7 @@
     <activity android:name=".animations.animationcomposition.ComposedAnimationsActivity" />
     <activity android:name=".animations.expandableelement.ExpandableElementActivity" />
     <activity android:name=".animations.bounds.BoundsAnimationActivity" />
+    <activity android:name=".animations.pageindicators.PageIndicatorsActivity" />
   </application>
 
 
