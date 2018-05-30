@@ -216,7 +216,6 @@ public class VerticalScrollSpec {
     }
 
     private void unmount() {
-      mLithoView.unbind();
     }
   }
 
