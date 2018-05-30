@@ -9,7 +9,7 @@ Litho provides extensive support for stylized borders on component layouts. All 
 
 ## Border Widths
 
-Litho supports setting a border width for all edges, or a different width per edge. Specifying a width for a certain edge is done via the various `width` builder methods. 
+Litho supports setting a border width for all edges, or a different width per edge. Specifying a width for a certain edge is done via the various `width` builder methods.
 
 For example, let's say you wanted to specify a 10 dip border width for all edges:
 
@@ -70,7 +70,7 @@ Row.create(c)
 
 ## Border Colors
 
-Setting a color for a certain border edge is set via the various `color` builder methods. 
+Setting a color for a certain border edge is set via the various `color` builder methods.
 
 You can set each border edge to any color you'd like:
 
@@ -137,7 +137,7 @@ Row.create(c)
   .build();
 ```
 
-You may also set a separate radius value per the X and Y dimensions:
+You may also set a separate radius value per corner:
 
 ![Varying Border Radii](/static/images/border-radius-separate.png)
 
@@ -152,8 +152,8 @@ Row.create(c)
       .widthDip(YogaEdge.ALL, 5)
       .color(YogaEdge.ALL, 0xfff36b7f)
       // We set a border X radius of 10 dip and Y radius of 30
-      .radiusXDip(10f)
-      .radiusYDip(30f)
+      .radiusDip(Border.Corner.TOP_LEFT, 10f)
+      .radiusDip(Border.Corner.TOP_RIGHT, 30f)
       .build())
   .build();
 ```
