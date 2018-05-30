@@ -43,11 +43,16 @@ object DemoListItemComponentSpec {
       c: ComponentContext,
       @FromEvent view: View,
       @Prop model: DemoListDataModel,
-      @Prop currentIndices: IntArray
+      @Prop currentIndex: Int
   ) {
-    val intent = Intent(c,
-        if (model.datamodels == null) model.klass else DemoListActivity::class.java)
-    intent.putExtra(DemoListActivity.INDICES, currentIndices)
+    val activityClass = if (model.datamodels == null) {
+      model.klass
+    } else {
+      DemoListActivity::class.java
+    }
+
+    val intent = Intent(c, activityClass)
+    intent.putExtra(DemoListActivity.INDEX, currentIndex)
     c.startActivity(intent)
   }
 }

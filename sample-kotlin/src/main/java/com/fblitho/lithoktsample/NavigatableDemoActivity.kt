@@ -20,9 +20,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import com.fblitho.lithoktsample.demo.DataModels
 import com.fblitho.lithoktsample.demo.DemoListActivity
-import com.fblitho.lithoktsample.demo.DemoListActivity.Companion.INDICES
-import com.fblitho.lithoktsample.demo.DemoListDataModel
-import java.util.Arrays
+import com.fblitho.lithoktsample.demo.DemoListActivity.Companion.INDEX
 
 @SuppressLint("Registered")
 open class NavigatableDemoActivity : AppCompatActivity() {
@@ -30,44 +28,30 @@ open class NavigatableDemoActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val indices = intent.getIntArrayExtra(INDICES)
-
-    if (indices != null) {
-      supportActionBar?.setDisplayHomeAsUpEnabled(true)
-      setTitleFromIndices(indices)
-    }
+    intent
+        .getIntExtra(INDEX, -1)
+        .takeIf { it > -1 }
+        ?.let {
+          supportActionBar?.setDisplayHomeAsUpEnabled(true)
+          setTitleFromIndex(it)
+        }
   }
 
-  override fun onOptionsItemSelected(item: MenuItem): Boolean {
-    when (item.itemId) {
-    // Respond to the action bar's Up/Home button
-      android.R.id.home -> {
+  override fun onOptionsItemSelected(item: MenuItem): Boolean =
+      if (item.itemId == android.R.id.home) {
         NavUtils.navigateUpFromSameTask(this)
-        return true
+        true
+      } else {
+        super.onOptionsItemSelected(item)
       }
-    }
-    return super.onOptionsItemSelected(item)
-  }
 
-  override fun getParentActivityIntent(): Intent? {
-    val indices = intent.getIntArrayExtra(DemoListActivity.INDICES) ?: return null
+  override fun getParentActivityIntent(): Intent = Intent(this, DemoListActivity::class.java)
 
-    val parentIntent = Intent(this, DemoListActivity::class.java)
-    if (indices.size > 1) {
-      parentIntent.putExtra(DemoListActivity.INDICES, Arrays.copyOf(indices, indices.size - 1))
-    }
-
-    return parentIntent
-  }
-
-  private fun setTitleFromIndices(indices: IntArray) {
-    var dataModels: List<DemoListDataModel>? = DataModels.DATA_MODELS
-
-    for (i in 0 until indices.size - 1) {
-      dataModels = dataModels?.get(indices[i])?.datamodels
-    }
-
-    val title = dataModels?.get(indices[indices.size - 1])?.name
-    setTitle(title)
+  private fun setTitleFromIndex(index: Int) {
+    index
+        .takeIf { it > -1 }
+        ?.let {
+          title = DataModels.DATA_MODELS[it].name
+        }
   }
 }

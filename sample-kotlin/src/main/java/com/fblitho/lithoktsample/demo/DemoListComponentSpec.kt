@@ -27,7 +27,6 @@ import com.facebook.litho.sections.common.RenderEvent
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.RenderInfo
-import java.util.Arrays
 
 @LayoutSpec
 object DemoListComponentSpec {
@@ -51,27 +50,17 @@ object DemoListComponentSpec {
   @OnEvent(RenderEvent::class)
   fun onRender(
       c: ComponentContext,
-      @Prop parentIndices: IntArray?,
+      @Prop parentIndex: Int,
       @FromEvent model: DemoListDataModel,
-      @FromEvent index: Int): RenderInfo =
+      @FromEvent index: Int
+  ): RenderInfo =
       ComponentRenderInfo.create()
           .component(
               DemoListItemComponent.create(c)
                   .model(model)
-                  .currentIndices(getUpdatedIndices(parentIndices, index))
+                  .currentIndex(index)
                   .build())
           .build()
-
-  fun getUpdatedIndices(parentIndices: IntArray?, currentIndex: Int): IntArray {
-    if (parentIndices == null) {
-      return intArrayOf(currentIndex)
-    }
-
-    val updatedIndices = Arrays.copyOf(parentIndices, parentIndices.size + 1)
-    updatedIndices[parentIndices.size] = currentIndex
-
-    return updatedIndices
-  }
 
   /**
    * Called during DataDiffSection's diffing to determine if two objects represent the same item.
@@ -80,7 +69,8 @@ object DemoListComponentSpec {
    * @return true if the two objects in the event represent the same item.
    */
   @OnEvent(OnCheckIsSameItemEvent::class)
-  fun isSameItem(c: ComponentContext,
+  fun isSameItem(
+      c: ComponentContext,
       @FromEvent previousItem: DemoListDataModel,
       @FromEvent nextItem: DemoListDataModel
   ): Boolean = previousItem === nextItem
@@ -95,7 +85,8 @@ object DemoListComponentSpec {
   fun isSameContent(
       c: ComponentContext,
       @FromEvent previousItem: DemoListDataModel?,
-      @FromEvent nextItem: DemoListDataModel?): Boolean =
+      @FromEvent nextItem: DemoListDataModel?
+  ): Boolean =
   // We're only displaying the name so checking if that's equal here is enough for our use case.
       if (previousItem == null) {
         nextItem == null

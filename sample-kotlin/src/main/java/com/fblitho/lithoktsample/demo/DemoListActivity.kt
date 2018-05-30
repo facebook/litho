@@ -22,20 +22,20 @@ class DemoListActivity : NavigatableDemoActivity() {
   public override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val indices = intent.getIntArrayExtra(INDICES)
-    val dataModels = DataModels.getDataModels(indices)
+    val index = intent.getIntExtra(INDEX, -1)
+    val dataModels = DataModels.getDataModels(index)
 
     val componentContext = ComponentContext(this)
     setContentView(
         LithoView.create(
             this,
             DemoListComponent.create(componentContext)
-                .dataModels(dataModels ?: emptyList())
-                .parentIndices(indices)
+                .dataModels(dataModels)
+                .parentIndex(index)
                 .build()))
   }
 
   companion object {
-    const val INDICES = "INDICES"
+    const val INDEX = "INDEX"
   }
 }

@@ -12,8 +12,8 @@
 
 package com.fblitho.lithoktsample.demo
 
-import com.fblitho.lithoktsample.lithography.LithographyActivity
 import com.fblitho.lithoktsample.errors.ErrorHandlingActivity
+import com.fblitho.lithoktsample.lithography.LithographyActivity
 
 object DataModels {
 
@@ -21,16 +21,10 @@ object DataModels {
       DemoListDataModel("Lithography", LithographyActivity::class.java),
       DemoListDataModel("Error boundaries", ErrorHandlingActivity::class.java))
 
-  fun getDataModels(indices: IntArray?): List<DemoListDataModel>? {
-    var dataModels: List<DemoListDataModel>? = DATA_MODELS
-
-    if (indices == null) {
-      return dataModels
-    }
-
-    for (i in indices.indices) {
-      dataModels = dataModels?.get(indices[i])?.datamodels
-    }
-    return dataModels
-  }
+  fun getDataModels(index: Int): List<DemoListDataModel> =
+      if (index == -1) {
+        DATA_MODELS
+      } else {
+        DATA_MODELS[index].datamodels ?: emptyList()
+      }
 }
