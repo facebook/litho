@@ -44,7 +44,8 @@ class BorderEffectsComponentSpec {
           VerticalDashPathEffectBorder.class,
           AlternateColorPathEffectBorder.class,
           AlternateColorCornerPathEffectBorder.class,
-          CompositePathEffectBorder.class);
+          CompositePathEffectBorder.class,
+          VaryingRadiiBorder.class);
 
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c) {
