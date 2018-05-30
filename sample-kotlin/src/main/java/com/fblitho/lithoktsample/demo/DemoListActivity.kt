@@ -31,7 +31,6 @@ class DemoListActivity : NavigatableDemoActivity() {
             this,
             DemoListComponent.create(componentContext)
                 .dataModels(dataModels)
-                .parentIndex(index)
                 .build()))
   }
 

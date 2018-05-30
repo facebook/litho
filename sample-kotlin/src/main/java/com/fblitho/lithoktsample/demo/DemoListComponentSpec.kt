@@ -50,7 +50,6 @@ object DemoListComponentSpec {
   @OnEvent(RenderEvent::class)
   fun onRender(
       c: ComponentContext,
-      @Prop parentIndex: Int,
       @FromEvent model: DemoListDataModel,
       @FromEvent index: Int
   ): RenderInfo =
