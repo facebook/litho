@@ -177,16 +177,26 @@ public class BorderTest {
   public void testBothRadiiSetting() {
     final ComponentContext c = new ComponentContext(application);
     Border border = Border.create(c).radiusPx(1337).build();
-    assertThat(border.mRadius[Border.DIM_X]).isEqualTo(1337);
-    assertThat(border.mRadius[Border.DIM_Y]).isEqualTo(1337);
+    assertThat(border.mRadius[Border.Corner.BOTTOM_LEFT]).isEqualTo(1337);
+    assertThat(border.mRadius[Border.Corner.BOTTOM_RIGHT]).isEqualTo(1337);
+    assertThat(border.mRadius[Border.Corner.TOP_LEFT]).isEqualTo(1337);
+    assertThat(border.mRadius[Border.Corner.TOP_RIGHT]).isEqualTo(1337);
   }
 
   @Test
   public void testIndividualRadiiSetting() {
     final ComponentContext c = new ComponentContext(application);
-    Border border = Border.create(c).radiusXPx(1337).radiusYPx(7331).build();
-    assertThat(border.mRadius[Border.DIM_X]).isEqualTo(1337);
-    assertThat(border.mRadius[Border.DIM_Y]).isEqualTo(7331);
+    Border border =
+        Border.create(c)
+            .radiusPx(Border.Corner.TOP_LEFT, 1)
+            .radiusPx(Border.Corner.TOP_RIGHT, 2)
+            .radiusPx(Border.Corner.BOTTOM_RIGHT, 3)
+            .radiusPx(Border.Corner.BOTTOM_LEFT, 4)
+            .build();
+    assertThat(border.mRadius[Border.Corner.TOP_LEFT]).isEqualTo(1);
+    assertThat(border.mRadius[Border.Corner.TOP_RIGHT]).isEqualTo(2);
+    assertThat(border.mRadius[Border.Corner.BOTTOM_RIGHT]).isEqualTo(3);
+    assertThat(border.mRadius[Border.Corner.BOTTOM_LEFT]).isEqualTo(4);
   }
 
   @Test
