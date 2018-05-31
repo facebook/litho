@@ -28,6 +28,15 @@ class HostComponent extends Component {
   }
 
   @Override
+  protected void onMount(ComponentContext c, Object convertContent) {
+    final ComponentHost host = (ComponentHost) convertContent;
+
+    // We need to do this in case an external user of this ComponentHost has manually set alpha
+    // to 0, which will mean that it won't draw anything.
+    host.setAlpha(1);
+  }
+
+  @Override
   public MountType getMountType() {
     return MountType.VIEW;
   }
