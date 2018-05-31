@@ -1232,8 +1232,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     }
 
     private static int[] createArray(int size) {
-      boolean myGK = false;
-      if (myGK && size == 2) {
+      if (ComponentsConfiguration.useBatchArrayAllocator && size == 2) {
         return ArrayBatchAllocator.newArrayOfSize2(); // = new int[2];
       } else {
         return new int[size];
