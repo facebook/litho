@@ -53,7 +53,7 @@ public class LithoView extends ComponentHost {
     void onDirtyMount(LithoView view);
   }
 
-  private ComponentTree mComponentTree;
+  @Nullable private ComponentTree mComponentTree;
   private final MountState mMountState;
   private boolean mIsAttached;
   // The bounds of the visible rect that was used for the previous incremental mount.
@@ -476,7 +476,7 @@ public class LithoView extends ComponentHost {
     }
   }
 
-  public void setComponentTree(ComponentTree componentTree) {
+  public void setComponentTree(@Nullable ComponentTree componentTree) {
     assertMainThread();
     assertNotInMeasure();
 
