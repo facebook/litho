@@ -27,6 +27,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.Diff;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
@@ -44,6 +45,7 @@ import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
+import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 
 /**
@@ -57,7 +59,7 @@ import com.facebook.litho.annotations.State;
  * @prop scrollbarFadingEnabled whether the scrollbar should fade out when the view is not scrolling
  * @props initialScrollOffsetPixels initial vertical scroll offset, in pixels
  */
-@MountSpec(canMountIncrementally = true)
+@MountSpec(canMountIncrementally = true, isPureRender = true)
 public class VerticalScrollSpec {
 
   @PropDefault static final boolean scrollbarEnabled = true;
@@ -192,6 +194,16 @@ public class VerticalScrollSpec {
     lithoScrollView.unmount();
   }
 
+  @ShouldUpdate(onMount = true)
+  static boolean shouldUpdate(
+      @Prop Diff<Component> childComponent,
+      @Prop(optional = true) Diff<Boolean> scrollbarEnabled,
+      @Prop(optional = true) Diff<Boolean> scrollbarFadingEnabled) {
+    return childComponent.getPrevious().isEquivalentTo(childComponent.getNext())
+        && scrollbarEnabled.getPrevious().equals(scrollbarEnabled.getNext())
+        && scrollbarFadingEnabled.getPrevious().equals(scrollbarFadingEnabled.getNext());
+  }
+
   static class LithoScrollView extends ScrollView {
 
     private final LithoView mLithoView;
@@ -216,6 +228,7 @@ public class VerticalScrollSpec {
     }
 
     private void unmount() {
+      mLithoView.setComponentTree(null);
     }
   }
 
