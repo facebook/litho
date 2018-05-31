@@ -38,13 +38,13 @@ object DebugErrorComponentSpec {
   private const val TAG = "DebugErrorComponentSpec"
 
   @ColorInt
-  private val DARK_RED_FRAME = -0x32b6d8
+  private val DARK_RED_FRAME = 0xffcd4928.toInt()
 
   @ColorInt
-  private val LIGHT_RED_BACKGROUND = -0x31317
+  private val LIGHT_RED_BACKGROUND = 0xfffcece9.toInt()
 
   @ColorInt
-  private val LIGHT_GRAY_TEXT = -0x9f9890
+  private val LIGHT_GRAY_TEXT = 0xff606770.toInt()
 
   @OnCreateLayout
   fun onCreateLayout(
