@@ -236,8 +236,7 @@ public final class DelegateMethodDescriptions {
           .returnType(ClassNames.MOUNT_CONTENT_POOL)
           .name("onCreateMountContentPool")
           .definedParameterTypes(ImmutableList.<TypeName>of())
-          .optionalParameterTypes(
-              ImmutableList.<DelegateMethodDescription.OptionalParameterType>of())
+          .optionalParameterTypes(ImmutableList.of(INJECT_PROP))
           .build();
 
   public static final DelegateMethodDescription ON_MOUNT =
