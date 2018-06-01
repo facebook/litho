@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import static android.support.v7.widget.OrientationHelper.VERTICAL;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
@@ -262,6 +263,46 @@ public class GridLayoutInfo implements LayoutInfo {
       public int getHeightMeasureSpec() {
         return mOverrideHeightMeasureSpec;
       }
+    }
+  }
+
+  static class ViewportFiller implements LayoutInfo.ViewportFiller {
+
+    private final int mWidth;
+    private final int mHeight;
+    private final int mOrientation;
+    private final int mSpanCount;
+    private int mFill;
+    private int mIndexOfSpan;
+
+    public ViewportFiller(int width, int height, int orientation, int spanCount) {
+      mWidth = width;
+      mHeight = height;
+      mOrientation = orientation;
+      mSpanCount = spanCount;
+    }
+
+    @Override
+    public boolean wantsMore() {
+      final int target = mOrientation == VERTICAL ? mHeight : mWidth;
+      return mFill < target;
+    }
+
+    @Override
+    public void add(RenderInfo renderInfo, int width, int height) {
+      if (mIndexOfSpan == 0) {
+        mFill += mOrientation == VERTICAL ? height : width;
+      }
+
+      if (++mIndexOfSpan == mSpanCount) {
+        // Reset the index after exceeding the span.
+        mIndexOfSpan = 0;
+      }
+    }
+
+    @Override
+    public int getFill() {
+      return mFill;
     }
   }
 }

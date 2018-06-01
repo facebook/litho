@@ -177,6 +177,34 @@ public class GridLayoutInfoTest {
     assertThat(measuredHeight).isEqualTo(600);
   }
 
+  @Test
+  public void testVerticalViewportFiller() {
+    final int spanCount = 3;
+    final int itemHeight = 10;
+    GridLayoutInfo.ViewportFiller viewportFiller =
+        new GridLayoutInfo.ViewportFiller(100, 100, VERTICAL, spanCount);
+
+    for (int i = 0; i < 8; i++) {
+      viewportFiller.add(mock(RenderInfo.class), 100, itemHeight);
+    }
+
+    assertThat(viewportFiller.getFill()).isEqualTo(itemHeight * spanCount);
+  }
+
+  @Test
+  public void testHorizontalViewportFiller() {
+    final int spanCount = 3;
+    final int itemWidth = 10;
+    GridLayoutInfo.ViewportFiller viewportFiller =
+        new GridLayoutInfo.ViewportFiller(100, 100, HORIZONTAL, spanCount);
+
+    for (int i = 0; i < 8; i++) {
+      viewportFiller.add(mock(RenderInfo.class), itemWidth, 100);
+    }
+
+    assertThat(viewportFiller.getFill()).isEqualTo(itemWidth * spanCount);
+  }
+
   private static GridLayoutInfo createGridLayoutInfo(int direction, int spanCount) {
     return new GridLayoutInfo(RuntimeEnvironment.application, spanCount, direction, false);
   }
