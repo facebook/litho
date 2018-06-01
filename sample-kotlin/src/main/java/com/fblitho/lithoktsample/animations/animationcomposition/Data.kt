@@ -10,10 +10,6 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.fblitho.lithoktsample.demo
+package com.fblitho.lithoktsample.animations.animationcomposition
 
-data class DemoListDataModel(
-    val name: String,
-    val klass: Class<*>? = null,
-    val datamodels: List<DemoListDataModel>? = null
-)
+data class Data(val number: Int)

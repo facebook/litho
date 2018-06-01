@@ -12,14 +12,45 @@
 
 package com.fblitho.lithoktsample.demo
 
+import com.fblitho.lithoktsample.animations.animatedbadge.AnimatedBadgeActivity
+import com.fblitho.lithoktsample.animations.animationcomposition.ComposedAnimationsActivity
+import com.fblitho.lithoktsample.animations.bounds.BoundsAnimationActivity
+import com.fblitho.lithoktsample.animations.expandableelement.ExpandableElementActivity
 import com.fblitho.lithoktsample.errors.ErrorHandlingActivity
 import com.fblitho.lithoktsample.lithography.LithographyActivity
 
 object DataModels {
 
   val DATA_MODELS = listOf(
-      DemoListDataModel("Lithography", LithographyActivity::class.java),
-      DemoListDataModel("Error boundaries", ErrorHandlingActivity::class.java))
+      DemoListDataModel(
+          name = "Lithography",
+          klass = LithographyActivity::class.java
+      ),
+      DemoListDataModel(
+          name = "Error boundaries",
+          klass = ErrorHandlingActivity::class.java
+      ),
+      DemoListDataModel(
+          name = "Animations",
+          datamodels = listOf(
+              DemoListDataModel(
+                  name = "Animations Composition",
+                  klass = ComposedAnimationsActivity::class.java
+              ),
+              DemoListDataModel(
+                  name = "Expandable Element",
+                  klass = ExpandableElementActivity::class.java
+              ),
+              DemoListDataModel(
+                  name = "Animated Badge",
+                  klass = AnimatedBadgeActivity::class.java
+              ),
+              DemoListDataModel(
+                  name = "Bounds Animation",
+                  klass = BoundsAnimationActivity::class.java)
+          )
+      )
+  )
 
   fun getDataModels(index: Int): List<DemoListDataModel> =
       if (index == DemoListActivity.DEFAULT_INDEX) {
