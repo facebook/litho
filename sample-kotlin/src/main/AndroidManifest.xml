@@ -21,11 +21,13 @@
         android:allowBackup="true"
         android:label="Litho Sample"
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
-        <activity android:name="com.fblitho.lithoktsample.MainActivity">
+        <activity android:name=".demo.DemoListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name="com.fblitho.lithoktsample.lithography.LithographyActivity"/>
+        <activity android:name=".errors.ErrorHandlingActivity" />
     </application>
 </manifest>

@@ -10,22 +10,22 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.fblitho.lithoktsample
+package com.fblitho.lithoktsample.lithography
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import com.facebook.litho.Component
 import com.facebook.litho.LithoView
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
+import com.fblitho.lithoktsample.NavigatableDemoActivity
 import com.fblitho.lithoktsample.lithography.data.DataFetcher
 import com.fblitho.lithoktsample.lithography.data.DecadeViewModel
 import com.fblitho.lithoktsample.lithography.data.Model
 import com.fblitho.lithoktsample.lithography.sections.LithoFeedSection
 
-class MainActivity : AppCompatActivity() {
+class LithographyActivity : NavigatableDemoActivity() {
 
   private val sectionContext: SectionContext by lazy { SectionContext(this) }
   private val lithoView: LithoView by lazy { LithoView(sectionContext) }
