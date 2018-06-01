@@ -220,11 +220,8 @@ public class VerticalScrollSpec {
     }
 
     private void mount(ComponentTree contentComponentTree, Component component) {
-      if (mLithoView.getComponentTree() == null) {
-        mLithoView.setComponentTree(contentComponentTree);
-      } else {
-        mLithoView.setComponent(component);
-      }
+      contentComponentTree.setRoot(component);
+      mLithoView.setComponentTree(contentComponentTree);
     }
 
     private void unmount() {
