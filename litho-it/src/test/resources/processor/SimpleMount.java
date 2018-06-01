@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright 2018-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.facebook.litho.processor.integration.resources;
 
+import android.content.Context;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -91,7 +91,7 @@ public final class SimpleMount extends Component {
 
   @Override
   protected Object onCreateMountContent(Object c) {
-    Object _result = (Object) SimpleMountSpec.onCreateMountContent((ComponentContext) c);
+    Object _result = (Object) SimpleMountSpec.onCreateMountContent((Context) c);
     return _result;
   }
 

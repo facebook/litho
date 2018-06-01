@@ -19,6 +19,7 @@ package com.facebook.litho.processor.integration.resources;
 import static com.facebook.litho.annotations.ResType.STRING;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -108,7 +109,7 @@ public class TestMountSpec<S extends View> implements TestTag {
       Output<Integer> boundsDefinedOutput) {}
 
   @OnCreateMountContent
-  static Drawable onCreateMountContent(ComponentContext c) {
+  static Drawable onCreateMountContent(Context c) {
     return new ColorDrawable(Color.RED);
   }
 

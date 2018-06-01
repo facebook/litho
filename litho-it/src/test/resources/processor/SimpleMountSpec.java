@@ -16,6 +16,7 @@
 
 package com.facebook.litho.processor.integration.resources;
 
+import android.content.Context;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -41,7 +42,7 @@ class SimpleMountSpec {
       @Prop double ratio) {}
 
   @OnCreateMountContent
-  static LithoView onCreateMountContent(ComponentContext c) {
+  static LithoView onCreateMountContent(Context c) {
     return new LithoView(c);
   }
 

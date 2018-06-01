@@ -22,6 +22,7 @@ import static com.facebook.litho.widget.CardClipDrawable.NONE;
 import static com.facebook.litho.widget.CardClipDrawable.TOP_LEFT;
 import static com.facebook.litho.widget.CardClipDrawable.TOP_RIGHT;
 
+import android.content.Context;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
@@ -44,7 +45,7 @@ import com.facebook.litho.annotations.ResType;
 class CardClipSpec {
 
   @OnCreateMountContent
-  static CardClipDrawable onCreateMountContent(ComponentContext c) {
+  static CardClipDrawable onCreateMountContent(Context c) {
     return new CardClipDrawable();
   }
 

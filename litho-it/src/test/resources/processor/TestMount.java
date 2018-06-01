@@ -16,6 +16,7 @@
 package com.facebook.litho.processor.integration.resources;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StringRes;
@@ -276,7 +277,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   @Override
   protected Object onCreateMountContent(Object c) {
-    Object _result = (Object) TestMountSpec.onCreateMountContent((ComponentContext) c);
+    Object _result = (Object) TestMountSpec.onCreateMountContent((Context) c);
     return _result;
   }
 

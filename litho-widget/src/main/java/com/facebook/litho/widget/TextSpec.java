@@ -31,6 +31,7 @@ import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_JUSTIFICATION_M
 import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_MAX_WIDTH;
 import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_MIN_WIDTH;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Path;
@@ -594,7 +595,7 @@ class TextSpec {
   }
 
   @OnCreateMountContent
-  static TextDrawable onCreateMountContent(ComponentContext c) {
+  static TextDrawable onCreateMountContent(Context c) {
     return new TextDrawable();
   }
 

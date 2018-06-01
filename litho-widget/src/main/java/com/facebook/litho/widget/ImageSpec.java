@@ -18,6 +18,7 @@ package com.facebook.litho.widget;
 
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
+import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView.ScaleType;
@@ -147,7 +148,7 @@ class ImageSpec {
   }
 
   @OnCreateMountContent
-  static MatrixDrawable onCreateMountContent(ComponentContext c) {
+  static MatrixDrawable onCreateMountContent(Context c) {
     return new MatrixDrawable();
   }
 

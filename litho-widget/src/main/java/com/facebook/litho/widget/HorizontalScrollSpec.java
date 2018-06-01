@@ -162,7 +162,7 @@ class HorizontalScrollSpec {
   }
 
   @OnCreateMountContent
-  static HorizontalScrollLithoView onCreateMountContent(ComponentContext c) {
+  static HorizontalScrollLithoView onCreateMountContent(Context c) {
     return new HorizontalScrollLithoView(c);
   }
 

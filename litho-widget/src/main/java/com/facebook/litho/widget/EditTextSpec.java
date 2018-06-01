@@ -355,7 +355,7 @@ class EditTextSpec {
   }
 
   @OnCreateMountContent
-  protected static EditTextWithEventHandlers onCreateMountContent(ComponentContext c) {
+  protected static EditTextWithEventHandlers onCreateMountContent(Context c) {
     return new EditTextWithEventHandlers(c);
   }
 

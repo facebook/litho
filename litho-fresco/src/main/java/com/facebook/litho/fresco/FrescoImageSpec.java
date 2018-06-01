@@ -18,6 +18,7 @@ package com.facebook.litho.fresco;
 
 import static com.facebook.litho.annotations.ResType.DRAWABLE;
 
+import android.content.Context;
 import android.graphics.ColorFilter;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
@@ -85,7 +86,7 @@ public class FrescoImageSpec {
   }
 
   @OnCreateMountContent
-  protected static DraweeDrawable<GenericDraweeHierarchy> onCreateMountContent(ComponentContext c) {
+  protected static DraweeDrawable<GenericDraweeHierarchy> onCreateMountContent(Context c) {
     GenericDraweeHierarchy draweeHierarchy =
         GenericDraweeHierarchyBuilder.newInstance(c.getResources()).build();
     return new DraweeDrawable<>(c, draweeHierarchy);

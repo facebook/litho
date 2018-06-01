@@ -123,7 +123,7 @@ class ProgressSpec {
   }
 
   @OnCreateMountContent
-  static ProgressBar onCreateMountContent(ComponentContext c) {
+  static ProgressBar onCreateMountContent(Context c) {
     return new ProgressView(c);
   }
 

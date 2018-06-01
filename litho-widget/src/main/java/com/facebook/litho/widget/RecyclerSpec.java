@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.IdRes;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -116,7 +117,7 @@ class RecyclerSpec {
   }
 
   @OnCreateMountContent
-  static SectionsRecyclerView onCreateMountContent(ComponentContext c) {
+  static SectionsRecyclerView onCreateMountContent(Context c) {
     return new SectionsRecyclerView(c, new LithoRecylerView(c));
   }
 
