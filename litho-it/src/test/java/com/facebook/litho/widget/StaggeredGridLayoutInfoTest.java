@@ -181,6 +181,44 @@ public class StaggeredGridLayoutInfoTest {
     assertThat(SizeSpec.getMode(widthSpec)).isEqualTo(UNSPECIFIED);
   }
 
+  @Test
+  public void testVerticalViewportFiller() {
+    final int spanCount = 3;
+    final int[] heights = {
+      10, 13, 16,
+      19, 22, 25,
+      28, 31
+    };
+    final int maxHeight = 66; // 13 + 22 + 31
+
+    StaggeredGridLayoutInfo.ViewportFiller viewportFiller =
+        new StaggeredGridLayoutInfo.ViewportFiller(100, 100, VERTICAL, spanCount);
+    for (int i = 0; i < heights.length; i++) {
+      viewportFiller.add(mock(RenderInfo.class), 100, heights[i]);
+    }
+
+    assertThat(viewportFiller.getFill()).isEqualTo(maxHeight);
+  }
+
+  @Test
+  public void testHorizontalViewportFiller() {
+    final int spanCount = 3;
+    final int[] widths = {
+      10, 13, 16,
+      19, 22, 25,
+      28, 31
+    };
+    final int maxWidth = 66; // 19 + 22 + 25
+
+    StaggeredGridLayoutInfo.ViewportFiller viewportFiller =
+        new StaggeredGridLayoutInfo.ViewportFiller(100, 100, HORIZONTAL, spanCount);
+    for (int i = 0; i < widths.length; i++) {
+      viewportFiller.add(mock(RenderInfo.class), widths[i], 100);
+    }
+
+    assertThat(viewportFiller.getFill()).isEqualTo(maxWidth);
+  }
+
   private static StaggeredGridLayoutInfo createStaggeredGridLayoutInfo(
       int direction, int spanCount) {
     return new StaggeredGridLayoutInfo(

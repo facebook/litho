@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import static android.support.v7.widget.OrientationHelper.VERTICAL;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
@@ -227,6 +228,47 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
       public int getHeightMeasureSpec() {
         return mOverrideHeightMeasureSpec;
       }
+    }
+  }
+
+  static class ViewportFiller implements LayoutInfo.ViewportFiller {
+
+    private final int mWidth;
+    private final int mHeight;
+    private final int mOrientation;
+    private final int mSpanCount;
+    private int mIndexOfSpan;
+    private int[] mFills;
+    private int mMaxFill;
+
+    public ViewportFiller(int width, int height, int orientation, int spanCount) {
+      mWidth = width;
+      mHeight = height;
+      mOrientation = orientation;
+      mSpanCount = spanCount;
+      mFills = new int[spanCount];
+    }
+
+    @Override
+    public boolean wantsMore() {
+      final int target = mOrientation == VERTICAL ? mHeight : mWidth;
+      return mMaxFill < target;
+    }
+
+    @Override
+    public void add(RenderInfo renderInfo, int width, int height) {
+      mFills[mIndexOfSpan] += mOrientation == VERTICAL ? height : width;
+      mMaxFill = Math.max(mMaxFill, mFills[mIndexOfSpan]);
+
+      if (++mIndexOfSpan == mSpanCount) {
+        // Reset the index after exceeding the span.
+        mIndexOfSpan = 0;
+      }
+    }
+
+    @Override
+    public int getFill() {
+      return mMaxFill;
     }
   }
 }
