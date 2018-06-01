@@ -22,7 +22,7 @@ object DataModels {
       DemoListDataModel("Error boundaries", ErrorHandlingActivity::class.java))
 
   fun getDataModels(index: Int): List<DemoListDataModel> =
-      if (index == -1) {
+      if (index == DemoListActivity.DEFAULT_INDEX) {
         DATA_MODELS
       } else {
         DATA_MODELS[index].datamodels ?: emptyList()

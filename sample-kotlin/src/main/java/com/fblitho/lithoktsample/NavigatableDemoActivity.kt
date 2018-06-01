@@ -20,6 +20,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import com.fblitho.lithoktsample.demo.DataModels
 import com.fblitho.lithoktsample.demo.DemoListActivity
+import com.fblitho.lithoktsample.demo.DemoListActivity.Companion.DEFAULT_INDEX
 import com.fblitho.lithoktsample.demo.DemoListActivity.Companion.INDEX
 
 @SuppressLint("Registered")
@@ -29,8 +30,8 @@ open class NavigatableDemoActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
 
     intent
-        .getIntExtra(INDEX, -1)
-        .takeIf { it > -1 }
+        .getIntExtra(INDEX, DEFAULT_INDEX)
+        .takeIf { it != DEFAULT_INDEX }
         ?.let {
           supportActionBar?.setDisplayHomeAsUpEnabled(true)
           setTitleFromIndex(it)
@@ -49,7 +50,7 @@ open class NavigatableDemoActivity : AppCompatActivity() {
 
   private fun setTitleFromIndex(index: Int) {
     index
-        .takeIf { it > -1 }
+        .takeIf { it != DEFAULT_INDEX }
         ?.let {
           title = DataModels.DATA_MODELS[it].name
         }

@@ -22,7 +22,7 @@ class DemoListActivity : NavigatableDemoActivity() {
   public override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val index = intent.getIntExtra(INDEX, -1)
+    val index = intent.getIntExtra(INDEX, DEFAULT_INDEX)
     val dataModels = DataModels.getDataModels(index)
 
     val componentContext = ComponentContext(this)
@@ -36,5 +36,6 @@ class DemoListActivity : NavigatableDemoActivity() {
 
   companion object {
     const val INDEX = "INDEX"
+    const val DEFAULT_INDEX = -1
   }
 }
