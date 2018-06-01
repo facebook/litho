@@ -16,10 +16,12 @@
 
 package com.facebook.litho;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestPerfEvent implements PerfEvent {
@@ -135,5 +137,47 @@ public class TestPerfEvent implements PerfEvent {
 
   public List<String> getPoints() {
     return mPoints;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder annotations = new StringBuilder();
+    for (Map.Entry<String, Object> entry : mAnnotations.entrySet()) {
+      annotations.append(entry.getKey());
+      annotations.append("=");
+      if (entry.getValue() instanceof Object[]) {
+        annotations.append(Arrays.toString((Object[]) entry.getValue()));
+      } else if (entry.getValue() instanceof int[]) {
+        annotations.append(Arrays.toString((int[]) entry.getValue()));
+      } else {
+        annotations.append(entry.getValue());
+      }
+      annotations.append(";");
+    }
+
+    return "TestPerfEvent{"
+        + "mMarkerId="
+        + mMarkerId
+        + ", mAnnotations={"
+        + annotations
+        + "}"
+        + ", mPoints="
+        + mPoints
+        + '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    TestPerfEvent that = (TestPerfEvent) o;
+    return mMarkerId == that.mMarkerId
+        && Objects.equals(mAnnotations, that.mAnnotations)
+        && Objects.equals(mPoints, that.mPoints);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(mMarkerId, mAnnotations, mPoints);
   }
 }
