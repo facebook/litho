@@ -49,6 +49,7 @@ import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -59,6 +60,7 @@ import com.facebook.litho.viewcompat.SimpleViewBinder;
 import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory;
+import com.facebook.litho.widget.RecyclerBinder.RenderCompleteRunnable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -3278,6 +3280,34 @@ public class RecyclerBinderTest {
     assertComponentAtEquals(recyclerBinder, 1, components.get(2));
     assertComponentAtEquals(recyclerBinder, 2, components.get(3));
     assertComponentAtEquals(recyclerBinder, 3, components.get(4));
+  }
+
+  @Test
+  public void testRenderStateWithNotifyItemRenderCompleteAt() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final RecyclerView recyclerView = mock(RecyclerView.class);
+    recyclerBinder.mount(recyclerView);
+
+    final Component component = TestDrawableComponent.create(mComponentContext).build();
+    final EventHandler<RenderCompleteEvent> renderCompleteEventHandler =
+        (EventHandler<RenderCompleteEvent>) mock(EventHandler.class);
+    final ComponentRenderInfo renderInfo =
+        ComponentRenderInfo.create()
+            .component(component)
+            .renderCompleteHandler(renderCompleteEventHandler)
+            .build();
+
+    recyclerBinder.insertItemAt(0, renderInfo);
+    recyclerBinder.notifyChangeSetComplete();
+
+    final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
+    assertThat(holder.getRenderState()).isEqualTo(ComponentTreeHolder.RENDER_UNINITIALIZED);
+
+    recyclerBinder.notifyItemRenderCompleteAt(0, 0);
+    verify(recyclerView).postOnAnimation(any(RenderCompleteRunnable.class));
+
+    assertThat(holder.getRenderState()).isEqualTo(ComponentTreeHolder.RENDER_DRAWN);
   }
 
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {

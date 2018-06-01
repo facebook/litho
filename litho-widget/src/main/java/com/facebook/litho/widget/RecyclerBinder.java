@@ -23,6 +23,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_ERROR;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
 import static com.facebook.litho.MeasureComparisonUtils.isMeasureSpecCompatible;
+import static com.facebook.litho.widget.ComponentTreeHolder.RENDER_UNINITIALIZED;
 import static com.facebook.litho.widget.RenderInfoViewCreatorController.DEFAULT_COMPONENT_VIEW_TYPE;
 
 import android.os.Build;
@@ -50,6 +51,7 @@ import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LogEvent;
 import com.facebook.litho.MeasureComparisonUtils;
+import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
@@ -58,6 +60,7 @@ import com.facebook.litho.utils.DisplayListUtils;
 import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory;
+import com.facebook.litho.widget.ComponentTreeHolder.RenderState;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayDeque;
@@ -269,6 +272,26 @@ public class RecyclerBinder
         }
       };
 
+  static class RenderCompleteRunnable implements Runnable {
+    private final EventHandler<RenderCompleteEvent> renderCompleteEventHandler;
+    private final boolean hasMounted;
+    private final long timestampNanos;
+
+    RenderCompleteRunnable(
+        EventHandler<RenderCompleteEvent> renderCompleteEventHandler,
+        boolean hasMounted,
+        long timestampNanos) {
+      this.renderCompleteEventHandler = renderCompleteEventHandler;
+      this.hasMounted = hasMounted;
+      this.timestampNanos = timestampNanos;
+    }
+
+    @Override
+    public void run() {
+      dispatchRenderCompleteEvent(renderCompleteEventHandler, hasMounted, timestampNanos);
+    }
+  }
+
   interface ComponentTreeHolderFactory {
     ComponentTreeHolder create(
         RenderInfo renderInfo,
@@ -459,6 +482,41 @@ public class RecyclerBinder
   @Override
   public boolean isWrapContent() {
     return mWrapContent;
+  }
+
+  @UiThread
+  public void notifyItemRenderCompleteAt(int position, final long timestampNanos) {
+    final ComponentTreeHolder holder = mComponentTreeHolders.get(position);
+    final EventHandler<RenderCompleteEvent> renderCompleteEventHandler =
+        holder.getRenderInfo().getRenderCompleteEventHandler();
+    if (renderCompleteEventHandler == null) {
+      return;
+    }
+
+    final @RenderState int state = holder.getRenderState();
+    if (state == ComponentTreeHolder.RENDER_DRAWN) {
+      return;
+    }
+
+    // Dispatch a RenderCompleteEvent asynchronously.
+    ViewCompat.postOnAnimation(
+        mMountedView, new RenderCompleteRunnable(renderCompleteEventHandler, true, timestampNanos));
+
+    // Update the state to prevent dispatch an event again for the same holder.
+    holder.setRenderState(ComponentTreeHolder.RENDER_DRAWN);
+  }
+
+  @UiThread
+  private static void dispatchRenderCompleteEvent(
+      EventHandler<RenderCompleteEvent> renderCompleteEventHandler,
+      boolean hasMounted,
+      long timestampNanos) {
+    ThreadUtils.assertMainThread();
+
+    final RenderCompleteEvent event = new RenderCompleteEvent();
+    event.hasMounted = hasMounted;
+    event.timestampNanos = timestampNanos;
+    renderCompleteEventHandler.dispatchEvent(event);
   }
 
   private RecyclerBinder(Builder builder) {
@@ -2244,11 +2302,11 @@ public class RecyclerBinder
     @Override
     @GuardedBy("RecyclerBinder.this")
     public void onBindViewHolder(BaseViewHolder holder, int position) {
-      position = getNormalizedPosition(position);
+      final int normalizedPosition = getNormalizedPosition(position);
 
       // We can ignore the synchronization here. We'll only add to this from the UiThread.
       // This read only happens on the UiThread as well and we are never writing this here.
-      final ComponentTreeHolder componentTreeHolder = mComponentTreeHolders.get(position);
+      final ComponentTreeHolder componentTreeHolder = mComponentTreeHolders.get(normalizedPosition);
 
       final RenderInfo renderInfo = componentTreeHolder.getRenderInfo();
       if (renderInfo.rendersComponent()) {
@@ -2287,6 +2345,18 @@ public class RecyclerBinder
 
         lithoView.setLayoutParams(layoutParams);
         lithoView.setComponentTree(componentTreeHolder.getComponentTree());
+
+        if (componentTreeHolder.getRenderInfo().getRenderCompleteEventHandler() != null
+            && componentTreeHolder.getRenderState() == RENDER_UNINITIALIZED) {
+          lithoView.setOnPostDrawListener(
+              new LithoView.OnPostDrawListener() {
+                @Override
+                public void onPostDraw() {
+                  notifyItemRenderCompleteAt(normalizedPosition, System.nanoTime());
+                  lithoView.setOnPostDrawListener(null);
+                }
+              });
+        }
       } else {
         final ViewBinder viewBinder = renderInfo.getViewBinder();
         holder.viewBinder = viewBinder;

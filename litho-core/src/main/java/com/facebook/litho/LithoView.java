@@ -25,6 +25,7 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.view.accessibility.AccessibilityManagerCompat;
@@ -53,6 +54,10 @@ public class LithoView extends ComponentHost {
     void onDirtyMount(LithoView view);
   }
 
+  public interface OnPostDrawListener {
+    void onPostDraw();
+  }
+
   @Nullable private ComponentTree mComponentTree;
   private final MountState mMountState;
   private boolean mIsAttached;
@@ -68,6 +73,7 @@ public class LithoView extends ComponentHost {
   private int mAnimatedWidth = -1;
   private int mAnimatedHeight = -1;
   private OnDirtyMountListener mOnDirtyMountListener = null;
+  @Nullable private OnPostDrawListener mOnPostDrawListener = null;
 
   private final AccessibilityManager mAccessibilityManager;
 
@@ -470,6 +476,10 @@ public class LithoView extends ComponentHost {
     mOnDirtyMountListener = onDirtyMountListener;
   }
 
+  public void setOnPostDrawListener(@Nullable OnPostDrawListener onPostDrawListener) {
+    mOnPostDrawListener = onPostDrawListener;
+  }
+
   void onDirtyMountComplete() {
     if (mOnDirtyMountListener != null) {
       mOnDirtyMountListener.onDirtyMount(this);
@@ -638,6 +648,15 @@ public class LithoView extends ComponentHost {
     super.setTranslationY(translationY);
 
     maybePerformIncrementalMountOnView();
+  }
+
+  @Override
+  public void draw(Canvas canvas) {
+    super.draw(canvas);
+
+    if (mOnPostDrawListener != null) {
+      mOnPostDrawListener.onPostDraw();
+    }
   }
 
   private void maybePerformIncrementalMountOnView() {

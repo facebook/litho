@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import android.support.annotation.IntDef;
 import android.support.v4.util.Pools;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -24,6 +25,7 @@ import com.facebook.litho.ComponentTree.MeasureListener;
 import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateHandler;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
@@ -61,6 +63,15 @@ public class ComponentTreeHolder {
 
   @GuardedBy("this")
   private int mLastRequestedHeightSpec = UNINITIALIZED;
+
+  @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
+  public @interface RenderState {}
+
+  static final int RENDER_UNINITIALIZED = 0;
+  static final int RENDER_ADDED = 1;
+  static final int RENDER_DRAWN = 2;
+
+  private final AtomicInteger mRenderState = new AtomicInteger(RENDER_UNINITIALIZED);
 
   private boolean mIsTreeValid;
   private LayoutHandler mLayoutHandler;
@@ -289,6 +300,14 @@ public class ComponentTreeHolder {
     }
   }
 
+  int getRenderState() {
+    return mRenderState.get();
+  }
+
+  void setRenderState(@RenderState int renderState) {
+    mRenderState.set(renderState);
+  }
+
   public synchronized boolean hasCompletedLatestLayout() {
     return mRenderInfo.rendersView()
         || (mComponentTree != null
@@ -322,6 +341,7 @@ public class ComponentTreeHolder {
     mLastRequestedHeightSpec = UNINITIALIZED;
     mIsInserted = true;
     mHasMounted = false;
+    mRenderState.set(RENDER_UNINITIALIZED);
   }
 
   @GuardedBy("this")
