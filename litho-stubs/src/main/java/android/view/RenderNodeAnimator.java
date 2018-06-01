@@ -96,4 +96,8 @@ public class RenderNodeAnimator extends Animator {
   public void setTarget(Object view) {
     throw new RuntimeException("Stub!");
   }
+
+  public void setAllowRunningAsynchronously(boolean mayRunAsync) {
+    throw new RuntimeException("Stub!");
+  }
 }
