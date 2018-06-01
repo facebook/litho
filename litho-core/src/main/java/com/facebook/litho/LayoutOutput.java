@@ -49,6 +49,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private int mFlags;
   private long mHostMarker;
   private AtomicInteger mRefCount = new AtomicInteger(0);
+  private int mIndex;
 
   private int mUpdateState;
   private int mImportantForAccessibility;
@@ -152,6 +153,14 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   void setId(long id) {
     mId = id;
+  }
+
+  int getIndex() {
+    return mIndex;
+  }
+
+  void setIndex(int index) {
+    mIndex = index;
   }
 
   void setNodeInfo(NodeInfo nodeInfo) {

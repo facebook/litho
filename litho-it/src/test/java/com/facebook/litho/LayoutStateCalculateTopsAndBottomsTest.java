@@ -77,24 +77,85 @@ public class LayoutStateCalculateTopsAndBottomsTest {
     assertThat(layoutState.getMountableOutputBottoms().get(3).getBounds().bottom).isEqualTo(70);
     assertThat(layoutState.getMountableOutputBottoms().get(4).getBounds().bottom).isEqualTo(70);
 
-    assertThat(layoutState.getMountableOutputAt(2)).isSameAs(layoutState.getMountableOutputTops().get(2));
-    assertThat(layoutState.getMountableOutputAt(4)).isSameAs(layoutState.getMountableOutputTops().get(3));
-    assertThat(layoutState.getMountableOutputAt(3)).isSameAs(layoutState.getMountableOutputTops().get(4));
+    assertThat(layoutState.getMountableOutputAt(2))
+        .isSameAs(layoutState.getMountableOutputTops().get(2));
+    assertThat(layoutState.getMountableOutputAt(4))
+        .isSameAs(layoutState.getMountableOutputTops().get(3));
+    assertThat(layoutState.getMountableOutputAt(3))
+        .isSameAs(layoutState.getMountableOutputTops().get(4));
 
-    assertThat(layoutState.getMountableOutputAt(4)).isSameAs(layoutState.getMountableOutputBottoms().get(0));
-    assertThat(layoutState.getMountableOutputAt(2)).isSameAs(layoutState.getMountableOutputBottoms().get(1));
-    assertThat(layoutState.getMountableOutputAt(1)).isSameAs(layoutState.getMountableOutputBottoms().get(2));
-    assertThat(layoutState.getMountableOutputAt(3)).isSameAs(layoutState.getMountableOutputBottoms().get(3));
-    assertThat(layoutState.getMountableOutputAt(0)).isSameAs(layoutState.getMountableOutputBottoms().get(4));
+    assertThat(layoutState.getMountableOutputAt(4))
+        .isSameAs(layoutState.getMountableOutputBottoms().get(0));
+    assertThat(layoutState.getMountableOutputAt(2))
+        .isSameAs(layoutState.getMountableOutputBottoms().get(1));
+    assertThat(layoutState.getMountableOutputAt(1))
+        .isSameAs(layoutState.getMountableOutputBottoms().get(2));
+    assertThat(layoutState.getMountableOutputAt(3))
+        .isSameAs(layoutState.getMountableOutputBottoms().get(3));
+    assertThat(layoutState.getMountableOutputAt(0))
+        .isSameAs(layoutState.getMountableOutputBottoms().get(4));
+  }
+
+  @Test
+  public void testCalculateTopsAndBottomsWhenEqual() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return create(c)
+                .child(TestDrawableComponent.create(c).heightPx(50))
+                .child(
+                    TestDrawableComponent.create(c)
+                        .wrapInView()
+                        .positionType(ABSOLUTE)
+                        .positionPx(TOP, 0)
+                        .positionPx(BOTTOM, 0))
+                .build();
+          }
+        };
+
+    LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, AT_MOST));
+
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(4);
+
+    assertThat(layoutState.getMountableOutputTops().get(0).getBounds().top).isEqualTo(0);
+    assertThat(layoutState.getMountableOutputTops().get(1).getBounds().top).isEqualTo(0);
+    assertThat(layoutState.getMountableOutputTops().get(2).getBounds().top).isEqualTo(0);
+    assertThat(layoutState.getMountableOutputTops().get(3).getBounds().top).isEqualTo(0);
+
+    assertThat(layoutState.getMountableOutputBottoms().get(0).getBounds().bottom).isEqualTo(50);
+    assertThat(layoutState.getMountableOutputBottoms().get(1).getBounds().bottom).isEqualTo(50);
+    assertThat(layoutState.getMountableOutputBottoms().get(2).getBounds().bottom).isEqualTo(50);
+    assertThat(layoutState.getMountableOutputBottoms().get(3).getBounds().bottom).isEqualTo(50);
+
+    assertThat(layoutState.getMountableOutputAt(0))
+        .isSameAs(layoutState.getMountableOutputTops().get(0));
+    assertThat(layoutState.getMountableOutputAt(1))
+        .isSameAs(layoutState.getMountableOutputTops().get(1));
+    assertThat(layoutState.getMountableOutputAt(2))
+        .isSameAs(layoutState.getMountableOutputTops().get(2));
+    assertThat(layoutState.getMountableOutputAt(3))
+        .isSameAs(layoutState.getMountableOutputTops().get(3));
+
+    assertThat(layoutState.getMountableOutputAt(0))
+        .isSameAs(layoutState.getMountableOutputBottoms().get(3));
+    assertThat(layoutState.getMountableOutputAt(1))
+        .isSameAs(layoutState.getMountableOutputBottoms().get(2));
+    assertThat(layoutState.getMountableOutputAt(2))
+        .isSameAs(layoutState.getMountableOutputBottoms().get(1));
+    assertThat(layoutState.getMountableOutputAt(3))
+        .isSameAs(layoutState.getMountableOutputBottoms().get(0));
   }
 
   @Test
   public void testTopsComparatorIsEquivalenceRelation() {
     LayoutOutput[] layoutOutputs = new LayoutOutput[4];
-    layoutOutputs[0] = createLayoutOutput(0, 20, false);
-    layoutOutputs[1] = createLayoutOutput(0, 20, true);
-    layoutOutputs[2] = createLayoutOutput(10, 20, false);
-    layoutOutputs[3] = createLayoutOutput(10, 20, true);
+    layoutOutputs[0] = createLayoutOutput(0, 10, 0);
+    layoutOutputs[1] = createLayoutOutput(0, 10, 1);
+    layoutOutputs[2] = createLayoutOutput(0, 20, 2);
+    layoutOutputs[3] = createLayoutOutput(0, 20, 3);
 
     // reflexive
     for (LayoutOutput layoutOutput : layoutOutputs) {
@@ -104,7 +165,8 @@ public class LayoutStateCalculateTopsAndBottomsTest {
     // symmetric
     for (int i = 0; i < 4; i++) {
       for (int j = i + 1; j < 4; j++) {
-        assertThat(-1 * sTopsComparator.compare(layoutOutputs[j], layoutOutputs[i])).isEqualTo(sTopsComparator.compare(layoutOutputs[i], layoutOutputs[j]));
+        assertThat(-1 * sTopsComparator.compare(layoutOutputs[j], layoutOutputs[i]))
+            .isEqualTo(sTopsComparator.compare(layoutOutputs[i], layoutOutputs[j]));
       }
     }
 
@@ -115,7 +177,8 @@ public class LayoutStateCalculateTopsAndBottomsTest {
           if (i != j && j != k && i != k) {
             if (LayoutState.sTopsComparator.compare(layoutOutputs[i], layoutOutputs[j]) ==
                 LayoutState.sTopsComparator.compare(layoutOutputs[j], layoutOutputs[k])) {
-              assertThat(sTopsComparator.compare(layoutOutputs[j], layoutOutputs[k])).isEqualTo(sTopsComparator.compare(layoutOutputs[i], layoutOutputs[j]));
+              assertThat(sTopsComparator.compare(layoutOutputs[j], layoutOutputs[k]))
+                  .isEqualTo(sTopsComparator.compare(layoutOutputs[i], layoutOutputs[j]));
             }
           }
         }
@@ -126,10 +189,10 @@ public class LayoutStateCalculateTopsAndBottomsTest {
   @Test
   public void testBottomsComparatorIsEquivalenceRelation() {
     LayoutOutput[] layoutOutputs = new LayoutOutput[4];
-    layoutOutputs[0] = createLayoutOutput(0, 10, false);
-    layoutOutputs[1] = createLayoutOutput(0, 10, true);
-    layoutOutputs[2] = createLayoutOutput(0, 20, false);
-    layoutOutputs[3] = createLayoutOutput(0, 20, true);
+    layoutOutputs[0] = createLayoutOutput(0, 10, 0);
+    layoutOutputs[1] = createLayoutOutput(0, 10, 1);
+    layoutOutputs[2] = createLayoutOutput(0, 20, 2);
+    layoutOutputs[3] = createLayoutOutput(0, 20, 3);
 
     // reflexive
     for (LayoutOutput layoutOutput : layoutOutputs) {
@@ -139,7 +202,8 @@ public class LayoutStateCalculateTopsAndBottomsTest {
     // symmetric
     for (int i = 0; i < 4; i++) {
       for (int j = i + 1; j < 4; j++) {
-        assertThat(-1 * sBottomsComparator.compare(layoutOutputs[j], layoutOutputs[i])).isEqualTo(sBottomsComparator.compare(layoutOutputs[i], layoutOutputs[j]));
+        assertThat(-1 * sBottomsComparator.compare(layoutOutputs[j], layoutOutputs[i]))
+            .isEqualTo(sBottomsComparator.compare(layoutOutputs[i], layoutOutputs[j]));
       }
     }
 
@@ -150,7 +214,8 @@ public class LayoutStateCalculateTopsAndBottomsTest {
           if (i != j && j != k && i != k) {
             if (LayoutState.sBottomsComparator.compare(layoutOutputs[i], layoutOutputs[j]) ==
                 LayoutState.sBottomsComparator.compare(layoutOutputs[j], layoutOutputs[k])) {
-              assertThat(sBottomsComparator.compare(layoutOutputs[j], layoutOutputs[k])).isEqualTo(sBottomsComparator.compare(layoutOutputs[i], layoutOutputs[j]));
+              assertThat(sBottomsComparator.compare(layoutOutputs[j], layoutOutputs[k]))
+                  .isEqualTo(sBottomsComparator.compare(layoutOutputs[i], layoutOutputs[j]));
             }
           }
         }
@@ -174,12 +239,10 @@ public class LayoutStateCalculateTopsAndBottomsTest {
         LayoutState.CalculateLayoutSource.TEST);
   }
 
-  private static LayoutOutput createLayoutOutput(int top, int bottom, boolean isHostSpec) {
+  private static LayoutOutput createLayoutOutput(int top, int bottom, int index) {
     LayoutOutput layoutOutput = new LayoutOutput();
     layoutOutput.setBounds(0, top, 10, bottom);
-    if (isHostSpec) {
-      layoutOutput.setComponent(HostComponent.create());
-    }
+    layoutOutput.setIndex(index);
 
     return layoutOutput;
   }

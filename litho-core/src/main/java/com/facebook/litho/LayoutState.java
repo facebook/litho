@@ -22,7 +22,6 @@ import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.os.Build.VERSION_CODES.M;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
-import static com.facebook.litho.Component.isHostSpec;
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountDrawableSpec;
 import static com.facebook.litho.Component.isMountSpec;
@@ -122,14 +121,8 @@ class LayoutState {
         public int compare(LayoutOutput lhs, LayoutOutput rhs) {
           final int lhsTop = lhs.getBounds().top;
           final int rhsTop = rhs.getBounds().top;
-          return lhsTop < rhsTop
-              ? -1
-              : lhsTop > rhsTop
-              ? 1
-              // Hosts should be higher for tops so that they are mounted first if possible.
-              : isHostSpec(lhs.getComponent()) == isHostSpec(rhs.getComponent())
-              ? 0
-              : isHostSpec(lhs.getComponent()) ? -1 : 1;
+          // Lower indices should be higher for tops so that they are mounted first if possible.
+          return lhsTop == rhsTop ? lhs.getIndex() - rhs.getIndex() : lhsTop - rhsTop;
         }
       };
 
@@ -139,14 +132,8 @@ class LayoutState {
         public int compare(LayoutOutput lhs, LayoutOutput rhs) {
           final int lhsBottom = lhs.getBounds().bottom;
           final int rhsBottom = rhs.getBounds().bottom;
-          return lhsBottom < rhsBottom
-              ? -1
-              : lhsBottom > rhsBottom
-              ? 1
-              // Hosts should be lower for bottoms so that they are mounted first if possible.
-              : isHostSpec(lhs.getComponent()) == isHostSpec(rhs.getComponent())
-              ? 0
-              : isHostSpec(lhs.getComponent()) ? 1 : -1;
+          // Lower indices should be lower for bottoms so that they are mounted first if possible.
+          return lhsBottom == rhsBottom ? rhs.getIndex() - lhs.getIndex() : lhsBottom - rhsBottom;
         }
       };
 
@@ -2240,6 +2227,8 @@ class LayoutState {
   }
 
   private static void addMountableOutput(LayoutState layoutState, LayoutOutput layoutOutput) {
+    layoutOutput.setIndex(layoutState.mMountableOutputs.size());
+
     layoutState.mMountableOutputs.add(layoutOutput);
     layoutState.mMountableOutputTops.add(layoutOutput);
     layoutState.mMountableOutputBottoms.add(layoutOutput);
