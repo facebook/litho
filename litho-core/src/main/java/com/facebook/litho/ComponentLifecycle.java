@@ -550,7 +550,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @param context The {@link ComponentContext} to be used to create the content.
    * @return an Object that can be mounted for this component.
    */
-  protected Object onCreateMountContent(ComponentContext context) {
+  protected Object onCreateMountContent(Object context) {
     throw new RuntimeException(
         "Trying to mount a MountSpec that doesn't implement @OnCreateMountContent");
   }

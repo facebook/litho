@@ -52,7 +52,7 @@ public class ComponentsPoolsTest {
         }
 
         @Override
-        public View onCreateMountContent(ComponentContext context) {
+        public View onCreateMountContent(Object context) {
           return mNewMountContent;
         }
       };
@@ -70,7 +70,7 @@ public class ComponentsPoolsTest {
         }
 
         @Override
-        public View onCreateMountContent(ComponentContext context) {
+        public View onCreateMountContent(Object context) {
           return mNewMountContent;
         }
       };

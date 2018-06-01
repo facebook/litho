@@ -77,7 +77,7 @@ public class TestDrawableComponent extends TestComponent {
   }
 
   @Override
-  protected Object onCreateMountContent(ComponentContext c) {
+  protected Object onCreateMountContent(Object c) {
     return new ColorDrawable();
   }
 

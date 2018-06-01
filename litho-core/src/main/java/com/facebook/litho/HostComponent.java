@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import android.content.Context;
+
 class HostComponent extends Component {
 
   protected HostComponent() {
@@ -23,8 +25,8 @@ class HostComponent extends Component {
   }
 
   @Override
-  protected Object onCreateMountContent(ComponentContext c) {
-    return new ComponentHost(c);
+  protected Object onCreateMountContent(Object c) {
+    return new ComponentHost((ComponentContext) c);
   }
 
   @Override

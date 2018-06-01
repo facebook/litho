@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing;
 
+import android.content.Context;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 import android.support.v4.util.Pools;
@@ -69,11 +70,11 @@ public class TestViewComponent extends TestComponent {
   }
 
   @Override
-  protected Object onCreateMountContent(ComponentContext c) {
+  protected Object onCreateMountContent(Object c) {
     if (c instanceof TestComponentContextWithView) {
       return ((TestComponentContextWithView) c).getTestView();
     }
-    return new View(c, null);
+    return new View((Context) c, null);
   }
 
   @Override

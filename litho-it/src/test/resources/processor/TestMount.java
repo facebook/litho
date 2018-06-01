@@ -275,7 +275,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
-  protected Object onCreateMountContent(ComponentContext c) {
+  protected Object onCreateMountContent(Object c) {
     Object _result = (Object) TestMountSpec.onCreateMountContent((ComponentContext) c);
     return _result;
   }
