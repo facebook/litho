@@ -35,6 +35,7 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import android.util.Log;
+import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsPools;
@@ -151,11 +152,6 @@ public class SectionTree {
   private final Map<String, Range> mLastRanges = new HashMap<>();
   private final boolean mForceSyncStateUpdates;
 
-  // Holds a Pair where the first item is a section's global starting index
-  // and the second is the count.
-  // Guarded by UI Thread.
-  private Map<String, Pair<Integer, Integer>> mSectionPositionInfo;
-
   private LoadEventsHandler mLoadEventsHandler;
 
   private final CalculateChangeSetRunnable mCalculateChangeSetOnMainThreadRunnable;
@@ -215,6 +211,9 @@ public class SectionTree {
 
   @GuardedBy("this")
   private @Nullable Section mNextSection;
+
+  @ThreadConfined(ThreadConfined.UI)
+  private @Nullable Section mBoundSection;
 
   @GuardedBy("this")
   private StateUpdatesHolder mPendingStateUpdates;
@@ -407,11 +406,7 @@ public class SectionTree {
     }
 
     if (currentSection != null) {
-      mSectionPositionInfo = new HashMap<>();
-      calculateRequestFocusDataRecursive(currentSection, 0);
-    }
-
-    if (currentSection != null) {
+      mBoundSection = currentSection;
       dataBoundRecursive(currentSection);
     }
   }
@@ -433,30 +428,50 @@ public class SectionTree {
 
   /** Calculates the global starting index for each section in the hierarchy. */
   @UiThread
-  private void calculateRequestFocusDataRecursive(Section root, int prevChildrenCount) {
+  private SectionLocationInfo findSectionForKey(String key) {
+    if (mBoundSection == null) {
+      throw new IllegalStateException(
+          "You cannot call requestFocus methods before dataBound() is called!");
+    }
+
+    final SectionLocationInfo sectionLocationInfo =
+        findSectionForKeyRecursive(mBoundSection, key, 0);
+    if (sectionLocationInfo == null) {
+      throw new RuntimeException("Did not find section with key '" + key + "'!");
+    }
+
+    return sectionLocationInfo;
+  }
+
+  /** Calculates the global starting index for each section in the hierarchy. */
+  @UiThread
+  private SectionLocationInfo findSectionForKeyRecursive(
+      Section root, String key, int prevChildrenCount) {
     if (root == null) {
-      return;
+      return null;
+    }
+
+    if (key.equals(root.getGlobalKey())) {
+      return new SectionLocationInfo(root, prevChildrenCount);
     }
 
     final List<Section> children = root.getChildren();
-
-    // We reached a leaf, we have the count.
     if (children == null || children.isEmpty()) {
-      mSectionPositionInfo.put(
-          root.getGlobalKey(),
-          Pair.create(prevChildrenCount, root.getCount()));
-      return;
+      return null;
     }
-
-    // We have to calculate the starting index for all the children.
+    
     int currentChildrenCount = 0;
-    for (int i = 0; i < children.size(); i++) {
+    for (int i = 0, size = children.size(); i < size; i++) {
       final Section child = children.get(i);
-      calculateRequestFocusDataRecursive(child, prevChildrenCount + currentChildrenCount);
+      final SectionLocationInfo result =
+          findSectionForKeyRecursive(child, key, prevChildrenCount + currentChildrenCount);
+      if (result != null) {
+        return result;
+      }
       currentChildrenCount += child.getCount();
     }
 
-    mSectionPositionInfo.put(root.getGlobalKey(), Pair.create(prevChildrenCount, root.getCount()));
+    return null;
   }
 
   public void viewPortChangedFromScrolling(
@@ -599,13 +614,9 @@ public class SectionTree {
         new Runnable() {
           @Override
           public void run() {
-            if (mSectionPositionInfo == null) {
-              throw new IllegalStateException(
-                  "You cannot call requestFocusWithOffset() before dataBound() is called.");
-            }
-
+            final SectionLocationInfo locationInfo = findSectionForKey(sectionKey);
             mFocusDispatcher.requestFocus(
-                getGlobalIndex(sectionKey, mSectionPositionInfo.get(sectionKey).second - 1));
+                locationInfo.mStartIndex + locationInfo.mSection.getCount() - 1);
           }
         });
   }
@@ -615,8 +626,9 @@ public class SectionTree {
         new Runnable() {
           @Override
           public void run() {
-            checkFocusValidity(sectionKey, index);
-            mFocusDispatcher.requestFocus(getGlobalIndex(sectionKey, index));
+            final SectionLocationInfo sectionLocationInfo = findSectionForKey(sectionKey);
+            checkFocusValidity(sectionLocationInfo, index);
+            mFocusDispatcher.requestFocus(sectionLocationInfo.mStartIndex + index);
           }
         });
   }
@@ -634,8 +646,10 @@ public class SectionTree {
         new Runnable() {
           @Override
           public void run() {
-            checkFocusValidity(sectionKey, index);
-            mFocusDispatcher.requestFocusWithOffset(getGlobalIndex(sectionKey, index), offset);
+            final SectionLocationInfo sectionLocationInfo = findSectionForKey(sectionKey);
+            checkFocusValidity(sectionLocationInfo, index);
+            mFocusDispatcher.requestFocusWithOffset(
+                sectionLocationInfo.mStartIndex + index, offset);
           }
         });
   }
@@ -645,23 +659,23 @@ public class SectionTree {
         new Runnable() {
           @Override
           public void run() {
-            checkFocusValidity(section.getGlobalKey(), index);
-            mFocusDispatcher.requestSmoothFocus(index);
+            final SectionLocationInfo sectionLocationInfo =
+                findSectionForKey(section.getGlobalKey());
+            checkFocusValidity(sectionLocationInfo, index);
+            mFocusDispatcher.requestSmoothFocus(sectionLocationInfo.mStartIndex + index);
           }
         });
   }
 
   @UiThread
-  private void checkFocusValidity(String sectionKey, int index) {
-    if (mSectionPositionInfo == null) {
+  private void checkFocusValidity(SectionLocationInfo sectionLocationInfo, int index) {
+    if (index >= sectionLocationInfo.mSection.getCount()) {
       throw new IllegalStateException(
-          "You cannot call requestFocusWithOffset() before dataBound() is called.");
-    }
-
-    if (index >= mSectionPositionInfo.get(sectionKey).second) {
-      throw new IllegalStateException(
-          "You are trying to request focus with offset on an index that is out of bounds: " +
-              "requested " + index + " , total " + mSectionPositionInfo.get(sectionKey).second);
+          "You are trying to request focus with offset on an index that is out of bounds: "
+              + "requested "
+              + index
+              + " , total "
+              + sectionLocationInfo.mSection.getCount());
     }
   }
 
@@ -671,10 +685,6 @@ public class SectionTree {
     } else {
       sMainThreadHandler.obtainMessage(MESSAGE_FOCUS_REQUEST, runnable).sendToTarget();
     }
-  }
-
-  private int getGlobalIndex(String sectionKey, int localIndex) {
-    return mSectionPositionInfo.get(sectionKey).first + localIndex;
   }
 
   private static Range acquireRange() {
@@ -691,11 +701,8 @@ public class SectionTree {
    * destroyed.
    */
   public void release() {
-    final Section toDispose;
-
     synchronized (this) {
       mReleased = true;
-      toDispose = mCurrentSection;
       mCurrentSection = null;
       mNextSection = null;
       mEventHandlers = null;
@@ -705,7 +712,7 @@ public class SectionTree {
       releaseRange(range);
     }
     mLastRanges.clear();
-    mSectionPositionInfo = null;
+    mBoundSection = null;
     clearUnusedTriggerHandlers();
     //TODO use pools t11953296
   }
@@ -1518,6 +1525,17 @@ public class SectionTree {
     void release() {
       mAllStateUpdates.clear();
       mNonLazyStateUpdates.clear();
+    }
+  }
+
+  private static class SectionLocationInfo {
+
+    private final Section mSection;
+    private final int mStartIndex;
+
+    public SectionLocationInfo(Section section, int startIndex) {
+      mSection = section;
+      mStartIndex = startIndex;
     }
   }
 }
