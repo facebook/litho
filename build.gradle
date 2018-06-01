@@ -60,7 +60,7 @@ ext.deps = [
         supportTestRules   : 'com.android.support.test:rules:1.0.2',
         supportMultidex    : 'com.android.support:multidex:1.0.1',
         // Arch
-        archPaging         : 'android.arch.paging:runtime:1.0.0-alpha3',
+        archLifecycle      : 'android.arch.lifecycle:extensions:1.1.1',
         // First-party
         fresco             : 'com.facebook.fresco:fresco:1.9.0',
         soloader           : 'com.facebook.soloader:soloader:0.4.1',
