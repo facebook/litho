@@ -1567,14 +1567,10 @@ class LayoutState {
       ComponentContext context) {
     final ComponentsLogger logger = context.getLogger();
 
-    LogEvent createLayoutEvent = null;
-    PerfEvent createLayoutPerfEvent = null;
-    if (logger != null && !ComponentsConfiguration.useBetterPerfLogger) {
-      createLayoutEvent = logger.newPerformanceEvent(EVENT_CREATE_LAYOUT);
-      createLayoutEvent.addParam(PARAM_LOG_TAG, context.getLogTag());
-      createLayoutEvent.addParam(PARAM_COMPONENT, component.getSimpleName());
-    } else if (logger != null && ComponentsConfiguration.useBetterPerfLogger) {
-      createLayoutPerfEvent = logger.newBetterPerformanceEvent(EVENT_CREATE_LAYOUT);
+    final PerfEvent createLayoutPerfEvent =
+        logger != null ? logger.newBetterPerformanceEvent(EVENT_CREATE_LAYOUT) : null;
+
+    if (createLayoutPerfEvent != null) {
       createLayoutPerfEvent.markerAnnotate(PARAM_LOG_TAG, context.getLogTag());
       createLayoutPerfEvent.markerAnnotate(PARAM_COMPONENT, component.getSimpleName());
       LogTreePopulator.populatePerfEventFromLogger(context, logger, createLayoutPerfEvent);
@@ -1582,9 +1578,7 @@ class LayoutState {
 
     final InternalNode root = component.createLayout(context, true /* resolveNestedTree */);
 
-    if (createLayoutEvent != null) {
-      logger.log(createLayoutEvent);
-    } else if (createLayoutPerfEvent != null) {
+    if (createLayoutPerfEvent != null) {
       logger.betterLog(createLayoutPerfEvent);
     }
 

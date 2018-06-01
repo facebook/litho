@@ -68,4 +68,8 @@ public class TestComponentsLogger extends BaseComponentsLogger {
   public List<PerfEvent> getLoggedPerfEvents() {
     return mLoggedPerfEvents;
   }
+
+  public void reset() {
+    mLoggedPerfEvents.clear();
+  }
 }

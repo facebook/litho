@@ -39,21 +39,13 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class MountStateBetterLoggingTest {
   private ComponentContext mContext;
-  private boolean mOriginalLoggingFlag;
 
   private TestComponentsLogger mLogger;
 
   @Before
   public void setup() {
-    mOriginalLoggingFlag = ComponentsConfiguration.useBetterPerfLogger;
-    ComponentsConfiguration.useBetterPerfLogger = true;
     mLogger = new TestComponentsLogger();
     mContext = new ComponentContext(RuntimeEnvironment.application, "tag", mLogger);
-  }
-
-  @After
-  public void tearDown() {
-    ComponentsConfiguration.useBetterPerfLogger = mOriginalLoggingFlag;
   }
 
   @Test

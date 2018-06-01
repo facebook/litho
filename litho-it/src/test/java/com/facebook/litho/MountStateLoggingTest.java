@@ -23,19 +23,14 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_UNMOUNTED_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_UNMOUNTED_COUNT;
 import static com.facebook.litho.testing.TestViewComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,14 +40,11 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class MountStateLoggingTest {
   private ComponentContext mContext;
-  private ComponentsLogger mComponentsLogger;
+  private TestComponentsLogger mComponentsLogger;
 
   @Before
   public void setup() {
-    mComponentsLogger = spy(new TestComponentsLogger());
-    when(mComponentsLogger.newEvent(any(int.class))).thenCallRealMethod();
-    when(mComponentsLogger.newPerformanceEvent(any(int.class))).thenCallRealMethod();
-
+    mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(RuntimeEnvironment.application, "tag", mComponentsLogger);
   }
 
@@ -82,7 +74,16 @@ public class MountStateLoggingTest {
 
   @Test
   public void testNoLogWhenTracingDisabled() {
-    when(mComponentsLogger.isTracing(any(LogEvent.class))).thenReturn(false);
+    mContext =
+        new ComponentContext(
+            RuntimeEnvironment.application,
+            "tag",
+            new TestComponentsLogger() {
+              @Override
+              public boolean isTracing(PerfEvent logEvent) {
+                return false;
+              }
+            });
 
     final TestComponent child1 = create(mContext).build();
     final TestComponent child2 = create(mContext).build();
@@ -97,9 +98,11 @@ public class MountStateLoggingTest {
                 .build();
           }
         });
-
     final LogEvent event = mComponentsLogger.newPerformanceEvent(EVENT_MOUNT);
-    verify(mComponentsLogger, never()).log(eq(event));
+
+    final List<PerfEvent> loggedPerfEvents = mComponentsLogger.getLoggedPerfEvents();
+
+    assertThat(loggedPerfEvents).isEmpty();
   }
 
   private void verifyLoggingAndResetLogger(
@@ -107,13 +110,13 @@ public class MountStateLoggingTest {
       int unmountedCount,
       List<String> mountedNames,
       List<String> unmountedNames) {
-    final LogEvent event = mComponentsLogger.newPerformanceEvent(EVENT_MOUNT);
-    event.addParam(PARAM_MOUNTED_COUNT, String.valueOf(mountedCount));
-    event.addParam(PARAM_UNMOUNTED_COUNT, String.valueOf(unmountedCount));
-    event.addJsonParam(PARAM_MOUNTED_CONTENT, mountedNames);
-    event.addJsonParam(PARAM_UNMOUNTED_CONTENT, unmountedNames);
-
-    verify(mComponentsLogger).log(eq(event));
-    reset(mComponentsLogger);
+    final TestPerfEvent perfEvent = (TestPerfEvent) mComponentsLogger.getLoggedPerfEvents().get(1);
+    final Map<String, Object> annotations = perfEvent.getAnnotations();
+    assertThat(annotations).containsEntry(PARAM_MOUNTED_COUNT, mountedCount);
+    assertThat(annotations).containsEntry(PARAM_UNMOUNTED_COUNT, unmountedCount);
+    assertThat(annotations)
+        .containsEntry(PARAM_MOUNTED_CONTENT, mountedNames.toArray(new String[0]));
+    assertThat(annotations)
+        .containsEntry(PARAM_UNMOUNTED_CONTENT, unmountedNames.toArray(new String[0]));
   }
 }

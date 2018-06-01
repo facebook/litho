@@ -21,16 +21,10 @@ import static android.graphics.Color.WHITE;
 import static android.view.View.MeasureSpec.AT_MOST;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_PREPARE_MOUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOVED_COUNT;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.graphics.Color;
 import com.facebook.litho.testing.TestComponent;
@@ -40,6 +34,10 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,14 +46,11 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class MountStateRemountInPlaceTest {
   private ComponentContext mContext;
-  private ComponentsLogger mComponentsLogger;
+  private TestComponentsLogger mComponentsLogger;
 
   @Before
   public void setup() {
-    mComponentsLogger = spy(new TestComponentsLogger());
-    when(mComponentsLogger.newEvent(any(int.class))).thenCallRealMethod();
-    when(mComponentsLogger.newPerformanceEvent(any(int.class))).thenCallRealMethod();
-
+    mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(RuntimeEnvironment.application, "tag", mComponentsLogger);
   }
 
@@ -685,11 +680,31 @@ public class MountStateRemountInPlaceTest {
 
     ComponentTree tree = ComponentTree.create(mContext, firstLayout).build();
     LithoView cv = new LithoView(mContext);
+
     ComponentTestHelper.mountComponent(cv, tree);
     tree.setRoot(secondLayout);
 
-    final LogEvent event = mComponentsLogger.newPerformanceEvent(EVENT_PREPARE_MOUNT);
-    event.addParam(PARAM_MOVED_COUNT, "2");
-    verify(mComponentsLogger).log(eq(event));
+    final List<TestPerfEvent> events =
+        mComponentsLogger
+            .getLoggedPerfEvents()
+            .stream()
+            .filter(
+                new Predicate<PerfEvent>() {
+                  @Override
+                  public boolean test(PerfEvent e) {
+                    return e.getMarkerId() == FrameworkLogEvents.EVENT_MOUNT;
+                  }
+                })
+            .map(
+                new Function<PerfEvent, TestPerfEvent>() {
+                  @Override
+                  public TestPerfEvent apply(PerfEvent e) {
+                    return (TestPerfEvent) e;
+                  }
+                })
+            .collect(Collectors.toList());
+    assertThat(events).hasSize(2);
+    assertThat(events.get(1).getAnnotations()).containsEntry(PARAM_MOVED_COUNT, 2);
+    assertThat(events.get(1).getPoints()).contains("PREPARE_MOUNT_START", "PREPARE_MOUNT_END");
   }
 }

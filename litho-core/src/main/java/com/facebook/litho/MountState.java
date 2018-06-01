@@ -22,7 +22,6 @@ import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
 import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_MOUNT;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_PREPARE_MOUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_DIRTY;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_CONTENT;
@@ -235,15 +234,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       releaseLastMountedLayoutState();
     }
 
-    LogEvent mountEvent = null;
-    PerfEvent mountPerfEvent = null;
-    if (logger != null && !ComponentsConfiguration.useBetterPerfLogger) {
-      mountEvent = logger.newPerformanceEvent(EVENT_MOUNT);
-    }
-
-    if (logger != null && ComponentsConfiguration.useBetterPerfLogger) {
-      mountPerfEvent = logger.newBetterPerformanceEvent(EVENT_MOUNT);
-    }
+    final PerfEvent mountPerfEvent =
+        logger == null ? null : logger.newBetterPerformanceEvent(EVENT_MOUNT);
 
     if (mIsDirty) {
       updateTransitions(layoutState, componentTree);
@@ -262,9 +254,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     mMountStats.reset();
-    if (logger != null
-        && ((mountEvent != null && logger.isTracing(mountEvent))
-            || (mountPerfEvent != null && logger.isTracing(mountPerfEvent)))) {
+    if (mountPerfEvent != null && logger.isTracing(mountPerfEvent)) {
       mMountStats.enableLogging();
     }
 
@@ -386,7 +376,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     suppressInvalidationsOnHosts(false);
 
-    logMountPerfEvent(componentTree, logger, mountEvent, mountPerfEvent);
+    logMountPerfEvent(componentTree, logger, mountPerfEvent);
 
     if (isTracing) {
       ComponentsSystrace.endSection();
@@ -394,76 +384,45 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void logMountPerfEvent(
-      ComponentTree componentTree,
-      ComponentsLogger logger,
-      LogEvent mountEvent,
-      PerfEvent mountPerfEvent) {
-    if (!mMountStats.isLoggingEnabled) {
+      ComponentTree componentTree, ComponentsLogger logger, @Nullable PerfEvent mountPerfEvent) {
+    if (!mMountStats.isLoggingEnabled || mountPerfEvent == null) {
       return;
     }
 
-    if (mountEvent != null) {
-      mountEvent.addParam(PARAM_LOG_TAG, componentTree.getContext().getLogTag());
-      mountEvent.addParam(PARAM_MOUNTED_COUNT, String.valueOf(mMountStats.mountedCount));
-      mountEvent.addJsonParam(PARAM_MOUNTED_CONTENT, mMountStats.mountedNames);
-      mountEvent.addJsonParam(PARAM_MOUNTED_TIME, mMountStats.mountTimes);
+    mountPerfEvent.markerAnnotate(PARAM_LOG_TAG, componentTree.getContext().getLogTag());
+    mountPerfEvent.markerAnnotate(PARAM_MOUNTED_COUNT, mMountStats.mountedCount);
+    mountPerfEvent.markerAnnotate(
+        PARAM_MOUNTED_CONTENT, mMountStats.mountedNames.toArray(new String[0]));
+    mountPerfEvent.markerAnnotate(
+        PARAM_MOUNTED_TIME, mMountStats.mountTimes.toArray(new Double[0]));
 
-      mountEvent.addParam(PARAM_UNMOUNTED_COUNT, String.valueOf(mMountStats.unmountedCount));
-      mountEvent.addJsonParam(PARAM_UNMOUNTED_CONTENT, mMountStats.unmountedNames);
-      mountEvent.addJsonParam(PARAM_UNMOUNTED_TIME, mMountStats.unmountedTimes);
+    mountPerfEvent.markerAnnotate(PARAM_UNMOUNTED_COUNT, mMountStats.unmountedCount);
+    mountPerfEvent.markerAnnotate(
+        PARAM_UNMOUNTED_CONTENT, mMountStats.unmountedNames.toArray(new String[0]));
+    mountPerfEvent.markerAnnotate(
+        PARAM_UNMOUNTED_TIME, mMountStats.unmountedTimes.toArray(new Double[0]));
+    mountPerfEvent.markerAnnotate(PARAM_MOUNTED_EXTRAS, mMountStats.extras.toArray(new String[0]));
 
-      mountEvent.addParam(PARAM_UPDATED_COUNT, String.valueOf(mMountStats.updatedCount));
-      mountEvent.addJsonParam(PARAM_UPDATED_CONTENT, mMountStats.updatedNames);
-      mountEvent.addJsonParam(PARAM_UPDATED_TIME, mMountStats.updatedTimes);
+    mountPerfEvent.markerAnnotate(PARAM_UPDATED_COUNT, mMountStats.updatedCount);
+    mountPerfEvent.markerAnnotate(
+        PARAM_UPDATED_CONTENT, mMountStats.updatedNames.toArray(new String[0]));
+    mountPerfEvent.markerAnnotate(
+        PARAM_UPDATED_TIME, mMountStats.updatedTimes.toArray(new Double[0]));
 
-      mountEvent.addParam(
-          PARAM_VISIBILITY_HANDLERS_TOTAL_TIME, mMountStats.visibilityHandlersTotalTime);
-      mountEvent.addJsonParam(PARAM_VISIBILITY_HANDLER, mMountStats.visibilityHandlerNames);
-      mountEvent.addJsonParam(PARAM_VISIBILITY_HANDLER_TIME, mMountStats.visibilityHandlerTimes);
+    mountPerfEvent.markerAnnotate(
+        PARAM_VISIBILITY_HANDLERS_TOTAL_TIME, mMountStats.visibilityHandlersTotalTime);
+    mountPerfEvent.markerAnnotate(
+        PARAM_VISIBILITY_HANDLER, mMountStats.visibilityHandlerNames.toArray(new String[0]));
+    mountPerfEvent.markerAnnotate(
+        PARAM_VISIBILITY_HANDLER_TIME, mMountStats.visibilityHandlerTimes.toArray(new Double[0]));
 
-      mountEvent.addParam(PARAM_NO_OP_COUNT, String.valueOf(mMountStats.noOpCount));
-      mountEvent.addParam(PARAM_IS_DIRTY, String.valueOf(mIsDirty));
+    mountPerfEvent.markerAnnotate(PARAM_NO_OP_COUNT, mMountStats.noOpCount);
+    mountPerfEvent.markerAnnotate(PARAM_IS_DIRTY, mIsDirty);
 
-      logger.log(mountEvent);
-    }
+    LogTreePopulator.populatePerfEventFromLogger(
+        componentTree.getContext(), logger, mountPerfEvent);
 
-    if (mountPerfEvent != null) {
-      mountPerfEvent.markerAnnotate(PARAM_LOG_TAG, componentTree.getContext().getLogTag());
-      mountPerfEvent.markerAnnotate(PARAM_MOUNTED_COUNT, mMountStats.mountedCount);
-      mountPerfEvent.markerAnnotate(
-          PARAM_MOUNTED_CONTENT, mMountStats.mountedNames.toArray(new String[0]));
-      mountPerfEvent.markerAnnotate(
-          PARAM_MOUNTED_TIME, mMountStats.mountTimes.toArray(new Double[0]));
-
-      mountPerfEvent.markerAnnotate(PARAM_UNMOUNTED_COUNT, mMountStats.unmountedCount);
-      mountPerfEvent.markerAnnotate(
-          PARAM_UNMOUNTED_CONTENT, mMountStats.unmountedNames.toArray(new String[0]));
-      mountPerfEvent.markerAnnotate(
-          PARAM_UNMOUNTED_TIME, mMountStats.unmountedTimes.toArray(new Double[0]));
-      mountPerfEvent.markerAnnotate(
-          PARAM_MOUNTED_EXTRAS, mMountStats.extras.toArray(new String[0]));
-
-      mountPerfEvent.markerAnnotate(PARAM_UPDATED_COUNT, mMountStats.updatedCount);
-      mountPerfEvent.markerAnnotate(
-          PARAM_UPDATED_CONTENT, mMountStats.updatedNames.toArray(new String[0]));
-      mountPerfEvent.markerAnnotate(
-          PARAM_UPDATED_TIME, mMountStats.updatedTimes.toArray(new Double[0]));
-
-      mountPerfEvent.markerAnnotate(
-          PARAM_VISIBILITY_HANDLERS_TOTAL_TIME, mMountStats.visibilityHandlersTotalTime);
-      mountPerfEvent.markerAnnotate(
-          PARAM_VISIBILITY_HANDLER, mMountStats.visibilityHandlerNames.toArray(new String[0]));
-      mountPerfEvent.markerAnnotate(
-          PARAM_VISIBILITY_HANDLER_TIME, mMountStats.visibilityHandlerTimes.toArray(new Double[0]));
-
-      mountPerfEvent.markerAnnotate(PARAM_NO_OP_COUNT, mMountStats.noOpCount);
-      mountPerfEvent.markerAnnotate(PARAM_IS_DIRTY, mIsDirty);
-
-      LogTreePopulator.populatePerfEventFromLogger(
-          componentTree.getContext(), logger, mountPerfEvent);
-
-      logger.betterLog(mountPerfEvent);
-    }
+    logger.betterLog(mountPerfEvent);
   }
 
   private void maybeRemoveAnimatingMountContent(String key) {
@@ -1005,20 +964,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final ComponentsLogger logger = component.getContext().getLogger();
     final String logTag = component.getContext().getLogTag();
 
-    LogEvent prepareEvent = null;
-    if (logger != null && !ComponentsConfiguration.useBetterPerfLogger) {
-      prepareEvent = logger.newPerformanceEvent(EVENT_PREPARE_MOUNT);
-    }
-
     final List<Integer> disappearingItems = extractDisappearingItems(layoutState);
     final PrepareMountStats stats = unmountOrMoveOldItems(layoutState, disappearingItems);
 
-    if (prepareEvent != null) {
-      prepareEvent.addParam(PARAM_LOG_TAG, logTag);
-      prepareEvent.addParam(PARAM_UNMOUNTED_COUNT, String.valueOf(stats.unmountedCount));
-      prepareEvent.addParam(PARAM_MOVED_COUNT, String.valueOf(stats.movedCount));
-      prepareEvent.addParam(PARAM_UNCHANGED_COUNT, String.valueOf(stats.unchangedCount));
-    } else if (perfEvent != null) {
+    if (perfEvent != null) {
       perfEvent.markerAnnotate(PARAM_UNMOUNTED_COUNT, stats.unmountedCount);
       perfEvent.markerAnnotate(PARAM_MOVED_COUNT, stats.movedCount);
       perfEvent.markerAnnotate(PARAM_UNCHANGED_COUNT, stats.unchangedCount);
@@ -1039,10 +988,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     for (int i = 0; i < outputCount; i++) {
       mLayoutOutputsIds[i] = layoutState.getMountableOutputAt(i).getId();
-    }
-
-    if (prepareEvent != null) {
-      logger.log(prepareEvent);
     }
   }
 

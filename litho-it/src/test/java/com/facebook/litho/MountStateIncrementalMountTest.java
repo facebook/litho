@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.FrameworkLogEvents.EVENT_MOUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_COUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_UNMOUNTED_COUNT;
 import static com.facebook.litho.testing.TestViewComponent.create;
@@ -31,8 +30,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,6 +44,11 @@ import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaEdge;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,14 +59,11 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class MountStateIncrementalMountTest {
   private ComponentContext mContext;
-  private ComponentsLogger mComponentsLogger;
+  private TestComponentsLogger mComponentsLogger;
 
   @Before
   public void setup() {
-    mComponentsLogger = spy(new TestComponentsLogger());
-    when(mComponentsLogger.newEvent(any(int.class))).thenCallRealMethod();
-    when(mComponentsLogger.newPerformanceEvent(any(int.class))).thenCallRealMethod();
-
+    mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(RuntimeEnvironment.application, "tag", mComponentsLogger);
   }
 
@@ -604,12 +603,32 @@ public class MountStateIncrementalMountTest {
   }
 
   private void verifyLoggingAndResetLogger(int mountedCount, int unmountedCount) {
-    final LogEvent event = mComponentsLogger.newPerformanceEvent(EVENT_MOUNT);
-    event.addParam(PARAM_MOUNTED_COUNT, String.valueOf(mountedCount));
-    event.addParam(PARAM_UNMOUNTED_COUNT, String.valueOf(unmountedCount));
+    final List<PerfEvent> loggedPerfEvents = mComponentsLogger.getLoggedPerfEvents();
+    final Optional<TestPerfEvent> perfEvent =
+        loggedPerfEvents
+            .stream()
+            .filter(
+                new Predicate<PerfEvent>() {
+                  @Override
+                  public boolean test(PerfEvent e) {
+                    return e.getMarkerId() == FrameworkLogEvents.EVENT_MOUNT;
+                  }
+                })
+            .map(
+                new Function<PerfEvent, TestPerfEvent>() {
+                  @Override
+                  public TestPerfEvent apply(PerfEvent e) {
+                    return (TestPerfEvent) e;
+                  }
+                })
+            .findFirst();
+    assertThat(perfEvent.isPresent()).isTrue();
 
-    verify(mComponentsLogger).log(eq(event));
-    reset(mComponentsLogger);
+    final Map<String, Object> annotations = perfEvent.get().getAnnotations();
+    assertThat(annotations).containsEntry(PARAM_MOUNTED_COUNT, mountedCount);
+    assertThat(annotations).containsEntry(PARAM_UNMOUNTED_COUNT, unmountedCount);
+
+    mComponentsLogger.reset();
   }
 
   private static LithoView getMockLithoViewWithBounds(Rect bounds) {
