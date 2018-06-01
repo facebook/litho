@@ -27,6 +27,7 @@ import com.facebook.litho.sections.common.RenderEvent
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.widget.ComponentRenderInfo
 import com.facebook.litho.widget.RenderInfo
+import java.util.Arrays
 
 @LayoutSpec
 object DemoListComponentSpec {
@@ -50,6 +51,7 @@ object DemoListComponentSpec {
   @OnEvent(RenderEvent::class)
   fun onRender(
       c: ComponentContext,
+      @Prop parentIndices: IntArray?,
       @FromEvent model: DemoListDataModel,
       @FromEvent index: Int
   ): RenderInfo =
@@ -57,9 +59,18 @@ object DemoListComponentSpec {
           .component(
               DemoListItemComponent.create(c)
                   .model(model)
-                  .currentIndex(index)
+                  .currentIndices(getUpdatedIndices(parentIndices, index))
                   .build())
           .build()
+
+  private fun getUpdatedIndices(parentIndices: IntArray?, currentIndex: Int): IntArray =
+      if (parentIndices == null) {
+        intArrayOf(currentIndex)
+      } else {
+        val updatedIndices = Arrays.copyOf(parentIndices, parentIndices.size + 1)
+        updatedIndices[parentIndices.size] = currentIndex
+        updatedIndices
+      }
 
   /**
    * Called during DataDiffSection's diffing to determine if two objects represent the same item.
