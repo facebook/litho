@@ -199,9 +199,9 @@ public class VerticalScrollSpec {
       @Prop Diff<Component> childComponent,
       @Prop(optional = true) Diff<Boolean> scrollbarEnabled,
       @Prop(optional = true) Diff<Boolean> scrollbarFadingEnabled) {
-    return childComponent.getPrevious().isEquivalentTo(childComponent.getNext())
-        && scrollbarEnabled.getPrevious().equals(scrollbarEnabled.getNext())
-        && scrollbarFadingEnabled.getPrevious().equals(scrollbarFadingEnabled.getNext());
+    return !childComponent.getPrevious().isEquivalentTo(childComponent.getNext())
+        || !scrollbarEnabled.getPrevious().equals(scrollbarEnabled.getNext())
+        || !scrollbarFadingEnabled.getPrevious().equals(scrollbarFadingEnabled.getNext());
   }
 
   static class LithoScrollView extends ScrollView {
