@@ -206,6 +206,7 @@ public class RecyclerBinder
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
   private volatile boolean mAsyncInsertsShouldWaitForMeasure = true;
+  private volatile boolean mHasFilledViewport = false;
   private String mInvalidStateLogId;
 
   @GuardedBy("this")
@@ -1160,10 +1161,11 @@ public class RecyclerBinder
               getActualChildrenHeightSpec(holder),
               mLayoutInfo.getScrollDirection());
 
-          if (SectionsDebug.ENABLED) {
-            Log.d(
-                SectionsDebug.TAG,
-                "(" + hashCode() + ") initializing range on main thread, will not fill viewport");
+          if (!mHasFilledViewport && shouldFillListViewport()) {
+            if (SectionsDebug.ENABLED) {
+              Log.d(SectionsDebug.TAG, "(" + hashCode() + ") filling viewport for mutation");
+            }
+            fillListViewport(mMeasuredSize.width, mMeasuredSize.height, null);
           }
         }
       }
@@ -1397,7 +1399,7 @@ public class RecyclerBinder
     }
 
     final boolean fillListViewport =
-        doFillViewportAfterFinishingMeasure && shouldFillListViewport();
+        doFillViewportAfterFinishingMeasure && !mHasFilledViewport && shouldFillListViewport();
     final Size wrapSize = mWrapContent ? new Size() : null;
 
     // If we were in a position to recompute range, we are also in a position to re-fill the
@@ -1450,6 +1452,8 @@ public class RecyclerBinder
     computeLayoutsToFillListViewport(
         mComponentTreeHolders, startIndex, maxWidth, maxHeight, outSize);
 
+    mHasFilledViewport = true;
+
     ComponentsSystrace.endSection();
   }
 
@@ -1494,6 +1498,7 @@ public class RecyclerBinder
     closeCurrentBatch();
 
     mInsertsWaitingForInitialMeasure.clear();
+    mHasFilledViewport = true;
 
     ComponentsSystrace.endSection();
   }

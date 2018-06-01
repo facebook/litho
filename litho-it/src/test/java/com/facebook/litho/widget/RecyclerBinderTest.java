@@ -2134,7 +2134,49 @@ public class RecyclerBinderTest {
   }
 
   @Test
-  public void testFillsViewportOnRemeasure() {
+  public void testFillsViewportWithMeasureBeforeData() {
+    ComponentsConfiguration.fillListViewport = true;
+
+    final LayoutInfo layoutInfo =
+        new LinearLayoutInfo(mComponentContext, OrientationHelper.VERTICAL, false);
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(layoutInfo)
+            .build(mComponentContext);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(250, EXACTLY), null);
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
+
+    final int expectedWidthSpec = makeSizeSpec(1000, EXACTLY);
+    final int expectedHeightSpec = makeSizeSpec(0, UNSPECIFIED);
+    assertThat(
+            recyclerBinder
+                .getComponentAt(0)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(1)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(2)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(3)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isFalse();
+  }
+
+  @Test
+  public void testDoesNotFillViewportOnRemeasure() {
     ComponentsConfiguration.fillListViewport = true;
 
     final LayoutInfo layoutInfo =
@@ -2186,16 +2228,6 @@ public class RecyclerBinderTest {
     assertThat(
             recyclerBinder
                 .getComponentAt(1)
-                .hasCompatibleLayout(expectedWidthSpec, newExpectedHeightSpec))
-        .isTrue();
-    assertThat(
-            recyclerBinder
-                .getComponentAt(2)
-                .hasCompatibleLayout(expectedWidthSpec, newExpectedHeightSpec))
-        .isTrue();
-    assertThat(
-            recyclerBinder
-                .getComponentAt(3)
                 .hasCompatibleLayout(expectedWidthSpec, newExpectedHeightSpec))
         .isFalse();
   }
