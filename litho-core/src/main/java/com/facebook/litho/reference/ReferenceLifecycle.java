@@ -16,7 +16,7 @@
 
 package com.facebook.litho.reference;
 
-import com.facebook.litho.ComponentContext;
+import android.content.Context;
 import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.Diff;
 
@@ -33,15 +33,9 @@ import com.facebook.litho.Diff;
 @Deprecated
 public abstract class ReferenceLifecycle<T> {
 
-  protected abstract T onAcquire(
-      ComponentContext context,
-      Reference<T> reference);
+  protected abstract T onAcquire(Context context, Reference<T> reference);
 
-  protected void onRelease(
-      ComponentContext context,
-      T value,
-      Reference<T> reference) {
-  }
+  protected void onRelease(Context context, T value, Reference<T> reference) {}
 
   protected final <R> Diff<R> acquireDiff(R previousValue, R nextValue) {
     Diff diff = ComponentsPools.acquireDiff(previousValue, nextValue);

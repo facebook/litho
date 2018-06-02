@@ -16,8 +16,8 @@
 
 package com.facebook.litho.reference;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
-import com.facebook.litho.ComponentContext;
 
 /**
  * A very simple Reference for {@link Drawable} used in all the cases where it's not
@@ -46,9 +46,7 @@ public final class DrawableReference extends ReferenceLifecycle<Drawable> {
   }
 
   @Override
-  protected Drawable onAcquire(
-      ComponentContext context,
-      Reference reference) {
+  protected Drawable onAcquire(Context context, Reference reference) {
     return ((State) reference).mDrawable;
   }
 

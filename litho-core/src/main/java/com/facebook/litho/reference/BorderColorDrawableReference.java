@@ -16,6 +16,7 @@
 
 package com.facebook.litho.reference;
 
+import android.content.Context;
 import android.graphics.PathEffect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
@@ -64,9 +65,7 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
   }
 
   @Override
-  protected Drawable onAcquire(
-      ComponentContext context,
-      Reference reference) {
+  protected Drawable onAcquire(Context context, Reference reference) {
     BorderColorDrawable drawable = ComponentsPools.acquireBorderColorDrawable();
 
     BorderColorDrawableReference.State state = (BorderColorDrawableReference.State) reference;
@@ -87,10 +86,7 @@ public class BorderColorDrawableReference extends ReferenceLifecycle<Drawable> {
   }
 
   @Override
-  protected void onRelease(
-      ComponentContext context,
-      Drawable drawable,
-      Reference reference) {
+  protected void onRelease(Context context, Drawable drawable, Reference reference) {
     ComponentsPools.release((BorderColorDrawable) drawable);
   }
 

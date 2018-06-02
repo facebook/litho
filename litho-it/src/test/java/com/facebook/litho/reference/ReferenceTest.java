@@ -20,6 +20,7 @@ import static com.facebook.litho.reference.Reference.acquire;
 import static com.facebook.litho.reference.Reference.release;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import com.facebook.litho.ComponentContext;
@@ -66,13 +67,13 @@ public class ReferenceTest {
     private boolean mReleased;
 
     @Override
-    protected Drawable onAcquire(ComponentContext c, Reference<Drawable> reference) {
+    protected Drawable onAcquire(Context c, Reference<Drawable> reference) {
       mAcquired = true;
       return new ColorDrawable(0);
     }
 
     @Override
-    protected void onRelease(ComponentContext c, Drawable value, Reference<Drawable> reference) {
+    protected void onRelease(Context c, Drawable value, Reference<Drawable> reference) {
       mReleased = true;
     }
   }
