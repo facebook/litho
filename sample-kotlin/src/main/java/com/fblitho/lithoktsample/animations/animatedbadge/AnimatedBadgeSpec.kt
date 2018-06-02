@@ -81,19 +81,20 @@ object AnimatedBadgeSpec {
                                   .widthDip(18f)
                                   .background(buildRoundedRect(c, -0x48b5, 9)))
                           .child(
-                              if (!expanded)
+                              if (!expanded) {
                                 null
-                              else
+                              } else {
                                 Text.create(c)
-                                    .transitionKey(
-                                        TRANSITION_KEY_TEXT) // still need transition keys for
-                                    // appear/disappear animations
-                                    .key("text") // need this to prevent the global key of "+1" Text
-                                    // from changing
+                                    // still need transition keys for appear/disappear animations
+                                    .transitionKey(TRANSITION_KEY_TEXT)
+                                    // need this to prevent the global key of "+1" Text from changing
+                                    .key("text")
                                     .marginDip(YogaEdge.LEFT, 8f)
                                     .clipToBounds(true)
                                     .textSizeDip(12f)
-                                    .text("Top Follower"))
+                                    .text("Top Follower")
+                              }
+                          )
                           .child(
                               Text.create(c)
                                   .marginDip(YogaEdge.LEFT, 8f)

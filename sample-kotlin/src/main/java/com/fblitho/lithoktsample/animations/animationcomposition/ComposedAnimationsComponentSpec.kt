@@ -34,7 +34,7 @@ object ComposedAnimationsComponentSpec {
       RecyclerCollectionComponent.create(c)
           .disablePTR(true)
           .section(
-              DataDiffSection.create<Any>(SectionContext(c))
+              DataDiffSection.create<Data>(SectionContext(c))
                   .data(generateData(20))
                   .renderEventHandler(ComposedAnimationsComponent.onRender(c))
                   .onCheckIsSameItemEventHandler(ComposedAnimationsComponent.isSameItem(c))
@@ -63,8 +63,8 @@ object ComposedAnimationsComponentSpec {
       @FromEvent nextItem: Data
   ): Boolean = previousItem.number == nextItem.number
 
-  private fun generateData(number: Int): List<Any> {
-    val dummyData = mutableListOf<Any>()
+  private fun generateData(number: Int): List<Data> {
+    val dummyData = mutableListOf<Data>()
 
     for (i in 0 until number) {
       dummyData.add(Data(i))
