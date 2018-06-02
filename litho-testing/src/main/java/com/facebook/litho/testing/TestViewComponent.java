@@ -26,6 +26,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
+import javax.annotation.Nullable;
 
 public class TestViewComponent extends TestComponent {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
@@ -35,6 +36,7 @@ public class TestViewComponent extends TestComponent {
   private final boolean mIsPureRender;
   private final boolean mCanMeasure;
   private final boolean mCanMountIncrementally;
+  @Nullable private View mTestView;
 
   private TestViewComponent(
       boolean callsShouldUpdateOnMount,
@@ -71,10 +73,7 @@ public class TestViewComponent extends TestComponent {
 
   @Override
   protected Object onCreateMountContent(Object c) {
-    if (c instanceof TestComponentContextWithView) {
-      return ((TestComponentContextWithView) c).getTestView();
-    }
-    return new View((Context) c, null);
+    return mTestView != null ? mTestView : new View((Context) c);
   }
 
   @Override
@@ -213,6 +212,11 @@ public class TestViewComponent extends TestComponent {
 
     public Builder unique() {
       mState.mIsUnique = true;
+      return this;
+    }
+
+    public Builder testView(View testView) {
+      mState.mTestView = testView;
       return this;
     }
 

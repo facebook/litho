@@ -37,7 +37,6 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.view.ViewGroup;
 import com.facebook.litho.testing.TestComponent;
-import com.facebook.litho.testing.TestComponentContextWithView;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
@@ -399,14 +398,11 @@ public class MountStateIncrementalMountTest {
   @Test
   public void testChildViewCanIncrementallyMount() {
     final TestLithoView mountedView = new TestLithoView(mContext);
-
-    final TestComponentContextWithView testComponentContext =
-        new TestComponentContextWithView(mContext, mountedView);
-    final TestComponent child2 = TestViewComponent.create(testComponentContext).build();
+    final TestComponent child2 = TestViewComponent.create(mContext).testView(mountedView).build();
 
     final LithoView lithoView =
         ComponentTestHelper.mountComponent(
-            testComponentContext,
+            mContext,
             new InlineLayoutSpec() {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
@@ -432,11 +428,7 @@ public class MountStateIncrementalMountTest {
     final TestLithoView mountedView = new TestLithoView(mContext);
     mountedView.layout(0, 0, 100, 100);
 
-    final TestComponentContextWithView testComponentContext =
-        new TestComponentContextWithView(mContext, mountedView);
-
-    final LithoView lithoView = mountComponent(
-        create(testComponentContext));
+    final LithoView lithoView = mountComponent(create(mContext).testView(mountedView));
 
     assertThat(mountedView.getPreviousIncrementalMountBounds().isEmpty()).isTrue();
 
@@ -465,11 +457,9 @@ public class MountStateIncrementalMountTest {
     final LithoView childView3 = getMockLithoViewWithBounds(new Rect(30, 35, 50, 60));
     when(mountedView.getChildAt(2)).thenReturn(childView3);
 
-    final TestComponentContextWithView testComponentContext =
-        new TestComponentContextWithView(mContext, mountedView);
-
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        TestViewComponent.create(testComponentContext));
+    final LithoView lithoView =
+        ComponentTestHelper.mountComponent(
+            TestViewComponent.create(mContext).testView(mountedView));
 
     // Can't verify directly as the object will have changed by the time we get the chance to
     // verify it.
@@ -653,6 +643,7 @@ public class MountStateIncrementalMountTest {
 
     @Override
     public void performIncrementalMount(Rect visibleRect, boolean processVisibilityOutputs) {
+      System.out.println("performIncMount on TestLithoView");
       mPreviousIncrementalMountBounds.set(visibleRect);
     }
 

@@ -33,7 +33,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.it.R;
 import com.facebook.litho.testing.TestComponent;
-import com.facebook.litho.testing.TestComponentContextWithView;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
@@ -158,12 +157,9 @@ public class MountStateViewTest {
     viewGroup.addView(child1);
     viewGroup.addView(child2);
 
-    final TestComponentContextWithView testComponentContextWithView =
-        new TestComponentContextWithView(mContext, viewGroup);
-
     final LithoView parentView =
         mountComponent(
-            testComponentContextWithView, TestViewComponent.create(mContext).build(), true);
+            mContext, TestViewComponent.create(mContext).testView(viewGroup).build(), true);
 
     ComponentTestHelper.unmountComponent(parentView);
 
