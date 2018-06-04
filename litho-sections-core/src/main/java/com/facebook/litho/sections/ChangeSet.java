@@ -25,6 +25,7 @@ import static com.facebook.litho.sections.Change.MOVE;
 import static com.facebook.litho.sections.Change.UPDATE;
 import static com.facebook.litho.sections.Change.UPDATE_RANGE;
 
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.TreeProps;
@@ -99,7 +100,7 @@ public final class ChangeSet {
     mChanges.add(change);
   }
 
-  public void insert(int index, RenderInfo renderInfo, TreeProps treeProps) {
+  public void insert(int index, RenderInfo renderInfo, @Nullable TreeProps treeProps) {
     // Null check for tests only. This should never be the case otherwise.
     if (mSection != null) {
       renderInfo.addDebugInfo(SectionsDebugParams.SECTION_GLOBAL_KEY, mSection.getGlobalKey());
@@ -107,7 +108,8 @@ public final class ChangeSet {
     addChange(Change.insert(index, new TreePropsWrappedRenderInfo(renderInfo, treeProps)));
   }
 
-  public void insertRange(int index, int count, List<RenderInfo> renderInfos, TreeProps treeProps) {
+  public void insertRange(
+      int index, int count, List<RenderInfo> renderInfos, @Nullable TreeProps treeProps) {
     // Null check for tests only. This should never be the case otherwise.
     if (mSection != null) {
       for (int i = 0, size = renderInfos.size(); i < size; i++) {
@@ -119,11 +121,12 @@ public final class ChangeSet {
     addChange(Change.insertRange(index, count, wrapTreePropRenderInfos(renderInfos, treeProps)));
   }
 
-  public void update(int index, RenderInfo renderInfo, TreeProps treeProps) {
+  public void update(int index, RenderInfo renderInfo, @Nullable TreeProps treeProps) {
     addChange(Change.update(index, new TreePropsWrappedRenderInfo(renderInfo, treeProps)));
   }
 
-  public void updateRange(int index, int count, List<RenderInfo> renderInfos, TreeProps treeProps) {
+  public void updateRange(
+      int index, int count, List<RenderInfo> renderInfos, @Nullable TreeProps treeProps) {
     addChange(Change.updateRange(index, count, wrapTreePropRenderInfos(renderInfos, treeProps)));
   }
 
@@ -164,7 +167,11 @@ public final class ChangeSet {
 
   /** Wrap the given list of {@link RenderInfo} in a {@link TreePropsWrappedRenderInfo}. */
   private static List<RenderInfo> wrapTreePropRenderInfos(
-      List<RenderInfo> renderInfos, TreeProps treeProps) {
+      List<RenderInfo> renderInfos, @Nullable TreeProps treeProps) {
+    if (treeProps == null) {
+      return renderInfos;
+    }
+
     final List<RenderInfo> wrappedRenderInfos = new ArrayList<>(renderInfos.size());
     for (int i = 0; i < renderInfos.size(); i++) {
       wrappedRenderInfos.add(new TreePropsWrappedRenderInfo(renderInfos.get(i), treeProps));
