@@ -2,6 +2,7 @@ load(
     "//:LITHO_DEFS.bzl",
     "fb_instrumentation_test",
     "make_dep_path",
+    "LITHO_JAVA_TARGET",
     "LITHO_ESPRESSO_TARGET",
     "LITHO_JUNIT_TARGET",
     "LITHO_JUNIT_TARGET",
@@ -16,6 +17,7 @@ fb_instrumentation_test(
     manifest = "AndroidManifest.xml",
     deps = [
         make_dep_path("litho-instrumentation-tests/src/main/java/com/facebook/litho/sections/treeprops:treeprops"),
+        LITHO_JAVA_TARGET,
         LITHO_ESPRESSO_TARGET,
         LITHO_JUNIT_TARGET,
         LITHO_JUNIT_TARGET,

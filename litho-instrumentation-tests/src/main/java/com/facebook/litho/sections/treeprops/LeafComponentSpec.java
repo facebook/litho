@@ -25,7 +25,10 @@ import com.facebook.litho.widget.Text;
 @LayoutSpec
 public class LeafComponentSpec {
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c, @TreeProp TestTreeProp treeProp) {
-    return Text.create(c).text(TestTreeProp.append(treeProp, "leaf").toString()).build();
+  static Component onCreateLayout(ComponentContext c, @TreeProp LogContext treeProp) {
+    return Text.create(c)
+        .text(LogContext.append(treeProp, "leaf").toString())
+        .textSizeDip(24)
+        .build();
   }
 }

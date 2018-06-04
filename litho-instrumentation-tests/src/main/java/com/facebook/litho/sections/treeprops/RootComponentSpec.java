@@ -15,6 +15,7 @@
  */
 package com.facebook.litho.sections.treeprops;
 
+import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.LayoutSpec;
@@ -27,14 +28,18 @@ import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 public class RootComponentSpec {
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c) {
-    return RecyclerCollectionComponent.create(c)
-        .disablePTR(true)
-        .section(TestTopGroupSection.create(new SectionContext(c)).build())
+    return Column.create(c)
+        .child(LeafComponent.create(c).viewTag(0))
+        .child(
+            RecyclerCollectionComponent.create(c)
+                .section(TopGroupSection.create(new SectionContext(c)).build())
+                .flexGrow(1f)
+                .build())
         .build();
   }
 
   @OnCreateTreeProp
-  static TestTreeProp onCreateTestTreeProp(ComponentContext c) {
-    return new TestTreeProp("root");
+  static LogContext onCreateTestTreeProp(ComponentContext c) {
+    return new LogContext("root");
   }
 }

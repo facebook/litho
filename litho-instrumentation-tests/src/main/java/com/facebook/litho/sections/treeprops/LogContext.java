@@ -17,18 +17,18 @@ package com.facebook.litho.sections.treeprops;
 
 import javax.annotation.Nullable;
 
-public class TestTreeProp {
+public class LogContext {
   public final String s;
 
-  public TestTreeProp(String s) {
+  public LogContext(String s) {
     this.s = s;
   }
 
-  public static TestTreeProp append(@Nullable TestTreeProp t, String s) {
+  public static LogContext append(@Nullable LogContext t, String s) {
     if (t == null) {
-      return new TestTreeProp(s);
+      return new LogContext(s);
     }
-    return new TestTreeProp(t.s + ":" + s);
+    return new LogContext(t.s + ":" + s);
   }
 
   public String toString() {

@@ -20,12 +20,15 @@ import android.app.Activity;
 import android.os.Bundle;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.soloader.SoLoader;
 
 public class TreePropTestActivity extends Activity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    SoLoader.init(this, false);
 
     final ComponentContext c = new ComponentContext(this);
     final LithoView lithoView = LithoView.create(c, RootComponent.create(c).build());

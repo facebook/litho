@@ -22,17 +22,20 @@ import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnCreateChildren;
+import com.facebook.litho.sections.common.SingleComponentSection;
 
 @GroupSectionSpec
-public class TestTopGroupSectionSpec {
+public class BottomGroupSectionSpec {
 
   @OnCreateChildren
   protected static Children onCreateChildren(SectionContext c) {
-    return Children.create().child(TestBottomGroupSection.create(c).build()).build();
+    return Children.create()
+        .child(SingleComponentSection.create(c).component(LeafComponent.create(c).build()))
+        .build();
   }
 
   @OnCreateTreeProp
-  static TestTreeProp onCreateTestTreeProp(SectionContext c, @TreeProp TestTreeProp t) {
-    return t == null ? new TestTreeProp("top_section") : TestTreeProp.append(t, "top_section");
+  static LogContext onCreateTestTreeProp(SectionContext c, @TreeProp LogContext t) {
+    return LogContext.append(t, "bottom");
   }
 }
