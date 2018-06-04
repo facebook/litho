@@ -16,203 +16,54 @@
 
 package com.facebook.litho.widget;
 
-import android.support.v4.util.ArrayMap;
 import com.facebook.litho.Component;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
-import java.util.Collections;
-import java.util.Map;
 import javax.annotation.Nullable;
 
-/**
- * Keeps the list item information that will allow the framework to understand how to render it.
- *
- * <p>SpanSize will be defaulted to 1. It is the information that is required to calculate how much
- * of the SpanCount the component should occupy in a Grid layout.
- *
- * <p>IsSticky will be defaulted to false. It determines if the component should be a sticky header
- * or not
- *
- * <p>IsFullSpan will be defaulted to false. It is the information that determines if the component
- * should occupy all of the SpanCount in a StaggeredGrid layout.
- */
-public abstract class RenderInfo {
+public interface RenderInfo {
 
-  public static final String CLIP_CHILDREN = "clip_children";
+  String CLIP_CHILDREN = "clip_children";
 
-  private static final String IS_STICKY = "is_sticky";
-  private static final String SPAN_SIZE = "span_size";
-  private static final String IS_FULL_SPAN = "is_full_span";
+  boolean isSticky();
 
-  private final @Nullable Map<String, Object> mCustomAttributes;
-  private @Nullable Map<String, Object> mDebugInfo;
+  int getSpanSize();
 
-  RenderInfo(Builder builder) {
-    mCustomAttributes = builder.mCustomAttributes;
-  }
+  boolean isFullSpan();
 
-  public boolean isSticky() {
-    if (mCustomAttributes == null || !mCustomAttributes.containsKey(IS_STICKY)) {
-      return false;
-    }
-
-    return (boolean) mCustomAttributes.get(IS_STICKY);
-  }
-
-  public int getSpanSize() {
-    if (mCustomAttributes == null || !mCustomAttributes.containsKey(SPAN_SIZE)) {
-      return 1;
-    }
-
-    return (int) mCustomAttributes.get(SPAN_SIZE);
-  }
-
-  public boolean isFullSpan() {
-    if (mCustomAttributes == null || !mCustomAttributes.containsKey(IS_FULL_SPAN)) {
-      return false;
-    }
-
-    return (boolean) mCustomAttributes.get(IS_FULL_SPAN);
-  }
-
-  public @Nullable Object getCustomAttribute(String key) {
-    return mCustomAttributes == null ? null : mCustomAttributes.get(key);
-  }
-
-  /**
-   * @return true, if {@link RenderInfo} was created through {@link ComponentRenderInfo#create()},
-   *     or false otherwise. This should be queried before accessing {@link #getComponent() } from
-   *     {@link RenderInfo} type.
-   */
-  public boolean rendersComponent() {
-    return false;
-  }
-
-  /**
-   * @return Valid {@link Component} if {@link RenderInfo} was created through {@link
-   *     ComponentRenderInfo#create()}, otherwise it will throw {@link
-   *     UnsupportedOperationException}. If this method is accessed from {@link RenderInfo} type,
-   *     {@link #rendersComponent()} should be queried first before accessing.
-   */
-  public Component getComponent() {
-    throw new UnsupportedOperationException();
-  }
-
-  /**
-   * @return Valid {@link EventHandler<RenderCompleteEvent>} if {@link RenderInfo} was created
-   *     through {@link ComponentRenderInfo#create()}, otherwise it will throw {@link
-   *     UnsupportedOperationException}.
-   */
   @Nullable
-  public EventHandler<RenderCompleteEvent> getRenderCompleteEventHandler() {
-    // TODO(T28620590): Support RenderCompleteEvent handler for ViewRenderInfo
-    throw new UnsupportedOperationException();
-  }
+  Object getCustomAttribute(String key);
 
-  /**
-   * @return true, if {@link RenderInfo} was created through {@link ViewRenderInfo#create()}, or
-   *     false otherwise. This should be queried before accessing view related methods, such as
-   *     {@link #getViewBinder()}, {@link #getViewCreator()}, {@link #getViewType()} and {@link
-   *     #setViewType(int)} from {@link RenderInfo} type.
-   */
-  public boolean rendersView() {
-    return false;
-  }
+  boolean rendersComponent();
 
-  /**
-   * @return Valid {@link ViewBinder} if {@link RenderInfo} was created through {@link
-   *     ViewRenderInfo#create()}, or otherwise it will throw {@link UnsupportedOperationException}.
-   *     If this method is accessed from {@link RenderInfo} type, {@link #rendersView()} should be
-   *     queried first before accessing.
-   */
-  public ViewBinder getViewBinder() {
-    throw new UnsupportedOperationException();
-  }
+  Component getComponent();
 
-  /**
-   * @return Valid {@link ViewCreator} if {@link RenderInfo} was created through {@link
-   *     ViewRenderInfo#create()}, or otherwise it will throw {@link UnsupportedOperationException}.
-   *     If this method is accessed from {@link RenderInfo} type, {@link #rendersView()} should be
-   *     queried first before accessing.
-   */
-  public ViewCreator getViewCreator() {
-    throw new UnsupportedOperationException();
-  }
+  @Nullable
+  EventHandler<RenderCompleteEvent> getRenderCompleteEventHandler();
 
-  /**
-   * @return true, if a custom viewType was set for this {@link RenderInfo} and it was created
-   *     through {@link ViewRenderInfo#create()}, or false otherwise.
-   */
-  public boolean hasCustomViewType() {
-    return false;
-  }
+  boolean rendersView();
 
-  /**
-   * @return viewType of current {@link RenderInfo} if it was created through {@link
-   *     ViewRenderInfo#create()} or otherwise it will throw {@link UnsupportedOperationException}.
-   *     If this method is accessed from {@link RenderInfo} type, {@link #rendersView()} should be
-   *     queried first before accessing.
-   */
-  public int getViewType() {
-    throw new UnsupportedOperationException();
-  }
+  ViewBinder getViewBinder();
 
-  public void addDebugInfo(String key, Object value) {
-    if (mDebugInfo == null) {
-      mDebugInfo = Collections.synchronizedMap(new ArrayMap<String, Object>());
-    }
+  ViewCreator getViewCreator();
 
-    mDebugInfo.put(key, value);
-  }
+  boolean hasCustomViewType();
 
-  public @Nullable Object getDebugInfo(String key) {
-    if (mDebugInfo == null) {
-      return null;
-    }
+  int getViewType();
 
-    return mDebugInfo.get(key);
-  }
+  void addDebugInfo(String key, Object value);
+
+  @Nullable
+  Object getDebugInfo(String key);
+
+  String getName();
 
   /**
    * Set viewType of current {@link RenderInfo} if it was created through {@link
    * ViewRenderInfo#create()} and a custom viewType was not set, or otherwise it will throw {@link
    * UnsupportedOperationException}.
    */
-  void setViewType(int viewType) {
-    throw new UnsupportedOperationException();
-  }
-
-  public abstract String getName();
-
-  public abstract static class Builder<T> {
-
-    private @Nullable Map<String, Object> mCustomAttributes;
-
-    public T isSticky(boolean isSticky) {
-      return customAttribute(IS_STICKY, isSticky);
-    }
-
-    public T spanSize(int spanSize) {
-      return customAttribute(SPAN_SIZE, spanSize);
-    }
-
-    public T isFullSpan(boolean isFullSpan) {
-      return customAttribute(IS_FULL_SPAN, isFullSpan);
-    }
-
-    public T customAttribute(String key, Object value) {
-      if (mCustomAttributes == null) {
-        mCustomAttributes = Collections.synchronizedMap(new ArrayMap<String, Object>());
-      }
-      mCustomAttributes.put(key, value);
-
-      return (T) this;
-    }
-
-    void release() {
-      mCustomAttributes = null;
-    }
-  }
+  void setViewType(int viewType);
 }

@@ -25,7 +25,7 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.RenderCompleteEvent;
 
 /** {@link RenderInfo} that can render components. */
-public class ComponentRenderInfo extends RenderInfo {
+public class ComponentRenderInfo extends BaseRenderInfo {
 
   private static final Pools.Pool<Builder> sBuilderPool = new Pools.SynchronizedPool<>(2);
 
@@ -44,12 +44,12 @@ public class ComponentRenderInfo extends RenderInfo {
   private ComponentRenderInfo(Builder builder) {
     super(builder);
 
-    if (builder.component == null) {
+    if (builder.mComponent == null) {
       throw new IllegalStateException("Component must be provided.");
     }
 
-    mComponent = builder.component;
-    mRenderCompleteEventHandler = builder.renderCompleteEventHandler;
+    mComponent = builder.mComponent;
+    mRenderCompleteEventHandler = builder.mRenderCompleteEventEventHandler;
   }
 
   /** Create empty {@link ComponentRenderInfo}. */
@@ -78,19 +78,19 @@ public class ComponentRenderInfo extends RenderInfo {
     return mComponent.getSimpleName();
   }
 
-  public static class Builder extends RenderInfo.Builder<Builder> {
-    private Component component;
-    private EventHandler<RenderCompleteEvent> renderCompleteEventHandler;
+  public static class Builder extends BaseRenderInfo.Builder<Builder> {
+    private Component mComponent;
+    private EventHandler<RenderCompleteEvent> mRenderCompleteEventEventHandler;
 
     /** Specify {@link Component} that will be rendered as an item of the list. */
     public Builder component(Component component) {
-      this.component = component;
+      this.mComponent = component;
       return this;
     }
 
     public Builder renderCompleteHandler(
         EventHandler<RenderCompleteEvent> renderCompleteEventHandler) {
-      this.renderCompleteEventHandler = renderCompleteEventHandler;
+      this.mRenderCompleteEventEventHandler = renderCompleteEventHandler;
       return this;
     }
 
@@ -108,8 +108,8 @@ public class ComponentRenderInfo extends RenderInfo {
     @Override
     void release() {
       super.release();
-      component = null;
-      renderCompleteEventHandler = null;
+      mComponent = null;
+      mRenderCompleteEventEventHandler = null;
       sBuilderPool.release(this);
     }
   }

@@ -21,7 +21,7 @@ import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 
 /** {@link RenderInfo} that can render views. */
-public class ViewRenderInfo extends RenderInfo {
+public class ViewRenderInfo extends BaseRenderInfo {
 
   private static final Pools.Pool<Builder> sBuilderPool = new Pools.SynchronizedPool<>(2);
 
@@ -71,7 +71,7 @@ public class ViewRenderInfo extends RenderInfo {
   }
 
   @Override
-  void setViewType(int viewType) {
+  public void setViewType(int viewType) {
     if (mHasCustomViewType) {
       throw new UnsupportedOperationException("Cannot override custom view type.");
     }
@@ -88,7 +88,7 @@ public class ViewRenderInfo extends RenderInfo {
     return "View (viewType=" + mViewType + ")";
   }
 
-  public static class Builder extends RenderInfo.Builder<Builder> {
+  public static class Builder extends BaseRenderInfo.Builder<Builder> {
     private ViewBinder viewBinder;
     private ViewCreator viewCreator;
     private boolean hasCustomViewType = false;
