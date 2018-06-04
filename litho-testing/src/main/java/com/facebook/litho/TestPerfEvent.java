@@ -24,6 +24,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Implementation of {@link PerfEvent} for tests.
+ */
 public class TestPerfEvent implements PerfEvent {
 
   private static final AtomicInteger sInstanceCounter = new AtomicInteger(0);
