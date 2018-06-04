@@ -28,7 +28,7 @@ public class EventHandler<E> {
     this(hasEventDispatcher, id, null);
   }
 
-  public EventHandler(HasEventDispatcher hasEventDispatcher, int id, Object[] params) {
+  public EventHandler(HasEventDispatcher hasEventDispatcher, int id, @Nullable Object[] params) {
     this.mHasEventDispatcher = hasEventDispatcher;
     this.id = id;
     this.params = params;
@@ -36,5 +36,36 @@ public class EventHandler<E> {
 
   public void dispatchEvent(E event) {
     mHasEventDispatcher.getEventDispatcher().dispatchOnEvent(this, event);
+  }
+
+  public boolean isEquivalentTo(EventHandler other) {
+    if (id != other.id) {
+      return false;
+    }
+
+    if (params == other.params) {
+      return true;
+    }
+
+    if (params == null || other.params == null) {
+      return false;
+    }
+
+    if (params.length != other.params.length) {
+      return false;
+    }
+
+    // Deliberately skip the first param as it is a ComponentContext which will change between
+    // EventHandlers.
+    for (int i = 1; i < params.length; i++) {
+      final Object object1 = params[i];
+      final Object object2 = other.params[i];
+
+      if (!(object1 == null ? object2 == null : object1.equals(object2))) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }
