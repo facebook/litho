@@ -474,6 +474,7 @@ public class TreeDiffingTest {
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             null,
+            null,
             LayoutState.CalculateLayoutSource.TEST,
             null);
 
@@ -488,6 +489,7 @@ public class TreeDiffingTest {
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             state.getDiffTree(),
+            null,
             LayoutState.CalculateLayoutSource.TEST,
             null);
 
@@ -502,6 +504,7 @@ public class TreeDiffingTest {
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             secondState.getDiffTree(),
+            null,
             LayoutState.CalculateLayoutSource.TEST,
             null);
 
@@ -525,6 +528,7 @@ public class TreeDiffingTest {
             makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             null,
+            null,
             LayoutState.CalculateLayoutSource.TEST,
             null);
 
@@ -539,6 +543,7 @@ public class TreeDiffingTest {
             makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             state.getDiffTree(),
+            null,
             LayoutState.CalculateLayoutSource.TEST,
             null);
 
@@ -554,6 +559,7 @@ public class TreeDiffingTest {
             makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             secondState.getDiffTree(),
+            null,
             LayoutState.CalculateLayoutSource.TEST,
             null);
 
@@ -582,6 +588,7 @@ public class TreeDiffingTest {
             makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             null,
+            null,
             LayoutState.CalculateLayoutSource.TEST,
             null);
 
@@ -596,6 +603,7 @@ public class TreeDiffingTest {
             makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             state.getDiffTree(),
+            null,
             LayoutState.CalculateLayoutSource.TEST,
             null);
 
@@ -610,6 +618,7 @@ public class TreeDiffingTest {
             makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             secondState.getDiffTree(),
+            null,
             LayoutState.CalculateLayoutSource.TEST,
             null);
 
@@ -632,6 +641,7 @@ public class TreeDiffingTest {
             makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             null,
+            null,
             LayoutState.CalculateLayoutSource.TEST,
             null);
 
@@ -646,6 +656,7 @@ public class TreeDiffingTest {
             makeSizeSpec(10, SizeSpec.EXACTLY),
             true,
             state.getDiffTree(),
+            null,
             LayoutState.CalculateLayoutSource.TEST,
             null);
 

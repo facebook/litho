@@ -64,7 +64,7 @@ public class ComponentContext extends ContextWrapper {
   private int mDefStyleAttr = 0;
 
   public ComponentContext(Context context) {
-    this(context, null, null, null, null);
+    this(context, null, null, null, null, null);
   }
 
   public ComponentContext(Context context, StateHandler stateHandler) {
@@ -72,7 +72,15 @@ public class ComponentContext extends ContextWrapper {
   }
 
   public ComponentContext(Context context, StateHandler stateHandler, KeyHandler keyHandler) {
-    this(context, null, null, stateHandler, keyHandler);
+    this(context, null, null, stateHandler, keyHandler, null);
+  }
+
+  ComponentContext(
+      Context context,
+      StateHandler stateHandler,
+      KeyHandler keyHandler,
+      @Nullable TreeProps treeProps) {
+    this(context, null, null, stateHandler, keyHandler, treeProps);
   }
 
   /**
@@ -84,7 +92,7 @@ public class ComponentContext extends ContextWrapper {
    * @param logger Specify the lifecycle logger to be used.
    */
   public ComponentContext(Context context, String logTag, ComponentsLogger logger) {
-    this(context, logTag, logger, null, null);
+    this(context, logTag, logger, null, null, null);
   }
 
   private ComponentContext(
@@ -92,7 +100,8 @@ public class ComponentContext extends ContextWrapper {
       String logTag,
       ComponentsLogger logger,
       StateHandler stateHandler,
-      KeyHandler keyHandler) {
+      KeyHandler keyHandler,
+      @Nullable TreeProps treeProps) {
     super((context instanceof ComponentContext)
         ? ((ComponentContext) context).getBaseContext()
         : context);
@@ -119,6 +128,9 @@ public class ComponentContext extends ContextWrapper {
       mResourceCache = ResourceCache.getLatest(context.getResources().getConfiguration());
     }
 
+    if (treeProps != null) {
+      mTreeProps = treeProps;
+    }
     mLogger = transferLogging ? componentContext.mLogger : logger;
     mLogTag = transferLogging ? componentContext.mLogTag : logTag;
     mStateHandler = transferStateHandler ? componentContext.mStateHandler : stateHandler;

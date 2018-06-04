@@ -49,6 +49,7 @@ public class TestComponentTree extends ComponentTree {
       int heightSpec,
       boolean diffingEnabled,
       @Nullable DiffNode diffNode,
+      TreeProps treeProps,
       @LayoutState.CalculateLayoutSource int source,
       String extraAttribution) {
     return LayoutState.calculate(

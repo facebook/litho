@@ -861,6 +861,7 @@ public class ComponentTree {
               heightSpec,
               mIsLayoutDiffingEnabled,
               null,
+              null,
               CalculateLayoutSource.MEASURE,
               null);
 
@@ -909,6 +910,7 @@ public class ComponentTree {
           layoutScheduleType == SCHEDULE_LAYOUT_ASYNC,
           null /*output */,
           CalculateLayoutSource.MEASURE,
+          null,
           null);
     }
   }
@@ -954,6 +956,7 @@ public class ComponentTree {
         false /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT,
+        null,
         null);
   }
 
@@ -1002,6 +1005,7 @@ public class ComponentTree {
         true /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT,
+        null,
         null);
   }
 
@@ -1109,7 +1113,8 @@ public class ComponentTree {
         isAsync,
         null /*output */,
         CalculateLayoutSource.UPDATE_STATE,
-        attribution);
+        attribution,
+        null);
   }
 
   void recordEventHandler(Component component, EventHandler eventHandler) {
@@ -1195,6 +1200,7 @@ public class ComponentTree {
         false /* isAsync */,
         output /* output */,
         CalculateLayoutSource.SET_SIZE_SPEC,
+        null,
         null);
   }
 
@@ -1206,6 +1212,7 @@ public class ComponentTree {
         true /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_SIZE_SPEC,
+        null,
         null);
   }
 
@@ -1224,7 +1231,28 @@ public class ComponentTree {
         true /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT,
+        null,
         null);
+  }
+
+  /**
+   * Compute asynchronously a new layout with the given component root, sizes and stored TreeProps.
+   */
+  public void setRootAndSizeSpecAsync(
+      Component root, int widthSpec, int heightSpec, @Nullable TreeProps treeProps) {
+    if (root == null) {
+      throw new IllegalArgumentException("Root component can't be null");
+    }
+
+    setRootAndSizeSpecInternal(
+        root,
+        widthSpec,
+        heightSpec,
+        true /* isAsync */,
+        null /* output */,
+        CalculateLayoutSource.SET_ROOT,
+        null,
+        treeProps);
   }
 
   /**
@@ -1242,6 +1270,7 @@ public class ComponentTree {
         false /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT,
+        null,
         null);
   }
 
@@ -1257,7 +1286,25 @@ public class ComponentTree {
         false /* isAsync */,
         output,
         CalculateLayoutSource.SET_ROOT,
+        null,
         null);
+  }
+
+  public void setRootAndSizeSpec(
+      Component root, int widthSpec, int heightSpec, Size output, @Nullable TreeProps treeProps) {
+    if (root == null) {
+      throw new IllegalArgumentException("Root component can't be null");
+    }
+
+    setRootAndSizeSpecInternal(
+        root,
+        widthSpec,
+        heightSpec,
+        false /* isAsync */,
+        output,
+        CalculateLayoutSource.SET_ROOT,
+        null,
+        treeProps);
   }
 
   /**
@@ -1359,7 +1406,8 @@ public class ComponentTree {
       boolean isAsync,
       Size output,
       @CalculateLayoutSource int source,
-      String extraAttribution) {
+      String extraAttribution,
+      @Nullable TreeProps treeProps) {
 
     synchronized (this) {
       if (mReleased) {
@@ -1439,11 +1487,11 @@ public class ComponentTree {
         if (mCurrentCalculateLayoutRunnable != null) {
           mLayoutThreadHandler.removeCallbacks(mCurrentCalculateLayoutRunnable);
         }
-        mCurrentCalculateLayoutRunnable = new CalculateLayoutRunnable(source);
+        mCurrentCalculateLayoutRunnable = new CalculateLayoutRunnable(source, treeProps);
         mLayoutThreadHandler.post(mCurrentCalculateLayoutRunnable);
       }
     } else {
-      calculateLayout(output, source, extraAttribution);
+      calculateLayout(output, source, extraAttribution, treeProps);
     }
   }
 
@@ -1451,9 +1499,13 @@ public class ComponentTree {
    * Calculates the layout.
    *
    * @param output a destination where the size information should be saved
+   * @param treeProps Saved TreeProps to be used as parent input
    */
   private void calculateLayout(
-      Size output, @CalculateLayoutSource int source, String extraAttribution) {
+      Size output,
+      @CalculateLayoutSource int source,
+      String extraAttribution,
+      @Nullable TreeProps treeProps) {
     final int widthSpec;
     final int heightSpec;
     final Component root;
@@ -1512,6 +1564,7 @@ public class ComponentTree {
             heightSpec,
             mIsLayoutDiffingEnabled,
             previousLayoutState != null ? previousLayoutState.getDiffTree() : null,
+            treeProps,
             source,
             extraAttribution);
 
@@ -1800,6 +1853,7 @@ public class ComponentTree {
       int heightSpec,
       boolean diffingEnabled,
       @Nullable DiffNode diffNode,
+      @Nullable TreeProps treeProps,
       @CalculateLayoutSource int source,
       String extraAttribution) {
     final ComponentContext contextWithStateHandler;
@@ -1811,7 +1865,8 @@ public class ComponentTree {
               : null;
 
       contextWithStateHandler =
-          new ComponentContext(context, StateHandler.acquireNewInstance(mStateHandler), keyHandler);
+          new ComponentContext(
+              context, StateHandler.acquireNewInstance(mStateHandler), keyHandler, treeProps);
     }
 
     if (lock != null) {
@@ -1879,14 +1934,17 @@ public class ComponentTree {
   private final class CalculateLayoutRunnable implements Runnable {
 
     private final @CalculateLayoutSource int mSource;
+    @Nullable private final TreeProps mTreeProps;
 
-    public CalculateLayoutRunnable(@CalculateLayoutSource int source) {
+    public CalculateLayoutRunnable(
+        @CalculateLayoutSource int source, @Nullable TreeProps treeProps) {
       mSource = source;
+      mTreeProps = treeProps;
     }
 
     @Override
     public void run() {
-      calculateLayout(null, mSource, null);
+      calculateLayout(null, mSource, null, mTreeProps);
     }
   }
 

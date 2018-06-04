@@ -340,6 +340,26 @@ public class ComponentTreeTest {
   }
 
   @Test
+  public void testSetRootAndSizeSpecWithTreeProps() {
+    ComponentTree componentTree = create(mContext, mComponent).build();
+
+    final Size size = new Size();
+    final TreeProps treeProps = new TreeProps();
+    treeProps.put(Object.class, "hello world");
+
+    componentTree.setRootAndSizeSpec(
+        TestDrawableComponent.create(mContext).build(),
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY),
+        size,
+        treeProps);
+
+    final ComponentContext c =
+        getInternalState(componentTree.getBackgroundLayoutState(), "mContext");
+    assertThat(c.getTreeProps()).isSameAs(treeProps);
+  }
+
+  @Test
   public void testSetInput() {
     Component component = TestLayoutComponent.create(mContext)
         .build();
