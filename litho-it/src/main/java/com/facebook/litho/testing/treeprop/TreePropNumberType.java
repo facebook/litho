@@ -44,4 +44,9 @@ public class TreePropNumberType {
   public int hashCode() {
     return mValue;
   }
+
+  @Override
+  public String toString() {
+    return "TreePropNumberType{" + "mValue=" + mValue + '}';
+  }
 }

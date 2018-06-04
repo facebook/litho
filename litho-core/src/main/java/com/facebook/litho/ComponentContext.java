@@ -266,6 +266,12 @@ public class ComponentContext extends ContextWrapper {
     return mTreeProps;
   }
 
+  /** Obtain a copy of the tree props currently held by this context. */
+  @Nullable
+  public TreeProps getTreePropsCopy() {
+    return TreeProps.copy(mTreeProps);
+  }
+
   public ResourceCache getResourceCache() {
     return mResourceCache;
   }

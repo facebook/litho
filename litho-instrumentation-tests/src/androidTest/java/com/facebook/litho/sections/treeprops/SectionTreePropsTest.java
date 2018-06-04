@@ -36,6 +36,6 @@ public class SectionTreePropsTest {
 
   @Test
   public void testTreePropPropagation() {
-    onView(componentHostWithText(containsString("leaf"))).check(matches(allOf(isDisplayed())));
+    onView(componentHostWithText(containsString("root:leaf"))).check(matches(allOf(isDisplayed())));
   }
 }
