@@ -57,6 +57,7 @@ dependencies {
     implementation project(':litho-sections-core')
     implementation project(':litho-sections-widget')
     implementation deps.soloader
+    implementation deps.supportAnnotations
     annotationProcessor project(':litho-sections-processor')
 
     compileOnly deps.jsr305

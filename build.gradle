@@ -50,7 +50,7 @@ ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
 
 ext.deps = [
         // Android support
-        supportAnnotations : 'com.android.support:support-annotations:27.0.2',
+        supportAnnotations : 'com.android.support:support-annotations:27.1.1',
         supportAppCompat   : 'com.android.support:appcompat-v7:26.1.0',
         supportCoreUi      : 'com.android.support:support-core-ui:26.1.0',
         supportRecyclerView: 'com.android.support:recyclerview-v7:26.1.0',
