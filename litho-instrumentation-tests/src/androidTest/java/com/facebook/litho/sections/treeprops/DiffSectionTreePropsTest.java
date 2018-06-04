@@ -39,11 +39,9 @@ public class DiffSectionTreePropsTest {
 
   @Test
   public void testTreePropPropagation() {
-    // TODO(T29504095): This is what we want to see once DataDiffSections are supported
-    //                  for treeprops.
-    // onView(componentHost(allOf(withText(containsString("rootdiff:top:leaf")),
-    // withTagValue(is(0))))).check(matches(isDisplayed()));
-    onView(componentHost(allOf(withText(containsString("rootdiff:leaf")), withTagValue(is((Object) 0)))))
+    onView(
+            componentHost(
+                allOf(withText(containsString("rootdiff:top:leaf")), withTagValue(is((Object) 0)))))
         .check(matches(isDisplayed()));
   }
 }

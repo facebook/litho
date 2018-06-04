@@ -19,6 +19,7 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static com.facebook.litho.testing.espresso.ComponentHostMatchers.componentHost;
+import static com.facebook.litho.testing.espresso.ComponentHostMatchers.componentHostWithText;
 import static com.facebook.litho.testing.espresso.ComponentHostMatchers.withTagValue;
 import static com.facebook.litho.testing.espresso.ComponentHostMatchers.withText;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -43,9 +44,8 @@ public class SectionTreePropsTest {
             componentHost(
                 allOf(withText(containsString("root:leaf")), withTagValue(is((Object) 0)))))
         .check(matches(isDisplayed()));
-    // TODO(T29504095): The lack of these two cases exemplifies the lack of support for TreeProps
-    //                  in Sections.
-    // onView(componentHostWithText(containsString("root:top:bottom:leaf"))).check(matches(allOf(isDisplayed())));
-    // onView(componentHostWithText(containsString("root:top:leaf"))).check(matches(allOf(isDisplayed())));
+    onView(componentHostWithText(containsString("root:top:bottom:leaf")))
+        .check(matches(isDisplayed()));
+    onView(componentHostWithText(containsString("root:top:leaf"))).check(matches(isDisplayed()));
   }
 }

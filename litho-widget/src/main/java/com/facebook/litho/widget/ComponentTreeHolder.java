@@ -26,6 +26,7 @@ import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateHandler;
 import java.util.concurrent.atomic.AtomicInteger;
+import com.facebook.litho.TreeProps;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
@@ -202,6 +203,7 @@ public class ComponentTreeHolder {
 
     final ComponentTree componentTree;
     final Component component;
+    final TreeProps treeProps;
 
     synchronized (this) {
       if (mRenderInfo.rendersView()) {
@@ -216,9 +218,13 @@ public class ComponentTreeHolder {
 
       componentTree = mComponentTree;
       component = mRenderInfo.getComponent();
+      treeProps =
+          mRenderInfo instanceof TreePropsWrappedRenderInfo
+              ? ((TreePropsWrappedRenderInfo) mRenderInfo).getTreeProps()
+              : null;
     }
 
-    componentTree.setRootAndSizeSpec(component, widthSpec, heightSpec, size);
+    componentTree.setRootAndSizeSpec(component, widthSpec, heightSpec, size, treeProps);
 
     synchronized (this) {
       if (componentTree == mComponentTree && component == mRenderInfo.getComponent()) {
@@ -234,6 +240,7 @@ public class ComponentTreeHolder {
 
     final ComponentTree componentTree;
     final Component component;
+    final TreeProps treeProps;
 
     synchronized (this) {
       if (mRenderInfo.rendersView()) {
@@ -248,9 +255,14 @@ public class ComponentTreeHolder {
 
       componentTree = mComponentTree;
       component = mRenderInfo.getComponent();
+
+      treeProps =
+          mRenderInfo instanceof TreePropsWrappedRenderInfo
+              ? ((TreePropsWrappedRenderInfo) mRenderInfo).getTreeProps()
+              : null;
     }
 
-    componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec);
+    componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec, treeProps);
 
     synchronized (this) {
       if (mComponentTree == componentTree && component == mRenderInfo.getComponent()) {

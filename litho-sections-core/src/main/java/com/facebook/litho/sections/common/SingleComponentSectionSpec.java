@@ -65,7 +65,8 @@ public class SingleComponentSectionSpec {
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
               .isFullSpan(isNextFullSpan)
-              .build());
+              .build(),
+          context.getTreePropsCopy());
       return;
     }
 
@@ -96,7 +97,8 @@ public class SingleComponentSectionSpec {
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
               .isFullSpan(isNextFullSpan)
-              .build());
+              .build(),
+          context.getTreePropsCopy());
     }
   }
 }
