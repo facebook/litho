@@ -65,7 +65,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -884,9 +883,7 @@ public class RecyclerBinder
     assertNoInsertOperationIfCircular();
 
     if (SectionsDebug.ENABLED) {
-      Log.d(
-          SectionsDebug.TAG,
-          "(" + hashCode() + ") insertItemAt " + position + ", name: " + renderInfo.getName());
+      Log.d(SectionsDebug.TAG, "(" + hashCode() + ") insertItemAt " + position);
     }
 
     final ComponentTreeHolder holder = createComponentTreeHolder(renderInfo);
@@ -933,20 +930,9 @@ public class RecyclerBinder
     assertNoInsertOperationIfCircular();
 
     if (SectionsDebug.ENABLED) {
-      final String[] names = new String[renderInfos.size()];
-      for (int i = 0; i < renderInfos.size(); i++) {
-        names[i] = renderInfos.get(i).getName();
-      }
       Log.d(
           SectionsDebug.TAG,
-          "("
-              + hashCode()
-              + ") insertRangeAt "
-              + position
-              + ", size: "
-              + renderInfos.size()
-              + ", names: "
-              + Arrays.toString(names));
+          "(" + hashCode() + ") insertRangeAt " + position + ", size: " + renderInfos.size());
     }
 
     for (int i = 0, size = renderInfos.size(); i < size; i++) {
@@ -988,9 +974,7 @@ public class RecyclerBinder
     ThreadUtils.assertMainThread();
 
     if (SectionsDebug.ENABLED) {
-      Log.d(
-          SectionsDebug.TAG,
-          "(" + hashCode() + ") updateItemAt " + position + ", name: " + renderInfo.getName());
+      Log.d(SectionsDebug.TAG, "(" + hashCode() + ") updateItemAt " + position);
     }
 
     final ComponentTreeHolder holder;
@@ -1021,20 +1005,9 @@ public class RecyclerBinder
     ThreadUtils.assertMainThread();
 
     if (SectionsDebug.ENABLED) {
-      final String[] names = new String[renderInfos.size()];
-      for (int i = 0; i < renderInfos.size(); i++) {
-        names[i] = renderInfos.get(i).getName();
-      }
       Log.d(
           SectionsDebug.TAG,
-          "("
-              + hashCode()
-              + ") updateRangeAt "
-              + position
-              + ", size: "
-              + renderInfos.size()
-              + ", names: "
-              + Arrays.toString(names));
+          "(" + hashCode() + ") updateRangeAt " + position + ", size: " + renderInfos.size());
     }
 
     for (int i = 0, size = renderInfos.size(); i < size; i++) {
