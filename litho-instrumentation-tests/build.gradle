@@ -22,6 +22,7 @@ android {
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
+        multiDexEnabled true
         testInstrumentationRunner 'com.facebook.litho.testing.espresso.LithoEspressoTestRunner'
 
         javaCompileOptions {

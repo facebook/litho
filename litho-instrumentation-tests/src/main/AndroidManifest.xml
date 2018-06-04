@@ -18,25 +18,19 @@
 
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.facebook.litho.instrumentationtests"
+    package="com.facebook.litho.sections.treeprops"
     android:versionCode="1"
     android:versionName="1.0">
   <application
       android:label="Instrumentation Test"
       android:allowBackup="false">
-    <activity android:name="com.facebook.litho.sections.treeprops.TreePropTestActivity">
+    <activity android:name=".TreePropTestActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
-    <activity android:name="com.facebook.litho.sections.treeprops.DiffingTreePropTestActivity">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
-      </intent-filter>
-    </activity>
-    <activity android:name="com.facebook.litho.sections.tti.TTIMarkerActivity">
+    <activity android:name=".DiffingTreePropTestActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
