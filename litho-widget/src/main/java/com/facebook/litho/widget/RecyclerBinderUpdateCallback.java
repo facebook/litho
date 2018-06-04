@@ -16,9 +16,11 @@
 
 package com.facebook.litho.widget;
 
+import android.support.annotation.Nullable;
 import android.support.v4.util.Pools.SynchronizedPool;
 import android.support.v7.util.ListUpdateCallback;
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +43,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
   }
 
   public interface OperationExecutor {
-    void executeOperations(List<Operation> operations);
+    void executeOperations(@Nullable ComponentContext c, List<Operation> operations);
   }
 
   private List<T> mData;
@@ -169,7 +171,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
     mOperations.add(Operation.acquire(Operation.UPDATE, position, -1, placeholders));
   }
 
-  public void applyChangeset() {
+  public void applyChangeset(ComponentContext c) {
     for (int i = 0, size = mPlaceholders.size(); i < size; i++) {
       if (mPlaceholders.get(i).mNeedsComputation) {
         mPlaceholders.get(i).mRenderInfo =
@@ -177,7 +179,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
       }
     }
 
-    mOperationExecutor.executeOperations(mOperations);
+    mOperationExecutor.executeOperations(c, mOperations);
   }
 
   public static class Operation {
