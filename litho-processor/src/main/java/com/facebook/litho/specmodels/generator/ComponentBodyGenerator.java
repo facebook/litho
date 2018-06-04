@@ -734,8 +734,12 @@ public class ComponentBodyGenerator {
   }
 
   private static boolean shouldUseIsEquivalentTo(SpecModel specModel, MethodParamModel field) {
-    return (field.getTypeName().equals(ClassNames.COMPONENT)
-        || field.getTypeName().equals(specModel.getComponentClass()));
+    final TypeName typeName = field.getTypeName();
+    return (typeName.equals(ClassNames.COMPONENT)
+        || typeName.equals(ClassNames.EVENT_HANDLER)
+        || (typeName instanceof ParameterizedTypeName
+            && ((ParameterizedTypeName) typeName).rawType.equals(ClassNames.EVENT_HANDLER))
+        || typeName.equals(specModel.getComponentClass()));
   }
 
   static String getImplAccessor(SpecModel specModel, MethodParamModel methodParamModel) {

@@ -24,6 +24,7 @@ import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Diff;
+import com.facebook.litho.EventHandler;
 import com.facebook.litho.Output;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
@@ -71,6 +72,7 @@ public class TestLayoutSpec<S extends View> implements TestTag {
       @Prop(optional = true) boolean prop2,
       @Prop @Nullable Object prop3,
       @Prop char[] prop4,
+      @Prop EventHandler<ClickEvent> handler,
       @State(canUpdateLazily = true) long state1,
       @State S state2,
       @State int state3,
