@@ -167,7 +167,7 @@ public class SectionContext extends ComponentContext {
   }
 
   @Override
-  public void setTreeProps(TreeProps treeProps) {
+  protected void setTreeProps(TreeProps treeProps) {
     super.setTreeProps(treeProps);
   }
 

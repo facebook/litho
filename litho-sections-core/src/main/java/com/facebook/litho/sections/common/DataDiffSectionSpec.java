@@ -27,7 +27,6 @@ import android.support.v4.util.Pools.Pool;
 import android.support.v4.util.Pools.SynchronizedPool;
 import android.support.v7.util.DiffUtil;
 import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.Diff;
@@ -151,7 +150,7 @@ public class DataDiffSectionSpec<T> {
             callback.getTrimmedHeadItemsCount());
 
     result.dispatchUpdatesTo(updatesCallback);
-    updatesCallback.applyChangeset(c);
+    updatesCallback.applyChangeset();
 
     Callback.release(callback);
     release(updatesCallback);
@@ -175,7 +174,7 @@ public class DataDiffSectionSpec<T> {
     }
 
     @Override
-    public void executeOperations(ComponentContext c, List<Operation> operations) {
+    public void executeOperations(List<Operation> operations) {
       for (int i = 0, size = operations.size(); i < size; i++) {
         final Operation operation = operations.get(i);
         final List<ComponentContainer> components = operation.getComponentContainers();
@@ -184,12 +183,10 @@ public class DataDiffSectionSpec<T> {
 
           case Operation.INSERT:
             if (opSize == 1) {
-              mChangeSet.insert(
-                  operation.getIndex(), components.get(0).getRenderInfo(), c.getTreePropsCopy());
+              mChangeSet.insert(operation.getIndex(), components.get(0).getRenderInfo());
             } else {
               final List<RenderInfo> renderInfos = extractComponentInfos(opSize, components);
-              mChangeSet.insertRange(
-                  operation.getIndex(), opSize, renderInfos, c.getTreePropsCopy());
+              mChangeSet.insertRange(operation.getIndex(), opSize, renderInfos);
             }
             break;
 
@@ -209,12 +206,10 @@ public class DataDiffSectionSpec<T> {
 
           case Operation.UPDATE:
             if (opSize == 1) {
-              mChangeSet.update(
-                  operation.getIndex(), components.get(0).getRenderInfo(), c.getTreePropsCopy());
+              mChangeSet.update(operation.getIndex(), components.get(0).getRenderInfo());
             } else {
               final List<RenderInfo> renderInfos = extractComponentInfos(opSize, components);
-              mChangeSet.updateRange(
-                  operation.getIndex(), opSize, renderInfos, c.getTreePropsCopy());
+              mChangeSet.updateRange(operation.getIndex(), opSize, renderInfos);
             }
             break;
         }
