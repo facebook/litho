@@ -29,5 +29,9 @@
         </activity>
         <activity android:name="com.fblitho.lithoktsample.lithography.LithographyActivity"/>
         <activity android:name=".errors.ErrorHandlingActivity" />
+        <activity android:name=".animations.animatedbadge.AnimatedBadgeActivity" />
+        <activity android:name=".animations.animationcomposition.ComposedAnimationsActivity" />
+        <activity android:name=".animations.expandableelement.ExpandableElementActivity" />
+        <activity android:name=".animations.bounds.BoundsAnimationActivity" />
     </application>
 </manifest>

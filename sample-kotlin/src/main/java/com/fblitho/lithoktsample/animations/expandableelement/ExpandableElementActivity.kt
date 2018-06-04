@@ -10,32 +10,24 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.fblitho.lithoktsample.demo
+package com.fblitho.lithoktsample.animations.expandableelement
 
 import android.os.Bundle
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LithoView
 import com.fblitho.lithoktsample.NavigatableDemoActivity
+import com.fblitho.lithoktsample.animations.messages.Message.Companion.MESSAGES
 
-class DemoListActivity : NavigatableDemoActivity() {
+class ExpandableElementActivity : NavigatableDemoActivity() {
 
-  public override fun onCreate(savedInstanceState: Bundle?) {
+  override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val indices = intent.getIntArrayExtra(INDICES)
-    val dataModels = DataModels.getDataModels(indices)
-
-    val componentContext = ComponentContext(this)
-    setContentView(
-        LithoView.create(
-            this,
-            DemoListComponent.create(componentContext)
-                .dataModels(dataModels)
-                .parentIndices(indices)
-                .build()))
-  }
-
-  companion object {
-    const val INDICES = "INDICES"
+    val lithoView = LithoView.create(
+        this,
+        ExpandableElementRootComponent.create(ComponentContext(this))
+            .initialMessages(MESSAGES)
+            .build())
+    setContentView(lithoView)
   }
 }

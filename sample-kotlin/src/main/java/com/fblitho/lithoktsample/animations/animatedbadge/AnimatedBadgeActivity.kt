@@ -10,32 +10,31 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.fblitho.lithoktsample.demo
+package com.fblitho.lithoktsample.animations.animatedbadge
 
 import android.os.Bundle
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LithoView
+import com.facebook.litho.config.ComponentsConfiguration
 import com.fblitho.lithoktsample.NavigatableDemoActivity
 
-class DemoListActivity : NavigatableDemoActivity() {
+class AnimatedBadgeActivity : NavigatableDemoActivity() {
 
-  public override fun onCreate(savedInstanceState: Bundle?) {
+  private var mPrevAssignTransitionKeysToAllOutputs: Boolean = false
+
+  override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val indices = intent.getIntArrayExtra(INDICES)
-    val dataModels = DataModels.getDataModels(indices)
+    mPrevAssignTransitionKeysToAllOutputs = ComponentsConfiguration.assignTransitionKeysToAllOutputs
+    ComponentsConfiguration.assignTransitionKeysToAllOutputs = true
 
-    val componentContext = ComponentContext(this)
     setContentView(
-        LithoView.create(
-            this,
-            DemoListComponent.create(componentContext)
-                .dataModels(dataModels)
-                .parentIndices(indices)
-                .build()))
+        LithoView.create(this, AnimatedBadge.create(ComponentContext(this)).build()))
   }
 
-  companion object {
-    const val INDICES = "INDICES"
+  override fun onDestroy() {
+    super.onDestroy()
+
+    ComponentsConfiguration.assignTransitionKeysToAllOutputs = mPrevAssignTransitionKeysToAllOutputs
   }
 }

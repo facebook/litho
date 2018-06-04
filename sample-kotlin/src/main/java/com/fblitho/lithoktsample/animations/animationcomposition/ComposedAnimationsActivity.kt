@@ -10,32 +10,20 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.fblitho.lithoktsample.demo
+package com.fblitho.lithoktsample.animations.animationcomposition
 
 import android.os.Bundle
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LithoView
 import com.fblitho.lithoktsample.NavigatableDemoActivity
 
-class DemoListActivity : NavigatableDemoActivity() {
+class ComposedAnimationsActivity : NavigatableDemoActivity() {
 
-  public override fun onCreate(savedInstanceState: Bundle?) {
+  override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val indices = intent.getIntArrayExtra(INDICES)
-    val dataModels = DataModels.getDataModels(indices)
-
-    val componentContext = ComponentContext(this)
     setContentView(
         LithoView.create(
-            this,
-            DemoListComponent.create(componentContext)
-                .dataModels(dataModels)
-                .parentIndices(indices)
-                .build()))
-  }
-
-  companion object {
-    const val INDICES = "INDICES"
+            this, ComposedAnimationsComponent.create(ComponentContext(this)).build()))
   }
 }
