@@ -16,6 +16,7 @@ import com.fblitho.lithoktsample.animations.animatedbadge.AnimatedBadgeActivity
 import com.fblitho.lithoktsample.animations.animationcomposition.ComposedAnimationsActivity
 import com.fblitho.lithoktsample.animations.bounds.BoundsAnimationActivity
 import com.fblitho.lithoktsample.animations.expandableelement.ExpandableElementActivity
+import com.fblitho.lithoktsample.bordereffects.BorderEffectsActivity
 import com.fblitho.lithoktsample.errors.ErrorHandlingActivity
 import com.fblitho.lithoktsample.lithography.LithographyActivity
 
@@ -25,6 +26,10 @@ object DataModels {
       DemoListDataModel(
           name = "Lithography",
           klass = LithographyActivity::class.java
+      ),
+      DemoListDataModel(
+          name = "Border effects",
+          klass = BorderEffectsActivity::class.java
       ),
       DemoListDataModel(
           name = "Error boundaries",
