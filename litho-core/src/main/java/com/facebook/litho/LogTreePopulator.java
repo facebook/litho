@@ -26,11 +26,17 @@ public final class LogTreePopulator {
   private LogTreePopulator() {}
 
   /**
-   * Extract the treeprops from a given {@link ComponentContext} and convert them into perf event
-   * annotations using a {@link ComponentsLogger} implementation.
+   * Annotate a log event with the log tag set in the context, and extract the treeprops from a
+   * given {@link ComponentContext} and convert them into perf event annotations using a {@link
+   * ComponentsLogger} implementation.
    */
   public static void populatePerfEventFromLogger(
       ComponentContext c, ComponentsLogger logger, PerfEvent perfEvent) {
+    final String logTag = c.getLogTag();
+    if (logTag != null) {
+      perfEvent.markerAnnotate(FrameworkLogEvents.PARAM_LOG_TAG, logTag);
+    }
+
     @Nullable final TreeProps treeProps = c.getTreeProps();
     if (treeProps == null) {
       return;

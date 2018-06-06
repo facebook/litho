@@ -389,7 +389,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return;
     }
 
-    mountPerfEvent.markerAnnotate(PARAM_LOG_TAG, componentTree.getContext().getLogTag());
     mountPerfEvent.markerAnnotate(PARAM_MOUNTED_COUNT, mMountStats.mountedCount);
     mountPerfEvent.markerAnnotate(
         PARAM_MOUNTED_CONTENT, mMountStats.mountedNames.toArray(new String[0]));

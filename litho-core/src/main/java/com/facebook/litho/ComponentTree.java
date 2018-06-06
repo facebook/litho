@@ -20,7 +20,6 @@ import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_CALCULATE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.LayoutState.CalculateLayoutSource;
 import static com.facebook.litho.ThreadUtils.assertHoldsLock;
@@ -985,7 +984,6 @@ public class ComponentTree {
 
     if (logger != null) {
       LogTreePopulator.populatePerfEventFromLogger(mContext, logger, event);
-      event.markerAnnotate(PARAM_LOG_TAG, mContext.getLogTag());
       logger.betterLog(event);
     }
 
@@ -1559,9 +1557,9 @@ public class ComponentTree {
         logger != null ? logger.newBetterPerformanceEvent(EVENT_LAYOUT_CALCULATE) : null;
 
     if (layoutEvent != null) {
-      layoutEvent.markerAnnotate(PARAM_LOG_TAG, mContext.getLogTag());
-      layoutEvent.markerAnnotate(PARAM_TREE_DIFF_ENABLED, mIsLayoutDiffingEnabled);
+      LogTreePopulator.populatePerfEventFromLogger(mContext, logger, layoutEvent);
       layoutEvent.markerAnnotate(PARAM_IS_BACKGROUND_LAYOUT, !ThreadUtils.isMainThread());
+      layoutEvent.markerAnnotate(PARAM_TREE_DIFF_ENABLED, mIsLayoutDiffingEnabled);
     }
 
     LayoutState localLayoutState =

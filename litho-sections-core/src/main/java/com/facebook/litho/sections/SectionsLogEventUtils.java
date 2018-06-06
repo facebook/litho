@@ -64,7 +64,6 @@ public class SectionsLogEventUtils {
         PARAM_SECTION_CURRENT, currentSection == null ? "null" : currentSection.getSimpleName());
     logEvent.markerAnnotate(
         PARAM_SECTION_NEXT, nextSection == null ? "null" : nextSection.getSimpleName());
-    logEvent.markerAnnotate(PARAM_LOG_TAG, c.getLogTag());
     LogTreePopulator.populatePerfEventFromLogger(c, logger, logEvent);
 
     return logEvent;

@@ -35,7 +35,6 @@ import static com.facebook.litho.FrameworkLogEvents.EVENT_CREATE_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_CSS_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_STATE_SOURCE;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE;
 import static com.facebook.litho.MountItem.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
@@ -1249,7 +1248,6 @@ class LayoutState {
 
       if (collectResultsEvent != null) {
         LogTreePopulator.populatePerfEventFromLogger(c, logger, collectResultsEvent);
-        collectResultsEvent.markerAnnotate(PARAM_LOG_TAG, c.getLogTag());
         logger.betterLog(collectResultsEvent);
       }
 
@@ -1568,7 +1566,6 @@ class LayoutState {
         logger != null ? logger.newBetterPerformanceEvent(EVENT_CREATE_LAYOUT) : null;
 
     if (createLayoutPerfEvent != null) {
-      createLayoutPerfEvent.markerAnnotate(PARAM_LOG_TAG, context.getLogTag());
       createLayoutPerfEvent.markerAnnotate(PARAM_COMPONENT, component.getSimpleName());
       LogTreePopulator.populatePerfEventFromLogger(context, logger, createLayoutPerfEvent);
     }
@@ -1614,7 +1611,7 @@ class LayoutState {
         logger != null ? logger.newBetterPerformanceEvent(EVENT_CSS_LAYOUT) : null;
 
     if (layoutEvent != null) {
-      layoutEvent.markerAnnotate(PARAM_LOG_TAG, context.getLogTag());
+      LogTreePopulator.populatePerfEventFromLogger(context, logger, layoutEvent);
       layoutEvent.markerAnnotate(PARAM_TREE_DIFF_ENABLED, previousDiffTreeRoot != null);
     }
 

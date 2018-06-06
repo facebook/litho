@@ -136,7 +136,6 @@ public class DataDiffSectionSpec<T> {
             : logger.newBetterPerformanceEvent(EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF);
 
     if (logEvent != null) {
-      logEvent.markerAnnotate(PARAM_LOG_TAG, c.getLogTag());
       LogTreePopulator.populatePerfEventFromLogger(c, logger, logEvent);
     }
 
