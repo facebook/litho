@@ -1555,12 +1555,13 @@ public class ComponentTree {
     }
 
     final ComponentsLogger logger = mContext.getLogger();
-    LogEvent layoutEvent = null;
-    if (logger != null) {
-      layoutEvent = logger.newPerformanceEvent(EVENT_LAYOUT_CALCULATE);
-      layoutEvent.addParam(PARAM_LOG_TAG, mContext.getLogTag());
-      layoutEvent.addParam(PARAM_TREE_DIFF_ENABLED, String.valueOf(mIsLayoutDiffingEnabled));
-      layoutEvent.addParam(PARAM_IS_BACKGROUND_LAYOUT, String.valueOf(!ThreadUtils.isMainThread()));
+    final PerfEvent layoutEvent =
+        logger != null ? logger.newBetterPerformanceEvent(EVENT_LAYOUT_CALCULATE) : null;
+
+    if (layoutEvent != null) {
+      layoutEvent.markerAnnotate(PARAM_LOG_TAG, mContext.getLogTag());
+      layoutEvent.markerAnnotate(PARAM_TREE_DIFF_ENABLED, mIsLayoutDiffingEnabled);
+      layoutEvent.markerAnnotate(PARAM_IS_BACKGROUND_LAYOUT, !ThreadUtils.isMainThread());
     }
 
     LayoutState localLayoutState =
@@ -1639,8 +1640,9 @@ public class ComponentTree {
       mPreAllocateMountContentHandler.post(mPreAllocateMountContentRunnable);
     }
 
-    if (logger != null) {
-      logger.log(layoutEvent);
+    if (layoutEvent != null) {
+      LogTreePopulator.populatePerfEventFromLogger(mContext, logger, layoutEvent);
+      logger.betterLog(layoutEvent);
     }
   }
 
