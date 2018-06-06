@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho.testing.logging;
 
+import com.facebook.litho.BaseComponentsLogger;
+import com.facebook.litho.FrameworkLogEvents;
+import com.facebook.litho.LogEvent;
+import com.facebook.litho.PerfEvent;
+import com.facebook.litho.TestPerfEvent;
 import java.util.LinkedList;
 import java.util.List;
 
