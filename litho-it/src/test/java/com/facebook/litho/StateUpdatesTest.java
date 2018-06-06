@@ -149,7 +149,6 @@ public class StateUpdatesTest {
   public void setup() throws Exception {
     mComponentsLogger = mock(BaseComponentsLogger.class);
     when(mComponentsLogger.newEvent(any(int.class))).thenCallRealMethod();
-    when(mComponentsLogger.newPerformanceEvent(any(int.class))).thenCallRealMethod();
     mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
     mWidthSpec = makeSizeSpec(39, EXACTLY);
     mHeightSpec = makeSizeSpec(41, EXACTLY);
