@@ -27,6 +27,11 @@ import java.util.Set;
  */
 public interface ComponentsLogger {
 
+  enum LogLevel {
+    WARNING,
+    ERROR
+  }
+
   /** Create a new event with the given event id. */
   LogEvent newEvent(@FrameworkLogEvents.LogEventId int eventId);
 
@@ -41,6 +46,9 @@ public interface ComponentsLogger {
 
   /** Write a {@link PerfEvent} to storage. This also marks the end of the event. */
   void betterLog(PerfEvent event);
+
+  /** Emit a message that can be logged or escalated by the logger implementation. */
+  void emitMessage(LogLevel level, String message);
 
   /**
    * When a component key collision occurs, filenames that contain keywords contained in the

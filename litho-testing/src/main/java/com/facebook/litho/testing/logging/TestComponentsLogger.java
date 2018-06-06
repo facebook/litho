@@ -70,6 +70,9 @@ public class TestComponentsLogger extends BaseComponentsLogger {
     mLoggedPerfEvents.add(event);
   }
 
+  @Override
+  public void emitMessage(LogLevel level, String message) {}
+
   public List<PerfEvent> getLoggedPerfEvents() {
     return mLoggedPerfEvents;
   }
