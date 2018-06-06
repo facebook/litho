@@ -31,13 +31,6 @@ public interface ComponentsLogger {
   LogEvent newEvent(@FrameworkLogEvents.LogEventId int eventId);
 
   /** Create a new performance event with the given event id and start counting the time. */
-  LogEvent newPerformanceEvent(@FrameworkLogEvents.LogEventId int eventId);
-
-  /**
-   * Create a new performance event with the given event id and start counting the time. This will
-   * be called instead of {@link #newPerformanceEvent(int)} if {@link
-   * com.facebook.litho.config.ComponentsConfiguration#useBatchArrayAllocator} is enabled.
-   */
   PerfEvent newBetterPerformanceEvent(@FrameworkLogEvents.LogEventId int eventId);
 
   /**
