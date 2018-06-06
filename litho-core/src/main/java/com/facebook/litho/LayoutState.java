@@ -1241,19 +1241,18 @@ class LayoutState {
         ComponentsSystrace.beginSection("collectResults:" + component.getSimpleName());
       }
 
-      LogEvent collectResultsEvent = null;
-      if (logger != null) {
-        collectResultsEvent = logger.newPerformanceEvent(EVENT_COLLECT_RESULTS);
-        collectResultsEvent.addParam(PARAM_LOG_TAG, c.getLogTag());
-      }
+      final PerfEvent collectResultsEvent =
+          logger != null ? logger.newBetterPerformanceEvent(EVENT_COLLECT_RESULTS) : null;
 
       collectResults(root, layoutState, null);
 
       Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
       Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
 
-      if (logger != null) {
-        logger.log(collectResultsEvent);
+      if (collectResultsEvent != null) {
+        LogTreePopulator.populatePerfEventFromLogger(c, logger, collectResultsEvent);
+        collectResultsEvent.markerAnnotate(PARAM_LOG_TAG, c.getLogTag());
+        logger.betterLog(collectResultsEvent);
       }
 
       if (isTracing) {
