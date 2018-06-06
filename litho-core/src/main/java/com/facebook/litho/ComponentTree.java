@@ -1423,6 +1423,15 @@ public class ComponentTree {
       if (pendingStateUpdates != null && pendingStateUpdates.size() > 0 && root != null) {
         root = root.makeShallowCopyWithNewId();
       }
+
+      // If a rootWrapperComponentFactory is provided, we use it to create a new root
+      // component.
+      final RootWrapperComponentFactory rootWrapperComponentFactory =
+          ErrorBoundariesConfiguration.rootWrapperComponentFactory;
+      if (rootWrapperComponentFactory != null) {
+        root = rootWrapperComponentFactory.createWrapper(mContext, root);
+      }
+
       final boolean rootInitialized = root != null;
       final boolean widthSpecInitialized = widthSpec != SIZE_UNINITIALIZED;
       final boolean heightSpecInitialized = heightSpec != SIZE_UNINITIALIZED;

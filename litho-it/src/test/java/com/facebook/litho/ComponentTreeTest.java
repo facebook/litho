@@ -51,6 +51,7 @@ public class ComponentTreeTest {
   private Component mComponent;
   private ShadowLooper mLayoutThreadShadowLooper;
   private ComponentContext mContext;
+  private RootWrapperComponentFactory mOldWrapperConfig;
 
   @Before
   public void setup() throws Exception {
@@ -67,6 +68,16 @@ public class ComponentTreeTest {
     mWidthSpec2 = makeSizeSpec(40, EXACTLY);
     mHeightSpec = makeSizeSpec(41, EXACTLY);
     mHeightSpec2 = makeSizeSpec(42, EXACTLY);
+  }
+
+  @Before
+  public void saveConfig() {
+    mOldWrapperConfig = ErrorBoundariesConfiguration.rootWrapperComponentFactory;
+  }
+
+  @After
+  public void restoreConfig() {
+    ErrorBoundariesConfiguration.rootWrapperComponentFactory = mOldWrapperConfig;
   }
 
   @After
@@ -379,6 +390,25 @@ public class ComponentTreeTest {
     // Since this happens post creation, it's not in general safe to update the main thread layout
     // state synchronously, so the result should be in the background layout state
     postSizeSpecChecks(componentTree, "mBackgroundLayoutState");
+  }
+
+  @Test
+  public void testRootWrapperComponent() {
+    final Component component = TestLayoutComponent.create(mContext).build();
+    final Component wrapperComponent = TestLayoutComponent.create(mContext).build();
+
+    ErrorBoundariesConfiguration.rootWrapperComponentFactory =
+        new RootWrapperComponentFactory() {
+          @Override
+          public Component createWrapper(ComponentContext c, Component root) {
+            return wrapperComponent;
+          }
+        };
+
+    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+
+    componentTree.setRootAndSizeSpec(mComponent, mWidthSpec, mHeightSpec);
+    assertThat(componentTree.getRoot()).isEqualTo(wrapperComponent);
   }
 
   @Test
