@@ -978,16 +978,15 @@ public class ComponentTree {
       }
     }
     final ComponentsLogger logger = mContext.getLogger();
-    LogEvent event = null;
-    if (logger != null) {
-      event = logger.newPerformanceEvent(EVENT_PRE_ALLOCATE_MOUNT_CONTENT);
-      event.addParam(PARAM_LOG_TAG, mContext.getLogTag());
-    }
+    final PerfEvent event =
+        logger != null ? logger.newBetterPerformanceEvent(EVENT_PRE_ALLOCATE_MOUNT_CONTENT) : null;
 
     toPrePopulate.preAllocateMountContent(shouldPreallocatePerMountSpec);
 
     if (logger != null) {
-      logger.log(event);
+      LogTreePopulator.populatePerfEventFromLogger(mContext, logger, event);
+      event.markerAnnotate(PARAM_LOG_TAG, mContext.getLogTag());
+      logger.betterLog(event);
     }
 
     toPrePopulate.releaseRef();
