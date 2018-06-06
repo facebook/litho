@@ -31,6 +31,9 @@ import com.facebook.litho.testing.util.InlineLayoutSpec;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -110,8 +113,27 @@ public class MountStateLoggingTest {
       int unmountedCount,
       List<String> mountedNames,
       List<String> unmountedNames) {
-    final TestPerfEvent perfEvent = (TestPerfEvent) mComponentsLogger.getLoggedPerfEvents().get(1);
-    final Map<String, Object> annotations = perfEvent.getAnnotations();
+    final Optional<TestPerfEvent> maybePerfEvent =
+        mComponentsLogger
+            .getLoggedPerfEvents()
+            .stream()
+            .filter(
+                new Predicate<PerfEvent>() {
+                  @Override
+                  public boolean test(PerfEvent perfEvent) {
+                    return perfEvent.getMarkerId() == FrameworkLogEvents.EVENT_MOUNT;
+                  }
+                })
+            .map(
+                new Function<PerfEvent, TestPerfEvent>() {
+                  @Override
+                  public TestPerfEvent apply(PerfEvent perfEvent) {
+                    return (TestPerfEvent) perfEvent;
+                  }
+                })
+            .findFirst();
+    assertThat(maybePerfEvent.isPresent()).isTrue();
+    final Map<String, Object> annotations = maybePerfEvent.get().getAnnotations();
     assertThat(annotations).containsEntry(PARAM_MOUNTED_COUNT, mountedCount);
     assertThat(annotations).containsEntry(PARAM_UNMOUNTED_COUNT, unmountedCount);
     assertThat(annotations)

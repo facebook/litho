@@ -1613,11 +1613,12 @@ class LayoutState {
     }
 
     final ComponentsLogger logger = context.getLogger();
-    LogEvent layoutEvent = null;
-    if (logger != null) {
-      layoutEvent = logger.newPerformanceEvent(EVENT_CSS_LAYOUT);
-      layoutEvent.addParam(PARAM_LOG_TAG, context.getLogTag());
-      layoutEvent.addParam(PARAM_TREE_DIFF_ENABLED, String.valueOf(previousDiffTreeRoot != null));
+    final PerfEvent layoutEvent =
+        logger != null ? logger.newBetterPerformanceEvent(EVENT_CSS_LAYOUT) : null;
+
+    if (layoutEvent != null) {
+      layoutEvent.markerAnnotate(PARAM_LOG_TAG, context.getLogTag());
+      layoutEvent.markerAnnotate(PARAM_TREE_DIFF_ENABLED, previousDiffTreeRoot != null);
     }
 
     root.calculateLayout(
@@ -1628,8 +1629,9 @@ class LayoutState {
             ? YogaConstants.UNDEFINED
             : SizeSpec.getSize(heightSpec));
 
-    if (logger != null) {
-      logger.log(layoutEvent);
+    if (layoutEvent != null) {
+      LogTreePopulator.populatePerfEventFromLogger(context, logger, layoutEvent);
+      logger.betterLog(layoutEvent);
     }
 
     if (isTracing) {
