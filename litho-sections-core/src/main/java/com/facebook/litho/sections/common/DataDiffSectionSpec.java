@@ -32,7 +32,8 @@ import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.LogEvent;
+import com.facebook.litho.LogTreePopulator;
+import com.facebook.litho.PerfEvent;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
@@ -129,17 +130,21 @@ public class DataDiffSectionSpec<T> {
             c, data.getPrevious(), data.getNext(), shouldTrim, shouldTrimSameInstanceOnly);
 
     final ComponentsLogger logger = c.getLogger();
-    LogEvent logEvent = null;
-    if (logger != null) {
-      logEvent = c.getLogger().newPerformanceEvent(EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF);
-      logEvent.addParam(PARAM_LOG_TAG, c.getLogTag());
+    final PerfEvent logEvent =
+        logger == null
+            ? null
+            : logger.newBetterPerformanceEvent(EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF);
+
+    if (logEvent != null) {
+      logEvent.markerAnnotate(PARAM_LOG_TAG, c.getLogTag());
+      LogTreePopulator.populatePerfEventFromLogger(c, logger, logEvent);
     }
 
-    DiffUtil.DiffResult result =
+    final DiffUtil.DiffResult result =
         DiffUtil.calculateDiff(callback, isDetectMovesEnabled(detectMoves));
 
-    if (logger != null) {
-      logger.log(logEvent);
+    if (logEvent != null) {
+      logger.betterLog(logEvent);
     }
 
     final RecyclerBinderUpdateCallback<T> updatesCallback =
