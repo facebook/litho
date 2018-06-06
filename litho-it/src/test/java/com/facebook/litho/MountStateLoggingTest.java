@@ -102,7 +102,6 @@ public class MountStateLoggingTest {
                 .build();
           }
         });
-    final LogEvent event = mComponentsLogger.newPerformanceEvent(EVENT_MOUNT);
 
     final List<PerfEvent> loggedPerfEvents = mComponentsLogger.getLoggedPerfEvents();
 

@@ -24,7 +24,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 import android.util.SparseArray;
 import com.facebook.litho.ComponentsLogger;
-import com.facebook.litho.LogEvent;
+import com.facebook.litho.PerfEvent;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,17 +65,9 @@ public class ChangeSetState {
     changeSetState.mCurrentRoot = currentRoot;
     changeSetState.mNewRoot = newRoot;
 
-    final ComponentsLogger logger = sectionContext.getLogger();
-    LogEvent logEvent = null;
-    if (logger != null) {
-      logEvent =
-          SectionsLogEventUtils.getSectionsPerformanceEvent(
-              logger,
-              sectionContext.getLogTag(),
-              EVENT_SECTIONS_GENERATE_CHANGESET,
-              currentRoot,
-              newRoot);
-    }
+    final PerfEvent logEvent =
+        SectionsLogEventUtils.getSectionsPerformanceEvent(
+            sectionContext, EVENT_SECTIONS_GENERATE_CHANGESET, currentRoot, newRoot);
 
     changeSetState.mChangeSet =
         generateChangeSetRecursive(
@@ -89,8 +81,9 @@ public class ChangeSetState {
             nextPrefix,
             Thread.currentThread().getName());
 
+    final ComponentsLogger logger = sectionContext.getLogger();
     if (logger != null) {
-      logger.log(logEvent);
+      logger.betterLog(logEvent);
     }
 
     return changeSetState;

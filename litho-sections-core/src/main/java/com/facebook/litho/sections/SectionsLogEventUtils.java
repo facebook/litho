@@ -20,8 +20,11 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_SECTION_CURRENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_SECTION_NEXT;
 
 import android.support.annotation.IntDef;
+import android.support.annotation.Nullable;
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsLogger;
-import com.facebook.litho.LogEvent;
+import com.facebook.litho.LogTreePopulator;
+import com.facebook.litho.PerfEvent;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -47,18 +50,22 @@ public class SectionsLogEventUtils {
   /**
    * Create a performance event that will add the names of the current and next section as params.
    */
-  public static LogEvent getSectionsPerformanceEvent(
-      ComponentsLogger logger,
-      String logTag,
-      int eventId,
-      Section currentSection,
-      Section nextSection) {
-    final LogEvent logEvent = logger.newPerformanceEvent(eventId);
-    logEvent.addParam(
+  @Nullable
+  public static PerfEvent getSectionsPerformanceEvent(
+      ComponentContext c, int eventId, Section currentSection, Section nextSection) {
+    final ComponentsLogger logger = c.getLogger();
+
+    if (logger == null) {
+      return null;
+    }
+
+    final PerfEvent logEvent = logger.newBetterPerformanceEvent(eventId);
+    logEvent.markerAnnotate(
         PARAM_SECTION_CURRENT, currentSection == null ? "null" : currentSection.getSimpleName());
-    logEvent.addParam(
+    logEvent.markerAnnotate(
         PARAM_SECTION_NEXT, nextSection == null ? "null" : nextSection.getSimpleName());
-    logEvent.addParam(PARAM_LOG_TAG, logTag);
+    logEvent.markerAnnotate(PARAM_LOG_TAG, c.getLogTag());
+    LogTreePopulator.populatePerfEventFromLogger(c, logger, logEvent);
 
     return logEvent;
   }

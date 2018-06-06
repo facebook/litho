@@ -44,7 +44,7 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventHandlersController;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggersContainer;
-import com.facebook.litho.LogEvent;
+import com.facebook.litho.PerfEvent;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet;
@@ -823,7 +823,6 @@ public class SectionTree {
       StateUpdatesHolder pendingStateUpdates;
 
       final ComponentsLogger logger;
-      final String logTag;
 
       synchronized (this) {
         if (mReleased) {
@@ -833,20 +832,17 @@ public class SectionTree {
         currentRoot = copy(mCurrentSection, true);
         nextRoot = copy(mNextSection, false);
         logger = mContext.getLogger();
-        logTag = mContext.getLogTag();
         pendingStateUpdates = mPendingStateUpdates.copy();
       }
 
-      LogEvent logEvent = null;
-
-      if (logger != null) {
-        logEvent =
-            SectionsLogEventUtils.getSectionsPerformanceEvent(
-                logger, logTag, EVENT_SECTIONS_SET_ROOT, currentRoot, nextRoot);
-        logEvent.addParam(
+      final PerfEvent logEvent =
+          SectionsLogEventUtils.getSectionsPerformanceEvent(
+              mContext, EVENT_SECTIONS_SET_ROOT, currentRoot, nextRoot);
+      if (logEvent != null) {
+        logEvent.markerAnnotate(
             PARAM_SECTION_SET_ROOT_SOURCE,
             SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
-        logEvent.addParam(PARAM_SET_ROOT_ON_BG_THREAD, !ThreadUtils.isMainThread());
+        logEvent.markerAnnotate(PARAM_SET_ROOT_ON_BG_THREAD, !ThreadUtils.isMainThread());
       }
 
       clearUnusedTriggerHandlers();
@@ -934,8 +930,8 @@ public class SectionTree {
         }
       }
 
-      if (logger != null) {
-        logger.log(logEvent);
+      if (logger != null && logEvent != null) {
+        logger.betterLog(logEvent);
       }
     } finally {
       if (isTracing) {
@@ -1139,12 +1135,9 @@ public class SectionTree {
     nextRoot.setGlobalKey(nextRoot.getKey());
 
     final ComponentsLogger logger = context.getLogger();
-    LogEvent logEvent = null;
-    if (logger != null) {
-      logEvent =
-          SectionsLogEventUtils.getSectionsPerformanceEvent(
-              logger, context.getLogTag(), EVENT_SECTIONS_CREATE_NEW_TREE, currentRoot, nextRoot);
-    }
+    final PerfEvent logEvent =
+        SectionsLogEventUtils.getSectionsPerformanceEvent(
+            context, EVENT_SECTIONS_CREATE_NEW_TREE, currentRoot, nextRoot);
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
@@ -1158,8 +1151,8 @@ public class SectionTree {
         ComponentsSystrace.endSection();
       }
     }
-    if (logger != null) {
-      logger.log(logEvent);
+    if (logger != null && logEvent != null) {
+      logger.betterLog(logEvent);
     }
 
     if (isTracing) {
@@ -1231,18 +1224,15 @@ public class SectionTree {
           nextRoot.getTreePropsForChildren(context, parentTreeProps));
 
       final ComponentsLogger logger = context.getLogger();
-      LogEvent logEvent = null;
-      if (logger != null) {
-        logEvent =
-            SectionsLogEventUtils.getSectionsPerformanceEvent(
-                logger, context.getLogTag(), EVENT_SECTIONS_ON_CREATE_CHILDREN, null, nextRoot);
-      }
+      final PerfEvent logEvent =
+          SectionsLogEventUtils.getSectionsPerformanceEvent(
+              context, EVENT_SECTIONS_ON_CREATE_CHILDREN, null, nextRoot);
 
       nextRoot.setChildren(nextRoot.createChildren(
           nextRoot.getScopedContext()));
 
-      if (logger != null) {
-        logger.log(logEvent);
+      if (logger != null && logEvent != null) {
+        logger.betterLog(logEvent);
       }
 
       final List<Section> nextRootChildren = nextRoot.getChildren();
