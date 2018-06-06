@@ -35,12 +35,6 @@ public interface ComponentsLogger {
   /** Create a new performance event with the given event id and start counting the time. */
   PerfEvent newBetterPerformanceEvent(@FrameworkLogEvents.LogEventId int eventId);
 
-  /**
-   * Log an event. Events are recycled and should not be used once logged. If the logged event is
-   * a performance event it will stop counting the time.
-   */
-  void log(LogEvent event);
-
   /** Write a {@link PerfEvent} to storage. This also marks the end of the event. */
   void betterLog(PerfEvent event);
 
@@ -71,9 +65,6 @@ public interface ComponentsLogger {
    */
   @Nullable
   Map<String, String> getExtraAnnotations(TreeProps treeProps);
-
-  /** @return whether this event is being traced and getting logged. */
-  boolean isTracing(LogEvent logEvent);
 
   /** @return whether this event is being traced and getting logged. */
   boolean isTracing(PerfEvent logEvent);

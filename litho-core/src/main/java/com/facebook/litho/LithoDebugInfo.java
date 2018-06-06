@@ -55,7 +55,6 @@ public final class LithoDebugInfo {
     pools.add(ComponentsPools.sTreePropsMapPool);
     pools.add(ComponentsPools.sArraySetPool);
     pools.add(ComponentsPools.sArrayDequePool);
-    pools.add(ComponentsPools.sLogEventPool);
 
     if (ComponentsPools.sTestOutputPool != null) {
       pools.add(ComponentsPools.sTestOutputPool);

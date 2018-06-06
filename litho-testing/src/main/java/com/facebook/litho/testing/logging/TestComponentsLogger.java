@@ -18,7 +18,6 @@ package com.facebook.litho.testing.logging;
 
 import com.facebook.litho.BaseComponentsLogger;
 import com.facebook.litho.FrameworkLogEvents;
-import com.facebook.litho.LogEvent;
 import com.facebook.litho.PerfEvent;
 import com.facebook.litho.TestPerfEvent;
 import java.util.LinkedList;
@@ -33,32 +32,9 @@ public class TestComponentsLogger extends BaseComponentsLogger {
   private final List<PerfEvent> mLoggedPerfEvents = new LinkedList<>();
 
   @Override
-  public void log(LogEvent event) {
-    if (event.isPerformanceEvent()) {
-      onPerformanceEventEnded(event);
-    } else {
-      onEvent(event);
-    }
-  }
-
-  @Override
-  public boolean isTracing(LogEvent logEvent) {
-    return true;
-  }
-
-  @Override
   public boolean isTracing(PerfEvent logEvent) {
     return true;
   }
-
-  @Override
-  public void onPerformanceEventStarted(LogEvent event) {}
-
-  @Override
-  public void onPerformanceEventEnded(LogEvent event) {}
-
-  @Override
-  public void onEvent(LogEvent event) {}
 
   @Override
   public PerfEvent newBetterPerformanceEvent(@FrameworkLogEvents.LogEventId int eventId) {

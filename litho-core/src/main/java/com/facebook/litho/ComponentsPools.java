@@ -142,9 +142,6 @@ public class ComponentsPools {
   static final RecyclePool<ArrayDeque> sArrayDequePool =
       new RecyclePool<>("ArrayDeque", 10, true);
 
-  static final RecyclePool<LogEvent> sLogEventPool =
-      new RecyclePool<>("LogEvent", 10, true);
-
   static final RecyclePool<RenderState> sRenderStatePool =
       new RecyclePool<>("RenderState", 4, true);
 
@@ -425,16 +422,6 @@ public class ComponentsPools {
     }
 
     return treeProps;
-  }
-
-  public static LogEvent acquireLogEvent(int eventId) {
-    LogEvent event = sLogEventPool.acquire();
-    if (event == null) {
-      event = new LogEvent();
-    }
-
-    event.setEventId(eventId);
-    return event;
   }
 
   //TODO t16407516 shb: change all "enableChecks = false" here to @TakesOwnership
@@ -786,7 +773,6 @@ public class ComponentsPools {
     sComponentTreeBuilderPool.clear();
     sStateHandlerPool.clear();
     sTreePropsMapPool.clear();
-    sLogEventPool.clear();
     sMountItemScrapArrayPool.clear();
     sRectFPool.clear();
     sEdgesPool.clear();
@@ -885,12 +871,6 @@ public class ComponentsPools {
   public static void release(ArrayDeque deque) {
     deque.clear();
     sArrayDequePool.release(deque);
-  }
-
-  @ThreadSafe(enableChecks = false)
-  public static void release(LogEvent event) {
-    event.reset();
-    sLogEventPool.release(event);
   }
 
   public static RenderState acquireRenderState() {

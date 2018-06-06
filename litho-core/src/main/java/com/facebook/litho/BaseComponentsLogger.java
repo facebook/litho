@@ -39,17 +39,6 @@ public abstract class BaseComponentsLogger implements ComponentsLogger {
   }
 
   @Override
-  public void log(LogEvent event) {
-    if (event.isPerformanceEvent()) {
-      onPerformanceEventEnded(event);
-    } else {
-      onEvent(event);
-    }
-
-    ComponentsPools.release(event);
-  }
-
-  @Override
   public Set<String> getKeyCollisionStackTraceKeywords() {
     return Collections.unmodifiableSet(sStackTraceKeywords);
   }
@@ -58,23 +47,6 @@ public abstract class BaseComponentsLogger implements ComponentsLogger {
   public Set<String> getKeyCollisionStackTraceBlacklist() {
     return Collections.unmodifiableSet(sStackTraceBlacklist);
   }
-
-  /**
-   * Log the start of a performance event. This is where you would start a timer and associate it
-   * with the given event object.
-   */
-  public abstract void onPerformanceEventStarted(LogEvent event);
-
-  /**
-   * Log the end of a performance event. This is where you would end a timer and associate it
-   * with the given event object and log the event.
-   */
-  public abstract void onPerformanceEventEnded(LogEvent event);
-
-  /**
-   * Log a non-performance event.
-   */
-  public abstract void onEvent(LogEvent event);
 
   @Nullable
   @Override
