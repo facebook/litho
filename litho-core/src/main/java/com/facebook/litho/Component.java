@@ -17,9 +17,6 @@
 package com.facebook.litho;
 
 import static android.support.annotation.Dimension.DP;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_ERROR;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_WARNING;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
@@ -248,16 +245,14 @@ public abstract class Component extends ComponentLifecycle
     if (component.mHasManualKey) {
       final ComponentsLogger logger = mScopedContext.getLogger();
       if (logger != null) {
-        final LogEvent event = logger.newEvent(EVENT_WARNING);
-        event.addParam(
-            PARAM_MESSAGE,
+        logger.emitMessage(
+            ComponentsLogger.LogLevel.WARNING,
             "The manual key "
                 + key
                 + " you are setting on this "
                 + component.getSimpleName()
                 + " is a duplicate and will be changed into a unique one. "
                 + "This will result in unexpected behavior if you don't change it.");
-        logger.log(event);
       }
     }
 
@@ -475,16 +470,14 @@ public abstract class Component extends ComponentLifecycle
         if (parentScope.getGlobalKey() == null) {
           final ComponentsLogger logger = parentContext.getLogger();
           if (logger != null) {
-            final LogEvent event = logger.newEvent(EVENT_ERROR);
-            event.addParam(
-                PARAM_MESSAGE,
+            logger.emitMessage(
+                ComponentsLogger.LogLevel.ERROR,
                 "Trying to generate parent-based key for component "
                     + getSimpleName()
                     + " , but parent "
                     + parentScope.getSimpleName()
                     + " has a null global key \"."
                     + " This is most likely a configuration mistake, check the value of ComponentsConfiguration.useGlobalKeys.");
-            logger.log(event);
           }
 
           setGlobalKey("null" + key);
@@ -631,17 +624,15 @@ public abstract class Component extends ComponentLifecycle
       if (key == null) {
         final ComponentsLogger logger = mContext.getLogger();
         if (logger != null) {
-          final LogEvent event = logger.newEvent(EVENT_ERROR);
           final String componentName =
               mContext.getComponentScope() != null
                   ? mContext.getComponentScope().getSimpleName()
                   : "unknown component";
-          event.addParam(
-              PARAM_MESSAGE,
+          final String message =
               "Setting a null key from "
                   + componentName
-                  + " which is usually a mistake! If it is not, explicitly set the String 'null'");
-          logger.log(event);
+                  + " which is usually a mistake! If it is not, explicitly set the String 'null'";
+          logger.emitMessage(ComponentsLogger.LogLevel.ERROR, message);
         }
         key = "null";
       }

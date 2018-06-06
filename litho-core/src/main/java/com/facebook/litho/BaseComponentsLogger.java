@@ -39,11 +39,6 @@ public abstract class BaseComponentsLogger implements ComponentsLogger {
   }
 
   @Override
-  public LogEvent newEvent(int eventId) {
-    return ComponentsPools.acquireLogEvent(eventId);
-  }
-
-  @Override
   public void log(LogEvent event) {
     if (event.isPerformanceEvent()) {
       onPerformanceEventEnded(event);

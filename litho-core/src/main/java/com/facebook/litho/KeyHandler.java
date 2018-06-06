@@ -15,9 +15,6 @@
  */
 package com.facebook.litho;
 
-import static com.facebook.litho.FrameworkLogEvents.EVENT_ERROR;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
-
 import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,9 +67,7 @@ public class KeyHandler {
       }
 
       if (mLogger != null) {
-        final LogEvent event = mLogger.newEvent(EVENT_ERROR);
-        event.addParam(PARAM_MESSAGE, message + "\n" + errorMessage);
-        mLogger.log(event);
+        mLogger.emitMessage(ComponentsLogger.LogLevel.ERROR, message + "\n" + errorMessage);
       }
     }
   }

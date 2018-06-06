@@ -20,8 +20,6 @@ import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
 import static android.support.v7.widget.OrientationHelper.VERTICAL;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_ERROR;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
 import static com.facebook.litho.MeasureComparisonUtils.isMeasureSpecCompatible;
 import static com.facebook.litho.widget.ComponentTreeHolder.RENDER_UNINITIALIZED;
 import static com.facebook.litho.widget.RenderInfoViewCreatorController.DEFAULT_COMPONENT_VIEW_TYPE;
@@ -49,7 +47,6 @@ import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.LogEvent;
 import com.facebook.litho.MeasureComparisonUtils;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
@@ -2495,40 +2492,36 @@ public class RecyclerBinder
   private void logTooManyPostingAttempts() {
     final ComponentsLogger logger = mComponentContext.getLogger();
     if (logger != null) {
-      final LogEvent logEvent = logger.newEvent(EVENT_ERROR);
-      if (logger.isTracing(logEvent)) {
-        final StringBuilder messageBuilder = new StringBuilder();
-        messageBuilder.append("Tried posting too many times! ");
-        messageBuilder.append("mMountedView is attached: ");
-        messageBuilder.append(mMountedView.isAttachedToWindow());
-        messageBuilder.append("; ");
-        messageBuilder.append("mMountedView visibility: ");
-        messageBuilder.append(mMountedView.getVisibility());
-        messageBuilder.append("; ");
-        messageBuilder.append("adapter has updates: ");
-        messageBuilder.append(mMountedView.hasPendingAdapterUpdates());
-        messageBuilder.append("; ");
-        messageBuilder.append("viewport should update: ");
-        messageBuilder.append(mViewportManager.shouldUpdate());
-        messageBuilder.append("; ");
-        messageBuilder.append("mMountedView requested layout: ");
-        messageBuilder.append(mMountedView.isLayoutRequested());
-        messageBuilder.append("; ");
+      final StringBuilder messageBuilder = new StringBuilder();
+      messageBuilder.append("Tried posting too many times! ");
+      messageBuilder.append("mMountedView is attached: ");
+      messageBuilder.append(mMountedView.isAttachedToWindow());
+      messageBuilder.append("; ");
+      messageBuilder.append("mMountedView visibility: ");
+      messageBuilder.append(mMountedView.getVisibility());
+      messageBuilder.append("; ");
+      messageBuilder.append("adapter has updates: ");
+      messageBuilder.append(mMountedView.hasPendingAdapterUpdates());
+      messageBuilder.append("; ");
+      messageBuilder.append("viewport should update: ");
+      messageBuilder.append(mViewportManager.shouldUpdate());
+      messageBuilder.append("; ");
+      messageBuilder.append("mMountedView requested layout: ");
+      messageBuilder.append(mMountedView.isLayoutRequested());
+      messageBuilder.append("; ");
 
-        for (int i = mCurrentFirstVisiblePosition; i <= mCurrentLastVisiblePosition; i++) {
-          final RenderInfo renderInfo = mComponentTreeHolders.get(i).getRenderInfo();
-          if (renderInfo.rendersComponent()) {
-            messageBuilder.append(renderInfo.getComponent().getSimpleName());
-          } else {
-            messageBuilder.append(renderInfo.getViewCreator().getClass());
-          }
-
-          messageBuilder.append(" ");
+      for (int i = mCurrentFirstVisiblePosition; i <= mCurrentLastVisiblePosition; i++) {
+        final RenderInfo renderInfo = mComponentTreeHolders.get(i).getRenderInfo();
+        if (renderInfo.rendersComponent()) {
+          messageBuilder.append(renderInfo.getComponent().getSimpleName());
+        } else {
+          messageBuilder.append(renderInfo.getViewCreator().getClass());
         }
 
-        logEvent.addParam(PARAM_MESSAGE, messageBuilder.toString());
-        logger.log(logEvent);
+        messageBuilder.append(" ");
       }
+
+      logger.emitMessage(ComponentsLogger.LogLevel.ERROR, messageBuilder.toString());
     }
   }
 }

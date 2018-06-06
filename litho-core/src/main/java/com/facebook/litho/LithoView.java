@@ -18,8 +18,6 @@ package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_ERROR;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.content.Context;
@@ -869,7 +867,6 @@ public class LithoView extends ComponentHost {
       return;
     }
 
-    final LogEvent logEvent = logger.newEvent(EVENT_ERROR);
     final StringBuilder messageBuilder = new StringBuilder();
     messageBuilder.append("[");
     messageBuilder.append(mInvalidStateLogId);
@@ -879,8 +876,7 @@ public class LithoView extends ComponentHost {
     messageBuilder.append((mComponentTree == null ? "" : mComponentTree.getSimpleName()));
     messageBuilder.append(", previousComponent=");
     messageBuilder.append(mPreviousComponentSimpleName);
-    logEvent.addParam(PARAM_MESSAGE, messageBuilder.toString());
-    logger.log(logEvent);
+    logger.emitMessage(ComponentsLogger.LogLevel.ERROR, messageBuilder.toString());
   }
 
   private void logSetAlreadyAttachedComponentTree(
@@ -890,7 +886,6 @@ public class LithoView extends ComponentHost {
       return;
     }
 
-    final LogEvent logEvent = logger.newEvent(EVENT_ERROR);
     final StringBuilder messageBuilder = new StringBuilder();
     messageBuilder.append("[");
     messageBuilder.append(mInvalidStateLogId);
@@ -902,8 +897,7 @@ public class LithoView extends ComponentHost {
     messageBuilder.append(currentComponentTree.getSimpleName());
     messageBuilder.append(", newComponent=");
     messageBuilder.append(newComponentTree.getSimpleName());
-    logEvent.addParam(PARAM_MESSAGE, messageBuilder.toString());
-    logger.log(logEvent);
+    logger.emitMessage(ComponentsLogger.LogLevel.ERROR, messageBuilder.toString());
   }
 
   @DoNotStrip

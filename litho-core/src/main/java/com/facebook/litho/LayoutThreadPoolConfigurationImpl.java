@@ -15,8 +15,6 @@
  */
 package com.facebook.litho;
 
-import static com.facebook.litho.FrameworkLogEvents.EVENT_WARNING;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
 import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
 
 import com.facebook.litho.config.DeviceInfoUtils;
@@ -104,9 +102,8 @@ public class LayoutThreadPoolConfigurationImpl implements LayoutThreadPoolConfig
       if (numProcessors == DeviceInfoUtils.DEVICEINFO_UNKNOWN || numProcessors == 0) {
         numProcessors = 1;
         if (logger != null) {
-          final LogEvent event = logger.newEvent(EVENT_WARNING);
-          event.addParam(PARAM_MESSAGE, "Could not read number of cores from device");
-          logger.log(event);
+          logger.emitMessage(
+              ComponentsLogger.LogLevel.WARNING, "Could not read number of cores from device");
         }
       }
 

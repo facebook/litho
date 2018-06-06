@@ -16,10 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.FrameworkLogEvents.EVENT_WARNING;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_MESSAGE;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,7 +45,6 @@ public class ComponentGlobalKeyTest {
   @Before
   public void setup() {
     mComponentsLogger = mock(BaseComponentsLogger.class);
-    when(mComponentsLogger.newEvent(any(int.class))).thenCallRealMethod();
     when(mComponentsLogger.getKeyCollisionStackTraceBlacklist()).thenCallRealMethod();
     when(mComponentsLogger.getKeyCollisionStackTraceKeywords()).thenCallRealMethod();
     mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
@@ -155,17 +150,13 @@ public class ComponentGlobalKeyTest {
 
     getLithoView(component);
 
-    final LogEvent event = mComponentsLogger.newEvent(EVENT_WARNING);
-
     final String expectedError =
         "The manual key "
             + "sameKey you are setting on "
             + "this Text is a duplicate and will be changed into a unique one. This will "
             + "result in unexpected behavior if you don't change it.";
 
-    event.addParam(PARAM_MESSAGE, expectedError);
-
-    verify(mComponentsLogger).log(eq(event));
+    verify(mComponentsLogger).emitMessage(ComponentsLogger.LogLevel.WARNING, expectedError);
   }
 
   @Test
@@ -184,17 +175,13 @@ public class ComponentGlobalKeyTest {
 
     getLithoView(component);
 
-    final LogEvent event = mComponentsLogger.newEvent(EVENT_WARNING);
-
     final String expectedError =
         "The manual key "
             + "sameKey you are setting on "
             + "this Column is a duplicate and will be changed into a unique one. This will "
             + "result in unexpected behavior if you don't change it.";
 
-    event.addParam(PARAM_MESSAGE, expectedError);
-
-    verify(mComponentsLogger).log(eq(event));
+    verify(mComponentsLogger).emitMessage(ComponentsLogger.LogLevel.WARNING, expectedError);
   }
 
   @Test

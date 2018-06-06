@@ -32,9 +32,6 @@ public interface ComponentsLogger {
     ERROR
   }
 
-  /** Create a new event with the given event id. */
-  LogEvent newEvent(@FrameworkLogEvents.LogEventId int eventId);
-
   /** Create a new performance event with the given event id and start counting the time. */
   PerfEvent newBetterPerformanceEvent(@FrameworkLogEvents.LogEventId int eventId);
 
