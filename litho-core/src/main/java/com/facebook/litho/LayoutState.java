@@ -1145,7 +1145,6 @@ class LayoutState {
       @Nullable String extraAttribution) {
 
     final ComponentsLogger logger = c.getLogger();
-    LogEvent logLayoutState = null;
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
@@ -1166,9 +1165,10 @@ class LayoutState {
 
     final LayoutState layoutState;
     try {
-      if (logger != null) {
-        logLayoutState = logger.newPerformanceEvent(EVENT_CALCULATE_LAYOUT_STATE);
-        logLayoutState.addParam(PARAM_LAYOUT_STATE_SOURCE, sourceToString(source));
+      final PerfEvent logLayoutState =
+          logger != null ? logger.newBetterPerformanceEvent(EVENT_CALCULATE_LAYOUT_STATE) : null;
+      if (logLayoutState != null) {
+        logLayoutState.markerAnnotate(PARAM_LAYOUT_STATE_SOURCE, sourceToString(source));
       }
 
       // Detect errors internal to components
@@ -1279,6 +1279,11 @@ class LayoutState {
       }
 
       layoutState.mCalculateLayoutDuration = System.nanoTime() - timestampStartLayout;
+
+      if (logLayoutState != null) {
+        LogTreePopulator.populatePerfEventFromLogger(c, logger, logLayoutState);
+        logger.betterLog(logLayoutState);
+      }
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();
@@ -1288,9 +1293,6 @@ class LayoutState {
       }
     }
 
-    if (logger != null) {
-      logger.log(logLayoutState);
-    }
 
     return layoutState;
   }
