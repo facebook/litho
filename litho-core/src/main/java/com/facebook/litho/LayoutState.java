@@ -204,7 +204,6 @@ class LayoutState {
   private final SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>>
       mTransitionKeyMapping = new SimpleArrayMap<>();
   private List<Transition> mTransitions;
-  long mCalculateLayoutDuration;
 
   @Nullable WorkingRangeContainer mWorkingRangeContainer;
 
@@ -1174,7 +1173,6 @@ class LayoutState {
       // Detect errors internal to components
       component.markLayoutStarted();
 
-      final long timestampStartLayout = System.nanoTime();
       layoutState = ComponentsPools.acquireLayoutState(c);
       layoutState.clearComponents();
       layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
@@ -1277,8 +1275,6 @@ class LayoutState {
           queueDisplayListsForPrefetch(layoutState);
         }
       }
-
-      layoutState.mCalculateLayoutDuration = System.nanoTime() - timestampStartLayout;
 
       if (logLayoutState != null) {
         LogTreePopulator.populatePerfEventFromLogger(c, logger, logLayoutState);
