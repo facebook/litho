@@ -34,8 +34,8 @@ public interface FrameworkLogEvents {
   int EVENT_MOUNT = 6;
   // Previously EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH = 7; Now unused.
   int EVENT_PRE_ALLOCATE_MOUNT_CONTENT = 8;
-  int EVENT_ERROR = 9;
-  int EVENT_WARNING = 10;
+  // Previously EVENT_ERROR = 9; Now unused.
+  // Previously EVENT_WARNING = 10; Now unused.
   int EVENT_SECTIONS_CREATE_NEW_TREE = 11;
   int EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF = 12;
   int EVENT_SECTIONS_GENERATE_CHANGESET = 13;
@@ -52,8 +52,6 @@ public interface FrameworkLogEvents {
     FrameworkLogEvents.EVENT_PREPARE_MOUNT,
     FrameworkLogEvents.EVENT_MOUNT,
     FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT,
-    FrameworkLogEvents.EVENT_ERROR,
-    FrameworkLogEvents.EVENT_WARNING,
     FrameworkLogEvents.EVENT_SECTIONS_CREATE_NEW_TREE,
     FrameworkLogEvents.EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF,
     FrameworkLogEvents.EVENT_SECTIONS_GENERATE_CHANGESET,
@@ -87,7 +85,6 @@ public interface FrameworkLogEvents {
   String PARAM_VISIBILITY_HANDLERS_TOTAL_TIME = "visibility_handlers_total_time_ms";
   String PARAM_VISIBILITY_HANDLER = "visibility_handler";
   String PARAM_VISIBILITY_HANDLER_TIME = "visibility_handler_time_ms";
-  String PARAM_MESSAGE = "message";
   String PARAM_SECTION_CURRENT = "section_current";
   String PARAM_SECTION_NEXT = "section_next";
   String PARAM_SECTION_SET_ROOT_SOURCE = "section_set_root_source";
