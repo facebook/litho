@@ -948,7 +948,7 @@ public class ComponentTree {
       throw new IllegalArgumentException("Root component can't be null");
     }
 
-    setRootAndSizeSpecInternal(
+    setRootAndSizeSpecAndWrapper(
         rootComponent,
         SIZE_UNINITIALIZED,
         SIZE_UNINITIALIZED,
@@ -995,7 +995,7 @@ public class ComponentTree {
       throw new IllegalArgumentException("Root component can't be null");
     }
 
-    setRootAndSizeSpecInternal(
+    setRootAndSizeSpecAndWrapper(
         rootComponent,
         SIZE_UNINITIALIZED,
         SIZE_UNINITIALIZED,
@@ -1221,7 +1221,7 @@ public class ComponentTree {
       throw new IllegalArgumentException("Root component can't be null");
     }
 
-    setRootAndSizeSpecInternal(
+    setRootAndSizeSpecAndWrapper(
         root,
         widthSpec,
         heightSpec,
@@ -1241,7 +1241,7 @@ public class ComponentTree {
       throw new IllegalArgumentException("Root component can't be null");
     }
 
-    setRootAndSizeSpecInternal(
+    setRootAndSizeSpecAndWrapper(
         root,
         widthSpec,
         heightSpec,
@@ -1260,7 +1260,7 @@ public class ComponentTree {
       throw new IllegalArgumentException("Root component can't be null");
     }
 
-    setRootAndSizeSpecInternal(
+    setRootAndSizeSpecAndWrapper(
         root,
         widthSpec,
         heightSpec,
@@ -1276,7 +1276,7 @@ public class ComponentTree {
       throw new IllegalArgumentException("Root component can't be null");
     }
 
-    setRootAndSizeSpecInternal(
+    setRootAndSizeSpecAndWrapper(
         root,
         widthSpec,
         heightSpec,
@@ -1293,7 +1293,7 @@ public class ComponentTree {
       throw new IllegalArgumentException("Root component can't be null");
     }
 
-    setRootAndSizeSpecInternal(
+    setRootAndSizeSpecAndWrapper(
         root,
         widthSpec,
         heightSpec,
@@ -1396,6 +1396,34 @@ public class ComponentTree {
     lithoTooltip.showLithoTooltip(mLithoView, anchorBounds, xOffset, yOffset);
   }
 
+  /**
+   * This internal version of {@link #setRootAndSizeSpecInternal(Component, int, int, boolean, Size,
+   * int, String, TreeProps)} wraps the provided root in a wrapper component first. Ensure to only
+   * call this for entry calls to setRoot, i.e. non-recurring calls as you will otherwise continue
+   * rewrapping the component.
+   */
+  private void setRootAndSizeSpecAndWrapper(
+      Component root,
+      int widthSpec,
+      int heightSpec,
+      boolean isAsync,
+      Size output,
+      @CalculateLayoutSource int source,
+      String extraAttribution,
+      @Nullable TreeProps treeProps) {
+
+    // If a rootWrapperComponentFactory is provided, we use it to create a new root
+    // component.
+    final RootWrapperComponentFactory rootWrapperComponentFactory =
+        ErrorBoundariesConfiguration.rootWrapperComponentFactory;
+    if (root != null && rootWrapperComponentFactory != null) {
+      root = rootWrapperComponentFactory.createWrapper(mContext, root);
+    }
+
+    setRootAndSizeSpecInternal(
+        root, widthSpec, heightSpec, isAsync, output, source, extraAttribution, treeProps);
+  }
+
   private void setRootAndSizeSpecInternal(
       Component root,
       int widthSpec,
@@ -1419,14 +1447,6 @@ public class ComponentTree {
           mStateHandler == null ? null : mStateHandler.getPendingStateUpdates();
       if (pendingStateUpdates != null && pendingStateUpdates.size() > 0 && root != null) {
         root = root.makeShallowCopyWithNewId();
-      }
-
-      // If a rootWrapperComponentFactory is provided, we use it to create a new root
-      // component.
-      final RootWrapperComponentFactory rootWrapperComponentFactory =
-          ErrorBoundariesConfiguration.rootWrapperComponentFactory;
-      if (rootWrapperComponentFactory != null) {
-        root = rootWrapperComponentFactory.createWrapper(mContext, root);
       }
 
       final boolean rootInitialized = root != null;
