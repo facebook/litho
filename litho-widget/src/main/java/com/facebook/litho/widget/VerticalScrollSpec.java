@@ -108,7 +108,7 @@ public class VerticalScrollSpec {
   }
 
   @OnCreateMountContent
-  static LithoScrollView onCreateMountContent(ComponentContext context) {
+  static LithoScrollView onCreateMountContent(Context context) {
     return new LithoScrollView(context);
   }
 
