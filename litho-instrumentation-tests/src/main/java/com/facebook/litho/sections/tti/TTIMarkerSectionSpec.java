@@ -58,7 +58,7 @@ public class TTIMarkerSectionSpec {
       SectionContext c,
       @Param String renderMarker,
       @FromEvent boolean hasMounted,
-      @FromEvent long timestampNanos) {
+      @FromEvent long timestampMillis) {
     Toast.makeText(c, renderMarker, Toast.LENGTH_SHORT).show();
   }
 }

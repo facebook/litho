@@ -27,6 +27,7 @@ import static com.facebook.litho.widget.RenderInfoViewCreatorController.DEFAULT_
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.support.annotation.IntDef;
 import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
@@ -274,20 +275,20 @@ public class RecyclerBinder
   static class RenderCompleteRunnable implements Runnable {
     private final EventHandler<RenderCompleteEvent> renderCompleteEventHandler;
     private final boolean hasMounted;
-    private final long timestampNanos;
+    private final long timestampMillis;
 
     RenderCompleteRunnable(
         EventHandler<RenderCompleteEvent> renderCompleteEventHandler,
         boolean hasMounted,
-        long timestampNanos) {
+        long timestampMillis) {
       this.renderCompleteEventHandler = renderCompleteEventHandler;
       this.hasMounted = hasMounted;
-      this.timestampNanos = timestampNanos;
+      this.timestampMillis = timestampMillis;
     }
 
     @Override
     public void run() {
-      dispatchRenderCompleteEvent(renderCompleteEventHandler, hasMounted, timestampNanos);
+      dispatchRenderCompleteEvent(renderCompleteEventHandler, hasMounted, timestampMillis);
     }
   }
 
@@ -484,7 +485,7 @@ public class RecyclerBinder
   }
 
   @UiThread
-  public void notifyItemRenderCompleteAt(int position, final long timestampNanos) {
+  public void notifyItemRenderCompleteAt(int position, final long timestampMillis) {
     final ComponentTreeHolder holder = mComponentTreeHolders.get(position);
     final EventHandler<RenderCompleteEvent> renderCompleteEventHandler =
         holder.getRenderInfo().getRenderCompleteEventHandler();
@@ -499,7 +500,8 @@ public class RecyclerBinder
 
     // Dispatch a RenderCompleteEvent asynchronously.
     ViewCompat.postOnAnimation(
-        mMountedView, new RenderCompleteRunnable(renderCompleteEventHandler, true, timestampNanos));
+        mMountedView,
+        new RenderCompleteRunnable(renderCompleteEventHandler, true, timestampMillis));
 
     // Update the state to prevent dispatch an event again for the same holder.
     holder.setRenderState(ComponentTreeHolder.RENDER_DRAWN);
@@ -509,12 +511,12 @@ public class RecyclerBinder
   private static void dispatchRenderCompleteEvent(
       EventHandler<RenderCompleteEvent> renderCompleteEventHandler,
       boolean hasMounted,
-      long timestampNanos) {
+      long timestampMillis) {
     ThreadUtils.assertMainThread();
 
     final RenderCompleteEvent event = new RenderCompleteEvent();
     event.hasMounted = hasMounted;
-    event.timestampNanos = timestampNanos;
+    event.timestampMillis = timestampMillis;
     renderCompleteEventHandler.dispatchEvent(event);
   }
 
@@ -2381,7 +2383,7 @@ public class RecyclerBinder
               new LithoView.OnPostDrawListener() {
                 @Override
                 public void onPostDraw() {
-                  notifyItemRenderCompleteAt(normalizedPosition, System.nanoTime());
+                  notifyItemRenderCompleteAt(normalizedPosition, SystemClock.uptimeMillis());
                   lithoView.setOnPostDrawListener(null);
                 }
               });

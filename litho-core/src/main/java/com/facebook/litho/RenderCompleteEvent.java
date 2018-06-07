@@ -22,11 +22,11 @@ import com.facebook.litho.annotations.Event;
  * An {@link Event} that is triggered when a component is render complete.
  *
  * @param hasMounted is true if the component has mounted (i.e. on the screen), false otherwise.
- * @param timestampNanos is the timestamp when the component is rendered complete, the unit is
- *     nanosecond.
+ * @param timestampMillis is the timestamp when the component is rendered complete, computed using
+ *     SystemClock.uptimeMillis.
  */
 @Event
 public class RenderCompleteEvent {
   public boolean hasMounted;
-  public long timestampNanos;
+  public long timestampMillis;
 }
