@@ -2814,11 +2814,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       final MountItem mountItem = mCanMountIncrementallyMountItems.valueAt(i);
       final int layoutOutputPosition =
           layoutState.getLayoutOutputPositionForId(mCanMountIncrementallyMountItems.keyAt(i));
-      mountItemIncrementally(
-          mountItem,
-          layoutState.getMountableOutputAt(layoutOutputPosition).getBounds(),
-          localVisibleRect,
-          processVisibilityOutputs);
+      if (layoutOutputPosition != -1) {
+        mountItemIncrementally(
+            mountItem,
+            layoutState.getMountableOutputAt(layoutOutputPosition).getBounds(),
+            localVisibleRect,
+            processVisibilityOutputs);
+      }
     }
 
     return true;
