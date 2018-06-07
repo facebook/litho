@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.litho.specmodels.processor;
+package com.facebook.litho.specmodels.model;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.annotations.MountSpec;
-import com.facebook.litho.annotations.OnCreateMountContent;
-import com.facebook.litho.annotations.OnMount;
-import com.facebook.litho.annotations.OnPrepare;
+import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.specmodels.internal.RunMode;
-import com.facebook.litho.specmodels.model.MountSpecModel;
-import com.facebook.litho.specmodels.model.SpecModelValidation;
-import com.facebook.litho.specmodels.model.SpecModelValidationError;
+import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
 import java.util.List;
 import javax.annotation.processing.Messager;
@@ -39,37 +37,38 @@ import org.junit.Test;
 
 public class DifferentlyTypedDuplicatePropValidationTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
-  private final MountSpecModelFactory mFactory = new MountSpecModelFactory();
+  private final LayoutSpecModelFactory mFactory = new LayoutSpecModelFactory();
 
   interface Drawable {}
 
-  @MountSpec
-  public static class DupeMountSpec {
+  @Event(returnType = boolean.class)
+  public static class TestEvent {
+    public boolean testValue;
+  }
 
-    @OnPrepare
-    static void onPrepare(ComponentContext c, @Prop String prop1) {}
+  @LayoutSpec
+  public static class DupeLayoutSpec {
+
+    @OnCreateLayout
+    static void OnCreateLayout(ComponentContext c, @Prop String prop1) {}
 
     // Note that prop1 here has the same name but a different type.
-    @OnMount
-    static void onMount(ComponentContext c, Drawable drawable, @Prop StringBuffer prop1) {}
-
-    @OnCreateMountContent
-    static Drawable onCreateMountContent(ComponentContext c) {
-      return null;
-    }
+    @OnEvent(TestEvent.class)
+    static void onEvent(@Prop StringBuffer prop1) {}
   }
 
   @Test
   public void testDuplicatePropValidationError() {
     final Elements elements = mCompilationRule.getElements();
     final Types types = mCompilationRule.getTypes();
-    final TypeElement typeElement = elements.getTypeElement(DupeMountSpec.class.getCanonicalName());
-    final MountSpecModel mountSpecModel =
+    final TypeElement typeElement =
+        elements.getTypeElement(DupeLayoutSpec.class.getCanonicalName());
+    final LayoutSpecModel layoutSpecModel =
         mFactory.create(
             elements, types, typeElement, mock(Messager.class), RunMode.NORMAL, null, null);
 
     final List<SpecModelValidationError> specModelValidationErrors =
-        SpecModelValidation.validateMountSpecModel(mountSpecModel, RunMode.NORMAL);
+        SpecModelValidation.validateLayoutSpecModel(layoutSpecModel, RunMode.NORMAL);
 
     assertThat(specModelValidationErrors)
         .extracting("message")
