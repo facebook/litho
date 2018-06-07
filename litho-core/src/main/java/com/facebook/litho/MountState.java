@@ -1127,6 +1127,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       // We do not need this mapping for disappearing items.
       mIndexToItemMap.remove(mLayoutOutputsIds[i]);
 
+      if (item.getComponent() != null && item.getComponent().canMountIncrementally()) {
+        mCanMountIncrementallyMountItems.remove(mLayoutOutputsIds[i]);
+      }
+
       // Likewise we no longer need host mapping for disappearing items.
       if (isHostSpec(item.getComponent())) {
         mHostsByMarker.removeAt(mHostsByMarker.indexOfValue((ComponentHost) item.getContent()));
