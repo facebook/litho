@@ -23,7 +23,6 @@ import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibility
 import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_MOUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_DIRTY;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_COUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_EXTRAS;
@@ -235,7 +234,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     final PerfEvent mountPerfEvent =
-        logger == null ? null : logger.newBetterPerformanceEvent(EVENT_MOUNT);
+        logger == null ? null : logger.newPerformanceEvent(EVENT_MOUNT);
 
     if (mIsDirty) {
       updateTransitions(layoutState, componentTree);
@@ -421,7 +420,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     LogTreePopulator.populatePerfEventFromLogger(
         componentTree.getContext(), logger, mountPerfEvent);
 
-    logger.betterLog(mountPerfEvent);
+    logger.logPerfEvent(mountPerfEvent);
   }
 
   private void maybeRemoveAnimatingMountContent(String key) {

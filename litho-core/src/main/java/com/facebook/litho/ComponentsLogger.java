@@ -33,10 +33,10 @@ public interface ComponentsLogger {
   }
 
   /** Create a new performance event with the given event id and start counting the time. */
-  PerfEvent newBetterPerformanceEvent(@FrameworkLogEvents.LogEventId int eventId);
+  PerfEvent newPerformanceEvent(@FrameworkLogEvents.LogEventId int eventId);
 
   /** Write a {@link PerfEvent} to storage. This also marks the end of the event. */
-  void betterLog(PerfEvent event);
+  void logPerfEvent(PerfEvent event);
 
   /** Emit a message that can be logged or escalated by the logger implementation. */
   void emitMessage(LogLevel level, String message);

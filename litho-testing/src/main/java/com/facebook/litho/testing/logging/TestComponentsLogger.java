@@ -37,12 +37,12 @@ public class TestComponentsLogger extends BaseComponentsLogger {
   }
 
   @Override
-  public PerfEvent newBetterPerformanceEvent(@FrameworkLogEvents.LogEventId int eventId) {
+  public PerfEvent newPerformanceEvent(@FrameworkLogEvents.LogEventId int eventId) {
     return new TestPerfEvent(eventId);
   }
 
   @Override
-  public void betterLog(PerfEvent event) {
+  public void logPerfEvent(PerfEvent event) {
     mLoggedPerfEvents.add(event);
   }
 

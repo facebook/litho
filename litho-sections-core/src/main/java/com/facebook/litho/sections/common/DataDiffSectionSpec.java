@@ -17,7 +17,6 @@
 package com.facebook.litho.sections.common;
 
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
 import static com.facebook.litho.widget.RecyclerBinderUpdateCallback.acquire;
 import static com.facebook.litho.widget.RecyclerBinderUpdateCallback.release;
 
@@ -131,9 +130,7 @@ public class DataDiffSectionSpec<T> {
 
     final ComponentsLogger logger = c.getLogger();
     final PerfEvent logEvent =
-        logger == null
-            ? null
-            : logger.newBetterPerformanceEvent(EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF);
+        logger == null ? null : logger.newPerformanceEvent(EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF);
 
     if (logEvent != null) {
       LogTreePopulator.populatePerfEventFromLogger(c, logger, logEvent);
@@ -143,7 +140,7 @@ public class DataDiffSectionSpec<T> {
         DiffUtil.calculateDiff(callback, isDetectMovesEnabled(detectMoves));
 
     if (logEvent != null) {
-      logger.betterLog(logEvent);
+      logger.logPerfEvent(logEvent);
     }
 
     final RecyclerBinderUpdateCallback<T> updatesCallback =

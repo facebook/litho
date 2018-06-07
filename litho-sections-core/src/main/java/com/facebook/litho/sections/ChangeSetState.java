@@ -83,7 +83,7 @@ public class ChangeSetState {
 
     final ComponentsLogger logger = sectionContext.getLogger();
     if (logger != null) {
-      logger.betterLog(logEvent);
+      logger.logPerfEvent(logEvent);
     }
 
     return changeSetState;

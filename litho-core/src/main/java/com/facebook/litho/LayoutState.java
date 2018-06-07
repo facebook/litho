@@ -1164,7 +1164,7 @@ class LayoutState {
     final LayoutState layoutState;
     try {
       final PerfEvent logLayoutState =
-          logger != null ? logger.newBetterPerformanceEvent(EVENT_CALCULATE_LAYOUT_STATE) : null;
+          logger != null ? logger.newPerformanceEvent(EVENT_CALCULATE_LAYOUT_STATE) : null;
       if (logLayoutState != null) {
         logLayoutState.markerAnnotate(PARAM_LAYOUT_STATE_SOURCE, sourceToString(source));
       }
@@ -1239,7 +1239,7 @@ class LayoutState {
       }
 
       final PerfEvent collectResultsEvent =
-          logger != null ? logger.newBetterPerformanceEvent(EVENT_COLLECT_RESULTS) : null;
+          logger != null ? logger.newPerformanceEvent(EVENT_COLLECT_RESULTS) : null;
 
       collectResults(root, layoutState, null);
 
@@ -1248,7 +1248,7 @@ class LayoutState {
 
       if (collectResultsEvent != null) {
         LogTreePopulator.populatePerfEventFromLogger(c, logger, collectResultsEvent);
-        logger.betterLog(collectResultsEvent);
+        logger.logPerfEvent(collectResultsEvent);
       }
 
       if (isTracing) {
@@ -1276,7 +1276,7 @@ class LayoutState {
 
       if (logLayoutState != null) {
         LogTreePopulator.populatePerfEventFromLogger(c, logger, logLayoutState);
-        logger.betterLog(logLayoutState);
+        logger.logPerfEvent(logLayoutState);
       }
     } finally {
       if (isTracing) {
@@ -1563,7 +1563,7 @@ class LayoutState {
     final ComponentsLogger logger = context.getLogger();
 
     final PerfEvent createLayoutPerfEvent =
-        logger != null ? logger.newBetterPerformanceEvent(EVENT_CREATE_LAYOUT) : null;
+        logger != null ? logger.newPerformanceEvent(EVENT_CREATE_LAYOUT) : null;
 
     if (createLayoutPerfEvent != null) {
       createLayoutPerfEvent.markerAnnotate(PARAM_COMPONENT, component.getSimpleName());
@@ -1573,7 +1573,7 @@ class LayoutState {
     final InternalNode root = component.createLayout(context, true /* resolveNestedTree */);
 
     if (createLayoutPerfEvent != null) {
-      logger.betterLog(createLayoutPerfEvent);
+      logger.logPerfEvent(createLayoutPerfEvent);
     }
 
     return root;
@@ -1608,7 +1608,7 @@ class LayoutState {
 
     final ComponentsLogger logger = context.getLogger();
     final PerfEvent layoutEvent =
-        logger != null ? logger.newBetterPerformanceEvent(EVENT_CSS_LAYOUT) : null;
+        logger != null ? logger.newPerformanceEvent(EVENT_CSS_LAYOUT) : null;
 
     if (layoutEvent != null) {
       LogTreePopulator.populatePerfEventFromLogger(context, logger, layoutEvent);
@@ -1625,7 +1625,7 @@ class LayoutState {
 
     if (layoutEvent != null) {
       LogTreePopulator.populatePerfEventFromLogger(context, logger, layoutEvent);
-      logger.betterLog(layoutEvent);
+      logger.logPerfEvent(layoutEvent);
     }
 
     if (isTracing) {

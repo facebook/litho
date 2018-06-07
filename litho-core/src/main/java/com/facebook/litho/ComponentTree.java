@@ -978,13 +978,13 @@ public class ComponentTree {
     }
     final ComponentsLogger logger = mContext.getLogger();
     final PerfEvent event =
-        logger != null ? logger.newBetterPerformanceEvent(EVENT_PRE_ALLOCATE_MOUNT_CONTENT) : null;
+        logger != null ? logger.newPerformanceEvent(EVENT_PRE_ALLOCATE_MOUNT_CONTENT) : null;
 
     toPrePopulate.preAllocateMountContent(shouldPreallocatePerMountSpec);
 
     if (logger != null) {
       LogTreePopulator.populatePerfEventFromLogger(mContext, logger, event);
-      logger.betterLog(event);
+      logger.logPerfEvent(event);
     }
 
     toPrePopulate.releaseRef();
@@ -1554,7 +1554,7 @@ public class ComponentTree {
 
     final ComponentsLogger logger = mContext.getLogger();
     final PerfEvent layoutEvent =
-        logger != null ? logger.newBetterPerformanceEvent(EVENT_LAYOUT_CALCULATE) : null;
+        logger != null ? logger.newPerformanceEvent(EVENT_LAYOUT_CALCULATE) : null;
 
     if (layoutEvent != null) {
       LogTreePopulator.populatePerfEventFromLogger(mContext, logger, layoutEvent);
@@ -1640,7 +1640,7 @@ public class ComponentTree {
 
     if (layoutEvent != null) {
       LogTreePopulator.populatePerfEventFromLogger(mContext, logger, layoutEvent);
-      logger.betterLog(layoutEvent);
+      logger.logPerfEvent(layoutEvent);
     }
   }
 

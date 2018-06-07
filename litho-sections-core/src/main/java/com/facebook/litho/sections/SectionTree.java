@@ -931,7 +931,7 @@ public class SectionTree {
       }
 
       if (logger != null && logEvent != null) {
-        logger.betterLog(logEvent);
+        logger.logPerfEvent(logEvent);
       }
     } finally {
       if (isTracing) {
@@ -1152,7 +1152,7 @@ public class SectionTree {
       }
     }
     if (logger != null && logEvent != null) {
-      logger.betterLog(logEvent);
+      logger.logPerfEvent(logEvent);
     }
 
     if (isTracing) {
@@ -1232,7 +1232,7 @@ public class SectionTree {
           nextRoot.getScopedContext()));
 
       if (logger != null && logEvent != null) {
-        logger.betterLog(logEvent);
+        logger.logPerfEvent(logEvent);
       }
 
       final List<Section> nextRootChildren = nextRoot.getChildren();

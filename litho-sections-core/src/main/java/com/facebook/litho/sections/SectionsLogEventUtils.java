@@ -15,7 +15,6 @@
  */
 package com.facebook.litho.sections;
 
-import static com.facebook.litho.FrameworkLogEvents.PARAM_LOG_TAG;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_SECTION_CURRENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_SECTION_NEXT;
 
@@ -59,7 +58,7 @@ public class SectionsLogEventUtils {
       return null;
     }
 
-    final PerfEvent logEvent = logger.newBetterPerformanceEvent(eventId);
+    final PerfEvent logEvent = logger.newPerformanceEvent(eventId);
     logEvent.markerAnnotate(
         PARAM_SECTION_CURRENT, currentSection == null ? "null" : currentSection.getSimpleName());
     logEvent.markerAnnotate(
