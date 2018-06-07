@@ -28,6 +28,20 @@ public class EventHandlerTest {
   private final HasEventDispatcher mHasEventDispatcher = mock(HasEventDispatcher.class);
 
   @Test
+  public void testIsEquivalentToWithNullHandler() {
+    EventHandler eventHandler = new EventHandler(mHasEventDispatcher, 1);
+
+    assertThat(eventHandler.isEquivalentTo(null)).isFalse();
+  }
+
+  @Test
+  public void testIsEquivalentToWithSameHandler() {
+    EventHandler eventHandler = new EventHandler(mHasEventDispatcher, 1);
+
+    assertThat(eventHandler.isEquivalentTo(eventHandler)).isTrue();
+  }
+
+  @Test
   public void testIsEquivalentToWithDifferentIds() {
     EventHandler eventHandler1 = new EventHandler(mHasEventDispatcher, 1);
     EventHandler eventHandler2 = new EventHandler(mHasEventDispatcher, 2);

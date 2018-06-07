@@ -38,7 +38,15 @@ public class EventHandler<E> {
     mHasEventDispatcher.getEventDispatcher().dispatchOnEvent(this, event);
   }
 
-  public boolean isEquivalentTo(EventHandler other) {
+  public boolean isEquivalentTo(@Nullable EventHandler other) {
+    if (this == other) {
+      return true;
+    }
+
+    if (other == null) {
+      return false;
+    }
+
     if (id != other.id) {
       return false;
     }
