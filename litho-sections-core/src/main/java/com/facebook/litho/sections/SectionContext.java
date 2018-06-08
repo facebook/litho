@@ -97,7 +97,7 @@ public class SectionContext extends ComponentContext {
           "(" + mSectionTree.hashCode() + ") updateState from " + stateUpdate.getClass().getName());
     }
 
-    sectionTree.updateState(section.getGlobalKey(), stateUpdate);
+    sectionTree.updateState(section.getGlobalKey(), stateUpdate, attribution);
   }
 
   public void updateStateLazy(StateUpdate stateUpdate) {
@@ -128,7 +128,7 @@ public class SectionContext extends ComponentContext {
               + stateUpdate.getClass().getName());
     }
 
-    sectionTree.updateStateAsync(section.getGlobalKey(), stateUpdate);
+    sectionTree.updateStateAsync(section.getGlobalKey(), stateUpdate, attribution);
   }
 
   @Override

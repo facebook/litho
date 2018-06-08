@@ -346,7 +346,7 @@ public class SectionTreeTest {
 
     final StateUpdate stateUpdate = new StateUpdate();
     changeSetHandler.clear();
-    tree.updateState("key", stateUpdate);
+    tree.updateState("key", stateUpdate, "test");
 
     assertThat(stateUpdate.mUpdateStateCalled).isTrue();
     assertChangeSetNotSeen(changeSetHandler);
@@ -373,7 +373,7 @@ public class SectionTreeTest {
     assertThat(lazyStateUpdate.mUpdateStateCalled).isFalse();
 
     final StateUpdate stateUpdate = new StateUpdate();
-    tree.updateState("key", stateUpdate);
+    tree.updateState("key", stateUpdate, "test");
 
     assertThat(lazyStateUpdate.mUpdateStateCalled).isTrue();
     assertThat(stateUpdate.mUpdateStateCalled).isTrue();
@@ -396,7 +396,7 @@ public class SectionTreeTest {
     final StateUpdate stateUpdate = new StateUpdate();
     changeSetHandler.clear();
     tree.release();
-    tree.updateState("key", stateUpdate);
+    tree.updateState("key", stateUpdate, "test");
 
     assertThat(stateUpdate.mUpdateStateCalled).isFalse();
   }
@@ -431,7 +431,7 @@ public class SectionTreeTest {
 
     final StateUpdate stateUpdate = new StateUpdate();
     changeSetHandler.clear();
-    tree.updateStateAsync("key", stateUpdate);
+    tree.updateStateAsync("key", stateUpdate, "test");
     assertThat(stateUpdate.mUpdateStateCalled).isFalse();
 
     mChangeSetThreadShadowLooper.runOneTask();
@@ -455,7 +455,7 @@ public class SectionTreeTest {
 
     final StateUpdate stateUpdate = new StateUpdate();
     changeSetHandler.clear();
-    tree.updateStateAsync("key", stateUpdate);
+    tree.updateStateAsync("key", stateUpdate, "test");
 
     assertThat(stateUpdate.mUpdateStateCalled).isTrue();
     assertChangeSetNotSeen(changeSetHandler);

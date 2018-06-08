@@ -165,23 +165,29 @@ public class SectionTree {
     private boolean mIsPosted;
 
     @GuardedBy("this")
-    private @ApplyNewChangeSet int mSource;
+    private @ApplyNewChangeSet int mSource = ApplyNewChangeSet.NONE;
+
+    @GuardedBy("this")
+    private @Nullable String mAttribution;
 
     public CalculateChangeSetRunnable(Handler handler) {
       mHandler = handler;
     }
 
-    public synchronized void ensurePosted(@ApplyNewChangeSet int source) {
+    public synchronized void ensurePosted(@ApplyNewChangeSet int source, String attribution) {
       if (!mIsPosted) {
         mIsPosted = true;
         mHandler.post(this);
         mSource = source;
+        mAttribution = attribution;
       }
     }
 
     public synchronized void cancel() {
       if (mIsPosted) {
         mIsPosted = false;
+        mSource = ApplyNewChangeSet.NONE;
+        mAttribution = null;
         mHandler.removeCallbacks(this);
       }
     }
@@ -189,17 +195,20 @@ public class SectionTree {
     @Override
     public void run() {
       @ApplyNewChangeSet int source;
+      final String attribution;
       synchronized (this) {
         if (!mIsPosted) {
           return;
         }
         source = mSource;
+        attribution = mAttribution;
         mSource = ApplyNewChangeSet.NONE;
+        mAttribution = null;
         mIsPosted = false;
       }
 
       try {
-        applyNewChangeSet(source);
+        applyNewChangeSet(source, attribution);
       } catch (IndexOutOfBoundsException e) {
         throw new RuntimeException(getDebugInfo(SectionTree.this) + e.getMessage(), e);
       }
@@ -322,9 +331,9 @@ public class SectionTree {
     }
 
     if (mAsyncPropUpdates && !isFirstSetRoot) {
-      mCalculateChangeSetRunnable.ensurePosted(ApplyNewChangeSet.SET_ROOT_ASYNC);
+      mCalculateChangeSetRunnable.ensurePosted(ApplyNewChangeSet.SET_ROOT_ASYNC, null);
     } else {
-      applyNewChangeSet(ApplyNewChangeSet.SET_ROOT);
+      applyNewChangeSet(ApplyNewChangeSet.SET_ROOT, null);
     }
   }
 
@@ -353,7 +362,7 @@ public class SectionTree {
       mNextSection = copy(section, false);
     }
 
-    mCalculateChangeSetRunnable.ensurePosted(ApplyNewChangeSet.SET_ROOT_ASYNC);
+    mCalculateChangeSetRunnable.ensurePosted(ApplyNewChangeSet.SET_ROOT_ASYNC, null);
   }
 
   /**
@@ -722,21 +731,22 @@ public class SectionTree {
   }
 
   /**
-   * This will be called by the framework when one of the {@link Section} in the tree
-   * requests to update its own state.
-   * The generation of the ChangeSet will happen synchronously in the thread calling this method.
+   * This will be called by the framework when one of the {@link Section} in the tree requests to
+   * update its own state. The generation of the ChangeSet will happen synchronously in the thread
+   * calling this method.
    *
    * @param key The unique key of the {@link Section} in the tree.
    * @param stateUpdate An implementation of {@link StateUpdate} that knows how to transition to the
-   *        new state.
+   *     new state.
    */
-  synchronized void updateState(String key, StateUpdate stateUpdate) {
+  synchronized void updateState(String key, StateUpdate stateUpdate, String attribution) {
     if (mAsyncStateUpdates) {
-      updateStateAsync(key, stateUpdate);
+      updateStateAsync(key, stateUpdate, attribution);
     } else {
       mCalculateChangeSetOnMainThreadRunnable.cancel();
       addStateUpdateInternal(key, stateUpdate, false);
-      mCalculateChangeSetOnMainThreadRunnable.ensurePosted(ApplyNewChangeSet.UPDATE_STATE);
+      mCalculateChangeSetOnMainThreadRunnable.ensurePosted(
+          ApplyNewChangeSet.UPDATE_STATE, attribution);
     }
   }
 
@@ -749,13 +759,13 @@ public class SectionTree {
    * @param stateUpdate An implementation of {@link StateUpdate} that knows how to transition to the
    *     new state.
    */
-  synchronized void updateStateAsync(String key, StateUpdate stateUpdate) {
+  synchronized void updateStateAsync(String key, StateUpdate stateUpdate, String attribution) {
     if (mForceSyncStateUpdates) {
-      updateState(key, stateUpdate);
+      updateState(key, stateUpdate, attribution);
     } else {
       mCalculateChangeSetRunnable.cancel();
       addStateUpdateInternal(key, stateUpdate, false);
-      mCalculateChangeSetRunnable.ensurePosted(ApplyNewChangeSet.UPDATE_STATE_ASYNC);
+      mCalculateChangeSetRunnable.ensurePosted(ApplyNewChangeSet.UPDATE_STATE_ASYNC, attribution);
     }
   }
 
@@ -794,9 +804,12 @@ public class SectionTree {
     }
   }
 
-  private void applyNewChangeSet(@ApplyNewChangeSet int source) {
+  private void applyNewChangeSet(@ApplyNewChangeSet int source, @Nullable String attribution) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
+      if (attribution != null) {
+        ComponentsSystrace.beginSection("extra:" + attribution);
+      }
       final String name = mNextSection != null ? mNextSection.getSimpleName() : "<null>";
       ComponentsSystrace.beginSection(
           name
@@ -936,6 +949,9 @@ public class SectionTree {
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();
+        if (attribution != null) {
+          ComponentsSystrace.endSection();
+        }
       }
     }
   }
