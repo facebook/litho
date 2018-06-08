@@ -32,7 +32,7 @@ Let's start with a simple `ColorComponent` that takes a color name as a prop and
 public class ColorComponentSpec {
 
   @OnCreateMountContent
-  static ColorDrawable onCreateMountContent(Context c) {
+  static ColorDrawable onCreateMountContent(ComponentContext c) {
     return new ColorDrawable();
   }
 
@@ -73,7 +73,7 @@ public class ColorComponentSpec {
   }
 
   @OnCreateMountContent
-  static ColorDrawable onCreateMountContent(Context c) {
+  static ColorDrawable onCreateMountContent(ComponentContext c) {
     return new ColorDrawable();
   }
 

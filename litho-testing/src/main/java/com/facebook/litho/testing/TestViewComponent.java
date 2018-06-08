@@ -72,8 +72,8 @@ public class TestViewComponent extends TestComponent {
   }
 
   @Override
-  protected Object onCreateMountContent(Context c) {
-    return mTestView != null ? mTestView : new View(c);
+  protected Object onCreateMountContent(Object c) {
+    return mTestView != null ? mTestView : new View((Context) c);
   }
 
   @Override
