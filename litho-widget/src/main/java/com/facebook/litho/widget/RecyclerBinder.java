@@ -43,7 +43,6 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
-import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
@@ -230,6 +229,7 @@ public class RecyclerBinder
 
   @VisibleForTesting final RenderInfoViewCreatorController mRenderInfoViewCreatorController;
 
+  // todo T30260224
   private final Runnable mUpdateViewportAndComputeRangeRunnable =
       new Runnable() {
         @Override
@@ -257,11 +257,26 @@ public class RecyclerBinder
           if (mPostUpdateViewportAndComputeRangeAttempts
               >= POST_UPDATE_VIEWPORT_AND_COMPUTE_RANGE_MAX_ATTEMPTS) {
             mPostUpdateViewportAndComputeRangeAttempts = 0;
-            logTooManyPostingAttempts();
             if (mViewportManager.shouldUpdate()) {
               mViewportManager.onViewportChanged(State.DATA_CHANGES);
             }
-            computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+
+            final int size = mComponentTreeHolders.size();
+            if (size == 0) {
+              return;
+            }
+            /**
+             * We only update first and last visible positions after the RecyclerView triggers a
+             * layout for its pending updates. If consuming updates is posted to the next frame,
+             * which the RecyclerView can do, then we go into this runnable after the component tree
+             * holders have been modified but before first/last indexes were updated. This can make
+             * these positions get out of bounds, so we make sure we access valid indexes before
+             * computing range.
+             */
+            final int first = Math.min(mCurrentFirstVisiblePosition, size - 1);
+            final int last = Math.min(mCurrentLastVisiblePosition, size - 1);
+
+            computeRange(first, last);
             return;
           }
 
@@ -2173,7 +2188,10 @@ public class RecyclerBinder
           if (!holder.isTreeValid()) {
             holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
           }
-        } else if (holder.isTreeValid() && !holder.getRenderInfo().isSticky()) {
+        } else if (holder.isTreeValid()
+            && !holder.getRenderInfo().isSticky()
+            && (holder.getComponentTree() != null
+                && holder.getComponentTree().getLithoView() == null)) {
           holder.acquireStateAndReleaseTree();
         }
       }
@@ -2489,41 +2507,5 @@ public class RecyclerBinder
         mCanCacheDrawingDisplayLists,
         mHasDynamicItemHeight ? mComponentTreeMeasureListenerFactory : null,
         mSplitLayoutTag);
-  }
-
-  private void logTooManyPostingAttempts() {
-    final ComponentsLogger logger = mComponentContext.getLogger();
-    if (logger != null) {
-      final StringBuilder messageBuilder = new StringBuilder();
-      messageBuilder.append("Tried posting too many times! ");
-      messageBuilder.append("mMountedView is attached: ");
-      messageBuilder.append(mMountedView.isAttachedToWindow());
-      messageBuilder.append("; ");
-      messageBuilder.append("mMountedView visibility: ");
-      messageBuilder.append(mMountedView.getVisibility());
-      messageBuilder.append("; ");
-      messageBuilder.append("adapter has updates: ");
-      messageBuilder.append(mMountedView.hasPendingAdapterUpdates());
-      messageBuilder.append("; ");
-      messageBuilder.append("viewport should update: ");
-      messageBuilder.append(mViewportManager.shouldUpdate());
-      messageBuilder.append("; ");
-      messageBuilder.append("mMountedView requested layout: ");
-      messageBuilder.append(mMountedView.isLayoutRequested());
-      messageBuilder.append("; ");
-
-      for (int i = mCurrentFirstVisiblePosition; i <= mCurrentLastVisiblePosition; i++) {
-        final RenderInfo renderInfo = mComponentTreeHolders.get(i).getRenderInfo();
-        if (renderInfo.rendersComponent()) {
-          messageBuilder.append(renderInfo.getComponent().getSimpleName());
-        } else {
-          messageBuilder.append(renderInfo.getViewCreator().getClass());
-        }
-
-        messageBuilder.append(" ");
-      }
-
-      logger.emitMessage(ComponentsLogger.LogLevel.ERROR, messageBuilder.toString());
-    }
   }
 }
