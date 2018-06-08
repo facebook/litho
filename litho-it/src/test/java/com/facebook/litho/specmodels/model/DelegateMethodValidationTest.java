@@ -75,7 +75,7 @@ public class DelegateMethodValidationTest {
                 ImmutableList.of(
                     MockMethodParamModel.newBuilder()
                         .name("c")
-                        .type(ClassNames.COMPONENT_CONTEXT)
+                        .type(ClassNames.ANDROID_CONTEXT)
                         .representedObject(new Object())
                         .build()))
             .representedObject(mOnCreateMountContentObject)

@@ -44,7 +44,7 @@ import java.lang.annotation.RetentionPolicy;
  * public class MyComponentSpec {
  *
  *  {@literal @}OnCreateMountContent
- *   MyDrawable onCreateMountContent(ComponentContext c) {
+ *   MyDrawable onCreateMountContent(Context c) {
  *     return new MyDrawable(c);
  *   }
  *

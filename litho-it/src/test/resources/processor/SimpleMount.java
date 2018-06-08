@@ -90,7 +90,7 @@ public final class SimpleMount extends Component {
   }
 
   @Override
-  protected Object onCreateMountContent(Object c) {
+  protected Object onCreateMountContent(Context c) {
     Object _result = (Object) SimpleMountSpec.onCreateMountContent((Context) c);
     return _result;
   }
