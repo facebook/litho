@@ -91,19 +91,18 @@ import java.util.List;
 public class RecyclerCollectionComponentSpec {
 
   @PropDefault
-  protected static final RecyclerConfiguration recyclerConfiguration =
-      new ListRecyclerConfiguration();
+  public static final RecyclerConfiguration recyclerConfiguration = new ListRecyclerConfiguration();
 
-  @PropDefault protected static final boolean nestedScrollingEnabled = true;
-  @PropDefault protected static final int scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY;
-  @PropDefault protected static final int recyclerViewId = View.NO_ID;
-  @PropDefault protected static final int overScrollMode = View.OVER_SCROLL_ALWAYS;
+  @PropDefault public static final boolean nestedScrollingEnabled = true;
+  @PropDefault public static final int scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY;
+  @PropDefault public static final int recyclerViewId = View.NO_ID;
+  @PropDefault public static final int overScrollMode = View.OVER_SCROLL_ALWAYS;
 
   @PropDefault
   protected static final boolean asyncStateUpdates =
       SectionsConfiguration.sectionComponentsAsyncStateUpdates;
 
-  @PropDefault static final ItemAnimator itemAnimator = new NoUpdateItemAnimator();
+  @PropDefault public static final ItemAnimator itemAnimator = new NoUpdateItemAnimator();
 
   @PropDefault
   protected static final boolean asyncPropUpdates =
@@ -113,9 +112,9 @@ public class RecyclerCollectionComponentSpec {
   protected static final boolean setRootAsync =
       ComponentsConfiguration.setRootAsyncRecyclerCollectionComponent;
 
-  @PropDefault static final boolean clipToPadding = true;
-  @PropDefault static final boolean clipChildren = true;
-  @PropDefault static final int refreshProgressBarColor = 0XFF4267B2; // blue
+  @PropDefault public static final boolean clipToPadding = true;
+  @PropDefault public static final boolean clipChildren = true;
+  @PropDefault public static final int refreshProgressBarColor = 0XFF4267B2; // blue
   private static final int MIN_SCROLL_FOR_PAGE = 20;
 
   @OnCreateLayout
