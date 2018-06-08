@@ -20,10 +20,10 @@ apply plugin: 'com.github.ben-manes.versions'
 
 subprojects {
     repositories {
+        google()
         jcenter()
         mavenCentral()
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-        maven { url 'https://maven.google.com' }
     }
     afterEvaluate {
         tasks.withType(Test) {
