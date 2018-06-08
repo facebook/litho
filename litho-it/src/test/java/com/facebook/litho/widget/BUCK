@@ -7,7 +7,10 @@ include_defs("//LITHO_DEFS.bzl")
 
 components_robolectric_test(
     name = "widget",
-    srcs = glob(["*Test.java"]),
+    srcs = glob([
+        "*Test.java",
+        "Test*.java",
+    ]),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
     provided_deps = [
         LITHO_ROBOLECTRIC_TARGET,
