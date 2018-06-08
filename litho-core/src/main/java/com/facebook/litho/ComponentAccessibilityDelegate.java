@@ -83,7 +83,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       // the root host view's as they are meant to behave as a single
       // node in the accessibility framework.
       final Component component = mountItem.getComponent();
-      component.onPopulateAccessibilityNode(node);
+      component.onPopulateAccessibilityNode(host, node);
     } else {
       super.onInitializeAccessibilityNodeInfo(host, node);
     }

@@ -330,7 +330,8 @@ public final class DelegateMethodDescriptions {
           .accessType(Modifier.PROTECTED)
           .returnType(TypeName.VOID)
           .name("onPopulateAccessibilityNode")
-          .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.ACCESSIBILITY_NODE))
+          .definedParameterTypes(
+              ImmutableList.<TypeName>of(ClassNames.VIEW, ClassNames.ACCESSIBILITY_NODE))
           .optionalParameterTypes(
               ImmutableList.of(PROP, COMMON_PROP, TREE_PROP, STATE, INJECT_PROP))
           .interStageInputAnnotations(

@@ -625,11 +625,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   /**
    * Populate an accessibility node with information about the component.
+   *
    * @param accessibilityNode node to populate
    */
   protected void onPopulateAccessibilityNode(
-      AccessibilityNodeInfoCompat accessibilityNode) {
-  }
+      View host, AccessibilityNodeInfoCompat accessibilityNode) {}
 
   /**
    * Populate an extra accessibility node.

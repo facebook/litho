@@ -300,9 +300,9 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
-  protected void onPopulateAccessibilityNode(AccessibilityNodeInfoCompat node) {
+  protected void onPopulateAccessibilityNode(View host, AccessibilityNodeInfoCompat node) {
     TestMountSpec.onPopulateAccessibilityNode(
-        (AccessibilityNodeInfoCompat) node, (CharSequence) prop7);
+        (View) host, (AccessibilityNodeInfoCompat) node, (CharSequence) prop7);
   }
 
   @Override

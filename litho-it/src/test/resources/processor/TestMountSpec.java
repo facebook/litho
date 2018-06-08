@@ -129,7 +129,9 @@ public class TestMountSpec<S extends View> implements TestTag {
 
   @OnPopulateAccessibilityNode
   static void onPopulateAccessibilityNode(
-      AccessibilityNodeInfoCompat node, @Prop(resType = STRING) @Nullable CharSequence prop7) {}
+      View host,
+      AccessibilityNodeInfoCompat node,
+      @Prop(resType = STRING) @Nullable CharSequence prop7) {}
 
   @GetExtraAccessibilityNodesCount
   static int getExtraAccessibilityNodesCount(

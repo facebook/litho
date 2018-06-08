@@ -41,6 +41,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.text.TextDirectionHeuristicCompat;
 import android.support.v4.text.TextDirectionHeuristicsCompat;
 import android.support.v4.util.Pools.SynchronizedPool;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.text.Layout;
 import android.text.Layout.Alignment;
@@ -51,6 +52,7 @@ import android.text.TextUtils.TruncateAt;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.util.Log;
+import android.view.View;
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.ComponentContext;
@@ -659,9 +661,14 @@ class TextSpec {
 
   @OnPopulateAccessibilityNode
   static void onPopulateAccessibilityNode(
+      View host,
       AccessibilityNodeInfoCompat node,
       @Prop(resType = STRING) CharSequence text,
       @Prop(optional = true, resType = ResType.BOOL) boolean isSingleLine) {
+    if (ViewCompat.getImportantForAccessibility(host)
+        == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+      ViewCompat.setImportantForAccessibility(host, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES);
+    }
     CharSequence contentDescription = node.getContentDescription();
     node.setText(contentDescription != null ? contentDescription : text);
     node.setContentDescription(contentDescription != null ? contentDescription : text);
