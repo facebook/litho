@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.AttrRes;
@@ -77,7 +78,7 @@ public class TestDrawableComponent extends TestComponent {
   }
 
   @Override
-  protected Object onCreateMountContent(Object c) {
+  protected Object onCreateMountContent(Context c) {
     return new ColorDrawable();
   }
 

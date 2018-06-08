@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.treeprop;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.MountSpec;
@@ -39,7 +40,7 @@ public class TreePropTestMountSpec {
   }
 
   @OnCreateMountContent
-  static Drawable onCreateMountContent(ComponentContext c) {
+  static Drawable onCreateMountContent(Context c) {
     return null;
   }
 }

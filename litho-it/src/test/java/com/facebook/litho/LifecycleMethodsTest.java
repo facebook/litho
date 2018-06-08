@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.measureAndLayout;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
@@ -118,7 +119,7 @@ public class LifecycleMethodsTest {
     }
 
     @Override
-    protected Object onCreateMountContent(Object context) {
+    protected Object onCreateMountContent(Context context) {
       setCurrentStep(LifecycleStep.ON_CREATE_MOUNT_CONTENT);
 
       return new LifecycleMethodsDrawable(this);
