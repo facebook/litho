@@ -33,7 +33,6 @@ public interface ClassNames {
   ClassName VIEW = ClassName.bestGuess(VIEW_NAME);
   String DRAWABLE_NAME = "android.graphics.drawable.Drawable";
   ClassName DRAWABLE = ClassName.bestGuess(DRAWABLE_NAME);
-  ClassName ANDROID_CONTEXT = ClassName.bestGuess("android.content.Context");
 
   ClassName ACCESSIBILITY_NODE =
       ClassName.bestGuess("android.support.v4.view.accessibility.AccessibilityNodeInfoCompat");

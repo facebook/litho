@@ -225,7 +225,7 @@ public final class DelegateMethodDescriptions {
           .accessType(Modifier.PROTECTED)
           .returnType(TypeName.OBJECT)
           .name("onCreateMountContent")
-          .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.ANDROID_CONTEXT))
+          .definedParameterTypes(ImmutableList.<TypeName>of(TypeName.OBJECT))
           .optionalParameterTypes(ImmutableList.of(INJECT_PROP))
           .build();
 
