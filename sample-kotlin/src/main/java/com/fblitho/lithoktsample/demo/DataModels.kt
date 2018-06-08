@@ -18,6 +18,7 @@ import com.fblitho.lithoktsample.animations.bounds.BoundsAnimationActivity
 import com.fblitho.lithoktsample.animations.expandableelement.ExpandableElementActivity
 import com.fblitho.lithoktsample.errors.ErrorHandlingActivity
 import com.fblitho.lithoktsample.lithography.LithographyActivity
+import com.fblitho.lithoktsample.logging.LoggingActivity
 
 object DataModels {
 
@@ -49,6 +50,10 @@ object DataModels {
                   name = "Bounds Animation",
                   klass = BoundsAnimationActivity::class.java)
           )
+      ),
+      DemoListDataModel(
+              name = "Logging",
+              klass = LoggingActivity::class.java
       )
   )
 
