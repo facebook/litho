@@ -90,4 +90,5 @@ public interface FrameworkLogEvents {
   String PARAM_SECTION_SET_ROOT_SOURCE = "section_set_root_source";
   String PARAM_SET_ROOT_ON_BG_THREAD = "sections_set_root_bg_thread";
   String PARAM_LAYOUT_STATE_SOURCE = "calculate_layout_state_source";
+  String PARAM_ROOT_COMPONENT = "root_component";
 }
