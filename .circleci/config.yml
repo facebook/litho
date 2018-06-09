@@ -39,12 +39,12 @@ aliases:
   # Repo Cache aliases
   - &restore-repo-cache
     keys:
-      - v2-jars-{{ checksum "workspace/repo/build.gradle" }}-{{ checksum  "workspace/repo/gradle.properties" }}
+      - v3-jars-{{ checksum "workspace/repo/build.gradle" }}-{{ checksum  "workspace/repo/gradle.properties" }}
   - &save-repo-cache
     paths:
       - ~/.gradle/caches
       - ~/.gradle/wrapper
-    key: v2-jars-{{ checksum "workspace/repo/build.gradle" }}-{{ checksum  "workspace/repo/gradle.properties" }}
+    key: v3-jars-{{ checksum "workspace/repo/build.gradle" }}-{{ checksum  "workspace/repo/gradle.properties" }}
 
   # Install Android NDK packages needed
   - &install-ndk
@@ -95,7 +95,9 @@ aliases:
   # Download project Gradle dependencies
   - &download-gradle-dependencies
     name: Download Gradle dependencies
-    command: ./workspace/repo/gradlew dependencies --no-daemon
+    command: |
+      cd workspace/repo
+      ./gradlew :litho-it:testDebugUnitTest --tests "*NodeInfoTest" --no-daemon
   
   # Download project BUCK dependencies
   - &download-buck-dependencies
@@ -194,9 +196,10 @@ jobs:
       - restore-cache: *restore-cache-ndk
       - restore-cache: *restore-cache-buck
       - restore_cache: *restore-repo-cache
-      - run: *download-gradle-dependencies
+      - restore-cache: *restore-cache-android-packages
       - run: *setup-buck
       - run: *download-buck-dependencies
+      - run: *download-gradle-dependencies
       - save_cache: *save-repo-cache
 
   buck_sample_build:
