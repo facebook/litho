@@ -1292,7 +1292,8 @@ public class SectionTree {
     }
   }
 
-  private static synchronized Looper getDefaultChangeSetThreadLooper() {
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+  public static synchronized Looper getDefaultChangeSetThreadLooper() {
     if (sDefaultChangeSetThreadLooper == null) {
       HandlerThread defaultThread =
           new HandlerThread(DEFAULT_CHANGESET_THREAD_NAME, DEFAULT_CHANGESET_THREAD_PRIORITY);
