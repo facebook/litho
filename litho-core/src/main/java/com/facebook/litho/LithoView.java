@@ -399,19 +399,29 @@ public class LithoView extends ComponentHost {
 
       boolean wasMountTriggered = mComponentTree.layout();
 
-      final boolean isRectSame =
-          mPreviousMountViewBounds != null
-              && mPreviousMountViewBounds.left == left
-              && mPreviousMountViewBounds.top == top
-              && mPreviousMountViewBounds.right == right
-              && mPreviousMountViewBounds.bottom == bottom;
-
       // If this happens the LithoView might have moved on Screen without a scroll event
       // triggering incremental mount. We trigger one here to be sure all the content is visible.
       if (!wasMountTriggered
-          && !isRectSame
           && isIncrementalMountEnabled()) {
-        performIncrementalMount();
+        if (ComponentsConfiguration.lithoViewIncrementalMountUsesLocalVisibleBounds) {
+          Rect rect = ComponentsPools.acquireRect();
+          getLocalVisibleRect(rect);
+
+          if (!rect.equals(mPreviousMountVisibleRectBounds)) {
+            performIncrementalMount(rect, true);
+          }
+          ComponentsPools.release(rect);
+        } else {
+          final boolean isRectSame =
+              mPreviousMountViewBounds != null
+                  && mPreviousMountViewBounds.left == left
+                  && mPreviousMountViewBounds.top == top
+                  && mPreviousMountViewBounds.right == right
+                  && mPreviousMountViewBounds.bottom == bottom;
+          if (!isRectSame) {
+            performIncrementalMount();
+          }
+        }
       }
 
       if (!wasMountTriggered || shouldAlwaysLayoutChildren()) {
