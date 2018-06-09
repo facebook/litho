@@ -26,8 +26,8 @@ class HostComponent extends Component {
   }
 
   @Override
-  protected Object onCreateMountContent(Object c) {
-    return new ComponentHost((ComponentContext) c);
+  protected Object onCreateMountContent(Context c) {
+    return new ComponentHost(c);
   }
 
   @Override

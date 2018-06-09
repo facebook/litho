@@ -15,6 +15,7 @@
  */
 package com.facebook.litho.testing.error;
 
+import android.content.Context;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.annotations.MountSpec;
@@ -26,7 +27,7 @@ import com.facebook.litho.annotations.OnUnmount;
 class TestCrasherOnMountSpec {
 
   @OnCreateMountContent
-  static LithoView onCreateMountContent(ComponentContext c) {
+  static LithoView onCreateMountContent(Context c) {
     return new LithoView(c);
   }
 

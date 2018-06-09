@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import com.facebook.litho.reference.Reference;
 
@@ -37,7 +38,7 @@ class DrawableComponent<T extends Drawable> extends Component {
   }
 
   @Override
-  protected Object onCreateMountContent(Object c) {
+  protected Object onCreateMountContent(Context c) {
     return new MatrixDrawable();
   }
 

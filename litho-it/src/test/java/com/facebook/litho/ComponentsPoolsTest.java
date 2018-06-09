@@ -22,6 +22,7 @@ import static com.facebook.litho.ComponentsPools.release;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -52,7 +53,7 @@ public class ComponentsPoolsTest {
         }
 
         @Override
-        public View onCreateMountContent(Object context) {
+        public View onCreateMountContent(Context context) {
           return mNewMountContent;
         }
       };
@@ -70,7 +71,7 @@ public class ComponentsPoolsTest {
         }
 
         @Override
-        public View onCreateMountContent(Object context) {
+        public View onCreateMountContent(Context context) {
           return mNewMountContent;
         }
       };
