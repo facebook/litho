@@ -19,6 +19,7 @@ package com.facebook.litho.sections;
 import android.util.SparseArray;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
+import com.facebook.litho.widget.OnDataBoundListener;
 import com.facebook.litho.widget.RenderInfo;
 import java.util.ArrayList;
 import java.util.List;
@@ -140,8 +141,8 @@ class BatchedTarget implements SectionTree.Target {
   }
 
   @Override
-  public void notifyChangeSetComplete() {
-    mTarget.notifyChangeSetComplete();
+  public void notifyChangeSetComplete(OnDataBoundListener onDataBoundListener) {
+    mTarget.notifyChangeSetComplete(onDataBoundListener);
   }
 
   @Override

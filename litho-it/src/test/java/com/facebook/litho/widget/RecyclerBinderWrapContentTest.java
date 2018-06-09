@@ -19,6 +19,7 @@ package com.facebook.litho.widget;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static com.facebook.litho.widget.RecyclerBinderTest.NO_OP_ON_DATA_BOUND_LISTENER;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doAnswer;
@@ -84,7 +85,7 @@ public class RecyclerBinderWrapContentTest {
         ComponentRenderInfo.create().component(component).build();
 
     recyclerBinder.insertItemAt(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     final int widthSpec = makeSizeSpec(1000, EXACTLY);
     final int heightSpec = makeSizeSpec(1000, AT_MOST);
@@ -100,7 +101,7 @@ public class RecyclerBinderWrapContentTest {
           TestDrawableComponent.create(mComponentContext).measuredHeight(100).build();
       recyclerBinder.insertItemAt(
           i + 1, ComponentRenderInfo.create().component(newComponent).build());
-      recyclerBinder.notifyChangeSetComplete();
+      recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
     }
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
@@ -128,7 +129,7 @@ public class RecyclerBinderWrapContentTest {
     }
 
     recyclerBinder.insertRangeAt(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     final int widthSpec = makeSizeSpec(1000, EXACTLY);
     final int heightSpec = makeSizeSpec(1000, AT_MOST);
@@ -145,7 +146,7 @@ public class RecyclerBinderWrapContentTest {
     }
 
     recyclerBinder.insertRangeAt(0, newRenderInfos);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
     verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
@@ -166,7 +167,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeItemAt(0);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
     verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
@@ -188,7 +189,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeRangeAt(0, 3);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
     verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
@@ -217,7 +218,7 @@ public class RecyclerBinderWrapContentTest {
           }
         };
     recyclerBinder.updateItemAt(0, newComponent);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
     verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
@@ -246,7 +247,7 @@ public class RecyclerBinderWrapContentTest {
       newRenderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
     recyclerBinder.updateRangeAt(0, newRenderInfos);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
     verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
@@ -273,7 +274,7 @@ public class RecyclerBinderWrapContentTest {
         ComponentRenderInfo.create().component(component).build();
 
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -289,7 +290,7 @@ public class RecyclerBinderWrapContentTest {
           TestDrawableComponent.create(mComponentContext).measuredHeight(100).build();
       recyclerBinder.insertItemAtAsync(
           i + 1, ComponentRenderInfo.create().component(newComponent).build());
-      recyclerBinder.notifyChangeSetComplete();
+      recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
     }
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
@@ -321,7 +322,7 @@ public class RecyclerBinderWrapContentTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -340,7 +341,7 @@ public class RecyclerBinderWrapContentTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, newRenderInfos);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -363,7 +364,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeItemAtAsync(0);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -387,7 +388,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeRangeAtAsync(0, 3);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -420,7 +421,7 @@ public class RecyclerBinderWrapContentTest {
     final RenderInfo renderInfo = ComponentRenderInfo.create().component(newComponent).build();
 
     recyclerBinder.updateItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -451,7 +452,7 @@ public class RecyclerBinderWrapContentTest {
       newRenderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
     recyclerBinder.updateRangeAtAsync(0, newRenderInfos);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -481,7 +482,7 @@ public class RecyclerBinderWrapContentTest {
         ComponentRenderInfo.create().component(component).build();
 
     recyclerBinder.insertItemAt(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     final int widthSpec = makeSizeSpec(1000, AT_MOST);
     final int heightSpec = makeSizeSpec(1000, EXACTLY);
@@ -495,7 +496,7 @@ public class RecyclerBinderWrapContentTest {
           TestDrawableComponent.create(mComponentContext).measuredWidth(100).build();
       recyclerBinder.insertItemAt(
           i + 1, ComponentRenderInfo.create().component(newComponent).build());
-      recyclerBinder.notifyChangeSetComplete();
+      recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
     }
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
@@ -526,7 +527,7 @@ public class RecyclerBinderWrapContentTest {
     }
 
     recyclerBinder.insertRangeAt(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     final int widthSpec = makeSizeSpec(1000, AT_MOST);
     final int heightSpec = makeSizeSpec(1000, EXACTLY);
@@ -543,7 +544,7 @@ public class RecyclerBinderWrapContentTest {
     }
 
     recyclerBinder.insertRangeAt(0, newRenderInfos);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
     verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
@@ -564,7 +565,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeItemAt(0);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
     verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
@@ -586,7 +587,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeRangeAt(0, 3);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
     verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
@@ -615,7 +616,7 @@ public class RecyclerBinderWrapContentTest {
           }
         };
     recyclerBinder.updateItemAt(0, newComponent);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
     verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
@@ -644,7 +645,7 @@ public class RecyclerBinderWrapContentTest {
       newRenderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
     recyclerBinder.updateRangeAt(0, newRenderInfos);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
     verify(mRecyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
@@ -673,7 +674,7 @@ public class RecyclerBinderWrapContentTest {
         ComponentRenderInfo.create().component(component).build();
 
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -689,7 +690,7 @@ public class RecyclerBinderWrapContentTest {
           TestDrawableComponent.create(mComponentContext).measuredWidth(100).build();
       recyclerBinder.insertItemAtAsync(
           i + 1, ComponentRenderInfo.create().component(newComponent).build());
-      recyclerBinder.notifyChangeSetComplete();
+      recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
     }
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
@@ -723,7 +724,7 @@ public class RecyclerBinderWrapContentTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -742,7 +743,7 @@ public class RecyclerBinderWrapContentTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, newRenderInfos);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -766,7 +767,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeItemAt(0);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -791,7 +792,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeRangeAt(0, 3);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -823,7 +824,7 @@ public class RecyclerBinderWrapContentTest {
           }
         };
     recyclerBinder.updateItemAt(0, newComponent);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -855,7 +856,7 @@ public class RecyclerBinderWrapContentTest {
       newRenderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
     recyclerBinder.updateRangeAt(0, newRenderInfos);
-    recyclerBinder.notifyChangeSetComplete();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -922,11 +923,11 @@ public class RecyclerBinderWrapContentTest {
     }
     if (async) {
       recyclerBinder.insertRangeAtAsync(0, components);
-      recyclerBinder.notifyChangeSetComplete();
+      recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
       mLayoutThreadShadowLooper.runToEndOfTasks();
     } else {
       recyclerBinder.insertRangeAt(0, components);
-      recyclerBinder.notifyChangeSetComplete();
+      recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
     }
 
     return recyclerBinder;

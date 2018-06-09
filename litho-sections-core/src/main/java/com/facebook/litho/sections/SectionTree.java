@@ -50,6 +50,7 @@ import com.facebook.litho.TreeProps;
 import com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
+import com.facebook.litho.widget.OnDataBoundListener;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.SectionsDebug;
 import com.facebook.litho.widget.ViewportInfo;
@@ -119,7 +120,7 @@ public class SectionTree {
     void move(int fromPosition, int toPosition);
 
     /** Called when a changeset has finished being applied. */
-    void notifyChangeSetComplete();
+    void notifyChangeSetComplete(OnDataBoundListener onDataBoundListener);
 
     /**
      * Request focus on the item with the given index.
@@ -408,11 +409,8 @@ public class SectionTree {
   }
 
   @UiThread
-  private void dataBound() {
-    final Section currentSection;
-    synchronized (this) {
-      currentSection = mCurrentSection;
-    }
+  private void dataBound(Section currentSection) {
+    ThreadUtils.assertMainThread();
 
     if (currentSection != null) {
       mBoundSection = currentSection;
@@ -1059,6 +1057,7 @@ public class SectionTree {
     assertMainThread();
 
     final List<ChangeSet> changeSets;
+    final Section currentSection;
     synchronized (this) {
       if (mReleased) {
         return;
@@ -1066,6 +1065,7 @@ public class SectionTree {
 
       changeSets = new ArrayList<>(mPendingChangeSets);
       mPendingChangeSets.clear();
+      currentSection = mCurrentSection;
     }
 
     final boolean isTracing = ComponentsSystrace.isTracing();
@@ -1121,18 +1121,22 @@ public class SectionTree {
     }
 
     if (appliedChanges) {
-      mTarget.notifyChangeSetComplete();
-
-      if (isTracing) {
-        ComponentsSystrace.beginSection("dataBound");
-      }
-      try {
-        dataBound();
-      } finally {
-        if (isTracing) {
-          ComponentsSystrace.endSection();
-        }
-      }
+      mTarget.notifyChangeSetComplete(
+          new OnDataBoundListener() {
+            @Override
+            public void onDataBound() {
+              if (isTracing) {
+                ComponentsSystrace.beginSection("dataBound");
+              }
+              try {
+                dataBound(currentSection);
+              } finally {
+                if (isTracing) {
+                  ComponentsSystrace.endSection();
+                }
+              }
+            }
+          });
     }
 
     if (mFocusDispatcher.isLoadingCompleted()) {

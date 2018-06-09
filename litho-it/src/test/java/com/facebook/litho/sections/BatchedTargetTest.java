@@ -29,6 +29,7 @@ import com.facebook.litho.sections.SectionTree.Target;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.ComponentRenderInfo;
+import com.facebook.litho.widget.OnDataBoundListener;
 import com.facebook.litho.widget.RenderInfo;
 import java.util.ArrayList;
 import java.util.List;
@@ -332,8 +333,9 @@ public class BatchedTargetTest {
 
   @Test
   public void testNotifyChangeSetCompleteForwarded() {
-    mTarget.notifyChangeSetComplete();
-    verify(mMockTarget).notifyChangeSetComplete();
+    final OnDataBoundListener listener = mock(OnDataBoundListener.class);
+    mTarget.notifyChangeSetComplete(listener);
+    verify(mMockTarget).notifyChangeSetComplete(listener);
   }
 
   private List<RenderInfo> dummyComponentInfos(int count) {

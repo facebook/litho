@@ -17,6 +17,7 @@
 package com.facebook.litho.testing.sections;
 
 import com.facebook.litho.sections.SectionTree;
+import com.facebook.litho.widget.OnDataBoundListener;
 import com.facebook.litho.widget.RenderInfo;
 import java.util.ArrayList;
 import java.util.List;
@@ -120,8 +121,9 @@ public class TestTarget implements SectionTree.Target {
   }
 
   @Override
-  public void notifyChangeSetComplete() {
+  public void notifyChangeSetComplete(OnDataBoundListener onDataBoundListener) {
     mWasNotifyChangeSetCompleteCalled = true;
+    onDataBoundListener.onDataBound();
   }
 
   @Override

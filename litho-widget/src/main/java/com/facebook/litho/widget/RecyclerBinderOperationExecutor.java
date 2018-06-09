@@ -74,6 +74,12 @@ public class RecyclerBinderOperationExecutor implements OperationExecutor {
       }
     }
 
-    mRecyclerBinder.notifyChangeSetComplete();
+    mRecyclerBinder.notifyChangeSetComplete(
+        new OnDataBoundListener() {
+          @Override
+          public void onDataBound() {
+            // Do nothing.
+          }
+        });
   }
 }
