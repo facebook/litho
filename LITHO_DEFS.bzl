@@ -4,6 +4,10 @@ LITHO_VISIBILITY = [
     "PUBLIC",
 ]
 
+LITHO_STUBS_VISIBILITY = [
+    "//litho-core/...",
+]
+
 LITHO_TESTING_UTIL_VISIBILITY = [
     "PUBLIC",
 ]

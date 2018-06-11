@@ -8,12 +8,12 @@
 # methods. They must be referenced as provided_deps. Since future platforms
 # may change this hidden API, callers should handle LinkageError gracefully.
 
-load("//:LITHO_DEFS.bzl", "LITHO_VISIBILITY", "fb_android_library")
+load("//:LITHO_DEFS.bzl", "LITHO_STUBS_VISIBILITY", "fb_android_library")
 
 fb_android_library(
     name = "stubs",
     srcs = glob([
         "src/**/*.java",
     ]),
-    visibility = ["PUBLIC"],
+    visibility = LITHO_STUBS_VISIBILITY,
 )
