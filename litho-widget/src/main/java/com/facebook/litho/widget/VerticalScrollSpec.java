@@ -29,24 +29,21 @@ import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.Diff;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.Output;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
-import com.facebook.litho.annotations.FromBind;
 import com.facebook.litho.annotations.MountSpec;
-import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
-import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
+import javax.annotation.Nullable;
 
 /**
  * Component that wraps another component, allowing it to be vertically scrollable. It's analogous
@@ -138,55 +135,9 @@ public class VerticalScrollSpec {
       @Prop Component childComponent,
       @State ComponentTree childComponentTree,
       @State final ScrollPosition scrollPosition) {
-    lithoScrollView.mount(childComponentTree, childComponent);
+    lithoScrollView.mount(childComponentTree, childComponent, scrollPosition);
     lithoScrollView.setVerticalScrollBarEnabled(scrollbarEnabled);
     lithoScrollView.setScrollbarFadingEnabled(scrollbarFadingEnabled);
-  }
-
-  @OnBind
-  protected static void onBind(
-      ComponentContext context,
-      final LithoScrollView lithoScrollView,
-      @State final ScrollPosition scrollPosition,
-      Output<ViewTreeObserver.OnPreDrawListener> onPreDrawListener,
-      Output<ViewTreeObserver.OnScrollChangedListener> onScrollChangedListener) {
-    ViewTreeObserver viewTreeObserver = lithoScrollView.getViewTreeObserver();
-
-    ViewTreeObserver.OnPreDrawListener preDrawListener =
-        new ViewTreeObserver.OnPreDrawListener() {
-          @Override
-          public boolean onPreDraw() {
-            lithoScrollView.setScrollY(scrollPosition.y);
-            ViewTreeObserver currentViewTreeObserver = lithoScrollView.getViewTreeObserver();
-            if (currentViewTreeObserver.isAlive()) {
-              currentViewTreeObserver.removeOnPreDrawListener(this);
-            }
-            return true;
-          }
-        };
-    viewTreeObserver.addOnPreDrawListener(preDrawListener);
-    onPreDrawListener.set(preDrawListener);
-
-    ViewTreeObserver.OnScrollChangedListener scrollChangedListener =
-        new ViewTreeObserver.OnScrollChangedListener() {
-          @Override
-          public void onScrollChanged() {
-            scrollPosition.y = lithoScrollView.getScrollY();
-          }
-        };
-    viewTreeObserver.addOnScrollChangedListener(scrollChangedListener);
-    onScrollChangedListener.set(scrollChangedListener);
-  }
-
-  @OnUnbind
-  protected static void onUnbind(
-      ComponentContext context,
-      LithoScrollView lithoScrollView,
-      @FromBind ViewTreeObserver.OnPreDrawListener onPreDrawListener,
-      @FromBind ViewTreeObserver.OnScrollChangedListener onScrollChangedListener) {
-    ViewTreeObserver viewTreeObserver = lithoScrollView.getViewTreeObserver();
-    viewTreeObserver.removeOnPreDrawListener(onPreDrawListener);
-    viewTreeObserver.removeOnScrollChangedListener(onScrollChangedListener);
   }
 
   @OnUnmount
@@ -208,6 +159,9 @@ public class VerticalScrollSpec {
 
     private final LithoView mLithoView;
 
+    @Nullable private ScrollPosition mScrollPosition;
+    @Nullable private ViewTreeObserver.OnPreDrawListener mOnPreDrawListener;
+
     LithoScrollView(Context context) {
       super(context);
       mLithoView = new LithoView(context);
@@ -215,17 +169,45 @@ public class VerticalScrollSpec {
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-      super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+      super.onScrollChanged(l, t, oldl, oldt);
+
+      if (mScrollPosition != null) {
+        mScrollPosition.y = getScrollY();
+      }
     }
 
-    private void mount(ComponentTree contentComponentTree, Component component) {
+    private void mount(
+        ComponentTree contentComponentTree,
+        Component component,
+        final ScrollPosition scrollPosition) {
       contentComponentTree.setRoot(component);
       mLithoView.setComponentTree(contentComponentTree);
+
+      mScrollPosition = scrollPosition;
+      final ViewTreeObserver.OnPreDrawListener onPreDrawListener =
+          new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+              setScrollY(scrollPosition.y);
+              ViewTreeObserver currentViewTreeObserver = getViewTreeObserver();
+              if (currentViewTreeObserver.isAlive()) {
+                currentViewTreeObserver.removeOnPreDrawListener(this);
+              }
+              return true;
+            }
+          };
+      getViewTreeObserver().addOnPreDrawListener(onPreDrawListener);
+
+      mOnPreDrawListener = onPreDrawListener;
     }
 
     private void unmount() {
       mLithoView.setComponentTree(null);
+
+      mScrollPosition = null;
+      getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
+      mOnPreDrawListener = null;
     }
   }
 
