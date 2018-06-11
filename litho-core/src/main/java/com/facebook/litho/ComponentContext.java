@@ -318,6 +318,8 @@ public class ComponentContext extends ContextWrapper {
       return component.mLayoutCreatedInWillRender;
     }
 
+    component = component.getThreadSafeInstance();
+
     component.updateInternalChildState(this);
 
     if (ComponentsConfiguration.isDebugModeEnabled) {
@@ -329,7 +331,7 @@ public class ComponentContext extends ContextWrapper {
     if (node != NULL_LAYOUT) {
       applyStyle(node, defStyleAttr, defStyleRes);
     }
-
+    
     return node;
   }
 
@@ -337,6 +339,8 @@ public class ComponentContext extends ContextWrapper {
     if (component.mLayoutCreatedInWillRender != null) {
       return component.mLayoutCreatedInWillRender;
     }
+
+    component = component.getThreadSafeInstance();
 
     component.updateInternalChildState(this, true);
 

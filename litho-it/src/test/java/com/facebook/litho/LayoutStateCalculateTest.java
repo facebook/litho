@@ -47,6 +47,7 @@ import static com.facebook.yoga.YogaJustify.SPACE_AROUND;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -2092,6 +2093,7 @@ public class LayoutStateCalculateTest {
 
     // Reset the checks for layout release and clearing that happen during measurement
     reset(componentSpy);
+    doReturn(componentSpy).when(componentSpy).makeShallowCopy();
 
     // Check the cached measured component tree
     assertThat(componentSpy.hasCachedLayout()).isTrue();
@@ -2115,6 +2117,8 @@ public class LayoutStateCalculateTest {
         -1,
         widthSpecContainer,
         heightSpec);
+
+    verify(componentSpy, times(1)).makeShallowCopy();
 
     // Make sure we reused the cached layout and it wasn't released.
     verify(componentSpy, never()).releaseCachedLayout();
@@ -2158,6 +2162,7 @@ public class LayoutStateCalculateTest {
 
     // Reset the checks for layout release and clearing that happen during measurement
     reset(sizeDependentComponentSpy);
+    doReturn(sizeDependentComponentSpy).when(sizeDependentComponentSpy).makeShallowCopy();
 
     // Check the cached measured component tree
     assertThat(sizeDependentComponentSpy.hasCachedLayout()).isTrue();
@@ -2187,6 +2192,8 @@ public class LayoutStateCalculateTest {
         -1,
         widthSpecContainer,
         heightSpec);
+
+    verify(sizeDependentComponentSpy, times(1)).makeShallowCopy();
 
     // Make sure we reused the cached layout and it wasn't released.
     verify(sizeDependentComponentSpy, never()).releaseCachedLayout();
@@ -2223,8 +2230,9 @@ public class LayoutStateCalculateTest {
         getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
         EXACTLY);
 
-    final Component componentSpy = spy(
-        TestLayoutComponent.create(c, 0, 0, true, true, true, true).build());
+    final Component componentSpy =
+        spy(TestLayoutComponent.create(c, 0, 0, true, true, true, true).build());
+
     final Size sizeOutput = new Size();
     componentSpy.measure(
         c,
@@ -2234,6 +2242,7 @@ public class LayoutStateCalculateTest {
 
     // Reset the checks for layout release and clearing that happen during measurement
     reset(componentSpy);
+    doReturn(componentSpy).when(componentSpy).makeShallowCopy();
 
     // Check the cached measured component tree
     assertThat(componentSpy.hasCachedLayout()).isTrue();
@@ -2256,6 +2265,8 @@ public class LayoutStateCalculateTest {
         -1,
         widthSpecContainer,
         heightSpec);
+
+    verify(componentSpy, times(1)).makeShallowCopy();
 
     // Make sure we reused the cached layout and it wasn't released.
     verify(componentSpy, never()).releaseCachedLayout();
@@ -2299,6 +2310,7 @@ public class LayoutStateCalculateTest {
 
     // Reset the checks for layout release and clearing that happen during measurement
     reset(sizeDependentComponentSpy);
+    doReturn(sizeDependentComponentSpy).when(sizeDependentComponentSpy).makeShallowCopy();
 
     // Check the cached measured component tree
     assertThat(sizeDependentComponentSpy.hasCachedLayout()).isTrue();
@@ -2324,6 +2336,8 @@ public class LayoutStateCalculateTest {
         -1,
         widthSpecContainer,
         heightSpec);
+
+    verify(sizeDependentComponentSpy, times(1)).makeShallowCopy();
 
     // Make sure we reused the cached layout and it wasn't released.
     verify(sizeDependentComponentSpy, never()).releaseCachedLayout();

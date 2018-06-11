@@ -28,6 +28,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.DimenRes;
 import android.support.annotation.Dimension;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.GuardedBy;
 import android.support.annotation.Px;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
@@ -52,6 +53,7 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 
@@ -69,6 +71,10 @@ public abstract class Component extends ComponentLifecycle
   private String mGlobalKey;
   @Nullable private String mKey;
   private boolean mHasManualKey;
+
+  @GuardedBy("this")
+  private AtomicBoolean mLayoutVersionGenerator = new AtomicBoolean();
+
   /**
    * Whether this Component should split the layout calculation of its direct children on multiple
    * background threads.
@@ -81,7 +87,7 @@ public abstract class Component extends ComponentLifecycle
   private boolean mCalculateLayoutInThreadPool;
 
   @ThreadConfined(ThreadConfined.ANY)
-  private ComponentContext mScopedContext;
+  private @Nullable ComponentContext mScopedContext;
 
   private boolean mIsLayoutStarted = false;
 
@@ -290,6 +296,9 @@ public abstract class Component extends ComponentLifecycle
       final Component component = (Component) super.clone();
       component.mIsLayoutStarted = false;
       component.mHasManualKey = false;
+      component.mLayoutVersionGenerator = new AtomicBoolean();
+      component.mScopedContext = null;
+      component.mChildCounters = null;
 
       return component;
     } catch (CloneNotSupportedException e) {
@@ -436,6 +445,11 @@ public abstract class Component extends ComponentLifecycle
     applyStateUpdates(parentContext);
     generateErrorEventHandler(parentContext);
     setSplitLayoutOnThreadPoolStatus(parentContext, shouldForwardSplitLayoutStatus);
+
+    // Needed for tests, mocks can run into this.
+    if (mLayoutVersionGenerator != null) {
+      mLayoutVersionGenerator.set(true);
+    }
   }
 
   private void setSplitLayoutOnThreadPoolStatus(
@@ -530,6 +544,22 @@ public abstract class Component extends ComponentLifecycle
     if (hasState()) {
       c.getStateHandler().applyStateUpdatesForComponent(this);
     }
+  }
+
+  /**
+   * If this component instance had its layout created on a different thread, we need to create a
+   * copy to create its layout on this thread, otherwise we'll end up accessing the internal data
+   * structures of the same instance on different threads. This can happen when the component is
+   * passed as a prop and the same instance can be used in layout calculations on main and
+   * background threads. https://github.com/facebook/litho/issues/360
+   */
+  Component getThreadSafeInstance() {
+    // Needed for tests, mocks can run into this.
+    if (mLayoutVersionGenerator == null) {
+      return this;
+    }
+
+    return mLayoutVersionGenerator.compareAndSet(true, true) ? makeShallowCopy() : this;
   }
 
   @Override

@@ -25,6 +25,9 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_MOVED_COUNT;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import android.graphics.Color;
 import com.facebook.litho.testing.TestComponent;
@@ -545,9 +548,9 @@ public class MountStateRemountInPlaceTest {
             .build();
     secondTree.setSizeSpec(100, 100);
 
-    final TestComponent thirdComponent =
-        create(mContext)
-            .build();
+    final TestComponent thirdComponent = spy(create(mContext).build());
+
+    doReturn(thirdComponent).when(thirdComponent).makeShallowCopy();
 
     secondTree.setRoot(
         new InlineLayoutSpec() {
@@ -558,6 +561,8 @@ public class MountStateRemountInPlaceTest {
         });
 
     mountComponent(firstLithoView, secondTree);
+
+    verify(thirdComponent).makeShallowCopy();
 
     assertThat(thirdComponent.wasOnMountCalled()).isTrue();
     assertThat(thirdComponent.wasOnBindCalled()).isTrue();
@@ -591,14 +596,8 @@ public class MountStateRemountInPlaceTest {
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
 
     final TestComponent secondComponent =
-        create(
-            mContext,
-            false,
-            true,
-            true,
-            false,
-            false)
-            .build();
+        spy(create(mContext, false, true, true, false, false).build());
+    doReturn(secondComponent).when(secondComponent).makeShallowCopy();
 
     final ComponentTree secondTree =
         ComponentTree.create(
@@ -613,6 +612,8 @@ public class MountStateRemountInPlaceTest {
     secondTree.setSizeSpec(100, 100);
 
     mountComponent(firstLithoView, secondTree);
+
+    verify(secondComponent).makeShallowCopy();
 
     assertThat(secondComponent.wasOnMountCalled()).isTrue();
     assertThat(secondComponent.wasOnBindCalled()).isTrue();

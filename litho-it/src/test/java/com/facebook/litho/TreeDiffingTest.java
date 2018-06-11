@@ -39,6 +39,7 @@ import static com.facebook.yoga.YogaMeasureOutput.getHeight;
 import static com.facebook.yoga.YogaMeasureOutput.getWidth;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -823,6 +824,7 @@ public class TreeDiffingTest {
             .setDelegate(false)
             .build());
     Size sizeOutput1 = new Size();
+
     sizeDependentComponentSpy1.measure(
         c,
         widthMeasuredComponent,
@@ -852,6 +854,7 @@ public class TreeDiffingTest {
 
     // Reset the release/clear counts before issuing calculate().
     reset(sizeDependentComponentSpy1);
+    doReturn(sizeDependentComponentSpy1).when(sizeDependentComponentSpy1).makeShallowCopy();
 
     LayoutState prevLayoutState =
         calculateLayoutStateWithDiffing(
@@ -868,6 +871,8 @@ public class TreeDiffingTest {
             widthSpecContainer,
             heightSpec,
             prevLayoutState.getDiffTree());
+
+    verify(sizeDependentComponentSpy1).makeShallowCopy();
 
     // Make sure we reused the cached layout and it wasn't released.
     verify(sizeDependentComponentSpy2, never()).releaseCachedLayout();
