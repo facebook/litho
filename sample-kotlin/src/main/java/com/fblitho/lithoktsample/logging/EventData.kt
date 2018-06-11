@@ -15,13 +15,13 @@ data class EventData(val startTimeNs: Long) {
     private val annotations: MutableMap<String, Any> = HashMap()
     private val markers: MutableList<Pair<Long, String>> = ArrayList()
 
-    fun addAnnotation(annotationKey: String, annotationValue: Any) {
+    fun addAnnotation(annotationKey: String, annotationValue: Any) : EventData = apply {
         annotations[annotationKey] = annotationValue
     }
 
     fun getAnnotations(): Map<String, Any> = annotations
 
-    fun addMarker(timeNs: Long, eventName: String) {
+    fun addMarker(timeNs: Long, eventName: String) : EventData  = apply {
         markers.add(Pair(timeNs, eventName))
     }
 
