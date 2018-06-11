@@ -183,4 +183,13 @@ public class ComponentsConfiguration {
    * instead.
    */
   public static boolean lazyLayoutForExactSpec = false;
+
+  /** Enable variable BatchSize for ArrayBatchAllocator */
+  public static boolean variableArrayBatchAllocatorEnabled = false;
+
+  /** Startup Size for ArrayBatchAllocator Batch Size */
+  public static int arrayBatchAllocatorStartupSize = 200;
+
+  /** Runtime Size for ArrayBatchAllocation Batch Size */
+  public static int arrayBatchAllocationRuntimeSize = 200;
 }
