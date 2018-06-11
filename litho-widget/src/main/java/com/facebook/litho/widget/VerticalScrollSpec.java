@@ -62,6 +62,23 @@ public class VerticalScrollSpec {
   @PropDefault static final boolean scrollbarEnabled = true;
   @PropDefault static final boolean scrollbarFadingEnabled = true;
 
+  @OnCreateInitialState
+  static void onCreateInitialState(
+      ComponentContext context,
+      StateValue<ScrollPosition> scrollPosition,
+      StateValue<ComponentTree> childComponentTree,
+      @Prop(optional = true) Integer initialScrollOffsetPixels,
+      @Prop Component childComponent) {
+    ScrollPosition initialScrollPosition = new ScrollPosition();
+    initialScrollPosition.y = initialScrollOffsetPixels == null ? 0 : initialScrollOffsetPixels;
+    scrollPosition.set(initialScrollPosition);
+
+    childComponentTree.set(
+        ComponentTree.create(new ComponentContext(context.getBaseContext()), childComponent)
+            .incrementalMount(false)
+            .build());
+  }
+
   @OnMeasure
   static void onMeasure(
       ComponentContext context,
@@ -69,23 +86,35 @@ public class VerticalScrollSpec {
       int widthSpec,
       int heightSpec,
       Size size,
+      @Prop Component childComponent,
       @State ComponentTree childComponentTree) {
-    measureVerticalScroll(widthSpec, heightSpec, size, childComponentTree);
+    childComponentTree.setRoot(childComponent);
+    measureVerticalScroll(widthSpec, heightSpec, size, childComponentTree, childComponent);
   }
 
   @OnBoundsDefined
   static void onBoundsDefined(
-      ComponentContext c, ComponentLayout layout, @State ComponentTree childComponentTree) {
+      ComponentContext c,
+      ComponentLayout layout,
+      @Prop Component childComponent,
+      @State ComponentTree childComponentTree) {
+    childComponentTree.setRoot(childComponent);
     measureVerticalScroll(
         SizeSpec.makeSizeSpec(layout.getWidth(), EXACTLY),
         SizeSpec.makeSizeSpec(layout.getHeight(), EXACTLY),
         null,
-        childComponentTree);
+        childComponentTree,
+        childComponent);
   }
 
   static void measureVerticalScroll(
-      int widthSpec, int heightSpec, Size size, ComponentTree childComponentTree) {
-    childComponentTree.setSizeSpec(widthSpec, SizeSpec.makeSizeSpec(0, UNSPECIFIED), size);
+      int widthSpec,
+      int heightSpec,
+      Size size,
+      ComponentTree childComponentTree,
+      Component childComponent) {
+    childComponentTree.setRootAndSizeSpec(
+        childComponent, widthSpec, SizeSpec.makeSizeSpec(0, UNSPECIFIED), size);
 
     // If we were measuring the component now we want to compute the appropriate size depending on
     // the heightSpec
@@ -109,33 +138,15 @@ public class VerticalScrollSpec {
     return new LithoScrollView(context);
   }
 
-  @OnCreateInitialState
-  static void onCreateInitialState(
-      ComponentContext context,
-      StateValue<ScrollPosition> scrollPosition,
-      StateValue<ComponentTree> childComponentTree,
-      @Prop(optional = true) Integer initialScrollOffsetPixels,
-      @Prop Component childComponent) {
-    ScrollPosition initialScrollPosition = new ScrollPosition();
-    initialScrollPosition.y = initialScrollOffsetPixels == null ? 0 : initialScrollOffsetPixels;
-    scrollPosition.set(initialScrollPosition);
-
-    childComponentTree.set(
-        ComponentTree.create(new ComponentContext(context.getBaseContext()), childComponent)
-            .incrementalMount(false)
-            .build());
-  }
-
   @OnMount
   static void onMount(
       ComponentContext context,
       final LithoScrollView lithoScrollView,
       @Prop(optional = true) boolean scrollbarEnabled,
       @Prop(optional = true) boolean scrollbarFadingEnabled,
-      @Prop Component childComponent,
       @State ComponentTree childComponentTree,
       @State final ScrollPosition scrollPosition) {
-    lithoScrollView.mount(childComponentTree, childComponent, scrollPosition);
+    lithoScrollView.mount(childComponentTree, scrollPosition);
     lithoScrollView.setVerticalScrollBarEnabled(scrollbarEnabled);
     lithoScrollView.setScrollbarFadingEnabled(scrollbarFadingEnabled);
   }
@@ -177,11 +188,7 @@ public class VerticalScrollSpec {
       }
     }
 
-    private void mount(
-        ComponentTree contentComponentTree,
-        Component component,
-        final ScrollPosition scrollPosition) {
-      contentComponentTree.setRoot(component);
+    private void mount(ComponentTree contentComponentTree, final ScrollPosition scrollPosition) {
       mLithoView.setComponentTree(contentComponentTree);
 
       mScrollPosition = scrollPosition;
