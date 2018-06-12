@@ -810,6 +810,8 @@ public class RecyclerBinder
 
     final AsyncMoveOperation operation = new AsyncMoveOperation(fromPosition, toPosition);
     synchronized (this) {
+      mHasAsyncOperations = true;
+
       mAsyncComponentTreeHolders.add(toPosition, mAsyncComponentTreeHolders.remove(fromPosition));
 
       // TODO(t28619782): When moving a CT into range, do an async prepare
@@ -831,6 +833,8 @@ public class RecyclerBinder
 
     final AsyncRemoveOperation asyncRemoveOperation = new AsyncRemoveOperation(position);
     synchronized (this) {
+      mHasAsyncOperations = true;
+
       mAsyncComponentTreeHolders.remove(position);
       addToCurrentBatch(asyncRemoveOperation);
     }
@@ -855,6 +859,8 @@ public class RecyclerBinder
 
     final AsyncRemoveRangeOperation operation = new AsyncRemoveRangeOperation(position, count);
     synchronized (this) {
+      mHasAsyncOperations = true;
+
       for (int i = 0; i < count; i++) {
         // TODO(t28712163): Cancel pending layouts for async inserts
         mAsyncComponentTreeHolders.remove(position);
