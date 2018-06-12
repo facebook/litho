@@ -782,7 +782,7 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private void registerAsyncInsertBeforeInitialMeasure(AsyncInsertOperation operation) {
-    mInsertsWaitingForInitialMeasure.add(operation);
+    mInsertsWaitingForInitialMeasure.add(operation.mPosition, operation);
     addToCurrentBatch(operation);
   }
 
@@ -1539,17 +1539,7 @@ public class RecyclerBinder
     final int numInserts = mInsertsWaitingForInitialMeasure.size();
     final ArrayList<ComponentTreeHolder> holdersForInsert = new ArrayList<>(numInserts);
     for (int i = 0; i < numInserts; i++) {
-      final AsyncInsertOperation operation = mInsertsWaitingForInitialMeasure.get(i);
-
-      if (i != operation.mPosition) {
-        throw new RuntimeException(
-            "For initial insert, expected insert position to match order of insertion! ("
-                + i
-                + " != "
-                + operation.mPosition);
-      }
-
-      holdersForInsert.add(operation.mHolder);
+      holdersForInsert.add(mInsertsWaitingForInitialMeasure.get(i).mHolder);
     }
 
     final int numComputed =
