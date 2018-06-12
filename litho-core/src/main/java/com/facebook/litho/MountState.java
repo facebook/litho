@@ -2354,37 +2354,39 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       }
     }
 
-    // If this is a new component tree but isn't the first time it's been mounted, then we shouldn't
-    // do any transition animations for changed mount content as it's just being remounted on a
-    // new LithoView.
-    final int componentTreeId = layoutState.getComponentTreeId();
-    if (mLastMountedComponentTreeId != componentTreeId) {
-      resetAnimationState();
-      if (!mIsFirstMountOfComponentTree) {
-        return;
+    try {
+      // If this is a new component tree but isn't the first time it's been mounted, then we shouldn't
+      // do any transition animations for changed mount content as it's just being remounted on a
+      // new LithoView.
+      final int componentTreeId = layoutState.getComponentTreeId();
+      if (mLastMountedComponentTreeId != componentTreeId) {
+        resetAnimationState();
+        if (!mIsFirstMountOfComponentTree) {
+          return;
+        }
       }
-    }
 
-    if (!mDisappearingMountItems.isEmpty()) {
-      updateDisappearingMountItems(layoutState);
-    }
-
-    if (shouldAnimateTransitions(layoutState)) {
-      if (!mTransitionsHasBeenCollected) {
-        collectAllTransitions(layoutState, componentTree);
+      if (!mDisappearingMountItems.isEmpty()) {
+        updateDisappearingMountItems(layoutState);
       }
-      if (hasTransitionsToAnimate()) {
-        createNewTransitions(layoutState, mRootTransition);
+
+      if (shouldAnimateTransitions(layoutState)) {
+        if (!mTransitionsHasBeenCollected) {
+          collectAllTransitions(layoutState, componentTree);
+        }
+        if (hasTransitionsToAnimate()) {
+          createNewTransitions(layoutState, mRootTransition);
+        }
       }
-    }
 
-    mAnimationLockedIndices = null;
-    if (!mAnimatingTransitionKeys.isEmpty()) {
-      regenerateAnimationLockedIndices(layoutState);
-    }
-
-    if (isTracing) {
-      ComponentsSystrace.endSection();
+      mAnimationLockedIndices = null;
+      if (!mAnimatingTransitionKeys.isEmpty()) {
+        regenerateAnimationLockedIndices(layoutState);
+      }
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
   }
 
