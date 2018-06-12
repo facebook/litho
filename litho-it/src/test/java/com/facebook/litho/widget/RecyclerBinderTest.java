@@ -2946,6 +2946,56 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void testClearAsync() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<Component> components = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 7; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      components.add(component);
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    recyclerBinder.insertRangeAtAsync(0, renderInfos);
+    recyclerBinder.clearAsync();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+  }
+
+  @Test
+  public void testClearAsyncBeforeMeasure() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<Component> components = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 7; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      components.add(component);
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.insertRangeAtAsync(0, renderInfos);
+    recyclerBinder.clearAsync();
+    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+  }
+
+  @Test
   public void testRenderStateWithNotifyItemRenderCompleteAt() {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);

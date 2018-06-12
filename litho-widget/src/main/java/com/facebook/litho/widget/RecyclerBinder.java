@@ -863,6 +863,28 @@ public class RecyclerBinder
     }
   }
 
+  /** Removes all items in this binder async. */
+  @UiThread
+  public final void clearAsync() {
+    ThreadUtils.assertMainThread();
+
+    if (SectionsDebug.ENABLED) {
+      Log.d(SectionsDebug.TAG, "(" + hashCode() + ") clear");
+    }
+
+    synchronized (this) {
+      mHasAsyncOperations = true;
+
+      final int count = mAsyncComponentTreeHolders.size();
+
+      // TODO(t28712163): Cancel pending layouts for async inserts
+      mAsyncComponentTreeHolders.clear();
+
+      final AsyncRemoveRangeOperation operation = new AsyncRemoveRangeOperation(0, count);
+      addToCurrentBatch(operation);
+    }
+  }
+
   @GuardedBy("this")
   private void addToCurrentBatch(AsyncOperation operation) {
     if (mCurrentBatch == null) {
@@ -1712,7 +1734,8 @@ public class RecyclerBinder
   }
 
   /**
-   * Gets the number of items in this binder.
+   * Gets the number of items currently in the adapter attached to this binder (i.e. the number of
+   * items the underlying RecyclerView knows about).
    */
   @Override
   public int getItemCount() {

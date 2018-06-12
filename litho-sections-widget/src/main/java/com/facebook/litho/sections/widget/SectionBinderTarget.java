@@ -182,10 +182,10 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   }
 
   public void clear() {
-    // Implement async version
     if (mUseAsyncMutations) {
-      throw new RuntimeException("clear() is not supported yet for async mutations");
+      mRecyclerBinder.clearAsync();
+    } else {
+      mRecyclerBinder.removeRangeAt(0, mRecyclerBinder.getItemCount());
     }
-    mRecyclerBinder.removeRangeAt(0, mRecyclerBinder.getItemCount());
   }
 }
