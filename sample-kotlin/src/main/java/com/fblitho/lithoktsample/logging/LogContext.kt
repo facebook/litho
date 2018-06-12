@@ -9,22 +9,17 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 package com.fblitho.lithoktsample.logging
 
-import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
-import com.facebook.litho.annotations.LayoutSpec
-import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.litho.annotations.OnCreateTreeProp
-import com.facebook.litho.widget.Text
+data class LogContext(val s: String) {
 
-@LayoutSpec
-object LoggingRootComponentSpec {
-    @OnCreateLayout
-    fun onCreateLayout(c: ComponentContext): Component =
-            Text.create(c).text("Hello, Logger.").build()
+    override fun toString(): String = s
 
-    @OnCreateTreeProp
-    fun onCreateTreeProp(c: ComponentContext): LogContext =
-            LogContext("root")
+    companion object {
+        fun append(t: LogContext?, s: String): LogContext =
+                if (t == null) {
+                    LogContext(s)
+                } else LogContext(t.s + ":" + s)
+    }
 }

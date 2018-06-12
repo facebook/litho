@@ -16,15 +16,17 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.OnCreateTreeProp
+import com.facebook.litho.annotations.TreeProp
 import com.facebook.litho.widget.Text
 
 @LayoutSpec
-object LoggingRootComponentSpec {
+object ChildComponentSpec {
     @OnCreateLayout
     fun onCreateLayout(c: ComponentContext): Component =
             Text.create(c).text("Hello, Logger.").build()
 
     @OnCreateTreeProp
-    fun onCreateTreeProp(c: ComponentContext): LogContext =
-            LogContext("root")
+    fun onCreateTreeProp(c: ComponentContext, @TreeProp parent: LogContext?): LogContext =
+            LogContext.append(parent, "child")
 }
+
