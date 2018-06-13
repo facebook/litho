@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.widget;
 
+import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.widget.LayoutHandlerFactory;
 import com.facebook.litho.widget.RecyclerBinder;
@@ -33,6 +34,9 @@ public class RecyclerBinderConfiguration {
   private boolean mIsWrapContent;
   private String mSplitLayoutTag;
   private boolean mUseAsyncMutations = SectionsConfiguration.asyncMutations;
+  private boolean mFillListViewport;
+  private boolean mFillListViewportHScrollOnly;
+  private LayoutThreadPoolConfiguration mThreadPoolForParallelFillViewportConfig;
 
   public RecyclerBinderConfiguration(double rangeRatio) {
     this(rangeRatio, null, false);
@@ -104,6 +108,19 @@ public class RecyclerBinderConfiguration {
     mUseAsyncMutations = useAsyncMutations;
   }
 
+  public void setFillListViewport(boolean fillListViewport) {
+    mFillListViewport = fillListViewport;
+  }
+
+  public void setFillListViewportHScrollOnly(boolean fillListViewportHScrollOnly) {
+    mFillListViewportHScrollOnly = fillListViewportHScrollOnly;
+  }
+
+  public void setThreadPoolForParallelFillViewportConfig(
+      LayoutThreadPoolConfiguration threadPoolForParallelFillViewportConfig) {
+    mThreadPoolForParallelFillViewportConfig = threadPoolForParallelFillViewportConfig;
+  }
+
   public double getRangeRatio() {
     return mRangeRatio;
   }
@@ -134,5 +151,17 @@ public class RecyclerBinderConfiguration {
 
   public boolean getUseAsyncMutations() {
     return mUseAsyncMutations;
+  }
+
+  public boolean getFillListViewport() {
+    return mFillListViewport;
+  }
+
+  public boolean getFillListViewportHScrollOnly() {
+    return mFillListViewportHScrollOnly;
+  }
+
+  public LayoutThreadPoolConfiguration getThreadPoolForParallelFillViewportConfig() {
+    return mThreadPoolForParallelFillViewportConfig;
   }
 }

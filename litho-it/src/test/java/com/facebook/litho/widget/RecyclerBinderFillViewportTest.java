@@ -50,7 +50,6 @@ import com.facebook.litho.LayoutPriorityThreadPoolExecutor;
 import com.facebook.litho.LayoutThreadPoolConfigurationImpl;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.viewcompat.SimpleViewBinder;
@@ -140,9 +139,6 @@ public class RecyclerBinderFillViewportTest {
 
   @After
   public void tearDown() {
-    ComponentsConfiguration.fillListViewport = false;
-    ComponentsConfiguration.fillListViewportHScrollOnly = false;
-    ComponentsConfiguration.threadPoolForParallelFillViewport = null;
     mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
@@ -183,8 +179,6 @@ public class RecyclerBinderFillViewportTest {
   @SuppressLint("STARVATION")
   @Test
   public void testDoesNotFillViewportHScrollOnly() {
-    ComponentsConfiguration.fillListViewportHScrollOnly = true;
-
     final LayoutInfo layoutInfo = mock(LayoutInfo.class);
     setupBaseLayoutInfoMock(layoutInfo, OrientationHelper.VERTICAL);
 
@@ -192,6 +186,7 @@ public class RecyclerBinderFillViewportTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .fillListViewportHScrollOnly(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -205,8 +200,6 @@ public class RecyclerBinderFillViewportTest {
   @SuppressLint("STARVATION")
   @Test
   public void testFillsViewport() {
-    ComponentsConfiguration.fillListViewport = true;
-
     final LayoutInfo layoutInfo =
         new LinearLayoutInfo(mComponentContext, OrientationHelper.VERTICAL, false);
 
@@ -214,6 +207,7 @@ public class RecyclerBinderFillViewportTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .fillListViewport(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -248,8 +242,6 @@ public class RecyclerBinderFillViewportTest {
   @SuppressLint("STARVATION")
   @Test
   public void testFillsViewportHScroll() {
-    ComponentsConfiguration.fillListViewportHScrollOnly = true;
-
     final LayoutInfo layoutInfo =
         new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false);
 
@@ -257,6 +249,7 @@ public class RecyclerBinderFillViewportTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .fillListViewportHScrollOnly(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -291,8 +284,6 @@ public class RecyclerBinderFillViewportTest {
   @SuppressLint("STARVATION")
   @Test
   public void testFillsViewportWithMeasureBeforeData() {
-    ComponentsConfiguration.fillListViewport = true;
-
     final LayoutInfo layoutInfo =
         new LinearLayoutInfo(mComponentContext, OrientationHelper.VERTICAL, false);
 
@@ -300,6 +291,7 @@ public class RecyclerBinderFillViewportTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .fillListViewport(true)
             .build(mComponentContext);
 
     recyclerBinder.measure(
@@ -334,8 +326,6 @@ public class RecyclerBinderFillViewportTest {
   @SuppressLint("STARVATION")
   @Test
   public void testDoesNotFillViewportOnRemeasure() {
-    ComponentsConfiguration.fillListViewport = true;
-
     final LayoutInfo layoutInfo =
         new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false);
 
@@ -343,6 +333,7 @@ public class RecyclerBinderFillViewportTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .fillListViewport(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -392,8 +383,6 @@ public class RecyclerBinderFillViewportTest {
   @SuppressLint("STARVATION")
   @Test
   public void testDoesNotFillViewportOnCompatibleMeasure() {
-    ComponentsConfiguration.fillListViewport = true;
-
     final LayoutInfo layoutInfo = mock(LayoutInfo.class);
     setupBaseLayoutInfoMock(layoutInfo, OrientationHelper.HORIZONTAL);
 
@@ -401,6 +390,7 @@ public class RecyclerBinderFillViewportTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .fillListViewport(true)
             .build(mComponentContext);
 
     when(layoutInfo.findFirstFullyVisibleItemPosition()).thenReturn(0);
@@ -422,8 +412,6 @@ public class RecyclerBinderFillViewportTest {
   @SuppressLint("STARVATION")
   @Test
   public void testFillsViewportFromFirstVisibleItem() {
-    ComponentsConfiguration.fillListViewport = true;
-
     final LayoutInfo layoutInfo =
         spy(new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false));
 
@@ -431,6 +419,7 @@ public class RecyclerBinderFillViewportTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .fillListViewport(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -477,8 +466,6 @@ public class RecyclerBinderFillViewportTest {
   @SuppressLint("STARVATION")
   @Test
   public void testFillsViewportWithSomeViews() {
-    ComponentsConfiguration.fillListViewport = true;
-
     final LayoutInfo layoutInfo =
         new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false);
 
@@ -486,6 +473,7 @@ public class RecyclerBinderFillViewportTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .fillListViewport(true)
             .build(mComponentContext);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 3);
@@ -545,8 +533,6 @@ public class RecyclerBinderFillViewportTest {
   @SuppressLint("STARVATION")
   @Test
   public void testFillViewportWithAllViews() {
-    ComponentsConfiguration.fillListViewport = true;
-
     final LayoutInfo layoutInfo =
         new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false);
 
@@ -554,6 +540,7 @@ public class RecyclerBinderFillViewportTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .fillListViewport(true)
             .build(mComponentContext);
 
     recyclerBinder.measure(
@@ -565,8 +552,6 @@ public class RecyclerBinderFillViewportTest {
   @SuppressLint("STARVATION")
   @Test
   public void testRemeasureAfterInsertFills() {
-    ComponentsConfiguration.fillListViewport = true;
-
     final LayoutInfo layoutInfo = mock(LayoutInfo.class);
     setupBaseLayoutInfoMock(layoutInfo, OrientationHelper.HORIZONTAL);
 
@@ -576,6 +561,7 @@ public class RecyclerBinderFillViewportTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
+            .fillListViewport(true)
             .build(mComponentContext);
 
     recyclerBinder.mount(recyclerView);
@@ -615,8 +601,6 @@ public class RecyclerBinderFillViewportTest {
   @Test
   public void testDoesNotFillViewportInParallelWithConfigurationOff()
       throws ExecutionException, InterruptedException {
-    ComponentsConfiguration.threadPoolForParallelFillViewport =
-        new LayoutThreadPoolConfigurationImpl(1, 1, 1);
 
     final LayoutInfo layoutInfo = mock(LayoutInfo.class);
     setupBaseLayoutInfoMock(layoutInfo, OrientationHelper.VERTICAL);
@@ -626,6 +610,8 @@ public class RecyclerBinderFillViewportTest {
             new RecyclerBinder.Builder()
                 .rangeRatio(RANGE_RATIO)
                 .layoutInfo(layoutInfo)
+                .threadPoolForParallelFillViewportConfig(
+                    new LayoutThreadPoolConfigurationImpl(1, 1, 1))
                 .build(mComponentContext));
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -642,8 +628,6 @@ public class RecyclerBinderFillViewportTest {
   @Test
   public void testDoesNotFillViewportInParallelWithNoPoolConfiguration()
       throws ExecutionException, InterruptedException {
-    ComponentsConfiguration.fillListViewport = true;
-
     final LayoutInfo layoutInfo = mock(LayoutInfo.class);
     setupBaseLayoutInfoMock(layoutInfo, OrientationHelper.VERTICAL);
 
@@ -652,6 +636,7 @@ public class RecyclerBinderFillViewportTest {
             new RecyclerBinder.Builder()
                 .rangeRatio(RANGE_RATIO)
                 .layoutInfo(layoutInfo)
+                .fillListViewport(true)
                 .build(mComponentContext));
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -667,15 +652,17 @@ public class RecyclerBinderFillViewportTest {
   @SuppressLint("STARVATION")
   @Test
   public void testParallelFillItemsSameAsPoolSize() {
-    ComponentsConfiguration.fillListViewport = true;
-    ComponentsConfiguration.threadPoolForParallelFillViewport =
-        new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND);
-
     final LayoutInfo layoutInfo =
         new LinearLayoutInfo(mComponentContext, OrientationHelper.VERTICAL, false);
 
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(1f).layoutInfo(layoutInfo).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .fillListViewport(true)
+            .threadPoolForParallelFillViewportConfig(
+                new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND))
+            .rangeRatio(1f)
+            .layoutInfo(layoutInfo)
+            .build(mComponentContext);
 
     final LayoutPriorityThreadPoolExecutor executor =
         spy(new LayoutPriorityThreadPoolExecutor(3, 3, Process.THREAD_PRIORITY_BACKGROUND));
@@ -717,15 +704,17 @@ public class RecyclerBinderFillViewportTest {
   @SuppressLint("STARVATION")
   @Test
   public void testParallelFillItemsMoreThanPoolSize() {
-    ComponentsConfiguration.fillListViewport = true;
-    ComponentsConfiguration.threadPoolForParallelFillViewport =
-        new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND);
-
     final LayoutInfo layoutInfo =
         new LinearLayoutInfo(mComponentContext, OrientationHelper.VERTICAL, false);
 
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(1f).layoutInfo(layoutInfo).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .fillListViewport(true)
+            .threadPoolForParallelFillViewportConfig(
+                new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND))
+            .rangeRatio(1f)
+            .layoutInfo(layoutInfo)
+            .build(mComponentContext);
 
     final LayoutPriorityThreadPoolExecutor executor =
         spy(new LayoutPriorityThreadPoolExecutor(3, 3, Process.THREAD_PRIORITY_BACKGROUND));
@@ -765,15 +754,17 @@ public class RecyclerBinderFillViewportTest {
   @SuppressLint("STARVATION")
   @Test
   public void testParallelFillItemsFewerThanPoolSize() {
-    ComponentsConfiguration.fillListViewport = true;
-    ComponentsConfiguration.threadPoolForParallelFillViewport =
-        new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND);
-
     final LayoutInfo layoutInfo =
         new LinearLayoutInfo(mComponentContext, OrientationHelper.VERTICAL, false);
 
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(1f).layoutInfo(layoutInfo).build(mComponentContext);
+        new RecyclerBinder.Builder()
+            .fillListViewport(true)
+            .threadPoolForParallelFillViewportConfig(
+                new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND))
+            .rangeRatio(1f)
+            .layoutInfo(layoutInfo)
+            .build(mComponentContext);
 
     final LayoutPriorityThreadPoolExecutor executor =
         spy(new LayoutPriorityThreadPoolExecutor(3, 3, Process.THREAD_PRIORITY_BACKGROUND));
@@ -804,15 +795,14 @@ public class RecyclerBinderFillViewportTest {
   @SuppressLint("STARVATION")
   @Test
   public void testParallelFillFromFirstVisible() {
-    ComponentsConfiguration.fillListViewport = true;
-    ComponentsConfiguration.threadPoolForParallelFillViewport =
-        new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND);
-
     final LayoutInfo layoutInfo =
         spy(new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false));
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
+            .fillListViewport(true)
+            .threadPoolForParallelFillViewportConfig(
+                new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND))
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
             .build(mComponentContext);
@@ -857,15 +847,14 @@ public class RecyclerBinderFillViewportTest {
   @SuppressLint("STARVATION")
   @Test
   public void testFillViewportParallelWithAllViews() {
-    ComponentsConfiguration.fillListViewport = true;
-    ComponentsConfiguration.threadPoolForParallelFillViewport =
-        new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND);
-
     final LayoutInfo layoutInfo =
         new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false);
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
+            .fillListViewport(true)
+            .threadPoolForParallelFillViewportConfig(
+                new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND))
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
             .build(mComponentContext);
@@ -879,15 +868,14 @@ public class RecyclerBinderFillViewportTest {
   @SuppressLint("STARVATION")
   @Test
   public void testFillsViewportParallelWithSomeViews() {
-    ComponentsConfiguration.fillListViewport = true;
-    ComponentsConfiguration.threadPoolForParallelFillViewport =
-        new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND);
-
     final LayoutInfo layoutInfo =
         new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false);
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
+            .fillListViewport(true)
+            .threadPoolForParallelFillViewportConfig(
+                new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND))
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(layoutInfo)
             .build(mComponentContext);

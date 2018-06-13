@@ -107,6 +107,8 @@ public class RecyclerBinder
   private final AtomicBoolean mRequiresRemeasure = new AtomicBoolean(false);
   private final @Nullable LayoutPriorityThreadPoolExecutor mExecutor;
   private final int mFillViewportPoolSize;
+  private final boolean mFillListViewport;
+  private final boolean mFillListViewportHScrollOnly;
 
   private boolean mParallelFillViewportEnabled;
   private String mSplitLayoutTag;
@@ -364,6 +366,9 @@ public class RecyclerBinder
     private int componentViewType;
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
     private String splitLayoutTag;
+    private boolean fillListViewport;
+    private boolean fillListViewportHScrollOnly;
+    private LayoutThreadPoolConfiguration threadPoolForParallelFillViewportConfig;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -476,6 +481,28 @@ public class RecyclerBinder
       return this;
     }
 
+    /** Whether to fill list viewports in RecyclerBinder from measure(). */
+    public Builder fillListViewport(boolean fillListViewport) {
+      this.fillListViewport = fillListViewport;
+      return this;
+    }
+
+    /** Whether to fill list viewports in RecyclerBinder from measure(), but only for HScrolls. */
+    public Builder fillListViewportHScrollOnly(boolean fillListViewportHScrollOnly) {
+      this.fillListViewportHScrollOnly = fillListViewportHScrollOnly;
+      return this;
+    }
+
+    /**
+     * If set, list viewports in RecyclerBinder will be filled in measure() by calculating layouts
+     * on multiple threads if fillListViewport or fillListViewportHScrollOnly are enabled.
+     */
+    public Builder threadPoolForParallelFillViewportConfig(
+        LayoutThreadPoolConfiguration threadPoolForParallelFillViewportConfig) {
+      this.threadPoolForParallelFillViewportConfig = threadPoolForParallelFillViewportConfig;
+      return this;
+    }
+
     /**
      * Method for tests to allow mocking of the InternalAdapter to verify interaction with the
      * RecyclerView.
@@ -576,10 +603,12 @@ public class RecyclerBinder
 
     mSplitLayoutTag = builder.splitLayoutTag;
 
-    if (ComponentsConfiguration.threadPoolForParallelFillViewport != null) {
+    mFillListViewport = builder.fillListViewport;
+    mFillListViewportHScrollOnly = builder.fillListViewportHScrollOnly;
+
+    final LayoutThreadPoolConfiguration config = builder.threadPoolForParallelFillViewportConfig;
+    if (config != null) {
       mParallelFillViewportEnabled = true;
-      final LayoutThreadPoolConfiguration config =
-          ComponentsConfiguration.threadPoolForParallelFillViewport;
       mFillViewportPoolSize = config.getCorePoolSize();
       mExecutor =
           new LayoutPriorityThreadPoolExecutor(
@@ -1551,8 +1580,8 @@ public class RecyclerBinder
   }
 
   private boolean shouldFillListViewport() {
-    return ComponentsConfiguration.fillListViewport
-        || (ComponentsConfiguration.fillListViewportHScrollOnly
+    return mFillListViewport
+        || (mFillListViewportHScrollOnly
             && mLayoutInfo.getScrollDirection() == OrientationHelper.HORIZONTAL);
   }
 

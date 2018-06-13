@@ -145,6 +145,11 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
             .wrapContent(mRecyclerBinderConfiguration.isWrapContent())
             .hasDynamicItemHeight(mRecyclerBinderConfiguration.hasDynamicItemHeight())
             .splitLayoutTag(mRecyclerBinderConfiguration.getSplitLayoutTag())
+            .fillListViewport(mRecyclerBinderConfiguration.getFillListViewport())
+            .fillListViewportHScrollOnly(
+                mRecyclerBinderConfiguration.getFillListViewportHScrollOnly())
+            .threadPoolForParallelFillViewportConfig(
+                mRecyclerBinderConfiguration.getThreadPoolForParallelFillViewportConfig())
             .build(c);
     return (T)
         new SectionBinderTarget(

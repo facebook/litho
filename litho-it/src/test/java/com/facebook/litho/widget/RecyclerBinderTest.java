@@ -186,8 +186,6 @@ public class RecyclerBinderTest {
 
   @After
   public void tearDown() {
-    ComponentsConfiguration.fillListViewport = false;
-    ComponentsConfiguration.fillListViewportHScrollOnly = false;
     mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
