@@ -405,9 +405,9 @@ public class LithoView extends ComponentHost {
           && isIncrementalMountEnabled()) {
         if (ComponentsConfiguration.lithoViewIncrementalMountUsesLocalVisibleBounds) {
           Rect rect = ComponentsPools.acquireRect();
-          getLocalVisibleRect(rect);
+          boolean isVisible = getLocalVisibleRect(rect);
 
-          if (!rect.equals(mPreviousMountVisibleRectBounds)) {
+          if (isVisible && !rect.equals(mPreviousMountVisibleRectBounds)) {
             performIncrementalMount(rect, true);
           }
           ComponentsPools.release(rect);
