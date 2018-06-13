@@ -299,6 +299,7 @@ public abstract class Component extends ComponentLifecycle
       component.mLayoutVersionGenerator = new AtomicBoolean();
       component.mScopedContext = null;
       component.mChildCounters = null;
+      component.mLastMeasuredLayout = null;
 
       return component;
     } catch (CloneNotSupportedException e) {
