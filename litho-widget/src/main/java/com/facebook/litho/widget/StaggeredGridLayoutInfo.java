@@ -134,8 +134,11 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
 
   @Override
   public ViewportFiller createViewportFiller(int measuredWidth, int measuredHeight) {
-    // TODO(t28219976): Implement ViewportFiller for StaggeredGridLayout
-    return null;
+    return new ViewportFiller(
+        measuredWidth,
+        measuredHeight,
+        getScrollDirection(),
+        mStaggeredGridLayoutManager.getSpanCount());
   }
 
   @Override
