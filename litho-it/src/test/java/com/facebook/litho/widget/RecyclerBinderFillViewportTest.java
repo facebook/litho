@@ -22,6 +22,8 @@ import static com.facebook.litho.widget.RecyclerBinderTest.NO_OP_ON_DATA_BOUND_L
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -30,8 +32,10 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Looper;
+import android.os.Process;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
@@ -42,6 +46,8 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
+import com.facebook.litho.LayoutPriorityThreadPoolExecutor;
+import com.facebook.litho.LayoutThreadPoolConfigurationImpl;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -51,6 +57,8 @@ import com.facebook.litho.viewcompat.SimpleViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -134,6 +142,7 @@ public class RecyclerBinderFillViewportTest {
   public void tearDown() {
     ComponentsConfiguration.fillListViewport = false;
     ComponentsConfiguration.fillListViewportHScrollOnly = false;
+    ComponentsConfiguration.threadPoolForParallelFillViewport = null;
     mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
@@ -171,6 +180,7 @@ public class RecyclerBinderFillViewportTest {
     verify(layoutInfo, never()).createViewportFiller(anyInt(), anyInt());
   }
 
+  @SuppressLint("STARVATION")
   @Test
   public void testDoesNotFillViewportHScrollOnly() {
     ComponentsConfiguration.fillListViewportHScrollOnly = true;
@@ -192,6 +202,7 @@ public class RecyclerBinderFillViewportTest {
     verify(layoutInfo, never()).createViewportFiller(anyInt(), anyInt());
   }
 
+  @SuppressLint("STARVATION")
   @Test
   public void testFillsViewport() {
     ComponentsConfiguration.fillListViewport = true;
@@ -234,6 +245,7 @@ public class RecyclerBinderFillViewportTest {
         .isFalse();
   }
 
+  @SuppressLint("STARVATION")
   @Test
   public void testFillsViewportHScroll() {
     ComponentsConfiguration.fillListViewportHScrollOnly = true;
@@ -276,6 +288,7 @@ public class RecyclerBinderFillViewportTest {
         .isFalse();
   }
 
+  @SuppressLint("STARVATION")
   @Test
   public void testFillsViewportWithMeasureBeforeData() {
     ComponentsConfiguration.fillListViewport = true;
@@ -318,6 +331,7 @@ public class RecyclerBinderFillViewportTest {
         .isFalse();
   }
 
+  @SuppressLint("STARVATION")
   @Test
   public void testDoesNotFillViewportOnRemeasure() {
     ComponentsConfiguration.fillListViewport = true;
@@ -375,6 +389,7 @@ public class RecyclerBinderFillViewportTest {
         .isFalse();
   }
 
+  @SuppressLint("STARVATION")
   @Test
   public void testDoesNotFillViewportOnCompatibleMeasure() {
     ComponentsConfiguration.fillListViewport = true;
@@ -404,6 +419,7 @@ public class RecyclerBinderFillViewportTest {
     verify(layoutInfo, never()).createViewportFiller(anyInt(), anyInt());
   }
 
+  @SuppressLint("STARVATION")
   @Test
   public void testFillsViewportFromFirstVisibleItem() {
     ComponentsConfiguration.fillListViewport = true;
@@ -458,6 +474,7 @@ public class RecyclerBinderFillViewportTest {
         .isFalse();
   }
 
+  @SuppressLint("STARVATION")
   @Test
   public void testFillsViewportWithSomeViews() {
     ComponentsConfiguration.fillListViewport = true;
@@ -525,6 +542,7 @@ public class RecyclerBinderFillViewportTest {
         .isFalse();
   }
 
+  @SuppressLint("STARVATION")
   @Test
   public void testFillViewportWithAllViews() {
     ComponentsConfiguration.fillListViewport = true;
@@ -544,6 +562,7 @@ public class RecyclerBinderFillViewportTest {
     // Just make sure we don't crash
   }
 
+  @SuppressLint("STARVATION")
   @Test
   public void testRemeasureAfterInsertFills() {
     ComponentsConfiguration.fillListViewport = true;
@@ -588,6 +607,343 @@ public class RecyclerBinderFillViewportTest {
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
 
     verify(layoutInfo).createViewportFiller(anyInt(), anyInt());
+  }
+
+  // Parallel viewport fill tests
+
+  @SuppressLint("STARVATION")
+  @Test
+  public void testDoesNotFillViewportInParallelWithConfigurationOff()
+      throws ExecutionException, InterruptedException {
+    ComponentsConfiguration.threadPoolForParallelFillViewport =
+        new LayoutThreadPoolConfigurationImpl(1, 1, 1);
+
+    final LayoutInfo layoutInfo = mock(LayoutInfo.class);
+    setupBaseLayoutInfoMock(layoutInfo, OrientationHelper.VERTICAL);
+
+    RecyclerBinder recyclerBinder =
+        spy(
+            new RecyclerBinder.Builder()
+                .rangeRatio(RANGE_RATIO)
+                .layoutInfo(layoutInfo)
+                .build(mComponentContext));
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    verify(recyclerBinder, never())
+        .computeLayoutsToFillListViewportParallel(
+            anyList(), anyInt(), anyInt(), anyInt(), any(Size.class));
+  }
+
+  @SuppressLint("STARVATION")
+  @Test
+  public void testDoesNotFillViewportInParallelWithNoPoolConfiguration()
+      throws ExecutionException, InterruptedException {
+    ComponentsConfiguration.fillListViewport = true;
+
+    final LayoutInfo layoutInfo = mock(LayoutInfo.class);
+    setupBaseLayoutInfoMock(layoutInfo, OrientationHelper.VERTICAL);
+
+    RecyclerBinder recyclerBinder =
+        spy(
+            new RecyclerBinder.Builder()
+                .rangeRatio(RANGE_RATIO)
+                .layoutInfo(layoutInfo)
+                .build(mComponentContext));
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    verify(recyclerBinder, never())
+        .computeLayoutsToFillListViewportParallel(
+            anyList(), anyInt(), anyInt(), anyInt(), any(Size.class));
+  }
+
+  @SuppressLint("STARVATION")
+  @Test
+  public void testParallelFillItemsSameAsPoolSize() {
+    ComponentsConfiguration.fillListViewport = true;
+    ComponentsConfiguration.threadPoolForParallelFillViewport =
+        new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND);
+
+    final LayoutInfo layoutInfo =
+        new LinearLayoutInfo(mComponentContext, OrientationHelper.VERTICAL, false);
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(1f).layoutInfo(layoutInfo).build(mComponentContext);
+
+    final LayoutPriorityThreadPoolExecutor executor =
+        spy(new LayoutPriorityThreadPoolExecutor(3, 3, Process.THREAD_PRIORITY_BACKGROUND));
+    Whitebox.setInternalState(recyclerBinder, "mExecutor", executor);
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(250, EXACTLY), null);
+
+    final int expectedWidthSpec = makeSizeSpec(1000, EXACTLY);
+    final int expectedHeightSpec = makeSizeSpec(0, UNSPECIFIED);
+
+    verify(executor).submit(any(Callable.class), eq(0));
+    verify(executor).submit(any(Callable.class), eq(1));
+    verify(executor).submit(any(Callable.class), eq(2));
+    verify(executor).submit(any(Callable.class), eq(3));
+    verify(executor).submit(any(Callable.class), eq(4));
+    verify(executor, never()).submit(any(Callable.class), eq(5));
+
+    assertThat(
+            recyclerBinder
+                .getComponentAt(0)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(1)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(2)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(recyclerBinder.getComponentAt(7)).isNull();
+  }
+
+  @SuppressLint("STARVATION")
+  @Test
+  public void testParallelFillItemsMoreThanPoolSize() {
+    ComponentsConfiguration.fillListViewport = true;
+    ComponentsConfiguration.threadPoolForParallelFillViewport =
+        new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND);
+
+    final LayoutInfo layoutInfo =
+        new LinearLayoutInfo(mComponentContext, OrientationHelper.VERTICAL, false);
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(1f).layoutInfo(layoutInfo).build(mComponentContext);
+
+    final LayoutPriorityThreadPoolExecutor executor =
+        spy(new LayoutPriorityThreadPoolExecutor(3, 3, Process.THREAD_PRIORITY_BACKGROUND));
+    Whitebox.setInternalState(recyclerBinder, "mExecutor", executor);
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 15);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(700, EXACTLY), null);
+
+    final int expectedWidthSpec = makeSizeSpec(1000, EXACTLY);
+    final int expectedHeightSpec = makeSizeSpec(0, UNSPECIFIED);
+
+    verify(executor).submit(any(Callable.class), eq(0));
+    verify(executor).submit(any(Callable.class), eq(1));
+    verify(executor).submit(any(Callable.class), eq(2));
+    verify(executor).submit(any(Callable.class), eq(3));
+    verify(executor).submit(any(Callable.class), eq(4));
+    verify(executor).submit(any(Callable.class), eq(5));
+    verify(executor).submit(any(Callable.class), eq(6));
+    verify(executor).submit(any(Callable.class), eq(7));
+    verify(executor).submit(any(Callable.class), eq(8));
+    verify(executor, never()).submit(any(Callable.class), eq(9));
+
+    assertThat(
+            recyclerBinder
+                .getComponentAt(8)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(9)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isFalse();
+  }
+
+  @SuppressLint("STARVATION")
+  @Test
+  public void testParallelFillItemsFewerThanPoolSize() {
+    ComponentsConfiguration.fillListViewport = true;
+    ComponentsConfiguration.threadPoolForParallelFillViewport =
+        new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND);
+
+    final LayoutInfo layoutInfo =
+        new LinearLayoutInfo(mComponentContext, OrientationHelper.VERTICAL, false);
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(1f).layoutInfo(layoutInfo).build(mComponentContext);
+
+    final LayoutPriorityThreadPoolExecutor executor =
+        spy(new LayoutPriorityThreadPoolExecutor(3, 3, Process.THREAD_PRIORITY_BACKGROUND));
+    Whitebox.setInternalState(recyclerBinder, "mExecutor", executor);
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 5);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(700, EXACTLY), null);
+
+    final int expectedWidthSpec = makeSizeSpec(1000, EXACTLY);
+    final int expectedHeightSpec = makeSizeSpec(0, UNSPECIFIED);
+
+    verify(executor).submit(any(Callable.class), eq(0));
+    verify(executor).submit(any(Callable.class), eq(1));
+    verify(executor).submit(any(Callable.class), eq(2));
+    verify(executor).submit(any(Callable.class), eq(3));
+    verify(executor).submit(any(Callable.class), eq(4));
+    verify(executor, never()).submit(any(Callable.class), eq(5));
+
+    assertThat(
+            recyclerBinder
+                .getComponentAt(4)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+  }
+
+  @SuppressLint("STARVATION")
+  @Test
+  public void testParallelFillFromFirstVisible() {
+    ComponentsConfiguration.fillListViewport = true;
+    ComponentsConfiguration.threadPoolForParallelFillViewport =
+        new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND);
+
+    final LayoutInfo layoutInfo =
+        spy(new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false));
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(layoutInfo)
+            .build(mComponentContext);
+
+    final LayoutPriorityThreadPoolExecutor executor =
+        spy(new LayoutPriorityThreadPoolExecutor(3, 3, Process.THREAD_PRIORITY_BACKGROUND));
+    Whitebox.setInternalState(recyclerBinder, "mExecutor", executor);
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 11);
+
+    when(layoutInfo.findFirstVisibleItemPosition()).thenReturn(5);
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(250, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    final int expectedWidthSpec = makeSizeSpec(0, UNSPECIFIED);
+    final int expectedHeightSpec = makeSizeSpec(1000, SizeSpec.EXACTLY);
+
+    verify(executor, never()).submit(any(Callable.class), eq(4));
+    verify(executor).submit(any(Callable.class), eq(5));
+    verify(executor).submit(any(Callable.class), eq(6));
+    verify(executor).submit(any(Callable.class), eq(7));
+    verify(executor).submit(any(Callable.class), eq(8));
+    verify(executor).submit(any(Callable.class), eq(9));
+    verify(executor, never()).submit(any(Callable.class), eq(10));
+
+    assertThat(
+            recyclerBinder
+                .getComponentAt(5)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(6)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(7)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+  }
+
+  @SuppressLint("STARVATION")
+  @Test
+  public void testFillViewportParallelWithAllViews() {
+    ComponentsConfiguration.fillListViewport = true;
+    ComponentsConfiguration.threadPoolForParallelFillViewport =
+        new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND);
+
+    final LayoutInfo layoutInfo =
+        new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false);
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(layoutInfo)
+            .build(mComponentContext);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    // Just make sure we don't crash
+  }
+
+  @SuppressLint("STARVATION")
+  @Test
+  public void testFillsViewportParallelWithSomeViews() {
+    ComponentsConfiguration.fillListViewport = true;
+    ComponentsConfiguration.threadPoolForParallelFillViewport =
+        new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND);
+
+    final LayoutInfo layoutInfo =
+        new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false);
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(layoutInfo)
+            .build(mComponentContext);
+
+    final LayoutPriorityThreadPoolExecutor executor =
+        spy(new LayoutPriorityThreadPoolExecutor(3, 3, Process.THREAD_PRIORITY_BACKGROUND));
+    Whitebox.setInternalState(recyclerBinder, "mExecutor", executor);
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 3);
+
+    recyclerBinder.insertItemAt(
+        3,
+        ViewRenderInfo.create()
+            .viewBinder(new SimpleViewBinder())
+            .viewCreator(VIEW_CREATOR_1)
+            .build());
+
+    for (int i = 4; i < 7; i++) {
+      recyclerBinder.insertItemAt(
+          i,
+          ComponentRenderInfo.create()
+              .component(
+                  TestDrawableComponent.create(mComponentContext)
+                      .widthPx(100)
+                      .heightPx(100)
+                      .build())
+              .build());
+    }
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    final int expectedWidthSpec = makeSizeSpec(0, UNSPECIFIED);
+    final int expectedHeightSpec = makeSizeSpec(1000, SizeSpec.EXACTLY);
+
+    verify(executor).submit(any(Callable.class), eq(0));
+    verify(executor).submit(any(Callable.class), eq(1));
+    verify(executor).submit(any(Callable.class), eq(2));
+    verify(executor, never()).submit(any(Callable.class), eq(4));
+
+    assertThat(
+            recyclerBinder
+                .getComponentAt(0)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(1)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
+    assertThat(
+            recyclerBinder
+                .getComponentAt(2)
+                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
+        .isTrue();
   }
 
   private void fillRecyclerBinderWithComponents(

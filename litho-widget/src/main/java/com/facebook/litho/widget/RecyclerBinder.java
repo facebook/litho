@@ -46,6 +46,7 @@ import com.facebook.litho.ComponentTree.MeasureListener;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
+import com.facebook.litho.LayoutPriorityThreadPoolExecutor;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.MeasureComparisonUtils;
 import com.facebook.litho.RenderCompleteEvent;
@@ -53,6 +54,7 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import com.facebook.litho.utils.DisplayListUtils;
 import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
@@ -65,6 +67,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
@@ -100,6 +105,11 @@ public class RecyclerBinder
   private final float mRangeRatio;
   private final AtomicBoolean mIsMeasured = new AtomicBoolean(false);
   private final AtomicBoolean mRequiresRemeasure = new AtomicBoolean(false);
+  private final @Nullable LayoutPriorityThreadPoolExecutor mExecutor;
+  private final int mFillViewportPoolSize;
+
+  private boolean mParallelFillViewportEnabled;
+  private String mSplitLayoutTag;
 
   @GuardedBy("this")
   private final ArrayList<AsyncInsertOperation> mInsertsWaitingForInitialMeasure =
@@ -133,7 +143,6 @@ public class RecyclerBinder
           return getMeasureListener(holder);
         }
       };
-  private String mSplitLayoutTag;
 
   private MeasureListener getMeasureListener(final ComponentTreeHolder holder) {
     return new MeasureListener() {
@@ -566,6 +575,19 @@ public class RecyclerBinder
             mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition, builder.layoutInfo);
 
     mSplitLayoutTag = builder.splitLayoutTag;
+
+    if (ComponentsConfiguration.threadPoolForParallelFillViewport != null) {
+      mParallelFillViewportEnabled = true;
+      final LayoutThreadPoolConfiguration config =
+          ComponentsConfiguration.threadPoolForParallelFillViewport;
+      mFillViewportPoolSize = config.getCorePoolSize();
+      mExecutor =
+          new LayoutPriorityThreadPoolExecutor(
+              mFillViewportPoolSize, config.getMaxPoolSize(), config.getThreadPriority());
+    } else {
+      mExecutor = null;
+      mFillViewportPoolSize = 0;
+    }
   }
 
   /**
@@ -1593,6 +1615,11 @@ public class RecyclerBinder
       int maxWidth,
       int maxHeight,
       @Nullable Size outputSize) {
+    if (mParallelFillViewportEnabled) {
+      return computeLayoutsToFillListViewportParallel(
+          holders, offset, maxWidth, maxHeight, outputSize);
+    }
+
     final LayoutInfo.ViewportFiller filler = mLayoutInfo.createViewportFiller(maxWidth, maxHeight);
     if (filler == null) {
       return 0;
@@ -1640,7 +1667,116 @@ public class RecyclerBinder
     }
 
     ComponentsSystrace.endSection();
+    logFillViewportInserted(numInserted, holders.size());
 
+    return numInserted;
+  }
+
+  /**
+   * Same as {@link #computeLayoutsToFillListViewport(List, int, int, int, Size)} but it uses
+   * multiple threads to calculate the viewport layouts.
+   */
+  @VisibleForTesting
+  @GuardedBy("this")
+  int computeLayoutsToFillListViewportParallel(
+      List<ComponentTreeHolder> holders,
+      final int offset,
+      final int maxWidth,
+      final int maxHeight,
+      @Nullable final Size outputSize) {
+
+    ComponentsSystrace.beginSection("computeLayoutsToFillListViewportParallel");
+
+    final int widthSpec = SizeSpec.makeSizeSpec(maxWidth, SizeSpec.EXACTLY);
+    final int heightSpec = SizeSpec.makeSizeSpec(maxHeight, SizeSpec.EXACTLY);
+
+    int index = offset;
+    int itemCount = holders.size();
+
+    final LayoutInfo.ViewportFiller filler = mLayoutInfo.createViewportFiller(maxWidth, maxHeight);
+    final List<Future<ParallelFillViewportResult>> fillViewportTasks = new ArrayList<>();
+
+    if (filler == null) {
+      return 0;
+    }
+
+    // We start with scheduling as many tasks as the number of threads in the pool.
+    // We wait for the scheduled layouts to be completed in order so that we can check if the
+    // viewport is full. As soon as a task finished we can schedule another one as long as
+    // the viewport is still not full.
+    for (int numPostedTasks = 0;
+        numPostedTasks < mFillViewportPoolSize && index < itemCount;
+        numPostedTasks++) {
+
+      final Future<ParallelFillViewportResult> task =
+          scheduleLayoutInParallel(mComponentTreeHolders.get(index), widthSpec, heightSpec, index);
+      // Bail as soon as we see a View since we can't tell what height it is and don't want to
+      // layout too much.
+      if (task == null) {
+        return numPostedTasks + 1;
+      }
+
+      fillViewportTasks.add(task);
+      index++;
+    }
+
+    // Wait for the posted tasks to complete. When the task for the next expected item in the
+    // viewport finishes, check if we can fill the viewport with the size of the available
+    // layouts. If there's still room, posted another task.
+
+    int indexForNextNeeded = 0;
+    while (indexForNextNeeded < fillViewportTasks.size()) {
+      ParallelFillViewportResult result;
+      try {
+        result = fillViewportTasks.get(indexForNextNeeded++).get();
+      } catch (InterruptedException | ExecutionException e) {
+        throw new RuntimeException(e);
+      }
+
+      /** We got a size for the next expected item, check if viewport is filled. */
+      final Size size = result.mSize;
+
+      filler.add(holders.get(result.mPosition).getRenderInfo(), size.width, size.height);
+
+      if (!filler.wantsMore()) {
+
+        if (outputSize != null) {
+          if (mLayoutInfo.getScrollDirection() == VERTICAL) {
+            outputSize.width = maxWidth;
+            outputSize.height = Math.min(filler.getFill(), maxHeight);
+          } else {
+            outputSize.width = Math.min(filler.getFill(), maxWidth);
+            outputSize.height = maxHeight;
+          }
+        }
+
+        ComponentsSystrace.endSection();
+        logFillViewportInserted(indexForNextNeeded, holders.size());
+        return indexForNextNeeded;
+      }
+
+      // We're not done so we can schedule another task since one of the threads in the pool
+      // is probably idle.
+      if (index < itemCount) {
+        final Future<ParallelFillViewportResult> task =
+            scheduleLayoutInParallel(holders.get(index), widthSpec, heightSpec, index);
+        // Bail as soon as we see a View since we can't tell what height it is and don't want to
+        // layout too much.
+        if (task == null) {
+          return indexForNextNeeded;
+        }
+
+        fillViewportTasks.add(task);
+        index++;
+      }
+    }
+
+    ComponentsSystrace.endSection();
+    logFillViewportInserted(indexForNextNeeded, holders.size());
+    return indexForNextNeeded;
+  }
+
+  private void logFillViewportInserted(int numInserted, int totalSize) {
     if (SectionsDebug.ENABLED) {
       Log.d(
           SectionsDebug.TAG,
@@ -1649,11 +1785,49 @@ public class RecyclerBinder
               + ") filled viewport with "
               + numInserted
               + " items (holder.size() = "
-              + holders.size()
+              + totalSize
               + ")");
     }
+  }
 
-    return numInserted;
+  /** @return null if provided holder renders a view. */
+  private Future<ParallelFillViewportResult> scheduleLayoutInParallel(
+      ComponentTreeHolder holder, int widthSpec, int heightSpec, int position) {
+    // Bail as soon as we see a View since we can't tell what height it is and don't want to
+    // layout too much.
+    if (holder.getRenderInfo().rendersView()) {
+      return null;
+    }
+
+    final Callable<ParallelFillViewportResult> callable =
+        createCallable(holder, widthSpec, heightSpec, position);
+
+    return mExecutor.submit(callable, position);
+  }
+
+  /**
+   * Returns a callable that calculates the layout for the provided ComponentTreeHolder
+   * asynchronously. It will be used to fill the viewport in parallel.
+   */
+  private Callable<ParallelFillViewportResult> createCallable(
+      final ComponentTreeHolder holder,
+      final int widthSpec,
+      final int heightSpec,
+      final int position) {
+    return new Callable<ParallelFillViewportResult>() {
+      @Override
+      public ParallelFillViewportResult call() {
+        final Size outSize = new Size();
+        final RenderInfo renderInfo = holder.getRenderInfo();
+        holder.computeLayoutSync(
+            mComponentContext,
+            mLayoutInfo.getChildWidthSpec(widthSpec, renderInfo),
+            mLayoutInfo.getChildHeightSpec(heightSpec, renderInfo),
+            outSize);
+
+        return new ParallelFillViewportResult(position, outSize);
+      }
+    };
   }
 
   private void maybePostInsertInitialLayoutsIntoAdapter(final List<ComponentTreeHolder> toInsert) {
@@ -2159,8 +2333,7 @@ public class RecyclerBinder
 
   private void maybePostUpdateViewportAndComputeRange() {
     if (mMountedView != null
-        && (ComponentsConfiguration.insertPostAsyncLayout
-            || mViewportManager.shouldUpdate())) {
+        && (ComponentsConfiguration.insertPostAsyncLayout || mViewportManager.shouldUpdate())) {
       mPostUpdateViewportAndComputeRangeAttempts = 0;
       mMountedView.removeCallbacks(mUpdateViewportAndComputeRangeRunnable);
       ViewCompat.postOnAnimation(mMountedView, mUpdateViewportAndComputeRangeRunnable);
@@ -2281,6 +2454,18 @@ public class RecyclerBinder
     int REMOVE = 1;
     int REMOVE_RANGE = 2;
     int MOVE = 3;
+  }
+
+  /** Result returned by a task that calculates a layout asynchronously for filling the viewport. */
+  private static final class ParallelFillViewportResult {
+
+    private final int mPosition;
+    private final Size mSize;
+
+    public ParallelFillViewportResult(int position, Size size) {
+      mPosition = position;
+      mSize = size;
+    }
   }
 
   /** An operation received from one of the *Async methods, pending execution. */

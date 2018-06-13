@@ -154,6 +154,12 @@ public class ComponentsConfiguration {
   /** Whether to fill list viewports in RecyclerBinder from measure(), but only for HScrolls. */
   public static boolean fillListViewportHScrollOnly = false;
 
+  /**
+   * If not null, list viewports in RecyclerBinder will be filled in measure() by calculating
+   * layouts on multiple threads if fillListViewport or fillListViewportHScrollOnly are enabled.
+   */
+  public static LayoutThreadPoolConfiguration threadPoolForParallelFillViewport = null;
+
   /** Configuration for asynchronous state update */
   public static boolean updateStateAsync = false;
 
