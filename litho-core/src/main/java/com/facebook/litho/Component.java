@@ -80,11 +80,6 @@ public abstract class Component extends ComponentLifecycle
    * background threads.
    */
   protected boolean mSplitChildrenLayoutInThreadPool;
-  /**
-   * Whether the layout calculation of this Component has been delegated by its parent to be
-   * computed on a background thread from a pool.
-   */
-  private boolean mCalculateLayoutInThreadPool;
 
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable ComponentContext mScopedContext;
@@ -469,8 +464,6 @@ public abstract class Component extends ComponentLifecycle
      */
     if (shouldForwardSplitLayoutStatus) {
       mSplitChildrenLayoutInThreadPool = parent.mSplitChildrenLayoutInThreadPool;
-    } else {
-      mCalculateLayoutInThreadPool = parent.mSplitChildrenLayoutInThreadPool;
     }
   }
 
