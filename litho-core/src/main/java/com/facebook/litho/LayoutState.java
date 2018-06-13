@@ -1634,7 +1634,6 @@ class LayoutState {
         logger != null ? logger.newPerformanceEvent(EVENT_CSS_LAYOUT) : null;
 
     if (layoutEvent != null) {
-      LogTreePopulator.populatePerfEventFromLogger(context, logger, layoutEvent);
       layoutEvent.markerAnnotate(PARAM_TREE_DIFF_ENABLED, previousDiffTreeRoot != null);
       layoutEvent.markerAnnotate(PARAM_ROOT_COMPONENT, root.getRootComponent().getSimpleName());
     }
