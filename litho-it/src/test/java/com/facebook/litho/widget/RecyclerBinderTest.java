@@ -148,6 +148,7 @@ public class RecyclerBinderTest {
               LayoutHandler layoutHandler,
               boolean canPrefetchDisplayLists,
               boolean canCacheDrawingDisplayLists,
+              boolean useSharedLayoutStateFuture,
               ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
               String splitLayoutTag) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);

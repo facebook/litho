@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static android.os.Process.THREAD_PRIORITY_DEFAULT;
 import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_CALCULATE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
@@ -34,6 +35,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.os.Process;
 import android.support.annotation.IntDef;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
@@ -55,6 +57,11 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.concurrent.GuardedBy;
@@ -170,6 +177,13 @@ public class ComponentTree {
   @GuardedBy("mCurrentCalculateLayoutRunnableLock")
   private @Nullable CalculateLayoutRunnable mCurrentCalculateLayoutRunnable;
 
+  private final boolean mUseSharedLayoutStateFuture;
+  private final Object mLayoutStateFutureLock = new Object();
+
+  @Nullable
+  @GuardedBy("mLayoutStateFutureLock")
+  private LayoutStateFuture mLayoutStateFuture;
+
   private volatile boolean mHasMounted;
 
   /** Transition that animates width of root component (LithoView). */
@@ -266,6 +280,7 @@ public class ComponentTree {
     mMeasureListener = builder.mMeasureListener;
     mSplitLayoutTag = builder.splitLayoutTag;
     mPersistInternalNodeTree = builder.persistInternalNodeTree;
+    mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
 
     if (mLayoutThreadHandler == null) {
       mLayoutThreadHandler =
@@ -865,10 +880,10 @@ public class ComponentTree {
               CalculateLayoutSource.MEASURE,
               null);
 
-      final StateHandler layoutStateStateHandler =
-          localLayoutState.consumeStateHandler();
-      final List<Component> components = new ArrayList<>(localLayoutState.getComponents());
+      final List<Component> components;
       synchronized (this) {
+        final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
+        components = new ArrayList<>(localLayoutState.getComponents());
         if (layoutStateStateHandler != null) {
           mStateHandler.commit(layoutStateStateHandler);
         }
@@ -1541,7 +1556,7 @@ public class ComponentTree {
   private void calculateLayout(
       @Nullable Size output,
       @CalculateLayoutSource int source,
-      String extraAttribution,
+      @Nullable String extraAttribution,
       @Nullable TreeProps treeProps) {
     final int widthSpec;
     final int heightSpec;
@@ -1744,6 +1759,12 @@ public class ComponentTree {
         }
       }
 
+      synchronized (mLayoutStateFutureLock) {
+        if (mLayoutStateFuture != null) {
+          mLayoutStateFuture = null;
+        }
+      }
+
       if (mPreAllocateMountContentHandler != null) {
         mPreAllocateMountContentHandler.removeCallbacks(mPreAllocateMountContentRunnable);
       }
@@ -1904,7 +1925,75 @@ public class ComponentTree {
       @Nullable LayoutState previousLayoutState,
       @Nullable TreeProps treeProps,
       @CalculateLayoutSource int source,
-      String extraAttribution) {
+      @Nullable String extraAttribution) {
+
+    if (mUseSharedLayoutStateFuture) {
+      LayoutStateFuture localLayoutStateFuture = new LayoutStateFuture(
+          lock,
+          context,
+          root,
+          widthSpec,
+          heightSpec,
+          diffingEnabled,
+          previousLayoutState,
+          treeProps,
+          source,
+          extraAttribution
+      );
+
+      synchronized (mLayoutStateFutureLock) {
+        if (localLayoutStateFuture.equals(mLayoutStateFuture) && !mLayoutStateFuture.isReleased()) {
+          // Use the latest LayoutState calculation if it's the same and its LayoutState unreleased.
+          localLayoutStateFuture = mLayoutStateFuture;
+        } else {
+          // Otherwise set our calculation as the latest one.
+          mLayoutStateFuture = localLayoutStateFuture;
+        }
+      }
+      localLayoutStateFuture.run();
+
+      final LayoutState layoutState = localLayoutStateFuture.get();
+      if (layoutState == null) {
+        // If the LayoutState is already released, recalculate.
+        return calculateLayoutState(
+            lock,
+            context,
+            root,
+            widthSpec,
+            heightSpec,
+            diffingEnabled,
+            previousLayoutState,
+            treeProps,
+            source,
+            extraAttribution);
+      }
+      return layoutState;
+    } else {
+      return calculateLayoutStateInternal(
+          lock,
+          context,
+          root,
+          widthSpec,
+          heightSpec,
+          diffingEnabled,
+          previousLayoutState,
+          treeProps,
+          source,
+          extraAttribution);
+    }
+  }
+
+  private LayoutState calculateLayoutStateInternal(
+      @Nullable Object lock,
+      ComponentContext context,
+      Component root,
+      int widthSpec,
+      int heightSpec,
+      boolean diffingEnabled,
+      @Nullable LayoutState previousLayoutState,
+      @Nullable TreeProps treeProps,
+      @CalculateLayoutSource int source,
+      @Nullable String extraAttribution) {
     final ComponentContext contextWithStateHandler;
 
     synchronized (this) {
@@ -1936,7 +2025,6 @@ public class ComponentTree {
             extraAttribution);
       }
     } else {
-
       return LayoutState.calculate(
           contextWithStateHandler,
           root,
@@ -1951,6 +2039,172 @@ public class ComponentTree {
           mPersistInternalNodeTree,
           source,
           extraAttribution);
+    }
+  }
+
+  /**
+   * A {@link FutureTask} used to deduplicate calculating the same LayoutState across threads.
+   */
+  private class LayoutStateFuture extends FutureTask<LayoutState> {
+
+    private final AtomicBoolean isFirstGet = new AtomicBoolean(true);
+    private final AtomicInteger runningThreadId = new AtomicInteger(-1);
+    private final ComponentContext context;
+    private final Component root;
+    private final int widthSpec;
+    private final int heightSpec;
+    private final boolean diffingEnabled;
+    @Nullable private final LayoutState previousLayoutState;
+    @Nullable private final TreeProps treeProps;
+    private volatile boolean isReleased = false;
+
+    private LayoutStateFuture(@Nullable final Object lock,
+        final ComponentContext context,
+        final Component root,
+        final int widthSpec,
+        final int heightSpec,
+        final boolean diffingEnabled,
+        @Nullable final LayoutState previousLayoutState,
+        @Nullable final TreeProps treeProps,
+        @CalculateLayoutSource final int source,
+        @Nullable final String extraAttribution) {
+      super(new Callable<LayoutState>() {
+        @Override
+        public LayoutState call() {
+          return calculateLayoutStateInternal(
+              lock,
+              context,
+              root,
+              widthSpec,
+              heightSpec,
+              diffingEnabled,
+              previousLayoutState,
+              treeProps,
+              source,
+              extraAttribution);
+        }
+      });
+
+      this.context = context;
+      this.root = root;
+      this.widthSpec = widthSpec;
+      this.heightSpec = heightSpec;
+      this.diffingEnabled = diffingEnabled;
+      this.previousLayoutState = previousLayoutState;
+      this.treeProps = treeProps;
+    }
+
+    boolean isReleased() {
+      return isReleased;
+    }
+
+    @Override
+    public void run() {
+      if (runningThreadId.compareAndSet(-1, Process.myTid())) {
+        super.run();
+      }
+    }
+
+    @Nullable
+    @Override
+    public LayoutState get() {
+      final int runningThreadId = this.runningThreadId.get();
+      final int originalThreadPriority;
+      final boolean didRaiseThreadPriority;
+      if (isMainThread() && !isDone() && runningThreadId != Process.myTid()) {
+        // Main thread is about to be blocked, raise the running thread priority.
+        originalThreadPriority = ThreadUtils
+            .tryRaiseThreadPriority(runningThreadId, Process.THREAD_PRIORITY_DISPLAY);
+        didRaiseThreadPriority = true;
+      } else {
+        originalThreadPriority = THREAD_PRIORITY_DEFAULT;
+        didRaiseThreadPriority = false;
+      }
+
+      final LayoutState layoutState;
+      try {
+        layoutState = super.get();
+      } catch (ExecutionException e) {
+        final Throwable cause = e.getCause();
+        if (cause instanceof RuntimeException) {
+          throw (RuntimeException) cause;
+        } else {
+          throw new RuntimeException(e.getMessage(), e);
+        }
+      } catch (InterruptedException | CancellationException e) {
+        throw new RuntimeException(e.getMessage(), e);
+      } finally {
+        if (didRaiseThreadPriority) {
+          // Reset the running thread's priority after we're unblocked.
+          try {
+            Process.setThreadPriority(runningThreadId, originalThreadPriority);
+          } catch (IllegalArgumentException | SecurityException ignored) {}
+        }
+      }
+
+      // Creating a LayoutState gives it a refcount of 1, but subsequent get() calls to this Future
+      // must increment the refcount to ensure we don't release the LayoutState too early.
+      if (isFirstGet.getAndSet(false)) {
+        return layoutState;
+      }
+      try {
+        return layoutState.acquireRef();
+      } catch (IllegalStateException e) {
+        isReleased = true;
+        return null;
+      }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+
+      LayoutStateFuture that = (LayoutStateFuture) o;
+
+      if (widthSpec != that.widthSpec) {
+        return false;
+      }
+      if (heightSpec != that.heightSpec) {
+        return false;
+      }
+      if (diffingEnabled != that.diffingEnabled) {
+        return false;
+      }
+      if (!context.equals(that.context)) {
+        return false;
+      }
+      if (root.getId() != that.root.getId()) {
+        // We only care that the root id is the same since the root is shallow copied before
+        // it's passed to us and will never be the same object.
+        return false;
+      }
+      if (diffingEnabled && previousLayoutState != null
+          ? !previousLayoutState.equals(that.previousLayoutState)
+          : that.previousLayoutState != null) {
+        // Only check against previousLayoutState if diffing is enabled.
+        return false;
+      }
+      if (treeProps != null ? !treeProps.equals(that.treeProps) : that.treeProps != null) {
+        return false;
+      }
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = context.hashCode();
+      result = 31 * result + root.getId();
+      result = 31 * result + widthSpec;
+      result = 31 * result + heightSpec;
+      result = 31 * result + (diffingEnabled ? 1 : 0);
+      result = 31 * result + (previousLayoutState != null ? previousLayoutState.hashCode() : 0);
+      result = 31 * result + (treeProps != null ? treeProps.hashCode() : 0);
+      return result;
     }
   }
 
@@ -2040,6 +2294,7 @@ public class ComponentTree {
     private boolean canPreallocateOnDefaultHandler;
     private String splitLayoutTag;
     private boolean persistInternalNodeTree = false;
+    private boolean useSharedLayoutStateFuture = false;
 
     protected Builder() {
     }
@@ -2073,6 +2328,7 @@ public class ComponentTree {
       preAllocateMountContentHandler = null;
       splitLayoutTag = null;
       persistInternalNodeTree = false;
+      useSharedLayoutStateFuture = false;
     }
 
     /**
@@ -2271,6 +2527,17 @@ public class ComponentTree {
      */
     public Builder persistInternalNodeTree(boolean persistInternalNodeTree) {
       this.persistInternalNodeTree = persistInternalNodeTree;
+      return this;
+    }
+
+    /**
+     * Whether to share a shared LayoutStateFuture between threads when calculating LayoutState to
+     * prevent duplicate calculations of the same LayoutState on different threads. The main thread
+     * will block on the completion of the Future even if the calculation was started on a
+     * background thread.
+     */
+    public Builder useSharedLayoutStateFuture(boolean useSharedLayoutStateFuture) {
+      this.useSharedLayoutStateFuture = useSharedLayoutStateFuture;
       return this;
     }
 

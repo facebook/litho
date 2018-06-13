@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.os.Looper;
+import android.os.Process;
 import android.support.annotation.IntDef;
 import android.support.annotation.VisibleForTesting;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -83,5 +84,30 @@ public class ThreadUtils {
     if (Thread.holdsLock(lock)) {
       throw new IllegalStateException("This method should be called outside the lock.");
     }
+  }
+
+  /**
+   * Try to raise the priority of {@param threadId} to {@param targetThreadPriority}.
+   * @return the original thread priority of the target thread.
+   */
+  public static int tryRaiseThreadPriority(int threadId, int targetThreadPriority) {
+    // Main thread is about to be blocked, raise the running thread priority.
+    final int originalThreadPriority = Process.getThreadPriority(threadId);
+    boolean success = false;
+    while (!success && targetThreadPriority < originalThreadPriority) {
+      // Keep trying to increase thread priority of running thread as long as it is an increase.
+      try {
+        Process.setThreadPriority(threadId, targetThreadPriority);
+        success = true;
+      } catch (SecurityException e) {
+            /*
+              From {@link Process#THREAD_PRIORITY_DISPLAY}, some applications can not change
+              the thread priority to that of the main thread. This catches that potential error
+              and tries to set a lower priority.
+             */
+        targetThreadPriority += Process.THREAD_PRIORITY_LESS_FAVORABLE;
+      }
+    }
+    return originalThreadPriority;
   }
 }

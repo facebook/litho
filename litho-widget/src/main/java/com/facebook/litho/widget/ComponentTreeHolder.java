@@ -87,6 +87,7 @@ public class ComponentTreeHolder {
   private LayoutHandler mPreallocateMountContentHandler;
   private boolean mCanPreallocateOnDefaultHandler;
   private boolean mShouldPreallocatePerMountSpec;
+  private boolean mUseSharedLayoutStateFuture;
   private String mSplitLayoutTag;
   private boolean mIsInserted = true;
   private boolean mHasMounted = false;
@@ -109,6 +110,7 @@ public class ComponentTreeHolder {
     private @Nullable LayoutHandler preallocateMountContentHandler;
     private boolean canPreallocateOnDefaultHandler;
     private boolean shouldPreallocatePerMountSpec;
+    private boolean useSharedLayoutStateFuture;
 
     private Builder() {}
 
@@ -159,6 +161,11 @@ public class ComponentTreeHolder {
       return this;
     }
 
+    public Builder useSharedLayoutStateFuture(boolean useSharedLayoutStateFuture) {
+      this.useSharedLayoutStateFuture = useSharedLayoutStateFuture;
+      return this;
+    }
+
     public ComponentTreeHolder build() {
       ensureMandatoryParams();
 
@@ -174,6 +181,7 @@ public class ComponentTreeHolder {
       componentTreeHolder.mPreallocateMountContentHandler = preallocateMountContentHandler;
       componentTreeHolder.mCanPreallocateOnDefaultHandler = canPreallocateOnDefaultHandler;
       componentTreeHolder.mShouldPreallocatePerMountSpec = shouldPreallocatePerMountSpec;
+      componentTreeHolder.mUseSharedLayoutStateFuture = useSharedLayoutStateFuture;
       componentTreeHolder.mComponentTreeMeasureListenerFactory =
           componentTreeMeasureListenerFactory;
       componentTreeHolder.mSplitLayoutTag = splitLayoutTag;
@@ -375,6 +383,7 @@ public class ComponentTreeHolder {
     mPreallocateMountContentHandler = null;
     mShouldPreallocatePerMountSpec = false;
     mCanPreallocateOnDefaultHandler = false;
+    mUseSharedLayoutStateFuture = false;
     mPendingNewLayoutListener = null;
     mLastRequestedWidthSpec = UNINITIALIZED;
     mLastRequestedHeightSpec = UNINITIALIZED;
@@ -402,6 +411,7 @@ public class ComponentTreeHolder {
               .preAllocateMountContentHandler(mPreallocateMountContentHandler)
               .preallocateOnDefaultHandler(mCanPreallocateOnDefaultHandler)
               .shouldPreallocateMountContentPerMountSpec(mShouldPreallocatePerMountSpec)
+              .useSharedLayoutStateFuture(mUseSharedLayoutStateFuture)
               .measureListener(
                   mComponentTreeMeasureListenerFactory == null
                       ? null

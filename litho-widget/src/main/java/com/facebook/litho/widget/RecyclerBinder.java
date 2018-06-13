@@ -230,6 +230,7 @@ public class RecyclerBinder
   private StickyHeaderController mStickyHeaderController;
   private final boolean mCanPrefetchDisplayLists;
   private final boolean mCanCacheDrawingDisplayLists;
+  private final boolean mUseSharedLayoutStateFuture;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
   private volatile boolean mAsyncInsertsShouldWaitForMeasure = true;
@@ -342,6 +343,7 @@ public class RecyclerBinder
         LayoutHandler layoutHandler,
         boolean canPrefetchDisplayLists,
         boolean canCacheDrawingDisplayLists,
+        boolean useSharedLayoutStateFuture,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
         String splitLayoutTag);
   }
@@ -354,6 +356,7 @@ public class RecyclerBinder
             LayoutHandler layoutHandler,
             boolean canPrefetchDisplayLists,
             boolean canCacheDrawingDisplayLists,
+            boolean useSharedLayoutStateFuture,
             ComponentTreeMeasureListenerFactory measureListenerFactory,
             String splitLayoutTag) {
           return ComponentTreeHolder.create()
@@ -361,6 +364,7 @@ public class RecyclerBinder
               .layoutHandler(layoutHandler)
               .canPrefetchDisplayLists(canPrefetchDisplayLists)
               .canCacheDrawingDisplayLists(canCacheDrawingDisplayLists)
+              .useSharedLayoutStateFuture(useSharedLayoutStateFuture)
               .componentTreeMeasureListenerFactory(measureListenerFactory)
               .splitLayoutTag(splitLayoutTag)
               .build();
@@ -389,6 +393,7 @@ public class RecyclerBinder
     private boolean fillListViewportHScrollOnly;
     private LayoutThreadPoolConfiguration threadPoolForParallelFillViewportConfig;
     private boolean enableStableIds;
+    private boolean useSharedLayoutStateFuture;
     private @Nullable List<ComponentLogParams> invalidStateLogParamsList;
 
     /**
@@ -544,6 +549,14 @@ public class RecyclerBinder
     }
 
     /**
+     * Whether to share a single LayoutStateFuture between threads when calculating LayoutState.
+     */
+    public Builder useSharedLayoutStateFuture(boolean useSharedLayoutStateFuture) {
+      this.useSharedLayoutStateFuture = useSharedLayoutStateFuture;
+      return this;
+    }
+
+    /**
      * Method for tests to allow mocking of the InternalAdapter to verify interaction with the
      * RecyclerView.
      */
@@ -628,6 +641,7 @@ public class RecyclerBinder
     mLithoViewFactory = builder.lithoViewFactory;
     mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
     mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
+    mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
     mRenderInfoViewCreatorController =
         new RenderInfoViewCreatorController(
             builder.customViewTypeEnabled,
@@ -3004,6 +3018,7 @@ public class RecyclerBinder
             : null,
         mCanPrefetchDisplayLists,
         mCanCacheDrawingDisplayLists,
+        mUseSharedLayoutStateFuture,
         mHasDynamicItemHeight ? mComponentTreeMeasureListenerFactory : null,
         mSplitLayoutTag);
   }
