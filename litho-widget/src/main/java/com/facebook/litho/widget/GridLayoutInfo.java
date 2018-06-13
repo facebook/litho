@@ -290,13 +290,17 @@ public class GridLayoutInfo implements LayoutInfo {
 
     @Override
     public void add(RenderInfo renderInfo, int width, int height) {
-      if (mIndexOfSpan == 0) {
+      if (renderInfo.isFullSpan()) {
         mFill += mOrientation == VERTICAL ? height : width;
-      }
+      } else {
+        if (mIndexOfSpan == 0) {
+          mFill += mOrientation == VERTICAL ? height : width;
+        }
 
-      if (++mIndexOfSpan == mSpanCount) {
-        // Reset the index after exceeding the span.
-        mIndexOfSpan = 0;
+        if (++mIndexOfSpan == mSpanCount) {
+          // Reset the index after exceeding the span.
+          mIndexOfSpan = 0;
+        }
       }
     }
 
