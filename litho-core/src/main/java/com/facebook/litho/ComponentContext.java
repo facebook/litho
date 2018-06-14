@@ -364,6 +364,7 @@ public class ComponentContext extends ContextWrapper {
       throw new IllegalArgumentException("Component must be internal!");
     }
 
+    setTreeProps(component.getScopedContext().getTreePropsCopy());
     return (InternalNode) component.resolve(this);
   }
 
