@@ -52,6 +52,7 @@ import android.support.v4.util.LongSparseArray;
 import android.support.v4.util.SimpleArrayMap;
 import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -2540,8 +2541,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       endUnmountDisappearingItem(disappearingGroup);
     } else {
       if (!mAnimatingTransitionKeys.remove(transitionKey)) {
-        throw new RuntimeException(
-            "Ending animation for key " + transitionKey + " but it wasn't recorded as animating!");
+        if (AnimationsDebug.ENABLED) {
+          Log.e(
+              AnimationsDebug.TAG,
+              "Ending animation for key "
+                  + transitionKey
+                  + " but it wasn't recorded as animating!");
+        }
       }
 
       final OutputUnitsAffinityGroup<LayoutOutput> layoutOutputGroup =
