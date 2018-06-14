@@ -184,8 +184,11 @@ public class GridLayoutInfoTest {
     GridLayoutInfo.ViewportFiller viewportFiller =
         new GridLayoutInfo.ViewportFiller(100, 100, VERTICAL, spanCount);
 
+    final RenderInfo renderInfo = mock(RenderInfo.class);
+    when(renderInfo.isFullSpan()).thenReturn(false);
+    when(renderInfo.getSpanSize()).thenReturn(1);
     for (int i = 0; i < 8; i++) {
-      viewportFiller.add(mock(RenderInfo.class), 100, itemHeight);
+      viewportFiller.add(renderInfo, 100, itemHeight);
     }
 
     assertThat(viewportFiller.getFill()).isEqualTo(itemHeight * spanCount);
@@ -200,11 +203,49 @@ public class GridLayoutInfoTest {
 
     final RenderInfo renderInfo = mock(RenderInfo.class);
     when(renderInfo.isFullSpan()).thenReturn(true);
+    when(renderInfo.getSpanSize()).thenReturn(spanCount);
     for (int i = 0; i < 8; i++) {
       viewportFiller.add(renderInfo, 100, itemHeight);
     }
 
     assertThat(viewportFiller.getFill()).isEqualTo(itemHeight * 8);
+  }
+
+  @Test
+  public void testVerticalViewportFillerWithDifferentSpan() {
+    /*
+     * Test different spans (full span, partial span, no span)
+     * -------------
+     * |     A     |
+     * -------------
+     * |  B    | C |
+     * -------------
+     * | D | E | F |
+     * -------------
+     */
+    final int spanCount = 3;
+    final int itemHeight = 10;
+    GridLayoutInfo.ViewportFiller viewportFiller =
+        new GridLayoutInfo.ViewportFiller(100, 100, VERTICAL, spanCount);
+
+    final RenderInfo renderInfoA = mock(RenderInfo.class);
+    when(renderInfoA.isFullSpan()).thenReturn(true);
+    when(renderInfoA.getSpanSize()).thenReturn(spanCount);
+    viewportFiller.add(renderInfoA, 10 * spanCount, itemHeight);
+
+    final RenderInfo renderInfoB = mock(RenderInfo.class);
+    when(renderInfoB.isFullSpan()).thenReturn(false);
+    when(renderInfoB.getSpanSize()).thenReturn(2);
+    viewportFiller.add(renderInfoB, 10 * 2, itemHeight);
+
+    final RenderInfo renderInfo = mock(RenderInfo.class);
+    when(renderInfo.isFullSpan()).thenReturn(false);
+    when(renderInfo.getSpanSize()).thenReturn(1);
+
+    for (int i = 0; i < 4; i++) {
+      viewportFiller.add(renderInfo, 10, itemHeight);
+    }
+    assertThat(viewportFiller.getFill()).isEqualTo(itemHeight * 3);
   }
 
   @Test
@@ -214,8 +255,11 @@ public class GridLayoutInfoTest {
     GridLayoutInfo.ViewportFiller viewportFiller =
         new GridLayoutInfo.ViewportFiller(100, 100, HORIZONTAL, spanCount);
 
+    final RenderInfo renderInfo = mock(RenderInfo.class);
+    when(renderInfo.isFullSpan()).thenReturn(false);
+    when(renderInfo.getSpanSize()).thenReturn(1);
     for (int i = 0; i < 8; i++) {
-      viewportFiller.add(mock(RenderInfo.class), itemWidth, 100);
+      viewportFiller.add(renderInfo, itemWidth, 100);
     }
 
     assertThat(viewportFiller.getFill()).isEqualTo(itemWidth * spanCount);
@@ -230,11 +274,49 @@ public class GridLayoutInfoTest {
 
     final RenderInfo renderInfo = mock(RenderInfo.class);
     when(renderInfo.isFullSpan()).thenReturn(true);
+    when(renderInfo.getSpanSize()).thenReturn(spanCount);
     for (int i = 0; i < 8; i++) {
       viewportFiller.add(renderInfo, itemWidth, 100);
     }
 
     assertThat(viewportFiller.getFill()).isEqualTo(itemWidth * 8);
+  }
+
+  @Test
+  public void testHorizontalViewportFillerWithDifferentSpan() {
+    /*
+     * Test different spans (full span, partial span, no span)
+     * -------------
+     * |   |   | D |
+     * |   | B |---|
+     * | A |   | E |
+     * |   |---|---|
+     * |   | C | F |
+     * -------------
+     */
+    final int spanCount = 3;
+    final int itemWidth = 10;
+    GridLayoutInfo.ViewportFiller viewportFiller =
+        new GridLayoutInfo.ViewportFiller(100, 100, HORIZONTAL, spanCount);
+
+    final RenderInfo renderInfoA = mock(RenderInfo.class);
+    when(renderInfoA.isFullSpan()).thenReturn(true);
+    when(renderInfoA.getSpanSize()).thenReturn(spanCount);
+    viewportFiller.add(renderInfoA, itemWidth, 10 * spanCount);
+
+    final RenderInfo renderInfoB = mock(RenderInfo.class);
+    when(renderInfoB.isFullSpan()).thenReturn(false);
+    when(renderInfoB.getSpanSize()).thenReturn(2);
+    viewportFiller.add(renderInfoB, itemWidth, 10 * 2);
+
+    final RenderInfo renderInfo = mock(RenderInfo.class);
+    when(renderInfo.isFullSpan()).thenReturn(false);
+    when(renderInfo.getSpanSize()).thenReturn(1);
+
+    for (int i = 0; i < 4; i++) {
+      viewportFiller.add(renderInfo, itemWidth, 10);
+    }
+    assertThat(viewportFiller.getFill()).isEqualTo(itemWidth * 3);
   }
 
   private static GridLayoutInfo createGridLayoutInfo(int direction, int spanCount) {
