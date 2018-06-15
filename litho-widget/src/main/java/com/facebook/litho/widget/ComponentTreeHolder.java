@@ -25,8 +25,8 @@ import com.facebook.litho.ComponentTree.MeasureListener;
 import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateHandler;
-import java.util.concurrent.atomic.AtomicInteger;
 import com.facebook.litho.TreeProps;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
@@ -40,6 +40,8 @@ import javax.annotation.concurrent.ThreadSafe;
 @ThreadSafe
 public class ComponentTreeHolder {
   private static final int UNINITIALIZED = -1;
+  private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
+
   private static final Pools.SynchronizedPool<ComponentTreeHolder> sComponentTreeHoldersPool =
       new Pools.SynchronizedPool<>(8);
   private ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
@@ -74,6 +76,7 @@ public class ComponentTreeHolder {
 
   private final AtomicInteger mRenderState = new AtomicInteger(RENDER_UNINITIALIZED);
 
+  private int mId;
   private boolean mIsTreeValid;
   private LayoutHandler mLayoutHandler;
   private boolean mCanPrefetchDisplayLists;
@@ -171,8 +174,13 @@ public class ComponentTreeHolder {
     componentTreeHolder.mShouldPreallocatePerMountSpec = shouldPreallocatePerMountSpec;
     componentTreeHolder.mComponentTreeMeasureListenerFactory = componentTreeMeasureListenerFactory;
     componentTreeHolder.mSplitLayoutTag = splitLayoutTag;
+    componentTreeHolder.acquireId();
 
     return componentTreeHolder;
+  }
+
+  private void acquireId() {
+    mId = sIdGenerator.getAndIncrement();
   }
 
   public synchronized void acquireStateAndReleaseTree() {
@@ -196,6 +204,10 @@ public class ComponentTreeHolder {
     } else {
       mPendingNewLayoutListener = listener;
     }
+  }
+
+  int getId() {
+    return mId;
   }
 
   public void computeLayoutSync(

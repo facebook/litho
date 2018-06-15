@@ -109,6 +109,7 @@ public class RecyclerBinder
   private final int mFillViewportPoolSize;
   private final boolean mFillListViewport;
   private final boolean mFillListViewportHScrollOnly;
+  private final boolean mEnableStableIds;
 
   private boolean mParallelFillViewportEnabled;
   private String mSplitLayoutTag;
@@ -369,6 +370,7 @@ public class RecyclerBinder
     private boolean fillListViewport;
     private boolean fillListViewportHScrollOnly;
     private LayoutThreadPoolConfiguration threadPoolForParallelFillViewportConfig;
+    private boolean enableStableIds;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -504,6 +506,16 @@ public class RecyclerBinder
     }
 
     /**
+     * If set, the RecyclerView adapter will have stableId support turned on. This is ideally what
+     * we want to do always but for now we need this as a parameter to make sure stable Ids are not
+     * breaking anything.
+     */
+    public Builder enableStableIds(boolean enableStableIds) {
+      this.enableStableIds = enableStableIds;
+      return this;
+    }
+
+    /**
      * Method for tests to allow mocking of the InternalAdapter to verify interaction with the
      * RecyclerView.
      */
@@ -619,6 +631,8 @@ public class RecyclerBinder
       mExecutor = null;
       mFillViewportPoolSize = 0;
     }
+
+    mEnableStableIds = builder.enableStableIds;
   }
 
   /**
@@ -2589,6 +2603,11 @@ public class RecyclerBinder
 
   private class InternalAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
+    InternalAdapter() {
+      super();
+      setHasStableIds(mEnableStableIds);
+    }
+
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
       final ViewCreator viewCreator = mRenderInfoViewCreatorController.getViewCreator(viewType);
@@ -2709,6 +2728,11 @@ public class RecyclerBinder
           holder.viewBinder = null;
         }
       }
+    }
+
+    @Override
+    public long getItemId(int position) {
+      return mComponentTreeHolders.get(position).getId();
     }
   }
 

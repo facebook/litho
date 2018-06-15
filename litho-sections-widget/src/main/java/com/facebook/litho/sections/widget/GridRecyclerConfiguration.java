@@ -107,6 +107,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
                 mRecyclerBinderConfiguration.getFillListViewportHScrollOnly())
             .threadPoolForParallelFillViewportConfig(
                 mRecyclerBinderConfiguration.getThreadPoolForParallelFillViewportConfig())
+            .enableStableIds(mRecyclerBinderConfiguration.getEnableStableIds())
             .build(c);
     return (T) new SectionBinderTarget(recyclerBinder);
   }
