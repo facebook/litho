@@ -88,7 +88,6 @@ public class VerticalScrollSpec {
       Size size,
       @Prop Component childComponent,
       @State ComponentTree childComponentTree) {
-    childComponentTree.setRoot(childComponent);
     measureVerticalScroll(widthSpec, heightSpec, size, childComponentTree, childComponent);
   }
 
@@ -98,7 +97,6 @@ public class VerticalScrollSpec {
       ComponentLayout layout,
       @Prop Component childComponent,
       @State ComponentTree childComponentTree) {
-    childComponentTree.setRoot(childComponent);
     measureVerticalScroll(
         SizeSpec.makeSizeSpec(layout.getWidth(), EXACTLY),
         SizeSpec.makeSizeSpec(layout.getHeight(), EXACTLY),
