@@ -595,35 +595,6 @@ public class RecyclerBinderFillViewportTest {
     verify(layoutInfo).createViewportFiller(anyInt(), anyInt());
   }
 
-  // Parallel viewport fill tests
-
-  @SuppressLint("STARVATION")
-  @Test
-  public void testDoesNotFillViewportInParallelWithConfigurationOff()
-      throws ExecutionException, InterruptedException {
-
-    final LayoutInfo layoutInfo = mock(LayoutInfo.class);
-    setupBaseLayoutInfoMock(layoutInfo, OrientationHelper.VERTICAL);
-
-    RecyclerBinder recyclerBinder =
-        spy(
-            new RecyclerBinder.Builder()
-                .rangeRatio(RANGE_RATIO)
-                .layoutInfo(layoutInfo)
-                .threadPoolForParallelFillViewportConfig(
-                    new LayoutThreadPoolConfigurationImpl(1, 1, 1))
-                .build(mComponentContext));
-
-    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
-
-    recyclerBinder.measure(
-        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
-
-    verify(recyclerBinder, never())
-        .computeLayoutsToFillListViewportParallel(
-            anyList(), anyInt(), anyInt(), anyInt(), any(Size.class));
-  }
-
   @SuppressLint("STARVATION")
   @Test
   public void testDoesNotFillViewportInParallelWithNoPoolConfiguration()
@@ -657,7 +628,6 @@ public class RecyclerBinderFillViewportTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .fillListViewport(true)
             .threadPoolForParallelFillViewportConfig(
                 new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND))
             .rangeRatio(1f)
@@ -709,7 +679,6 @@ public class RecyclerBinderFillViewportTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .fillListViewport(true)
             .threadPoolForParallelFillViewportConfig(
                 new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND))
             .rangeRatio(1f)
@@ -759,7 +728,6 @@ public class RecyclerBinderFillViewportTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .fillListViewport(true)
             .threadPoolForParallelFillViewportConfig(
                 new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND))
             .rangeRatio(1f)
@@ -800,7 +768,6 @@ public class RecyclerBinderFillViewportTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .fillListViewport(true)
             .threadPoolForParallelFillViewportConfig(
                 new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND))
             .rangeRatio(RANGE_RATIO)
@@ -852,7 +819,6 @@ public class RecyclerBinderFillViewportTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .fillListViewport(true)
             .threadPoolForParallelFillViewportConfig(
                 new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND))
             .rangeRatio(RANGE_RATIO)
@@ -873,7 +839,6 @@ public class RecyclerBinderFillViewportTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .fillListViewport(true)
             .threadPoolForParallelFillViewportConfig(
                 new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND))
             .rangeRatio(RANGE_RATIO)

@@ -603,10 +603,12 @@ public class RecyclerBinder
 
     mSplitLayoutTag = builder.splitLayoutTag;
 
-    mFillListViewport = builder.fillListViewport;
     mFillListViewportHScrollOnly = builder.fillListViewportHScrollOnly;
 
     final LayoutThreadPoolConfiguration config = builder.threadPoolForParallelFillViewportConfig;
+
+    mFillListViewport = builder.fillListViewport;
+
     if (config != null) {
       mParallelFillViewportEnabled = true;
       mFillViewportPoolSize = config.getCorePoolSize();
@@ -1582,7 +1584,8 @@ public class RecyclerBinder
   private boolean shouldFillListViewport() {
     return mFillListViewport
         || (mFillListViewportHScrollOnly
-            && mLayoutInfo.getScrollDirection() == OrientationHelper.HORIZONTAL);
+            && mLayoutInfo.getScrollDirection() == OrientationHelper.HORIZONTAL)
+        || mParallelFillViewportEnabled;
   }
 
   @GuardedBy("this")
