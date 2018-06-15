@@ -56,8 +56,12 @@ class LayoutThreadFactory implements ThreadFactory {
           }
         };
 
-    return new Thread(
-        wrapperRunnable,
-        "ComponentLayoutThread" + mThreadPoolId + "-" + threadNumber.getAndIncrement());
+    final Thread thread =
+        new Thread(
+            wrapperRunnable,
+            "ComponentLayoutThread" + mThreadPoolId + "-" + threadNumber.getAndIncrement());
+    thread.setPriority(Thread.MAX_PRIORITY);
+
+    return thread;
   }
 }
