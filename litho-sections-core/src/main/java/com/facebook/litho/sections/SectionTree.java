@@ -29,7 +29,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
-import android.os.Process;
 import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pair;
@@ -47,6 +46,7 @@ import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.PerfEvent;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.TreeProps;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
@@ -83,7 +83,6 @@ public class SectionTree {
   }
 
   private static final String DEFAULT_CHANGESET_THREAD_NAME = "SectionChangeSetThread";
-  private static final int DEFAULT_CHANGESET_THREAD_PRIORITY = Process.THREAD_PRIORITY_BACKGROUND;
   private final SectionsDebugLogger mSectionsDebugLogger;
   private volatile boolean mReleased;
 
@@ -1296,7 +1295,9 @@ public class SectionTree {
   public static synchronized Looper getDefaultChangeSetThreadLooper() {
     if (sDefaultChangeSetThreadLooper == null) {
       HandlerThread defaultThread =
-          new HandlerThread(DEFAULT_CHANGESET_THREAD_NAME, DEFAULT_CHANGESET_THREAD_PRIORITY);
+          new HandlerThread(
+              DEFAULT_CHANGESET_THREAD_NAME,
+              ComponentsConfiguration.defaultChangeSetThreadPriority);
       defaultThread.start();
       sDefaultChangeSetThreadLooper = defaultThread.getLooper();
     }

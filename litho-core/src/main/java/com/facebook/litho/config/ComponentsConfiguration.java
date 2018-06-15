@@ -20,6 +20,7 @@ import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 
+import android.os.Process;
 import com.facebook.litho.BuildConfig;
 import com.facebook.yoga.YogaLogger;
 
@@ -116,6 +117,8 @@ public class ComponentsConfiguration {
 
   /** The default priority for threads that perform background layout calculations. */
   public static final int DEFAULT_BACKGROUND_THREAD_PRIORITY = 5;
+
+  public static int defaultChangeSetThreadPriority = Process.THREAD_PRIORITY_BACKGROUND;
 
   /**
    * Whether components with transitions set on don't necessarily have to be wrapped in views
