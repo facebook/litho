@@ -60,7 +60,7 @@ public final class Column extends Component {
   }
 
   @Override
-  boolean isInternalComponent() {
+  protected boolean isInternalComponent() {
     return true;
   }
 

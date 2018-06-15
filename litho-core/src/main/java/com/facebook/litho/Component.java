@@ -561,7 +561,7 @@ public abstract class Component extends ComponentLifecycle
     // Do nothing by default
   }
 
-  boolean isInternalComponent() {
+  protected boolean isInternalComponent() {
     return false;
   }
 

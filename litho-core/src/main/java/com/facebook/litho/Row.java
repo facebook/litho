@@ -60,7 +60,7 @@ public final class Row extends Component {
   }
 
   @Override
-  boolean isInternalComponent() {
+  protected boolean isInternalComponent() {
     return true;
   }
 
