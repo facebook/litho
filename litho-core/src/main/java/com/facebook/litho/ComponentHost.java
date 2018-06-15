@@ -55,6 +55,8 @@ import java.util.List;
 @DoNotStrip
 public class ComponentHost extends ViewGroup {
 
+  private static final double NS_IN_MS = 1000000.0;
+
   private SparseArrayCompat<MountItem> mMountItems;
   private SparseArrayCompat<MountItem> mScrapMountItemsArray;
 
@@ -75,6 +77,9 @@ public class ComponentHost extends ViewGroup {
   private boolean mSuppressInvalidations;
 
   private final InterleavedDispatchDraw mDispatchDraw = new InterleavedDispatchDraw();
+  private final DrawStats mDrawStats = new DrawStats();
+
+  @Nullable private PerfEvent mPerfEvent;
 
   private int[] mChildDrawingOrder = new int[0];
   private boolean mIsChildDrawingOrderDirty;
@@ -132,6 +137,12 @@ public class ComponentHost extends ViewGroup {
    */
   long getParentHostMarker() {
     return mParentHostMarker;
+  }
+
+  /** Set a perf event to log additional draw stats for <b>the next draw call only</b>. */
+  void setPerfEvent(PerfEvent perfEvent) {
+    mPerfEvent = perfEvent;
+    mDrawStats.enableLogging();
   }
 
   /**
@@ -1300,6 +1311,7 @@ public class ComponentHost extends ViewGroup {
       for (int i = mDrawIndex, size = (mMountItems == null) ? 0 : mMountItems.size();
           i < size;
           i++) {
+        final long startDrawNs = System.nanoTime();
         final MountItem mountItem = mMountItems.valueAt(i);
 
         final Object content = mountItem.getDisplayListDrawable() != null ?
@@ -1320,12 +1332,21 @@ public class ComponentHost extends ViewGroup {
         }
 
         final boolean isTracing = ComponentsSystrace.isTracing();
+        final String mountItemName =
+            isTracing || mDrawStats.mIsLoggingEnabled ? getMountItemName(mountItem) : null;
+
         if (isTracing) {
-          ComponentsSystrace.beginSection(getTraceName(mountItem));
+          ComponentsSystrace.beginSection("draw: " + mountItemName);
         }
         ((Drawable) content).draw(mCanvas);
         if (isTracing) {
           ComponentsSystrace.endSection();
+        }
+
+        final long endDrawNs = System.nanoTime();
+        if (mDrawStats.mIsLoggingEnabled) {
+          mDrawStats.mMountItemTimes.add((endDrawNs - startDrawNs) / NS_IN_MS);
+          mDrawStats.mMountItemNames.add(mountItemName);
         }
       }
 
@@ -1333,12 +1354,16 @@ public class ComponentHost extends ViewGroup {
     }
 
     private void end() {
+      if (mDrawStats.mIsLoggingEnabled) {
+        mDrawStats.annotatePerfEvent(mPerfEvent);
+        mPerfEvent = null;
+      }
       mCanvas = null;
     }
   }
 
-  private static String getTraceName(MountItem mountItem) {
-    String traceName = "draw: " + mountItem.getComponent().getSimpleName();
+  private static String getMountItemName(MountItem mountItem) {
+    String traceName = mountItem.getComponent().getSimpleName();
     final DisplayListDrawable displayListDrawable = mountItem.getDisplayListDrawable();
     if (displayListDrawable != null && displayListDrawable.willDrawDisplayList()) {
       traceName += "DL";
@@ -1371,5 +1396,37 @@ public class ComponentHost extends ViewGroup {
     }
 
     return super.performAccessibilityAction(action, arguments);
+  }
+
+  private static class DrawStats {
+    List<String> mMountItemNames;
+    List<Double> mMountItemTimes;
+
+    boolean mIsLoggingEnabled = false;
+    private boolean mIsInitialized = false;
+
+    void enableLogging() {
+      if (!mIsInitialized) {
+        mMountItemNames = new ArrayList<>(4);
+        mMountItemTimes = new ArrayList<>(4);
+      }
+
+      mIsLoggingEnabled = true;
+      mIsInitialized = true;
+    }
+
+    private void reset() {
+      mIsLoggingEnabled = false;
+      mMountItemNames.clear();
+      mMountItemTimes.clear();
+    }
+
+    void annotatePerfEvent(PerfEvent perfEvent) {
+      perfEvent.markerAnnotate(
+          FrameworkLogEvents.PARAM_DRAWN_CONTENT, mMountItemNames.toArray(new String[0]));
+      perfEvent.markerAnnotate(
+          FrameworkLogEvents.PARAM_DRAWN_TIME, mMountItemTimes.toArray(new Double[0]));
+      reset();
+    }
   }
 }

@@ -82,6 +82,8 @@ public interface FrameworkLogEvents {
   String PARAM_UPDATED_COUNT = "updated_count";
   String PARAM_UPDATED_CONTENT = "updated_content";
   String PARAM_UPDATED_TIME = "updated_time_ms";
+  String PARAM_DRAWN_CONTENT = "drawn_content";
+  String PARAM_DRAWN_TIME = "drawn_time";
   String PARAM_NO_OP_COUNT = "no_op_count";
   String PARAM_IS_DIRTY = "is_dirty";
   String PARAM_VISIBILITY_HANDLERS_TOTAL_TIME = "visibility_handlers_total_time_ms";

@@ -655,6 +655,9 @@ public class LithoView extends ComponentHost {
         getComponentTree() == null ? null : getComponentTree().getContext().getLogger();
     final PerfEvent perfEvent =
         logger != null ? logger.newPerformanceEvent(FrameworkLogEvents.EVENT_DRAW) : null;
+    if (perfEvent != null) {
+      setPerfEvent(perfEvent);
+    }
 
     super.draw(canvas);
 
