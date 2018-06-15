@@ -251,10 +251,7 @@ public class LithoView extends ComponentHost {
 
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    if (ComponentsConfiguration.doubleMeasureCorrection) {
-      widthMeasureSpec =
-          correctWidthSpecForAndroidDoubleMeasureBug(getResources(), widthMeasureSpec);
-    }
+    widthMeasureSpec = correctWidthSpecForAndroidDoubleMeasureBug(getResources(), widthMeasureSpec);
 
     // mAnimatedWidth/mAnimatedHeight >= 0 if something is driving a width/height animation.
     final boolean animating = mAnimatedWidth != -1 || mAnimatedHeight != -1;

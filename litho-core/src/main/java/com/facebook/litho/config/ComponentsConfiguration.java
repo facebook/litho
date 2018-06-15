@@ -169,9 +169,6 @@ public class ComponentsConfiguration {
    */
   public static boolean useStateHandlers = true;
 
-  /** Enable workaround for double measure with different widths bug in Android. */
-  public static boolean doubleMeasureCorrection = false;
-
   /** Default for ComponentHost#hasOverlappingRendering. */
   public static boolean hostHasOverlappingRendering = true;
 

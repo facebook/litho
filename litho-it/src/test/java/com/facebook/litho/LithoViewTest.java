@@ -75,7 +75,6 @@ public class LithoViewTest {
 
   @After
   public void tearDown() {
-    ComponentsConfiguration.doubleMeasureCorrection = false;
     ComponentsConfiguration.isDebugModeEnabled = ComponentsConfiguration.IS_INTERNAL_BUILD;
   }
 
@@ -224,8 +223,6 @@ public class LithoViewTest {
 
   @Test
   public void testCorrectsDoubleMeasureBug() {
-    ComponentsConfiguration.doubleMeasureCorrection = true;
-
     mLithoView = setupLithoViewForDoubleMeasureTest(411, 2.625f, 1080);
     mLithoView.measure(makeMeasureSpec(1079, EXACTLY), makeMeasureSpec(100, EXACTLY));
 
@@ -235,8 +232,6 @@ public class LithoViewTest {
 
   @Test
   public void testCorrectsDoubleMeasureBugWithAtMost() {
-    ComponentsConfiguration.doubleMeasureCorrection = true;
-
     mLithoView = setupLithoViewForDoubleMeasureTest(411, 2.625f, 1080);
     mLithoView.measure(makeMeasureSpec(1079, AT_MOST), makeMeasureSpec(100, EXACTLY));
 
@@ -246,8 +241,6 @@ public class LithoViewTest {
 
   @Test
   public void testNoCorrectionWhenBugIsNotMatched() {
-    ComponentsConfiguration.doubleMeasureCorrection = true;
-
     mLithoView = setupLithoViewForDoubleMeasureTest(411, 2f, 1080);
     mLithoView.measure(makeMeasureSpec(1079, EXACTLY), makeMeasureSpec(100, EXACTLY));
 
@@ -257,23 +250,10 @@ public class LithoViewTest {
 
   @Test
   public void testNoCorrectionWhenBugIsNotMatched2() {
-    ComponentsConfiguration.doubleMeasureCorrection = true;
-
     mLithoView = setupLithoViewForDoubleMeasureTest(411, 2.625f, 1080);
     mLithoView.measure(makeMeasureSpec(1078, EXACTLY), makeMeasureSpec(100, EXACTLY));
 
     assertThat(mLithoView.getMeasuredWidth()).isEqualTo(1078);
-    assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
-  }
-
-  @Test
-  public void testNoCorrectionWithConfigOff() {
-    ComponentsConfiguration.doubleMeasureCorrection = false;
-
-    mLithoView = setupLithoViewForDoubleMeasureTest(411, 2.625f, 1080);
-    mLithoView.measure(makeMeasureSpec(1079, EXACTLY), makeMeasureSpec(100, EXACTLY));
-
-    assertThat(mLithoView.getMeasuredWidth()).isEqualTo(1079);
     assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
   }
 
