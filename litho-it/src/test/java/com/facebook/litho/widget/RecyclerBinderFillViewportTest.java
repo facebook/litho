@@ -57,7 +57,6 @@ import com.facebook.litho.viewcompat.ViewCreator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -595,10 +594,11 @@ public class RecyclerBinderFillViewportTest {
     verify(layoutInfo).createViewportFiller(anyInt(), anyInt());
   }
 
+  // Parallel viewport fill tests
+
   @SuppressLint("STARVATION")
   @Test
-  public void testDoesNotFillViewportInParallelWithNoPoolConfiguration()
-      throws ExecutionException, InterruptedException {
+  public void testDoesNotFillViewportInParallelWithNoPoolConfiguration() {
     final LayoutInfo layoutInfo = mock(LayoutInfo.class);
     setupBaseLayoutInfoMock(layoutInfo, OrientationHelper.VERTICAL);
 
@@ -643,32 +643,12 @@ public class RecyclerBinderFillViewportTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(250, EXACTLY), null);
 
-    final int expectedWidthSpec = makeSizeSpec(1000, EXACTLY);
-    final int expectedHeightSpec = makeSizeSpec(0, UNSPECIFIED);
-
     verify(executor).submit(any(Callable.class), eq(0));
     verify(executor).submit(any(Callable.class), eq(1));
     verify(executor).submit(any(Callable.class), eq(2));
     verify(executor).submit(any(Callable.class), eq(3));
     verify(executor).submit(any(Callable.class), eq(4));
     verify(executor, never()).submit(any(Callable.class), eq(5));
-
-    assertThat(
-            recyclerBinder
-                .getComponentAt(0)
-                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
-        .isTrue();
-    assertThat(
-            recyclerBinder
-                .getComponentAt(1)
-                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
-        .isTrue();
-    assertThat(
-            recyclerBinder
-                .getComponentAt(2)
-                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
-        .isTrue();
-    assertThat(recyclerBinder.getComponentAt(7)).isNull();
   }
 
   @SuppressLint("STARVATION")
@@ -694,9 +674,6 @@ public class RecyclerBinderFillViewportTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(700, EXACTLY), null);
 
-    final int expectedWidthSpec = makeSizeSpec(1000, EXACTLY);
-    final int expectedHeightSpec = makeSizeSpec(0, UNSPECIFIED);
-
     verify(executor).submit(any(Callable.class), eq(0));
     verify(executor).submit(any(Callable.class), eq(1));
     verify(executor).submit(any(Callable.class), eq(2));
@@ -707,17 +684,6 @@ public class RecyclerBinderFillViewportTest {
     verify(executor).submit(any(Callable.class), eq(7));
     verify(executor).submit(any(Callable.class), eq(8));
     verify(executor, never()).submit(any(Callable.class), eq(9));
-
-    assertThat(
-            recyclerBinder
-                .getComponentAt(8)
-                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
-        .isTrue();
-    assertThat(
-            recyclerBinder
-                .getComponentAt(9)
-                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
-        .isFalse();
   }
 
   @SuppressLint("STARVATION")
@@ -743,21 +709,12 @@ public class RecyclerBinderFillViewportTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(700, EXACTLY), null);
 
-    final int expectedWidthSpec = makeSizeSpec(1000, EXACTLY);
-    final int expectedHeightSpec = makeSizeSpec(0, UNSPECIFIED);
-
     verify(executor).submit(any(Callable.class), eq(0));
     verify(executor).submit(any(Callable.class), eq(1));
     verify(executor).submit(any(Callable.class), eq(2));
     verify(executor).submit(any(Callable.class), eq(3));
     verify(executor).submit(any(Callable.class), eq(4));
     verify(executor, never()).submit(any(Callable.class), eq(5));
-
-    assertThat(
-            recyclerBinder
-                .getComponentAt(4)
-                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
-        .isTrue();
   }
 
   @SuppressLint("STARVATION")
@@ -783,9 +740,6 @@ public class RecyclerBinderFillViewportTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(250, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
-    final int expectedWidthSpec = makeSizeSpec(0, UNSPECIFIED);
-    final int expectedHeightSpec = makeSizeSpec(1000, SizeSpec.EXACTLY);
-
     verify(executor, never()).submit(any(Callable.class), eq(4));
     verify(executor).submit(any(Callable.class), eq(5));
     verify(executor).submit(any(Callable.class), eq(6));
@@ -793,22 +747,6 @@ public class RecyclerBinderFillViewportTest {
     verify(executor).submit(any(Callable.class), eq(8));
     verify(executor).submit(any(Callable.class), eq(9));
     verify(executor, never()).submit(any(Callable.class), eq(10));
-
-    assertThat(
-            recyclerBinder
-                .getComponentAt(5)
-                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
-        .isTrue();
-    assertThat(
-            recyclerBinder
-                .getComponentAt(6)
-                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
-        .isTrue();
-    assertThat(
-            recyclerBinder
-                .getComponentAt(7)
-                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
-        .isTrue();
   }
 
   @SuppressLint("STARVATION")
@@ -874,29 +812,10 @@ public class RecyclerBinderFillViewportTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
-    final int expectedWidthSpec = makeSizeSpec(0, UNSPECIFIED);
-    final int expectedHeightSpec = makeSizeSpec(1000, SizeSpec.EXACTLY);
-
     verify(executor).submit(any(Callable.class), eq(0));
     verify(executor).submit(any(Callable.class), eq(1));
     verify(executor).submit(any(Callable.class), eq(2));
     verify(executor, never()).submit(any(Callable.class), eq(4));
-
-    assertThat(
-            recyclerBinder
-                .getComponentAt(0)
-                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
-        .isTrue();
-    assertThat(
-            recyclerBinder
-                .getComponentAt(1)
-                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
-        .isTrue();
-    assertThat(
-            recyclerBinder
-                .getComponentAt(2)
-                .hasCompatibleLayout(expectedWidthSpec, expectedHeightSpec))
-        .isTrue();
   }
 
   private void fillRecyclerBinderWithComponents(
