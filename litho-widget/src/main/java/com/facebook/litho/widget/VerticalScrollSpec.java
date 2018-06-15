@@ -21,8 +21,8 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.content.Context;
+import android.support.v4.widget.NestedScrollView;
 import android.view.ViewTreeObserver;
-import android.widget.ScrollView;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -142,11 +142,13 @@ public class VerticalScrollSpec {
       final LithoScrollView lithoScrollView,
       @Prop(optional = true) boolean scrollbarEnabled,
       @Prop(optional = true) boolean scrollbarFadingEnabled,
+      @Prop(optional = true) boolean nestedScrollingEnabled,
       @State ComponentTree childComponentTree,
       @State final ScrollPosition scrollPosition) {
     lithoScrollView.mount(childComponentTree, scrollPosition);
     lithoScrollView.setVerticalScrollBarEnabled(scrollbarEnabled);
     lithoScrollView.setScrollbarFadingEnabled(scrollbarFadingEnabled);
+    lithoScrollView.setNestedScrollingEnabled(nestedScrollingEnabled);
   }
 
   @OnUnmount
@@ -164,7 +166,7 @@ public class VerticalScrollSpec {
         || !scrollbarFadingEnabled.getPrevious().equals(scrollbarFadingEnabled.getNext());
   }
 
-  static class LithoScrollView extends ScrollView {
+  static class LithoScrollView extends NestedScrollView {
 
     private final LithoView mLithoView;
 
