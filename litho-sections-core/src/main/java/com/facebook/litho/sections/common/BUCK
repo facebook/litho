@@ -20,6 +20,7 @@ litho_android_library(
     ],
     deps = [
         LITHO_JAVA_TARGET,
+        LITHO_UTILS_TARGET,
         LITHO_SECTIONS_TARGET,
         LITHO_SECTIONS_CONFIG_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,

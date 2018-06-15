@@ -25,6 +25,7 @@ components_robolectric_test(
         LITHO_SECTIONS_ANNOTATIONS_TARGET,
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_UTILS_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
         make_dep_path("litho-sections-widget/src/main/java/com/facebook/litho/sections/widget:widget"),

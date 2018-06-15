@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.common;
 
+import android.support.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.Diff;
 import com.facebook.litho.annotations.Prop;
@@ -23,7 +24,9 @@ import com.facebook.litho.sections.ChangeSet;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.OnDiff;
+import com.facebook.litho.utils.MapDiffUtils;
 import com.facebook.litho.widget.ComponentRenderInfo;
+import java.util.Map;
 
 @DiffSectionSpec
 public class SingleComponentSectionSpec {
@@ -35,7 +38,8 @@ public class SingleComponentSectionSpec {
       @Prop Diff<Component> component,
       @Prop(optional = true) Diff<Boolean> sticky,
       @Prop(optional = true) Diff<Integer> spanSize,
-      @Prop(optional = true) Diff<Boolean> isFullSpan) {
+      @Prop(optional = true) Diff<Boolean> isFullSpan,
+      @Prop(optional = true) Diff<Map<String, Object>> customAttributes) {
 
     if (component.getNext() == null) {
       changeSet.delete(0);
@@ -60,7 +64,7 @@ public class SingleComponentSectionSpec {
     if (component.getPrevious() == null) {
       changeSet.insert(
           0,
-          ComponentRenderInfo.create()
+          addCustomAttributes(ComponentRenderInfo.create(), customAttributes.getNext())
               .component(component.getNext())
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
@@ -86,13 +90,17 @@ public class SingleComponentSectionSpec {
       isPrevFullSpan = isFullSpan.getPrevious();
     }
 
+    final boolean customAttributesEqual =
+        MapDiffUtils.areMapsEqual(customAttributes.getPrevious(), customAttributes.getNext());
+
     if (isPrevSticky != isNextSticky
         || prevSpanSize != nextSpanSize
         || isPrevFullSpan != isNextFullSpan
-        || !component.getPrevious().isEquivalentTo(component.getNext())) {
+        || !component.getPrevious().isEquivalentTo(component.getNext())
+        || !customAttributesEqual) {
       changeSet.update(
           0,
-          ComponentRenderInfo.create()
+          addCustomAttributes(ComponentRenderInfo.create(), customAttributes.getNext())
               .component(component.getNext())
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
@@ -100,5 +108,18 @@ public class SingleComponentSectionSpec {
               .build(),
           context.getTreePropsCopy());
     }
+  }
+
+  private static ComponentRenderInfo.Builder addCustomAttributes(
+      ComponentRenderInfo.Builder builder, @Nullable Map<String, Object> attributes) {
+    if (attributes == null) {
+      return builder;
+    }
+
+    for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+      builder.customAttribute(entry.getKey(), entry.getValue());
+    }
+
+    return builder;
   }
 }
