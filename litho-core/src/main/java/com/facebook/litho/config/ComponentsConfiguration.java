@@ -172,12 +172,6 @@ public class ComponentsConfiguration {
   /** Default for ComponentHost#hasOverlappingRendering. */
   public static boolean hostHasOverlappingRendering = true;
 
-  /**
-   * Don't compute LayoutState in LithoView#onMeasure if measure specs are exact: wait for onLayout
-   * instead.
-   */
-  public static boolean lazyLayoutForExactSpec = false;
-
   /** Enable variable BatchSize for ArrayBatchAllocator */
   public static boolean variableArrayBatchAllocatorEnabled = false;
 

@@ -76,7 +76,6 @@ public class LithoViewTest {
   @After
   public void tearDown() {
     ComponentsConfiguration.doubleMeasureCorrection = false;
-    ComponentsConfiguration.lazyLayoutForExactSpec = false;
     ComponentsConfiguration.isDebugModeEnabled = ComponentsConfiguration.IS_INTERNAL_BUILD;
   }
 
@@ -279,22 +278,7 @@ public class LithoViewTest {
   }
 
   @Test
-  public void testMeasureComputesLayoutStateWhenSpecsAreExactNotInConfig() {
-    ComponentsConfiguration.lazyLayoutForExactSpec = false;
-
-    mLithoView = new LithoView(RuntimeEnvironment.application);
-    mLithoView.setComponent(TestDrawableComponent.create(mLithoView.getComponentContext()).build());
-    mLithoView.measure(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
-
-    assertThat(mLithoView.getMeasuredWidth()).isEqualTo(100);
-    assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
-    assertThat(mLithoView.getComponentTree().getMainThreadLayoutState()).isNotNull();
-  }
-
-  @Test
   public void testMeasureDoesNotComputeLayoutStateWhenSpecsAreExact() {
-    ComponentsConfiguration.lazyLayoutForExactSpec = true;
-
     mLithoView = new LithoView(RuntimeEnvironment.application);
     mLithoView.setComponent(TestDrawableComponent.create(mLithoView.getComponentContext()).build());
     mLithoView.measure(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
@@ -312,8 +296,6 @@ public class LithoViewTest {
 
   @Test
   public void testMeasureComputesLayoutStateWhenSpecsAreNotExact() {
-    ComponentsConfiguration.lazyLayoutForExactSpec = true;
-
     mLithoView = new LithoView(RuntimeEnvironment.application);
     mLithoView.setComponent(
         TestDrawableComponent.create(mLithoView.getComponentContext()).heightPx(100).build());

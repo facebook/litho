@@ -291,14 +291,15 @@ public class LithoView extends ComponentHost {
       mTemporaryDetachedComponent = null;
     }
 
-    if (ComponentsConfiguration.lazyLayoutForExactSpec) {
-      if (!mForceLayout
-          && SizeSpec.getMode(widthMeasureSpec) == SizeSpec.EXACTLY
-          && SizeSpec.getMode(heightMeasureSpec) == SizeSpec.EXACTLY) {
-        mDoMeasureInLayout = true;
-        setMeasuredDimension(width, height);
-        return;
-      }
+    if (!mForceLayout
+        && SizeSpec.getMode(widthMeasureSpec) == SizeSpec.EXACTLY
+        && SizeSpec.getMode(heightMeasureSpec) == SizeSpec.EXACTLY) {
+      // If the measurements are exact, postpone LayoutState calculation from measure to layout.
+      // This is part of the fix for android's double measure bug. Doing this means that if we get
+      // remeasured with different exact measurements, we don't compute two layouts.
+      mDoMeasureInLayout = true;
+      setMeasuredDimension(width, height);
+      return;
     }
 
     mIsMeasuring = true;
