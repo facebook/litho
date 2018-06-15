@@ -651,10 +651,28 @@ public class LithoView extends ComponentHost {
 
   @Override
   public void draw(Canvas canvas) {
+    final ComponentsLogger logger =
+        getComponentTree() == null ? null : getComponentTree().getContext().getLogger();
+    final PerfEvent perfEvent =
+        logger != null ? logger.newPerformanceEvent(FrameworkLogEvents.EVENT_DRAW) : null;
+
     super.draw(canvas);
 
     if (mOnPostDrawListener != null) {
+      if (perfEvent != null) {
+        perfEvent.markerPoint("POST_DRAW_START");
+      }
       mOnPostDrawListener.onPostDraw();
+      if (perfEvent != null) {
+        perfEvent.markerPoint("POST_DRAW_END");
+      }
+    }
+
+    if (perfEvent != null) {
+      LogTreePopulator.populatePerfEventFromLogger(getComponentContext(), logger, perfEvent);
+      perfEvent.markerAnnotate(
+          FrameworkLogEvents.PARAM_ROOT_COMPONENT, getComponentTree().getRoot().getSimpleName());
+      logger.logPerfEvent(perfEvent);
     }
   }
 

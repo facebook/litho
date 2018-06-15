@@ -42,6 +42,7 @@ public interface FrameworkLogEvents {
   int EVENT_SECTIONS_ON_CREATE_CHILDREN = 14;
   int EVENT_SECTIONS_SET_ROOT = 15;
   int EVENT_CALCULATE_LAYOUT_STATE = 16;
+  int EVENT_DRAW = 17;
 
   @IntDef({
     FrameworkLogEvents.EVENT_CREATE_LAYOUT,
@@ -58,6 +59,7 @@ public interface FrameworkLogEvents {
     FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN,
     FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT,
     FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE,
+    FrameworkLogEvents.EVENT_DRAW,
   })
   @Retention(RetentionPolicy.SOURCE)
   @interface LogEventId {}
