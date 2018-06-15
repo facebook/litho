@@ -1,9 +1,10 @@
+# BUILD FILE SYNTAX: SKYLARK
 # Copyright (c) 2017-present, Facebook, Inc.
 #
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-include_defs("//LITHO_DEFS.bzl")
+load("//:LITHO_DEFS.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_BUILD_CONFIG_TARGET", "LITHO_JAVA_TARGET", "LITHO_SECTIONS_ANNOTATIONS_TARGET", "LITHO_SECTIONS_COMMON_TARGET", "LITHO_SECTIONS_TARGET", "LITHO_SECTIONS_WIDGET_TARGET", "LITHO_VISIBILITY", "LITHO_WIDGET_TARGET", "LITHO_YOGA_TARGET", "fb_core_android_library", "litho_android_library")
 
 litho_android_library(
     name = "components",

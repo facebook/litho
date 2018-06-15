@@ -1,4 +1,5 @@
-include_defs("//LITHO_DEFS.bzl")
+# BUILD FILE SYNTAX: SKYLARK
+load("//:LITHO_DEFS.bzl", "LITHO_BUILD_CONFIG_TARGET", "LITHO_GUAVA_TARGET", "LITHO_JAVA_TARGET", "LITHO_ROBOLECTRIC_TARGET", "LITHO_TESTING_TARGET", "LITHO_TEST_RES", "make_dep_path", "components_robolectric_test")
 
 components_robolectric_test(
     name = "viewtree",
