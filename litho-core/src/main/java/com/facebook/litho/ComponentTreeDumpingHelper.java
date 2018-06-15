@@ -32,9 +32,12 @@ public class ComponentTreeDumpingHelper {
 
   /** Dumps the tree related to the provided component context */
   @Nullable
-  public static String dumpContextTree(ComponentContext componentContext) {
+  public static String dumpContextTree(@Nullable ComponentContext componentContext) {
     if (!ComponentsConfiguration.isDebugModeEnabled) {
       return "Dumping of the component" + " tree is not support on non-internal builds";
+    }
+    if (componentContext == null) {
+      return "ComponentContext is null";
     }
 
     // Getting the base of the tree
