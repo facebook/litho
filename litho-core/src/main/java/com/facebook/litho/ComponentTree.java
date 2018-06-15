@@ -247,7 +247,7 @@ public class ComponentTree {
 
   protected ComponentTree(Builder builder) {
     mContext = ComponentContext.withComponentTree(builder.context, this);
-    mRoot = builder.root;
+    mRoot = wrapRootInErrorBoundary(builder.root);
 
     mIncrementalMountEnabled = builder.incrementalMountEnabled;
     mUseExactRectForVisibilityEvents = builder.useExactRectForVisibilityEvents;
@@ -1412,16 +1412,25 @@ public class ComponentTree {
       String extraAttribution,
       @Nullable TreeProps treeProps) {
 
+    setRootAndSizeSpecInternal(
+        wrapRootInErrorBoundary(root),
+        widthSpec,
+        heightSpec,
+        isAsync,
+        output,
+        source,
+        extraAttribution,
+        treeProps);
+  }
+
+  private Component wrapRootInErrorBoundary(Component originalRoot) {
     // If a rootWrapperComponentFactory is provided, we use it to create a new root
     // component.
     final RootWrapperComponentFactory rootWrapperComponentFactory =
         ErrorBoundariesConfiguration.rootWrapperComponentFactory;
-    if (root != null && rootWrapperComponentFactory != null) {
-      root = rootWrapperComponentFactory.createWrapper(mContext, root);
-    }
-
-    setRootAndSizeSpecInternal(
-        root, widthSpec, heightSpec, isAsync, output, source, extraAttribution, treeProps);
+    return rootWrapperComponentFactory == null
+        ? originalRoot
+        : rootWrapperComponentFactory.createWrapper(mContext, originalRoot);
   }
 
   private void setRootAndSizeSpecInternal(
