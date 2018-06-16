@@ -1,10 +1,9 @@
-# BUILD FILE SYNTAX: SKYLARK
 # Copyright (c) 2017-present, Facebook, Inc.
 #
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//:LITHO_DEFS.bzl", "LITHO_VISIBILITY", "fb_java_library")
+include_defs("//LITHO_DEFS.bzl")
 
 fb_java_library(
     name = "resources",
