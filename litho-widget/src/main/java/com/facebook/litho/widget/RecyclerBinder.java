@@ -62,6 +62,7 @@ import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListene
 import com.facebook.litho.widget.ComponentTreeHolder.RenderState;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Field;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,6 +88,8 @@ public class RecyclerBinder
   private static final Size sDummySize = new Size();
   private static final String TAG = RecyclerBinder.class.getSimpleName();
   private static final int POST_UPDATE_VIEWPORT_AND_COMPUTE_RANGE_MAX_ATTEMPTS = 3;
+
+  private static Field mViewHolderField;
 
   @GuardedBy("this")
   private final List<ComponentTreeHolder> mComponentTreeHolders = new ArrayList<>();
@@ -2777,6 +2780,31 @@ public class RecyclerBinder
     public boolean isFullSpan() {
       return mIsFullSpan;
     }
+
+    @Override
+    public boolean hasValidAdapterPosition() {
+      final RecyclerView.ViewHolder viewHolder = getViewHolderFromLayoutParam(this);
+      // If adapter position is invalid it means that this item is being removed in pre-layout
+      // phase of RecyclerView layout when predictive animation is turned on.
+      return viewHolder != null && viewHolder.getAdapterPosition() == RecyclerView.NO_POSITION;
+    }
+  }
+
+  private static @Nullable RecyclerView.ViewHolder getViewHolderFromLayoutParam(
+      RecyclerView.LayoutParams layoutParams) {
+    try {
+      if (mViewHolderField == null) {
+        mViewHolderField = RecyclerView.LayoutParams.class.getDeclaredField("mViewHolder");
+        mViewHolderField.setAccessible(true);
+      }
+
+      final RecyclerView.ViewHolder viewHolder =
+          (RecyclerView.ViewHolder) mViewHolderField.get(layoutParams);
+
+      return viewHolder;
+    } catch (Exception ignore) {
+    }
+    return null;
   }
 
   private ComponentTreeHolder createComponentTreeHolder(RenderInfo renderInfo) {

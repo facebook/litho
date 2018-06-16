@@ -231,6 +231,11 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
       public int getHeightMeasureSpec() {
         return mOverrideHeightMeasureSpec;
       }
+
+      @Override
+      public boolean hasValidAdapterPosition() {
+        return false;
+      }
     }
   }
 

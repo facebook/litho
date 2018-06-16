@@ -886,15 +886,24 @@ public class LithoView extends ComponentHost {
       return;
     }
 
+    final LayoutParams layoutParams = getLayoutParams();
+    final boolean isViewBeingRemovedInPreLayout =
+        layoutParams instanceof LayoutManagerOverrideParams
+            && ((LayoutManagerOverrideParams) layoutParams).hasValidAdapterPosition();
+
+    if (isViewBeingRemovedInPreLayout) {
+      return;
+    }
+
     final StringBuilder messageBuilder = new StringBuilder();
     messageBuilder.append("[");
     messageBuilder.append(mInvalidStateLogId);
-    messageBuilder.append("] 0-height: view=");
-    messageBuilder.append(LithoViewTestHelper.toDebugString(this));
-    messageBuilder.append(", currentComponent=");
+    messageBuilder.append("] 0-height: current=");
     messageBuilder.append((mComponentTree == null ? "" : mComponentTree.getSimpleName()));
-    messageBuilder.append(", previousComponent=");
+    messageBuilder.append(", previous=");
     messageBuilder.append(mPreviousComponentSimpleName);
+    messageBuilder.append(", view=");
+    messageBuilder.append(LithoViewTestHelper.toDebugString(this));
     logger.emitMessage(ComponentsLogger.LogLevel.ERROR, messageBuilder.toString());
   }
 
@@ -963,6 +972,9 @@ public class LithoView extends ComponentHost {
     int getWidthMeasureSpec();
 
     int getHeightMeasureSpec();
+
+    // TODO T30527513 Remove after fixing 0 height issues.
+    boolean hasValidAdapterPosition();
   }
 
   @Override

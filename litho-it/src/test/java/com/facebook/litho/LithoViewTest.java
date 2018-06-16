@@ -34,7 +34,6 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Rect;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -329,6 +328,11 @@ public class LithoViewTest {
     @Override
     public int getHeightMeasureSpec() {
       return mHeightMeasureSpec;
+    }
+
+    @Override
+    public boolean hasValidAdapterPosition() {
+      return false;
     }
   }
 }
