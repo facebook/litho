@@ -135,6 +135,11 @@ public class ViewRenderInfo extends BaseRenderInfo {
     }
 
     @Override
+    public Builder isFullSpan(boolean isFullSpan) {
+      throw new UnsupportedOperationException("ViewRenderInfo does not support isFullSpan.");
+    }
+
+    @Override
     void release() {
       super.release();
       viewBinder = null;
