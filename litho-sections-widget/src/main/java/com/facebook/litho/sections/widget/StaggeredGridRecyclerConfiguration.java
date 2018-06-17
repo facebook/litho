@@ -104,7 +104,9 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
                 mRecyclerBinderConfiguration.getThreadPoolForParallelFillViewportConfig())
             .enableStableIds(mRecyclerBinderConfiguration.getEnableStableIds())
             .build(c);
-    return (T) new SectionBinderTarget(recyclerBinder);
+    return (T)
+        new SectionBinderTarget(
+            recyclerBinder, mRecyclerBinderConfiguration.getUseAsyncMutations());
   }
 
   @Override

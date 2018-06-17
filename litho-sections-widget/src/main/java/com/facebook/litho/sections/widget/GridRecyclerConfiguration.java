@@ -109,7 +109,9 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
                 mRecyclerBinderConfiguration.getThreadPoolForParallelFillViewportConfig())
             .enableStableIds(mRecyclerBinderConfiguration.getEnableStableIds())
             .build(c);
-    return (T) new SectionBinderTarget(recyclerBinder);
+    return (T)
+        new SectionBinderTarget(
+            recyclerBinder, mRecyclerBinderConfiguration.getUseAsyncMutations());
   }
 
   @Override
