@@ -15,6 +15,7 @@
  */
 package com.facebook.litho;
 
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.animation.AnimatedProperties;
@@ -516,12 +517,14 @@ public abstract class Transition {
    */
   public static class TimingTransitionAnimator implements Transition.TransitionAnimator {
 
+    private static final Interpolator DEFAULT_INTERPOLATOR = new AccelerateDecelerateInterpolator();
+
     final int mDurationMs;
     final Interpolator mInterpolator;
 
-    /** Create timing animator with linear interpolation. */
+    /** Create timing animator with accelerate decelerate interpolation. */
     public TimingTransitionAnimator(int durationMs) {
-      this(durationMs, null);
+      this(durationMs, DEFAULT_INTERPOLATOR);
     }
 
     /** Create timing animator with custom Android interpolator. */
