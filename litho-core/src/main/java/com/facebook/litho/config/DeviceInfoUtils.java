@@ -33,7 +33,7 @@ public class DeviceInfoUtils {
    */
   public static final int DEVICEINFO_UNKNOWN = -1;
 
-  public static final int NUM_CORES_NOT_SET = -1;
+  public static final int NUM_CORES_NOT_SET = -2;
   private static int sNumCores = NUM_CORES_NOT_SET;
 
   /**
