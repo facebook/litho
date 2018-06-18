@@ -37,7 +37,7 @@ class TestComponentContext extends ComponentContext {
   @Override
   public InternalNode newLayoutBuilder(
       Component component, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-    if (component.isInternalComponent()) {
+    if (component.canResolve()) {
       return super.newLayoutBuilder(component, defStyleAttr, defStyleRes);
     }
 
@@ -51,7 +51,7 @@ class TestComponentContext extends ComponentContext {
 
   @Override
   InternalNode resolveLayout(Component component) {
-    if (component.isInternalComponent()) {
+    if (component.canResolve()) {
       return super.resolveLayout(component);
     }
 

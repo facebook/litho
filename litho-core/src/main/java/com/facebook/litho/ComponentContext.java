@@ -349,7 +349,7 @@ public class ComponentContext extends ContextWrapper {
     }
 
     final InternalNode node = (InternalNode) component.resolve(component.getScopedContext());
-    if (component.isInternalComponent()) {
+    if (component.canResolve()) {
       final CommonPropsCopyable props = component.getCommonPropsCopyable();
       if (props != null) {
         props.copyInto(component.getScopedContext(), node);
@@ -357,15 +357,6 @@ public class ComponentContext extends ContextWrapper {
     }
 
     return node;
-  }
-
-  InternalNode resolveInternalComponent(Component component) {
-    if (!component.isInternalComponent()) {
-      throw new IllegalArgumentException("Component must be internal!");
-    }
-
-    setTreeProps(component.getScopedContext().getTreePropsCopy());
-    return (InternalNode) component.resolve(this);
   }
 
   int getWidthSpec() {

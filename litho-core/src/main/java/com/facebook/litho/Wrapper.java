@@ -37,7 +37,7 @@ public final class Wrapper extends Component {
   }
 
   @Override
-  protected boolean isInternalComponent() {
+  protected boolean canResolve() {
     return true;
   }
 

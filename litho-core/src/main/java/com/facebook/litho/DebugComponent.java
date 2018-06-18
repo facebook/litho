@@ -215,10 +215,6 @@ public final class DebugComponent {
     return mNode.getContext();
   }
 
-  public boolean isInternalComponent() {
-    return getComponent().isInternalComponent();
-  }
-
   /**
    * @return True if this not has layout information attached to it (backed by a Yoga node)
    */
@@ -347,6 +343,10 @@ public final class DebugComponent {
 
   public String getGlobalKey() {
     return mGlobalKey;
+  }
+
+  public boolean canResolve() {
+    return getComponent().canResolve();
   }
 
   public boolean isRoot() {

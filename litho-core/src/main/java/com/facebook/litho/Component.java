@@ -561,7 +561,11 @@ public abstract class Component extends ComponentLifecycle
     // Do nothing by default
   }
 
-  protected boolean isInternalComponent() {
+  /**
+   * Indicate that this component implements its own {@link #resolve(ComponentContext)} logic
+   * instead of going through {@link #createComponentLayout(ComponentContext)}.
+   */
+  protected boolean canResolve() {
     return false;
   }
 
