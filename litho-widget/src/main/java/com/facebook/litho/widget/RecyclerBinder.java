@@ -2681,8 +2681,11 @@ public class RecyclerBinder
               new LithoView.OnPostDrawListener() {
                 @Override
                 public void onPostDraw() {
-                  notifyItemRenderCompleteAt(normalizedPosition, SystemClock.uptimeMillis());
-                  lithoView.setOnPostDrawListener(null);
+                  final int position = mMountedView.getChildAdapterPosition(lithoView);
+                  if (position != RecyclerView.NO_POSITION) {
+                    notifyItemRenderCompleteAt(position, SystemClock.uptimeMillis());
+                    lithoView.setOnPostDrawListener(null);
+                  }
                 }
               });
         }
