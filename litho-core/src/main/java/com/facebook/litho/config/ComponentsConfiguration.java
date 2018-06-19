@@ -180,4 +180,6 @@ public class ComponentsConfiguration {
 
   /** Runtime Size for ArrayBatchAllocation Batch Size */
   public static int arrayBatchAllocationRuntimeSize = 200;
+
+  public static boolean saveMeasuredSizesInMeasure = false;
 }

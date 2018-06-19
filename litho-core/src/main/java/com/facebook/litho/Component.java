@@ -357,6 +357,10 @@ public abstract class Component extends ComponentLifecycle
     if (Component.isLayoutSpec(this)) {
       mLastMeasuredLayout.setLastWidthSpec(widthSpec);
       mLastMeasuredLayout.setLastHeightSpec(heightSpec);
+      if (ComponentsConfiguration.saveMeasuredSizesInMeasure) {
+        mLastMeasuredLayout.setLastMeasuredWidth(mLastMeasuredLayout.getWidth());
+        mLastMeasuredLayout.setLastMeasuredHeight(mLastMeasuredLayout.getHeight());
+      }
     }
 
     outputSize.width = mLastMeasuredLayout.getWidth();
