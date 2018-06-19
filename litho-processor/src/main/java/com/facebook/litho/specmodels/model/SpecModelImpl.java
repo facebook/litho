@@ -619,8 +619,8 @@ public final class SpecModelImpl implements SpecModel {
       @Nullable SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
       ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
-    final Set<InjectPropModel> props =
-        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
+
+    final List<InjectPropModel> props = new ArrayList<>();
 
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
       for (MethodParamModel param : delegateMethod.methodParams) {
@@ -679,7 +679,7 @@ public final class SpecModelImpl implements SpecModel {
       }
     }
 
-    return ImmutableList.copyOf(new ArrayList<>(props));
+    return ImmutableList.copyOf(props);
   }
 
   private static ImmutableList<InjectPropModel> getInjectProps(
@@ -696,7 +696,11 @@ public final class SpecModelImpl implements SpecModel {
                         rawInjectProps.get(i), cachedPropNames, i + propOffset))
             .collect(Collectors.toList());
 
-    return ImmutableList.copyOf(renamedProps);
+    final Set<InjectPropModel> dedupedRenamedProps =
+        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
+    dedupedRenamedProps.addAll(renamedProps);
+
+    return ImmutableList.copyOf(new ArrayList<>(dedupedRenamedProps));
   }
 
   private static ImmutableList<StateParamModel> getStateValues(
