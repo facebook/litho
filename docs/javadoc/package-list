@@ -28,6 +28,7 @@ com.facebook.litho.testing.espresso
 com.facebook.litho.testing.espresso.rules
 com.facebook.litho.testing.eventhandler
 com.facebook.litho.testing.helper
+com.facebook.litho.testing.logging
 com.facebook.litho.testing.sections
 com.facebook.litho.testing.shadows
 com.facebook.litho.testing.specmodels
