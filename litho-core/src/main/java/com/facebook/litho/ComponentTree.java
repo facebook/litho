@@ -1616,11 +1616,16 @@ public class ComponentTree {
 
     List<Component> components = null;
 
+    final boolean noCompatibleComponent;
+    int rootWidth = 0;
+    int rootHeight = 0;
     boolean layoutStateUpdated = false;
     synchronized (this) {
       // Make sure some other thread hasn't computed a compatible layout in the meantime.
-      if (!hasCompatibleComponentAndSpec()
-          && isCompatibleSpec(localLayoutState, mWidthSpec, mHeightSpec)) {
+      noCompatibleComponent =
+          !hasCompatibleComponentAndSpec()
+              && isCompatibleSpec(localLayoutState, mWidthSpec, mHeightSpec);
+      if (noCompatibleComponent) {
 
         if (localLayoutState != null) {
           final StateHandler layoutStateStateHandler =
@@ -1632,8 +1637,8 @@ public class ComponentTree {
           }
 
           if (mMeasureListener != null) {
-            mMeasureListener.onSetRootAndSizeSpec(
-                localLayoutState.getWidth(), localLayoutState.getHeight());
+            rootWidth = localLayoutState.getWidth();
+            rootHeight = localLayoutState.getHeight();
           }
 
           components = new ArrayList<>(localLayoutState.getComponents());
@@ -1647,6 +1652,10 @@ public class ComponentTree {
         localLayoutState = tmp;
         layoutStateUpdated = true;
       }
+    }
+
+    if (noCompatibleComponent && mMeasureListener != null) {
+      mMeasureListener.onSetRootAndSizeSpec(rootWidth, rootHeight);
     }
 
     if (components != null) {
