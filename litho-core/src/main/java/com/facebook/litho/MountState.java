@@ -2109,18 +2109,20 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
       for (int i = 0; i < viewGroup.getChildCount(); i++) {
         final View childView = viewGroup.getChildAt(i);
+        final int translationX = (int) childView.getTranslationX();
+        final int translationY = (int) childView.getTranslationY();
+        final int left = childView.getLeft() + translationX;
+        final int top = childView.getTop() + translationY;
+        final int right = childView.getRight() + translationX;
+        final int bottom = childView.getBottom() + translationY;
 
-        if (localVisibleRect.intersects(
-            childView.getLeft(),
-            childView.getTop(),
-            childView.getRight(),
-            childView.getBottom())) {
+        if (localVisibleRect.intersects(left, top, right, bottom)) {
           final Rect rect = ComponentsPools.acquireRect();
           rect.set(
-              Math.max(0, localVisibleRect.left - childView.getLeft()),
-              Math.max(0, localVisibleRect.top - childView.getTop()),
-              childView.getWidth() - Math.max(0, childView.getRight() - localVisibleRect.right),
-              childView.getHeight() - Math.max(0, childView.getBottom() - localVisibleRect.bottom));
+              Math.max(0, localVisibleRect.left - left),
+              Math.max(0, localVisibleRect.top - top),
+              childView.getWidth() - Math.max(0, right - localVisibleRect.right),
+              childView.getHeight() - Math.max(0, bottom - localVisibleRect.bottom));
 
           mountViewIncrementally(childView, rect, processVisibilityOutputs);
 

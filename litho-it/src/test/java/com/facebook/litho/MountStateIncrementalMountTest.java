@@ -450,6 +450,8 @@ public class MountStateIncrementalMountTest {
     when(mountedView.getChildCount()).thenReturn(3);
 
     final LithoView childView1 = getMockLithoViewWithBounds(new Rect(5, 10, 20, 30));
+    when(childView1.getTranslationX()).thenReturn(5.0f);
+    when(childView1.getTranslationY()).thenReturn(-10.0f);
     when(mountedView.getChildAt(0)).thenReturn(childView1);
 
     final LithoView childView2 = getMockLithoViewWithBounds(new Rect(10, 10, 50, 60));
@@ -469,7 +471,7 @@ public class MountStateIncrementalMountTest {
               @Override
               public Object answer(InvocationOnMock invocation) throws Throwable {
                 Rect rect = (Rect) invocation.getArguments()[0];
-                if (!rect.equals(new Rect(10, 5, 15, 20))) {
+                if (!rect.equals(new Rect(5, 15, 15, 20))) {
                   fail();
                 }
                 return null;
