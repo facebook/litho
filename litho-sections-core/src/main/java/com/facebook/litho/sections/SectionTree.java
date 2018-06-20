@@ -807,7 +807,10 @@ public class SectionTree {
       if (attribution != null) {
         ComponentsSystrace.beginSection("extra:" + attribution);
       }
-      final String name = mNextSection != null ? mNextSection.getSimpleName() : "<null>";
+      final String name;
+      synchronized (this) {
+        name = mNextSection != null ? mNextSection.getSimpleName() : "<null>";
+      }
       ComponentsSystrace.beginSection(
           name
               + "_applyNewChangeSet_"
@@ -815,7 +818,10 @@ public class SectionTree {
     }
 
     if (SectionsDebug.ENABLED) {
-      final String name = mNextSection != null ? mNextSection.getSimpleName() : "<null>";
+      final String name;
+      synchronized (this) {
+        name = mNextSection != null ? mNextSection.getSimpleName() : "<null>";
+      }
       Log.d(
           SectionsDebug.TAG,
           "=== NEW CHANGE SET ("
