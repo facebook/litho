@@ -20,6 +20,7 @@
   - id: border
   - id: recycler-collection-component
   - id: transition-animations
+  - id: tooltips
   - id: glossary
 - title: Handling Events
   items:
