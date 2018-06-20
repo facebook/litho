@@ -23,12 +23,14 @@ class ColorComponentSpec {
   @OnCreateLayout
   static Component onCreateLayout(
       Context c,
-      @Prop EventHandler colorChangedHandler,
       @Prop int color) {
     ...
-    ColorComponent.dispatchColorChangedEvent(
-        colorChangedHandler,
-        color);
+    EventHandler handler = ColorComponent.getColorChangedEventHandler(c);
+    if (handler != null) {
+      ColorComponent.dispatchColorChangedEvent(
+          colorChangedHandler,
+          color);
+    }
     ...
   }
 }
@@ -99,7 +101,7 @@ class FacePileComponentSpec {
               .uri(face)
               .clickHandler(FacePileComponent.onFaceClicked(c, face));
     }
-    
+
     return builder.build();
   }
 
