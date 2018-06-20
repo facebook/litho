@@ -16,11 +16,14 @@
 
 package com.facebook.litho;
 
+import static android.view.View.MeasureSpec.EXACTLY;
+import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.powermock.reflect.Whitebox.getInternalState;
 
+import android.graphics.Color;
 import android.support.v4.util.LongSparseArray;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -132,12 +135,8 @@ public class MountStateRemountTest {
 
   @Test
   public void testRemountNewLayoutState() {
-    final TestComponent component1 = create(mContext)
-        .unique()
-        .build();
-    final TestComponent component2 = create(mContext)
-        .unique()
-        .build();
+    final TestComponent component1 = create(mContext).color(Color.RED).build();
+    final TestComponent component2 = create(mContext).color(Color.BLUE).build();
     final TestComponent component3 = create(mContext)
         .unique()
         .build();
@@ -172,6 +171,31 @@ public class MountStateRemountTest {
     assertThat(component2.isMounted()).isFalse();
     assertThat(component3.isMounted()).isTrue();
     assertThat(component4.isMounted()).isTrue();
+  }
+
+  @Test
+  public void testRemountAfterSettingNewRootTwice() {
+    final TestComponent component1 =
+        create(mContext).color(Color.RED).returnSelfInMakeShallowCopy().build();
+    final TestComponent component2 =
+        create(mContext).returnSelfInMakeShallowCopy().color(Color.BLUE).build();
+
+    final LithoView lithoView = new LithoView(mContext);
+    final ComponentTree componentTree =
+        ComponentTree.create(mContext, Column.create(mContext).child(component1).build()).build();
+    mountComponent(
+        lithoView, componentTree, makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
+
+    assertThat(component1.isMounted()).isTrue();
+
+    componentTree.setRootAndSizeSpec(
+        Column.create(mContext).child(component2).build(),
+        makeMeasureSpec(50, EXACTLY),
+        makeMeasureSpec(50, EXACTLY));
+
+    componentTree.setSizeSpec(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
+
+    assertThat(component2.isMounted()).isTrue();
   }
 
   @Test

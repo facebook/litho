@@ -48,7 +48,7 @@ public class TestComponentTree extends ComponentTree {
       int widthSpec,
       int heightSpec,
       boolean diffingEnabled,
-      @Nullable DiffNode diffNode,
+      @Nullable LayoutState previousLayoutState,
       TreeProps treeProps,
       @LayoutState.CalculateLayoutSource int source,
       String extraAttribution) {
@@ -61,7 +61,7 @@ public class TestComponentTree extends ComponentTree {
         widthSpec,
         heightSpec,
         diffingEnabled,
-        diffNode,
+        previousLayoutState,
         false /* canPrefetchDisplayLists */,
         false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */,

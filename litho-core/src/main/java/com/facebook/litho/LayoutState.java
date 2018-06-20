@@ -139,6 +139,9 @@ class LayoutState {
         }
       };
 
+  private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
+  private static final int NO_PREVIOUS_LAYOUT_STATE_ID = -1;
+
   private final Map<String, Rect> mComponentKeyToBounds = new HashMap<>();
   private final List<Component> mComponents = new ArrayList<>();
 
@@ -193,6 +196,9 @@ class LayoutState {
 
   private boolean mShouldGenerateDiffTree = false;
   private int mComponentTreeId = -1;
+  private int mId;
+  // Id of the layout state (if any) that was used in comparisons with this layout state.
+  private int mPreviousLayoutStateId = NO_PREVIOUS_LAYOUT_STATE_ID;
 
   private AccessibilityManager mAccessibilityManager;
   private boolean mAccessibilityEnabled = false;
@@ -218,6 +224,7 @@ class LayoutState {
 
   void init(ComponentContext context) {
     mContext = context;
+    mId = sIdGenerator.getAndIncrement();
     mStateHandler = mContext.getStateHandler();
     mReferenceCount.set(1);
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
@@ -1154,7 +1161,7 @@ class LayoutState {
       int widthSpec,
       int heightSpec,
       boolean shouldGenerateDiffTree,
-      DiffNode previousDiffTreeRoot,
+      @Nullable LayoutState previousLayoutState,
       boolean canPrefetchDisplayLists,
       boolean canCacheDrawingDisplayLists,
       boolean clipChildren,
@@ -1197,6 +1204,8 @@ class LayoutState {
       layoutState.clearComponents();
       layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
       layoutState.mComponentTreeId = componentTreeId;
+      layoutState.mPreviousLayoutStateId =
+          previousLayoutState != null ? previousLayoutState.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
       layoutState.mAccessibilityManager =
           (AccessibilityManager) c.getSystemService(ACCESSIBILITY_SERVICE);
       layoutState.mAccessibilityEnabled = isAccessibilityEnabled(layoutState.mAccessibilityManager);
@@ -1213,10 +1222,10 @@ class LayoutState {
                   c,
                   component,
                   null, // nestedTreeHolder is null because this is measuring the root component
-                        // tree.
+                  // tree.
                   widthSpec,
                   heightSpec,
-                  previousDiffTreeRoot)
+                  previousLayoutState != null ? previousLayoutState.mDiffTreeRoot : null)
               : component.mLayoutCreatedInWillRender;
 
       switch (SizeSpec.getMode(widthSpec)) {
@@ -2026,6 +2035,18 @@ class LayoutState {
     return mComponentTreeId;
   }
 
+  /** Id of this {@link LayoutState}. */
+  int getId() {
+    return mId;
+  }
+
+  /**
+   * Id of the {@link LayoutState} that was compared to when calculating this {@link LayoutState}.
+   */
+  int getPreviousLayoutStateId() {
+    return mPreviousLayoutStateId;
+  }
+
   /**
    * See {@link LayoutState#acquireRef} Call this when you are done using the reference to the
    * LayoutState.
@@ -2048,6 +2069,8 @@ class LayoutState {
       mCurrentHostMarker = -1;
       mCurrentHostOutputPosition = -1;
       mComponentTreeId = -1;
+      mId = -1;
+      mPreviousLayoutStateId = NO_PREVIOUS_LAYOUT_STATE_ID;
 
       mShouldDuplicateParentState = true;
       mClipChildren = true;

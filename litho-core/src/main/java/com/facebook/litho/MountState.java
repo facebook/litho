@@ -299,7 +299,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         } else if (isMounted) {
           if (mIsDirty) {
             final boolean useUpdateValueFromLayoutOutput =
-                (componentTreeId >= 0) && (componentTreeId == mLastMountedComponentTreeId);
+                mLastMountedLayoutState != null
+                    && mLastMountedLayoutState.getId() == layoutState.getPreviousLayoutStateId();
 
             final long startTime = System.nanoTime();
             final String transitionKey = currentMountItem.getTransitionKey();

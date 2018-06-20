@@ -42,6 +42,11 @@ public class TestDrawableComponent extends TestComponent {
 
   private final long mProperties;
 
+  private int color = Color.BLACK;
+  private int measuredWidth = -1;
+  private int measuredHeight = -1;
+  private boolean mReturnSelfInMakeShallowCopy;
+
   private TestDrawableComponent(long properties) {
     super("TestDrawableComponent");
     mProperties = properties;
@@ -132,6 +137,15 @@ public class TestDrawableComponent extends TestComponent {
   @Override
   public MountType getMountType() {
     return MountType.DRAWABLE;
+  }
+
+  @Override
+  public Component makeShallowCopy() {
+    if (mReturnSelfInMakeShallowCopy) {
+      return this;
+    }
+
+    return super.makeShallowCopy();
   }
 
   public static Builder create(
@@ -232,10 +246,6 @@ public class TestDrawableComponent extends TestComponent {
     return builder;
   }
 
-  int color = Color.BLACK;
-  int measuredWidth = -1;
-  int measuredHeight = -1;
-
   @Override
   public int hashCode() {
     return super.hashCode() + color;
@@ -285,6 +295,11 @@ public class TestDrawableComponent extends TestComponent {
 
     public Builder unique() {
       mComponent.mIsUnique = true;
+      return this;
+    }
+
+    public Builder returnSelfInMakeShallowCopy() {
+      mComponent.mReturnSelfInMakeShallowCopy = true;
       return this;
     }
 
