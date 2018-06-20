@@ -91,9 +91,10 @@ public class VerticalScrollSpec {
       int heightSpec,
       Size size,
       @Prop Component childComponent,
+      @Prop(optional = true) boolean fillViewport,
       @State ComponentTree childComponentTree) {
     measureVerticalScroll(
-        widthSpec, heightSpec, size, childComponentTree, childComponent, null, null);
+        widthSpec, heightSpec, size, childComponentTree, childComponent, fillViewport, null, null);
   }
 
   @OnBoundsDefined
@@ -101,6 +102,7 @@ public class VerticalScrollSpec {
       ComponentContext c,
       ComponentLayout layout,
       @Prop Component childComponent,
+      @Prop(optional = true) boolean fillViewport,
       @State ComponentTree childComponentTree,
       Output<Integer> contentWidth,
       Output<Integer> contentHeight) {
@@ -110,6 +112,7 @@ public class VerticalScrollSpec {
         new Size(),
         childComponentTree,
         childComponent,
+        fillViewport,
         contentWidth,
         contentHeight);
   }
@@ -120,6 +123,7 @@ public class VerticalScrollSpec {
       Size size,
       ComponentTree childComponentTree,
       Component childComponent,
+      boolean fillViewport,
       @Nullable Output<Integer> contentWidth,
       @Nullable Output<Integer> contentHeight) {
     childComponentTree.setRootAndSizeSpec(
@@ -138,12 +142,30 @@ public class VerticalScrollSpec {
         // If this Vertical scroll is being measured with a fixed height we don't care about
         // the size of the content and just use that instead
       case EXACTLY:
+        if (fillViewport && size.height < SizeSpec.getSize(heightSpec)) {
+          // Remeasure with exact bounds to make sure that the child component fills the viewport.
+          childComponentTree.setSizeSpec(widthSpec, heightSpec);
+
+          if (contentHeight != null) {
+            contentHeight.set(SizeSpec.getSize(heightSpec));
+          }
+        }
+
         size.height = SizeSpec.getSize(heightSpec);
         break;
 
         // For at most we want the VerticalScroll to be as big as its content up to the maximum
         // height specified in the heightSpec
       case AT_MOST:
+        if (fillViewport && size.height < SizeSpec.getSize(heightSpec)) {
+          // Remeasure with exact bounds to make sure that the child component fills the viewport.
+          childComponentTree.setSizeSpec(
+              widthSpec, SizeSpec.makeSizeSpec(SizeSpec.getSize(heightSpec), EXACTLY));
+          if (contentHeight != null) {
+            contentHeight.set(SizeSpec.getSize(heightSpec));
+          }
+        }
+
         size.height = Math.min(SizeSpec.getSize(heightSpec), size.height);
     }
   }
