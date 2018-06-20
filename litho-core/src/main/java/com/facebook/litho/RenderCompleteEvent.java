@@ -21,12 +21,21 @@ import com.facebook.litho.annotations.Event;
 /**
  * An {@link Event} that is triggered when a component is render complete.
  *
- * @param hasMounted is true if the component has mounted (i.e. on the screen), false otherwise.
+ * @param renderState is {@link #RENDER_DRAWN} if the component has mounted (i.e. on the screen), or
+ *     {@link #RENDER_ADDED} if not, or {@link #FAILED_EXCEED_MAX_ATTEMPTS} if we cannot determine
+ *     its state in the maximum attempts.
  * @param timestampMillis is the timestamp when the component is rendered complete, computed using
  *     SystemClock.uptimeMillis.
  */
 @Event
 public class RenderCompleteEvent {
-  public boolean hasMounted;
+
+  public enum RenderState {
+    RENDER_DRAWN,
+    RENDER_ADDED,
+    FAILED_EXCEED_MAX_ATTEMPTS
+  }
+
+  public RenderState renderState;
   public long timestampMillis;
 }

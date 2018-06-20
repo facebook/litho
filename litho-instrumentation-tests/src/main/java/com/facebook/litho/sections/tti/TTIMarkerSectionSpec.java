@@ -57,8 +57,9 @@ public class TTIMarkerSectionSpec {
   static void onRenderComplete(
       SectionContext c,
       @Param String renderMarker,
-      @FromEvent boolean hasMounted,
+      @FromEvent RenderCompleteEvent.RenderState renderState,
       @FromEvent long timestampMillis) {
+    final boolean hasMounted = renderState == RenderCompleteEvent.RenderState.RENDER_DRAWN;
     Toast.makeText(c, renderMarker, Toast.LENGTH_SHORT).show();
   }
 }

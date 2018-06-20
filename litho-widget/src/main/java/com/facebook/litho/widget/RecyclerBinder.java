@@ -304,21 +304,21 @@ public class RecyclerBinder
 
   static class RenderCompleteRunnable implements Runnable {
     private final EventHandler<RenderCompleteEvent> renderCompleteEventHandler;
-    private final boolean hasMounted;
+    private final RenderCompleteEvent.RenderState renderState;
     private final long timestampMillis;
 
     RenderCompleteRunnable(
         EventHandler<RenderCompleteEvent> renderCompleteEventHandler,
-        boolean hasMounted,
+        RenderCompleteEvent.RenderState renderState,
         long timestampMillis) {
       this.renderCompleteEventHandler = renderCompleteEventHandler;
-      this.hasMounted = hasMounted;
+      this.renderState = renderState;
       this.timestampMillis = timestampMillis;
     }
 
     @Override
     public void run() {
-      dispatchRenderCompleteEvent(renderCompleteEventHandler, hasMounted, timestampMillis);
+      dispatchRenderCompleteEvent(renderCompleteEventHandler, renderState, timestampMillis);
     }
   }
 
@@ -560,14 +560,17 @@ public class RecyclerBinder
     }
 
     final @RenderState int state = holder.getRenderState();
-    if (state == ComponentTreeHolder.RENDER_DRAWN) {
+    if (state != ComponentTreeHolder.RENDER_UNINITIALIZED) {
       return;
     }
 
     // Dispatch a RenderCompleteEvent asynchronously.
     ViewCompat.postOnAnimation(
         mMountedView,
-        new RenderCompleteRunnable(renderCompleteEventHandler, true, timestampMillis));
+        new RenderCompleteRunnable(
+            renderCompleteEventHandler,
+            RenderCompleteEvent.RenderState.RENDER_DRAWN,
+            timestampMillis));
 
     // Update the state to prevent dispatch an event again for the same holder.
     holder.setRenderState(ComponentTreeHolder.RENDER_DRAWN);
@@ -576,12 +579,12 @@ public class RecyclerBinder
   @UiThread
   private static void dispatchRenderCompleteEvent(
       EventHandler<RenderCompleteEvent> renderCompleteEventHandler,
-      boolean hasMounted,
+      RenderCompleteEvent.RenderState renderState,
       long timestampMillis) {
     ThreadUtils.assertMainThread();
 
     final RenderCompleteEvent event = new RenderCompleteEvent();
-    event.hasMounted = hasMounted;
+    event.renderState = renderState;
     event.timestampMillis = timestampMillis;
     renderCompleteEventHandler.dispatchEvent(event);
   }
