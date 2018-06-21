@@ -31,6 +31,16 @@ public class DefaultComponentsSystrace implements ComponentsSystrace.Systrace {
   }
 
   @Override
+  public void beginSectionAsync(String name) {
+    // no-op
+  }
+
+  @Override
+  public void beginSectionAsync(String name, int cookie) {
+    // no-op
+  }
+
+  @Override
   public ComponentsSystrace.ArgsBuilder beginSectionWithArgs(String name) {
     if (ComponentsConfiguration.IS_INTERNAL_BUILD
         && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
@@ -46,6 +56,16 @@ public class DefaultComponentsSystrace implements ComponentsSystrace.Systrace {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       Trace.endSection();
     }
+  }
+
+  @Override
+  public void endSectionAsync(String name) {
+    // no-op
+  }
+
+  @Override
+  public void endSectionAsync(String name, int cookie) {
+    // no-op
   }
 
   @Override

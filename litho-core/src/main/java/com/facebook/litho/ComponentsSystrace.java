@@ -18,7 +18,8 @@ package com.facebook.litho;
 
 /**
  * This is intended as a hook into {@code android.os.Trace}, but allows you to provide your own
- * functionality.  Use it as
+ * functionality. Use it as
+ *
  * <p>
  *   {@code
  *      ComponentsSystrace.beginSection("tag");
@@ -40,9 +41,18 @@ public class ComponentsSystrace {
   public interface Systrace {
     void beginSection(String name);
 
+    void beginSectionAsync(String name);
+
+    void beginSectionAsync(String name, int cookie);
+
     ArgsBuilder beginSectionWithArgs(String name);
 
     void endSection();
+
+    void endSectionAsync(String name);
+
+    void endSectionAsync(String name, int cookie);
+
     boolean isTracing();
   }
 
@@ -81,23 +91,81 @@ public class ComponentsSystrace {
     ArgsBuilder arg(String key, double value);
   }
 
-  private ComponentsSystrace() {
-  }
+  private ComponentsSystrace() {}
 
   public static void provide(Systrace instance) {
     sInstance = instance;
   }
 
+  /**
+   * Writes a trace message to indicate that a given section of code has begun. This call must be
+   * followed by a corresponding call to {@link #endSection()} on the same thread.
+   */
   public static void beginSection(String name) {
     getInstance().beginSection(name);
+  }
+
+  /**
+   * Writes a trace message to indicate that a given section of code has begun. Must be followed by
+   * a call to {@link #endSectionAsync(String)} using the same tag. Unlike {@link
+   * #beginSection(String)} and {@link #endSection()}, asynchronous events do not need to be nested.
+   * The name and cookie used to begin an event must be used to end it.
+   *
+   * <p class="note">Depending on provided {@link Systrace} instance, this method could vary in
+   * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
+   */
+  public static void beginSectionAsync(String name) {
+    getInstance().beginSectionAsync(name);
+  }
+
+  /**
+   * Writes a trace message to indicate that a given section of code has begun. Must be followed by
+   * a call to {@link #endSectionAsync(String, int)} using the same tag. Unlike {@link
+   * #beginSection(String)} and {@link #endSection()}, asynchronous events do not need to be nested.
+   * The name and cookie used to begin an event must be used to end it.
+   *
+   * <p class="note">Depending on provided {@link Systrace} instance, this method could vary in
+   * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
+   */
+  public static void beginSectionAsync(String name, int cookie) {
+    getInstance().beginSectionAsync(name, cookie);
   }
 
   public static ArgsBuilder beginSectionWithArgs(String name) {
     return getInstance().beginSectionWithArgs(name);
   }
 
+  /**
+   * Writes a trace message to indicate that a given section of code has ended. This call must be
+   * preceded by a corresponding call to {@link #beginSection(String)}. Calling this method will
+   * mark the end of the most recently begun section of code, so care must be taken to ensure that
+   * beginSection / endSection pairs are properly nested and called from the same thread.
+   */
   public static void endSection() {
     getInstance().endSection();
+  }
+
+  /**
+   * Writes a trace message to indicate that the current method has ended. Must be called exactly
+   * once for each call to {@link #beginSectionAsync(String)} using the same tag, name and cookie.
+   *
+   * <p class="note">Depending on provided {@link Systrace} instance, this method could vary in
+   * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
+   */
+  public static void endSectionAsync(String name) {
+    getInstance().endSectionAsync(name);
+  }
+
+  /**
+   * Writes a trace message to indicate that the current method has ended. Must be called exactly
+   * once for each call to {@link #beginSectionAsync(String, int)} using the same tag, name and
+   * cookie.
+   *
+   * <p class="note">Depending on provided {@link Systrace} instance, this method could vary in
+   * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
+   */
+  public static void endSectionAsync(String name, int cookie) {
+    getInstance().endSectionAsync(name, cookie);
   }
 
   public static boolean isTracing() {
