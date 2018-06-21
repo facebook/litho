@@ -21,6 +21,8 @@ import static com.facebook.litho.AnimationsDebug.TAG;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.v4.util.SimpleArrayMap;
+import android.support.v4.util.SparseArrayCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
@@ -188,6 +190,7 @@ public class TransitionManager {
   private final SimpleArrayMap<AnimationBinding, ArraySet<PropertyHandle>> mAnimationsToPropertyHandles =
       new SimpleArrayMap<>();
   private final SimpleArrayMap<String, AnimationState> mAnimationStates = new SimpleArrayMap<>();
+  private final SparseArrayCompat<String> mTraceNames = new SparseArrayCompat<>();
   private final SimpleArrayMap<PropertyHandle, Float> mInitialStatesToRestore =
       new SimpleArrayMap<>();
   private final ArraySet<AnimationBinding> mRunningRootAnimations = new ArraySet<>();
@@ -357,6 +360,7 @@ public class TransitionManager {
       clearLayoutOutputs(animationState);
     }
     mAnimationStates.clear();
+    mTraceNames.clear();
 
     // Clear these so that stopping animations below doesn't cause us to trigger any useless
     // cleanup.
@@ -677,6 +681,10 @@ public class TransitionManager {
 
     mInitialStatesToRestore.put(propertyHandle, startValue);
 
+    if (!TextUtils.isEmpty(transition.getTraceName())) {
+      mTraceNames.put(animation.hashCode(), transition.getTraceName());
+    }
+
     return animation;
   }
 
@@ -858,6 +866,11 @@ public class TransitionManager {
         propertyState.animation = binding;
       }
 
+      final String traceName = mTraceNames.get(binding.hashCode());
+      if (!TextUtils.isEmpty(traceName)) {
+        ComponentsSystrace.beginSectionAsync(traceName, binding.hashCode());
+      }
+
       mTempPropertyAnimations.clear();
     }
 
@@ -987,6 +1000,12 @@ public class TransitionManager {
           mAnimationStates.remove(key);
           clearLayoutOutputs(animationState);
         }
+      }
+
+      final String traceName = mTraceNames.get(binding.hashCode());
+      if (!TextUtils.isEmpty(traceName)) {
+        ComponentsSystrace.endSectionAsync(traceName, binding.hashCode());
+        mTraceNames.delete(binding.hashCode());
       }
     }
 

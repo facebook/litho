@@ -228,16 +228,19 @@ public abstract class Transition {
     private final TransitionAnimator mTransitionAnimator;
     private final RuntimeValue mAppearFrom;
     private final RuntimeValue mDisappearTo;
+    @Nullable private final String mTraceName;
 
     TransitionUnit(
         AnimationTarget animationTarget,
         TransitionAnimator transitionAnimator,
         RuntimeValue appearFrom,
-        RuntimeValue disappearTo) {
+        RuntimeValue disappearTo,
+        @Nullable String traceName) {
       mAnimationTarget = animationTarget;
       mTransitionAnimator = transitionAnimator;
       mAppearFrom = appearFrom;
       mDisappearTo = disappearTo;
+      mTraceName = traceName;
     }
 
     AnimationTarget getAnimationTarget() {
@@ -264,6 +267,11 @@ public abstract class Transition {
       final PropertyAnimation propertyAnimation =
           new PropertyAnimation(propertyHandle, targetValue);
       return mTransitionAnimator.createAnimation(propertyAnimation);
+    }
+
+    @Nullable
+    String getTraceName() {
+      return mTraceName;
     }
 
     boolean targetsKey(String key) {
@@ -383,6 +391,11 @@ public abstract class Transition {
       return this;
     }
 
+    public TransitionUnitsBuilder traceName(String name) {
+      mTraceName = name;
+      return this;
+    }
+
     /**
      * Define where disappear animations should end at.
      *
@@ -445,6 +458,7 @@ public abstract class Transition {
     TransitionAnimator mTransitionAnimator = DEFAULT_ANIMATOR;
     RuntimeValue mAppearFrom;
     RuntimeValue mDisappearTo;
+    String mTraceName;
 
     void maybeCommitCurrentBuilder() {
       if (mPropertyTarget == null) {
@@ -455,11 +469,13 @@ public abstract class Transition {
               new AnimationTarget(mComponentTarget, mPropertyTarget),
               mTransitionAnimator,
               mAppearFrom,
-              mDisappearTo));
+              mDisappearTo,
+              mTraceName));
       mPropertyTarget = null;
       mTransitionAnimator = DEFAULT_ANIMATOR;
       mAppearFrom = null;
       mDisappearTo = null;
+      mTraceName = null;
     }
 
     ArrayList<TransitionUnit> getTransitionUnits() {
