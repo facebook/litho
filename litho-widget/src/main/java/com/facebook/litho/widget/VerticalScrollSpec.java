@@ -188,7 +188,6 @@ public class VerticalScrollSpec {
       @FromBoundsDefined Integer contentWidth,
       @FromBoundsDefined Integer contentHeight) {
     lithoScrollView.mount(childComponentTree, scrollPosition, contentWidth, contentHeight);
-    lithoScrollView.setVerticalScrollBarEnabled(scrollbarEnabled);
     lithoScrollView.setScrollbarFadingEnabled(scrollbarFadingEnabled);
     lithoScrollView.setNestedScrollingEnabled(nestedScrollingEnabled);
 
@@ -197,6 +196,8 @@ public class VerticalScrollSpec {
     // https://github.com/aosp-mirror/platform_frameworks_base/commit/6c8fef7fb866d244486a962dd82f4a6f26505f16#diff-7c8b4c8147fbbbf69293775bca384f31.
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
       lithoScrollView.setVerticalScrollBarEnabled(false);
+    } else {
+      lithoScrollView.setVerticalScrollBarEnabled(scrollbarEnabled);
     }
   }
 
