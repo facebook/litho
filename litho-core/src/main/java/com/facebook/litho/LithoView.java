@@ -344,7 +344,6 @@ public class LithoView extends ComponentHost {
 
   @Override
   protected void performLayout(boolean changed, int left, int top, int right, int bottom) {
-
     if (mComponentTree != null) {
       if (mComponentTree.isReleased()) {
         throw new IllegalStateException(
@@ -364,19 +363,23 @@ public class LithoView extends ComponentHost {
 
       boolean wasMountTriggered = mComponentTree.layout();
 
-      final boolean isRectSame =
-          mPreviousMountViewBounds != null
-              && mPreviousMountViewBounds.left == left
-              && mPreviousMountViewBounds.top == top
-              && mPreviousMountViewBounds.right == right
-              && mPreviousMountViewBounds.bottom == bottom;
-
       // If this happens the LithoView might have moved on Screen without a scroll event
       // triggering incremental mount. We trigger one here to be sure all the content is visible.
       if (!wasMountTriggered
-          && !isRectSame
           && isIncrementalMountEnabled()) {
-        performIncrementalMount();
+        if (ComponentsConfiguration.incrementalMountUsesLocalVisibleBounds) {
+          performIncrementalMount();
+        } else {
+          final boolean isRectSame =
+              mPreviousMountViewBounds != null
+                  && mPreviousMountViewBounds.left == left
+                  && mPreviousMountViewBounds.top == top
+                  && mPreviousMountViewBounds.right == right
+                  && mPreviousMountViewBounds.bottom == bottom;
+          if (!isRectSame) {
+            performIncrementalMount();
+          }
+        }
       }
 
       if (!wasMountTriggered || shouldAlwaysLayoutChildren()) {
