@@ -53,6 +53,7 @@ import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.widget.OnDataBoundListener;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.SectionsDebug;
+import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -127,7 +128,7 @@ public class SectionTree {
     void requestFocus(int index);
 
     /** Request smooth focus on the item with the given index. */
-    void requestSmoothFocus(int index);
+    void requestSmoothFocus(int index, SmoothScrollAlignmentType type);
 
     /**
      * Request focus on the item with the given index, plus some additional offset.
@@ -465,7 +466,7 @@ public class SectionTree {
     if (children == null || children.isEmpty()) {
       return null;
     }
-    
+
     int currentChildrenCount = 0;
     for (int i = 0, size = children.size(); i < size; i++) {
       final Section child = children.get(i);
@@ -660,7 +661,8 @@ public class SectionTree {
         });
   }
 
-  void requestSmoothFocus(final Section section, final int index) {
+  void requestSmoothFocus(
+      final Section section, final int index, final SmoothScrollAlignmentType type) {
     focusRequestOnUiThread(
         new Runnable() {
           @Override
@@ -668,7 +670,7 @@ public class SectionTree {
             final SectionLocationInfo sectionLocationInfo =
                 findSectionForKey(section.getGlobalKey());
             checkFocusValidity(sectionLocationInfo, index);
-            mFocusDispatcher.requestSmoothFocus(sectionLocationInfo.mStartIndex + index);
+            mFocusDispatcher.requestSmoothFocus(sectionLocationInfo.mStartIndex + index, type);
           }
         });
   }

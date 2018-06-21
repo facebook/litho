@@ -28,6 +28,7 @@ import com.facebook.litho.widget.OnDataBoundListener;
 import com.facebook.litho.widget.ReMeasureEvent;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.RenderInfo;
+import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import com.facebook.litho.widget.ViewportInfo.ViewportChanged;
 import java.util.List;
 
@@ -145,12 +146,12 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
 
   @Override
   public void requestFocus(int index) {
-    mRecyclerBinder.scrollToPosition(index, false);
+    mRecyclerBinder.scrollToPosition(index);
   }
 
   @Override
-  public void requestSmoothFocus(int index) {
-    mRecyclerBinder.scrollToPosition(index, true);
+  public void requestSmoothFocus(int index, SmoothScrollAlignmentType type) {
+    mRecyclerBinder.scrollSmoothToPosition(index, type);
   }
 
   @Override

@@ -19,6 +19,7 @@ package com.facebook.litho.testing.sections;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.OnDataBoundListener;
 import com.facebook.litho.widget.RenderInfo;
+import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -132,7 +133,7 @@ public class TestTarget implements SectionTree.Target {
   }
 
   @Override
-  public void requestSmoothFocus(int index) {
+  public void requestSmoothFocus(int index, SmoothScrollAlignmentType type) {
     requestFocus(index);
   }
 

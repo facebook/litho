@@ -21,6 +21,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.widget.OnDataBoundListener;
 import com.facebook.litho.widget.RenderInfo;
+import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -152,8 +153,8 @@ class BatchedTarget implements SectionTree.Target {
   }
 
   @Override
-  public void requestSmoothFocus(int index) {
-    mTarget.requestSmoothFocus(index);
+  public void requestSmoothFocus(int index, SmoothScrollAlignmentType type) {
+    mTarget.requestSmoothFocus(index, type);
     maybeLogRequestFocus(index);
   }
 

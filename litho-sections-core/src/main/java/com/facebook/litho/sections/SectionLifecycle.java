@@ -30,6 +30,7 @@ import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnDataBound;
 import com.facebook.litho.sections.annotations.OnDiff;
+import com.facebook.litho.widget.SmoothScrollAlignmentType;
 
 public abstract class SectionLifecycle implements EventDispatcher, EventTriggerTarget {
 
@@ -372,6 +373,11 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
   }
 
   public static void requestSmoothFocus(SectionContext c, int index) {
+    requestSmoothFocus(c, index, SmoothScrollAlignmentType.DEFAULT);
+  }
+
+  public static void requestSmoothFocus(
+      SectionContext c, int index, SmoothScrollAlignmentType type) {
     final Section scopedSection = c.getSectionScope();
     final SectionTree sectionTree = c.getSectionTree();
 
@@ -379,6 +385,6 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
       return;
     }
 
-    sectionTree.requestSmoothFocus(scopedSection, index);
+    sectionTree.requestSmoothFocus(scopedSection, index, type);
   }
 }

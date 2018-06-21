@@ -18,6 +18,7 @@ package com.facebook.litho.sections;
 
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import com.facebook.litho.widget.SmoothScrollAlignmentType;
 
 /**
  * This is an internal class used by {@link SectionTree} to dispatch the last known focus request
@@ -52,9 +53,9 @@ class FocusDispatcher {
   }
 
   @UiThread
-  void requestSmoothFocus(int index) {
+  void requestSmoothFocus(int index, SmoothScrollAlignmentType type) {
     if (shouldDispatchRequests()) {
-      mTarget.requestSmoothFocus(index);
+      mTarget.requestSmoothFocus(index, type);
       return;
     }
 

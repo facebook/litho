@@ -33,6 +33,7 @@ import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
@@ -2248,16 +2249,41 @@ public class RecyclerBinder
   }
 
   @UiThread
-  public void scrollToPosition(int position, boolean smoothScroll) {
+  public void scrollToPosition(int position) {
+    if (mMountedView == null) {
+      mCurrentFirstVisiblePosition = position;
+      return;
+    }
+    mMountedView.scrollToPosition(position);
+  }
+
+  @UiThread
+  public void scrollSmoothToPosition(int position, final SmoothScrollAlignmentType type) {
     if (mMountedView == null) {
       mCurrentFirstVisiblePosition = position;
       return;
     }
 
-    if (smoothScroll) {
-      mMountedView.smoothScrollToPosition(position);
+    final int representation = type.getValue();
+    if (type == SmoothScrollAlignmentType.SNAP_TO_ANY
+        || type == SmoothScrollAlignmentType.SNAP_TO_START
+        || type == SmoothScrollAlignmentType.SNAP_TO_END) {
+      RecyclerView.SmoothScroller selectedSmoothScroller =
+          new LinearSmoothScroller(mComponentContext) {
+            @Override
+            protected int getVerticalSnapPreference() {
+              return representation;
+            }
+
+            protected int getHorizontalSnapPreference() {
+              return representation;
+            }
+          };
+      selectedSmoothScroller.setTargetPosition(position);
+      mMountedView.getLayoutManager().startSmoothScroll(selectedSmoothScroller);
     } else {
-      mMountedView.scrollToPosition(position);
+      // continue using the default layout manager smooth scroll
+      mMountedView.smoothScrollToPosition(position);
     }
   }
 
