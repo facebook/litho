@@ -160,6 +160,27 @@ public abstract class Component extends ComponentLifecycle
 
   public void setScopedContext(ComponentContext scopedContext) {
     mScopedContext = scopedContext;
+
+    if (mLayoutCreatedInWillRender != null) {
+      assertSameBaseContext(scopedContext, mLayoutCreatedInWillRender.getContext());
+    }
+  }
+
+  // TODO(t30797526): Remove
+  private static void assertSameBaseContext(
+      ComponentContext scopedContext, ComponentContext willRenderContext) {
+    if (scopedContext.getBaseContext() != willRenderContext.getBaseContext()) {
+      final ComponentsLogger logger = scopedContext.getLogger();
+      if (logger != null) {
+        logger.emitMessage(
+            ComponentsLogger.LogLevel.ERROR,
+            "Found mismatching base contexts between the Component's Context ("
+                + scopedContext.getBaseContext()
+                + ") and the Context used in willRender ("
+                + willRenderContext.getBaseContext()
+                + ")!");
+      }
+    }
   }
 
   synchronized void markLayoutStarted() {
@@ -408,6 +429,11 @@ public abstract class Component extends ComponentLifecycle
   public static boolean willRender(ComponentContext c, Component component) {
     if (component == null) {
       return false;
+    }
+
+    final ComponentContext scopedContext = component.getScopedContext();
+    if (scopedContext != null) {
+      assertSameBaseContext(scopedContext, c);
     }
 
     if (component.mLayoutCreatedInWillRender != null) {
