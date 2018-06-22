@@ -1245,27 +1245,28 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
-    public T clickHandler(EventHandler<ClickEvent> clickHandler) {
+    public T clickHandler(@Nullable EventHandler<ClickEvent> clickHandler) {
       mComponent.getOrCreateCommonPropsHolder().clickHandler(clickHandler);
       return getThis();
     }
 
-    public T longClickHandler(EventHandler<LongClickEvent> longClickHandler) {
+    public T longClickHandler(@Nullable EventHandler<LongClickEvent> longClickHandler) {
       mComponent.getOrCreateCommonPropsHolder().longClickHandler(longClickHandler);
       return getThis();
     }
 
-    public T focusChangeHandler(EventHandler<FocusChangedEvent> focusChangeHandler) {
+    public T focusChangeHandler(@Nullable EventHandler<FocusChangedEvent> focusChangeHandler) {
       mComponent.getOrCreateCommonPropsHolder().focusChangeHandler(focusChangeHandler);
       return getThis();
     }
 
-    public T touchHandler(EventHandler<TouchEvent> touchHandler) {
+    public T touchHandler(@Nullable EventHandler<TouchEvent> touchHandler) {
       mComponent.getOrCreateCommonPropsHolder().touchHandler(touchHandler);
       return getThis();
     }
 
-    public T interceptTouchHandler(EventHandler<InterceptTouchEvent> interceptTouchHandler) {
+    public T interceptTouchHandler(
+        @Nullable EventHandler<InterceptTouchEvent> interceptTouchHandler) {
       mComponent.getOrCreateCommonPropsHolder().interceptTouchHandler(interceptTouchHandler);
       return getThis();
     }
@@ -1295,32 +1296,33 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
-    public T visibleHandler(EventHandler<VisibleEvent> visibleHandler) {
+    public T visibleHandler(@Nullable EventHandler<VisibleEvent> visibleHandler) {
       mComponent.getOrCreateCommonPropsHolder().visibleHandler(visibleHandler);
       return getThis();
     }
 
-    public T focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler) {
+    public T focusedHandler(@Nullable EventHandler<FocusedVisibleEvent> focusedHandler) {
       mComponent.getOrCreateCommonPropsHolder().focusedHandler(focusedHandler);
       return getThis();
     }
 
-    public T unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
+    public T unfocusedHandler(@Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
       mComponent.getOrCreateCommonPropsHolder().unfocusedHandler(unfocusedHandler);
       return getThis();
     }
 
-    public T fullImpressionHandler(EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
+    public T fullImpressionHandler(
+        @Nullable EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
       mComponent.getOrCreateCommonPropsHolder().fullImpressionHandler(fullImpressionHandler);
       return getThis();
     }
 
-    public T invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
+    public T invisibleHandler(@Nullable EventHandler<InvisibleEvent> invisibleHandler) {
       mComponent.getOrCreateCommonPropsHolder().invisibleHandler(invisibleHandler);
       return getThis();
     }
 
-    public T contentDescription(CharSequence contentDescription) {
+    public T contentDescription(@Nullable CharSequence contentDescription) {
       mComponent.getOrCreateCommonPropsHolder().contentDescription(contentDescription);
       return getThis();
     }
