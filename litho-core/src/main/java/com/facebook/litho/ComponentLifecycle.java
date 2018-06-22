@@ -292,12 +292,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @return New InternalNode associated with the given component.
    */
   InternalNode createLayout(ComponentContext context, boolean resolveNestedTree) {
-    Component component = (Component) this;
+    final Component component = (Component) this;
+    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
 
-    if (component.mLayoutCreatedInWillRender != null) {
-      InternalNode layout = component.mLayoutCreatedInWillRender;
-      component.mLayoutCreatedInWillRender = null;
-      return layout;
+    if (layoutCreatedInWillRender != null) {
+      return layoutCreatedInWillRender;
     }
 
     final boolean deferNestedTreeResolution =

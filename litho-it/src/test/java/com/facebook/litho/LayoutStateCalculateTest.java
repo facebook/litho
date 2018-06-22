@@ -2625,18 +2625,66 @@ public class LayoutStateCalculateTest {
 
     Component.willRender(c, componentSpy);
 
-    assertThat(componentSpy.mLayoutCreatedInWillRender).isNotNull();
+    final InternalNode cachedLayout = componentSpy.getLayoutCreatedInWillRenderForTesting();
+    assertThat(cachedLayout).isNotNull();
 
-    LayoutState layoutState =
-        calculateLayoutState(
-            c, componentSpy, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+    calculateLayoutState(
+        c, componentSpy, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
-    ComponentLifecycle lifecycle = getComponentAt(layoutState, 0);
-    InternalNode internalNode = lifecycle.createLayout(c, false);
-
-    assertThat(internalNode == componentSpy.mLayoutCreatedInWillRender);
+    assertThat(componentSpy.getLayoutCreatedInWillRenderForTesting()).isNull();
 
     verify(componentSpy, times(1)).updateInternalChildState(any(ComponentContext.class));
+  }
+
+  @Test
+  public void testResolveLayoutUsesWillRenderResult() {
+    ComponentContext c = new ComponentContext(application);
+
+    final Component component =
+        TestLayoutComponent.create(c, 0, 0, true, true, true, false).build();
+
+    Component.willRender(c, component);
+
+    final InternalNode cachedLayout = component.getLayoutCreatedInWillRenderForTesting();
+    assertThat(cachedLayout).isNotNull();
+
+    InternalNode result = c.resolveLayout(component);
+    assertThat(result).isEqualTo(cachedLayout);
+    assertThat(component.getLayoutCreatedInWillRenderForTesting()).isNull();
+  }
+
+  @Test
+  public void testNewLayoutBuilderUsesWillRenderResult() {
+    ComponentContext c = new ComponentContext(application);
+
+    final Component component =
+        TestLayoutComponent.create(c, 0, 0, true, true, true, false).build();
+
+    Component.willRender(c, component);
+
+    final InternalNode cachedLayout = component.getLayoutCreatedInWillRenderForTesting();
+    assertThat(cachedLayout).isNotNull();
+
+    InternalNode result = c.newLayoutBuilder(component, 0, 0);
+    assertThat(result).isEqualTo(cachedLayout);
+    assertThat(component.getLayoutCreatedInWillRenderForTesting()).isNull();
+  }
+
+  @Test
+  public void testCreateLayoutUsesWillRenderResult() {
+    ComponentContext c = new ComponentContext(application);
+
+    final Component component =
+        TestLayoutComponent.create(c, 0, 0, true, true, true, false).build();
+
+    Component.willRender(c, component);
+
+    final InternalNode cachedLayout = component.getLayoutCreatedInWillRenderForTesting();
+    assertThat(cachedLayout).isNotNull();
+
+    InternalNode result = component.createLayout(c, false);
+    assertThat(result).isEqualTo(cachedLayout);
+    assertThat(component.getLayoutCreatedInWillRenderForTesting()).isNull();
   }
 
   @Test

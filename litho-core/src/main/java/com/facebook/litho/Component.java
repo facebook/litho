@@ -106,7 +106,7 @@ public abstract class Component extends ComponentLifecycle
 
   // Keep hold of the layout that we resolved during will render in order to use it again in
   // createLayout.
-  @Nullable InternalNode mLayoutCreatedInWillRender;
+  @Nullable private InternalNode mLayoutCreatedInWillRender;
 
   /**
    * Holds a list of working range related data. {@link LayoutState} will use it to update {@link
@@ -429,6 +429,17 @@ public abstract class Component extends ComponentLifecycle
     }
 
     return true;
+  }
+
+  InternalNode consumeLayoutCreatedInWillRender() {
+    final InternalNode layout = mLayoutCreatedInWillRender;
+    mLayoutCreatedInWillRender = null;
+    return layout;
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+  InternalNode getLayoutCreatedInWillRenderForTesting() {
+    return mLayoutCreatedInWillRender;
   }
 
   /** Called to install internal state based on a component's parent context. */

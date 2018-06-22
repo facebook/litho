@@ -314,8 +314,9 @@ public class ComponentContext extends ContextWrapper {
 
   InternalNode newLayoutBuilder(
       Component component, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-    if (component.mLayoutCreatedInWillRender != null) {
-      return component.mLayoutCreatedInWillRender;
+    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
+    if (layoutCreatedInWillRender != null) {
+      return layoutCreatedInWillRender;
     }
 
     component = component.getThreadSafeInstance();
@@ -336,8 +337,9 @@ public class ComponentContext extends ContextWrapper {
   }
 
   InternalNode resolveLayout(Component component) {
-    if (component.mLayoutCreatedInWillRender != null) {
-      return component.mLayoutCreatedInWillRender;
+    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
+    if (layoutCreatedInWillRender != null) {
+      return layoutCreatedInWillRender;
     }
 
     component = component.getThreadSafeInstance();
