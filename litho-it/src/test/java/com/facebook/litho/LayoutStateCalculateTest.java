@@ -2708,6 +2708,22 @@ public class LayoutStateCalculateTest {
     verify(componentSpy, times(1)).updateInternalChildState(any(ComponentContext.class));
   }
 
+  @Test
+  public void testWillRenderTwiceDoesNotReCreateLayout() {
+    ComponentContext c = new ComponentContext(application);
+
+    final Component component =
+        TestLayoutComponent.create(c, 0, 0, true, true, true, false).build();
+
+    Component.willRender(c, component);
+
+    final InternalNode cachedLayout = component.getLayoutCreatedInWillRenderForTesting();
+    assertThat(cachedLayout).isNotNull();
+
+    assertThat(Component.willRender(c, component)).isTrue();
+    assertThat(component.getLayoutCreatedInWillRenderForTesting()).isEqualTo(cachedLayout);
+  }
+
   private void enableAccessibility() {
     final ShadowAccessibilityManager manager = Shadows.shadowOf(
         (AccessibilityManager)

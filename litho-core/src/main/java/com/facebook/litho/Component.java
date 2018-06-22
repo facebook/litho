@@ -410,6 +410,10 @@ public abstract class Component extends ComponentLifecycle
       return false;
     }
 
+    if (component.mLayoutCreatedInWillRender != null) {
+      return willRender(component.mLayoutCreatedInWillRender);
+    }
+
     component.mLayoutCreatedInWillRender = Layout.create(c, component);
     return willRender(component.mLayoutCreatedInWillRender);
   }
