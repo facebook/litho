@@ -451,12 +451,8 @@ public class ComponentBodyGenerator {
               .addAnnotation(Override.class)
               .addModifiers(Modifier.PROTECTED)
               .returns(TypeName.VOID)
-              .addParameter(ClassNames.COMPONENT, "component")
-              .addStatement(
-                  "$N $N = ($N) component",
-                  className,
-                  instanceName,
-                  className);
+              .addParameter(specModel.getComponentClass(), "component")
+              .addStatement("$N $N = ($N) component", className, instanceName, className);
 
       for (InterStageInputParamModel interStageInput : interStageInputs) {
         copyInterStageComponentBuilder
