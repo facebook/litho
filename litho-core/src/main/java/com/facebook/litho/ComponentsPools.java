@@ -133,9 +133,6 @@ public class ComponentsPools {
   static final RecyclePool<DisplayListDrawable> sDisplayListDrawablePool =
       new RecyclePool<>("DisplayListDrawable", 10, false);
 
-  static final RecyclePool<TreeProps> sTreePropsMapPool =
-      new RecyclePool<>("TreeProps", 10, true);
-
   static final RecyclePool<ArraySet> sArraySetPool =
       new RecyclePool<>("ArraySet", 10, true);
 
@@ -413,22 +410,6 @@ public class ComponentsPools {
   @Nullable
   static StateHandler acquireStateHandler() {
     return acquireStateHandler(null);
-  }
-
-  public static TreeProps acquireTreeProps() {
-    TreeProps treeProps = sTreePropsMapPool.acquire();
-    if (treeProps == null) {
-      treeProps = new TreeProps();
-    }
-
-    return treeProps;
-  }
-
-  //TODO t16407516 shb: change all "enableChecks = false" here to @TakesOwnership
-  @ThreadSafe(enableChecks = false)
-  public static void release(TreeProps treeProps) {
-    treeProps.reset();
-    sTreePropsMapPool.release(treeProps);
   }
 
   @ThreadSafe(enableChecks = false)
@@ -772,7 +753,6 @@ public class ComponentsPools {
     sDiffPool.clear();
     sComponentTreeBuilderPool.clear();
     sStateHandlerPool.clear();
-    sTreePropsMapPool.clear();
     sMountItemScrapArrayPool.clear();
     sRectFPool.clear();
     sEdgesPool.clear();

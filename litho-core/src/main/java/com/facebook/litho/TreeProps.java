@@ -49,7 +49,7 @@ public class TreeProps {
    */
   @ThreadSafe(enableChecks = false)
   public static TreeProps copy(TreeProps source) {
-    final TreeProps newProps = ComponentsPools.acquireTreeProps();
+    final TreeProps newProps = new TreeProps();
     if (source != null) {
       synchronized (source.mMap) {
         newProps.mMap.putAll(source.mMap);

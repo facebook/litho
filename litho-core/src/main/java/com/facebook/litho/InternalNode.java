@@ -1634,12 +1634,7 @@ class InternalNode implements ComponentLayout {
     mCachedMeasuresValid = false;
     mIsNestedTreeHolder = false;
     mTestKey = null;
-
-    if (mPendingTreeProps != null) {
-      mPendingTreeProps.reset();
-      ComponentsPools.release(mPendingTreeProps);
-      mPendingTreeProps = null;
-    }
+    mPendingTreeProps = null;
 
     mTransitions = null;
     mComponentsNeedingPreviousRenderData = null;

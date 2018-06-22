@@ -455,7 +455,7 @@ public final class ComponentTestHelper {
     try {
       treeProps = Whitebox.invokeMethod(context, "getTreeProps");
       if (treeProps == null) {
-        treeProps = ComponentsPools.acquireTreeProps();
+        treeProps = new TreeProps();
         Whitebox.invokeMethod(context, "setTreeProps", treeProps);
       }
     } catch (Exception e) {
