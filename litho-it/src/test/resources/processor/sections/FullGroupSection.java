@@ -427,7 +427,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
     }
 
     public Builder<T> prop3(Component.Builder<?> prop3Builder) {
-      this.mFullGroupSection.prop3 = prop3Builder.build();
+      this.mFullGroupSection.prop3 = prop3Builder == null ? null : prop3Builder.build();
       mRequired.set(1);
       return this;
     }

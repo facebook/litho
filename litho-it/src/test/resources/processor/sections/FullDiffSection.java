@@ -382,7 +382,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     }
 
     public Builder<T> prop3(Component.Builder<?> prop3Builder) {
-      this.mFullDiffSection.prop3 = prop3Builder.build();
+      this.mFullDiffSection.prop3 = prop3Builder == null ? null : prop3Builder.build();
       mRequired.set(2);
       return this;
     }

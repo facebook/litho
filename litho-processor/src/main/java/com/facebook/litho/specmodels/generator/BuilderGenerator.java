@@ -1009,7 +1009,8 @@ public class BuilderGenerator {
                             builderClass, getBuilderGenericTypes(prop, builderClass))
                         : builderClass,
                     prop.getName() + "Builder")),
-            "$L.build()",
+            "$L == null ? null : $L.build()",
+            prop.getName() + "Builder",
             prop.getName() + "Builder")
         .build();
   }

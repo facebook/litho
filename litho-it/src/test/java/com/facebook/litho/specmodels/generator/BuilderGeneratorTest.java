@@ -245,7 +245,7 @@ public class BuilderGeneratorTest {
                 + "  }\n"
                 + "\n"
                 + "  public Builder section(com.facebook.litho.sections.Section.Builder<?> sectionBuilder) {\n"
-                + "    this.mTest.section = sectionBuilder.build();\n"
+                + "    this.mTest.section = sectionBuilder == null ? null : sectionBuilder.build();\n"
                 + "    mRequired.set(2);\n"
                 + "    return this;\n"
                 + "  }\n"

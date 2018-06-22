@@ -157,7 +157,7 @@ public final class SimpleMount extends Component {
     }
 
     public Builder content(Component.Builder<?> contentBuilder) {
-      this.mSimpleMount.content = contentBuilder.build();
+      this.mSimpleMount.content = contentBuilder == null ? null : contentBuilder.build();
       mRequired.set(0);
       return this;
     }

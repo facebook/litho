@@ -579,7 +579,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
 
     public Builder<S> child(Component.Builder<?> childBuilder) {
-      this.mTestLayout.child = childBuilder.build();
+      this.mTestLayout.child = childBuilder == null ? null : childBuilder.build();
       mRequired.set(0);
       return this;
     }
