@@ -1762,7 +1762,7 @@ public class RecyclerBinder
         numPostedTasks++) {
 
       final Future<ParallelFillViewportResult> task =
-          scheduleLayoutInParallel(mComponentTreeHolders.get(index), widthSpec, heightSpec, index);
+          scheduleLayoutInParallel(holders.get(index), widthSpec, heightSpec, index);
       // Bail as soon as we see a View since we can't tell what height it is and don't want to
       // layout too much.
       if (task == null) {
