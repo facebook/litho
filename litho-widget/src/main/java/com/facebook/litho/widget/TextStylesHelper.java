@@ -23,6 +23,7 @@ import static com.facebook.litho.widget.VerticalGravity.CENTER;
 import static com.facebook.litho.widget.VerticalGravity.TOP;
 
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -34,6 +35,7 @@ import android.view.View;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Output;
 import com.facebook.litho.R;
+import com.facebook.litho.config.ComponentsConfiguration;
 
 public final class TextStylesHelper {
   static {
@@ -81,17 +83,32 @@ public final class TextStylesHelper {
       Output<VerticalGravity> verticalGravity,
       Output<Typeface> typeface) {
 
+    final Resources.Theme theme = c.getTheme();
+
     // check first if provided attributes contain textAppearance. As an analogy to TextView
     // behavior,
     // we will parse textAppearance attributes first and then will override leftovers from main
     // style
-    TypedArray a = c.obtainStyledAttributes(R.styleable.Text_TextAppearanceAttr, 0);
+    TypedArray a;
+    if (ComponentsConfiguration.NEEDS_THEME_SYNCHRONIZATION) {
+      synchronized (theme) {
+        a = c.obtainStyledAttributes(R.styleable.Text_TextAppearanceAttr, 0);
+      }
+    } else {
+      a = c.obtainStyledAttributes(R.styleable.Text_TextAppearanceAttr, 0);
+    }
 
     int textAppearanceResId =
         a.getResourceId(R.styleable.Text_TextAppearanceAttr_android_textAppearance, -1);
     a.recycle();
     if (textAppearanceResId != -1) {
-      a = c.getTheme().obtainStyledAttributes(textAppearanceResId, R.styleable.Text);
+      if (ComponentsConfiguration.NEEDS_THEME_SYNCHRONIZATION) {
+        synchronized (theme) {
+          a = theme.obtainStyledAttributes(textAppearanceResId, R.styleable.Text);
+        }
+      } else {
+        a = theme.obtainStyledAttributes(textAppearanceResId, R.styleable.Text);
+      }
       resolveStyleAttrsForTypedArray(
           a,
           ellipsize,
@@ -125,7 +142,13 @@ public final class TextStylesHelper {
     }
 
     // now (after we parsed textAppearance) we can move on to main style attributes
-    a = c.obtainStyledAttributes(R.styleable.Text, 0);
+    if (ComponentsConfiguration.NEEDS_THEME_SYNCHRONIZATION) {
+      synchronized (theme) {
+        a = c.obtainStyledAttributes(R.styleable.Text, 0);
+      }
+    } else {
+      a = c.obtainStyledAttributes(R.styleable.Text, 0);
+    }
     resolveStyleAttrsForTypedArray(
         a,
         ellipsize,

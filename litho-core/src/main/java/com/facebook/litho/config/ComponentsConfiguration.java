@@ -19,6 +19,7 @@ package com.facebook.litho.config;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
+import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 
 import android.os.Process;
 import com.facebook.litho.BuildConfig;
@@ -53,6 +54,9 @@ public class ComponentsConfiguration {
 
   /** Whether we can access properties in Settings.Global for animations. */
   public static final boolean CAN_CHECK_GLOBAL_ANIMATOR_SETTINGS = (SDK_INT >= JELLY_BEAN_MR1);
+
+  /** Whether we need to account for lack of synchronization while accessing Themes. */
+  public static final boolean NEEDS_THEME_SYNCHRONIZATION = (SDK_INT <= LOLLIPOP_MR1);
 
   /**
    * Option to enabled debug mode. This will save extra data asscociated with each node and allow
