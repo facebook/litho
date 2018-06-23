@@ -478,6 +478,15 @@ class EditTextSpec {
     }
   }
 
+  @OnTrigger(ClearFocusEvent.class)
+  static void clearFocus(
+      ComponentContext c, @State AtomicReference<EditTextWithEventHandlers> mountedView) {
+    EditTextWithEventHandlers eventHandler = mountedView.get();
+    if (eventHandler != null) {
+      eventHandler.clearFocus();
+    }
+  }
+
   @OnUpdateState
   static void updateInput(StateValue<String> input, @Param String newInput) {
     input.set(newInput);
