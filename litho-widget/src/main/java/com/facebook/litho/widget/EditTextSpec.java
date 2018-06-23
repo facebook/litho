@@ -78,13 +78,18 @@ import com.facebook.litho.utils.MeasureUtils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Component that renders an {@link EditText}.
  *
  * @uidocs https://fburl.com/EditText:6bb7
- * @prop text Initial text to display.
+ * @prop text Text to display; changing this overrides and replaces the current text. Leave this as
+ *     null to signal that the EditText's text property should be left untouched.
+ * @prop initialText Initial text to display. This only takes effect if the text prop is null. If
+ *     set, the value is set on the EditText exactly once: on initial mount. From then on, the
+ *     EditText's text property is not modified.
  * @prop hint Hint text to display.
  * @prop ellipsize If sets, specifies the position of the text to be ellispized.
  * @prop minLines Minimum number of lines to show.
@@ -252,6 +257,7 @@ class EditTextSpec {
       int heightSpec,
       Size size,
       @Prop(optional = true, resType = ResType.STRING) CharSequence text,
+      @Prop(optional = true, resType = ResType.STRING) CharSequence initialText,
       @Prop(optional = true, resType = ResType.STRING) CharSequence hint,
       @Prop(optional = true) TextUtils.TruncateAt ellipsize,
       @Prop(optional = true, resType = ResType.INT) int minLines,
@@ -293,6 +299,8 @@ class EditTextSpec {
     initEditText(
         editText,
         input == null ? text : input,
+        // We want to use the initialText value for *every* measure, not just the first one.
+        initialText,
         hint,
         ellipsize,
         inputFilters,
@@ -365,6 +373,7 @@ class EditTextSpec {
       final ComponentContext c,
       EditTextWithEventHandlers editText,
       @Prop(optional = true, resType = ResType.STRING) CharSequence text,
+      @Prop(optional = true, resType = ResType.STRING) CharSequence initialText,
       @Prop(optional = true, resType = ResType.STRING) CharSequence hint,
       @Prop(optional = true) TextUtils.TruncateAt ellipsize,
       @Prop(optional = true, resType = ResType.INT) int minLines,
@@ -399,6 +408,7 @@ class EditTextSpec {
       @Prop(optional = true) int cursorDrawableRes,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @State AtomicReference<EditTextWithEventHandlers> mountedView,
+      @State AtomicBoolean configuredInitialText,
       @State(canUpdateLazily = true) String input) {
 
     mountedView.set(editText);
@@ -406,6 +416,8 @@ class EditTextSpec {
     initEditText(
         editText,
         input == null ? text : input,
+        // Only set initialText on the EditText during the very first mount.
+        configuredInitialText.getAndSet(true) ? null : initialText,
         hint,
         ellipsize,
         inputFilters,
@@ -503,13 +515,16 @@ class EditTextSpec {
   @OnCreateInitialState
   static void onCreateInitialState(
       final ComponentContext c,
-      StateValue<AtomicReference<EditTextWithEventHandlers>> mountedView) {
+      StateValue<AtomicReference<EditTextWithEventHandlers>> mountedView,
+      StateValue<AtomicBoolean> configuredInitialText) {
     mountedView.set(new AtomicReference<EditTextWithEventHandlers>());
+    configuredInitialText.set(new AtomicBoolean());
   }
 
   private static void initEditText(
       EditText editText,
       CharSequence text,
+      CharSequence initialText,
       CharSequence hint,
       TextUtils.TruncateAt ellipsize,
       @Nullable List<InputFilter> inputFilters,
@@ -582,6 +597,8 @@ class EditTextSpec {
     if (text != null
         && (!(text instanceof String) || !text.equals(editText.getText().toString()))) {
       editText.setText(text);
+    } else if (initialText != null) {
+      editText.setText(initialText);
     }
     editText.setHint(hint);
     editText.setEllipsize(ellipsize);
