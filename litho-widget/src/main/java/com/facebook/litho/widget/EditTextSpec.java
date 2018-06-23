@@ -47,6 +47,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import com.facebook.litho.ComponentContext;
@@ -474,7 +475,11 @@ class EditTextSpec {
       ComponentContext c, @State AtomicReference<EditTextWithEventHandlers> mountedView) {
     EditTextWithEventHandlers eventHandler = mountedView.get();
     if (eventHandler != null) {
-      eventHandler.requestFocus();
+      if (eventHandler.requestFocus()) {
+        InputMethodManager imm =
+            (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(eventHandler, 0);
+      }
     }
   }
 
@@ -484,6 +489,9 @@ class EditTextSpec {
     EditTextWithEventHandlers eventHandler = mountedView.get();
     if (eventHandler != null) {
       eventHandler.clearFocus();
+      InputMethodManager imm =
+          (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
+      imm.hideSoftInputFromWindow(eventHandler.getWindowToken(), 0);
     }
   }
 
