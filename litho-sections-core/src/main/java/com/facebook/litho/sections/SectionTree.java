@@ -662,12 +662,13 @@ public class SectionTree {
   }
 
   void requestSmoothFocus(
-      final String globalKey, final int index, final SmoothScrollAlignmentType type) {
+      final Section section, final int index, final SmoothScrollAlignmentType type) {
     focusRequestOnUiThread(
         new Runnable() {
           @Override
           public void run() {
-            final SectionLocationInfo sectionLocationInfo = findSectionForKey(globalKey);
+            final SectionLocationInfo sectionLocationInfo =
+                findSectionForKey(section.getGlobalKey());
             checkFocusValidity(sectionLocationInfo, index);
             mFocusDispatcher.requestSmoothFocus(sectionLocationInfo.mStartIndex + index, type);
           }
