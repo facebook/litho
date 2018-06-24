@@ -139,10 +139,5 @@ public class TestingDIComponentProcessor extends AbstractComponentsProcessor {
           .addStatement("return $N", injectedParam.getName())
           .build();
     }
-
-    @Override
-    public boolean hasDIComponentCreation() {
-      return true;
-    }
   }
 }

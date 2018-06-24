@@ -65,9 +65,4 @@ public interface DependencyInjectionHelper {
 
   /** True if the Spec has to be injected. */
   boolean hasSpecInjection();
-
-  /**
-   * False if the Component.create() method should be static. This depends on Dependency Injection.
-   */
-  boolean hasDIComponentCreation();
 }

@@ -73,12 +73,12 @@ public class BuilderGenerator {
     final MethodSpec.Builder factoryMethod =
         MethodSpec.methodBuilder("create")
             .addModifiers(Modifier.PUBLIC)
-            .addModifiers(hasStaticCreate(specModel) ? Modifier.STATIC : Modifier.FINAL)
+            .addModifiers(Modifier.STATIC)
             .returns(getBuilderType(specModel))
             .addParameter(specModel.getContextClass(), "context")
             .addStatement("final $1T builder = new $1T()", BUILDER_CLASS_NAME);
 
-    if (hasStaticCreate(specModel) && !specModel.getTypeVariables().isEmpty()) {
+    if (!specModel.getTypeVariables().isEmpty()) {
       factoryMethod.addTypeVariables(specModel.getTypeVariables());
     }
 
@@ -117,9 +117,9 @@ public class BuilderGenerator {
             .returns(getBuilderType(specModel))
             .addParameter(specModel.getContextClass(), "context")
             .addStatement("return create(context, 0, 0)")
-            .addModifiers(hasStaticCreate(specModel) ? Modifier.STATIC : Modifier.FINAL);
+            .addModifiers(Modifier.STATIC);
 
-    if (hasStaticCreate(specModel) && !specModel.getTypeVariables().isEmpty()) {
+    if (!specModel.getTypeVariables().isEmpty()) {
       methodBuilder.addTypeVariables(specModel.getTypeVariables());
     }
 
@@ -1384,10 +1384,5 @@ public class BuilderGenerator {
     }
 
     return builtInitializer.toString();
-  }
-
-  private static boolean hasStaticCreate(SpecModel specModel) {
-    return !(specModel.hasInjectedDependencies()
-        && specModel.getDependencyInjectionHelper().hasDIComponentCreation());
   }
 }
