@@ -16,8 +16,6 @@
 
 package com.facebook.litho.testing.processor;
 
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
-
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -31,6 +29,7 @@ import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.facebook.litho.specmodels.processor.MountSpecModelFactory;
 import com.facebook.litho.specmodels.processor.testing.TestSpecModelFactory;
 import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
@@ -69,6 +68,10 @@ public class TestingDIComponentProcessor extends AbstractComponentsProcessor {
   }
 
   private static class TestingDependencyInjectionHelper implements DependencyInjectionHelper {
+
+    private static final ClassName ANDROID_CONTEXT_CLASS_NAME =
+        ClassName.get("android.content", "Context");
+
     @Override
     public List<SpecModelValidationError> validate(SpecModel specModel) {
       return ImmutableList.of();
@@ -80,35 +83,19 @@ public class TestingDIComponentProcessor extends AbstractComponentsProcessor {
     }
 
     @Override
-    public TypeSpecDataHolder generateSourceDelegate(SpecModel specModel) {
-      final FieldSpec.Builder builder =
-          FieldSpec.builder(specModel.getSpecTypeName(), DELEGATE_FIELD_NAME)
-              .addModifiers(Modifier.PRIVATE);
-
-      return TypeSpecDataHolder.newBuilder().addField(builder.build()).build();
-    }
-
-    @Override
     public MethodSpec generateConstructor(SpecModel specModel) {
       return MethodSpec.constructorBuilder()
           .addModifiers(Modifier.PUBLIC)
-          .addParameter(specModel.getSpecTypeName(), "spec")
-          .addStatement("$N = spec", DELEGATE_FIELD_NAME)
+          .addParameter(ANDROID_CONTEXT_CLASS_NAME, "context")
           .build();
     }
 
     @Override
     public CodeBlock generateFactoryMethodsComponentInstance(SpecModel specModel) {
       return CodeBlock.of(
-          "$L instance = new $L(new $L());\n",
+          "$L instance = new $L(context);\n",
           specModel.getComponentName(),
-          specModel.getComponentName(),
-          specModel.getSpecTypeName());
-    }
-
-    @Override
-    public boolean hasSpecInjection() {
-      return true;
+          specModel.getComponentName());
     }
 
     @Override

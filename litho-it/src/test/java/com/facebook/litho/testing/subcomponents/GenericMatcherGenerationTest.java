@@ -28,7 +28,6 @@ import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.specmodels.MyGeneric;
-import com.facebook.litho.testing.specmodels.MyGenericSpec;
 import com.facebook.litho.testing.specmodels.TestMyGeneric;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.assertj.core.api.Condition;
@@ -54,8 +53,7 @@ public class GenericMatcherGenerationTest {
   @Test
   public void testGenericPropMatching() {
     final ComponentContext c = mComponentsRule.getContext();
-    final Component component =
-        new MyGeneric<>(new MyGenericSpec()).create(c).genericProp(mGenericProp).build();
+    final Component component = new MyGeneric<>(c).create(c).genericProp(mGenericProp).build();
     final Condition<InspectableComponent> matcher =
         TestMyGeneric.matcher(c).genericProp(mGenericProp).build();
 

@@ -60,7 +60,6 @@ public class DelegateMethodGeneratorTest {
 
   @Before
   public void setUp() {
-    when(mDependencyInjectionHelper.hasSpecInjection()).thenReturn(true);
     mDelegateMethodModel =
         SpecMethodModel.<DelegateMethod, Void>builder()
             .annotations(ImmutableList.of(createAnnotation(OnCreateLayout.class)))
@@ -131,63 +130,6 @@ public class DelegateMethodGeneratorTest {
             "@java.lang.Override\n"
                 + "protected com.facebook.litho.Component onCreateLayout(com.facebook.litho.ComponentContext c) {\n"
                 + "  com.facebook.litho.Component _result = (com.facebook.litho.Component) TestSpec.onCreateLayout(\n"
-                + "    (com.facebook.litho.ComponentContext) c,\n"
-                + "    (boolean) prop,\n"
-                + "    (int) state);\n"
-                + "  return _result;\n"
-                + "}\n");
-  }
-
-  @Test
-  public void testGenerateWithDependencyInjection() {
-    TypeSpecDataHolder typeSpecDataHolder =
-        generateDelegates(
-            mSpecModelWithDI,
-            LAYOUT_SPEC_DELEGATE_METHODS_MAP);
-
-    assertThat(typeSpecDataHolder.getFieldSpecs()).isEmpty();
-    assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(1);
-    assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
-
-    assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
-        .isEqualTo(
-            "@java.lang.Override\n"
-                + "protected com.facebook.litho.Component onCreateLayout(com.facebook.litho.ComponentContext c) {\n"
-                + "  com.facebook.litho.Component _result = (com.facebook.litho.Component) mSpec.onCreateLayout(\n"
-                + "    (com.facebook.litho.ComponentContext) c,\n"
-                + "    (boolean) prop,\n"
-                + "    (int) state);\n"
-                + "  return _result;\n"
-                + "}\n");
-  }
-
-  @Test
-  public void testExtraOptionalParameterHasNoEffectIfSpecMethodDoesntUseIt() throws Exception {
-    Map<Class<? extends Annotation>, DelegateMethodDescription> map =
-        new TreeMap<>(
-            new Comparator<Class<? extends Annotation>>() {
-              @Override
-              public int compare(Class<? extends Annotation> lhs, Class<? extends Annotation> rhs) {
-                return lhs.toString().compareTo(rhs.toString());
-              }
-            });
-    map.put(
-        OnCreateLayout.class,
-        DelegateMethodDescription.fromDelegateMethodDescription(
-                LAYOUT_SPEC_DELEGATE_METHODS_MAP.get(OnCreateLayout.class))
-            .optionalParameters(
-                ImmutableList.of(
-                    MethodParamModelFactory.createSimpleMethodParamModel(
-                        new TypeSpec(TypeName.CHAR), "optionalParam", new Object())))
-            .build());
-
-    TypeSpecDataHolder typeSpecDataHolder = generateDelegates(mSpecModelWithDI, map);
-
-    assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
-        .isEqualTo(
-            "@java.lang.Override\n"
-                + "protected com.facebook.litho.Component onCreateLayout(com.facebook.litho.ComponentContext c) {\n"
-                + "  com.facebook.litho.Component _result = (com.facebook.litho.Component) mSpec.onCreateLayout(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (boolean) prop,\n"
                 + "    (int) state);\n"

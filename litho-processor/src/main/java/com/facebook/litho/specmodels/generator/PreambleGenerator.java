@@ -34,24 +34,8 @@ public class PreambleGenerator {
 
   public static TypeSpecDataHolder generate(SpecModel specModel) {
     return TypeSpecDataHolder.newBuilder()
-        .addTypeSpecDataHolder(generateSourceDelegate(specModel))
         .addTypeSpecDataHolder(generateConstructor(specModel))
         .build();
-  }
-
-  /**
-   * Generate a delegate to the Spec that defines this component.
-   */
-  static TypeSpecDataHolder generateSourceDelegate(SpecModel specModel) {
-    final TypeSpecDataHolder.Builder sourceDelegateBuilder = TypeSpecDataHolder.newBuilder();
-
-    if (specModel.hasInjectedDependencies()
-        && specModel.getDependencyInjectionHelper().hasSpecInjection()) {
-      sourceDelegateBuilder.addTypeSpecDataHolder(
-          specModel.getDependencyInjectionHelper().generateSourceDelegate(specModel));
-    }
-
-    return sourceDelegateBuilder.build();
   }
 
   /**

@@ -27,8 +27,7 @@ public final class SpecMethodModelValidation {
   private SpecMethodModelValidation() {}
 
   /**
-   * Validate that the given {@link SpecMethodModel} is either static or statically accessible (i.e.
-   * part of a well-known singleton structure).
+   * Validate that the given {@link SpecMethodModel} is static.
    *
    * @param specModel SpecModel containing the SpecMethodModel
    * @param methodModel The method to analyze.
@@ -37,13 +36,11 @@ public final class SpecMethodModelValidation {
   public static List<SpecModelValidationError> validateMethodIsStatic(
       SpecModel specModel, SpecMethodModel<?, ?> methodModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
-    if (!specModel.hasInjectedDependencies()
-        && specModel.getSpecElementType() == SpecElementType.JAVA_CLASS
+    if (specModel.getSpecElementType() == SpecElementType.JAVA_CLASS
         && !methodModel.modifiers.contains(Modifier.STATIC)) {
       validationErrors.add(
           new SpecModelValidationError(
-              methodModel.representedObject,
-              "Methods in a spec that doesn't have dependency injection must be static."));
+              methodModel.representedObject, "Methods in a spec must be static."));
     }
     return validationErrors;
   }

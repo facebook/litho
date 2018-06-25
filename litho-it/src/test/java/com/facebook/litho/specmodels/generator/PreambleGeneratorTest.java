@@ -17,7 +17,6 @@
 package com.facebook.litho.specmodels.generator;
 
 import static com.facebook.litho.specmodels.generator.PreambleGenerator.generateConstructor;
-import static com.facebook.litho.specmodels.generator.PreambleGenerator.generateSourceDelegate;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -48,7 +47,6 @@ public class PreambleGeneratorTest {
 
   @Before
   public void setUp() {
-    when(mDependencyInjectionHelper.hasSpecInjection()).thenReturn(true);
     mSpecModelWithoutDI = SpecModelImpl.newBuilder()
         .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
         .delegateMethods(ImmutableList.<SpecMethodModel<DelegateMethod, Void>>of())
@@ -99,37 +97,5 @@ public class PreambleGeneratorTest {
             "public Constructor() {\n"
                 + "  super(\"Test\");\n  final Object testObject = new TestObject();\n"
                 + "}\n");
-  }
-
-  @Test
-  public void testGenerateSourceDelegateWithoutDependencyInjection() {
-    TypeSpecDataHolder typeSpecDataHolder =
-        generateSourceDelegate(mSpecModelWithoutDI);
-
-    assertThat(typeSpecDataHolder.getFieldSpecs()).isEmpty();
-    assertThat(typeSpecDataHolder.getMethodSpecs()).isEmpty();
-    assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
-  }
-
-  @Test
-  public void testGenerateSourceDelegateWithDependencyInjection() {
-    final FieldSpec field =
-        FieldSpec.builder(mSpecModelWithDI.getSpecTypeName(), "mSpec")
-            .addModifiers(Modifier.PRIVATE)
-            .build();
-    final TypeSpecDataHolder sourceDelegate =
-        TypeSpecDataHolder.newBuilder().addField(field).build();
-    when(mDependencyInjectionHelper.generateSourceDelegate(mSpecModelWithDI))
-        .thenReturn(sourceDelegate);
-
-    TypeSpecDataHolder typeSpecDataHolder =
-        generateSourceDelegate(mSpecModelWithDI);
-
-    assertThat(typeSpecDataHolder.getFieldSpecs()).hasSize(1);
-    assertThat(typeSpecDataHolder.getMethodSpecs()).isEmpty();
-    assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
-
-    assertThat(typeSpecDataHolder.getFieldSpecs().get(0).toString())
-        .isEqualTo("private com.facebook.litho.TestSpec mSpec;\n");
   }
 }

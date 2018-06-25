@@ -300,8 +300,7 @@ public class DelegateMethodValidationTest {
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mDelegateMethodObject1);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "Methods in a spec that doesn't have dependency injection must be static.");
+    assertThat(validationErrors.get(0).message).isEqualTo("Methods in a spec must be static.");
   }
 
   @Test

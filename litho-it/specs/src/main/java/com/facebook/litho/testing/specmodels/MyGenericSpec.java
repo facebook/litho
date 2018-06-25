@@ -27,7 +27,8 @@ import com.facebook.litho.annotations.Prop;
 @LayoutSpec
 public class MyGenericSpec<E extends HasEventDispatcher> {
   @OnCreateLayout
-  protected Component onCreateLayout(ComponentContext c, @Prop E genericProp) {
+  protected static <E extends HasEventDispatcher> Component onCreateLayout(
+      ComponentContext c, @Prop E genericProp) {
     return Column.create(c).build();
   }
 }

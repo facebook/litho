@@ -39,9 +39,6 @@ public interface DependencyInjectionHelper {
    */
   boolean isValidGeneratedComponentAnnotation(AnnotationSpec annotation);
 
-  /** Generate source delegate required for Dependency Injection. */
-  TypeSpecDataHolder generateSourceDelegate(SpecModel specModel);
-
   /** Generate the constructor required for Dependency Injection. */
   MethodSpec generateConstructor(SpecModel specModel);
 
@@ -62,7 +59,4 @@ public interface DependencyInjectionHelper {
    * fields. For instance, when field values are wrapped in a lazy wrapper.
    */
   MethodSpec generateTestingFieldAccessor(InjectPropModel injectPropModel);
-
-  /** True if the Spec has to be injected. */
-  boolean hasSpecInjection();
 }

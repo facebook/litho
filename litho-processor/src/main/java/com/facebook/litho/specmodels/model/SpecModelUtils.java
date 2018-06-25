@@ -16,7 +16,6 @@
 
 package com.facebook.litho.specmodels.model;
 
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
 import static com.facebook.litho.specmodels.internal.ImmutableList.copyOf;
 import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
 
@@ -47,11 +46,6 @@ public class SpecModelUtils {
   public static String getSpecAccessor(SpecModel specModel) {
     if (specModel.getSpecElementType() == SpecElementType.KOTLIN_SINGLETON) {
       return specModel.getSpecName() + ".INSTANCE";
-    }
-
-    if (specModel.hasInjectedDependencies()
-        && specModel.getDependencyInjectionHelper().hasSpecInjection()) {
-      return DELEGATE_FIELD_NAME;
     }
 
     return specModel.getSpecName();
