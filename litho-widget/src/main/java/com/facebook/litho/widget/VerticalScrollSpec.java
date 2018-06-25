@@ -37,6 +37,7 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.FromBoundsDefined;
+import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateInitialState;
@@ -93,9 +94,22 @@ public class VerticalScrollSpec {
       Size size,
       @Prop Component childComponent,
       @Prop(optional = true) boolean fillViewport,
-      @State ComponentTree childComponentTree) {
+      @State ComponentTree childComponentTree,
+      Output<Integer> measuredContentWidth,
+      Output<Integer> measuredContentHeight,
+      Output<Integer> measuredWidth,
+      Output<Integer> measuredHeight) {
     measureVerticalScroll(
-        widthSpec, heightSpec, size, childComponentTree, childComponent, fillViewport, null, null);
+        widthSpec,
+        heightSpec,
+        size,
+        childComponentTree,
+        childComponent,
+        fillViewport,
+        measuredContentWidth,
+        measuredContentHeight);
+    measuredWidth.set(size.width);
+    measuredHeight.set(size.height);
   }
 
   @OnBoundsDefined
@@ -106,7 +120,26 @@ public class VerticalScrollSpec {
       @Prop(optional = true) boolean fillViewport,
       @State ComponentTree childComponentTree,
       Output<Integer> contentWidth,
-      Output<Integer> contentHeight) {
+      Output<Integer> contentHeight,
+      @FromMeasure Integer measuredContentWidth,
+      @FromMeasure Integer measuredContentHeight,
+      @FromMeasure Integer measuredWidth,
+      @FromMeasure Integer measuredHeight) {
+
+    final int layoutWidth = layout.getWidth() - layout.getPaddingLeft() - layout.getPaddingRight();
+    final int layoutHeight =
+        layout.getHeight() - layout.getPaddingTop() - layout.getPaddingBottom();
+
+    if (measuredWidth != null
+        && measuredWidth == layoutWidth
+        && (!fillViewport || (measuredHeight != null && measuredHeight == layoutHeight))) {
+      // If we're not filling the viewport, then we always measure the height with unspecified, so
+      // we just need to check that the width matches.
+      contentWidth.set(measuredContentWidth);
+      contentHeight.set(measuredContentHeight);
+      return;
+    }
+
     measureVerticalScroll(
         SizeSpec.makeSizeSpec(layout.getWidth(), EXACTLY),
         SizeSpec.makeSizeSpec(layout.getHeight(), EXACTLY),
@@ -125,18 +158,13 @@ public class VerticalScrollSpec {
       ComponentTree childComponentTree,
       Component childComponent,
       boolean fillViewport,
-      @Nullable Output<Integer> contentWidth,
-      @Nullable Output<Integer> contentHeight) {
+      Output<Integer> contentWidth,
+      Output<Integer> contentHeight) {
     childComponentTree.setRootAndSizeSpec(
         childComponent, widthSpec, SizeSpec.makeSizeSpec(0, UNSPECIFIED), size);
 
-    if (contentWidth != null) {
-      contentWidth.set(size.width);
-    }
-
-    if (contentHeight != null) {
-      contentHeight.set(size.height);
-    }
+    contentWidth.set(size.width);
+    contentHeight.set(size.height);
 
     // Compute the appropriate size depending on the heightSpec
     switch (SizeSpec.getMode(heightSpec)) {
@@ -146,10 +174,7 @@ public class VerticalScrollSpec {
         if (fillViewport && size.height < SizeSpec.getSize(heightSpec)) {
           // Remeasure with exact bounds to make sure that the child component fills the viewport.
           childComponentTree.setSizeSpec(widthSpec, heightSpec);
-
-          if (contentHeight != null) {
-            contentHeight.set(SizeSpec.getSize(heightSpec));
-          }
+          contentHeight.set(SizeSpec.getSize(heightSpec));
         }
 
         size.height = SizeSpec.getSize(heightSpec);
@@ -162,9 +187,7 @@ public class VerticalScrollSpec {
           // Remeasure with exact bounds to make sure that the child component fills the viewport.
           childComponentTree.setSizeSpec(
               widthSpec, SizeSpec.makeSizeSpec(SizeSpec.getSize(heightSpec), EXACTLY));
-          if (contentHeight != null) {
-            contentHeight.set(SizeSpec.getSize(heightSpec));
-          }
+          contentHeight.set(SizeSpec.getSize(heightSpec));
         }
 
         size.height = Math.min(SizeSpec.getSize(heightSpec), size.height);
