@@ -37,7 +37,6 @@ import android.util.Log;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentsLogger;
-import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventHandlersController;
@@ -662,13 +661,12 @@ public class SectionTree {
   }
 
   void requestSmoothFocus(
-      final Section section, final int index, final SmoothScrollAlignmentType type) {
+      final String globalKey, final int index, final SmoothScrollAlignmentType type) {
     focusRequestOnUiThread(
         new Runnable() {
           @Override
           public void run() {
-            final SectionLocationInfo sectionLocationInfo =
-                findSectionForKey(section.getGlobalKey());
+            final SectionLocationInfo sectionLocationInfo = findSectionForKey(globalKey);
             checkFocusValidity(sectionLocationInfo, index);
             mFocusDispatcher.requestSmoothFocus(sectionLocationInfo.mStartIndex + index, type);
           }
