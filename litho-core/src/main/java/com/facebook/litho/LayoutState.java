@@ -1201,7 +1201,6 @@ class LayoutState {
       component.markLayoutStarted();
 
       layoutState = ComponentsPools.acquireLayoutState(c);
-      layoutState.clearComponents();
       layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
       layoutState.mComponentTreeId = componentTreeId;
       layoutState.mPreviousLayoutStateId =
@@ -2090,6 +2089,7 @@ class LayoutState {
         ComponentsPools.release(rect);
       }
       mComponentKeyToBounds.clear();
+      mComponents.clear();
 
       for (int i = 0, size = mVisibilityOutputs.size(); i < size; i++) {
         ComponentsPools.release(mVisibilityOutputs.get(i));
