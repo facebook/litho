@@ -349,7 +349,7 @@ public class DelegateMethodValidation {
     return false;
   }
 
-  private static boolean isOptionalParamValid(
+  public static boolean isOptionalParamValid(
       SpecModel specModel,
       ImmutableList<OptionalParameterType> parameterTypes,
       MethodParamModel methodParamModel) {
@@ -399,8 +399,7 @@ public class DelegateMethodValidation {
     return false;
   }
 
-  private static String getOptionalParamsError(
-      DelegateMethodDescription delegateMethodDescription) {
+  public static String getOptionalParamsError(DelegateMethodDescription delegateMethodDescription) {
     StringBuilder stringBuilder = new StringBuilder();
     stringBuilder
         .append("Not a valid parameter, should be one of the following: ")
@@ -419,7 +418,7 @@ public class DelegateMethodValidation {
     return stringBuilder.toString();
   }
 
-  private static String getStringRepresentationOfParamTypes(
+  public static String getStringRepresentationOfParamTypes(
       ImmutableList<OptionalParameterType> optionalParameterTypes) {
     final StringBuilder stringBuilder = new StringBuilder();
     for (OptionalParameterType parameterType : optionalParameterTypes) {
