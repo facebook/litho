@@ -23,12 +23,14 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -46,8 +48,8 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
-import com.facebook.litho.LayoutPriorityThreadPoolExecutor;
 import com.facebook.litho.LayoutThreadPoolConfigurationImpl;
+import com.facebook.litho.LayoutThreadPoolExecutor;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -634,8 +636,8 @@ public class RecyclerBinderFillViewportTest {
             .layoutInfo(layoutInfo)
             .build(mComponentContext);
 
-    final LayoutPriorityThreadPoolExecutor executor =
-        spy(new LayoutPriorityThreadPoolExecutor(3, 3, Process.THREAD_PRIORITY_BACKGROUND));
+    final LayoutThreadPoolExecutor executor =
+        spy(new LayoutThreadPoolExecutor(3, 3, Process.THREAD_PRIORITY_BACKGROUND));
     Whitebox.setInternalState(recyclerBinder, "mExecutor", executor);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
@@ -643,12 +645,8 @@ public class RecyclerBinderFillViewportTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(250, EXACTLY), null);
 
-    verify(executor).submit(any(Callable.class), eq(0));
-    verify(executor).submit(any(Callable.class), eq(1));
-    verify(executor).submit(any(Callable.class), eq(2));
-    verify(executor).submit(any(Callable.class), eq(3));
-    verify(executor).submit(any(Callable.class), eq(4));
-    verify(executor, never()).submit(any(Callable.class), eq(5));
+    verify(executor, atLeast(3)).submit(any(Callable.class));
+    verify(executor, atMost(6)).submit(any(Callable.class));
   }
 
   @SuppressLint("STARVATION")
@@ -665,8 +663,8 @@ public class RecyclerBinderFillViewportTest {
             .layoutInfo(layoutInfo)
             .build(mComponentContext);
 
-    final LayoutPriorityThreadPoolExecutor executor =
-        spy(new LayoutPriorityThreadPoolExecutor(3, 3, Process.THREAD_PRIORITY_BACKGROUND));
+    final LayoutThreadPoolExecutor executor =
+        spy(new LayoutThreadPoolExecutor(3, 3, Process.THREAD_PRIORITY_BACKGROUND));
     Whitebox.setInternalState(recyclerBinder, "mExecutor", executor);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 15);
@@ -674,16 +672,8 @@ public class RecyclerBinderFillViewportTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(700, EXACTLY), null);
 
-    verify(executor).submit(any(Callable.class), eq(0));
-    verify(executor).submit(any(Callable.class), eq(1));
-    verify(executor).submit(any(Callable.class), eq(2));
-    verify(executor).submit(any(Callable.class), eq(3));
-    verify(executor).submit(any(Callable.class), eq(4));
-    verify(executor).submit(any(Callable.class), eq(5));
-    verify(executor).submit(any(Callable.class), eq(6));
-    verify(executor).submit(any(Callable.class), eq(7));
-    verify(executor).submit(any(Callable.class), eq(8));
-    verify(executor, never()).submit(any(Callable.class), eq(9));
+    verify(executor, atLeast(7)).submit(any(Callable.class));
+    verify(executor, atMost(10)).submit(any(Callable.class));
   }
 
   @SuppressLint("STARVATION")
@@ -700,8 +690,8 @@ public class RecyclerBinderFillViewportTest {
             .layoutInfo(layoutInfo)
             .build(mComponentContext);
 
-    final LayoutPriorityThreadPoolExecutor executor =
-        spy(new LayoutPriorityThreadPoolExecutor(3, 3, Process.THREAD_PRIORITY_BACKGROUND));
+    final LayoutThreadPoolExecutor executor =
+        spy(new LayoutThreadPoolExecutor(3, 3, Process.THREAD_PRIORITY_BACKGROUND));
     Whitebox.setInternalState(recyclerBinder, "mExecutor", executor);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 5);
@@ -709,12 +699,7 @@ public class RecyclerBinderFillViewportTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(700, EXACTLY), null);
 
-    verify(executor).submit(any(Callable.class), eq(0));
-    verify(executor).submit(any(Callable.class), eq(1));
-    verify(executor).submit(any(Callable.class), eq(2));
-    verify(executor).submit(any(Callable.class), eq(3));
-    verify(executor).submit(any(Callable.class), eq(4));
-    verify(executor, never()).submit(any(Callable.class), eq(5));
+    verify(executor, times(5)).submit(any(Callable.class));
   }
 
   @SuppressLint("STARVATION")
@@ -731,8 +716,8 @@ public class RecyclerBinderFillViewportTest {
             .layoutInfo(layoutInfo)
             .build(mComponentContext);
 
-    final LayoutPriorityThreadPoolExecutor executor =
-        spy(new LayoutPriorityThreadPoolExecutor(3, 3, Process.THREAD_PRIORITY_BACKGROUND));
+    final LayoutThreadPoolExecutor executor =
+        spy(new LayoutThreadPoolExecutor(3, 3, Process.THREAD_PRIORITY_BACKGROUND));
     Whitebox.setInternalState(recyclerBinder, "mExecutor", executor);
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 11);
 
@@ -740,13 +725,8 @@ public class RecyclerBinderFillViewportTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(250, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
-    verify(executor, never()).submit(any(Callable.class), eq(4));
-    verify(executor).submit(any(Callable.class), eq(5));
-    verify(executor).submit(any(Callable.class), eq(6));
-    verify(executor).submit(any(Callable.class), eq(7));
-    verify(executor).submit(any(Callable.class), eq(8));
-    verify(executor).submit(any(Callable.class), eq(9));
-    verify(executor, never()).submit(any(Callable.class), eq(10));
+    verify(executor, atLeast(3)).submit(any(Callable.class));
+    verify(executor, atMost(6)).submit(any(Callable.class));
   }
 
   @SuppressLint("STARVATION")
@@ -783,8 +763,8 @@ public class RecyclerBinderFillViewportTest {
             .layoutInfo(layoutInfo)
             .build(mComponentContext);
 
-    final LayoutPriorityThreadPoolExecutor executor =
-        spy(new LayoutPriorityThreadPoolExecutor(3, 3, Process.THREAD_PRIORITY_BACKGROUND));
+    final LayoutThreadPoolExecutor executor =
+        spy(new LayoutThreadPoolExecutor(3, 3, Process.THREAD_PRIORITY_BACKGROUND));
     Whitebox.setInternalState(recyclerBinder, "mExecutor", executor);
 
     fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 3);
@@ -812,10 +792,7 @@ public class RecyclerBinderFillViewportTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
-    verify(executor).submit(any(Callable.class), eq(0));
-    verify(executor).submit(any(Callable.class), eq(1));
-    verify(executor).submit(any(Callable.class), eq(2));
-    verify(executor, never()).submit(any(Callable.class), eq(4));
+    verify(executor, times(3)).submit(any(Callable.class));
   }
 
   private void fillRecyclerBinderWithComponents(

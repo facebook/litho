@@ -47,7 +47,7 @@ import com.facebook.litho.ComponentTree.MeasureListener;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
-import com.facebook.litho.LayoutPriorityThreadPoolExecutor;
+import com.facebook.litho.LayoutThreadPoolExecutor;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.MeasureComparisonUtils;
 import com.facebook.litho.RenderCompleteEvent;
@@ -109,7 +109,7 @@ public class RecyclerBinder
   private final float mRangeRatio;
   private final AtomicBoolean mIsMeasured = new AtomicBoolean(false);
   private final AtomicBoolean mRequiresRemeasure = new AtomicBoolean(false);
-  private final @Nullable LayoutPriorityThreadPoolExecutor mExecutor;
+  private final @Nullable LayoutThreadPoolExecutor mExecutor;
   private final int mFillViewportPoolSize;
   private final boolean mFillListViewport;
   private final boolean mFillListViewportHScrollOnly;
@@ -632,7 +632,7 @@ public class RecyclerBinder
       mParallelFillViewportEnabled = true;
       mFillViewportPoolSize = config.getCorePoolSize();
       mExecutor =
-          new LayoutPriorityThreadPoolExecutor(
+          new LayoutThreadPoolExecutor(
               mFillViewportPoolSize, config.getMaxPoolSize(), config.getThreadPriority());
     } else {
       mExecutor = null;
@@ -1855,7 +1855,7 @@ public class RecyclerBinder
     final Callable<ParallelFillViewportResult> callable =
         createCallable(holder, widthSpec, heightSpec, position);
 
-    return mExecutor.submit(callable, position);
+    return mExecutor.submit(callable);
   }
 
   /**
