@@ -2290,7 +2290,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     for (int i = 0, size = group.size(); i < size; i++) {
       final MountItem item = group.getAt(i);
-      if (item.getContent() instanceof ComponentHost) {
+      // We used to do (item.getContent() instanceof ComponentHost) check here, which didn't take
+      // into consideration MountSpecs that mount a LithoView which would pass the check while
+      // shouldn't
+      if (group.typeAt(i) == OutputUnitType.HOST) {
         final ComponentHost content = (ComponentHost) item.getContent();
 
         // Unmount descendant items in reverse order.
