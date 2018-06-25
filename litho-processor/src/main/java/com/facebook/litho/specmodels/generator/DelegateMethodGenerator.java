@@ -124,6 +124,47 @@ public class DelegateMethodGenerator {
           componentName);
     }
 
+    methodSpec.addCode(getDelegationCode(specModel, delegateMethod, methodDescription));
+
+    if (delegateMethod.name.toString().equals("onCreateLayout")
+        || delegateMethod.name.toString().equals("onPrepare")) {
+      SpecMethodModel<EventMethod, Void> registerRangesModel =
+          specModel.getWorkingRangeRegisterMethod();
+
+      if (registerRangesModel != null) {
+        CodeBlock.Builder registerDelegation =
+            CodeBlock.builder()
+                .add(
+                    "$L.$L(\n",
+                    SpecModelUtils.getSpecAccessor(specModel),
+                    registerRangesModel.name);
+
+        registerDelegation.indent();
+        for (int i = 0, size = registerRangesModel.methodParams.size(); i < size; i++) {
+          final MethodParamModel methodParamModel = registerRangesModel.methodParams.get(i);
+          registerDelegation.add(
+              "($T) $L",
+              methodParamModel.getTypeName(),
+              getImplAccessor(specModel, methodParamModel));
+          registerDelegation.add(
+              (i < registerRangesModel.methodParams.size() - 1) ? ",\n" : ");\n");
+        }
+        registerDelegation.unindent();
+        methodSpec.addCode(registerDelegation.build());
+      }
+    }
+
+    if (!methodDescription.returnType.equals(TypeName.VOID)) {
+      methodSpec.addStatement("return _result");
+    }
+
+    return methodSpec.build();
+  }
+
+  public static CodeBlock getDelegationCode(
+      SpecModel specModel,
+      SpecMethodModel<DelegateMethod, Void> delegateMethod,
+      DelegateMethodDescription methodDescription) {
     final CodeBlock.Builder acquireStatements = CodeBlock.builder();
     final CodeBlock.Builder delegation = CodeBlock.builder();
     final CodeBlock.Builder releaseStatements = CodeBlock.builder();
@@ -203,7 +244,7 @@ public class DelegateMethodGenerator {
         if (delegateMethod.name.toString().equals("createInitialState")) {
           releaseStatements.endControlFlow();
         }
-        
+
       } else if (methodParamModel instanceof RenderDataDiffModel) {
         final String diffName = "_" + methodParamModel.getName() + "Diff";
         CodeBlock block =
@@ -218,7 +259,7 @@ public class DelegateMethodGenerator {
                 .add("$L);\n", getImplAccessor(specModel, methodParamModel))
                 .unindent()
                 .build();
-        methodSpec.addCode(block);
+        acquireStatements.add(block);
         releaseStatements.addStatement("releaseDiff($L)", diffName);
         delegation.add("$L", diffName);
       } else if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, CommonProp.class)) {
@@ -242,39 +283,11 @@ public class DelegateMethodGenerator {
     delegation.add(");\n");
     delegation.unindent();
 
-    methodSpec.addCode(acquireStatements.build());
-    methodSpec.addCode(delegation.build());
-    methodSpec.addCode(releaseStatements.build());
-
-    if (delegateMethod.name.toString().equals("onCreateLayout")
-        || delegateMethod.name.toString().equals("onPrepare")) {
-      SpecMethodModel<EventMethod, Void> registerRangesModel =
-          specModel.getWorkingRangeRegisterMethod();
-
-      if (registerRangesModel != null) {
-        CodeBlock.Builder registerDelegation =
-            CodeBlock.builder().add("$L.$L(\n", sourceDelegateAccessor, registerRangesModel.name);
-
-        registerDelegation.indent();
-        for (int i = 0, size = registerRangesModel.methodParams.size(); i < size; i++) {
-          final MethodParamModel methodParamModel = registerRangesModel.methodParams.get(i);
-          registerDelegation.add(
-              "($T) $L",
-              methodParamModel.getTypeName(),
-              getImplAccessor(specModel, methodParamModel));
-          registerDelegation.add(
-              (i < registerRangesModel.methodParams.size() - 1) ? ",\n" : ");\n");
-        }
-        registerDelegation.unindent();
-        methodSpec.addCode(registerDelegation.build());
-      }
-    }
-
-    if (!methodDescription.returnType.equals(TypeName.VOID)) {
-      methodSpec.addStatement("return _result");
-    }
-
-    return methodSpec.build();
+    return CodeBlock.builder()
+        .add(acquireStatements.build())
+        .add(delegation.build())
+        .add(releaseStatements.build())
+        .build();
   }
 
   /**
