@@ -21,6 +21,7 @@ import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getMe
 
 import com.facebook.litho.annotations.CommonProp;
 import com.facebook.litho.annotations.InjectProp;
+import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
@@ -51,6 +52,7 @@ public class DelegateMethodExtractor {
     METHOD_PARAM_ANNOTATIONS.add(TreeProp.class);
     METHOD_PARAM_ANNOTATIONS.add(CommonProp.class);
     METHOD_PARAM_ANNOTATIONS.add(InjectProp.class);
+    METHOD_PARAM_ANNOTATIONS.add(Param.class);
   }
 
   /** Get the delegate methods from the given {@link TypeElement}. */

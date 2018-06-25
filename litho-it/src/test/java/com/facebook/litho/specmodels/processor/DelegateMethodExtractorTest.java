@@ -19,10 +19,10 @@ package com.facebook.litho.specmodels.processor;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
-import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
@@ -54,7 +54,7 @@ public class DelegateMethodExtractorTest {
     public void testMethod(
         @Prop boolean testProp,
         @State int testState,
-        @Param Object testPermittedAnnotation) {
+        @Event Object testPermittedAnnotation) {
       // Don't do anything.
     }
 
@@ -72,7 +72,7 @@ public class DelegateMethodExtractorTest {
 
     List<Class<? extends Annotation>> permittedParamAnnotations =
         new ArrayList<>();
-    permittedParamAnnotations.add(Param.class);
+    permittedParamAnnotations.add(Event.class);
 
     ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods =
         DelegateMethodExtractor.getDelegateMethods(
