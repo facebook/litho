@@ -174,6 +174,7 @@ class LayoutState {
 
   @Nullable InternalNode mLayoutRoot;
   @Nullable String mRootTransitionKey;
+  @Nullable String mRootComponentName;
 
   private DiffNode mDiffTreeRoot;
   // Reference count will be initialized to 1 in init().
@@ -1214,6 +1215,7 @@ class LayoutState {
       layoutState.mCanPrefetchDisplayLists = canPrefetchDisplayLists;
       layoutState.mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
       layoutState.mClipChildren = clipChildren;
+      layoutState.mRootComponentName = component.getSimpleName();
 
       final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
       final InternalNode root =
@@ -2127,6 +2129,7 @@ class LayoutState {
       }
 
       mRootTransitionKey = null;
+      mRootComponentName = null;
 
       if (mComponentsNeedingPreviousRenderData != null) {
         mComponentsNeedingPreviousRenderData.clear();

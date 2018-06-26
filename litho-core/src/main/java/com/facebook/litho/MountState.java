@@ -2886,6 +2886,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (!TextUtils.isEmpty(rootTransitionKey)) {
       for (int i = 0, size = allTransitions.size(); i < size; i++) {
         final Transition transition = allTransitions.get(i);
+        if (transition == null) {
+          throw new IllegalStateException(
+              "NULL_TRANSITION when collecting root bounds anim. Root: "
+                  + layoutState.mRootComponentName
+                  + ", rootKey: "
+                  + rootTransitionKey);
+        }
         TransitionUtils.collectRootBoundsTransitions(
             rootTransitionKey, transition, AnimatedProperties.WIDTH, rootWidthTransition);
 
