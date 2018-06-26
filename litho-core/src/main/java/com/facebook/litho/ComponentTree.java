@@ -1537,7 +1537,7 @@ public class ComponentTree {
    * @param treeProps Saved TreeProps to be used as parent input
    */
   private void calculateLayout(
-      Size output,
+      @Nullable Size output,
       @CalculateLayoutSource int source,
       String extraAttribution,
       @Nullable TreeProps treeProps) {
