@@ -16,7 +16,6 @@
 
 package com.facebook.litho.specmodels.model;
 
-import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.COMMON_PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_STATE;
@@ -91,8 +90,7 @@ public final class DelegateMethodDescriptions {
           .returnType(ClassNames.COMPONENT)
           .name("onCreateLayout")
           .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
-          .optionalParameterTypes(
-              ImmutableList.of(PROP, COMMON_PROP, TREE_PROP, STATE, INJECT_PROP))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP))
           .build();
 
   public static final DelegateMethodDescription ON_ERROR =
@@ -103,8 +101,7 @@ public final class DelegateMethodDescriptions {
           .name("onError")
           .definedParameterTypes(
               ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT, ClassNames.EXCEPTION))
-          .optionalParameterTypes(
-              ImmutableList.of(PROP, COMMON_PROP, TREE_PROP, STATE, INJECT_PROP))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP))
           .build();
 
   public static final DelegateMethodDescription ON_CREATE_LAYOUT_WITH_SIZE_SPEC =
@@ -115,8 +112,7 @@ public final class DelegateMethodDescriptions {
           .name("onCreateLayoutWithSizeSpec")
           .definedParameterTypes(
               ImmutableList.of(ClassNames.COMPONENT_CONTEXT, TypeName.INT, TypeName.INT))
-          .optionalParameterTypes(
-              ImmutableList.of(PROP, COMMON_PROP, TREE_PROP, STATE, INJECT_PROP))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP))
           .extraMethods(
               ImmutableList.of(
                   MethodSpec.methodBuilder("canMeasure")
@@ -134,8 +130,7 @@ public final class DelegateMethodDescriptions {
           .returnType(TypeName.VOID)
           .name("createInitialState")
           .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
-          .optionalParameterTypes(
-              ImmutableList.of(PROP, COMMON_PROP, TREE_PROP, STATE_VALUE, INJECT_PROP))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE_VALUE, INJECT_PROP))
           .build();
 
   public static final DelegateMethodDescription ON_CREATE_TRANSITION =
@@ -145,8 +140,7 @@ public final class DelegateMethodDescriptions {
           .returnType(ClassNames.TRANSITION)
           .name("onCreateTransition")
           .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
-          .optionalParameterTypes(
-              ImmutableList.of(PROP, COMMON_PROP, TREE_PROP, STATE, DIFF, INJECT_PROP))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, DIFF, INJECT_PROP))
           .build();
 
   public static final DelegateMethodDescription ON_PREPARE =
@@ -157,8 +151,7 @@ public final class DelegateMethodDescriptions {
           .name("onPrepare")
           .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
           .optionalParameterTypes(
-              ImmutableList.of(
-                  PROP, COMMON_PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP))
+              ImmutableList.of(PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP))
           .build();
 
   public static final DelegateMethodDescription ON_MEASURE =
@@ -175,8 +168,7 @@ public final class DelegateMethodDescriptions {
                   TypeName.INT,
                   ClassNames.SIZE))
           .optionalParameterTypes(
-              ImmutableList.of(
-                  PROP, COMMON_PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP))
+              ImmutableList.of(PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP))
           .interStageInputAnnotations(
               ImmutableList.<Class<? extends Annotation>>of(FromPrepare.class))
           .extraMethods(
@@ -198,8 +190,7 @@ public final class DelegateMethodDescriptions {
           .definedParameterTypes(
               ImmutableList.of(ClassNames.COMPONENT_CONTEXT, TypeName.INT, TypeName.INT))
           .optionalParameterTypes(
-              ImmutableList.of(
-                  PROP, COMMON_PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP))
+              ImmutableList.of(PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP))
           .interStageInputAnnotations(
               ImmutableList.<Class<? extends Annotation>>of(FromPrepare.class))
           .build();
@@ -213,8 +204,7 @@ public final class DelegateMethodDescriptions {
           .definedParameterTypes(
               ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT, ClassNames.COMPONENT_LAYOUT))
           .optionalParameterTypes(
-              ImmutableList.of(
-                  PROP, COMMON_PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP))
+              ImmutableList.of(PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP))
           .interStageInputAnnotations(
               ImmutableList.of(FromPrepare.class, FromMeasure.class, FromMeasureBaseline.class))
           .build();
@@ -248,8 +238,7 @@ public final class DelegateMethodDescriptions {
           .definedParameterTypes(
               ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT, ClassNames.OBJECT))
           .optionalParameterTypes(
-              ImmutableList.of(
-                  PROP, COMMON_PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP))
+              ImmutableList.of(PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP))
           .interStageInputAnnotations(
               ImmutableList.of(
                   FromPrepare.class,
@@ -267,8 +256,7 @@ public final class DelegateMethodDescriptions {
           .definedParameterTypes(
               ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT, ClassNames.OBJECT))
           .optionalParameterTypes(
-              ImmutableList.of(
-                  PROP, COMMON_PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP))
+              ImmutableList.of(PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP))
           .interStageInputAnnotations(
               ImmutableList.of(
                   FromPrepare.class,
@@ -285,8 +273,7 @@ public final class DelegateMethodDescriptions {
           .name("onUnbind")
           .definedParameterTypes(
               ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT, ClassNames.OBJECT))
-          .optionalParameterTypes(
-              ImmutableList.of(PROP, COMMON_PROP, TREE_PROP, STATE, INJECT_PROP))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP))
           .interStageInputAnnotations(
               ImmutableList.of(
                   FromPrepare.class,
@@ -304,8 +291,7 @@ public final class DelegateMethodDescriptions {
           .name("onUnmount")
           .definedParameterTypes(
               ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT, ClassNames.OBJECT))
-          .optionalParameterTypes(
-              ImmutableList.of(PROP, COMMON_PROP, TREE_PROP, STATE, INJECT_PROP))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP))
           .interStageInputAnnotations(
               ImmutableList.of(
                   FromPrepare.class,
@@ -332,8 +318,7 @@ public final class DelegateMethodDescriptions {
           .name("onPopulateAccessibilityNode")
           .definedParameterTypes(
               ImmutableList.<TypeName>of(ClassNames.VIEW, ClassNames.ACCESSIBILITY_NODE))
-          .optionalParameterTypes(
-              ImmutableList.of(PROP, COMMON_PROP, TREE_PROP, STATE, INJECT_PROP))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP))
           .interStageInputAnnotations(
               ImmutableList.of(
                   FromPrepare.class,
@@ -360,8 +345,7 @@ public final class DelegateMethodDescriptions {
           .definedParameterTypes(
               ImmutableList.of(
                   ClassNames.ACCESSIBILITY_NODE, TypeName.INT, TypeName.INT, TypeName.INT))
-          .optionalParameterTypes(
-              ImmutableList.of(PROP, COMMON_PROP, TREE_PROP, STATE, INJECT_PROP))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP))
           .interStageInputAnnotations(
               ImmutableList.of(
                   FromPrepare.class,
@@ -386,8 +370,7 @@ public final class DelegateMethodDescriptions {
           .returnType(TypeName.INT)
           .name("getExtraAccessibilityNodeAt")
           .definedParameterTypes(ImmutableList.of(TypeName.INT, TypeName.INT))
-          .optionalParameterTypes(
-              ImmutableList.of(PROP, COMMON_PROP, TREE_PROP, STATE, INJECT_PROP))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP))
           .interStageInputAnnotations(
               ImmutableList.of(
                   FromPrepare.class,
@@ -404,8 +387,7 @@ public final class DelegateMethodDescriptions {
           .returnType(TypeName.INT)
           .name("getExtraAccessibilityNodesCount")
           .definedParameterTypes(ImmutableList.<TypeName>of())
-          .optionalParameterTypes(
-              ImmutableList.of(PROP, COMMON_PROP, TREE_PROP, STATE, INJECT_PROP))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP))
           .interStageInputAnnotations(
               ImmutableList.of(
                   FromPrepare.class,

@@ -130,7 +130,6 @@ public class MountSpecModelFactory implements SpecModelFactory {
                 interStageStore, element.getQualifiedName()),
         ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),
-        PropDefaultsExtractor.getCommonPropDefaults(element),
         EventDeclarationsExtractor.getEventDeclarations(
             elements, element, MountSpec.class, runMode),
         JavadocExtractor.getClassJavadoc(elements, element),

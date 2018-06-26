@@ -21,7 +21,6 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
-import com.facebook.litho.specmodels.model.CommonPropDefaultModel;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
@@ -176,11 +175,6 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
 
   @Override
   public ImmutableList<PropDefaultModel> getPropDefaults() {
-    return ImmutableList.of();
-  }
-
-  @Override
-  public ImmutableList<CommonPropDefaultModel> getCommonPropDefaults() {
     return ImmutableList.of();
   }
 

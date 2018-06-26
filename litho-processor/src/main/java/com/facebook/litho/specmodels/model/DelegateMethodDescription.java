@@ -41,7 +41,6 @@ public final class DelegateMethodDescription {
     PROP,
     DIFF_PROP,
     TREE_PROP,
-    COMMON_PROP,
     STATE,
     DIFF_STATE,
     PARAM,

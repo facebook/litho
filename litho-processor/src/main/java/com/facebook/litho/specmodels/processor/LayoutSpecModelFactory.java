@@ -116,7 +116,6 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
             : CachedPropNameExtractor.getCachedPropNames(
                 interStageStore, element.getQualifiedName()),
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),
-        PropDefaultsExtractor.getCommonPropDefaults(element),
         EventDeclarationsExtractor.getEventDeclarations(
             elements, element, LayoutSpec.class, runMode),
         AnnotationExtractor.extractValidAnnotations(element),

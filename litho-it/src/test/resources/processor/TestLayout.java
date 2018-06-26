@@ -248,8 +248,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
                 (S) mStateContainer.state2,
                 (int) mStateContainer.state3,
                 (TestTreeProp) treeProp,
-                (Component) child,
-                (boolean) getOrCreateCommonProps().getEnabled());
+                (Component) child);
     return _result;
   }
 
@@ -579,7 +578,6 @@ public final class TestLayout<S extends View> extends Component implements TestT
       mTestLayout = testLayoutRef;
       mContext = context;
       mRequired.clear();
-      contentDescription(TestLayoutSpec.contentDescription);
     }
 
     @Override

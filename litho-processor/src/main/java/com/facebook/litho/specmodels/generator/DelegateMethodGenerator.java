@@ -23,7 +23,6 @@ import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_STATE;
 
-import com.facebook.litho.annotations.CommonProp;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DelegateMethodDescription;
@@ -31,7 +30,6 @@ import com.facebook.litho.specmodels.model.DiffPropModel;
 import com.facebook.litho.specmodels.model.DiffStateParamModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
-import com.facebook.litho.specmodels.model.MethodParamModelUtils;
 import com.facebook.litho.specmodels.model.RenderDataDiffModel;
 import com.facebook.litho.specmodels.model.SimpleMethodParamModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
@@ -262,12 +260,6 @@ public class DelegateMethodGenerator {
         acquireStatements.add(block);
         releaseStatements.addStatement("releaseDiff($L)", diffName);
         delegation.add("$L", diffName);
-      } else if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, CommonProp.class)) {
-        delegation.add(
-            "($T) getOrCreateCommonProps().get$L$L()",
-            methodParamModel.getTypeName(),
-            methodParamModel.getName().substring(0, 1).toUpperCase(),
-            methodParamModel.getName().substring(1));
       } else {
         delegation.add(
             "($T) $L",

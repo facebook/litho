@@ -17,15 +17,11 @@ package com.facebook.litho.specmodels.processor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.facebook.litho.annotations.CommonPropDefault;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.specmodels.model.CommonPropDefaultModel;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.google.testing.compile.CompilationRule;
-import com.squareup.javapoet.TypeName;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import org.junit.Rule;
@@ -49,12 +45,6 @@ public class PropDefaultsExtractorTest {
     public final String getTitle() {
       return title;
     }
-  }
-
-  static class TestClassWithCommonPropDefault {
-    @CommonPropDefault
-    protected static final int importantForAccessibility =
-        ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES;
   }
 
   @Test
@@ -82,22 +72,5 @@ public class PropDefaultsExtractorTest {
     assertThat(propDefaults).hasSize(1);
 
     assertThat(propDefaults.get(0).getName()).isEqualTo("title");
-  }
-
-  @Test
-  public void testExtractCommonPropDefaults() {
-    final Elements elements = mCompilationRule.getElements();
-    final TypeElement element =
-        elements.getTypeElement(TestClassWithCommonPropDefault.class.getCanonicalName());
-
-    final ImmutableList<CommonPropDefaultModel> propDefaults =
-        PropDefaultsExtractor.getCommonPropDefaults(element);
-
-    assertThat(propDefaults).hasSize(1);
-
-    assertThat(propDefaults.get(0).mName).isEqualTo("importantForAccessibility");
-    assertThat(propDefaults.get(0).mModifiers)
-        .contains(Modifier.PROTECTED, Modifier.STATIC, Modifier.FINAL);
-    assertThat(propDefaults.get(0).mType).isEqualTo(TypeName.INT);
   }
 }

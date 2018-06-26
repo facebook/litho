@@ -51,7 +51,6 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       ImmutableList<String> cachedPropNames,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
-      ImmutableList<CommonPropDefaultModel> commonPropDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
       String classJavadoc,
       ImmutableList<AnnotationSpec> classAnnotations,
@@ -82,7 +81,6 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .cachedPropNames(cachedPropNames)
             .typeVariables(typeVariables)
             .propDefaults(propDefaults)
-            .commonPropDefaults(commonPropDefaults)
             .eventDeclarations(eventDeclarations)
             .classAnnotations(classAnnotations)
             .tags(tags)
@@ -185,11 +183,6 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   @Override
   public ImmutableList<PropDefaultModel> getPropDefaults() {
     return mSpecModel.getPropDefaults();
-  }
-
-  @Override
-  public ImmutableList<CommonPropDefaultModel> getCommonPropDefaults() {
-    return mSpecModel.getCommonPropDefaults();
   }
 
   @Override

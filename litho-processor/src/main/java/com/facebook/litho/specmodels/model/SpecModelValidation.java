@@ -55,8 +55,6 @@ public class SpecModelValidation {
             PropValidation.COMMON_PROP_NAMES,
             PropValidation.VALID_COMMON_PROPS,
             runMode));
-    validationErrors.addAll(
-        CommonPropValidation.validate(specModel, PropValidation.VALID_COMMON_PROPS));
     validationErrors.addAll(PureRenderValidation.validate(specModel));
     validationErrors.addAll(DelegateMethodValidation.validateLayoutSpecModel(specModel));
     return validationErrors;
@@ -71,8 +69,6 @@ public class SpecModelValidation {
             PropValidation.COMMON_PROP_NAMES,
             PropValidation.VALID_COMMON_PROPS,
             runMode));
-    validationErrors.addAll(
-        CommonPropValidation.validate(specModel, PropValidation.VALID_COMMON_PROPS));
     validationErrors.addAll(PureRenderValidation.validate(specModel));
     validationErrors.addAll(DelegateMethodValidation.validateMountSpecModel(specModel));
     validationErrors.addAll(validateGetMountType(specModel));

@@ -46,7 +46,6 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateWithTransitionMethods,
       ImmutableList<String> cachedPropNames,
       ImmutableList<PropDefaultModel> propDefaults,
-      ImmutableList<CommonPropDefaultModel> commonPropDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
       ImmutableList<AnnotationSpec> classAnnotations,
       ImmutableList<TagModel> tags,
@@ -74,7 +73,6 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
             .cachedPropNames(cachedPropNames)
             .typeVariables(typeVariables)
             .propDefaults(propDefaults)
-            .commonPropDefaults(commonPropDefaults)
             .eventDeclarations(eventDeclarations)
             .classAnnotations(classAnnotations)
             .tags(tags)
@@ -169,11 +167,6 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   @Override
   public ImmutableList<PropDefaultModel> getPropDefaults() {
     return mSpecModel.getPropDefaults();
-  }
-
-  @Override
-  public ImmutableList<CommonPropDefaultModel> getCommonPropDefaults() {
-    return mSpecModel.getCommonPropDefaults();
   }
 
   @Override

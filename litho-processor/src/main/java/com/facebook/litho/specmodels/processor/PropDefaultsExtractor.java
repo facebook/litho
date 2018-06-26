@@ -16,11 +16,9 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import com.facebook.litho.annotations.CommonPropDefault;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.specmodels.model.CommonPropDefaultModel;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
@@ -54,18 +52,6 @@ public class PropDefaultsExtractor {
     return ImmutableList.copyOf(propDefaults);
   }
 
-  /** Get the common prop defaults from the given {@link TypeElement} */
-  public static ImmutableList<CommonPropDefaultModel> getCommonPropDefaults(
-      TypeElement typeElement) {
-    final List<CommonPropDefaultModel> commonPropDefaults = new ArrayList<>();
-    final List<? extends Element> enclosedElements = typeElement.getEnclosedElements();
-    for (Element enclosedElement : enclosedElements) {
-      commonPropDefaults.addAll((extractCommonPropFromField(enclosedElement)));
-    }
-
-    return ImmutableList.copyOf(commonPropDefaults);
-  }
-
   private static ImmutableList<PropDefaultModel> extractFromField(Element enclosedElement) {
     if (enclosedElement.getKind() != ElementKind.FIELD) {
       return ImmutableList.of();
@@ -88,26 +74,6 @@ public class PropDefaultsExtractor {
             variableElement,
             propDefaultResType,
             propDefaultResId));
-  }
-
-  private static ImmutableList<CommonPropDefaultModel> extractCommonPropFromField(
-      Element enclosedElement) {
-    if (enclosedElement.getKind() != ElementKind.FIELD) {
-      return ImmutableList.of();
-    }
-
-    final VariableElement variableElement = (VariableElement) enclosedElement;
-    final Annotation propDefaultAnnotation = variableElement.getAnnotation(CommonPropDefault.class);
-    if (propDefaultAnnotation == null) {
-      return ImmutableList.of();
-    }
-
-    return ImmutableList.of(
-        new CommonPropDefaultModel(
-            TypeName.get(variableElement.asType()),
-            variableElement.getSimpleName().toString(),
-            ImmutableList.copyOf(new ArrayList<>(variableElement.getModifiers())),
-            variableElement));
   }
 
   /**

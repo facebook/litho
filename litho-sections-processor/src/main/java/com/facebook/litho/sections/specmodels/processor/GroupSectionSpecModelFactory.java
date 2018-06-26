@@ -140,7 +140,6 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory {
             element, INTER_STAGE_INPUT_ANNOTATIONS, messager),
         ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
         ImmutableList.copyOf(PropDefaultsExtractor.getPropDefaults(element)),
-        PropDefaultsExtractor.getCommonPropDefaults(element),
         EventDeclarationsExtractor.getEventDeclarations(
             elements, element, GroupSectionSpec.class, runMode),
         AnnotationExtractor.extractValidAnnotations(element),
