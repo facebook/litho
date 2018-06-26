@@ -74,7 +74,7 @@ public class PropValidationTest {
         .isEqualTo(
             "The prop sameName is defined differently in different methods. Ensure that each "
                 + "instance of this prop is declared in the same way (this means having the same type, "
-                + "resType and values for isOptional and isCommonProp).");
+                + "resType and values for isOptional, isCommonProp and overrideCommonPropBehavior).");
   }
 
   @Test
@@ -94,7 +94,7 @@ public class PropValidationTest {
         .isEqualTo(
             "The prop sameName is defined differently in different methods. Ensure that each "
                 + "instance of this prop is declared in the same way (this means having the same type, "
-                + "resType and values for isOptional and isCommonProp).");
+                + "resType and values for isOptional, isCommonProp and overrideCommonPropBehavior).");
   }
 
   @Test
@@ -114,7 +114,7 @@ public class PropValidationTest {
         .isEqualTo(
             "The prop sameName is defined differently in different methods. Ensure that each "
                 + "instance of this prop is declared in the same way (this means having the same type, "
-                + "resType and values for isOptional and isCommonProp).");
+                + "resType and values for isOptional, isCommonProp and overrideCommonPropBehavior).");
   }
 
   @Test
@@ -160,6 +160,20 @@ public class PropValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
         .isEqualTo("A common prop with name focusable must have type of: boolean");
+  }
+
+  @Test
+  public void testPropMarkedOverrideCommonButNotCommon() {
+    when(mPropModel1.overrideCommonPropBehavior()).thenReturn(true);
+    when(mPropModel1.isCommonProp()).thenReturn(false);
+
+    List<SpecModelValidationError> validationErrors =
+        PropValidation.validate(
+            mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo("overrideCommonPropBehavior may only be true is isCommonProp is true.");
   }
 
   @Test

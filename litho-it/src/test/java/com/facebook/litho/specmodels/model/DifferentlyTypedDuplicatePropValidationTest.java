@@ -75,6 +75,7 @@ public class DifferentlyTypedDuplicatePropValidationTest {
         .contains(
             "The prop prop1 is defined differently in different methods. "
                 + "Ensure that each instance of this prop is declared in the same way "
-                + "(this means having the same type, resType and values for isOptional and isCommonProp).");
+                + "(this means having the same type, resType and values for isOptional, "
+                + "isCommonProp and overrideCommonPropBehavior).");
   }
 }

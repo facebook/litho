@@ -316,12 +316,19 @@ public class PropValidation {
                       + props.get(i).getName()
                       + " is defined differently in different "
                       + "methods. Ensure that each instance of this prop is declared in the same "
-                      + "way (this means having the same type, resType and values for isOptional and isCommonProp)."));
+                      + "way (this means having the same type, resType and values for isOptional, isCommonProp and overrideCommonPropBehavior)."));
         }
       }
     }
 
     for (PropModel prop : props) {
+      if (!prop.isCommonProp() && prop.overrideCommonPropBehavior()) {
+        validationErrors.add(
+            new SpecModelValidationError(
+                prop.getRepresentedObject(),
+                "overrideCommonPropBehavior may only be true is isCommonProp is true."));
+      }
+
       if (reservedPropNames.contains(prop.getName()) && !prop.isCommonProp()) {
         validationErrors.add(
             new SpecModelValidationError(

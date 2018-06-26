@@ -33,6 +33,7 @@ public class PropModel implements MethodParamModel {
   private final MethodParamModel mParamModel;
   private final boolean mIsOptional;
   private final boolean mIsCommonProp;
+  private final boolean mOverrideCommonPropBehavior;
   private final ResType mResType;
   private final String mVarArgSingleArgName;
 
@@ -40,11 +41,13 @@ public class PropModel implements MethodParamModel {
       MethodParamModel paramModel,
       boolean isOptional,
       boolean isCommonProp,
+      boolean overrideCommonPropBehavior,
       ResType resType,
       String varArg) {
     mParamModel = paramModel;
     mIsOptional = isOptional;
     mIsCommonProp = isCommonProp;
+    mOverrideCommonPropBehavior = overrideCommonPropBehavior;
     mResType = resType;
     mVarArgSingleArgName = varArg;
   }
@@ -87,6 +90,10 @@ public class PropModel implements MethodParamModel {
     return mIsCommonProp;
   }
 
+  public boolean overrideCommonPropBehavior() {
+    return mOverrideCommonPropBehavior;
+  }
+
   public ResType getResType() {
     return mResType;
   }
@@ -116,7 +123,8 @@ public class PropModel implements MethodParamModel {
 
   /** @return a new {@link PropModel} instance with the given name overridden. */
   public PropModel withName(String name) {
-    return new PropModel(mParamModel, mIsOptional, mIsCommonProp, mResType, mVarArgSingleArgName) {
+    return new PropModel(
+        mParamModel, mIsOptional, mIsCommonProp, false, mResType, mVarArgSingleArgName) {
       @Override
       public String getName() {
         return name;

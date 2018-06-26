@@ -68,11 +68,13 @@ public class SpecModelImplTest {
             MockMethodParamModel.newBuilder().name("propModel1").type(TypeName.BOOLEAN).build(),
             false,
             false,
+            false,
             null,
             "");
     mPropModel2 =
         new PropModel(
             MockMethodParamModel.newBuilder().name("propModel2").type(TypeName.INT).build(),
+            false,
             false,
             false,
             null,
@@ -82,11 +84,13 @@ public class SpecModelImplTest {
             MockMethodParamModel.newBuilder().name("propModel3").type(TypeName.LONG).build(),
             false,
             false,
+            false,
             null,
             "");
     mPropModel4 =
         new PropModel(
             MockMethodParamModel.newBuilder().name("propModel4").type(TypeName.INT).build(),
+            false,
             false,
             false,
             null,
@@ -100,11 +104,13 @@ public class SpecModelImplTest {
                 .build(),
             false,
             false,
+            false,
             null,
             "");
     mUnderlyingPropModel2 =
         new PropModel(
             MockMethodParamModel.newBuilder().name("differentName").build(),
+            false,
             false,
             false,
             null,

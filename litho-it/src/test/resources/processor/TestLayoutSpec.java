@@ -86,6 +86,7 @@ public class TestLayoutSpec<S extends View> implements TestTag {
       @Prop @Nullable Object prop3,
       @Prop char prop5,
       @Prop(isCommonProp = true) float aspectRatio,
+      @Prop(isCommonProp = true, overrideCommonPropBehavior = true) boolean focusable,
       @State(canUpdateLazily = true) long state1) {}
 
   @OnError

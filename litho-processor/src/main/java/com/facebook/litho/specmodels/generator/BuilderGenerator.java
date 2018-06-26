@@ -1206,17 +1206,19 @@ public class BuilderGenerator {
     if (prop.isCommonProp()) {
       builder.addAnnotation(Override.class);
 
-      final CodeBlock.Builder superCodeBlock = CodeBlock.builder().add("super.$L(", name);
-      boolean isFirstParam = true;
-      for (ParameterSpec param : parameters) {
-        if (!isFirstParam) {
-          superCodeBlock.add(", ");
+      if (!prop.overrideCommonPropBehavior()) {
+        final CodeBlock.Builder superCodeBlock = CodeBlock.builder().add("super.$L(", name);
+        boolean isFirstParam = true;
+        for (ParameterSpec param : parameters) {
+          if (!isFirstParam) {
+            superCodeBlock.add(", ");
+          }
+          superCodeBlock.add("$L", param.name);
+          isFirstParam = false;
         }
-        superCodeBlock.add("$L", param.name);
-        isFirstParam = false;
-      }
 
-      builder.addCode(superCodeBlock.add(");\n").build());
+        builder.addCode(superCodeBlock.add(");\n").build());
+      }
     }
 
     for (ParameterSpec param : parameters) {

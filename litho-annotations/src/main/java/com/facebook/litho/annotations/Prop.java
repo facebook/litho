@@ -67,4 +67,11 @@ public @interface Prop {
 
   /** Whether this prop has the same name as a CommonProp. */
   boolean isCommonProp() default false;
+
+  /**
+   * This may only be set to true if isCommonProp is also set to true. If true, then the common prop
+   * behavior of this prop will be overridden. If false, then the common prop will apply at the
+   * framework level as normal as well as any behavior that the user defines within the spec.
+   */
+  boolean overrideCommonPropBehavior() default false;
 }

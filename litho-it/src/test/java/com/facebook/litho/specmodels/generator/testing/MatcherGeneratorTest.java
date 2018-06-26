@@ -85,6 +85,7 @@ public class MatcherGeneratorTest {
                             .build(),
                         false,
                         false,
+                        false,
                         ResType.STRING,
                         ""),
                     new PropModel(
@@ -93,6 +94,7 @@ public class MatcherGeneratorTest {
                             .type(TypeName.FLOAT)
                             .build(),
                         true,
+                        false,
                         false,
                         ResType.DIMEN_SIZE,
                         "")))
@@ -142,6 +144,7 @@ public class MatcherGeneratorTest {
                             .name("prop1")
                             .type(TypeName.get(String.class))
                             .build(),
+                        false,
                         false,
                         false,
                         ResType.STRING,
@@ -199,7 +202,7 @@ public class MatcherGeneratorTest {
 
   public static PropModel makePropModel(String name) {
     final MockMethodParamModel paramModel = MockMethodParamModel.newBuilder().name(name).build();
-    return new PropModel(paramModel, false, false, ResType.INT, "");
+    return new PropModel(paramModel, false, false, false, ResType.INT, "");
   }
 
 }
