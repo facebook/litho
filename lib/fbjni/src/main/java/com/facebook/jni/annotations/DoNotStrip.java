@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.jni;
+package com.facebook.jni.annotations;
 
-import com.facebook.jni.annotations.DoNotStrip;
-import com.facebook.soloader.SoLoader;
+import static java.lang.annotation.RetentionPolicy.CLASS;
 
-@DoNotStrip
-public class ThreadScopeSupport {
-  static {
-    SoLoader.loadLibrary("fbjni");
-  }
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-  // This is just used for ThreadScope::withClassLoader to have a java function
-  // in the stack so that jni has access to the correct classloader.
-  @DoNotStrip
-  private static void runStdFunction(long ptr) {
-    runStdFunctionImpl(ptr);
-  }
-
-  private static native void runStdFunctionImpl(long ptr);
-}
+/**
+ * Add this annotation to a class, method, or field to instruct Proguard to not strip it out.
+ *
+ * <p>This is useful for methods called via reflection that could appear as unused to Proguard.
+ */
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR})
+@Retention(CLASS)
+public @interface DoNotStrip {}

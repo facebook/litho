@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.jni;
+#include <fb/fbjni.h>
+#include <fb/NativeRunnable.h>
 
-import com.facebook.jni.annotations.DoNotStrip;
+using namespace facebook::jni;
 
-/** A Runnable that has a native run implementation. */
-@DoNotStrip
-public class NativeRunnable implements Runnable {
-
-  private final HybridData mHybridData;
-
-  private NativeRunnable(HybridData hybridData) {
-    mHybridData = hybridData;
-  }
-
-  public native void run();
+JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
+  return facebook::jni::initialize(vm, [] {
+    HybridDataOnLoad();
+    JNativeRunnable::OnLoad();
+    ThreadScope::OnLoad();
+  });
 }

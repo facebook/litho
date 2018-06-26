@@ -30,7 +30,7 @@ add_compile_options(
 add_library(yoga SHARED jni/YGJNI.cpp)
 
 target_include_directories(yoga PRIVATE
-    ${libfb_DIR}/include
+    ${libfb_DIR}
     ${yogacore_DIR})
 
 target_link_libraries(yoga yogacore fb)

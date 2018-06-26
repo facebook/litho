@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.jni;
+#pragma once
 
-import com.facebook.jni.annotations.DoNotStrip;
+#include <fb/fbjni.h>
 
-/** A Runnable that has a native run implementation. */
-@DoNotStrip
-public class NativeRunnable implements Runnable {
+namespace facebook {
+namespace jni {
 
-  private final HybridData mHybridData;
+class JFile : public JavaClass<JFile> {
+ public:
+  static constexpr const char* kJavaDescriptor = "Ljava/io/File;";
 
-  private NativeRunnable(HybridData hybridData) {
-    mHybridData = hybridData;
+  // Define a method that calls into the represented Java class
+  std::string getAbsolutePath() {
+    static const auto method = getClass()->getMethod<jstring()>("getAbsolutePath");
+    return method(self())->toStdString();
   }
 
-  public native void run();
+};
+
+}
 }

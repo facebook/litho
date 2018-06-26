@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.jni;
+#pragma once
 
-import com.facebook.jni.annotations.DoNotStrip;
+#include <fb/fbjni.h>
+#include <fb/ByteBuffer.h>
 
-/** A Runnable that has a native run implementation. */
-@DoNotStrip
-public class NativeRunnable implements Runnable {
+namespace facebook {
+namespace jni {
 
-  private final HybridData mHybridData;
+class JReadableByteChannel : public JavaClass<JReadableByteChannel> {
+public:
+  static constexpr const char* kJavaDescriptor = "Ljava/nio/channels/ReadableByteChannel;";
 
-  private NativeRunnable(HybridData hybridData) {
-    mHybridData = hybridData;
-  }
+  int read(alias_ref<JByteBuffer> dest) const;
+};
 
-  public native void run();
-}
+}}

@@ -13,19 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.jni;
+#pragma once
 
-import com.facebook.jni.annotations.DoNotStrip;
+namespace facebook {
+namespace jni {
 
-/** A Runnable that has a native run implementation. */
-@DoNotStrip
-public class NativeRunnable implements Runnable {
+template<typename F>
+class JMethod;
+template<typename F>
+class JStaticMethod;
+template<typename F>
+class JNonvirtualMethod;
+template<typename F>
+struct JConstructor;
+template<typename F>
+class JField;
+template<typename F>
+class JStaticField;
 
-  private final HybridData mHybridData;
+/// Type traits for Java types (currently providing Java type descriptors)
+template<typename T>
+struct jtype_traits;
 
-  private NativeRunnable(HybridData hybridData) {
-    mHybridData = hybridData;
-  }
+/// Type traits for Java methods (currently providing Java type descriptors)
+template<typename F>
+struct jmethod_traits;
 
-  public native void run();
-}
+}}

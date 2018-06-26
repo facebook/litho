@@ -273,9 +273,7 @@ def define_fbjni_targets():
         soname = "libfb.$(ext)",
         srcs = native.glob(
             [
-                "src/main/cpp/*.cpp",
-                "src/main/cpp/jni/*.cpp",
-                "src/main/cpp/lyra/*.cpp",
+                "src/main/cpp/fb/**/*.cpp",
             ],
         ),
         header_namespace = "",
@@ -283,16 +281,32 @@ def define_fbjni_targets():
             "-fno-omit-frame-pointer",
             "-fexceptions",
             "-Wall",
+            "-frtti",
             "-std=c++11",
             "-DDISABLE_CPUCAP",
             "-DDISABLE_XPLAT",
         ],
         exported_headers = subdir_glob(
             [
-                ("src/main/cpp/include", "fb/**/*.h"),
-                ("src/main/cpp/include", "jni/*.h"),
+                ("src/main/cpp", "fb/**/*.h"),
             ],
         ),
+        exported_platform_headers = [
+            (
+                "^(?!android-arm$).*$",
+                subdir_glob([
+                    ("src/main/cpp", "lyra/*.h"),
+                ]),
+            ),
+        ],
+        platform_srcs = [
+            (
+                "^(?!android-arm$).*$",
+                glob([
+                    "src/main/cpp/lyra/*.cpp",
+                ]),
+            ),
+        ],
         deps = [
             LITHO_JNI_TARGET,
             ":ndklog",
@@ -359,7 +373,7 @@ def define_cpp_yoga_targets():
             "-fno-omit-frame-pointer",
             "-fexceptions",
             "-Wall",
-            "-std=c++1y",
+            "-std=c++11",
             "-O3",
         ],
         exported_headers = native.glob(["yoga/*.h"]),

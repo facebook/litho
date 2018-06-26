@@ -13,19 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.jni;
+#include <fb/fbjni.h>
 
-import com.facebook.jni.annotations.DoNotStrip;
+namespace facebook {
+namespace jni {
 
-/** A Runnable that has a native run implementation. */
-@DoNotStrip
-public class NativeRunnable implements Runnable {
+namespace detail {
 
-  private final HybridData mHybridData;
-
-  private NativeRunnable(HybridData hybridData) {
-    mHybridData = hybridData;
-  }
-
-  public native void run();
+local_ref<HybridData> HybridData::create() {
+  return newInstance();
 }
+
+}
+
+namespace {
+void deleteNative(alias_ref<jclass>, jlong ptr) {
+  delete reinterpret_cast<detail::BaseHybridClass*>(ptr);
+}
+}
+
+void HybridDataOnLoad() {
+  registerNatives("com/facebook/jni/HybridData$Destructor", {
+      makeNativeMethod("deleteNative", deleteNative),
+  });
+}
+
+}}

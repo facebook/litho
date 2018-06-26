@@ -18,14 +18,14 @@ add_compile_options(
     -DDISABLE_XPLAT)
 
 file(GLOB fb_SRC
-    *.cpp
-    jni/*.cpp
+    fb/*.cpp
+    fb/detail/*.cpp
     lyra/*.cpp)
 
 add_library(fb SHARED
     ${fb_SRC})
 
 target_include_directories(fb PRIVATE
-    include)
+    .)
 
 target_link_libraries(fb android log)

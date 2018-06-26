@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.jni;
+#include <fb/ReadableByteChannel.h>
 
-import com.facebook.jni.annotations.DoNotStrip;
+namespace facebook {
+namespace jni {
 
-/** A Runnable that has a native run implementation. */
-@DoNotStrip
-public class NativeRunnable implements Runnable {
-
-  private final HybridData mHybridData;
-
-  private NativeRunnable(HybridData hybridData) {
-    mHybridData = hybridData;
+int JReadableByteChannel::read(alias_ref<JByteBuffer> dest) const {
+  if (!self()) {
+    throwNewJavaException("java/lang/NullPointerException", "java.lang.NullPointerException");
   }
-
-  public native void run();
+  static auto method = javaClassStatic()->getMethod<jint(alias_ref<JByteBuffer>)>("read");
+  return method(self(), dest);
 }
+
+}}
+

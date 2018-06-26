@@ -1,13 +1,31 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright 2004-present Facebook, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+#include <lyra/lyra.h>
 
-#include <fb/lyra.h>
-
+#include <atomic>
 #include <ios>
+#include <ostream>
+#include <iomanip>
 #include <memory>
 #include <vector>
 
 #include <dlfcn.h>
 #include <unwind.h>
+
+#include <fb/detail/Log.h>
 
 using namespace std;
 
@@ -63,6 +81,27 @@ void captureBacktrace(size_t skip, vector<InstructionPointer>& stackTrace) {
   BacktraceState state = {skip, stackTrace};
   _Unwind_Backtrace(unwindCallback, &state);
 }
+
+// this is a pointer to a function
+std::atomic<LibraryIdentifierFunctionType> gLibraryIdentifierFunction{nullptr};
+
+}
+
+void setLibraryIdentifierFunction(LibraryIdentifierFunctionType func) {
+  gLibraryIdentifierFunction.store(func, std::memory_order_relaxed);
+}
+
+std::string StackTraceElement::buildId() const {
+  if (!hasBuildId_) {
+    auto getBuildId = gLibraryIdentifierFunction.load(std::memory_order_relaxed);
+    if (getBuildId) {
+      buildId_ = getBuildId(libraryName());
+    } else {
+      buildId_ = "<unimplemented>";
+    }
+    hasBuildId_ = true;
+  }
+  return buildId_;
 }
 
 void getStackTrace(vector<InstructionPointer>& stackTrace, size_t skip) {
@@ -89,7 +128,6 @@ void getStackTraceSymbols(vector<StackTraceElement>& symbols,
 ostream& operator<<(ostream& out, const StackTraceElement& elm) {
   IosFlagsSaver flags{out};
 
-  // TODO(t10748683): Add build id to the output
   out << "{dso=" << elm.libraryName() << " offset=" << hex
       << showbase << elm.libraryOffset();
 
@@ -97,7 +135,7 @@ ostream& operator<<(ostream& out, const StackTraceElement& elm) {
     out << " func=" << elm.functionName() << "()+" << elm.functionOffset();
   }
 
-  out << " build-id=" << hex << setw(8) << 0
+  out << " build-id=" << hex << setw(8) << elm.buildId()
       << "}";
 
   return out;
@@ -116,5 +154,28 @@ ostream& operator<<(ostream& out, const vector<StackTraceElement>& trace) {
 
   return out;
 }
+
+void logStackTrace(const vector<StackTraceElement>& trace) {
+  auto i = 0;
+  FBJNI_LOGE("Backtrace:");
+  for (auto& elm : trace) {
+    if (!elm.functionName().empty()) {
+      FBJNI_LOGE("    #%02d |lyra|{dso=%s offset=%#x func=%s+%#x build-id=%s}",
+          i++,
+          elm.libraryName().c_str(),
+          elm.libraryOffset(),
+          elm.functionName().c_str(),
+          elm.functionOffset(),
+          elm.buildId().c_str());
+    } else {
+      FBJNI_LOGE("    #%02d |lyra|{dso=%s offset=%#x build-id=%s}",
+          i++,
+          elm.libraryName().c_str(),
+          elm.libraryOffset(),
+          elm.buildId().c_str());
+    }
+  }
+}
+
 }
 }

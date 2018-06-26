@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-present Facebook, Inc.
+ * Copyright 2004-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,5 @@ package com.facebook.jni;
 
 import com.facebook.jni.annotations.DoNotStrip;
 
-/** A Runnable that has a native run implementation. */
 @DoNotStrip
-public class NativeRunnable implements Runnable {
-
-  private final HybridData mHybridData;
-
-  private NativeRunnable(HybridData hybridData) {
-    mHybridData = hybridData;
-  }
-
-  public native void run();
-}
+public abstract class HybridClassBase extends HybridData {}
