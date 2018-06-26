@@ -280,8 +280,8 @@ def define_fbjni_targets():
         compiler_flags = [
             "-fno-omit-frame-pointer",
             "-fexceptions",
-            "-Wall",
             "-frtti",
+            "-Wall",
             "-std=c++11",
             "-DDISABLE_CPUCAP",
             "-DDISABLE_XPLAT",

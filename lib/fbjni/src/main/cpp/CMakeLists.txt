@@ -12,6 +12,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 add_compile_options(
     -fno-omit-frame-pointer
     -fexceptions
+    -frtti
     -Wall
     -std=c++11
     -DDISABLE_CPUCAP
