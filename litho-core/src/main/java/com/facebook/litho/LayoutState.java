@@ -819,18 +819,7 @@ class LayoutState {
       layoutState.mTestOutputs.add(testOutput);
     }
 
-    // 9. Keep a list of the components we created during this layout calculation. If the layout is
-    // valid, the ComponentTree will update the event handlers that have been created in the
-    // previous ComponentTree with the new component dispatched, otherwise Section children might
-    // not be accessing the correct props and state on the event handlers. The null checkers cover
-    // tests, the scope and tree should not be null at this point of the layout calculation.
-    if (component != null
-        && component.getScopedContext() != null
-        && component.getScopedContext().getComponentTree() != null) {
-      layoutState.mComponents.add(component);
-    }
-
-    // 10. Extract the Working Range registrations.
+    // 9. Extract the Working Range registrations.
     List<WorkingRangeContainer.Registration> registrations = node.getWorkingRangeRegistrations();
     if (registrations != null && !registrations.isEmpty()) {
       if (layoutState.mWorkingRangeContainer == null) {
@@ -856,6 +845,17 @@ class LayoutState {
       for (Component delegate : node.getComponents()) {
         final Rect copyRect = ComponentsPools.acquireRect();
         copyRect.set(rect);
+
+        // Keep a list of the components we created during this layout calculation. If the layout is
+        // valid, the ComponentTree will update the event handlers that have been created in the
+        // previous ComponentTree with the new component dispatched, otherwise Section children
+        // might not be accessing the correct props and state on the event handlers. The null
+        // checkers cover tests, the scope and tree should not be null at this point of the layout
+        // calculation.
+        if (delegate.getScopedContext() != null
+            && delegate.getScopedContext().getComponentTree() != null) {
+          layoutState.mComponents.add(delegate);
+        }
         if (delegate.getGlobalKey() != null) {
           layoutState.mComponentKeyToBounds.put(delegate.getGlobalKey(), copyRect);
         }
