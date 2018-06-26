@@ -34,7 +34,8 @@ public class SpecModelValidation {
   public static List<SpecModelValidationError> validateGroupSectionSpecModel(
       GroupSectionSpecModel specModel, RunMode runMode) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
-    validationErrors.addAll(validateSpecModel(specModel, SECTIONS_RESERVED_PROP_NAMES, runMode));
+    validationErrors.addAll(
+        validateSpecModel(specModel, SECTIONS_RESERVED_PROP_NAMES, new ArrayList<>(), runMode));
     validationErrors.addAll(
         DelegateMethodValidation.validateMethods(
             specModel,
@@ -46,7 +47,8 @@ public class SpecModelValidation {
   public static List<SpecModelValidationError> validateDiffSectionSpecModel(
       DiffSectionSpecModel specModel, RunMode runMode) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
-    validationErrors.addAll(validateSpecModel(specModel, SECTIONS_RESERVED_PROP_NAMES, runMode));
+    validationErrors.addAll(
+        validateSpecModel(specModel, SECTIONS_RESERVED_PROP_NAMES, new ArrayList<>(), runMode));
     validationErrors.addAll(
         DelegateMethodValidation.validateMethods(
             specModel,

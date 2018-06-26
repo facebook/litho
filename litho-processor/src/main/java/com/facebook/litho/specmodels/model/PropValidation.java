@@ -18,8 +18,10 @@ package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.WildcardTypeName;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -155,13 +157,152 @@ public class PropValidation {
           "scale",
           "selected");
 
+  // This is a subset of the common props defined above that maybe be used as props that set the
+  // isCommonProp param to true.
+  public static final List<CommonPropModel> VALID_COMMON_PROPS =
+      Arrays.asList(
+          new CommonPropModel(
+              "positionType", ClassName.bestGuess("com.facebook.yoga.YogaPositionType")),
+          new CommonPropModel("widthPx", TypeName.INT),
+          new CommonPropModel("heightPx", TypeName.INT),
+          new CommonPropModel(
+              "background",
+              ParameterizedTypeName.get(
+                  ClassNames.REFERENCE, WildcardTypeName.subtypeOf(ClassNames.DRAWABLE))),
+          new CommonPropModel("testKey", ClassNames.STRING),
+          new CommonPropModel(
+              "layoutDirection", ClassName.bestGuess("com.facebook.yoga.YogaDirection")),
+          new CommonPropModel("alignSelf", ClassName.bestGuess("com.facebook.yoga.YogaAlign")),
+          new CommonPropModel("flex", TypeName.FLOAT),
+          new CommonPropModel("flexGrow", TypeName.FLOAT),
+          new CommonPropModel("flexShrink", TypeName.FLOAT),
+          new CommonPropModel("flexBasisPx", TypeName.INT),
+          new CommonPropModel("duplicateParentState", TypeName.BOOLEAN),
+          new CommonPropModel("importantForAccessibility", TypeName.INT),
+          new CommonPropModel("border", ClassName.bestGuess("com.facebook.litho.Border")),
+          new CommonPropModel(
+              "stateListAnimator", ClassName.bestGuess("android.animation.StateListAnimator")),
+          new CommonPropModel("aspectRatio", TypeName.FLOAT),
+          new CommonPropModel("foreground", ClassNames.DRAWABLE),
+          new CommonPropModel(
+              "clickHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.ClickEvent"))),
+          new CommonPropModel(
+              "longClickHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.LongClickEvent"))),
+          new CommonPropModel(
+              "focusChangeHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.FocusChangedEvent"))),
+          new CommonPropModel(
+              "touchHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.TouchEvent"))),
+          new CommonPropModel(
+              "interceptTouchHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.InterceptTouchEvent"))),
+          new CommonPropModel("focusable", TypeName.BOOLEAN),
+          new CommonPropModel("enabled", TypeName.BOOLEAN),
+          new CommonPropModel("selected", TypeName.BOOLEAN),
+          new CommonPropModel("visibleHeightRatio", TypeName.FLOAT),
+          new CommonPropModel("visibleWidthRatio", TypeName.FLOAT),
+          new CommonPropModel(
+              "visibleHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.VisibleEvent"))),
+          new CommonPropModel(
+              "focusedHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.FocusedVisibleEvent"))),
+          new CommonPropModel(
+              "unfocusedHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.UnfocusedVisibleEvent"))),
+          new CommonPropModel(
+              "fullImpressionHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.FullImpressionVisibleEvent"))),
+          new CommonPropModel(
+              "invisibleHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.InvisibleEvent"))),
+          new CommonPropModel("contentDescription", ClassName.bestGuess("java.lang.CharSequence")),
+          new CommonPropModel("viewTag", TypeName.OBJECT),
+          new CommonPropModel("viewTags", ClassName.bestGuess("android.util.SparseArray")),
+          new CommonPropModel("shadowElevationPx", TypeName.FLOAT),
+          new CommonPropModel(
+              "outlineProvider", ClassName.bestGuess("android.view.ViewOutlineProvider")),
+          new CommonPropModel("clipToOutline", TypeName.BOOLEAN),
+          new CommonPropModel("accessibilityRole", ClassNames.STRING),
+          new CommonPropModel(
+              "dispatchPopulateAccessibilityEventHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess(
+                      "com.facebook.litho.DispatchPopulateAccessibilityEventEvent"))),
+          new CommonPropModel(
+              "onInitializeAccessibilityEventHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.OnInitializeAccessibilityEventEvent"))),
+          new CommonPropModel(
+              "onInitializeAccessibilityNodeInfoHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess(
+                      "com.facebook.litho.OnInitializeAccessibilityNodeInfoEvent"))),
+          new CommonPropModel(
+              "onPopulateAccessibilityEventHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.OnPopulateAccessibilityEventEvent"))),
+          new CommonPropModel(
+              "onRequestSendAccessibilityEventHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.OnRequestSendAccessibilityEventEvent"))),
+          new CommonPropModel(
+              "performAccessibilityActionHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.PerformAccessibilityActionEvent"))),
+          new CommonPropModel(
+              "sendAccessibilityEventHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.SendAccessibilityEventEvent"))),
+          new CommonPropModel(
+              "sendAccessibilityEventUncheckedHandler",
+              ParameterizedTypeName.get(
+                  ClassName.bestGuess("com.facebook.litho.EventHandler"),
+                  ClassName.bestGuess("com.facebook.litho.SendAccessibilityEventUncheckedEvent"))),
+          new CommonPropModel("transitionKey", ClassNames.STRING),
+          new CommonPropModel("scale", TypeName.FLOAT),
+          new CommonPropModel("alpha", TypeName.FLOAT),
+          new CommonPropModel("rotation", TypeName.FLOAT));
+
   private static final List<TypeName> ILLEGAL_PROP_TYPES = Arrays.<TypeName>asList(
       ClassNames.COMPONENT_LAYOUT,
       ClassNames.COMPONENT_BUILDER,
       ClassNames.REFERENCE_BUILDER);
 
   static List<SpecModelValidationError> validate(
-      SpecModel specModel, List<String> reservedPropNames) {
+      SpecModel specModel,
+      List<String> reservedPropNames,
+      List<CommonPropModel> permittedCommonProps) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
     final ImmutableList<PropModel> props = specModel.getProps();
@@ -190,13 +331,32 @@ public class PropValidation {
                     + "' is a reserved prop name used by the component's "
                     + "builder. Please use another name or add \"isCommonProp\" to the "
                     + "Prop's definition."));
-      } else if (!reservedPropNames.contains(prop.getName()) && prop.isCommonProp()) {
-        validationErrors.add(
-            new SpecModelValidationError(
-                prop.getRepresentedObject(),
-                "'"
-                    + prop.getName()
-                    + "' specifies \"isCommonProp\" but does not use a common prop name."));
+      } else if (prop.isCommonProp()) {
+        boolean validName = false;
+        for (CommonPropModel commonPropModel : permittedCommonProps) {
+          if (commonPropModel.name.equals(prop.getName())) {
+            validName = true;
+            if (!commonPropModel.type.equals(prop.getTypeName())) {
+              validationErrors.add(
+                  new SpecModelValidationError(
+                      prop.getRepresentedObject(),
+                      "A common prop with name "
+                          + commonPropModel.name
+                          + " must have type of: "
+                          + commonPropModel.type));
+            }
+          }
+        }
+
+        if (!validName) {
+          validationErrors.add(
+              new SpecModelValidationError(
+                  prop.getRepresentedObject(),
+                  "Prop with isCommonProp and name "
+                      + prop.getName()
+                      + " is incorrectly defined - see PropValidation.java for a "
+                      + "list of common props that may be used."));
+        }
       }
 
       TypeName argumentType = null;
@@ -376,5 +536,15 @@ public class PropValidation {
     }
 
     return validationErrors;
+  }
+
+  public static class CommonPropModel {
+    final String name;
+    final TypeName type;
+
+    CommonPropModel(String name, TypeName type) {
+      this.name = name;
+      this.type = type;
+    }
   }
 }

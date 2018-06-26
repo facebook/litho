@@ -29,7 +29,11 @@ public class TestSpecModelValidation {
   public static List<SpecModelValidationError> validateTestSpecModel(TestSpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(
-        validateSpecModel(specModel, PropValidation.COMMON_PROP_NAMES, RunMode.NORMAL));
+        validateSpecModel(
+            specModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            RunMode.NORMAL));
     return validationErrors;
   }
 }

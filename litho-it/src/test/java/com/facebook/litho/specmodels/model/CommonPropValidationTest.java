@@ -92,8 +92,7 @@ public class CommonPropValidationTest {
                     .build()));
 
     final List<SpecModelValidationError> validationErrors =
-        CommonPropValidation.validateCommonProps(
-            mSpecModel, CommonPropValidation.VALID_COMMON_PROPS);
+        CommonPropValidation.validateCommonProps(mSpecModel, PropValidation.VALID_COMMON_PROPS);
     assertThat(validationErrors).hasSize(2);
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
     assertThat(validationErrors.get(0).message)

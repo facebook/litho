@@ -24,7 +24,10 @@ import java.util.List;
 public class SpecModelValidation {
 
   public static List<SpecModelValidationError> validateSpecModel(
-      SpecModel specModel, List<String> reservedPropNames, RunMode runMode) {
+      SpecModel specModel,
+      List<String> reservedPropNames,
+      List<PropValidation.CommonPropModel> permittedCommonProps,
+      RunMode runMode) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
     final DependencyInjectionHelper dependencyInjectionHelper =
         specModel.getDependencyInjectionHelper();
@@ -32,7 +35,8 @@ public class SpecModelValidation {
       validationErrors.addAll(dependencyInjectionHelper.validate(specModel));
     }
     validationErrors.addAll(validateName(specModel));
-    validationErrors.addAll(PropValidation.validate(specModel, reservedPropNames));
+    validationErrors.addAll(
+        PropValidation.validate(specModel, reservedPropNames, permittedCommonProps));
     validationErrors.addAll(StateValidation.validate(specModel));
     validationErrors.addAll(EventValidation.validate(specModel, runMode));
     validationErrors.addAll(TreePropValidation.validate(specModel));
@@ -46,9 +50,13 @@ public class SpecModelValidation {
       LayoutSpecModel specModel, RunMode runMode) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(
-        validateSpecModel(specModel, PropValidation.COMMON_PROP_NAMES, runMode));
+        validateSpecModel(
+            specModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            runMode));
     validationErrors.addAll(
-        CommonPropValidation.validate(specModel, CommonPropValidation.VALID_COMMON_PROPS));
+        CommonPropValidation.validate(specModel, PropValidation.VALID_COMMON_PROPS));
     validationErrors.addAll(PureRenderValidation.validate(specModel));
     validationErrors.addAll(DelegateMethodValidation.validateLayoutSpecModel(specModel));
     return validationErrors;
@@ -58,9 +66,13 @@ public class SpecModelValidation {
       MountSpecModel specModel, RunMode runMode) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(
-        validateSpecModel(specModel, PropValidation.COMMON_PROP_NAMES, runMode));
+        validateSpecModel(
+            specModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            runMode));
     validationErrors.addAll(
-        CommonPropValidation.validate(specModel, CommonPropValidation.VALID_COMMON_PROPS));
+        CommonPropValidation.validate(specModel, PropValidation.VALID_COMMON_PROPS));
     validationErrors.addAll(PureRenderValidation.validate(specModel));
     validationErrors.addAll(DelegateMethodValidation.validateMountSpecModel(specModel));
     validationErrors.addAll(validateGetMountType(specModel));
