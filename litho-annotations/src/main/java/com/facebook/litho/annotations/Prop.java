@@ -64,4 +64,7 @@ public @interface Prop {
    * should be a parameterized list with a resource type of {@code resType = ResType.NONE}.
    */
   String varArg() default "";
+
+  /** Whether this prop has the same name as a CommonProp. */
+  boolean isCommonProp() default false;
 }

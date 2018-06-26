@@ -102,7 +102,7 @@ public class PropNameInterStageStoreTest {
 
   static PropModel makePropModel(String name) {
     return new PropModel(
-        MockMethodParamModel.newBuilder().name(name).build(), false, ResType.BOOL, "");
+        MockMethodParamModel.newBuilder().name(name).build(), false, false, ResType.BOOL, "");
   }
 
   private InjectPropModel makeInjectPropModel(String name) {

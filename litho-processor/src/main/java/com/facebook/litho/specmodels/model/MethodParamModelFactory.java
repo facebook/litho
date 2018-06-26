@@ -61,6 +61,7 @@ public final class MethodParamModelFactory {
             new PropModel(
                 simpleMethodParamModel,
                 ((Prop) annotation).optional(),
+                ((Prop) annotation).isCommonProp(),
                 ((Prop) annotation).resType(),
                 ((Prop) annotation).varArg());
 

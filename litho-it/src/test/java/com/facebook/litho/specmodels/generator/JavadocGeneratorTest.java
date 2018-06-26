@@ -29,7 +29,6 @@ import com.facebook.litho.testing.specmodels.MockSpecModel;
 import com.squareup.javapoet.TypeName;
 import org.junit.Test;
 
-
 /**
  * Tests {@link JavadocGenerator}
  */
@@ -49,8 +48,8 @@ public class JavadocGeneratorTest {
                     new PropJavadocModel("propName2", "test prop2 javadoc")))
             .props(
                 ImmutableList.of(
-                    new PropModel(requiredMethodParam, false, ResType.INT, ""),
-                    new PropModel(optionalMethodParam, true, ResType.BOOL, "")))
+                    new PropModel(requiredMethodParam, false, false, ResType.INT, ""),
+                    new PropModel(optionalMethodParam, true, false, ResType.BOOL, "")))
             .build();
 
     final TypeSpecDataHolder dataHolder = JavadocGenerator.generate(specModel);

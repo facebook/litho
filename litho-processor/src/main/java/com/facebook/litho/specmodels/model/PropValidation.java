@@ -171,22 +171,32 @@ public class PropValidation {
           validationErrors.add(
               new SpecModelValidationError(
                   props.get(i).getRepresentedObject(),
-                  "The prop " + props.get(i).getName() + " is defined differently in different " +
-                      "methods. Ensure that each instance of this prop is declared in the same " +
-                      "way (this means having the same type, resType and value for isOptional)."));
+                  "The prop "
+                      + props.get(i).getName()
+                      + " is defined differently in different "
+                      + "methods. Ensure that each instance of this prop is declared in the same "
+                      + "way (this means having the same type, resType and values for isOptional and isCommonProp)."));
         }
       }
     }
 
     for (PropModel prop : props) {
-      if (reservedPropNames.contains(prop.getName())) {
+      if (reservedPropNames.contains(prop.getName()) && !prop.isCommonProp()) {
         validationErrors.add(
             new SpecModelValidationError(
                 prop.getRepresentedObject(),
                 "'"
                     + prop.getName()
                     + "' is a reserved prop name used by the component's "
-                    + "builder. Please use another name."));
+                    + "builder. Please use another name or add \"isCommonProp\" to the "
+                    + "Prop's definition."));
+      } else if (!reservedPropNames.contains(prop.getName()) && prop.isCommonProp()) {
+        validationErrors.add(
+            new SpecModelValidationError(
+                prop.getRepresentedObject(),
+                "'"
+                    + prop.getName()
+                    + "' specifies \"isCommonProp\" but does not use a common prop name."));
       }
 
       TypeName argumentType = null;

@@ -69,10 +69,11 @@ public class PropValidationTest {
         PropValidation.validate(mSpecModel, PropValidation.COMMON_PROP_NAMES);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "The prop sameName is defined differently in different methods. Ensure that each " +
-            "instance of this prop is declared in the same way (this means having the same type, " +
-            "resType and value for isOptional).");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "The prop sameName is defined differently in different methods. Ensure that each "
+                + "instance of this prop is declared in the same way (this means having the same type, "
+                + "resType and values for isOptional and isCommonProp).");
   }
 
   @Test
@@ -87,10 +88,11 @@ public class PropValidationTest {
         PropValidation.validate(mSpecModel, PropValidation.COMMON_PROP_NAMES);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "The prop sameName is defined differently in different methods. Ensure that each " +
-            "instance of this prop is declared in the same way (this means having the same type, " +
-            "resType and value for isOptional).");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "The prop sameName is defined differently in different methods. Ensure that each "
+                + "instance of this prop is declared in the same way (this means having the same type, "
+                + "resType and values for isOptional and isCommonProp).");
   }
 
   @Test
@@ -105,10 +107,11 @@ public class PropValidationTest {
         PropValidation.validate(mSpecModel, PropValidation.COMMON_PROP_NAMES);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "The prop sameName is defined differently in different methods. Ensure that each " +
-            "instance of this prop is declared in the same way (this means having the same type, " +
-            "resType and value for isOptional).");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "The prop sameName is defined differently in different methods. Ensure that each "
+                + "instance of this prop is declared in the same way (this means having the same type, "
+                + "resType and values for isOptional and isCommonProp).");
   }
 
   @Test
@@ -122,7 +125,20 @@ public class PropValidationTest {
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
             "'layoutDirection' is a reserved prop name used by the component's builder. Please"
-                + " use another name.");
+                + " use another name or add \"isCommonProp\" to the Prop's definition.");
+  }
+
+  @Test
+  public void testPropMarkedCommonWithoutCommonName() {
+    when(mPropModel1.getName()).thenReturn("badName");
+    when(mPropModel1.isCommonProp()).thenReturn(true);
+
+    List<SpecModelValidationError> validationErrors =
+        PropValidation.validate(mSpecModel, PropValidation.COMMON_PROP_NAMES);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo("'badName' specifies \"isCommonProp\" but does not use a common prop name.");
   }
 
   @Test

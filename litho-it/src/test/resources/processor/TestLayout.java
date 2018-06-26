@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 
 /**
+ * @prop-required aspectRatio float
  * @prop-required child com.facebook.litho.Component
  * @prop-required handler com.facebook.litho.EventHandler<com.facebook.litho.ClickEvent>
  * @prop-required prop1 int
@@ -60,6 +61,9 @@ public final class TestLayout<S extends View> extends Component implements TestT
   private TestLayoutStateContainer mStateContainer;
 
   private TestLayoutRenderData mPreviousRenderData;
+
+  @Prop(resType = ResType.NONE, optional = false)
+  float aspectRatio;
 
   @Prop(
       resType = ResType.NONE,
@@ -131,6 +135,9 @@ public final class TestLayout<S extends View> extends Component implements TestT
     TestLayout testLayoutRef = (TestLayout) other;
     if (this.getId() == testLayoutRef.getId()) {
       return true;
+    }
+    if (Float.compare(aspectRatio, testLayoutRef.aspectRatio) != 0) {
+      return false;
     }
     if (child != null ? !child.isEquivalentTo(testLayoutRef.child) : testLayoutRef.child != null) {
       return false;
@@ -295,6 +302,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
         param1,
         (Object) _ref.prop3,
         (char) _ref.prop5,
+        (float) _ref.aspectRatio,
         (long) _ref.mStateContainer.state1);
   }
 
@@ -553,9 +561,11 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
   public static class Builder<S extends View> extends Component.Builder<Builder<S>> {
     private static final String[] REQUIRED_PROPS_NAMES =
-        new String[] {"child", "handler", "prop1", "prop3", "prop4", "prop5", "prop6"};
+        new String[] {
+          "aspectRatio", "child", "handler", "prop1", "prop3", "prop4", "prop5", "prop6"
+        };
 
-    private static final int REQUIRED_PROPS_COUNT = 7;
+    private static final int REQUIRED_PROPS_COUNT = 8;
 
     TestLayout mTestLayout;
 
@@ -572,27 +582,35 @@ public final class TestLayout<S extends View> extends Component implements TestT
       contentDescription(TestLayoutSpec.contentDescription);
     }
 
+    @Override
+    public Builder<S> aspectRatio(float aspectRatio) {
+      super.aspectRatio(aspectRatio);
+      this.mTestLayout.aspectRatio = aspectRatio;
+      mRequired.set(0);
+      return this;
+    }
+
     public Builder<S> child(Component child) {
       this.mTestLayout.child = child == null ? null : child.makeShallowCopy();
-      mRequired.set(0);
+      mRequired.set(1);
       return this;
     }
 
     public Builder<S> child(Component.Builder<?> childBuilder) {
       this.mTestLayout.child = childBuilder == null ? null : childBuilder.build();
-      mRequired.set(0);
+      mRequired.set(1);
       return this;
     }
 
     public Builder<S> handler(EventHandler<ClickEvent> handler) {
       this.mTestLayout.handler = handler;
-      mRequired.set(1);
+      mRequired.set(2);
       return this;
     }
 
     public Builder<S> prop1(int prop1) {
       this.mTestLayout.prop1 = prop1;
-      mRequired.set(2);
+      mRequired.set(3);
       return this;
     }
 
@@ -603,25 +621,25 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
     public Builder<S> prop3(@Nullable Object prop3) {
       this.mTestLayout.prop3 = prop3;
-      mRequired.set(3);
+      mRequired.set(4);
       return this;
     }
 
     public Builder<S> prop4(char[] prop4) {
       this.mTestLayout.prop4 = prop4;
-      mRequired.set(4);
+      mRequired.set(5);
       return this;
     }
 
     public Builder<S> prop5(char prop5) {
       this.mTestLayout.prop5 = prop5;
-      mRequired.set(5);
+      mRequired.set(6);
       return this;
     }
 
     public Builder<S> prop6(long prop6) {
       this.mTestLayout.prop6 = prop6;
-      mRequired.set(6);
+      mRequired.set(7);
       return this;
     }
 

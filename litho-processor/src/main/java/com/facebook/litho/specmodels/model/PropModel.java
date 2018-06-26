@@ -22,6 +22,7 @@ import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -31,13 +32,19 @@ import javax.annotation.concurrent.Immutable;
 public class PropModel implements MethodParamModel {
   private final MethodParamModel mParamModel;
   private final boolean mIsOptional;
+  private final boolean mIsCommonProp;
   private final ResType mResType;
   private final String mVarArgSingleArgName;
 
   public PropModel(
-      MethodParamModel paramModel, boolean isOptional, ResType resType, String varArg) {
+      MethodParamModel paramModel,
+      boolean isOptional,
+      boolean isCommonProp,
+      ResType resType,
+      String varArg) {
     mParamModel = paramModel;
     mIsOptional = isOptional;
+    mIsCommonProp = isCommonProp;
     mResType = resType;
     mVarArgSingleArgName = varArg;
   }
@@ -76,6 +83,10 @@ public class PropModel implements MethodParamModel {
     return mIsOptional;
   }
 
+  public boolean isCommonProp() {
+    return mIsCommonProp;
+  }
+
   public ResType getResType() {
     return mResType;
   }
@@ -105,7 +116,7 @@ public class PropModel implements MethodParamModel {
 
   /** @return a new {@link PropModel} instance with the given name overridden. */
   public PropModel withName(String name) {
-    return new PropModel(mParamModel, mIsOptional, mResType, mVarArgSingleArgName) {
+    return new PropModel(mParamModel, mIsOptional, mIsCommonProp, mResType, mVarArgSingleArgName) {
       @Override
       public String getName() {
         return name;
@@ -119,6 +130,7 @@ public class PropModel implements MethodParamModel {
       final PropModel p = (PropModel) o;
       return mParamModel.equals(p.mParamModel)
           && mIsOptional == p.mIsOptional
+          && mIsCommonProp == p.mIsCommonProp
           && mResType == p.mResType
           && mVarArgSingleArgName.equals(p.getVarArgsSingleName());
     }
@@ -128,10 +140,6 @@ public class PropModel implements MethodParamModel {
 
   @Override
   public int hashCode() {
-    int result = mParamModel.hashCode();
-    result = 17 * result + (mIsOptional ? 1 : 0);
-    result = mResType == null ? result : 31 * result + mResType.hashCode();
-    result = 43 * result + mVarArgSingleArgName.hashCode();
-    return result;
+    return Objects.hash(mParamModel, mIsOptional, mIsCommonProp, mResType, mVarArgSingleArgName);
   }
 }
