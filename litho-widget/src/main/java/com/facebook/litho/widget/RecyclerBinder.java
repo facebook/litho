@@ -1321,15 +1321,23 @@ public class RecyclerBinder
         int firstComponent = findFirstComponentPosition(mComponentTreeHolders);
         if (firstComponent >= 0) {
           final ComponentTreeHolder holder = mComponentTreeHolders.get(firstComponent);
-          initRange(
-              mMeasuredSize.width,
-              mMeasuredSize.height,
-              holder,
-              getActualChildrenWidthSpec(holder),
-              getActualChildrenHeightSpec(holder),
-              mLayoutInfo.getScrollDirection());
+          final boolean shouldFillViewport = !mHasFilledViewport && shouldFillListViewport();
+          // If filling the viewport is enabled and the Recycler is measured with fixed size, we
+          // don't need to compute the size before filling the viewport.
+          final boolean initRangeAfterFillViewport =
+              shouldFillViewport && canSkipInitRange(true, true);
 
-          if (!mHasFilledViewport && shouldFillListViewport()) {
+          if (!initRangeAfterFillViewport) {
+            initRange(
+                mMeasuredSize.width,
+                mMeasuredSize.height,
+                holder,
+                getActualChildrenWidthSpec(holder),
+                getActualChildrenHeightSpec(holder),
+                mLayoutInfo.getScrollDirection());
+          }
+
+          if (shouldFillViewport) {
             if (SectionsDebug.ENABLED) {
               Log.d(SectionsDebug.TAG, "(" + hashCode() + ") filling viewport for mutation");
             }
@@ -1477,30 +1485,28 @@ public class RecyclerBinder
     // We now need to compute the size of the non scrolling side. We try to do this by using the
     // calculated range (if we have one) or computing one.
     boolean doFillViewportAfterFinishingMeasure = false;
+
+    // If filling the viewport is enabled and the Recycler is measured with fixed size, we don't
+    // need to compute the size before filling the viewport.
+    boolean initRangeAfterFillViewport =
+        canSkipInitRange(
+            SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY,
+            SizeSpec.getMode(heightSpec) == SizeSpec.EXACTLY);
+
     if (mRange == null) {
-      ComponentTreeHolder holderForRange = null;
-      if (!mComponentTreeHolders.isEmpty()) {
-        final int positionToComputeLayout = findFirstComponentPosition(mComponentTreeHolders);
-        if (mCurrentFirstVisiblePosition < mComponentTreeHolders.size()
-            && positionToComputeLayout >= 0) {
-          holderForRange = mComponentTreeHolders.get(positionToComputeLayout);
-        }
-      } else if (!mInsertsWaitingForInitialMeasure.isEmpty()) {
-        final int positionToComputeLayout =
-            findFirstAsyncComponentInsert(mInsertsWaitingForInitialMeasure);
-        if (positionToComputeLayout >= 0) {
-          holderForRange = mInsertsWaitingForInitialMeasure.get(positionToComputeLayout).mHolder;
-        }
-      }
+      ComponentTreeHolder holderForRange = getHolderForRange();
 
       if (holderForRange != null) {
-        initRange(
-            SizeSpec.getSize(widthSpec),
-            SizeSpec.getSize(heightSpec),
-            holderForRange,
-            getActualChildrenWidthSpec(holderForRange),
-            getActualChildrenHeightSpec(holderForRange),
-            scrollDirection);
+        if (!initRangeAfterFillViewport) {
+          initRange(
+              SizeSpec.getSize(widthSpec),
+              SizeSpec.getSize(heightSpec),
+              holderForRange,
+              getActualChildrenWidthSpec(holderForRange),
+              getActualChildrenHeightSpec(holderForRange),
+              scrollDirection);
+        }
+
         doFillViewportAfterFinishingMeasure = true;
       }
     }
@@ -1623,6 +1629,19 @@ public class RecyclerBinder
 
     mHasFilledViewport = true;
 
+    if (mRange == null) {
+      final ComponentTreeHolder holderForRange = getHolderForRange();
+      if (holderForRange != null) {
+        initRange(
+            maxWidth,
+            maxHeight,
+            holderForRange,
+            getActualChildrenWidthSpec(holderForRange),
+            getActualChildrenHeightSpec(holderForRange),
+            mLayoutInfo.getScrollDirection());
+      }
+    }
+
     ComponentsSystrace.endSection();
   }
 
@@ -1658,11 +1677,25 @@ public class RecyclerBinder
     mInsertsWaitingForInitialMeasure.clear();
     mHasFilledViewport = true;
 
+    if (mRange == null) {
+      final ComponentTreeHolder holderForRange = getHolderForRange();
+      if (holderForRange != null) {
+        initRange(
+            maxWidth,
+            maxHeight,
+            holderForRange,
+            getActualChildrenWidthSpec(holderForRange),
+            getActualChildrenHeightSpec(holderForRange),
+            mLayoutInfo.getScrollDirection());
+      }
+    }
+
     ComponentsSystrace.endSection();
   }
 
+  @VisibleForTesting
   @GuardedBy("this")
-  private int computeLayoutsToFillListViewport(
+  int computeLayoutsToFillListViewport(
       List<ComponentTreeHolder> holders,
       int offset,
       int maxWidth,
@@ -1826,6 +1859,7 @@ public class RecyclerBinder
 
     ComponentsSystrace.endSection();
     logFillViewportInserted(indexForNextNeeded, holders.size());
+
     return indexForNextNeeded;
   }
 
@@ -2027,8 +2061,9 @@ public class RecyclerBinder
     mInvalidStateLogId = logId;
   }
 
+  @VisibleForTesting
   @GuardedBy("this")
-  private void initRange(
+  void initRange(
       int width,
       int height,
       ComponentTreeHolder holder,
@@ -2854,5 +2889,35 @@ public class RecyclerBinder
         mCanCacheDrawingDisplayLists,
         mHasDynamicItemHeight ? mComponentTreeMeasureListenerFactory : null,
         mSplitLayoutTag);
+  }
+
+  private ComponentTreeHolder getHolderForRange() {
+    ComponentTreeHolder holderForRange = null;
+    if (!mComponentTreeHolders.isEmpty()) {
+      final int positionToComputeLayout = findFirstComponentPosition(mComponentTreeHolders);
+      if (mCurrentFirstVisiblePosition < mComponentTreeHolders.size()
+          && positionToComputeLayout >= 0) {
+        holderForRange = mComponentTreeHolders.get(positionToComputeLayout);
+      }
+    } else if (!mInsertsWaitingForInitialMeasure.isEmpty()) {
+      final int positionToComputeLayout =
+          findFirstAsyncComponentInsert(mInsertsWaitingForInitialMeasure);
+      if (positionToComputeLayout >= 0) {
+        holderForRange = mInsertsWaitingForInitialMeasure.get(positionToComputeLayout).mHolder;
+      }
+    }
+
+    return holderForRange;
+  }
+
+  private boolean canSkipInitRange(boolean widthSpecModeExactly, boolean heightSpecModeExactly) {
+    final boolean canMeasure = mReMeasureEventEventHandler != null;
+    final int scrollDirection = mLayoutInfo.getScrollDirection();
+
+    return !mHasFilledViewport
+        && shouldFillListViewport()
+        && (!canMeasure
+            || (scrollDirection == OrientationHelper.VERTICAL && widthSpecModeExactly)
+            || (scrollDirection == OrientationHelper.HORIZONTAL && heightSpecModeExactly));
   }
 }

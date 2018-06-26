@@ -26,6 +26,7 @@ import static org.mockito.Matchers.anyList;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -63,6 +64,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.reflect.Whitebox;
@@ -596,6 +598,35 @@ public class RecyclerBinderFillViewportTest {
     verify(layoutInfo).createViewportFiller(anyInt(), anyInt());
   }
 
+  @SuppressLint("STARVATION")
+  @Test
+  public void testFillsViewportNoInitRange() {
+    final LayoutInfo layoutInfo =
+        new LinearLayoutInfo(mComponentContext, OrientationHelper.VERTICAL, false);
+
+    final RecyclerBinder recyclerBinder =
+        spy(
+            new RecyclerBinder.Builder()
+                .rangeRatio(RANGE_RATIO)
+                .layoutInfo(layoutInfo)
+                .fillListViewport(true)
+                .build(mComponentContext));
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(250, EXACTLY), null);
+
+    InOrder inOrder = inOrder(recyclerBinder);
+    inOrder
+        .verify(recyclerBinder)
+        .computeLayoutsToFillListViewport(anyList(), anyInt(), anyInt(), anyInt(), any(Size.class));
+    inOrder
+        .verify(recyclerBinder)
+        .initRange(
+            anyInt(), anyInt(), any(ComponentTreeHolder.class), anyInt(), anyInt(), anyInt());
+  }
+
   // Parallel viewport fill tests
 
   @SuppressLint("STARVATION")
@@ -793,6 +824,35 @@ public class RecyclerBinderFillViewportTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
     verify(executor, times(3)).submit(any(Callable.class));
+  }
+
+  @SuppressLint("STARVATION")
+  @Test
+  public void testParallelFillNoInitRange() {
+    final LayoutInfo layoutInfo =
+        new LinearLayoutInfo(mComponentContext, OrientationHelper.VERTICAL, false);
+
+    final RecyclerBinder recyclerBinder =
+        spy(
+            new RecyclerBinder.Builder()
+                .threadPoolForParallelFillViewportConfig(
+                    new LayoutThreadPoolConfigurationImpl(3, 3, Process.THREAD_PRIORITY_BACKGROUND))
+                .rangeRatio(1f)
+                .layoutInfo(layoutInfo)
+                .build(mComponentContext));
+
+    fillRecyclerBinderWithComponents(recyclerBinder, 100, 100, 10);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(250, EXACTLY), null);
+    InOrder inOrder = inOrder(recyclerBinder);
+    inOrder
+        .verify(recyclerBinder)
+        .computeLayoutsToFillListViewport(anyList(), anyInt(), anyInt(), anyInt(), any(Size.class));
+    inOrder
+        .verify(recyclerBinder)
+        .initRange(
+            anyInt(), anyInt(), any(ComponentTreeHolder.class), anyInt(), anyInt(), anyInt());
   }
 
   private void fillRecyclerBinderWithComponents(
