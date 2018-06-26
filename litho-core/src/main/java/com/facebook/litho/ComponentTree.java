@@ -1438,7 +1438,7 @@ public class ComponentTree {
       int widthSpec,
       int heightSpec,
       boolean isAsync,
-      Size output,
+      @Nullable Size output,
       @CalculateLayoutSource int source,
       String extraAttribution,
       @Nullable TreeProps treeProps) {
