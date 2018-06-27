@@ -206,6 +206,7 @@ public class VerticalScrollSpec {
       @Prop(optional = true) boolean scrollbarEnabled,
       @Prop(optional = true) boolean scrollbarFadingEnabled,
       @Prop(optional = true) boolean nestedScrollingEnabled,
+      @Prop(optional = true) boolean fillViewport,
       @State ComponentTree childComponentTree,
       @State final ScrollPosition scrollPosition,
       @FromBoundsDefined Integer contentWidth,
@@ -213,6 +214,7 @@ public class VerticalScrollSpec {
     lithoScrollView.mount(childComponentTree, scrollPosition, contentWidth, contentHeight);
     lithoScrollView.setScrollbarFadingEnabled(scrollbarFadingEnabled);
     lithoScrollView.setNestedScrollingEnabled(nestedScrollingEnabled);
+    lithoScrollView.setFillViewport(fillViewport);
 
     // On older versions we need to disable the vertical scroll bar as otherwise we run into an NPE
     // that was only fixed in Lollipop - see
@@ -248,7 +250,6 @@ public class VerticalScrollSpec {
     LithoScrollView(Context context) {
       super(context);
       mLithoView = new LithoView(context);
-      mLithoView.setLayoutParams(new LayoutParams());
 
       addView(mLithoView);
     }
@@ -267,9 +268,6 @@ public class VerticalScrollSpec {
         final ScrollPosition scrollPosition,
         int width,
         int height) {
-      LayoutParams params = (LayoutParams) mLithoView.getLayoutParams();
-      params.mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
-      params.mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
       mLithoView.setComponentTree(contentComponentTree);
 
       mScrollPosition = scrollPosition;
