@@ -2876,7 +2876,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
     componentTree.applyPreviousRenderData(layoutState);
     collectMountTimeTransitions(layoutState, allTransitions);
-    componentTree.consumeStateUpdateTransitions(allTransitions);
+    componentTree.consumeStateUpdateTransitions(allTransitions, layoutState.mRootComponentName);
 
     Transition.RootBoundsTransition rootWidthTransition = new Transition.RootBoundsTransition();
     Transition.RootBoundsTransition rootHeightTransition = new Transition.RootBoundsTransition();
@@ -2926,7 +2926,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           component.onCreateTransition(component.getScopedContext());
 
       if (transition != null) {
-        TransitionUtils.addTransitions(transition, outList);
+        TransitionUtils.addTransitions(transition, outList, layoutState.mRootComponentName);
       }
     }
   }

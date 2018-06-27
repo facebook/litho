@@ -17,6 +17,7 @@ package com.facebook.litho;
 
 import android.content.Context;
 import android.provider.Settings;
+import android.support.annotation.Nullable;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;
@@ -84,11 +85,15 @@ class TransitionUtils {
         || animatorDurationScale != 0f;
   }
 
-  static void addTransitions(Transition transition, List<Transition> outList) {
+  static void addTransitions(
+      Transition transition, List<Transition> outList, @Nullable String logContext) {
     if (transition instanceof Transition.BaseTransitionUnitsBuilder) {
       outList.addAll(((Transition.BaseTransitionUnitsBuilder) transition).getTransitionUnits());
-    } else {
+    } else if (transition != null) {
       outList.add(transition);
+    } else {
+      throw new IllegalStateException(
+          "[" + logContext + "] Adding null to transition list is not allowed.");
     }
   }
 }

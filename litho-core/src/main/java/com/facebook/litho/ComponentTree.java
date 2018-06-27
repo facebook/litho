@@ -1325,9 +1325,10 @@ public class ComponentTree {
     return StateHandler.acquireNewInstance(mStateHandler);
   }
 
-  synchronized @Nullable void consumeStateUpdateTransitions(List<Transition> outList) {
+  synchronized @Nullable void consumeStateUpdateTransitions(
+      List<Transition> outList, @Nullable String logContext) {
     if (mStateHandler != null) {
-      mStateHandler.consumePendingStateUpdateTransitions(outList);
+      mStateHandler.consumePendingStateUpdateTransitions(outList, logContext);
     }
   }
 
