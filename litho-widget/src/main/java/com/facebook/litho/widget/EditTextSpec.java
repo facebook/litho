@@ -84,7 +84,6 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Component that renders an {@link EditText}.
  *
- * @uidocs https://fburl.com/EditText:6bb7
  * @prop text Text to display; changing this overrides and replaces the current text. Leave this as
  *     null to signal that the EditText's text property should be left untouched.
  * @prop initialText Initial text to display. This only takes effect if the text prop is null. If
