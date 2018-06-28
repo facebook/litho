@@ -20,18 +20,15 @@ import android.support.annotation.VisibleForTesting;
 import com.facebook.litho.dataflow.BindingListener;
 import com.facebook.litho.dataflow.GraphBinding;
 import com.facebook.litho.dataflow.ValueNode;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Base class for defining animations for transitions between states of the component hierarchy.
- * Subclasses should define their animation by creating a {@link GraphBinding} in
- * {@link #setupBinding}.
+ * Subclasses should define their animation by creating a {@link GraphBinding} in {@link
+ * #setupBinding}.
  */
-public abstract class TransitionAnimationBinding implements AnimationBinding {
+public abstract class TransitionAnimationBinding extends BaseAnimationBinding {
 
   private final GraphBinding mGraphBinding;
-  private final CopyOnWriteArrayList<AnimationBindingListener> mListeners =
-      new CopyOnWriteArrayList<>();
 
   public TransitionAnimationBinding() {
     this(GraphBinding.create());
@@ -64,15 +61,12 @@ public abstract class TransitionAnimationBinding implements AnimationBinding {
 
   @Override
   public void start(Resolver resolver) {
-    for (AnimationBindingListener listener : mListeners) {
-      if (!listener.shouldStart(this)) {
-        notifyCanceledBeforeStart();
-        return;
-      }
+    if (!shouldStart()) {
+      notifyCanceledBeforeStart();
+      return;
     }
-    for (AnimationBindingListener listener : mListeners) {
-      listener.onWillStart(this);
-    }
+    notifyWillStart();
+
     setupBinding(resolver);
     mGraphBinding.activate();
   }
@@ -97,25 +91,7 @@ public abstract class TransitionAnimationBinding implements AnimationBinding {
   }
 
   private void onAllNodesFinished() {
-    for (AnimationBindingListener listener : mListeners) {
-      listener.onFinish(this);
-    }
+    notifyFinished();
     stop();
-  }
-
-  private void notifyCanceledBeforeStart() {
-    for (AnimationBindingListener listener : mListeners) {
-      listener.onCanceledBeforeStart(this);
-    }
-  }
-
-  @Override
-  public void addListener(AnimationBindingListener bindingListener) {
-    mListeners.add(bindingListener);
-  }
-
-  @Override
-  public void removeListener(AnimationBindingListener animationBindingListener) {
-    mListeners.remove(animationBindingListener);
   }
 }

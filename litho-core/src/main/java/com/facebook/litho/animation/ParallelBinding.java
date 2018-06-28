@@ -21,16 +21,13 @@ import com.facebook.litho.dataflow.ChoreographerCompatImpl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * An {@link AnimationBinding} that's composed of other {@link AnimationBinding}s running in
  * parallel, possibly starting on a stagger.
  */
-public class ParallelBinding implements AnimationBinding {
+public class ParallelBinding extends BaseAnimationBinding {
 
-  private final CopyOnWriteArrayList<AnimationBindingListener> mListeners =
-      new CopyOnWriteArrayList<>();
   private final List<AnimationBinding> mBindings;
   private final AnimationBindingListener mChildListener;
   private final HashSet<AnimationBinding> mBindingsFinished = new HashSet<>();
@@ -101,9 +98,7 @@ public class ParallelBinding implements AnimationBinding {
 
   private void finish() {
     mIsActive = false;
-    for (AnimationBindingListener listener : mListeners) {
-      listener.onFinish(this);
-    }
+    notifyFinished();
   }
 
   @Override
@@ -114,15 +109,11 @@ public class ParallelBinding implements AnimationBinding {
     mHasStarted = true;
     mResolver = resolver;
 
-    for (AnimationBindingListener listener : mListeners) {
-      if (!listener.shouldStart(this)) {
-        notifyCanceledBeforeStart();
-        return;
-      }
+    if (!shouldStart()) {
+      notifyCanceledBeforeStart();
+      return;
     }
-    for (AnimationBindingListener listener : mListeners) {
-      listener.onWillStart(this);
-    }
+    notifyWillStart();
 
     mIsActive = true;
 
@@ -146,12 +137,6 @@ public class ParallelBinding implements AnimationBinding {
 
     if (mNextIndexToStart < mBindings.size()) {
       ChoreographerCompatImpl.getInstance().postFrameCallbackDelayed(mStaggerCallback, mStaggerMs);
-    }
-  }
-
-  private void notifyCanceledBeforeStart() {
-    for (AnimationBindingListener listener : mListeners) {
-      listener.onCanceledBeforeStart(this);
     }
   }
 
@@ -180,15 +165,5 @@ public class ParallelBinding implements AnimationBinding {
     for (int i = 0, size = mBindings.size(); i < size; i++) {
       mBindings.get(i).collectTransitioningProperties(outList);
     }
-  }
-
-  @Override
-  public void addListener(AnimationBindingListener animationBindingListener) {
-    mListeners.add(animationBindingListener);
-  }
-
-  @Override
-  public void removeListener(AnimationBindingListener animationBindingListener) {
-    mListeners.remove(animationBindingListener);
   }
 }

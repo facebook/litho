@@ -18,15 +18,10 @@ package com.facebook.litho.animation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-/**
- * An {@link AnimationBinding} that's a sequence of other {@link AnimationBinding}s.
- */
-public class SequenceBinding implements AnimationBinding {
+/** An {@link AnimationBinding} that's a sequence of other {@link AnimationBinding}s. */
+public class SequenceBinding extends BaseAnimationBinding {
 
-  private final CopyOnWriteArrayList<AnimationBindingListener> mListeners =
-      new CopyOnWriteArrayList<>();
   private final List<AnimationBinding> mBindings;
   private final AnimationBindingListener mChildListener;
   private Resolver mResolver;
@@ -79,17 +74,9 @@ public class SequenceBinding implements AnimationBinding {
   }
 
   private void finish() {
-    for (AnimationBindingListener listener : mListeners) {
-      listener.onFinish(this);
-    }
+    notifyFinished();
     mIsActive = false;
     mResolver = null;
-  }
-
-  private void notifyCanceledBeforeStart() {
-    for (AnimationBindingListener listener : mListeners) {
-      listener.onCanceledBeforeStart(this);
-    }
   }
 
   @Override
@@ -97,15 +84,13 @@ public class SequenceBinding implements AnimationBinding {
     if (mIsActive) {
       throw new RuntimeException("Already started");
     }
-    for (AnimationBindingListener listener : mListeners) {
-      if (!listener.shouldStart(this)) {
-        notifyCanceledBeforeStart();
-        return;
-      }
+
+    if (!shouldStart()) {
+      notifyCanceledBeforeStart();
+      return;
     }
-    for (AnimationBindingListener listener : mListeners) {
-      listener.onWillStart(this);
-    }
+    notifyWillStart();
+
     mIsActive = true;
     mResolver = resolver;
     final AnimationBinding first = mBindings.get(0);
@@ -132,15 +117,5 @@ public class SequenceBinding implements AnimationBinding {
     for (int i = 0, size = mBindings.size(); i < size; i++) {
       mBindings.get(i).collectTransitioningProperties(outList);
     }
-  }
-
-  @Override
-  public void addListener(AnimationBindingListener animationBindingListener) {
-    mListeners.add(animationBindingListener);
-  }
-
-  @Override
-  public void removeListener(AnimationBindingListener animationBindingListener) {
-    mListeners.remove(animationBindingListener);
   }
 }
