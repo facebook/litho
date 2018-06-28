@@ -182,6 +182,29 @@ operator!=(const T1& a, const T2& b) {
   return !(a == b);
 }
 
+template<typename T1>
+inline enable_if_t<IsNonWeakReference<T1>(), bool>
+operator==(const T1& a, std::nullptr_t) {
+  return getPlainJniReference(a) == nullptr;
+}
+
+template<typename T1>
+inline enable_if_t<IsNonWeakReference<T1>(), bool>
+operator==(std::nullptr_t, const T1& a) {
+  return nullptr == getPlainJniReference(a);
+}
+
+template<typename T1>
+inline enable_if_t<IsNonWeakReference<T1>(), bool>
+operator!=(const T1& a, std::nullptr_t) {
+  return !(a == nullptr);
+}
+
+template<typename T1>
+inline enable_if_t<IsNonWeakReference<T1>(), bool>
+operator!=(std::nullptr_t, const T1& a) {
+  return !(nullptr == getPlainJniReference(a));
+}
 
 // base_owned_ref ///////////////////////////////////////////////////////////////////////
 

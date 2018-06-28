@@ -35,6 +35,13 @@ namespace jni {
 class JClass;
 class JObject;
 
+namespace detail {
+
+/// Lookup a class by name.  This should only be used internally.
+jclass findClass(JNIEnv* env, const char* name);
+
+}
+
 /// Lookup a class by name. Note this functions returns an alias_ref that
 /// points to a leaked global reference.  This is appropriate for classes
 /// that are never unloaded (which is any class in an Android app and most

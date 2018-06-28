@@ -60,26 +60,29 @@ jint initialize(JavaVM* vm, std::function<void()>&& init_fn) noexcept {
   return JNI_VERSION_1_6;
 }
 
-alias_ref<JClass> findClassStatic(const char* name) {
-  const auto env = detail::currentOrNull();
+namespace detail {
+
+jclass findClass(JNIEnv* env, const char* name) {
   if (!env) {
     throw std::runtime_error("Unable to retrieve JNIEnv*.");
   }
-  local_ref<jclass> cls = adopt_local(env->FindClass(name));
+  jclass cls = env->FindClass(name);
   FACEBOOK_JNI_THROW_EXCEPTION_IF(!cls);
-  auto leaking_ref = (jclass)env->NewGlobalRef(cls.get());
-  FACEBOOK_JNI_THROW_EXCEPTION_IF(!leaking_ref);
-  return wrap_alias(leaking_ref);
+  return cls;
+}
+
 }
 
 local_ref<JClass> findClassLocal(const char* name) {
-  const auto env = detail::currentOrNull();
-  if (!env) {
-    throw std::runtime_error("Unable to retrieve JNIEnv*.");
-  }
-  auto cls = env->FindClass(name);
-  FACEBOOK_JNI_THROW_EXCEPTION_IF(!cls);
-  return adopt_local(cls);
+  return adopt_local(detail::findClass(detail::currentOrNull(), name));
+}
+
+alias_ref<JClass> findClassStatic(const char* name) {
+  JNIEnv* env = detail::currentOrNull();
+  auto cls = adopt_local(detail::findClass(env, name));
+  auto leaking_ref = (jclass)env->NewGlobalRef(cls.get());
+  FACEBOOK_JNI_THROW_EXCEPTION_IF(!leaking_ref);
+  return wrap_alias(leaking_ref);
 }
 
 
