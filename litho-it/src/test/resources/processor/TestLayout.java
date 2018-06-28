@@ -645,7 +645,9 @@ public final class TestLayout<S extends View> extends Component implements TestT
       if (names == null) {
         return this;
       }
-      if (this.mTestLayout.names == null || this.mTestLayout.names.isEmpty()) {
+      if (this.mTestLayout.names == null
+          || this.mTestLayout.names.isEmpty()
+          || this.mTestLayout.names == TestLayoutSpec.names) {
         this.mTestLayout.names = names;
       } else {
         this.mTestLayout.names.addAll(names);
@@ -657,7 +659,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       if (name == null) {
         return this;
       }
-      if (this.mTestLayout.names == null) {
+      if (this.mTestLayout.names == null || this.mTestLayout.names == TestLayoutSpec.names) {
         this.mTestLayout.names = new ArrayList<String>();
       }
       this.mTestLayout.names.add(name);
@@ -665,7 +667,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
 
     public Builder<S> nameRes(@StringRes int resId) {
-      if (this.mTestLayout.names == null) {
+      if (this.mTestLayout.names == null || this.mTestLayout.names == TestLayoutSpec.names) {
         this.mTestLayout.names = new ArrayList<String>();
       }
       final String res = mResourceResolver.resolveStringRes(resId);
@@ -677,7 +679,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       if (resIds == null) {
         return this;
       }
-      if (this.mTestLayout.names == null) {
+      if (this.mTestLayout.names == null || this.mTestLayout.names == TestLayoutSpec.names) {
         this.mTestLayout.names = new ArrayList<String>();
       }
       for (int i = 0; i < resIds.size(); i++) {
@@ -688,7 +690,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
 
     public Builder<S> nameRes(@StringRes int resId, Object... formatArgs) {
-      if (this.mTestLayout.names == null) {
+      if (this.mTestLayout.names == null || this.mTestLayout.names == TestLayoutSpec.names) {
         this.mTestLayout.names = new ArrayList<String>();
       }
       final String res = mResourceResolver.resolveStringRes(resId, formatArgs);
@@ -700,7 +702,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       if (resIds == null) {
         return this;
       }
-      if (this.mTestLayout.names == null) {
+      if (this.mTestLayout.names == null || this.mTestLayout.names == TestLayoutSpec.names) {
         this.mTestLayout.names = new ArrayList<String>();
       }
       for (int i = 0; i < resIds.size(); i++) {
@@ -711,7 +713,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
 
     public Builder<S> nameAttr(@AttrRes int attrResId, @StringRes int defResId) {
-      if (this.mTestLayout.names == null) {
+      if (this.mTestLayout.names == null || this.mTestLayout.names == TestLayoutSpec.names) {
         this.mTestLayout.names = new ArrayList<String>();
       }
       final String res = mResourceResolver.resolveStringAttr(attrResId, defResId);
@@ -720,7 +722,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
 
     public Builder<S> nameAttr(@AttrRes int attrResId) {
-      if (this.mTestLayout.names == null) {
+      if (this.mTestLayout.names == null || this.mTestLayout.names == TestLayoutSpec.names) {
         this.mTestLayout.names = new ArrayList<String>();
       }
       final String res = mResourceResolver.resolveStringAttr(attrResId, 0);
@@ -732,7 +734,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       if (attrResIds == null) {
         return this;
       }
-      if (this.mTestLayout.names == null) {
+      if (this.mTestLayout.names == null || this.mTestLayout.names == TestLayoutSpec.names) {
         this.mTestLayout.names = new ArrayList<String>();
       }
       for (int i = 0; i < attrResIds.size(); i++) {
@@ -746,7 +748,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       if (attrResIds == null) {
         return this;
       }
-      if (this.mTestLayout.names == null) {
+      if (this.mTestLayout.names == null || this.mTestLayout.names == TestLayoutSpec.names) {
         this.mTestLayout.names = new ArrayList<String>();
       }
       for (int i = 0; i < attrResIds.size(); i++) {

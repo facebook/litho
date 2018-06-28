@@ -570,19 +570,32 @@ public class BuilderGenerator {
 
     final ParameterizedTypeName listType =
         ParameterizedTypeName.get(ClassName.get(ArrayList.class), varArgTypeName);
-    CodeBlock codeBlock = CodeBlock.builder()
-        .beginControlFlow("if ($L == null)", varArgName)
-        .addStatement("return this")
-        .endControlFlow()
-        .beginControlFlow("if (this.$L.$L == null)", implMemberInstanceName, propName)
-        .addStatement("this.$L.$L = new $T()", implMemberInstanceName, propName, listType)
-        .endControlFlow()
-        .addStatement(
-        "this.$L.$L.add($L)",
-        implMemberInstanceName,
-        propName,
-        varArgName)
-        .build();
+    CodeBlock.Builder codeBlockBuilder =
+        CodeBlock.builder()
+            .beginControlFlow("if ($L == null)", varArgName)
+            .addStatement("return this")
+            .endControlFlow();
+
+    if (prop.hasDefault(specModel.getPropDefaults())) {
+      codeBlockBuilder.beginControlFlow(
+          "if (this.$L.$L == null || this.$L.$L == $L.$L)",
+          implMemberInstanceName,
+          propName,
+          implMemberInstanceName,
+          propName,
+          specModel.getSpecName(),
+          propName);
+    } else {
+      codeBlockBuilder.beginControlFlow(
+          "if (this.$L.$L == null)", implMemberInstanceName, propName);
+    }
+
+    CodeBlock codeBlock =
+        codeBlockBuilder
+            .addStatement("this.$L.$L = new $T()", implMemberInstanceName, propName, listType)
+            .endControlFlow()
+            .addStatement("this.$L.$L.add($L)", implMemberInstanceName, propName, varArgName)
+            .build();
 
     return getMethodSpecBuilder(
             specModel,
@@ -1083,12 +1096,28 @@ public class BuilderGenerator {
     final ParameterizedTypeName listType =
         ParameterizedTypeName.get(ClassName.get(ArrayList.class), resType);
 
-    CodeBlock codeBlock =
+    CodeBlock.Builder codeBlockBuilder =
         CodeBlock.builder()
             .beginControlFlow("if ($L == null)", parameterName)
             .addStatement("return this")
-            .endControlFlow()
-            .beginControlFlow("if (this.$L.$L == null)", componentMemberInstanceName, propName)
+            .endControlFlow();
+
+    if (prop.hasDefault(specModel.getPropDefaults())) {
+      codeBlockBuilder.beginControlFlow(
+          "if (this.$L.$L == null || this.$L.$L == $L.$L)",
+          componentMemberInstanceName,
+          propName,
+          componentMemberInstanceName,
+          propName,
+          specModel.getSpecName(),
+          propName);
+    } else {
+      codeBlockBuilder.beginControlFlow(
+          "if (this.$L.$L == null)", componentMemberInstanceName, propName);
+    }
+
+    CodeBlock codeBlock =
+        codeBlockBuilder
             .addStatement("this.$L.$L = new $T()", componentMemberInstanceName, propName, listType)
             .endControlFlow()
             .beginControlFlow("for (int i = 0; i < $L.size(); i++)", parameterName)
@@ -1118,18 +1147,32 @@ public class BuilderGenerator {
       final ParameterizedTypeName listType =
           ParameterizedTypeName.get(ClassName.get(ArrayList.class), singleParameterType);
 
-      CodeBlock.Builder codeBlockBuilder =
-          CodeBlock.builder()
-              .beginControlFlow("if (this.$L.$L == null)", componentMemberInstanceName, propName)
-              .addStatement("this.$L.$L = new $T()", componentMemberInstanceName, propName, listType)
-              .endControlFlow()
-              .add(
-                  "final $T res = ",
-                  singleParameterType.isBoxedPrimitive()
-                      ? singleParameterType.unbox()
-                      : singleParameterType)
-              .addStatement(statement, formatObjects)
-              .addStatement("this.$L.$L.add(res)", componentMemberInstanceName, propName);
+      CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+
+      if (prop.hasDefault(specModel.getPropDefaults())) {
+        codeBlockBuilder.beginControlFlow(
+            "if (this.$L.$L == null || this.$L.$L == $L.$L)",
+            componentMemberInstanceName,
+            propName,
+            componentMemberInstanceName,
+            propName,
+            specModel.getSpecName(),
+            propName);
+      } else {
+        codeBlockBuilder.beginControlFlow(
+            "if (this.$L.$L == null)", componentMemberInstanceName, propName);
+      }
+
+      codeBlockBuilder
+          .addStatement("this.$L.$L = new $T()", componentMemberInstanceName, propName, listType)
+          .endControlFlow()
+          .add(
+              "final $T res = ",
+              singleParameterType.isBoxedPrimitive()
+                  ? singleParameterType.unbox()
+                  : singleParameterType)
+          .addStatement(statement, formatObjects)
+          .addStatement("this.$L.$L.add(res)", componentMemberInstanceName, propName);
 
       return getMethodSpecBuilder(specModel, prop, requiredIndex, name, parameters, codeBlockBuilder.build());
     }
@@ -1155,17 +1198,33 @@ public class BuilderGenerator {
           CodeBlock.builder()
               .beginControlFlow("if ($L == null)", propName)
               .addStatement("return this")
-              .endControlFlow()
-              .beginControlFlow(
-                  "if (this.$L.$L == null || this.$L.$L.isEmpty())",
-                  componentMemberInstanceName,
-                  propName,
-                  componentMemberInstanceName,
-                  propName)
-              .addStatement("this.$L.$L = $L", componentMemberInstanceName, propName, propName)
-              .nextControlFlow("else")
-              .addStatement("this.$L.$L.addAll($L)", componentMemberInstanceName, propName, propName)
               .endControlFlow();
+
+      if (prop.hasDefault(specModel.getPropDefaults())) {
+        codeBlockBuilder.beginControlFlow(
+            "if (this.$L.$L == null || this.$L.$L.isEmpty() || this.$L.$L == $L.$L)",
+            componentMemberInstanceName,
+            propName,
+            componentMemberInstanceName,
+            propName,
+            componentMemberInstanceName,
+            propName,
+            specModel.getSpecName(),
+            propName);
+      } else {
+        codeBlockBuilder.beginControlFlow(
+            "if (this.$L.$L == null || this.$L.$L.isEmpty())",
+            componentMemberInstanceName,
+            propName,
+            componentMemberInstanceName,
+            propName);
+      }
+
+      codeBlockBuilder
+          .addStatement("this.$L.$L = $L", componentMemberInstanceName, propName, propName)
+          .nextControlFlow("else")
+          .addStatement("this.$L.$L.addAll($L)", componentMemberInstanceName, propName, propName)
+          .endControlFlow();
 
       return getMethodSpecBuilder(specModel, prop, requiredIndex, name, parameters, codeBlockBuilder.build());
     }
