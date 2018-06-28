@@ -38,6 +38,7 @@ public class RecyclerBinderConfiguration {
   private boolean mFillListViewportHScrollOnly;
   private LayoutThreadPoolConfiguration mThreadPoolForParallelFillViewportConfig;
   private boolean mEnableStableIds;
+  private String mInitialInvalidStateLogId;
 
   public RecyclerBinderConfiguration(double rangeRatio) {
     this(rangeRatio, null, false);
@@ -126,6 +127,10 @@ public class RecyclerBinderConfiguration {
     mEnableStableIds = enableStableIds;
   }
 
+  public void setInitialInvalidStateLogId(String initialInvalidStateLogId) {
+    mInitialInvalidStateLogId = initialInvalidStateLogId;
+  }
+
   public double getRangeRatio() {
     return mRangeRatio;
   }
@@ -172,5 +177,9 @@ public class RecyclerBinderConfiguration {
 
   public boolean getEnableStableIds() {
     return mEnableStableIds;
+  }
+
+  public String getInitialInvalidStateLogId() {
+    return mInitialInvalidStateLogId;
   }
 }

@@ -103,6 +103,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
             .threadPoolForParallelFillViewportConfig(
                 mRecyclerBinderConfiguration.getThreadPoolForParallelFillViewportConfig())
             .enableStableIds(mRecyclerBinderConfiguration.getEnableStableIds())
+            .initialInvalidStateLogId(mRecyclerBinderConfiguration.getInitialInvalidStateLogId())
             .build(c);
     return (T)
         new SectionBinderTarget(

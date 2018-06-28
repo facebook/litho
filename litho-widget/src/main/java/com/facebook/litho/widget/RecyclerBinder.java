@@ -375,6 +375,7 @@ public class RecyclerBinder
     private boolean fillListViewportHScrollOnly;
     private LayoutThreadPoolConfiguration threadPoolForParallelFillViewportConfig;
     private boolean enableStableIds;
+    private String initialInvalidStateLogId;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -520,6 +521,15 @@ public class RecyclerBinder
     }
 
     /**
+     * If non-null logId is provided we will log invalid state of the LithoView like height being 0
+     * while non-0 value was expected and similar other invalid cases.
+     */
+    public Builder initialInvalidStateLogId(String invalidStateLogId) {
+      this.initialInvalidStateLogId = invalidStateLogId;
+      return this;
+    }
+
+    /**
      * Method for tests to allow mocking of the InternalAdapter to verify interaction with the
      * RecyclerView.
      */
@@ -640,6 +650,7 @@ public class RecyclerBinder
     }
 
     mEnableStableIds = builder.enableStableIds;
+    mInvalidStateLogId = builder.initialInvalidStateLogId;
   }
 
   /**
