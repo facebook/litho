@@ -16,7 +16,9 @@
 package com.facebook.litho.processor.integration.resources;
 
 import android.annotation.TargetApi;
+import android.support.annotation.AttrRes;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pools;
 import android.view.View;
@@ -39,14 +41,17 @@ import com.facebook.litho.TreeProps;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.List;
 
 /**
  * @prop-required aspectRatio float
  * @prop-required child com.facebook.litho.Component
  * @prop-required focusable boolean
  * @prop-required handler com.facebook.litho.EventHandler<com.facebook.litho.ClickEvent>
+ * @prop-optional names java.util.List<java.lang.String>
  * @prop-required prop1 int
  * @prop-optional prop2 boolean
  * @prop-required prop3 java.lang.Object
@@ -77,6 +82,9 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
   @Prop(resType = ResType.NONE, optional = false)
   EventHandler<ClickEvent> handler;
+
+  @Prop(resType = ResType.STRING, optional = true)
+  List<String> names = TestLayoutSpec.names;
 
   @Prop(
       resType = ResType.NONE,
@@ -152,6 +160,9 @@ public final class TestLayout<S extends View> extends Component implements TestT
     if (handler != null
         ? !handler.isEquivalentTo(testLayoutRef.handler)
         : testLayoutRef.handler != null) {
+      return false;
+    }
+    if (names != null ? !names.equals(testLayoutRef.names) : testLayoutRef.names != null) {
       return false;
     }
     if (prop1 != testLayoutRef.prop1) {
@@ -251,6 +262,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
                 (Object) prop3,
                 (char[]) prop4,
                 (EventHandler<ClickEvent>) handler,
+                (List<String>) names,
                 (long) mStateContainer.state1,
                 (S) mStateContainer.state2,
                 (int) mStateContainer.state3,
@@ -626,6 +638,121 @@ public final class TestLayout<S extends View> extends Component implements TestT
     public Builder<S> handler(EventHandler<ClickEvent> handler) {
       this.mTestLayout.handler = handler;
       mRequired.set(3);
+      return this;
+    }
+
+    public Builder<S> names(List<String> names) {
+      if (names == null) {
+        return this;
+      }
+      if (this.mTestLayout.names == null || this.mTestLayout.names.isEmpty()) {
+        this.mTestLayout.names = names;
+      } else {
+        this.mTestLayout.names.addAll(names);
+      }
+      return this;
+    }
+
+    public Builder<S> name(String name) {
+      if (name == null) {
+        return this;
+      }
+      if (this.mTestLayout.names == null) {
+        this.mTestLayout.names = new ArrayList<String>();
+      }
+      this.mTestLayout.names.add(name);
+      return this;
+    }
+
+    public Builder<S> nameRes(@StringRes int resId) {
+      if (this.mTestLayout.names == null) {
+        this.mTestLayout.names = new ArrayList<String>();
+      }
+      final String res = mResourceResolver.resolveStringRes(resId);
+      this.mTestLayout.names.add(res);
+      return this;
+    }
+
+    public Builder<S> namesRes(List<Integer> resIds) {
+      if (resIds == null) {
+        return this;
+      }
+      if (this.mTestLayout.names == null) {
+        this.mTestLayout.names = new ArrayList<String>();
+      }
+      for (int i = 0; i < resIds.size(); i++) {
+        final String res = mResourceResolver.resolveStringRes(resIds.get(i));
+        this.mTestLayout.names.add(res);
+      }
+      return this;
+    }
+
+    public Builder<S> nameRes(@StringRes int resId, Object... formatArgs) {
+      if (this.mTestLayout.names == null) {
+        this.mTestLayout.names = new ArrayList<String>();
+      }
+      final String res = mResourceResolver.resolveStringRes(resId, formatArgs);
+      this.mTestLayout.names.add(res);
+      return this;
+    }
+
+    public Builder<S> namesRes(@StringRes List<Integer> resIds, Object... formatArgs) {
+      if (resIds == null) {
+        return this;
+      }
+      if (this.mTestLayout.names == null) {
+        this.mTestLayout.names = new ArrayList<String>();
+      }
+      for (int i = 0; i < resIds.size(); i++) {
+        final String res = mResourceResolver.resolveStringRes(resIds.get(i), formatArgs);
+        this.mTestLayout.names.add(res);
+      }
+      return this;
+    }
+
+    public Builder<S> nameAttr(@AttrRes int attrResId, @StringRes int defResId) {
+      if (this.mTestLayout.names == null) {
+        this.mTestLayout.names = new ArrayList<String>();
+      }
+      final String res = mResourceResolver.resolveStringAttr(attrResId, defResId);
+      this.mTestLayout.names.add(res);
+      return this;
+    }
+
+    public Builder<S> nameAttr(@AttrRes int attrResId) {
+      if (this.mTestLayout.names == null) {
+        this.mTestLayout.names = new ArrayList<String>();
+      }
+      final String res = mResourceResolver.resolveStringAttr(attrResId, 0);
+      this.mTestLayout.names.add(res);
+      return this;
+    }
+
+    public Builder<S> namesAttr(List<Integer> attrResIds, @StringRes int defResId) {
+      if (attrResIds == null) {
+        return this;
+      }
+      if (this.mTestLayout.names == null) {
+        this.mTestLayout.names = new ArrayList<String>();
+      }
+      for (int i = 0; i < attrResIds.size(); i++) {
+        final String res = mResourceResolver.resolveStringAttr(attrResIds.get(i), defResId);
+        this.mTestLayout.names.add(res);
+      }
+      return this;
+    }
+
+    public Builder<S> namesAttr(List<Integer> attrResIds) {
+      if (attrResIds == null) {
+        return this;
+      }
+      if (this.mTestLayout.names == null) {
+        this.mTestLayout.names = new ArrayList<String>();
+      }
+      for (int i = 0; i < attrResIds.size(); i++) {
+        final String res = mResourceResolver.resolveStringAttr(attrResIds.get(i), 0);
+        this.mTestLayout.names.add(res);
+      }
       return this;
     }
 

@@ -43,13 +43,17 @@ import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
+import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
+import java.util.ArrayList;
+import java.util.List;
 
 @LayoutSpec(events = TestEvent.class)
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 public class TestLayoutSpec<S extends View> implements TestTag {
   @PropDefault protected static final boolean prop2 = true;
+  @PropDefault protected static final List<String> names = new ArrayList<>();
 
   @OnLoadStyle
   static void onLoadStyle(ComponentContext c, Output<Boolean> prop2, Output<Object> prop3) {}
@@ -70,6 +74,7 @@ public class TestLayoutSpec<S extends View> implements TestTag {
       @Prop @Nullable Object prop3,
       @Prop char[] prop4,
       @Prop EventHandler<ClickEvent> handler,
+      @Prop(resType = ResType.STRING, optional = true, varArg = "name") List<String> names,
       @State(canUpdateLazily = true) long state1,
       @State S state2,
       @State int state3,
