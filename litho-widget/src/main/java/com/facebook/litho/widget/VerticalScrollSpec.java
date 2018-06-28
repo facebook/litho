@@ -21,7 +21,6 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.os.Build;
 import android.support.v4.widget.NestedScrollView;
 import android.view.ViewGroup;
@@ -81,7 +80,9 @@ public class VerticalScrollSpec {
     scrollPosition.set(initialScrollPosition);
 
     childComponentTree.set(
-        ComponentTree.create(new ComponentContext(context), childComponent).build());
+        ComponentTree.create(new ComponentContext(context.getBaseContext()), childComponent)
+            .incrementalMount(false)
+            .build());
   }
 
   @OnMeasure
@@ -241,7 +242,6 @@ public class VerticalScrollSpec {
   }
 
   static class LithoScrollView extends NestedScrollView {
-    private static final Rect sRect = new Rect();
     private final LithoView mLithoView;
 
     @Nullable private ScrollPosition mScrollPosition;
@@ -257,9 +257,6 @@ public class VerticalScrollSpec {
     @Override
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
       super.onScrollChanged(l, t, oldl, oldt);
-
-      sRect.set(l, t, l + getWidth(), t + getHeight());
-      mLithoView.performIncrementalMount(sRect, true);
 
       if (mScrollPosition != null) {
         mScrollPosition.y = getScrollY();
