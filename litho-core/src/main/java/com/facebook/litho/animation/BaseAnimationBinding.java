@@ -76,4 +76,14 @@ abstract class BaseAnimationBinding implements AnimationBinding {
       listener.onFinish(this);
     }
   }
+
+  /**
+   * Notifies the added {@link AnimationBindingListener}s that has been scheduled to start later.
+   */
+  final void notifyScheduledToStartLater() {
+    for (int index = mListeners.size() - 1; index >= 0; index--) {
+      final AnimationBindingListener listener = mListeners.get(index);
+      listener.onScheduledToStartLater(this);
+    }
+  }
 }

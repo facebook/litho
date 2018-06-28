@@ -22,6 +22,12 @@ import com.facebook.litho.dataflow.GraphBinding;
  * Listener that receives events when a {@link GraphBinding} is activated or is finished.
  */
 public interface AnimationBindingListener {
+  /**
+   * Called when going to be started later. For example: when a set of {@link AnimationBinding}
+   * starts, but this particular binding will come into play later. This may be called multiple
+   * times in case of several nested sets
+   */
+  void onScheduledToStartLater(AnimationBinding binding);
 
   /**
    * Called when {@link GraphBinding#activate} is called on the relevant binding.

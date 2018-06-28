@@ -90,6 +90,11 @@ public abstract class TransitionAnimationBinding extends BaseAnimationBinding {
     return mGraphBinding.isActive();
   }
 
+  @Override
+  public void prepareToStartLater() {
+    notifyScheduledToStartLater();
+  }
+
   private void onAllNodesFinished() {
     notifyFinished();
     stop();

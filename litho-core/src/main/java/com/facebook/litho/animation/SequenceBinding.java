@@ -35,26 +35,29 @@ public class SequenceBinding extends BaseAnimationBinding {
       throw new IllegalArgumentException("Empty binding sequence");
     }
 
-    mChildListener = new AnimationBindingListener() {
-      @Override
-      public void onWillStart(AnimationBinding binding) {
-      }
+    mChildListener =
+        new AnimationBindingListener() {
+          @Override
+          public void onScheduledToStartLater(AnimationBinding binding) {}
 
-      @Override
-      public void onFinish(AnimationBinding binding) {
-        SequenceBinding.this.onBindingFinished(binding);
-      }
+          @Override
+          public void onWillStart(AnimationBinding binding) {}
 
-      @Override
-      public void onCanceledBeforeStart(AnimationBinding binding) {
-        SequenceBinding.this.onBindingFinished(binding);
-      }
+          @Override
+          public void onFinish(AnimationBinding binding) {
+            SequenceBinding.this.onBindingFinished(binding);
+          }
 
-      @Override
-      public boolean shouldStart(AnimationBinding binding) {
-        return true;
-      }
-    };
+          @Override
+          public void onCanceledBeforeStart(AnimationBinding binding) {
+            SequenceBinding.this.onBindingFinished(binding);
+          }
+
+          @Override
+          public boolean shouldStart(AnimationBinding binding) {
+            return true;
+          }
+        };
   }
 
   private void onBindingFinished(AnimationBinding binding) {
@@ -90,7 +93,12 @@ public class SequenceBinding extends BaseAnimationBinding {
       return;
     }
     notifyWillStart();
-
+    // Notify all children except the first one that will start later
+    for (int i = 1, size = mBindings.size(); i < size; i++) {
+      final AnimationBinding binding = mBindings.get(i);
+      binding.prepareToStartLater();
+    }
+    // Now start the first one
     mIsActive = true;
     mResolver = resolver;
     final AnimationBinding first = mBindings.get(0);
@@ -116,6 +124,15 @@ public class SequenceBinding extends BaseAnimationBinding {
   public void collectTransitioningProperties(ArrayList<PropertyAnimation> outList) {
     for (int i = 0, size = mBindings.size(); i < size; i++) {
       mBindings.get(i).collectTransitioningProperties(outList);
+    }
+  }
+
+  @Override
+  public void prepareToStartLater() {
+    notifyScheduledToStartLater();
+    for (int i = 0, size = mBindings.size(); i < size; i++) {
+      final AnimationBinding binding = mBindings.get(i);
+      binding.prepareToStartLater();
     }
   }
 }

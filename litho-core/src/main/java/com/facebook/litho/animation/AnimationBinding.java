@@ -26,6 +26,13 @@ import java.util.ArrayList;
 public interface AnimationBinding {
 
   /**
+   * Called when binding is to be started later. For example: when a set of bindings starts, but
+   * this particular binding will come into play later. This may be called multiple times in case of
+   * several nested sets
+   */
+  void prepareToStartLater();
+
+  /**
    * Starts this animation. The provided {@link Resolver} instance can be used to configure this
    * animation appropriately using mount content property current and end values.
    */

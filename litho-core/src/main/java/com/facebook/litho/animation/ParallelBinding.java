@@ -47,26 +47,29 @@ public class ParallelBinding extends BaseAnimationBinding {
       throw new IllegalArgumentException("Empty binding parallel");
     }
 
-    mChildListener = new AnimationBindingListener() {
-      @Override
-      public void onWillStart(AnimationBinding binding) {
-      }
+    mChildListener =
+        new AnimationBindingListener() {
+          @Override
+          public void onScheduledToStartLater(AnimationBinding binding) {}
 
-      @Override
-      public void onFinish(AnimationBinding binding) {
-        ParallelBinding.this.onBindingFinished(binding);
-      }
+          @Override
+          public void onWillStart(AnimationBinding binding) {}
 
-      @Override
-      public void onCanceledBeforeStart(AnimationBinding binding) {
-        ParallelBinding.this.onBindingFinished(binding);
-      }
+          @Override
+          public void onFinish(AnimationBinding binding) {
+            ParallelBinding.this.onBindingFinished(binding);
+          }
 
-      @Override
-      public boolean shouldStart(AnimationBinding binding) {
-        return true;
-      }
-    };
+          @Override
+          public void onCanceledBeforeStart(AnimationBinding binding) {
+            ParallelBinding.this.onBindingFinished(binding);
+          }
+
+          @Override
+          public boolean shouldStart(AnimationBinding binding) {
+            return true;
+          }
+        };
 
     if (mStaggerMs == 0) {
       mStaggerCallback = null;
@@ -127,6 +130,12 @@ public class ParallelBinding extends BaseAnimationBinding {
       }
       mNextIndexToStart = mBindings.size();
     } else {
+      // Notify all children except the first one that will start later
+      for (int i = 1, size = mBindings.size(); i < size; i++) {
+        final AnimationBinding binding = mBindings.get(i);
+        binding.prepareToStartLater();
+      }
+      // Now start the first one
       startNextBindingForStagger();
     }
   }
@@ -164,6 +173,15 @@ public class ParallelBinding extends BaseAnimationBinding {
   public void collectTransitioningProperties(ArrayList<PropertyAnimation> outList) {
     for (int i = 0, size = mBindings.size(); i < size; i++) {
       mBindings.get(i).collectTransitioningProperties(outList);
+    }
+  }
+
+  @Override
+  public void prepareToStartLater() {
+    notifyScheduledToStartLater();
+    for (int i = 0, size = mBindings.size(); i < size; i++) {
+      final AnimationBinding binding = mBindings.get(i);
+      binding.prepareToStartLater();
     }
   }
 }

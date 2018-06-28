@@ -852,26 +852,18 @@ public class TransitionManager {
     private final ArrayList<PropertyAnimation> mTempPropertyAnimations = new ArrayList<>();
 
     @Override
+    public void onScheduledToStartLater(AnimationBinding binding) {
+      updateAnimationStates(binding);
+    }
+
+    @Override
     public void onWillStart(AnimationBinding binding) {
-      binding.collectTransitioningProperties(mTempPropertyAnimations);
-
-      for (int i = 0, size = mTempPropertyAnimations.size(); i < size; i++) {
-        final PropertyAnimation propertyAnimation = mTempPropertyAnimations.get(i);
-        final String key = propertyAnimation.getTransitionKey();
-        final AnimationState animationState = mAnimationStates.get(key);
-        final PropertyState propertyState =
-            animationState.propertyStates.get(propertyAnimation.getProperty());
-
-        propertyState.targetValue = propertyAnimation.getTargetValue();
-        propertyState.animation = binding;
-      }
+      updateAnimationStates(binding);
 
       final String traceName = mTraceNames.get(binding.hashCode());
       if (!TextUtils.isEmpty(traceName)) {
         ComponentsSystrace.beginSectionAsync(traceName, binding.hashCode());
       }
-
-      mTempPropertyAnimations.clear();
     }
 
     @Override
@@ -922,6 +914,23 @@ public class TransitionManager {
 
       mTempPropertyAnimations.clear();
       return shouldStart;
+    }
+
+    private void updateAnimationStates(AnimationBinding binding) {
+      binding.collectTransitioningProperties(mTempPropertyAnimations);
+
+      for (int i = 0, size = mTempPropertyAnimations.size(); i < size; i++) {
+        final PropertyAnimation propertyAnimation = mTempPropertyAnimations.get(i);
+        final String key = propertyAnimation.getTransitionKey();
+        final AnimationState animationState = mAnimationStates.get(key);
+        final PropertyState propertyState =
+            animationState.propertyStates.get(propertyAnimation.getProperty());
+
+        propertyState.targetValue = propertyAnimation.getTargetValue();
+        propertyState.animation = binding;
+      }
+
+      mTempPropertyAnimations.clear();
     }
 
     private void finishAnimation(AnimationBinding binding) {
@@ -1058,6 +1067,9 @@ public class TransitionManager {
   }
 
   private class RootAnimationListener implements AnimationBindingListener {
+
+    @Override
+    public void onScheduledToStartLater(AnimationBinding binding) {}
 
     @Override
     public void onWillStart(AnimationBinding binding) {
