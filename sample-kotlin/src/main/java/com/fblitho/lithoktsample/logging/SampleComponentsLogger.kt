@@ -44,6 +44,10 @@ class SampleComponentsLogger : BaseComponentsLogger() {
         }
     }
 
+    override fun emitMessage(level: ComponentsLogger.LogLevel, message: String, samplingFrequency: Int) {
+        emitMessage(level, message)
+    }
+
     override fun isTracing(logEvent: PerfEvent): Boolean = true
 
     override fun getExtraAnnotations(treeProps: TreeProps?): MutableMap<String, String> =
