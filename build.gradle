@@ -85,7 +85,7 @@ ext.deps = [
         // Misc
         khronos            : 'org.khronos:opengl-api:gl1.1-android-2.1_r1',
         // Kotlin
-        kotlinStandardLib  : "org.jetbrains.kotlin:kotlin-stdlib-jre7:${KOTLIN_VERSION}"
+        kotlinStandardLib  : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${KOTLIN_VERSION}"
 ]
 
 // For releases, we want to depend on a stable version of Yoga.
