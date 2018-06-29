@@ -34,12 +34,19 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.lang.ref.WeakReference;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
  * A {@link ViewGroup} that can host the mounted state of a {@link Component}.
  */
 public class LithoView extends ComponentHost {
+
+  public static final String ZERO_HEIGHT_LOG = "LithoView:0-height";
+  public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
+      "LithoView:SetAlreadyAttachedComponentTree";
 
   public interface OnDirtyMountListener {
     /**
@@ -84,7 +91,7 @@ public class LithoView extends ComponentHost {
   private int mTransientStateCount;
   private boolean mDoesOwnIncrementalMount;
   private boolean mDoMeasureInLayout;
-  @Nullable private String mInvalidStateLogId;
+  @Nullable private Map<String, ComponentLogParams> mInvalidStateLogParams;
   @Nullable private String mPreviousComponentSimpleName;
 
   /**
@@ -310,8 +317,10 @@ public class LithoView extends ComponentHost {
       mDoMeasureInLayout = false;
     }
 
-    if (mInvalidStateLogId != null && height == 0) {
-      logZeroHeight();
+    if (height == 0
+        && mInvalidStateLogParams != null
+        && mInvalidStateLogParams.containsKey(ZERO_HEIGHT_LOG)) {
+      logZeroHeight(mInvalidStateLogParams.get(ZERO_HEIGHT_LOG));
     }
 
     final boolean canAnimateRootBounds =
@@ -473,13 +482,17 @@ public class LithoView extends ComponentHost {
         unmountAllItems();
       }
 
-      if (mInvalidStateLogId != null) {
+      if (mInvalidStateLogParams != null) {
         mPreviousComponentSimpleName = mComponentTree.getSimpleName();
       }
-      if (mInvalidStateLogId != null
-          && componentTree != null
-          && componentTree.getLithoView() != null) {
-        logSetAlreadyAttachedComponentTree(mComponentTree, componentTree);
+      if (componentTree != null
+          && componentTree.getLithoView() != null
+          && mInvalidStateLogParams != null
+          && mInvalidStateLogParams.containsKey(SET_ALREADY_ATTACHED_COMPONENT_TREE)) {
+        logSetAlreadyAttachedComponentTree(
+            mComponentTree,
+            componentTree,
+            mInvalidStateLogParams.get(SET_ALREADY_ATTACHED_COMPONENT_TREE));
       }
       if (mIsAttached) {
         mComponentTree.detach();
@@ -845,12 +858,20 @@ public class LithoView extends ComponentHost {
     }
   }
 
-  /** Provide additional context when logging invalid state cases. */
-  public void setInvalidStateLogId(String logId) {
-    mInvalidStateLogId = logId;
+  /** Register for particular invalid state logs. */
+  public void setInvalidStateLogParamsList(@Nullable List<ComponentLogParams> logParamsList) {
+    if (logParamsList == null) {
+      mInvalidStateLogParams = null;
+    } else {
+      mInvalidStateLogParams = new HashMap<>();
+      for (int i = 0, size = logParamsList.size(); i < size; i++) {
+        final ComponentLogParams logParams = logParamsList.get(i);
+        mInvalidStateLogParams.put(logParams.logType, logParams);
+      }
+    }
   }
 
-  private void logZeroHeight() {
+  private void logZeroHeight(ComponentLogParams logParams) {
     final ComponentsLogger logger = getComponentContext().getLogger();
     if (logger == null) {
       return;
@@ -866,28 +887,32 @@ public class LithoView extends ComponentHost {
     }
 
     final StringBuilder messageBuilder = new StringBuilder();
-    messageBuilder.append("[");
-    messageBuilder.append(mInvalidStateLogId);
-    messageBuilder.append("] 0-height: current=");
+    messageBuilder.append(logParams.logProductId);
+    messageBuilder.append("-");
+    messageBuilder.append(ZERO_HEIGHT_LOG);
+    messageBuilder.append(", current=");
     messageBuilder.append((mComponentTree == null ? "" : mComponentTree.getSimpleName()));
     messageBuilder.append(", previous=");
     messageBuilder.append(mPreviousComponentSimpleName);
     messageBuilder.append(", view=");
     messageBuilder.append(LithoViewTestHelper.toDebugString(this));
-    logger.emitMessage(ComponentsLogger.LogLevel.ERROR, messageBuilder.toString());
+    logError(logger, messageBuilder.toString(), logParams);
   }
 
   private void logSetAlreadyAttachedComponentTree(
-      ComponentTree currentComponentTree, ComponentTree newComponentTree) {
+      ComponentTree currentComponentTree,
+      ComponentTree newComponentTree,
+      ComponentLogParams logParams) {
     final ComponentsLogger logger = getComponentContext().getLogger();
     if (logger == null) {
       return;
     }
 
     final StringBuilder messageBuilder = new StringBuilder();
-    messageBuilder.append("[");
-    messageBuilder.append(mInvalidStateLogId);
-    messageBuilder.append("] setComponentTree(<already_attached_componenttree>): currentView=");
+    messageBuilder.append(logParams.logProductId);
+    messageBuilder.append("-");
+    messageBuilder.append(SET_ALREADY_ATTACHED_COMPONENT_TREE);
+    messageBuilder.append(", currentView=");
     messageBuilder.append(LithoViewTestHelper.toDebugString(currentComponentTree.getLithoView()));
     messageBuilder.append(", newComponent.LV=");
     messageBuilder.append(LithoViewTestHelper.toDebugString(newComponentTree.getLithoView()));
@@ -895,7 +920,14 @@ public class LithoView extends ComponentHost {
     messageBuilder.append(currentComponentTree.getSimpleName());
     messageBuilder.append(", newComponent=");
     messageBuilder.append(newComponentTree.getSimpleName());
-    logger.emitMessage(ComponentsLogger.LogLevel.ERROR, messageBuilder.toString());
+    logError(logger, messageBuilder.toString(), logParams);
+  }
+
+  private static void logError(
+      ComponentsLogger logger, String message, ComponentLogParams logParams) {
+    final ComponentsLogger.LogLevel logLevel =
+        logParams.failHarder ? ComponentsLogger.LogLevel.FATAL : ComponentsLogger.LogLevel.ERROR;
+    logger.emitMessage(logLevel, message, logParams.samplingFrequency);
   }
 
   @DoNotStrip

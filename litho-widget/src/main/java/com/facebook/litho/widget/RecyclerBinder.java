@@ -42,6 +42,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLogParams;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
 import com.facebook.litho.ComponentsSystrace;
@@ -114,6 +115,7 @@ public class RecyclerBinder
   private final boolean mFillListViewport;
   private final boolean mFillListViewportHScrollOnly;
   private final boolean mEnableStableIds;
+  private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
 
   private boolean mParallelFillViewportEnabled;
   private String mSplitLayoutTag;
@@ -221,7 +223,6 @@ public class RecyclerBinder
   private volatile boolean mHasAsyncOperations = false;
   private volatile boolean mAsyncInsertsShouldWaitForMeasure = true;
   private volatile boolean mHasFilledViewport = false;
-  private String mInvalidStateLogId;
 
   @GuardedBy("this")
   private @Nullable AsyncBatch mCurrentBatch = null;
@@ -375,7 +376,7 @@ public class RecyclerBinder
     private boolean fillListViewportHScrollOnly;
     private LayoutThreadPoolConfiguration threadPoolForParallelFillViewportConfig;
     private boolean enableStableIds;
-    private String initialInvalidStateLogId;
+    private @Nullable List<ComponentLogParams> invalidStateLogParamsList;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -521,11 +522,11 @@ public class RecyclerBinder
     }
 
     /**
-     * If non-null logId is provided we will log invalid state of the LithoView like height being 0
-     * while non-0 value was expected and similar other invalid cases.
+     * Provide a list of {@link ComponentLogParams} that will be used to log invalid states in the
+     * LithoView, such as height being 0 while non-0 value was expected.
      */
-    public Builder initialInvalidStateLogId(String invalidStateLogId) {
-      this.initialInvalidStateLogId = invalidStateLogId;
+    public Builder invalidStateLogParamsList(@Nullable List<ComponentLogParams> logParamsList) {
+      this.invalidStateLogParamsList = logParamsList;
       return this;
     }
 
@@ -650,7 +651,7 @@ public class RecyclerBinder
     }
 
     mEnableStableIds = builder.enableStableIds;
-    mInvalidStateLogId = builder.initialInvalidStateLogId;
+    mInvalidStateLogParamsList = builder.invalidStateLogParamsList;
   }
 
   /**
@@ -2063,15 +2064,6 @@ public class RecyclerBinder
     }
   }
 
-  /**
-   * If non-null logId is provided we will log invalid state of the LithoView like height being 0
-   * while non-0 value was expected and similar other invalid cases.
-   */
-  @UiThread
-  public void setInvalidStateLogId(String logId) {
-    mInvalidStateLogId = logId;
-  }
-
   @VisibleForTesting
   @GuardedBy("this")
   void initRange(
@@ -2720,7 +2712,7 @@ public class RecyclerBinder
       final RenderInfo renderInfo = componentTreeHolder.getRenderInfo();
       if (renderInfo.rendersComponent()) {
         final LithoView lithoView = (LithoView) holder.itemView;
-        lithoView.setInvalidStateLogId(mInvalidStateLogId);
+        lithoView.setInvalidStateLogParamsList(mInvalidStateLogParamsList);
         final int childrenWidthSpec = getActualChildrenWidthSpec(componentTreeHolder);
         final int childrenHeightSpec = getActualChildrenHeightSpec(componentTreeHolder);
         if (!componentTreeHolder.isTreeValid()) {
@@ -2806,7 +2798,7 @@ public class RecyclerBinder
         final LithoView lithoView = (LithoView) holder.itemView;
         lithoView.unmountAllItems();
         lithoView.setComponentTree(null);
-        lithoView.setInvalidStateLogId(null);
+        lithoView.setInvalidStateLogParamsList(null);
       } else {
         final ViewBinder viewBinder = holder.viewBinder;
         if (viewBinder != null) {

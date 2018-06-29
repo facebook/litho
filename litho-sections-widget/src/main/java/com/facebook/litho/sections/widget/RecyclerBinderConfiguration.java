@@ -16,10 +16,13 @@
 
 package com.facebook.litho.sections.widget;
 
+import android.support.annotation.Nullable;
+import com.facebook.litho.ComponentLogParams;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.widget.LayoutHandlerFactory;
 import com.facebook.litho.widget.RecyclerBinder;
+import java.util.List;
 
 /**
  * Configuration setting for {@link RecyclerBinder}.
@@ -32,13 +35,13 @@ public class RecyclerBinderConfiguration {
   private final boolean mIsCircular;
   private boolean mHasDynamicItemHeight;
   private boolean mIsWrapContent;
-  private String mSplitLayoutTag;
+  @Nullable private String mSplitLayoutTag;
   private boolean mUseAsyncMutations = SectionsConfiguration.asyncMutations;
   private boolean mFillListViewport;
   private boolean mFillListViewportHScrollOnly;
-  private LayoutThreadPoolConfiguration mThreadPoolForParallelFillViewportConfig;
+  @Nullable private LayoutThreadPoolConfiguration mThreadPoolForParallelFillViewportConfig;
   private boolean mEnableStableIds;
-  private String mInitialInvalidStateLogId;
+  @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
 
   public RecyclerBinderConfiguration(double rangeRatio) {
     this(rangeRatio, null, false);
@@ -127,8 +130,8 @@ public class RecyclerBinderConfiguration {
     mEnableStableIds = enableStableIds;
   }
 
-  public void setInitialInvalidStateLogId(String initialInvalidStateLogId) {
-    mInitialInvalidStateLogId = initialInvalidStateLogId;
+  public void setInvalidStateLogParamsList(List<ComponentLogParams> invalidStateLogParamsList) {
+    mInvalidStateLogParamsList = invalidStateLogParamsList;
   }
 
   public double getRangeRatio() {
@@ -179,7 +182,7 @@ public class RecyclerBinderConfiguration {
     return mEnableStableIds;
   }
 
-  public String getInitialInvalidStateLogId() {
-    return mInitialInvalidStateLogId;
+  public @Nullable List<ComponentLogParams> getInvalidStateLogParamsList() {
+    return mInvalidStateLogParamsList;
   }
 }
