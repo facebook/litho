@@ -17,8 +17,6 @@ import com.facebook.litho.ComponentsLogger
 import com.facebook.litho.FrameworkLogEvents
 import com.facebook.litho.PerfEvent
 import com.facebook.litho.TreeProps
-import com.facebook.litho.annotations.Event
-import java.util.Arrays
 import java.util.concurrent.atomic.AtomicInteger
 
 class SampleComponentsLogger : BaseComponentsLogger() {
@@ -46,10 +44,10 @@ class SampleComponentsLogger : BaseComponentsLogger() {
 
     override fun isTracing(logEvent: PerfEvent): Boolean = true
 
-    override fun getExtraAnnotations(treeProps: TreeProps?): MutableMap<String, String> =
+    override fun getExtraAnnotations(treeProps: TreeProps?): Map<String, String> =
             treeProps?.get(LogContext::class.java)?.let {
-                mutableMapOf("log_context" to it.toString())
-            } ?: mutableMapOf()
+                mapOf("log_context" to it.toString())
+            } ?: emptyMap()
 
     private fun printEventData(event: PerfEvent, data: EventData) {
         val totalTimeMs = (data.endTimeNs!! - data.startTimeNs) / (1000 * 1000f)
