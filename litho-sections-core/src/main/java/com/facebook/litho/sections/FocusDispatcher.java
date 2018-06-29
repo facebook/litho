@@ -53,9 +53,9 @@ class FocusDispatcher {
   }
 
   @UiThread
-  void requestSmoothFocus(int index, SmoothScrollAlignmentType type) {
+  void requestSmoothFocus(int index, int offset, SmoothScrollAlignmentType type) {
     if (shouldDispatchRequests()) {
-      mTarget.requestSmoothFocus(index, type);
+      mTarget.requestSmoothFocus(index, offset, type);
       return;
     }
 

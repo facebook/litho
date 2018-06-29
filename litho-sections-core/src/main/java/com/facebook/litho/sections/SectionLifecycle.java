@@ -373,16 +373,16 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
   }
 
   public static void requestSmoothFocus(SectionContext c, int index) {
-    requestSmoothFocus(c, "", index, SmoothScrollAlignmentType.DEFAULT);
+    requestSmoothFocus(c, "", index, 0, SmoothScrollAlignmentType.DEFAULT);
   }
 
   public static void requestSmoothFocus(
       SectionContext c, int index, SmoothScrollAlignmentType type) {
-    requestSmoothFocus(c, "", index, type);
+    requestSmoothFocus(c, "", index, 0, type);
   }
 
   public static void requestSmoothFocus(
-      SectionContext c, String keyString, int index, SmoothScrollAlignmentType type) {
+      SectionContext c, String keyString, int index, int offset, SmoothScrollAlignmentType type) {
     final Section scopedSection = c.getSectionScope();
     final SectionTree sectionTree = c.getSectionTree();
 
@@ -391,6 +391,6 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
     }
 
     final String globalKey = scopedSection.getGlobalKey() + keyString;
-    sectionTree.requestSmoothFocus(globalKey, index, type);
+    sectionTree.requestSmoothFocus(globalKey, index, offset, type);
   }
 }

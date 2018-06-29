@@ -133,7 +133,7 @@ public class TestTarget implements SectionTree.Target {
   }
 
   @Override
-  public void requestSmoothFocus(int index, SmoothScrollAlignmentType type) {
+  public void requestSmoothFocus(int index, int offset, SmoothScrollAlignmentType type) {
     requestFocus(index);
   }
 

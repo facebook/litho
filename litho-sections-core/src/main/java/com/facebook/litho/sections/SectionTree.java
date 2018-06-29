@@ -127,7 +127,7 @@ public class SectionTree {
     void requestFocus(int index);
 
     /** Request smooth focus on the item with the given index. */
-    void requestSmoothFocus(int index, SmoothScrollAlignmentType type);
+    void requestSmoothFocus(int index, int offset, SmoothScrollAlignmentType type);
 
     /**
      * Request focus on the item with the given index, plus some additional offset.
@@ -661,14 +661,18 @@ public class SectionTree {
   }
 
   void requestSmoothFocus(
-      final String globalKey, final int index, final SmoothScrollAlignmentType type) {
+      final String globalKey,
+      final int index,
+      final int offset,
+      final SmoothScrollAlignmentType type) {
     focusRequestOnUiThread(
         new Runnable() {
           @Override
           public void run() {
             final SectionLocationInfo sectionLocationInfo = findSectionForKey(globalKey);
             checkFocusValidity(sectionLocationInfo, index);
-            mFocusDispatcher.requestSmoothFocus(sectionLocationInfo.mStartIndex + index, type);
+            mFocusDispatcher.requestSmoothFocus(
+                sectionLocationInfo.mStartIndex + index, offset, type);
           }
         });
   }

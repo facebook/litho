@@ -2301,9 +2301,11 @@ public class RecyclerBinder
   }
 
   @UiThread
-  public void scrollSmoothToPosition(int position, final SmoothScrollAlignmentType type) {
+  public void scrollSmoothToPosition(
+      int position, final int offset, final SmoothScrollAlignmentType type) {
     if (mMountedView == null) {
       mCurrentFirstVisiblePosition = position;
+      mCurrentOffset = offset;
       return;
     }
 
@@ -2314,10 +2316,19 @@ public class RecyclerBinder
       RecyclerView.SmoothScroller selectedSmoothScroller =
           new LinearSmoothScroller(mComponentContext) {
             @Override
+            public int calculateDtToFit(
+                int viewStart, int viewEnd, int boxStart, int boxEnd, int snapPreference) {
+              int result =
+                  super.calculateDtToFit(viewStart, viewEnd, boxStart, boxEnd, snapPreference);
+              return result + offset;
+            }
+
+            @Override
             protected int getVerticalSnapPreference() {
               return representation;
             }
 
+            @Override
             protected int getHorizontalSnapPreference() {
               return representation;
             }

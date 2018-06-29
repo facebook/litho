@@ -153,8 +153,8 @@ class BatchedTarget implements SectionTree.Target {
   }
 
   @Override
-  public void requestSmoothFocus(int index, SmoothScrollAlignmentType type) {
-    mTarget.requestSmoothFocus(index, type);
+  public void requestSmoothFocus(int index, int offset, SmoothScrollAlignmentType type) {
+    mTarget.requestSmoothFocus(index, offset, type);
     maybeLogRequestFocus(index);
   }
 

@@ -150,8 +150,8 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   }
 
   @Override
-  public void requestSmoothFocus(int index, SmoothScrollAlignmentType type) {
-    mRecyclerBinder.scrollSmoothToPosition(index, type);
+  public void requestSmoothFocus(int index, int offset, SmoothScrollAlignmentType type) {
+    mRecyclerBinder.scrollSmoothToPosition(index, offset, type);
   }
 
   @Override
