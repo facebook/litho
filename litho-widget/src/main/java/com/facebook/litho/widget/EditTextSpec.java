@@ -733,7 +733,7 @@ class EditTextSpec {
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
       if (mKeyUpEventHandler != null) {
-        com.facebook.litho.widget.EditText.dispatchKeyUpEvent(mKeyUpEventHandler, keyCode);
+        com.facebook.litho.widget.EditText.dispatchKeyUpEvent(mKeyUpEventHandler, keyCode, event);
       }
       return super.onKeyUp(keyCode, event);
     }

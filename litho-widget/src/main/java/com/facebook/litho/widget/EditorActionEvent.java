@@ -20,12 +20,11 @@ import android.view.KeyEvent;
 import com.facebook.litho.annotations.Event;
 
 /**
- * Event that corresponds to an underlying android.widget.EditText#onKeyUp(). If you handled the
- * event, return true. If you want to allow the event to be handled by the next receiver, return
- * false.
+ * Event sent by EditText when the return key is pressed or the IME signals an 'action'. Return true
+ * if the handler consumed the event.
  */
 @Event(returnType = boolean.class)
-public class KeyUpEvent {
-  public int keyCode;
-  public KeyEvent keyEvent;
+public class EditorActionEvent {
+  public int actionId;
+  public KeyEvent event;
 }

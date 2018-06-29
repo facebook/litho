@@ -16,16 +16,10 @@
 
 package com.facebook.litho.widget;
 
-import android.view.KeyEvent;
 import com.facebook.litho.annotations.Event;
 
-/**
- * Event that corresponds to an underlying android.widget.EditText#onKeyUp(). If you handled the
- * event, return true. If you want to allow the event to be handled by the next receiver, return
- * false.
- */
-@Event(returnType = boolean.class)
-public class KeyUpEvent {
-  public int keyCode;
-  public KeyEvent keyEvent;
+/** Use this with TextInput to set the field's current text. */
+@Event
+public class SetTextEvent {
+  public String text;
 }
