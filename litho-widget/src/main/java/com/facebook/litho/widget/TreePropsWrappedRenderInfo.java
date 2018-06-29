@@ -31,8 +31,9 @@ public class TreePropsWrappedRenderInfo implements RenderInfo {
   private final RenderInfo mRenderInfo;
   private final TreeProps mTreeProps;
 
-  public TreePropsWrappedRenderInfo(RenderInfo renderInfo, @Nullable TreeProps treeProps) {
-    mRenderInfo = renderInfo;
+  public TreePropsWrappedRenderInfo(
+      @Nullable RenderInfo renderInfo, @Nullable TreeProps treeProps) {
+    mRenderInfo = renderInfo == null ? ComponentRenderInfo.createEmpty() : renderInfo;
     mTreeProps = treeProps;
   }
 
