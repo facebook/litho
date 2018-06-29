@@ -29,7 +29,8 @@ public interface ComponentsLogger {
 
   enum LogLevel {
     WARNING,
-    ERROR
+    ERROR,
+    FATAL
   }
 
   /** Create a new performance event with the given event id and start counting the time. */
@@ -38,8 +39,22 @@ public interface ComponentsLogger {
   /** Write a {@link PerfEvent} to storage. This also marks the end of the event. */
   void logPerfEvent(PerfEvent event);
 
-  /** Emit a message that can be logged or escalated by the logger implementation. */
+  /**
+   * Emit a message that can be logged or escalated by the logger implementation.
+   *
+   * @param level
+   * @param message Message to log
+   */
   void emitMessage(LogLevel level, String message);
+
+  /**
+   * Emit a message that can be logged or escalated by the logger implementation.
+   *
+   * @param level
+   * @param message Message to log
+   * @param samplingFrequency sampling frequency to override default one
+   */
+  void emitMessage(LogLevel level, String message, int samplingFrequency);
 
   /**
    * When a component key collision occurs, filenames that contain keywords contained in the

@@ -49,6 +49,9 @@ public class TestComponentsLogger extends BaseComponentsLogger {
   @Override
   public void emitMessage(LogLevel level, String message) {}
 
+  @Override
+  public void emitMessage(LogLevel level, String message, int samplingFrequency) {}
+
   public List<PerfEvent> getLoggedPerfEvents() {
     return mLoggedPerfEvents;
   }
