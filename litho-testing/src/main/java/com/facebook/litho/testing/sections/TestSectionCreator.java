@@ -204,5 +204,10 @@ public class TestSectionCreator {
       return o.getClass().equals(getClass())
           && ((Section) o).getGlobalKey().equals(getGlobalKey());
     }
+
+    @Override
+    public Section makeShallowCopy() {
+      return this;
+    }
   }
 }

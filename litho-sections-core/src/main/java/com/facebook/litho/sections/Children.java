@@ -68,7 +68,7 @@ public class Children {
       verifyValidState();
 
       if (section != null) {
-        mChildren.mSections.add(section);
+        mChildren.mSections.add(section.makeShallowCopy());
       }
 
       return this;
@@ -84,7 +84,7 @@ public class Children {
       for (int i = 0; i < sectionList.size(); i++) {
         Section section = sectionList.get(i);
         if (section != null) {
-          mChildren.mSections.add(section);
+          mChildren.mSections.add(section.makeShallowCopy());
         }
       }
 
