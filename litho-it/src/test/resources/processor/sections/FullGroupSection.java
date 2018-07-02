@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright 2018-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.facebook.litho.sections.processor.integration.resources;
 
 import android.support.annotation.AttrRes;
@@ -48,6 +47,7 @@ import java.util.BitSet;
  * @prop-optional prop2 java.lang.String
  * @prop-required prop3 com.facebook.litho.Component
  * @prop-required prop4 java.lang.String
+ * @prop-required prop5 com.facebook.litho.sections.Section
  * @see com.facebook.litho.sections.processor.integration.resources.FullGroupSectionSpec
  */
 final class FullGroupSection<T> extends Section implements TestTag {
@@ -67,6 +67,9 @@ final class FullGroupSection<T> extends Section implements TestTag {
 
   @Prop(resType = ResType.STRING, optional = false)
   String prop4;
+
+  @Prop(resType = ResType.NONE, optional = false)
+  Section prop5;
 
   FullGroupSectionSpec.TreePropWrapper treeProp;
 
@@ -109,6 +112,11 @@ final class FullGroupSection<T> extends Section implements TestTag {
     if (prop4 != null
         ? !prop4.equals(fullGroupSectionRef.prop4)
         : fullGroupSectionRef.prop4 != null) {
+      return false;
+    }
+    if (prop5 != null
+        ? !prop5.isEquivalentTo(fullGroupSectionRef.prop5)
+        : fullGroupSectionRef.prop5 != null) {
       return false;
     }
     if (mStateContainer.state1 != null
@@ -300,7 +308,11 @@ final class FullGroupSection<T> extends Section implements TestTag {
     Children _result =
         (Children)
             FullGroupSectionSpec.onCreateChildren(
-                (SectionContext) c, (Component) prop3, (String) prop4, (T) mStateContainer.state1);
+                (SectionContext) c,
+                (Component) prop3,
+                (String) prop4,
+                (Section) prop5,
+                (T) mStateContainer.state1);
     return _result;
   }
 
@@ -392,9 +404,10 @@ final class FullGroupSection<T> extends Section implements TestTag {
   }
 
   public static class Builder<T> extends Section.Builder<Builder<T>> {
-    private static final String[] REQUIRED_PROPS_NAMES = new String[] {"prop1", "prop3", "prop4"};
+    private static final String[] REQUIRED_PROPS_NAMES =
+        new String[] {"prop1", "prop3", "prop4", "prop5"};
 
-    private static final int REQUIRED_PROPS_COUNT = 3;
+    private static final int REQUIRED_PROPS_COUNT = 4;
 
     FullGroupSection mFullGroupSection;
 
@@ -459,6 +472,18 @@ final class FullGroupSection<T> extends Section implements TestTag {
     public Builder<T> prop4Attr(@AttrRes int attrResId) {
       this.mFullGroupSection.prop4 = mResourceResolver.resolveStringAttr(attrResId, 0);
       mRequired.set(2);
+      return this;
+    }
+
+    public Builder<T> prop5(Section prop5) {
+      this.mFullGroupSection.prop5 = prop5 == null ? null : prop5.makeShallowCopy();
+      mRequired.set(3);
+      return this;
+    }
+
+    public Builder<T> prop5(Section.Builder<?> prop5Builder) {
+      this.mFullGroupSection.prop5 = prop5Builder == null ? null : prop5Builder.build();
+      mRequired.set(3);
       return this;
     }
 

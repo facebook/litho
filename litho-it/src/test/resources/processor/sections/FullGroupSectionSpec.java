@@ -34,6 +34,7 @@ import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.sections.Children;
+import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnBindService;
@@ -69,6 +70,7 @@ public class FullGroupSectionSpec<T> implements TestTag {
       SectionContext c,
       @Prop Component prop3,
       @Prop(resType = ResType.STRING) String prop4,
+      @Prop Section prop5,
       @State T state1) {
     return null;
   }
