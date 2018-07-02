@@ -79,6 +79,16 @@ public final class BaseMatcherBuilder {
           return false;
         }
 
+        if (matcher.mFocusable != null
+            && commonProps != null
+            && !matcher.mFocusable.matches(commonProps.getFocusable())) {
+          as(
+              new TextDescription(
+                  "Focusable <%s> (doesn't match <%s>)",
+                  matcher.mFocusable, commonProps.getFocusable()));
+          return false;
+        }
+
         return true;
       }
     };

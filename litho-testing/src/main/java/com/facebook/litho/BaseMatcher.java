@@ -29,6 +29,7 @@ public abstract class BaseMatcher<T extends BaseMatcher<T>> {
   @Nullable Matcher<EventHandler<FocusChangedEvent>> mFocusChangeHandlerMatcher;
   @Nullable Matcher<EventHandler<TouchEvent>> mTouchEventHandlerMatcher;
   @Nullable Matcher<EventHandler<InterceptTouchEvent>> mInterceptTouchHandlerMatcher;
+  @Nullable Matcher<Boolean> mFocusable;
 
   public T clickHandler(EventHandler<ClickEvent> clickHandler) {
     mClickHandlerMatcher = Is.is(clickHandler);
@@ -78,6 +79,16 @@ public abstract class BaseMatcher<T extends BaseMatcher<T>> {
   public T interceptTouchHandler(
       Matcher<EventHandler<InterceptTouchEvent>> interceptTouchHandlerMatcher) {
     mInterceptTouchHandlerMatcher = interceptTouchHandlerMatcher;
+    return getThis();
+  }
+
+  public T focusable(boolean focusable) {
+    mFocusable = Is.is(focusable);
+    return getThis();
+  }
+
+  public T focusable(Matcher<Boolean> focusableMatcher) {
+    mFocusable = focusableMatcher;
     return getThis();
   }
 
