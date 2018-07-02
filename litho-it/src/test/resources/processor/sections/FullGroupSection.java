@@ -435,7 +435,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
     }
 
     public Builder<T> prop3(Component prop3) {
-      this.mFullGroupSection.prop3 = prop3;
+      this.mFullGroupSection.prop3 = prop3 == null ? null : prop3.makeShallowCopy();
       mRequired.set(1);
       return this;
     }
@@ -477,7 +477,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
     }
 
     public Builder<T> prop5(Section prop5) {
-      this.mFullGroupSection.prop5 = prop5 == null ? null : prop5.makeShallowCopy();
+      this.mFullGroupSection.prop5 = prop5;
       mRequired.set(3);
       return this;
     }

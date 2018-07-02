@@ -453,7 +453,7 @@ public class BuilderGenerator {
                 ((ParameterizedTypeName) prop.getTypeName()).rawType :
                 prop.getTypeName();
 
-        if (componentClass.equals(specModel.getComponentClass())) {
+        if (componentClass.equals(ClassNames.COMPONENT)) {
           dataHolder.addMethod(componentBuilder(specModel, prop, requiredIndex));
         } else {
           dataHolder.addMethod(regularBuilder(specModel, prop, requiredIndex));
