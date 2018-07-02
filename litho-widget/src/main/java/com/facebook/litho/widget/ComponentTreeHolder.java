@@ -26,6 +26,7 @@ import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateHandler;
 import com.facebook.litho.TreeProps;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
@@ -66,6 +67,8 @@ public class ComponentTreeHolder {
 
   @GuardedBy("this")
   private int mLastRequestedHeightSpec = UNINITIALIZED;
+
+  private final AtomicBoolean mIsReleased = new AtomicBoolean(false);
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -175,6 +178,7 @@ public class ComponentTreeHolder {
     componentTreeHolder.mComponentTreeMeasureListenerFactory = componentTreeMeasureListenerFactory;
     componentTreeHolder.mSplitLayoutTag = splitLayoutTag;
     componentTreeHolder.acquireId();
+    componentTreeHolder.mIsReleased.set(false);
 
     return componentTreeHolder;
   }
@@ -349,6 +353,10 @@ public class ComponentTreeHolder {
     mIsInserted = inserted;
   }
 
+  public boolean isReleased() {
+    return mIsReleased.get();
+  }
+
   public synchronized void release() {
     releaseTree();
     clearStateHandler();
@@ -359,13 +367,16 @@ public class ComponentTreeHolder {
     mPreallocateMountContentHandler = null;
     mShouldPreallocatePerMountSpec = false;
     mCanPreallocateOnDefaultHandler = false;
-    sComponentTreeHoldersPool.release(this);
     mPendingNewLayoutListener = null;
     mLastRequestedWidthSpec = UNINITIALIZED;
     mLastRequestedHeightSpec = UNINITIALIZED;
     mIsInserted = true;
     mHasMounted = false;
     mRenderState.set(RENDER_UNINITIALIZED);
+    if (mIsReleased.getAndSet(true)) {
+      throw new RuntimeException("Releasing already released ComponentTreeHolder!");
+    }
+    sComponentTreeHoldersPool.release(this);
   }
 
   @GuardedBy("this")

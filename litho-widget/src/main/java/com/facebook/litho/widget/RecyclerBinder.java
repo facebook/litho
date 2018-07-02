@@ -698,6 +698,7 @@ public class RecyclerBinder
       holder = mAsyncComponentTreeHolders.get(position);
       renderInfoWasView = holder.getRenderInfo().rendersView();
 
+      assertNotNullRenderInfo(renderInfo);
       mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
       holder.setRenderInfo(renderInfo);
 
@@ -730,6 +731,7 @@ public class RecyclerBinder
 
     assertNoInsertOperationIfCircular();
 
+    assertNotNullRenderInfo(renderInfo);
     final AsyncInsertOperation operation = createAsyncInsertOperation(position, renderInfo);
 
     synchronized (this) {
@@ -764,8 +766,9 @@ public class RecyclerBinder
       mHasAsyncOperations = true;
 
       for (int i = 0, size = renderInfos.size(); i < size; i++) {
-        final AsyncInsertOperation operation =
-            createAsyncInsertOperation(position + i, renderInfos.get(i));
+        final RenderInfo renderInfo = renderInfos.get(i);
+        assertNotNullRenderInfo(renderInfo);
+        final AsyncInsertOperation operation = createAsyncInsertOperation(position + i, renderInfo);
 
         mAsyncComponentTreeHolders.add(position + i, operation.mHolder);
 
@@ -1031,6 +1034,7 @@ public class RecyclerBinder
           "(" + hashCode() + ") insertItemAt " + position + ", name: " + renderInfo.getName());
     }
 
+    assertNotNullRenderInfo(renderInfo);
     final ComponentTreeHolder holder = createComponentTreeHolder(renderInfo);
     synchronized (this) {
       if (mHasAsyncOperations) {
@@ -1095,6 +1099,8 @@ public class RecyclerBinder
 
       synchronized (this) {
         final RenderInfo renderInfo = renderInfos.get(i);
+        assertNotNullRenderInfo(renderInfo);
+
         final ComponentTreeHolder holder = createComponentTreeHolder(renderInfo);
         if (mHasAsyncOperations) {
           throw new RuntimeException(
@@ -1141,6 +1147,7 @@ public class RecyclerBinder
       holder = mComponentTreeHolders.get(position);
       renderInfoWasView = holder.getRenderInfo().rendersView();
 
+      assertNotNullRenderInfo(renderInfo);
       mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
       holder.setRenderInfo(renderInfo);
     }
@@ -1184,6 +1191,8 @@ public class RecyclerBinder
       synchronized (this) {
         final ComponentTreeHolder holder = mComponentTreeHolders.get(position + i);
         final RenderInfo newRenderInfo = renderInfos.get(i);
+
+        assertNotNullRenderInfo(newRenderInfo);
 
         // If this item is rendered with a view (or was rendered with a view before now) we still
         // need to notify the RecyclerView's adapter that something changed.
@@ -1391,12 +1400,22 @@ public class RecyclerBinder
 
   @Override
   public final synchronized RenderInfo getRenderInfoAt(int position) {
-    return mComponentTreeHolders.get(position).getRenderInfo();
+    final ComponentTreeHolder holder = mComponentTreeHolders.get(position);
+    if (holder.isReleased()) {
+      throw new RuntimeException("Trying to access released ComponentTreeHolder!");
+    }
+    return holder.getRenderInfo();
   }
 
   @VisibleForTesting
   final synchronized ComponentTreeHolder getComponentTreeHolderAt(int position) {
     return mComponentTreeHolders.get(position);
+  }
+
+  private static void assertNotNullRenderInfo(RenderInfo renderInfo) {
+    if (renderInfo == null) {
+      throw new RuntimeException("Received null RenderInfo to insert/update!");
+    }
   }
 
   @Override
