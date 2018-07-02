@@ -145,6 +145,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
   public FullGroupSection makeShallowCopy(boolean deepCopy) {
     FullGroupSection component = (FullGroupSection) super.makeShallowCopy(deepCopy);
     component.prop3 = component.prop3 != null ? component.prop3.makeShallowCopy() : null;
+    component.prop5 = component.prop5 != null ? component.prop5.makeShallowCopy() : null;
     if (!deepCopy) {
       component.mStateContainer = new FullGroupSectionStateContainer();
     }

@@ -18,7 +18,6 @@ package com.facebook.litho.specmodels.generator;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
-import static com.facebook.litho.specmodels.model.ClassNames.COMPONENT;
 
 import android.support.annotation.VisibleForTesting;
 import com.facebook.litho.annotations.Param;
@@ -584,10 +583,12 @@ public class ComponentBodyGenerator {
     final List<MethodParamModel> componentsInImpl = new ArrayList<>();
 
     for (PropModel prop : specModel.getProps()) {
-      final TypeName typeName = prop.getTypeName();
-      if (typeName.equals(ClassNames.COMPONENT) ||
-          (typeName instanceof ParameterizedTypeName &&
-              ((ParameterizedTypeName) typeName).rawType.equals(COMPONENT))) {
+      TypeName typeName = prop.getTypeName();
+      if (typeName instanceof ParameterizedTypeName) {
+        typeName = ((ParameterizedTypeName) typeName).rawType;
+      }
+
+      if (typeName.equals(ClassNames.COMPONENT) || typeName.equals(ClassNames.SECTION)) {
         componentsInImpl.add(prop);
       }
     }
