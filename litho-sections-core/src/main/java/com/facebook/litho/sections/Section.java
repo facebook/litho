@@ -362,6 +362,11 @@ public abstract class Section extends SectionLifecycle
     }
 
     final List<Section> children = currentComponent.getChildren();
+    if (children == null) {
+      throw new IllegalStateException(
+          "Children of current section " + currentComponent + " is null!");
+    }
+
     for (int i = 0, size = children.size(); i < size; i++) {
       final Section child = children.get(i);
       childrenMap.put(child.getGlobalKey(), new Pair<Section, Integer>(child, i));
