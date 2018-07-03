@@ -50,6 +50,7 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.LayoutThreadPoolExecutor;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.LithoView.LayoutManagerOverrideParams;
 import com.facebook.litho.MeasureComparisonUtils;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
@@ -86,7 +87,6 @@ import javax.annotation.concurrent.ThreadSafe;
 public class RecyclerBinder
     implements Binder<RecyclerView>, LayoutInfo.RenderInfoCollection, HasStickyHeader {
 
-  private static final int UNINITIALIZED = -1;
   private static final Size sDummySize = new Size();
   private static final String TAG = RecyclerBinder.class.getSimpleName();
   private static final int POST_UPDATE_VIEWPORT_AND_COMPUTE_RANGE_MAX_ATTEMPTS = 3;
@@ -208,8 +208,8 @@ public class RecyclerBinder
   private final boolean mIsCircular;
   private final boolean mHasDynamicItemHeight;
   private final boolean mWrapContent;
-  private int mLastWidthSpec = UNINITIALIZED;
-  private int mLastHeightSpec = UNINITIALIZED;
+  private int mLastWidthSpec = LayoutManagerOverrideParams.UNINITIALIZED;
+  private int mLastHeightSpec = LayoutManagerOverrideParams.UNINITIALIZED;
   private Size mMeasuredSize;
   private RecyclerView mMountedView;
   @VisibleForTesting int mCurrentFirstVisiblePosition = RecyclerView.NO_POSITION;
@@ -1475,7 +1475,7 @@ public class RecyclerBinder
                 " either OrientationHelper.HORIZONTAL or OrientationHelper.VERTICAL");
     }
 
-    if (mLastWidthSpec != UNINITIALIZED && !mRequiresRemeasure.get()) {
+    if (mLastWidthSpec != LayoutManagerOverrideParams.UNINITIALIZED && !mRequiresRemeasure.get()) {
       switch (scrollDirection) {
         case VERTICAL:
           if (MeasureComparisonUtils.isMeasureSpecCompatible(
@@ -2149,7 +2149,7 @@ public class RecyclerBinder
    */
   @Override
   public synchronized void setSize(int width, int height) {
-    if (mLastWidthSpec == UNINITIALIZED || !isCompatibleSize(
+    if (mLastWidthSpec == LayoutManagerOverrideParams.UNINITIALIZED || !isCompatibleSize(
         SizeSpec.makeSizeSpec(width, SizeSpec.EXACTLY),
         SizeSpec.makeSizeSpec(height, SizeSpec.EXACTLY))) {
       measure(
@@ -2377,7 +2377,7 @@ public class RecyclerBinder
   private boolean isCompatibleSize(int widthSpec, int heightSpec) {
     final int scrollDirection = mLayoutInfo.getScrollDirection();
 
-    if (mLastWidthSpec != UNINITIALIZED) {
+    if (mLastWidthSpec != LayoutManagerOverrideParams.UNINITIALIZED) {
 
       switch (scrollDirection) {
         case HORIZONTAL:
