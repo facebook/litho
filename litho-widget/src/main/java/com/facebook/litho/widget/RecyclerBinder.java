@@ -1968,6 +1968,9 @@ public class RecyclerBinder
     synchronized (this) {
       for (int i = 0, size = toInsert.size(); i < size; i++) {
         final ComponentTreeHolder holder = toInsert.get(i);
+        if (holder.isInserted()) {
+          continue;
+        }
         holder.setInserted(true);
         mComponentTreeHolders.add(i, holder);
         mInternalAdapter.notifyItemInserted(i);
