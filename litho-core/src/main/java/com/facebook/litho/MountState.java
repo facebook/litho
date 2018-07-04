@@ -2378,9 +2378,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       }
 
       if (shouldAnimateTransitions(layoutState)) {
-        if (!mTransitionsHasBeenCollected) {
-          collectAllTransitions(layoutState, componentTree);
-        }
+        collectAllTransitions(layoutState, componentTree);
         if (hasTransitionsToAnimate()) {
           createNewTransitions(layoutState, mRootTransition);
         }
@@ -2869,6 +2867,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
    * @param layoutState that is going to be mounted.
    */
   void collectAllTransitions(LayoutState layoutState, ComponentTree componentTree) {
+    if (mTransitionsHasBeenCollected) {
+      return;
+    }
+
     final ArrayList<Transition> allTransitions = new ArrayList<>();
 
     if (layoutState.getTransitions() != null) {
