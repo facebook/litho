@@ -95,92 +95,100 @@ public class ComponentTreeHolder {
     MeasureListener create(ComponentTreeHolder holder);
   }
 
-  public static ComponentTreeHolder acquire(
-      RenderInfo renderInfo,
-      LayoutHandler layoutHandler,
-      boolean canPrefetchDisplayLists,
-      boolean canCacheDrawingDisplayLists) {
-    return acquire(
-        renderInfo,
-        layoutHandler,
-        canPrefetchDisplayLists,
-        canCacheDrawingDisplayLists,
-        null, /* preallocateMountContentHandler */
-        false, /* canPreallocateOnDefaultHandler */
-        false, /* shouldPreallocatePerMountSpec */
-        null,
-        null);
+  public static Builder create() {
+    return new Builder();
   }
 
-  public static ComponentTreeHolder acquire(
-      RenderInfo renderInfo,
-      LayoutHandler layoutHandler,
-      boolean canPrefetchDisplayLists,
-      boolean canCacheDrawingDisplayLists,
-      ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
-      String splitLayoutTag) {
-    return acquire(
-        renderInfo,
-        layoutHandler,
-        canPrefetchDisplayLists,
-        canCacheDrawingDisplayLists,
-        null, /* preallocateMountContentHandler */
-        false, /* canPreallocateOnDefaultHandler */
-        false, /* shouldPreallocatePerMountSpec */
-        componentTreeMeasureListenerFactory,
-        splitLayoutTag);
-  }
+  public static class Builder {
+    private RenderInfo renderInfo;
+    private LayoutHandler layoutHandler;
+    private boolean canPrefetchDisplayLists;
+    private boolean canCacheDrawingDisplayLists;
+    private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
+    private String splitLayoutTag;
+    private @Nullable LayoutHandler preallocateMountContentHandler;
+    private boolean canPreallocateOnDefaultHandler;
+    private boolean shouldPreallocatePerMountSpec;
 
-  public static ComponentTreeHolder acquire(
-      RenderInfo renderInfo,
-      LayoutHandler layoutHandler,
-      boolean canPrefetchDisplayLists,
-      boolean canCacheDrawingDisplayLists,
-      @Nullable LayoutHandler preallocateMountContentHandler,
-      boolean canPreallocateOnDefaultHandler,
-      boolean shouldPreallocatePerMountSpec) {
-    return acquire(
-        renderInfo,
-        layoutHandler,
-        canPrefetchDisplayLists,
-        canCacheDrawingDisplayLists,
-        preallocateMountContentHandler,
-        canPreallocateOnDefaultHandler,
-        shouldPreallocatePerMountSpec,
-        null,
-        null);
-  }
+    private Builder() {}
 
-  // If we obtain the tree holder from the pool, we can rely on it being synchronized,
-  // if we create the object from scratch, we do not need to worry about sharing.
-  @SuppressWarnings("GuardedBy")
-  public static ComponentTreeHolder acquire(
-      RenderInfo renderInfo,
-      LayoutHandler layoutHandler,
-      boolean canPrefetchDisplayLists,
-      boolean canCacheDrawingDisplayLists,
-      @Nullable LayoutHandler preallocateMountContentHandler,
-      boolean canPreallocateOnDefaultHandler,
-      boolean shouldPreallocatePerMountSpec,
-      final ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
-      String splitLayoutTag) {
-    ComponentTreeHolder componentTreeHolder = sComponentTreeHoldersPool.acquire();
-    if (componentTreeHolder == null) {
-      componentTreeHolder = new ComponentTreeHolder();
+    public Builder renderInfo(RenderInfo renderInfo) {
+      this.renderInfo = renderInfo == null ? ComponentRenderInfo.createEmpty() : renderInfo;
+      return this;
     }
-    componentTreeHolder.mRenderInfo = renderInfo;
-    componentTreeHolder.mLayoutHandler = layoutHandler;
-    componentTreeHolder.mCanPrefetchDisplayLists = canPrefetchDisplayLists;
-    componentTreeHolder.mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
-    componentTreeHolder.mPreallocateMountContentHandler = preallocateMountContentHandler;
-    componentTreeHolder.mCanPreallocateOnDefaultHandler = canPreallocateOnDefaultHandler;
-    componentTreeHolder.mShouldPreallocatePerMountSpec = shouldPreallocatePerMountSpec;
-    componentTreeHolder.mComponentTreeMeasureListenerFactory = componentTreeMeasureListenerFactory;
-    componentTreeHolder.mSplitLayoutTag = splitLayoutTag;
-    componentTreeHolder.acquireId();
-    componentTreeHolder.mIsReleased.set(false);
 
-    return componentTreeHolder;
+    public Builder layoutHandler(LayoutHandler layoutHandler) {
+      this.layoutHandler = layoutHandler;
+      return this;
+    }
+
+    public Builder canPrefetchDisplayLists(boolean canPrefetchDisplayLists) {
+      this.canPrefetchDisplayLists = canPrefetchDisplayLists;
+      return this;
+    }
+
+    public Builder canCacheDrawingDisplayLists(boolean canCacheDrawingDisplayLists) {
+      this.canCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
+      return this;
+    }
+
+    public Builder componentTreeMeasureListenerFactory(
+        ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory) {
+      this.componentTreeMeasureListenerFactory = componentTreeMeasureListenerFactory;
+      return this;
+    }
+
+    public Builder splitLayoutTag(String splitLayoutTag) {
+      this.splitLayoutTag = splitLayoutTag;
+      return this;
+    }
+
+    public Builder preallocateMountContentHandler(
+        @Nullable LayoutHandler preallocateMountContentHandler) {
+      this.preallocateMountContentHandler = preallocateMountContentHandler;
+      return this;
+    }
+
+    public Builder canPreallocateOnDefaultHandler(boolean canPreallocateOnDefaultHandler) {
+      this.canPreallocateOnDefaultHandler = canPreallocateOnDefaultHandler;
+      return this;
+    }
+
+    public Builder shouldPreallocatePerMountSpec(boolean shouldPreallocatePerMountSpec) {
+      this.shouldPreallocatePerMountSpec = shouldPreallocatePerMountSpec;
+      return this;
+    }
+
+    public ComponentTreeHolder build() {
+      ensureMandatoryParams();
+
+      ComponentTreeHolder componentTreeHolder = sComponentTreeHoldersPool.acquire();
+      if (componentTreeHolder == null) {
+        componentTreeHolder = new ComponentTreeHolder();
+      }
+
+      componentTreeHolder.mRenderInfo = renderInfo;
+      componentTreeHolder.mLayoutHandler = layoutHandler;
+      componentTreeHolder.mCanPrefetchDisplayLists = canPrefetchDisplayLists;
+      componentTreeHolder.mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
+      componentTreeHolder.mPreallocateMountContentHandler = preallocateMountContentHandler;
+      componentTreeHolder.mCanPreallocateOnDefaultHandler = canPreallocateOnDefaultHandler;
+      componentTreeHolder.mShouldPreallocatePerMountSpec = shouldPreallocatePerMountSpec;
+      componentTreeHolder.mComponentTreeMeasureListenerFactory =
+          componentTreeMeasureListenerFactory;
+      componentTreeHolder.mSplitLayoutTag = splitLayoutTag;
+      componentTreeHolder.acquireId();
+      componentTreeHolder.mIsReleased.set(false);
+
+      return componentTreeHolder;
+    }
+
+    private void ensureMandatoryParams() {
+      if (renderInfo == null) {
+        throw new IllegalArgumentException(
+            "A RenderInfo must be specified to create a ComponentTreeHolder");
+      }
+    }
   }
 
   private void acquireId() {

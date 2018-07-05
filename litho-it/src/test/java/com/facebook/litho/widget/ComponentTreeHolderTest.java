@@ -196,6 +196,6 @@ public class ComponentTreeHolderTest {
   }
 
   private ComponentTreeHolder createComponentTreeHolder(RenderInfo info) {
-    return ComponentTreeHolder.acquire(info, null, false, false);
+    return ComponentTreeHolder.create().renderInfo(info).build();
   }
 }

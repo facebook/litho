@@ -344,13 +344,14 @@ public class RecyclerBinder
             boolean canCacheDrawingDisplayLists,
             ComponentTreeMeasureListenerFactory measureListenerFactory,
             String splitLayoutTag) {
-          return ComponentTreeHolder.acquire(
-              renderInfo,
-              layoutHandler,
-              canPrefetchDisplayLists,
-              canCacheDrawingDisplayLists,
-              measureListenerFactory,
-              splitLayoutTag);
+          return ComponentTreeHolder.create()
+              .renderInfo(renderInfo)
+              .layoutHandler(layoutHandler)
+              .canPrefetchDisplayLists(canPrefetchDisplayLists)
+              .canCacheDrawingDisplayLists(canCacheDrawingDisplayLists)
+              .componentTreeMeasureListenerFactory(measureListenerFactory)
+              .splitLayoutTag(splitLayoutTag)
+              .build();
         }
       };
 
