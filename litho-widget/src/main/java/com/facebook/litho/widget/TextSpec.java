@@ -123,6 +123,9 @@ import com.facebook.yoga.YogaDirection;
  *     from text. This can be used to avoid memory leaks if the click/long click actions require a
  *     context, since spannables are stored statically in memory.
  * @prop clipToBounds If the text should be clipped inside component bounds. Default: {@code true}
+ * @prop customEllipsisText Text used to replace the standard Android ... ellipsis at the end of
+ *     truncated lines. Warning: specifying this prop causes measurement to run twice. This can have
+ *     a serious performance cost, especially on older devices!
  */
 @MountSpec(
   isPureRender = true,
@@ -505,14 +508,17 @@ class TextSpec {
       @Prop(optional = true) int hyphenationFrequency,
       @Prop(optional = true) boolean glyphWarming,
       @Prop(optional = true) TextDirectionHeuristicCompat textDirection,
+      @Prop(optional = true, resType = ResType.STRING) CharSequence customEllipsisText,
       @FromMeasure Layout measureLayout,
       @FromMeasure Integer measuredWidth,
       @FromMeasure Integer measuredHeight,
+      Output<CharSequence> processedText,
       Output<Layout> textLayout,
       Output<Float> textLayoutTranslationY,
       Output<ClickableSpan[]> clickableSpans,
       Output<ImageSpan[]> imageSpans) {
 
+    processedText.set(text);
     if (TextUtils.isEmpty(text)) {
       return;
     }
@@ -590,6 +596,97 @@ class TextSpec {
       clickableSpans.set(spanned.getSpans(0, text.length(), ClickableSpan.class));
       imageSpans.set(spanned.getSpans(0, text.length(), ImageSpan.class));
     }
+
+    // Handle custom text truncation:
+    if (customEllipsisText != null && !customEllipsisText.equals("")) {
+      final int ellipsizedLineNumber = getEllipsizedLineNumber(textLayout.get());
+      if (ellipsizedLineNumber != -1) {
+        final CharSequence truncated =
+            truncateText(text, customEllipsisText, textLayout.get(), ellipsizedLineNumber);
+
+        Layout newLayout =
+            createTextLayout(
+                SizeSpec.makeSizeSpec((int) layoutWidth, EXACTLY),
+                ellipsize,
+                shouldIncludeFontPadding,
+                maxLines,
+                shadowRadius,
+                shadowDx,
+                shadowDy,
+                shadowColor,
+                isSingleLine,
+                truncated,
+                textColor,
+                textColorStateList,
+                linkColor,
+                textSize,
+                extraSpacing,
+                spacingMultiplier,
+                letterSpacing,
+                textStyle,
+                typeface,
+                textAlignment,
+                glyphWarming,
+                layout.getResolvedLayoutDirection(),
+                minEms,
+                maxEms,
+                minTextWidth,
+                maxTextWidth,
+                c.getResources().getDisplayMetrics().density,
+                breakStrategy,
+                hyphenationFrequency,
+                justificationMode,
+                textDirection);
+
+        processedText.set(truncated);
+        textLayout.set(newLayout);
+      }
+    }
+  }
+
+  /**
+   * Truncates text which is too long and appends the given custom ellipsis CharSequence to the end
+   * of the visible text.
+   *
+   * @param text Text to truncate
+   * @param customEllipsisText Text to append to the end to indicate truncation happened
+   * @param newLayout A Layout object populated with measurement information for this text
+   * @param ellipsizedLineNumber The line number within the text at which truncation occurs (i.e.
+   *     the last visible line).
+   * @return The provided text truncated in such a way that the 'customEllipsisText' can appear at
+   *     the end.
+   */
+  private static CharSequence truncateText(
+      CharSequence text,
+      CharSequence customEllipsisText,
+      Layout newLayout,
+      int ellipsizedLineNumber) {
+    Rect bounds = new Rect();
+    newLayout
+        .getPaint()
+        .getTextBounds(customEllipsisText.toString(), 0, customEllipsisText.length(), bounds);
+    // Identify the X position at which to truncate the final line:
+    final float ellipsisTarget = newLayout.getLineMax(ellipsizedLineNumber) - bounds.width();
+    // Get character offset number corresponding to that X position:
+    final int ellipsisOffset =
+        newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
+    // getOffsetForHorizontal returns the closest character, but we need to guarantee no truncation,
+    // so subtract 1 from the result:
+    return TextUtils.concat(text.subSequence(0, ellipsisOffset - 1), customEllipsisText);
+  }
+
+  /**
+   * @param layout A prepared text layout object
+   * @return The (zero-indexed) line number at which the text in this layout will be ellipsized, or
+   *     -1 if no line will be ellipsized.
+   */
+  private static int getEllipsizedLineNumber(Layout layout) {
+    for (int i = 0; i < layout.getLineCount(); ++i) {
+      if (layout.getEllipsisCount(i) > 0) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   @OnCreateMountContent
@@ -601,7 +698,6 @@ class TextSpec {
   static void onMount(
       ComponentContext c,
       TextDrawable textDrawable,
-      @Prop(resType = ResType.STRING) final CharSequence text,
       @Prop(optional = true, resType = ResType.COLOR) int textColor,
       @Prop(optional = true, resType = ResType.COLOR) int highlightColor,
       @Prop(optional = true) ColorStateList textColorStateList,
@@ -611,6 +707,7 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) float clickableSpanExpandedOffset,
       @Prop(optional = true) boolean clipToBounds,
       @Prop(optional = true) ClickableSpanListener spanListener,
+      final @FromBoundsDefined CharSequence processedText,
       @FromBoundsDefined Layout textLayout,
       @FromBoundsDefined Float textLayoutTranslationY,
       @FromBoundsDefined ClickableSpan[] clickableSpans,
@@ -619,15 +716,17 @@ class TextSpec {
     TextDrawable.TextOffsetOnTouchListener textOffsetOnTouchListener = null;
 
     if (textOffsetOnTouchHandler != null) {
-      textOffsetOnTouchListener = new TextDrawable.TextOffsetOnTouchListener() {
-        @Override
-        public void textOffsetOnTouch(int textOffset) {
-          Text.dispatchTextOffsetOnTouchEvent(textOffsetOnTouchHandler, text, textOffset);
-        }
-      };
+      textOffsetOnTouchListener =
+          new TextDrawable.TextOffsetOnTouchListener() {
+            @Override
+            public void textOffsetOnTouch(int textOffset) {
+              Text.dispatchTextOffsetOnTouchEvent(
+                  textOffsetOnTouchHandler, processedText, textOffset);
+            }
+          };
     }
     textDrawable.mount(
-        text,
+        processedText,
         textLayout,
         textLayoutTranslationY == null ? 0 : textLayoutTranslationY,
         clipToBounds,
@@ -642,8 +741,8 @@ class TextSpec {
         highlightEndOffset,
         clickableSpanExpandedOffset);
 
-    if (text instanceof MountableCharSequence) {
-      ((MountableCharSequence) text).onMount(textDrawable);
+    if (processedText instanceof MountableCharSequence) {
+      ((MountableCharSequence) processedText).onMount(textDrawable);
     }
   }
 
