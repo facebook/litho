@@ -227,8 +227,14 @@ public class EventValidationTest {
   }
 
   @Test
-  public void testEventMethodsWithWrongFirstParam() {
-    MethodParamModel methodParam = MockMethodParamModel.newBuilder().type(TypeName.BOOLEAN).build();
+  public void testEventMethodsWithWrongParams() {
+    MethodParamModel methodParam1 =
+        MockMethodParamModel.newBuilder().type(TypeName.BOOLEAN).build();
+    MethodParamModel methodParam2 =
+        MockMethodParamModel.newBuilder()
+            .representedObject(mRepresentedObject3)
+            .type(TypeName.BOOLEAN)
+            .build();
     SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =
         SpecMethodModel.<EventMethod, EventDeclarationModel>builder()
             .annotations(ImmutableList.of())
@@ -236,7 +242,7 @@ public class EventValidationTest {
             .name("name")
             .returnTypeSpec(new TypeSpec(INT))
             .typeVariables(ImmutableList.of())
-            .methodParams(ImmutableList.of(methodParam))
+            .methodParams(ImmutableList.of(methodParam1, methodParam2))
             .representedObject(mRepresentedObject2)
             .typeModel(
                 new EventDeclarationModel(OBJECT, INT, ImmutableList.of(), mRepresentedObject1))
@@ -246,11 +252,16 @@ public class EventValidationTest {
 
     List<SpecModelValidationError> validationErrors =
         EventValidation.validate(mSpecModel, RunMode.NORMAL);
-    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors).hasSize(2);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
     assertThat(validationErrors.get(0).message).isEqualTo(
         "The first parameter for a method annotated with @OnEvent should be of type " +
             "com.facebook.litho.ComponentContext.");
+
+    assertThat(validationErrors.get(1).element).isEqualTo(mRepresentedObject3);
+    assertThat(validationErrors.get(1).message)
+        .isEqualTo(
+            "Param must be annotated with one of @FromEvent, @Prop, @InjectProp, @TreeProp, @State or @Param.");
   }
 
   @Test

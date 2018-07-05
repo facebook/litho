@@ -19,6 +19,11 @@ package com.facebook.litho.specmodels.model;
 import static com.facebook.litho.specmodels.model.SpecMethodModelValidation.validateMethodIsStatic;
 
 import com.facebook.litho.annotations.FromEvent;
+import com.facebook.litho.annotations.InjectProp;
+import com.facebook.litho.annotations.Param;
+import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.State;
+import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.squareup.javapoet.ClassName;
@@ -112,7 +117,8 @@ public class EventValidation {
                       + "."));
         }
 
-        for (MethodParamModel methodParam : eventMethod.methodParams) {
+        for (int i = 1, size = eventMethod.methodParams.size(); i < size; i++) {
+          final MethodParamModel methodParam = eventMethod.methodParams.get(i);
           if (MethodParamModelUtils.isAnnotatedWith(methodParam, FromEvent.class)
               && !hasMatchingField(methodParam, eventMethod.typeModel.fields)) {
             validationErrors.add(
@@ -126,14 +132,28 @@ public class EventValidation {
                         + eventMethod.typeModel.name
                         + "."));
           }
+
+          if (!hasPermittedAnnotation(methodParam)) {
+            validationErrors.add(
+                new SpecModelValidationError(
+                    methodParam.getRepresentedObject(),
+                    "Param must be annotated with one of @FromEvent, @Prop, @InjectProp, "
+                        + "@TreeProp, @State or @Param."));
+          }
         }
       }
     }
 
-    // Need some way of verifying that the return type and the @FromEvent parameters are
-    // correct and valid.
-
     return validationErrors;
+  }
+
+  private static boolean hasPermittedAnnotation(MethodParamModel methodParam) {
+    return MethodParamModelUtils.isAnnotatedWith(methodParam, FromEvent.class)
+        || MethodParamModelUtils.isAnnotatedWith(methodParam, Prop.class)
+        || MethodParamModelUtils.isAnnotatedWith(methodParam, InjectProp.class)
+        || MethodParamModelUtils.isAnnotatedWith(methodParam, TreeProp.class)
+        || MethodParamModelUtils.isAnnotatedWith(methodParam, State.class)
+        || MethodParamModelUtils.isAnnotatedWith(methodParam, Param.class);
   }
 
   private static boolean hasMatchingField(
