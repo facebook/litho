@@ -317,10 +317,8 @@ public class LithoView extends ComponentHost {
       mDoMeasureInLayout = false;
     }
 
-    if (height == 0
-        && mInvalidStateLogParams != null
-        && mInvalidStateLogParams.containsKey(ZERO_HEIGHT_LOG)) {
-      logZeroHeight(mInvalidStateLogParams.get(ZERO_HEIGHT_LOG));
+    if (height == 0) {
+      maybeLogInvalidZeroHeight();
     }
 
     final boolean canAnimateRootBounds =
@@ -871,18 +869,32 @@ public class LithoView extends ComponentHost {
     }
   }
 
-  private void logZeroHeight(ComponentLogParams logParams) {
+  private void maybeLogInvalidZeroHeight() {
     final ComponentsLogger logger = getComponentContext().getLogger();
     if (logger == null) {
       return;
     }
 
+    if (mComponentTree != null
+        && mComponentTree.getMainThreadLayoutState() != null
+        && mComponentTree.getMainThreadLayoutState().mLayoutRoot == null) {
+      // Valid case for 0-height, onCreateLayout of root component returned null.
+      return;
+    }
+
+    final ComponentLogParams logParams =
+        mInvalidStateLogParams == null ? null : mInvalidStateLogParams.get(ZERO_HEIGHT_LOG);
+    if (logParams == null) {
+      // surface didn't subscribe for this type of logging.
+      return;
+    }
+
     final LayoutParams layoutParams = getLayoutParams();
-    final boolean isViewBeingRemovedInPreLayout =
+    final boolean isViewBeingRemovedInPreLayoutOfPredictiveAnim =
         layoutParams instanceof LayoutManagerOverrideParams
             && ((LayoutManagerOverrideParams) layoutParams).hasValidAdapterPosition();
 
-    if (isViewBeingRemovedInPreLayout) {
+    if (isViewBeingRemovedInPreLayoutOfPredictiveAnim) {
       return;
     }
 
