@@ -35,6 +35,7 @@ import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.OnBindService;
 import com.facebook.litho.sections.annotations.OnCreateService;
 import com.facebook.litho.sections.annotations.OnDataBound;
+import com.facebook.litho.sections.annotations.OnDataRendered;
 import com.facebook.litho.sections.annotations.OnDiff;
 import com.facebook.litho.sections.annotations.OnRefresh;
 import com.facebook.litho.sections.annotations.OnUnbindService;
@@ -92,4 +93,7 @@ public class FullDiffSectionSpec<T> implements TestTag {
 
   @OnEvent(ClickEvent.class)
   static void testEvent(SectionContext c, @FromEvent View view, @Param int someParam) {}
+
+  @OnDataRendered
+  static void onDataRendered(SectionContext c, boolean isDataChanged, @Prop Integer prop1) {}
 }

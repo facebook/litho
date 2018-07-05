@@ -23,6 +23,7 @@ import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.OnBindService;
 import com.facebook.litho.sections.annotations.OnCreateService;
 import com.facebook.litho.sections.annotations.OnDataBound;
+import com.facebook.litho.sections.annotations.OnDataRendered;
 import com.facebook.litho.sections.annotations.OnDiff;
 import com.facebook.litho.sections.annotations.OnRefresh;
 import com.facebook.litho.sections.annotations.OnUnbindService;
@@ -84,6 +85,7 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory {
     DELEGATE_METHOD_ANNOTATIONS.add(OnBindService.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnUnbindService.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnDataBound.class);
+    DELEGATE_METHOD_ANNOTATIONS.add(OnDataRendered.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnRefresh.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnViewportChanged.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnCreateTreeProp.class);

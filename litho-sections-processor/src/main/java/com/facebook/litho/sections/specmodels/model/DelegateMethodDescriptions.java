@@ -30,6 +30,7 @@ import com.facebook.litho.sections.annotations.OnBindService;
 import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.sections.annotations.OnCreateService;
 import com.facebook.litho.sections.annotations.OnDataBound;
+import com.facebook.litho.sections.annotations.OnDataRendered;
 import com.facebook.litho.sections.annotations.OnDiff;
 import com.facebook.litho.sections.annotations.OnRefresh;
 import com.facebook.litho.sections.annotations.OnUnbindService;
@@ -88,6 +89,17 @@ public class DelegateMethodDescriptions {
           .returnType(TypeName.VOID)
           .name("dataBound")
           .definedParameterTypes(ImmutableList.<TypeName>of(SectionClassNames.SECTION_CONTEXT))
+          .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP))
+          .build();
+
+  private static final DelegateMethodDescription ON_DATA_RENDERED =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(TypeName.VOID)
+          .name("dataRendered")
+          .definedParameterTypes(
+              ImmutableList.<TypeName>of(SectionClassNames.SECTION_CONTEXT, TypeName.BOOLEAN))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP))
           .build();
 
@@ -179,6 +191,7 @@ public class DelegateMethodDescriptions {
 
     serviceAwareDelegateMethodsMap.put(OnRefresh.class, ON_REFRESH);
     serviceAwareDelegateMethodsMap.put(OnDataBound.class, ON_DATA_BOUND);
+    serviceAwareDelegateMethodsMap.put(OnDataRendered.class, ON_DATA_RENDERED);
     serviceAwareDelegateMethodsMap.put(OnViewportChanged.class, ON_VIEWPORT_CHANGED);
     serviceAwareDelegateMethodsMap.put(OnCreateService.class, ON_CREATE_SERVICE);
     serviceAwareDelegateMethodsMap.put(OnBindService.class, ON_BIND_SERVICE);

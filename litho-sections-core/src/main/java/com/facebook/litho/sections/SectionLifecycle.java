@@ -29,6 +29,7 @@ import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnDataBound;
+import com.facebook.litho.sections.annotations.OnDataRendered;
 import com.facebook.litho.sections.annotations.OnDiff;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 
@@ -62,6 +63,12 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
   protected void dataBound(SectionContext c) {
 
   }
+
+  /**
+   * This method will delegate to the {@link Section}Spec method annotated with {@link
+   * OnDataRendered}.
+   */
+  protected void dataRendered(SectionContext c, boolean isDataChanged) {}
 
   protected void bindService(SectionContext c) {
 

@@ -377,6 +377,15 @@ final class FullGroupSection<T> extends Section implements TestTag {
   }
 
   @Override
+  protected void dataRendered(SectionContext c, boolean isDataChanged) {
+    FullGroupSectionSpec.onDataRendered(
+      (SectionContext) c,
+      (boolean) isDataChanged,
+      (int) prop1,
+      (Object) mStateContainer.state2);
+  }
+
+  @Override
   protected void populateTreeProps(TreeProps treeProps) {
     if (treeProps == null) {
       return;

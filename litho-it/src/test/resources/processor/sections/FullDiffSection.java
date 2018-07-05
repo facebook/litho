@@ -334,6 +334,14 @@ public final class FullDiffSection<T> extends Section implements TestTag {
         (int) lastFullyVisibleIndex);
   }
 
+  @Override
+  protected void dataRendered(SectionContext c, boolean isDataChanged) {
+    FullDiffSectionSpec.onDataRendered(
+      (SectionContext) c,
+      (boolean) isDataChanged,
+      (Integer) prop1);
+  }
+
   @VisibleForTesting(otherwise = 2)
   static class FullDiffSectionStateContainer<T> implements SectionLifecycle.StateContainer {
     @State Object state1;
