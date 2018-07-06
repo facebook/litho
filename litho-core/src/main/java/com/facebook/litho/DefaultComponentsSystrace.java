@@ -75,53 +75,39 @@ public class DefaultComponentsSystrace implements ComponentsSystrace.Systrace {
   }
 
   /**
-   * Handles adding args to a systrace section by naively appending them to the section name. This
-   * functionality has a more intelligent implementation when using a tracer that writes directly to
-   * ftrace instead of using Android's Trace class.
+   * Ignores args. This functionality has a more intelligent implementation when using a tracer that
+   * writes directly to ftrace instead of using Android's Trace class.
    */
   private static final class DefaultArgsBuilder implements ComponentsSystrace.ArgsBuilder {
 
-    private final StringBuilder mStringBuilder;
+    private final String mName;
 
     public DefaultArgsBuilder(String name) {
-      mStringBuilder = new StringBuilder(name);
+      mName = name;
     }
 
     @Override
     public void flush() {
-      // 127 is the max name length according to
-      // https://developer.android.com/reference/android/os/Trace.html
-      if (mStringBuilder.length() > 127) {
-        mStringBuilder.setLength(127);
-      }
-      Trace.beginSection(mStringBuilder.toString());
+      Trace.beginSection(mName);
     }
 
     @Override
     public ComponentsSystrace.ArgsBuilder arg(String key, Object value) {
-      mStringBuilder
-          .append(';')
-          .append(key)
-          .append('=')
-          .append(value == null ? "null" : value.toString());
       return this;
     }
 
     @Override
     public ComponentsSystrace.ArgsBuilder arg(String key, int value) {
-      mStringBuilder.append(';').append(key).append('=').append(Integer.toString(value));
       return this;
     }
 
     @Override
     public ComponentsSystrace.ArgsBuilder arg(String key, long value) {
-      mStringBuilder.append(';').append(key).append('=').append(Long.toString(value));
       return this;
     }
 
     @Override
     public ComponentsSystrace.ArgsBuilder arg(String key, double value) {
-      mStringBuilder.append(';').append(key).append('=').append(Double.toString(value));
       return this;
     }
   }
