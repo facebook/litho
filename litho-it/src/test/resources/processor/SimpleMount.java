@@ -132,13 +132,13 @@ public final class SimpleMount extends Component {
   }
 
   public static class Builder extends Component.Builder<Builder> {
-    private static final String[] REQUIRED_PROPS_NAMES = new String[] {"content", "ratio"};
-
-    private static final int REQUIRED_PROPS_COUNT = 2;
-
     SimpleMount mSimpleMount;
 
     ComponentContext mContext;
+
+    private final String[] REQUIRED_PROPS_NAMES = new String[] {"content", "ratio"};
+
+    private final int REQUIRED_PROPS_COUNT = 2;
 
     private final BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 

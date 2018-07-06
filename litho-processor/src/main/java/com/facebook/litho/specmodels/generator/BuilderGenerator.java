@@ -195,33 +195,15 @@ public class BuilderGenerator {
     }
 
     if (numRequiredProps > 0) {
-      final FieldSpec.Builder requiredPropsNamesBuilder =
-          FieldSpec.builder(
-              String[].class,
-              REQUIRED_PROPS_NAMES,
-              Modifier.PRIVATE,
-              Modifier.FINAL)
-              .initializer("new String[] {$L}", commaSeparateAndQuoteStrings(requiredPropNames));
+      propsBuilderClassBuilder.addField(
+          FieldSpec.builder(String[].class, REQUIRED_PROPS_NAMES, Modifier.PRIVATE, Modifier.FINAL)
+              .initializer("new String[] {$L}", commaSeparateAndQuoteStrings(requiredPropNames))
+              .build());
 
-      if (!specModel.hasInjectedDependencies()) {
-        requiredPropsNamesBuilder.addModifiers(Modifier.STATIC);
-      }
-
-      propsBuilderClassBuilder.addField(requiredPropsNamesBuilder.build());
-
-      final FieldSpec.Builder requiredPropsCountBuilder =
-          FieldSpec.builder(
-              int.class,
-              REQUIRED_PROPS_COUNT,
-              Modifier.PRIVATE,
-              Modifier.FINAL)
-              .initializer("$L", numRequiredProps);
-
-      if (!specModel.hasInjectedDependencies()) {
-        requiredPropsCountBuilder.addModifiers(Modifier.STATIC);
-      }
-
-      propsBuilderClassBuilder.addField(requiredPropsCountBuilder.build());
+      propsBuilderClassBuilder.addField(
+          FieldSpec.builder(int.class, REQUIRED_PROPS_COUNT, Modifier.PRIVATE, Modifier.FINAL)
+              .initializer("$L", numRequiredProps)
+              .build());
 
       propsBuilderClassBuilder.addField(
           FieldSpec.builder(BitSet.class, "mRequired", Modifier.PRIVATE, Modifier.FINAL)
