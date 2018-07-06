@@ -82,10 +82,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.CheckReturnValue;
 
@@ -210,6 +212,7 @@ class LayoutState {
   @Nullable private OutputUnitsAffinityGroup<LayoutOutput> mCurrentLayoutOutputAffinityGroup;
   private final SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>>
       mTransitionKeyMapping = new SimpleArrayMap<>();
+  private final Set<String> mDuplicatedTransitionKeys = new HashSet<>();
   private List<Transition> mTransitions;
 
   @Nullable WorkingRangeContainer mWorkingRangeContainer;
@@ -620,13 +623,15 @@ class LayoutState {
     final String transitionKey = getTransitionKeyForNode(node);
     layoutState.mCurrentLayoutOutputAffinityGroup =
         transitionKey != null ? new OutputUnitsAffinityGroup<LayoutOutput>() : null;
+    final boolean isTransitionKeyGenerated = !node.hasTransitionKey();
 
     int hostLayoutPosition = -1;
 
     // 1. Insert a host LayoutOutput if we have some interactive content to be attached to.
     if (needsHostView) {
       hostLayoutPosition = addHostLayoutOutput(node, layoutState, diffNode);
-      addCurrentAffinityGroupToTransitionMapping(transitionKey, layoutState);
+      addCurrentAffinityGroupToTransitionMapping(
+          transitionKey, isTransitionKeyGenerated, layoutState);
 
       layoutState.mCurrentLevel++;
       layoutState.mCurrentHostMarker =
@@ -868,7 +873,8 @@ class LayoutState {
     }
     layoutState.mShouldDuplicateParentState = shouldDuplicateParentState;
 
-    addCurrentAffinityGroupToTransitionMapping(transitionKey, layoutState);
+    addCurrentAffinityGroupToTransitionMapping(
+        transitionKey, isTransitionKeyGenerated, layoutState);
     layoutState.mCurrentLayoutOutputAffinityGroup = currentLayoutOutputAffinityGroup;
   }
 
@@ -991,21 +997,33 @@ class LayoutState {
   }
 
   private static void addCurrentAffinityGroupToTransitionMapping(
-      String transitionKey, LayoutState layoutState) {
+      String transitionKey, boolean isTransitionKeyGenerated, LayoutState layoutState) {
     final OutputUnitsAffinityGroup<LayoutOutput> group =
         layoutState.mCurrentLayoutOutputAffinityGroup;
     if (group == null || group.isEmpty()) {
       return;
     }
 
-    if (layoutState.mTransitionKeyMapping.put(transitionKey, group) != null) {
-      // Already seen component with the same manually set transition key
-      throw new RuntimeException(
-          "The transitionKey '"
-              + transitionKey
-              + "' is defined multiple times in the same layout. transitionKeys must be unique "
-              + "identifiers per layout. If this is a reusable component that can appear in the "
-              + "same layout multiple times, consider passing unique transitionKeys from above.");
+    if (isTransitionKeyGenerated) {
+      // Check if the duplications of this key has been found before, if so, just ignore it
+      if (!layoutState.mDuplicatedTransitionKeys.contains(transitionKey)) {
+        if (layoutState.mTransitionKeyMapping.put(transitionKey, group) != null) {
+          // Already seen component with the same generated transition key, remove it from the
+          // mapping and ignore in the future
+          layoutState.mTransitionKeyMapping.remove(transitionKey);
+          layoutState.mDuplicatedTransitionKeys.add(transitionKey);
+        }
+      }
+    } else {
+      if (layoutState.mTransitionKeyMapping.put(transitionKey, group) != null) {
+        // Already seen component with the same manually set transition key
+        throw new RuntimeException(
+            "The transitionKey '"
+                + transitionKey
+                + "' is defined multiple times in the same layout. transitionKeys must be unique "
+                + "identifiers per layout. If this is a reusable component that can appear in the "
+                + "same layout multiple times, consider passing unique transitionKeys from above.");
+      }
     }
 
     layoutState.mCurrentLayoutOutputAffinityGroup = null;
@@ -2120,6 +2138,7 @@ class LayoutState {
 
       mCurrentLayoutOutputAffinityGroup = null;
       mTransitionKeyMapping.clear();
+      mDuplicatedTransitionKeys.clear();
 
       mWorkingRangeContainer = null;
 
