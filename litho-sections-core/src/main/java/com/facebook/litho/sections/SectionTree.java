@@ -443,7 +443,7 @@ public class SectionTree {
     final SectionLocationInfo sectionLocationInfo =
         findSectionForKeyRecursive(mBoundSection, key, 0);
     if (sectionLocationInfo == null) {
-      throw new RuntimeException("Did not find section with key '" + key + "'!");
+      throw new SectionKeyNotFoundException("Did not find section with key '" + key + "'!");
     }
 
     return sectionLocationInfo;
