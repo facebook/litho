@@ -22,10 +22,16 @@ import android.os.Build;
 import android.util.LongSparseArray;
 import android.util.SparseArray;
 import java.lang.reflect.Field;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SynchronizedTypefaceHelper {
+  private static final AtomicBoolean sIsInitialized = new AtomicBoolean(false);
 
-  static void setupSynchronizedTypeface() {
+  public static void setupSynchronizedTypeface() {
+    if (sIsInitialized.getAndSet(true)) {
+      return;
+    }
+
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
       // sTypefaceCache was introduced in API level 16.
       return;
