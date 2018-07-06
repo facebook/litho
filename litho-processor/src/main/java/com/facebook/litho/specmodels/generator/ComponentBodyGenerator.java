@@ -172,13 +172,19 @@ public class ComponentBodyGenerator {
                       .endControlFlow()
                       .build())
               .addStatement(
-                  "$T<$T> $N = new $T<>($N)",
+                  "$T<$T> $N",
                   ClassNames.LIST,
                   specModel.getTransitionClass(),
+                  transitionsCopyVarName)
+              .beginControlFlow(
+                  "synchronized ($L)", GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME)
+              .addStatement(
+                  "$N = new $T<>($N)",
                   transitionsCopyVarName,
                   ClassNames.ARRAY_LIST,
                   GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME)
               .addStatement("$N.clear()", GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME)
+              .endControlFlow()
               .addStatement("return $N", transitionsCopyVarName)
               .build());
     }

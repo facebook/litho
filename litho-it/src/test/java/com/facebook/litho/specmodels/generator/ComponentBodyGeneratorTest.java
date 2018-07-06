@@ -195,8 +195,11 @@ public class ComponentBodyGeneratorTest {
                 + "    if (_transitions.isEmpty()) {\n"
                 + "      return java.util.Collections.EMPTY_LIST;\n"
                 + "    }\n"
-                + "    java.util.List<com.facebook.litho.Transition> transitionsCopy = new java.util.ArrayList<>(_transitions);\n"
-                + "    _transitions.clear();\n"
+                + "    java.util.List<com.facebook.litho.Transition> transitionsCopy;\n"
+                + "    synchronized (_transitions) {\n"
+                + "      transitionsCopy = new java.util.ArrayList<>(_transitions);\n"
+                + "      _transitions.clear();\n"
+                + "    }\n"
                 + "    return transitionsCopy;\n"
                 + "  }\n"
                 + "}\n");
