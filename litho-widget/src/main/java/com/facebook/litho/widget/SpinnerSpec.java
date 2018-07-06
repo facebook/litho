@@ -27,12 +27,14 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.ColorInt;
-import android.support.v7.widget.ListPopupWindow;
+import android.support.annotation.RequiresApi;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListPopupWindow;
 import android.widget.PopupWindow;
 import com.facebook.litho.AccessibilityRole;
 import com.facebook.litho.ClickEvent;
@@ -77,6 +79,7 @@ import javax.annotation.Nullable;
  * @prop-optional selectedTextColor The text color of the selected value
  */
 @LayoutSpec(events = ItemSelectedEvent.class)
+@RequiresApi(Build.VERSION_CODES.HONEYCOMB)
 public class SpinnerSpec {
 
   private static final float MARGIN_SMALL = 8;
@@ -103,6 +106,7 @@ public class SpinnerSpec {
       @Prop(resType = ResType.DIMEN_TEXT, optional = true) float selectedTextSize,
       @Prop(resType = ResType.COLOR, optional = true) int selectedTextColor,
       @Prop(resType = ResType.DRAWABLE, optional = true) @Nullable Drawable caret) {
+    assertAPI11orHigher();
     caret = caret == null ? new CaretDrawable(c, DEFAULT_CARET_COLOR) : caret;
     selectedTextSize = selectedTextSize == -1 ? spToPx(c, DEFAULT_TEXT_SIZE_SP) : selectedTextSize;
 
@@ -116,6 +120,12 @@ public class SpinnerSpec {
         .child(createCaret(c, caret, isShowingDropDown))
         .accessibilityRole(AccessibilityRole.DROP_DOWN_LIST)
         .build();
+  }
+
+  private static void assertAPI11orHigher() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+      throw new RuntimeException("Spinner requires API 11 (HONEYCOMB) or greater");
+    }
   }
 
   private static Component createCaret(

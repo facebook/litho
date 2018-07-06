@@ -36,7 +36,6 @@ android {
 dependencies {
     implementation project(':litho-core')
     implementation deps.supportRecyclerView
-    implementation deps.supportAppCompat
     compileOnly project(':litho-annotations')
     annotationProcessor project(':litho-processor')
 
