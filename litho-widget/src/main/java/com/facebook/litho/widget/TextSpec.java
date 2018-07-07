@@ -670,9 +670,13 @@ class TextSpec {
     // Get character offset number corresponding to that X position:
     final int ellipsisOffset =
         newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
-    // getOffsetForHorizontal returns the closest character, but we need to guarantee no truncation,
-    // so subtract 1 from the result:
-    return TextUtils.concat(text.subSequence(0, ellipsisOffset - 1), customEllipsisText);
+    if (ellipsisOffset > 0) {
+      // getOffsetForHorizontal returns the closest character, but we need to guarantee no
+      // truncation, so subtract 1 from the result:
+      return TextUtils.concat(text.subSequence(0, ellipsisOffset - 1), customEllipsisText);
+    } else {
+      return text;
+    }
   }
 
   /**
