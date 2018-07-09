@@ -207,10 +207,6 @@ def components_robolectric_test(
         **kwargs
     )
 
-def fb_instrumentation_test(*args, **kwargs):
-    # Not supported in OSS at the moment.
-    pass
-
 def fb_java_test(*args, **kwargs):
     """Uses native java_test for OSS project."""
     java_test(*args, **kwargs)
@@ -249,6 +245,7 @@ def fb_instrumentation_test(**kwargs):
     We don't support this in the OSS build for now.
     Please use Gradle instead.
     """
+    _ignore = kwargs
     pass
 
 def fb_core_android_library(**kwargs):
