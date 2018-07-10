@@ -23,9 +23,7 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import android.content.Context;
 import android.os.Build;
 import android.support.v4.widget.NestedScrollView;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.FrameLayout;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -36,6 +34,7 @@ import com.facebook.litho.Output;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.Wrapper;
 import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.MountSpec;
@@ -87,7 +86,7 @@ public class VerticalScrollSpec {
 
   @OnMeasure
   static void onMeasure(
-      ComponentContext context,
+      ComponentContext c,
       ComponentLayout layout,
       int widthSpec,
       int heightSpec,
@@ -100,6 +99,7 @@ public class VerticalScrollSpec {
       Output<Integer> measuredWidth,
       Output<Integer> measuredHeight) {
     measureVerticalScroll(
+        c,
         widthSpec,
         heightSpec,
         size,
@@ -141,6 +141,7 @@ public class VerticalScrollSpec {
     }
 
     measureVerticalScroll(
+        c,
         SizeSpec.makeSizeSpec(layout.getWidth(), EXACTLY),
         SizeSpec.makeSizeSpec(layout.getHeight(), EXACTLY),
         new Size(),
@@ -152,6 +153,7 @@ public class VerticalScrollSpec {
   }
 
   static void measureVerticalScroll(
+      ComponentContext c,
       int widthSpec,
       int heightSpec,
       Size size,
@@ -160,6 +162,15 @@ public class VerticalScrollSpec {
       boolean fillViewport,
       Output<Integer> contentWidth,
       Output<Integer> contentHeight) {
+    // If fillViewport is true, then set a minimum height to ensure that the viewport is filled.
+    if (fillViewport) {
+      childComponent =
+          Wrapper.create(c)
+              .delegate(childComponent)
+              .minHeightPx(SizeSpec.getSize(heightSpec))
+              .build();
+    }
+
     childComponentTree.setRootAndSizeSpec(
         childComponent, widthSpec, SizeSpec.makeSizeSpec(0, UNSPECIFIED), size);
 
@@ -168,29 +179,17 @@ public class VerticalScrollSpec {
 
     // Compute the appropriate size depending on the heightSpec
     switch (SizeSpec.getMode(heightSpec)) {
+      case EXACTLY:
         // If this Vertical scroll is being measured with a fixed height we don't care about
         // the size of the content and just use that instead
-      case EXACTLY:
-        if (fillViewport && size.height < SizeSpec.getSize(heightSpec)) {
-          // Remeasure with exact bounds to make sure that the child component fills the viewport.
-          childComponentTree.setSizeSpec(widthSpec, heightSpec);
-          contentHeight.set(SizeSpec.getSize(heightSpec));
-        }
-
         size.height = SizeSpec.getSize(heightSpec);
         break;
 
+      case AT_MOST:
         // For at most we want the VerticalScroll to be as big as its content up to the maximum
         // height specified in the heightSpec
-      case AT_MOST:
-        if (fillViewport && size.height < SizeSpec.getSize(heightSpec)) {
-          // Remeasure with exact bounds to make sure that the child component fills the viewport.
-          childComponentTree.setSizeSpec(
-              widthSpec, SizeSpec.makeSizeSpec(SizeSpec.getSize(heightSpec), EXACTLY));
-          contentHeight.set(SizeSpec.getSize(heightSpec));
-        }
-
         size.height = Math.min(SizeSpec.getSize(heightSpec), size.height);
+        break;
     }
   }
 
@@ -206,7 +205,6 @@ public class VerticalScrollSpec {
       @Prop(optional = true) boolean scrollbarEnabled,
       @Prop(optional = true) boolean scrollbarFadingEnabled,
       @Prop(optional = true) boolean nestedScrollingEnabled,
-      @Prop(optional = true) boolean fillViewport,
       @State ComponentTree childComponentTree,
       @State final ScrollPosition scrollPosition,
       @FromBoundsDefined Integer contentWidth,
@@ -214,7 +212,6 @@ public class VerticalScrollSpec {
     lithoScrollView.mount(childComponentTree, scrollPosition, contentWidth, contentHeight);
     lithoScrollView.setScrollbarFadingEnabled(scrollbarFadingEnabled);
     lithoScrollView.setNestedScrollingEnabled(nestedScrollingEnabled);
-    lithoScrollView.setFillViewport(fillViewport);
 
     // On older versions we need to disable the vertical scroll bar as otherwise we run into an NPE
     // that was only fixed in Lollipop - see
@@ -294,37 +291,6 @@ public class VerticalScrollSpec {
       mScrollPosition = null;
       getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
       mOnPreDrawListener = null;
-    }
-
-    /**
-     * Our {@link LithoView} needs to use these params in order to prevent the {@link
-     * LithoScrollView} from remeasuring internal content with wrap content, which causes
-     * fillViewport to fail to work.
-     */
-    private static final class LayoutParams extends FrameLayout.LayoutParams
-        implements LithoView.LayoutManagerOverrideParams {
-
-      private int mWidthMeasureSpec;
-      private int mHeightMeasureSpec;
-
-      public LayoutParams() {
-        super(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-      }
-
-      @Override
-      public int getWidthMeasureSpec() {
-        return mWidthMeasureSpec;
-      }
-
-      @Override
-      public int getHeightMeasureSpec() {
-        return mHeightMeasureSpec;
-      }
-
-      @Override
-      public boolean hasValidAdapterPosition() {
-        return false;
-      }
     }
   }
 
