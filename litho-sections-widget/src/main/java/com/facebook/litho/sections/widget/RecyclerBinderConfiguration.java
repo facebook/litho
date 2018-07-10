@@ -30,7 +30,7 @@ import java.util.List;
 public class RecyclerBinderConfiguration {
   private static final double DEFAULT_RANGE = 5.0;
   private final double mRangeRatio;
-  private final LayoutHandlerFactory mLayoutHandlerFactory;
+  @Nullable private final LayoutHandlerFactory mLayoutHandlerFactory;
   private final boolean mCanPrefetchDisplayLists;
   private final boolean mIsCircular;
   private boolean mHasDynamicItemHeight;
@@ -47,18 +47,21 @@ public class RecyclerBinderConfiguration {
     this(rangeRatio, null, false);
   }
 
-  public RecyclerBinderConfiguration(double rangeRatio, LayoutHandlerFactory idleExecutor) {
+  public RecyclerBinderConfiguration(
+      double rangeRatio, @Nullable LayoutHandlerFactory idleExecutor) {
     this(rangeRatio, idleExecutor, false);
   }
 
   public RecyclerBinderConfiguration(
-      double rangeRatio, LayoutHandlerFactory idleExecutor, boolean canPrefetchDisplayLists) {
+      double rangeRatio,
+      @Nullable LayoutHandlerFactory idleExecutor,
+      boolean canPrefetchDisplayLists) {
     this(rangeRatio, idleExecutor, canPrefetchDisplayLists, false);
   }
 
   public RecyclerBinderConfiguration(
       double rangeRatio,
-      LayoutHandlerFactory idleExecutor,
+      @Nullable LayoutHandlerFactory idleExecutor,
       boolean canPrefetchDisplayLists,
       boolean isCircular) {
     this(rangeRatio, idleExecutor, canPrefetchDisplayLists, isCircular, false);
@@ -85,7 +88,7 @@ public class RecyclerBinderConfiguration {
    */
   public RecyclerBinderConfiguration(
       double rangeRatio,
-      LayoutHandlerFactory idleExecutor,
+      @Nullable LayoutHandlerFactory idleExecutor,
       boolean canPrefetchDisplayLists,
       boolean isCircular,
       boolean isWrapContent) {
@@ -138,7 +141,7 @@ public class RecyclerBinderConfiguration {
     return mRangeRatio;
   }
 
-  public LayoutHandlerFactory getLayoutHandlerFactory() {
+  public @Nullable LayoutHandlerFactory getLayoutHandlerFactory() {
     return mLayoutHandlerFactory;
   }
 
