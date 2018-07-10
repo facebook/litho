@@ -35,7 +35,6 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Wrapper;
-import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBoundsDefined;
@@ -94,20 +93,10 @@ public class VerticalScrollSpec {
       @Prop Component childComponent,
       @Prop(optional = true) boolean fillViewport,
       @State ComponentTree childComponentTree,
-      Output<Integer> measuredContentWidth,
-      Output<Integer> measuredContentHeight,
       Output<Integer> measuredWidth,
       Output<Integer> measuredHeight) {
     measureVerticalScroll(
-        c,
-        widthSpec,
-        heightSpec,
-        size,
-        childComponentTree,
-        childComponent,
-        fillViewport,
-        measuredContentWidth,
-        measuredContentHeight);
+        c, widthSpec, heightSpec, size, childComponentTree, childComponent, fillViewport);
     measuredWidth.set(size.width);
     measuredHeight.set(size.height);
   }
@@ -119,10 +108,6 @@ public class VerticalScrollSpec {
       @Prop Component childComponent,
       @Prop(optional = true) boolean fillViewport,
       @State ComponentTree childComponentTree,
-      Output<Integer> contentWidth,
-      Output<Integer> contentHeight,
-      @FromMeasure Integer measuredContentWidth,
-      @FromMeasure Integer measuredContentHeight,
       @FromMeasure Integer measuredWidth,
       @FromMeasure Integer measuredHeight) {
 
@@ -135,8 +120,6 @@ public class VerticalScrollSpec {
         && (!fillViewport || (measuredHeight != null && measuredHeight == layoutHeight))) {
       // If we're not filling the viewport, then we always measure the height with unspecified, so
       // we just need to check that the width matches.
-      contentWidth.set(measuredContentWidth);
-      contentHeight.set(measuredContentHeight);
       return;
     }
 
@@ -147,9 +130,7 @@ public class VerticalScrollSpec {
         new Size(),
         childComponentTree,
         childComponent,
-        fillViewport,
-        contentWidth,
-        contentHeight);
+        fillViewport);
   }
 
   static void measureVerticalScroll(
@@ -159,9 +140,7 @@ public class VerticalScrollSpec {
       Size size,
       ComponentTree childComponentTree,
       Component childComponent,
-      boolean fillViewport,
-      Output<Integer> contentWidth,
-      Output<Integer> contentHeight) {
+      boolean fillViewport) {
     // If fillViewport is true, then set a minimum height to ensure that the viewport is filled.
     if (fillViewport) {
       childComponent =
@@ -173,9 +152,6 @@ public class VerticalScrollSpec {
 
     childComponentTree.setRootAndSizeSpec(
         childComponent, widthSpec, SizeSpec.makeSizeSpec(0, UNSPECIFIED), size);
-
-    contentWidth.set(size.width);
-    contentHeight.set(size.height);
 
     // Compute the appropriate size depending on the heightSpec
     switch (SizeSpec.getMode(heightSpec)) {
@@ -206,10 +182,8 @@ public class VerticalScrollSpec {
       @Prop(optional = true) boolean scrollbarFadingEnabled,
       @Prop(optional = true) boolean nestedScrollingEnabled,
       @State ComponentTree childComponentTree,
-      @State final ScrollPosition scrollPosition,
-      @FromBoundsDefined Integer contentWidth,
-      @FromBoundsDefined Integer contentHeight) {
-    lithoScrollView.mount(childComponentTree, scrollPosition, contentWidth, contentHeight);
+      @State final ScrollPosition scrollPosition) {
+    lithoScrollView.mount(childComponentTree, scrollPosition);
     lithoScrollView.setScrollbarFadingEnabled(scrollbarFadingEnabled);
     lithoScrollView.setNestedScrollingEnabled(nestedScrollingEnabled);
 
@@ -260,11 +234,7 @@ public class VerticalScrollSpec {
       }
     }
 
-    private void mount(
-        ComponentTree contentComponentTree,
-        final ScrollPosition scrollPosition,
-        int width,
-        int height) {
+    private void mount(ComponentTree contentComponentTree, final ScrollPosition scrollPosition) {
       mLithoView.setComponentTree(contentComponentTree);
 
       mScrollPosition = scrollPosition;
