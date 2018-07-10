@@ -19,7 +19,7 @@ package com.facebook.litho.sections;
 import android.util.SparseArray;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
-import com.facebook.litho.widget.OnDataBoundListener;
+import com.facebook.litho.widget.ChangeSetCompleteCallback;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import java.util.ArrayList;
@@ -142,8 +142,8 @@ class BatchedTarget implements SectionTree.Target {
   }
 
   @Override
-  public void notifyChangeSetComplete(OnDataBoundListener onDataBoundListener) {
-    mTarget.notifyChangeSetComplete(onDataBoundListener);
+  public void notifyChangeSetComplete(ChangeSetCompleteCallback changeSetCompleteCallback) {
+    mTarget.notifyChangeSetComplete(changeSetCompleteCallback);
   }
 
   @Override

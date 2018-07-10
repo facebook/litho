@@ -24,7 +24,7 @@ import com.facebook.litho.Size;
 import com.facebook.litho.sections.SectionTree.Target;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.widget.Binder;
-import com.facebook.litho.widget.OnDataBoundListener;
+import com.facebook.litho.widget.ChangeSetCompleteCallback;
 import com.facebook.litho.widget.ReMeasureEvent;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.RenderInfo;
@@ -140,8 +140,8 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   }
 
   @Override
-  public void notifyChangeSetComplete(OnDataBoundListener onDataBoundListener) {
-    mRecyclerBinder.notifyChangeSetComplete(onDataBoundListener);
+  public void notifyChangeSetComplete(ChangeSetCompleteCallback changeSetCompleteCallback) {
+    mRecyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback);
   }
 
   @Override

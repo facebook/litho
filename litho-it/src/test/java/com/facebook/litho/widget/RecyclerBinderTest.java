@@ -50,7 +50,6 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
@@ -84,8 +83,8 @@ import org.robolectric.shadows.ShadowLooper;
 @RunWith(ComponentsTestRunner.class)
 public class RecyclerBinderTest {
 
-  public static final OnDataBoundListener NO_OP_ON_DATA_BOUND_LISTENER =
-      new NoOpOnDataBoundListener();
+  public static final NoOpChangeSetCompleteCallback NO_OP_CHANGE_SET_COMPLETE_CALLBACK =
+      new NoOpChangeSetCompleteCallback();
 
   private static final float RANGE_RATIO = 2.0f;
   private static final int RANGE_SIZE = 3;
@@ -211,7 +210,7 @@ public class RecyclerBinderTest {
       components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
       mRecyclerBinder.insertItemAt(0, components.get(i));
     }
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     for (int i = 0; i < 100; i++) {
       Assert.assertNotNull(mHoldersForComponents.get(components.get(i).getComponent()));
@@ -225,7 +224,7 @@ public class RecyclerBinderTest {
       components.add(create().component(mock(Component.class)).build());
       mRecyclerBinder.appendItem(components.get(i));
     }
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     for (int i = 0; i < 100; i++) {
       assertThat(mHoldersForComponents.get(components.get(i).getComponent())).isNotNull();
@@ -240,7 +239,7 @@ public class RecyclerBinderTest {
       components.add(create().component(mock(Component.class)).build());
       mRecyclerBinder.insertItemAt(i, components.get(i));
     }
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     for (int i = 0; i < 100; i++) {
       assertThat(mHoldersForComponents.get(components.get(i).getComponent())).isNotNull();
@@ -521,7 +520,7 @@ public class RecyclerBinderTest {
 
       mRecyclerBinder.insertItemAt(i, components.get(i));
     }
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     when(mLayoutInfo.getChildWidthSpec(anyInt(), any(RenderInfo.class)))
         .thenAnswer(new Answer<Integer>() {
@@ -580,7 +579,7 @@ public class RecyclerBinderTest {
       components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
       mRecyclerBinder.insertItemAt(i, components.get(i));
     }
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     for (int i = 0; i < 100; i++) {
       Assert.assertNotNull(mHoldersForComponents.get(components.get(i).getComponent()));
@@ -638,7 +637,7 @@ public class RecyclerBinderTest {
       components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
       mRecyclerBinder.insertItemAt(i, components.get(i));
     }
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     verify(recyclerView).removeCallbacks(mRecyclerBinder.mRemeasureRunnable);
     verify(recyclerView).postOnAnimation(mRecyclerBinder.mRemeasureRunnable);
@@ -661,7 +660,7 @@ public class RecyclerBinderTest {
       components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
     }
     mRecyclerBinder.insertRangeAt(0, components);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     verify(recyclerView).removeCallbacks(mRecyclerBinder.mRemeasureRunnable);
     verify(recyclerView).postOnAnimation(mRecyclerBinder.mRemeasureRunnable);
@@ -684,7 +683,7 @@ public class RecyclerBinderTest {
       components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
     }
     mRecyclerBinder.insertRangeAt(0, components);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     reset(recyclerView);
 
@@ -692,7 +691,7 @@ public class RecyclerBinderTest {
       mRecyclerBinder.updateItemAt(
           i, ComponentRenderInfo.create().component(mock(Component.class)).build());
     }
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     verify(recyclerView).removeCallbacks(mRecyclerBinder.mRemeasureRunnable);
     verify(recyclerView).postOnAnimation(mRecyclerBinder.mRemeasureRunnable);
@@ -719,12 +718,12 @@ public class RecyclerBinderTest {
       updatedComponents.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
     }
     mRecyclerBinder.insertRangeAt(0, components);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     reset(recyclerView);
 
     mRecyclerBinder.updateRangeAt(0, updatedComponents);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     verify(recyclerView).removeCallbacks(mRecyclerBinder.mRemeasureRunnable);
     verify(recyclerView).postOnAnimation(mRecyclerBinder.mRemeasureRunnable);
@@ -747,7 +746,7 @@ public class RecyclerBinderTest {
         components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
         mRecyclerBinder.insertItemAt(i, components.get(i));
       }
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     verify(recyclerView, never()).removeCallbacks(mRecyclerBinder.mRemeasureRunnable);
     verify(recyclerView, never()).postOnAnimation(mRecyclerBinder.mRemeasureRunnable);
@@ -760,7 +759,7 @@ public class RecyclerBinderTest {
       components.add(create().component(mock(Component.class)).build());
       mRecyclerBinder.insertItemAt(i, components.get(i));
     }
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     for (int i = 0; i < 2; i++) {
       assertThat(mHoldersForComponents.get(components.get(i).getComponent())).isNotNull();
@@ -922,7 +921,7 @@ public class RecyclerBinderTest {
   public void testMoveItemOutsideFromRange() {
     final List<ComponentRenderInfo> components = prepareLoadedBinder();
     mRecyclerBinder.moveItem(0, 99);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     final TestComponentTreeHolder movedHolder =
         mHoldersForComponents.get(components.get(0).getComponent());
@@ -944,7 +943,7 @@ public class RecyclerBinderTest {
   public void testMoveItemInsideRange() {
     final List<ComponentRenderInfo> components = prepareLoadedBinder();
     mRecyclerBinder.moveItem(99, 4);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     TestComponentTreeHolder movedHolder =
         mHoldersForComponents.get(components.get(99).getComponent());
@@ -966,7 +965,7 @@ public class RecyclerBinderTest {
   public void testMoveItemInsideVisibleRange() {
     final List<ComponentRenderInfo> components = prepareLoadedBinder();
     mRecyclerBinder.moveItem(99, 2);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     final TestComponentTreeHolder movedHolder =
         mHoldersForComponents.get(components.get(99).getComponent());
@@ -990,7 +989,7 @@ public class RecyclerBinderTest {
   public void testMoveItemOutsideRange() {
     final List<ComponentRenderInfo> components = prepareLoadedBinder();
     mRecyclerBinder.moveItem(2, 99);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     final TestComponentTreeHolder movedHolder =
         mHoldersForComponents.get(components.get(2).getComponent());
@@ -1027,7 +1026,7 @@ public class RecyclerBinderTest {
     movedHolderTwo.mDidAcquireStateHandler = false;
 
     mRecyclerBinder.moveItem(0, 1);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(movedHolderOne.isTreeValid()).isTrue();
     assertThat(movedHolderOne.mLayoutAsyncCalled).isFalse();
@@ -1047,7 +1046,7 @@ public class RecyclerBinderTest {
         create().component(mock(Component.class)).build();
 
     mRecyclerBinder.insertItemAt(1, newRenderInfo);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     final TestComponentTreeHolder holder =
         mHoldersForComponents.get(newRenderInfo.getComponent());
 
@@ -1090,7 +1089,7 @@ public class RecyclerBinderTest {
     int removeRangeSize = rangeSize;
     // Remove above the visible range
     mRecyclerBinder.removeRangeAt(0, removeRangeSize);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(mRecyclerBinder.mViewportManager.shouldUpdate()).isTrue();
 
@@ -1116,7 +1115,7 @@ public class RecyclerBinderTest {
     int removeRangeSize = rangeSize;
     // Remove below the visible range
     mRecyclerBinder.removeRangeAt(lastVisible + 1, removeRangeSize);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(mRecyclerBinder.mViewportManager.shouldUpdate()).isFalse();
 
@@ -1132,7 +1131,7 @@ public class RecyclerBinderTest {
         create().component(mock(Component.class)).build();
 
     mRecyclerBinder.insertItemAt(RANGE_SIZE + 1, newRenderInfo);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     final TestComponentTreeHolder holder =
         mHoldersForComponents.get(newRenderInfo.getComponent());
 
@@ -1162,7 +1161,7 @@ public class RecyclerBinderTest {
     }
 
     mRecyclerBinder.insertRangeAt(0, newComponents);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     // The new elements were scheduled for layout.
     for (int i = 0; i < 3; i++) {
@@ -1195,7 +1194,7 @@ public class RecyclerBinderTest {
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
     mRecyclerBinder.insertItemAt(rangeTotal + 1, newRenderInfo);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     final TestComponentTreeHolder holder =
         mHoldersForComponents.get(newRenderInfo.getComponent());
@@ -1212,7 +1211,7 @@ public class RecyclerBinderTest {
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
     mRecyclerBinder.removeItemAt(rangeTotal + 1);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     final TestComponentTreeHolder holder =
         mHoldersForComponents.get(components.get(rangeTotal + 1).getComponent());
@@ -1225,7 +1224,7 @@ public class RecyclerBinderTest {
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
     mRecyclerBinder.removeItemAt(rangeTotal);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     final TestComponentTreeHolder holder =
         mHoldersForComponents.get(components.get(rangeTotal).getComponent());
@@ -1245,7 +1244,7 @@ public class RecyclerBinderTest {
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
     mRecyclerBinder.removeRangeAt(0, RANGE_SIZE);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     // The elements that were removed have been released.
     for (int i = 0; i < RANGE_SIZE; i++) {
@@ -1278,7 +1277,7 @@ public class RecyclerBinderTest {
     final ComponentRenderInfo newRenderInfo =
         create().component(mock(Component.class)).build();
     mRecyclerBinder.updateItemAt(0, newRenderInfo);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(newRenderInfo).isEqualTo(holder.getRenderInfo());
     assertThat(holder.isTreeValid()).isTrue();
@@ -1302,7 +1301,7 @@ public class RecyclerBinderTest {
           ComponentRenderInfo.create().component(mock(Component.class)).build());
     }
     mRecyclerBinder.updateRangeAt(0, newInfos);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     for (int i = 0; i < RANGE_SIZE; i++) {
       final TestComponentTreeHolder holder =
@@ -1387,7 +1386,7 @@ public class RecyclerBinderTest {
             .viewBinder(new SimpleViewBinder())
             .viewCreator(VIEW_CREATOR_1)
             .build());
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size())
         .isEqualTo(1);
@@ -1400,7 +1399,7 @@ public class RecyclerBinderTest {
             .viewBinder(new SimpleViewBinder())
             .viewCreator(VIEW_CREATOR_2)
             .build());
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size())
         .isEqualTo(2);
@@ -1409,7 +1408,7 @@ public class RecyclerBinderTest {
 
     mRecyclerBinder.removeItemAt(1);
     mRecyclerBinder.removeItemAt(1);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size())
         .isEqualTo(2);
@@ -1433,7 +1432,7 @@ public class RecyclerBinderTest {
             .viewBinder(new SimpleViewBinder())
             .viewCreator(VIEW_CREATOR_2)
             .build());
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size())
         .isEqualTo(2);
@@ -1446,7 +1445,7 @@ public class RecyclerBinderTest {
             .viewBinder(new SimpleViewBinder())
             .viewCreator(VIEW_CREATOR_2)
             .build());
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size())
         .isEqualTo(2);
@@ -1459,7 +1458,7 @@ public class RecyclerBinderTest {
             .viewCreator(VIEW_CREATOR_3)
             .viewBinder(new SimpleViewBinder())
             .build());
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size())
         .isEqualTo(3);
@@ -1481,7 +1480,7 @@ public class RecyclerBinderTest {
             .viewCreator(VIEW_CREATOR_1)
             .customViewType(10)
             .build());
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size())
         .isEqualTo(1);
@@ -1500,7 +1499,7 @@ public class RecyclerBinderTest {
             .viewBinder(new SimpleViewBinder())
             .viewCreator(VIEW_CREATOR_1)
             .build());
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
   }
 
   @Test(expected = IllegalStateException.class)
@@ -1516,7 +1515,7 @@ public class RecyclerBinderTest {
             .viewCreator(VIEW_CREATOR_1)
             .customViewType(10)
             .build());
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
   }
 
   @Test(expected = IllegalStateException.class)
@@ -1533,7 +1532,7 @@ public class RecyclerBinderTest {
             .viewCreator(VIEW_CREATOR_1)
             .customViewType(2)
             .build());
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
   }
 
   @Test
@@ -1551,7 +1550,7 @@ public class RecyclerBinderTest {
 
     mRecyclerBinder.insertItemAt(
         0, ViewRenderInfo.create().viewBinder(viewBinder).viewCreator(viewCreator).build());
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     mRecyclerBinder.mount(recyclerView);
 
@@ -1579,7 +1578,7 @@ public class RecyclerBinderTest {
           i,
           create().component(mock(Component.class)).build());
     }
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
   }
 
   @Test
@@ -1617,7 +1616,7 @@ public class RecyclerBinderTest {
 
     mRecyclerBinder.insertItemAt(
         1, ComponentRenderInfo.create().component(mock(Component.class)).build());
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(mRecyclerBinder.getRangeCalculationResult()).isNotNull();
   }
@@ -1637,7 +1636,7 @@ public class RecyclerBinderTest {
 
     mRecyclerBinder.updateItemAt(
         1, ComponentRenderInfo.create().component(mock(Component.class)).build());
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(mRecyclerBinder.getRangeCalculationResult()).isNotNull();
   }
@@ -1659,7 +1658,7 @@ public class RecyclerBinderTest {
     renderInfos.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
     renderInfos.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
     mRecyclerBinder.insertRangeAt(0, renderInfos);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(mRecyclerBinder.getRangeCalculationResult()).isNotNull();
   }
@@ -1681,7 +1680,7 @@ public class RecyclerBinderTest {
     renderInfos.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
     renderInfos.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
     mRecyclerBinder.updateRangeAt(0, renderInfos);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(mRecyclerBinder.getRangeCalculationResult()).isNotNull();
   }
@@ -1696,13 +1695,13 @@ public class RecyclerBinderTest {
               .viewCreator(VIEW_CREATOR_1)
               .build());
     }
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(mRecyclerBinder.getRangeCalculationResult()).isNull();
 
     mRecyclerBinder.insertItemAt(
         1, ComponentRenderInfo.create().component(mock(Component.class)).build());
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(mRecyclerBinder.getRangeCalculationResult()).isNull();
 
@@ -1732,7 +1731,7 @@ public class RecyclerBinderTest {
       renderInfos.add(renderInfo);
       mRecyclerBinder.insertItemAt(i, renderInfos.get(i));
     }
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     Size size = new Size();
     int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
@@ -1751,7 +1750,7 @@ public class RecyclerBinderTest {
     }
 
     mCircularRecyclerBinder.insertRangeAt(0, renderInfos);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     Assert.assertEquals(Integer.MAX_VALUE, mCircularRecyclerBinder.getItemCount());
   }
@@ -1760,7 +1759,7 @@ public class RecyclerBinderTest {
   public void testCircularRecyclerItemCountWithOneItem() {
     mCircularRecyclerBinder.insertItemAt(
         0, ComponentRenderInfo.create().component(mock(Component.class)).build());
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     Assert.assertEquals(Integer.MAX_VALUE, mCircularRecyclerBinder.getItemCount());
   }
@@ -1825,7 +1824,7 @@ public class RecyclerBinderTest {
       components.add(ComponentRenderInfo.create().component(component).build());
     }
     recyclerBinder.insertRangeAt(0, components);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     RecyclerView rv = new RecyclerView(RuntimeEnvironment.application);
     recyclerBinder.mount(rv);
@@ -1868,7 +1867,7 @@ public class RecyclerBinderTest {
       components.add(ComponentRenderInfo.create().component(component).build());
     }
     recyclerBinder.insertRangeAt(0, components);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     RecyclerView rv = new RecyclerView(RuntimeEnvironment.application);
     recyclerBinder.mount(rv);
@@ -1902,14 +1901,14 @@ public class RecyclerBinderTest {
       components.add(ComponentRenderInfo.create().component(component).build());
     }
     recyclerBinder.insertRangeAt(0, components);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     RecyclerView rv = mock(RecyclerView.class);
     recyclerBinder.mount(rv);
 
     recyclerBinder.updateItemAt(
         0, TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build());
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     verify(adapter, never()).notifyItemChanged(anyInt());
     verify(adapter, never()).notifyItemRangeChanged(anyInt(), anyInt());
@@ -1920,7 +1919,7 @@ public class RecyclerBinderTest {
             .viewCreator(VIEW_CREATOR_1)
             .viewBinder(new SimpleViewBinder())
             .build());
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     verify(adapter, times(1)).notifyItemChanged(0);
   }
 
@@ -1943,7 +1942,7 @@ public class RecyclerBinderTest {
       components.add(ComponentRenderInfo.create().component(component).build());
     }
     recyclerBinder.insertRangeAt(0, components);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     RecyclerView rv = mock(RecyclerView.class);
     recyclerBinder.mount(rv);
@@ -1961,7 +1960,7 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.updateRangeAt(0, newComponents);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     verify(adapter, never()).notifyItemChanged(anyInt());
     verify(adapter, never()).notifyItemRangeChanged(anyInt(), anyInt());
@@ -1976,7 +1975,7 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.updateRangeAt(0, newViews);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     for (int i = 0; i < NUM_ITEMS; i++) {
       verify(adapter, times(1)).notifyItemChanged(i);
@@ -2020,7 +2019,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
@@ -2048,7 +2047,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
@@ -2064,7 +2063,7 @@ public class RecyclerBinderTest {
         ComponentRenderInfo.create().component(component2).build();
 
     recyclerBinder.insertItemAtAsync(0, renderInfo2);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
@@ -2095,7 +2094,7 @@ public class RecyclerBinderTest {
         ComponentRenderInfo.create().component(component).build();
 
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
@@ -2134,7 +2133,7 @@ public class RecyclerBinderTest {
         mock(EventHandler.class));
 
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
@@ -2169,7 +2168,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(500, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
@@ -2203,7 +2202,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(500, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -2235,7 +2234,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
@@ -2268,7 +2267,7 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
@@ -2302,7 +2301,7 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
@@ -2344,7 +2343,7 @@ public class RecyclerBinderTest {
   public void testThrowsIfSyncInsertAfterAsyncInsert() {
     mRecyclerBinder.insertItemAtAsync(0, createTestComponentRenderInfo());
     mRecyclerBinder.insertItemAt(1, createTestComponentRenderInfo());
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
   }
 
   @Test(expected = RuntimeException.class)
@@ -2358,7 +2357,7 @@ public class RecyclerBinderTest {
 
     mRecyclerBinder.insertRangeAtAsync(0, firstInsert);
     mRecyclerBinder.insertRangeAt(firstInsert.size(), secondInsert);
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
   }
 
   @Test
@@ -2378,7 +2377,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
@@ -2416,14 +2415,14 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
 
     recyclerBinder.removeItemAtAsync(0);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
@@ -2447,7 +2446,7 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(0));
     recyclerBinder.insertItemAtAsync(1, renderInfos.get(1));
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
@@ -2455,7 +2454,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(2));
     recyclerBinder.removeItemAtAsync(0);
     recyclerBinder.insertItemAtAsync(2, renderInfos.get(3));
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(3);
@@ -2480,13 +2479,13 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(4);
 
     recyclerBinder.moveItemAsync(0, 2);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(4);
@@ -2513,7 +2512,7 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(0));
     recyclerBinder.insertItemAtAsync(1, renderInfos.get(1));
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
@@ -2521,7 +2520,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(2));
     recyclerBinder.moveItemAsync(0, 1);
     recyclerBinder.insertItemAtAsync(2, renderInfos.get(3));
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(4);
@@ -2542,7 +2541,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final ComponentRenderInfo newRenderInfo =
@@ -2551,7 +2550,7 @@ public class RecyclerBinderTest {
                 TestDrawableComponent.create(mComponentContext).widthPx(50).heightPx(50).build())
             .build();
     recyclerBinder.updateItemAtAsync(0, newRenderInfo);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     verify(adapter, never()).notifyItemChanged(anyInt());
 
@@ -2573,7 +2572,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
 
@@ -2583,7 +2582,7 @@ public class RecyclerBinderTest {
                 TestDrawableComponent.create(mComponentContext).widthPx(50).heightPx(50).build())
             .build();
     recyclerBinder.updateItemAtAsync(0, newRenderInfo);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     verify(adapter, never()).notifyItemChanged(anyInt());
@@ -2613,7 +2612,7 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(0));
     recyclerBinder.insertItemAtAsync(1, renderInfos.get(1));
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
@@ -2633,7 +2632,7 @@ public class RecyclerBinderTest {
     recyclerBinder.updateItemAtAsync(0, newRenderInfo0);
     recyclerBinder.insertItemAtAsync(2, renderInfos.get(3));
     recyclerBinder.updateItemAtAsync(1, newRenderInfo1);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(4);
@@ -2660,7 +2659,7 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(0));
     recyclerBinder.insertItemAtAsync(1, renderInfos.get(1));
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
@@ -2689,7 +2688,7 @@ public class RecyclerBinderTest {
     recyclerBinder.updateItemAtAsync(1, newRenderInfo1);
     recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(4, renderInfos.size()));
     recyclerBinder.updateItemAtAsync(2, newRenderInfo2);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(6);
@@ -2712,7 +2711,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final RenderInfo newRenderInfo =
@@ -2721,7 +2720,7 @@ public class RecyclerBinderTest {
             .viewCreator(VIEW_CREATOR_1)
             .build();
     recyclerBinder.updateItemAtAsync(0, newRenderInfo);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     verify(adapter).notifyItemChanged(0);
 
@@ -2743,7 +2742,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final ComponentRenderInfo newRenderInfo =
@@ -2752,7 +2751,7 @@ public class RecyclerBinderTest {
                 TestDrawableComponent.create(mComponentContext).widthPx(50).heightPx(50).build())
             .build();
     recyclerBinder.updateItemAtAsync(0, newRenderInfo);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     verify(adapter).notifyItemChanged(0);
 
@@ -2774,7 +2773,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     final RenderInfo newRenderInfo =
         ViewRenderInfo.create()
@@ -2782,7 +2781,7 @@ public class RecyclerBinderTest {
             .viewCreator(VIEW_CREATOR_1)
             .build();
     recyclerBinder.updateItemAtAsync(0, newRenderInfo);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
 
@@ -2811,7 +2810,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(0, 5));
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(5);
@@ -2828,7 +2827,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(5));
     recyclerBinder.updateRangeAtAsync(0, newRenderInfos);
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(6));
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(7);
@@ -2857,7 +2856,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(0, 5));
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(5);
@@ -2865,7 +2864,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(5));
     recyclerBinder.removeRangeAtAsync(0, 3);
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(6));
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(4);
@@ -2890,7 +2889,7 @@ public class RecyclerBinderTest {
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(0, 3));
     recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(3, renderInfos.size()));
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
@@ -2928,7 +2927,7 @@ public class RecyclerBinderTest {
     recyclerBinder.removeRangeAtAsync(1, 3);
     recyclerBinder.updateItemAtAsync(
         3, ComponentRenderInfo.create().component(updatedIndex3).build());
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
@@ -2961,7 +2960,7 @@ public class RecyclerBinderTest {
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
     recyclerBinder.clearAsync();
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -2983,7 +2982,7 @@ public class RecyclerBinderTest {
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
     recyclerBinder.clearAsync();
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -3010,7 +3009,7 @@ public class RecyclerBinderTest {
             .build();
 
     recyclerBinder.insertItemAt(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
     assertThat(holder.getRenderState()).isEqualTo(ComponentTreeHolder.RENDER_UNINITIALIZED);
@@ -3023,8 +3022,10 @@ public class RecyclerBinderTest {
 
   @Test
   public void testOnDataBound() {
-    final OnDataBoundListener onDataBoundListener1 = mock(OnDataBoundListener.class);
-    final OnDataBoundListener onDataBoundListener2 = mock(OnDataBoundListener.class);
+    final ChangeSetCompleteCallback changeSetCompleteCallback1 =
+        mock(ChangeSetCompleteCallback.class);
+    final ChangeSetCompleteCallback changeSetCompleteCallback2 =
+        mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos1 = new ArrayList<>();
@@ -3037,25 +3038,27 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.insertRangeAt(0, renderInfos1);
-    recyclerBinder.notifyChangeSetComplete(onDataBoundListener1);
+    recyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback1);
 
-    verify(onDataBoundListener1).onDataBound();
-    reset(onDataBoundListener1);
+    verify(changeSetCompleteCallback1).onDataBound();
+    reset(changeSetCompleteCallback1);
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(200, EXACTLY), makeSizeSpec(200, EXACTLY), null);
 
     recyclerBinder.insertRangeAt(renderInfos1.size(), renderInfos2);
-    recyclerBinder.notifyChangeSetComplete(onDataBoundListener2);
+    recyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback2);
 
-    verify(onDataBoundListener1, never()).onDataBound();
-    verify(onDataBoundListener2).onDataBound();
+    verify(changeSetCompleteCallback1, never()).onDataBound();
+    verify(changeSetCompleteCallback2).onDataBound();
   }
 
   @Test
   public void testOnDataBoundInsertAsync() {
-    final OnDataBoundListener onDataBoundListener1 = mock(OnDataBoundListener.class);
-    final OnDataBoundListener onDataBoundListener2 = mock(OnDataBoundListener.class);
+    final ChangeSetCompleteCallback changeSetCompleteCallback1 =
+        mock(ChangeSetCompleteCallback.class);
+    final ChangeSetCompleteCallback changeSetCompleteCallback2 =
+        mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos1 = new ArrayList<>();
@@ -3068,36 +3071,37 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos1);
-    recyclerBinder.notifyChangeSetComplete(onDataBoundListener1);
+    recyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback1);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
-    verify(onDataBoundListener1, never()).onDataBound();
+    verify(changeSetCompleteCallback1, never()).onDataBound();
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(200, EXACTLY), makeSizeSpec(200, EXACTLY), null);
 
-    verify(onDataBoundListener1, never()).onDataBound();
+    verify(changeSetCompleteCallback1, never()).onDataBound();
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
-    verify(onDataBoundListener1).onDataBound();
-    reset(onDataBoundListener1);
+    verify(changeSetCompleteCallback1).onDataBound();
+    reset(changeSetCompleteCallback1);
 
     recyclerBinder.insertRangeAtAsync(renderInfos1.size(), renderInfos2);
-    recyclerBinder.notifyChangeSetComplete(onDataBoundListener2);
+    recyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback2);
 
-    verify(onDataBoundListener2, never()).onDataBound();
+    verify(changeSetCompleteCallback2, never()).onDataBound();
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
-    verify(onDataBoundListener1, never()).onDataBound();
-    verify(onDataBoundListener2).onDataBound();
+    verify(changeSetCompleteCallback1, never()).onDataBound();
+    verify(changeSetCompleteCallback2).onDataBound();
   }
 
   @Test
   public void testOnDataBoundInsertAsyncLessThanViewport() {
-    final OnDataBoundListener onDataBoundListener = mock(OnDataBoundListener.class);
+    final ChangeSetCompleteCallback changeSetCompleteCallback =
+        mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
@@ -3108,14 +3112,14 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(onDataBoundListener);
+    recyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback);
 
-    verify(onDataBoundListener, never()).onDataBound();
+    verify(changeSetCompleteCallback, never()).onDataBound();
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
-    verify(onDataBoundListener).onDataBound();
+    verify(changeSetCompleteCallback).onDataBound();
   }
 
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
@@ -3136,7 +3140,7 @@ public class RecyclerBinderTest {
       components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
     }
     binder.insertRangeAt(0, (List) components);
-    binder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    binder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     for (int i = 0; i < count; i++) {
       Assert.assertNotNull(mHoldersForComponents.get(components.get(i).getComponent()));
@@ -3157,7 +3161,7 @@ public class RecyclerBinderTest {
         ComponentRenderInfo.create().component(mock(Component.class)).isSticky(true).build());
     mRecyclerBinder.removeItemAt(i);
     mRecyclerBinder.insertItemAt(i, components.get(i));
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
   }
 
   private RenderInfo createTestComponentRenderInfo() {
@@ -3182,9 +3186,12 @@ public class RecyclerBinderTest {
     assertThat(holder.getRenderInfo().getComponent()).isSameAs(component);
   }
 
-  private static class NoOpOnDataBoundListener implements OnDataBoundListener {
+  private static class NoOpChangeSetCompleteCallback implements ChangeSetCompleteCallback {
 
     @Override
     public void onDataBound() {}
+
+    @Override
+    public void onDataRendered() {}
   }
 }

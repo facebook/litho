@@ -16,10 +16,15 @@
 package com.facebook.litho.widget;
 
 /**
- * A listener invoked when the data for a section has been dispatched to the underlying
+ * A callback invoked when the data for a section has been dispatched to the underlying
  * RecyclerView. This can happen after setRoot is called because the setRoot may be async, or we may
  * wait for layouts to complete before inserting into the adapter.
  */
-public interface OnDataBoundListener {
+public interface ChangeSetCompleteCallback {
+
+  /** A callback invoked when the data for a section has changed to the underlying RecyclerView. */
   void onDataBound();
+
+  /** A callback invoked when the data for a section has rendered to the underlying RecyclerView. */
+  void onDataRendered();
 }

@@ -75,9 +75,14 @@ public class RecyclerBinderOperationExecutor implements OperationExecutor {
     }
 
     mRecyclerBinder.notifyChangeSetComplete(
-        new OnDataBoundListener() {
+        new ChangeSetCompleteCallback() {
           @Override
           public void onDataBound() {
+            // Do nothing.
+          }
+
+          @Override
+          public void onDataRendered() {
             // Do nothing.
           }
         });

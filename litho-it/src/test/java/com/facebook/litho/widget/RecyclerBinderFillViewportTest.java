@@ -18,7 +18,7 @@ package com.facebook.litho.widget;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
-import static com.facebook.litho.widget.RecyclerBinderTest.NO_OP_ON_DATA_BOUND_LISTENER;
+import static com.facebook.litho.widget.RecyclerBinderTest.NO_OP_CHANGE_SET_COMPLETE_CALLBACK;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -499,7 +499,7 @@ public class RecyclerBinderFillViewportTest {
                       .build())
               .build());
     }
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
@@ -818,7 +818,7 @@ public class RecyclerBinderFillViewportTest {
                       .build())
               .build());
     }
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
@@ -871,6 +871,6 @@ public class RecyclerBinderFillViewportTest {
                       .build())
               .build());
     }
-    recyclerBinder.notifyChangeSetComplete(NO_OP_ON_DATA_BOUND_LISTENER);
+    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
   }
 }

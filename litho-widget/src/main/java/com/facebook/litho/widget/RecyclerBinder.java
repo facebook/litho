@@ -847,7 +847,7 @@ public class RecyclerBinder
       }
     }
 
-    batch.mOnDataBoundListener.onDataBound();
+    batch.mChangeSetCompleteCallback.onDataBound();
   }
 
   @GuardedBy("this")
@@ -1298,7 +1298,7 @@ public class RecyclerBinder
    * Called after all the change set operations (inserts, removes, etc.) in a batch have completed.
    */
   @UiThread
-  public void notifyChangeSetComplete(OnDataBoundListener onDataBoundListener) {
+  public void notifyChangeSetComplete(ChangeSetCompleteCallback changeSetCompleteCallback) {
     ThreadUtils.assertMainThread();
 
     if (SectionsDebug.ENABLED) {
@@ -1306,16 +1306,16 @@ public class RecyclerBinder
     }
 
     if (!mHasAsyncOperations) {
-      onDataBoundListener.onDataBound();
+      changeSetCompleteCallback.onDataBound();
     } else {
-      closeCurrentBatch(onDataBoundListener);
+      closeCurrentBatch(changeSetCompleteCallback);
       applyReadyBatches();
     }
 
     maybeUpdateRangeOrRemeasureForMutation();
   }
 
-  private synchronized void closeCurrentBatch(OnDataBoundListener onDataBoundListener) {
+  private synchronized void closeCurrentBatch(ChangeSetCompleteCallback changeSetCompleteCallback) {
     if (mCurrentBatch == null) {
       // We create a batch here even if it doesn't have any operations: this is so we can still
       // invoke the OnDataBoundListener at the appropriate time (after all preceding batches
@@ -1323,7 +1323,7 @@ public class RecyclerBinder
       mCurrentBatch = new AsyncBatch();
     }
 
-    mCurrentBatch.mOnDataBoundListener = onDataBoundListener;
+    mCurrentBatch.mChangeSetCompleteCallback = changeSetCompleteCallback;
     mAsyncBatches.addLast(mCurrentBatch);
     mCurrentBatch = null;
   }
@@ -2686,7 +2686,7 @@ public class RecyclerBinder
   private static final class AsyncBatch {
 
     private final ArrayList<AsyncOperation> mOperations = new ArrayList<>();
-    private @Nullable OnDataBoundListener mOnDataBoundListener;
+    private ChangeSetCompleteCallback mChangeSetCompleteCallback;
   }
 
   private class RangeScrollListener extends RecyclerView.OnScrollListener {

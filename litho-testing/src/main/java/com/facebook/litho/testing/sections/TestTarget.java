@@ -17,7 +17,7 @@
 package com.facebook.litho.testing.sections;
 
 import com.facebook.litho.sections.SectionTree;
-import com.facebook.litho.widget.OnDataBoundListener;
+import com.facebook.litho.widget.ChangeSetCompleteCallback;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import java.util.ArrayList;
@@ -122,9 +122,9 @@ public class TestTarget implements SectionTree.Target {
   }
 
   @Override
-  public void notifyChangeSetComplete(OnDataBoundListener onDataBoundListener) {
+  public void notifyChangeSetComplete(ChangeSetCompleteCallback changeSetCompleteCallback) {
     mWasNotifyChangeSetCompleteCalled = true;
-    onDataBoundListener.onDataBound();
+    changeSetCompleteCallback.onDataBound();
   }
 
   @Override

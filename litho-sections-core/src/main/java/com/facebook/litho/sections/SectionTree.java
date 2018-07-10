@@ -49,7 +49,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
-import com.facebook.litho.widget.OnDataBoundListener;
+import com.facebook.litho.widget.ChangeSetCompleteCallback;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.SectionsDebug;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
@@ -119,7 +119,7 @@ public class SectionTree {
     void move(int fromPosition, int toPosition);
 
     /** Called when a changeset has finished being applied. */
-    void notifyChangeSetComplete(OnDataBoundListener onDataBoundListener);
+    void notifyChangeSetComplete(ChangeSetCompleteCallback changeSetCompleteCallback);
 
     /**
      * Request focus on the item with the given index.
@@ -429,6 +429,29 @@ public class SectionTree {
     final List<Section> children = section.getChildren();
     for (int i = 0, size = children.size(); i < size; i++) {
       dataBoundRecursive(children.get(i));
+    }
+  }
+
+  @UiThread
+  private void dataRendered(Section currentSection, boolean isDataChanged) {
+    ThreadUtils.assertMainThread();
+
+    if (currentSection != null) {
+      dataRenderedRecursive(currentSection, isDataChanged);
+    }
+  }
+
+  @UiThread
+  private void dataRenderedRecursive(Section section, boolean isDataChanged) {
+    section.dataRendered(section.getScopedContext(), isDataChanged);
+
+    if (section.isDiffSectionSpec()) {
+      return;
+    }
+
+    final List<Section> children = section.getChildren();
+    for (int i = 0, size = children.size(); i < size; i++) {
+      dataRenderedRecursive(children.get(i), isDataChanged);
     }
   }
 
@@ -1129,24 +1152,32 @@ public class SectionTree {
       }
     }
 
-    if (appliedChanges) {
-      mTarget.notifyChangeSetComplete(
-          new OnDataBoundListener() {
-            @Override
-            public void onDataBound() {
+    final boolean isDataChanged = appliedChanges;
+    mTarget.notifyChangeSetComplete(
+        new ChangeSetCompleteCallback() {
+          @Override
+          public void onDataBound() {
+            if (!isDataChanged) {
+              return;
+            }
+
+            if (isTracing) {
+              ComponentsSystrace.beginSection("dataBound");
+            }
+            try {
+              dataBound(currentSection);
+            } finally {
               if (isTracing) {
-                ComponentsSystrace.beginSection("dataBound");
-              }
-              try {
-                dataBound(currentSection);
-              } finally {
-                if (isTracing) {
-                  ComponentsSystrace.endSection();
-                }
+                ComponentsSystrace.endSection();
               }
             }
-          });
-    }
+          }
+
+          @Override
+          public void onDataRendered() {
+            dataRendered(currentSection, isDataChanged);
+          }
+        });
 
     if (mFocusDispatcher.isLoadingCompleted()) {
       mFocusDispatcher.waitForDataBound(false);

@@ -731,7 +731,8 @@ public class SectionTreeTest {
 
   private static void assertChangeSetNotSeen(TestTarget testTarget) {
     assertThat(testTarget.wereChangesHandled()).isFalse();
-    assertThat(testTarget.wasNotifyChangeSetCompleteCalled()).isFalse();
+    // TODO(T31375777): Remove mWasNotifyChangeSetCompleteCalled and refactor affected test cases.
+    // assertThat(testTarget.wasNotifyChangeSetCompleteCalled()).isFalse();
   }
 
   private static class StateUpdate implements SectionLifecycle.StateUpdate {
