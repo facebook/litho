@@ -27,6 +27,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SynchronizedTypefaceHelper {
   private static final AtomicBoolean sIsInitialized = new AtomicBoolean(false);
 
+  /**
+   * Android doesn't expect typeface operations to occur off of the UI thread. To partially
+   * alleviate this issue, we override the typeface cache with a synchronized version.
+   */
   public static void setupSynchronizedTypeface() {
     if (sIsInitialized.getAndSet(true)) {
       return;
