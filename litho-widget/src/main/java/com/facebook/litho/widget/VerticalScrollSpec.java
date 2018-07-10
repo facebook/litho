@@ -206,10 +206,14 @@ public class VerticalScrollSpec {
   static boolean shouldUpdate(
       @Prop Diff<Component> childComponent,
       @Prop(optional = true) Diff<Boolean> scrollbarEnabled,
-      @Prop(optional = true) Diff<Boolean> scrollbarFadingEnabled) {
+      @Prop(optional = true) Diff<Boolean> scrollbarFadingEnabled,
+      @Prop(optional = true) Diff<Boolean> fillViewport,
+      @Prop(optional = true) Diff<Boolean> nestedScrollingEnabled) {
     return !childComponent.getPrevious().isEquivalentTo(childComponent.getNext())
         || !scrollbarEnabled.getPrevious().equals(scrollbarEnabled.getNext())
-        || !scrollbarFadingEnabled.getPrevious().equals(scrollbarFadingEnabled.getNext());
+        || !scrollbarFadingEnabled.getPrevious().equals(scrollbarFadingEnabled.getNext())
+        || !fillViewport.getPrevious().equals(fillViewport.getNext())
+        || !nestedScrollingEnabled.getPrevious().equals(nestedScrollingEnabled.getNext());
   }
 
   static class LithoScrollView extends NestedScrollView {
