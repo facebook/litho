@@ -664,4 +664,42 @@ public class VisibilityEventsTest {
     lithoView.setHasTransientState(false);
     assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
   }
+
+  @Test
+  public void testRemovingComponentTriggersInvisible() {
+    final TestComponent content = create(mContext).build();
+    final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 1);
+    final EventHandler<InvisibleEvent> invisibleEventHandler = new EventHandler<>(content, 2);
+    final Component wrappedContent =
+        Wrapper.create(mContext)
+            .delegate(content)
+            .widthPx(10)
+            .heightPx(5)
+            .visibleHandler(visibleEventHandler)
+            .invisibleHandler(invisibleEventHandler)
+            .build();
+
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            mLithoView,
+            Column.create(mContext).child(wrappedContent).build(),
+            true,
+            10,
+            10);
+
+    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
+
+    content.getDispatchedEventHandlers().clear();
+
+    lithoView.setComponent(Column.create(mContext).build());
+    assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+
+    content.getDispatchedEventHandlers().clear();
+    lithoView.setComponent(Column.create(mContext).child(wrappedContent).build());
+    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
+  }
 }

@@ -556,6 +556,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           mVisibilityIdToItemMap.remove(visibilityOutputId);
           ComponentsPools.release(visibilityItem);
           visibilityItem = null;
+        } else {
+          // Processed, do not clear.
+          visibilityItem.setDoNotClearInThisPass(true);
         }
       }
 
@@ -568,6 +571,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
                   : null;
           visibilityItem =
               ComponentsPools.acquireVisibilityItem(globalKey, invisibleHandler, unfocusedHandler);
+          visibilityItem.setDoNotClearInThisPass(true);
           mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
 
           if (visibleHandler != null) {
@@ -615,6 +619,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         ComponentsSystrace.endSection();
       }
     }
+
+    clearVisibilityItems();
 
     if (isDoingPerfLog) {
       mMountStats.visibilityHandlersTotalTime = (System.nanoTime() - totalStartTime) / NS_IN_MS;
@@ -708,23 +714,28 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     for (int i = mVisibilityIdToItemMap.size() - 1; i >= 0; i--) {
       final VisibilityItem visibilityItem = mVisibilityIdToItemMap.valueAt(i);
-      final EventHandler<InvisibleEvent> invisibleHandler = visibilityItem.getInvisibleHandler();
-      final EventHandler<UnfocusedVisibleEvent> unfocusedHandler =
-          visibilityItem.getUnfocusedHandler();
+      if (visibilityItem.doNotClearInThisPass()) {
+        // This visibility item has already been accounted for in this pass, so ignore it.
+        visibilityItem.setDoNotClearInThisPass(false);
+      } else {
+        final EventHandler<InvisibleEvent> invisibleHandler = visibilityItem.getInvisibleHandler();
+        final EventHandler<UnfocusedVisibleEvent> unfocusedHandler =
+            visibilityItem.getUnfocusedHandler();
 
-      if (invisibleHandler != null) {
-        EventDispatcherUtils.dispatchOnInvisible(invisibleHandler);
-      }
-
-      if (visibilityItem.isInFocusedRange()) {
-        visibilityItem.setFocusedRange(false);
-        if (unfocusedHandler != null) {
-          EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
+        if (invisibleHandler != null) {
+          EventDispatcherUtils.dispatchOnInvisible(invisibleHandler);
         }
-      }
 
-      mVisibilityIdToItemMap.removeAt(i);
-      ComponentsPools.release(visibilityItem);
+        if (visibilityItem.isInFocusedRange()) {
+          visibilityItem.setFocusedRange(false);
+          if (unfocusedHandler != null) {
+            EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
+          }
+        }
+
+        mVisibilityIdToItemMap.removeAt(i);
+        ComponentsPools.release(visibilityItem);
+      }
     }
 
     if (isTracing) {

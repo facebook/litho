@@ -37,6 +37,7 @@ class VisibilityItem {
   // the corresponding event when unbind is called or when the MountState is reset.
   private EventHandler<InvisibleEvent> mInvisibleHandler;
   private EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
+  private boolean mDoNotClearInThisPass;
 
   public VisibilityItem() {
     mFlags = 0;
@@ -125,9 +126,18 @@ class VisibilityItem {
     }
   }
 
+  boolean doNotClearInThisPass() {
+    return mDoNotClearInThisPass;
+  }
+
+  void setDoNotClearInThisPass(boolean doNotClearInThisPass) {
+    mDoNotClearInThisPass = doNotClearInThisPass;
+  }
+
   void release() {
     mFlags = 0;
     mInvisibleHandler = null;
     mUnfocusedHandler = null;
+    mDoNotClearInThisPass = false;
   }
 }
