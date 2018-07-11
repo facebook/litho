@@ -295,7 +295,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
             ComponentsPools.release(rect);
           }
         } else if (!isMountable && isMounted) {
-          unmountItem(mContext, i, mHostsByMarker);
+          unmountItem(i, mHostsByMarker);
         } else if (isMounted) {
           if (mIsDirty) {
             final boolean useUpdateValueFromLayoutOutput =
@@ -1201,7 +1201,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       }
 
       if (newPosition == -1) {
-        unmountItem(mContext, i, mHostsByMarker);
+        unmountItem(i, mHostsByMarker);
         mPrepareMountStats.unmountedCount++;
       } else {
         final LayoutOutput newItem = newLayoutState.getMountableOutputAt(newPosition);
@@ -1218,7 +1218,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           // logically they represent different items.
           // If the item to unmount is a ComponentHost, all the children will be
           // recursively unmounted.
-          unmountItem(mContext, i, mHostsByMarker);
+          unmountItem(i, mHostsByMarker);
           mPrepareMountStats.unmountedCount++;
         } else if (newPosition != i) {
           // If a MountItem for this id exists and the hostMarker has not changed but its position
@@ -2168,7 +2168,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     unsetViewAttributes(item);
 
-    unbindAndUnmountLifecycle(context, item);
+    unbindAndUnmountLifecycle(item);
 
     if (item.getComponent().canMountIncrementally()) {
       final int index = mCanMountIncrementallyMountItems.indexOfValue(item);
@@ -2184,14 +2184,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return;
     }
     for (int i = mLayoutOutputsIds.length - 1; i >= 0; i--) {
-      unmountItem(mContext, i, mHostsByMarker);
+      unmountItem(i, mHostsByMarker);
     }
     mPreviousLocalVisibleRect.setEmpty();
     mNeedsRemount = true;
   }
 
   private void unmountItem(
-      ComponentContext context,
       int index,
       LongSparseArray<ComponentHost> hostsByMarker) {
     final MountItem item = getItemAt(index);
@@ -2219,7 +2218,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
         for (int mountIndex = mLayoutOutputsIds.length - 1; mountIndex >= 0; mountIndex--) {
           if (mLayoutOutputsIds[mountIndex] == layoutOutputId) {
-            unmountItem(context, mountIndex, hostsByMarker);
+            unmountItem(mountIndex, hostsByMarker);
             break;
           }
         }
@@ -2260,7 +2259,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       removeDisappearingMountContentFromComponentHost(componentHost);
     }
 
-    unbindAndUnmountLifecycle(context, item);
+    unbindAndUnmountLifecycle(item);
 
     final long layoutOutputId = mLayoutOutputsIds[index];
     mIndexToItemMap.remove(layoutOutputId);
@@ -2273,7 +2272,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       mCanMountIncrementallyMountItems.delete(mLayoutOutputsIds[index]);
     }
 
-    ComponentsPools.release(context, item);
+    ComponentsPools.release(mContext, item);
 
     if (mMountStats.isLoggingEnabled) {
       mMountStats.unmountedTimes.add((System.nanoTime() - startTime) / NS_IN_MS);
@@ -2283,10 +2282,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void unbindAndUnmountLifecycle(
-      ComponentContext context,
       MountItem item) {
     final Component component = item.getComponent();
     final Object content = item.getContent();
+    final ComponentContext context = getContextForComponent(component);
 
     // Call the component's unmount() method.
     if (item.isBound()) {
@@ -2324,7 +2323,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       host.unmountDisappearingItem(item);
       unsetViewAttributes(item);
 
-      unbindAndUnmountLifecycle(mContext, item);
+      unbindAndUnmountLifecycle(item);
 
       if (item.getComponent().canMountIncrementally()) {
         final int index = mCanMountIncrementallyMountItems.indexOfValue(item);
@@ -2786,7 +2785,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         final long id = layoutOutputBottoms.get(mPreviousBottomsIndex).getId();
         final int layoutOutputIndex = layoutState.getLayoutOutputPositionForId(id);
         if (!isAnimationLocked(layoutOutputIndex)) {
-          unmountItem(mContext, layoutOutputIndex, mHostsByMarker);
+          unmountItem(layoutOutputIndex, mHostsByMarker);
         }
         mPreviousBottomsIndex++;
       }
@@ -2832,7 +2831,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         final long id = layoutOutputTops.get(mPreviousTopsIndex).getId();
         final int layoutOutputIndex = layoutState.getLayoutOutputPositionForId(id);
         if (!isAnimationLocked(layoutOutputIndex)) {
-          unmountItem(mContext, layoutOutputIndex, mHostsByMarker);
+          unmountItem(layoutOutputIndex, mHostsByMarker);
         }
       }
     }
