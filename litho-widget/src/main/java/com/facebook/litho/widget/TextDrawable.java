@@ -463,7 +463,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
      * {@link Layout#getLineMax} includes leading margin and offers no way to subtract it, and
      * {@link Layout#getParagraphLeft} is naturally only accurate at the paragraph level.
      */
-    float start = mLayout.getPrimaryHorizontal(mLayout.getLineStart(line));
+    float start = getHorizontal(mLayout.getLineStart(line), line);
 
     float end;
     /**
@@ -483,8 +483,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       final float[] endWidth = new float[1];
       mLayout.getPaint().getTextWidths(mText, endOffset, endOffset + 1, endWidth);
       end =
-          mLayout.getPrimaryHorizontal(endOffset)
-              + (mLayout.isRtlCharAt(endOffset) ? -1 : 1) * endWidth[0];
+          getHorizontal(endOffset, line) + (mLayout.isRtlCharAt(endOffset) ? -1 : 1) * endWidth[0];
     }
 
     if (start > end) {
@@ -499,6 +498,17 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     }
 
     return mLayout.getOffsetForHorizontal(line, x);
+  }
+
+  /**
+   * {@link Layout#getPrimaryHorizontal} uses the paragraph direction, which is incorrect for
+   * characters that oppose the direction of the paragraph.
+   */
+  private float getHorizontal(int offset, int line) {
+    final boolean isRtlLine = mLayout.getParagraphDirection(line) == Layout.DIR_RIGHT_TO_LEFT;
+    return isRtlLine == mLayout.isRtlCharAt(offset)
+        ? mLayout.getPrimaryHorizontal(offset)
+        : mLayout.getSecondaryHorizontal(offset);
   }
 
   /**
