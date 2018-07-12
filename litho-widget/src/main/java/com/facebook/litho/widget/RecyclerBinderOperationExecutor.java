@@ -82,7 +82,7 @@ public class RecyclerBinderOperationExecutor implements OperationExecutor {
           }
 
           @Override
-          public void onDataRendered() {
+          public void onDataRendered(boolean isMounted) {
             // Do nothing.
           }
         });

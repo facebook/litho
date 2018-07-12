@@ -26,5 +26,5 @@ public interface ChangeSetCompleteCallback {
   void onDataBound();
 
   /** A callback invoked when the data for a section has rendered to the underlying RecyclerView. */
-  void onDataRendered();
+  void onDataRendered(boolean isMounted);
 }

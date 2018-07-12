@@ -131,6 +131,7 @@ public class FullGroupSectionSpec<T> implements TestTag {
   static void onDataRendered(
       SectionContext c,
       boolean isDataChanged,
+      boolean isMounted,
       @Prop int prop1,
       @State(canUpdateLazily = true) Object state2) {}
 }

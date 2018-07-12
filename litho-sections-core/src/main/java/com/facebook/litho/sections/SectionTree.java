@@ -433,17 +433,17 @@ public class SectionTree {
   }
 
   @UiThread
-  private void dataRendered(Section currentSection, boolean isDataChanged) {
+  private void dataRendered(Section currentSection, boolean isDataChanged, boolean isMounted) {
     ThreadUtils.assertMainThread();
 
     if (currentSection != null) {
-      dataRenderedRecursive(currentSection, isDataChanged);
+      dataRenderedRecursive(currentSection, isDataChanged, isMounted);
     }
   }
 
   @UiThread
-  private void dataRenderedRecursive(Section section, boolean isDataChanged) {
-    section.dataRendered(section.getScopedContext(), isDataChanged);
+  private void dataRenderedRecursive(Section section, boolean isDataChanged, boolean isMounted) {
+    section.dataRendered(section.getScopedContext(), isDataChanged, isMounted);
 
     if (section.isDiffSectionSpec()) {
       return;
@@ -451,7 +451,7 @@ public class SectionTree {
 
     final List<Section> children = section.getChildren();
     for (int i = 0, size = children.size(); i < size; i++) {
-      dataRenderedRecursive(children.get(i), isDataChanged);
+      dataRenderedRecursive(children.get(i), isDataChanged, isMounted);
     }
   }
 
@@ -1174,8 +1174,8 @@ public class SectionTree {
           }
 
           @Override
-          public void onDataRendered() {
-            dataRendered(currentSection, isDataChanged);
+          public void onDataRendered(boolean isMounted) {
+            dataRendered(currentSection, isDataChanged, isMounted);
           }
         });
 

@@ -68,7 +68,7 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
    * This method will delegate to the {@link Section}Spec method annotated with {@link
    * OnDataRendered}.
    */
-  protected void dataRendered(SectionContext c, boolean isDataChanged) {}
+  protected void dataRendered(SectionContext c, boolean isDataChanged, boolean isMounted) {}
 
   protected void bindService(SectionContext c) {
 

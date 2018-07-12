@@ -66,7 +66,11 @@ public class GroupSectionSpecGeneratorTest {
 
     @OnDataRendered
     public void onDataRendered(
-        SectionContext c, boolean isDataChanged, @Prop boolean arg0, @State int arg1) {}
+        SectionContext c,
+        boolean isDataChanged,
+        boolean isMounted,
+        @Prop boolean arg0,
+        @State int arg1) {}
   }
 
   private SpecModel mSpecModel;
@@ -103,10 +107,12 @@ public class GroupSectionSpecGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected void dataRendered(com.facebook.litho.sections.SectionContext c, boolean isDataChanged) {\n"
+                + "protected void dataRendered(com.facebook.litho.sections.SectionContext c, boolean isDataChanged,\n"
+                + "    boolean isMounted) {\n"
                 + "  TestGroupSectionSpec.onDataRendered(\n"
                 + "    (com.facebook.litho.sections.SectionContext) c,\n"
                 + "    (boolean) isDataChanged,\n"
+                + "    (boolean) isMounted,\n"
                 + "    (boolean) arg0,\n"
                 + "    (int) mStateContainer.arg1);\n"
                 + "}\n");

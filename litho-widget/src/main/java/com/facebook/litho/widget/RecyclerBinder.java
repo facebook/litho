@@ -1351,8 +1351,9 @@ public class RecyclerBinder
         || !mMountedView.hasPendingAdapterUpdates()
         || !mMountedView.isAttachedToWindow()
         || mMountedView.getVisibility() == View.GONE) {
+      final boolean isMounted = (mMountedView != null);
       while (!mChangeSetCompleteCallbacks.isEmpty()) {
-        mChangeSetCompleteCallbacks.pollFirst().onDataRendered();
+        mChangeSetCompleteCallbacks.pollFirst().onDataRendered(isMounted);
       }
     }
 
