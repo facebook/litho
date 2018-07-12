@@ -282,8 +282,14 @@ public class LithoView extends ComponentHost {
     if (layoutParams instanceof LayoutManagerOverrideParams) {
       LayoutManagerOverrideParams layoutManagerOverrideParams =
           (LayoutManagerOverrideParams) layoutParams;
-      widthMeasureSpec = layoutManagerOverrideParams.getWidthMeasureSpec();
-      heightMeasureSpec = layoutManagerOverrideParams.getHeightMeasureSpec();
+      final int overrideWidthSpec = layoutManagerOverrideParams.getWidthMeasureSpec();
+      if (overrideWidthSpec != LayoutManagerOverrideParams.UNINITIALIZED) {
+        widthMeasureSpec = overrideWidthSpec;
+      }
+      final int overrideHeightSpec = layoutManagerOverrideParams.getHeightMeasureSpec();
+      if (overrideHeightSpec != LayoutManagerOverrideParams.UNINITIALIZED) {
+        heightMeasureSpec = overrideHeightSpec;
+      }
     }
 
     int width = MeasureSpec.getSize(widthMeasureSpec);
@@ -983,6 +989,9 @@ public class LithoView extends ComponentHost {
    * special values.
    */
   public interface LayoutManagerOverrideParams {
+
+    int UNINITIALIZED = -1;
+
     int getWidthMeasureSpec();
 
     int getHeightMeasureSpec();
