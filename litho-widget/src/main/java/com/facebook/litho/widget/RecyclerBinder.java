@@ -20,6 +20,7 @@ import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
 import static android.support.v7.widget.OrientationHelper.VERTICAL;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.litho.MeasureComparisonUtils.isMeasureSpecCompatible;
 import static com.facebook.litho.widget.ComponentTreeHolder.RENDER_UNINITIALIZED;
 import static com.facebook.litho.widget.RenderInfoViewCreatorController.DEFAULT_COMPONENT_VIEW_TYPE;
@@ -40,6 +41,7 @@ import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLogParams;
@@ -115,6 +117,7 @@ public class RecyclerBinder
   private final boolean mFillListViewport;
   private final boolean mFillListViewportHScrollOnly;
   private final boolean mEnableStableIds;
+  private final Deque<ChangeSetCompleteCallback> mChangeSetCompleteCallbacks = new ArrayDeque<>();
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
 
   private boolean mParallelFillViewportEnabled;
@@ -135,6 +138,18 @@ public class RecyclerBinder
           if (mReMeasureEventEventHandler != null) {
             mReMeasureEventEventHandler.dispatchEvent(new ReMeasureEvent());
           }
+        }
+      };
+
+  private final PostDispatchDrawListener mPostDispatchDrawListener =
+      new PostDispatchDrawListener() {
+        @Override
+        public void postDispatchDraw() {
+          if (mChangeSetCompleteCallbacks.isEmpty()) {
+            // early return if no pending dataRendered callbacks.
+            return;
+          }
+          maybeDispatchDataRendered();
         }
       };
 
@@ -223,6 +238,7 @@ public class RecyclerBinder
   private volatile boolean mHasAsyncOperations = false;
   private volatile boolean mAsyncInsertsShouldWaitForMeasure = true;
   private volatile boolean mHasFilledViewport = false;
+  private boolean mIsInitMounted = false; // Set to true when the first mount() is called.
 
   @GuardedBy("this")
   private @Nullable AsyncBatch mCurrentBatch = null;
@@ -848,6 +864,8 @@ public class RecyclerBinder
     }
 
     batch.mChangeSetCompleteCallback.onDataBound();
+    mChangeSetCompleteCallbacks.addLast(batch.mChangeSetCompleteCallback);
+    maybeDispatchDataRendered();
   }
 
   @GuardedBy("this")
@@ -1307,12 +1325,39 @@ public class RecyclerBinder
 
     if (!mHasAsyncOperations) {
       changeSetCompleteCallback.onDataBound();
+      mChangeSetCompleteCallbacks.addLast(changeSetCompleteCallback);
+      maybeDispatchDataRendered();
     } else {
       closeCurrentBatch(changeSetCompleteCallback);
       applyReadyBatches();
     }
 
     maybeUpdateRangeOrRemeasureForMutation();
+  }
+
+  @ThreadConfined(UI)
+  private void maybeDispatchDataRendered() {
+    ThreadUtils.assertMainThread();
+
+    if (!mIsInitMounted) {
+      // The view isn't mounted yet, OnDataRendered callbacks are postponed until mount() is called,
+      // and ViewGroup#dispatchDraw(Canvas) should take care triggering OnDataRendered callbacks.
+      return;
+    }
+
+    // Execute onDataRendered callbacks immediately if the view has been unmounted, finishes
+    // dispatchDraw (no pending updates), is detached, or its visibility is GONE.
+    if (mMountedView == null
+        || !mMountedView.hasPendingAdapterUpdates()
+        || !mMountedView.isAttachedToWindow()
+        || mMountedView.getVisibility() == View.GONE) {
+      while (!mChangeSetCompleteCallbacks.isEmpty()) {
+        mChangeSetCompleteCallbacks.pollFirst().onDataRendered();
+      }
+    }
+
+    // Otherwise we'll wait for ViewGroup#dispatchDraw(Canvas), which would call this method again
+    // to execute onDataRendered callbacks.
   }
 
   private synchronized void closeCurrentBatch(ChangeSetCompleteCallback changeSetCompleteCallback) {
@@ -2184,6 +2229,7 @@ public class RecyclerBinder
     }
 
     mMountedView = view;
+    mIsInitMounted = true;
 
     final LayoutManager layoutManager = mLayoutInfo.getLayoutManager();
 
@@ -2200,6 +2246,17 @@ public class RecyclerBinder
     }
     view.addOnScrollListener(mRangeScrollListener);
     view.addOnScrollListener(mViewportManager.getScrollListener());
+
+    if (view instanceof HasPostDispatchDrawListener) {
+      ((HasPostDispatchDrawListener) view).setPostDispatchDrawListener(mPostDispatchDrawListener);
+    } else {
+      if (SectionsDebug.ENABLED) {
+        Log.d(
+            SectionsDebug.TAG,
+            "OnDataRendered only support view implements HasPostDispatchDrawListener, current view is "
+                + view);
+      }
+    }
 
     mLayoutInfo.setRenderInfoCollection(this);
 
@@ -2291,6 +2348,11 @@ public class RecyclerBinder
 
     view.removeOnScrollListener(mRangeScrollListener);
     view.removeOnScrollListener(mViewportManager.getScrollListener());
+
+    if (view instanceof HasPostDispatchDrawListener) {
+      ((HasPostDispatchDrawListener) view).setPostDispatchDrawListener(null);
+    }
+
     if (ComponentsConfiguration.enableSwapAdapter) {
       view.swapAdapter(null, false);
     } else {

@@ -32,6 +32,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.os.Looper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
@@ -3120,6 +3121,265 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
     verify(changeSetCompleteCallback).onDataBound();
+  }
+
+  @Test
+  public void testOnDataRenderedWithMountAfterInsert() {
+    final ChangeSetCompleteCallback changeSetCompleteCallback =
+        mock(ChangeSetCompleteCallback.class);
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.insertRangeAt(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback);
+
+    // Mount view after insertions
+    final LithoRecylerView recyclerView = new LithoRecylerView(RuntimeEnvironment.application);
+    recyclerBinder.mount(recyclerView);
+
+    // Simulate calling ViewGroup#dispatchDraw(Canvas).
+    recyclerView.dispatchDraw(mock(Canvas.class));
+
+    verify(changeSetCompleteCallback).onDataRendered();
+  }
+
+  @Test
+  public void testOnDataRenderedWithMountAfterInsertAsync() {
+    final ChangeSetCompleteCallback changeSetCompleteCallback =
+        mock(ChangeSetCompleteCallback.class);
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.insertRangeAtAsync(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback);
+
+    // Mount view after insertions
+    final LithoRecylerView recyclerView = new LithoRecylerView(RuntimeEnvironment.application);
+    recyclerBinder.mount(recyclerView);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    // Simulate calling ViewGroup#dispatchDraw(Canvas).
+    recyclerView.dispatchDraw(mock(Canvas.class));
+
+    verify(changeSetCompleteCallback).onDataRendered();
+  }
+
+  @Test
+  public void testOnDataRenderedWithMountUnMountBeforeInsert() {
+    final ChangeSetCompleteCallback changeSetCompleteCallback =
+        mock(ChangeSetCompleteCallback.class);
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    // mount() and unmount() are called prior to data insertions.
+    final RecyclerView recyclerView = mock(LithoRecylerView.class);
+    recyclerBinder.mount(recyclerView);
+    recyclerBinder.unmount(recyclerView);
+
+    recyclerBinder.insertRangeAt(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback);
+
+    verify(changeSetCompleteCallback).onDataRendered();
+  }
+
+  @Test
+  public void testOnDataRenderedWithNoPendingUpdate() {
+    final ChangeSetCompleteCallback changeSetCompleteCallback =
+        mock(ChangeSetCompleteCallback.class);
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    final RecyclerView recyclerView = mock(LithoRecylerView.class);
+    when(recyclerView.hasPendingAdapterUpdates()).thenReturn(false);
+    when(recyclerView.isAttachedToWindow()).thenReturn(true);
+    when(recyclerView.getVisibility()).thenReturn(View.VISIBLE);
+    recyclerBinder.mount(recyclerView);
+
+    recyclerBinder.insertRangeAt(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback);
+
+    verify(changeSetCompleteCallback).onDataRendered();
+  }
+
+  @Test
+  public void testOnDataRenderedWithViewDetachedFromWindow() {
+    final ChangeSetCompleteCallback changeSetCompleteCallback =
+        mock(ChangeSetCompleteCallback.class);
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    final RecyclerView recyclerView = mock(LithoRecylerView.class);
+    when(recyclerView.hasPendingAdapterUpdates()).thenReturn(true);
+    when(recyclerView.isAttachedToWindow()).thenReturn(false);
+    when(recyclerView.getVisibility()).thenReturn(View.VISIBLE);
+    recyclerBinder.mount(recyclerView);
+
+    recyclerBinder.insertRangeAt(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback);
+
+    verify(changeSetCompleteCallback).onDataRendered();
+  }
+
+  @Test
+  public void testOnDataRenderedWithViewVisibilityIsGone() {
+    final ChangeSetCompleteCallback changeSetCompleteCallback =
+        mock(ChangeSetCompleteCallback.class);
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    final RecyclerView recyclerView = mock(LithoRecylerView.class);
+    when(recyclerView.hasPendingAdapterUpdates()).thenReturn(true);
+    when(recyclerView.isAttachedToWindow()).thenReturn(true);
+    when(recyclerView.getVisibility()).thenReturn(View.GONE);
+    recyclerBinder.mount(recyclerView);
+
+    recyclerBinder.insertRangeAt(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback);
+
+    verify(changeSetCompleteCallback).onDataRendered();
+  }
+
+  @Test
+  public void testOnDataRenderedWithMultipleUpdates() {
+    final ChangeSetCompleteCallback changeSetCompleteCallback1 =
+        mock(ChangeSetCompleteCallback.class);
+    final ChangeSetCompleteCallback changeSetCompleteCallback2 =
+        mock(ChangeSetCompleteCallback.class);
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<RenderInfo> renderInfos1 = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos1.add(ComponentRenderInfo.create().component(component).build());
+      renderInfos2.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.insertRangeAt(0, renderInfos1);
+    recyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback1);
+    verify(changeSetCompleteCallback1, never()).onDataRendered();
+
+    recyclerBinder.insertRangeAt(0, renderInfos2);
+    recyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback2);
+    verify(changeSetCompleteCallback2, never()).onDataRendered();
+
+    // Mount view after insertions
+    final LithoRecylerView recyclerView = new LithoRecylerView(RuntimeEnvironment.application);
+    recyclerBinder.mount(recyclerView);
+
+    // Simulate calling ViewGroup#dispatchDraw(Canvas).
+    recyclerView.dispatchDraw(mock(Canvas.class));
+
+    verify(changeSetCompleteCallback1).onDataRendered();
+    verify(changeSetCompleteCallback2).onDataRendered();
+  }
+
+  @Test
+  public void testOnDataRenderedWithMultipleAsyncUpdates() {
+    final ChangeSetCompleteCallback changeSetCompleteCallback1 =
+        mock(ChangeSetCompleteCallback.class);
+    final ChangeSetCompleteCallback changeSetCompleteCallback2 =
+        mock(ChangeSetCompleteCallback.class);
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<RenderInfo> renderInfos1 = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos1.add(ComponentRenderInfo.create().component(component).build());
+      renderInfos2.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.insertRangeAtAsync(0, renderInfos1);
+    recyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback1);
+    verify(changeSetCompleteCallback1, never()).onDataRendered();
+
+    recyclerBinder.insertRangeAtAsync(0, renderInfos2);
+    recyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback2);
+    verify(changeSetCompleteCallback2, never()).onDataRendered();
+
+    // Mount view after insertions
+    final LithoRecylerView recyclerView = new LithoRecylerView(RuntimeEnvironment.application);
+    recyclerBinder.mount(recyclerView);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    // Simulate calling ViewGroup#dispatchDraw(Canvas).
+    recyclerView.dispatchDraw(mock(Canvas.class));
+
+    verify(changeSetCompleteCallback1).onDataRendered();
+    verify(changeSetCompleteCallback2).onDataRendered();
+  }
+
+  @Test
+  public void testOnDataRenderedWithNoChanges() {
+    final ChangeSetCompleteCallback changeSetCompleteCallback =
+        mock(ChangeSetCompleteCallback.class);
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    final RecyclerView recyclerView = mock(LithoRecylerView.class);
+    when(recyclerView.hasPendingAdapterUpdates()).thenReturn(true);
+    recyclerBinder.mount(recyclerView);
+
+    recyclerBinder.insertRangeAt(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback);
+
+    verify(changeSetCompleteCallback).onDataRendered();
+
+    reset(changeSetCompleteCallback);
+
+    // Call notifyChangeSetComplete with no actual data change.
+    recyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback);
+
+    verify(changeSetCompleteCallback).onDataRendered();
   }
 
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {

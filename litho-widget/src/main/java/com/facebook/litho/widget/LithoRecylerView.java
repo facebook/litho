@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -26,9 +27,10 @@ import android.view.MotionEvent;
  * Extension of {@link RecyclerView} that allows to add more features needed for @{@link
  * RecyclerSpec}
  */
-public class LithoRecylerView extends RecyclerView {
+public class LithoRecylerView extends RecyclerView implements HasPostDispatchDrawListener {
 
   private @Nullable TouchInterceptor mTouchInterceptor;
+  private @Nullable PostDispatchDrawListener mPostDispatchDrawListener;
 
   public LithoRecylerView(Context context) {
     this(context, null);
@@ -67,6 +69,20 @@ public class LithoRecylerView extends RecyclerView {
       default:
         throw new IllegalArgumentException("Unknown TouchInterceptor.Result: " + result);
     }
+  }
+
+  @Override
+  protected void dispatchDraw(Canvas canvas) {
+    super.dispatchDraw(canvas);
+
+    if (mPostDispatchDrawListener != null) {
+      mPostDispatchDrawListener.postDispatchDraw();
+    }
+  }
+
+  @Override
+  public void setPostDispatchDrawListener(@Nullable PostDispatchDrawListener listener) {
+    mPostDispatchDrawListener = listener;
   }
 
   /** Allows to override {@link #onInterceptTouchEvent(MotionEvent)} behavior */
