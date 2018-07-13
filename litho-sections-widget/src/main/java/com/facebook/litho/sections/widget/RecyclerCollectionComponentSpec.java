@@ -87,7 +87,7 @@ import java.util.List;
  * <p>The {@link RecyclerCollectionEventsController} {@link Prop} is a way to sent commands to the
  * {@link RecyclerCollectionComponentSpec}, such as scrollTo(position) and refresh().
  */
-@LayoutSpec
+@LayoutSpec(events = PTRRefreshEvent.class)
 public class RecyclerCollectionComponentSpec {
 
   @PropDefault
@@ -333,8 +333,24 @@ public class RecyclerCollectionComponentSpec {
   }
 
   @OnEvent(PTRRefreshEvent.class)
-  protected static void onRefresh(ComponentContext c, @Param SectionTree sectionTree) {
-    sectionTree.refresh();
+  protected static boolean onRefresh(
+      ComponentContext c,
+      @Param SectionTree sectionTree,
+      @Prop(optional = true) boolean ignoreLoadingUpdates) {
+    EventHandler<PTRRefreshEvent> ptrEventHandler =
+        RecyclerCollectionComponent.getPTRRefreshEventHandler(c);
+
+    if (!ignoreLoadingUpdates || ptrEventHandler == null) {
+      sectionTree.refresh();
+      return true;
+    }
+
+    final boolean isHandled = RecyclerCollectionComponent.dispatchPTRRefreshEvent(ptrEventHandler);
+    if (!isHandled) {
+      sectionTree.refresh();
+    }
+
+    return true;
   }
 
   @OnTrigger(ScrollEvent.class)

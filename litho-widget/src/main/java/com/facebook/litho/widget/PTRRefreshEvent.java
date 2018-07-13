@@ -18,10 +18,6 @@ package com.facebook.litho.widget;
 
 import com.facebook.litho.annotations.Event;
 
-/**
- * An event that is triggered when a pull-to-refresh action is performed.
- */
-@Event
-public class PTRRefreshEvent {
-
-}
+/** An event that is triggered when a pull-to-refresh action is performed. */
+@Event(returnType = Boolean.class)
+public class PTRRefreshEvent {}
