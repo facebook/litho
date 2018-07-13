@@ -102,6 +102,9 @@ import com.facebook.yoga.YogaDirection;
  * @prop textColor Color of the text.
  * @prop textColorStateList ColorStateList of the text.
  * @prop linkColor Color for links in the text.
+ * @prop highlightColor Color for an optional highlight of the text.
+ * @prop highlightStartOffset Start offset for an optional highlight of the text.
+ * @prop highlightEndOffset End offset for an optional highlight of the text.
  * @prop textSize Size of the text.
  * @prop extraSpacing Extra spacing between the lines of text.
  * @prop spacingMultiplier Extra spacing between the lines of text, as a multiplier.
