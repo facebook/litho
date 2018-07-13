@@ -43,6 +43,7 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.utils.MeasureUtils;
 
 /**
@@ -112,6 +113,14 @@ class ImageSpec {
         intrinsicHeight,
         aspectRatio,
         size);
+
+    if (ComponentsConfiguration.prewarmImageTexture) {
+      TextureWarmer.WarmDrawable warmDrawable = new TextureWarmer.WarmDrawable(
+          drawable,
+          size.width,
+          size.height);
+      TextureWarmer.getInstance().warmDrawable(warmDrawable);
+    }
   }
 
   @OnBoundsDefined

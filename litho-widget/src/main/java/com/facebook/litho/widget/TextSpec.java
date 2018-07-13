@@ -472,7 +472,7 @@ class TextSpec {
     sTextLayoutBuilderPool.release(layoutBuilder);
 
     if (glyphWarming && !DisplayListUtils.isEligibleForCreatingDisplayLists()) {
-      GlyphWarmer.getInstance().warmLayout(newLayout);
+      TextureWarmer.getInstance().warmLayout(newLayout);
     }
 
     return newLayout;

@@ -22,6 +22,7 @@ import static org.mockito.Mockito.verify;
 
 import android.graphics.Canvas;
 import android.graphics.Picture;
+import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
@@ -34,26 +35,35 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 
 /**
- * Tests {@link GlyphWarmer}.
+ * Tests {@link TextureWarmer}.
  */
 @RunWith(ComponentsTestRunner.class)
-@Config(shadows = GlyphWarmerTest.ShadowPicture.class)
-public class GlyphWarmerTest {
+@Config(shadows = TextureWarmerTest.ShadowPicture.class)
+public class TextureWarmerTest {
   private ShadowLooper mShadowLooper;
-  private GlyphWarmer mGlyphWarmer;
+  private TextureWarmer mTextureWarmer;
 
   @Before
   public void setup() {
-    mGlyphWarmer = GlyphWarmer.getInstance();
-    mShadowLooper = Shadows.shadowOf(mGlyphWarmer.getWarmerLooper());
+    mTextureWarmer = TextureWarmer.getInstance();
+    mShadowLooper = Shadows.shadowOf(mTextureWarmer.getWarmerLooper());
   }
 
   @Test
   public void testWarmGlyph() {
     Layout layout = mock(Layout.class);
-    mGlyphWarmer.warmLayout(layout);
+    mTextureWarmer.warmLayout(layout);
     mShadowLooper.runOneTask();
     verify(layout).draw(any(Canvas.class));
+  }
+
+  @Test
+  public void testWarmTexture() {
+    Drawable drawable = mock(Drawable.class);
+    TextureWarmer.WarmDrawable warmDrawable = new TextureWarmer.WarmDrawable(drawable, 1, 1);
+    mTextureWarmer.warmDrawable(warmDrawable);
+    mShadowLooper.runOneTask();
+    verify(drawable).draw(any(Canvas.class));
   }
 
   @Implements(Picture.class)
