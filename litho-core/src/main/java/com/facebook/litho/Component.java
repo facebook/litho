@@ -690,6 +690,13 @@ public abstract class Component extends ComponentLifecycle
       }
     }
 
+    /**
+     * @return the {@link ComponentContext} for this {@link Builder}, useful for Kotlin DSL.
+     */
+    public ComponentContext getContext() {
+      return mContext;
+    }
+
     public abstract T getThis();
 
     /** Set a key on the component that is local to its parent. */
