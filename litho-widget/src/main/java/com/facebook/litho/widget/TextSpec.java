@@ -105,6 +105,8 @@ import com.facebook.yoga.YogaDirection;
  * @prop textSize Size of the text.
  * @prop extraSpacing Extra spacing between the lines of text.
  * @prop spacingMultiplier Extra spacing between the lines of text, as a multiplier.
+ * @prop letterSpacing Text letter-spacing. Typical values for slight expansion will be around 0.05
+ *     ems. Negative values tighten text.
  * @prop textStyle Style (bold, italic, bolditalic) for the text.
  * @prop typeface Typeface for the text.
  * @prop textAlignment Alignment of the text within its container.
