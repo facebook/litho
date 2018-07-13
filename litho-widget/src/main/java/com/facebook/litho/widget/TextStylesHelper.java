@@ -44,14 +44,17 @@ public final class TextStylesHelper {
 
   private static final TruncateAt[] TRUNCATE_AT = TruncateAt.values();
 
-  static final int DEFAULT_EMS = -1;
-  static final int DEFAULT_MIN_WIDTH = 0;
-  static final int DEFAULT_MAX_WIDTH = Integer.MAX_VALUE;
-  static final int DEFAULT_BREAK_STRATEGY = 0; // BREAK_STRATEGY_SIMPLE (AOSP Default)
-  static final int DEFAULT_HYPHENATION_FREQUENCY = 0; // HYPHENATION_FREQUENCY_NONE (AOSP Default)
-  static final int DEFAULT_JUSTIFICATION_MODE = 0; // JUSTIFICATION_MODE_NONE (AOSP Default)
+  public static final int DEFAULT_EMS = -1;
+  public static final int DEFAULT_MIN_WIDTH = 0;
+  public static final int DEFAULT_MAX_WIDTH = Integer.MAX_VALUE;
+  // BREAK_STRATEGY_SIMPLE (AOSP Default)
+  public static final int DEFAULT_BREAK_STRATEGY = 0;
+  // HYPHENATION_FREQUENCY_NONE (AOSP Default)
+  public static final int DEFAULT_HYPHENATION_FREQUENCY = 0;
+  // JUSTIFICATION_MODE_NONE (AOSP Default)
+  public static final int DEFAULT_JUSTIFICATION_MODE = 0;
 
-  static final Alignment textAlignmentDefault = ALIGN_NORMAL;
+  public static final Alignment textAlignmentDefault = ALIGN_NORMAL;
 
   public static void onLoadStyle(
       ComponentContext c,
