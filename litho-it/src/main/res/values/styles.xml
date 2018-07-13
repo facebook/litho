@@ -16,10 +16,10 @@
 
 <resources>
     <style name="TestTheme" parent="android:style/Theme">
-        <item name="attr/testAttrDimen">@dimen/test_dimen</item>
-        <item name="attr/testAttrDrawable">@drawable/test_bg</item>
-        <item name="attr/testAttrLargeText">@style/TextLargeSizeStyle</item>
-        <item name="attr/testAttrLargePadding">@style/PaddingStyleLarge</item>
+        <item name="testAttrDimen">@dimen/test_dimen</item>
+        <item name="testAttrDrawable">@drawable/test_bg</item>
+        <item name="testAttrLargeText">@style/TextLargeSizeStyle</item>
+        <item name="testAttrLargePadding">@style/PaddingStyleLarge</item>
     </style>
 
     <style name="TestTheme.BackgroundWithPadding">
