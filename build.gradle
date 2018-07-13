@@ -50,9 +50,9 @@ ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
 ext.deps = [
         // Android support
         supportAnnotations : 'com.android.support:support-annotations:27.1.1',
-        supportAppCompat   : 'com.android.support:appcompat-v7:26.1.0',
-        supportCoreUi      : 'com.android.support:support-core-ui:26.1.0',
-        supportRecyclerView: 'com.android.support:recyclerview-v7:26.1.0',
+        supportAppCompat   : 'com.android.support:appcompat-v7:27.1.1',
+        supportCoreUi      : 'com.android.support:support-core-ui:27.1.1',
+        supportRecyclerView: 'com.android.support:recyclerview-v7:27.1.1',
         supportEspresso    : 'com.android.support.test.espresso:espresso-core:3.0.2',
         supportEspressoIntents : 'com.android.support.test.espresso:espresso-intents:3.0.2',
         supportTestRunner  : 'com.android.support.test:runner:1.0.2',
