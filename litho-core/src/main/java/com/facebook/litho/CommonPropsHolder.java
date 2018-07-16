@@ -87,7 +87,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return mDefStyleRes;
   }
 
-  void positionType(YogaPositionType positionType) {
+  void positionType(@Nullable YogaPositionType positionType) {
     mPrivateFlags |= PFLAG_POSITION_TYPE_IS_SET;
     mPositionType = positionType;
   }
@@ -98,7 +98,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return mPositionType;
   }
 
-  void positionPx(YogaEdge edge, @Px int position) {
+  void positionPx(@Nullable YogaEdge edge, @Px int position) {
     mPrivateFlags |= PFLAG_POSITION_IS_SET;
     if (mPositions == null) {
       mPositions =
@@ -130,7 +130,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return mHeightPx;
   }
 
-  void background(Reference<? extends Drawable> background) {
+  void background(@Nullable Reference<? extends Drawable> background) {
     mPrivateFlags |= PFLAG_BACKGROUND_IS_SET;
     mBackground = background;
   }
@@ -161,7 +161,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return mWrapInView;
   }
 
-  void layoutDirection(YogaDirection direction) {
+  void layoutDirection(@Nullable YogaDirection direction) {
     getOrCreateOtherProps().layoutDirection(direction);
   }
 
@@ -171,7 +171,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return getOrCreateOtherProps().mLayoutDirection;
   }
 
-  void alignSelf(YogaAlign alignSelf) {
+  void alignSelf(@Nullable YogaAlign alignSelf) {
     getOrCreateOtherProps().alignSelf(alignSelf);
   }
 
@@ -275,7 +275,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return getOrCreateOtherProps().mBorder;
   }
 
-  void stateListAnimator(StateListAnimator stateListAnimator) {
+  void stateListAnimator(@Nullable StateListAnimator stateListAnimator) {
     getOrCreateOtherProps().stateListAnimator(stateListAnimator);
   }
 
@@ -295,7 +295,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return getOrCreateOtherProps().mStateListAnimatorRes;
   }
 
-  void positionPercent(YogaEdge edge, float percent) {
+  void positionPercent(@Nullable YogaEdge edge, float percent) {
     getOrCreateOtherProps().positionPercent(edge, percent);
   }
 
@@ -348,11 +348,11 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return getOrCreateOtherProps().mAspectRatio;
   }
 
-  void touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
+  void touchExpansionPx(@Nullable YogaEdge edge, @Px int touchExpansion) {
     getOrCreateOtherProps().touchExpansionPx(edge, touchExpansion);
   }
 
-  void foreground(Drawable foreground) {
+  void foreground(@Nullable Drawable foreground) {
     getOrCreateOtherProps().foreground(foreground);
   }
 
@@ -507,7 +507,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return getOrCreateOtherProps().mInvisibleHandler;
   }
 
-  void contentDescription(CharSequence contentDescription) {
+  void contentDescription(@Nullable CharSequence contentDescription) {
     getOrCreateNodeInfo().setContentDescription(contentDescription);
   }
 
@@ -517,7 +517,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return getOrCreateNodeInfo().getContentDescription();
   }
 
-  void viewTag(Object viewTag) {
+  void viewTag(@Nullable Object viewTag) {
     getOrCreateNodeInfo().setViewTag(viewTag);
   }
 
@@ -527,7 +527,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return getOrCreateNodeInfo().getViewTag();
   }
 
-  void viewTags(SparseArray<Object> viewTags) {
+  void viewTags(@Nullable SparseArray<Object> viewTags) {
     getOrCreateNodeInfo().setViewTags(viewTags);
   }
 
@@ -547,7 +547,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return getOrCreateNodeInfo().getShadowElevation();
   }
 
-  void outlineProvider(ViewOutlineProvider outlineProvider) {
+  void outlineProvider(@Nullable ViewOutlineProvider outlineProvider) {
     getOrCreateNodeInfo().setOutlineProvider(outlineProvider);
   }
 
@@ -566,7 +566,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return getOrCreateNodeInfo().getClipToOutline();
   }
 
-  void accessibilityRole(@AccessibilityRole.AccessibilityRoleType String role) {
+  void accessibilityRole(@Nullable @AccessibilityRole.AccessibilityRoleType String role) {
     getOrCreateNodeInfo().setAccessibilityRole(role);
   }
 
@@ -578,8 +578,9 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
   }
 
   void dispatchPopulateAccessibilityEventHandler(
-      EventHandler<DispatchPopulateAccessibilityEventEvent>
-          dispatchPopulateAccessibilityEventHandler) {
+      @Nullable
+          EventHandler<DispatchPopulateAccessibilityEventEvent>
+              dispatchPopulateAccessibilityEventHandler) {
     getOrCreateNodeInfo()
         .setDispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
   }
@@ -592,7 +593,8 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
   }
 
   void onInitializeAccessibilityEventHandler(
-      EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler) {
+      @Nullable
+          EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler) {
     getOrCreateNodeInfo()
         .setOnInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
   }
@@ -605,8 +607,9 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
   }
 
   void onInitializeAccessibilityNodeInfoHandler(
-      EventHandler<OnInitializeAccessibilityNodeInfoEvent>
-          onInitializeAccessibilityNodeInfoHandler) {
+      @Nullable
+          EventHandler<OnInitializeAccessibilityNodeInfoEvent>
+              onInitializeAccessibilityNodeInfoHandler) {
     getOrCreateNodeInfo()
         .setOnInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
   }
@@ -619,7 +622,8 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
   }
 
   void onPopulateAccessibilityEventHandler(
-      EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler) {
+      @Nullable
+          EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler) {
     getOrCreateNodeInfo()
         .setOnPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
   }
@@ -631,7 +635,9 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
   }
 
   void onRequestSendAccessibilityEventHandler(
-      EventHandler<OnRequestSendAccessibilityEventEvent> onRequestSendAccessibilityEventHandler) {
+      @Nullable
+          EventHandler<OnRequestSendAccessibilityEventEvent>
+              onRequestSendAccessibilityEventHandler) {
     getOrCreateNodeInfo()
         .setOnRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
   }
@@ -644,7 +650,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
   }
 
   void performAccessibilityActionHandler(
-      EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler) {
+      @Nullable EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler) {
     getOrCreateNodeInfo().setPerformAccessibilityActionHandler(performAccessibilityActionHandler);
   }
 
@@ -655,7 +661,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
   }
 
   void sendAccessibilityEventHandler(
-      EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler) {
+      @Nullable EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler) {
     getOrCreateNodeInfo().setSendAccessibilityEventHandler(sendAccessibilityEventHandler);
   }
 
@@ -666,7 +672,9 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
   }
 
   void sendAccessibilityEventUncheckedHandler(
-      EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler) {
+      @Nullable
+          EventHandler<SendAccessibilityEventUncheckedEvent>
+              sendAccessibilityEventUncheckedHandler) {
     getOrCreateNodeInfo()
         .setSendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
   }
@@ -705,7 +713,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return getOrCreateNodeInfo().getRotation();
   }
 
-  void transitionKey(String key) {
+  void transitionKey(@Nullable String key) {
     getOrCreateOtherProps().transitionKey(key);
   }
 
@@ -751,7 +759,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     if ((mPrivateFlags & PFLAG_HEIGHT_IS_SET) != 0L) {
       node.heightPx(mHeightPx);
     }
-    
+
     if (mWrapInView) {
       node.wrapInView();
     }
@@ -891,7 +899,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mDuplicateParentState = duplicateParentState;
     }
 
-    private void marginPx(YogaEdge edge, @Px int margin) {
+    private void marginPx(@Nullable YogaEdge edge, @Px int margin) {
       mPrivateFlags |= PFLAG_MARGIN_IS_SET;
 
       if (mMargins == null) {
@@ -903,7 +911,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mMargins.add(edge, margin);
     }
 
-    private void marginPercent(YogaEdge edge, float percent) {
+    private void marginPercent(@Nullable YogaEdge edge, float percent) {
       mPrivateFlags |= PFLAG_MARGIN_PERCENT_IS_SET;
       if (mMarginPercents == null) {
         mMarginPercents = new YogaEdgesWithFloats();
@@ -911,7 +919,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mMarginPercents.add(edge, percent);
     }
 
-    private void marginAuto(YogaEdge edge) {
+    private void marginAuto(@Nullable YogaEdge edge) {
       mPrivateFlags |= PFLAG_MARGIN_AUTO_IS_SET;
       if (mMarginAutos == null) {
         mMarginAutos = new ArrayList<>(2);
@@ -919,7 +927,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mMarginAutos.add(edge);
     }
 
-    private void paddingPx(YogaEdge edge, @Px int padding) {
+    private void paddingPx(@Nullable YogaEdge edge, @Px int padding) {
       mPrivateFlags |= PFLAG_PADDING_IS_SET;
       if (mPaddings == null) {
         mPaddings =
@@ -930,7 +938,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mPaddings.add(edge, padding);
     }
 
-    private void paddingPercent(YogaEdge edge, float percent) {
+    private void paddingPercent(@Nullable YogaEdge edge, float percent) {
       mPrivateFlags |= PFLAG_PADDING_PERCENT_IS_SET;
       if (mPaddingPercents == null) {
         mPaddingPercents = new YogaEdgesWithFloats();
@@ -938,7 +946,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mPaddingPercents.add(edge, percent);
     }
 
-    private void border(Border border) {
+    private void border(@Nullable Border border) {
       mPrivateFlags |= PFLAG_BORDER_IS_SET;
       mBorder = border;
     }
