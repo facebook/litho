@@ -666,7 +666,7 @@ public abstract class Component extends ComponentLifecycle
    */
   public abstract static class Builder<T extends Builder<T>> {
 
-    private ComponentContext mContext;
+    @Nullable private ComponentContext mContext;
     private Component mComponent;
     protected ResourceResolver mResourceResolver;
 
@@ -688,6 +688,15 @@ public abstract class Component extends ComponentLifecycle
         mComponent.getOrCreateCommonPropsHolder().setStyle(defStyleAttr, defStyleRes);
         component.loadStyle(c, defStyleAttr, defStyleRes);
       }
+    }
+
+    /**
+     * @return the {@link ComponentContext} for this {@link Builder}, useful for Kotlin DSL. Will be
+     *     null if the Builder was already used to {@link #build()} a component.
+     */
+    @Nullable
+    public ComponentContext getContext() {
+      return mContext;
     }
 
     public abstract T getThis();
