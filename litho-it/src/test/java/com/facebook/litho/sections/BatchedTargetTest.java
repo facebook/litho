@@ -335,8 +335,8 @@ public class BatchedTargetTest {
   public void testNotifyChangeSetCompleteForwarded() {
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
-    mTarget.notifyChangeSetComplete(changeSetCompleteCallback);
-    verify(mMockTarget).notifyChangeSetComplete(changeSetCompleteCallback);
+    mTarget.notifyChangeSetComplete(true, changeSetCompleteCallback);
+    verify(mMockTarget).notifyChangeSetComplete(true, changeSetCompleteCallback);
   }
 
   private List<RenderInfo> dummyComponentInfos(int count) {

@@ -119,7 +119,8 @@ public class SectionTree {
     void move(int fromPosition, int toPosition);
 
     /** Called when a changeset has finished being applied. */
-    void notifyChangeSetComplete(ChangeSetCompleteCallback changeSetCompleteCallback);
+    void notifyChangeSetComplete(
+        boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback);
 
     /**
      * Request focus on the item with the given index.
@@ -1154,6 +1155,7 @@ public class SectionTree {
 
     final boolean isDataChanged = appliedChanges;
     mTarget.notifyChangeSetComplete(
+        isDataChanged,
         new ChangeSetCompleteCallback() {
           @Override
           public void onDataBound() {

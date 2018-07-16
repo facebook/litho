@@ -499,7 +499,7 @@ public class RecyclerBinderFillViewportTest {
                       .build())
               .build());
     }
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
@@ -818,7 +818,7 @@ public class RecyclerBinderFillViewportTest {
                       .build())
               .build());
     }
-    mRecyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
@@ -871,6 +871,6 @@ public class RecyclerBinderFillViewportTest {
                       .build())
               .build());
     }
-    recyclerBinder.notifyChangeSetComplete(NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
   }
 }

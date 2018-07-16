@@ -726,13 +726,12 @@ public class SectionTreeTest {
 
   private static void assertChangeSetHandled(TestTarget testTarget) {
     assertThat(testTarget.wereChangesHandled()).isTrue();
-    assertThat(testTarget.wasNotifyChangeSetCompleteCalled()).isTrue();
+    assertThat(testTarget.wasNotifyChangeSetCompleteCalledWithChangedData()).isTrue();
   }
 
   private static void assertChangeSetNotSeen(TestTarget testTarget) {
     assertThat(testTarget.wereChangesHandled()).isFalse();
-    // TODO(T31375777): Remove mWasNotifyChangeSetCompleteCalled and refactor affected test cases.
-    // assertThat(testTarget.wasNotifyChangeSetCompleteCalled()).isFalse();
+    assertThat(testTarget.wasNotifyChangeSetCompleteCalledWithChangedData()).isFalse();
   }
 
   private static class StateUpdate implements SectionLifecycle.StateUpdate {

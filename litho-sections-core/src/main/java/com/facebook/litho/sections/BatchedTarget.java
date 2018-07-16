@@ -142,8 +142,9 @@ class BatchedTarget implements SectionTree.Target {
   }
 
   @Override
-  public void notifyChangeSetComplete(ChangeSetCompleteCallback changeSetCompleteCallback) {
-    mTarget.notifyChangeSetComplete(changeSetCompleteCallback);
+  public void notifyChangeSetComplete(
+      boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
+    mTarget.notifyChangeSetComplete(isDataChanged, changeSetCompleteCallback);
   }
 
   @Override

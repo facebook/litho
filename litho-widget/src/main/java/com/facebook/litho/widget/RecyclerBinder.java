@@ -816,7 +816,7 @@ public class RecyclerBinder
         mAsyncBatches.pollFirst();
         applyBatch(batch);
 
-        appliedBatch = true;
+        appliedBatch |= batch.mIsDataChanged;
       }
 
       if (appliedBatch) {
@@ -1316,7 +1316,8 @@ public class RecyclerBinder
    * Called after all the change set operations (inserts, removes, etc.) in a batch have completed.
    */
   @UiThread
-  public void notifyChangeSetComplete(ChangeSetCompleteCallback changeSetCompleteCallback) {
+  public void notifyChangeSetComplete(
+      boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
     ThreadUtils.assertMainThread();
 
     if (SectionsDebug.ENABLED) {
@@ -1328,11 +1329,13 @@ public class RecyclerBinder
       mChangeSetCompleteCallbacks.addLast(changeSetCompleteCallback);
       maybeDispatchDataRendered();
     } else {
-      closeCurrentBatch(changeSetCompleteCallback);
+      closeCurrentBatch(isDataChanged, changeSetCompleteCallback);
       applyReadyBatches();
     }
 
-    maybeUpdateRangeOrRemeasureForMutation();
+    if (isDataChanged) {
+      maybeUpdateRangeOrRemeasureForMutation();
+    }
   }
 
   @ThreadConfined(UI)
@@ -1361,7 +1364,8 @@ public class RecyclerBinder
     // to execute onDataRendered callbacks.
   }
 
-  private synchronized void closeCurrentBatch(ChangeSetCompleteCallback changeSetCompleteCallback) {
+  private synchronized void closeCurrentBatch(
+      boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
     if (mCurrentBatch == null) {
       // We create a batch here even if it doesn't have any operations: this is so we can still
       // invoke the OnDataBoundListener at the appropriate time (after all preceding batches
@@ -1369,6 +1373,7 @@ public class RecyclerBinder
       mCurrentBatch = new AsyncBatch();
     }
 
+    mCurrentBatch.mIsDataChanged = isDataChanged;
     mCurrentBatch.mChangeSetCompleteCallback = changeSetCompleteCallback;
     mAsyncBatches.addLast(mCurrentBatch);
     mCurrentBatch = null;
@@ -2748,8 +2753,8 @@ public class RecyclerBinder
    * should be called once all these operations are applied.
    */
   private static final class AsyncBatch {
-
     private final ArrayList<AsyncOperation> mOperations = new ArrayList<>();
+    private boolean mIsDataChanged;
     private ChangeSetCompleteCallback mChangeSetCompleteCallback;
   }
 

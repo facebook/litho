@@ -140,8 +140,9 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   }
 
   @Override
-  public void notifyChangeSetComplete(ChangeSetCompleteCallback changeSetCompleteCallback) {
-    mRecyclerBinder.notifyChangeSetComplete(changeSetCompleteCallback);
+  public void notifyChangeSetComplete(
+      boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
+    mRecyclerBinder.notifyChangeSetComplete(isDataChanged, changeSetCompleteCallback);
   }
 
   @Override
