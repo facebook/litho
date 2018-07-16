@@ -16,7 +16,6 @@
 
 package com.facebook.litho.sections.treeprops;
 
-import com.facebook.litho.Row;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.sections.Children;
@@ -31,9 +30,7 @@ public class BottomGroupSectionSpec {
   @OnCreateChildren
   protected static Children onCreateChildren(SectionContext c) {
     return Children.create()
-        .child(
-            SingleComponentSection.create(c)
-                .component(Row.create(c).child(LeafComponent.create(c)).build()))
+        .child(SingleComponentSection.create(c).component(IntermediateComponent.create(c).build()))
         .build();
   }
 

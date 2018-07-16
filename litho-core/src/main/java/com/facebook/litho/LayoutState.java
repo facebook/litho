@@ -1781,8 +1781,6 @@ class LayoutState {
     final boolean hasNestedTreeHolder = nestedTreeHolder != null;
     if (hasNestedTreeHolder) {
       c.setTreeProps(nestedTreeHolder.getPendingTreeProps());
-    } else if (!isTest) {
-      c.setTreeProps(null);
     }
 
     // Account for the size specs in ComponentContext in case the tree is a NestedTree.
@@ -1796,10 +1794,7 @@ class LayoutState {
         component,
         c);
 
-    if (hasNestedTreeHolder) {
-      c.setTreeProps(null);
-    }
-
+    c.setTreeProps(null);
     c.setWidthSpec(previousWidthSpec);
     c.setHeightSpec(previousHeightSpec);
 
