@@ -29,8 +29,10 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.ViewGroup;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,6 +55,7 @@ public class ComponentTreeIncrementalMountTest {
 
   @Before
   public void setup() {
+    ComponentsConfiguration.incrementalMountUsesLocalVisibleBounds = false;
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
     mComponentTree =
         ComponentTree.create(
@@ -78,6 +81,11 @@ public class ComponentTreeIncrementalMountTest {
             })
         .when(mLithoView)
         .mount(any(LayoutState.class), any(Rect.class), eq(true));
+  }
+
+  @After
+  public void tearDown() {
+    ComponentsConfiguration.incrementalMountUsesLocalVisibleBounds = true;
   }
 
   @Test

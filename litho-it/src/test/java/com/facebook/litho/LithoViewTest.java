@@ -181,11 +181,11 @@ public class LithoViewTest {
     assertThat(mLithoView.getMeasuredWidth()).isEqualTo(0);
     assertThat(mLithoView.getMeasuredHeight()).isEqualTo(200);
 
-    // Attaching will automatically mount since we already have a layout fitting our size.
+    // Attaching will not mount anything as we have no width.
     ShadowView shadow = shadowOf(mLithoView);
     shadow.callOnAttachedToWindow();
 
-    assertThat(getInternalMountItems(mLithoView)).hasSize(2);
+    assertThat(getInternalMountItems(mLithoView)).isNull();
   }
 
   /** This verifies that the width is correct with at most layout params. */

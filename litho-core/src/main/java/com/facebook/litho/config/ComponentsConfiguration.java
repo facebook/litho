@@ -91,16 +91,16 @@ public class ComponentsConfiguration {
    * Whether incremental mount should use the local visible bounds of the {@link
    * com.facebook.litho.LithoView}.
    */
-  public static boolean incrementalMountUsesLocalVisibleBounds = false;
+  public static boolean incrementalMountUsesLocalVisibleBounds = true;
 
   /**
    * Whether incremental mount that begins in {@link com.facebook.litho.LithoView} should use the
    * local visible bounds of the view.
    */
-  public static boolean lithoViewIncrementalMountUsesLocalVisibleBounds = false;
+  public static boolean lithoViewIncrementalMountUsesLocalVisibleBounds = true;
 
   /** Whether we should always perform incremental mount in perform layout. */
-  public static boolean lithoViewAlwaysMountsInPerformLayout = false;
+  public static boolean lithoViewAlwaysMountsInPerformLayout = true;
 
   /** Whether the RecyclerCollectionComponent can asynchronously set the root of a SectionTree. */
   public static boolean setRootAsyncRecyclerCollectionComponent = false;
