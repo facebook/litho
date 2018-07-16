@@ -93,6 +93,7 @@ public class LithoView extends ComponentHost {
   private boolean mDoMeasureInLayout;
   @Nullable private Map<String, ComponentLogParams> mInvalidStateLogParams;
   @Nullable private String mPreviousComponentSimpleName;
+  @Nullable private String mNullComponentCause;
 
   /**
    * Create a new {@link LithoView} instance and initialize it
@@ -522,6 +523,7 @@ public class LithoView extends ComponentHost {
         requestLayout();
       }
     }
+    mNullComponentCause = mComponentTree == null ? "set_CT" : null;
   }
 
   /**
@@ -571,6 +573,7 @@ public class LithoView extends ComponentHost {
     }
 
     mComponentTree = null;
+    mNullComponentCause = "clear_CT";
   }
 
   @Override
@@ -768,6 +771,7 @@ public class LithoView extends ComponentHost {
     if (mComponentTree != null) {
       mComponentTree.release();
       mComponentTree = null;
+      mNullComponentCause = "release_CT";
     }
   }
 
@@ -909,7 +913,8 @@ public class LithoView extends ComponentHost {
     messageBuilder.append("-");
     messageBuilder.append(ZERO_HEIGHT_LOG);
     messageBuilder.append(", current=");
-    messageBuilder.append((mComponentTree == null ? "" : mComponentTree.getSimpleName()));
+    messageBuilder.append(
+        (mComponentTree == null ? "null_" + mNullComponentCause : mComponentTree.getSimpleName()));
     messageBuilder.append(", previous=");
     messageBuilder.append(mPreviousComponentSimpleName);
     messageBuilder.append(", view=");
