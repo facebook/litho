@@ -202,6 +202,11 @@ public abstract class Transition {
     return new SequenceTransitionSet(transitions);
   }
 
+  /** Creates a delayed {@link Transition}s that will run after a delay. */
+  public static <T extends Transition> Transition delay(int delayMs, T transition) {
+    return new DelayTransitionSet(delayMs, transition);
+  }
+
   /**
    * Creates a {@link SpringTransition} with the given tension and friction. Spring physics
    * implementation is taken from Rebound library and we recommend to use demo provided at <a
