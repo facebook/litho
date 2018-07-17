@@ -1354,10 +1354,25 @@ public class RecyclerBinder
         || !mMountedView.hasPendingAdapterUpdates()
         || !mMountedView.isAttachedToWindow()
         || mMountedView.getVisibility() == View.GONE) {
-      final boolean isMounted = (mMountedView != null);
-      while (!mChangeSetCompleteCallbacks.isEmpty()) {
-        mChangeSetCompleteCallbacks.pollFirst().onDataRendered(isMounted);
+      if (mChangeSetCompleteCallbacks.isEmpty()) {
+        // Early return if no callbacks existed.
+        return;
       }
+
+      final boolean isMounted = (mMountedView != null);
+      final Deque<ChangeSetCompleteCallback> snapshotCallbacks =
+          new ArrayDeque<>(mChangeSetCompleteCallbacks);
+      mChangeSetCompleteCallbacks.clear();
+
+      mMainThreadHandler.postAtFrontOfQueue(
+          new Runnable() {
+            @Override
+            public void run() {
+              while (!snapshotCallbacks.isEmpty()) {
+                snapshotCallbacks.pollFirst().onDataRendered(isMounted);
+              }
+            }
+          });
     }
 
     // Otherwise we'll wait for ViewGroup#dispatchDraw(Canvas), which would call this method again
