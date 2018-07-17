@@ -13,8 +13,8 @@
 package com.facebook.samples.litho.animations.animationcomposition;
 
 import android.graphics.Color;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.BounceInterpolator;
+import android.view.animation.LinearInterpolator;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
@@ -59,6 +59,13 @@ public class LeftRightBlocksComponentSpec {
                 .backgroundColor(Color.parseColor("#11ee11"))
                 .transitionKey("green")
                 .build())
+        .child(
+            Row.create(c)
+                .heightDip(40)
+                .widthDip(40)
+                .backgroundColor(Color.BLACK)
+                .transitionKey("black")
+                .build())
         .clickHandler(LeftRightBlocksComponent.onClick(c))
         .build();
   }
@@ -78,10 +85,19 @@ public class LeftRightBlocksComponentSpec {
     return Transition.parallel(
         Transition.create("red")
             .animate(AnimatedProperties.X)
-            .animator(Transition.timing(1000, new AccelerateDecelerateInterpolator())),
-        Transition.create("blue").animate(AnimatedProperties.X).animator(Transition.timing(1000)),
+            .animator(Transition.timing(1000, new LinearInterpolator())),
+        Transition.create("blue")
+            .animate(AnimatedProperties.X)
+            .animator(
+                Transition.timing(
+                    1000)), // uses default interpolator AccelerateDecelerateInterpolator
         Transition.create("green")
             .animate(AnimatedProperties.X)
-            .animator(Transition.timing(1000, new BounceInterpolator())));
+            .animator(Transition.timing(1000, new BounceInterpolator())),
+        Transition.delay(
+            1000,
+            Transition.create("black")
+                .animate(AnimatedProperties.X)
+                .animator(Transition.timing(1000))));
   }
 }
