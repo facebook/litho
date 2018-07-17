@@ -28,6 +28,8 @@ import org.junit.rules.ExternalResource;
  */
 public class AnimationRunnerTestRule extends ExternalResource {
 
+  public static final int FRAME_TIME_MS = MockTimingSource.FRAME_TIME_MS;
+
   private MockTimingSource mFakeTimingSource;
 
   @Override
