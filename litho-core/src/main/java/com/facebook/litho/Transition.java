@@ -48,6 +48,26 @@ import javax.annotation.Nullable;
 public abstract class Transition {
 
   /**
+   * Spring-driven animator with values of {@link SpringConfig#DEFAULT_TENSION} and {@link
+   * SpringConfig#DEFAULT_FRICTION} that has overshooting behavior. Spring physics implementation is
+   * taken from Rebound library and we recommend to use demo provided at <a
+   * href="http://facebook.github.io/rebound/">http://facebook.github.io/rebound</a> to have a
+   * better sense of how friction and tension values work together.
+   */
+  public static final TransitionAnimator SPRING_WITH_OVERSHOOT =
+      new SpringTransitionAnimator(SpringConfig.defaultConfig);
+
+  /**
+   * Spring-driven animator that can be used as alternative to {@link #SPRING_WITH_OVERSHOOT} if
+   * overshoot is not desired. Spring physics implementation is taken from Rebound library and we
+   * recommend to use demo provided at <a
+   * href="http://facebook.github.io/rebound/">http://facebook.github.io/rebound</a> to have a
+   * better sense of how friction and tension values work together.
+   */
+  public static final TransitionAnimator SPRING_WITHOUT_OVERSHOOT =
+      new SpringTransitionAnimator(SpringConfig.noOvershootConfig);
+
+  /**
    * The type of a {@link ComponentTarget}.
    */
   enum ComponentTargetType {
@@ -137,7 +157,7 @@ public abstract class Transition {
     }
   }
 
-  private static final TransitionAnimator DEFAULT_ANIMATOR = new SpringTransitionAnimator();
+  private static final TransitionAnimator DEFAULT_ANIMATOR = SPRING_WITH_OVERSHOOT;
 
   /**
    * Class that knows how to create a {@link TransitionAnimationBinding} given a
@@ -504,18 +524,7 @@ public abstract class Transition {
    */
   public static class SpringTransitionAnimator implements TransitionAnimator {
 
-    @Nullable SpringConfig mSpringConfig;
-
-    /**
-     * Create spring-driven animator with default values of {@link SpringConfig#DEFAULT_FRICTION}
-     * and {@link SpringConfig#DEFAULT_TENSION}. Spring physics implementation is taken from Rebound
-     * library and we recommend to use demo provided at <a
-     * href="http://facebook.github.io/rebound/">http://facebook.github.io/rebound</a> to have a
-     * better sense of how friction and tension values work together.
-     */
-    public SpringTransitionAnimator() {
-      mSpringConfig = null;
-    }
+    final SpringConfig mSpringConfig;
 
     /**
      * Create spring-driven animator with given tension and friction values. Spring physics
@@ -525,6 +534,16 @@ public abstract class Transition {
      */
     public SpringTransitionAnimator(final double tension, final double friction) {
       mSpringConfig = new SpringConfig(tension, friction);
+    }
+
+    /**
+     * Create spring-driven animator with given {@link SpringConfig}. Spring physics implementation
+     * is taken from Rebound library and we recommend to use demo provided at <a
+     * href="http://facebook.github.io/rebound/">http://facebook.github.io/rebound</a> to have a
+     * better sense of how friction and tension values work together.
+     */
+    public SpringTransitionAnimator(SpringConfig springConfig) {
+      mSpringConfig = springConfig;
     }
 
     @Override

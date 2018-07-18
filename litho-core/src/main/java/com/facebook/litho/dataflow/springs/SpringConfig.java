@@ -32,6 +32,9 @@ public class SpringConfig {
   // Taken from the default Quartz Composer spring config of tension=40, friction=7 (in QC units)
   public static SpringConfig defaultConfig = new SpringConfig(DEFAULT_TENSION, DEFAULT_FRICTION);
 
+  // Taken from the default Quartz Composer spring config of tension=70, friction=11 (in QC units)
+  public static SpringConfig noOvershootConfig = new SpringConfig(338.8, 34);
+
   /**
    * constructor for the SpringConfig
    * @param tension tension value for the SpringConfig
