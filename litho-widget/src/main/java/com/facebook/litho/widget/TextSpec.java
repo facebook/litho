@@ -596,12 +596,6 @@ class TextSpec {
         break;
     }
 
-    if (text instanceof Spanned) {
-      Spanned spanned = (Spanned) text;
-      clickableSpans.set(spanned.getSpans(0, text.length(), ClickableSpan.class));
-      imageSpans.set(spanned.getSpans(0, text.length(), ImageSpan.class));
-    }
-
     // Handle custom text truncation:
     if (customEllipsisText != null && !customEllipsisText.equals("")) {
       final int ellipsizedLineNumber = getEllipsizedLineNumber(textLayout.get());
@@ -646,6 +640,13 @@ class TextSpec {
         processedText.set(truncated);
         textLayout.set(newLayout);
       }
+    }
+
+    final CharSequence resultText = processedText.get();
+    if (resultText instanceof Spanned) {
+      Spanned spanned = (Spanned) resultText;
+      clickableSpans.set(spanned.getSpans(0, resultText.length(), ClickableSpan.class));
+      imageSpans.set(spanned.getSpans(0, resultText.length(), ImageSpan.class));
     }
   }
 
