@@ -17,6 +17,7 @@
 package com.facebook.litho.animation;
 
 import android.graphics.drawable.Drawable;
+import android.view.View;
 import com.facebook.litho.OutputUnitsAffinityGroup;
 import com.facebook.litho.dataflow.ValueNode;
 import java.lang.ref.WeakReference;
@@ -35,6 +36,7 @@ public class AnimatedPropertyNode extends ValueNode {
   private final AnimatedProperty mAnimatedProperty;
   private final OutputUnitsAffinityGroup<WeakReference<Object>> mMountContentGroup =
       new OutputUnitsAffinityGroup<>();
+  private boolean mUsingRenderThread;
 
   public AnimatedPropertyNode(
       OutputUnitsAffinityGroup<Object> mountContentGroup, AnimatedProperty animatedProperty) {
@@ -78,6 +80,35 @@ public class AnimatedPropertyNode extends ValueNode {
     return value;
   }
 
+  /**
+   * Sets if the content is being animated on the Render thread, which means that the further passed
+   * are not be applied to the content, but just to be recorded
+   */
+  void setUsingRenderThread(boolean usingRenderThread) {
+    this.mUsingRenderThread = usingRenderThread;
+  }
+
+  /**
+   * If the mount content is just a single {@link android.view.View}- returns that view, otherwise
+   * returns null. Used by {@link RenderThreadTransition} as for now we can only run RT animations
+   * on View
+   */
+  @Nullable
+  View getSingleTargetView() {
+    View view = null;
+    for (int i = 0, size = mMountContentGroup.size(); i < size; i++) {
+      final Object mountContent = resolveReference(mMountContentGroup.getAt(i));
+      if (mountContent == null) {
+        continue;
+      }
+      if (view != null || !(mountContent instanceof View)) {
+        return null;
+      }
+      view = (View) mountContent;
+    }
+    return view;
+  }
+
   private void setMountContentGroupInner(OutputUnitsAffinityGroup<Object> mountContentGroup) {
     mMountContentGroup.clean();
     if (mountContentGroup == null) {
@@ -90,6 +121,10 @@ public class AnimatedPropertyNode extends ValueNode {
   }
 
   private void setValueInner(float value) {
+    if (mUsingRenderThread) {
+      return;
+    }
+
     for (int i = 0, size = mMountContentGroup.size(); i < size; i++) {
       final Object mountContent = resolveReference(mMountContentGroup.getAt(i));
       if (mountContent != null) {

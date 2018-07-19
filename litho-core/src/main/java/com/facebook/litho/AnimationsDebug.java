@@ -23,7 +23,7 @@ import android.util.Log;
  */
 public class AnimationsDebug {
 
-  static final boolean ENABLED = false;
+  public static final boolean ENABLED = false;
   static final String TAG = "LithoAnimationDebug";
 
   static void debugPrintLayoutState(LayoutState layoutState) {
