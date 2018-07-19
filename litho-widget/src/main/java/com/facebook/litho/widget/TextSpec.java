@@ -20,8 +20,6 @@ import static android.support.v4.widget.ExploreByTouchHelper.INVALID_ID;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
-import static com.facebook.litho.annotations.ResType.BOOL;
-import static com.facebook.litho.annotations.ResType.STRING;
 import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_BREAK_STRATEGY;
 import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_EMS;
 import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_HYPHENATION_FREQUENCY;
@@ -131,6 +129,10 @@ import com.facebook.yoga.YogaDirection;
  * @prop customEllipsisText Text used to replace the standard Android ... ellipsis at the end of
  *     truncated lines. Warning: specifying this prop causes measurement to run twice. This can have
  *     a serious performance cost, especially on older devices!
+ * @prop textOffsetOnTouchHandler A handler for touch events that need to know their character
+ *     offset into the text. Will only fire on ACTION_DOWN events that occur at an index within the
+ *     text.
+ * @prop accessibleClickableSpans Whether the text can contain accessible clickable spans.
  */
 @MountSpec(
   isPureRender = true,
@@ -772,7 +774,7 @@ class TextSpec {
   static void onPopulateAccessibilityNode(
       View host,
       AccessibilityNodeInfoCompat node,
-      @Prop(resType = STRING) CharSequence text,
+      @Prop(resType = ResType.STRING) CharSequence text,
       @Prop(optional = true, resType = ResType.BOOL) boolean isSingleLine) {
     if (ViewCompat.getImportantForAccessibility(host)
         == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
@@ -796,7 +798,7 @@ class TextSpec {
 
   @GetExtraAccessibilityNodesCount
   static int getExtraAccessibilityNodesCount(
-      @Prop(optional = true, resType = BOOL) boolean accessibleClickableSpans,
+      @Prop(optional = true, resType = ResType.BOOL) boolean accessibleClickableSpans,
       @FromBoundsDefined ClickableSpan[] clickableSpans) {
     return (accessibleClickableSpans && clickableSpans != null) ? clickableSpans.length : 0;
   }
@@ -807,7 +809,7 @@ class TextSpec {
       int extraNodeIndex,
       int componentBoundsLeft,
       int componentBoundsTop,
-      @Prop(resType = STRING) CharSequence text,
+      @Prop(resType = ResType.STRING) CharSequence text,
       @FromBoundsDefined Layout textLayout,
       @FromBoundsDefined ClickableSpan[] clickableSpans) {
     final Spanned spanned = (Spanned) text;
@@ -861,7 +863,7 @@ class TextSpec {
   static int getExtraAccessibilityNodeAt(
       int x,
       int y,
-      @Prop(resType = STRING) CharSequence text,
+      @Prop(resType = ResType.STRING) CharSequence text,
       @FromBoundsDefined Layout textLayout,
       @FromBoundsDefined ClickableSpan[] clickableSpans) {
     final Spanned spanned = (Spanned) text;
