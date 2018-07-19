@@ -22,7 +22,7 @@ dependencies {
   annotationProcessor 'com.facebook.litho:litho-processor:{{site.litho-version}}'
 
   // SoLoader
-  implementation 'com.facebook.soloader:soloader:0.2.0'
+  implementation 'com.facebook.soloader:soloader:{{site.soloader-version}}'
 
   // For integration with Fresco
   implementation 'com.facebook.litho:litho-fresco:{{site.litho-version}}'
