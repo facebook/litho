@@ -15,7 +15,7 @@
  */
 package com.facebook.litho.dataflow;
 
-import android.view.animation.Interpolator;
+import android.animation.TimeInterpolator;
 
 /**
  * A {@link ValueNode} that will update its value by mapping an input value between 0 to 1.0
@@ -23,9 +23,9 @@ import android.view.animation.Interpolator;
  */
 public class InterpolatorNode extends ValueNode {
 
-  private final Interpolator mInterpolator;
+  private final TimeInterpolator mInterpolator;
 
-  public InterpolatorNode(Interpolator interpolator) {
+  public InterpolatorNode(TimeInterpolator interpolator) {
     mInterpolator = interpolator;
   }
 
