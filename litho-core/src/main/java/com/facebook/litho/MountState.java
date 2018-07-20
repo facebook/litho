@@ -390,6 +390,12 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return;
     }
 
+    // MOUNT events that don't mount any content are not valuable enough to log at the moment.
+    // We will likely enable them again in the future. T31729233
+    if (mMountStats.mountedCount == 0) {
+      return;
+    }
+
     mountPerfEvent.markerAnnotate(PARAM_MOUNTED_COUNT, mMountStats.mountedCount);
     mountPerfEvent.markerAnnotate(
         PARAM_MOUNTED_CONTENT, mMountStats.mountedNames.toArray(new String[0]));

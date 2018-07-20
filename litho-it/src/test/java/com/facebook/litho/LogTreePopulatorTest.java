@@ -17,10 +17,9 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.support.annotation.Nullable;
@@ -40,7 +39,8 @@ public class LogTreePopulatorTest {
 
   @Before
   public void setup() throws Exception {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext =
+        new ComponentContext(RuntimeEnvironment.application, "test", new TestComponentsLogger());
   }
 
   @Test
@@ -70,6 +70,33 @@ public class LogTreePopulatorTest {
   }
 
   @Test
+  public void testSkipOnEmptyTag() {
+    final BaseComponentsLogger logger =
+        new TestComponentsLogger() {
+          @Nullable
+          @Override
+          public Map<String, String> getExtraAnnotations(TreeProps treeProps) {
+            final Object o = treeProps.get(MyKey.class);
+
+            final Map<String, String> map = new HashMap<>(1);
+            map.put("my_key", String.valueOf((int) o));
+
+            return map;
+          }
+        };
+
+    final PerfEvent event = mock(PerfEvent.class);
+    final TreeProps treeProps = new TreeProps();
+    treeProps.put(MyKey.class, 1337);
+    mContext.setTreeProps(treeProps);
+
+    final ComponentContext noLogTagContext = new ComponentContext(RuntimeEnvironment.application);
+    LogTreePopulator.populatePerfEventFromLogger(noLogTagContext, logger, event);
+
+    verifyNoMoreInteractions(event);
+  }
+
+  @Test
   public void testNullTreePropLogger() {
     final BaseComponentsLogger logger =
         new TestComponentsLogger() {
@@ -87,7 +114,8 @@ public class LogTreePopulatorTest {
 
     LogTreePopulator.populatePerfEventFromLogger(mContext, logger, event);
 
-    verify(event, never()).markerAnnotate(anyString(), anyString());
+    verify(event).markerAnnotate("log_tag", "test");
+    verifyNoMoreInteractions(event);
   }
 
   @Test

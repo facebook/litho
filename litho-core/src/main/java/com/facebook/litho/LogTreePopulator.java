@@ -33,9 +33,11 @@ public final class LogTreePopulator {
   public static void populatePerfEventFromLogger(
       ComponentContext c, ComponentsLogger logger, PerfEvent perfEvent) {
     final String logTag = c.getLogTag();
-    if (logTag != null) {
-      perfEvent.markerAnnotate(FrameworkLogEvents.PARAM_LOG_TAG, logTag);
+    if (logTag == null) {
+      return;
     }
+
+    perfEvent.markerAnnotate(FrameworkLogEvents.PARAM_LOG_TAG, logTag);
 
     @Nullable final TreeProps treeProps = c.getTreeProps();
     if (treeProps == null) {

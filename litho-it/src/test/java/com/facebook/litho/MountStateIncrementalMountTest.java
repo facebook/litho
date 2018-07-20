@@ -615,11 +615,15 @@ public class MountStateIncrementalMountTest {
                   }
                 })
             .findFirst();
-    assertThat(perfEvent.isPresent()).isTrue();
 
-    final Map<String, Object> annotations = perfEvent.get().getAnnotations();
-    assertThat(annotations).containsEntry(PARAM_MOUNTED_COUNT, mountedCount);
-    assertThat(annotations).containsEntry(PARAM_UNMOUNTED_COUNT, unmountedCount);
+    // Disabled as part of T31729233.
+    if (mountedCount > 0) {
+      assertThat(perfEvent.isPresent()).isTrue();
+
+      final Map<String, Object> annotations = perfEvent.get().getAnnotations();
+      assertThat(annotations).containsEntry(PARAM_MOUNTED_COUNT, mountedCount);
+      assertThat(annotations).containsEntry(PARAM_UNMOUNTED_COUNT, unmountedCount);
+    }
 
     mComponentsLogger.reset();
   }
