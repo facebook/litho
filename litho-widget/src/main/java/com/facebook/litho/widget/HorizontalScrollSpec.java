@@ -173,7 +173,7 @@ class HorizontalScrollSpec {
       @Prop Component contentProps,
       @Prop(optional = true, resType = ResType.BOOL) boolean scrollbarEnabled,
       @Prop(optional = true) HorizontalScrollEventsController eventsController,
-      @State(canUpdateLazily = true) final int lastScrollPosition,
+      @State final ScrollPosition lastScrollPosition,
       @FromBoundsDefined int componentWidth,
       @FromBoundsDefined int componentHeight,
       @FromBoundsDefined final YogaDirection layoutDirection) {
@@ -187,14 +187,13 @@ class HorizontalScrollSpec {
           public boolean onPreDraw() {
             horizontalScrollLithoView.getViewTreeObserver().removeOnPreDrawListener(this);
 
-            if (lastScrollPosition == LAST_SCROLL_POSITION_UNSET) {
+            if (lastScrollPosition.x == LAST_SCROLL_POSITION_UNSET) {
               if (layoutDirection == YogaDirection.RTL) {
                 horizontalScrollLithoView.fullScroll(HorizontalScrollView.FOCUS_RIGHT);
               }
-              HorizontalScroll.lazyUpdateLastScrollPosition(
-                  context, horizontalScrollLithoView.getScrollX());
+              lastScrollPosition.x = horizontalScrollLithoView.getScrollX();
             } else {
-              horizontalScrollLithoView.setScrollX(lastScrollPosition);
+              horizontalScrollLithoView.setScrollX(lastScrollPosition.x);
             }
 
             return true;
@@ -204,8 +203,7 @@ class HorizontalScrollSpec {
         new ViewTreeObserver.OnScrollChangedListener() {
           @Override
           public void onScrollChanged() {
-            HorizontalScroll.lazyUpdateLastScrollPosition(
-                context, horizontalScrollLithoView.getScrollX());
+            lastScrollPosition.x = horizontalScrollLithoView.getScrollX();
           }
         });
 
@@ -230,10 +228,12 @@ class HorizontalScrollSpec {
   @OnCreateInitialState
   static void onCreateInitialState(
       ComponentContext c,
-      StateValue<Integer> lastScrollPosition,
+      StateValue<ScrollPosition> lastScrollPosition,
       @Prop(optional = true) Integer initialScrollPosition) {
+
     lastScrollPosition.set(
-        initialScrollPosition == null ? LAST_SCROLL_POSITION_UNSET : initialScrollPosition);
+        new ScrollPosition(
+            initialScrollPosition == null ? LAST_SCROLL_POSITION_UNSET : initialScrollPosition));
   }
 
   static class HorizontalScrollLithoView extends HorizontalScrollView {
@@ -296,5 +296,13 @@ class HorizontalScrollSpec {
 
   private static void releaseSize(Size size) {
     sSizePool.release(size);
+  }
+
+  static class ScrollPosition {
+    int x;
+
+    ScrollPosition(int initialX) {
+      this.x = initialX;
+    }
   }
 }
