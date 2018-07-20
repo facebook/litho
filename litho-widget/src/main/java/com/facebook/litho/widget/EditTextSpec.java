@@ -125,6 +125,9 @@ import java.util.concurrent.atomic.AtomicReference;
  * @prop stateUpdatePolicy A policy describing when and how internal state should be updated. This
  *     does violate encapsulation, but is essential for optimization, so costly state updates, which
  *     trigger relayout, happen only when is really needed.
+ * @prop textWatcher A text watcher. Mainly designed to add decoration spans to the text during
+ *     input. Usually you should use an {@link InputFilter} instead, but an {@link InputFilter}
+ *     won't allow you to decorate the text outside of the changed selection.
  */
 @MountSpec(
   isPureRender = true,
@@ -456,7 +459,8 @@ class EditTextSpec {
   static void onBind(
       ComponentContext c,
       EditTextWithEventHandlers editText,
-      @Prop(optional = true) EditTextStateUpdatePolicy stateUpdatePolicy) {
+      @Prop(optional = true) EditTextStateUpdatePolicy stateUpdatePolicy,
+      @Prop(optional = true) TextWatcher textWatcher) {
     editText.setComponentContext(c);
     editText.setTextChangedEventHandler(
         com.facebook.litho.widget.EditText.getTextChangedEventHandler(c));
@@ -464,7 +468,7 @@ class EditTextSpec {
         com.facebook.litho.widget.EditText.getSelectionChangedEventHandler(c));
     editText.setKeyUpEventHandler(com.facebook.litho.widget.EditText.getKeyUpEventHandler(c));
     editText.setStateUpdatePolicy(stateUpdatePolicy);
-    editText.attachWatcher();
+    editText.attachWatcher(textWatcher);
   }
 
   @OnUnbind
@@ -678,46 +682,61 @@ class EditTextSpec {
   }
 
   static class EditTextWithEventHandlers extends EditText {
-    private final TextWatcher mTextWatcher;
+    private final DelegatingTextWatcher mTextWatcher;
     private ComponentContext mComponentContext;
     private EditTextStateUpdatePolicy mStateUpdatePolicy;
     private EventHandler mTextChangedEventHandler;
     private EventHandler mSelectionChangedEventHandler;
     private EventHandler mKeyUpEventHandler;
 
+    private class DelegatingTextWatcher implements TextWatcher {
+
+      @Nullable TextWatcher mDelegate;
+      int mPrevLineCount;
+
+      public void setDelegate(@Nullable TextWatcher delegate) {
+        mDelegate = delegate;
+      }
+
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        if (mDelegate != null) {
+          mDelegate.beforeTextChanged(s, start, count, after);
+        }
+        // Only need the previous line count when state update policy is ON_LINE_COUNT_CHANGE
+        if (mStateUpdatePolicy == UPDATE_ON_LINE_COUNT_CHANGE) {
+          mPrevLineCount = getLineCount();
+        }
+      }
+
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+        if (mDelegate != null) {
+          mDelegate.onTextChanged(s, start, before, count);
+        }
+        if ((mStateUpdatePolicy == UPDATE_ON_LINE_COUNT_CHANGE && mPrevLineCount != getLineCount())
+            || mStateUpdatePolicy == UPDATE_ON_TEXT_CHANGE) {
+          com.facebook.litho.widget.EditText.updateInput(mComponentContext, s.toString());
+        } else if (mStateUpdatePolicy != NO_UPDATES) {
+          com.facebook.litho.widget.EditText.lazyUpdateInput(mComponentContext, s.toString());
+        }
+      }
+
+      @Override
+      public void afterTextChanged(Editable s) {
+        if (mDelegate != null) {
+          mDelegate.afterTextChanged(s);
+        }
+        if (mTextChangedEventHandler != null) {
+          com.facebook.litho.widget.EditText.dispatchTextChangedEvent(
+              mTextChangedEventHandler, s.toString());
+        }
+      }
+    }
+
     EditTextWithEventHandlers(Context context) {
       super(context);
-      this.mTextWatcher =
-          new TextWatcher() {
-            int mPrevLineCount;
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-              // Only need the previous line count when state update policy is ON_LINE_COUNT_CHANGE
-              if (mStateUpdatePolicy == UPDATE_ON_LINE_COUNT_CHANGE) {
-                mPrevLineCount = getLineCount();
-              }
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-              if ((mStateUpdatePolicy == UPDATE_ON_LINE_COUNT_CHANGE
-                      && mPrevLineCount != getLineCount())
-                  || mStateUpdatePolicy == UPDATE_ON_TEXT_CHANGE) {
-                com.facebook.litho.widget.EditText.updateInput(mComponentContext, s.toString());
-              } else if (mStateUpdatePolicy != NO_UPDATES) {
-                com.facebook.litho.widget.EditText.lazyUpdateInput(mComponentContext, s.toString());
-              }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-              if (mTextChangedEventHandler != null) {
-                com.facebook.litho.widget.EditText.dispatchTextChangedEvent(
-                    mTextChangedEventHandler, s.toString());
-              }
-            }
-          };
+      this.mTextWatcher = new DelegatingTextWatcher();
     }
 
     @Override
@@ -765,11 +784,13 @@ class EditTextSpec {
       mKeyUpEventHandler = null;
     }
 
-    void attachWatcher() {
+    void attachWatcher(@Nullable TextWatcher textWatcher) {
+      mTextWatcher.setDelegate(textWatcher);
       addTextChangedListener(mTextWatcher);
     }
 
     void detachWatcher() {
+      mTextWatcher.setDelegate(null);
       removeTextChangedListener(mTextWatcher);
     }
   }
