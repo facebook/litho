@@ -2994,6 +2994,83 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void testRemoveItemsAsyncBeforeMeasure() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<Component> components = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 6; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      components.add(component);
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(0, 3));
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(3, 6));
+    recyclerBinder.removeRangeAtAsync(0, 3);
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY), null);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getRenderInfoAt(0)).isEqualTo(renderInfos.get(0));
+    assertThat(recyclerBinder.getRenderInfoAt(1)).isEqualTo(renderInfos.get(1));
+    assertThat(recyclerBinder.getRenderInfoAt(2)).isEqualTo(renderInfos.get(2));
+
+    final Component component0 =
+        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+    final Component component1 =
+        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+    final Component component2 =
+        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+
+    recyclerBinder.updateItemAtAsync(0, ComponentRenderInfo.create().component(component0).build());
+    recyclerBinder.updateItemAtAsync(1, ComponentRenderInfo.create().component(component1).build());
+    recyclerBinder.updateItemAtAsync(2, ComponentRenderInfo.create().component(component2).build());
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(3);
+    assertThat(recyclerBinder.getRenderInfoAt(0).getComponent()).isEqualTo(component0);
+    assertThat(recyclerBinder.getRenderInfoAt(1).getComponent()).isEqualTo(component1);
+    assertThat(recyclerBinder.getRenderInfoAt(2).getComponent()).isEqualTo(component2);
+  }
+
+  @Test
+  public void testRemoveAllItemsAsyncBeforeMeasure() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<Component> components = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 6; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      components.add(component);
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.insertRangeAtAsync(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    recyclerBinder.removeRangeAtAsync(0, renderInfos.size());
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY), null);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+  }
+
+  @Test
   public void testRenderStateWithNotifyItemRenderCompleteAt() {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
