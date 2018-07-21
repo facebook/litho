@@ -115,7 +115,7 @@ static void onMeasure(
 
   // If height is undefined, use 1.5 aspect ratio.
   if (SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
-    size.height = width * 1.5;
+    size.height = (int) (size.width * 1.5);
   } else {
     size.height = SizeSpec.getSize(heightSpec);
   }
