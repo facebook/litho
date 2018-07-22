@@ -52,4 +52,4 @@ Text.create(c)
     .textSizeRes(R.dimen.my_text_size)
     .grow(1f)
 ```
-You can check the full [Yoga](https://facebook.github.io/yoga/docs/learn-more/) documentation to see all the layout features that the framework exposes.
+You can check the full [Yoga](https://yogalayout.com/docs/) documentation to see all the layout features that the framework exposes.
