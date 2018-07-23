@@ -25,6 +25,7 @@ import com.facebook.litho.ComponentLifecycle.StateContainer;
 import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.concurrent.GuardedBy;
@@ -76,6 +77,13 @@ public class StateHandler {
   @GuardedBy("this")
   public Map<String, StateContainer> mStateContainers;
 
+  /**
+   * Contains all keys of components that were present in the current ComponentTree and therefore
+   * their StateContainer needs to be kept around.
+   */
+  @GuardedBy("this")
+  public HashSet<String> mNeededStateContainers;
+
   void init(@Nullable StateHandler stateHandler) {
     if (stateHandler == null) {
       return;
@@ -126,6 +134,7 @@ public class StateHandler {
   @ThreadSafe(enableChecks = false)
   void applyStateUpdatesForComponent(Component component) {
     maybeInitStateContainers();
+    maybeInitNeededStateContainers();
 
     if (!component.hasState()) {
       return;
@@ -137,6 +146,7 @@ public class StateHandler {
 
     synchronized (this) {
       currentStateContainer = mStateContainers.get(key);
+      mNeededStateContainers.add(key);
     }
 
     if (currentStateContainer != null) {
@@ -185,6 +195,7 @@ public class StateHandler {
    */
   void commit(StateHandler stateHandler) {
     clearStateUpdates(stateHandler.getPendingStateUpdates());
+    clearUnusedStateContainers(stateHandler);
     copyCurrentStateContainers(stateHandler.getStateContainers());
     copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
   }
@@ -234,6 +245,8 @@ public class StateHandler {
       sStateContainersMapPool.release(mStateContainers);
       mStateContainers = null;
     }
+
+    mNeededStateContainers = null;
   }
 
   private static List<StateUpdate> acquireStateUpdatesList() {
@@ -315,7 +328,24 @@ public class StateHandler {
 
     synchronized (this) {
       maybeInitStateContainers();
+      mStateContainers.clear();
       mStateContainers.putAll(stateContainers);
+    }
+  }
+
+  private static void clearUnusedStateContainers(StateHandler currentStateHandler) {
+    final HashSet<String> neededStateContainers = currentStateHandler.mNeededStateContainers;
+    final List<String> stateContainerKeys = new ArrayList<>();
+    if (neededStateContainers == null || currentStateHandler.mStateContainers == null) {
+      return;
+    }
+
+    stateContainerKeys.addAll(currentStateHandler.mStateContainers.keySet());
+
+    for (String key : stateContainerKeys) {
+      if (!neededStateContainers.contains(key)) {
+        currentStateHandler.mStateContainers.remove(key);
+      }
     }
   }
 
@@ -337,6 +367,12 @@ public class StateHandler {
       if (mStateContainers == null) {
         mStateContainers = new HashMap<>(INITIAL_MAP_CAPACITY);
       }
+    }
+  }
+
+  private synchronized void maybeInitNeededStateContainers() {
+    if (mNeededStateContainers == null) {
+      mNeededStateContainers = new HashSet<>();
     }
   }
 

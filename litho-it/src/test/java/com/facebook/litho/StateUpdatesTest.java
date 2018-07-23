@@ -20,9 +20,7 @@ import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import android.os.Looper;
 import com.facebook.litho.ComponentLifecycle.StateContainer;
@@ -144,6 +142,7 @@ public class StateUpdatesTest {
   private TestComponent mTestComponent;
   private ComponentTree mComponentTree;
   private ComponentsLogger mComponentsLogger;
+  private LithoView mLithoView;
 
   @Before
   public void setup() throws Exception {
@@ -159,10 +158,10 @@ public class StateUpdatesTest {
     mTestComponent = new TestComponent();
 
     mComponentTree = ComponentTree.create(mContext, mTestComponent).build();
-    final LithoView lithoView = new LithoView(mContext);
-    lithoView.setComponentTree(mComponentTree);
-    lithoView.onAttachedToWindow();
-    ComponentTestHelper.measureAndLayout(lithoView);
+    mLithoView = new LithoView(mContext);
+    mLithoView.setComponentTree(mComponentTree);
+    mLithoView.onAttachedToWindow();
+    ComponentTestHelper.measureAndLayout(mLithoView);
   }
 
   @Test
@@ -222,6 +221,25 @@ public class StateUpdatesTest {
         (TestStateContainer) getStateContainersMap().get(mTestComponent.getGlobalKey());
     assertThat(previousStateContainer).isNotNull();
     assertThat(previousStateContainer.mCount).isEqualTo(INITIAL_COUNT_STATE_VALUE + 1);
+  }
+
+  @Test
+  public void testClearUnusedStateContainers() {
+    mComponentTree.updateStateSync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+
+    assertThat(getStateContainersMap().keySet().size()).isEqualTo(1);
+    assertThat(getStateContainersMap().keySet().contains(mTestComponent.getGlobalKey())).isTrue();
+
+    final Component child1 = new TestComponent();
+    child1.setKey("key");
+
+    mLithoView.setComponent(child1);
+    mLithoView.onAttachedToWindow();
+    ComponentTestHelper.measureAndLayout(mLithoView);
+    mComponentTree.updateStateSync(child1.getGlobalKey(), new TestStateUpdate(), "test");
+
+    assertThat(getStateContainersMap().keySet().size()).isEqualTo(1);
+    assertThat(getStateContainersMap().keySet().contains("key")).isTrue();
   }
 
   @Test
