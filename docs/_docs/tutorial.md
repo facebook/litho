@@ -28,7 +28,7 @@ public class SampleApplication extends Application {
 }
 ```
 
-Behind the scenes, Litho uses [Yoga](https://facebook.github.io/yoga/) for layout. Yoga has native dependencies and [SoLoader](https://github.com/facebook/SoLoader) is brought in to take care of loading those. Initializing `SoLoader` here ensures that you're not referencing unloaded libraries later on.
+Behind the scenes, Litho uses [Yoga](https://yogalayout.com/docs/) for layout. Yoga has native dependencies and [SoLoader](https://github.com/facebook/SoLoader) is brought in to take care of loading those. Initializing `SoLoader` here ensures that you're not referencing unloaded libraries later on.
 
 Next, add a predefined [Text](/javadoc/com/facebook/litho/widget/Text) Litho component to an activity:
 
@@ -102,7 +102,7 @@ public class ListItemSpec {
 }
 ```
 
-You should recognize the `Text` component from the previous tutorial step. In this example, you're passing it in as a `child` property of a [Column](/javadoc/com/facebook/litho/Column). You can think of a `Column` as equivalent to a `<div>` in HTML.  It's a wrapper, used mainly for collating things together and perhaps adding some background styling.  Since Litho uses [Yoga](https://facebook.github.io/yoga/), you can add flexbox attributes to set the layout for the children of a `Column` or a `Row`. Here, you simply set the padding and the background color.
+You should recognize the `Text` component from the previous tutorial step. In this example, you're passing it in as a `child` property of a [Column](/javadoc/com/facebook/litho/Column). You can think of a `Column` as equivalent to a `<div>` in HTML.  It's a wrapper, used mainly for collating things together and perhaps adding some background styling.  Since Litho uses [Yoga](https://yogalayout.com/docs/), you can add flexbox attributes to set the layout for the children of a `Column` or a `Row`. Here, you simply set the padding and the background color.
 
 How do you render this component? In your activity, simply change the `Component` definition to:
 

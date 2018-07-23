@@ -4,7 +4,7 @@ title: Custom Layout
 layout: docs
 permalink: /docs/custom-layout.html
 ---
-Litho relies on [Yoga](https://facebook.github.io/yoga/), a powerful layout engine that is able to create very complex UIs, for layout calculations.  However, there are few exceptions where Yoga is not enough and you may need to implement your own measuring and layout. 
+Litho relies on [Yoga](https://yogalayout.com/docs/), a powerful layout engine that is able to create very complex UIs, for layout calculations.  However, there are few exceptions where Yoga is not enough and you may need to implement your own measuring and layout. 
 
 Litho provides a custom layout API for accessing size information while the [ComponentTree](/javadoc/com/facebook/litho/ComponentTree) is being created and measured, as well as the possibility to measure a component in isolation.
 

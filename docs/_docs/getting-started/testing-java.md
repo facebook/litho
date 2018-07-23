@@ -2,7 +2,7 @@
 
 You can test your install by adding a view created with Litho to an activity.
 
-First, initialize `SoLoader`. Litho has a dependency on [SoLoader](https://github.com/facebook/SoLoader) to help load native libraries provided by the underlying layout engine, [Yoga](https://facebook.github.io/yoga/). Your `Application` class is a good place to do this:
+First, initialize `SoLoader`. Litho has a dependency on [SoLoader](https://github.com/facebook/SoLoader) to help load native libraries provided by the underlying layout engine, [Yoga](https://yogalayout.com/docs/). Your `Application` class is a good place to do this:
 
 ```java
 [MyApplication.java]
