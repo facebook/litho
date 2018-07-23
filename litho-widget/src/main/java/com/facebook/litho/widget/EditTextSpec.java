@@ -125,9 +125,9 @@ import java.util.concurrent.atomic.AtomicReference;
  * @prop stateUpdatePolicy A policy describing when and how internal state should be updated. This
  *     does violate encapsulation, but is essential for optimization, so costly state updates, which
  *     trigger relayout, happen only when is really needed.
- * @prop textWatcher A text watcher. Mainly designed to add decoration spans to the text during
- *     input. Usually you should use an {@link InputFilter} instead, but an {@link InputFilter}
- *     won't allow you to decorate the text outside of the changed selection.
+ * @prop textWatcher The text watchers to apply to the text. Mainly designed to add decoration spans
+ *     to the text during input. Usually you should use an {@link InputFilter} instead, but an
+ *     {@link InputFilter} won't allow you to decorate the text outside of the changed selection.
  */
 @MountSpec(
   isPureRender = true,
@@ -460,7 +460,7 @@ class EditTextSpec {
       ComponentContext c,
       EditTextWithEventHandlers editText,
       @Prop(optional = true) EditTextStateUpdatePolicy stateUpdatePolicy,
-      @Prop(optional = true) TextWatcher textWatcher) {
+      @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers) {
     editText.setComponentContext(c);
     editText.setTextChangedEventHandler(
         com.facebook.litho.widget.EditText.getTextChangedEventHandler(c));
@@ -468,12 +468,12 @@ class EditTextSpec {
         com.facebook.litho.widget.EditText.getSelectionChangedEventHandler(c));
     editText.setKeyUpEventHandler(com.facebook.litho.widget.EditText.getKeyUpEventHandler(c));
     editText.setStateUpdatePolicy(stateUpdatePolicy);
-    editText.attachWatcher(textWatcher);
+    editText.attachWatchers(textWatchers);
   }
 
   @OnUnbind
   static void onUnbind(ComponentContext c, EditTextWithEventHandlers editText) {
-    editText.detachWatcher();
+    editText.detachWatchers();
     editText.clear();
   }
 
@@ -691,17 +691,19 @@ class EditTextSpec {
 
     private class DelegatingTextWatcher implements TextWatcher {
 
-      @Nullable TextWatcher mDelegate;
+      @Nullable List<TextWatcher> mDelegates;
       int mPrevLineCount;
 
-      public void setDelegate(@Nullable TextWatcher delegate) {
-        mDelegate = delegate;
+      public void setDelegates(@Nullable List<TextWatcher> delegates) {
+        mDelegates = delegates;
       }
 
       @Override
       public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        if (mDelegate != null) {
-          mDelegate.beforeTextChanged(s, start, count, after);
+        if (mDelegates != null) {
+          for (int i = 0, stop = mDelegates.size(); i < stop; i++) {
+            mDelegates.get(i).beforeTextChanged(s, start, count, after);
+          }
         }
         // Only need the previous line count when state update policy is ON_LINE_COUNT_CHANGE
         if (mStateUpdatePolicy == UPDATE_ON_LINE_COUNT_CHANGE) {
@@ -711,8 +713,10 @@ class EditTextSpec {
 
       @Override
       public void onTextChanged(CharSequence s, int start, int before, int count) {
-        if (mDelegate != null) {
-          mDelegate.onTextChanged(s, start, before, count);
+        if (mDelegates != null) {
+          for (int i = 0, stop = mDelegates.size(); i < stop; i++) {
+            mDelegates.get(i).onTextChanged(s, start, before, count);
+          }
         }
         if ((mStateUpdatePolicy == UPDATE_ON_LINE_COUNT_CHANGE && mPrevLineCount != getLineCount())
             || mStateUpdatePolicy == UPDATE_ON_TEXT_CHANGE) {
@@ -724,8 +728,10 @@ class EditTextSpec {
 
       @Override
       public void afterTextChanged(Editable s) {
-        if (mDelegate != null) {
-          mDelegate.afterTextChanged(s);
+        if (mDelegates != null) {
+          for (int i = 0, stop = mDelegates.size(); i < stop; i++) {
+            mDelegates.get(i).afterTextChanged(s);
+          }
         }
         if (mTextChangedEventHandler != null) {
           com.facebook.litho.widget.EditText.dispatchTextChangedEvent(
@@ -784,13 +790,13 @@ class EditTextSpec {
       mKeyUpEventHandler = null;
     }
 
-    void attachWatcher(@Nullable TextWatcher textWatcher) {
-      mTextWatcher.setDelegate(textWatcher);
+    void attachWatchers(@Nullable List<TextWatcher> textWatchers) {
+      mTextWatcher.setDelegates(textWatchers);
       addTextChangedListener(mTextWatcher);
     }
 
-    void detachWatcher() {
-      mTextWatcher.setDelegate(null);
+    void detachWatchers() {
+      mTextWatcher.setDelegates(null);
       removeTextChangedListener(mTextWatcher);
     }
   }
