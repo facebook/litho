@@ -125,9 +125,15 @@ import java.util.concurrent.atomic.AtomicReference;
  * @prop stateUpdatePolicy A policy describing when and how internal state should be updated. This
  *     does violate encapsulation, but is essential for optimization, so costly state updates, which
  *     trigger relayout, happen only when is really needed.
+ * @prop inputFilter The {@link InputFilter}s to apply to the text. Usually you can use these to
+ *     apply spans, restrict text input, and do general text manipulation for added text.
  * @prop textWatcher The text watchers to apply to the text. Mainly designed to add decoration spans
  *     to the text during input. Usually you should use an {@link InputFilter} instead, but an
  *     {@link InputFilter} won't allow you to decorate the text outside of the changed selection.
+ * @prop highlightColor The color to apply to highlights within the text.
+ * @prop hintColor The color to apply to the hint text.
+ * @prop hintColorStateList A {@link ColorStateList to use for the hint text}.
+ * @prop linkColor The color to apply to links within the text.
  */
 @MountSpec(
   isPureRender = true,
