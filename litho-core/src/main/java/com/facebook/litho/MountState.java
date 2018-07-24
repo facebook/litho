@@ -2425,9 +2425,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void updateDisappearingMountItems(LayoutState newLayoutState) {
-    SimpleArrayMap<String, ?> nextMountedTransitionKeys = newLayoutState.getTransitionKeyMapping();
-    for (int i = 0, size = nextMountedTransitionKeys.size(); i < size; i++) {
-      final String transitionKey = nextMountedTransitionKeys.keyAt(i);
+    final Map<String, ?> nextMountedTransitionKeys = newLayoutState.getTransitionKeyMapping();
+    for (String transitionKey : nextMountedTransitionKeys.keySet()) {
       final OutputUnitsAffinityGroup<MountItem> disappearingItem =
           mDisappearingMountItems.remove(transitionKey);
       if (disappearingItem != null) {
@@ -2441,9 +2440,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     mTransitionManager.setupTransitions(mLastMountedLayoutState, newLayoutState, rootTransition);
 
-    SimpleArrayMap<String, ?> nextTransitionKeys = newLayoutState.getTransitionKeyMapping();
-    for (int i = 0, size = nextTransitionKeys.size(); i < size; i++) {
-      final String transitionKey = nextTransitionKeys.keyAt(i);
+    final Map<String, ?> nextTransitionKeys = newLayoutState.getTransitionKeyMapping();
+    for (String transitionKey : nextTransitionKeys.keySet()) {
       if (mTransitionManager.isKeyAnimating(transitionKey)) {
         mAnimatingTransitionKeys.add(transitionKey);
       }
@@ -2451,11 +2449,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void regenerateAnimationLockedIndices(LayoutState newLayoutState) {
-    final SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>> transitionMapping =
+    final Map<String, OutputUnitsAffinityGroup<LayoutOutput>> transitionMapping =
         newLayoutState.getTransitionKeyMapping();
     if (transitionMapping != null) {
-      for (int i = 0, size = transitionMapping.size(); i < size; i++) {
-        final String key = transitionMapping.keyAt(i);
+      for (String key : transitionMapping.keySet()) {
         if (!mAnimatingTransitionKeys.contains(key)) {
           continue;
         }
@@ -2464,7 +2461,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           mAnimationLockedIndices = new int[newLayoutState.getMountableOutputCount()];
         }
 
-        final OutputUnitsAffinityGroup<LayoutOutput> group = transitionMapping.valueAt(i);
+        final OutputUnitsAffinityGroup<LayoutOutput> group = transitionMapping.get(key);
         for (int j = 0, sz = group.size(); j < sz; j++) {
           final LayoutOutput layoutOutput = group.getAt(j);
           final int position = newLayoutState.getLayoutOutputPositionForId(layoutOutput.getId());

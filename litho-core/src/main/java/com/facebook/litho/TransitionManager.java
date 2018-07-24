@@ -40,7 +40,9 @@ import com.facebook.litho.internal.ArraySet;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Handles animating transitions defined by ComponentSpec's onCreateTransition code.
@@ -228,42 +230,37 @@ public class TransitionManager {
       mAnimationStates.valueAt(i).seenInLastTransition = false;
     }
 
-    final SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>> nextTransitionKeys =
+    final Map<String, OutputUnitsAffinityGroup<LayoutOutput>> nextTransitionKeys =
         nextLayoutState.getTransitionKeyMapping();
     if (currentLayoutState == null) {
-      for (int i = 0, size = nextTransitionKeys.size(); i < size; i++) {
-        final String transitionKey = nextTransitionKeys.keyAt(i);
+      for (String transitionKey : nextTransitionKeys.keySet()) {
         final OutputUnitsAffinityGroup<LayoutOutput> nextLayoutOutputsGroup =
-            nextTransitionKeys.valueAt(i);
+            nextTransitionKeys.get(transitionKey);
         recordLayoutOutputsGroupDiff(transitionKey, null, nextLayoutOutputsGroup);
       }
     } else {
-      final SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>> currentTransitionKeys =
+      final Map<String, OutputUnitsAffinityGroup<LayoutOutput>> currentTransitionKeys =
           currentLayoutState.getTransitionKeyMapping();
-      final boolean[] seenIndicesInNewLayout = new boolean[currentTransitionKeys.size()];
-      for (int i = 0, size = nextTransitionKeys.size(); i < size; i++) {
-        final String transitionKey = nextTransitionKeys.keyAt(i);
+      final HashSet<String> seenKeysInNewLayout = new HashSet<>();
+      for (String transitionKey : nextTransitionKeys.keySet()) {
         final OutputUnitsAffinityGroup<LayoutOutput> nextLayoutOutputsGroup =
-            nextTransitionKeys.valueAt(i);
+            nextTransitionKeys.get(transitionKey);
 
-        final int currentIndex = currentTransitionKeys.indexOfKey(transitionKey);
-
-        OutputUnitsAffinityGroup<LayoutOutput> currentLayoutOutputsGroup = null;
-        if (currentIndex >= 0) {
-          currentLayoutOutputsGroup = currentTransitionKeys.valueAt(currentIndex);
-          seenIndicesInNewLayout[currentIndex] = true;
+        final OutputUnitsAffinityGroup<LayoutOutput> currentLayoutOutputsGroup =
+            currentTransitionKeys.get(transitionKey);
+        if (currentLayoutOutputsGroup != null) {
+          seenKeysInNewLayout.add(transitionKey);
         }
 
         recordLayoutOutputsGroupDiff(
             transitionKey, currentLayoutOutputsGroup, nextLayoutOutputsGroup);
       }
 
-      for (int i = 0, size = currentTransitionKeys.size(); i < size; i++) {
-        if (seenIndicesInNewLayout[i]) {
+      for (String transitionKey : currentTransitionKeys.keySet()) {
+        if (seenKeysInNewLayout.contains(transitionKey)) {
           continue;
         }
-        recordLayoutOutputsGroupDiff(
-            currentTransitionKeys.keyAt(i), currentTransitionKeys.valueAt(i), null);
+        recordLayoutOutputsGroupDiff(transitionKey, currentTransitionKeys.get(transitionKey), null);
       }
     }
 

@@ -22,7 +22,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Rect;
-import android.support.v4.util.SimpleArrayMap;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.animation.PropertyAnimation;
@@ -31,7 +30,9 @@ import com.facebook.litho.animation.SpringTransition;
 import com.facebook.litho.animation.TransitionAnimationBinding;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -373,8 +374,8 @@ public class TransitionManagerAnimationCreationTest {
   /** @return a mock LayoutState that only has a transition key -> LayoutOutput mapping. */
   private LayoutState createMockLayoutState(
       TransitionSet transitions, LayoutOutput... layoutOutputs) {
-    final SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>> transitionKeyMapping =
-        new SimpleArrayMap<>();
+    final Map<String, OutputUnitsAffinityGroup<LayoutOutput>> transitionKeyMapping =
+        new LinkedHashMap<>();
     for (int i = 0; i < layoutOutputs.length; i++) {
       final LayoutOutput layoutOutput = layoutOutputs[i];
       final String transitionKey = layoutOutput.getTransitionKey();

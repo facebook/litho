@@ -58,7 +58,6 @@ import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LongSparseArray;
-import android.support.v4.util.SimpleArrayMap;
 import android.support.v4.view.accessibility.AccessibilityManagerCompat;
 import android.text.TextUtils;
 import android.view.View;
@@ -83,6 +82,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -210,8 +210,8 @@ class LayoutState {
   private boolean mClipChildren = true;
   private List<Component> mComponentsNeedingPreviousRenderData;
   @Nullable private OutputUnitsAffinityGroup<LayoutOutput> mCurrentLayoutOutputAffinityGroup;
-  private final SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>>
-      mTransitionKeyMapping = new SimpleArrayMap<>();
+  private final Map<String, OutputUnitsAffinityGroup<LayoutOutput>> mTransitionKeyMapping =
+      new LinkedHashMap<>();
   private final Set<String> mDuplicatedTransitionKeys = new HashSet<>();
   private List<Transition> mTransitions;
 
@@ -2256,10 +2256,11 @@ class LayoutState {
   }
 
   /** Gets a mapping from transition key to a group of LayoutOutput. */
-  SimpleArrayMap<String, OutputUnitsAffinityGroup<LayoutOutput>> getTransitionKeyMapping() {
+  Map<String, OutputUnitsAffinityGroup<LayoutOutput>> getTransitionKeyMapping() {
     return mTransitionKeyMapping;
   }
 
+  /** Gets a group of LayoutOutput given transition key */
   OutputUnitsAffinityGroup<LayoutOutput> getLayoutOutputsForTransitionKey(String key) {
     return mTransitionKeyMapping.get(key);
   }
