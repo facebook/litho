@@ -623,10 +623,6 @@ public abstract class Component extends ComponentLifecycle
     return mCommonPropsHolder;
   }
 
-  protected CommonProps getOrCreateCommonProps() {
-    return getOrCreateCommonPropsHolder();
-  }
-
   private CommonPropsHolder getOrCreateCommonPropsHolder() {
     if (mCommonPropsHolder == null) {
       mCommonPropsHolder = new CommonPropsHolder();
