@@ -16,13 +16,13 @@
 
 package com.facebook.litho.widget;
 
-import android.support.v4.util.ArrayMap;
 import com.facebook.litho.Component;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
 
@@ -172,7 +172,7 @@ public abstract class BaseRenderInfo implements RenderInfo {
   @Override
   public void addDebugInfo(String key, Object value) {
     if (mDebugInfo == null) {
-      mDebugInfo = Collections.synchronizedMap(new ArrayMap<String, Object>());
+      mDebugInfo = Collections.synchronizedMap(new HashMap<String, Object>());
     }
 
     mDebugInfo.put(key, value);
@@ -214,7 +214,7 @@ public abstract class BaseRenderInfo implements RenderInfo {
 
     public T customAttribute(String key, Object value) {
       if (mCustomAttributes == null) {
-        mCustomAttributes = Collections.synchronizedMap(new ArrayMap<String, Object>());
+        mCustomAttributes = Collections.synchronizedMap(new HashMap<String, Object>());
       }
       mCustomAttributes.put(key, value);
 
