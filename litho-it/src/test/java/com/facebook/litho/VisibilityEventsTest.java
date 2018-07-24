@@ -702,4 +702,86 @@ public class VisibilityEventsTest {
     assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
     assertThat(content.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
   }
+
+  @Test
+  public void testMultipleVisibilityEventsOnSameNode() {
+    final TestComponent content = create(mContext).build();
+    final EventHandler<VisibleEvent> visibleEventHandler1 = new EventHandler<>(content, 1);
+    final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(content, 2);
+    final EventHandler<VisibleEvent> visibleEventHandler3 = new EventHandler<>(content, 3);
+    final EventHandler<InvisibleEvent> invisibleEventHandler1 = new EventHandler<>(content, 4);
+    final EventHandler<InvisibleEvent> invisibleEventHandler2 = new EventHandler<>(content, 5);
+    final EventHandler<InvisibleEvent> invisibleEventHandler3 = new EventHandler<>(content, 6);
+    final EventHandler<FocusedVisibleEvent> focusedEventHandler1 = new EventHandler<>(content, 7);
+    final EventHandler<FocusedVisibleEvent> focusedEventHandler2 = new EventHandler<>(content, 8);
+    final EventHandler<FocusedVisibleEvent> focusedEventHandler3 = new EventHandler<>(content, 9);
+    final EventHandler<UnfocusedVisibleEvent> unfocusedEventHandler1 =
+        new EventHandler<>(content, 10);
+    final EventHandler<UnfocusedVisibleEvent> unfocusedEventHandler2 =
+        new EventHandler<>(content, 11);
+    final EventHandler<UnfocusedVisibleEvent> unfocusedEventHandler3 =
+        new EventHandler<>(content, 12);
+    final EventHandler<FullImpressionVisibleEvent> fullImpressionVisibleEventHandler1 =
+        new EventHandler<>(content, 13);
+    final EventHandler<FullImpressionVisibleEvent> fullImpressionVisibleEventHandler2 =
+        new EventHandler<>(content, 14);
+    final EventHandler<FullImpressionVisibleEvent> fullImpressionVisibleEventHandler3 =
+        new EventHandler<>(content, 15);
+
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            mLithoView,
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(
+                            Wrapper.create(mContext)
+                                .delegate(
+                                    Wrapper.create(mContext)
+                                        .delegate(content)
+                                        .visibleHandler(visibleEventHandler1)
+                                        .invisibleHandler(invisibleEventHandler1)
+                                        .focusedHandler(focusedEventHandler1)
+                                        .unfocusedHandler(unfocusedEventHandler1)
+                                        .fullImpressionHandler(fullImpressionVisibleEventHandler1)
+                                        .widthPx(10)
+                                        .heightPx(5)
+                                        .build())
+                                .visibleHandler(visibleEventHandler2)
+                                .invisibleHandler(invisibleEventHandler2)
+                                .focusedHandler(focusedEventHandler2)
+                                .unfocusedHandler(unfocusedEventHandler2)
+                                .fullImpressionHandler(fullImpressionVisibleEventHandler2)
+                                .build())
+                        .visibleHandler(visibleEventHandler3)
+                        .invisibleHandler(invisibleEventHandler3)
+                        .focusedHandler(focusedEventHandler3)
+                        .unfocusedHandler(unfocusedEventHandler3)
+                        .fullImpressionHandler(fullImpressionVisibleEventHandler3))
+                .build(),
+            true,
+            10,
+            10);
+
+    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler1);
+    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler2);
+    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler3);
+    assertThat(content.getDispatchedEventHandlers()).contains(focusedEventHandler1);
+    assertThat(content.getDispatchedEventHandlers()).contains(focusedEventHandler2);
+    assertThat(content.getDispatchedEventHandlers()).contains(focusedEventHandler3);
+    assertThat(content.getDispatchedEventHandlers()).contains(fullImpressionVisibleEventHandler1);
+    assertThat(content.getDispatchedEventHandlers()).contains(fullImpressionVisibleEventHandler2);
+    assertThat(content.getDispatchedEventHandlers()).contains(fullImpressionVisibleEventHandler3);
+
+    content.getDispatchedEventHandlers().clear();
+
+    unbindComponent(lithoView);
+    assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler1);
+    assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler2);
+    assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler3);
+    assertThat(content.getDispatchedEventHandlers()).contains(unfocusedEventHandler1);
+    assertThat(content.getDispatchedEventHandlers()).contains(unfocusedEventHandler2);
+    assertThat(content.getDispatchedEventHandlers()).contains(unfocusedEventHandler3);
+  }
 }

@@ -47,6 +47,10 @@ public class EventHandler<E> {
       return false;
     }
 
+    if (other.getClass() != getClass()) {
+      return false;
+    }
+
     if (id != other.id) {
       return false;
     }

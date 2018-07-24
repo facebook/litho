@@ -98,8 +98,7 @@ class EventDispatcherUtils {
       sVisibleEvent = new VisibleEvent();
     }
 
-    final EventDispatcher eventDispatcher = visibleHandler.mHasEventDispatcher.getEventDispatcher();
-    eventDispatcher.dispatchOnEvent(visibleHandler, sVisibleEvent);
+    visibleHandler.dispatchEvent(sVisibleEvent);
 
     if (isTracing) {
       ComponentsSystrace.endSection();
@@ -113,9 +112,7 @@ class EventDispatcherUtils {
       sFocusedVisibleEvent = new FocusedVisibleEvent();
     }
 
-    final EventDispatcher eventDispatcher =
-      focusedHandler.mHasEventDispatcher.getEventDispatcher();
-    eventDispatcher.dispatchOnEvent(focusedHandler, sFocusedVisibleEvent);
+    focusedHandler.dispatchEvent(sFocusedVisibleEvent);
   }
 
   static void dispatchOnUnfocused(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
@@ -125,9 +122,7 @@ class EventDispatcherUtils {
       sUnfocusedVisibleEvent = new UnfocusedVisibleEvent();
     }
 
-    final EventDispatcher eventDispatcher =
-      unfocusedHandler.mHasEventDispatcher.getEventDispatcher();
-    eventDispatcher.dispatchOnEvent(unfocusedHandler, sUnfocusedVisibleEvent);
+    unfocusedHandler.dispatchEvent(sUnfocusedVisibleEvent);
   }
 
   static void dispatchOnFullImpression(
@@ -138,9 +133,7 @@ class EventDispatcherUtils {
       sFullImpressionVisibleEvent = new FullImpressionVisibleEvent();
     }
 
-    final EventDispatcher eventDispatcher =
-        fullImpressionHandler.mHasEventDispatcher.getEventDispatcher();
-    eventDispatcher.dispatchOnEvent(fullImpressionHandler, sFullImpressionVisibleEvent);
+    fullImpressionHandler.dispatchEvent(sFullImpressionVisibleEvent);
   }
 
   static void dispatchOnInvisible(EventHandler<InvisibleEvent> invisibleHandler) {
@@ -150,9 +143,7 @@ class EventDispatcherUtils {
       sInvisibleEvent = new InvisibleEvent();
     }
 
-    final EventDispatcher eventDispatcher =
-        invisibleHandler.mHasEventDispatcher.getEventDispatcher();
-    eventDispatcher.dispatchOnEvent(invisibleHandler, sInvisibleEvent);
+    invisibleHandler.dispatchEvent(sInvisibleEvent);
   }
 
   static boolean dispatchOnLongClick(EventHandler<LongClickEvent> longClickHandler, View view) {

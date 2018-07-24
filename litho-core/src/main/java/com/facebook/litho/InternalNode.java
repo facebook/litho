@@ -853,7 +853,7 @@ class InternalNode implements ComponentLayout {
 
   InternalNode visibleHandler(EventHandler<VisibleEvent> visibleHandler) {
     mPrivateFlags |= PFLAG_VISIBLE_HANDLER_IS_SET;
-    mVisibleHandler = visibleHandler;
+    mVisibleHandler = addVisibilityHandler(mVisibleHandler, visibleHandler);
     return this;
   }
 
@@ -863,7 +863,7 @@ class InternalNode implements ComponentLayout {
 
   InternalNode focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler) {
     mPrivateFlags |= PFLAG_FOCUSED_HANDLER_IS_SET;
-    mFocusedHandler = focusedHandler;
+    mFocusedHandler = addVisibilityHandler(mFocusedHandler, focusedHandler);
     return this;
   }
 
@@ -873,7 +873,7 @@ class InternalNode implements ComponentLayout {
 
   InternalNode unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
     mPrivateFlags |= PFLAG_UNFOCUSED_HANDLER_IS_SET;
-    mUnfocusedHandler = unfocusedHandler;
+    mUnfocusedHandler = addVisibilityHandler(mUnfocusedHandler, unfocusedHandler);
     return this;
   }
 
@@ -884,7 +884,7 @@ class InternalNode implements ComponentLayout {
   InternalNode fullImpressionHandler(
       EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
     mPrivateFlags |= PFLAG_FULL_IMPRESSION_HANDLER_IS_SET;
-    mFullImpressionHandler = fullImpressionHandler;
+    mFullImpressionHandler = addVisibilityHandler(mFullImpressionHandler, fullImpressionHandler);
     return this;
   }
 
@@ -894,12 +894,21 @@ class InternalNode implements ComponentLayout {
 
   InternalNode invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
     mPrivateFlags |= PFLAG_INVISIBLE_HANDLER_IS_SET;
-    mInvisibleHandler = invisibleHandler;
+    mInvisibleHandler = addVisibilityHandler(mInvisibleHandler, invisibleHandler);
     return this;
   }
 
   EventHandler<InvisibleEvent> getInvisibleHandler() {
     return mInvisibleHandler;
+  }
+
+  private static <T> EventHandler<T> addVisibilityHandler(
+      @Nullable EventHandler<T> existingEventHandler, EventHandler<T> newEventHandler) {
+    if (existingEventHandler == null) {
+      return newEventHandler;
+    } else {
+      return new DelegatingEventHandler<>(existingEventHandler, newEventHandler);
+    }
   }
 
   InternalNode contentDescription(CharSequence contentDescription) {
