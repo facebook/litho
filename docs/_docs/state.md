@@ -198,6 +198,8 @@ static Component onCreateLayout(
 }
 ```
 
+If a component with key `A` updates its state, and later it is removed from the hierarchy and added back again with the same key `A`, its state will be reset to the initial value. That means that an updated state value will only persist as long as the component it belongs to is part of the ComponentTree hierarchy.
+
 
 ## Lazy State Updates
 For situations where you want to update the value of a `State` but don't need to immediately trigger a new layout calculation, you can use **lazy state updates**. After a lazy state update is called, the component will hold the same value for that state until the next layout calculation is triggered by something else (receiving new props or regular state updates) and the value will be updated. This is useful for updating internal Component information and persisting it between ComponentTree re-layouts when an immediate layout calculation is not needed.
