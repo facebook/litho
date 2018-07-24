@@ -1761,6 +1761,7 @@ public class ComponentTree {
 
       synchronized (mLayoutStateFutureLock) {
         if (mLayoutStateFuture != null) {
+          mLayoutStateFuture.release();
           mLayoutStateFuture = null;
         }
       }
@@ -1942,11 +1943,14 @@ public class ComponentTree {
       );
 
       synchronized (mLayoutStateFutureLock) {
-        if (localLayoutStateFuture.equals(mLayoutStateFuture) && !mLayoutStateFuture.isReleased()) {
-          // Use the latest LayoutState calculation if it's the same and its LayoutState unreleased.
+        if (localLayoutStateFuture.equals(mLayoutStateFuture)) {
+          // Use the latest LayoutState calculation if it's the same.
           localLayoutStateFuture = mLayoutStateFuture;
         } else {
           // Otherwise set our calculation as the latest one.
+          if (mLayoutStateFuture != null) {
+            mLayoutStateFuture.release();
+          }
           mLayoutStateFuture = localLayoutStateFuture;
         }
       }
@@ -2056,7 +2060,6 @@ public class ComponentTree {
     private final boolean diffingEnabled;
     @Nullable private final LayoutState previousLayoutState;
     @Nullable private final TreeProps treeProps;
-    private volatile boolean isReleased = false;
 
     private LayoutStateFuture(@Nullable final Object lock,
         final ComponentContext context,
@@ -2094,8 +2097,25 @@ public class ComponentTree {
       this.treeProps = treeProps;
     }
 
-    boolean isReleased() {
-      return isReleased;
+    public void release() {
+      if (!isDone() && ThreadUtils.isMainThread() && mLayoutThreadHandler != null) {
+        // If the future isn't completed, we don't want to block the main thread on the synchronous
+        // get() call, so we post this release to the layout thread.
+        mLayoutThreadHandler.post(new Runnable() {
+          @Override
+          public void run() {
+            final LayoutState layoutState = get();
+            layoutState.releaseRef();
+            // get() calls acquireRef, so we need to release again.
+            layoutState.releaseRef();
+          }
+        });
+      } else {
+        final LayoutState layoutState = get();
+        layoutState.releaseRef();
+        // get() calls acquireRef, so we need to release again.
+        layoutState.releaseRef();
+      }
     }
 
     @Override
@@ -2105,7 +2125,6 @@ public class ComponentTree {
       }
     }
 
-    @Nullable
     @Override
     public LayoutState get() {
       final int runningThreadId = this.runningThreadId.get();
@@ -2142,17 +2161,7 @@ public class ComponentTree {
         }
       }
 
-      // Creating a LayoutState gives it a refcount of 1, but subsequent get() calls to this Future
-      // must increment the refcount to ensure we don't release the LayoutState too early.
-      if (isFirstGet.getAndSet(false)) {
-        return layoutState;
-      }
-      try {
-        return layoutState.acquireRef();
-      } catch (IllegalStateException e) {
-        isReleased = true;
-        return null;
-      }
+      return layoutState.acquireRef();
     }
 
     @Override
