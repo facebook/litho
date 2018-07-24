@@ -20,7 +20,6 @@ import static com.facebook.litho.AnimationsDebug.TAG;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
-import android.support.v4.util.SimpleArrayMap;
 import android.support.v4.util.SparseArrayCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -40,7 +39,9 @@ import com.facebook.litho.internal.ArraySet;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -161,8 +162,7 @@ public class TransitionManager {
      * The states for all the properties of this mount content that have an animated value (e.g. a
      * value that isn't necessarily their mounted value).
      */
-    public final SimpleArrayMap<AnimatedProperty, PropertyState> propertyStates =
-        new SimpleArrayMap<>();
+    public final Map<AnimatedProperty, PropertyState> propertyStates = new HashMap<>();
 
     /**
      * The current mount content for this animation state, if it's mounted, null otherwise. This
@@ -189,12 +189,11 @@ public class TransitionManager {
     public boolean seenInLastTransition = false;
   }
 
-  private final SimpleArrayMap<AnimationBinding, ArraySet<PropertyHandle>> mAnimationsToPropertyHandles =
-      new SimpleArrayMap<>();
-  private final SimpleArrayMap<String, AnimationState> mAnimationStates = new SimpleArrayMap<>();
+  private final Map<AnimationBinding, ArraySet<PropertyHandle>> mAnimationsToPropertyHandles =
+      new HashMap<>();
+  private final Map<String, AnimationState> mAnimationStates = new HashMap<>();
   private final SparseArrayCompat<String> mTraceNames = new SparseArrayCompat<>();
-  private final SimpleArrayMap<PropertyHandle, Float> mInitialStatesToRestore =
-      new SimpleArrayMap<>();
+  private final Map<PropertyHandle, Float> mInitialStatesToRestore = new HashMap<>();
   private final ArraySet<AnimationBinding> mRunningRootAnimations = new ArraySet<>();
   private final TransitionsAnimationBindingListener mAnimationBindingListener =
       new TransitionsAnimationBindingListener();
@@ -226,8 +225,8 @@ public class TransitionManager {
       ComponentsSystrace.beginSection("TransitionManager.setupTransition");
     }
 
-    for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
-      mAnimationStates.valueAt(i).seenInLastTransition = false;
+    for (AnimationState animationState : mAnimationStates.values()) {
+      animationState.seenInLastTransition = false;
     }
 
     final Map<String, OutputUnitsAffinityGroup<LayoutOutput>> nextTransitionKeys =
@@ -350,9 +349,8 @@ public class TransitionManager {
    * To be called when a MountState is recycled for a new component tree. Clears all animations.
    */
   void reset() {
-    for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
-      final String key = mAnimationStates.keyAt(i);
-      final AnimationState animationState = mAnimationStates.valueAt(i);
+    for (String key : mAnimationStates.keySet()) {
+      final AnimationState animationState = mAnimationStates.get(key);
       setMountContentInner(key, animationState, null);
       clearLayoutOutputs(animationState);
     }
@@ -438,12 +436,11 @@ public class TransitionManager {
             : null;
     // The values for all members of the group should be the same, thus we'll be collected from the
     // most significant one
-    for (int i = 0, size = animationState.propertyStates.size(); i < size; i++) {
-      final PropertyState propertyState = animationState.propertyStates.valueAt(i);
+    for (AnimatedProperty property : animationState.propertyStates.keySet()) {
+      final PropertyState propertyState = animationState.propertyStates.get(property);
       if (layoutOutput == null) {
         propertyState.lastMountedValue = null;
       } else {
-        final AnimatedProperty property = animationState.propertyStates.keyAt(i);
         propertyState.lastMountedValue = property.get(layoutOutput);
       }
     }
@@ -533,12 +530,12 @@ public class TransitionManager {
   private void createAnimationsForTransitionUnitAllKeys(
       TransitionUnit transition,
       ArrayList<AnimationBinding> outList) {
-    for (int i = 0, size = mAnimationStates.size(); i < size; i++) {
-      final AnimationState animationState = mAnimationStates.valueAt(i);
+    for (String transitionKey : mAnimationStates.keySet()) {
+      final AnimationState animationState = mAnimationStates.get(transitionKey);
       if (!animationState.seenInLastTransition) {
         continue;
       }
-      createAnimationsForTransitionUnit(transition, mAnimationStates.keyAt(i), outList);
+      createAnimationsForTransitionUnit(transition, transitionKey, outList);
     }
   }
 
@@ -686,9 +683,8 @@ public class TransitionManager {
   }
 
   private void restoreInitialStates() {
-    for (int i = 0, size = mInitialStatesToRestore.size(); i < size; i++) {
-      final PropertyHandle propertyHandle = mInitialStatesToRestore.keyAt(i);
-      final float value = mInitialStatesToRestore.valueAt(i);
+    for (PropertyHandle propertyHandle : mInitialStatesToRestore.keySet()) {
+      final float value = mInitialStatesToRestore.get(propertyHandle);
       final AnimationState animationState = mAnimationStates.get(propertyHandle.getTransitionKey());
       if (animationState.mountContentGroup != null) {
         setPropertyValue(propertyHandle.getProperty(), value, animationState.mountContentGroup);
@@ -716,20 +712,16 @@ public class TransitionManager {
           AnimationsDebug.TAG, "Setting mount content for " + key + " to " + newMountContentGroup);
     }
 
-    final SimpleArrayMap<AnimatedProperty, PropertyState> animatingProperties =
-        animationState.propertyStates;
+    final Map<AnimatedProperty, PropertyState> animatingProperties = animationState.propertyStates;
     if (animationState.mountContentGroup != null) {
-      for (int i = 0, size = animatingProperties.size(); i < size; i++) {
-        resetProperty(animatingProperties.keyAt(i), animationState.mountContentGroup);
+      for (AnimatedProperty animatedProperty : animatingProperties.keySet()) {
+        resetProperty(animatedProperty, animationState.mountContentGroup);
       }
       recursivelySetChildClippingForGroup(animationState.mountContentGroup, true);
     }
 
-    for (int i = 0, size = animatingProperties.size(); i < size; i++) {
-      animatingProperties
-          .valueAt(i)
-          .animatedPropertyNode
-          .setMountContentGroup(newMountContentGroup);
+    for (PropertyState propertyState : animatingProperties.values()) {
+      propertyState.animatedPropertyNode.setMountContentGroup(newMountContentGroup);
     }
     if (newMountContentGroup != null) {
       recursivelySetChildClippingForGroup(newMountContentGroup, false);
@@ -774,11 +766,14 @@ public class TransitionManager {
    * never resulted in an animation being created.
    */
   private void cleanupNonAnimatingAnimationStates() {
-    for (int i = mAnimationStates.size() - 1; i >= 0; i--) {
-      final AnimationState animationState = mAnimationStates.valueAt(i);
+    final Iterator<String> transitionKeyIterator = mAnimationStates.keySet().iterator();
+    while (transitionKeyIterator.hasNext()) {
+      final String transitionKey = transitionKeyIterator.next();
+      final AnimationState animationState = mAnimationStates.get(transitionKey);
       if (animationState.propertyStates.isEmpty()) {
-        setMountContentInner(mAnimationStates.keyAt(i), animationState, null);
-        clearLayoutOutputs(mAnimationStates.removeAt(i));
+        setMountContentInner(transitionKey, animationState, null);
+        transitionKeyIterator.remove();
+        clearLayoutOutputs(animationState);
       }
     }
   }
@@ -965,25 +960,23 @@ public class TransitionManager {
           propertyState.numPendingAnimations--;
           didFinish = areAllDisappearingAnimationsFinished(animationState);
           if (didFinish && animationState.mountContentGroup != null) {
-            for (int j = 0; j < animationState.propertyStates.size(); j++) {
-              resetProperty(
-                  animationState.propertyStates.keyAt(j), animationState.mountContentGroup);
+            for (AnimatedProperty animatedProperty : animationState.propertyStates.keySet()) {
+              resetProperty(animatedProperty, animationState.mountContentGroup);
             }
           }
         } else {
-          final int index = animationState.propertyStates.indexOfKey(property);
-          if (index < 0) {
+          final PropertyState propertyState = animationState.propertyStates.get(property);
+          if (propertyState == null) {
             throw new RuntimeException(
                 "Some animation bookkeeping is wrong: tried to remove an animation from the list " +
                     "of active animations, but it wasn't there.");
           }
 
-          final PropertyState propertyState = animationState.propertyStates.valueAt(index);
           propertyState.numPendingAnimations--;
           if (propertyState.numPendingAnimations > 0) {
             didFinish = false;
           } else {
-            animationState.propertyStates.removeAt(index);
+            animationState.propertyStates.remove(property);
             didFinish = animationState.propertyStates.isEmpty();
 
             if (animationState.mountContentGroup != null) {
@@ -1019,8 +1012,7 @@ public class TransitionManager {
       if (animationState.changeType != ChangeType.DISAPPEARED) {
         throw new RuntimeException("This should only be checked for disappearing animations");
       }
-      for (int i = 0, size = animationState.propertyStates.size(); i < size; i++) {
-        final PropertyState propertyState = animationState.propertyStates.valueAt(i);
+      for (PropertyState propertyState : animationState.propertyStates.values()) {
         if (propertyState.numPendingAnimations > 0) {
           return false;
         }
