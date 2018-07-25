@@ -21,6 +21,8 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.widget.RecyclerBinderTest.NO_OP_CHANGE_SET_COMPLETE_CALLBACK;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -889,14 +891,14 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.insertItemAt(0, renderInfo);
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
 
-    verify(changeSetCompleteCallback).onDataRendered(true);
+    verify(changeSetCompleteCallback).onDataRendered(eq(true), anyLong());
 
     reset(changeSetCompleteCallback);
 
     // Call notifyChangeSetComplete with no actual data change.
     recyclerBinder.notifyChangeSetComplete(false, changeSetCompleteCallback);
 
-    verify(changeSetCompleteCallback).onDataRendered(true);
+    verify(changeSetCompleteCallback).onDataRendered(eq(true), anyLong());
     verify(mRecyclerView, never()).postOnAnimation(recyclerBinder.mRemeasureRunnable);
   }
 

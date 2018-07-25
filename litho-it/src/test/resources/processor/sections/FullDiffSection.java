@@ -335,11 +335,13 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   }
 
   @Override
-  protected void dataRendered(SectionContext c, boolean isDataChanged, boolean isMounted) {
+  protected void dataRendered(
+      SectionContext c, boolean isDataChanged, boolean isMounted, long uptimeMillis) {
     FullDiffSectionSpec.onDataRendered(
       (SectionContext) c,
       (boolean) isDataChanged,
       (boolean) isMounted,
+      (long) uptimeMillis,
       (Integer) prop1);
   }
 

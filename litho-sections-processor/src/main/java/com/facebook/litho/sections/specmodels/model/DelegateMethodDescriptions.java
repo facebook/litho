@@ -100,7 +100,10 @@ public class DelegateMethodDescriptions {
           .name("dataRendered")
           .definedParameterTypes(
               ImmutableList.<TypeName>of(
-                  SectionClassNames.SECTION_CONTEXT, TypeName.BOOLEAN, TypeName.BOOLEAN))
+                  SectionClassNames.SECTION_CONTEXT,
+                  TypeName.BOOLEAN,
+                  TypeName.BOOLEAN,
+                  TypeName.LONG))
           .optionalParameterTypes(ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP))
           .build();
 

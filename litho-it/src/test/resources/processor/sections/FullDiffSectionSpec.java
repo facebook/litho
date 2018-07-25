@@ -96,5 +96,9 @@ public class FullDiffSectionSpec<T> implements TestTag {
 
   @OnDataRendered
   static void onDataRendered(
-      SectionContext c, boolean isDataChanged, boolean isMounted, @Prop Integer prop1) {}
+      SectionContext c,
+      boolean isDataChanged,
+      boolean isMounted,
+      long uptimeMillis,
+      @Prop Integer prop1) {}
 }

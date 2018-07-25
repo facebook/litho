@@ -24,6 +24,8 @@ import static com.facebook.litho.widget.ComponentRenderInfo.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -3223,7 +3225,7 @@ public class RecyclerBinderTest {
     // Simulate calling ViewGroup#dispatchDraw(Canvas).
     recyclerView.dispatchDraw(mock(Canvas.class));
 
-    verify(changeSetCompleteCallback).onDataRendered(true);
+    verify(changeSetCompleteCallback).onDataRendered(eq(true), anyLong());
   }
 
   @Test
@@ -3252,7 +3254,7 @@ public class RecyclerBinderTest {
     // Simulate calling ViewGroup#dispatchDraw(Canvas).
     recyclerView.dispatchDraw(mock(Canvas.class));
 
-    verify(changeSetCompleteCallback).onDataRendered(true);
+    verify(changeSetCompleteCallback).onDataRendered(eq(true), anyLong());
   }
 
   @Test
@@ -3276,7 +3278,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertRangeAt(0, renderInfos);
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
 
-    verify(changeSetCompleteCallback).onDataRendered(false);
+    verify(changeSetCompleteCallback).onDataRendered(eq(false), anyLong());
   }
 
   @Test
@@ -3301,7 +3303,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertRangeAt(0, renderInfos);
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
 
-    verify(changeSetCompleteCallback).onDataRendered(true);
+    verify(changeSetCompleteCallback).onDataRendered(eq(true), anyLong());
   }
 
   @Test
@@ -3326,7 +3328,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertRangeAt(0, renderInfos);
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
 
-    verify(changeSetCompleteCallback).onDataRendered(true);
+    verify(changeSetCompleteCallback).onDataRendered(eq(true), anyLong());
   }
 
   @Test
@@ -3351,7 +3353,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertRangeAt(0, renderInfos);
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
 
-    verify(changeSetCompleteCallback).onDataRendered(true);
+    verify(changeSetCompleteCallback).onDataRendered(eq(true), anyLong());
   }
 
   @Test
@@ -3373,11 +3375,11 @@ public class RecyclerBinderTest {
 
     recyclerBinder.insertRangeAt(0, renderInfos1);
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback1);
-    verify(changeSetCompleteCallback1, never()).onDataRendered(true);
+    verify(changeSetCompleteCallback1, never()).onDataRendered(eq(true), anyLong());
 
     recyclerBinder.insertRangeAt(0, renderInfos2);
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback2);
-    verify(changeSetCompleteCallback2, never()).onDataRendered(true);
+    verify(changeSetCompleteCallback2, never()).onDataRendered(eq(true), anyLong());
 
     // Mount view after insertions
     final LithoRecylerView recyclerView = new LithoRecylerView(RuntimeEnvironment.application);
@@ -3386,8 +3388,8 @@ public class RecyclerBinderTest {
     // Simulate calling ViewGroup#dispatchDraw(Canvas).
     recyclerView.dispatchDraw(mock(Canvas.class));
 
-    verify(changeSetCompleteCallback1).onDataRendered(true);
-    verify(changeSetCompleteCallback2).onDataRendered(true);
+    verify(changeSetCompleteCallback1).onDataRendered(eq(true), anyLong());
+    verify(changeSetCompleteCallback2).onDataRendered(eq(true), anyLong());
   }
 
   @Test
@@ -3409,11 +3411,11 @@ public class RecyclerBinderTest {
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos1);
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback1);
-    verify(changeSetCompleteCallback1, never()).onDataRendered(true);
+    verify(changeSetCompleteCallback1, never()).onDataRendered(eq(true), anyLong());
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos2);
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback2);
-    verify(changeSetCompleteCallback2, never()).onDataRendered(true);
+    verify(changeSetCompleteCallback2, never()).onDataRendered(eq(true), anyLong());
 
     // Mount view after insertions
     final LithoRecylerView recyclerView = new LithoRecylerView(RuntimeEnvironment.application);
@@ -3425,8 +3427,8 @@ public class RecyclerBinderTest {
     // Simulate calling ViewGroup#dispatchDraw(Canvas).
     recyclerView.dispatchDraw(mock(Canvas.class));
 
-    verify(changeSetCompleteCallback1).onDataRendered(true);
-    verify(changeSetCompleteCallback2).onDataRendered(true);
+    verify(changeSetCompleteCallback1).onDataRendered(eq(true), anyLong());
+    verify(changeSetCompleteCallback2).onDataRendered(eq(true), anyLong());
   }
 
   @Test
@@ -3449,14 +3451,14 @@ public class RecyclerBinderTest {
     recyclerBinder.insertRangeAt(0, renderInfos);
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
 
-    verify(changeSetCompleteCallback).onDataRendered(true);
+    verify(changeSetCompleteCallback).onDataRendered(eq(true), anyLong());
 
     reset(changeSetCompleteCallback);
 
     // Call notifyChangeSetComplete with no actual data change.
     recyclerBinder.notifyChangeSetComplete(false, changeSetCompleteCallback);
 
-    verify(changeSetCompleteCallback).onDataRendered(true);
+    verify(changeSetCompleteCallback).onDataRendered(eq(true), anyLong());
     verify(recyclerView, never()).postOnAnimation(recyclerBinder.mRemeasureRunnable);
   }
 
@@ -3530,6 +3532,6 @@ public class RecyclerBinderTest {
     public void onDataBound() {}
 
     @Override
-    public void onDataRendered(boolean isMounted) {}
+    public void onDataRendered(boolean isMounted, long uptimeMillis) {}
   }
 }

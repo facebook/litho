@@ -434,17 +434,19 @@ public class SectionTree {
   }
 
   @UiThread
-  private void dataRendered(Section currentSection, boolean isDataChanged, boolean isMounted) {
+  private void dataRendered(
+      Section currentSection, boolean isDataChanged, boolean isMounted, long uptimeMillis) {
     ThreadUtils.assertMainThread();
 
     if (currentSection != null) {
-      dataRenderedRecursive(currentSection, isDataChanged, isMounted);
+      dataRenderedRecursive(currentSection, isDataChanged, isMounted, uptimeMillis);
     }
   }
 
   @UiThread
-  private void dataRenderedRecursive(Section section, boolean isDataChanged, boolean isMounted) {
-    section.dataRendered(section.getScopedContext(), isDataChanged, isMounted);
+  private void dataRenderedRecursive(
+      Section section, boolean isDataChanged, boolean isMounted, long uptimeMillis) {
+    section.dataRendered(section.getScopedContext(), isDataChanged, isMounted, uptimeMillis);
 
     if (section.isDiffSectionSpec()) {
       return;
@@ -452,7 +454,7 @@ public class SectionTree {
 
     final List<Section> children = section.getChildren();
     for (int i = 0, size = children.size(); i < size; i++) {
-      dataRenderedRecursive(children.get(i), isDataChanged, isMounted);
+      dataRenderedRecursive(children.get(i), isDataChanged, isMounted, uptimeMillis);
     }
   }
 
@@ -1176,8 +1178,8 @@ public class SectionTree {
           }
 
           @Override
-          public void onDataRendered(boolean isMounted) {
-            dataRendered(currentSection, isDataChanged, isMounted);
+          public void onDataRendered(boolean isMounted, long uptimeMillis) {
+            dataRendered(currentSection, isDataChanged, isMounted, uptimeMillis);
           }
         });
 

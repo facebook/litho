@@ -1362,8 +1362,9 @@ public class RecyclerBinder
           new Runnable() {
             @Override
             public void run() {
+              final long uptimeMillis = SystemClock.uptimeMillis();
               while (!snapshotCallbacks.isEmpty()) {
-                snapshotCallbacks.pollFirst().onDataRendered(isMounted);
+                snapshotCallbacks.pollFirst().onDataRendered(isMounted, uptimeMillis);
               }
             }
           });

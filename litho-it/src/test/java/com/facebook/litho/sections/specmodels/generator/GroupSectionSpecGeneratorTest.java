@@ -69,6 +69,7 @@ public class GroupSectionSpecGeneratorTest {
         SectionContext c,
         boolean isDataChanged,
         boolean isMounted,
+        long uptimeMillis,
         @Prop boolean arg0,
         @State int arg1) {}
   }
@@ -108,11 +109,12 @@ public class GroupSectionSpecGeneratorTest {
         .isEqualTo(
             "@java.lang.Override\n"
                 + "protected void dataRendered(com.facebook.litho.sections.SectionContext c, boolean isDataChanged,\n"
-                + "    boolean isMounted) {\n"
+                + "    boolean isMounted, long uptimeMillis) {\n"
                 + "  TestGroupSectionSpec.onDataRendered(\n"
                 + "    (com.facebook.litho.sections.SectionContext) c,\n"
                 + "    (boolean) isDataChanged,\n"
                 + "    (boolean) isMounted,\n"
+                + "    (long) uptimeMillis,\n"
                 + "    (boolean) arg0,\n"
                 + "    (int) mStateContainer.arg1);\n"
                 + "}\n");
