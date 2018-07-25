@@ -136,6 +136,7 @@ circle_ci_android_container_config: &circle_ci_android_container_config
     _JAVA_OPTIONS: "-Xmx1500m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2"
     TERM: 'dumb'
     ANDROID_NDK_REPOSITORY: '/opt/ndk'
+    ANDROID_NDK_HOME: '/opt/android/ndk/android-ndk-r17b/'
 
 attach_workspace: &attach_workspace
   attach_workspace:
