@@ -189,6 +189,9 @@ public class RenderThreadTransition extends TransitionAnimationBinding {
     if (animatedProperty == AnimatedProperties.Y) {
       return RenderNodeAnimator.Y;
     }
+    if (animatedProperty == AnimatedProperties.ROTATION) {
+      return RenderNodeAnimator.ROTATION;
+    }
     throw new IllegalArgumentException(
         "Cannot animate " + animatedProperty.getName() + " on RenderThread");
   }
@@ -202,6 +205,9 @@ public class RenderThreadTransition extends TransitionAnimationBinding {
     }
     if (animatedProperty == AnimatedProperties.Y) {
       return View.Y;
+    }
+    if (animatedProperty == AnimatedProperties.ROTATION) {
+      return View.ROTATION;
     }
     throw new IllegalArgumentException(
         "Cannot animate " + animatedProperty.getName() + " on RenderThread");
