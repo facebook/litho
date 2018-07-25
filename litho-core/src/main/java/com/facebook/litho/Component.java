@@ -618,8 +618,7 @@ public abstract class Component extends ComponentLifecycle
     return mCommonPropsHolder;
   }
 
-  @VisibleForTesting
-  CommonProps getCommonProps() {
+  public CommonProps getCommonProps() {
     return mCommonPropsHolder;
   }
 

@@ -75,27 +75,9 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     mDefStyleRes = defStyleRes;
   }
 
-  @Override
-  @AttrRes
-  public int getDefStyleAttr() {
-    return mDefStyleAttr;
-  }
-
-  @Override
-  @StyleRes
-  public int getDefStyleRes() {
-    return mDefStyleRes;
-  }
-
   void positionType(@Nullable YogaPositionType positionType) {
     mPrivateFlags |= PFLAG_POSITION_TYPE_IS_SET;
     mPositionType = positionType;
-  }
-
-  @Override
-  @Nullable
-  public YogaPositionType getPositionType() {
-    return mPositionType;
   }
 
   void positionPx(@Nullable YogaEdge edge, @Px int position) {
@@ -115,19 +97,9 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     mWidthPx = width;
   }
 
-  @Override
-  public int getWidthPx() {
-    return mWidthPx;
-  }
-
   void heightPx(@Px int height) {
     mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
     mHeightPx = height;
-  }
-
-  @Override
-  public int getHeightPx() {
-    return mHeightPx;
   }
 
   void background(@Nullable Reference<? extends Drawable> background) {
@@ -135,114 +107,49 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     mBackground = background;
   }
 
-  @Override
-  @Nullable
-  public Reference<? extends Drawable> getBackground() {
-    return mBackground;
-  }
-
   void testKey(String testKey) {
     mPrivateFlags |= PFLAG_TEST_KEY_IS_SET;
     mTestKey = testKey;
-  }
-
-  @Override
-  @Nullable
-  public String getTestKey() {
-    return mTestKey;
   }
 
   void wrapInView() {
     mWrapInView = true;
   }
 
-  @Override
-  public boolean isWrapInView() {
-    return mWrapInView;
-  }
-
   void layoutDirection(@Nullable YogaDirection direction) {
     getOrCreateOtherProps().layoutDirection(direction);
-  }
-
-  @Override
-  @Nullable
-  public YogaDirection getLayoutDirection() {
-    return getOrCreateOtherProps().mLayoutDirection;
   }
 
   void alignSelf(@Nullable YogaAlign alignSelf) {
     getOrCreateOtherProps().alignSelf(alignSelf);
   }
 
-  @Override
-  @Nullable
-  public YogaAlign getAlignSelf() {
-    return getOrCreateOtherProps().mAlignSelf;
-  }
-
   void flex(float flex) {
     getOrCreateOtherProps().flex(flex);
-  }
-
-  @Override
-  public float getFlex() {
-    return getOrCreateOtherProps().mFlex;
   }
 
   void flexGrow(float flexGrow) {
     getOrCreateOtherProps().flexGrow(flexGrow);
   }
 
-  @Override
-  public float getFlexGrow() {
-    return getOrCreateOtherProps().mFlexGrow;
-  }
-
   void flexShrink(float flexShrink) {
     getOrCreateOtherProps().flexShrink(flexShrink);
-  }
-
-  @Override
-  public float getFlexShrink() {
-    return getOrCreateOtherProps().mFlexShrink;
   }
 
   void flexBasisPx(@Px int flexBasis) {
     getOrCreateOtherProps().flexBasisPx(flexBasis);
   }
 
-  @Override
-  @Px
-  public int getFlexBasisPx() {
-    return getOrCreateOtherProps().mFlexBasisPx;
-  }
-
   void flexBasisPercent(float percent) {
     getOrCreateOtherProps().flexBasisPercent(percent);
-  }
-
-  @Override
-  public float getFlexBasisPercent() {
-    return getOrCreateOtherProps().mFlexBasisPercent;
   }
 
   void importantForAccessibility(int importantForAccessibility) {
     getOrCreateOtherProps().importantForAccessibility(importantForAccessibility);
   }
 
-  @Override
-  public int getImportantForAccessibility() {
-    return getOrCreateOtherProps().mImportantForAccessibility;
-  }
-
   void duplicateParentState(boolean duplicateParentState) {
     getOrCreateOtherProps().duplicateParentState(duplicateParentState);
-  }
-
-  @Override
-  public boolean getDuplicateParentState() {
-    return getOrCreateOtherProps().mDuplicateParentState;
   }
 
   void marginPx(YogaEdge edge, @Px int margin) {
@@ -269,30 +176,12 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     getOrCreateOtherProps().border(border);
   }
 
-  @Override
-  @Nullable
-  public Border getBorder() {
-    return getOrCreateOtherProps().mBorder;
-  }
-
   void stateListAnimator(@Nullable StateListAnimator stateListAnimator) {
     getOrCreateOtherProps().stateListAnimator(stateListAnimator);
   }
 
-  @Override
-  @Nullable
-  public StateListAnimator getStateListAnimator() {
-    return getOrCreateOtherProps().mStateListAnimator;
-  }
-
   void stateListAnimatorRes(@DrawableRes int resId) {
     getOrCreateOtherProps().stateListAnimatorRes(resId);
-  }
-
-  @Override
-  @DrawableRes
-  public int getStateListAnimatorRes() {
-    return getOrCreateOtherProps().mStateListAnimatorRes;
   }
 
   void positionPercent(@Nullable YogaEdge edge, float percent) {
@@ -343,23 +232,12 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     getOrCreateOtherProps().aspectRatio(aspectRatio);
   }
 
-  @Override
-  public float getAspectRatio() {
-    return getOrCreateOtherProps().mAspectRatio;
-  }
-
   void touchExpansionPx(@Nullable YogaEdge edge, @Px int touchExpansion) {
     getOrCreateOtherProps().touchExpansionPx(edge, touchExpansion);
   }
 
   void foreground(@Nullable Drawable foreground) {
     getOrCreateOtherProps().foreground(foreground);
-  }
-
-  @Override
-  @Nullable
-  public Drawable getForeground() {
-    return getOrCreateOtherProps().mForeground;
   }
 
   void clickHandler(EventHandler<ClickEvent> clickHandler) {
@@ -425,156 +303,64 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     getOrCreateNodeInfo().setEnabled(isEnabled);
   }
 
-  @Override
-  public boolean getEnabled() {
-    return getOrCreateNodeInfo().getEnabledState() == NodeInfo.ENABLED_SET_TRUE;
-  }
-
   void selected(boolean isSelected) {
     getOrCreateNodeInfo().setSelected(isSelected);
-  }
-
-  @Override
-  public boolean getSelected() {
-    return getOrCreateNodeInfo().getSelectedState() == NodeInfo.ENABLED_SET_TRUE;
   }
 
   void visibleHeightRatio(float visibleHeightRatio) {
     getOrCreateOtherProps().visibleHeightRatio(visibleHeightRatio);
   }
 
-  @Override
-  public float getVisibleHeightRatio() {
-    return getOrCreateOtherProps().mVisibleHeightRatio;
-  }
-
   void visibleWidthRatio(float visibleWidthRatio) {
     getOrCreateOtherProps().visibleWidthRatio(visibleWidthRatio);
-  }
-
-  @Override
-  public float getVisibleWidthRatio() {
-    return getOrCreateOtherProps().mVisibleWidthRatio;
   }
 
   void visibleHandler(EventHandler<VisibleEvent> visibleHandler) {
     getOrCreateOtherProps().visibleHandler(visibleHandler);
   }
 
-  @Override
-  @Nullable
-  public EventHandler<VisibleEvent> getVisibleHandler() {
-    return getOrCreateOtherProps().mVisibleHandler;
-  }
-
   void focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler) {
     getOrCreateOtherProps().focusedHandler(focusedHandler);
-  }
-
-  @Override
-  @Nullable
-  public EventHandler<FocusedVisibleEvent> getFocusedHandler() {
-    return getOrCreateOtherProps().mFocusedHandler;
   }
 
   void unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
     getOrCreateOtherProps().unfocusedHandler(unfocusedHandler);
   }
 
-  @Override
-  @Nullable
-  public EventHandler<UnfocusedVisibleEvent> getUnfocusedHandler() {
-    return getOrCreateOtherProps().mUnfocusedHandler;
-  }
-
   void fullImpressionHandler(EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
     getOrCreateOtherProps().fullImpressionHandler(fullImpressionHandler);
-  }
-
-  @Override
-  @Nullable
-  public EventHandler<FullImpressionVisibleEvent> getFullImpressionHandler() {
-    return getOrCreateOtherProps().mFullImpressionHandler;
   }
 
   void invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
     getOrCreateOtherProps().invisibleHandler(invisibleHandler);
   }
 
-  @Override
-  @Nullable
-  public EventHandler<InvisibleEvent> getInvisibleHandler() {
-    return getOrCreateOtherProps().mInvisibleHandler;
-  }
-
   void contentDescription(@Nullable CharSequence contentDescription) {
     getOrCreateNodeInfo().setContentDescription(contentDescription);
-  }
-
-  @Override
-  @Nullable
-  public CharSequence getContentDescription() {
-    return getOrCreateNodeInfo().getContentDescription();
   }
 
   void viewTag(@Nullable Object viewTag) {
     getOrCreateNodeInfo().setViewTag(viewTag);
   }
 
-  @Override
-  @Nullable
-  public Object getViewTag() {
-    return getOrCreateNodeInfo().getViewTag();
-  }
-
   void viewTags(@Nullable SparseArray<Object> viewTags) {
     getOrCreateNodeInfo().setViewTags(viewTags);
-  }
-
-  @Override
-  @Nullable
-  public SparseArray getViewTags() {
-    final SparseArray<Object> viewTags = getOrCreateNodeInfo().getViewTags();
-    return viewTags == null ? null : viewTags.clone();
   }
 
   void shadowElevationPx(float shadowElevation) {
     getOrCreateNodeInfo().setShadowElevation(shadowElevation);
   }
 
-  @Override
-  public float getShadowElevationPx() {
-    return getOrCreateNodeInfo().getShadowElevation();
-  }
-
   void outlineProvider(@Nullable ViewOutlineProvider outlineProvider) {
     getOrCreateNodeInfo().setOutlineProvider(outlineProvider);
-  }
-
-  @Override
-  @Nullable
-  public ViewOutlineProvider getOutlineProvider() {
-    return getOrCreateNodeInfo().getOutlineProvider();
   }
 
   void clipToOutline(boolean clipToOutline) {
     getOrCreateNodeInfo().setClipToOutline(clipToOutline);
   }
 
-  @Override
-  public boolean getClipToOutline() {
-    return getOrCreateNodeInfo().getClipToOutline();
-  }
-
   void accessibilityRole(@Nullable @AccessibilityRole.AccessibilityRoleType String role) {
     getOrCreateNodeInfo().setAccessibilityRole(role);
-  }
-
-  @Override
-  @AccessibilityRole.AccessibilityRoleType
-  @Nullable
-  public String getAccessibilityRole() {
-    return getOrCreateNodeInfo().getAccessibilityRole();
   }
 
   void dispatchPopulateAccessibilityEventHandler(
@@ -585,25 +371,11 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
         .setDispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
   }
 
-  @Override
-  @Nullable
-  public EventHandler<DispatchPopulateAccessibilityEventEvent>
-      getDispatchPopulateAccessibilityEventHandler() {
-    return getOrCreateNodeInfo().getDispatchPopulateAccessibilityEventHandler();
-  }
-
   void onInitializeAccessibilityEventHandler(
       @Nullable
           EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler) {
     getOrCreateNodeInfo()
         .setOnInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
-  }
-
-  @Override
-  @Nullable
-  public EventHandler<OnInitializeAccessibilityEventEvent>
-      getOnInitializeAccessibilityEventHandler() {
-    return getOrCreateNodeInfo().getOnInitializeAccessibilityEventHandler();
   }
 
   void onInitializeAccessibilityNodeInfoHandler(
@@ -614,24 +386,11 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
         .setOnInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
   }
 
-  @Override
-  @Nullable
-  public EventHandler<OnInitializeAccessibilityNodeInfoEvent>
-      getOnInitializeAccessibilityNodeInfoHandler() {
-    return getOrCreateNodeInfo().getOnInitializeAccessibilityNodeInfoHandler();
-  }
-
   void onPopulateAccessibilityEventHandler(
       @Nullable
           EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler) {
     getOrCreateNodeInfo()
         .setOnPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
-  }
-
-  @Override
-  @Nullable
-  public EventHandler<OnPopulateAccessibilityEventEvent> getOnPopulateAccessibilityEventHandler() {
-    return getOrCreateNodeInfo().getOnPopulateAccessibilityEventHandler();
   }
 
   void onRequestSendAccessibilityEventHandler(
@@ -642,33 +401,14 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
         .setOnRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
   }
 
-  @Nullable
-  @Override
-  public EventHandler<OnRequestSendAccessibilityEventEvent>
-      getOnRequestSendAccessibilityEventHandler() {
-    return getOrCreateNodeInfo().getOnRequestSendAccessibilityEventHandler();
-  }
-
   void performAccessibilityActionHandler(
       @Nullable EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler) {
     getOrCreateNodeInfo().setPerformAccessibilityActionHandler(performAccessibilityActionHandler);
   }
 
-  @Nullable
-  @Override
-  public EventHandler<PerformAccessibilityActionEvent> getPerformAccessibilityActionHandler() {
-    return getOrCreateNodeInfo().getPerformAccessibilityActionHandler();
-  }
-
   void sendAccessibilityEventHandler(
       @Nullable EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler) {
     getOrCreateNodeInfo().setSendAccessibilityEventHandler(sendAccessibilityEventHandler);
-  }
-
-  @Nullable
-  @Override
-  public EventHandler<SendAccessibilityEventEvent> getSendAccessibilityEventHandler() {
-    return getOrCreateNodeInfo().getSendAccessibilityEventHandler();
   }
 
   void sendAccessibilityEventUncheckedHandler(
@@ -679,38 +419,16 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
         .setSendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
   }
 
-  @Nullable
-  @Override
-  public EventHandler<SendAccessibilityEventUncheckedEvent>
-      getSendAccessibilityEventUncheckedHandler() {
-    return getOrCreateNodeInfo().getSendAccessibilityEventUncheckedHandler();
-  }
-
   void scale(float scale) {
     getOrCreateNodeInfo().setScale(scale);
-  }
-
-  @Override
-  public float getScale() {
-    return getOrCreateNodeInfo().getScale();
   }
 
   void alpha(float alpha) {
     getOrCreateNodeInfo().setAlpha(alpha);
   }
 
-  @Override
-  public float getAlpha() {
-    return getOrCreateNodeInfo().getAlpha();
-  }
-
   void rotation(float rotation) {
     getOrCreateNodeInfo().setRotation(rotation);
-  }
-
-  @Override
-  public float getRotation() {
-    return getOrCreateNodeInfo().getRotation();
   }
 
   void transitionKey(@Nullable String key) {
