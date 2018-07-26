@@ -36,6 +36,7 @@ dependencies {
     implementation project(':litho-fresco')
     implementation project(':litho-sections-core')
     implementation project(':litho-sections-widget')
+    implementation project(':litho-kotlin')
 
     compileOnly project(':litho-annotations')
     compileOnly project(':litho-sections-annotations')

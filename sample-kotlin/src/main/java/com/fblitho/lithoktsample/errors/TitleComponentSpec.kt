@@ -19,6 +19,7 @@ import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.ResType.STRING
+import com.facebook.litho.kotlin.text
 import com.facebook.litho.widget.Text
 import com.facebook.yoga.YogaEdge
 
@@ -27,10 +28,10 @@ object TitleComponentSpec {
 
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext, @Prop(resType = STRING) title: String): Component =
-      Text.create(c)
-          .text(title)
-          .textStyle(BOLD)
-          .textSizeDip(24f)
-          .positionDip(YogaEdge.BOTTOM, 16f)
-          .build()
+      text(c) {
+        text(title)
+        textStyle(BOLD)
+        textSizeDip(24f)
+        positionDip(YogaEdge.BOTTOM, 16f)
+      }
 }

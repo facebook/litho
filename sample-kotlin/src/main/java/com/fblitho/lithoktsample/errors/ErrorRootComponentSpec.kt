@@ -19,6 +19,7 @@ import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.OnEvent
 import com.facebook.litho.annotations.Prop
+import com.facebook.litho.kotlin.recyclerCollectionComponent
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.DataDiffSection
 import com.facebook.litho.sections.common.RenderEvent
@@ -32,15 +33,16 @@ object ErrorRootComponentSpec {
 
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext, @Prop dataModels: List<ListRow>): Component =
-      RecyclerCollectionComponent.create(c)
-          .disablePTR(true)
-          .section(
-              DataDiffSection.create<ListRow>(SectionContext(c))
-                  .data(dataModels)
-                  .renderEventHandler(ErrorRootComponent.onRender(c))
-                  .build())
-          .paddingDip(YogaEdge.TOP, 8f)
-          .build()
+      recyclerCollectionComponent(c) {
+        disablePTR(true)
+        section(
+            DataDiffSection.create<ListRow>(SectionContext(c))
+                .data(dataModels)
+                .renderEventHandler(ErrorRootComponent.onRender(c))
+                .build())
+            .paddingDip(YogaEdge.TOP, 8f)
+
+      }
 
   @OnEvent(RenderEvent::class)
   fun onRender(c: ComponentContext, @FromEvent model: ListRow): RenderInfo =

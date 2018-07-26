@@ -19,6 +19,7 @@ import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.OnEvent
 import com.facebook.litho.annotations.Prop
+import com.facebook.litho.kotlin.recyclerCollectionComponent
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.common.DataDiffSection
 import com.facebook.litho.sections.common.OnCheckIsSameContentEvent
@@ -36,17 +37,17 @@ object DemoListComponentSpec {
 
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext, @Prop dataModels: List<DemoListDataModel>): Component =
-      RecyclerCollectionComponent.create(c)
-          .section(
-              DataDiffSection.create<DemoListDataModel>(SectionContext(c))
-                  .data(dataModels)
-                  .renderEventHandler(DemoListComponent.onRender(c))
-                  .onCheckIsSameItemEventHandler(DemoListComponent.isSameItem(c))
-                  .onCheckIsSameContentEventHandler(DemoListComponent.isSameContent(c))
-                  .build())
-          .disablePTR(true)
-          .testKey(MAIN_SCREEN)
-          .build()
+      recyclerCollectionComponent(c) {
+        section(
+            DataDiffSection.create<DemoListDataModel>(SectionContext(c))
+                .data(dataModels)
+                .renderEventHandler(DemoListComponent.onRender(c))
+                .onCheckIsSameItemEventHandler(DemoListComponent.isSameItem(c))
+                .onCheckIsSameContentEventHandler(DemoListComponent.isSameContent(c))
+                .build())
+        disablePTR(true)
+        testKey(MAIN_SCREEN)
+      }
 
   @OnEvent(RenderEvent::class)
   fun onRender(

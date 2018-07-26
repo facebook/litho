@@ -18,6 +18,8 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.Row
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
+import com.facebook.litho.kotlin.children
+import com.facebook.litho.kotlin.row
 import com.facebook.litho.widget.Text
 import com.facebook.yoga.YogaEdge
 
@@ -25,15 +27,17 @@ import com.facebook.yoga.YogaEdge
 object DashPathEffectBorderSpec {
 
   @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext): Component =
-      Row.create(c)
-          .child(
-              Text.create(c).textSizeSp(20f).text("This component has a dash path effect applied"))
-          .border(
-              Border.create(c)
-                  .color(YogaEdge.ALL, NiceColor.BLUE)
-                  .widthDip(YogaEdge.ALL, 5f)
-                  .dashEffect(floatArrayOf(10f, 5f), 0f)
-                  .build())
-          .build()
+  fun onCreateLayout(c: ComponentContext): Component = row(c) {
+    children {
+      text {
+          textSizeSp(20f)
+        text("This component has a dash path effect applied")
+      }
+    }
+    border(Border.create(c)
+            .color(YogaEdge.ALL, NiceColor.BLUE)
+            .widthDip(YogaEdge.ALL, 5f)
+            .dashEffect(floatArrayOf(10f, 5f), 0f)
+            .build())
+  }
 }

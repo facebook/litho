@@ -17,6 +17,9 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
+import com.facebook.litho.kotlin.children
+import com.facebook.litho.kotlin.column
+import com.facebook.litho.kotlin.columnBuilder
 import com.facebook.litho.widget.Card
 import com.facebook.yoga.YogaEdge
 
@@ -25,17 +28,17 @@ object ListRowComponentSpec {
 
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext, @Prop row: ListRow): Component =
-      Column.create(c)
-          .paddingDip(YogaEdge.VERTICAL, 8f)
-          .paddingDip(YogaEdge.HORIZONTAL, 32f)
-          .child(
-              Card.create(c)
-                  .content(
-                      Column.create(c)
-                          .marginDip(YogaEdge.ALL, 32f)
-                          .child(TitleComponent.create(c).title(row.title))
-                          .child(PossiblyCrashingSubTitleComponent.create(c).subtitle(row.subtitle))
-                          .build())
-                  .build())
-          .build()
+      column(c) {
+        paddingDip(YogaEdge.VERTICAL, 8f)
+        paddingDip(YogaEdge.HORIZONTAL, 32f)
+        children {
+          card {
+            content(column(c) {
+              marginDip(YogaEdge.ALL, 32f)
+              child(TitleComponent.create(c).title(row.title))
+              child(PossiblyCrashingSubTitleComponent.create(c).subtitle(row.subtitle))
+            })
+          }
+        }
+      }
 }

@@ -16,13 +16,13 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.OnCreateTreeProp
+import com.facebook.litho.kotlin.text
 import com.facebook.litho.widget.Text
 
 @LayoutSpec
 object LoggingRootComponentSpec {
     @OnCreateLayout
-    fun onCreateLayout(c: ComponentContext): Component =
-            Text.create(c).text("Hello, Logger.").build()
+    fun onCreateLayout(c: ComponentContext): Component = text(c) { text("Hello, Logger.") }
 
     @OnCreateTreeProp
     fun onCreateTreeProp(c: ComponentContext): LogContext =

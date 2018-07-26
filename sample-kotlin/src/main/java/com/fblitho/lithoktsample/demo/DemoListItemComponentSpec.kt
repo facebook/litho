@@ -23,6 +23,8 @@ import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.OnEvent
 import com.facebook.litho.annotations.Prop
+import com.facebook.litho.kotlin.children
+import com.facebook.litho.kotlin.column
 import com.facebook.litho.widget.Text
 
 import com.facebook.yoga.YogaEdge.ALL
@@ -31,12 +33,16 @@ import com.facebook.yoga.YogaEdge.ALL
 object DemoListItemComponentSpec {
 
   @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext, @Prop model: DemoListDataModel): Component =
-      Column.create(c)
-          .paddingDip(ALL, 16f)
-          .child(Text.create(c).text(model.name).textSizeSp(18f).build())
-          .clickHandler(DemoListItemComponent.onClick(c))
-          .build()
+  fun onCreateLayout(c: ComponentContext, @Prop model: DemoListDataModel): Component = column(c) {
+    paddingDip(ALL, 16f)
+    children {
+      text {
+        text(model.name)
+        textSizeSp(18f)
+      }
+      clickHandler(DemoListItemComponent.onClick(c))
+    }
+  }
 
   @OnEvent(ClickEvent::class)
   fun onClick(
