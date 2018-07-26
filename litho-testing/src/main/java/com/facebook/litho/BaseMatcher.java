@@ -30,6 +30,7 @@ public abstract class BaseMatcher<T extends BaseMatcher<T>> {
   @Nullable Matcher<EventHandler<TouchEvent>> mTouchEventHandlerMatcher;
   @Nullable Matcher<EventHandler<InterceptTouchEvent>> mInterceptTouchHandlerMatcher;
   @Nullable Matcher<Boolean> mFocusable;
+  @Nullable Matcher<String> mTransitionKey;
 
   public T clickHandler(EventHandler<ClickEvent> clickHandler) {
     mClickHandlerMatcher = Is.is(clickHandler);
@@ -89,6 +90,16 @@ public abstract class BaseMatcher<T extends BaseMatcher<T>> {
 
   public T focusable(Matcher<Boolean> focusableMatcher) {
     mFocusable = focusableMatcher;
+    return getThis();
+  }
+
+  public T transitionKey(Matcher<String> transitionKeyMatcher) {
+    mTransitionKey = transitionKeyMatcher;
+    return getThis();
+  }
+
+  public T transitionKey(String transitionKey) {
+    mTransitionKey = Is.is(transitionKey);
     return getThis();
   }
 

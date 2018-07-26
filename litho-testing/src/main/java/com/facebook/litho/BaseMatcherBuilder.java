@@ -89,6 +89,16 @@ public final class BaseMatcherBuilder {
           return false;
         }
 
+        if (matcher.mTransitionKey != null
+            && commonProps != null
+            && !matcher.mTransitionKey.matches(commonProps.getTransitionKey())) {
+          as(
+              new TextDescription(
+                  "Transition key <%s> (doesn't match <\"%s\">)",
+                  matcher.mTransitionKey, commonProps.getTransitionKey()));
+          return false;
+        }
+
         return true;
       }
     };
