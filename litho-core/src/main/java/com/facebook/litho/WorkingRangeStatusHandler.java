@@ -19,6 +19,8 @@ package com.facebook.litho;
 import android.support.annotation.IntDef;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.SimpleArrayMap;
+import java.util.HashMap;
+import java.util.Map;
 
 /** A handler that stores the range status of components with given working range. */
 public class WorkingRangeStatusHandler {
@@ -39,7 +41,7 @@ public class WorkingRangeStatusHandler {
    * specific working range since a component can have several working ranges. The value is an
    * integer presenting the status.
    */
-  private final SimpleArrayMap<String, Integer> mStatus = new SimpleArrayMap<>();
+  private final Map<String, Integer> mStatus = new HashMap<>();
 
   boolean isInRange(String name, Component component) {
     return getStatus(name, component) == STATUS_IN_RANGE;
@@ -69,7 +71,7 @@ public class WorkingRangeStatusHandler {
   }
 
   @VisibleForTesting
-  SimpleArrayMap<String, Integer> getStatus() {
+  Map<String, Integer> getStatus() {
     return mStatus;
   }
 

@@ -17,9 +17,10 @@
 package com.facebook.litho;
 
 import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.SimpleArrayMap;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
@@ -30,15 +31,15 @@ import javax.annotation.Nullable;
 class WorkingRangeContainer {
 
   /**
-   * Use {@link SimpleArrayMap} to store the working range of each component. The key is composed
+   * Use {@link java.util.HashMap} to store the working range of each component. The key is composed
    * with name and working range hashcode. The value is a {@link RangeTuple} object that contains a
    * working range related information.
    */
-  @Nullable private SimpleArrayMap<String, RangeTuple> mWorkingRanges;
+  @Nullable private Map<String, RangeTuple> mWorkingRanges;
 
   void registerWorkingRange(String name, WorkingRange workingRange, Component component) {
     if (mWorkingRanges == null) {
-      mWorkingRanges = new SimpleArrayMap<>();
+      mWorkingRanges = new LinkedHashMap<>();
     }
 
     final String key = name + "_" + workingRange.hashCode();
@@ -65,8 +66,7 @@ class WorkingRangeContainer {
       return;
     }
 
-    for (int i = 0, size = mWorkingRanges.size(); i < size; i++) {
-      final String key = mWorkingRanges.keyAt(i);
+    for (String key : mWorkingRanges.keySet()) {
       final RangeTuple rangeTuple = mWorkingRanges.get(key);
 
       for (Component component : rangeTuple.mComponents) {
@@ -105,8 +105,7 @@ class WorkingRangeContainer {
       return;
     }
 
-    for (int i = 0, size = mWorkingRanges.size(); i < size; i++) {
-      final String key = mWorkingRanges.keyAt(i);
+    for (String key : mWorkingRanges.keySet()) {
       final RangeTuple rangeTuple = mWorkingRanges.get(key);
 
       for (Component component : rangeTuple.mComponents) {
@@ -150,8 +149,8 @@ class WorkingRangeContainer {
   }
 
   @VisibleForTesting
-  SimpleArrayMap<String, RangeTuple> getWorkingRangesForTestOnly() {
-    return (mWorkingRanges != null) ? mWorkingRanges : new SimpleArrayMap<String, RangeTuple>();
+  Map<String, RangeTuple> getWorkingRangesForTestOnly() {
+    return (mWorkingRanges != null) ? mWorkingRanges : new LinkedHashMap<String, RangeTuple>();
   }
 
   /**

@@ -24,9 +24,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.support.v4.util.SimpleArrayMap;
 import com.facebook.litho.WorkingRangeContainer.RangeTuple;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,11 +55,11 @@ public class WorkingRangeContainerTest {
   public void testRegisterWorkingRange() {
     mWorkingRangeContainer.registerWorkingRange(NAME, mWorkingRange, mComponent);
 
-    final SimpleArrayMap<String, RangeTuple> workingRanges =
+    final Map<String, RangeTuple> workingRanges =
         mWorkingRangeContainer.getWorkingRangesForTestOnly();
     assertThat(workingRanges.size()).isEqualTo(1);
 
-    final String key = workingRanges.keyAt(0);
+    final String key = workingRanges.keySet().iterator().next();
     assertThat(key).isEqualTo(NAME + "_" + mWorkingRange.hashCode());
 
     final RangeTuple rangeTuple = workingRanges.get(key);
