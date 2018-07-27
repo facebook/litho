@@ -89,6 +89,10 @@ public class RenderNodeAnimator extends Animator {
     throw new RuntimeException("Stub!");
   }
 
+  public void setTarget(DisplayListCanvas canvas) {
+    throw new RuntimeException("Stub!");
+  }
+
   public void setTarget(Canvas canvas) {
     throw new RuntimeException("Stub!");
   }
