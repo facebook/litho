@@ -24,6 +24,8 @@ import com.facebook.litho.internal.ArraySet;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
@@ -87,7 +89,7 @@ public class DataFlowGraph {
   private final ArrayList<ValueNode> mSortedNodes = new ArrayList<>();
 
   @GuardedBy("this")
-  private final SimpleArrayMap<ValueNode, NodeState> mNodeStates = new SimpleArrayMap<>();
+  private final Map<ValueNode, NodeState> mNodeStates = new HashMap<>();
 
   private boolean mIsDirty = false;
 
@@ -183,8 +185,7 @@ public class DataFlowGraph {
     while (!nodesToProcess.isEmpty()) {
       final ValueNode next = nodesToProcess.pollFirst();
       mSortedNodes.add(next);
-      for (int i = 0, count = next.getInputCount(); i < count; i++) {
-        final ValueNode input = next.getInputAt(i);
+      for (ValueNode input : next.getAllInputs()) {
         final int outputsLeft = nodesToOutputsLeft.get(input) - 1;
         nodesToOutputsLeft.put(input, outputsLeft);
         if (outputsLeft == 0) {
@@ -234,8 +235,8 @@ public class DataFlowGraph {
 
   @GuardedBy("this")
   private boolean areInputsFinished(ValueNode node) {
-    for (int i = 0, inputCount = node.getInputCount(); i < inputCount; i++) {
-      final NodeState nodeState = mNodeStates.get(node.getInputAt(i));
+    for (ValueNode input : node.getAllInputs()) {
+      final NodeState nodeState = mNodeStates.get(input);
       if (!nodeState.isFinished) {
         return false;
       }

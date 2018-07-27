@@ -16,8 +16,12 @@
 
 package com.facebook.litho.dataflow;
 
-import android.support.v4.util.SimpleArrayMap;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * A single node in a {@link DataFlowGraph}. Nodes are added to a {@link DataFlowGraph} using
@@ -37,7 +41,7 @@ public abstract class ValueNode {
 
   public static final String DEFAULT_INPUT = "default_input";
 
-  private SimpleArrayMap<String, ValueNode> mInputs = null;
+  private Map<String, ValueNode> mInputs = null;
   private ArrayList<ValueNode> mOutputs = null;
   private float mValue;
   private long mTimeNs = 0;
@@ -112,9 +116,10 @@ public abstract class ValueNode {
       return "[]";
     }
     String inputNames = "";
-    for (int i = 0; i < mInputs.size(); i++) {
-      inputNames += "'" + mInputs.keyAt(i) + "'";
-      if (i != mInputs.size() - 1) {
+    final Iterator<String> inputIterator = mInputs.keySet().iterator();
+    while (inputIterator.hasNext()) {
+      inputNames += "'" + inputIterator.next() + "'";
+      if (!inputIterator.hasNext()) {
         inputNames += ", ";
       }
     }
@@ -161,13 +166,6 @@ public abstract class ValueNode {
     return getOutputAt(0);
   }
 
-  void removeOutputAt(int i) {
-    if (i >= getOutputCount()) {
-      throw new RuntimeException("Bad index: " + i + " >= " + getOutputCount());
-    }
-    mOutputs.remove(i);
-  }
-
   void removeOutput(ValueNode output) {
     if (!mOutputs.remove(output)) {
       throw new RuntimeException("Tried to remove non-existent input!");
@@ -178,16 +176,17 @@ public abstract class ValueNode {
     return mInputs == null ? 0 : mInputs.size();
   }
 
-  ValueNode getInputAt(int i) {
-    if (getInputCount() <= i) {
-      throw new RuntimeException("Bad index: " + i + " > " + getInputCount());
+  Collection<ValueNode> getAllInputs() {
+    if (mInputs == null) {
+      return Collections.emptySet();
     }
-    return mInputs.valueAt(i);
+
+    return mInputs.values();
   }
 
   void setInput(String name, ValueNode input) {
     if (mInputs == null) {
-      mInputs = new SimpleArrayMap<>();
+      mInputs = new LinkedHashMap<>();
     }
     mInputs.put(name, input);
   }
