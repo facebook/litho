@@ -16,15 +16,19 @@
 
 package com.facebook.litho;
 
+import android.support.annotation.GuardedBy;
 import android.support.annotation.Nullable;
-import android.support.v4.util.SimpleArrayMap;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Keeps all valid instances of {@link EventTrigger} from the hierarchy when the layout is completed
  */
 public class EventTriggersContainer {
 
-  @Nullable private SimpleArrayMap<String, EventTrigger> mEventTriggers;
+  @GuardedBy("this")
+  @Nullable
+  private Map<String, EventTrigger> mEventTriggers;
 
   /**
    * Record an {@link EventTrigger} according to its key.
@@ -36,11 +40,13 @@ public class EventTriggersContainer {
       return;
     }
 
-    if (mEventTriggers == null) {
-      mEventTriggers = new SimpleArrayMap<>();
-    }
+    synchronized (this) {
+      if (mEventTriggers == null) {
+        mEventTriggers = new HashMap<>();
+      }
 
-    mEventTriggers.put(trigger.mKey, trigger);
+      mEventTriggers.put(trigger.mKey, trigger);
+    }
   }
 
   /**
@@ -50,7 +56,7 @@ public class EventTriggersContainer {
    * @return EventTrigger with the triggerKey given.
    */
   @Nullable
-  public EventTrigger getEventTrigger(String triggerKey) {
+  public synchronized EventTrigger getEventTrigger(String triggerKey) {
     if (mEventTriggers == null || !mEventTriggers.containsKey(triggerKey)) {
       return null;
     }
@@ -58,7 +64,7 @@ public class EventTriggersContainer {
     return mEventTriggers.get(triggerKey);
   }
 
-  public void clear() {
+  public synchronized void clear() {
     if (mEventTriggers != null) {
       mEventTriggers.clear();
     }

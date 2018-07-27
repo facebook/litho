@@ -228,7 +228,6 @@ public class ComponentTree {
 
   private final EventHandlersController mEventHandlersController = new EventHandlersController();
 
-  @GuardedBy("mEventTriggersContainer")
   private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
 
   @GuardedBy("this")
@@ -1126,9 +1125,7 @@ public class ComponentTree {
   }
 
   private void clearUnusedTriggerHandlers() {
-    synchronized (mEventTriggersContainer) {
-      mEventTriggersContainer.clear();
-    }
+    mEventTriggersContainer.clear();
   }
 
   @Nullable

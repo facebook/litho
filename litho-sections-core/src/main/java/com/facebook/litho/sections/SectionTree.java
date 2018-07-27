@@ -236,7 +236,6 @@ public class SectionTree {
 
   private final EventHandlersController mEventHandlersController = new EventHandlersController();
 
-  @GuardedBy("this")
   private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
 
   void recordEventHandler(Section section, EventHandler eventHandler) {
@@ -254,7 +253,7 @@ public class SectionTree {
     }
   }
 
-  private synchronized void clearUnusedTriggerHandlers() {
+  private void clearUnusedTriggerHandlers() {
     mEventTriggersContainer.clear();
   }
 
