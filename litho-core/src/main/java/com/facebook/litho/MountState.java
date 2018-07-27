@@ -49,7 +49,6 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LongSparseArray;
-import android.support.v4.util.SimpleArrayMap;
 import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -67,6 +66,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -132,8 +132,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private TransitionManager mTransitionManager;
   private final HashSet<String> mAnimatingTransitionKeys = new HashSet<>();
   private int[] mAnimationLockedIndices;
-  private final SimpleArrayMap<String, OutputUnitsAffinityGroup<MountItem>>
-      mDisappearingMountItems = new SimpleArrayMap<>();
+  private final Map<String, OutputUnitsAffinityGroup<MountItem>> mDisappearingMountItems =
+      new LinkedHashMap<>();
   private @Nullable Transition mRootTransition;
   private boolean mTransitionsHasBeenCollected = false;
 
@@ -454,8 +454,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     // Group mount content (represents current LayoutStates only) into groups and pass it to the
     // TransitionManager
-    final SimpleArrayMap<String, OutputUnitsAffinityGroup<Object>> animatingContent =
-        new SimpleArrayMap<>(mAnimatingTransitionKeys.size());
+    final Map<String, OutputUnitsAffinityGroup<Object>> animatingContent =
+        new LinkedHashMap<>(mAnimatingTransitionKeys.size());
     for (int i = 0, size = mIndexToItemMap.size(); i < size; i++) {
       final MountItem mountItem = mIndexToItemMap.valueAt(i);
       if (!mountItem.hasTransitionKey()) {
@@ -470,21 +470,21 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       }
       group.replace(type, mountItem.getContent());
     }
-    for (int i = 0, size = animatingContent.size(); i < size; i++) {
-      mTransitionManager.setMountContent(animatingContent.keyAt(i), animatingContent.valueAt(i));
+    for (String transitionKey : animatingContent.keySet()) {
+      mTransitionManager.setMountContent(transitionKey, animatingContent.get(transitionKey));
     }
 
     // Retrieve mount content from disappearing mount items and pass it to the TransitionManager
-    for (int i = 0, size = mDisappearingMountItems.size(); i < size; i++) {
+    for (String transitionKey : mDisappearingMountItems.keySet()) {
       final OutputUnitsAffinityGroup<MountItem> mountItemsGroup =
-          mDisappearingMountItems.valueAt(i);
+          mDisappearingMountItems.get(transitionKey);
       final OutputUnitsAffinityGroup<Object> mountContentGroup = new OutputUnitsAffinityGroup<>();
       for (int j = 0, sz = mountItemsGroup.size(); j < sz; j++) {
         final @OutputUnitType int type = mountItemsGroup.typeAt(j);
         final MountItem mountItem = mountItemsGroup.getAt(j);
         mountContentGroup.add(type, mountItem.getContent());
       }
-      mTransitionManager.setMountContent(mDisappearingMountItems.keyAt(i), mountContentGroup);
+      mTransitionManager.setMountContent(transitionKey, mountContentGroup);
     }
   }
 
@@ -2415,8 +2415,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (mTransitionManager == null) {
       return;
     }
-    for (int i = 0, size = mDisappearingMountItems.size(); i < size; i++) {
-      endUnmountDisappearingItem(mDisappearingMountItems.valueAt(i));
+    for (OutputUnitsAffinityGroup<MountItem> group : mDisappearingMountItems.values()) {
+      endUnmountDisappearingItem(group);
     }
     mDisappearingMountItems.clear();
     mAnimatingTransitionKeys.clear();
