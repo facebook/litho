@@ -61,8 +61,8 @@ ext.deps = [
         // Arch
         archLifecycle      : 'android.arch.lifecycle:extensions:1.1.1',
         // First-party
-        fresco             : 'com.facebook.fresco:fresco:1.9.0',
-        soloader           : 'com.facebook.soloader:soloader:0.5.0',
+        fresco             : 'com.facebook.fresco:fresco:1.10.0',
+        soloader           : 'com.facebook.soloader:soloader:0.5.1',
         textlayoutbuilder  : 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.4.0',
         screenshot         : 'com.facebook.testing.screenshot:core:0.5.0',
         // Annotations
