@@ -1333,7 +1333,12 @@ public class RecyclerBinderTest {
         .isEqualTo(1);
 
     ViewCreator obtainedViewCreator =
-        mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.keyAt(0);
+        mRecyclerBinder
+            .mRenderInfoViewCreatorController
+            .mViewCreatorToViewType
+            .keySet()
+            .iterator()
+            .next();
     assertThat(obtainedViewCreator).isEqualTo(VIEW_CREATOR_1);
     assertThat(
             mRecyclerBinder.mRenderInfoViewCreatorController.mViewTypeToViewCreator.indexOfValue(
@@ -1365,12 +1370,8 @@ public class RecyclerBinderTest {
     assertThat(mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size())
         .isEqualTo(4);
 
-    for (int i = 0,
-            size = mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.size();
-        i < size;
-        i++) {
-      final ViewCreator obtainedViewCreator =
-          mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.keyAt(i);
+    for (ViewCreator obtainedViewCreator :
+        mRecyclerBinder.mRenderInfoViewCreatorController.mViewCreatorToViewType.keySet()) {
       assertThat(
               mRecyclerBinder.mRenderInfoViewCreatorController.mViewTypeToViewCreator.indexOfValue(
                   obtainedViewCreator))

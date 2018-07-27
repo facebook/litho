@@ -18,9 +18,10 @@ package com.facebook.litho.widget;
 
 import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.SimpleArrayMap;
 import android.util.SparseArray;
 import com.facebook.litho.viewcompat.ViewCreator;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
@@ -30,8 +31,7 @@ public class RenderInfoViewCreatorController {
 
   @VisibleForTesting final SparseArray<ViewCreator> mViewTypeToViewCreator = new SparseArray<>();
 
-  @VisibleForTesting
-  final SimpleArrayMap<ViewCreator, Integer> mViewCreatorToViewType = new SimpleArrayMap<>();
+  @VisibleForTesting final Map<ViewCreator, Integer> mViewCreatorToViewType = new HashMap<>();
 
   public static final int DEFAULT_COMPONENT_VIEW_TYPE = 0;
   private final boolean mCustomViewTypeEnabled;
@@ -54,9 +54,8 @@ public class RenderInfoViewCreatorController {
 
     final ViewCreator viewCreator = renderInfo.getViewCreator();
     final int viewType;
-    final int index = mViewCreatorToViewType.indexOfKey(viewCreator);
-    if (index >= 0) {
-      viewType = mViewCreatorToViewType.valueAt(index);
+    if (mViewCreatorToViewType.containsKey(viewCreator)) {
+      viewType = mViewCreatorToViewType.get(viewCreator);
     } else {
       viewType = renderInfo.hasCustomViewType() ? renderInfo.getViewType() : mViewTypeCounter++;
       mViewTypeToViewCreator.put(viewType, viewCreator);
