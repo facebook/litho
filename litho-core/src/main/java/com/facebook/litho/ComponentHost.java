@@ -761,6 +761,11 @@ public class ComponentHost extends ViewGroup {
   }
 
   @Override
+  public boolean shouldDelayChildPressedState() {
+    return ComponentsConfiguration.shouldDelayChildPressedState;
+  }
+
+  @Override
   public boolean onTouchEvent(MotionEvent event) {
     assertMainThread();
 

@@ -191,4 +191,7 @@ public class ComponentsConfiguration {
   public static boolean saveMeasuredSizesInMeasure = false;
 
   public static boolean prewarmImageTexture = false;
+
+  /** By default ComponentHost (extending ViewGroup) delay press state. */
+  public static boolean shouldDelayChildPressedState = true;
 }
