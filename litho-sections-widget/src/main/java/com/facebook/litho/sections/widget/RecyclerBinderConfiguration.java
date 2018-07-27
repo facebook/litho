@@ -42,6 +42,7 @@ public class RecyclerBinderConfiguration {
   @Nullable private LayoutThreadPoolConfiguration mThreadPoolForParallelFillViewportConfig;
   private boolean mEnableStableIds;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
+  private boolean mUseSharedLayoutStateFuture;
 
   public RecyclerBinderConfiguration(double rangeRatio) {
     this(rangeRatio, null, false);
@@ -116,6 +117,10 @@ public class RecyclerBinderConfiguration {
     mUseAsyncMutations = useAsyncMutations;
   }
 
+  public void setUseSharedLayoutStateFuture(boolean useSharedLayoutStateFuture) {
+    mUseSharedLayoutStateFuture = useSharedLayoutStateFuture;
+  }
+
   public void setFillListViewport(boolean fillListViewport) {
     mFillListViewport = fillListViewport;
   }
@@ -167,6 +172,10 @@ public class RecyclerBinderConfiguration {
 
   public boolean getUseAsyncMutations() {
     return mUseAsyncMutations;
+  }
+
+  public boolean getUseSharedLayoutStateFuture() {
+    return mUseSharedLayoutStateFuture;
   }
 
   public boolean getFillListViewport() {
