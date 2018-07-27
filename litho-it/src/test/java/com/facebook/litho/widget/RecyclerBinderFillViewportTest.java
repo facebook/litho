@@ -109,6 +109,7 @@ public class RecyclerBinderFillViewportTest {
               LayoutHandler layoutHandler,
               boolean canPrefetchDisplayLists,
               boolean canCacheDrawingDisplayLists,
+              boolean useSharedLayoutStateFuture,
               ComponentTreeHolder.ComponentTreeMeasureListenerFactory
                   componentTreeMeasureListenerFactory,
               String splitLayoutTag) {
