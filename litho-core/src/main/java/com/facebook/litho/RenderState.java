@@ -15,9 +15,10 @@
  */
 package com.facebook.litho;
 
-import android.support.v4.util.SimpleArrayMap;
 import com.facebook.litho.internal.ArraySet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Keeps track of the last mounted @Prop/@State a component was rendered with for components that
@@ -26,8 +27,7 @@ import java.util.List;
  */
 public class RenderState {
 
-  private final SimpleArrayMap<String, ComponentLifecycle.RenderData> mRenderData =
-      new SimpleArrayMap<>();
+  private final Map<String, ComponentLifecycle.RenderData> mRenderData = new HashMap<>();
   private final ArraySet<String> mSeenGlobalKeys = new ArraySet<>();
 
   void recordRenderData(List<Component> components) {
@@ -84,7 +84,7 @@ public class RenderState {
     }
 
     final String key = component.getGlobalKey();
-    ComponentLifecycle.RenderData previousRenderData = mRenderData.get(key);
+    final ComponentLifecycle.RenderData previousRenderData = mRenderData.get(key);
     component.applyPreviousRenderData(previousRenderData);
   }
 
