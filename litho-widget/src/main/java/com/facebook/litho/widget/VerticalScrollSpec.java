@@ -181,6 +181,7 @@ public class VerticalScrollSpec {
       @Prop(optional = true) boolean scrollbarEnabled,
       @Prop(optional = true) boolean scrollbarFadingEnabled,
       @Prop(optional = true) boolean nestedScrollingEnabled,
+      @Prop(optional = true) NestedScrollView.OnScrollChangeListener onScrollChangeListener,
       @State ComponentTree childComponentTree,
       @State final ScrollPosition scrollPosition) {
     lithoScrollView.mount(childComponentTree, scrollPosition);
@@ -195,10 +196,12 @@ public class VerticalScrollSpec {
     } else {
       lithoScrollView.setVerticalScrollBarEnabled(scrollbarEnabled);
     }
+    lithoScrollView.setOnScrollChangeListener(onScrollChangeListener);
   }
 
   @OnUnmount
   static void onUnmount(ComponentContext context, LithoScrollView lithoScrollView) {
+    lithoScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) null);
     lithoScrollView.unmount();
   }
 
