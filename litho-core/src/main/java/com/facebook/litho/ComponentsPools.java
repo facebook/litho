@@ -50,8 +50,8 @@ import javax.annotation.concurrent.GuardedBy;
 /**
  * Pools of recycled resources.
  *
- * FUTURE: Consider customizing the pool implementation such that we can match buffer sizes. Without
- * this we will tend to expand all buffers to the largest size needed.
+ * <p>FUTURE: Consider customizing the pool implementation such that we can match buffer sizes.
+ * Without this we will tend to expand all buffers to the largest size needed.
  */
 public class ComponentsPools {
 
@@ -59,8 +59,7 @@ public class ComponentsPools {
 
   private static volatile YogaConfig sYogaConfig;
 
-  private ComponentsPools() {
-  }
+  private ComponentsPools() {}
 
   private static final Object sMountContentLock = new Object();
   private static final Object sYogaConfigLock = new Object();
@@ -80,8 +79,7 @@ public class ComponentsPools {
   static final RecyclePool<YogaNode> sYogaNodePool =
       new RecyclePool<>("YogaNode", PoolsConfig.sYogaNodeSize, true);
 
-  static final RecyclePool<MountItem> sMountItemPool =
-      new RecyclePool<>("MountItem", 256, true);
+  static final RecyclePool<MountItem> sMountItemPool = new RecyclePool<>("MountItem", 256, true);
 
   static final RecyclePool<LayoutOutput> sLayoutOutputPool =
       new RecyclePool<>("LayoutOutput", PoolsConfig.sLayoutOutputSize, true);
@@ -103,14 +101,12 @@ public class ComponentsPools {
   static final RecyclePool<VisibilityItem> sVisibilityItemPool =
       new RecyclePool<>("VisibilityItem", 64, true);
 
-  static final RecyclePool<Output<?>> sOutputPool =
-      new RecyclePool<>("Output", 20, true);
+  static final RecyclePool<Output<?>> sOutputPool = new RecyclePool<>("Output", 20, true);
 
   static final RecyclePool<DiffNode> sDiffNodePool =
       new RecyclePool<>("DiffNode", PoolsConfig.sDiffNodeSize, true);
 
-  static final RecyclePool<Diff<?>> sDiffPool =
-      new RecyclePool<>("Diff", 20, true);
+  static final RecyclePool<Diff<?>> sDiffPool = new RecyclePool<>("Diff", 20, true);
 
   static final RecyclePool<ComponentTree.Builder> sComponentTreeBuilderPool =
       new RecyclePool<>("ComponentTree.Builder", 2, true);
@@ -121,23 +117,18 @@ public class ComponentsPools {
   static final RecyclePool<SparseArrayCompat<MountItem>> sMountItemScrapArrayPool =
       new RecyclePool<>("MountItemScrapArray", 8, false);
 
-  static final RecyclePool<RectF> sRectFPool =
-      new RecyclePool<>("RectF", 4, true);
+  static final RecyclePool<RectF> sRectFPool = new RecyclePool<>("RectF", 4, true);
 
-  static final RecyclePool<Rect> sRectPool =
-      new RecyclePool<>("Rect", 30, true);
+  static final RecyclePool<Rect> sRectPool = new RecyclePool<>("Rect", 30, true);
 
-  static final RecyclePool<Edges> sEdgesPool =
-      new RecyclePool<>("Edges", 30, true);
+  static final RecyclePool<Edges> sEdgesPool = new RecyclePool<>("Edges", 30, true);
 
   static final RecyclePool<DisplayListDrawable> sDisplayListDrawablePool =
       new RecyclePool<>("DisplayListDrawable", 10, false);
 
-  static final RecyclePool<ArraySet> sArraySetPool =
-      new RecyclePool<>("ArraySet", 10, true);
+  static final RecyclePool<ArraySet> sArraySetPool = new RecyclePool<>("ArraySet", 10, true);
 
-  static final RecyclePool<ArrayDeque> sArrayDequePool =
-      new RecyclePool<>("ArrayDeque", 10, true);
+  static final RecyclePool<ArrayDeque> sArrayDequePool = new RecyclePool<>("ArrayDeque", 10, true);
 
   static final RecyclePool<RenderState> sRenderStatePool =
       new RecyclePool<>("RenderState", 4, true);
@@ -156,10 +147,9 @@ public class ComponentsPools {
   private static PoolsActivityCallback sActivityCallbacks;
 
   /**
-   * To support Gingerbread (where the registerActivityLifecycleCallbacks API
-   * doesn't exist), we allow apps to explicitly invoke activity callbacks. If
-   * this is enabled we'll throw if we are passed a context for which we have
-   * no record.
+   * To support Gingerbread (where the registerActivityLifecycleCallbacks API doesn't exist), we
+   * allow apps to explicitly invoke activity callbacks. If this is enabled we'll throw if we are
+   * passed a context for which we have no record.
    */
   static boolean sIsManualCallbacks;
 
@@ -191,7 +181,10 @@ public class ComponentsPools {
 
     YogaNode node = sYogaNodePool.acquire();
     if (node == null) {
-      node = new YogaNode(sYogaConfig);
+      node =
+          PoolsConfig.sYogaNodeFactory != null
+              ? PoolsConfig.sYogaNodeFactory.create(sYogaConfig)
+              : new YogaNode(sYogaConfig);
     }
 
     return node;
@@ -226,9 +219,7 @@ public class ComponentsPools {
   }
 
   static MountItem acquireRootHostMountItem(
-      Component component,
-      ComponentHost host,
-      Object content) {
+      Component component, ComponentHost host, Object content) {
     MountItem item = sMountItemPool.acquire();
     if (item == null) {
       item = new MountItem();
@@ -270,10 +261,7 @@ public class ComponentsPools {
   }
 
   static MountItem acquireMountItem(
-      Component component,
-      ComponentHost host,
-      Object content,
-      LayoutOutput layoutOutput) {
+      Component component, ComponentHost host, Object content, LayoutOutput layoutOutput) {
     MountItem item = sMountItemPool.acquire();
     if (item == null) {
       item = new MountItem();
@@ -648,12 +636,9 @@ public class ComponentsPools {
     sEdgesPool.release(edges);
   }
 
-  /**
-   * Empty implementation of the {@link Application.ActivityLifecycleCallbacks} interface
-   */
+  /** Empty implementation of the {@link Application.ActivityLifecycleCallbacks} interface */
   @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-  private static class PoolsActivityCallback
-      implements Application.ActivityLifecycleCallbacks {
+  private static class PoolsActivityCallback implements Application.ActivityLifecycleCallbacks {
 
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
@@ -719,18 +704,14 @@ public class ComponentsPools {
     }
   }
 
-  /**
-   * Call from tests to clear external references.
-   */
+  /** Call from tests to clear external references. */
   public static void clearMountContentPools() {
     synchronized (sMountContentLock) {
       sMountContentPoolsByContext.clear();
     }
   }
 
-  /**
-   * Clear pools for all the internal util objects, excluding mount content.
-   */
+  /** Clear pools for all the internal util objects, excluding mount content. */
   public static void clearInternalUtilPools() {
     sLayoutStatePool.clear();
     sYogaNodePool.clear();
@@ -766,9 +747,7 @@ public class ComponentsPools {
     sLithoViewArrayListPool.clear();
   }
 
-  /**
-   * Check whether contextWrapper is a wrapper of baseContext
-   */
+  /** Check whether contextWrapper is a wrapper of baseContext */
   private static boolean isContextWrapper(Context contextWrapper, Context baseContext) {
     Context currentContext = contextWrapper;
     while (currentContext instanceof ContextWrapper) {
@@ -783,8 +762,7 @@ public class ComponentsPools {
   }
 
   public static DisplayListDrawable acquireDisplayListDrawable(
-      Drawable content,
-      DisplayListContainer displayListContainer) {
+      Drawable content, DisplayListContainer displayListContainer) {
 
     // When we are wrapping drawable with DisplayListDrawable we need to make sure that
     // wrapped DisplayListDrawable has the same view callback as original one had for correct

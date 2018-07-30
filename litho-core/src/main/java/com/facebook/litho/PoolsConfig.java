@@ -15,6 +15,10 @@
  */
 package com.facebook.litho;
 
+import com.facebook.yoga.YogaConfig;
+import com.facebook.yoga.YogaNode;
+import javax.annotation.Nullable;
+
 /** A helper class that defines a configurable sizes for ComponentsPools. */
 public class PoolsConfig {
   public static int sLayoutStateSize = 64;
@@ -24,4 +28,16 @@ public class PoolsConfig {
   public static int sLayoutOutputSize = 256;
   public static int sYogaNodeSize = 256;
   public static int sDisplayListContainerSize = 64;
+
+  public interface YogaNodeFactory {
+    YogaNode create();
+
+    YogaNode create(YogaConfig config);
+  }
+
+  /**
+   * Custom factory for Yoga nodes. Used to enable direct byte buffers to set Yoga style properties
+   * (rather than JNI)
+   */
+  @Nullable public static YogaNodeFactory sYogaNodeFactory = null;
 }
