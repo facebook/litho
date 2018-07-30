@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
-
-#include <fb/fbjni.h>
-#include <fb/ByteBuffer.h>
+#include <fb/fbjni/ReadableByteChannel.h>
 
 namespace facebook {
 namespace jni {
 
-class JReadableByteChannel : public JavaClass<JReadableByteChannel> {
-public:
-  static constexpr const char* kJavaDescriptor = "Ljava/nio/channels/ReadableByteChannel;";
-
-  int read(alias_ref<JByteBuffer> dest) const;
-};
+int JReadableByteChannel::read(alias_ref<JByteBuffer> dest) const {
+  if (!self()) {
+    throwNewJavaException("java/lang/NullPointerException", "java.lang.NullPointerException");
+  }
+  static auto method = javaClassStatic()->getMethod<jint(alias_ref<JByteBuffer>)>("read");
+  return method(self(), dest);
+}
 
 }}
+

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <fb/ByteBuffer.h>
+#include <fb/fbjni/ByteBuffer.h>
 
 #include <stdexcept>
 
