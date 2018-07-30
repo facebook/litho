@@ -33,6 +33,7 @@ import android.support.annotation.Px;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.content.ContextCompat;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ReturnsOwnership;
@@ -1214,7 +1215,7 @@ public abstract class Component extends ComponentLifecycle
         return background((Reference<? extends Drawable>) null);
       }
 
-      return background(mContext.getResources().getDrawable(resId));
+      return background(ContextCompat.getDrawable(mContext, resId));
     }
 
     public T backgroundColor(@ColorInt int backgroundColor) {
@@ -1239,7 +1240,7 @@ public abstract class Component extends ComponentLifecycle
         return foreground(null);
       }
 
-      return foreground(mContext.getResources().getDrawable(resId));
+      return foreground(ContextCompat.getDrawable(mContext, resId));
     }
 
     public T foregroundColor(@ColorInt int foregroundColor) {

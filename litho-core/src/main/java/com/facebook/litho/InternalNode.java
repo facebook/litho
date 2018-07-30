@@ -41,6 +41,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Px;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
@@ -755,7 +756,7 @@ class InternalNode implements ComponentLayout {
       return background((Reference<? extends Drawable>) null);
     }
 
-    return background(mComponentContext.getResources().getDrawable(resId));
+    return background(ContextCompat.getDrawable(mComponentContext, resId));
   }
 
   InternalNode backgroundColor(@ColorInt int backgroundColor) {
@@ -773,7 +774,7 @@ class InternalNode implements ComponentLayout {
       return foreground(null);
     }
 
-    return foreground(mComponentContext.getResources().getDrawable(resId));
+    return foreground(ContextCompat.getDrawable(mComponentContext, resId));
   }
 
   InternalNode foregroundColor(@ColorInt int foregroundColor) {
