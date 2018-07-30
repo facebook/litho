@@ -85,10 +85,10 @@ public @interface MountSpec {
   boolean isPureRender() default false;
 
   /**
-   * @return Boolean indicating whether this mount spec supports incremental mount. This is only
-   * applicable to MountSpecs which mount a View which is or contains a LithoView.
+   * @return boolean indicating whether this mount spec has child LithoViews. If this is true then
+   *     we need to ensure that these child views are correctly incrementally mounted.
    */
-  boolean canMountIncrementally() default false;
+  boolean hasChildLithoViews() default false;
 
   /**
    * @return List of event POJOs this component can dispatch. Used to generate event dispatch

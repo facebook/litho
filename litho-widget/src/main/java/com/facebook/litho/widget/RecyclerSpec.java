@@ -72,7 +72,11 @@ import java.util.List;
  * @prop recyclerEventsController Controller to pass events from outside the component.
  * @prop onScrollListener Listener for RecyclerView's scroll events.
  */
-@MountSpec(canMountIncrementally = true, isPureRender = true, events = {PTRRefreshEvent.class})
+@MountSpec(
+  hasChildLithoViews = true,
+  isPureRender = true,
+  events = {PTRRefreshEvent.class}
+)
 class RecyclerSpec {
 
   @PropDefault static final int scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY;

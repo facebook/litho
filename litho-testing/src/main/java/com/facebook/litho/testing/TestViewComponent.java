@@ -35,20 +35,20 @@ public class TestViewComponent extends TestComponent {
   private final boolean mCallsShouldUpdateOnMount;
   private final boolean mIsPureRender;
   private final boolean mCanMeasure;
-  private final boolean mCanMountIncrementally;
+  private final boolean mHasChildLithoViews;
   @Nullable private View mTestView;
 
   private TestViewComponent(
       boolean callsShouldUpdateOnMount,
       boolean isPureRender,
       boolean canMeasure,
-      boolean canMountIncrementally) {
+      boolean hasChildLithoViews) {
     super("TestViewComponent");
 
     mCallsShouldUpdateOnMount = callsShouldUpdateOnMount;
     mIsPureRender = isPureRender;
     mCanMeasure = canMeasure;
-    mCanMountIncrementally = canMountIncrementally;
+    mHasChildLithoViews = hasChildLithoViews;
   }
 
   @Override
@@ -67,8 +67,8 @@ public class TestViewComponent extends TestComponent {
   }
 
   @Override
-  protected boolean canMountIncrementally() {
-    return mCanMountIncrementally;
+  protected boolean hasChildLithoViews() {
+    return mHasChildLithoViews;
   }
 
   @Override

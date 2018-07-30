@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
 public class MountSpecModel implements SpecModel, HasPureRender {
   private final SpecModelImpl mSpecModel;
   private final boolean mIsPureRender;
-  private final boolean mCanMountIncrementally;
+  private final boolean mHasChildLithosViews;
   private final boolean mShouldUseDisplayList;
   private final int mPoolSize;
   private final boolean mCanPreallocate;
@@ -59,7 +59,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       boolean isPublic,
       DependencyInjectionHelper dependencyInjectionHelper,
       boolean isPureRender,
-      boolean canMountIncrementally,
+      boolean hasChildLithosViews,
       boolean shouldUseDisplayList,
       int poolSize,
       boolean canPreallocate,
@@ -92,7 +92,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .representedObject(representedObject)
             .build();
     mIsPureRender = isPureRender;
-    mCanMountIncrementally = canMountIncrementally;
+    mHasChildLithosViews = hasChildLithosViews;
     mShouldUseDisplayList = shouldUseDisplayList;
     mPoolSize = poolSize;
     mCanPreallocate = canPreallocate;
@@ -341,7 +341,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   public boolean canMountIncrementally() {
-    return mCanMountIncrementally;
+    return mHasChildLithosViews;
   }
 
   public boolean shouldUseDisplayList() {
@@ -367,8 +367,8 @@ public class MountSpecModel implements SpecModel, HasPureRender {
         + mSpecModel
         + ", mIsPureRender="
         + mIsPureRender
-        + ", mCanMountIncrementally="
-        + mCanMountIncrementally
+        + ", mHasChildLithosViews="
+        + mHasChildLithosViews
         + ", mShouldUseDisplayList="
         + mShouldUseDisplayList
         + ", mPoolSize="

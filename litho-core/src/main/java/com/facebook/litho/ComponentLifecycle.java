@@ -551,11 +551,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /**
-   * Whether this {@link ComponentLifecycle} mounts views that contain component-based
-   * content that can be incrementally mounted e.g. if the mounted view has a
-   * LithoView with incremental mount enabled.
+   * Whether this {@link ComponentLifecycle} mounts views that contain component-based content that
+   * can be incrementally mounted e.g. if the mounted view has a LithoView with incremental mount
+   * enabled.
    */
-  protected boolean canMountIncrementally() {
+  protected boolean hasChildLithoViews() {
     return false;
   }
 

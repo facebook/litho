@@ -60,7 +60,7 @@ import javax.annotation.Nullable;
  * @prop scrollbarFadingEnabled whether the scrollbar should fade out when the view is not scrolling
  * @props initialScrollOffsetPixels initial vertical scroll offset, in pixels
  */
-@MountSpec(canMountIncrementally = true, isPureRender = true)
+@MountSpec(hasChildLithoViews = true, isPureRender = true)
 public class VerticalScrollSpec {
 
   @PropDefault static final boolean scrollbarEnabled = true;

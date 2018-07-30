@@ -71,7 +71,7 @@ import javax.annotation.Nullable;
   events = TestEvent.class,
   shouldUseDisplayList = true,
   isPureRender = true,
-  canMountIncrementally = true,
+  hasChildLithoViews = true,
   canPreallocate = true
 )
 public class TestMountSpec<S extends View> implements TestTag {

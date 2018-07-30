@@ -384,7 +384,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
-  public boolean canMountIncrementally() {
+  public boolean hasChildLithoViews() {
     return true;
   }
 

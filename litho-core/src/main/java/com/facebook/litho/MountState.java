@@ -1146,7 +1146,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       // We do not need this mapping for disappearing items.
       mIndexToItemMap.remove(mLayoutOutputsIds[i]);
 
-      if (item.getComponent() != null && item.getComponent().canMountIncrementally()) {
+      if (item.getComponent() != null && item.getComponent().hasChildLithoViews()) {
         mCanMountIncrementallyMountItems.remove(mLayoutOutputsIds[i]);
       }
 
@@ -1347,7 +1347,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     // that sets the root host interactions.
     mIndexToItemMap.put(mLayoutOutputsIds[index], item);
 
-    if (component.canMountIncrementally()) {
+    if (component.hasChildLithoViews()) {
       mCanMountIncrementallyMountItems.put(mLayoutOutputsIds[index], item);
     }
 
@@ -1379,7 +1379,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static boolean canMountIncrementally(Component component) {
-    return component.canMountIncrementally();
+    return component.hasChildLithoViews();
   }
 
   /**
@@ -2176,7 +2176,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     unbindAndUnmountLifecycle(item);
 
-    if (item.getComponent().canMountIncrementally()) {
+    if (item.getComponent().hasChildLithoViews()) {
       final int index = mCanMountIncrementallyMountItems.indexOfValue(item);
       if (index > 0) {
         mCanMountIncrementallyMountItems.removeAt(index);
@@ -2274,7 +2274,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       maybeRemoveAnimatingMountContent(item.getTransitionKey(), type);
     }
 
-    if (component.canMountIncrementally()) {
+    if (component.hasChildLithoViews()) {
       mCanMountIncrementallyMountItems.delete(mLayoutOutputsIds[index]);
     }
 
@@ -2331,7 +2331,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
       unbindAndUnmountLifecycle(item);
 
-      if (item.getComponent().canMountIncrementally()) {
+      if (item.getComponent().hasChildLithoViews()) {
         final int index = mCanMountIncrementallyMountItems.indexOfValue(item);
         if (index > 0) {
           mCanMountIncrementallyMountItems.removeAt(index);

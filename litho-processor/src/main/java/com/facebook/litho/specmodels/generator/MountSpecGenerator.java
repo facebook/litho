@@ -41,12 +41,12 @@ public class MountSpecGenerator {
   private MountSpecGenerator() {
   }
 
-  public static TypeSpecDataHolder generateCanMountIncrementally(MountSpecModel specModel) {
+  public static TypeSpecDataHolder generateHasChildLithoViews(MountSpecModel specModel) {
     TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
 
     if (specModel.canMountIncrementally()) {
       dataHolder.addMethod(
-          MethodSpec.methodBuilder("canMountIncrementally")
+          MethodSpec.methodBuilder("hasChildLithoViews")
               .addAnnotation(Override.class)
               .addModifiers(Modifier.PUBLIC)
               .returns(TypeName.BOOLEAN)
