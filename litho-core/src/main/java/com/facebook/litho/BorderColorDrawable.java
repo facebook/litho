@@ -35,8 +35,8 @@ public class BorderColorDrawable extends Drawable {
 
   private static final int QUICK_REJECT_COLOR = Color.TRANSPARENT;
   private static final float CLIP_ANGLE = 45f;
-  private static final RectF mClipBounds = new RectF();
-  private static final RectF mDrawBounds = new RectF();
+  private static final RectF sClipBounds = new RectF();
+  private static final RectF sDrawBounds = new RectF();
   private final Paint mPaint = new Paint();
   private final Path mPath = new Path();
   private float mBorderLeftWidth;
@@ -133,27 +133,27 @@ public class BorderColorDrawable extends Drawable {
   /** Best case possible, all colors are the same and all widths are the same */
   private void drawAllBorders(Canvas canvas, float strokeWidth, @ColorInt int color) {
     float inset = strokeWidth / 2f;
-    mDrawBounds.set(getBounds());
-    mDrawBounds.inset(inset, inset);
+    sDrawBounds.set(getBounds());
+    sDrawBounds.inset(inset, inset);
     mPaint.setStrokeWidth(strokeWidth);
     mPaint.setColor(color);
-    drawBorder(canvas, mDrawBounds, path(), mBorderRadius, mPaint);
+    drawBorder(canvas, sDrawBounds, path(), mBorderRadius, mPaint);
   }
 
   /** Special case, support for multi color with same widths */
   private void drawMultiColoredBorders(Canvas canvas) {
     float inset = mBorderLeftWidth / 2f;
-    mDrawBounds.set(getBounds());
+    sDrawBounds.set(getBounds());
     final int translateSaveCount = canvas.save();
-    canvas.translate(mDrawBounds.left, mDrawBounds.top);
-    mDrawBounds.offsetTo(0.0f, 0.0f);
+    canvas.translate(sDrawBounds.left, sDrawBounds.top);
+    sDrawBounds.offsetTo(0.0f, 0.0f);
     mPaint.setStrokeWidth(mBorderLeftWidth);
 
-    int height = Math.round(mDrawBounds.height());
-    int width = Math.round(mDrawBounds.width());
+    int height = Math.round(sDrawBounds.height());
+    int width = Math.round(sDrawBounds.width());
     int hypotenuse = (int) Math.round(Math.sqrt(2f * (height / 2f) * (height / 2f)));
     int saveCount;
-    mDrawBounds.inset(inset, inset);
+    sDrawBounds.inset(inset, inset);
 
     // Left
     if (mBorderLeftColor != QUICK_REJECT_COLOR) {
@@ -164,7 +164,7 @@ public class BorderColorDrawable extends Drawable {
       canvas.rotate(-CLIP_ANGLE, 0f, 0f);
 
       mPaint.setColor(mBorderLeftColor);
-      drawBorder(canvas, mDrawBounds, path(), mBorderRadius, mPaint);
+      drawBorder(canvas, sDrawBounds, path(), mBorderRadius, mPaint);
       canvas.restoreToCount(saveCount);
     }
 
@@ -177,7 +177,7 @@ public class BorderColorDrawable extends Drawable {
       canvas.rotate(CLIP_ANGLE, width, 0f);
 
       mPaint.setColor(mBorderRightColor);
-      drawBorder(canvas, mDrawBounds, path(), mBorderRadius, mPaint);
+      drawBorder(canvas, sDrawBounds, path(), mBorderRadius, mPaint);
       canvas.restoreToCount(saveCount);
     }
 
@@ -196,7 +196,7 @@ public class BorderColorDrawable extends Drawable {
       canvas.clipRect(hypotenuse, 0f, width - hypotenuse, hypotenuse, Region.Op.UNION);
 
       mPaint.setColor(mBorderTopColor);
-      drawBorder(canvas, mDrawBounds, path(), mBorderRadius, mPaint);
+      drawBorder(canvas, sDrawBounds, path(), mBorderRadius, mPaint);
       canvas.restoreToCount(saveCount);
     }
 
@@ -215,7 +215,7 @@ public class BorderColorDrawable extends Drawable {
       canvas.clipRect(hypotenuse, height - hypotenuse, width - hypotenuse, height, Region.Op.UNION);
 
       mPaint.setColor(mBorderBottomColor);
-      drawBorder(canvas, mDrawBounds, path(), mBorderRadius, mPaint);
+      drawBorder(canvas, sDrawBounds, path(), mBorderRadius, mPaint);
       canvas.restoreToCount(saveCount);
     }
 
@@ -289,17 +289,17 @@ public class BorderColorDrawable extends Drawable {
       boolean insetHorizontal) {
     mPaint.setStrokeWidth(strokeWidth);
     mPaint.setColor(color);
-    mClipBounds.set(left, top, right, bottom);
-    mDrawBounds.set(getBounds());
+    sClipBounds.set(left, top, right, bottom);
+    sDrawBounds.set(getBounds());
     if (insetHorizontal) {
-      mDrawBounds.inset(mClipBounds.centerX() - mClipBounds.left, 0f);
+      sDrawBounds.inset(sClipBounds.centerX() - sClipBounds.left, 0f);
     } else {
-      mDrawBounds.inset(0f, mClipBounds.centerY() - mClipBounds.top);
+      sDrawBounds.inset(0f, sClipBounds.centerY() - sClipBounds.top);
     }
 
     int saveCount = canvas.save();
-    canvas.clipRect(mClipBounds);
-    drawBorder(canvas, mDrawBounds, path(), mBorderRadius, mPaint);
+    canvas.clipRect(sClipBounds);
+    drawBorder(canvas, sDrawBounds, path(), mBorderRadius, mPaint);
     canvas.restoreToCount(saveCount);
   }
 
@@ -335,5 +335,20 @@ public class BorderColorDrawable extends Drawable {
   @Override
   public int getOpacity() {
     return PixelFormat.OPAQUE;
+  }
+
+  public void reset() {
+    mPaint.reset();
+    mPath.reset();
+    mBorderLeftWidth = 0;
+    mBorderTopWidth = 0;
+    mBorderRightWidth = 0;
+    mBorderBottomWidth = 0;
+    mBorderRadius = null;
+    mDrawBorderWithPath = false;
+    mBorderLeftColor = 0;
+    mBorderTopColor = 0;
+    mBorderRightColor = 0;
+    mBorderBottomColor = 0;
   }
 }

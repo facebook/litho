@@ -800,6 +800,7 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   public static void release(BorderColorDrawable borderColorDrawable) {
+    borderColorDrawable.reset();
     sBorderColorDrawablePool.release(borderColorDrawable);
   }
 
