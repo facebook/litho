@@ -98,6 +98,8 @@ public class ComponentsRule implements TestRule {
         android.R.attr.contentDescription,
         android.R.attr.background,
         android.R.attr.foreground,
+        android.R.attr.minHeight,
+        android.R.attr.minWidth,
         android.R.attr.importantForAccessibility,
         android.R.attr.duplicateParentState,
       },

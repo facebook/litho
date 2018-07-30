@@ -1497,6 +1497,10 @@ class InternalNode implements ComponentLayout {
         if (height >= 0) {
           heightPx(height);
         }
+      } else if (attr == R.styleable.ComponentLayout_android_minHeight) {
+        minHeightPx(a.getDimensionPixelSize(attr, 0));
+      } else if (attr == R.styleable.ComponentLayout_android_minWidth) {
+        minWidthPx(a.getDimensionPixelSize(attr, 0));
       } else if (attr == R.styleable.ComponentLayout_android_paddingLeft) {
         paddingPx(LEFT, a.getDimensionPixelOffset(attr, 0));
       } else if (attr == R.styleable.ComponentLayout_android_paddingTop) {

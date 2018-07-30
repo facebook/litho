@@ -51,6 +51,8 @@
     <attr name="android:contentDescription" />
     <attr name="android:background" />
     <attr name="android:foreground" />
+    <attr name="android:minHeight" />
+    <attr name="android:minWidth" />
     <attr name="android:importantForAccessibility" />
     <attr name="android:duplicateParentState" />
   </declare-styleable>
