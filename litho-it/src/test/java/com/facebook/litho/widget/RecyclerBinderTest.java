@@ -3464,6 +3464,110 @@ public class RecyclerBinderTest {
     verify(recyclerView, never()).postOnAnimation(recyclerBinder.mRemeasureRunnable);
   }
 
+  @Test
+  public void testChangeSetCompleteCallbacksIsEmptyWithInsertBeforeMount() {
+    final RecyclerView recyclerView = mock(RecyclerView.class);
+    final ChangeSetCompleteCallback changeSetCompleteCallback =
+        mock(ChangeSetCompleteCallback.class);
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.insertRangeAt(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
+
+    // Mount view after insertions
+    recyclerBinder.mount(recyclerView);
+
+    assertThat(recyclerBinder.mDataRenderedCallbacks).isEmpty();
+    verify(changeSetCompleteCallback, never()).onDataRendered(eq(true), anyLong());
+  }
+
+  @Test
+  public void testChangeSetCompleteCallbacksIsEmptyWithAsyncInsertBeforeMount() {
+    final RecyclerView recyclerView = mock(RecyclerView.class);
+    final ChangeSetCompleteCallback changeSetCompleteCallback =
+        mock(ChangeSetCompleteCallback.class);
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.insertRangeAtAsync(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    // Mount view after insertions
+    recyclerBinder.mount(recyclerView);
+
+    assertThat(recyclerBinder.mDataRenderedCallbacks).isEmpty();
+    verify(changeSetCompleteCallback, never()).onDataRendered(eq(true), anyLong());
+  }
+
+  @Test
+  public void testDataRenderedCallbacksIsEmptyWithInsertAfterMount() {
+    final RecyclerView recyclerView = mock(RecyclerView.class);
+    final ChangeSetCompleteCallback changeSetCompleteCallback =
+        mock(ChangeSetCompleteCallback.class);
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+
+    // Mount view before insertions
+    recyclerBinder.mount(recyclerView);
+
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.insertRangeAt(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
+
+    assertThat(recyclerBinder.mDataRenderedCallbacks).isEmpty();
+    verify(changeSetCompleteCallback, never()).onDataRendered(eq(true), anyLong());
+  }
+
+  @Test
+  public void testDataRenderedCallbacksIsEmptyWithAsyncInsertAfterMount() {
+    final RecyclerView recyclerView = mock(RecyclerView.class);
+    final ChangeSetCompleteCallback changeSetCompleteCallback =
+        mock(ChangeSetCompleteCallback.class);
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+
+    // Mount view before insertions
+    recyclerBinder.mount(recyclerView);
+
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.insertRangeAtAsync(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    assertThat(recyclerBinder.mDataRenderedCallbacks).isEmpty();
+    verify(changeSetCompleteCallback, never()).onDataRendered(eq(true), anyLong());
+  }
+
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
     return new RecyclerBinder.Builder()
         .rangeRatio(RANGE_RATIO)

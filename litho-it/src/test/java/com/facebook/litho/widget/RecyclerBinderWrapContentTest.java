@@ -874,6 +874,7 @@ public class RecyclerBinderWrapContentTest {
 
   @Test
   public void testOnDataRenderedWithNoChanges() {
+    final LithoRecylerView recyclerView = mock(LithoRecylerView.class);
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
@@ -881,7 +882,7 @@ public class RecyclerBinderWrapContentTest {
             .rangeRatio(RANGE_RATIO)
             .wrapContent(true)
             .build(mComponentContext);
-    recyclerBinder.mount(mRecyclerView);
+    recyclerBinder.mount(recyclerView);
 
     final Component component =
         TestDrawableComponent.create(mComponentContext).measuredHeight(100).build();

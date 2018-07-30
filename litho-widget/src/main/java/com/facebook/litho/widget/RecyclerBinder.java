@@ -117,7 +117,6 @@ public class RecyclerBinder
   private final boolean mFillListViewport;
   private final boolean mFillListViewportHScrollOnly;
   private final boolean mEnableStableIds;
-  private final Deque<ChangeSetCompleteCallback> mChangeSetCompleteCallbacks = new ArrayDeque<>();
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
 
   private boolean mParallelFillViewportEnabled;
@@ -125,6 +124,9 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private final Deque<AsyncBatch> mAsyncBatches = new ArrayDeque<>();
+
+  @VisibleForTesting
+  final Deque<ChangeSetCompleteCallback> mDataRenderedCallbacks = new ArrayDeque<>();
 
   @VisibleForTesting
   final Runnable mRemeasureRunnable =
@@ -141,7 +143,7 @@ public class RecyclerBinder
       new PostDispatchDrawListener() {
         @Override
         public void postDispatchDraw() {
-          if (mChangeSetCompleteCallbacks.isEmpty()) {
+          if (mDataRenderedCallbacks.isEmpty()) {
             // early return if no pending dataRendered callbacks.
             return;
           }
@@ -872,7 +874,7 @@ public class RecyclerBinder
     }
 
     batch.mChangeSetCompleteCallback.onDataBound();
-    mChangeSetCompleteCallbacks.addLast(batch.mChangeSetCompleteCallback);
+    mDataRenderedCallbacks.addLast(batch.mChangeSetCompleteCallback);
     maybeDispatchDataRendered();
   }
 
@@ -1332,7 +1334,7 @@ public class RecyclerBinder
 
     if (!mHasAsyncOperations) {
       changeSetCompleteCallback.onDataBound();
-      mChangeSetCompleteCallbacks.addLast(changeSetCompleteCallback);
+      mDataRenderedCallbacks.addLast(changeSetCompleteCallback);
       maybeDispatchDataRendered();
     } else {
       closeCurrentBatch(isDataChanged, changeSetCompleteCallback);
@@ -1348,6 +1350,13 @@ public class RecyclerBinder
   private void maybeDispatchDataRendered() {
     ThreadUtils.assertMainThread();
 
+    if (mMountedView != null && !(mMountedView instanceof HasPostDispatchDrawListener)) {
+      // onDataRendered() cannot be triggered correctly if the view isn't implement
+      // HasPostDispatchDrawListener, just clear the queue.
+      mDataRenderedCallbacks.clear();
+      return;
+    }
+
     if (!mIsInitMounted) {
       // The view isn't mounted yet, OnDataRendered callbacks are postponed until mount() is called,
       // and ViewGroup#dispatchDraw(Canvas) should take care triggering OnDataRendered callbacks.
@@ -1360,15 +1369,15 @@ public class RecyclerBinder
         || !mMountedView.hasPendingAdapterUpdates()
         || !mMountedView.isAttachedToWindow()
         || mMountedView.getVisibility() == View.GONE) {
-      if (mChangeSetCompleteCallbacks.isEmpty()) {
+      if (mDataRenderedCallbacks.isEmpty()) {
         // Early return if no callbacks existed.
         return;
       }
 
       final boolean isMounted = (mMountedView != null);
       final Deque<ChangeSetCompleteCallback> snapshotCallbacks =
-          new ArrayDeque<>(mChangeSetCompleteCallbacks);
-      mChangeSetCompleteCallbacks.clear();
+          new ArrayDeque<>(mDataRenderedCallbacks);
+      mDataRenderedCallbacks.clear();
 
       mMainThreadHandler.postAtFrontOfQueue(
           new Runnable() {
@@ -2280,6 +2289,7 @@ public class RecyclerBinder
     if (view instanceof HasPostDispatchDrawListener) {
       ((HasPostDispatchDrawListener) view).setPostDispatchDrawListener(mPostDispatchDrawListener);
     } else {
+      mDataRenderedCallbacks.clear();
       if (SectionsDebug.ENABLED) {
         Log.d(
             SectionsDebug.TAG,
@@ -2380,7 +2390,10 @@ public class RecyclerBinder
     view.removeOnScrollListener(mViewportManager.getScrollListener());
 
     if (view instanceof HasPostDispatchDrawListener) {
+      maybeDispatchDataRendered();
       ((HasPostDispatchDrawListener) view).setPostDispatchDrawListener(null);
+    } else {
+      mDataRenderedCallbacks.clear();
     }
 
     if (ComponentsConfiguration.enableSwapAdapter) {
