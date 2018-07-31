@@ -401,8 +401,16 @@ public class ComponentTreeHolder {
     if (mComponentTree == null) {
       final Object clipChildrenAttr = mRenderInfo.getCustomAttribute(RenderInfo.CLIP_CHILDREN);
       final boolean clipChildren = clipChildrenAttr == null ? true : (boolean) clipChildrenAttr;
+      final Object layoutDiffingEnabledAttr =
+          mRenderInfo.getCustomAttribute(ComponentRenderInfo.LAYOUT_DIFFING_ENABLED);
+      final ComponentTree.Builder builder =
+          ComponentTree.create(context, mRenderInfo.getComponent());
+      // If no custom attribute is set, defer default value to the builder.
+      if (layoutDiffingEnabledAttr != null) {
+        builder.layoutDiffing((boolean) layoutDiffingEnabledAttr);
+      }
       mComponentTree =
-          ComponentTree.create(context, mRenderInfo.getComponent())
+          builder
               .layoutThreadHandler(mLayoutHandler)
               .stateHandler(mStateHandler)
               .canPrefetchDisplayLists(mCanPrefetchDisplayLists)

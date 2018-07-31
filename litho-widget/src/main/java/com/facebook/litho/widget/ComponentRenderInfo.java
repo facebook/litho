@@ -27,6 +27,8 @@ import com.facebook.litho.RenderCompleteEvent;
 /** {@link RenderInfo} that can render components. */
 public class ComponentRenderInfo extends BaseRenderInfo {
 
+  public static final String LAYOUT_DIFFING_ENABLED = "layout_diffing_enabled";
+
   private static final Pools.Pool<Builder> sBuilderPool = new Pools.SynchronizedPool<>(2);
 
   private final Component mComponent;
