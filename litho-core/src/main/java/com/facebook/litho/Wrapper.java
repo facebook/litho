@@ -121,6 +121,7 @@ public final class Wrapper extends Component {
     @Override
     protected void release() {
       super.release();
+      mRequired.clear();
       mWrapper = null;
       sBuilderPool.release(this);
     }
