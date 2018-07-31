@@ -99,9 +99,6 @@ public class ComponentsConfiguration {
    */
   public static boolean lithoViewIncrementalMountUsesLocalVisibleBounds = true;
 
-  /** Whether we should always perform incremental mount in perform layout. */
-  public static boolean lithoViewAlwaysMountsInPerformLayout = true;
-
   /** Whether the RecyclerCollectionComponent can asynchronously set the root of a SectionTree. */
   public static boolean setRootAsyncRecyclerCollectionComponent = false;
 
