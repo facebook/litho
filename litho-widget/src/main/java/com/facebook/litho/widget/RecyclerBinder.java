@@ -2658,14 +2658,31 @@ public class RecyclerBinder
           if (!holder.isTreeValid()) {
             holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
           }
-        } else if (holder.isTreeValid()
+        } else {
+          final Runnable maybeAcquireStateAndReleaseTreeRunnable =
+              getMaybeAcquireStateAndReleaseTreeRunnable(holder);
+          if (ThreadUtils.isMainThread()) {
+            maybeAcquireStateAndReleaseTreeRunnable.run();
+          } else {
+            mMainThreadHandler.post(maybeAcquireStateAndReleaseTreeRunnable);
+          }
+        }
+      }
+    }
+  }
+
+  private Runnable getMaybeAcquireStateAndReleaseTreeRunnable(final ComponentTreeHolder holder) {
+    return new Runnable() {
+      @Override
+      public void run() {
+        if (holder.isTreeValid()
             && !holder.getRenderInfo().isSticky()
             && (holder.getComponentTree() != null
                 && holder.getComponentTree().getLithoView() == null)) {
           holder.acquireStateAndReleaseTree();
         }
       }
-    }
+    };
   }
 
   @VisibleForTesting
