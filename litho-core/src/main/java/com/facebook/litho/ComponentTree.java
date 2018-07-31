@@ -582,7 +582,7 @@ public class ComponentTree {
           " is not enabled");
     }
 
-    if (mLithoView == null || mLithoView.doesOwnIncrementalMount()) {
+    if (mLithoView == null) {
       return;
     }
 

@@ -89,7 +89,6 @@ public class LithoView extends ComponentHost {
   // TODO T14859077 Replace with proper solution
   private ComponentTree mTemporaryDetachedComponent;
   private int mTransientStateCount;
-  private boolean mDoesOwnIncrementalMount;
   private boolean mDoMeasureInLayout;
   @Nullable private Map<String, ComponentLogParams> mInvalidStateLogParams;
   @Nullable private String mPreviousComponentSimpleName;
@@ -832,38 +831,6 @@ public class LithoView extends ComponentHost {
 
   MountState getMountState() {
     return mMountState;
-  }
-
-  boolean doesOwnIncrementalMount() {
-    return mDoesOwnIncrementalMount;
-  }
-
-  @Deprecated
-  /**
-   * @deprecated This is being temporarily added while we experiment with other solutions for
-   *     incremental mount (see {@link
-   *     ComponentsConfiguration#incrementalMountUsesLocalVisibleBounds} and {@link
-   *     ComponentsConfiguration#lithoViewIncrementalMountUsesLocalVisibleBounds}.
-   */
-  public void setDoesOwnIncrementalMount(boolean doesOwnIncrementalMount) {
-    mDoesOwnIncrementalMount = doesOwnIncrementalMount;
-
-    setDoesOwnIncrementalMountOnChildren(this, doesOwnIncrementalMount);
-  }
-
-  private void setDoesOwnIncrementalMountOnChildren(
-      ViewGroup viewGroup, boolean doesOwnIncrementalMount) {
-    for (int i = 0, size = viewGroup.getChildCount(); i < size; i++) {
-      final View child = viewGroup.getChildAt(i);
-
-      if (child instanceof LithoView) {
-        ((LithoView) child).setDoesOwnIncrementalMount(doesOwnIncrementalMount);
-      }
-
-      if (child instanceof ViewGroup) {
-        setDoesOwnIncrementalMountOnChildren((ViewGroup) child, doesOwnIncrementalMount);
-      }
-    }
   }
 
   /** Register for particular invalid state logs. */
