@@ -72,6 +72,7 @@ public class VerticalScrollSpec {
       StateValue<ScrollPosition> scrollPosition,
       StateValue<ComponentTree> childComponentTree,
       @Prop(optional = true) Integer initialScrollOffsetPixels,
+      @Prop(optional = true) boolean incrementalMountEnabled,
       @Prop Component childComponent) {
     ScrollPosition initialScrollPosition = new ScrollPosition();
     initialScrollPosition.y = initialScrollOffsetPixels == null ? 0 : initialScrollOffsetPixels;
@@ -79,7 +80,7 @@ public class VerticalScrollSpec {
 
     childComponentTree.set(
         ComponentTree.create(new ComponentContext(context.getBaseContext()), childComponent)
-            .incrementalMount(false)
+            .incrementalMount(incrementalMountEnabled)
             .build());
   }
 
@@ -181,10 +182,11 @@ public class VerticalScrollSpec {
       @Prop(optional = true) boolean scrollbarEnabled,
       @Prop(optional = true) boolean scrollbarFadingEnabled,
       @Prop(optional = true) boolean nestedScrollingEnabled,
+      @Prop(optional = true) boolean incrementalMountEnabled,
       @Prop(optional = true) NestedScrollView.OnScrollChangeListener onScrollChangeListener,
       @State ComponentTree childComponentTree,
       @State final ScrollPosition scrollPosition) {
-    lithoScrollView.mount(childComponentTree, scrollPosition);
+    lithoScrollView.mount(childComponentTree, scrollPosition, incrementalMountEnabled);
     lithoScrollView.setScrollbarFadingEnabled(scrollbarFadingEnabled);
     lithoScrollView.setNestedScrollingEnabled(nestedScrollingEnabled);
 
@@ -211,12 +213,14 @@ public class VerticalScrollSpec {
       @Prop(optional = true) Diff<Boolean> scrollbarEnabled,
       @Prop(optional = true) Diff<Boolean> scrollbarFadingEnabled,
       @Prop(optional = true) Diff<Boolean> fillViewport,
-      @Prop(optional = true) Diff<Boolean> nestedScrollingEnabled) {
+      @Prop(optional = true) Diff<Boolean> nestedScrollingEnabled,
+      @Prop(optional = true) Diff<Boolean> incrementalMountEnabled) {
     return !childComponent.getPrevious().isEquivalentTo(childComponent.getNext())
         || !scrollbarEnabled.getPrevious().equals(scrollbarEnabled.getNext())
         || !scrollbarFadingEnabled.getPrevious().equals(scrollbarFadingEnabled.getNext())
         || !fillViewport.getPrevious().equals(fillViewport.getNext())
-        || !nestedScrollingEnabled.getPrevious().equals(nestedScrollingEnabled.getNext());
+        || !nestedScrollingEnabled.getPrevious().equals(nestedScrollingEnabled.getNext())
+        || !incrementalMountEnabled.getPrevious().equals(incrementalMountEnabled.getNext());
   }
 
   static class LithoScrollView extends NestedScrollView {
@@ -224,6 +228,7 @@ public class VerticalScrollSpec {
 
     @Nullable private ScrollPosition mScrollPosition;
     @Nullable private ViewTreeObserver.OnPreDrawListener mOnPreDrawListener;
+    private boolean mIsIncrementalMountEnabled;
 
     LithoScrollView(Context context) {
       super(context);
@@ -236,14 +241,22 @@ public class VerticalScrollSpec {
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
       super.onScrollChanged(l, t, oldl, oldt);
 
+      if (mIsIncrementalMountEnabled) {
+        mLithoView.performIncrementalMount();
+      }
+
       if (mScrollPosition != null) {
         mScrollPosition.y = getScrollY();
       }
     }
 
-    private void mount(ComponentTree contentComponentTree, final ScrollPosition scrollPosition) {
+    private void mount(
+        ComponentTree contentComponentTree,
+        final ScrollPosition scrollPosition,
+        boolean isIncrementalMountEnabled) {
       mLithoView.setComponentTree(contentComponentTree);
 
+      mIsIncrementalMountEnabled = isIncrementalMountEnabled;
       mScrollPosition = scrollPosition;
       final ViewTreeObserver.OnPreDrawListener onPreDrawListener =
           new ViewTreeObserver.OnPreDrawListener() {
