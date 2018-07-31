@@ -12,11 +12,11 @@ aliases:
   # SDK Cache aliases
   - &restore-cache-android-packages
     keys:
-      - v2-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
+      - v3-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
   - &save-cache-android-packages
     paths:
       - /opt/android/sdk
-    key: v2-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
+    key: v3-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
 
   # BUCK Cache aliases
   - &restore-cache-buck
@@ -98,7 +98,7 @@ aliases:
     command: |
       cd workspace/repo
       ./gradlew :litho-it:testDebugUnitTest --tests "*NodeInfoTest" --no-daemon
-  
+
   # Download project BUCK dependencies
   - &download-buck-dependencies
     name: Buck Dependencies
@@ -131,12 +131,12 @@ circle_ci_android_container_config: &circle_ci_android_container_config
     - image: circleci/android:api-27-alpha
   working_directory: ~/litho-working-dir
   environment:
-    # Borrowed from https://github.com/chrisbanes/tivi/blob/master/.circleci/config.yml 
+    # Borrowed from https://github.com/chrisbanes/tivi/blob/master/.circleci/config.yml
     # Sometimes gradle_tests_run job would fail with OOM error from CI. This is an attempt to fix it!
     _JAVA_OPTIONS: "-Xmx1500m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2"
     TERM: 'dumb'
     ANDROID_NDK_REPOSITORY: '/opt/ndk'
-    ANDROID_NDK_HOME: '/opt/android/ndk/android-ndk-r17b/'
+    ANDROID_NDK_HOME: '/opt/ndk/android-ndk-r15c/'
 
 attach_workspace: &attach_workspace
   attach_workspace:
@@ -157,11 +157,11 @@ jobs:
       # Create folders needed
       - run: mkdir -p workspace
       - run: mkdir -p repo
-      
+
       # Checkout code into repo
       - checkout:
           path: workspace/repo
-      
+
       # Manage Android NDK caches
       - run: *create-android-ndk-dir
       - restore-cache: *restore-cache-ndk
@@ -182,13 +182,13 @@ jobs:
       - restore-cache: *restore-cache-buck
       - run: *download-buck
       - save-cache: *save-cache-buck
-      
+
       # Persist repo code
       - persist_to_workspace:
           root: workspace
           paths:
             - repo
-      
+
   build:
     <<: *circle_ci_android_container_config
     steps:
