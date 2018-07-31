@@ -2278,11 +2278,7 @@ public class RecyclerBinder
     layoutManager.setItemPrefetchEnabled(false);
 
     view.setLayoutManager(layoutManager);
-    if (ComponentsConfiguration.enableSwapAdapter) {
-      view.swapAdapter(mInternalAdapter, false);
-    } else {
-      view.setAdapter(mInternalAdapter);
-    }
+    view.setAdapter(mInternalAdapter);
     view.addOnScrollListener(mRangeScrollListener);
     view.addOnScrollListener(mViewportManager.getScrollListener());
 
@@ -2396,11 +2392,7 @@ public class RecyclerBinder
       mDataRenderedCallbacks.clear();
     }
 
-    if (ComponentsConfiguration.enableSwapAdapter) {
-      view.swapAdapter(null, false);
-    } else {
-      view.setAdapter(null);
-    }
+    view.setAdapter(null);
     view.setLayoutManager(null);
 
     mViewportManager.removeViewportChangedListener(mViewportChangedListener);

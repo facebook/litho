@@ -161,9 +161,6 @@ public class ComponentsConfiguration {
   /** Configuration for lazifying state of ComponentHost */
   public static boolean lazyComponentHost = false;
 
-  /** Configuration for swapping the adapter on mount/unmount */
-  public static boolean enableSwapAdapter = false;
-
   /** Assign transition keys to all LayoutOutputs, this enables Transition.allLayout() */
   public static boolean assignTransitionKeysToAllOutputs = false;
 
