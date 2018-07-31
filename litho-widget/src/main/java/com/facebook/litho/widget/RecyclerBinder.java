@@ -2356,12 +2356,7 @@ public class RecyclerBinder
     final View firstView = layoutManager.findViewByPosition(mCurrentFirstVisiblePosition);
 
     if (firstView != null) {
-      final boolean reverseLayout;
-      if (layoutManager instanceof LinearLayoutManager) {
-        reverseLayout = ((LinearLayoutManager) layoutManager).getReverseLayout();
-      } else {
-        reverseLayout = false;
-      }
+      final boolean reverseLayout = getReverseLayout();
 
       if (mLayoutInfo.getScrollDirection() == HORIZONTAL) {
         mCurrentOffset =
@@ -2620,7 +2615,18 @@ public class RecyclerBinder
   private void computeRangeLayout(
       int treeHoldersSize, int rangeStart, int rangeEnd, boolean ignoreRange) {
     // TODO 16212153 optimize computeRange loop.
-    for (int i = 0; i < treeHoldersSize; i++) {
+    /**
+     * Here is the four combinations of reverseLayout and stackFromEnd,
+     * for a list of items from 1 to n inclusive, with m of them visible and noted by the bracket.
+     * reverseLayout=false, stackFromEnd=false : [0...m]...n
+     * reverseLayout=true,  stackFromEnd=false : [n...n-m]...0
+     * reverseLayout=false, stackFromEnd=true  : 0...[n-m...n]
+     * reverseLayout=true,  stackFromEnd=true  : n...[m...0]
+     */
+    final boolean reverseOrder = getReverseLayout() ^ getStackFromEnd();
+    for (int i = reverseOrder ? treeHoldersSize - 1 : 0;
+       reverseOrder ? i >= 0 : i < treeHoldersSize;
+       i += reverseOrder ? -1 : 1) {
       final ComponentTreeHolder holder;
       final int childrenWidthSpec, childrenHeightSpec;
 
@@ -2675,6 +2681,24 @@ public class RecyclerBinder
         }
       }
     };
+  }
+
+  private boolean getReverseLayout() {
+    final LayoutManager layoutManager = mLayoutInfo.getLayoutManager();
+    if (layoutManager instanceof LinearLayoutManager) {
+      return ((LinearLayoutManager) layoutManager).getReverseLayout();
+    } else {
+      return false;
+    }
+  }
+
+  private boolean getStackFromEnd() {
+    final LayoutManager layoutManager = mLayoutInfo.getLayoutManager();
+    if (layoutManager instanceof LinearLayoutManager) {
+      return ((LinearLayoutManager) layoutManager).getStackFromEnd();
+    } else {
+      return false;
+    }
   }
 
   @VisibleForTesting
