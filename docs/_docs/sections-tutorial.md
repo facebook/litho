@@ -50,7 +50,7 @@ Finally combine these two new methods with `DataDiffSection` by replacing our cu
 static Children onCreateChildren(final SectionContext c) {
   return Children.create()
       .child(
-          DataDiffSection.create(c)
+          DataDiffSection.<Integer>create(c)
               .data(generateData(32))
               .renderEventHandler(ListSection.onRender(c)))
       .build();
