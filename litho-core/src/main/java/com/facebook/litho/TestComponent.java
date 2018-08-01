@@ -18,7 +18,7 @@ package com.facebook.litho;
 
 /**
  * A {@link Component} that wraps another component for testing purposes. This component has a
- * lifecycle that doesn't override any methods.
+ * lifecycle that doesn't override any methods except for isEquivalentTo().
  */
 class TestComponent extends Component {
 
@@ -32,5 +32,10 @@ class TestComponent extends Component {
 
   Component getWrappedComponent() {
     return mWrappedComponent;
+  }
+
+  @Override
+  public boolean isEquivalentTo(Component other) {
+    return this == other;
   }
 }

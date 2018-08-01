@@ -148,7 +148,17 @@ public abstract class Component extends ComponentLifecycle
    * @return true if the components are of the same type and have the same props
    */
   public boolean isEquivalentTo(Component other) {
-    return this == other;
+    if (this == other) {
+      return true;
+    }
+    if (other == null || getClass() != other.getClass()) {
+      return false;
+    }
+    if (getId() == other.getId()) {
+      return true;
+    }
+
+    return ComponentUtils.hasEquivalentFields(this, other);
   }
 
   protected StateContainer getStateContainer() {

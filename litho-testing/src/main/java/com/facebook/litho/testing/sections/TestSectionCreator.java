@@ -206,6 +206,11 @@ public class TestSectionCreator {
     }
 
     @Override
+    public boolean isEquivalentTo(Section other) {
+      return this.equals(other);
+    }
+
+    @Override
     public Section makeShallowCopy() {
       return this;
     }

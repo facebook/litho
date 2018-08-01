@@ -28,6 +28,7 @@ import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.ChangeSet;
 import com.facebook.litho.sections.LoadingEvent;
 import com.facebook.litho.sections.Section;
@@ -77,6 +78,9 @@ public final class FullDiffSection<T> extends Section implements TestTag {
 
   @Override
   public boolean isEquivalentTo(Section other) {
+    if (ComponentsConfiguration.useNewIsEquivalentTo) {
+      return super.isEquivalentTo(other);
+    }
     if (this == other) {
       return true;
     }

@@ -61,6 +61,11 @@ public class SectionsTestHelper extends Section {
     preparedSections = new HashMap<>();
   }
 
+  @Override
+  public boolean isEquivalentTo(Section other) {
+    return this.equals(other);
+  }
+
   /** Return a generic {@link SectionContext} you can use to create sections. */
   public SectionContext getContext() {
     return mSectionContext;

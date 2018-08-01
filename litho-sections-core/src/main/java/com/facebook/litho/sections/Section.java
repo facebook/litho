@@ -18,6 +18,7 @@ package com.facebook.litho.sections;
 
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pair;
+import com.facebook.litho.ComponentUtils;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTriggersContainer;
@@ -303,7 +304,14 @@ public abstract class Section extends SectionLifecycle
    * @return true if the components are of the same type and have the same props
    */
   public boolean isEquivalentTo(Section other) {
-    return this.equals(other);
+    if (this == other) {
+      return true;
+    }
+    if (other == null || getClass() != other.getClass()) {
+      return false;
+    }
+
+    return ComponentUtils.hasEquivalentFields(this, other);
   }
 
   protected StateContainer getStateContainer() {

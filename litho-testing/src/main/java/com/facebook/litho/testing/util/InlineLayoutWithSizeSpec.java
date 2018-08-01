@@ -27,6 +27,11 @@ public abstract class InlineLayoutWithSizeSpec extends Component {
   }
 
   @Override
+  public boolean isEquivalentTo(Component other) {
+    return this == other;
+  }
+
+  @Override
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
     // no-op
     return null;

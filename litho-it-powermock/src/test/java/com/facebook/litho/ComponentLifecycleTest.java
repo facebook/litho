@@ -354,6 +354,11 @@ public class ComponentLifecycleTest {
     }
 
     @Override
+    public boolean isEquivalentTo(Component other) {
+      return this == other;
+    }
+
+    @Override
     protected Component onCreateLayout(ComponentContext c) {
       return this;
     }

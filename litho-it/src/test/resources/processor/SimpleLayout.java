@@ -18,6 +18,7 @@ package com.facebook.litho.processor.integration.resources;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.config.ComponentsConfiguration;
 
 /** @see com.facebook.litho.processor.integration.resources.SimpleLayoutSpec */
 public final class SimpleLayout extends Component {
@@ -27,6 +28,9 @@ public final class SimpleLayout extends Component {
 
   @Override
   public boolean isEquivalentTo(Component other) {
+    if (ComponentsConfiguration.useNewIsEquivalentTo) {
+      return super.isEquivalentTo(other);
+    }
     if (this == other) {
       return true;
     }

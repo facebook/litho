@@ -263,7 +263,7 @@ public class ComponentBodyGeneratorTest {
     TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateTreeProps(mSpecModelDI);
     assertThat(dataHolder.getFieldSpecs()).hasSize(3);
     assertThat(dataHolder.getFieldSpecs().get(0).toString())
-        .isEqualTo("@com.facebook.litho.annotations.TreeProp\n" + "long arg3;\n");
+        .isEqualTo("@com.facebook.litho.annotations.TreeProp\nlong arg3;\n");
   }
 
   @Test
@@ -296,6 +296,9 @@ public class ComponentBodyGeneratorTest {
         .isEqualTo(
             "@java.lang.Override\n"
                 + "public boolean isEquivalentTo(com.facebook.litho.Component other) {\n"
+                + "  if (com.facebook.litho.config.ComponentsConfiguration.useNewIsEquivalentTo) {\n"
+                + "    return super.isEquivalentTo(other);\n"
+                + "  }\n"
                 + "  if (this == other) {\n"
                 + "    return true;\n"
                 + "  }\n"

@@ -188,4 +188,6 @@ public class ComponentsConfiguration {
 
   /** By default ComponentHost (extending ViewGroup) delay press state. */
   public static boolean shouldDelayChildPressedState = true;
+
+  public static boolean useNewIsEquivalentTo = false;
 }

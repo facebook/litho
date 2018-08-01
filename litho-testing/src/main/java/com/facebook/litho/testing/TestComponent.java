@@ -145,6 +145,11 @@ public abstract class TestComponent extends Component {
     return false;
   }
 
+  @Override
+  public boolean isEquivalentTo(Component other) {
+    return this == other;
+  }
+
   /**
    * Reset the tracking of which methods have been called on this component.
    */

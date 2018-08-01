@@ -136,4 +136,6 @@ public interface ClassNames {
   ClassName NON_EXISTENT_CLASS = ClassName.bestGuess("error.NonExistentClass");
 
   ClassName WORKING_RANGE = ClassName.bestGuess("com.facebook.litho.WorkingRange");
+  ClassName COMPONENTS_CONFIGURATION =
+      ClassName.bestGuess("com.facebook.litho.config.ComponentsConfiguration");
 }

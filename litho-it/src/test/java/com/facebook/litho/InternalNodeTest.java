@@ -54,6 +54,11 @@ public class InternalNodeTest {
     }
 
     @Override
+    public boolean isEquivalentTo(Component other) {
+      return this == other;
+    }
+
+    @Override
     int getTypeId() {
       return LIFECYCLE_TEST_ID;
     }

@@ -45,6 +45,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.Arrays;
 import java.util.BitSet;
 import javax.annotation.Nullable;
@@ -135,6 +136,9 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   @Override
   public boolean isEquivalentTo(Component other) {
+    if (ComponentsConfiguration.useNewIsEquivalentTo) {
+      return super.isEquivalentTo(other);
+    }
     if (this == other) {
       return true;
     }

@@ -17,6 +17,7 @@
 package com.facebook.litho.sections.processor.integration.resources;
 
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.LoadingEvent;
 import com.facebook.litho.sections.Section;
@@ -30,6 +31,9 @@ public final class SimpleGroupSection extends Section {
 
   @Override
   public boolean isEquivalentTo(Section other) {
+    if (ComponentsConfiguration.useNewIsEquivalentTo) {
+      return super.isEquivalentTo(other);
+    }
     if (this == other) {
       return true;
     }

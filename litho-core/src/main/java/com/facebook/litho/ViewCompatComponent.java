@@ -63,6 +63,11 @@ public class ViewCompatComponent<V extends View> extends Component {
   }
 
   @Override
+  public boolean isEquivalentTo(Component other) {
+    return this == other;
+  }
+
+  @Override
   protected boolean canMeasure() {
     return true;
   }

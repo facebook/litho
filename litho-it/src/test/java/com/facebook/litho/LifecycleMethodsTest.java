@@ -95,6 +95,11 @@ public class LifecycleMethodsTest {
     }
 
     @Override
+    public boolean isEquivalentTo(Component other) {
+      return this == other;
+    }
+
+    @Override
     protected void onPrepare(ComponentContext c) {
       setCurrentStep(LifecycleStep.ON_PREPARE);
     }
