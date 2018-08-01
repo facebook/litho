@@ -44,6 +44,7 @@ import com.facebook.litho.TreeProps;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.annotations.TreeProp;
 import java.util.Arrays;
 import java.util.BitSet;
 import javax.annotation.Nullable;
@@ -111,6 +112,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   )
   long prop8;
 
+  @TreeProp
   TestTreeProp treeProp;
 
   Integer boundsDefinedOutput;

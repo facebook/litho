@@ -262,7 +262,8 @@ public class ComponentBodyGeneratorTest {
   public void testGenerateTreeProps() {
     TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateTreeProps(mSpecModelDI);
     assertThat(dataHolder.getFieldSpecs()).hasSize(3);
-    assertThat(dataHolder.getFieldSpecs().get(0).toString()).isEqualTo("long arg3;\n");
+    assertThat(dataHolder.getFieldSpecs().get(0).toString())
+        .isEqualTo("@com.facebook.litho.annotations.TreeProp\n" + "long arg3;\n");
   }
 
   @Test

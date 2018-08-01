@@ -24,6 +24,5 @@ import java.lang.annotation.RetentionPolicy;
  * The parent should set the prop in a {@link OnCreateTreeProp} method.
  * Both the name and type of a child's TreeProp should match exactly to what is set in the parent.
  */
-@Retention(RetentionPolicy.CLASS)
-public @interface TreeProp {
-}
+@Retention(RetentionPolicy.RUNTIME)
+public @interface TreeProp {}

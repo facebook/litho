@@ -31,6 +31,7 @@ import com.facebook.litho.TreeProps;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.LoadingEvent;
 import com.facebook.litho.sections.Section;
@@ -71,6 +72,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
   @Prop(resType = ResType.NONE, optional = false)
   Section prop5;
 
+  @TreeProp
   FullGroupSectionSpec.TreePropWrapper treeProp;
 
   String _service;

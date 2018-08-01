@@ -24,6 +24,7 @@ import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
@@ -339,7 +340,9 @@ public class ComponentBodyGenerator {
 
     for (TreePropModel treeProp : treeProps) {
       typeSpecDataHolder.addField(
-          FieldSpec.builder(treeProp.getTypeName(), treeProp.getName()).build());
+          FieldSpec.builder(treeProp.getTypeName(), treeProp.getName())
+              .addAnnotation(TreeProp.class)
+              .build());
     }
 
     return typeSpecDataHolder.build();
