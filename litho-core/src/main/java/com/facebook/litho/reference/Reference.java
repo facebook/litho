@@ -77,7 +77,7 @@ public abstract class Reference<L> {
    * reference it's possible to provide custom logic for the comparison implementing a method
    * annotated with the {@link com.facebook.litho.annotations.ShouldUpdate} annotation.
    */
-  public static <T> boolean shouldUpdate(Reference<T> previous, Reference<T> next) {
+  public static boolean shouldUpdate(Reference previous, Reference next) {
     if (previous != null) {
       return previous.mLifecycle.shouldReferenceUpdate(previous, next);
     } else {

@@ -675,7 +675,7 @@ public class ComponentBodyGenerator {
     } else if (field.getTypeName().equals(ClassNames.REFERENCE)) {
       codeBlock
           .beginControlFlow(
-              "if (Reference.shouldUpdate($L != $L.$L))",
+              "if (Reference.shouldUpdate($L, $L.$L))",
               implAccessor,
               implInstanceName,
               implAccessor)
