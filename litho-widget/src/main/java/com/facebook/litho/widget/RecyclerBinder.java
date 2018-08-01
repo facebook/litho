@@ -2657,12 +2657,10 @@ public class RecyclerBinder
             holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
           }
         } else {
-          final Runnable maybeAcquireStateAndReleaseTreeRunnable =
-              getMaybeAcquireStateAndReleaseTreeRunnable(holder);
           if (ThreadUtils.isMainThread()) {
-            maybeAcquireStateAndReleaseTreeRunnable.run();
+            maybeAcquireStateAndReleaseTree(holder);
           } else {
-            mMainThreadHandler.post(maybeAcquireStateAndReleaseTreeRunnable);
+            mMainThreadHandler.post(getMaybeAcquireStateAndReleaseTreeRunnable(holder));
           }
         }
       }
@@ -2673,14 +2671,18 @@ public class RecyclerBinder
     return new Runnable() {
       @Override
       public void run() {
-        if (holder.isTreeValid()
-            && !holder.getRenderInfo().isSticky()
-            && (holder.getComponentTree() != null
-                && holder.getComponentTree().getLithoView() == null)) {
-          holder.acquireStateAndReleaseTree();
-        }
+        maybeAcquireStateAndReleaseTree(holder);
       }
     };
+  }
+
+  private static void maybeAcquireStateAndReleaseTree(ComponentTreeHolder holder) {
+    if (holder.isTreeValid()
+        && !holder.getRenderInfo().isSticky()
+        && (holder.getComponentTree() != null
+            && holder.getComponentTree().getLithoView() == null)) {
+      holder.acquireStateAndReleaseTree();
+    }
   }
 
   private boolean getReverseLayout() {
