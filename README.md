@@ -58,6 +58,11 @@ or, if you prefer Gradle,
     $ ./gradlew :sample:installDebug
 
 ## Contributing
+
+Before contributing to Litho, please first read the the [Code of
+Conduct](https://code.facebook.com/codeofconduct) that we expect
+project participants to adhere to.
+
 For pull requests, please see our [CONTRIBUTING](CONTRIBUTING.md) guide.
 
 See our [issues](https://github.com/facebook/litho/issues/) page for ideas on how to contribute or to let us know of any problems.
