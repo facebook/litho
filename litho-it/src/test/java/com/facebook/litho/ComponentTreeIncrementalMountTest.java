@@ -153,34 +153,6 @@ public class ComponentTreeIncrementalMountTest {
     assertThat(mMountedRect).isEqualTo(new Rect(0, 0, 10, 5));
   }
 
-  @Test
-  public void testGetLocalVisibleBoundsWithExactRect() {
-    mComponentTree =
-        ComponentTree.create(
-                mComponentContext,
-                TestDrawableComponent.create(mComponentContext).color(Color.BLACK).build())
-            .useExactRectForVisibilityEvents()
-            .build();
-
-    Whitebox.setInternalState(mComponentTree, "mLithoView", mLithoView);
-    Whitebox.setInternalState(mComponentTree, "mMainThreadLayoutState", mock(LayoutState.class));
-
-    doAnswer(
-            new Answer<Boolean>() {
-              @Override
-              public Boolean answer(InvocationOnMock invocation) throws Throwable {
-                Rect rect = (Rect) invocation.getArguments()[0];
-                rect.set(new Rect(10, 5, 20, 15));
-                return true;
-              }
-            })
-        .when(mLithoView)
-        .getLocalVisibleRect(any(Rect.class));
-
-    mComponentTree.incrementalMountComponent();
-    assertThat(mMountedRect).isEqualTo(new Rect(10, 5, 20, 15));
-  }
-
   private void setupIncrementalMountTest(
       final Rect lithoViewBoundsInScreen, final Rect parentBoundsInScreen) {
 

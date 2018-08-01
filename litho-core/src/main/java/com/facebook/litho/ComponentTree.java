@@ -131,7 +131,6 @@ public class ComponentTree {
   private static final Rect sParentBounds = new Rect();
 
   @Nullable private final IncrementalMountHelper mIncrementalMountHelper;
-  private final boolean mUseExactRectForVisibilityEvents;
   private final boolean mShouldPreallocatePerMountSpec;
   private final Runnable mPreAllocateMountContentRunnable =
       new Runnable() {
@@ -264,7 +263,6 @@ public class ComponentTree {
     mRoot = wrapRootInErrorBoundary(builder.root);
 
     mIncrementalMountEnabled = builder.incrementalMountEnabled;
-    mUseExactRectForVisibilityEvents = builder.useExactRectForVisibilityEvents;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mLayoutThreadHandler = builder.layoutThreadHandler;
     mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
@@ -609,8 +607,7 @@ public class ComponentTree {
   private boolean getVisibleRect(Rect visibleBounds) {
     assertMainThread();
 
-    if (mUseExactRectForVisibilityEvents
-        || ComponentsConfiguration.incrementalMountUsesLocalVisibleBounds) {
+    if (ComponentsConfiguration.incrementalMountUsesLocalVisibleBounds) {
       return mLithoView.getLocalVisibleRect(visibleBounds);
     }
 
@@ -943,10 +940,6 @@ public class ComponentTree {
    */
   public boolean isIncrementalMountEnabled() {
     return mIncrementalMountEnabled;
-  }
-
-  boolean useExactRectForVisibilityEvents() {
-    return mUseExactRectForVisibilityEvents;
   }
 
   synchronized Component getRoot() {
@@ -2284,7 +2277,6 @@ public class ComponentTree {
 
     // optional
     private boolean incrementalMountEnabled = true;
-    private boolean useExactRectForVisibilityEvents = false;
     private boolean isLayoutDiffingEnabled = true;
     private LayoutHandler layoutThreadHandler;
     private LayoutHandler preAllocateMountContentHandler;
@@ -2321,7 +2313,6 @@ public class ComponentTree {
       root = null;
 
       incrementalMountEnabled = true;
-      useExactRectForVisibilityEvents = false;
       isLayoutDiffingEnabled = true;
       layoutThreadHandler = null;
       layoutLock = null;
@@ -2350,16 +2341,6 @@ public class ComponentTree {
     @Deprecated
     public Builder incrementalMount(boolean isEnabled) {
       incrementalMountEnabled = isEnabled;
-      return this;
-    }
-
-    /**
-     * Use this option if you want to use the correct bounds for incremental mount (which is also
-     * used for visibility events). This will soon be the default, but there are some risks with
-     * content not being mounted, so use with care.
-     */
-    public Builder useExactRectForVisibilityEvents() {
-      useExactRectForVisibilityEvents = true;
       return this;
     }
 
