@@ -118,6 +118,7 @@ public class RecyclerBinder
   private final boolean mFillListViewportHScrollOnly;
   private final boolean mEnableStableIds;
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
+  private final RecyclerRangeTraverser mRangeTraverser;
 
   private boolean mParallelFillViewportEnabled;
   private String mSplitLayoutTag;
@@ -397,6 +398,8 @@ public class RecyclerBinder
     private boolean enableStableIds;
     private boolean useSharedLayoutStateFuture;
     private @Nullable List<ComponentLogParams> invalidStateLogParamsList;
+    private RecyclerRangeTraverser recyclerRangeTraverser =
+        RecyclerRangeTraverser.DEFAULT_TRAVERSER;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -556,6 +559,12 @@ public class RecyclerBinder
       return this;
     }
 
+    /** Set a custom range traverser */
+    public Builder recyclerRangeTraverser(RecyclerRangeTraverser traverser) {
+      this.recyclerRangeTraverser = traverser;
+      return this;
+    }
+
     /**
      * Method for tests to allow mocking of the InternalAdapter to verify interaction with the
      * RecyclerView.
@@ -653,6 +662,7 @@ public class RecyclerBinder
     mHasDynamicItemHeight =
         mLayoutInfo.getScrollDirection() == HORIZONTAL ? builder.hasDynamicItemHeight : false;
     mWrapContent = builder.wrapContent;
+    mRangeTraverser = builder.recyclerRangeTraverser;
 
     mViewportManager =
         new ViewportManager(
@@ -2604,67 +2614,66 @@ public class RecyclerBinder
         firstVisible = lastVisible = 0;
       }
       rangeSize = Math.max(mRange.estimatedViewportCount, lastVisible - firstVisible);
-      rangeStart = firstVisible - (int) (rangeSize * mRangeRatio);
-      rangeEnd = firstVisible + rangeSize + (int) (rangeSize * mRangeRatio);
       treeHoldersSize = mComponentTreeHolders.size();
+      if (mIsCircular) {
+        rangeStart = 0;
+        rangeEnd = treeHoldersSize;
+      } else {
+        rangeStart = firstVisible - (int) (rangeSize * mRangeRatio);
+        rangeEnd = firstVisible + rangeSize + (int) (rangeSize * mRangeRatio);
+      }
     }
 
-    computeRangeLayout(treeHoldersSize, rangeStart, rangeEnd, mIsCircular);
+    mRangeTraverser.traverse(
+        0,
+        treeHoldersSize,
+        firstVisible,
+        lastVisible,
+        new RecyclerRangeTraverser.Processor() {
+          @Override
+          public boolean process(int index) {
+            return computeRangeLayoutAt(index, rangeStart, rangeEnd, treeHoldersSize);
+          }
+        });
   }
 
-  private void computeRangeLayout(
-      int treeHoldersSize, int rangeStart, int rangeEnd, boolean ignoreRange) {
-    // TODO 16212153 optimize computeRange loop.
-    /**
-     * Here is the four combinations of reverseLayout and stackFromEnd,
-     * for a list of items from 1 to n inclusive, with m of them visible and noted by the bracket.
-     * reverseLayout=false, stackFromEnd=false : [0...m]...n
-     * reverseLayout=true,  stackFromEnd=false : [n...n-m]...0
-     * reverseLayout=false, stackFromEnd=true  : 0...[n-m...n]
-     * reverseLayout=true,  stackFromEnd=true  : n...[m...0]
-     */
-    final boolean reverseOrder = getReverseLayout() ^ getStackFromEnd();
-    for (int i = reverseOrder ? treeHoldersSize - 1 : 0;
-       reverseOrder ? i >= 0 : i < treeHoldersSize;
-       i += reverseOrder ? -1 : 1) {
-      final ComponentTreeHolder holder;
-      final int childrenWidthSpec, childrenHeightSpec;
+  /** @return Whether or not to continue layout computation for current range */
+  private boolean computeRangeLayoutAt(
+      int index, int rangeStart, int rangeEnd, int treeHoldersSize) {
 
-      synchronized (this) {
-        // Someone modified the ComponentsTreeHolders while we were computing this range. We
-        // can just bail as another range will be computed.
-        if (treeHoldersSize != mComponentTreeHolders.size()) {
-          return;
-        }
+    final ComponentTreeHolder holder;
+    final int childrenWidthSpec, childrenHeightSpec;
 
-        holder = mComponentTreeHolders.get(i);
-
-        if (holder.getRenderInfo().rendersView()) {
-          continue;
-        }
-
-        childrenWidthSpec = getActualChildrenWidthSpec(holder);
-        childrenHeightSpec = getActualChildrenHeightSpec(holder);
+    synchronized (this) {
+      // Someone modified the ComponentsTreeHolders while we were computing this range. We
+      // can just bail as another range will be computed.
+      if (treeHoldersSize != mComponentTreeHolders.size()) {
+        return false;
       }
 
-      if (ignoreRange) {
-        if (!holder.isTreeValid()) {
-          holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
-        }
+      holder = mComponentTreeHolders.get(index);
+
+      if (holder.getRenderInfo().rendersView()) {
+        return true;
+      }
+
+      childrenWidthSpec = getActualChildrenWidthSpec(holder);
+      childrenHeightSpec = getActualChildrenHeightSpec(holder);
+    }
+
+    if (index >= rangeStart && index <= rangeEnd) {
+      if (!holder.isTreeValid()) {
+        holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
+      }
+    } else {
+      if (ThreadUtils.isMainThread()) {
+        maybeAcquireStateAndReleaseTree(holder);
       } else {
-        if (i >= rangeStart && i <= rangeEnd) {
-          if (!holder.isTreeValid()) {
-            holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
-          }
-        } else {
-          if (ThreadUtils.isMainThread()) {
-            maybeAcquireStateAndReleaseTree(holder);
-          } else {
-            mMainThreadHandler.post(getMaybeAcquireStateAndReleaseTreeRunnable(holder));
-          }
-        }
+        mMainThreadHandler.post(getMaybeAcquireStateAndReleaseTreeRunnable(holder));
       }
     }
+
+    return true;
   }
 
   private Runnable getMaybeAcquireStateAndReleaseTreeRunnable(final ComponentTreeHolder holder) {
@@ -2689,15 +2698,6 @@ public class RecyclerBinder
     final LayoutManager layoutManager = mLayoutInfo.getLayoutManager();
     if (layoutManager instanceof LinearLayoutManager) {
       return ((LinearLayoutManager) layoutManager).getReverseLayout();
-    } else {
-      return false;
-    }
-  }
-
-  private boolean getStackFromEnd() {
-    final LayoutManager layoutManager = mLayoutInfo.getLayoutManager();
-    if (layoutManager instanceof LinearLayoutManager) {
-      return ((LinearLayoutManager) layoutManager).getStackFromEnd();
     } else {
       return false;
     }
