@@ -173,11 +173,17 @@ public class SectionTree {
 
     public CalculateChangeSetRunnable(Handler handler) {
       mHandler = handler;
+      if (ComponentsConfiguration.enableThrowableTracking) {
+        new Throwable();
+      }
     }
 
     public synchronized void ensurePosted(@ApplyNewChangeSet int source, String attribution) {
       if (!mIsPosted) {
         mIsPosted = true;
+        if (ComponentsConfiguration.enableThrowableTracking) {
+          new Throwable();
+        }
         mHandler.post(this);
         mSource = source;
         mAttribution = attribution;
@@ -1081,6 +1087,9 @@ public class SectionTree {
     if (isMainThread()) {
       postChangesetsToHandler();
     } else {
+      if (ComponentsConfiguration.enableThrowableTracking) {
+        new Throwable();
+      }
       sMainThreadHandler.obtainMessage(MESSAGE_WHAT_BACKGROUND_CHANGESET_STATE_UPDATED, this)
           .sendToTarget();
     }

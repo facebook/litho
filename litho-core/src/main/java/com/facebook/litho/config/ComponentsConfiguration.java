@@ -193,4 +193,7 @@ public class ComponentsConfiguration {
 
   /** Only clear visibility items in MountState when the MountState is dirty */
   public static boolean clearVisibilityItemsOnlyWhenDirty = true;
+
+  /** Assess the impact of using the Thrawable class to track crashes across threads */
+  public static boolean enableThrowableTracking = false;
 }
