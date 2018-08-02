@@ -87,18 +87,6 @@ public class ComponentsConfiguration {
   /** Enable exception delegation to {@link com.facebook.litho.annotations.OnError}. */
   public static boolean enableOnErrorHandling = false;
 
-  /**
-   * Whether incremental mount should use the local visible bounds of the {@link
-   * com.facebook.litho.LithoView}.
-   */
-  public static boolean incrementalMountUsesLocalVisibleBounds = true;
-
-  /**
-   * Whether incremental mount that begins in {@link com.facebook.litho.LithoView} should use the
-   * local visible bounds of the view.
-   */
-  public static boolean lithoViewIncrementalMountUsesLocalVisibleBounds = true;
-
   /** Whether the RecyclerCollectionComponent can asynchronously set the root of a SectionTree. */
   public static boolean setRootAsyncRecyclerCollectionComponent = false;
 

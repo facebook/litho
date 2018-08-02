@@ -43,7 +43,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewParent;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -123,12 +122,6 @@ public class ComponentTree {
 
   private static final ThreadLocal<WeakReference<Handler>> sSyncStateUpdatesHandler =
       new ThreadLocal<>();
-
-  // Helpers to track view visibility when we are incrementally
-  // mounting and partially invalidating
-  private static final int[] sCurrentLocation = new int[2];
-  private static final int[] sParentLocation = new int[2];
-  private static final Rect sParentBounds = new Rect();
 
   @Nullable private final IncrementalMountHelper mIncrementalMountHelper;
   private final boolean mShouldPreallocatePerMountSpec;
@@ -588,7 +581,7 @@ public class ComponentTree {
     // not in "depth order", this variable cannot be static.
     final Rect currentVisibleArea = ComponentsPools.acquireRect();
 
-    if (getVisibleRect(currentVisibleArea)
+    if (mLithoView.getLocalVisibleRect(currentVisibleArea)
         // It might not be yet visible but animating from 0 height/width in which case we still need
         // to mount them to trigger animation.
         || animatingRootBoundsFromZero(currentVisibleArea)) {
@@ -602,37 +595,6 @@ public class ComponentTree {
     return !mHasMounted
         && ((mRootHeightAnimation != null && currentVisibleArea.height() == 0)
             || (mRootWidthAnimation != null && currentVisibleArea.width() == 0));
-  }
-
-  private boolean getVisibleRect(Rect visibleBounds) {
-    assertMainThread();
-
-    if (ComponentsConfiguration.incrementalMountUsesLocalVisibleBounds) {
-      return mLithoView.getLocalVisibleRect(visibleBounds);
-    }
-
-    getLocationAndBoundsOnScreen(mLithoView, sCurrentLocation, visibleBounds);
-
-    final ViewParent viewParent = mLithoView.getParent();
-    if (viewParent instanceof View) {
-      final View parent = (View) viewParent;
-      getLocationAndBoundsOnScreen(parent, sParentLocation, sParentBounds);
-      if (!visibleBounds.setIntersect(visibleBounds, sParentBounds)) {
-        return false;
-      }
-    }
-
-    visibleBounds.offset(-sCurrentLocation[0], -sCurrentLocation[1]);
-
-    return true;
-  }
-
-  private static void getLocationAndBoundsOnScreen(View view, int[] location, Rect bounds) {
-    assertMainThread();
-
-    view.getLocationOnScreen(location);
-    bounds.set(
-        location[0], location[1], location[0] + view.getWidth(), location[1] + view.getHeight());
   }
 
   /**

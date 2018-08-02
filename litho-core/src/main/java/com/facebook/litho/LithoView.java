@@ -380,19 +380,7 @@ public class LithoView extends ComponentHost {
       // triggering incremental mount. We trigger one here to be sure all the content is visible.
       if (!wasMountTriggered
           && isIncrementalMountEnabled()) {
-        if (ComponentsConfiguration.incrementalMountUsesLocalVisibleBounds) {
-          performIncrementalMount();
-        } else {
-          final boolean isRectSame =
-              mPreviousMountViewBounds != null
-                  && mPreviousMountViewBounds.left == left
-                  && mPreviousMountViewBounds.top == top
-                  && mPreviousMountViewBounds.right == right
-                  && mPreviousMountViewBounds.bottom == bottom;
-          if (!isRectSame) {
-            performIncrementalMount();
-          }
-        }
+        performIncrementalMount();
       }
 
       if (!wasMountTriggered || shouldAlwaysLayoutChildren()) {
@@ -691,19 +679,7 @@ public class LithoView extends ComponentHost {
     }
 
     final Rect rect = ComponentsPools.acquireRect();
-    final boolean isEmpty;
-    if (ComponentsConfiguration.lithoViewIncrementalMountUsesLocalVisibleBounds) {
-      isEmpty = !getLocalVisibleRect(rect);
-    } else {
-      rect.set(
-          Math.max(0, -left),
-          Math.max(0, -top),
-          Math.min(right, parentWidth) - left,
-          Math.min(bottom, parentHeight) - top);
-      isEmpty = rect.isEmpty();
-    }
-
-    if (isEmpty) {
+    if (!getLocalVisibleRect(rect)) {
       // View is not visible at all, nothing to do.
       ComponentsPools.release(rect);
       return;
