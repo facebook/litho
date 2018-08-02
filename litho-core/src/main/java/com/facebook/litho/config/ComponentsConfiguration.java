@@ -190,4 +190,7 @@ public class ComponentsConfiguration {
   public static boolean shouldDelayChildPressedState = true;
 
   public static boolean useNewIsEquivalentTo = false;
+
+  /** Only clear visibility items in MountState when the MountState is dirty */
+  public static boolean clearVisibilityItemsOnlyWhenDirty = true;
 }

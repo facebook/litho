@@ -354,6 +354,12 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       mTransitionManager.runTransitions();
     }
 
+    if (processVisibilityOutputs) {
+      ComponentsSystrace.beginSection("processVisibilityOutputs");
+      processVisibilityOutputs(layoutState, localVisibleRect, mountPerfEvent);
+      ComponentsSystrace.endSection();
+    }
+
     mRootTransition = null;
     mTransitionsHasBeenCollected = false;
     mIsDirty = false;
@@ -366,12 +372,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     releaseLastMountedLayoutState();
     mLastMountedComponentTreeId = componentTreeId;
     mLastMountedLayoutState = layoutState.acquireRef();
-
-    if (processVisibilityOutputs) {
-      ComponentsSystrace.beginSection("processVisibilityOutputs");
-      processVisibilityOutputs(layoutState, localVisibleRect, mountPerfEvent);
-      ComponentsSystrace.endSection();
-    }
 
     processTestOutputs(layoutState);
 
@@ -501,6 +501,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final boolean isDoingPerfLog = mMountStats.isLoggingEnabled;
     final boolean isTracing = ComponentsSystrace.isTracing();
     final long totalStartTime = isDoingPerfLog ? System.nanoTime() : 0L;
+    final boolean clearRemovedVisibilityItems =
+        mIsDirty || !ComponentsConfiguration.clearVisibilityItemsOnlyWhenDirty;
     for (int j = 0, size = layoutState.getVisibilityOutputCount(); j < size; j++) {
       final VisibilityOutput visibilityOutput = layoutState.getVisibilityOutputAt(j);
       if (isTracing) {
@@ -564,7 +566,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           visibilityItem = null;
         } else {
           // Processed, do not clear.
-          visibilityItem.setDoNotClearInThisPass(true);
+          visibilityItem.setDoNotClearInThisPass(clearRemovedVisibilityItems);
         }
       }
 
@@ -577,7 +579,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
                   : null;
           visibilityItem =
               ComponentsPools.acquireVisibilityItem(globalKey, invisibleHandler, unfocusedHandler);
-          visibilityItem.setDoNotClearInThisPass(true);
+          visibilityItem.setDoNotClearInThisPass(clearRemovedVisibilityItems);
           mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
 
           if (visibleHandler != null) {
@@ -626,7 +628,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       }
     }
 
-    clearVisibilityItems();
+    if (clearRemovedVisibilityItems) {
+      clearVisibilityItems();
+    }
 
     if (isDoingPerfLog) {
       mMountStats.visibilityHandlersTotalTime = (System.nanoTime() - totalStartTime) / NS_IN_MS;
