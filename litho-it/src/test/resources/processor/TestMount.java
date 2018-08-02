@@ -215,7 +215,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   @Override
   protected TreeProps getTreePropsForChildren(ComponentContext c, TreeProps parentTreeProps) {
-    final TreeProps childTreeProps = TreeProps.copy(parentTreeProps);
+    final TreeProps childTreeProps = TreeProps.acquire(parentTreeProps);
     childTreeProps.put(com.facebook.litho.processor.integration.resources.TestTreeProp.class, TestMountSpec.onCreateFeedPrefetcherProp(
         (ComponentContext) c,
         prop6));

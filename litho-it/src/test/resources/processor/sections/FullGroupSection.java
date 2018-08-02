@@ -407,7 +407,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
 
   @Override
   protected TreeProps getTreePropsForChildren(SectionContext c, TreeProps parentTreeProps) {
-    final TreeProps childTreeProps = TreeProps.copy(parentTreeProps);
+    final TreeProps childTreeProps = TreeProps.acquire(parentTreeProps);
     childTreeProps.put(
         com.facebook.litho.sections.processor.integration.resources.FullGroupSectionSpec
             .TreePropWrapper.class,

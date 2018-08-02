@@ -42,13 +42,24 @@ public class TreeProps {
     return (T) mMap.get(key);
   }
 
+  /** @return a copy of the provided TreeProps instance; returns null if source is null */
+  @ThreadSafe(enableChecks = false)
+  public static @Nullable TreeProps copy(TreeProps source) {
+    if (source == null) {
+      return null;
+    }
+
+    return acquire(source);
+  }
+
   /**
-   * Whenever a Spec sets tree props, the TreeProps map from the parent is copied.
+   * Whenever a Spec sets tree props, the TreeProps map from the parent is copied. If parent
+   * TreeProps are null, a new TreeProps instance is created to copy the current tree props.
    *
-   * Infer knows that newProps is owned but doesn't know that newProps.mMap is owned.
+   * <p>Infer knows that newProps is owned but doesn't know that newProps.mMap is owned.
    */
   @ThreadSafe(enableChecks = false)
-  public static TreeProps copy(TreeProps source) {
+  public static TreeProps acquire(TreeProps source) {
     final TreeProps newProps = new TreeProps();
     if (source != null) {
       synchronized (source.mMap) {

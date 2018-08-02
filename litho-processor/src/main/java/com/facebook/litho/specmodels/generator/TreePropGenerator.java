@@ -87,7 +87,7 @@ public class TreePropGenerator {
             .addParameter(specModel.getContextClass(), "c")
             .addParameter(ClassNames.TREE_PROPS, "parentTreeProps")
             .addStatement(
-                "final $T childTreeProps = $T.copy(parentTreeProps)",
+                "final $T childTreeProps = $T.acquire(parentTreeProps)",
                 ClassNames.TREE_PROPS,
                 ClassNames.TREE_PROPS);
 
