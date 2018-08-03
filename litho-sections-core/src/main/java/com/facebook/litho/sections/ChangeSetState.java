@@ -17,6 +17,8 @@
 package com.facebook.litho.sections;
 
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_GENERATE_CHANGESET;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGE_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_FINAL_COUNT;
 import static com.facebook.litho.sections.Section.acquireChildrenMap;
 import static com.facebook.litho.sections.Section.releaseChildrenMap;
 
@@ -24,6 +26,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 import android.util.SparseArray;
 import com.facebook.litho.ComponentsLogger;
+import com.facebook.litho.LogTreePopulator;
 import com.facebook.litho.PerfEvent;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import java.util.ArrayList;
@@ -82,7 +85,10 @@ public class ChangeSetState {
             Thread.currentThread().getName());
 
     final ComponentsLogger logger = sectionContext.getLogger();
-    if (logger != null) {
+    if (logger != null && logEvent != null) {
+      LogTreePopulator.populatePerfEventFromLogger(sectionContext, logger, logEvent);
+      logEvent.markerAnnotate(PARAM_CHANGE_COUNT, changeSetState.mChangeSet.getChangeCount());
+      logEvent.markerAnnotate(PARAM_FINAL_COUNT, changeSetState.mChangeSet.getCount());
       logger.logPerfEvent(logEvent);
     }
 

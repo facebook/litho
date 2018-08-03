@@ -345,8 +345,8 @@ public class SectionTree {
 
   /**
    * Update the root Section. This will create the new Section tree and generate a {@link ChangeSet}
-   * to be applied to the UI. In response to this {@link Target#applyNewChangeSet(int)} will be
-   * invoked once the {@link ChangeSet} has been calculated. The generation of the ChangeSet will
+   * to be applied to the UI. In response to this {@link Target#applyNewChangeSet(int, String)} will
+   * be invoked once the {@link ChangeSet} has been calculated. The generation of the ChangeSet will
    * happen asynchronously in this SectionTree ChangeSetThread.
    *
    * @param section The new root.
