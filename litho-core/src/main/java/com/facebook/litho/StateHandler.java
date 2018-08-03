@@ -140,7 +140,6 @@ public class StateHandler {
       return;
     }
 
-    final StateContainer previousStateContainer;
     final String key = component.getGlobalKey();
     final StateContainer currentStateContainer;
 
@@ -153,10 +152,8 @@ public class StateHandler {
       component.transferState(
           component.getScopedContext(),
           currentStateContainer);
-      previousStateContainer = currentStateContainer;
     } else {
       component.createInitialState(component.getScopedContext());
-      previousStateContainer = component.getStateContainer();
     }
 
     final List<StateUpdate> stateUpdatesForKey;
@@ -170,7 +167,7 @@ public class StateHandler {
     // If there are no state updates pending for this component, simply store its current state.
     if (stateUpdatesForKey != null) {
       for (StateUpdate update : stateUpdatesForKey) {
-        update.updateState(previousStateContainer, component);
+        update.updateState(component.getStateContainer(), component);
       }
     }
 
