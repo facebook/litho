@@ -3465,7 +3465,7 @@ public class RecyclerBinderTest {
   }
 
   @Test
-  public void testChangeSetCompleteCallbacksIsEmptyWithInsertBeforeMount() {
+  public void testChangeSetCompleteCallbacksIsNotEmptyWithInsertBeforeMount() {
     final RecyclerView recyclerView = mock(RecyclerView.class);
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
@@ -3484,12 +3484,11 @@ public class RecyclerBinderTest {
     // Mount view after insertions
     recyclerBinder.mount(recyclerView);
 
-    assertThat(recyclerBinder.mDataRenderedCallbacks).isEmpty();
-    verify(changeSetCompleteCallback, never()).onDataRendered(eq(true), anyLong());
+    assertThat(recyclerBinder.mDataRenderedCallbacks).isNotEmpty();
   }
 
   @Test
-  public void testChangeSetCompleteCallbacksIsEmptyWithAsyncInsertBeforeMount() {
+  public void testChangeSetCompleteCallbacksIsNotEmptyWithAsyncInsertBeforeMount() {
     final RecyclerView recyclerView = mock(RecyclerView.class);
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
@@ -3511,8 +3510,7 @@ public class RecyclerBinderTest {
     // Mount view after insertions
     recyclerBinder.mount(recyclerView);
 
-    assertThat(recyclerBinder.mDataRenderedCallbacks).isEmpty();
-    verify(changeSetCompleteCallback, never()).onDataRendered(eq(true), anyLong());
+    assertThat(recyclerBinder.mDataRenderedCallbacks).isNotEmpty();
   }
 
   @Test
@@ -3537,7 +3535,6 @@ public class RecyclerBinderTest {
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
 
     assertThat(recyclerBinder.mDataRenderedCallbacks).isEmpty();
-    verify(changeSetCompleteCallback, never()).onDataRendered(eq(true), anyLong());
   }
 
   @Test
@@ -3565,7 +3562,6 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
     assertThat(recyclerBinder.mDataRenderedCallbacks).isEmpty();
-    verify(changeSetCompleteCallback, never()).onDataRendered(eq(true), anyLong());
   }
 
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {

@@ -41,6 +41,7 @@ import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -144,20 +145,26 @@ public class RecyclerBinder
       new PostDispatchDrawListener() {
         @Override
         public void postDispatchDraw() {
-          if (mDataRenderedCallbacks.isEmpty()) {
-            // early return if no pending dataRendered callbacks.
-            return;
-          }
           maybeDispatchDataRendered();
         }
       };
 
-  private final Runnable mNotifyDatasetChangedRunnable = new Runnable() {
-    @Override
-    public void run() {
-      mInternalAdapter.notifyDataSetChanged();
-    }
-  };
+  private final ViewTreeObserver.OnPreDrawListener mOnPreDrawListener =
+      new ViewTreeObserver.OnPreDrawListener() {
+        @Override
+        public boolean onPreDraw() {
+          maybeDispatchDataRendered();
+          return true;
+        }
+      };
+
+  private final Runnable mNotifyDatasetChangedRunnable =
+      new Runnable() {
+        @Override
+        public void run() {
+          mInternalAdapter.notifyDataSetChanged();
+        }
+      };
 
   private final ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory =
       new ComponentTreeMeasureListenerFactory() {
@@ -1359,11 +1366,8 @@ public class RecyclerBinder
   @ThreadConfined(UI)
   private void maybeDispatchDataRendered() {
     ThreadUtils.assertMainThread();
-
-    if (mMountedView != null && !(mMountedView instanceof HasPostDispatchDrawListener)) {
-      // onDataRendered() cannot be triggered correctly if the view isn't implement
-      // HasPostDispatchDrawListener, just clear the queue.
-      mDataRenderedCallbacks.clear();
+    if (mDataRenderedCallbacks.isEmpty()) {
+      // early return if no pending dataRendered callbacks.
       return;
     }
 
@@ -1379,11 +1383,6 @@ public class RecyclerBinder
         || !mMountedView.hasPendingAdapterUpdates()
         || !mMountedView.isAttachedToWindow()
         || mMountedView.getVisibility() == View.GONE) {
-      if (mDataRenderedCallbacks.isEmpty()) {
-        // Early return if no callbacks existed.
-        return;
-      }
-
       final boolean isMounted = (mMountedView != null);
       final Deque<ChangeSetCompleteCallback> snapshotCallbacks =
           new ArrayDeque<>(mDataRenderedCallbacks);
@@ -2294,14 +2293,8 @@ public class RecyclerBinder
 
     if (view instanceof HasPostDispatchDrawListener) {
       ((HasPostDispatchDrawListener) view).setPostDispatchDrawListener(mPostDispatchDrawListener);
-    } else {
-      mDataRenderedCallbacks.clear();
-      if (SectionsDebug.ENABLED) {
-        Log.d(
-            SectionsDebug.TAG,
-            "OnDataRendered only support view implements HasPostDispatchDrawListener, current view is "
-                + view);
-      }
+    } else if (view.getViewTreeObserver() != null) {
+      view.getViewTreeObserver().addOnPreDrawListener(mOnPreDrawListener);
     }
 
     mLayoutInfo.setRenderInfoCollection(this);
@@ -2391,11 +2384,11 @@ public class RecyclerBinder
     view.removeOnScrollListener(mViewportManager.getScrollListener());
 
     if (view instanceof HasPostDispatchDrawListener) {
-      maybeDispatchDataRendered();
       ((HasPostDispatchDrawListener) view).setPostDispatchDrawListener(null);
-    } else {
-      mDataRenderedCallbacks.clear();
+    } else if (view.getViewTreeObserver() != null) {
+      view.getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
     }
+    maybeDispatchDataRendered();
 
     view.setAdapter(null);
     view.setLayoutManager(null);
