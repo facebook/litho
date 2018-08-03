@@ -86,6 +86,7 @@ public interface FrameworkLogEvents {
   String PARAM_DRAWN_TIME = "drawn_time";
   String PARAM_CHANGE_COUNT = "change_count";
   String PARAM_FINAL_COUNT = "final_count";
+  String PARAM_ATTRIBUTION = "attribution";
   String PARAM_NO_OP_COUNT = "no_op_count";
   String PARAM_IS_DIRTY = "is_dirty";
   String PARAM_VISIBILITY_HANDLERS_TOTAL_TIME = "visibility_handlers_total_time_ms";

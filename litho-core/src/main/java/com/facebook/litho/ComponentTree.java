@@ -20,6 +20,7 @@ import static android.os.Process.THREAD_PRIORITY_DEFAULT;
 import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_CALCULATE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_ROOT_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
@@ -1559,6 +1560,7 @@ public class ComponentTree {
       layoutEvent.markerAnnotate(PARAM_ROOT_COMPONENT, root.getSimpleName());
       layoutEvent.markerAnnotate(PARAM_IS_BACKGROUND_LAYOUT, !ThreadUtils.isMainThread());
       layoutEvent.markerAnnotate(PARAM_TREE_DIFF_ENABLED, mIsLayoutDiffingEnabled);
+      layoutEvent.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
     }
 
     LayoutState localLayoutState =

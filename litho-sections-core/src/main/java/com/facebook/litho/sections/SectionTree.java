@@ -19,6 +19,7 @@ package com.facebook.litho.sections;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_CREATE_NEW_TREE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_SECTION_SET_ROOT_SOURCE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_SET_ROOT_ON_BG_THREAD;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
@@ -890,6 +891,7 @@ public class SectionTree {
           SectionsLogEventUtils.getSectionsPerformanceEvent(
               mContext, EVENT_SECTIONS_SET_ROOT, currentRoot, nextRoot);
       if (logEvent != null) {
+        logEvent.markerAnnotate(PARAM_ATTRIBUTION, attribution);
         logEvent.markerAnnotate(
             PARAM_SECTION_SET_ROOT_SOURCE,
             SectionsLogEventUtils.applyNewChangeSetSourceToString(source));
