@@ -26,6 +26,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.Pair;
 import android.util.SparseArray;
 import com.facebook.litho.ComponentsLogger;
+import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.LogTreePopulator;
 import com.facebook.litho.PerfEvent;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
@@ -154,10 +155,22 @@ public class ChangeSetState {
     // Component(s) can generate changeSets and will generate the changeset.
     // Add the startCount to the changeSet.
     if (lifecycle.isDiffSectionSpec()) {
-      ChangeSet changeSet =
+      final boolean isTracing = ComponentsSystrace.isTracing();
+      if (isTracing) {
+        ComponentsSystrace.beginSectionWithArgs("generateChangeSet")
+            .arg("current_root", currentRootIsNull ? "<null>" : currentRoot.getKey())
+            .arg("update_prefix", updateCurrentPrefix)
+            .flush();
+      }
+
+      final ChangeSet changeSet =
           ChangeSet.acquireChangeSet(currentRootIsNull ? 0 : currentRoot.getCount(), newRoot);
       lifecycle.generateChangeSet(newRoot.getScopedContext(), changeSet, currentRoot, newRoot);
       newRoot.setCount(changeSet.getCount());
+
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
 
       return changeSet;
     }
