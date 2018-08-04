@@ -665,8 +665,10 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     }
 
     private void border(@Nullable Border border) {
-      mPrivateFlags |= PFLAG_BORDER_IS_SET;
-      mBorder = border;
+      if (border != null) {
+        mPrivateFlags |= PFLAG_BORDER_IS_SET;
+        mBorder = border;
+      }
     }
 
     private void positionPercent(YogaEdge edge, float percent) {
