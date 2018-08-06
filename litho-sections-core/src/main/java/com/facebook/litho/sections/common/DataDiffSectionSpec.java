@@ -130,11 +130,10 @@ public class DataDiffSectionSpec<T> {
 
     final ComponentsLogger logger = c.getLogger();
     final PerfEvent logEvent =
-        logger == null ? null : logger.newPerformanceEvent(EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF);
-
-    if (logEvent != null) {
-      LogTreePopulator.populatePerfEventFromLogger(c, logger, logEvent);
-    }
+        logger == null
+            ? null
+            : LogTreePopulator.populatePerfEventFromLogger(
+                c, logger, logger.newPerformanceEvent(EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF));
 
     final DiffUtil.DiffResult result =
         DiffUtil.calculateDiff(callback, isDetectMovesEnabled(detectMoves));

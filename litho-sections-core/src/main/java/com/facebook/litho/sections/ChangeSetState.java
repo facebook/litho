@@ -27,7 +27,6 @@ import android.support.v4.util.Pair;
 import android.util.SparseArray;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsSystrace;
-import com.facebook.litho.LogTreePopulator;
 import com.facebook.litho.PerfEvent;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import java.util.ArrayList;
@@ -69,6 +68,7 @@ public class ChangeSetState {
     changeSetState.mCurrentRoot = currentRoot;
     changeSetState.mNewRoot = newRoot;
 
+    final ComponentsLogger logger = sectionContext.getLogger();
     final PerfEvent logEvent =
         SectionsLogEventUtils.getSectionsPerformanceEvent(
             sectionContext, EVENT_SECTIONS_GENERATE_CHANGESET, currentRoot, newRoot);
@@ -85,9 +85,7 @@ public class ChangeSetState {
             nextPrefix,
             Thread.currentThread().getName());
 
-    final ComponentsLogger logger = sectionContext.getLogger();
     if (logger != null && logEvent != null) {
-      LogTreePopulator.populatePerfEventFromLogger(sectionContext, logger, logEvent);
       logEvent.markerAnnotate(PARAM_CHANGE_COUNT, changeSetState.mChangeSet.getChangeCount());
       logEvent.markerAnnotate(PARAM_FINAL_COUNT, changeSetState.mChangeSet.getCount());
       logger.logPerfEvent(logEvent);

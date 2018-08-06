@@ -628,7 +628,12 @@ public class LithoView extends ComponentHost {
     final ComponentsLogger logger =
         getComponentTree() == null ? null : getComponentTree().getContext().getLogger();
     final PerfEvent perfEvent =
-        logger != null ? logger.newPerformanceEvent(FrameworkLogEvents.EVENT_DRAW) : null;
+        logger != null
+            ? LogTreePopulator.populatePerfEventFromLogger(
+                getComponentContext(),
+                logger,
+                logger.newPerformanceEvent(FrameworkLogEvents.EVENT_DRAW))
+            : null;
     if (perfEvent != null) {
       setPerfEvent(perfEvent);
     }
@@ -646,7 +651,6 @@ public class LithoView extends ComponentHost {
     }
 
     if (perfEvent != null) {
-      LogTreePopulator.populatePerfEventFromLogger(getComponentContext(), logger, perfEvent);
       perfEvent.markerAnnotate(
           FrameworkLogEvents.PARAM_ROOT_COMPONENT, getComponentTree().getRoot().getSimpleName());
       logger.logPerfEvent(perfEvent);

@@ -949,12 +949,14 @@ public class ComponentTree {
     }
     final ComponentsLogger logger = mContext.getLogger();
     final PerfEvent event =
-        logger != null ? logger.newPerformanceEvent(EVENT_PRE_ALLOCATE_MOUNT_CONTENT) : null;
+        logger != null
+            ? LogTreePopulator.populatePerfEventFromLogger(
+                mContext, logger, logger.newPerformanceEvent(EVENT_PRE_ALLOCATE_MOUNT_CONTENT))
+            : null;
 
     toPrePopulate.preAllocateMountContent(shouldPreallocatePerMountSpec);
 
     if (logger != null) {
-      LogTreePopulator.populatePerfEventFromLogger(mContext, logger, event);
       logger.logPerfEvent(event);
     }
 
@@ -1553,10 +1555,12 @@ public class ComponentTree {
 
     final ComponentsLogger logger = mContext.getLogger();
     final PerfEvent layoutEvent =
-        logger != null ? logger.newPerformanceEvent(EVENT_LAYOUT_CALCULATE) : null;
+        logger != null
+            ? LogTreePopulator.populatePerfEventFromLogger(
+                mContext, logger, logger.newPerformanceEvent(EVENT_LAYOUT_CALCULATE))
+            : null;
 
     if (layoutEvent != null) {
-      LogTreePopulator.populatePerfEventFromLogger(mContext, logger, layoutEvent);
       layoutEvent.markerAnnotate(PARAM_ROOT_COMPONENT, root.getSimpleName());
       layoutEvent.markerAnnotate(PARAM_IS_BACKGROUND_LAYOUT, !ThreadUtils.isMainThread());
       layoutEvent.markerAnnotate(PARAM_TREE_DIFF_ENABLED, mIsLayoutDiffingEnabled);
@@ -1649,7 +1653,6 @@ public class ComponentTree {
     }
 
     if (layoutEvent != null) {
-      LogTreePopulator.populatePerfEventFromLogger(mContext, logger, layoutEvent);
       logger.logPerfEvent(layoutEvent);
     }
   }

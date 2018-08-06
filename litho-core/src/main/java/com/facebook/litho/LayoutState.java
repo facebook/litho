@@ -1193,7 +1193,10 @@ class LayoutState {
     final LayoutState layoutState;
     try {
       final PerfEvent logLayoutState =
-          logger != null ? logger.newPerformanceEvent(EVENT_CALCULATE_LAYOUT_STATE) : null;
+          logger != null
+              ? LogTreePopulator.populatePerfEventFromLogger(
+                  c, logger, logger.newPerformanceEvent(EVENT_CALCULATE_LAYOUT_STATE))
+              : null;
       if (logLayoutState != null) {
         logLayoutState.markerAnnotate(PARAM_COMPONENT, component.getSimpleName());
         logLayoutState.markerAnnotate(PARAM_LAYOUT_STATE_SOURCE, sourceToString(source));
@@ -1272,7 +1275,10 @@ class LayoutState {
       }
 
       final PerfEvent collectResultsEvent =
-          logger != null ? logger.newPerformanceEvent(EVENT_COLLECT_RESULTS) : null;
+          logger != null
+              ? LogTreePopulator.populatePerfEventFromLogger(
+                  c, logger, logger.newPerformanceEvent(EVENT_COLLECT_RESULTS))
+              : null;
 
       collectResults(root, layoutState, null);
 
@@ -1280,7 +1286,6 @@ class LayoutState {
       Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
 
       if (collectResultsEvent != null) {
-        LogTreePopulator.populatePerfEventFromLogger(c, logger, collectResultsEvent);
         collectResultsEvent.markerAnnotate(
             FrameworkLogEvents.PARAM_ROOT_COMPONENT, root.getRootComponent().getSimpleName());
         logger.logPerfEvent(collectResultsEvent);
@@ -1310,7 +1315,6 @@ class LayoutState {
       }
 
       if (logLayoutState != null) {
-        LogTreePopulator.populatePerfEventFromLogger(c, logger, logLayoutState);
         logger.logPerfEvent(logLayoutState);
       }
     } finally {
@@ -1598,11 +1602,13 @@ class LayoutState {
     final ComponentsLogger logger = context.getLogger();
 
     final PerfEvent createLayoutPerfEvent =
-        logger != null ? logger.newPerformanceEvent(EVENT_CREATE_LAYOUT) : null;
+        logger != null
+            ? LogTreePopulator.populatePerfEventFromLogger(
+                context, logger, logger.newPerformanceEvent(EVENT_CREATE_LAYOUT))
+            : null;
 
     if (createLayoutPerfEvent != null) {
       createLayoutPerfEvent.markerAnnotate(PARAM_COMPONENT, component.getSimpleName());
-      LogTreePopulator.populatePerfEventFromLogger(context, logger, createLayoutPerfEvent);
     }
 
     final InternalNode root = component.createLayout(context, true /* resolveNestedTree */);
@@ -1643,7 +1649,10 @@ class LayoutState {
 
     final ComponentsLogger logger = context.getLogger();
     final PerfEvent layoutEvent =
-        logger != null ? logger.newPerformanceEvent(EVENT_CSS_LAYOUT) : null;
+        logger != null
+            ? LogTreePopulator.populatePerfEventFromLogger(
+                context, logger, logger.newPerformanceEvent(EVENT_CSS_LAYOUT))
+            : null;
 
     if (layoutEvent != null) {
       layoutEvent.markerAnnotate(PARAM_TREE_DIFF_ENABLED, previousDiffTreeRoot != null);
@@ -1659,7 +1668,6 @@ class LayoutState {
             : SizeSpec.getSize(heightSpec));
 
     if (layoutEvent != null) {
-      LogTreePopulator.populatePerfEventFromLogger(context, logger, layoutEvent);
       logger.logPerfEvent(layoutEvent);
     }
 

@@ -235,7 +235,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     final PerfEvent mountPerfEvent =
-        logger == null ? null : logger.newPerformanceEvent(EVENT_MOUNT);
+        logger == null
+            ? null
+            : LogTreePopulator.populatePerfEventFromLogger(
+                componentTree.getContext(), logger, logger.newPerformanceEvent(EVENT_MOUNT));
 
     if (mIsDirty) {
       updateTransitions(layoutState, componentTree);
@@ -424,9 +427,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     mountPerfEvent.markerAnnotate(PARAM_NO_OP_COUNT, mMountStats.noOpCount);
     mountPerfEvent.markerAnnotate(PARAM_IS_DIRTY, mIsDirty);
-
-    LogTreePopulator.populatePerfEventFromLogger(
-        componentTree.getContext(), logger, mountPerfEvent);
 
     logger.logPerfEvent(mountPerfEvent);
   }

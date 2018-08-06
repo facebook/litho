@@ -58,12 +58,15 @@ public class SectionsLogEventUtils {
       return null;
     }
 
-    final PerfEvent logEvent = logger.newPerformanceEvent(eventId);
-    logEvent.markerAnnotate(
-        PARAM_SECTION_CURRENT, currentSection == null ? "null" : currentSection.getSimpleName());
-    logEvent.markerAnnotate(
-        PARAM_SECTION_NEXT, nextSection == null ? "null" : nextSection.getSimpleName());
-    LogTreePopulator.populatePerfEventFromLogger(c, logger, logEvent);
+    final PerfEvent logEvent =
+        LogTreePopulator.populatePerfEventFromLogger(
+            c, logger, logger.newPerformanceEvent(eventId));
+    if (logEvent != null) {
+      logEvent.markerAnnotate(
+          PARAM_SECTION_CURRENT, currentSection == null ? "null" : currentSection.getSimpleName());
+      logEvent.markerAnnotate(
+          PARAM_SECTION_NEXT, nextSection == null ? "null" : nextSection.getSimpleName());
+    }
 
     return logEvent;
   }
