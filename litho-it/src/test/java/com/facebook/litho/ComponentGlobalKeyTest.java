@@ -16,14 +16,14 @@
 
 package com.facebook.litho;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import android.util.Pair;
 import android.view.View;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.widget.CardClip;
@@ -40,13 +40,11 @@ public class ComponentGlobalKeyTest {
   private static final String mLogTag = "logTag";
 
   private ComponentContext mContext;
-  private ComponentsLogger mComponentsLogger;
+  private TestComponentsLogger mComponentsLogger;
 
   @Before
   public void setup() {
-    mComponentsLogger = mock(BaseComponentsLogger.class);
-    when(mComponentsLogger.getKeyCollisionStackTraceBlacklist()).thenCallRealMethod();
-    when(mComponentsLogger.getKeyCollisionStackTraceKeywords()).thenCallRealMethod();
+    mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
   }
 
@@ -156,7 +154,8 @@ public class ComponentGlobalKeyTest {
             + "this Text is a duplicate and will be changed into a unique one. This will "
             + "result in unexpected behavior if you don't change it.";
 
-    verify(mComponentsLogger).emitMessage(ComponentsLogger.LogLevel.WARNING, expectedError);
+    assertThat(mComponentsLogger.getLoggedMessages())
+        .contains(Pair.create(ComponentsLogger.LogLevel.WARNING, expectedError));
   }
 
   @Test
@@ -181,7 +180,8 @@ public class ComponentGlobalKeyTest {
             + "this Column is a duplicate and will be changed into a unique one. This will "
             + "result in unexpected behavior if you don't change it.";
 
-    verify(mComponentsLogger).emitMessage(ComponentsLogger.LogLevel.WARNING, expectedError);
+    assertThat(mComponentsLogger.getLoggedMessages())
+        .contains(Pair.create(ComponentsLogger.LogLevel.WARNING, expectedError));
   }
 
   @Test

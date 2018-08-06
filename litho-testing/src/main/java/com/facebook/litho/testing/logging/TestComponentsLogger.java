@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.logging;
 
+import android.util.Pair;
 import com.facebook.litho.BaseComponentsLogger;
 import com.facebook.litho.FrameworkLogEvents;
 import com.facebook.litho.PerfEvent;
@@ -30,6 +31,7 @@ import java.util.List;
 public class TestComponentsLogger extends BaseComponentsLogger {
 
   private final List<PerfEvent> mLoggedPerfEvents = new LinkedList<>();
+  private final List<Pair<LogLevel, String>> mLoggedMessages = new LinkedList<>();
 
   @Override
   public boolean isTracing(PerfEvent logEvent) {
@@ -47,13 +49,21 @@ public class TestComponentsLogger extends BaseComponentsLogger {
   }
 
   @Override
-  public void emitMessage(LogLevel level, String message) {}
+  public void emitMessage(LogLevel level, String message) {
+    mLoggedMessages.add(new Pair<>(level, message));
+  }
 
   @Override
-  public void emitMessage(LogLevel level, String message, int samplingFrequency) {}
+  public void emitMessage(LogLevel level, String message, int samplingFrequency) {
+    mLoggedMessages.add(new Pair<>(level, message));
+  }
 
   public List<PerfEvent> getLoggedPerfEvents() {
     return mLoggedPerfEvents;
+  }
+
+  public List<Pair<LogLevel, String>> getLoggedMessages() {
+    return mLoggedMessages;
   }
 
   public void reset() {

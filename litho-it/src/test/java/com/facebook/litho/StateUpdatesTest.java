@@ -20,11 +20,11 @@ import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 import android.os.Looper;
 import com.facebook.litho.ComponentLifecycle.StateContainer;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
+import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import java.util.List;
@@ -151,7 +151,7 @@ public class StateUpdatesTest {
 
   @Before
   public void setup() throws Exception {
-    mComponentsLogger = mock(BaseComponentsLogger.class);
+    mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
     mWidthSpec = makeSizeSpec(39, EXACTLY);
     mHeightSpec = makeSizeSpec(41, EXACTLY);
