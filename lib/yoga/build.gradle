@@ -16,7 +16,6 @@ dependencies {
     implementation deps.inferAnnotations
 
     compileOnly project(':litho-annotations')
-    compileOnly project(':yoga:stubs')
 }
 
 // Our current NDK setup only gets us half-way there to a way to run Yoga

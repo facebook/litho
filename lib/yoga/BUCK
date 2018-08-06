@@ -16,11 +16,5 @@ litho_android_library(
         LITHO_INFERANNOTATIONS_TARGET,
         LITHO_JSR_TARGET,
         LITHO_FBJNI_JAVA_TARGET,
-        ":stubs",
     ],
-)
-
-litho_android_library(
-    name = "stubs",
-    srcs = glob(["src/main/stubs/**/*.java"]),
 )
