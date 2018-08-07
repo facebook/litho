@@ -573,6 +573,18 @@ public class ComponentTree {
   }
 
   void incrementalMountComponent() {
+    if (mIncrementalMountOnPreDraw) {
+      return;
+    }
+
+    incrementalMountComponentInternal();
+  }
+
+  void incrementalMountComponentOnPreDraw() {
+    incrementalMountComponentInternal();
+  }
+
+  private void incrementalMountComponentInternal() {
     assertMainThread();
 
     if (!mIncrementalMountEnabled) {

@@ -147,7 +147,7 @@ class IncrementalMountHelper {
     public boolean onPreDraw() {
       final ComponentTree componentTree = mComponentTree.get();
       if (componentTree != null) {
-        componentTree.incrementalMountComponent();
+        componentTree.incrementalMountComponentOnPreDraw();
       }
 
       return true;
