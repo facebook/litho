@@ -91,7 +91,6 @@ class SampleComponentsLogger : BaseComponentsLogger() {
                 FrameworkLogEvents.EVENT_CSS_LAYOUT                        -> "CSS_LAYOUT"
                 FrameworkLogEvents.EVENT_COLLECT_RESULTS                   -> "COLLECT_RESULTS"
                 FrameworkLogEvents.EVENT_LAYOUT_CALCULATE                  -> "LAYOUT_CALCULATE"
-                FrameworkLogEvents.EVENT_PREPARE_PART_DEFINITION           -> "PREPARE_PART_DEFINITION"
                 FrameworkLogEvents.EVENT_PREPARE_MOUNT                     -> "PREPARE_MOUNT"
                 FrameworkLogEvents.EVENT_MOUNT                             -> "MOUNT"
                 FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT        -> "PRE_ALLOCATE_MOUNT_CONTENT"
