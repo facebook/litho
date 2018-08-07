@@ -19,6 +19,7 @@ package com.facebook.litho;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.view.ViewParent;
+import android.view.ViewTreeObserver;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -31,14 +32,26 @@ import java.util.List;
  */
 class IncrementalMountHelper {
   private final ComponentTree mComponentTree;
-  private final List<ViewPagerListener> mViewPagerListeners = new ArrayList<>(2);
+  private List<ViewPagerListener> mViewPagerListeners;
+  private PreDrawListener mPreDrawListener;
 
   IncrementalMountHelper(ComponentTree componentTree) {
     mComponentTree = componentTree;
+
+    if (mComponentTree.isIncrementalMountOnPreDraw()) {
+      mPreDrawListener = new PreDrawListener(mComponentTree);
+    } else {
+      mViewPagerListeners = new ArrayList<>(2);
+    }
   }
 
   void onAttach(LithoView lithoView) {
     if (!mComponentTree.isIncrementalMountEnabled()) {
+      return;
+    }
+
+    if (mPreDrawListener != null) {
+      lithoView.getViewTreeObserver().addOnPreDrawListener(mPreDrawListener);
       return;
     }
 
@@ -78,6 +91,11 @@ class IncrementalMountHelper {
   }
 
   void onDetach(LithoView lithoView) {
+    if (mPreDrawListener != null) {
+      lithoView.getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
+      return;
+    }
+
     for (int i = 0, size = mViewPagerListeners.size(); i < size; i++) {
       ViewPagerListener viewPagerListener = mViewPagerListeners.get(i);
       viewPagerListener.release();
@@ -115,6 +133,24 @@ class IncrementalMountHelper {
               }
             });
       }
+    }
+  }
+
+  private static class PreDrawListener implements ViewTreeObserver.OnPreDrawListener {
+    private final WeakReference<ComponentTree> mComponentTree;
+
+    private PreDrawListener(ComponentTree componentTree) {
+      mComponentTree = new WeakReference<>(componentTree);
+    }
+
+    @Override
+    public boolean onPreDraw() {
+      final ComponentTree componentTree = mComponentTree.get();
+      if (componentTree != null) {
+        componentTree.incrementalMountComponent();
+      }
+
+      return true;
     }
   }
 }

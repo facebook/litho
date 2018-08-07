@@ -184,4 +184,7 @@ public class ComponentsConfiguration {
 
   /** Assess the impact of using the Thrawable class to track crashes across threads */
   public static boolean enableThrowableTracking = false;
+
+  /** Whether we should do incremental mount on pre draw */
+  public static boolean incrementalMountOnPreDraw = false;
 }
