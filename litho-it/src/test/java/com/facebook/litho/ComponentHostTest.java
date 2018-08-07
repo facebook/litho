@@ -341,6 +341,46 @@ public class ComponentHostTest {
   }
 
   @Test
+  public void testTouchExpansionItemShouldAddTouchDelegate() {
+    View view = mock(View.class);
+    when(view.getContext()).thenReturn(RuntimeEnvironment.application);
+
+    MountItem mountItem = mountTouchExpansionItem(0, view);
+
+    assertThat(mHost.getTouchExpansionDelegate()).isNotNull();
+
+    unmount(0, mountItem);
+  }
+
+  @Test
+  public void testRecursiveTouchExpansionItemShouldNotAddTouchDelegate() {
+    MountItem mountItem = mountTouchExpansionItem(0, mHost);
+
+    assertThat(mHost.getTouchExpansionDelegate()).isNull();
+
+    unmount(0, mountItem);
+  }
+
+  @Test
+  public void testRecursiveTouchExpansionItemSecondShouldNotCrash() {
+    View view = mock(View.class);
+    when(view.getContext()).thenReturn(RuntimeEnvironment.application);
+    MountItem mountItem1 = mountTouchExpansionItem(0, view);
+
+    assertThat(mHost.getTouchExpansionDelegate()).isNotNull();
+
+    MountItem mountItem2 = mountTouchExpansionItem(1, mHost);
+
+    assertThat(mHost.getTouchExpansionDelegate()).isNotNull();
+
+    unmount(1, mountItem2);
+
+    assertThat(mHost.getTouchExpansionDelegate()).isNotNull();
+
+    unmount(0, mountItem1);
+  }
+
+  @Test
   public void testDuplicateParentStateOnViews() {
     View v1 = mock(View.class);
     mount(0, v1);
@@ -851,6 +891,15 @@ public class ComponentHostTest {
     final MountItem viewMountItem = new MountItem();
     final ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
     viewNodeInfo.setLayoutDirection(YogaDirection.LTR);
+
+    InternalNode node = mock(InternalNode.class);
+    when(node.hasTouchExpansion()).thenReturn(true);
+    when(node.getTouchExpansionLeft()).thenReturn(1);
+    when(node.getTouchExpansionTop()).thenReturn(1);
+    when(node.getTouchExpansionRight()).thenReturn(1);
+    when(node.getTouchExpansionBottom()).thenReturn(1);
+
+    viewNodeInfo.setExpandedTouchBounds(node, 1, 1, 1, 1);
 
     viewMountItem.init(
         mViewComponent,

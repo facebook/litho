@@ -308,6 +308,11 @@ public class ComponentHost extends ViewGroup {
       return;
     }
 
+    if (this.equals(mountItem.getContent())) {
+      // Don't delegate to ourselves or we'll cause a StackOverflowError
+      return;
+    }
+
     if (mTouchExpansionDelegate == null) {
       mTouchExpansionDelegate = new TouchExpansionDelegate(this);
       setTouchDelegate(mTouchExpansionDelegate);
@@ -326,6 +331,11 @@ public class ComponentHost extends ViewGroup {
     }
 
     if (mTouchExpansionDelegate == null || viewNodeInfo.getExpandedTouchBounds() == null) {
+      return;
+    }
+
+    if (this.equals(mountItem.getContent())) {
+      // Recursive delegation is never registered
       return;
     }
 
