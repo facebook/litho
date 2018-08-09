@@ -515,6 +515,81 @@ public class MountStateIncrementalMountTest {
     verify(childView3).performIncrementalMount(any(Rect.class), eq(true));
   }
 
+  @Test
+  public void testChildViewGroupAllIncrementallyMountedNotProcessVisibilityOutputs() {
+    final ViewGroup mountedView = mock(ViewGroup.class);
+    when(mountedView.getLeft()).thenReturn(0);
+    when(mountedView.getTop()).thenReturn(0);
+    when(mountedView.getRight()).thenReturn(100);
+    when(mountedView.getBottom()).thenReturn(100);
+    when(mountedView.getChildCount()).thenReturn(3);
+
+    final LithoView childView1 = getMockLithoViewWithBounds(new Rect(5, 10, 20, 30));
+    when(childView1.getTranslationX()).thenReturn(5.0f);
+    when(childView1.getTranslationY()).thenReturn(-10.0f);
+    when(mountedView.getChildAt(0)).thenReturn(childView1);
+
+    final LithoView childView2 = getMockLithoViewWithBounds(new Rect(10, 10, 50, 60));
+    when(mountedView.getChildAt(1)).thenReturn(childView2);
+
+    final LithoView childView3 = getMockLithoViewWithBounds(new Rect(30, 35, 50, 60));
+    when(mountedView.getChildAt(2)).thenReturn(childView3);
+
+    final LithoView lithoView =
+        ComponentTestHelper.mountComponent(
+            TestViewComponent.create(mContext).testView(mountedView));
+
+    // Can't verify directly as the object will have changed by the time we get the chance to
+    // verify it.
+    doAnswer(
+            new Answer<Object>() {
+              @Override
+              public Object answer(InvocationOnMock invocation) throws Throwable {
+                Rect rect = (Rect) invocation.getArguments()[0];
+                if (!rect.equals(new Rect(0, 0, 15, 20))) {
+                  fail();
+                }
+                return null;
+              }
+            })
+        .when(childView1)
+        .performIncrementalMount(any(Rect.class), eq(true));
+
+    doAnswer(
+            new Answer<Object>() {
+              @Override
+              public Object answer(InvocationOnMock invocation) throws Throwable {
+                Rect rect = (Rect) invocation.getArguments()[0];
+                if (!rect.equals(new Rect(0, 0, 40, 50))) {
+                  fail();
+                }
+                return null;
+              }
+            })
+        .when(childView2)
+        .performIncrementalMount(any(Rect.class), eq(true));
+
+    doAnswer(
+            new Answer<Object>() {
+              @Override
+              public Object answer(InvocationOnMock invocation) throws Throwable {
+                Rect rect = (Rect) invocation.getArguments()[0];
+                if (!rect.equals(new Rect(0, 0, 20, 25))) {
+                  fail();
+                }
+                return null;
+              }
+            })
+        .when(childView3)
+        .performIncrementalMount(any(Rect.class), eq(true));
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, 0, 100, 100), false);
+
+    verify(childView1).performIncrementalMount(any(Rect.class), eq(false));
+    verify(childView2).performIncrementalMount(any(Rect.class), eq(false));
+    verify(childView3).performIncrementalMount(any(Rect.class), eq(false));
+  }
+
   /**
    * Tests incremental mount behaviour of a vertical stack of components with a View mount type.
    */
