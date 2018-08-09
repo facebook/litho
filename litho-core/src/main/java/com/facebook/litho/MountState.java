@@ -291,11 +291,17 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
               && canMountIncrementally(component)) {
             // If the component is locked for animation then we need to make sure that all the
             // children are also mounted.
-            final Rect rect = ComponentsPools.acquireRect();
             final View view = (View) getItemAt(i).getContent();
-            rect.set(0, 0, view.getWidth(), view.getHeight());
-            mountViewIncrementally(view, rect, processVisibilityOutputs);
-            ComponentsPools.release(rect);
+            if (ComponentsConfiguration.useGlobalRectForRecursiveMounting) {
+              // We're mounting everything, don't process visibility outputs as they will not be
+              // accurate.
+              mountViewIncrementally(view, false);
+            } else {
+              final Rect rect = ComponentsPools.acquireRect();
+              rect.set(0, 0, view.getWidth(), view.getHeight());
+              mountViewIncrementallyUsingLocalVisibleRect(view, rect, processVisibilityOutputs);
+              ComponentsPools.release(rect);
+            }
           }
         } else if (!isMountable && isMounted) {
           unmountItem(i, mHostsByMarker);
@@ -2104,19 +2110,49 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     // We can't just use the bounds of the View since we need the bounds relative to the
     // hosting LithoView (which is what the localVisibleRect is measured relative to).
     final View view = (View) item.getContent();
-    final Rect rect = ComponentsPools.acquireRect();
-    rect.set(
-        Math.max(0, localVisibleRect.left - itemBounds.left),
-        Math.max(0, localVisibleRect.top - itemBounds.top),
-        itemBounds.width() - Math.max(0, itemBounds.right - localVisibleRect.right),
-        itemBounds.height() - Math.max(0, itemBounds.bottom - localVisibleRect.bottom));
 
-    mountViewIncrementally(view, rect, processVisibilityOutputs);
+    if (ComponentsConfiguration.useGlobalRectForRecursiveMounting) {
+      mountViewIncrementally(view, processVisibilityOutputs);
+    } else {
+      final Rect rect = ComponentsPools.acquireRect();
+      rect.set(
+          Math.max(0, localVisibleRect.left - itemBounds.left),
+          Math.max(0, localVisibleRect.top - itemBounds.top),
+          itemBounds.width() - Math.max(0, itemBounds.right - localVisibleRect.right),
+          itemBounds.height() - Math.max(0, itemBounds.bottom - localVisibleRect.bottom));
 
-    ComponentsPools.release(rect);
+      mountViewIncrementallyUsingLocalVisibleRect(view, rect, processVisibilityOutputs);
+
+      ComponentsPools.release(rect);
+    }
   }
 
-  private static void mountViewIncrementally(
+  private static void mountViewIncrementally(View view, boolean processVisibilityOutputs) {
+    assertMainThread();
+
+    if (view instanceof LithoView) {
+      final LithoView lithoView = (LithoView) view;
+      if (lithoView.isIncrementalMountEnabled()) {
+        if (!processVisibilityOutputs) {
+          final Rect rect = ComponentsPools.acquireRect();
+          rect.set(0, 0, view.getWidth(), view.getHeight());
+          lithoView.performIncrementalMount(rect, false);
+          ComponentsPools.release(rect);
+        } else {
+          lithoView.performIncrementalMount();
+        }
+      }
+    } else if (view instanceof ViewGroup) {
+      final ViewGroup viewGroup = (ViewGroup) view;
+
+      for (int i = 0; i < viewGroup.getChildCount(); i++) {
+        final View childView = viewGroup.getChildAt(i);
+        mountViewIncrementally(childView, processVisibilityOutputs);
+      }
+    }
+  }
+
+  private static void mountViewIncrementallyUsingLocalVisibleRect(
       View view, Rect localVisibleRect, boolean processVisibilityOutputs) {
     assertMainThread();
 
@@ -2145,7 +2181,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
               childView.getWidth() - Math.max(0, right - localVisibleRect.right),
               childView.getHeight() - Math.max(0, bottom - localVisibleRect.bottom));
 
-          mountViewIncrementally(childView, rect, processVisibilityOutputs);
+          mountViewIncrementallyUsingLocalVisibleRect(childView, rect, processVisibilityOutputs);
 
           ComponentsPools.release(rect);
         }
