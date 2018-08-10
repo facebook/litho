@@ -52,15 +52,15 @@ import java.util.List;
 /**
  * A {@link DiffSectionSpec} that creates a changeSet diffing a generic {@link List<T>} of data.
  * This {@link Section} emits the following events:
- *
- *   {@link RenderEvent} whenever it needs a {@link Component} to render a model T from the list of
- *   data. Providing an handler for this {@link OnEvent} is mandatory.
- *
- *   {@link OnCheckIsSameItemEvent} whenever during a diffing it wants to check whether two items
- *   represent the same piece of data.
- *
- *   {@link OnCheckIsSameContentEvent} whenever during a diffing it wants to check whether two items
- *   that represent the same piece of data have exactly the same content.
+ * <p>
+ * {@link RenderEvent} whenever it needs a {@link Component} to render a model T from the list of
+ * data. Providing an handler for this {@link OnEvent} is mandatory.
+ * <p>
+ * {@link OnCheckIsSameItemEvent} whenever during a diffing it wants to check whether two items
+ * represent the same piece of data.
+ * <p>
+ * {@link OnCheckIsSameContentEvent} whenever during a diffing it wants to check whether two items
+ * that represent the same piece of data have exactly the same content.
  *
  * <p> For example:
  * <pre>
@@ -94,66 +94,87 @@ import java.util.List;
  *       .build();
  *   }
  * </pre>
- *
  */
-@DiffSectionSpec(events = {
-    OnCheckIsSameContentEvent.class,
-    OnCheckIsSameItemEvent.class,
-    RenderEvent.class})
+@DiffSectionSpec(
+  events = {OnCheckIsSameContentEvent.class, OnCheckIsSameItemEvent.class, RenderEvent.class}
+)
 public class DataDiffSectionSpec<T> {
 
   @PropDefault public static Boolean trimHeadAndTail = false;
   @PropDefault public static Boolean trimSameInstancesOnly = false;
+  @PropDefault public static @Nullable Object dataIdentifier = null;
 
   @OnDiff
   public static <T> void onCreateChangeSet(
       SectionContext c,
       ChangeSet changeSet,
       @Prop Diff<List<T>> data,
+      @Prop(optional = true) Diff<Object> dataIdentifier,
       @Prop(optional = true) @Nullable Diff<Boolean> detectMoves,
       @Prop(optional = true) Diff<Boolean> trimHeadAndTail,
       @Prop(optional = true) Diff<Boolean> trimSameInstancesOnly) {
 
-    final boolean shouldTrim =
-        trimHeadAndTail == null || trimHeadAndTail.getNext() == null
-            ? SectionsConfiguration.trimDataDiffSectionHeadAndTail
-            : trimHeadAndTail.getNext().booleanValue();
+    final List<T> previousData = data.getPrevious();
+    final List<T> nextData = data.getNext();
+    final int previousDataSize = previousData == null ? 0 : previousData.size();
+    final int nextDataSize = nextData == null ? 0 : nextData.size();
+    final ComponentRenderer componentRenderer =
+        new ComponentRenderer(DataDiffSection.getRenderEventHandler(c));
+    final DiffSectionOperationExecutor operationExecutor =
+        new DiffSectionOperationExecutor(changeSet);
+    final RecyclerBinderUpdateCallback<T> updatesCallback;
 
-    final boolean shouldTrimSameInstanceOnly =
-        trimSameInstancesOnly == null || trimSameInstancesOnly.getNext() == null
-            ? SectionsConfiguration.trimSameInstancesOnly
-            : trimSameInstancesOnly.getNext().booleanValue();
+    if (!isSameDataIdentifier(dataIdentifier)) {
+      updatesCallback =
+          acquire(previousDataSize, nextData, componentRenderer, operationExecutor, 0);
+      if (previousDataSize > 0) {
+        updatesCallback.onRemoved(0, previousDataSize);
+      }
+      if (nextDataSize > 0) {
+        updatesCallback.onInserted(0, nextDataSize);
+      }
+    } else {
+      final boolean shouldTrim =
+          trimHeadAndTail == null || trimHeadAndTail.getNext() == null
+              ? SectionsConfiguration.trimDataDiffSectionHeadAndTail
+              : trimHeadAndTail.getNext().booleanValue();
 
-    final Callback<T> callback =
-        Callback.acquire(
-            c, data.getPrevious(), data.getNext(), shouldTrim, shouldTrimSameInstanceOnly);
+      final boolean shouldTrimSameInstanceOnly =
+          trimSameInstancesOnly == null || trimSameInstancesOnly.getNext() == null
+              ? SectionsConfiguration.trimSameInstancesOnly
+              : trimSameInstancesOnly.getNext().booleanValue();
 
-    final ComponentsLogger logger = c.getLogger();
-    final PerfEvent logEvent =
-        logger == null
-            ? null
-            : LogTreePopulator.populatePerfEventFromLogger(
-                c, logger, logger.newPerformanceEvent(EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF));
+      final Callback<T> callback =
+          Callback.acquire(
+              c, data.getPrevious(), data.getNext(), shouldTrim, shouldTrimSameInstanceOnly);
 
-    final DiffUtil.DiffResult result =
-        DiffUtil.calculateDiff(callback, isDetectMovesEnabled(detectMoves));
+      final ComponentsLogger logger = c.getLogger();
+      final PerfEvent logEvent =
+          logger == null
+              ? null
+              : LogTreePopulator.populatePerfEventFromLogger(
+                  c, logger, logger.newPerformanceEvent(EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF));
 
-    if (logEvent != null) {
-      logger.logPerfEvent(logEvent);
+      final DiffUtil.DiffResult result =
+          DiffUtil.calculateDiff(callback, isDetectMovesEnabled(detectMoves));
+
+      if (logEvent != null) {
+        logger.logPerfEvent(logEvent);
+      }
+
+      updatesCallback =
+          acquire(
+              previousDataSize,
+              nextData,
+              componentRenderer,
+              operationExecutor,
+              callback.getTrimmedHeadItemsCount());
+      result.dispatchUpdatesTo(updatesCallback);
+
+      Callback.release(callback);
     }
 
-    final RecyclerBinderUpdateCallback<T> updatesCallback =
-        acquire(
-            data.getPrevious() != null ? data.getPrevious().size() : 0,
-            data.getNext(),
-            new ComponentRenderer(DataDiffSection.getRenderEventHandler(c)),
-            new DiffSectionOperationExecutor(changeSet),
-            callback.getTrimmedHeadItemsCount());
-
-    result.dispatchUpdatesTo(updatesCallback);
     updatesCallback.applyChangeset(c);
-
-    Callback.release(callback);
     release(updatesCallback);
   }
 
@@ -163,6 +184,12 @@ public class DataDiffSectionSpec<T> {
    */
   private static boolean isDetectMovesEnabled(@Nullable Diff<Boolean> detectMoves) {
     return detectMoves == null || detectMoves.getNext() == null || detectMoves.getNext();
+  }
+
+  private static boolean isSameDataIdentifier(Diff<Object> dataIdentifier) {
+    final Object previous = dataIdentifier.getPrevious();
+    final Object next = dataIdentifier.getNext();
+    return previous == null ? next == null : previous.equals(next);
   }
 
   private static class DiffSectionOperationExecutor implements
