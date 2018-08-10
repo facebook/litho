@@ -72,8 +72,6 @@ import javax.annotation.concurrent.GuardedBy;
  */
 public class SectionTree {
 
-  private static final int OUT_OF_RANGE = -1;
-
   private static class Range {
 
     private int firstVisibleIndex;
