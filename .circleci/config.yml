@@ -12,11 +12,11 @@ aliases:
   # SDK Cache aliases
   - &restore-cache-android-packages
     keys:
-      - v3-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
+      - v4-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
   - &save-cache-android-packages
     paths:
       - /opt/android/sdk
-    key: v3-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
+    key: v4-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
 
   # BUCK Cache aliases
   - &restore-cache-buck
