@@ -7,8 +7,8 @@ We want to make contributing to this project as easy and transparent as possible
 1. Clone the repo.
 2. Ensure your Android SDK has the right dependencies.  To build Litho you need:
    - [The Android NDK and build tools](https://developer.android.com/studio/projects/add-native-code.html) (NDK, CMake, LLDB)
-   - The Android 7.1.1 (API 25) SDK
-   - Version 26.0.2 of the The Android SDK Build tools.
+   - The Android 8.0 (API 26) SDK
+   - Version 27.0.3 of the The Android SDK Build tools.
 3. Import the project by selecting the repo's root directory. You should be able to successfully sync the gradle project now!
 
 ## Our Development Process
