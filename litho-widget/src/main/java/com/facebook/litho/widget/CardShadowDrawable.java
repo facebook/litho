@@ -28,7 +28,7 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 
-class CardShadowDrawable extends Drawable {
+public class CardShadowDrawable extends Drawable {
 
   static final float SHADOW_MULTIPLIER = 1.5f;
 
@@ -62,19 +62,19 @@ class CardShadowDrawable extends Drawable {
     mEdgeShadowPaint.setAlpha(alpha);
   }
 
-  static int getShadowHorizontal(float shadowSize) {
+  public static int getShadowHorizontal(float shadowSize) {
     return (int) Math.ceil(shadowSize);
   }
 
-  static int getShadowTop(float shadowSize) {
+  public static int getShadowTop(float shadowSize) {
     return (int) Math.ceil(shadowSize / 2);
   }
 
-  static int getShadowRight(float shadowSize) {
+  public static int getShadowRight(float shadowSize) {
     return (int) Math.ceil(shadowSize);
   }
 
-  static int getShadowBottom(float shadowSize, int shadowBottom) {
+  public static int getShadowBottom(float shadowSize, int shadowBottom) {
     if (shadowBottom != -1) {
       return shadowBottom;
     }

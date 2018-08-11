@@ -33,7 +33,7 @@ import com.facebook.litho.annotations.ResType;
  * @prop cornerRadius Corner radius for the card that shows the shadow.
  * @prop shadowSize Size of the shadow.
  */
-@MountSpec(isPublic = false, isPureRender = true)
+@MountSpec(isPureRender = true)
 class CardShadowSpec {
 
   @OnCreateMountContent
