@@ -74,7 +74,10 @@ class CardShadowDrawable extends Drawable {
     return (int) Math.ceil(shadowSize);
   }
 
-  static int getShadowBottom(float shadowSize) {
+  static int getShadowBottom(float shadowSize, int shadowBottom) {
+    if (shadowBottom != -1) {
+      return shadowBottom;
+    }
     return (int) Math.ceil(shadowSize * SHADOW_MULTIPLIER);
   }
 
@@ -156,7 +159,7 @@ class CardShadowDrawable extends Drawable {
   private void buildShadow() {
     final int shadowHorizontal = getShadowHorizontal(mRawShadowSize);
     final int shadowTop = getShadowTop(mRawShadowSize);
-    final int shadowBottom = getShadowBottom(mRawShadowSize);
+    final int shadowBottom = getShadowBottom(mRawShadowSize, -1);
     final float shadowCornerRadius = shadowHorizontal + mCornerRadius;
 
     mCornerShadowPaint.setShader(
@@ -188,12 +191,12 @@ class CardShadowDrawable extends Drawable {
     mCornerShadowTopPath.rLineTo(0, shadowTop);
     mCornerShadowTopPath.close();
 
-
-    final RectF bottomInnerBounds = new RectF(
-        getShadowHorizontal(mRawShadowSize),
-        getShadowBottom(mRawShadowSize),
-        getShadowHorizontal(mRawShadowSize) + 2 * mCornerRadius,
-        getShadowBottom(mRawShadowSize) + 2 * mCornerRadius);
+    final RectF bottomInnerBounds =
+        new RectF(
+            getShadowHorizontal(mRawShadowSize),
+            getShadowBottom(mRawShadowSize, -1),
+            getShadowHorizontal(mRawShadowSize) + 2 * mCornerRadius,
+            getShadowBottom(mRawShadowSize, -1) + 2 * mCornerRadius);
 
     final RectF bottomOuterBounds = new RectF(0, 0, 2 * mCornerRadius, 2 * mCornerRadius);
 
@@ -257,7 +260,7 @@ class CardShadowDrawable extends Drawable {
     final int paddingLeft = getShadowHorizontal(mRawShadowSize);
     final int paddingTop = getShadowTop(mRawShadowSize);
     final int paddingRight = getShadowRight(mRawShadowSize);
-    final int paddingBottom = getShadowBottom(mRawShadowSize);
+    final int paddingBottom = getShadowBottom(mRawShadowSize, -1);
 
     // top
     int saved = canvas.save();
