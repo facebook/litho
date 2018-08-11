@@ -21,6 +21,7 @@ import android.support.v4.util.Pools.SynchronizedPool;
 import android.support.v7.util.ListUpdateCallback;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentsSystrace;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -172,14 +173,33 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
   }
 
   public void applyChangeset(ComponentContext c) {
+    final boolean isTracing = ComponentsSystrace.isTracing();
     for (int i = 0, size = mPlaceholders.size(); i < size; i++) {
       if (mPlaceholders.get(i).mNeedsComputation) {
-        mPlaceholders.get(i).mRenderInfo =
-            mComponentRenderer.render(mData.get(i), i);
+        final Object model = mData.get(i);
+        if (isTracing) {
+          ComponentsSystrace.beginSection("renderInfo:" + getModelName(model));
+        }
+        mPlaceholders.get(i).mRenderInfo = mComponentRenderer.render(model, i);
+        if (isTracing) {
+          ComponentsSystrace.endSection();
+        }
       }
     }
 
+    if (isTracing) {
+      ComponentsSystrace.beginSection("executeOperations");
+    }
     mOperationExecutor.executeOperations(c, mOperations);
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
+  }
+
+  private static String getModelName(Object model) {
+    return model instanceof DataDiffModelName
+        ? ((DataDiffModelName) model).getName()
+        : model.getClass().getSimpleName();
   }
 
   public static class Operation {

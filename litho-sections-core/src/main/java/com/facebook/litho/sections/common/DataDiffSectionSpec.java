@@ -29,6 +29,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsPools;
+import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LogTreePopulator;
@@ -123,15 +124,22 @@ public class DataDiffSectionSpec<T> {
     final DiffSectionOperationExecutor operationExecutor =
         new DiffSectionOperationExecutor(changeSet);
     final RecyclerBinderUpdateCallback<T> updatesCallback;
+    final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (!isSameDataIdentifier(dataIdentifier)) {
       updatesCallback =
           acquire(previousDataSize, nextData, componentRenderer, operationExecutor, 0);
+      if (isTracing) {
+        ComponentsSystrace.beginSection("FastPathDiff");
+      }
       if (previousDataSize > 0) {
         updatesCallback.onRemoved(0, previousDataSize);
       }
       if (nextDataSize > 0) {
         updatesCallback.onInserted(0, nextDataSize);
+      }
+      if (isTracing) {
+        ComponentsSystrace.endSection();
       }
     } else {
       final boolean shouldTrim =
@@ -155,8 +163,14 @@ public class DataDiffSectionSpec<T> {
               : LogTreePopulator.populatePerfEventFromLogger(
                   c, logger, logger.newPerformanceEvent(EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF));
 
+      if (isTracing) {
+        ComponentsSystrace.beginSection("DiffUtil.calculateDiff");
+      }
       final DiffUtil.DiffResult result =
           DiffUtil.calculateDiff(callback, isDetectMovesEnabled(detectMoves));
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
 
       if (logEvent != null) {
         logger.logPerfEvent(logEvent);
