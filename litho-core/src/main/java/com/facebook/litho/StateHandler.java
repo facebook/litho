@@ -21,6 +21,7 @@ import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 import android.support.annotation.Nullable;
 import android.support.v4.util.Pools;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.ComponentLifecycle.StateContainer;
 import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;
 import java.util.HashMap;

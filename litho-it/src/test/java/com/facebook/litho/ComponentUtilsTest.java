@@ -226,7 +226,7 @@ public class ComponentUtilsTest {
     }
   }
 
-  private static class StateTest implements StateContainer {
+  private static class StateTest implements ComponentLifecycle.StateContainer {
     @State boolean state1;
 
     @State float state2;

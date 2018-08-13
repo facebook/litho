@@ -25,7 +25,6 @@ import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.HasEventTrigger;
 import com.facebook.litho.ResourceResolver;
-import com.facebook.litho.StateContainer;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnDiff;

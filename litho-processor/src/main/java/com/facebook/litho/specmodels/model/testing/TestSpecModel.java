@@ -250,7 +250,7 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
 
   @Override
   public ClassName getStateContainerClass() {
-    return ClassNames.STATE_CONTAINER;
+    return ClassNames.STATE_CONTAINER_COMPONENT;
   }
 
   @Override

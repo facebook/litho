@@ -19,7 +19,6 @@ package com.facebook.litho.sections.specmodels.model;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
-import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
@@ -260,7 +259,7 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
 
   @Override
   public ClassName getStateContainerClass() {
-    return ClassNames.STATE_CONTAINER;
+    return SectionClassNames.STATE_CONTAINER_SECTION;
   }
 
   @Override

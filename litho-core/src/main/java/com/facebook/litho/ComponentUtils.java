@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.support.annotation.VisibleForTesting;
+import com.facebook.litho.ComponentLifecycle.StateContainer;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;

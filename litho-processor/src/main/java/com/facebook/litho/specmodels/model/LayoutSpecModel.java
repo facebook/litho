@@ -241,7 +241,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
 
   @Override
   public ClassName getStateContainerClass() {
-    return ClassNames.STATE_CONTAINER;
+    return ClassNames.STATE_CONTAINER_COMPONENT;
   }
 
   @Override

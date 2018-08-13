@@ -35,7 +35,6 @@ import com.facebook.litho.EventTriggerTarget;
 import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.Output;
-import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
 import com.facebook.litho.TreeProps;
@@ -136,7 +135,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
   }
 
   @Override
-  protected StateContainer getStateContainer() {
+  protected ComponentLifecycle.StateContainer getStateContainer() {
     return mStateContainer;
   }
 
@@ -447,7 +446,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
   @Override
   protected void transferState(
-      ComponentContext context, StateContainer _prevStateContainer) {
+      ComponentContext context, ComponentLifecycle.StateContainer _prevStateContainer) {
     TestLayoutStateContainer prevStateContainer = (TestLayoutStateContainer) _prevStateContainer;
     mStateContainer.state1 = prevStateContainer.state1;
     mStateContainer.state2 = prevStateContainer.state2;
@@ -491,7 +490,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
         new ComponentLifecycle.StateUpdate() {
           @Override
           public void updateState(
-              StateContainer _stateContainer, Component newComponent) {
+              ComponentLifecycle.StateContainer _stateContainer, Component newComponent) {
             TestLayout newComponentStateUpdate = (TestLayout) newComponent;
             StateValue<Long> state1 = new StateValue<Long>();
             state1.set(lazyUpdateValue);
@@ -542,7 +541,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @VisibleForTesting(
       otherwise = 2
   )
-  static class TestLayoutStateContainer<S extends View> implements StateContainer {
+  static class TestLayoutStateContainer<S extends View> implements ComponentLifecycle.StateContainer {
     @State
     long state1;
 
@@ -575,7 +574,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
     @Override
     public void updateState(
-        StateContainer _stateContainer, Component newComponent) {
+        ComponentLifecycle.StateContainer _stateContainer, Component newComponent) {
       TestLayoutStateContainer stateContainer = (TestLayoutStateContainer) _stateContainer;
       TestLayout newComponentStateUpdate = (TestLayout) newComponent;
       StateValue<Long> state1 = new StateValue<Long>();

@@ -170,7 +170,7 @@ public class ComponentBodyGeneratorTest {
             "@android.support.annotation.VisibleForTesting(\n"
                 + "    otherwise = 2\n"
                 + ")\n"
-                + "static class TestStateContainer implements com.facebook.litho.StateContainer {\n"
+                + "static class TestStateContainer implements com.facebook.litho.ComponentLifecycle.StateContainer {\n"
                 + "  @com.facebook.litho.annotations.State\n"
                 + "  int arg1;\n"
                 + "}\n");
@@ -183,7 +183,7 @@ public class ComponentBodyGeneratorTest {
             "@android.support.annotation.VisibleForTesting(\n"
                 + "    otherwise = 2\n"
                 + ")\n"
-                + "static class TestWithTransitionStateContainer implements com.facebook.litho.StateContainer, "
+                + "static class TestWithTransitionStateContainer implements com.facebook.litho.ComponentLifecycle.StateContainer, "
                 + "com.facebook.litho.ComponentLifecycle.TransitionContainer {\n"
                 + "  @com.facebook.litho.annotations.State\n"
                 + "  int arg1;\n"
@@ -214,11 +214,12 @@ public class ComponentBodyGeneratorTest {
   @Test
   public void testGenerateStateContainerGetter() {
     assertThat(
-            ComponentBodyGenerator.generateStateContainerGetter(ClassNames.STATE_CONTAINER)
+            ComponentBodyGenerator.generateStateContainerGetter(
+                    ClassNames.STATE_CONTAINER_COMPONENT)
                 .toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected com.facebook.litho.StateContainer getStateContainer() {\n"
+                + "protected com.facebook.litho.ComponentLifecycle.StateContainer getStateContainer() {\n"
                 + "  return mStateContainer;\n"
                 + "}\n");
   }
