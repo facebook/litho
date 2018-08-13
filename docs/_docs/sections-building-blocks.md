@@ -44,7 +44,7 @@ class MyGroupSection {
   static RenderInfo onRenderEdge(
       SectionContext c,
       @FromEvent MyModel model) {
-      return ComponentRenderInfo.create(c)
+      return ComponentRenderInfo.create()
           .component(MyModelItemComponent.create(c).item(model).build())
           .build();
   }

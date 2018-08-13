@@ -28,7 +28,7 @@ class MyGroupSectionSpec {
   static RenderInfo onRenderEvent(
       SectionContext c,
       @FromEvent MyModel model) {
-      return ComponentRenderInfo.create(c)
+      return ComponentRenderInfo.create()
           .component(MyModelItemComponent.create(c).item(model).build())
           .build();
   }
@@ -126,7 +126,7 @@ class MyGroupSectionSpec {
       SectionContext c,
       @FromEvent MyModel model) {
       if (model.canRenderWithComponent()) {
-        return ComponentRenderInfo.create(c)
+        return ComponentRenderInfo.create()
             .component(MyModelItemComponent.create(c).item(model).build())
             .build();
       }

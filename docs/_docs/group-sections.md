@@ -36,13 +36,13 @@ class FooSectionSpec {
   }
 
   @OnEvent(RenderEvent.class)
-  static ComponentRenderInfo onRender(
+  static RenderInfo onRender(
       SectionContext c,
-      @FromEvent String item) {
-    return ComponentRenderInfo.create(c)
+      @FromEvent String model) {
+    return ComponentRenderInfo.create()
         .component(
             Text.create(c)
-                .text(item)
+                .text(model)
                 .build())
         .build();
     }
