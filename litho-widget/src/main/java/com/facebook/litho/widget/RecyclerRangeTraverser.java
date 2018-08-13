@@ -44,7 +44,20 @@ public interface RecyclerRangeTraverser {
             return;
           }
 
-          final int center = (firstVisible + lastVisible) / 2;
+          final boolean firstVisibleValid = rangeStart <= firstVisible && firstVisible < rangeEnd;
+          final boolean lastVisibleValid = rangeStart <= lastVisible && lastVisible < rangeEnd;
+
+          final int center;
+          if (!firstVisibleValid && !lastVisibleValid) {
+            center = (rangeEnd + rangeStart - 1) / 2;
+          } else if (!firstVisibleValid) {
+            center = lastVisible;
+          } else if (!lastVisibleValid) {
+            center = firstVisible;
+          } else {
+            center = (firstVisible + lastVisible) / 2;
+          }
+
           if (!processor.process(center)) {
             return;
           }

@@ -104,6 +104,27 @@ public class RecyclerRangeTraverserTest implements RecyclerRangeTraverser.Proces
     assertThat(mCollectedIndices).isEqualTo(Arrays.asList(3, 2, 4, 1, 5, 0, 6, 7, 8, 9));
   }
 
+  @Test
+  public void testBidirectionalTraverserInvalidFirstVisible() {
+    RecyclerRangeTraverser traverser = RecyclerRangeTraverser.BIDIRECTIONAL_TRAVERSER;
+    traverser.traverse(0, 10, -1, 7, this);
+    assertThat(mCollectedIndices).isEqualTo(Arrays.asList(7, 6, 8, 5, 9, 4, 3, 2, 1, 0));
+  }
+
+  @Test
+  public void testBidirectionalTraverserInvalidLastVisible() {
+    RecyclerRangeTraverser traverser = RecyclerRangeTraverser.BIDIRECTIONAL_TRAVERSER;
+    traverser.traverse(0, 10, 0, -1, this);
+    assertThat(mCollectedIndices).isEqualTo(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
+  }
+
+  @Test
+  public void testBidirectionalTraverserInvalidFirstAndLastVisible() {
+    RecyclerRangeTraverser traverser = RecyclerRangeTraverser.BIDIRECTIONAL_TRAVERSER;
+    traverser.traverse(0, 10, -1, -1, this);
+    assertThat(mCollectedIndices).isEqualTo(Arrays.asList(4, 3, 5, 2, 6, 1, 7, 0, 8, 9));
+  }
+
   @Override
   public boolean process(int index) {
     mCollectedIndices.add(index);
