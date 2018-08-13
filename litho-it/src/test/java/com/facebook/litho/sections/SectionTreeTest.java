@@ -17,6 +17,8 @@
 package com.facebook.litho.sections;
 
 import static com.facebook.litho.testing.sections.TestSectionCreator.TestSection;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -714,6 +716,26 @@ public class SectionTreeTest {
 
     tree.requestFocusEnd("rootnode2leaf4");
     assertThat(9).isEqualTo(changeSetHandler.getFocusedTo());
+  }
+
+  @Test
+  public void testIsSectionIndexValid() {
+    final Section leaf1 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1", Change.insert(0, makeComponentInfo()), Change.insert(1, makeComponentInfo()));
+
+    final Section node1 = TestSectionCreator.createSectionComponent("node1", leaf1);
+
+    final TestTarget changeSetHandler = new TestTarget();
+
+    final Section root = TestSectionCreator.createSectionComponent("root", node1);
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
+    tree.setRoot(root);
+
+    assertTrue(tree.isSectionIndexValid("rootnode1leaf1", 0));
+    assertTrue(tree.isSectionIndexValid("rootnode1leaf1", 1));
+    assertFalse(tree.isSectionIndexValid("rootnode1leaf1", -1));
+    assertFalse(tree.isSectionIndexValid("rootnode1leaf1", 2));
   }
 
   @Test(expected = RuntimeException.class)

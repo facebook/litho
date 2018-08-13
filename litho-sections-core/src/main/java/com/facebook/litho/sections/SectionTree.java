@@ -707,6 +707,10 @@ public class SectionTree {
         });
   }
 
+  public boolean isSectionIndexValid(String globalKey, int index) {
+    return index < findSectionForKey(globalKey).mSection.getCount() && index >= 0;
+  }
+
   @UiThread
   private void checkFocusValidity(SectionLocationInfo sectionLocationInfo, int index) {
     if (index >= sectionLocationInfo.mSection.getCount()) {
