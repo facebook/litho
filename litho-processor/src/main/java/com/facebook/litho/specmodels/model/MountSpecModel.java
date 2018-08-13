@@ -257,7 +257,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
 
   @Override
   public ClassName getStateContainerClass() {
-    return ClassNames.STATE_CONTAINER_COMPONENT;
+    return ClassNames.STATE_CONTAINER;
   }
 
   @Override

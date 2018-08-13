@@ -26,6 +26,7 @@ import com.facebook.litho.Diff;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.HasEventDispatcher;
+import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.annotations.Prop;
@@ -86,7 +87,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
   }
 
   @Override
-  protected SectionLifecycle.StateContainer getStateContainer() {
+  protected StateContainer getStateContainer() {
     return mStateContainer;
   }
 
@@ -167,7 +168,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
 
   @Override
   protected void transferState(
-      SectionContext context, SectionLifecycle.StateContainer _prevStateContainer) {
+      SectionContext context, StateContainer _prevStateContainer) {
     FullGroupSectionStateContainer prevStateContainer =
         (FullGroupSectionStateContainer) _prevStateContainer;
     mStateContainer.state1 = prevStateContainer.state1;
@@ -213,7 +214,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
         new SectionLifecycle.StateUpdate() {
           @Override
           public void updateState(
-              SectionLifecycle.StateContainer _stateContainer, Section newComponent) {
+              StateContainer _stateContainer, Section newComponent) {
             FullGroupSection newComponentStateUpdate = (FullGroupSection) newComponent;
             StateValue<Object> state2 = new StateValue<Object>();
             state2.set(lazyUpdateValue);
@@ -416,7 +417,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
   }
 
   @VisibleForTesting(otherwise = 2)
-  static class FullGroupSectionStateContainer<T> implements SectionLifecycle.StateContainer {
+  static class FullGroupSectionStateContainer<T> implements StateContainer {
     @State T state1;
 
     @State Object state2;
@@ -549,7 +550,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
     }
 
     @Override
-    public void updateState(SectionLifecycle.StateContainer _stateContainer, Section newComponent) {
+    public void updateState(StateContainer _stateContainer, Section newComponent) {
       FullGroupSectionStateContainer stateContainer =
           (FullGroupSectionStateContainer) _stateContainer;
       FullGroupSection newComponentStateUpdate = (FullGroupSection) newComponent;

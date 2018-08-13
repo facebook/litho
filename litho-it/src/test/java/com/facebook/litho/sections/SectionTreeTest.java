@@ -22,7 +22,7 @@ import static org.mockito.Mockito.mock;
 
 import android.os.Looper;
 import com.facebook.litho.Component;
-import com.facebook.litho.sections.SectionLifecycle.StateContainer;
+import com.facebook.litho.StateContainer;
 import com.facebook.litho.testing.sections.TestSectionCreator;
 import com.facebook.litho.testing.sections.TestTarget;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
