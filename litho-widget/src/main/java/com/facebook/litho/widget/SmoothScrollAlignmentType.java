@@ -38,7 +38,10 @@ public enum SmoothScrollAlignmentType {
   /**
    * Default alias to LinearSmoothScroller.SNAP_TO_END, align child top edge to viewport bottom edge
    */
-  SNAP_TO_END(LinearSmoothScroller.SNAP_TO_END);
+  SNAP_TO_END(LinearSmoothScroller.SNAP_TO_END),
+
+  /** Scroll the selected position to the center of the RecyclerView. */
+  SNAP_TO_CENTER(-6);
 
   private int value;
 

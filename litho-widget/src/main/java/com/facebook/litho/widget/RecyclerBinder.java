@@ -236,6 +236,7 @@ public class RecyclerBinder
   @VisibleForTesting int mCurrentFirstVisiblePosition = RecyclerView.NO_POSITION;
   @VisibleForTesting int mCurrentLastVisiblePosition = RecyclerView.NO_POSITION;
   private int mCurrentOffset;
+  private SmoothScrollAlignmentType mSmoothScrollAlignmentType;
   private @Nullable RangeCalculationResult mRange;
   private StickyHeaderController mStickyHeaderController;
   private final boolean mCanPrefetchDisplayLists;
@@ -2303,11 +2304,16 @@ public class RecyclerBinder
 
     if (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION &&
         mCurrentFirstVisiblePosition >= 0) {
-      if (layoutManager instanceof LinearLayoutManager) {
-        ((LinearLayoutManager) layoutManager)
-            .scrollToPositionWithOffset(mCurrentFirstVisiblePosition, mCurrentOffset);
+      if (mSmoothScrollAlignmentType != null) {
+        scrollSmoothToPosition(
+            mCurrentFirstVisiblePosition, mCurrentOffset, mSmoothScrollAlignmentType);
       } else {
-        view.scrollToPosition(mCurrentFirstVisiblePosition);
+        if (layoutManager instanceof LinearLayoutManager) {
+          ((LinearLayoutManager) layoutManager)
+              .scrollToPositionWithOffset(mCurrentFirstVisiblePosition, mCurrentOffset);
+        } else {
+          view.scrollToPosition(mCurrentFirstVisiblePosition);
+        }
       }
     } else if (mIsCircular) {
       // Initialize circular RecyclerView position
@@ -2424,6 +2430,7 @@ public class RecyclerBinder
     if (mMountedView == null) {
       mCurrentFirstVisiblePosition = position;
       mCurrentOffset = offset;
+      mSmoothScrollAlignmentType = type;
       return;
     }
 
@@ -2453,6 +2460,12 @@ public class RecyclerBinder
           };
       selectedSmoothScroller.setTargetPosition(position);
       mMountedView.getLayoutManager().startSmoothScroll(selectedSmoothScroller);
+    } else if (type == SmoothScrollAlignmentType.SNAP_TO_CENTER) {
+      final RecyclerView.SmoothScroller smoothScroller =
+          new CenterSnappingSmoothScroller(
+              mComponentContext, SmoothScrollAlignmentType.SNAP_TO_CENTER, offset);
+      smoothScroller.setTargetPosition(position + 1);
+      mMountedView.getLayoutManager().startSmoothScroll(smoothScroller);
     } else {
       // continue using the default layout manager smooth scroll
       mMountedView.smoothScrollToPosition(position);
