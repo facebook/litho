@@ -193,7 +193,10 @@ public class ComponentsPools {
   static InternalNode acquireInternalNode(ComponentContext componentContext) {
     InternalNode node = sInternalNodePool.acquire();
     if (node == null) {
-      node = new InternalNode();
+      node =
+          PoolsConfig.sInternalNodeFactory != null
+              ? PoolsConfig.sInternalNodeFactory.create()
+              : new InternalNode();
     }
 
     node.init(acquireYogaNode(), componentContext);
