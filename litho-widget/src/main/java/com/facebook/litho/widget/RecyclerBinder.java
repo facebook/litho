@@ -58,6 +58,7 @@ import com.facebook.litho.MeasureComparisonUtils;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
+import com.facebook.litho.ThreadPoolLayoutHandler;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
@@ -242,6 +243,7 @@ public class RecyclerBinder
   private final boolean mCanPrefetchDisplayLists;
   private final boolean mCanCacheDrawingDisplayLists;
   private final boolean mUseSharedLayoutStateFuture;
+  private final LayoutHandler mSharedLayoutStateFutureLayoutHandler;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
   private volatile boolean mAsyncInsertsShouldWaitForMeasure = true;
@@ -267,6 +269,7 @@ public class RecyclerBinder
         }
       };
   private int mPostUpdateViewportAndComputeRangeAttempts;
+  private int mPostUpdateViewportAttempts;
 
   @VisibleForTesting final RenderInfoViewCreatorController mRenderInfoViewCreatorController;
 
@@ -325,6 +328,45 @@ public class RecyclerBinder
           // in the next frame.
           mPostUpdateViewportAndComputeRangeAttempts++;
           ViewCompat.postOnAnimation(mMountedView, mUpdateViewportAndComputeRangeRunnable);
+        }
+      };
+
+  private final Runnable mUpdateViewportRunnable =
+      new Runnable() {
+        @Override
+        public void run() {
+          // If mount hasn't happened or we don't have any pending updates, we're ready to compute
+          // range.
+          if (mMountedView == null || !mMountedView.hasPendingAdapterUpdates()) {
+            if (mViewportManager.shouldUpdate()) {
+              mViewportManager.onViewportChanged(State.DATA_CHANGES);
+            }
+            mPostUpdateViewportAttempts = 0;
+            return;
+          }
+
+          // If the view gets detached, we can still have pending updates.
+          // If the view's visibility is GONE, layout won't happen until it becomes visible. We have
+          // to exit here, otherwise we keep posting this runnable to the next frame until it
+          // becomes visible.
+          if (!mMountedView.isAttachedToWindow() || mMountedView.getVisibility() == View.GONE) {
+            mPostUpdateViewportAttempts = 0;
+            return;
+          }
+
+          if (mPostUpdateViewportAttempts >= POST_UPDATE_VIEWPORT_AND_COMPUTE_RANGE_MAX_ATTEMPTS) {
+            mPostUpdateViewportAttempts = 0;
+            if (mViewportManager.shouldUpdate()) {
+              mViewportManager.onViewportChanged(State.DATA_CHANGES);
+            }
+
+            return;
+          }
+
+          // If we have pending updates, wait until the sync operations are finished and try again
+          // in the next frame.
+          mPostUpdateViewportAttempts++;
+          ViewCompat.postOnAnimation(mMountedView, mUpdateViewportRunnable);
         }
       };
 
@@ -408,6 +450,7 @@ public class RecyclerBinder
     private @Nullable List<ComponentLogParams> invalidStateLogParamsList;
     private RecyclerRangeTraverser recyclerRangeTraverser =
         RecyclerRangeTraverser.DEFAULT_TRAVERSER;
+    private LayoutThreadPoolConfiguration threadPoolForSharedLayoutStateFutureConfig;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -567,6 +610,12 @@ public class RecyclerBinder
       return this;
     }
 
+    public Builder threadPoolForSharedLayoutStateFutureConfig(
+        LayoutThreadPoolConfiguration config) {
+      this.threadPoolForSharedLayoutStateFutureConfig = config;
+      return this;
+    }
+
     /** Set a custom range traverser */
     public Builder recyclerRangeTraverser(RecyclerRangeTraverser traverser) {
       this.recyclerRangeTraverser = traverser;
@@ -659,6 +708,14 @@ public class RecyclerBinder
     mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
     mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
+    final LayoutThreadPoolConfiguration sharedLayoutFutureConfig =
+        builder.threadPoolForSharedLayoutStateFutureConfig;
+    if (mUseSharedLayoutStateFuture && sharedLayoutFutureConfig != null) {
+      mSharedLayoutStateFutureLayoutHandler = new ThreadPoolLayoutHandler(sharedLayoutFutureConfig);
+    } else {
+      mSharedLayoutStateFutureLayoutHandler = null;
+    }
+
     mRenderInfoViewCreatorController =
         new RenderInfoViewCreatorController(
             builder.customViewTypeEnabled,
@@ -681,7 +738,7 @@ public class RecyclerBinder
     mFillListViewportHScrollOnly = builder.fillListViewportHScrollOnly;
 
     final LayoutThreadPoolConfiguration config = builder.threadPoolForParallelFillViewportConfig;
-
+    
     mFillListViewport = builder.fillListViewport;
 
     if (config != null) {
@@ -2595,6 +2652,12 @@ public class RecyclerBinder
   }
 
   private void maybePostUpdateViewportAndComputeRange() {
+    if (mUseSharedLayoutStateFuture) {
+      ViewCompat.postOnAnimation(mMountedView, mUpdateViewportRunnable);
+      computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+      return;
+    }
+
     if (mMountedView != null
         && (ComponentsConfiguration.insertPostAsyncLayout || mViewportManager.shouldUpdate())) {
       mPostUpdateViewportAndComputeRangeAttempts = 0;
@@ -3063,6 +3126,17 @@ public class RecyclerBinder
   }
 
   private ComponentTreeHolder createComponentTreeHolder(RenderInfo renderInfo) {
+    if (mSharedLayoutStateFutureLayoutHandler != null) {
+      return mComponentTreeHolderFactory.create(
+          renderInfo,
+          mSharedLayoutStateFutureLayoutHandler,
+          mCanPrefetchDisplayLists,
+          mCanCacheDrawingDisplayLists,
+          mUseSharedLayoutStateFuture,
+          mHasDynamicItemHeight ? mComponentTreeMeasureListenerFactory : null,
+          mSplitLayoutTag);
+    }
+
     return mComponentTreeHolderFactory.create(
         renderInfo,
         mLayoutHandlerFactory != null
