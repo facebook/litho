@@ -358,6 +358,15 @@ class InternalNode implements ComponentLayout {
     return mYogaNode.getLayoutDirection();
   }
 
+  /** Continually walks the node hierarchy until a node returns a non inherited layout direction */
+  YogaDirection recursivelyResolveLayoutDirection() {
+    YogaNode yogaNode = mYogaNode;
+    while (yogaNode != null && yogaNode.getLayoutDirection() == YogaDirection.INHERIT) {
+      yogaNode = yogaNode.getOwner();
+    }
+    return yogaNode == null ? YogaDirection.INHERIT : yogaNode.getLayoutDirection();
+  }
+
   InternalNode layoutDirection(YogaDirection direction) {
     mPrivateFlags |= PFLAG_LAYOUT_DIRECTION_IS_SET;
     mYogaNode.setDirection(direction);
@@ -522,6 +531,10 @@ class InternalNode implements ComponentLayout {
     } else {
       mYogaNode.setBorder(edge, borderWidth);
     }
+  }
+
+  int getLayoutBorder(YogaEdge edge) {
+    return FastMath.round(mYogaNode.getLayoutBorder(edge));
   }
 
   InternalNode stateListAnimator(StateListAnimator stateListAnimator) {
@@ -1230,15 +1243,18 @@ class InternalNode implements ComponentLayout {
     return mBorderPathEffect;
   }
 
-  boolean shouldDrawBorders() {
-    boolean hasColor = false;
+  protected boolean hasBorderColor() {
     for (int color : mBorderColors) {
       if (color != Color.TRANSPARENT) {
-        hasColor = true;
-        break;
+        return true;
       }
     }
-    return hasColor
+
+    return false;
+  }
+
+  boolean shouldDrawBorders() {
+    return hasBorderColor()
         && (mYogaNode.getLayoutBorder(LEFT) != 0
             || mYogaNode.getLayoutBorder(TOP) != 0
             || mYogaNode.getLayoutBorder(RIGHT) != 0
