@@ -171,7 +171,9 @@ class InternalNode implements ComponentLayout {
   private Set<DebugComponent> mDebugComponents = new HashSet<>();
 
   void init(YogaNode yogaNode, ComponentContext componentContext) {
-    yogaNode.setData(this);
+    if (yogaNode != null) {
+      yogaNode.setData(this);
+    }
     mYogaNode = yogaNode;
 
     mComponentContext = componentContext;
@@ -1597,15 +1599,18 @@ class InternalNode implements ComponentLayout {
   }
 
   /**
-   * Reset all attributes to default values. Intended to facilitate recycling.
+   * Reset all attributes to default values and release the YogaNode if present. Intended to
+   * facilitate recycling.
    */
   void release() {
-    if (mYogaNode.getOwner() != null || mYogaNode.getChildCount() > 0) {
-      throw new IllegalStateException("You should not free an attached Internalnode");
-    }
+    if (mYogaNode != null) {
+      if (mYogaNode.getOwner() != null || mYogaNode.getChildCount() > 0) {
+        throw new IllegalStateException("You should not free an attached Internalnode");
+      }
 
-    ComponentsPools.release(mYogaNode);
-    mYogaNode = null;
+      ComponentsPools.release(mYogaNode);
+      mYogaNode = null;
+    }
 
     mDebugComponents.clear();
 
