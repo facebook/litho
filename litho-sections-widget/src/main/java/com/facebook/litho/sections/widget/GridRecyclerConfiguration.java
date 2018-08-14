@@ -102,11 +102,6 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
                     c, mNumColumns, mOrientation, mReverseLayout, mAllowMeasureOverride))
             .layoutHandlerFactory(mRecyclerBinderConfiguration.getLayoutHandlerFactory())
             .wrapContent(mRecyclerBinderConfiguration.isWrapContent())
-            .fillListViewport(mRecyclerBinderConfiguration.getFillListViewport())
-            .fillListViewportHScrollOnly(
-                mRecyclerBinderConfiguration.getFillListViewportHScrollOnly())
-            .threadPoolForParallelFillViewportConfig(
-                mRecyclerBinderConfiguration.getThreadPoolForParallelFillViewportConfig())
             .enableStableIds(mRecyclerBinderConfiguration.getEnableStableIds())
             .invalidStateLogParamsList(mRecyclerBinderConfiguration.getInvalidStateLogParamsList())
             .useSharedLayoutStateFuture(

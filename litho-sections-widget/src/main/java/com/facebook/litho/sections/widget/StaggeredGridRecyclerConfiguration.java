@@ -97,11 +97,6 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
                 new StaggeredGridLayoutInfo(mNumSpans, mOrientation, mReverseLayout, mGapStrategy))
             .layoutHandlerFactory(mRecyclerBinderConfiguration.getLayoutHandlerFactory())
             .wrapContent(mRecyclerBinderConfiguration.isWrapContent())
-            .fillListViewport(mRecyclerBinderConfiguration.getFillListViewport())
-            .fillListViewportHScrollOnly(
-                mRecyclerBinderConfiguration.getFillListViewportHScrollOnly())
-            .threadPoolForParallelFillViewportConfig(
-                mRecyclerBinderConfiguration.getThreadPoolForParallelFillViewportConfig())
             .enableStableIds(mRecyclerBinderConfiguration.getEnableStableIds())
             .invalidStateLogParamsList(mRecyclerBinderConfiguration.getInvalidStateLogParamsList())
             .useSharedLayoutStateFuture(

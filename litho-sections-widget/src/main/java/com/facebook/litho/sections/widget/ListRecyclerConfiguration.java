@@ -145,11 +145,6 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
             .wrapContent(mRecyclerBinderConfiguration.isWrapContent())
             .hasDynamicItemHeight(mRecyclerBinderConfiguration.hasDynamicItemHeight())
             .splitLayoutTag(mRecyclerBinderConfiguration.getSplitLayoutTag())
-            .fillListViewport(mRecyclerBinderConfiguration.getFillListViewport())
-            .fillListViewportHScrollOnly(
-                mRecyclerBinderConfiguration.getFillListViewportHScrollOnly())
-            .threadPoolForParallelFillViewportConfig(
-                mRecyclerBinderConfiguration.getThreadPoolForParallelFillViewportConfig())
             .enableStableIds(mRecyclerBinderConfiguration.getEnableStableIds())
             .invalidStateLogParamsList(mRecyclerBinderConfiguration.getInvalidStateLogParamsList())
             .useSharedLayoutStateFuture(
