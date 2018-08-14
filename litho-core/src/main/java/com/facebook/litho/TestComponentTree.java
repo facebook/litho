@@ -16,8 +16,11 @@
 
 package com.facebook.litho;
 
+import android.graphics.Rect;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -68,6 +71,30 @@ public class TestComponentTree extends ComponentTree {
         false /* persistInternalNodeTree */,
         source,
         extraAttribution);
+  }
+
+  @VisibleForTesting
+  @Override
+  public void setLithoView(@NonNull LithoView view) {
+    super.setLithoView(view);
+  }
+
+  @VisibleForTesting
+  @Override
+  public void mountComponent(Rect currentVisibleArea, boolean processVisibilityOutputs) {
+    super.mountComponent(currentVisibleArea, processVisibilityOutputs);
+  }
+
+  @VisibleForTesting
+  @Override
+  public void measure(int widthSpec, int heightSpec, int[] measureOutput, boolean forceLayout) {
+    super.measure(widthSpec, heightSpec, measureOutput, forceLayout);
+  }
+
+  @VisibleForTesting
+  @Override
+  public void attach() {
+    super.attach();
   }
 
   private static List<Component> extractSubComponents(DiffNode root) {
