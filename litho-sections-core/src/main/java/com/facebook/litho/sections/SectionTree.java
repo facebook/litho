@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections;
 
+import static com.facebook.litho.ComponentsLogger.LogLevel.ERROR;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_CREATE_NEW_TREE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT;
@@ -663,8 +664,9 @@ public class SectionTree {
           @Override
           public void run() {
             final SectionLocationInfo sectionLocationInfo = findSectionForKey(sectionKey);
-            checkFocusValidity(sectionLocationInfo, index);
-            mFocusDispatcher.requestFocus(sectionLocationInfo.mStartIndex + index);
+            if (isFocusValid(sectionLocationInfo, index)) {
+              mFocusDispatcher.requestFocus(sectionLocationInfo.mStartIndex + index);
+            }
           }
         });
   }
@@ -683,9 +685,10 @@ public class SectionTree {
           @Override
           public void run() {
             final SectionLocationInfo sectionLocationInfo = findSectionForKey(sectionKey);
-            checkFocusValidity(sectionLocationInfo, index);
-            mFocusDispatcher.requestFocusWithOffset(
-                sectionLocationInfo.mStartIndex + index, offset);
+            if (isFocusValid(sectionLocationInfo, index)) {
+              mFocusDispatcher.requestFocusWithOffset(
+                  sectionLocationInfo.mStartIndex + index, offset);
+            }
           }
         });
   }
@@ -700,9 +703,10 @@ public class SectionTree {
           @Override
           public void run() {
             final SectionLocationInfo sectionLocationInfo = findSectionForKey(globalKey);
-            checkFocusValidity(sectionLocationInfo, index);
-            mFocusDispatcher.requestSmoothFocus(
-                sectionLocationInfo.mStartIndex + index, offset, type);
+            if (isFocusValid(sectionLocationInfo, index)) {
+              mFocusDispatcher.requestSmoothFocus(
+                  sectionLocationInfo.mStartIndex + index, offset, type);
+            }
           }
         });
   }
@@ -711,16 +715,31 @@ public class SectionTree {
     return index < findSectionForKey(globalKey).mSection.getCount() && index >= 0;
   }
 
+  /**
+   * Returns true if the check is valid, false if not
+   *
+   * @param sectionLocationInfo
+   * @param index
+   * @return
+   */
   @UiThread
-  private void checkFocusValidity(SectionLocationInfo sectionLocationInfo, int index) {
-    if (index >= sectionLocationInfo.mSection.getCount()) {
-      throw new IllegalStateException(
+  private boolean isFocusValid(SectionLocationInfo sectionLocationInfo, int index) {
+    if (index >= sectionLocationInfo.mSection.getCount() || index < 0) {
+      String errorMessage =
           "You are trying to request focus with offset on an index that is out of bounds: "
               + "requested "
               + index
               + " , total "
-              + sectionLocationInfo.mSection.getCount());
+              + sectionLocationInfo.mSection.getCount();
+      if (mContext != null && mContext.getLogger() != null) {
+        mContext.getLogger().emitMessage(ERROR, errorMessage);
+      } else {
+        Log.e(SectionsDebug.TAG, errorMessage);
+      }
+
+      return false;
     }
+    return true;
   }
 
   private static void focusRequestOnUiThread(Runnable runnable) {
