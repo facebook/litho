@@ -61,7 +61,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.concurrent.GuardedBy;
@@ -1741,7 +1740,6 @@ public class ComponentTree {
 
       synchronized (mLayoutStateFutureLock) {
         if (mLayoutStateFuture != null) {
-          mLayoutStateFuture.release();
           mLayoutStateFuture = null;
         }
       }
@@ -1923,14 +1921,11 @@ public class ComponentTree {
               extraAttribution);
 
       synchronized (mLayoutStateFutureLock) {
-        if (localLayoutStateFuture.equals(mLayoutStateFuture)) {
-          // Use the latest LayoutState calculation if it's the same.
+        if (localLayoutStateFuture.equals(mLayoutStateFuture) && !mLayoutStateFuture.isReleased()) {
+          // Use the latest LayoutState calculation if it's the same and it's unreleased.
           localLayoutStateFuture = mLayoutStateFuture;
         } else {
           // Otherwise set our calculation as the latest one.
-          if (mLayoutStateFuture != null) {
-            mLayoutStateFuture.release();
-          }
           mLayoutStateFuture = localLayoutStateFuture;
         }
       }
@@ -2029,7 +2024,12 @@ public class ComponentTree {
   /** A {@link FutureTask} used to deduplicate calculating the same LayoutState across threads. */
   private class LayoutStateFuture extends FutureTask<LayoutState> {
 
-    private final AtomicBoolean isFirstGet = new AtomicBoolean(true);
+    // This is explicitly different from LayoutState.ID_RELEASED so we don't think we still have a
+    // valid LayoutState when both the Future and the LayoutState are released.
+    private static final int STATE_RELEASED = LayoutState.ID_RELEASED - 1;
+    private static final int STATE_UNINITIALIZED = LayoutState.ID_RELEASED - 2;
+
+    private final AtomicInteger layoutStateId = new AtomicInteger(STATE_UNINITIALIZED);
     private final AtomicInteger runningThreadId = new AtomicInteger(-1);
     private final ComponentContext context;
     private final Component root;
@@ -2077,26 +2077,14 @@ public class ComponentTree {
       this.treeProps = treeProps;
     }
 
-    public void release() {
-      if (!isDone() && ThreadUtils.isMainThread() && mLayoutThreadHandler != null) {
-        // If the future isn't completed, we don't want to block the main thread on the synchronous
-        // get() call, so we post this release to the layout thread.
-        mLayoutThreadHandler.post(
-            new Runnable() {
-              @Override
-              public void run() {
-                final LayoutState layoutState = get();
-                layoutState.releaseRef();
-                // get() calls acquireRef, so we need to release again.
-                layoutState.releaseRef();
-              }
-            });
-      } else {
-        final LayoutState layoutState = get();
-        layoutState.releaseRef();
-        // get() calls acquireRef, so we need to release again.
-        layoutState.releaseRef();
-      }
+    /**
+     * Best effort, not thread-safe check on whether the underlying LayoutState is released.
+     *
+     * <p> A return value of {@code true} guarantees that the LayoutState is released, but a return
+     * value of {@code false} does not guarantee that the underlying LayoutState is unreleased.
+     * */
+    private boolean isReleased() {
+      return layoutStateId.get() == STATE_RELEASED;
     }
 
     @Override
@@ -2108,6 +2096,10 @@ public class ComponentTree {
 
     @Override
     public LayoutState get() {
+      if (layoutStateId.get() == STATE_RELEASED) {
+        return null;
+      }
+
       final int runningThreadId = this.runningThreadId.get();
       final int originalThreadPriority;
       final boolean didRaiseThreadPriority;
@@ -2143,7 +2135,18 @@ public class ComponentTree {
         }
       }
 
-      return layoutState.acquireRef();
+      final int calculatedLayoutStateId = layoutState.getId();
+      if (layoutStateId.compareAndSet(STATE_UNINITIALIZED, calculatedLayoutStateId)) {
+        // This is the first get(), we don't need to acquireRef because refcount is already 1.
+        return layoutState;
+      } else if (calculatedLayoutStateId == layoutStateId.get()) {
+        // Subsequent get() calls need to increment refcount.
+        return layoutState.acquireRef();
+      } else {
+        // LayoutState is no longer valid, mark as released and return null.
+        layoutStateId.set(STATE_RELEASED);
+        return null;
+      }
     }
 
     @Override

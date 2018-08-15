@@ -138,6 +138,8 @@ class LayoutState {
         }
       };
 
+  static final int ID_RELEASED = -1;
+
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private static final int NO_PREVIOUS_LAYOUT_STATE_ID = -1;
 
@@ -2173,7 +2175,7 @@ class LayoutState {
       mCurrentHostMarker = -1;
       mCurrentHostOutputPosition = -1;
       mComponentTreeId = -1;
-      mId = -1;
+      mId = ID_RELEASED;
       mPreviousLayoutStateId = NO_PREVIOUS_LAYOUT_STATE_ID;
 
       mShouldDuplicateParentState = true;
