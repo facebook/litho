@@ -2408,7 +2408,7 @@ public class RecyclerBinder
   }
 
   private void maybePostUpdateViewportAndComputeRange() {
-    if (mUseSharedLayoutStateFuture) {
+    if (mMountedView != null && mUseSharedLayoutStateFuture) {
       ViewCompat.postOnAnimation(mMountedView, mUpdateViewportRunnable);
       computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
       return;
