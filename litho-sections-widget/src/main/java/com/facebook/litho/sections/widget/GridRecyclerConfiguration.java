@@ -106,6 +106,8 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
             .invalidStateLogParamsList(mRecyclerBinderConfiguration.getInvalidStateLogParamsList())
             .useSharedLayoutStateFuture(
                 mRecyclerBinderConfiguration.getUseSharedLayoutStateFuture())
+            .threadPoolForSharedLayoutStateFutureConfig(
+                mRecyclerBinderConfiguration.getThreadPoolForSharedLayoutStateFutureConfig())
             .build(c);
     return (T)
         new SectionBinderTarget(

@@ -101,6 +101,8 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
             .invalidStateLogParamsList(mRecyclerBinderConfiguration.getInvalidStateLogParamsList())
             .useSharedLayoutStateFuture(
                 mRecyclerBinderConfiguration.getUseSharedLayoutStateFuture())
+            .threadPoolForSharedLayoutStateFutureConfig(
+                mRecyclerBinderConfiguration.getThreadPoolForSharedLayoutStateFutureConfig())
             .build(c);
     return (T)
         new SectionBinderTarget(

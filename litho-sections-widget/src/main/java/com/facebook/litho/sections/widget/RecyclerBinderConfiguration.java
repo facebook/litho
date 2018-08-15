@@ -18,6 +18,7 @@ package com.facebook.litho.sections.widget;
 
 import android.support.annotation.Nullable;
 import com.facebook.litho.ComponentLogParams;
+import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.widget.LayoutHandlerFactory;
 import com.facebook.litho.widget.RecyclerBinder;
@@ -39,6 +40,7 @@ public class RecyclerBinderConfiguration {
   private boolean mEnableStableIds;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
   private boolean mUseSharedLayoutStateFuture;
+  private LayoutThreadPoolConfiguration mThreadPoolForSharedLayoutStateFutureConfig;
 
   public RecyclerBinderConfiguration(double rangeRatio) {
     this(rangeRatio, null, false);
@@ -117,6 +119,10 @@ public class RecyclerBinderConfiguration {
     mUseSharedLayoutStateFuture = useSharedLayoutStateFuture;
   }
 
+  public void setThreadPoolForSharedLayoutStateFutureConfig(LayoutThreadPoolConfiguration config) {
+    mThreadPoolForSharedLayoutStateFutureConfig = config;
+  }
+
   public void setEnableStableIds(boolean enableStableIds) {
     mEnableStableIds = enableStableIds;
   }
@@ -159,6 +165,10 @@ public class RecyclerBinderConfiguration {
 
   public boolean getUseSharedLayoutStateFuture() {
     return mUseSharedLayoutStateFuture;
+  }
+
+  public LayoutThreadPoolConfiguration getThreadPoolForSharedLayoutStateFutureConfig() {
+    return mThreadPoolForSharedLayoutStateFutureConfig;
   }
 
   public boolean getEnableStableIds() {
