@@ -840,6 +840,10 @@ public class SectionTree {
   }
 
   private void applyNewChangeSet(@ApplyNewChangeSet int source, @Nullable String attribution) {
+    if (attribution == null) {
+      attribution = mTag;
+    }
+
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       if (attribution != null) {
