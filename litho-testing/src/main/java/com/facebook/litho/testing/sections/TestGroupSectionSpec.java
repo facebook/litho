@@ -46,6 +46,7 @@ public class TestGroupSectionSpec {
   protected static Children onCreateChildren(
       SectionContext c,
       @Prop List data,
+      @Prop(optional = true) Object dataIdentifier,
       @Prop(optional = true) Comparator isSameItemComparator,
       @Prop(optional = true) Comparator isSameContentComparator,
       @Prop(optional = true) boolean trimHeadAndTail,
@@ -54,6 +55,7 @@ public class TestGroupSectionSpec {
     DataDiffSection.Builder builder =
         DataDiffSection.create(c)
             .data(data)
+            .dataIdentifier(dataIdentifier)
             .renderEventHandler(TestGroupSection.onRender(c, c))
             .trimHeadAndTail(trimHeadAndTail)
             .trimSameInstancesOnly(trimSameInstancesOnly);

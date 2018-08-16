@@ -63,12 +63,7 @@ public class DataDiffSectionSpecTest {
 
   @Test
   public void testSetRoot() {
-    ArrayList<String> data = new ArrayList<>();
-    for (int i = 0; i < 100; i++) {
-      data.add(""+i);
-    }
-
-    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
+    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(generateData(100)).build());
     final List<Operation> executedOperations = mTestTarget.getOperations();
 
     assertThat(executedOperations.size()).isEqualTo(1);
@@ -77,12 +72,7 @@ public class DataDiffSectionSpecTest {
 
   @Test
   public void testAppendData() {
-    ArrayList<String> data = new ArrayList<>();
-    for (int i = 0; i < 100; i++) {
-      data.add(""+i);
-    }
-
-    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
+    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(generateData(100)).build());
     List<Operation> executedOperations = mTestTarget.getOperations();
 
     assertThat(executedOperations.size()).isEqualTo(1);
@@ -90,12 +80,7 @@ public class DataDiffSectionSpecTest {
 
     mTestTarget.clear();
 
-    data = new ArrayList<>();
-    for (int i = 0; i < 200; i++) {
-      data.add(""+i);
-    }
-
-    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
+    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(generateData(200)).build());
     executedOperations = mTestTarget.getOperations();
 
     assertThat(executedOperations.size()).isEqualTo(1);
@@ -103,13 +88,62 @@ public class DataDiffSectionSpecTest {
   }
 
   @Test
-  public void testInsertData() {
-    ArrayList<String> data = new ArrayList<>();
-    for (int i = 0; i < 100; i++) {
-      data.add(""+i);
-    }
+  public void testInitialUpdateWithDataIdentifier() {
+    mSectionTree.setRoot(
+        TestGroupSection.create(mSectionContext)
+            .data(generateData(100))
+            .dataIdentifier("items")
+            .build());
 
-    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
+    final List<Operation> executedOperations = mTestTarget.getOperations();
+    assertThat(executedOperations.size()).isEqualTo(1);
+    assertRangeOperation(executedOperations.get(0), TestTarget.INSERT_RANGE, 0, 100);
+  }
+
+  @Test
+  public void testInsertionUpdateWithSameDataIdentifier() {
+    mSectionTree.setRoot(
+        TestGroupSection.create(mSectionContext)
+            .data(generateData(100))
+            .dataIdentifier("items")
+            .build());
+    mTestTarget.clear();
+
+    mSectionTree.setRoot(
+        TestGroupSection.create(mSectionContext)
+            .data(generateData(200))
+            .dataIdentifier("items")
+            .build());
+    final List<Operation> executedOperations = mTestTarget.getOperations();
+
+    assertThat(executedOperations.size()).isEqualTo(1);
+    assertRangeOperation(executedOperations.get(0), TestTarget.INSERT_RANGE, 100, 100);
+  }
+
+  @Test
+  public void testInsertionUpdateWithDifferentDataIdentifier() {
+    mSectionTree.setRoot(
+        TestGroupSection.create(mSectionContext)
+            .data(generateData(100))
+            .dataIdentifier("items")
+            .build());
+    mTestTarget.clear();
+
+    mSectionTree.setRoot(
+        TestGroupSection.create(mSectionContext)
+            .data(generateData(200))
+            .dataIdentifier("new_items")
+            .build());
+    final List<Operation> executedOperations = mTestTarget.getOperations();
+
+    assertThat(executedOperations.size()).isEqualTo(2);
+    assertRangeOperation(executedOperations.get(0), TestTarget.DELETE_RANGE, 0, 100);
+    assertRangeOperation(executedOperations.get(1), TestTarget.INSERT_RANGE, 0, 200);
+  }
+
+  @Test
+  public void testInsertData() {
+    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(generateData(100)).build());
     List<Operation> executedOperations = mTestTarget.getOperations();
 
     assertThat(executedOperations.size()).isEqualTo(1);
@@ -117,11 +151,7 @@ public class DataDiffSectionSpecTest {
 
     mTestTarget.clear();
 
-    data = new ArrayList<>();
-    for (int i = 0; i < 100; i++) {
-      data.add(""+i);
-    }
-
+    final List<String> data = generateData(100);
     data.add(6,"new item");
     data.add(9,"new item");
     data.add(12,"new item");
@@ -142,12 +172,7 @@ public class DataDiffSectionSpecTest {
 
   @Test
   public void testMoveData() {
-    ArrayList<String> data = new ArrayList<>();
-    for (int i = 0; i < 3; i++) {
-      data.add(""+i);
-    }
-
-    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
+    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(generateData(3)).build());
     List<Operation> executedOperations = mTestTarget.getOperations();
 
     assertThat(executedOperations.size()).isEqualTo(1);
@@ -155,9 +180,9 @@ public class DataDiffSectionSpecTest {
 
     mTestTarget.clear();
 
-    data = new ArrayList<>();
+    List<String> data = new ArrayList<>();
     for (int i = 2; i >= 0; i--) {
-      data.add(""+i);
+      data.add(Integer.toString(i));
     }
 
     mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
@@ -176,12 +201,7 @@ public class DataDiffSectionSpecTest {
 
   @Test
   public void testRemoveRangeData() {
-    ArrayList<String> data = new ArrayList<>();
-    for (int i = 0; i < 100; i++) {
-      data.add(""+i);
-    }
-
-    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
+    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(generateData(100)).build());
     List<Operation> executedOperations = mTestTarget.getOperations();
 
     assertThat(executedOperations.size()).isEqualTo(1);
@@ -189,7 +209,7 @@ public class DataDiffSectionSpecTest {
 
     mTestTarget.clear();
 
-    data = new ArrayList<>();
+    final List<String> data = new ArrayList<>();
     for (int i = 0; i < 50; i++) {
       data.add(""+i);
     }
@@ -207,12 +227,7 @@ public class DataDiffSectionSpecTest {
 
   @Test
   public void testRemoveData() throws Exception {
-    ArrayList<String> data = new ArrayList<>();
-    for (int i = 0; i < 100; i++) {
-      data.add(""+i);
-    }
-
-    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
+    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(generateData(100)).build());
     List<Operation> executedOperations = mTestTarget.getOperations();
 
     assertThat(executedOperations.size()).isEqualTo(1);
@@ -220,7 +235,7 @@ public class DataDiffSectionSpecTest {
 
     mTestTarget.clear();
 
-    data = new ArrayList<>();
+    final List<String> data = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
       data.add(""+i);
     }
@@ -239,15 +254,7 @@ public class DataDiffSectionSpecTest {
 
   @Test
   public void testUpdateData() {
-    ArrayList<String> data = new ArrayList<>();
-    for (int i = 0; i < 100; i++) {
-      data.add(""+i);
-    }
-
-    mSectionTree.setRoot(
-        TestGroupSection.create(mSectionContext)
-            .data(data)
-            .build());
+    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(generateData(100)).build());
     List<Operation> executedOperations = mTestTarget.getOperations();
 
     assertThat(executedOperations.size()).isEqualTo(1);
@@ -255,7 +262,7 @@ public class DataDiffSectionSpecTest {
 
     mTestTarget.clear();
 
-    data = new ArrayList<>();
+    List<String> data = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
       data.add("different "+i);
     }
@@ -284,17 +291,10 @@ public class DataDiffSectionSpecTest {
 
   @Test
   public void testShuffledDataWithUpdates() {
-    ArrayList<String> data = new ArrayList<>();
-    for (int i = 0; i < 40; i++) {
-      data.add(""+i);
-    }
+    final List<String> oldData = generateData(40);
+    Collections.shuffle(oldData);
 
-    Collections.shuffle(data);
-
-    mSectionTree.setRoot(
-        TestGroupSection.create(mSectionContext)
-            .data(data)
-            .build());
+    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(oldData).build());
     List<Operation> executedOperations = mTestTarget.getOperations();
 
     assertThat(executedOperations.size()).isEqualTo(1);
@@ -302,31 +302,29 @@ public class DataDiffSectionSpecTest {
 
     mTestTarget.clear();
 
-    data = new ArrayList<>();
-    for (int i = 0; i < 20; i++) {
-      data.add(""+i);
-    }
+    final List<String> newData = generateData(20);
+    Collections.shuffle(newData);
 
-    Collections.shuffle(data);
-
-    mSectionTree.setRoot(TestGroupSection
-        .create(mSectionContext)
-        .isSameItemComparator(new Comparator() {
-          @Override
-          public int compare(Object lhs, Object rhs) {
-            String left = (String) lhs;
-            String right = (String) rhs;
-            return left.compareTo(right);
-          }
-        })
-        .isSameContentComparator(new Comparator() {
-          @Override
-          public int compare(Object lhs, Object rhs) {
-            return -1;
-          }
-        })
-        .data(data)
-        .build());
+    mSectionTree.setRoot(
+        TestGroupSection.create(mSectionContext)
+            .isSameItemComparator(
+                new Comparator() {
+                  @Override
+                  public int compare(Object lhs, Object rhs) {
+                    String left = (String) lhs;
+                    String right = (String) rhs;
+                    return left.compareTo(right);
+                  }
+                })
+            .isSameContentComparator(
+                new Comparator() {
+                  @Override
+                  public int compare(Object lhs, Object rhs) {
+                    return -1;
+                  }
+                })
+            .data(newData)
+            .build());
 
     executedOperations = mTestTarget.getOperations();
     assertBulkOperations(executedOperations,0, 20,20);
@@ -335,17 +333,10 @@ public class DataDiffSectionSpecTest {
 
   @Test
   public void testShuffledData() {
-    ArrayList<String> data = new ArrayList<>();
-    for (int i = 0; i < 40; i++) {
-      data.add(""+i);
-    }
+    final List<String> oldData = generateData(40);
+    Collections.shuffle(oldData);
 
-    Collections.shuffle(data);
-
-    mSectionTree.setRoot(
-        TestGroupSection.create(mSectionContext)
-            .data(data)
-            .build());
+    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(oldData).build());
     List<Operation> executedOperations = mTestTarget.getOperations();
 
     assertThat(executedOperations.size()).isEqualTo(1);
@@ -353,25 +344,22 @@ public class DataDiffSectionSpecTest {
 
     mTestTarget.clear();
 
-    data = new ArrayList<>();
-    for (int i = 0; i < 20; i++) {
-      data.add(""+i);
-    }
+    final List<String> newData = generateData(20);
+    Collections.shuffle(newData);
 
-    Collections.shuffle(data);
-
-    mSectionTree.setRoot(TestGroupSection
-        .create(mSectionContext)
-        .isSameItemComparator(new Comparator() {
-          @Override
-          public int compare(Object lhs, Object rhs) {
-            String left = (String) lhs;
-            String right = (String) rhs;
-            return left.compareTo(right);
-          }
-        })
-        .data(data)
-        .build());
+    mSectionTree.setRoot(
+        TestGroupSection.create(mSectionContext)
+            .isSameItemComparator(
+                new Comparator() {
+                  @Override
+                  public int compare(Object lhs, Object rhs) {
+                    String left = (String) lhs;
+                    String right = (String) rhs;
+                    return left.compareTo(right);
+                  }
+                })
+            .data(newData)
+            .build());
 
     executedOperations = mTestTarget.getOperations();
 
@@ -549,14 +537,9 @@ public class DataDiffSectionSpecTest {
 
   @Test
   public void testAppendDataTrimming() {
-    ArrayList<String> data = new ArrayList<>();
-    for (int i = 0; i < 100; i++) {
-      data.add("" + i);
-    }
-
     mSectionTree.setRoot(
         TestGroupSection.create(mSectionContext)
-            .data(data)
+            .data(generateData(100))
             .trimHeadAndTail(true)
             .trimSameInstancesOnly(true)
             .build());
@@ -567,12 +550,7 @@ public class DataDiffSectionSpecTest {
 
     mTestTarget.clear();
 
-    data = new ArrayList<>();
-    for (int i = 0; i < 200; i++) {
-      data.add("" + i);
-    }
-
-    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(data).build());
+    mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(generateData(200)).build());
     executedOperations = mTestTarget.getOperations();
 
     assertThat(executedOperations.size()).isEqualTo(1);
@@ -627,5 +605,13 @@ public class DataDiffSectionSpecTest {
     assertThat(totalInserted).isEqualTo(expectedInserted);
     assertThat(totalUpdated).isEqualTo(expectedUpdated);
     assertThat(totalRemoved).isEqualTo(expectedRemoved);
+  }
+
+  private static List<String> generateData(int length) {
+    final List<String> data = new ArrayList<>(length);
+    for (int i = 0; i < length; i++) {
+      data.add(Integer.toString(i));
+    }
+    return data;
   }
 }
