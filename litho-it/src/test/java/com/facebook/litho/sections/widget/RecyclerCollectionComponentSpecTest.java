@@ -16,7 +16,6 @@
 
 package com.facebook.litho.sections.widget;
 
-import static com.facebook.litho.sections.widget.ListRecyclerConfiguration.SNAP_NONE;
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.EMPTY;
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.ERROR;
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.LOADED;
@@ -24,6 +23,7 @@ import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec
 import static com.facebook.litho.testing.assertj.ComponentConditions.textEquals;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static com.facebook.litho.testing.assertj.LithoViewSubComponentDeepExtractor.deepSubComponentWith;
+import static com.facebook.litho.widget.SnapUtil.SNAP_NONE;
 import static org.assertj.core.condition.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;

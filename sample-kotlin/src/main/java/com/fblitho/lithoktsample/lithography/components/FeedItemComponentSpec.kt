@@ -23,9 +23,9 @@ import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
-import com.facebook.litho.sections.widget.ListRecyclerConfiguration.SNAP_TO_CENTER
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
 import com.facebook.litho.sections.widget.SectionBinderTarget
+import com.facebook.litho.widget.SnapUtil.SNAP_TO_CENTER
 import com.facebook.litho.widget.Text
 import com.facebook.yoga.YogaEdge.BOTTOM
 import com.facebook.yoga.YogaEdge.LEFT

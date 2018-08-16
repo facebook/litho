@@ -16,11 +16,14 @@
 
 package com.facebook.litho.sections.widget;
 
-import static android.support.v7.widget.LinearSmoothScroller.SNAP_TO_END;
-import static android.support.v7.widget.LinearSmoothScroller.SNAP_TO_START;
+import static com.facebook.litho.widget.SnapUtil.SNAP_NONE;
+import static com.facebook.litho.widget.SnapUtil.SNAP_TO_CENTER;
+import static com.facebook.litho.widget.SnapUtil.SNAP_TO_CENTER_CHILD;
+import static com.facebook.litho.widget.SnapUtil.SNAP_TO_END;
+import static com.facebook.litho.widget.SnapUtil.SNAP_TO_START;
+import static com.facebook.litho.widget.SnapUtil.SnapMode;
 
 import android.content.Context;
-import android.support.annotation.IntDef;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.OrientationHelper;
@@ -32,8 +35,6 @@ import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.Binder;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.RecyclerBinder;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import javax.annotation.Nullable;
 
 /**
@@ -43,22 +44,11 @@ import javax.annotation.Nullable;
 public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<RecyclerView>>
     implements RecyclerConfiguration {
 
-  /* This snap mode will cause a PagerSnapHelper to be used */
-  public static final int SNAP_TO_CENTER = Integer.MAX_VALUE;
-  /* This snap mode will cause a LinearSnapHelper to be used */
-  public static final int SNAP_TO_CENTER_CHILD = Integer.MAX_VALUE - 1;
-  /* No snap helper is required */
-  public static final int SNAP_NONE = Integer.MIN_VALUE;
-
   private static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
       new RecyclerBinderConfiguration(4.0);
 
   private static final LinearLayoutInfoFactory LINEAR_LAYOUT_INFO_FACTORY =
       new DefaultLinearLayoutInfoFactory();
-
-  @IntDef({SNAP_NONE, SNAP_TO_END, SNAP_TO_START, SNAP_TO_CENTER, SNAP_TO_CENTER_CHILD})
-  @Retention(RetentionPolicy.SOURCE)
-  public @interface SnapMode {}
 
   private final int mOrientation;
   private final boolean mReverseLayout;

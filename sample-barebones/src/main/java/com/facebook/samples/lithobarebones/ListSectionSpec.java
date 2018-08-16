@@ -11,7 +11,7 @@
  */
 package com.facebook.samples.lithobarebones;
 
-import static com.facebook.litho.sections.widget.ListRecyclerConfiguration.SNAP_TO_CENTER;
+import static com.facebook.litho.widget.SnapUtil.SNAP_TO_CENTER;
 
 import android.content.Context;
 import android.graphics.Color;
