@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import android.widget.EditText;
 import com.facebook.litho.annotations.Event;
 
 /**
@@ -23,5 +24,7 @@ import com.facebook.litho.annotations.Event;
  */
 @Event
 public class TextChangedEvent {
+
+  public EditText view;
   public String text;
 }

@@ -741,7 +741,7 @@ class EditTextSpec {
         }
         if (mTextChangedEventHandler != null) {
           com.facebook.litho.widget.EditText.dispatchTextChangedEvent(
-              mTextChangedEventHandler, s.toString());
+              mTextChangedEventHandler, EditTextWithEventHandlers.this, s.toString());
         }
       }
     }
