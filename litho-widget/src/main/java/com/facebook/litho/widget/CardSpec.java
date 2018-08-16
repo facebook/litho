@@ -45,7 +45,7 @@ import com.facebook.litho.annotations.ResType;
  * @prop shadowEndColor End color for shadow drawn underneath the card.
  * @prop cornerRadius Corner radius for the card.
  * @prop elevation Elevation of the card.
- * @prop shadowBottom Size of shadow at bottom of card.
+ * @prop shadowBottomOverride Override of size of shadow at bottom of card.
  */
 @LayoutSpec(isPureRender = true)
 class CardSpec {
@@ -59,7 +59,7 @@ class CardSpec {
   @PropDefault static final int shadowEndColor = 0x03000000;
   @PropDefault static final float cornerRadius = -1;
   @PropDefault static final float elevation = -1;
-  @PropDefault static final int shadowBottom = -1;
+  @PropDefault static final int shadowBottomOverride = -1;
 
   private static float pixels(Resources resources, int dips) {
     final float scale = resources.getDisplayMetrics().density;
@@ -76,7 +76,7 @@ class CardSpec {
       @Prop(optional = true, resType = ResType.COLOR) int shadowEndColor,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float cornerRadius,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float elevation,
-      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int shadowBottom) {
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int shadowBottomOverride) {
 
     final Resources resources = c.getResources();
 
@@ -89,7 +89,8 @@ class CardSpec {
     }
 
     final int shadowTop = getShadowTop(elevation);
-    shadowBottom = getShadowBottom(elevation, shadowBottom);
+    final int shadowBottom =
+        shadowBottomOverride == -1 ? getShadowBottom(elevation) : shadowBottomOverride;
     final int shadowHorizontal = getShadowHorizontal(elevation);
 
     return Column.create(c)
