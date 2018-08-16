@@ -1923,11 +1923,11 @@ public class ComponentTree {
               extraAttribution);
 
       synchronized (mLayoutStateFutureLock) {
-        if (localLayoutStateFuture.equals(mLayoutStateFuture)) {
-          // Use the latest LayoutState calculation if it's the same.
+        if (localLayoutStateFuture.equals(mLayoutStateFuture) && !mLayoutStateFuture.isReleased()) {
+          // Use the latest LayoutState calculation if it's the same and unreleased.
           localLayoutStateFuture = mLayoutStateFuture;
         } else {
-          // Otherwise set our calculation as the latest one.
+          // Otherwise set our calculation as the latest one and release the previous one.
           if (mLayoutStateFuture != null) {
             mLayoutStateFuture.release();
           }
@@ -2029,7 +2029,7 @@ public class ComponentTree {
   /** A {@link FutureTask} used to deduplicate calculating the same LayoutState across threads. */
   private class LayoutStateFuture extends FutureTask<LayoutState> {
 
-    private final AtomicBoolean isFirstGet = new AtomicBoolean(true);
+    private final AtomicBoolean isReleased = new AtomicBoolean(false);
     private final AtomicInteger runningThreadId = new AtomicInteger(-1);
     private final ComponentContext context;
     private final Component root;
@@ -2078,6 +2078,10 @@ public class ComponentTree {
     }
 
     public void release() {
+      // Mark the Future released as soon as possible to stop other threads from using it.
+      if (!isReleased.compareAndSet(false, true)) {
+        return;
+      }
       if (!isDone() && ThreadUtils.isMainThread() && mLayoutThreadHandler != null) {
         // If the future isn't completed, we don't want to block the main thread on the synchronous
         // get() call, so we post this release to the layout thread.
@@ -2085,18 +2089,30 @@ public class ComponentTree {
             new Runnable() {
               @Override
               public void run() {
-                final LayoutState layoutState = get();
+                final LayoutState layoutState = getInternal();
+                if (layoutState == null) {
+                  // LayoutState is already released, ignore.
+                  return;
+                }
                 layoutState.releaseRef();
                 // get() calls acquireRef, so we need to release again.
                 layoutState.releaseRef();
               }
             });
       } else {
-        final LayoutState layoutState = get();
+        final LayoutState layoutState = getInternal();
+        if (layoutState == null) {
+          // LayoutState is already released, ignore.
+          return;
+        }
         layoutState.releaseRef();
         // get() calls acquireRef, so we need to release again.
         layoutState.releaseRef();
       }
+    }
+
+    private boolean isReleased() {
+      return isReleased.get();
     }
 
     @Override
@@ -2106,8 +2122,14 @@ public class ComponentTree {
       }
     }
 
+    @Nullable
     @Override
     public LayoutState get() {
+      if (isReleased()) {
+        // return early if our layout has been released already
+        return null;
+      }
+
       final int runningThreadId = this.runningThreadId.get();
       final int originalThreadPriority;
       final boolean didRaiseThreadPriority;
@@ -2123,16 +2145,7 @@ public class ComponentTree {
 
       final LayoutState layoutState;
       try {
-        layoutState = super.get();
-      } catch (ExecutionException e) {
-        final Throwable cause = e.getCause();
-        if (cause instanceof RuntimeException) {
-          throw (RuntimeException) cause;
-        } else {
-          throw new RuntimeException(e.getMessage(), e);
-        }
-      } catch (InterruptedException | CancellationException e) {
-        throw new RuntimeException(e.getMessage(), e);
+        layoutState = getInternal();
       } finally {
         if (didRaiseThreadPriority) {
           // Reset the running thread's priority after we're unblocked.
@@ -2143,7 +2156,30 @@ public class ComponentTree {
         }
       }
 
-      return layoutState.acquireRef();
+      if (isReleased()) {
+        // return early if our layout has been released already
+        return null;
+      }
+      try {
+        return layoutState.acquireRef();
+      } catch (IllegalStateException ignored) {
+        return null;
+      }
+    }
+
+    private LayoutState getInternal() {
+      try {
+        return super.get();
+      } catch (ExecutionException e) {
+        final Throwable cause = e.getCause();
+        if (cause instanceof RuntimeException) {
+          throw (RuntimeException) cause;
+        } else {
+          throw new RuntimeException(e.getMessage(), e);
+        }
+      } catch (InterruptedException | CancellationException e) {
+        throw new RuntimeException(e.getMessage(), e);
+      }
     }
 
     @Override
