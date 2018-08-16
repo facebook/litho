@@ -21,6 +21,7 @@ import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 
 import android.support.annotation.IdRes;
+import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
@@ -394,7 +395,8 @@ public class RecyclerCollectionComponentSpec {
     }
   }
 
-  enum LoadingState {
+  @VisibleForTesting
+  public enum LoadingState {
     /** We're loading but don't have any content yet. */
     LOADING,
     /** A load completed and we have content. */
