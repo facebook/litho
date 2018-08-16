@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.sections.widget;
+package com.facebook.litho.widget;
 
 import android.graphics.PointF;
 import android.support.annotation.NonNull;

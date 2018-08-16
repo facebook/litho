@@ -34,7 +34,6 @@ import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
@@ -2247,42 +2246,12 @@ public class RecyclerBinder
       return;
     }
 
-    final int representation = type.getValue();
-    if (type == SmoothScrollAlignmentType.SNAP_TO_ANY
-        || type == SmoothScrollAlignmentType.SNAP_TO_START
-        || type == SmoothScrollAlignmentType.SNAP_TO_END) {
-      RecyclerView.SmoothScroller selectedSmoothScroller =
-          new LinearSmoothScroller(mComponentContext) {
-            @Override
-            public int calculateDtToFit(
-                int viewStart, int viewEnd, int boxStart, int boxEnd, int snapPreference) {
-              int result =
-                  super.calculateDtToFit(viewStart, viewEnd, boxStart, boxEnd, snapPreference);
-              return result + offset;
-            }
+    final int target = type == SmoothScrollAlignmentType.SNAP_TO_CENTER ? position + 1 : position;
 
-            @Override
-            protected int getVerticalSnapPreference() {
-              return representation;
-            }
-
-            @Override
-            protected int getHorizontalSnapPreference() {
-              return representation;
-            }
-          };
-      selectedSmoothScroller.setTargetPosition(position);
-      mMountedView.getLayoutManager().startSmoothScroll(selectedSmoothScroller);
-    } else if (type == SmoothScrollAlignmentType.SNAP_TO_CENTER) {
-      final RecyclerView.SmoothScroller smoothScroller =
-          new CenterSnappingSmoothScroller(
-              mComponentContext, SmoothScrollAlignmentType.SNAP_TO_CENTER, offset);
-      smoothScroller.setTargetPosition(position + 1);
-      mMountedView.getLayoutManager().startSmoothScroll(smoothScroller);
-    } else {
-      // continue using the default layout manager smooth scroll
-      mMountedView.smoothScrollToPosition(position);
-    }
+    final RecyclerView.SmoothScroller smoothScroller =
+        SnapUtil.getSmoothScrollerWithOffset(mComponentContext.getBaseContext(), offset, type);
+    smoothScroller.setTargetPosition(target);
+    mMountedView.getLayoutManager().startSmoothScroll(smoothScroller);
   }
 
   @UiThread

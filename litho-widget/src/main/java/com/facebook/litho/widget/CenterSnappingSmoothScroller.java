@@ -24,7 +24,7 @@ public class CenterSnappingSmoothScroller extends LinearSmoothScroller {
   private static final float MILLISECONDS_PER_INCH = 100f;
   private final int mOffset;
 
-  public CenterSnappingSmoothScroller(Context context, SmoothScrollAlignmentType type, int offset) {
+  public CenterSnappingSmoothScroller(Context context, int offset) {
     super(context);
     mOffset = offset;
   }

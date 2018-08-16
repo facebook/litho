@@ -17,17 +17,11 @@
 package com.facebook.litho.sections.widget;
 
 import static com.facebook.litho.widget.SnapUtil.SNAP_NONE;
-import static com.facebook.litho.widget.SnapUtil.SNAP_TO_CENTER;
-import static com.facebook.litho.widget.SnapUtil.SNAP_TO_CENTER_CHILD;
-import static com.facebook.litho.widget.SnapUtil.SNAP_TO_END;
-import static com.facebook.litho.widget.SnapUtil.SNAP_TO_START;
 import static com.facebook.litho.widget.SnapUtil.SnapMode;
 
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import com.facebook.litho.ComponentContext;
@@ -35,6 +29,7 @@ import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.Binder;
 import com.facebook.litho.widget.LinearLayoutInfo;
 import com.facebook.litho.widget.RecyclerBinder;
+import com.facebook.litho.widget.SnapUtil;
 import javax.annotation.Nullable;
 
 /**
@@ -147,23 +142,10 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
             recyclerBinder, mRecyclerBinderConfiguration.getUseAsyncMutations());
   }
 
+  @Nullable
   @Override
-  public @Nullable SnapHelper getSnapHelper() {
-    switch (mSnapMode) {
-      case SNAP_TO_CENTER:
-        return new PagerSnapHelper();
-
-      case SNAP_TO_START:
-        return new StartSnapHelper();
-
-      case SNAP_TO_CENTER_CHILD:
-        return new LinearSnapHelper();
-
-      case SNAP_TO_END:
-      case SNAP_NONE:
-      default:
-        return null;
-    }
+  public SnapHelper getSnapHelper() {
+    return SnapUtil.getSnapHelper(mSnapMode);
   }
 
   @Override

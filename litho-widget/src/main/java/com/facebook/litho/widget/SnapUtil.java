@@ -15,18 +15,22 @@
  */
 package com.facebook.litho.widget;
 
+import android.content.Context;
 import android.support.annotation.IntDef;
 import android.support.v7.widget.LinearSmoothScroller;
+import android.support.v7.widget.LinearSnapHelper;
+import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SnapHelper;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import javax.annotation.Nullable;
 
 /** Utility class containing snapping related behavior of {@link RecyclerView}. */
 public class SnapUtil {
 
   /* No snap helper is required */
   public static final int SNAP_NONE = Integer.MIN_VALUE;
-
   public static final int SNAP_TO_END = LinearSmoothScroller.SNAP_TO_END;
   /* This snap mode will cause a StartSnapHelper to be used */
   public static final int SNAP_TO_START = LinearSmoothScroller.SNAP_TO_START;
@@ -38,4 +42,55 @@ public class SnapUtil {
   @IntDef({SNAP_NONE, SNAP_TO_END, SNAP_TO_START, SNAP_TO_CENTER, SNAP_TO_CENTER_CHILD})
   @Retention(RetentionPolicy.SOURCE)
   public @interface SnapMode {}
+
+  @Nullable
+  public static SnapHelper getSnapHelper(@SnapMode int snapMode) {
+    switch (snapMode) {
+      case SNAP_TO_CENTER:
+        return new PagerSnapHelper();
+      case SNAP_TO_START:
+        return new StartSnapHelper();
+      case SNAP_TO_CENTER_CHILD:
+        return new LinearSnapHelper();
+      case SNAP_TO_END:
+      case SNAP_NONE:
+      default:
+        return null;
+    }
+  }
+
+  /**
+   * @return {@link android.support.v7.widget.RecyclerView.SmoothScroller} that takes snapping into
+   *     account.
+   */
+  public static RecyclerView.SmoothScroller getSmoothScrollerWithOffset(
+      Context context, final int offset, final SmoothScrollAlignmentType type) {
+    if (type == SmoothScrollAlignmentType.SNAP_TO_ANY
+        || type == SmoothScrollAlignmentType.SNAP_TO_START
+        || type == SmoothScrollAlignmentType.SNAP_TO_END) {
+      final int snapPreference = type.getValue();
+      return new LinearSmoothScroller(context) {
+        @Override
+        public int calculateDtToFit(
+            int viewStart, int viewEnd, int boxStart, int boxEnd, int snapPreference) {
+          int result = super.calculateDtToFit(viewStart, viewEnd, boxStart, boxEnd, snapPreference);
+          return result + offset;
+        }
+
+        @Override
+        protected int getVerticalSnapPreference() {
+          return snapPreference;
+        }
+
+        @Override
+        protected int getHorizontalSnapPreference() {
+          return snapPreference;
+        }
+      };
+    } else if (type == SmoothScrollAlignmentType.SNAP_TO_CENTER) {
+      return new CenterSnappingSmoothScroller(context, offset);
+    } else {
+      return new LinearSmoothScroller(context);
+    }
+  }
 }
