@@ -21,12 +21,12 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentHost;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.DebugComponent;
 import com.facebook.litho.DebugLayoutNode;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoViewTestHelper;
+import com.facebook.litho.StateContainer;
 import com.facebook.litho.reference.Reference;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -209,7 +209,7 @@ public class InspectableComponent {
   }
 
   @Nullable
-  public ComponentLifecycle.StateContainer getStateContainer() {
+  public StateContainer getStateContainer() {
     return mComponent.getStateContainer();
   }
 

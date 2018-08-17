@@ -22,7 +22,6 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.os.Looper;
-import com.facebook.litho.ComponentLifecycle.StateContainer;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;

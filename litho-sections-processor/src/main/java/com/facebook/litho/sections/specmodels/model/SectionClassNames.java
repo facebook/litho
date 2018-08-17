@@ -24,8 +24,6 @@ import com.squareup.javapoet.ClassName;
  */
 public interface SectionClassNames {
 
-  ClassName STATE_CONTAINER_SECTION =
-      ClassName.bestGuess("com.facebook.litho.sections.SectionLifecycle.StateContainer");
   ClassName SECTION = ClassName.bestGuess("com.facebook.litho.sections.Section");
   ClassName SECTION_LIFECYCLE = ClassName.bestGuess("com.facebook.litho.sections.SectionLifecycle");
   ClassName SECTION_CONTEXT = ClassName.bestGuess("com.facebook.litho.sections.SectionContext");

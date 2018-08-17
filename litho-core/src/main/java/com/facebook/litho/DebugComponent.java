@@ -38,7 +38,7 @@ public final class DebugComponent {
   public interface Overrider {
     void applyComponentOverrides(String key, Component component);
 
-    void applyStateOverrides(String key, ComponentLifecycle.StateContainer state);
+    void applyStateOverrides(String key, StateContainer state);
 
     void applyLayoutOverrides(String key, DebugLayoutNode node);
   }
@@ -318,7 +318,7 @@ public final class DebugComponent {
   }
 
   @Nullable
-  public ComponentLifecycle.StateContainer getStateContainer() {
+  public StateContainer getStateContainer() {
     return getComponent().getStateContainer();
   }
 

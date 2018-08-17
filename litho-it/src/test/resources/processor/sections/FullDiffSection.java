@@ -24,6 +24,7 @@ import com.facebook.litho.Diff;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.HasEventDispatcher;
+import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
@@ -72,7 +73,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   }
 
   @Override
-  protected SectionLifecycle.StateContainer getStateContainer() {
+  protected StateContainer getStateContainer() {
     return mStateContainer;
   }
 
@@ -137,7 +138,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
 
   @Override
   protected void transferState(
-      SectionContext context, SectionLifecycle.StateContainer _prevStateContainer) {
+      SectionContext context, StateContainer _prevStateContainer) {
     FullDiffSectionStateContainer prevStateContainer =
         (FullDiffSectionStateContainer) _prevStateContainer;
     mStateContainer.state1 = prevStateContainer.state1;
@@ -350,7 +351,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   }
 
   @VisibleForTesting(otherwise = 2)
-  static class FullDiffSectionStateContainer<T> implements SectionLifecycle.StateContainer {
+  static class FullDiffSectionStateContainer<T> implements StateContainer {
     @State Object state1;
   }
 
@@ -445,7 +446,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     }
 
     @Override
-    public void updateState(SectionLifecycle.StateContainer _stateContainer, Section newComponent) {
+    public void updateState(StateContainer _stateContainer, Section newComponent) {
       FullDiffSectionStateContainer stateContainer =
           (FullDiffSectionStateContainer) _stateContainer;
       FullDiffSection newComponentStateUpdate = (FullDiffSection) newComponent;

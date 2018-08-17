@@ -39,6 +39,7 @@ import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.MountContentPool;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
+import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.annotations.Prop;
@@ -130,7 +131,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
-  protected ComponentLifecycle.StateContainer getStateContainer() {
+  protected StateContainer getStateContainer() {
     return mStateContainer;
   }
 
@@ -546,7 +547,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   @Override
   protected void transferState(
-      ComponentContext context, ComponentLifecycle.StateContainer _prevStateContainer) {
+      ComponentContext context, StateContainer _prevStateContainer) {
     TestMountStateContainer prevStateContainer = (TestMountStateContainer) _prevStateContainer;
     mStateContainer.state1 = prevStateContainer.state1;
     mStateContainer.state2 = prevStateContainer.state2;
@@ -589,7 +590,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
         new ComponentLifecycle.StateUpdate() {
           @Override
           public void updateState(
-              ComponentLifecycle.StateContainer _stateContainer, Component newComponent) {
+              StateContainer _stateContainer, Component newComponent) {
             TestMount newComponentStateUpdate = (TestMount) newComponent;
             StateValue<Long> state1 = new StateValue<Long>();
             state1.set(lazyUpdateValue);
@@ -614,7 +615,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   @VisibleForTesting(
       otherwise = 2
   )
-  static class TestMountStateContainer<S extends View> implements ComponentLifecycle.StateContainer {
+  static class TestMountStateContainer<S extends View> implements StateContainer {
     @State
     long state1;
 
@@ -631,7 +632,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
     @Override
     public void updateState(
-        ComponentLifecycle.StateContainer _stateContainer, Component newComponent) {
+        StateContainer _stateContainer, Component newComponent) {
       TestMountStateContainer stateContainer = (TestMountStateContainer) _stateContainer;
       TestMount newComponentStateUpdate = (TestMount) newComponent;
       StateValue<Long> state1 = new StateValue<Long>();

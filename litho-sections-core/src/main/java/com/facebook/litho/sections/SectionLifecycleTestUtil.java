@@ -17,6 +17,7 @@
 package com.facebook.litho.sections;
 
 import android.support.annotation.VisibleForTesting;
+import com.facebook.litho.StateContainer;
 
 /**
  * A utility elevating some of the visibility constraints internal classes, including {@link
@@ -39,7 +40,7 @@ public final class SectionLifecycleTestUtil {
     lifecycle.createInitialState(c);
   }
 
-  public static SectionLifecycle.StateContainer getStateContainer(Section section) {
+  public static StateContainer getStateContainer(Section section) {
     return section.getStateContainer();
   }
 

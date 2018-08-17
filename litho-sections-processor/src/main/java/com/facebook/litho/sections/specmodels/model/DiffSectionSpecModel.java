@@ -19,6 +19,7 @@ package com.facebook.litho.sections.specmodels.model;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
+import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
@@ -259,7 +260,7 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
 
   @Override
   public ClassName getStateContainerClass() {
-    return SectionClassNames.STATE_CONTAINER_SECTION;
+    return ClassNames.STATE_CONTAINER;
   }
 
   @Override

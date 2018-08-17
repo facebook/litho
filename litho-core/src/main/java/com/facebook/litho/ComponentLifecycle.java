@@ -62,8 +62,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     VIEW,
   }
 
-  public interface StateContainer {}
-
   /**
    * Generated component's state container could implement this interface along with {@link
    * StateContainer} when componentspec specifies state update method with {@link
