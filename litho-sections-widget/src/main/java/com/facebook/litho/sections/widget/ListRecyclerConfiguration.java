@@ -152,6 +152,11 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   }
 
   @Override
+  public int getSnapMode() {
+    return mSnapMode;
+  }
+
+  @Override
   public int getOrientation() {
     return mOrientation;
   }

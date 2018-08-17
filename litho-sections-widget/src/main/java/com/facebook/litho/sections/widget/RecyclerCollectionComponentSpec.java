@@ -292,6 +292,7 @@ public class RecyclerCollectionComponentSpec {
     final RecyclerCollectionEventsController internalEventsControllerInstance =
         eventsController != null ? eventsController : new RecyclerCollectionEventsController();
     internalEventsControllerInstance.setSectionTree(sectionTreeInstance);
+    internalEventsControllerInstance.setSnapMode(recyclerConfiguration.getSnapMode());
     internalEventsController.set(internalEventsControllerInstance);
 
     final RecyclerCollectionLoadEventsHandler recyclerCollectionLoadEventsHandlerInstance =
@@ -376,21 +377,38 @@ public class RecyclerCollectionComponentSpec {
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
       super.onScrolled(recyclerView, dx, dy);
 
-      int firstCompletelyVisibleItemPosition =
+      final int firstCompletelyVisibleItemPosition =
           getFirstCompletelyVisibleItemPosition(recyclerView.getLayoutManager());
       if (firstCompletelyVisibleItemPosition != -1) {
         // firstCompletelyVisibleItemPosition can be -1 in middle of the scroll, so
         // wait until it finishes to set the state.
         mEventsController.setFirstCompletelyVisibleItemPosition(firstCompletelyVisibleItemPosition);
       }
+
+      final int lastCompletelyVisibleItemPosition =
+          getLastCompletelyVisibleItemPosition(recyclerView.getLayoutManager());
+      if (lastCompletelyVisibleItemPosition != -1) {
+        mEventsController.setLastCompletelyVisibleItemPosition(lastCompletelyVisibleItemPosition);
+      }
     }
 
-    private int getFirstCompletelyVisibleItemPosition(RecyclerView.LayoutManager layoutManager) {
+    private static int getFirstCompletelyVisibleItemPosition(
+        RecyclerView.LayoutManager layoutManager) {
       if (layoutManager instanceof StaggeredGridLayoutManager) {
         return StaggeredGridLayoutHelper.findFirstFullyVisibleItemPosition(
             (StaggeredGridLayoutManager) layoutManager);
       } else {
         return ((LinearLayoutManager) layoutManager).findFirstCompletelyVisibleItemPosition();
+      }
+    }
+
+    private static int getLastCompletelyVisibleItemPosition(
+        RecyclerView.LayoutManager layoutManager) {
+      if (layoutManager instanceof StaggeredGridLayoutManager) {
+        return StaggeredGridLayoutHelper.findLastFullyVisibleItemPosition(
+            (StaggeredGridLayoutManager) layoutManager);
+      } else {
+        return ((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition();
       }
     }
   }

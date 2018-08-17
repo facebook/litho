@@ -16,6 +16,8 @@
 
 package com.facebook.litho.sections.widget;
 
+import static com.facebook.litho.widget.SnapUtil.SNAP_NONE;
+
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
@@ -117,6 +119,11 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   @Override
   public @Nullable SnapHelper getSnapHelper() {
     return null;
+  }
+
+  @Override
+  public int getSnapMode() {
+    return SNAP_NONE;
   }
 
   @Override

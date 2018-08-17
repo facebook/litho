@@ -16,6 +16,8 @@
 
 package com.facebook.litho.sections.widget;
 
+import static com.facebook.litho.widget.SnapUtil.SNAP_NONE;
+
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -112,6 +114,11 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
   @Override
   public @Nullable SnapHelper getSnapHelper() {
     return null;
+  }
+
+  @Override
+  public int getSnapMode() {
+    return SNAP_NONE;
   }
 
   @Override
