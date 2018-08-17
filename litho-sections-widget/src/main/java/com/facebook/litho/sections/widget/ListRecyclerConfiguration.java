@@ -17,6 +17,7 @@
 package com.facebook.litho.sections.widget;
 
 import static com.facebook.litho.widget.SnapUtil.SNAP_NONE;
+import static com.facebook.litho.widget.SnapUtil.SNAP_TO_START;
 import static com.facebook.litho.widget.SnapUtil.SnapMode;
 
 import android.content.Context;
@@ -100,8 +101,10 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       @SnapMode int snapMode,
       @Nullable RecyclerBinderConfiguration recyclerBinderConfiguration,
       @Nullable LinearLayoutInfoFactory linearLayoutInfoFactory) {
-    if (orientation != OrientationHelper.HORIZONTAL && snapMode != SNAP_NONE) {
-      throw new UnsupportedOperationException("Snapping is only implemented for horizontal lists");
+    if (orientation == OrientationHelper.VERTICAL
+        && !(snapMode == SNAP_NONE || snapMode == SNAP_TO_START)) {
+      throw new UnsupportedOperationException(
+          "Only snap to start is implemented for vertical lists");
     }
     mOrientation = orientation;
     mReverseLayout = reverseLayout;
