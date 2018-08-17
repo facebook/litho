@@ -850,7 +850,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         }
       }
 
-      unsetViewAttributes(currentMountItem);
+      maybeUnsetViewAttributes(currentMountItem);
 
       final ComponentHost host = currentMountItem.getHost();
       host.maybeUnregisterTouchExpansion(index, currentMountItem);
@@ -1459,12 +1459,16 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
-  private static void unsetViewAttributes(MountItem item) {
+  private static void maybeUnsetViewAttributes(MountItem item) {
     final Component component = item.getComponent();
     if (!isMountViewSpec(component)) {
       return;
     }
 
+    unsetViewAttributes(item, isHostSpec(component));
+  }
+
+  private static void unsetViewAttributes(MountItem item, boolean isHostView) {
     final View view = (View) item.getContent();
     final NodeInfo nodeInfo = item.getNodeInfo();
 
@@ -1522,7 +1526,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (viewNodeInfo != null) {
       unsetViewClipChildren(view);
       unsetViewStateListAnimator(view, viewNodeInfo);
-      if (!isHostSpec(component)) {
+      // Host view doesn't set its own padding, but gets absolute positions for inner content from
+      // Yoga. Also bg/fg is used as separate drawables instead of using View's bg/fg attribute.
+      if (!isHostView) {
         unsetViewPadding(view, viewNodeInfo);
         unsetViewBackground(view, viewNodeInfo);
         unsetViewForeground(view, viewNodeInfo);
@@ -2212,7 +2218,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final ComponentHost host = item.getHost();
     host.unmount(item);
 
-    unsetViewAttributes(item);
+    maybeUnsetViewAttributes(item);
 
     unbindAndUnmountLifecycle(item);
 
@@ -2242,9 +2248,15 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final MountItem item = getItemAt(index);
     final long startTime = System.nanoTime();
 
+    // Already has been unmounted.
+    if (item == null) {
+      return;
+    }
+
     // The root host item should never be unmounted as it's a reference
     // to the top-level LithoView.
-    if (item == null || mLayoutOutputsIds[index] == ROOT_HOST_ID) {
+    if (mLayoutOutputsIds[index] == ROOT_HOST_ID) {
+      unsetViewAttributes(item, true);
       return;
     }
 
@@ -2295,7 +2307,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final ComponentHost host = item.getHost();
     host.unmount(index, item);
 
-    unsetViewAttributes(item);
+    maybeUnsetViewAttributes(item);
 
     final Component component = item.getComponent();
 
@@ -2367,7 +2379,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
       final ComponentHost host = item.getHost();
       host.unmountDisappearingItem(item);
-      unsetViewAttributes(item);
+      maybeUnsetViewAttributes(item);
 
       unbindAndUnmountLifecycle(item);
 

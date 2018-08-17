@@ -124,4 +124,25 @@ public class MountStateViewClickTest {
     assertThat(lithoView.getChildCount()).isEqualTo(0);
     assertThat(lithoView.isLongClickable()).isTrue();
   }
+
+  @Test
+  public void testRootHostClickableUnmount() {
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            Column.create(mContext)
+                .clickHandler(mContext.newEventHandler(1))
+                .longClickHandler(mContext.newEventHandler(2))
+                .child(TestDrawableComponent.create(mContext))
+                .build(),
+            true);
+
+    assertThat(lithoView.isClickable()).isTrue();
+    assertThat(lithoView.isLongClickable()).isTrue();
+
+    lithoView.unmountAllItems();
+
+    assertThat(lithoView.isClickable()).isFalse();
+    assertThat(lithoView.isLongClickable()).isFalse();
+  }
 }
