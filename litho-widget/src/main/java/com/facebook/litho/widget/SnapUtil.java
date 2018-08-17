@@ -69,24 +69,7 @@ public class SnapUtil {
         || type == SmoothScrollAlignmentType.SNAP_TO_START
         || type == SmoothScrollAlignmentType.SNAP_TO_END) {
       final int snapPreference = type.getValue();
-      return new LinearSmoothScroller(context) {
-        @Override
-        public int calculateDtToFit(
-            int viewStart, int viewEnd, int boxStart, int boxEnd, int snapPreference) {
-          int result = super.calculateDtToFit(viewStart, viewEnd, boxStart, boxEnd, snapPreference);
-          return result + offset;
-        }
-
-        @Override
-        protected int getVerticalSnapPreference() {
-          return snapPreference;
-        }
-
-        @Override
-        protected int getHorizontalSnapPreference() {
-          return snapPreference;
-        }
-      };
+      return new EdgeSnappingSmoothScroller(context, snapPreference, offset);
     } else if (type == SmoothScrollAlignmentType.SNAP_TO_CENTER) {
       return new CenterSnappingSmoothScroller(context, offset);
     } else {
