@@ -57,6 +57,8 @@ import com.facebook.litho.Output;
 import com.facebook.litho.R;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.ThreadUtils;
+import com.facebook.litho.annotations.FromTrigger;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnCreateInitialState;
@@ -137,7 +139,12 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @MountSpec(
   isPureRender = true,
-  events = {TextChangedEvent.class, SelectionChangedEvent.class, KeyUpEvent.class}
+  events = {
+    TextChangedEvent.class,
+    SelectionChangedEvent.class,
+    KeyUpEvent.class,
+    SetTextEvent.class
+  }
 )
 class EditTextSpec {
 
@@ -513,6 +520,21 @@ class EditTextSpec {
       InputMethodManager imm =
           (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
       imm.hideSoftInputFromWindow(eventHandler.getWindowToken(), 0);
+    }
+  }
+
+  @OnTrigger(SetTextEvent.class)
+  static void setText(
+      ComponentContext c,
+      @State AtomicReference<EditTextWithEventHandlers> mountedView,
+      @FromTrigger String text) {
+    ThreadUtils.assertMainThread();
+
+    com.facebook.litho.widget.EditText.lazyUpdateInput(c, text);
+
+    final EditTextWithEventHandlers view = mountedView.get();
+    if (view != null) {
+      view.setText(text);
     }
   }
 
