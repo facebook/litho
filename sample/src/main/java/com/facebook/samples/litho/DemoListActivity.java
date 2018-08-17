@@ -24,6 +24,7 @@ import com.facebook.samples.litho.animations.pageindicators.PageIndicatorsActivi
 import com.facebook.samples.litho.animations.renderthread.RenderThreadAnimationActivity;
 import com.facebook.samples.litho.bordereffects.BorderEffectsActivity;
 import com.facebook.samples.litho.errors.ErrorHandlingActivity;
+import com.facebook.samples.litho.hscroll.HorizontalScrollWithSnapActivity;
 import com.facebook.samples.litho.lithography.LithographyActivity;
 import com.facebook.samples.litho.playground.PlaygroundActivity;
 import java.util.Arrays;
@@ -57,6 +58,7 @@ public class DemoListActivity extends NavigatableDemoActivity {
           new DemoListDataModel("Playground", PlaygroundActivity.class),
           new DemoListDataModel("Border effects", BorderEffectsActivity.class),
           new DemoListDataModel("Error boundaries", ErrorHandlingActivity.class),
+          new DemoListDataModel("HScroll with Snapping", HorizontalScrollWithSnapActivity.class),
           new DemoListDataModel(
               "Animations",
               Arrays.asList(
