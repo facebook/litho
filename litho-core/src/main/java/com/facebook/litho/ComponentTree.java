@@ -279,13 +279,7 @@ public class ComponentTree {
     mPersistInternalNodeTree = builder.persistInternalNodeTree;
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
 
-    if (mLayoutThreadHandler == null) {
-      mLayoutThreadHandler =
-          ComponentsConfiguration.threadPoolForBackgroundThreadsConfig == null
-              ? new DefaultLayoutHandler(getDefaultLayoutThreadLooper())
-              : new ThreadPoolLayoutHandler(
-                  ComponentsConfiguration.threadPoolForBackgroundThreadsConfig);
-    }
+    ensureLayoutThreadHandler();
 
     if (mPreAllocateMountContentHandler == null && builder.canPreallocateOnDefaultHandler) {
       mPreAllocateMountContentHandler =
@@ -313,6 +307,16 @@ public class ComponentTree {
         ComponentsConfiguration.USE_INCREMENTAL_MOUNT_HELPER
             ? new IncrementalMountHelper(this)
             : null;
+  }
+
+  private void ensureLayoutThreadHandler() {
+    if (mLayoutThreadHandler == null) {
+      mLayoutThreadHandler =
+          ComponentsConfiguration.threadPoolForBackgroundThreadsConfig == null
+              ? new DefaultLayoutHandler(getDefaultLayoutThreadLooper())
+              : new ThreadPoolLayoutHandler(
+                  ComponentsConfiguration.threadPoolForBackgroundThreadsConfig);
+    }
   }
 
   @Nullable
@@ -399,6 +403,25 @@ public class ComponentTree {
 
   public void setNewLayoutStateReadyListener(NewLayoutStateReadyListener listener) {
     mNewLayoutStateReadyListener = listener;
+  }
+
+  /**
+   * Provide custom {@link LayoutHandler}. If null is provided default one will be used for layouts.
+   */
+  @ThreadConfined(ThreadConfined.UI)
+  public void updateLayoutThreadHandler(@Nullable LayoutHandler layoutThreadHandler) {
+    synchronized (mUpdateStateSyncRunnableLock) {
+      if (mUpdateStateSyncRunnable != null) {
+        mLayoutThreadHandler.removeCallbacks(mUpdateStateSyncRunnable);
+      }
+    }
+    synchronized (mCurrentCalculateLayoutRunnableLock) {
+      if (mCurrentCalculateLayoutRunnable != null) {
+        mLayoutThreadHandler.removeCallbacks(mCurrentCalculateLayoutRunnable);
+      }
+    }
+    mLayoutThreadHandler = layoutThreadHandler;
+    ensureLayoutThreadHandler();
   }
 
   @VisibleForTesting

@@ -17,10 +17,13 @@ package com.facebook.litho.widget;
 
 import static org.mockito.Mockito.mock;
 
+import android.support.annotation.Nullable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
+
 
 public class TestComponentTreeHolder extends ComponentTreeHolder {
 
@@ -34,6 +37,7 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   int mChildWidth;
   int mChildHeight;
   boolean mCheckWorkingRangeCalled;
+  LayoutHandler mLayoutHandler;
 
   TestComponentTreeHolder(RenderInfo renderInfo) {
     mRenderInfo = renderInfo;
@@ -81,6 +85,12 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
     }
 
     mLayoutSyncCalled = true;
+  }
+
+  @Override
+  public synchronized void updateLayoutHandler(@Nullable LayoutHandler layoutHandler) {
+    super.updateLayoutHandler(layoutHandler);
+    mLayoutHandler = layoutHandler;
   }
 
   @Override

@@ -81,7 +81,7 @@ public class ComponentTreeHolder {
 
   private int mId;
   private boolean mIsTreeValid;
-  private LayoutHandler mLayoutHandler;
+  private @Nullable LayoutHandler mLayoutHandler;
   private boolean mCanPrefetchDisplayLists;
   private boolean mCanCacheDrawingDisplayLists;
   private LayoutHandler mPreallocateMountContentHandler;
@@ -318,6 +318,13 @@ public class ComponentTreeHolder {
   public synchronized void setRenderInfo(RenderInfo renderInfo) {
     invalidateTree();
     mRenderInfo = renderInfo;
+  }
+
+  public synchronized void updateLayoutHandler(@Nullable LayoutHandler layoutHandler) {
+    mLayoutHandler = layoutHandler;
+    if (mComponentTree != null) {
+      mComponentTree.updateLayoutThreadHandler(layoutHandler);
+    }
   }
 
   synchronized int getMeasuredHeight() {

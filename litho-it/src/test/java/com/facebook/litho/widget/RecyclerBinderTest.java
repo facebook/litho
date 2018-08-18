@@ -36,6 +36,7 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Looper;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
@@ -154,6 +155,7 @@ public class RecyclerBinderTest {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             if (renderInfo.rendersComponent()) {
               mHoldersForComponents.put(renderInfo.getComponent(), holder);
+              holder.mLayoutHandler = layoutHandler;
             }
 
             return holder;
@@ -1538,6 +1540,200 @@ public class RecyclerBinderTest {
             .customViewType(2)
             .build());
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+  }
+
+  @Test
+  public void testShouldAlwaysUpdateLayoutHandler() {
+    final LayoutHandler layoutHandlerBase = mock(LayoutHandler.class);
+    final LayoutHandler layoutHandler1 = mock(LayoutHandler.class);
+    final LayoutHandler layoutHandler2 = mock(LayoutHandler.class);
+    final LayoutHandler layoutHandlerN = mock(LayoutHandler.class);
+    final RecyclerBinder recyclerBinder =
+        mRecyclerBinderBuilder
+            .layoutHandlerFactory(
+                new LayoutHandlerFactory() {
+                  @Nullable
+                  @Override
+                  public LayoutHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
+                    final Object handlerType = renderInfo.getCustomAttribute("handlerType");
+                    if (handlerType == null) {
+                      return layoutHandlerBase;
+                    } else if ((Integer) handlerType == 1) {
+                      return layoutHandler1;
+                    } else if ((Integer) handlerType == 2) {
+                      return layoutHandler2;
+                    } else {
+                      return layoutHandlerN;
+                    }
+                  }
+
+                  @Override
+                  public boolean shouldUpdateLayoutHandler(
+                      RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
+                    return true;
+                  }
+                })
+            .build(mComponentContext);
+    final Component component0 = mock(Component.class);
+    final Component component1 = mock(Component.class);
+    final Component component2 = mock(Component.class);
+    recyclerBinder.insertItemAt(0, ComponentRenderInfo.create().component(component0).build());
+    recyclerBinder.insertItemAt(
+        1,
+        ComponentRenderInfo.create()
+            .component(component1)
+            .customAttribute("handlerType", 1)
+            .build());
+    recyclerBinder.insertItemAt(
+        2,
+        ComponentRenderInfo.create()
+            .component(component2)
+            .customAttribute("handlerType", 2)
+            .build());
+
+    assertThat(mHoldersForComponents.get(component0).mLayoutHandler).isSameAs(layoutHandlerBase);
+    assertThat(mHoldersForComponents.get(component1).mLayoutHandler).isSameAs(layoutHandler1);
+    assertThat(mHoldersForComponents.get(component2).mLayoutHandler).isSameAs(layoutHandler2);
+
+    recyclerBinder.updateItemAt(1, ComponentRenderInfo.create().component(component1).build());
+
+    assertThat(mHoldersForComponents.get(component1).mLayoutHandler).isSameAs(layoutHandlerBase);
+
+    recyclerBinder.updateItemAt(
+        2,
+        ComponentRenderInfo.create()
+            .component(component2)
+            .customAttribute("handlerType", 10)
+            .build());
+
+    assertThat(mHoldersForComponents.get(component2).mLayoutHandler).isSameAs(layoutHandlerN);
+  }
+
+  @Test
+  public void testShouldNeverUpdateLayoutHandler() {
+    final LayoutHandler layoutHandler1 = mock(LayoutHandler.class);
+    final LayoutHandler layoutHandler2 = mock(LayoutHandler.class);
+    final LayoutHandler layoutHandlerN = mock(LayoutHandler.class);
+    final RecyclerBinder recyclerBinder =
+        mRecyclerBinderBuilder
+            .layoutHandlerFactory(
+                new LayoutHandlerFactory() {
+                  @Nullable
+                  @Override
+                  public LayoutHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
+                    final Object handlerType = renderInfo.getCustomAttribute("handlerType");
+                    if (handlerType == null) {
+                      return null;
+                    } else if ((Integer) handlerType == 1) {
+                      return layoutHandler1;
+                    } else if ((Integer) handlerType == 2) {
+                      return layoutHandler2;
+                    } else {
+                      return layoutHandlerN;
+                    }
+                  }
+
+                  @Override
+                  public boolean shouldUpdateLayoutHandler(
+                      RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
+                    return false;
+                  }
+                })
+            .build(mComponentContext);
+    final Component component0 = mock(Component.class);
+    final Component component1 = mock(Component.class);
+    final Component component2 = mock(Component.class);
+    recyclerBinder.insertItemAt(0, ComponentRenderInfo.create().component(component0).build());
+    recyclerBinder.insertItemAt(
+        1,
+        ComponentRenderInfo.create()
+            .component(component1)
+            .customAttribute("handlerType", 1)
+            .build());
+    recyclerBinder.insertItemAt(
+        2,
+        ComponentRenderInfo.create()
+            .component(component2)
+            .customAttribute("handlerType", 2)
+            .build());
+
+    recyclerBinder.updateItemAt(1, ComponentRenderInfo.create().component(component1).build());
+
+    assertThat(mHoldersForComponents.get(component1).mLayoutHandler).isSameAs(layoutHandler1);
+
+    recyclerBinder.updateItemAt(
+        2,
+        ComponentRenderInfo.create()
+            .component(component2)
+            .customAttribute("handlerType", 10)
+            .build());
+
+    assertThat(mHoldersForComponents.get(component2).mLayoutHandler).isSameAs(layoutHandler2);
+  }
+
+  @Test
+  public void testShouldUpdateOnlyFromFirstToSecondLayoutHandler() {
+    final LayoutHandler layoutHandler1 = mock(LayoutHandler.class);
+    final LayoutHandler layoutHandler2 = mock(LayoutHandler.class);
+    final LayoutHandler layoutHandlerN = mock(LayoutHandler.class);
+    final RecyclerBinder recyclerBinder =
+        mRecyclerBinderBuilder
+            .layoutHandlerFactory(
+                new LayoutHandlerFactory() {
+                  @Nullable
+                  @Override
+                  public LayoutHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
+                    final Object handlerType = renderInfo.getCustomAttribute("handlerType");
+                    if (handlerType == null) {
+                      return null;
+                    } else if ((Integer) handlerType == 1) {
+                      return layoutHandler1;
+                    } else if ((Integer) handlerType == 2) {
+                      return layoutHandler2;
+                    } else {
+                      return layoutHandlerN;
+                    }
+                  }
+
+                  @Override
+                  public boolean shouldUpdateLayoutHandler(
+                      RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
+                    final Object previousHandlerType =
+                        previousRenderInfo.getCustomAttribute("handlerType");
+                    final Object newHandlerType = newRenderInfo.getCustomAttribute("handlerType");
+                    return previousHandlerType != null
+                        && newHandlerType != null
+                        && previousHandlerType.equals(1)
+                        && newHandlerType.equals(2);
+                  }
+                })
+            .build(mComponentContext);
+    final Component component0 = mock(Component.class);
+    final Component component1 = mock(Component.class);
+    recyclerBinder.insertItemAt(0, ComponentRenderInfo.create().component(component0).build());
+    recyclerBinder.insertItemAt(
+        1,
+        ComponentRenderInfo.create()
+            .component(component1)
+            .customAttribute("handlerType", 1)
+            .build());
+
+    assertThat(mHoldersForComponents.get(component1).mLayoutHandler).isSameAs(layoutHandler1);
+    recyclerBinder.updateItemAt(
+        1,
+        ComponentRenderInfo.create()
+            .component(component1)
+            .customAttribute("handlerType", 2)
+            .build());
+    assertThat(mHoldersForComponents.get(component1).mLayoutHandler).isSameAs(layoutHandler2);
+
+    recyclerBinder.updateItemAt(
+        1,
+        ComponentRenderInfo.create()
+            .component(component1)
+            .customAttribute("handlerType", 1)
+            .build());
+    assertThat(mHoldersForComponents.get(component1).mLayoutHandler).isSameAs(layoutHandler2);
   }
 
   @Test

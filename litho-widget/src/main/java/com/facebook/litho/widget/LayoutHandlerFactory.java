@@ -16,17 +16,24 @@
 
 package com.facebook.litho.widget;
 
+import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LayoutHandler;
 import javax.annotation.Nullable;
 
-/**
- * A Factory used to create {@link LayoutHandler}s in {@link RecyclerBinder}.
- */
+/** A Factory used to create {@link LayoutHandler}s in {@link RecyclerBinder}. */
 public interface LayoutHandlerFactory {
   /**
    * @return a new {@link LayoutHandler} that will be used to compute the layouts of the children of
-   * the {@link RecyclerSpec}.
+   *     the {@link RecyclerSpec}.
    */
   @Nullable
   LayoutHandler createLayoutCalculationHandler(RenderInfo renderInfo);
+
+  /**
+   * @return If true, {@link LayoutHandler} of {@link ComponentTree} that's being updated by update
+   *     operation of {@link RecyclerBinder} will be replaced by new {@link LayoutHandler} returned
+   *     from {@link #createLayoutCalculationHandler(RenderInfo)}, otherwise keep using existing
+   *     {@link LayoutHandler} created during item insertion.
+   */
+  boolean shouldUpdateLayoutHandler(RenderInfo previousRenderInfo, RenderInfo newRenderInfo);
 }

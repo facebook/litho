@@ -750,7 +750,7 @@ public class RecyclerBinder
 
       assertNotNullRenderInfo(renderInfo);
       mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
-      holder.setRenderInfo(renderInfo);
+      updateHolder(holder, renderInfo);
 
       if (holder.isInserted()) {
         // If it's inserted, we can just count on the normal range computation re-computing this
@@ -1199,7 +1199,7 @@ public class RecyclerBinder
 
       assertNotNullRenderInfo(renderInfo);
       mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
-      holder.setRenderInfo(renderInfo);
+      updateHolder(holder, renderInfo);
     }
 
     // If this item is rendered with a view (or was rendered with a view before now) we need to
@@ -1251,7 +1251,7 @@ public class RecyclerBinder
         }
 
         mRenderInfoViewCreatorController.maybeTrackViewCreator(newRenderInfo);
-        holder.setRenderInfo(newRenderInfo);
+        updateHolder(holder, newRenderInfo);
       }
     }
 
@@ -2860,6 +2860,15 @@ public class RecyclerBinder
         mUseSharedLayoutStateFuture,
         mHasDynamicItemHeight ? mComponentTreeMeasureListenerFactory : null,
         mSplitLayoutTag);
+  }
+
+  private void updateHolder(ComponentTreeHolder holder, RenderInfo renderInfo) {
+    final RenderInfo previousRenderInfo = holder.getRenderInfo();
+    holder.setRenderInfo(renderInfo);
+    if (mLayoutHandlerFactory != null
+        && mLayoutHandlerFactory.shouldUpdateLayoutHandler(previousRenderInfo, renderInfo)) {
+      holder.updateLayoutHandler(mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo));
+    }
   }
 
   private ComponentTreeHolder getHolderForRange() {
