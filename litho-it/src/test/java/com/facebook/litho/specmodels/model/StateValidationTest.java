@@ -20,7 +20,11 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.Param;
+import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.ResType;
+import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.specmodels.MockMethodParamModel;
 import com.squareup.javapoet.ClassName;
@@ -28,6 +32,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
 import com.squareup.javapoet.WildcardTypeName;
+import java.lang.annotation.Annotation;
 import java.util.List;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
@@ -63,6 +68,9 @@ public class StateValidationTest {
     when(stateValue2.getTypeName()).thenReturn(TypeName.INT);
     when(stateValue2.getRepresentedObject()).thenReturn(mRepresentedObject2);
     when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue1, stateValue2));
+    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
+    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
+    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
 
     List<SpecModelValidationError> validationErrors =
         StateValidation.validateStateValues(mSpecModel);
@@ -84,6 +92,9 @@ public class StateValidationTest {
     when(stateValue1.canUpdateLazily()).thenReturn(true);
     when(stateValue2.getRepresentedObject()).thenReturn(mRepresentedObject2);
     when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue1, stateValue2));
+    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
+    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
+    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
 
     List<SpecModelValidationError> validationErrors =
         StateValidation.validateStateValues(mSpecModel);
@@ -259,5 +270,132 @@ public class StateValidationTest {
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isSameAs(mRepresentedObject1);
     assertThat(validationErrors.get(0).message).isEqualTo("Methods in a spec must be static.");
+  }
+
+  @Test
+  public void testStateAndPropWithSameName() {
+    final StateParamModel stateValue = mock(StateParamModel.class);
+    when(stateValue.getName()).thenReturn("sameName");
+    final PropModel prop = mock(PropModel.class);
+    when(prop.getName()).thenReturn("sameName");
+    when(prop.getRepresentedObject()).thenReturn(mRepresentedObject1);
+
+    final Prop propAnnotation =
+        new Prop() {
+          @Override
+          public Class<? extends Annotation> annotationType() {
+            return Prop.class;
+          }
+
+          @Override
+          public boolean optional() {
+            return false;
+          }
+
+          @Override
+          public ResType resType() {
+            return null;
+          }
+
+          @Override
+          public String docString() {
+            return null;
+          }
+
+          @Override
+          public String varArg() {
+            return null;
+          }
+
+          @Override
+          public boolean isCommonProp() {
+            return false;
+          }
+
+          @Override
+          public boolean overrideCommonPropBehavior() {
+            return false;
+          }
+        };
+    when(prop.getAnnotations()).thenReturn(ImmutableList.<Annotation>of(propAnnotation));
+
+    when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue));
+    when(mSpecModel.getProps()).thenReturn(ImmutableList.of(prop));
+    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
+    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
+
+    final List<SpecModelValidationError> validationErrors =
+        StateValidation.validateStateValues(mSpecModel);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo("The parameter name of @Prop \"sameName\" and @State \"sameName\" collide!");
+  }
+
+  @Test
+  public void testStateAndInjectPropWithSameName() {
+    final StateParamModel stateValue = mock(StateParamModel.class);
+    when(stateValue.getName()).thenReturn("sameName");
+    final InjectPropModel injectProp = mock(InjectPropModel.class);
+    when(injectProp.getName()).thenReturn("sameName");
+    when(injectProp.getRepresentedObject()).thenReturn(mRepresentedObject1);
+
+    final InjectProp injectPropAnnotation =
+        new InjectProp() {
+          @Override
+          public Class<? extends Annotation> annotationType() {
+            return InjectProp.class;
+          }
+
+          @Override
+          public boolean isLazy() {
+            return false;
+          }
+        };
+    when(injectProp.getAnnotations())
+        .thenReturn(ImmutableList.<Annotation>of(injectPropAnnotation));
+
+    when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue));
+    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
+    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.of(injectProp));
+    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.<TreePropModel>of());
+
+    final List<SpecModelValidationError> validationErrors =
+        StateValidation.validateStateValues(mSpecModel);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "The parameter name of @InjectProp \"sameName\" and @State \"sameName\" collide!");
+  }
+
+  @Test
+  public void testStateAndTreePropWithSameName() {
+    final StateParamModel stateValue = mock(StateParamModel.class);
+    when(stateValue.getName()).thenReturn("sameName");
+    final TreePropModel treeProp = mock(TreePropModel.class);
+    when(treeProp.getName()).thenReturn("sameName");
+    when(treeProp.getRepresentedObject()).thenReturn(mRepresentedObject1);
+
+    final TreeProp treePropAnnotation =
+        new TreeProp() {
+          @Override
+          public Class<? extends Annotation> annotationType() {
+            return TreeProp.class;
+          }
+        };
+    when(treeProp.getAnnotations()).thenReturn(ImmutableList.<Annotation>of(treePropAnnotation));
+
+    when(mSpecModel.getStateValues()).thenReturn(ImmutableList.of(stateValue));
+    when(mSpecModel.getProps()).thenReturn(ImmutableList.<PropModel>of());
+    when(mSpecModel.getInjectProps()).thenReturn(ImmutableList.<InjectPropModel>of());
+    when(mSpecModel.getTreeProps()).thenReturn(ImmutableList.of(treeProp));
+
+    final List<SpecModelValidationError> validationErrors =
+        StateValidation.validateStateValues(mSpecModel);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo("The parameter name of @TreeProp \"sameName\" and @State \"sameName\" collide!");
   }
 }

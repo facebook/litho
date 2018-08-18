@@ -18,16 +18,21 @@ package com.facebook.litho.specmodels.model;
 
 import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
 
+import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.WildcardTypeName;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Class for validating that the state models within a  {@link SpecModel} are well-formed.
@@ -67,6 +72,12 @@ public class StateValidation {
         }
       }
     }
+
+    final Set<String> stateNameSet =
+        stateValues.stream().map(StateParamModel::getName).collect(Collectors.toSet());
+    validateDuplicateName(stateNameSet, specModel.getProps(), validationErrors);
+    validateDuplicateName(stateNameSet, specModel.getInjectProps(), validationErrors);
+    validateDuplicateName(stateNameSet, specModel.getTreeProps(), validationErrors);
 
     return validationErrors;
   }
@@ -169,5 +180,35 @@ public class StateValidation {
     }
 
     return false;
+  }
+
+  private static void validateDuplicateName(
+      Set<String> stateNameSet,
+      List<? extends MethodParamModel> propModelList,
+      List<SpecModelValidationError> validationErrors) {
+    for (int i = 0, size = propModelList.size(); i < size; i++) {
+      final MethodParamModel model = propModelList.get(i);
+      if (stateNameSet.contains(model.getName())) {
+        final Annotation paramAnnotation =
+            model
+                .getAnnotations()
+                .stream()
+                .filter(
+                    it -> it instanceof Prop || it instanceof InjectProp || it instanceof TreeProp)
+                .findFirst()
+                .get();
+
+        validationErrors.add(
+            new SpecModelValidationError(
+                model.getRepresentedObject(),
+                "The parameter name of @"
+                    + paramAnnotation.annotationType().getSimpleName()
+                    + " \""
+                    + model.getName()
+                    + "\" and @State \""
+                    + model.getName()
+                    + "\" collide!"));
+      }
+    }
   }
 }
