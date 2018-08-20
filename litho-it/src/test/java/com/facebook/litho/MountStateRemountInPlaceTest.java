@@ -106,27 +106,7 @@ public class MountStateRemountInPlaceTest {
     assertThat(secondComponent.wasOnBindCalled()).isTrue();
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
   }
-
-  @Test
-  public void testMountUnmountWithDifferentTransitionKeys() {
-    final TestComponent firstComponent = create(mContext).transitionKey("key1").build();
-
-    final LithoView lithoView =
-        mountComponent(mContext, Column.create(mContext).child(firstComponent).build());
-
-    assertThat(firstComponent.wasOnMountCalled()).isTrue();
-    assertThat(firstComponent.wasOnBindCalled()).isTrue();
-    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
-
-    final TestComponent secondComponent = create(mContext).transitionKey("key2").build();
-
-    lithoView.getComponentTree().setRoot(Column.create(mContext).child(secondComponent).build());
-
-    assertThat(secondComponent.wasOnMountCalled()).isTrue();
-    assertThat(secondComponent.wasOnBindCalled()).isTrue();
-    assertThat(firstComponent.wasOnUnmountCalled()).isTrue();
-  }
-
+  
   @Test
   public void testMountUnmountWithNoShouldUpdateAndDifferentSize() {
     final TestComponent firstComponent =
