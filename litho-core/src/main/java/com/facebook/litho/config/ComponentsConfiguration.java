@@ -190,4 +190,7 @@ public class ComponentsConfiguration {
 
   /** Whether we should use the global visible rect for mounting recursively */
   public static boolean useGlobalRectForRecursiveMounting = true;
+
+  /** Whether we should use the PlaceholderComponent instead of Column as MountSpec holder. */
+  public static boolean usePlaceholderComponent = false;
 }

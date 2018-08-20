@@ -490,11 +490,19 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @param c The {@link ComponentContext} to build a {@link ComponentLayout} tree.
    */
   protected Component onCreateLayout(ComponentContext c) {
+    if (ComponentsConfiguration.usePlaceholderComponent) {
+      return PlaceholderComponent.createAndBuild();
+    }
+
     return Column.create(c).build();
   }
 
   protected Component onCreateLayoutWithSizeSpec(
       ComponentContext c, int widthSpec, int heightSpec) {
+    if (ComponentsConfiguration.usePlaceholderComponent) {
+      return PlaceholderComponent.createAndBuild();
+    }
+
     return Column.create(c).build();
   }
 
