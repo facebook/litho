@@ -507,8 +507,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final boolean isDoingPerfLog = mMountStats.isLoggingEnabled;
     final boolean isTracing = ComponentsSystrace.isTracing();
     final long totalStartTime = isDoingPerfLog ? System.nanoTime() : 0L;
-    final boolean clearRemovedVisibilityItems =
-        mIsDirty || !ComponentsConfiguration.clearVisibilityItemsOnlyWhenDirty;
     for (int j = 0, size = layoutState.getVisibilityOutputCount(); j < size; j++) {
       final VisibilityOutput visibilityOutput = layoutState.getVisibilityOutputAt(j);
       if (isTracing) {
@@ -572,7 +570,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           visibilityItem = null;
         } else {
           // Processed, do not clear.
-          visibilityItem.setDoNotClearInThisPass(clearRemovedVisibilityItems);
+          visibilityItem.setDoNotClearInThisPass(mIsDirty);
         }
       }
 
@@ -585,7 +583,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
                   : null;
           visibilityItem =
               ComponentsPools.acquireVisibilityItem(globalKey, invisibleHandler, unfocusedHandler);
-          visibilityItem.setDoNotClearInThisPass(clearRemovedVisibilityItems);
+          visibilityItem.setDoNotClearInThisPass(mIsDirty);
           mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
 
           if (visibleHandler != null) {
@@ -634,7 +632,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       }
     }
 
-    if (clearRemovedVisibilityItems) {
+    if (mIsDirty) {
       clearVisibilityItems();
     }
 

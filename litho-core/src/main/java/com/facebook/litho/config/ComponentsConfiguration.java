@@ -179,10 +179,7 @@ public class ComponentsConfiguration {
 
   public static boolean useNewIsEquivalentTo = false;
 
-  /** Only clear visibility items in MountState when the MountState is dirty */
-  public static boolean clearVisibilityItemsOnlyWhenDirty = true;
-
-  /** Assess the impact of using the Thrawable class to track crashes across threads */
+  /** Assess the impact of using the Throwable class to track crashes across threads */
   public static boolean enableThrowableTracking = false;
 
   /** Whether we should do incremental mount on pre draw */
