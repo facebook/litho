@@ -23,14 +23,12 @@ import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import android.support.annotation.IdRes;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemAnimator;
 import android.support.v7.widget.RecyclerView.ItemDecoration;
 import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.support.v7.widget.SnapHelper;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
@@ -65,7 +63,6 @@ import com.facebook.litho.widget.LithoRecylerView;
 import com.facebook.litho.widget.PTRRefreshEvent;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerEventsController;
-import com.facebook.litho.widget.StaggeredGridLayoutHelper;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.List;
 
@@ -377,39 +374,7 @@ public class RecyclerCollectionComponentSpec {
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
       super.onScrolled(recyclerView, dx, dy);
 
-      final int firstCompletelyVisibleItemPosition =
-          getFirstCompletelyVisibleItemPosition(recyclerView.getLayoutManager());
-      if (firstCompletelyVisibleItemPosition != -1) {
-        // firstCompletelyVisibleItemPosition can be -1 in middle of the scroll, so
-        // wait until it finishes to set the state.
-        mEventsController.setFirstCompletelyVisibleItemPosition(firstCompletelyVisibleItemPosition);
-      }
-
-      final int lastCompletelyVisibleItemPosition =
-          getLastCompletelyVisibleItemPosition(recyclerView.getLayoutManager());
-      if (lastCompletelyVisibleItemPosition != -1) {
-        mEventsController.setLastCompletelyVisibleItemPosition(lastCompletelyVisibleItemPosition);
-      }
-    }
-
-    private static int getFirstCompletelyVisibleItemPosition(
-        RecyclerView.LayoutManager layoutManager) {
-      if (layoutManager instanceof StaggeredGridLayoutManager) {
-        return StaggeredGridLayoutHelper.findFirstFullyVisibleItemPosition(
-            (StaggeredGridLayoutManager) layoutManager);
-      } else {
-        return ((LinearLayoutManager) layoutManager).findFirstCompletelyVisibleItemPosition();
-      }
-    }
-
-    private static int getLastCompletelyVisibleItemPosition(
-        RecyclerView.LayoutManager layoutManager) {
-      if (layoutManager instanceof StaggeredGridLayoutManager) {
-        return StaggeredGridLayoutHelper.findLastFullyVisibleItemPosition(
-            (StaggeredGridLayoutManager) layoutManager);
-      } else {
-        return ((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition();
-      }
+      mEventsController.updateFirstLastFullyVisibleItemPositions(recyclerView.getLayoutManager());
     }
   }
 

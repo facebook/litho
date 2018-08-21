@@ -22,12 +22,15 @@ import static com.facebook.litho.widget.SnapUtil.SNAP_TO_CENTER_CHILD;
 import static com.facebook.litho.widget.SnapUtil.SNAP_TO_END;
 import static com.facebook.litho.widget.SnapUtil.SNAP_TO_START;
 
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.RecyclerEventsController;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import com.facebook.litho.widget.SnapUtil;
+import com.facebook.litho.widget.StaggeredGridLayoutHelper;
 import java.lang.ref.WeakReference;
 
 /**
@@ -166,11 +169,40 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
     mSnapMode = snapMode;
   }
 
-  void setFirstCompletelyVisibleItemPosition(int firstCompletelyVisibleItemPosition) {
-    mFirstCompletelyVisibleItemPosition = firstCompletelyVisibleItemPosition;
+  private static int getFirstCompletelyVisibleItemPosition(
+      RecyclerView.LayoutManager layoutManager) {
+    if (layoutManager instanceof StaggeredGridLayoutManager) {
+      return StaggeredGridLayoutHelper.findFirstFullyVisibleItemPosition(
+          (StaggeredGridLayoutManager) layoutManager);
+    } else {
+      return ((LinearLayoutManager) layoutManager).findFirstCompletelyVisibleItemPosition();
+    }
   }
 
-  void setLastCompletelyVisibleItemPosition(int lastCompletelyVisibleItemPosition) {
-    mLastCompletelyVisibleItemPosition = lastCompletelyVisibleItemPosition;
+  private static int getLastCompletelyVisibleItemPosition(
+      RecyclerView.LayoutManager layoutManager) {
+    if (layoutManager instanceof StaggeredGridLayoutManager) {
+      return StaggeredGridLayoutHelper.findLastFullyVisibleItemPosition(
+          (StaggeredGridLayoutManager) layoutManager);
+    } else {
+      return ((LinearLayoutManager) layoutManager).findLastCompletelyVisibleItemPosition();
+    }
   }
+
+  public void updateFirstLastFullyVisibleItemPositions(RecyclerView.LayoutManager layoutManager) {
+    final int firstCompletelyVisibleItemPosition =
+        getFirstCompletelyVisibleItemPosition(layoutManager);
+    if (firstCompletelyVisibleItemPosition != -1) {
+      // firstCompletelyVisibleItemPosition can be -1 in middle of the scroll, so
+      // wait until it finishes to set the state.
+      mFirstCompletelyVisibleItemPosition = firstCompletelyVisibleItemPosition;
+    }
+
+    final int lastCompletelyVisibleItemPosition =
+        getLastCompletelyVisibleItemPosition(layoutManager);
+    if (lastCompletelyVisibleItemPosition != -1) {
+      mLastCompletelyVisibleItemPosition = lastCompletelyVisibleItemPosition;
+    }
+  }
+
 }
