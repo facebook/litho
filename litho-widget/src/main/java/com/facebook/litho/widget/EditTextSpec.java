@@ -37,6 +37,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewCompat;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Layout;
@@ -289,6 +290,7 @@ class EditTextSpec {
       @Prop(optional = true) ColorStateList hintColorStateList,
       @Prop(optional = true, resType = ResType.COLOR) int linkColor,
       @Prop(optional = true, resType = ResType.COLOR) int highlightColor,
+      @Prop(optional = true) ColorStateList tintColorStateList,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float extraSpacing,
       @Prop(optional = true, resType = ResType.FLOAT) float spacingMultiplier,
@@ -333,6 +335,7 @@ class EditTextSpec {
         hintColorStateList,
         linkColor,
         highlightColor,
+        tintColorStateList,
         textSize,
         extraSpacing,
         spacingMultiplier,
@@ -405,6 +408,7 @@ class EditTextSpec {
       @Prop(optional = true) ColorStateList hintColorStateList,
       @Prop(optional = true, resType = ResType.COLOR) int linkColor,
       @Prop(optional = true, resType = ResType.COLOR) int highlightColor,
+      @Prop(optional = true) ColorStateList tintColorStateList,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float extraSpacing,
       @Prop(optional = true, resType = ResType.FLOAT) float spacingMultiplier,
@@ -450,6 +454,7 @@ class EditTextSpec {
         hintColorStateList,
         linkColor,
         highlightColor,
+        tintColorStateList,
         textSize,
         extraSpacing,
         spacingMultiplier,
@@ -573,6 +578,7 @@ class EditTextSpec {
       ColorStateList hintColorStateList,
       int linkColor,
       int highlightColor,
+      ColorStateList tintColorStateList,
       int textSize,
       float extraSpacing,
       float spacingMultiplier,
@@ -666,6 +672,10 @@ class EditTextSpec {
       editText.setHintTextColor(hintColor);
     } else {
       editText.setHintTextColor(hintColorStateList);
+    }
+
+    if (tintColorStateList != null) {
+      ViewCompat.setBackgroundTintList(editText, tintColorStateList);
     }
 
     if (requestFocus) {
