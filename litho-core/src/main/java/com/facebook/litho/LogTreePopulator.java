@@ -40,6 +40,7 @@ public final class LogTreePopulator {
       ComponentContext c, ComponentsLogger logger, PerfEvent perfEvent) {
     final String logTag = c.getLogTag();
     if (logTag == null) {
+      logger.cancelPerfEvent(perfEvent);
       return null;
     }
 

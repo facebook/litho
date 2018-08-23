@@ -71,7 +71,7 @@ public class LogTreePopulatorTest {
 
   @Test
   public void testSkipOnEmptyTag() {
-    final BaseComponentsLogger logger =
+    final TestComponentsLogger logger =
         new TestComponentsLogger() {
           @Nullable
           @Override
@@ -91,7 +91,11 @@ public class LogTreePopulatorTest {
     mContext.setTreeProps(treeProps);
 
     final ComponentContext noLogTagContext = new ComponentContext(RuntimeEnvironment.application);
-    LogTreePopulator.populatePerfEventFromLogger(noLogTagContext, logger, event);
+    final PerfEvent perfEvent =
+        LogTreePopulator.populatePerfEventFromLogger(noLogTagContext, logger, event);
+
+    assertThat(perfEvent).isNull();
+    assertThat(logger.getCanceledPerfEvents()).containsExactly(event);
 
     verifyNoMoreInteractions(event);
   }

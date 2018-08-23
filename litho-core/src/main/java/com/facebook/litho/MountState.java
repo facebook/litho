@@ -386,22 +386,25 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     suppressInvalidationsOnHosts(false);
 
-    logMountPerfEvent(componentTree, logger, mountPerfEvent);
+    if (logger != null) {
+      logMountPerfEvent(logger, mountPerfEvent);
+    }
 
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
   }
 
-  private void logMountPerfEvent(
-      ComponentTree componentTree, ComponentsLogger logger, @Nullable PerfEvent mountPerfEvent) {
+  private void logMountPerfEvent(ComponentsLogger logger, @Nullable PerfEvent mountPerfEvent) {
     if (!mMountStats.isLoggingEnabled || mountPerfEvent == null) {
+      logger.cancelPerfEvent(mountPerfEvent);
       return;
     }
 
     // MOUNT events that don't mount any content are not valuable enough to log at the moment.
     // We will likely enable them again in the future. T31729233
     if (mMountStats.mountedCount == 0) {
+      logger.cancelPerfEvent(mountPerfEvent);
       return;
     }
 

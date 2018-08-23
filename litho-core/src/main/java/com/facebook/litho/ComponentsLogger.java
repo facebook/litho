@@ -39,6 +39,9 @@ public interface ComponentsLogger {
   /** Write a {@link PerfEvent} to storage. This also marks the end of the event. */
   void logPerfEvent(PerfEvent event);
 
+  /** Release a previously obtained {@link PerfEvent} without logging it. */
+  void cancelPerfEvent(PerfEvent event);
+
   /**
    * Emit a message that can be logged or escalated by the logger implementation.
    *

@@ -31,6 +31,10 @@ class SampleComponentsLogger : BaseComponentsLogger() {
         printEventData(event, PerfEventStore.release(event))
     }
 
+    override fun cancelPerfEvent(event: PerfEvent) {
+        PerfEventStore.release(event)
+    }
+
     override fun emitMessage(level: ComponentsLogger.LogLevel, message: String) {
         when (level) {
             ComponentsLogger.LogLevel.WARNING -> {

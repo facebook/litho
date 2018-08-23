@@ -31,6 +31,7 @@ import java.util.List;
 public class TestComponentsLogger extends BaseComponentsLogger {
 
   private final List<PerfEvent> mLoggedPerfEvents = new LinkedList<>();
+  private final List<PerfEvent> mCanceledPerfEvents = new LinkedList<>();
   private final List<Pair<LogLevel, String>> mLoggedMessages = new LinkedList<>();
 
   @Override
@@ -41,6 +42,11 @@ public class TestComponentsLogger extends BaseComponentsLogger {
   @Override
   public PerfEvent newPerformanceEvent(@FrameworkLogEvents.LogEventId int eventId) {
     return new TestPerfEvent(eventId);
+  }
+
+  @Override
+  public void cancelPerfEvent(PerfEvent event) {
+    mCanceledPerfEvents.add(event);
   }
 
   @Override
@@ -60,6 +66,10 @@ public class TestComponentsLogger extends BaseComponentsLogger {
 
   public List<PerfEvent> getLoggedPerfEvents() {
     return mLoggedPerfEvents;
+  }
+
+  public List<PerfEvent> getCanceledPerfEvents() {
+    return mCanceledPerfEvents;
   }
 
   public List<Pair<LogLevel, String>> getLoggedMessages() {
