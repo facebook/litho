@@ -1,6 +1,6 @@
 ---
 docid: communicating-with-the-ui
-title: Communicating with the UI
+title: Scrolling and communicating with the UI
 layout: docs
 permalink: /docs/communicating-with-the-ui
 ---
@@ -121,7 +121,7 @@ class SectionSpec {
 }
 ```
 
-## requestFocus()
+## Scrolling: requestFocus()
 
 Use this method to give focus to one of the components in a section. If the component is hidden from the visible viewport, the section will be scrolled to reveal it, thereby calling the `@OnViewportChanged` annotated method.
 
@@ -151,6 +151,16 @@ Calls focus to the first index of the component in the section
 
 2) `FocusType.END`
 Calls focus to the last index of the component in the section
+
+#### SectionLifecycle.requestSmoothFocus(SectionContext c, int index, SmoothScrollAlignmentType type)
+Use this variation if you need to specify a snapping mode.
+`SmoothScrollAlignmentType` is either:
+1) `SNAP_TO_ANY`
+2) `SNAP_TO_START`
+3) `SNAP_TO_END`
+4) `SNAP_TO_CENTER`
+
+For the full list of methods available to request scroll to a position, check out the [SectionLifecycle](/javadoc/com/facebook/litho/sections/SectionLifecycle.html) documentation.
 
 ## @OnEvent(LoadingEvent.class)
 
