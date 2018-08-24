@@ -179,9 +179,6 @@ public class ComponentsConfiguration {
 
   public static boolean useNewIsEquivalentTo = false;
 
-  /** Assess the impact of using the Throwable class to track crashes across threads */
-  public static boolean enableThrowableTracking = false;
-
   /** Whether we should do incremental mount on pre draw */
   public static boolean incrementalMountOnPreDraw = false;
 

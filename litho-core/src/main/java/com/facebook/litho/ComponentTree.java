@@ -2257,9 +2257,6 @@ public class ComponentTree {
         @CalculateLayoutSource int source, @Nullable TreeProps treeProps) {
       mSource = source;
       mTreeProps = treeProps;
-      if (ComponentsConfiguration.enableThrowableTracking) {
-        new Throwable();
-      }
     }
 
     @Override
@@ -2274,9 +2271,6 @@ public class ComponentTree {
 
     public UpdateStateSyncRunnable(String attribution) {
       mAttribution = attribution;
-      if (ComponentsConfiguration.enableThrowableTracking) {
-        new Throwable();
-      }
     }
 
     @Override
