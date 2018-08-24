@@ -67,18 +67,47 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
   }
 
   /**
-   * Send the Recycler a request to scroll the content to the next item in the binder.
-   * @param animated if animated is set to true the scroll will happen with an animation.
+   * Send the {@link RecyclerCollectionComponent} a request to scroll the content to the next item
+   * in the binder.
+   *
+   * @param animated whether the scroll will happen with animation.
    */
   public void requestScrollToNextPosition(boolean animated) {
-    requestScrollToRelativePosition(animated, true);
+    final int defaultTarget = Math.max(0, mLastCompletelyVisibleItemPosition + 1);
+    final int snapTarget = getSmoothScrollTarget(true, defaultTarget);
+    requestScrollToPositionInner(animated, defaultTarget, snapTarget);
   }
 
+  /**
+   * Send the {@link RecyclerCollectionComponent} a request to scroll the content to the previous
+   * item in the binder.
+   *
+   * @param animated whether the scroll will happen with animation.
+   */
   public void requestScrollToPreviousPosition(boolean animated) {
-    requestScrollToRelativePosition(animated, false);
+    final int defaultTarget = Math.max(0, mFirstCompletelyVisibleItemPosition - 1);
+    final int snapTarget = getSmoothScrollTarget(false, defaultTarget);
+    requestScrollToPositionInner(animated, defaultTarget, snapTarget);
   }
 
-  private void requestScrollToRelativePosition(boolean animated, boolean forward) {
+  /**
+   * Send the {@link RecyclerCollectionComponent} a request to scroll the content to the given
+   * target position taking into account snapping behavior.
+   *
+   * <p>For example, if the content is center snapped, then the {@link RecyclerView} will scroll
+   * contents until the target position is visible at the center (as opposed to the edge of {@link
+   * RecyclerView} which is the case when using {@link #requestScrollToPosition(int, boolean)}).
+   */
+  public void requestScrollToPositionWithSnap(final int target) {
+    requestScrollToPositionInner(true, target, target);
+  }
+
+  /**
+   * @param animated whether the scroll will happen with animation.
+   * @param defaultTarget target to use as fallback.
+   * @param snapTarget target that takes into account snapping behavior.
+   */
+  private void requestScrollToPositionInner(boolean animated, int defaultTarget, int snapTarget) {
     final RecyclerView recyclerView = getRecyclerView();
     if (recyclerView == null) {
       return;
@@ -89,12 +118,6 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
       return;
     }
 
-    final int defaultTarget =
-        Math.max(
-            0,
-            forward
-                ? mLastCompletelyVisibleItemPosition + 1
-                : mFirstCompletelyVisibleItemPosition - 1);
     if (!animated) {
       requestScrollToPosition(defaultTarget, false);
       return;
@@ -108,7 +131,7 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
     final RecyclerView.SmoothScroller smoothScroller =
         SnapUtil.getSmoothScrollerWithOffset(
             recyclerView.getContext(), 0, getSmoothScrollAlignmentTypeFrom(mSnapMode));
-    smoothScroller.setTargetPosition(getSmoothScrollTarget(forward, defaultTarget));
+    smoothScroller.setTargetPosition(snapTarget);
     layoutManager.startSmoothScroll(smoothScroller);
   }
 
