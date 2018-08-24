@@ -258,75 +258,14 @@ public class RecyclerBinder
               firstVisibleIndex, lastVisibleIndex, firstFullyVisibleIndex, lastFullyVisibleIndex);
         }
       };
-  private int mPostUpdateViewportAndComputeRangeAttempts;
   private int mPostUpdateViewportAttempts;
 
   @VisibleForTesting final RenderInfoViewCreatorController mRenderInfoViewCreatorController;
-
-  // todo T30260224
-  private final Runnable mUpdateViewportAndComputeRangeRunnable =
-      new Runnable() {
-        @Override
-        public void run() {
-          // If mount hasn't happened or we don't have any pending updates, we're ready to compute
-          // range.
-          if (mMountedView == null || !mMountedView.hasPendingAdapterUpdates()) {
-            if (mViewportManager.shouldUpdate()) {
-              mViewportManager.onViewportChanged(State.DATA_CHANGES);
-            }
-            mPostUpdateViewportAndComputeRangeAttempts = 0;
-            computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
-            return;
-          }
-
-          // If the view gets detached, we can still have pending updates.
-          // If the view's visibility is GONE, layout won't happen until it becomes visible. We have
-          // to exit here, otherwise we keep posting this runnable to the next frame until it
-          // becomes visible.
-          if (!mMountedView.isAttachedToWindow() || mMountedView.getVisibility() == View.GONE) {
-            mPostUpdateViewportAndComputeRangeAttempts = 0;
-            return;
-          }
-
-          if (mPostUpdateViewportAndComputeRangeAttempts
-              >= POST_UPDATE_VIEWPORT_AND_COMPUTE_RANGE_MAX_ATTEMPTS) {
-            mPostUpdateViewportAndComputeRangeAttempts = 0;
-            if (mViewportManager.shouldUpdate()) {
-              mViewportManager.onViewportChanged(State.DATA_CHANGES);
-            }
-
-            final int size = mComponentTreeHolders.size();
-            if (size == 0) {
-              return;
-            }
-            /**
-             * We only update first and last visible positions after the RecyclerView triggers a
-             * layout for its pending updates. If consuming updates is posted to the next frame,
-             * which the RecyclerView can do, then we go into this runnable after the component tree
-             * holders have been modified but before first/last indexes were updated. This can make
-             * these positions get out of bounds, so we make sure we access valid indexes before
-             * computing range.
-             */
-            final int first = Math.min(mCurrentFirstVisiblePosition, size - 1);
-            final int last = Math.min(mCurrentLastVisiblePosition, size - 1);
-
-            computeRange(first, last);
-            return;
-          }
-
-          // If we have pending updates, wait until the sync operations are finished and try again
-          // in the next frame.
-          mPostUpdateViewportAndComputeRangeAttempts++;
-          ViewCompat.postOnAnimation(mMountedView, mUpdateViewportAndComputeRangeRunnable);
-        }
-      };
 
   private final Runnable mUpdateViewportRunnable =
       new Runnable() {
         @Override
         public void run() {
-          // If mount hasn't happened or we don't have any pending updates, we're ready to compute
-          // range.
           if (mMountedView == null || !mMountedView.hasPendingAdapterUpdates()) {
             if (mViewportManager.shouldUpdate()) {
               mViewportManager.onViewportChanged(State.DATA_CHANGES);
@@ -335,7 +274,7 @@ public class RecyclerBinder
             return;
           }
 
-          // If the view gets detached, we can still have pending updates.
+          // If the view gets detached, we might still have pending updates.
           // If the view's visibility is GONE, layout won't happen until it becomes visible. We have
           // to exit here, otherwise we keep posting this runnable to the next frame until it
           // becomes visible.
@@ -2377,20 +2316,14 @@ public class RecyclerBinder
   }
 
   private void maybePostUpdateViewportAndComputeRange() {
-    if (mMountedView != null && mUseSharedLayoutStateFuture) {
-      ViewCompat.postOnAnimation(mMountedView, mUpdateViewportRunnable);
-      computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
-      return;
-    }
-
     if (mMountedView != null
-        && (ComponentsConfiguration.insertPostAsyncLayout || mViewportManager.shouldUpdate())) {
-      mPostUpdateViewportAndComputeRangeAttempts = 0;
-      mMountedView.removeCallbacks(mUpdateViewportAndComputeRangeRunnable);
-      ViewCompat.postOnAnimation(mMountedView, mUpdateViewportAndComputeRangeRunnable);
-    } else {
-      computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+        && (mUseSharedLayoutStateFuture
+            || ComponentsConfiguration.insertPostAsyncLayout
+            || mViewportManager.shouldUpdate())) {
+      mMountedView.removeCallbacks(mUpdateViewportRunnable);
+      ViewCompat.postOnAnimation(mMountedView, mUpdateViewportRunnable);
     }
+    computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
   }
 
   private void computeRange(int firstVisible, int lastVisible) {
