@@ -190,7 +190,7 @@ public abstract class Section extends SectionLifecycle
   }
 
   /**
-   * Sets te total number of {@link com.facebook.litho.Component} that the subtree of {@link
+   * Sets the total number of {@link com.facebook.litho.Component} that the subtree of {@link
    * Section}s having its root in this {@link Section} generated.
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
