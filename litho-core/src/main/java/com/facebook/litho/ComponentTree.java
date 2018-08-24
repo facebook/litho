@@ -2248,7 +2248,7 @@ public class ComponentTree {
     return mEventHandlersController;
   }
 
-  private final class CalculateLayoutRunnable implements Runnable {
+  private final class CalculateLayoutRunnable extends ThreadTracingRunnable {
 
     private final @CalculateLayoutSource int mSource;
     @Nullable private final TreeProps mTreeProps;
@@ -2260,12 +2260,12 @@ public class ComponentTree {
     }
 
     @Override
-    public void run() {
+    public void tracedRun(Throwable tracedThrowable) {
       calculateLayout(null, mSource, null, mTreeProps);
     }
   }
 
-  private final class UpdateStateSyncRunnable implements Runnable {
+  private final class UpdateStateSyncRunnable extends ThreadTracingRunnable {
 
     private final String mAttribution;
 
@@ -2274,7 +2274,7 @@ public class ComponentTree {
     }
 
     @Override
-    public void run() {
+    public void tracedRun(Throwable tracedThrowable) {
       updateStateInternal(false, mAttribution);
     }
   }

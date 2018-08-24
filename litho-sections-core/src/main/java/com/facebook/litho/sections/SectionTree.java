@@ -45,6 +45,7 @@ import com.facebook.litho.EventHandlersController;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.PerfEvent;
+import com.facebook.litho.ThreadTracingRunnable;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -158,7 +159,7 @@ public class SectionTree {
   private final CalculateChangeSetRunnable mCalculateChangeSetOnMainThreadRunnable;
   private final CalculateChangeSetRunnable mCalculateChangeSetRunnable;
 
-  private class CalculateChangeSetRunnable implements Runnable {
+  private class CalculateChangeSetRunnable extends ThreadTracingRunnable {
 
     private final Handler mHandler;
 
@@ -178,6 +179,7 @@ public class SectionTree {
     public synchronized void ensurePosted(@ApplyNewChangeSet int source, String attribution) {
       if (!mIsPosted) {
         mIsPosted = true;
+        resetTrace();
         mHandler.post(this);
         mSource = source;
         mAttribution = attribution;
@@ -194,7 +196,7 @@ public class SectionTree {
     }
 
     @Override
-    public void run() {
+    public void tracedRun(Throwable tracedThrowable) {
       @ApplyNewChangeSet int source;
       final String attribution;
       synchronized (this) {
@@ -209,7 +211,7 @@ public class SectionTree {
       }
 
       try {
-        applyNewChangeSet(source, attribution);
+        applyNewChangeSet(source, attribution, tracedThrowable);
       } catch (IndexOutOfBoundsException e) {
         throw new RuntimeException(getDebugInfo(SectionTree.this) + e.getMessage(), e);
       }
@@ -333,7 +335,7 @@ public class SectionTree {
     if (mAsyncPropUpdates && !isFirstSetRoot) {
       mCalculateChangeSetRunnable.ensurePosted(ApplyNewChangeSet.SET_ROOT_ASYNC, null);
     } else {
-      applyNewChangeSet(ApplyNewChangeSet.SET_ROOT, null);
+      applyNewChangeSet(ApplyNewChangeSet.SET_ROOT, null, null);
     }
   }
 
@@ -852,7 +854,8 @@ public class SectionTree {
     }
   }
 
-  private void applyNewChangeSet(@ApplyNewChangeSet int source, @Nullable String attribution) {
+  private void applyNewChangeSet(
+      @ApplyNewChangeSet int source, @Nullable String attribution, Throwable tracedThrowable) {
     if (attribution == null) {
       attribution = mTag;
     }
@@ -984,7 +987,7 @@ public class SectionTree {
           }
 
           mEventHandlersController.clearUnusedEventHandlers();
-          postNewChangeSets();
+          postNewChangeSets(tracedThrowable);
         }
 
         synchronized (this) {
@@ -1104,11 +1107,24 @@ public class SectionTree {
     }
   }
 
-  private void postNewChangeSets() {
+  private void postNewChangeSets(Throwable tracedThrowable) {
     if (isMainThread()) {
       postChangesetsToHandler();
     } else {
-      sMainThreadHandler.obtainMessage(MESSAGE_WHAT_BACKGROUND_CHANGESET_STATE_UPDATED, this)
+      sMainThreadHandler
+          .obtainMessage(
+              MESSAGE_WHAT_BACKGROUND_CHANGESET_STATE_UPDATED,
+              new ThreadTracingRunnable(tracedThrowable) {
+                @Override
+                public void tracedRun(Throwable tracedThrowable) {
+                  final SectionTree tree = SectionTree.this;
+                  try {
+                    tree.postChangesetsToHandler();
+                  } catch (IndexOutOfBoundsException e) {
+                    throw new RuntimeException(getDebugInfo(tree) + e.getMessage(), e);
+                  }
+                }
+              })
           .sendToTarget();
     }
   }
@@ -1392,12 +1408,8 @@ public class SectionTree {
     public void handleMessage(Message msg) {
       switch (msg.what) {
         case MESSAGE_WHAT_BACKGROUND_CHANGESET_STATE_UPDATED:
-          final SectionTree tree = (SectionTree) msg.obj;
-          try {
-            tree.postChangesetsToHandler();
-          } catch (IndexOutOfBoundsException e) {
-            throw new RuntimeException(getDebugInfo(tree) + e.getMessage(), e);
-          }
+          final Runnable runnable = (Runnable) msg.obj;
+          runnable.run();
           break;
         case MESSAGE_FOCUS_REQUEST:
         case MESSAGE_FOCUS_DISPATCHER_LOADING_STATE_UPDATE:
