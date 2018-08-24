@@ -89,7 +89,7 @@ public class ComponentLifecycleErrorTest {
       exception = e;
     }
 
-    assertThat(exception).isNotNull().hasMessage("onCreateLayout crash");
+    assertThat(exception).isNotNull().hasStackTraceContaining("onCreateLayout crash");
   }
 
   @Test
@@ -107,7 +107,7 @@ public class ComponentLifecycleErrorTest {
       exception = e;
     }
 
-    assertThat(exception).isNotNull().hasMessageContaining("onCreateLayout crash");
+    assertThat(exception).isNotNull().hasStackTraceContaining("onCreateLayout crash");
   }
 
   @Test
@@ -142,7 +142,7 @@ public class ComponentLifecycleErrorTest {
       exception = e;
     }
 
-    assertThat(exception).isNotNull().hasMessage("onCreateLayoutWithSizeSpec crash");
+    assertThat(exception).isNotNull().hasStackTraceContaining("onCreateLayoutWithSizeSpec crash");
   }
 
   @Test
@@ -161,7 +161,7 @@ public class ComponentLifecycleErrorTest {
       exception = e;
     }
 
-    assertThat(exception).isNotNull().hasMessageContaining("onCreateLayoutWithSizeSpec crash");
+    assertThat(exception).isNotNull().hasStackTraceContaining("onCreateLayoutWithSizeSpec crash");
   }
 
   @Test

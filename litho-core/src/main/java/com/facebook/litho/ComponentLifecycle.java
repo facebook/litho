@@ -308,21 +308,25 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       ComponentsSystrace.beginSection("createLayout:" + ((Component) this).getSimpleName());
     }
 
-    final InternalNode node;
-    if (deferNestedTreeResolution) {
-      node = ComponentsPools.acquireInternalNode(context);
-      node.markIsNestedTreeHolder(context.getTreeProps());
-    } else if (component.canResolve()) {
-      context.setTreeProps(component.getScopedContext().getTreePropsCopy());
-      node = (InternalNode) component.resolve(context);
-    } else {
-      final Component layoutComponent = createComponentLayout(context);
-
-      if (layoutComponent == null || layoutComponent.getId() <= 0) {
-        node = null;
+    InternalNode node = null;
+    try {
+      if (deferNestedTreeResolution) {
+        node = ComponentsPools.acquireInternalNode(context);
+        node.markIsNestedTreeHolder(context.getTreeProps());
+      } else if (component.canResolve()) {
+        context.setTreeProps(component.getScopedContext().getTreePropsCopy());
+        node = (InternalNode) component.resolve(context);
       } else {
-        node = context.resolveLayout(layoutComponent);
+        final Component layoutComponent = createComponentLayout(context);
+
+        if (layoutComponent == null || layoutComponent.getId() <= 0) {
+          node = null;
+        } else {
+          node = context.resolveLayout(layoutComponent);
+        }
       }
+    } catch (Throwable t) {
+      throw new CreateLayoutException((Component) this, t);
     }
 
     if (isTracing) {
@@ -869,5 +873,16 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    */
   protected boolean shouldAlwaysRemeasure() {
     return false;
+  }
+
+  /**
+   * Exception class used to print the Components' hierarchy involved in a layout creation crash.
+   */
+  private static class CreateLayoutException extends RuntimeException {
+    CreateLayoutException(Component c, Throwable cause) {
+      super(c.getSimpleName());
+      initCause(cause);
+      setStackTrace(new StackTraceElement[0]);
+    }
   }
 }
