@@ -49,7 +49,6 @@ import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
-import android.util.Log;
 import android.view.View;
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
@@ -138,7 +137,7 @@ import com.facebook.yoga.YogaDirection;
   isPureRender = true,
   shouldUseDisplayList = true,
   poolSize = 30,
-  events = {TextOffsetOnTouchEvent.class}
+  events = {TextOffsetOnTouchEvent.class, CustomEllipsisTruncationEvent.class}
 )
 class TextSpec {
 
@@ -516,6 +515,7 @@ class TextSpec {
       @Prop(optional = true) boolean glyphWarming,
       @Prop(optional = true) TextDirectionHeuristicCompat textDirection,
       @Prop(optional = true, resType = ResType.STRING) CharSequence customEllipsisText,
+      @Prop(optional = true) EventHandler customEllipsisHandler,
       @FromMeasure Layout measureLayout,
       @FromMeasure Integer measuredWidth,
       @FromMeasure Integer measuredHeight,
@@ -596,7 +596,12 @@ class TextSpec {
       final int ellipsizedLineNumber = getEllipsizedLineNumber(textLayout.get());
       if (ellipsizedLineNumber != -1) {
         final CharSequence truncated =
-            truncateText(text, customEllipsisText, textLayout.get(), ellipsizedLineNumber);
+            truncateText(
+                text,
+                customEllipsisText,
+                textLayout.get(),
+                ellipsizedLineNumber,
+                customEllipsisHandler);
 
         Layout newLayout =
             createTextLayout(
@@ -661,7 +666,8 @@ class TextSpec {
       CharSequence text,
       CharSequence customEllipsisText,
       Layout newLayout,
-      int ellipsizedLineNumber) {
+      int ellipsizedLineNumber,
+      @Nullable EventHandler customEllipsisTruncationEventHandler) {
     Rect bounds = new Rect();
     newLayout
         .getPaint()
@@ -672,6 +678,9 @@ class TextSpec {
     final int ellipsisOffset =
         newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
     if (ellipsisOffset > 0) {
+      if (customEllipsisTruncationEventHandler != null) {
+        Text.dispatchCustomEllipsisTruncationEvent(customEllipsisTruncationEventHandler);
+      }
       // getOffsetForHorizontal returns the closest character, but we need to guarantee no
       // truncation, so subtract 1 from the result:
       return TextUtils.concat(text.subSequence(0, ellipsisOffset - 1), customEllipsisText);
