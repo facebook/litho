@@ -200,3 +200,9 @@ MyComponent2.create(c)
 
 The props of a Component are read-only. The Component's parent passes down values for the props when it creates the Component and they cannot change throughout the lifecycle of the Component. If the props values must be updated, the parent has to create a new Component and pass down new values for the props.
 The props objects should be made immutable. Due to [background layout](/docs/asynchronous-layout), props may be accessed on multiple threads. Props immutability ensures that no thread safety issues enter into your component hierarchy.
+
+## Common Props
+
+Common props are props that are available on all Components, e.g. `margin`, `padding`, `flex` etc. A full list of CommonProps can be found in the code [here](https://github.com/facebook/litho/blob/master/litho-core/src/main/java/com/facebook/litho/Component.java). 
+
+You may want to access a Common Prop inside your Component (e.g. to see if a click handler was set on it), in which case you should use set `@Prop` param `isCommonProp()`, and name your prop using the same name as the Common Prop. If you wish to override the behavior of the Common Prop, then you should also set the `@Prop` param `overrideCommonPropBehavior` to true. 
