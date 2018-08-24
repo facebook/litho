@@ -145,6 +145,10 @@ public class GridLayoutInfo implements LayoutInfo {
           return SizeSpec.makeSizeSpec(overrideWidth, EXACTLY);
         }
 
+        if (renderInfo.isFullSpan()) {
+          return SizeSpec.makeSizeSpec(SizeSpec.getSize(widthSpec), EXACTLY);
+        }
+
         final int spanCount = mGridLayoutManager.getSpanCount();
         final int spanSize = renderInfo.getSpanSize();
 
@@ -165,6 +169,10 @@ public class GridLayoutInfo implements LayoutInfo {
             (Integer) renderInfo.getCustomAttribute(GridLayoutInfo.OVERRIDE_SIZE);
         if (overrideHeight != null) {
           return SizeSpec.makeSizeSpec(overrideHeight, EXACTLY);
+        }
+
+        if (renderInfo.isFullSpan()) {
+          return SizeSpec.makeSizeSpec(SizeSpec.getSize(heightSpec), EXACTLY);
         }
 
         final int spanCount = mGridLayoutManager.getSpanCount();
@@ -222,7 +230,12 @@ public class GridLayoutInfo implements LayoutInfo {
         return 1;
       }
 
-      return mRenderInfoCollection.getRenderInfoAt(position).getSpanSize();
+      final RenderInfo renderInfo = mRenderInfoCollection.getRenderInfoAt(position);
+      if (renderInfo.isFullSpan()) {
+        return mGridLayoutManager.getSpanCount();
+      }
+
+      return renderInfo.getSpanSize();
     }
   }
 

@@ -319,6 +319,70 @@ public class GridLayoutInfoTest {
     assertThat(viewportFiller.getFill()).isEqualTo(itemWidth * 3);
   }
 
+  @Test
+  public void testFullSpanChildWidthSpec() {
+    final GridLayoutInfo gridLayoutInfo = createGridLayoutInfo(VERTICAL, 3);
+    final int sizeSpec = SizeSpec.makeSizeSpec(200, EXACTLY);
+
+    final RenderInfo renderInfo = mock(RenderInfo.class);
+    when(renderInfo.isFullSpan()).thenReturn(true);
+
+    final int heightSpec = gridLayoutInfo.getChildHeightSpec(sizeSpec, renderInfo);
+    assertThat(SizeSpec.getMode(heightSpec)).isEqualTo(UNSPECIFIED);
+
+    final int widthSpec = gridLayoutInfo.getChildWidthSpec(sizeSpec, renderInfo);
+
+    assertThat(SizeSpec.getSize(widthSpec)).isEqualTo(200);
+    assertThat(SizeSpec.getMode(widthSpec)).isEqualTo(EXACTLY);
+  }
+
+  @Test
+  public void testFullSpanChildHeightSpec() {
+    final GridLayoutInfo gridLayoutInfo = createGridLayoutInfo(HORIZONTAL, 3);
+    final int sizeSpec = SizeSpec.makeSizeSpec(200, EXACTLY);
+
+    final RenderInfo renderInfo = mock(RenderInfo.class);
+    when(renderInfo.isFullSpan()).thenReturn(true);
+
+    final int widthSpec = gridLayoutInfo.getChildWidthSpec(sizeSpec, renderInfo);
+    assertThat(SizeSpec.getMode(widthSpec)).isEqualTo(UNSPECIFIED);
+
+    final int heightSpec = gridLayoutInfo.getChildHeightSpec(sizeSpec, renderInfo);
+
+    assertThat(SizeSpec.getSize(heightSpec)).isEqualTo(200);
+    assertThat(SizeSpec.getMode(heightSpec)).isEqualTo(EXACTLY);
+  }
+
+  @Test
+  public void testGridSpanSizeLookup() {
+    final GridLayoutInfo gridLayoutInfo = createGridLayoutInfo(HORIZONTAL, 3);
+
+    final RenderInfo renderInfo1 = mock(RenderInfo.class);
+    when(renderInfo1.isFullSpan()).thenReturn(true);
+    when(renderInfo1.getSpanSize()).thenReturn(1);
+
+    final RenderInfo renderInfo2 = mock(RenderInfo.class);
+    when(renderInfo2.isFullSpan()).thenReturn(false);
+    when(renderInfo2.getSpanSize()).thenReturn(2);
+
+    final RenderInfo renderInfo3 = mock(RenderInfo.class);
+    when(renderInfo3.isFullSpan()).thenReturn(false);
+    when(renderInfo3.getSpanSize()).thenReturn(1);
+
+    final LayoutInfo.RenderInfoCollection renderInfoCollection =
+        mock(LayoutInfo.RenderInfoCollection.class);
+    when(renderInfoCollection.getRenderInfoAt(0)).thenReturn(renderInfo1);
+    when(renderInfoCollection.getRenderInfoAt(1)).thenReturn(renderInfo2);
+    when(renderInfoCollection.getRenderInfoAt(2)).thenReturn(renderInfo3);
+    gridLayoutInfo.setRenderInfoCollection(renderInfoCollection);
+
+    final GridLayoutManager.SpanSizeLookup spanSizeLookup =
+        ((GridLayoutManager) gridLayoutInfo.getLayoutManager()).getSpanSizeLookup();
+    assertThat(spanSizeLookup.getSpanSize(0)).isEqualTo(3);
+    assertThat(spanSizeLookup.getSpanSize(1)).isEqualTo(2);
+    assertThat(spanSizeLookup.getSpanSize(2)).isEqualTo(1);
+  }
+
   private static GridLayoutInfo createGridLayoutInfo(int direction, int spanCount) {
     return new GridLayoutInfo(RuntimeEnvironment.application, spanCount, direction, false);
   }
