@@ -14,8 +14,10 @@ package com.facebook.samples.litho.hscroll;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.widget.LinearLayout;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.sections.widget.RecyclerCollectionEventsController;
 import com.facebook.samples.litho.NavigatableDemoActivity;
 
 public class HorizontalScrollWithSnapActivity extends NavigatableDemoActivity {
@@ -29,9 +31,24 @@ public class HorizontalScrollWithSnapActivity extends NavigatableDemoActivity {
     super.onCreate(savedInstanceState);
 
     final ComponentContext componentContext = new ComponentContext(this);
-    setContentView(
+    final LinearLayout container = new LinearLayout(this);
+    container.setOrientation(LinearLayout.VERTICAL);
+    final RecyclerCollectionEventsController eventsController =
+        new RecyclerCollectionEventsController();
+    container.addView(
         LithoView.create(
             this,
-            HorizontalScrollWithSnapComponent.create(componentContext).colors(colors).build()));
+            HorizontalScrollWithSnapComponent.create(componentContext)
+                .colors(colors)
+                .eventsController(eventsController)
+                .build()));
+    container.addView(
+        LithoView.create(
+            this,
+            HorizontalScrollScrollerComponent.create(componentContext)
+                .colors(colors)
+                .eventsController(eventsController)
+                .build()));
+    setContentView(container);
   }
 }

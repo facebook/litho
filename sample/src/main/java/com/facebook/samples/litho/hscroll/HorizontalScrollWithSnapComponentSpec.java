@@ -22,7 +22,6 @@ import android.graphics.Rect;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -49,7 +48,10 @@ import com.facebook.litho.widget.ItemSelectedEvent;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.Spinner;
 import com.facebook.litho.widget.Text;
+import com.facebook.litho.widget.VerticalGravity;
+import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaJustify;
 import java.util.Arrays;
 
 @LayoutSpec
@@ -62,11 +64,7 @@ public class HorizontalScrollWithSnapComponentSpec {
       new int[] {SNAP_NONE, SNAP_TO_START, SNAP_TO_CENTER, SNAP_TO_CENTER_CHILD};
 
   @OnCreateInitialState
-  static void onCreateInitialState(
-      ComponentContext c,
-      StateValue<RecyclerCollectionEventsController> eventsController,
-      StateValue<Integer> snapMode) {
-    eventsController.set(new RecyclerCollectionEventsController());
+  static void onCreateInitialState(ComponentContext c, StateValue<Integer> snapMode) {
     snapMode.set(SNAP_NONE);
   }
 
@@ -74,14 +72,31 @@ public class HorizontalScrollWithSnapComponentSpec {
   static Component onCreateLayout(
       ComponentContext c,
       @Prop Integer[] colors,
-      @State RecyclerCollectionEventsController eventsController,
+      @Prop RecyclerCollectionEventsController eventsController,
       @State int snapMode) {
 
     final RecyclerConfiguration recyclerConfiguration =
         new ListRecyclerConfiguration(
             LinearLayoutManager.HORIZONTAL, /*reverseLayout*/ false, snapMode);
     return Column.create(c)
-        .backgroundColor(Color.WHITE)
+        .paddingDip(YogaEdge.ALL, 5)
+        .child(
+            Row.create(c)
+                .alignContent(YogaAlign.STRETCH)
+                .marginDip(YogaEdge.TOP, 10)
+                .child(
+                    Text.create(c)
+                        .alignSelf(YogaAlign.CENTER)
+                        .flexGrow(2f)
+                        .text("Snap type: ")
+                        .textSizeSp(20))
+                .child(
+                    Spinner.create(c)
+                        .flexGrow(1.f)
+                        .options(Arrays.asList(SNAP_MODE_STRING))
+                        .selectedOption(getSnapModeString(snapMode))
+                        .itemSelectedEventHandler(
+                            HorizontalScrollWithSnapComponent.onSnapModeSelected(c))))
         .child(
             RecyclerCollectionComponent.create(c)
                 .key("snapMode" + snapMode)
@@ -116,48 +131,30 @@ public class HorizontalScrollWithSnapComponentSpec {
                         outRect.right = endPx;
                       }
                     })
-                .eventsController(eventsController)
-                .build())
-        .child(
-            Text.create(c)
-                .paddingDip(YogaEdge.TOP, 5)
-                .text("SCROLL TO NEXT")
-                .textSizeSp(30)
-                .clickHandler(HorizontalScrollWithSnapComponent.onClick(c, true)))
-        .child(
-            Text.create(c)
-                .text("SCROLL TO PREVIOUS")
-                .textSizeSp(30)
-                .clickHandler(HorizontalScrollWithSnapComponent.onClick(c, false)))
-        .child(
-            Spinner.create(c)
-                .options(Arrays.asList(SNAP_MODE_STRING))
-                .selectedOption(getSnapModeString(snapMode))
-                .itemSelectedEventHandler(HorizontalScrollWithSnapComponent.onItemSelected(c)))
+                .eventsController(eventsController))
         .build();
   }
 
   @OnEvent(RenderEvent.class)
-  static RenderInfo onRender(ComponentContext c, @FromEvent Object model) {
+  static RenderInfo onRender(ComponentContext c, @FromEvent Object model, @FromEvent int index) {
     return ComponentRenderInfo.create()
-        .component(Row.create(c).widthDip(120).heightDip(120).backgroundColor((int) model))
+        .component(
+            Row.create(c)
+                .justifyContent(YogaJustify.CENTER)
+                .widthDip(120)
+                .heightDip(120)
+                .backgroundColor((int) model)
+                .child(
+                    Text.create(c)
+                        .textSizeSp(20)
+                        .textColor(Color.LTGRAY)
+                        .text(Integer.toString(index))
+                        .verticalGravity(VerticalGravity.CENTER)))
         .build();
   }
 
-  @OnEvent(ClickEvent.class)
-  static void onClick(
-      ComponentContext c,
-      @State RecyclerCollectionEventsController eventsController,
-      @Param boolean forward) {
-    if (forward) {
-      eventsController.requestScrollToNextPosition(true);
-    } else {
-      eventsController.requestScrollToPreviousPosition(true);
-    }
-  }
-
   @OnEvent(ItemSelectedEvent.class)
-  static void onItemSelected(ComponentContext c, @FromEvent String newSelection) {
+  static void onSnapModeSelected(ComponentContext c, @FromEvent String newSelection) {
     HorizontalScrollWithSnapComponent.updateSnapMode(c, getSnapModeInt(newSelection));
   }
 
