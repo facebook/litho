@@ -71,21 +71,60 @@ Other snapping options are SNAP_NONE, SNAP_TO_END, SNAP_TO_CENTER.
 
 
 ### Setting the height of a horizontal RecyclerCollectionComponent
-
-A horizontal `RecyclerCollectionComponent` expects to receive its height through a `height` prop. If no height is specified, it will take a height of 0.
-If you don't know the height of your `RecyclerCollectionComponent`, you can configure it to determine its own height by enabling the `canMeasure` prop. This will measure the first child Component in the Sections hierarchy and will set the height of the entire `RecyclerCollectionComponent` to the height of the child.
+You can set the height of horizontally scrolling `RecyclerCollectionComponent` in three ways:
+1) The most performant way: A fixed height is set on the H-Scroll component.
+In this case, the client knows the height of the h-scroll when it creates it. The height cannot be changed once the h-scroll gets measured. Children of this h-scroll are measured with at most the height of the h-scroll and positioned at the start of the h-scroll. In Litho this is the most efficient way to set the height of an h-scroll and it's advisable to use this option whenever possible.
+To do this, just set the height throught the `height` prop on your `RecyclerCollectionComponent`:
+```java
+final Component component =
+    RecyclerCollectionComponent.create(context)
+        .section(FooSection.create(new SectionContext(context)).build())
+        .height(heightValue)
+        .build();
+ ```
+2) Height is not known when component is created: Let the h-scroll set its height to the height of the first item.
+In cases where the height of the h-scroll is not known at the time it is created, the height will be determined by measuring the first child of the h-scroll and setting that as the height of the h-scroll. This measurement happens once only, when the h-scroll is first measured, and the height cannot be changed after that. All other children heights will be measured with at most the height of the h-scroll and position at the start of the h-scroll.
+To enable this, instead of passing a `height` prop on the `RecyclerCollectionComponent`, tell it through the `canMeasureRecycler` prop it should measure itself.
 
 ```java
 final Component component =
     RecyclerCollectionComponent.create(context)
         .section(FooSection.create(new SectionContext(context)).build())
-        .recyclerConfiguration(recyclerConfiguration)
-        .disablePTR(true)
         .canMeasureRecycler(true)
         .build();
  ```
 
-Whenever possible, you should specify an exact height on the `RecyclerCollectionComponent` to avoid an extra measure for determining the height.
+Note that if you don't set a non-zero height on the `RecyclerCollectionComponent` and `canMeasureRecycler` is not enabled, your RecyclerCollectionComponent will end up with a height of 0.
+
+3) The underperformant way: Let the h-scroll dynamically change its height to fit the tallest item
+H-Scrolls can be configured to support items of different heights or remeasuring the height if the height of the children could change after the initial measurement. In this case, the initial height of the h-scroll is determined by the height of the tallest child.
+Initial height: The initial height of the h-scroll is determined by the height of the tallest child.
+Expanding more than the height of the h-scroll: If a child wants to expand to become taller than the current height of the h-scroll, the h-scroll will be remeasured with the new height of the child. Other items will not be remeasured.
+Collapsing the highest child: If the child with the biggest height collapses, then the h-scroll will again determine what its height should be by remeasuring all the items.
+
+> Enabling this option should be done only if absolutely needed and should especially be avoided for lists with infinite scrolling.
+
+Measuring all the children to determine the tallest comes with a high performance cost, especially for infinite loading h-scrolls when the height needs to be remeasured every time new items are inserted.
+If you must do this, you can pass your own [RecyclerConfiguration](/javadoc/com/facebook/litho/sections/widget/RecyclerConfiguration.html) to the `RecyclerCollectionComponent` and enable this on the [RecyclerBinderConfigurationer](/javadoc/com/facebook/litho/sections/widget/RecyclerBinderConfiguration.html) that is used to create the `RecyclerConfiguration`.
+Here's an example of enabling that on a horizontal linear list:
+
+```java
+final RecyclerBinderConfiguration configuration = new RecyclerBinderConfiguration(rangeRatio);
+configuration.setHasDynamicItemHeight((true);
+RecyclerConfiguration recyclerConfiguration =
+    new ListRecyclerConfiguration(
+        LinearLayoutManager.HORIZONTAL,
+        reverseLayout,
+        snapMode,
+        configuration);
+
+final Component component =
+    RecyclerCollectionComponent.create(context)
+        .section(FooSection.create(new SectionContext(context)).build())
+        .recyclerConfiguration(recyclerConfiguration)
+        .canMeasureRecycler(true)
+        .build();
+```
 
 ### Pull to refresh
 `RecyclerCollectionComponent` enables pull-to-refresh by default and sends an event handler to the underlying `Recycler` that will trigger a refresh on the SectionTree.
