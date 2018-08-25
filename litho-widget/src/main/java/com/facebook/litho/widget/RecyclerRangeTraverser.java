@@ -17,12 +17,25 @@ package com.facebook.litho.widget;
 
 /** An interface for generating traversing order for a range. */
 public interface RecyclerRangeTraverser {
-  RecyclerRangeTraverser DEFAULT_TRAVERSER =
+  RecyclerRangeTraverser FORWARD_TRAVERSER =
       new RecyclerRangeTraverser() {
         @Override
         public void traverse(
             int rangeStart, int rangeEnd, int firstVisible, int lastVisible, Processor processor) {
           for (int i = rangeStart; i < rangeEnd; i++) {
+            if (!processor.process(i)) {
+              return;
+            }
+          }
+        }
+      };
+
+  RecyclerRangeTraverser BACKWARD_TRAVERSER =
+      new RecyclerRangeTraverser() {
+        @Override
+        public void traverse(
+            int rangeStart, int rangeEnd, int firstVisible, int lastVisible, Processor processor) {
+          for (int i = rangeEnd - 1; i >= rangeStart; i--) {
             if (!processor.process(i)) {
               return;
             }

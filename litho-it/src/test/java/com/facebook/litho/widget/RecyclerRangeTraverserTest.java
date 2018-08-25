@@ -35,31 +35,45 @@ public class RecyclerRangeTraverserTest implements RecyclerRangeTraverser.Proces
   }
 
   @Test
-  public void testDefaultTraverserWithEmptyRange() {
-    RecyclerRangeTraverser traverser = RecyclerRangeTraverser.DEFAULT_TRAVERSER;
+  public void testForwardTraverserWithEmptyRange() {
+    RecyclerRangeTraverser traverser = RecyclerRangeTraverser.FORWARD_TRAVERSER;
     traverser.traverse(0, 0, 0, 0, this);
     assertThat(mCollectedIndices).isEqualTo(Arrays.asList());
   }
 
   @Test
-  public void testDefaultTraverserWithSingleItemRange() {
-    RecyclerRangeTraverser traverser = RecyclerRangeTraverser.DEFAULT_TRAVERSER;
+  public void testForwardTraverserWithSingleItemRange() {
+    RecyclerRangeTraverser traverser = RecyclerRangeTraverser.FORWARD_TRAVERSER;
     traverser.traverse(0, 1, 0, 0, this);
     assertThat(mCollectedIndices).isEqualTo(Arrays.asList(0));
   }
 
   @Test
-  public void testDefaultTraverserWithEntireRangeVisible() {
-    RecyclerRangeTraverser traverser = RecyclerRangeTraverser.DEFAULT_TRAVERSER;
+  public void testForwardTraverserWithEntireRangeVisible() {
+    RecyclerRangeTraverser traverser = RecyclerRangeTraverser.FORWARD_TRAVERSER;
     traverser.traverse(0, 2, 0, 1, this);
     assertThat(mCollectedIndices).isEqualTo(Arrays.asList(0, 1));
   }
 
   @Test
-  public void testDefaultTraverserWithSimpleRange() {
-    RecyclerRangeTraverser traverser = RecyclerRangeTraverser.DEFAULT_TRAVERSER;
+  public void testBackwardTraverserWithEntireRangeVisible() {
+    RecyclerRangeTraverser traverser = RecyclerRangeTraverser.BACKWARD_TRAVERSER;
+    traverser.traverse(0, 2, 0, 1, this);
+    assertThat(mCollectedIndices).isEqualTo(Arrays.asList(1, 0));
+  }
+
+  @Test
+  public void testForwardTraverserWithSimpleRange() {
+    RecyclerRangeTraverser traverser = RecyclerRangeTraverser.FORWARD_TRAVERSER;
     traverser.traverse(0, 10, 2, 4, this);
     assertThat(mCollectedIndices).isEqualTo(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9));
+  }
+
+  @Test
+  public void testBackwardTraverserWithSimpleRange() {
+    RecyclerRangeTraverser traverser = RecyclerRangeTraverser.BACKWARD_TRAVERSER;
+    traverser.traverse(0, 10, 2, 4, this);
+    assertThat(mCollectedIndices).isEqualTo(Arrays.asList(9, 8, 7, 6, 5, 4, 3, 2, 1, 0));
   }
 
   @Test

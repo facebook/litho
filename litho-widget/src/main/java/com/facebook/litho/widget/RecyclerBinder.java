@@ -374,8 +374,7 @@ public class RecyclerBinder
     private boolean enableStableIds;
     private boolean useSharedLayoutStateFuture;
     private @Nullable List<ComponentLogParams> invalidStateLogParamsList;
-    private RecyclerRangeTraverser recyclerRangeTraverser =
-        RecyclerRangeTraverser.DEFAULT_TRAVERSER;
+    private RecyclerRangeTraverser recyclerRangeTraverser;
     private LayoutThreadPoolConfiguration threadPoolForSharedLayoutStateFutureConfig;
 
     /**
@@ -631,7 +630,14 @@ public class RecyclerBinder
     mHasDynamicItemHeight =
         mLayoutInfo.getScrollDirection() == HORIZONTAL ? builder.hasDynamicItemHeight : false;
     mWrapContent = builder.wrapContent;
-    mRangeTraverser = builder.recyclerRangeTraverser;
+
+    if (builder.recyclerRangeTraverser != null) {
+      mRangeTraverser = builder.recyclerRangeTraverser;
+    } else if (getStackFromEnd() ^ getReverseLayout()) { // layout from end
+      mRangeTraverser = RecyclerRangeTraverser.BACKWARD_TRAVERSER;
+    } else {
+      mRangeTraverser = RecyclerRangeTraverser.FORWARD_TRAVERSER;
+    }
 
     mViewportManager =
         new ViewportManager(
@@ -2425,6 +2431,15 @@ public class RecyclerBinder
     final LayoutManager layoutManager = mLayoutInfo.getLayoutManager();
     if (layoutManager instanceof LinearLayoutManager) {
       return ((LinearLayoutManager) layoutManager).getReverseLayout();
+    } else {
+      return false;
+    }
+  }
+
+  private boolean getStackFromEnd() {
+    final LayoutManager layoutManager = mLayoutInfo.getLayoutManager();
+    if (layoutManager instanceof LinearLayoutManager) {
+      return ((LinearLayoutManager) layoutManager).getStackFromEnd();
     } else {
       return false;
     }
