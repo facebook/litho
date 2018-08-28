@@ -14,7 +14,14 @@ package com.facebook.samples.litho;
 
 import android.app.Application;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.sonar.plugins.litho.LithoSonarDescriptors;
 import com.facebook.soloader.SoLoader;
+import com.facebook.sonar.android.AndroidSonarClient;
+import com.facebook.sonar.android.utils.SonarUtils;
+import com.facebook.sonar.core.SonarClient;
+import com.facebook.sonar.plugins.console.JavascriptEnvironment;
+import com.facebook.sonar.plugins.inspector.DescriptorMapping;
+import com.facebook.sonar.plugins.inspector.InspectorSonarPlugin;
 
 public class LithoSampleApplication extends Application {
 
@@ -24,5 +31,14 @@ public class LithoSampleApplication extends Application {
 
     Fresco.initialize(this);
     SoLoader.init(this, false);
+
+    if (SonarUtils.shouldEnableSonar(this)) {
+      final SonarClient client = AndroidSonarClient.getInstance(this);
+      final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
+      LithoSonarDescriptors.add(descriptorMapping);
+      client.addPlugin(
+          new InspectorSonarPlugin(this, descriptorMapping, new JavascriptEnvironment()));
+      client.start();
+    }
   }
 }

@@ -153,10 +153,6 @@ LITHO_SECTIONS_PROCESSOR_LIB_TARGET = make_dep_path("litho-sections-processor/sr
 # Sample app
 LITHO_SAMPLE_JAVA = make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho")
 
-LITHO_SAMPLE_APP_TARGET = make_dep_path("sample/src/oss-only/java/com/facebook/samples/litho:litho")
-
-LITHO_SAMPLE_APP_EXTRAS = []
-
 LITHO_SAMPLE_BAREBONES_JAVA = make_dep_path("sample-barebones/src/main/java/com/facebook/samples/lithobarebones:lithobarebones")
 
 LITHO_SAMPLE_BAREBONES_RES = make_dep_path("sample-barebones:res")
@@ -177,6 +173,10 @@ LITHO_FRESCO_TARGETS = [
     make_dep_path("lib/fbcore:fbcore"),
     make_dep_path("lib/fresco:fresco-drawee"),
     make_dep_path("lib/fresco:fresco"),
+]
+
+LITHO_FLIPPER_TARGETS = [
+    make_dep_path("lib/flipper:flipper"),
 ]
 
 LITHO_FRESCO_PIPELINE_TARGET = [make_dep_path("lib/fresco:imagepipeline")]

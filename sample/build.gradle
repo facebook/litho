@@ -35,7 +35,6 @@ android {
         main {
             java {
                 srcDirs 'src/main'
-                srcDirs 'src/oss-only'
             }
         }
     }
@@ -55,6 +54,7 @@ dependencies {
     // First-party
     implementation deps.soloader
     implementation deps.fresco
+    implementation deps.flipper
 
     // Annotations
     compileOnly deps.jsr305
