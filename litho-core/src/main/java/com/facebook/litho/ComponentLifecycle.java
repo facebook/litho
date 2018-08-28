@@ -127,12 +127,15 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
           final int heightSpec;
           final boolean isTracing = ComponentsSystrace.isTracing();
 
-          if (isTracing) {
-            ComponentsSystrace.beginSection("measure:" + component.getSimpleName());
-          }
-
           widthSpec = SizeSpec.makeSizeSpecFromCssSpec(width, widthMode);
           heightSpec = SizeSpec.makeSizeSpecFromCssSpec(height, heightMode);
+
+          if (isTracing) {
+            ComponentsSystrace.beginSectionWithArgs("measure:" + component.getSimpleName())
+                .arg("widthSpec", SizeSpec.toString(widthSpec))
+                .arg("heightSpec", SizeSpec.toString(heightSpec))
+                .flush();
+          }
 
           node.setLastWidthSpec(widthSpec);
           node.setLastHeightSpec(heightSpec);
