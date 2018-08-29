@@ -216,14 +216,12 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     final ComponentTree componentTree = mLithoView.getComponentTree();
+    final boolean isIncrementalMountEnabled = localVisibleRect != null;
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      String logTag = componentTree.getContext().getLogTag();
-      if (logTag == null) {
-        ComponentsSystrace.beginSection("mount");
-      } else {
-        ComponentsSystrace.beginSection("mount:" + logTag);
-      }
+      final String mountText = isIncrementalMountEnabled ? "incrementalMount" : "mount";
+      final String logTag = componentTree.getContext().getLogTag();
+      ComponentsSystrace.beginSection(logTag == null ? mountText : (mountText + ": " + logTag));
     }
 
     final ComponentsLogger logger = componentTree.getContext().getLogger();
@@ -260,8 +258,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (mountPerfEvent != null && logger.isTracing(mountPerfEvent)) {
       mMountStats.enableLogging();
     }
-
-    final boolean isIncrementalMountEnabled = localVisibleRect != null;
 
     if (!isIncrementalMountEnabled
         || !performIncrementalMount(layoutState, localVisibleRect, processVisibilityOutputs)) {
