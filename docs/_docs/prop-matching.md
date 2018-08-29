@@ -190,7 +190,7 @@ Obviously, this outrageous omission of puppies couldn't possibly pass the test
 run and will fail with a helpful error message:
 
 ```
-java.lang.AssertionError: 
+java.lang.AssertionError:
 Expecting:
  <FeedItemComponent{0, 0 - 100, 100}
   ComplexComponent{0, 0 - 100, 0}
@@ -287,7 +287,7 @@ for the annotation processing step to work.
 
 In order to save you copy-pasting boilerplate all over your project, it is
 recommended keep a rule definition like this in a well-known place
-(e.g. `//buck_imports/litho_testspec.bzl`). You would obviously have to adjust
+(e.g. `//tools/build_defs/android/litho_testspec.bzl`). You would obviously have to adjust
 the library paths to the corresponding targets in your code base.
 
 ```python
