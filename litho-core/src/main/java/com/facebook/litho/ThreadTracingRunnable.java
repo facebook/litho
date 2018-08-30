@@ -36,6 +36,9 @@ package com.facebook.litho;
  */
 public abstract class ThreadTracingRunnable implements Runnable {
 
+  private static final String MESSAGE_PART_1 = "Runnable instantiated on thread id: ";
+  private static final String MESSAGE_PART_2 = ", name: ";
+
   private final Throwable mTracingThrowable;
 
   public ThreadTracingRunnable() {
@@ -43,10 +46,11 @@ public abstract class ThreadTracingRunnable implements Runnable {
     // This Throwable is saving the call stack which created this Runnable.
     mTracingThrowable =
         new Throwable(
-            "Runnable instantiated on thread id: "
-                + thread.getId()
-                + ", name: "
-                + thread.getName());
+            new StringBuilder(MESSAGE_PART_1)
+                .append(thread.getId())
+                .append(MESSAGE_PART_2)
+                .append(thread.getName())
+                .toString());
   }
 
   /**
