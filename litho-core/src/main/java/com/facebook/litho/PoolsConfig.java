@@ -43,8 +43,8 @@ public class PoolsConfig {
    * Custom factory for Yoga nodes. Used to enable direct byte buffers to set Yoga style properties
    * (rather than JNI)
    */
-  @Nullable public static YogaNodeFactory sYogaNodeFactory = null;
+  @Nullable public static volatile YogaNodeFactory sYogaNodeFactory = null;
 
   /** Factory to create custom InternalNodes for Components. */
-  @Nullable public static InternalNodeFactory sInternalNodeFactory = null;
+  @Nullable public static volatile InternalNodeFactory sInternalNodeFactory = null;
 }
