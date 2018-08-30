@@ -103,11 +103,35 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
   }
 
   /**
+   * Send the {@link RecyclerCollectionComponent} a request to scroll the content to the given
+   * target position taking into account provided snapping behavior. The provided smoothScroller is
+   * used to scroll to the target.
+   */
+  public void requestScrollToPositionWithSnap(
+      final int target, final RecyclerView.SmoothScroller smoothScroller) {
+    requestScrollToPositionInner(true, target, target, smoothScroller);
+  }
+
+  /**
    * @param animated whether the scroll will happen with animation.
    * @param defaultTarget target to use as fallback.
    * @param snapTarget target that takes into account snapping behavior.
    */
   private void requestScrollToPositionInner(boolean animated, int defaultTarget, int snapTarget) {
+    requestScrollToPositionInner(animated, defaultTarget, snapTarget, null);
+  }
+
+  /**
+   * @param animated whether the scroll will happen with animation.
+   * @param defaultTarget target to use as fallback.
+   * @param snapTarget target that takes into account snapping behavior.
+   * @param smoothScroller custom smooth scroller
+   */
+  private void requestScrollToPositionInner(
+      boolean animated,
+      int defaultTarget,
+      int snapTarget,
+      RecyclerView.SmoothScroller smoothScroller) {
     final RecyclerView recyclerView = getRecyclerView();
     if (recyclerView == null) {
       return;
@@ -123,14 +147,17 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
       return;
     }
 
-    if (mSnapMode == SNAP_NONE) {
+    if (smoothScroller == null && mSnapMode == SNAP_NONE) {
       requestScrollToPosition(defaultTarget, true);
       return;
     }
 
-    final RecyclerView.SmoothScroller smoothScroller =
-        SnapUtil.getSmoothScrollerWithOffset(
-            recyclerView.getContext(), 0, getSmoothScrollAlignmentTypeFrom(mSnapMode));
+    if (smoothScroller == null) {
+      smoothScroller =
+          SnapUtil.getSmoothScrollerWithOffset(
+              recyclerView.getContext(), 0, getSmoothScrollAlignmentTypeFrom(mSnapMode));
+    }
+
     smoothScroller.setTargetPosition(snapTarget);
     layoutManager.startSmoothScroll(smoothScroller);
   }
