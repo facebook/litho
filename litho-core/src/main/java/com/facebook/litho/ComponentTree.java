@@ -1965,7 +1965,7 @@ public class ComponentTree {
         return calculateLayoutState(
             lock,
             context,
-            root,
+            root.makeShallowCopy(),
             widthSpec,
             heightSpec,
             diffingEnabled,
@@ -2052,7 +2052,6 @@ public class ComponentTree {
   /** A {@link FutureTask} used to deduplicate calculating the same LayoutState across threads. */
   private class LayoutStateFuture extends FutureTask<LayoutState> {
 
-    private final AtomicBoolean isFirstGet = new AtomicBoolean(true);
     private final AtomicInteger runningThreadId = new AtomicInteger(-1);
     private final ComponentContext context;
     private final Component root;
@@ -2061,6 +2060,8 @@ public class ComponentTree {
     private final boolean diffingEnabled;
     @Nullable private final LayoutState previousLayoutState;
     @Nullable private final TreeProps treeProps;
+    private final AtomicBoolean layoutStateReleased = new AtomicBoolean(false);
+    private volatile boolean released = false;
 
     private LayoutStateFuture(
         @Nullable final Object lock,
@@ -2100,25 +2101,12 @@ public class ComponentTree {
       this.treeProps = treeProps;
     }
 
-    public void release() {
-      if (!isDone() && ThreadUtils.isMainThread() && mLayoutThreadHandler != null) {
-        // If the future isn't completed, we don't want to block the main thread on the synchronous
-        // get() call, so we post this release to the layout thread.
-        mLayoutThreadHandler.post(
-            new Runnable() {
-              @Override
-              public void run() {
-                final LayoutState layoutState = get();
-                layoutState.releaseRef();
-                // get() calls acquireRef, so we need to release again.
-                layoutState.releaseRef();
-              }
-            });
-      } else {
-        final LayoutState layoutState = get();
-        layoutState.releaseRef();
-        // get() calls acquireRef, so we need to release again.
-        layoutState.releaseRef();
+    void release() {
+      released = true;
+      if (isDone() && layoutStateReleased.compareAndSet(false, true)) {
+        // Only release if the future is done, to make sure we don't block the calling thread on
+        // layout calculation
+        getOrThrowWithCause().releaseRef();
       }
     }
 
@@ -2129,6 +2117,7 @@ public class ComponentTree {
       }
     }
 
+    @Nullable
     @Override
     public LayoutState get() {
       final int runningThreadId = this.runningThreadId.get();
@@ -2146,16 +2135,7 @@ public class ComponentTree {
 
       final LayoutState layoutState;
       try {
-        layoutState = super.get();
-      } catch (ExecutionException e) {
-        final Throwable cause = e.getCause();
-        if (cause instanceof RuntimeException) {
-          throw (RuntimeException) cause;
-        } else {
-          throw new RuntimeException(e.getMessage(), e);
-        }
-      } catch (InterruptedException | CancellationException e) {
-        throw new RuntimeException(e.getMessage(), e);
+        layoutState = getOrThrowWithCause();
       } finally {
         if (didRaiseThreadPriority) {
           // Reset the running thread's priority after we're unblocked.
@@ -2166,7 +2146,29 @@ public class ComponentTree {
         }
       }
 
-      return layoutState.acquireRef();
+      if (released) {
+        if (layoutStateReleased.compareAndSet(false, true)) {
+          layoutState.releaseRef();
+        }
+        return null;
+      } else {
+        return layoutState.acquireRef();
+      }
+    }
+
+    private LayoutState getOrThrowWithCause() {
+      try {
+        return super.get();
+      } catch (ExecutionException e) {
+        final Throwable cause = e.getCause();
+        if (cause instanceof RuntimeException) {
+          throw (RuntimeException) cause;
+        } else {
+          throw new RuntimeException(e.getMessage(), e);
+        }
+      } catch (InterruptedException | CancellationException e) {
+        throw new RuntimeException(e.getMessage(), e);
+      }
     }
 
     @Override
@@ -2187,6 +2189,9 @@ public class ComponentTree {
         return false;
       }
       if (diffingEnabled != that.diffingEnabled) {
+        return false;
+      }
+      if (released != that.released) {
         return false;
       }
       if (!context.equals(that.context)) {
