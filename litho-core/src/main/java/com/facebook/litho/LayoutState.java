@@ -65,6 +65,7 @@ import android.view.Window;
 import android.view.accessibility.AccessibilityManager;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.displaylist.DisplayList;
 import com.facebook.litho.displaylist.DisplayListException;
@@ -628,6 +629,18 @@ class LayoutState {
         ComponentsSystrace.endSection();
       }
       return;
+    }
+
+    // IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS sets node to YES and children to
+    // NO_HIDE_DESCENDANTS
+    if (node.getImportantForAccessibility()
+        == ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS) {
+      node.importantForAccessibility(ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES);
+      for (int i = 0, size = node.getChildCount(); i < size; i++) {
+        node.getChildAt(i)
+            .importantForAccessibility(
+                ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+      }
     }
 
     final boolean shouldGenerateDiffTree = layoutState.mShouldGenerateDiffTree;

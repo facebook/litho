@@ -21,10 +21,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @IntDef({
-    ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-    ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES,
-    ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO,
-    ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+  ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+  ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES,
+  ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO,
+  ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS,
+  ImportantForAccessibility.IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface ImportantForAccessibility {
@@ -48,4 +49,7 @@ public @interface ImportantForAccessibility {
    * descendant views.
    */
   int IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS = 0x00000004;
+
+  /** The view is important for accessibility, but none of its descendant views are. */
+  int IMPORTANT_FOR_ACCESSIBILITY_YES_HIDE_DESCENDANTS = 0x00000008;
 }
