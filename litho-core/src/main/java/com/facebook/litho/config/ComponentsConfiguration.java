@@ -174,9 +174,6 @@ public class ComponentsConfiguration {
 
   public static boolean prewarmImageTexture = false;
 
-  /** By default ComponentHost (extending ViewGroup) delay press state. */
-  public static boolean shouldDelayChildPressedState = true;
-
   public static boolean useNewIsEquivalentTo = false;
 
   /** Whether we should do incremental mount on pre draw */

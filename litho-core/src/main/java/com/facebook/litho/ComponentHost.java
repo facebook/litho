@@ -772,7 +772,7 @@ public class ComponentHost extends ViewGroup {
 
   @Override
   public boolean shouldDelayChildPressedState() {
-    return ComponentsConfiguration.shouldDelayChildPressedState;
+    return false;
   }
 
   @Override
