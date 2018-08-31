@@ -16,8 +16,6 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
-    useLibrary 'org.apache.http.legacy'
-
     targetCompatibility = targetCompatibilityVersion
     sourceCompatibility = sourceCompatibilityVersion
 
