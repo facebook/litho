@@ -179,9 +179,6 @@ public class ComponentsConfiguration {
   /** Whether we should do incremental mount on pre draw */
   public static boolean incrementalMountOnPreDraw = false;
 
-  /** Whether we should use the global visible rect for mounting recursively */
-  public static boolean useGlobalRectForRecursiveMounting = true;
-
   /** Whether we should use the PlaceholderComponent instead of Column as MountSpec holder. */
   public static boolean usePlaceholderComponent = false;
 }

@@ -288,16 +288,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
             // If the component is locked for animation then we need to make sure that all the
             // children are also mounted.
             final View view = (View) getItemAt(i).getContent();
-            if (ComponentsConfiguration.useGlobalRectForRecursiveMounting) {
-              // We're mounting everything, don't process visibility outputs as they will not be
-              // accurate.
-              mountViewIncrementally(view, false);
-            } else {
-              final Rect rect = ComponentsPools.acquireRect();
-              rect.set(0, 0, view.getWidth(), view.getHeight());
-              mountViewIncrementallyUsingLocalVisibleRect(view, rect, processVisibilityOutputs);
-              ComponentsPools.release(rect);
-            }
+            // We're mounting everything, don't process visibility outputs as they will not be
+            // accurate.
+            mountViewIncrementally(view, false);
           }
         } else if (!isMountable && isMounted) {
           unmountItem(i, mHostsByMarker);
@@ -2110,20 +2103,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     // hosting LithoView (which is what the localVisibleRect is measured relative to).
     final View view = (View) item.getContent();
 
-    if (ComponentsConfiguration.useGlobalRectForRecursiveMounting) {
-      mountViewIncrementally(view, processVisibilityOutputs);
-    } else {
-      final Rect rect = ComponentsPools.acquireRect();
-      rect.set(
-          Math.max(0, localVisibleRect.left - itemBounds.left),
-          Math.max(0, localVisibleRect.top - itemBounds.top),
-          itemBounds.width() - Math.max(0, itemBounds.right - localVisibleRect.right),
-          itemBounds.height() - Math.max(0, itemBounds.bottom - localVisibleRect.bottom));
-
-      mountViewIncrementallyUsingLocalVisibleRect(view, rect, processVisibilityOutputs);
-
-      ComponentsPools.release(rect);
-    }
+    mountViewIncrementally(view, processVisibilityOutputs);
   }
 
   private static void mountViewIncrementally(View view, boolean processVisibilityOutputs) {
@@ -2147,43 +2127,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       for (int i = 0; i < viewGroup.getChildCount(); i++) {
         final View childView = viewGroup.getChildAt(i);
         mountViewIncrementally(childView, processVisibilityOutputs);
-      }
-    }
-  }
-
-  private static void mountViewIncrementallyUsingLocalVisibleRect(
-      View view, Rect localVisibleRect, boolean processVisibilityOutputs) {
-    assertMainThread();
-
-    if (view instanceof LithoView) {
-      final LithoView lithoView = (LithoView) view;
-      if (lithoView.isIncrementalMountEnabled()) {
-        lithoView.performIncrementalMount(localVisibleRect, processVisibilityOutputs);
-      }
-    } else if (view instanceof ViewGroup) {
-      final ViewGroup viewGroup = (ViewGroup) view;
-
-      for (int i = 0; i < viewGroup.getChildCount(); i++) {
-        final View childView = viewGroup.getChildAt(i);
-        final int translationX = (int) childView.getTranslationX();
-        final int translationY = (int) childView.getTranslationY();
-        final int left = childView.getLeft() + translationX;
-        final int top = childView.getTop() + translationY;
-        final int right = childView.getRight() + translationX;
-        final int bottom = childView.getBottom() + translationY;
-
-        if (localVisibleRect.intersects(left, top, right, bottom)) {
-          final Rect rect = ComponentsPools.acquireRect();
-          rect.set(
-              Math.max(0, localVisibleRect.left - left),
-              Math.max(0, localVisibleRect.top - top),
-              childView.getWidth() - Math.max(0, right - localVisibleRect.right),
-              childView.getHeight() - Math.max(0, bottom - localVisibleRect.bottom));
-
-          mountViewIncrementallyUsingLocalVisibleRect(childView, rect, processVisibilityOutputs);
-
-          ComponentsPools.release(rect);
-        }
       }
     }
   }
