@@ -41,6 +41,7 @@ public class RecyclerBinderConfiguration {
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
   private boolean mUseSharedLayoutStateFuture;
   private LayoutThreadPoolConfiguration mThreadPoolForSharedLayoutStateFutureConfig;
+  private boolean mAsyncInitRange;
 
   public RecyclerBinderConfiguration(double rangeRatio) {
     this(rangeRatio, null, false);
@@ -123,6 +124,10 @@ public class RecyclerBinderConfiguration {
     mThreadPoolForSharedLayoutStateFutureConfig = config;
   }
 
+  public void setAsyncInitRange(boolean asyncInitRange) {
+    mAsyncInitRange = asyncInitRange;
+  }
+
   public void setEnableStableIds(boolean enableStableIds) {
     mEnableStableIds = enableStableIds;
   }
@@ -169,6 +174,10 @@ public class RecyclerBinderConfiguration {
 
   public LayoutThreadPoolConfiguration getThreadPoolForSharedLayoutStateFutureConfig() {
     return mThreadPoolForSharedLayoutStateFutureConfig;
+  }
+
+  public boolean getAsyncInitRange() {
+    return mAsyncInitRange;
   }
 
   public boolean getEnableStableIds() {

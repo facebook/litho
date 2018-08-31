@@ -438,6 +438,7 @@ public class RecyclerBinder
     private @Nullable List<ComponentLogParams> invalidStateLogParamsList;
     private RecyclerRangeTraverser recyclerRangeTraverser;
     private LayoutThreadPoolConfiguration threadPoolForSharedLayoutStateFutureConfig;
+    private boolean asyncInitRange = ComponentsConfiguration.asyncInitRange;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -602,6 +603,12 @@ public class RecyclerBinder
       return this;
     }
 
+    /** If true, the async range calculation isn't blocked on the first item finishing layout */
+    public Builder asyncInitRange(boolean asyncInitRange) {
+      this.asyncInitRange = asyncInitRange;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext = new ComponentContext(c);
@@ -710,9 +717,7 @@ public class RecyclerBinder
     mEnableStableIds = builder.enableStableIds;
     mInvalidStateLogParamsList = builder.invalidStateLogParamsList;
 
-    // Will set this up properly in next diff, and disable it when wrap content or dynamic height
-    // are enabled.
-    mAsyncInitRange = false;
+    mAsyncInitRange = builder.asyncInitRange;
   }
 
   /**

@@ -139,6 +139,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
                 mRecyclerBinderConfiguration.getUseSharedLayoutStateFuture())
             .threadPoolForSharedLayoutStateFutureConfig(
                 mRecyclerBinderConfiguration.getThreadPoolForSharedLayoutStateFutureConfig())
+            .asyncInitRange(mRecyclerBinderConfiguration.getAsyncInitRange())
             .build(c);
     return (T)
         new SectionBinderTarget(

@@ -181,4 +181,7 @@ public class ComponentsConfiguration {
 
   /** Whether we should use the PlaceholderComponent instead of Column as MountSpec holder. */
   public static boolean usePlaceholderComponent = false;
+
+  /** If true, the async range calculation isn't blocked on the first item finishing layout */
+  public static boolean asyncInitRange = false;
 }
