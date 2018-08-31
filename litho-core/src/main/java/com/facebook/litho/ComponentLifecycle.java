@@ -134,6 +134,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
             ComponentsSystrace.beginSectionWithArgs("measure:" + component.getSimpleName())
                 .arg("widthSpec", SizeSpec.toString(widthSpec))
                 .arg("heightSpec", SizeSpec.toString(heightSpec))
+                .arg("componentId", component.getId())
                 .flush();
           }
 

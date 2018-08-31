@@ -602,7 +602,11 @@ class LayoutState {
       // If the nested tree is defined, it has been resolved during a measure call during
       // layout calculation.
       if (isTracing) {
-        ComponentsSystrace.beginSection("resolveNestedTree:" + component.getSimpleName());
+        ComponentsSystrace.beginSectionWithArgs("resolveNestedTree:" + component.getSimpleName())
+            .arg("widthSpec", "EXACTLY " + node.getWidth())
+            .arg("heightSpec", "EXACTLY " + node.getHeight())
+            .arg("rootComponentId", node.getRootComponent().getId())
+            .flush();
       }
       InternalNode nestedTree = resolveNestedTree(
           node,
