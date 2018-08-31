@@ -217,13 +217,15 @@ public class ChangeSetState {
                 currentChildren.get(section.getGlobalKey());
 
             if (valueAndIndex.second != j) {
-             currentChildren.put(section.getGlobalKey(), new Pair<>(valueAndIndex.first, j));
+              currentChildren.put(section.getGlobalKey(), new Pair<>(valueAndIndex.first, j));
             }
           }
         } else if (currentIndex > sectionToSwapIndex) { // We found something that was moved.
           sectionToSwapIndex = currentIndex;
-          swapToIndex = getPreviousChildrenCount(currentChildrenList, key) +
-              currentChildrenList.get(sectionToSwapIndex).getCount() - 1;
+          swapToIndex =
+              getPreviousChildrenCount(currentChildrenList, key)
+                  + currentChildrenList.get(sectionToSwapIndex).getCount()
+                  - 1;
         }
       }
     }
@@ -346,7 +348,7 @@ public class ChangeSetState {
                 newPrefix,
                 thread);
 
-        changeSets.put(activeChildIndex, ChangeSet.merge(currentChangeSet,changeSet));
+        changeSets.put(activeChildIndex, ChangeSet.merge(currentChangeSet, changeSet));
 
         if (currentChangeSet != null) {
           currentChangeSet.release();
@@ -363,54 +365,20 @@ public class ChangeSetState {
   }
 
   private static SparseArray<ChangeSet> acquireChangeSetSparseArray() {
-    //TODO use pools instead t11953296
+    // TODO use pools instead t11953296
     return new SparseArray<>();
   }
 
   private static void releaseChangeSetSparseArray(SparseArray<ChangeSet> changeSets) {
-    //TODO use pools t11953296
+    // TODO use pools t11953296
   }
 
   private static ChangeSetState acquireChangeSetState() {
-    //TODO use pools t11953296
+    // TODO use pools t11953296
     return new ChangeSetState();
   }
 
-  /**
-   * @return the ChangeSet that needs to be applied when transitioning from currentRoot to newRoot.
-   */
-  ChangeSet getChangeSet() {
-    return mChangeSet;
-  }
-
-  /**
-   * @return the {@link Section} that was used as current root for this ChangeSet computation.
-   */
-  Section getCurrentRoot() {
-    return mCurrentRoot;
-  }
-
-  /**
-   * @return the {@link Section} that was used as new root for this ChangeSet computation.
-   */
-  Section getNewRoot() {
-    return mNewRoot;
-  }
-
-  /**
-   * @return the {@link Section} that were removed from the tree as result of this ChangeSet
-   * computation.
-   */
-  List<Section> getRemovedComponents() {
-    return mRemovedComponents;
-  }
-
-  void release() {
-    mRemovedComponents.clear();
-    //TODO use pools t11953296
-  }
-
-  private final static int getPreviousChildrenCount(List<Section> sections, String key) {
+  private static final int getPreviousChildrenCount(List<Section> sections, String key) {
     int count = 0;
     for (Section s : sections) {
       if (s.getGlobalKey().equals(key)) {
@@ -423,7 +391,7 @@ public class ChangeSetState {
     return count;
   }
 
-  private final static String updatePrefix(Section root, String prefix) {
+  private static final String updatePrefix(Section root, String prefix) {
     if (root != null && root.getParent() == null) {
       return root.getClass().getSimpleName();
     } else if (root != null) {
@@ -487,5 +455,35 @@ public class ChangeSetState {
     message.append("]");
 
     throw new IllegalStateException(message.toString());
+  }
+
+  /**
+   * @return the ChangeSet that needs to be applied when transitioning from currentRoot to newRoot.
+   */
+  ChangeSet getChangeSet() {
+    return mChangeSet;
+  }
+
+  /** @return the {@link Section} that was used as current root for this ChangeSet computation. */
+  Section getCurrentRoot() {
+    return mCurrentRoot;
+  }
+
+  /** @return the {@link Section} that was used as new root for this ChangeSet computation. */
+  Section getNewRoot() {
+    return mNewRoot;
+  }
+
+  /**
+   * @return the {@link Section} that were removed from the tree as result of this ChangeSet
+   *     computation.
+   */
+  List<Section> getRemovedComponents() {
+    return mRemovedComponents;
+  }
+
+  void release() {
+    mRemovedComponents.clear();
+    // TODO use pools t11953296
   }
 }
