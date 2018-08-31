@@ -61,7 +61,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.concurrent.GuardedBy;
@@ -1957,15 +1956,14 @@ public class ComponentTree {
           mLayoutStateFuture = localLayoutStateFuture;
         }
       }
-      localLayoutStateFuture.run();
 
-      final LayoutState layoutState = localLayoutStateFuture.get();
+      final LayoutState layoutState = localLayoutStateFuture.runAndGet();
       if (layoutState == null) {
         // If the LayoutState is already released, recalculate.
         return calculateLayoutState(
             lock,
             context,
-            root,
+            root.makeShallowCopy(),
             widthSpec,
             heightSpec,
             diffingEnabled,
@@ -2049,10 +2047,9 @@ public class ComponentTree {
     }
   }
 
-  /** A {@link FutureTask} used to deduplicate calculating the same LayoutState across threads. */
-  private class LayoutStateFuture extends FutureTask<LayoutState> {
+  /** Wraps a {@link FutureTask} to deduplicate calculating the same LayoutState across threads. */
+  private class LayoutStateFuture {
 
-    private final AtomicBoolean isFirstGet = new AtomicBoolean(true);
     private final AtomicInteger runningThreadId = new AtomicInteger(-1);
     private final ComponentContext context;
     private final Component root;
@@ -2061,6 +2058,9 @@ public class ComponentTree {
     private final boolean diffingEnabled;
     @Nullable private final LayoutState previousLayoutState;
     @Nullable private final TreeProps treeProps;
+    private final FutureTask<LayoutState> futureTask;
+    @GuardedBy("LayoutStateFuture.this") private volatile boolean released = false;
+    @GuardedBy("LayoutStateFuture.this") private volatile LayoutState layoutState = null;
 
     private LayoutStateFuture(
         @Nullable final Object lock,
@@ -2073,24 +2073,6 @@ public class ComponentTree {
         @Nullable final TreeProps treeProps,
         @CalculateLayoutSource final int source,
         @Nullable final String extraAttribution) {
-      super(
-          new Callable<LayoutState>() {
-            @Override
-            public LayoutState call() {
-              return calculateLayoutStateInternal(
-                  lock,
-                  context,
-                  root,
-                  widthSpec,
-                  heightSpec,
-                  diffingEnabled,
-                  previousLayoutState,
-                  treeProps,
-                  source,
-                  extraAttribution);
-            }
-          });
-
       this.context = context;
       this.root = root;
       this.widthSpec = widthSpec;
@@ -2098,43 +2080,58 @@ public class ComponentTree {
       this.diffingEnabled = diffingEnabled;
       this.previousLayoutState = previousLayoutState;
       this.treeProps = treeProps;
+      this.futureTask = new FutureTask<>(new Callable<LayoutState>() {
+        @Override
+        public LayoutState call() {
+          synchronized (LayoutStateFuture.this) {
+            if (released) {
+              return null;
+            }
+          }
+          final LayoutState result = calculateLayoutStateInternal(
+              lock,
+              context,
+              root,
+              widthSpec,
+              heightSpec,
+              diffingEnabled,
+              previousLayoutState,
+              treeProps,
+              source,
+              extraAttribution);
+          synchronized (LayoutStateFuture.this) {
+            if (released) {
+              result.releaseRef();
+              return null;
+            } else {
+              layoutState = result;
+              return result;
+            }
+          }
+        }
+      });
     }
 
-    public void release() {
-      if (!isDone() && ThreadUtils.isMainThread() && mLayoutThreadHandler != null) {
-        // If the future isn't completed, we don't want to block the main thread on the synchronous
-        // get() call, so we post this release to the layout thread.
-        mLayoutThreadHandler.post(
-            new Runnable() {
-              @Override
-              public void run() {
-                final LayoutState layoutState = get();
-                layoutState.releaseRef();
-                // get() calls acquireRef, so we need to release again.
-                layoutState.releaseRef();
-              }
-            });
-      } else {
-        final LayoutState layoutState = get();
-        layoutState.releaseRef();
-        // get() calls acquireRef, so we need to release again.
-        layoutState.releaseRef();
+    private synchronized void release() {
+      if (released) {
+        return;
       }
+      if (layoutState != null) {
+        layoutState.releaseRef();
+        layoutState = null;
+      }
+      released = true;
     }
 
-    @Override
-    public void run() {
+    private LayoutState runAndGet() {
       if (runningThreadId.compareAndSet(-1, Process.myTid())) {
-        super.run();
+        futureTask.run();
       }
-    }
 
-    @Override
-    public LayoutState get() {
       final int runningThreadId = this.runningThreadId.get();
       final int originalThreadPriority;
       final boolean didRaiseThreadPriority;
-      if (isMainThread() && !isDone() && runningThreadId != Process.myTid()) {
+      if (isMainThread() && !futureTask.isDone() && runningThreadId != Process.myTid()) {
         // Main thread is about to be blocked, raise the running thread priority.
         originalThreadPriority =
             ThreadUtils.tryRaiseThreadPriority(runningThreadId, Process.THREAD_PRIORITY_DISPLAY);
@@ -2144,9 +2141,9 @@ public class ComponentTree {
         didRaiseThreadPriority = false;
       }
 
-      final LayoutState layoutState;
+      final LayoutState result;
       try {
-        layoutState = super.get();
+        result = futureTask.get();
       } catch (ExecutionException e) {
         final Throwable cause = e.getCause();
         if (cause instanceof RuntimeException) {
@@ -2166,7 +2163,15 @@ public class ComponentTree {
         }
       }
 
-      return layoutState.acquireRef();
+      if (result == null) {
+        return null;
+      }
+      synchronized (LayoutStateFuture.this) {
+        if (released) {
+          return null;
+        }
+        return result.acquireRef();
+      }
     }
 
     @Override
