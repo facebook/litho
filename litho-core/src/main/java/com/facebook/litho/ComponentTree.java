@@ -90,7 +90,6 @@ public class ComponentTree {
   private static final int SCHEDULE_NONE = 0;
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
   private static final int SCHEDULE_LAYOUT_SYNC = 2;
-  private final MeasureListener mMeasureListener;
   private final @Nullable String mSplitLayoutTag;
   private boolean mReleased;
   private String mReleasedComponent;
@@ -102,6 +101,9 @@ public class ComponentTree {
   public interface MeasureListener {
     void onSetRootAndSizeSpec(int width, int height);
   }
+
+  @GuardedBy("this")
+  private @Nullable MeasureListener mMeasureListener;
 
   /**
    * Listener that will be notified when a new LayoutState is computed and ready to be committed to
@@ -2290,6 +2292,10 @@ public class ComponentTree {
     public void tracedRun(Throwable tracedThrowable) {
       updateStateInternal(false, mAttribution);
     }
+  }
+
+  public synchronized void updateMeasureListener(@Nullable MeasureListener measureListener) {
+    mMeasureListener = measureListener;
   }
 
   /**

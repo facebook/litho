@@ -74,6 +74,7 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
@@ -89,6 +90,7 @@ public class RecyclerBinder
   private static final Size sDummySize = new Size();
   private static final String TAG = RecyclerBinder.class.getSimpleName();
   private static final int POST_UPDATE_VIEWPORT_AND_COMPUTE_RANGE_MAX_ATTEMPTS = 3;
+  @VisibleForTesting static final int MIN_RANGE_SIZE = 3;
 
   private static Field mViewHolderField;
 
@@ -112,6 +114,11 @@ public class RecyclerBinder
   private final boolean mEnableStableIds;
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
   private final RecyclerRangeTraverser mRangeTraverser;
+  private final AtomicBoolean mShouldComputeRangeAfterInit = new AtomicBoolean();
+  private final AtomicInteger mTotalItemsWithLayoutSize = new AtomicInteger();
+  private final AtomicInteger mTotalItemsWithLayoutCount = new AtomicInteger();
+
+  private boolean mAsyncInitRange;
 
   private String mSplitLayoutTag;
 
@@ -160,8 +167,16 @@ public class RecyclerBinder
   private final ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory =
       new ComponentTreeMeasureListenerFactory() {
         @Override
-        public MeasureListener create(final ComponentTreeHolder holder) {
-          return getMeasureListener(holder);
+        public @Nullable MeasureListener create(final ComponentTreeHolder holder) {
+          if (mHasDynamicItemHeight) {
+            return getMeasureListener(holder);
+          }
+
+          if (mAsyncInitRange) {
+            return getMeasureListenerForInitRange(holder);
+          }
+
+          return null;
         }
       };
 
@@ -187,6 +202,53 @@ public class RecyclerBinder
         }
 
         requestRemeasure();
+      }
+    };
+  }
+
+  // TODO T33427406 Merge this into NewLayoutStateReadyListener.
+  private MeasureListener getMeasureListenerForInitRange(final ComponentTreeHolder holder) {
+    return new MeasureListener() {
+      @Override
+      public void onSetRootAndSizeSpec(int width, int height) {
+
+        // For each new layout that is calculated, we recompute an average item size.
+        boolean hasVerticalLayout = mLayoutInfo.getScrollDirection() == OrientationHelper.VERTICAL;
+
+        int totalSize = mTotalItemsWithLayoutSize.addAndGet(hasVerticalLayout ? height : width);
+        int layoutCount = mTotalItemsWithLayoutCount.incrementAndGet();
+        int averageSize = totalSize / layoutCount;
+
+        // We only do this for the first layout, after the item is inserted.
+        holder.updateMeasureListener(null);
+
+        // Don't create range until we have finished the layouts for the minimum number of items
+        // to calculate an average.
+        if (layoutCount < MIN_RANGE_SIZE) {
+          return;
+        }
+
+        // We estimate how many items are needed to fill the RecyclerView's measured size based on
+        // the average size of the items. The precomputed range size will depend on this number
+        // and the range ratio.
+        int estimatedViewportCount =
+            SizeSpec.getSize(hasVerticalLayout ? mLastHeightSpec : mLastWidthSpec) / averageSize
+                + 1;
+
+        synchronized (RecyclerBinder.this) {
+          if (mRange == null) {
+            mRange = new RangeCalculationResult();
+            mRange.measuredSize = hasVerticalLayout ? width : height;
+          }
+
+          mRange.estimatedViewportCount = estimatedViewportCount;
+
+          // As soon as we have an estimation for the range size, we can compute range if it was
+          // requested during measure.
+          if (mShouldComputeRangeAfterInit.compareAndSet(true, false)) {
+            computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+          }
+        }
       }
     };
   }
@@ -647,6 +709,10 @@ public class RecyclerBinder
 
     mEnableStableIds = builder.enableStableIds;
     mInvalidStateLogParamsList = builder.invalidStateLogParamsList;
+
+    // Will set this up properly in next diff, and disable it when wrap content or dynamic height
+    // are enabled.
+    mAsyncInitRange = false;
   }
 
   /**
@@ -1385,13 +1451,14 @@ public class RecyclerBinder
         int firstComponent = findFirstComponentPosition(mComponentTreeHolders);
         if (firstComponent >= 0) {
           final ComponentTreeHolder holder = mComponentTreeHolders.get(firstComponent);
-            initRange(
-                mMeasuredSize.width,
-                mMeasuredSize.height,
-                holder,
-                getActualChildrenWidthSpec(holder),
-                getActualChildrenHeightSpec(holder),
-                mLayoutInfo.getScrollDirection());
+          initRange(
+              mMeasuredSize.width,
+              mMeasuredSize.height,
+              holder,
+              firstComponent,
+              getActualChildrenWidthSpec(holder),
+              getActualChildrenHeightSpec(holder),
+              mLayoutInfo.getScrollDirection());
         }
       }
     }
@@ -1548,15 +1615,16 @@ public class RecyclerBinder
     boolean doFillViewportAfterFinishingMeasure = false;
 
     if (mRange == null) {
-      ComponentTreeHolder holderForRange = getHolderForRange();
+      ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
 
-      if (holderForRange != null) {
+      if (holderForRangeInfo != null) {
         initRange(
             SizeSpec.getSize(widthSpec),
             SizeSpec.getSize(heightSpec),
-            holderForRange,
-            getActualChildrenWidthSpec(holderForRange),
-            getActualChildrenHeightSpec(holderForRange),
+            holderForRangeInfo.mHolder,
+            holderForRangeInfo.mPosition,
+            getActualChildrenWidthSpec(holderForRangeInfo.mHolder),
+            getActualChildrenHeightSpec(holderForRangeInfo.mHolder),
             scrollDirection);
 
         doFillViewportAfterFinishingMeasure = true;
@@ -1656,6 +1724,8 @@ public class RecyclerBinder
 
     if (mRange != null) {
       computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+    } else if (mAsyncInitRange) {
+      mShouldComputeRangeAfterInit.getAndSet(true);
     }
   }
 
@@ -1674,14 +1744,15 @@ public class RecyclerBinder
     mHasFilledViewport = true;
 
     if (mRange == null) {
-      final ComponentTreeHolder holderForRange = getHolderForRange();
-      if (holderForRange != null) {
+      final ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
+      if (holderForRangeInfo != null) {
         initRange(
             maxWidth,
             maxHeight,
-            holderForRange,
-            getActualChildrenWidthSpec(holderForRange),
-            getActualChildrenHeightSpec(holderForRange),
+            holderForRangeInfo.mHolder,
+            holderForRangeInfo.mPosition,
+            getActualChildrenWidthSpec(holderForRangeInfo.mHolder),
+            getActualChildrenHeightSpec(holderForRangeInfo.mHolder),
             mLayoutInfo.getScrollDirection());
       }
     }
@@ -1721,14 +1792,15 @@ public class RecyclerBinder
     mHasFilledViewport = true;
 
     if (mRange == null) {
-      final ComponentTreeHolder holderForRange = getHolderForRange();
-      if (holderForRange != null) {
+      final ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
+      if (holderForRangeInfo != null) {
         initRange(
             maxWidth,
             maxHeight,
-            holderForRange,
-            getActualChildrenWidthSpec(holderForRange),
-            getActualChildrenHeightSpec(holderForRange),
+            holderForRangeInfo.mHolder,
+            holderForRangeInfo.mPosition,
+            getActualChildrenWidthSpec(holderForRangeInfo.mHolder),
+            getActualChildrenHeightSpec(holderForRangeInfo.mHolder),
             mLayoutInfo.getScrollDirection());
       }
     }
@@ -1937,15 +2009,38 @@ public class RecyclerBinder
     }
   }
 
+  @GuardedBy("this")
+  private void initRangeAsync(
+      int rangeStartPosition, int childrenWidthSpec, int childrenHeightSpec) {
+    final int rangeEndPosition =
+        rangeStartPosition + Math.min(mComponentTreeHolders.size(), MIN_RANGE_SIZE);
+
+    for (int i = rangeStartPosition; i < rangeEndPosition; i++) {
+      final ComponentTreeHolder holder = mComponentTreeHolders.get(i);
+      holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
+    }
+  }
+
+  @VisibleForTesting
+  public void setAsyncInitRange(boolean asyncInitRange) {
+    mAsyncInitRange = asyncInitRange;
+  }
+
   @VisibleForTesting
   @GuardedBy("this")
   void initRange(
       int width,
       int height,
       ComponentTreeHolder holder,
+      int holderPosition,
       int childrenWidthSpec,
       int childrenHeightSpec,
       int scrollDirection) {
+    if (mAsyncInitRange) {
+      initRangeAsync(holderPosition, childrenWidthSpec, childrenHeightSpec);
+      return;
+    }
+
     ComponentsSystrace.beginSection("initRange");
     try {
       final Size size = new Size();
@@ -2620,8 +2715,9 @@ public class RecyclerBinder
         final int childrenWidthSpec = getActualChildrenWidthSpec(componentTreeHolder);
         final int childrenHeightSpec = getActualChildrenHeightSpec(componentTreeHolder);
         if (!componentTreeHolder.isTreeValid()) {
+          final Size size = new Size();
           componentTreeHolder.computeLayoutSync(
-              mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
+              mComponentContext, childrenWidthSpec, childrenHeightSpec, size);
         }
         final boolean isOrientationVertical =
             mLayoutInfo.getScrollDirection() == OrientationHelper.VERTICAL;
@@ -2794,7 +2890,7 @@ public class RecyclerBinder
           mCanPrefetchDisplayLists,
           mCanCacheDrawingDisplayLists,
           mUseSharedLayoutStateFuture,
-          mHasDynamicItemHeight ? mComponentTreeMeasureListenerFactory : null,
+          mComponentTreeMeasureListenerFactory,
           mSplitLayoutTag);
     }
 
@@ -2806,7 +2902,7 @@ public class RecyclerBinder
         mCanPrefetchDisplayLists,
         mCanCacheDrawingDisplayLists,
         mUseSharedLayoutStateFuture,
-        mHasDynamicItemHeight ? mComponentTreeMeasureListenerFactory : null,
+        mComponentTreeMeasureListenerFactory,
         mSplitLayoutTag);
   }
 
@@ -2819,21 +2915,36 @@ public class RecyclerBinder
     }
   }
 
-  private ComponentTreeHolder getHolderForRange() {
-    ComponentTreeHolder holderForRange = null;
+  private @Nullable ComponentTreeHolderRangeInfo getHolderForRangeInfo() {
+    ComponentTreeHolderRangeInfo holderForRangeInfo = null;
+
     if (!mComponentTreeHolders.isEmpty()) {
       final int positionToComputeLayout = findFirstComponentPosition(mComponentTreeHolders);
       if (mCurrentFirstVisiblePosition < mComponentTreeHolders.size()
           && positionToComputeLayout >= 0) {
-        holderForRange = mComponentTreeHolders.get(positionToComputeLayout);
+        holderForRangeInfo =
+            new ComponentTreeHolderRangeInfo(
+                positionToComputeLayout, mComponentTreeHolders.get(positionToComputeLayout));
       }
     } else if (!mAsyncComponentTreeHolders.isEmpty()) {
       final int positionToComputeLayout = findFirstComponentPosition(mAsyncComponentTreeHolders);
       if (positionToComputeLayout >= 0) {
-        holderForRange = mAsyncComponentTreeHolders.get(positionToComputeLayout);
+        holderForRangeInfo =
+            new ComponentTreeHolderRangeInfo(
+                positionToComputeLayout, mAsyncComponentTreeHolders.get(positionToComputeLayout));
       }
     }
 
-    return holderForRange;
+    return holderForRangeInfo;
+  }
+
+  private static class ComponentTreeHolderRangeInfo {
+    private final int mPosition;
+    private final ComponentTreeHolder mHolder;
+
+    private ComponentTreeHolderRangeInfo(int position, ComponentTreeHolder holder) {
+      mPosition = position;
+      mHolder = holder;
+    }
   }
 }

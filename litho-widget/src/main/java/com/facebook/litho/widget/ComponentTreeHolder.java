@@ -93,6 +93,7 @@ public class ComponentTreeHolder {
   private boolean mHasMounted = false;
 
   interface ComponentTreeMeasureListenerFactory {
+    @Nullable
     MeasureListener create(ComponentTreeHolder holder);
   }
 
@@ -378,6 +379,12 @@ public class ComponentTreeHolder {
 
   public boolean isReleased() {
     return mIsReleased.get();
+  }
+
+  public synchronized void updateMeasureListener(@Nullable MeasureListener measureListener) {
+    if (mComponentTree != null) {
+      mComponentTree.updateMeasureListener(measureListener);
+    }
   }
 
   public synchronized void release() {
