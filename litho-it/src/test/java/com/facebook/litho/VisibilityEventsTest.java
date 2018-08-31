@@ -26,7 +26,6 @@ import android.graphics.Rect;
 import android.widget.FrameLayout;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaEdge;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,20 +63,15 @@ public class VisibilityEventsTest {
         mountComponent(
             mContext,
             mLithoView,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(
-                        Wrapper.create(c)
-                            .delegate(content)
-                            .visibleHandler(visibleEventHandler)
-                            .widthPx(10)
-                            .heightPx(5)
-                            .marginPx(YogaEdge.TOP, 5))
-                    .build();
-              }
-            },
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content)
+                        .visibleHandler(visibleEventHandler)
+                        .widthPx(10)
+                        .heightPx(5)
+                        .marginPx(YogaEdge.TOP, 5))
+                .build(),
             true,
             10,
             5);
@@ -98,21 +92,16 @@ public class VisibilityEventsTest {
         mountComponent(
             mContext,
             mLithoView,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(
-                        Wrapper.create(c)
-                            .delegate(content)
-                            .visibleHeightRatio(0.4f)
-                            .visibleHandler(visibleEventHandler)
-                            .widthPx(10)
-                            .heightPx(5)
-                            .marginPx(YogaEdge.TOP, 5))
-                    .build();
-              }
-            },
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content)
+                        .visibleHeightRatio(0.4f)
+                        .visibleHandler(visibleEventHandler)
+                        .widthPx(10)
+                        .heightPx(5)
+                        .marginPx(YogaEdge.TOP, 5))
+                .build(),
             true,
             10,
             10);
@@ -150,21 +139,16 @@ public class VisibilityEventsTest {
         mountComponent(
             mContext,
             mLithoView,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(
-                        Wrapper.create(c)
-                            .delegate(content)
-                            .visibleWidthRatio(0.4f)
-                            .visibleHandler(visibleEventHandler)
-                            .widthPx(10)
-                            .heightPx(5)
-                            .marginPx(YogaEdge.TOP, 5))
-                    .build();
-              }
-            },
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content)
+                        .visibleWidthRatio(0.4f)
+                        .visibleHandler(visibleEventHandler)
+                        .widthPx(10)
+                        .heightPx(5)
+                        .marginPx(YogaEdge.TOP, 5))
+                .build(),
             true,
             10,
             5);
@@ -187,22 +171,17 @@ public class VisibilityEventsTest {
         mountComponent(
             mContext,
             mLithoView,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(
-                        Wrapper.create(c)
-                            .delegate(content)
-                            .visibleWidthRatio(0.4f)
-                            .visibleHeightRatio(0.4f)
-                            .visibleHandler(visibleEventHandler)
-                            .widthPx(10)
-                            .heightPx(5)
-                            .marginPx(YogaEdge.TOP, 5))
-                    .build();
-              }
-            },
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content)
+                        .visibleWidthRatio(0.4f)
+                        .visibleHeightRatio(0.4f)
+                        .visibleHandler(visibleEventHandler)
+                        .widthPx(10)
+                        .heightPx(5)
+                        .marginPx(YogaEdge.TOP, 5))
+                .build(),
             true,
             10,
             10);
@@ -235,19 +214,14 @@ public class VisibilityEventsTest {
         mountComponent(
             mContext,
             mLithoView,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(
-                        Wrapper.create(c)
-                            .delegate(content)
-                            .focusedHandler(focusedEventHandler)
-                            .widthPx(10)
-                            .heightPx(10))
-                    .build();
-              }
-            },
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content)
+                        .focusedHandler(focusedEventHandler)
+                        .widthPx(10)
+                        .heightPx(10))
+                .build(),
             true,
             10,
             10);
@@ -271,19 +245,14 @@ public class VisibilityEventsTest {
         mountComponent(
             mContext,
             mLithoView,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(
-                        Wrapper.create(c)
-                            .delegate(content)
-                            .focusedHandler(focusedEventHandler)
-                            .widthPx(10)
-                            .heightPx(3))
-                    .build();
-              }
-            },
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content)
+                        .focusedHandler(focusedEventHandler)
+                        .widthPx(10)
+                        .heightPx(3))
+                .build(),
             true,
             10,
             10);
@@ -308,21 +277,16 @@ public class VisibilityEventsTest {
         mountComponent(
             mContext,
             mLithoView,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(
-                        Wrapper.create(c)
-                            .delegate(content)
-                            .focusedHandler(focusedHandler)
-                            .unfocusedHandler(unfocusedHandler)
-                            .widthPx(10)
-                            .heightPx(7)
-                            .marginPx(YogaEdge.TOP, 3))
-                    .build();
-              }
-            },
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content)
+                        .focusedHandler(focusedHandler)
+                        .unfocusedHandler(unfocusedHandler)
+                        .widthPx(10)
+                        .heightPx(7)
+                        .marginPx(YogaEdge.TOP, 3))
+                .build(),
             true,
             100,
             100);
@@ -359,20 +323,15 @@ public class VisibilityEventsTest {
     mountComponent(
         mContext,
         mLithoView,
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .child(
-                    Wrapper.create(c)
-                        .delegate(content)
-                        .fullImpressionHandler(fullImpressionVisibleEvent)
-                        .widthPx(10)
-                        .heightPx(5)
-                        .marginPx(YogaEdge.TOP, 5))
-                .build();
-          }
-        },
+        Column.create(mContext)
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(content)
+                    .fullImpressionHandler(fullImpressionVisibleEvent)
+                    .widthPx(10)
+                    .heightPx(5)
+                    .marginPx(YogaEdge.TOP, 5))
+            .build(),
         true,
         10,
         10);
@@ -390,20 +349,15 @@ public class VisibilityEventsTest {
         mountComponent(
             mContext,
             mLithoView,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(
-                        Wrapper.create(c)
-                            .delegate(content)
-                            .invisibleHandler(invisibleEventHandler)
-                            .widthPx(10)
-                            .heightPx(5)
-                            .marginPx(YogaEdge.TOP, 5))
-                    .build();
-              }
-            },
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content)
+                        .invisibleHandler(invisibleEventHandler)
+                        .widthPx(10)
+                        .heightPx(5)
+                        .marginPx(YogaEdge.TOP, 5))
+                .build(),
             true,
             10,
             10);
@@ -425,21 +379,16 @@ public class VisibilityEventsTest {
         mountComponent(
             mContext,
             mLithoView,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(
-                        Wrapper.create(c)
-                            .delegate(content)
-                            .visibleHandler(visibleEventHandler)
-                            .invisibleHandler(invisibleEventHandler)
-                            .widthPx(10)
-                            .heightPx(5)
-                            .marginPx(YogaEdge.TOP, 5))
-                    .build();
-              }
-            },
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content)
+                        .visibleHandler(visibleEventHandler)
+                        .invisibleHandler(invisibleEventHandler)
+                        .widthPx(10)
+                        .heightPx(5)
+                        .marginPx(YogaEdge.TOP, 5))
+                .build(),
             true,
             10,
             10);
@@ -478,25 +427,20 @@ public class VisibilityEventsTest {
         mountComponent(
             mContext,
             mLithoView,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(
-                        Wrapper.create(c)
-                            .delegate(content1)
-                            .visibleHandler(visibleEventHandler1)
-                            .widthPx(10)
-                            .heightPx(5))
-                    .child(
-                        Wrapper.create(c)
-                            .delegate(content2)
-                            .visibleHandler(visibleEventHandler2)
-                            .widthPx(10)
-                            .heightPx(5))
-                    .build();
-              }
-            },
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content1)
+                        .visibleHandler(visibleEventHandler1)
+                        .widthPx(10)
+                        .heightPx(5))
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content2)
+                        .visibleHandler(visibleEventHandler2)
+                        .widthPx(10)
+                        .heightPx(5))
+                .build(),
             true,
             10,
             10);
@@ -535,19 +479,14 @@ public class VisibilityEventsTest {
     final LithoView lithoView =
         mountComponent(
             mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(
-                        Wrapper.create(c)
-                            .delegate(content)
-                            .invisibleHandler(invisibleEventHandler)
-                            .widthPx(10)
-                            .heightPx(10))
-                    .build();
-              }
-            },
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content)
+                        .invisibleHandler(invisibleEventHandler)
+                        .widthPx(10)
+                        .heightPx(10))
+                .build(),
             true);
 
     lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 10), true);
@@ -572,22 +511,17 @@ public class VisibilityEventsTest {
     final LithoView lithoView =
         mountComponent(
             mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(
-                        Wrapper.create(c)
-                            .delegate(component1)
-                            .visibleHandler(visibleEventHandler1)
-                            .invisibleHandler(invisibleEventHandler1)
-                            .focusedHandler(focusedEventHandler1)
-                            .unfocusedHandler(unfocusedEventHandler1)
-                            .widthPx(10)
-                            .heightPx(10))
-                    .build();
-              }
-            },
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(component1)
+                        .visibleHandler(visibleEventHandler1)
+                        .invisibleHandler(invisibleEventHandler1)
+                        .focusedHandler(focusedEventHandler1)
+                        .unfocusedHandler(unfocusedEventHandler1)
+                        .widthPx(10)
+                        .heightPx(10))
+                .build(),
             true);
 
     assertThat(component1.getDispatchedEventHandlers())
@@ -601,19 +535,14 @@ public class VisibilityEventsTest {
     lithoView.setComponentTree(
         ComponentTree.create(
                 mContext,
-                new InlineLayoutSpec() {
-                  @Override
-                  protected Component onCreateLayout(ComponentContext c) {
-                    return Column.create(c)
-                        .child(
-                            Wrapper.create(c)
-                                .delegate(component2)
-                                .visibleHandler(visibleEventHandler2)
-                                .widthPx(10)
-                                .heightPx(10))
-                        .build();
-                  }
-                })
+                Column.create(mContext)
+                    .child(
+                        Wrapper.create(mContext)
+                            .delegate(component2)
+                            .visibleHandler(visibleEventHandler2)
+                            .widthPx(10)
+                            .heightPx(10))
+                    .build())
             .build());
 
     measureAndLayout(lithoView);
@@ -634,19 +563,14 @@ public class VisibilityEventsTest {
     final LithoView lithoView =
         mountComponent(
             mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(
-                        Wrapper.create(c)
-                            .delegate(content)
-                            .visibleHandler(visibleEventHandler)
-                            .widthPx(10)
-                            .heightPx(10))
-                    .build();
-              }
-            },
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content)
+                        .visibleHandler(visibleEventHandler)
+                        .widthPx(10)
+                        .heightPx(10))
+                .build(),
             true);
 
     lithoView.performIncrementalMount(new Rect(0, -10, 10, -5), true);
