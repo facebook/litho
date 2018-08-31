@@ -375,23 +375,26 @@ public abstract class Component extends ComponentLifecycle
    * @param outputSize Size object that will be set with the measured dimensions.
    */
   public void measure(ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
-    releaseCachedLayout();
+    if (mLastMeasuredLayout == null
+        || !MeasureComparisonUtils.isMeasureSpecCompatible(
+            mLastMeasuredLayout.getLastWidthSpec(), widthSpec, mLastMeasuredLayout.getWidth())
+        || !MeasureComparisonUtils.isMeasureSpecCompatible(
+            mLastMeasuredLayout.getLastHeightSpec(), heightSpec, mLastMeasuredLayout.getHeight())) {
+      releaseCachedLayout();
 
-    mLastMeasuredLayout = LayoutState.createAndMeasureTreeForComponent(
-        c,
-        this,
-        widthSpec,
-        heightSpec);
+      mLastMeasuredLayout =
+          LayoutState.createAndMeasureTreeForComponent(c, this, widthSpec, heightSpec);
 
-    // This component resolution won't be deferred nor onMeasure called if it's a layout spec.
-    // In that case it needs to manually save the latest saze specs.
-    // The size specs will be checked during the calculation (or collection) of the main tree.
-    if (Component.isLayoutSpec(this)) {
-      mLastMeasuredLayout.setLastWidthSpec(widthSpec);
-      mLastMeasuredLayout.setLastHeightSpec(heightSpec);
-      if (ComponentsConfiguration.saveMeasuredSizesInMeasure) {
-        mLastMeasuredLayout.setLastMeasuredWidth(mLastMeasuredLayout.getWidth());
-        mLastMeasuredLayout.setLastMeasuredHeight(mLastMeasuredLayout.getHeight());
+      // This component resolution won't be deferred nor onMeasure called if it's a layout spec.
+      // In that case it needs to manually save the latest saze specs.
+      // The size specs will be checked during the calculation (or collection) of the main tree.
+      if (Component.isLayoutSpec(this)) {
+        mLastMeasuredLayout.setLastWidthSpec(widthSpec);
+        mLastMeasuredLayout.setLastHeightSpec(heightSpec);
+        if (ComponentsConfiguration.saveMeasuredSizesInMeasure) {
+          mLastMeasuredLayout.setLastMeasuredWidth(mLastMeasuredLayout.getWidth());
+          mLastMeasuredLayout.setLastMeasuredHeight(mLastMeasuredLayout.getHeight());
+        }
       }
     }
 
