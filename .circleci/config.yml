@@ -12,11 +12,11 @@ aliases:
   # SDK Cache aliases
   - &restore-cache-android-packages
     keys:
-      - v4-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
+      - v5-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
   - &save-cache-android-packages
     paths:
       - /opt/android/sdk
-    key: v4-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
+    key: v5-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
 
   # BUCK Cache aliases
   - &restore-cache-buck
@@ -128,7 +128,7 @@ aliases:
 
 circle_ci_android_container_config: &circle_ci_android_container_config
   docker:
-    - image: circleci/android:api-27-alpha
+    - image: circleci/android:api-28-ndk-r17b
   working_directory: ~/litho-working-dir
   environment:
     # Borrowed from https://github.com/chrisbanes/tivi/blob/master/.circleci/config.yml

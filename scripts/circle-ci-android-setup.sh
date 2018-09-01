@@ -51,10 +51,4 @@ function getAndroidNDK {
 
 function installAndroidSDK {
   export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$PATH"
-
-  mkdir -p "$ANDROID_HOME/licenses/"
-  echo > "$ANDROID_HOME/licenses/android-sdk-license"
-  echo -n d56f5187479451eabf01fb78af6dfcb131a6481e > "$ANDROID_HOME/licenses/android-sdk-license"
-
-  installsdk 'build-tools;27.0.3' 'platforms;android-26' 'extras;android;m2repository'
 }
