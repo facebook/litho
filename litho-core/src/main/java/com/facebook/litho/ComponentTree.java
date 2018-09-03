@@ -634,6 +634,31 @@ public class ComponentTree {
     ComponentsPools.release(currentVisibleArea);
   }
 
+  void processVisibilityOutputs() {
+    assertMainThread();
+
+    if (!mIncrementalMountEnabled) {
+      throw new IllegalStateException(
+          "Calling processVisibilityOutputs() but incremental mount is not enabled");
+    }
+
+    if (mLithoView == null) {
+      return;
+    }
+
+    if (mMainThreadLayoutState == null) {
+      Log.w(TAG, "Main Thread Layout state is not found");
+      return;
+    }
+
+    final Rect currentVisibleArea = ComponentsPools.acquireRect();
+    if (mLithoView.getLocalVisibleRect(currentVisibleArea)) {
+      mLithoView.processVisibilityOutputs(mMainThreadLayoutState, currentVisibleArea);
+    }
+    // if false: no-op, doesn't have visible area, is not ready or not attached
+    ComponentsPools.release(currentVisibleArea);
+  }
+
   private boolean animatingRootBoundsFromZero(Rect currentVisibleArea) {
     return !mHasMounted
         && ((mRootHeightAnimation != null && currentVisibleArea.height() == 0)

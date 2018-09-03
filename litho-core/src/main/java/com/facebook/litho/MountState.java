@@ -486,7 +486,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
-  private void processVisibilityOutputs(
+  void processVisibilityOutputs(
       LayoutState layoutState, Rect localVisibleRect, @Nullable PerfEvent mountPerfEvent) {
     if (localVisibleRect == null) {
       return;
@@ -712,7 +712,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
-  private void clearVisibilityItems() {
+  void clearVisibilityItems() {
     boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("MountState.clearVisibilityItems");
