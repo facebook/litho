@@ -25,6 +25,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -48,6 +49,7 @@ import android.widget.FrameLayout;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.LithoView;
@@ -3808,6 +3810,30 @@ public class RecyclerBinderTest {
     TestComponentTreeHolder holder =
         mHoldersForComponents.get(components.get(RecyclerBinder.MIN_RANGE_SIZE).getComponent());
     assertThat(holder.mLayoutAsyncCalled).isFalse();
+  }
+
+  @Test
+  public void testDataRenderedCallbacksAreNotTriggered() {
+    final ChangeSetCompleteCallback changeSetCompleteCallback =
+        mock(ChangeSetCompleteCallback.class);
+    final ComponentsLogger componentsLogger = mock(ComponentsLogger.class);
+    final ComponentContext componentContext =
+        new ComponentContext(RuntimeEnvironment.application, "", componentsLogger);
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(componentContext);
+    for (int i = 0; i < 40; i++) {
+      recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
+    }
+
+    final RecyclerView recyclerView = mock(LithoRecylerView.class);
+    when(recyclerView.hasPendingAdapterUpdates()).thenReturn(true);
+    when(recyclerView.isAttachedToWindow()).thenReturn(true);
+    when(recyclerView.getVisibility()).thenReturn(View.VISIBLE);
+    recyclerBinder.mount(recyclerView);
+
+    recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
+    verify(componentsLogger).emitMessage(eq(ComponentsLogger.LogLevel.ERROR), anyString());
+    assertThat(recyclerBinder.mDataRenderedCallbacks).isEmpty();
   }
 
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {

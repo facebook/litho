@@ -47,6 +47,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLogParams;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
+import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutHandler;
@@ -91,6 +92,7 @@ public class RecyclerBinder
   private static final String TAG = RecyclerBinder.class.getSimpleName();
   private static final int POST_UPDATE_VIEWPORT_AND_COMPUTE_RANGE_MAX_ATTEMPTS = 3;
   @VisibleForTesting static final int MIN_RANGE_SIZE = 3;
+  private static final int DATA_RENDERED_CALLBACKS_QUEUE_MAX_SIZE = 20;
 
   private static Field mViewHolderField;
 
@@ -1420,6 +1422,39 @@ public class RecyclerBinder
               }
             }
           });
+    } else {
+      if (mDataRenderedCallbacks.size() > DATA_RENDERED_CALLBACKS_QUEUE_MAX_SIZE) {
+        mDataRenderedCallbacks.clear();
+
+        final ComponentsLogger logger = mComponentContext.getLogger();
+        if (logger != null) {
+          final StringBuilder messageBuilder = new StringBuilder();
+          if (mMountedView == null) {
+            messageBuilder.append("mMountedView == null");
+          } else {
+            messageBuilder
+                .append("mMountedView: ")
+                .append(mMountedView)
+                .append(", hasPendingAdapterUpdates(): ")
+                .append(mMountedView.hasPendingAdapterUpdates())
+                .append(", isAttachedToWindow(): ")
+                .append(mMountedView.isAttachedToWindow())
+                .append(", getVisibility(): ")
+                .append(mMountedView.getVisibility())
+                .append(", isComputingLayout(): ")
+                .append(mMountedView.isComputingLayout());
+          }
+          messageBuilder
+              .append(", visible range: [")
+              .append(mCurrentFirstVisiblePosition)
+              .append(", ")
+              .append(mCurrentLastVisiblePosition)
+              .append("]");
+          logger.emitMessage(
+              ComponentsLogger.LogLevel.ERROR,
+              "@OnDataRendered callbacks aren't triggered as expected: " + messageBuilder);
+        }
+      }
     }
 
     // Otherwise we'll wait for ViewGroup#dispatchDraw(Canvas), which would call this method again
