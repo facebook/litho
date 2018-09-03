@@ -2209,13 +2209,13 @@ public class LayoutStateCalculateTest {
     // Check NestedTree
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
     layoutState.getMountableOutputAt(1).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(25, 5, 275, 11));
+    assertThat(mountBounds).isEqualTo(new Rect(25, 5, 275, 5));
     assertThat(getComponentAt(layoutState, 2)).isInstanceOf(TestDrawableComponent.class);
     layoutState.getMountableOutputAt(2).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(25, 5, 275, 11));
+    assertThat(mountBounds).isEqualTo(new Rect(25, 5, 275, 5));
     assertThat(getComponentAt(layoutState, 3)).isInstanceOf(TestViewComponent.class);
     layoutState.getMountableOutputAt(3).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(28, 14, 272, 14));
+    assertThat(mountBounds).isEqualTo(new Rect(28, 8, 272, 8));
 
     validateMockitoUsage();
   }
