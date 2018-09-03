@@ -13,34 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.litho.utils;
+package com.facebook.litho;
 
 import android.support.annotation.Nullable;
-import com.facebook.litho.CommonUtils;
-import java.util.Map;
 
-public final class MapDiffUtils {
+public class CommonUtils {
 
-  /** Return whether the two maps have the same keys and values. */
-  public static <K, V> boolean areMapsEqual(@Nullable Map<K, V> prev, @Nullable Map<K, V> next) {
-    if (prev == next) {
+  private CommonUtils() {}
+
+  /** @return {@code true} iff a and b are equal. */
+  public static boolean equals(@Nullable Object a, @Nullable Object b) {
+    if (a == b) {
       return true;
     }
 
-    if (prev == null || next == null) {
+    if (a == null || b == null) {
       return false;
     }
 
-    if (prev.size() != next.size()) {
-      return false;
-    }
-
-    for (Map.Entry<K, V> entry : prev.entrySet()) {
-      if (!CommonUtils.equals(entry.getValue(), next.get(entry.getKey()))) {
-        return false;
-      }
-    }
-
-    return true;
+    return a.equals(b);
   }
 }

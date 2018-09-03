@@ -160,6 +160,58 @@ class ViewNodeInfo {
     mStateListAnimatorRes = resId;
   }
 
+  /**
+   * Checks if this ViewNodeInfo is equal to the {@param other}
+   *
+   * @param other the other ViewNodeInfo
+   * @return {@code true} iff this NodeInfo is equal to the {@param other}.
+   */
+  public boolean isEquivalentTo(ViewNodeInfo other) {
+    if (this == other) {
+      return true;
+    }
+
+    if (other == null) {
+      return false;
+    }
+
+    // TODO: (T33421916) We need compare Drawables more accurately
+    if (!CommonUtils.equals(mBackground, other.mBackground)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mForeground, other.mForeground)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mPadding, other.mPadding)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mExpandedTouchBounds, other.mExpandedTouchBounds)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mLayoutDirection, other.mLayoutDirection)) {
+      return false;
+    }
+
+    if (mClipChildren != other.mClipChildren) {
+      return false;
+    }
+
+    if (mStateListAnimatorRes != other.mStateListAnimatorRes) {
+      return false;
+    }
+
+    // TODO: (T33421916) We need compare StateListAnimators more accurately
+    if (!CommonUtils.equals(mStateListAnimator, other.mStateListAnimator)) {
+      return false;
+    }
+
+    return true;
+  }
+
   static ViewNodeInfo acquire() {
     final ViewNodeInfo viewNodeInfo = ComponentsPools.acquireViewNodeInfo();
 

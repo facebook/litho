@@ -817,13 +817,18 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final Component itemComponent = currentMountItem.getComponent();
 
     // 1. Check if the mount item generated from the old component should be updated.
-    final boolean shouldUpdate = shouldUpdateMountItem(
-        layoutOutput,
-        currentMountItem,
-        useUpdateValueFromLayoutOutput,
-        mIndexToItemMap,
-        mLayoutOutputsIds,
-        logger);
+    final boolean shouldUpdateMountItem =
+        shouldUpdateMountItem(
+            layoutOutput,
+            currentMountItem,
+            useUpdateValueFromLayoutOutput,
+            mIndexToItemMap,
+            mLayoutOutputsIds,
+            logger);
+
+    final boolean shouldUpdate = shouldUpdateMountItem;
+    final boolean shouldUpdateViewInfo =
+        shouldUpdateMountItem || shouldUpdateViewInfo(layoutOutput, currentMountItem);
 
     // 2. Reset all the properties like click handler, content description and tags related to
     // this item if it needs to be updated. the update mount item will re-set the new ones.
@@ -840,6 +845,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         }
       }
 
+      maybeUnsetViewAttributes(currentMountItem);
+
+      final ComponentHost host = currentMountItem.getHost();
+      host.maybeUnregisterTouchExpansion(index, currentMountItem);
+    } else if (shouldUpdateViewInfo) {
       maybeUnsetViewAttributes(currentMountItem);
 
       final ComponentHost host = currentMountItem.getHost();
@@ -861,6 +871,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       host.maybeRegisterTouchExpansion(index, currentMountItem);
 
       updateMountedContent(currentMountItem, layoutOutput, itemComponent);
+      setViewAttributes(currentMountItem);
+    } else if (shouldUpdateViewInfo) {
+      final ComponentHost host = currentMountItem.getHost();
+      host.maybeRegisterTouchExpansion(index, currentMountItem);
+
       setViewAttributes(currentMountItem);
     }
 
@@ -891,6 +906,32 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     return shouldUpdate;
   }
 
+  private static boolean shouldUpdateViewInfo(
+      LayoutOutput layoutOutput, MountItem currentMountItem) {
+
+    if (!ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates) {
+      return false;
+    }
+
+    ViewNodeInfo nextViewNodeInfo = layoutOutput.getViewNodeInfo();
+    ViewNodeInfo currentViewNodeInfo = currentMountItem.getViewNodeInfo();
+    if (((nextViewNodeInfo == null || currentViewNodeInfo == null)
+            && !(nextViewNodeInfo == null && currentViewNodeInfo == null))
+        || (nextViewNodeInfo != null && !nextViewNodeInfo.isEquivalentTo(currentViewNodeInfo))) {
+      return true;
+    }
+
+    NodeInfo nextNodeInfo = layoutOutput.getNodeInfo();
+    NodeInfo currentNodeInfo = currentMountItem.getNodeInfo();
+    if (((nextNodeInfo == null || currentNodeInfo == null)
+            && !(nextNodeInfo == null && currentNodeInfo == null))
+        || (nextNodeInfo != null && !nextNodeInfo.isEquivalentTo(currentNodeInfo))) {
+      return true;
+    }
+
+    return false;
+  }
+
   private static boolean shouldUpdateMountItem(
       LayoutOutput layoutOutput,
       MountItem currentMountItem,
@@ -917,7 +958,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         return currentLifecycle instanceof DrawableComponent
             && nextLifecycle instanceof DrawableComponent
             && currentLifecycle.shouldComponentUpdate(currentComponent, nextComponent);
-
       } else if (updateState == LayoutOutput.STATE_DIRTY) {
         return true;
       }

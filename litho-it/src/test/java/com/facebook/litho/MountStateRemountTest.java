@@ -24,12 +24,17 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.powermock.reflect.Whitebox.getInternalState;
 
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.util.LongSparseArray;
+import android.view.View;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.widget.EditText;
+import com.facebook.litho.widget.Text;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
@@ -187,6 +192,149 @@ public class MountStateRemountTest {
     assertThat(component2.isMounted()).isFalse();
     assertThat(component3.isMounted()).isFalse();
     assertThat(component4.isMounted()).isTrue();
+  }
+
+  @Test
+  public void testRemountOnNoLayoutChanges() {
+    ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = true;
+
+    final Component oldComponent =
+        Column.create(mContext)
+            .backgroundColor(Color.WHITE)
+            .child(
+                EditText.create(mContext)
+                    .text("Hello World")
+                    .viewTag("Alpha")
+                    .contentDescription("some description"))
+            .build();
+
+    final LithoView lithoView = mountComponent(mContext, oldComponent, 400, 400);
+
+    final View oldView = lithoView.getChildAt(0);
+
+    final Object oldTag = oldView.getTag();
+    final String oldContentDescription = oldView.getContentDescription().toString();
+
+    final Component newComponent =
+        Column.create(mContext)
+            .backgroundColor(Color.WHITE)
+            .child(
+                EditText.create(mContext)
+                    .text("Hello World")
+                    .viewTag("Alpha")
+                    .contentDescription("some description"))
+            .build();
+
+    mountComponent(mContext, lithoView, newComponent, 400, 400);
+
+    View newView = lithoView.getChildAt(0);
+
+    assertThat(newView).isSameAs(oldView);
+
+    Object newTag = newView.getTag();
+    String newContentDescription = newView.getContentDescription().toString();
+
+    assertThat(newTag).isSameAs(oldTag);
+    assertThat(newContentDescription).isSameAs(oldContentDescription);
+
+    // TODO: (T33421916) add tests to assert if background and foreground remain the same
+
+    ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = false;
+  }
+
+  @Test
+  public void testRemountOnNodeInfoLayoutChanges() {
+    ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = true;
+
+    final Component oldComponent =
+        Column.create(mContext)
+            .backgroundColor(Color.WHITE)
+            .child(Text.create(mContext).textSizeSp(12).text("label:"))
+            .child(
+                EditText.create(mContext)
+                    .text("Hello World")
+                    .textSizeSp(12)
+                    .viewTag("Alpha")
+                    .enabled(true))
+            .build();
+
+    final LithoView lithoView = mountComponent(mContext, oldComponent, 400, 400);
+
+    final View oldView = lithoView.getChildAt(0);
+
+    final Object oldTag = oldView.getTag();
+    final boolean oldIsEnabled = oldView.isEnabled();
+
+    final Component newComponent =
+        Column.create(mContext)
+            .backgroundColor(Color.WHITE)
+            .child(Text.create(mContext).textSizeSp(12).text("label:"))
+            .child(
+                EditText.create(mContext)
+                    .text("Hello World")
+                    .textSizeSp(12)
+                    .viewTag("Beta")
+                    .enabled(false))
+            .build();
+
+    mountComponent(mContext, lithoView, newComponent, 400, 400);
+
+    final View newView = lithoView.getChildAt(0);
+
+    assertThat(newView).isSameAs(oldView);
+
+    final Object newTag = newView.getTag();
+    final boolean newIsEnabled = newView.isEnabled();
+
+    assertThat(newTag).isNotEqualTo(oldTag);
+    assertThat(newIsEnabled).isNotEqualTo(oldIsEnabled);
+
+    ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = false;
+  }
+
+  @Test
+  public void testRemountOnViewNodeInfoLayoutChanges() {
+    ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = true;
+
+    final Component oldComponent =
+        Column.create(mContext)
+            .backgroundColor(Color.WHITE)
+            .child(Text.create(mContext).textSizeSp(12).text("label:"))
+            .child(
+                EditText.create(mContext)
+                    .text("Hello World")
+                    .textSizeSp(12)
+                    .backgroundColor(Color.RED))
+            .build();
+
+    final LithoView lithoView = mountComponent(mContext, oldComponent, 400, 400);
+
+    final View oldView = lithoView.getChildAt(0);
+
+    final ColorDrawable oldDrawable = (ColorDrawable) oldView.getBackground();
+
+    final Component newComponent =
+        Column.create(mContext)
+            .backgroundColor(Color.WHITE)
+            .child(Text.create(mContext).textSizeSp(12).text("label:"))
+            .child(
+                EditText.create(mContext)
+                    .text("Hello World")
+                    .textSizeSp(12)
+                    .backgroundColor(Color.CYAN))
+            .build();
+
+    mountComponent(mContext, lithoView, newComponent, 400, 400);
+
+    final View newView = lithoView.getChildAt(0);
+
+    assertThat(newView).isSameAs(oldView);
+
+    final ColorDrawable newDrawable = (ColorDrawable) newView.getBackground();
+
+    assertThat(newDrawable.getColor()).isNotEqualTo(oldDrawable.getColor());
+
+    ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = false;
   }
 
   private boolean containsRef(List<?> list, Object object) {

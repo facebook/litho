@@ -435,6 +435,137 @@ class NodeInfo {
     return (mPrivateFlags & PFLAG_ROTATION_IS_SET) != 0;
   }
 
+  /**
+   * Checks if this NodeInfo is equal to the {@param other}
+   *
+   * @param other the other NodeInfo
+   * @return {@code true} iff this NodeInfo is equal to the {@param other}.
+   */
+  public boolean isEquivalentTo(NodeInfo other) {
+    if (this == other) {
+      return true;
+    }
+
+    if (other == null) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mAccessibilityRole, other.mAccessibilityRole)) {
+      return false;
+    }
+
+    if (mAlpha != other.mAlpha) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mClickHandler, other.mClickHandler)) {
+      return false;
+    }
+
+    if (mClipToOutline != other.mClipToOutline) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mContentDescription, other.mContentDescription)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(
+        mDispatchPopulateAccessibilityEventHandler,
+        other.mDispatchPopulateAccessibilityEventHandler)) {
+      return false;
+    }
+
+    if (mEnabledState != other.mEnabledState) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mFocusChangeHandler, other.mFocusChangeHandler)) {
+      return false;
+    }
+
+    if (mFocusState != other.mFocusState) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mInterceptTouchHandler, other.mInterceptTouchHandler)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mLongClickHandler, other.mLongClickHandler)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(
+        mOnInitializeAccessibilityEventHandler, other.mOnInitializeAccessibilityEventHandler)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(
+        mOnInitializeAccessibilityNodeInfoHandler,
+        other.mOnInitializeAccessibilityNodeInfoHandler)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(
+        mOnPopulateAccessibilityEventHandler, other.mOnPopulateAccessibilityEventHandler)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(
+        mOnRequestSendAccessibilityEventHandler, other.mOnRequestSendAccessibilityEventHandler)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mOutlineProvider, other.mOutlineProvider)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(
+        mPerformAccessibilityActionHandler, other.mPerformAccessibilityActionHandler)) {
+      return false;
+    }
+
+    if (mRotation != other.mRotation) {
+      return false;
+    }
+
+    if (mScale != other.mScale) {
+      return false;
+    }
+
+    if (mSelectedState != other.mSelectedState) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mSendAccessibilityEventHandler, other.mSendAccessibilityEventHandler)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(
+        mSendAccessibilityEventUncheckedHandler, other.mSendAccessibilityEventUncheckedHandler)) {
+      return false;
+    }
+
+    if (mShadowElevation != other.mShadowElevation) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mTouchHandler, other.mTouchHandler)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mViewTag, other.mViewTag)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mViewTags, other.mViewTags)) {
+      return false;
+    }
+
+    return true;
+  }
+
   void updateWith(NodeInfo newInfo) {
     if ((newInfo.mPrivateFlags & PFLAG_CLICK_HANDLER_IS_SET) != 0) {
       mClickHandler = newInfo.mClickHandler;
