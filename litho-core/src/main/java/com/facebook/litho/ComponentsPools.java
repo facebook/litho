@@ -164,15 +164,7 @@ public class ComponentsPools {
   }
 
   static YogaNode acquireYogaNode() {
-    if (sYogaConfig == null) {
-      synchronized (sYogaConfigLock) {
-        if (sYogaConfig == null) {
-          sYogaConfig = new YogaConfig();
-          sYogaConfig.setUseWebDefaults(true);
-        }
-      }
-    }
-
+    initYogaConfigIfNecessary();
     if (sYogaConfig.getLogger() != ComponentsConfiguration.YOGA_LOGGER) {
       synchronized (sYogaConfigLock) {
         sYogaConfig.setLogger(ComponentsConfiguration.YOGA_LOGGER);
@@ -875,6 +867,29 @@ public class ComponentsPools {
       }
     }
     return pools;
+  }
+
+  /**
+   * Toggles a Yoga setting on whether to print debug logs to adb.
+   *
+   * @param enable whether to print logs or not
+   */
+  public static void setPrintYogaDebugLogs(boolean enable) {
+    initYogaConfigIfNecessary();
+    synchronized (sYogaConfigLock) {
+      sYogaConfig.setPrintTreeFlag(enable);
+    }
+  }
+
+  private static void initYogaConfigIfNecessary() {
+    if (sYogaConfig == null) {
+      synchronized (sYogaConfigLock) {
+        if (sYogaConfig == null) {
+          sYogaConfig = new YogaConfig();
+          sYogaConfig.setUseWebDefaults(true);
+        }
+      }
+    }
   }
 
   @VisibleForTesting
