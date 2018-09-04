@@ -16,10 +16,12 @@
 
 package com.facebook.litho.testing;
 
+import android.support.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.EventHandler;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Base class for test components which expose lifecycle information.
@@ -28,7 +30,7 @@ import java.util.List;
  */
 public abstract class TestComponent extends Component {
 
-  private final List<EventHandler<?>> mDispatchedEventHandlers = new ArrayList<>();
+  private final Map<EventHandler<?>, Object> mDispatchedEventHandlers = new HashMap<>();
   private boolean mOnMountCalled;
   private boolean mMounted;
   private boolean mOnUnmountCalled;
@@ -164,11 +166,15 @@ public abstract class TestComponent extends Component {
 
   @Override
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-    mDispatchedEventHandlers.add(eventHandler);
+    mDispatchedEventHandlers.put(eventHandler, eventState);
     return null;
   }
 
-  public List<EventHandler<?>> getDispatchedEventHandlers() {
-    return mDispatchedEventHandlers;
+  public Set<EventHandler<?>> getDispatchedEventHandlers() {
+    return mDispatchedEventHandlers.keySet();
+  }
+
+  public @Nullable Object getEventState(EventHandler eventHandler) {
+    return mDispatchedEventHandlers.get(eventHandler);
   }
 }

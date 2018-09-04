@@ -146,11 +146,13 @@ public class CommonPropsTest {
     final EventHandler<UnfocusedVisibleEvent> unfocusedHandler = mock(EventHandler.class);
     final EventHandler<FullImpressionVisibleEvent> fullImpressionHandler = mock(EventHandler.class);
     final EventHandler<InvisibleEvent> invisibleHandler = mock(EventHandler.class);
+    final EventHandler<VisibilityChangedEvent> visibleRectChangedHandler = mock(EventHandler.class);
     mCommonProps.visibleHandler(visibleHandler);
     mCommonProps.focusedHandler(focusedHandler);
     mCommonProps.unfocusedHandler(unfocusedHandler);
     mCommonProps.fullImpressionHandler(fullImpressionHandler);
     mCommonProps.invisibleHandler(invisibleHandler);
+    mCommonProps.visibilityChangedHandler(visibleRectChangedHandler);
 
     mCommonProps.contentDescription("test");
 
@@ -279,6 +281,7 @@ public class CommonPropsTest {
     verify(mNode).unfocusedHandler(unfocusedHandler);
     verify(mNode).fullImpressionHandler(fullImpressionHandler);
     verify(mNode).invisibleHandler(invisibleHandler);
+    verify(mNode).visibilityChangedHandler(visibleRectChangedHandler);
 
     verify(mNode).contentDescription("test");
 

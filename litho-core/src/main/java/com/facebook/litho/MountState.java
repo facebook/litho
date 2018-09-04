@@ -518,6 +518,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           visibilityOutput.getFullImpressionEventHandler();
       final EventHandler<InvisibleEvent> invisibleHandler =
           visibilityOutput.getInvisibleEventHandler();
+      final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
+          visibilityOutput.getVisibilityChangedEventHandler();
       final long visibilityOutputId = visibilityOutput.getId();
       final Rect visibilityOutputBounds = visibilityOutput.getBounds();
 
@@ -550,6 +552,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
             EventDispatcherUtils.dispatchOnInvisible(visibilityItem.getInvisibleHandler());
           }
 
+          if (visibilityChangedHandler != null) {
+            EventDispatcherUtils.dispatchOnVisibilityChanged(
+                visibilityChangedHandler, 0, 0, 0f, 0f);
+          }
+
           if (visibilityItem.isInFocusedRange()) {
             visibilityItem.setFocusedRange(false);
             if (visibilityItem.getUnfocusedHandler() != null) {
@@ -574,7 +581,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
                   ? visibilityOutput.getComponent().getGlobalKey()
                   : null;
           visibilityItem =
-              ComponentsPools.acquireVisibilityItem(globalKey, invisibleHandler, unfocusedHandler);
+              ComponentsPools.acquireVisibilityItem(
+                  globalKey, invisibleHandler, unfocusedHandler, visibilityChangedHandler);
           visibilityItem.setDoNotClearInThisPass(mIsDirty);
           mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
 
@@ -609,6 +617,17 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           if (visibilityItem.isInFullImpressionRange()) {
             EventDispatcherUtils.dispatchOnFullImpression(fullImpressionHandler);
           }
+        }
+
+        if (visibilityChangedHandler != null) {
+          final int visibleWidth = localVisibleRect.right - localVisibleRect.left;
+          final int visibleHeight = localVisibleRect.bottom - localVisibleRect.top;
+          EventDispatcherUtils.dispatchOnVisibilityChanged(
+              visibilityChangedHandler,
+              visibleWidth,
+              visibleHeight,
+              100f * visibleWidth / layoutState.getWidth(),
+              100f * visibleHeight / layoutState.getHeight());
         }
       }
       if (isDoingPerfLog) {
@@ -727,6 +746,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         final EventHandler<InvisibleEvent> invisibleHandler = visibilityItem.getInvisibleHandler();
         final EventHandler<UnfocusedVisibleEvent> unfocusedHandler =
             visibilityItem.getUnfocusedHandler();
+        final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
+            visibilityItem.getVisibilityChangedHandler();
 
         if (invisibleHandler != null) {
           EventDispatcherUtils.dispatchOnInvisible(invisibleHandler);
@@ -737,6 +758,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           if (unfocusedHandler != null) {
             EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
           }
+        }
+
+        if (visibilityChangedHandler != null) {
+          EventDispatcherUtils.dispatchOnVisibilityChanged(visibilityChangedHandler, 0, 0, 0f, 0f);
         }
 
         mVisibilityIdToItemMap.removeAt(i);

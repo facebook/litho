@@ -110,6 +110,7 @@ class InternalNode implements ComponentLayout {
   private static final long PFLAG_BORDER_IS_SET = 1L << 28;
   private static final long PFLAG_STATE_LIST_ANIMATOR_SET = 1L << 29;
   private static final long PFLAG_STATE_LIST_ANIMATOR_RES_SET = 1L << 30;
+  private static final long PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET = 1L << 31;
 
   YogaNode mYogaNode;
   private ComponentContext mComponentContext;
@@ -140,6 +141,7 @@ class InternalNode implements ComponentLayout {
   private EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
   private EventHandler<FullImpressionVisibleEvent> mFullImpressionHandler;
   private EventHandler<InvisibleEvent> mInvisibleHandler;
+  private @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
   private String mTestKey;
   private Edges mTouchExpansion;
   private Edges mNestedTreePadding;
@@ -290,7 +292,8 @@ class InternalNode implements ComponentLayout {
         || mFocusedHandler != null
         || mUnfocusedHandler != null
         || mFullImpressionHandler != null
-        || mInvisibleHandler != null;
+        || mInvisibleHandler != null
+        || mVisibilityChangedHandler != null;
   }
 
   /**
@@ -918,8 +921,21 @@ class InternalNode implements ComponentLayout {
     return mInvisibleHandler;
   }
 
-  private static <T> EventHandler<T> addVisibilityHandler(
-      @Nullable EventHandler<T> existingEventHandler, EventHandler<T> newEventHandler) {
+  InternalNode visibilityChangedHandler(
+      @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
+    mPrivateFlags |= PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET;
+    mVisibilityChangedHandler =
+        addVisibilityHandler(mVisibilityChangedHandler, visibilityChangedHandler);
+    return this;
+  }
+
+  @Nullable
+  EventHandler<VisibilityChangedEvent> getVisibilityChangedHandler() {
+    return mVisibilityChangedHandler;
+  }
+
+  private static @Nullable <T> EventHandler<T> addVisibilityHandler(
+      @Nullable EventHandler<T> existingEventHandler, @Nullable EventHandler<T> newEventHandler) {
     if (existingEventHandler == null) {
       return newEventHandler;
     } else {
@@ -1356,6 +1372,9 @@ class InternalNode implements ComponentLayout {
     }
     if ((mPrivateFlags & PFLAG_UNFOCUSED_HANDLER_IS_SET) != 0L) {
       node.mUnfocusedHandler = mUnfocusedHandler;
+    }
+    if ((mPrivateFlags & PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET) != 0L) {
+      node.mVisibilityChangedHandler = mVisibilityChangedHandler;
     }
     if (mTestKey != null) {
       node.mTestKey = mTestKey;

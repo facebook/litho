@@ -370,6 +370,97 @@ public class VisibilityEventsTest {
   }
 
   @Test
+  public void testVisibleRectChangedEventItemVisible() {
+    final TestComponent content = create(mContext).build();
+    final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
+        new EventHandler<>(content, 3);
+
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            mLithoView,
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content)
+                        .visibilityChangedHandler(visibilityChangedHandler)
+                        .widthPx(10)
+                        .heightPx(10))
+                .build(),
+            true,
+            10,
+            10);
+
+    VisibilityChangedEvent visibilityChangedEvent =
+        (VisibilityChangedEvent) content.getEventState(visibilityChangedHandler);
+    assertThat(visibilityChangedEvent.visibleHeight).isEqualTo(10);
+    assertThat(visibilityChangedEvent.visibleWidth).isEqualTo(10);
+    assertThat(visibilityChangedEvent.percentVisibleHeight).isEqualTo(100f);
+    assertThat(visibilityChangedEvent.percentVisibleWidth).isEqualTo(100f);
+
+    content.getDispatchedEventHandlers().clear();
+
+    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 4), true);
+    assertThat(content.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
+
+    visibilityChangedEvent =
+        (VisibilityChangedEvent) content.getEventState(visibilityChangedHandler);
+
+    assertThat(visibilityChangedEvent.visibleHeight).isEqualTo(4);
+    assertThat(visibilityChangedEvent.visibleWidth).isEqualTo(10);
+    assertThat(visibilityChangedEvent.percentVisibleHeight).isEqualTo(40f);
+    assertThat(visibilityChangedEvent.percentVisibleWidth).isEqualTo(100f);
+
+    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 5), true);
+    assertThat(content.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
+
+    visibilityChangedEvent =
+        (VisibilityChangedEvent) content.getEventState(visibilityChangedHandler);
+
+    assertThat(visibilityChangedEvent.visibleHeight).isEqualTo(5);
+    assertThat(visibilityChangedEvent.visibleWidth).isEqualTo(10);
+    assertThat(visibilityChangedEvent.percentVisibleHeight).isEqualTo(50f);
+    assertThat(visibilityChangedEvent.percentVisibleWidth).isEqualTo(100f);
+  }
+
+  @Test
+  public void testVisibleRectChangedEventItemNotVisible() {
+    final TestComponent content = create(mContext).build();
+    final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
+        new EventHandler<>(content, 3);
+
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            mLithoView,
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content)
+                        .visibilityChangedHandler(visibilityChangedHandler)
+                        .widthPx(10)
+                        .heightPx(5)
+                        .marginPx(YogaEdge.TOP, 5))
+                .build(),
+            true,
+            10,
+            10);
+
+    content.getDispatchedEventHandlers().clear();
+
+    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 5), true);
+    assertThat(content.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
+
+    VisibilityChangedEvent visibilityChangedEvent =
+        (VisibilityChangedEvent) content.getEventState(visibilityChangedHandler);
+
+    assertThat(visibilityChangedEvent.visibleHeight).isEqualTo(0);
+    assertThat(visibilityChangedEvent.visibleWidth).isEqualTo(0);
+    assertThat(visibilityChangedEvent.percentVisibleHeight).isEqualTo(0.0f);
+    assertThat(visibilityChangedEvent.percentVisibleWidth).isEqualTo(0.0f);
+  }
+
+  @Test
   public void testVisibleAndInvisibleEvents() {
     final TestComponent content = create(mContext).build();
     final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 1);
@@ -420,8 +511,12 @@ public class VisibilityEventsTest {
   public void testMultipleVisibleEvents() {
     final TestComponent content1 = create(mContext).build();
     final TestComponent content2 = create(mContext).build();
+    final TestComponent content3 = create(mContext).build();
     final EventHandler<VisibleEvent> visibleEventHandler1 = new EventHandler<>(content1, 1);
     final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(content2, 2);
+    final EventHandler<VisibleEvent> visibleEventHandler3 = new EventHandler<>(content3, 3);
+    final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
+        new EventHandler<>(content3, 4);
 
     final LithoView lithoView =
         mountComponent(
@@ -440,6 +535,13 @@ public class VisibilityEventsTest {
                         .visibleHandler(visibleEventHandler2)
                         .widthPx(10)
                         .heightPx(5))
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content3)
+                        .visibleHandler(visibleEventHandler3)
+                        .visibilityChangedHandler(visibilityChangedHandler)
+                        .widthPx(10)
+                        .heightPx(5))
                 .build(),
             true,
             10,
@@ -447,28 +549,38 @@ public class VisibilityEventsTest {
 
     assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).contains(visibleEventHandler3);
+    assertThat(content3.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
 
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
+    content3.getDispatchedEventHandlers().clear();
     lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 0), true);
     assertThat(content1.getDispatchedEventHandlers())
         .doesNotContain(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers())
         .doesNotContain(visibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
+    assertThat(content3.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
 
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
+    content3.getDispatchedEventHandlers().clear();
     lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 3), true);
     assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers())
         .doesNotContain(visibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibilityChangedHandler);
 
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
-    lithoView.performIncrementalMount(new Rect(LEFT, 3, RIGHT, 6), true);
+    lithoView.performIncrementalMount(new Rect(LEFT, 3, RIGHT, 11), true);
     assertThat(content1.getDispatchedEventHandlers())
         .doesNotContain(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).contains(visibleEventHandler3);
+    assertThat(content3.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
   }
 
   @Test

@@ -442,6 +442,8 @@ class LayoutState {
     final EventHandler<FullImpressionVisibleEvent> fullImpressionHandler =
         node.getFullImpressionHandler();
     final EventHandler<InvisibleEvent> invisibleHandler = node.getInvisibleHandler();
+    final EventHandler<VisibilityChangedEvent> visibleRectChangedEventHandler =
+        node.getVisibilityChangedHandler();
     final VisibilityOutput visibilityOutput = ComponentsPools.acquireVisibilityOutput();
 
     visibilityOutput.setComponent(node.getRootComponent());
@@ -453,6 +455,7 @@ class LayoutState {
     visibilityOutput.setUnfocusedEventHandler(unfocusedHandler);
     visibilityOutput.setFullImpressionEventHandler(fullImpressionHandler);
     visibilityOutput.setInvisibleEventHandler(invisibleHandler);
+    visibilityOutput.setVisibilityChangedEventHandler(visibleRectChangedEventHandler);
 
     return visibilityOutput;
   }

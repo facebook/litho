@@ -334,6 +334,7 @@ public class LayoutStateCreateTreeTest {
     final EventHandler<UnfocusedVisibleEvent> unfocusedHandler = mock(EventHandler.class);
     final EventHandler<FullImpressionVisibleEvent> fullImpressionHandler = mock(EventHandler.class);
     final EventHandler<InvisibleEvent> invisibleHandler = mock(EventHandler.class);
+    final EventHandler<VisibilityChangedEvent> visibleRectChangedHandler = mock(EventHandler.class);
     final Object viewTag = new Object();
     final SparseArray<Object> viewTags = new SparseArray<>();
     final EventHandler<DispatchPopulateAccessibilityEventEvent>
@@ -426,6 +427,7 @@ public class LayoutStateCreateTreeTest {
                 .unfocusedHandler(unfocusedHandler)
                 .fullImpressionHandler(fullImpressionHandler)
                 .invisibleHandler(invisibleHandler)
+                .visibilityChangedHandler(visibleRectChangedHandler)
                 .contentDescription("test")
                 .viewTag(viewTag)
                 .viewTags(viewTags)
@@ -530,6 +532,7 @@ public class LayoutStateCreateTreeTest {
     verify(node).unfocusedHandler(unfocusedHandler);
     verify(node).fullImpressionHandler(fullImpressionHandler);
     verify(node).invisibleHandler(invisibleHandler);
+    verify(node).visibilityChangedHandler(visibleRectChangedHandler);
 
     verify(node).contentDescription("test");
 

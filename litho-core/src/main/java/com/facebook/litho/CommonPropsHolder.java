@@ -335,6 +335,11 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     getOrCreateOtherProps().invisibleHandler(invisibleHandler);
   }
 
+  void visibilityChangedHandler(
+      @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
+    getOrCreateOtherProps().visibilityChangedHandler(visibilityChangedHandler);
+  }
+
   void contentDescription(@Nullable CharSequence contentDescription) {
     getOrCreateNodeInfo().setContentDescription(contentDescription);
   }
@@ -529,6 +534,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     private static final long PFLAG_BORDER_IS_SET = 1L << 37;
     private static final long PFLAG_STATE_LIST_ANIMATOR_IS_SET = 1L << 38;
     private static final long PFLAG_STATE_LIST_ANIMATOR_RES_IS_SET = 1L << 39;
+    private static final long PFLAG_VISIBILITY_CHANGED_HANDLER_IS_SET = 1L << 40;
 
     private long mPrivateFlags;
 
@@ -539,6 +545,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     @Nullable private EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
     @Nullable private EventHandler<FullImpressionVisibleEvent> mFullImpressionHandler;
     @Nullable private EventHandler<InvisibleEvent> mInvisibleHandler;
+    @Nullable private EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
     @Nullable private YogaDirection mLayoutDirection;
     @Nullable private YogaAlign mAlignSelf;
     private float mFlex;
@@ -786,6 +793,12 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mInvisibleHandler = invisibleHandler;
     }
 
+    private void visibilityChangedHandler(
+        @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
+      mPrivateFlags |= PFLAG_VISIBILITY_CHANGED_HANDLER_IS_SET;
+      mVisibilityChangedHandler = visibilityChangedHandler;
+    }
+
     private void transitionKey(String key) {
       mPrivateFlags |= PFLAG_TRANSITION_KEY_IS_SET;
       mTransitionKey = key;
@@ -831,6 +844,9 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       }
       if ((mPrivateFlags & PFLAG_UNFOCUSED_HANDLER_IS_SET) != 0L) {
         node.unfocusedHandler(mUnfocusedHandler);
+      }
+      if ((mPrivateFlags & PFLAG_VISIBILITY_CHANGED_HANDLER_IS_SET) != 0) {
+        node.visibilityChangedHandler(mVisibilityChangedHandler);
       }
       if ((mPrivateFlags & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
         node.transitionKey(mTransitionKey);

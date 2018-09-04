@@ -1340,6 +1340,12 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    public T visibilityChangedHandler(
+        @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
+      mComponent.getOrCreateCommonPropsHolder().visibilityChangedHandler(visibilityChangedHandler);
+      return getThis();
+    }
+
     public T contentDescription(@Nullable CharSequence contentDescription) {
       mComponent.getOrCreateCommonPropsHolder().contentDescription(contentDescription);
       return getThis();

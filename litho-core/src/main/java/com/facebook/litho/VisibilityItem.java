@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.graphics.Rect;
+import android.support.annotation.Nullable;
 
 /**
  * Holds information about a VisibilityOutput (that is, about a component for which a visibility
@@ -37,12 +38,14 @@ class VisibilityItem {
   // the corresponding event when unbind is called or when the MountState is reset.
   private EventHandler<InvisibleEvent> mInvisibleHandler;
   private EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
+  private @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
   private boolean mDoNotClearInThisPass;
 
   public VisibilityItem() {
     mFlags = 0;
     mInvisibleHandler = null;
     mUnfocusedHandler = null;
+    mVisibilityChangedHandler = null;
   }
 
   String getGlobalKey() {
@@ -79,6 +82,15 @@ class VisibilityItem {
    */
   EventHandler<UnfocusedVisibleEvent> getUnfocusedHandler() {
     return mUnfocusedHandler;
+  }
+
+  void setVisibilityChangedHandler(EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
+    mVisibilityChangedHandler = visibilityChangedHandler;
+  }
+
+  @Nullable
+  EventHandler<VisibilityChangedEvent> getVisibilityChangedHandler() {
+    return mVisibilityChangedHandler;
   }
 
   boolean isInFocusedRange() {
@@ -138,6 +150,7 @@ class VisibilityItem {
     mFlags = 0;
     mInvisibleHandler = null;
     mUnfocusedHandler = null;
+    mVisibilityChangedHandler = null;
     mDoNotClearInThisPass = false;
   }
 }
