@@ -22,7 +22,8 @@ android {
     sourceCompatibility = sourceCompatibilityVersion
 
     defaultConfig {
-        minSdkVersion rootProject.minSdkVersion
+        minSdkVersion 21
+        multiDexEnabled true
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
@@ -55,6 +56,7 @@ dependencies {
     implementation deps.soloader
     implementation deps.fresco
     implementation deps.flipper
+
     // Flipper may reflect on annotations, requiring them to be present at runtime.
     debugImplementation project(':litho-annotations')
 

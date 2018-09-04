@@ -21,7 +21,7 @@ import com.facebook.soloader.SoLoader;
 @DoNotStrip
 public class ThreadScopeSupport {
   static {
-    SoLoader.loadLibrary("fbjni");
+    SoLoader.loadLibrary("fb");
   }
 
   // This is just used for ThreadScope::withClassLoader to have a java function
