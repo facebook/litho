@@ -189,4 +189,6 @@ public class ComponentsConfiguration {
    * not change the measure of view.
    */
   public static boolean enableViewInfoDiffingForMountStateUpdates = false;
+
+  public static boolean enableThreadTracingStacktrace = false;
 }

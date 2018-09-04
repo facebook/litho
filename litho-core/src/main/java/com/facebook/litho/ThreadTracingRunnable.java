@@ -15,6 +15,8 @@
  */
 package com.facebook.litho;
 
+import com.facebook.litho.config.ComponentsConfiguration;
+
 /**
  * ThreadTracingRunnable tries to help debugging crashes happening across threads showing the
  * stacktrace of the crash origin which scheduled this runnable.
@@ -86,11 +88,14 @@ public abstract class ThreadTracingRunnable implements Runnable {
     try {
       tracedRun(mTracingThrowable);
     } catch (Throwable t) {
-      Throwable lastThrowable = t;
-      while (lastThrowable.getCause() != null) {
-        lastThrowable = lastThrowable.getCause();
+      if (ComponentsConfiguration.enableThreadTracingStacktrace) {
+        Throwable lastThrowable = t;
+        while (lastThrowable.getCause() != null) {
+          lastThrowable = lastThrowable.getCause();
+        }
+        lastThrowable.initCause(mTracingThrowable);
       }
-      lastThrowable.initCause(mTracingThrowable);
+
       throw t;
     }
   }
