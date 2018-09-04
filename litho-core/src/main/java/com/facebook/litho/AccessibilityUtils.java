@@ -18,9 +18,12 @@ package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 
+import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.Context;
-import android.support.v4.view.accessibility.AccessibilityManagerCompat;
+import android.support.v4.accessibilityservice.AccessibilityServiceInfoCompat;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
+import java.util.List;
 
 class AccessibilityUtils {
   private static final boolean ACCESSIBILITY_ENABLED =
@@ -33,7 +36,39 @@ class AccessibilityUtils {
   public static boolean isAccessibilityEnabled(Context context) {
     final AccessibilityManager manager =
         (AccessibilityManager) context.getSystemService(ACCESSIBILITY_SERVICE);
-    return ACCESSIBILITY_ENABLED
-        || (manager.isEnabled() && AccessibilityManagerCompat.isTouchExplorationEnabled(manager));
+    return ACCESSIBILITY_ENABLED || isRunningApplicableAccessibilityService(manager);
+  }
+
+  public static boolean isRunningApplicableAccessibilityService(AccessibilityManager manager) {
+    if (!manager.isEnabled()) {
+      return false;
+    }
+    return manager.isTouchExplorationEnabled()
+        || enabledServiceCanFocusAndRetrieveWindowContent(manager);
+  }
+
+  public static boolean enabledServiceCanFocusAndRetrieveWindowContent(
+      AccessibilityManager manager) {
+    List<AccessibilityServiceInfo> enabledServices =
+        manager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
+
+    if (enabledServices == null) {
+      return false;
+    }
+
+    for (AccessibilityServiceInfo serviceInfo : enabledServices) {
+      int eventTypes = serviceInfo.eventTypes;
+      if ((eventTypes & AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED)
+          != AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
+        continue;
+      }
+      int capabilities = AccessibilityServiceInfoCompat.getCapabilities(serviceInfo);
+      if ((capabilities & AccessibilityServiceInfo.CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT)
+          == AccessibilityServiceInfo.CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
