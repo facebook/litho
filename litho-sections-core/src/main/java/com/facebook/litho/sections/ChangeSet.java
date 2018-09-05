@@ -47,12 +47,13 @@ import java.util.List;
 public final class ChangeSet {
 
   private final List<Change> mChanges;
-  private int mFinalCount;
   private Section mSection;
+
+  @Nullable private ChangeSetStats mChangeSetStats;
+  private int mFinalCount;
 
   private ChangeSet() {
     mChanges = new ArrayList<>();
-    mFinalCount = 0;
   }
 
   /**
@@ -75,6 +76,13 @@ public final class ChangeSet {
    */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public void addChange(Change change) {
+    mChanges.add(change);
+
+    final int changeDelta = getChangeDelta(change);
+    mFinalCount += changeDelta;
+  }
+
+  private static int getChangeDelta(Change change) {
     int changeDelta = 0;
     switch (change.getType()) {
       case INSERT:
@@ -96,8 +104,7 @@ public final class ChangeSet {
         break;
     }
 
-    mFinalCount += changeDelta;
-    mChanges.add(change);
+    return changeDelta;
   }
 
   public void insert(int index, RenderInfo renderInfo, @Nullable TreeProps treeProps) {
@@ -150,17 +157,23 @@ public final class ChangeSet {
     return mFinalCount;
   }
 
+  @Nullable
+  public ChangeSetStats getChangeSetStats() {
+    return mChangeSetStats;
+  }
+
   /** @return an empty ChangeSet. */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public static ChangeSet acquireChangeSet(Section section) {
-    return acquireChangeSet(0, section);
+  public static ChangeSet acquireChangeSet(Section section, boolean enableStats) {
+    return acquireChangeSet(0, section, enableStats);
   }
 
   /** @return an empty ChangeSet starting from count startCount. */
-  static ChangeSet acquireChangeSet(int startCount, Section section) {
+  static ChangeSet acquireChangeSet(int startCount, Section section, boolean enableStats) {
     final ChangeSet changeSet = acquire();
     changeSet.mFinalCount = startCount;
     changeSet.mSection = section;
+    changeSet.mChangeSetStats = enableStats ? new ChangeSetStats() : null;
 
     return changeSet;
   }
@@ -185,11 +198,13 @@ public final class ChangeSet {
    * Section}. The merged ChangeSet will be passed to the {@link Target}.
    */
   static ChangeSet merge(ChangeSet first, ChangeSet second) {
-    final ChangeSet mergedChangeSet = acquireChangeSet(null);
+    final ChangeSet mergedChangeSet = acquireChangeSet(null, false);
     final int firstCount = first != null ? first.mFinalCount : 0;
     final int secondCount = second != null ? second.mFinalCount : 0;
 
     final List<Change> mergedChanged = mergedChangeSet.mChanges;
+    final ChangeSetStats firstStats = first != null ? first.getChangeSetStats() : null;
+    final ChangeSetStats secondStats = second != null ? second.getChangeSetStats() : null;
 
     if (first != null) {
       for (Change change : first.mChanges) {
@@ -204,6 +219,7 @@ public final class ChangeSet {
     }
 
     mergedChangeSet.mFinalCount = firstCount + secondCount;
+    mergedChangeSet.mChangeSetStats = ChangeSetStats.merge(firstStats, secondStats);
 
     return mergedChangeSet;
   }
@@ -220,6 +236,216 @@ public final class ChangeSet {
     }
 
     mChanges.clear();
+    mChangeSetStats = null;
     mFinalCount = 0;
+  }
+
+  /** Keep track of internal statistics useful for performance analyses. */
+  static class ChangeSetStats {
+
+    private final int mEffectiveChangesCount;
+
+    private final int mInsertSingleCount;
+    private final int mInsertRangeCount;
+
+    private final int mDeleteSingleCount;
+    private final int mDeleteRangeCount;
+
+    private final int mUpdateSingleCount;
+    private final int mUpdateRangeCount;
+
+    private final int mMoveCount;
+
+    ChangeSetStats(
+        int effectiveChangesCount,
+        int insertSingleCount,
+        int insertRangeCount,
+        int deleteSingleCount,
+        int deleteRangeCount,
+        int updateSingleCount,
+        int updateRangeCount,
+        int moveCount) {
+      mEffectiveChangesCount = effectiveChangesCount;
+      mInsertSingleCount = insertSingleCount;
+      mInsertRangeCount = insertRangeCount;
+      mDeleteSingleCount = deleteSingleCount;
+      mDeleteRangeCount = deleteRangeCount;
+      mUpdateSingleCount = updateSingleCount;
+      mUpdateRangeCount = updateRangeCount;
+      mMoveCount = moveCount;
+    }
+
+    ChangeSetStats() {
+      mEffectiveChangesCount = 0;
+      mInsertSingleCount = 0;
+      mInsertRangeCount = 0;
+      mDeleteSingleCount = 0;
+      mDeleteRangeCount = 0;
+      mUpdateSingleCount = 0;
+      mUpdateRangeCount = 0;
+      mMoveCount = 0;
+    }
+
+    @Nullable
+    ChangeSetStats merge(@Nullable ChangeSetStats other) {
+      if (other == null) {
+        return null;
+      }
+
+      return new ChangeSetStats(
+          other.mEffectiveChangesCount + mEffectiveChangesCount,
+          other.mInsertSingleCount + mInsertSingleCount,
+          other.mInsertRangeCount + mInsertRangeCount,
+          other.mDeleteSingleCount + mDeleteSingleCount,
+          other.mDeleteRangeCount + mDeleteRangeCount,
+          other.mUpdateSingleCount + mUpdateSingleCount,
+          other.mUpdateRangeCount + mUpdateRangeCount,
+          other.mMoveCount + mMoveCount);
+    }
+
+    @Nullable
+    static ChangeSetStats merge(@Nullable ChangeSetStats a, @Nullable ChangeSetStats b) {
+      if (a == null) {
+        return b;
+      }
+
+      if (b == null) {
+        return a;
+      }
+
+      return a.merge(b);
+    }
+
+    static ChangeSetStats fromChange(Change change, int changeDelta) {
+      int insertSingleCount = 0,
+          insertRangeCount = 0,
+          deleteSingleCount = 0,
+          deleteRangeCount = 0,
+          updateSingleCount = 0,
+          updateRangeCount = 0,
+          moveCount = 0;
+
+      switch (change.getType()) {
+        case INSERT:
+          insertSingleCount += 1;
+          break;
+        case INSERT_RANGE:
+          insertRangeCount += change.getCount();
+          break;
+        case DELETE:
+          deleteSingleCount += 1;
+          break;
+        case DELETE_RANGE:
+          deleteRangeCount += change.getCount();
+          break;
+        case UPDATE:
+          updateSingleCount += 1;
+          break;
+        case UPDATE_RANGE:
+          updateRangeCount += change.getCount();
+          break;
+        case MOVE:
+          moveCount += change.getCount();
+          break;
+      }
+
+      return new ChangeSetStats(
+          changeDelta,
+          insertSingleCount,
+          insertRangeCount,
+          deleteSingleCount,
+          deleteRangeCount,
+          updateSingleCount,
+          updateRangeCount,
+          moveCount);
+    }
+
+    /**
+     * The effective number of changes this changeset causes. E.g. one delete + two updates + one
+     * insert = 0 (delete and insert cancel each other out, updates don't effect the list size).
+     */
+    public int getEffectiveChangesCount() {
+      return mEffectiveChangesCount;
+    }
+
+    public int getInsertSingleCount() {
+      return mInsertSingleCount;
+    }
+
+    public int getInsertRangeCount() {
+      return mInsertRangeCount;
+    }
+
+    public int getDeleteSingleCount() {
+      return mDeleteSingleCount;
+    }
+
+    public int getDeleteRangeCount() {
+      return mDeleteRangeCount;
+    }
+
+    public int getUpdateSingleCount() {
+      return mUpdateSingleCount;
+    }
+
+    public int getUpdateRangeCount() {
+      return mUpdateRangeCount;
+    }
+
+    public int getMoveCount() {
+      return mMoveCount;
+    }
+
+    @Override
+    public String toString() {
+      return "ChangeSetStats{"
+          + "mEffectiveChangesCount="
+          + mEffectiveChangesCount
+          + ", mInsertSingleCount="
+          + mInsertSingleCount
+          + ", mInsertRangeCount="
+          + mInsertRangeCount
+          + ", mDeleteSingleCount="
+          + mDeleteSingleCount
+          + ", mDeleteRangeCount="
+          + mDeleteRangeCount
+          + ", mUpdateSingleCount="
+          + mUpdateSingleCount
+          + ", mUpdateRangeCount="
+          + mUpdateRangeCount
+          + ", mMoveCount="
+          + mMoveCount
+          + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      ChangeSetStats that = (ChangeSetStats) o;
+
+      if (mEffectiveChangesCount != that.mEffectiveChangesCount) return false;
+      if (mInsertSingleCount != that.mInsertSingleCount) return false;
+      if (mInsertRangeCount != that.mInsertRangeCount) return false;
+      if (mDeleteSingleCount != that.mDeleteSingleCount) return false;
+      if (mDeleteRangeCount != that.mDeleteRangeCount) return false;
+      if (mUpdateSingleCount != that.mUpdateSingleCount) return false;
+      if (mUpdateRangeCount != that.mUpdateRangeCount) return false;
+      return mMoveCount == that.mMoveCount;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = mEffectiveChangesCount;
+      result = 31 * result + mInsertSingleCount;
+      result = 31 * result + mInsertRangeCount;
+      result = 31 * result + mDeleteSingleCount;
+      result = 31 * result + mDeleteRangeCount;
+      result = 31 * result + mUpdateSingleCount;
+      result = 31 * result + mUpdateRangeCount;
+      result = 31 * result + mMoveCount;
+      return result;
+    }
   }
 }

@@ -63,7 +63,8 @@ public class ChangeSetState {
       SectionsDebugLogger sectionsDebugLogger,
       String sectionTreeTag,
       String currentPrefix,
-      String nextPrefix) {
+      String nextPrefix,
+      boolean enableStats) {
     ChangeSetState changeSetState = acquireChangeSetState();
     changeSetState.mCurrentRoot = currentRoot;
     changeSetState.mNewRoot = newRoot;
@@ -83,7 +84,8 @@ public class ChangeSetState {
             sectionTreeTag,
             currentPrefix,
             nextPrefix,
-            Thread.currentThread().getName());
+            Thread.currentThread().getName(),
+            enableStats);
 
     if (logger != null && logEvent != null) {
       logEvent.markerAnnotate(PARAM_CHANGE_COUNT, changeSetState.mChangeSet.getChangeCount());
@@ -105,12 +107,13 @@ public class ChangeSetState {
       String sectionTreeTag,
       String currentPrefix,
       String newPrefix,
-      String thread) {
+      String thread,
+      boolean enableStats) {
 
     boolean currentRootIsNull = currentRoot == null;
     boolean newRootIsNull = newRoot == null;
 
-    if (currentRootIsNull  && newRootIsNull) {
+    if (currentRootIsNull && newRootIsNull) {
       throw new IllegalStateException("Both currentRoot and newRoot are null.");
     }
 
@@ -119,7 +122,8 @@ public class ChangeSetState {
       // the list.
       final int currentItemsCount = currentRoot.getCount();
       removedComponents.add(currentRoot);
-      final ChangeSet changeSet = ChangeSet.acquireChangeSet(currentRoot.getCount(), newRoot);
+      final ChangeSet changeSet =
+          ChangeSet.acquireChangeSet(currentRoot.getCount(), newRoot, enableStats);
 
       for (int i = 0; i < currentItemsCount; i++) {
         changeSet.addChange(Change.remove(0));
@@ -134,7 +138,8 @@ public class ChangeSetState {
 
     // Components both exist and don't need to update.
     if (!currentRootIsNull && !lifecycle.shouldComponentUpdate(currentRoot, newRoot)) {
-      final ChangeSet changeSet = ChangeSet.acquireChangeSet(currentRoot.getCount(), newRoot);
+      final ChangeSet changeSet =
+          ChangeSet.acquireChangeSet(currentRoot.getCount(), newRoot, enableStats);
       newRoot.setCount(changeSet.getCount());
       sectionsDebugLogger.logShouldUpdate(
           sectionTreeTag,
@@ -162,7 +167,8 @@ public class ChangeSetState {
       }
 
       final ChangeSet changeSet =
-          ChangeSet.acquireChangeSet(currentRootIsNull ? 0 : currentRoot.getCount(), newRoot);
+          ChangeSet.acquireChangeSet(
+              currentRootIsNull ? 0 : currentRoot.getCount(), newRoot, enableStats);
       lifecycle.generateChangeSet(newRoot.getScopedContext(), changeSet, currentRoot, newRoot);
       newRoot.setCount(changeSet.getCount());
 
@@ -173,7 +179,7 @@ public class ChangeSetState {
       return changeSet;
     }
 
-    ChangeSet resultChangeSet = ChangeSet.acquireChangeSet(newRoot);
+    ChangeSet resultChangeSet = ChangeSet.acquireChangeSet(newRoot, enableStats);
 
     final Map<String, Pair<Section, Integer>> currentChildren = acquireChildrenMap(currentRoot);
     final Map<String, Pair<Section, Integer>> newChildren = acquireChildrenMap(newRoot);
@@ -205,7 +211,8 @@ public class ChangeSetState {
         if (sectionToSwapIndex > currentIndex) {
 
           for (int c = 0; c < current.getCount(); c++) {
-            resultChangeSet.addChange(Change.move(getPreviousChildrenCount(currentChildrenList, key), swapToIndex));
+            resultChangeSet.addChange(
+                Change.move(getPreviousChildrenCount(currentChildrenList, key), swapToIndex));
           }
 
           // Place this section in the correct order in the current children list.
@@ -242,7 +249,8 @@ public class ChangeSetState {
             sectionTreeTag,
             updateCurrentPrefix,
             updateNewPrefix,
-            thread);
+            thread,
+            enableStats);
 
     for (int i = 0, size = changeSets.size(); i < size; i++) {
       ChangeSet changeSet = changeSets.valueAt(i);
@@ -280,7 +288,8 @@ public class ChangeSetState {
       String sectionTreeTag,
       String currentPrefix,
       String newPrefix,
-      String thread) {
+      String thread,
+      boolean enableStats) {
     final SparseArray<ChangeSet> changeSets = acquireChangeSetSparseArray();
 
     // Find removed current children.
@@ -300,7 +309,8 @@ public class ChangeSetState {
                 sectionTreeTag,
                 currentPrefix,
                 newPrefix,
-                thread));
+                thread,
+                enableStats));
       }
     }
 
@@ -323,7 +333,8 @@ public class ChangeSetState {
                 sectionTreeTag,
                 currentPrefix,
                 newPrefix,
-                thread);
+                thread,
+                enableStats);
 
         changeSets.put(activeChildIndex, ChangeSet.merge(currentChangeSet, changeSet));
 
@@ -346,7 +357,8 @@ public class ChangeSetState {
                 sectionTreeTag,
                 currentPrefix,
                 newPrefix,
-                thread);
+                thread,
+                enableStats);
 
         changeSets.put(activeChildIndex, ChangeSet.merge(currentChangeSet, changeSet));
 

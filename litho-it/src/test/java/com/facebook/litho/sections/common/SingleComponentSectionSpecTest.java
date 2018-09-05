@@ -54,7 +54,7 @@ public class SingleComponentSectionSpecTest {
     mSpanSizeDiff = new Diff<>();
     mIsFullSpanDiff = new Diff<>();
     mCustomAttributesDiff = new Diff<>();
-    mChangeSet = ChangeSet.acquireChangeSet(null);
+    mChangeSet = ChangeSet.acquireChangeSet(null, false);
   }
 
   @Test
@@ -252,7 +252,7 @@ public class SingleComponentSectionSpecTest {
     assertThat(change.getRenderInfo().isFullSpan()).isFalse();
     assertThat((Boolean) change.getRenderInfo().getCustomAttribute("test")).isTrue();
 
-    mChangeSet = ChangeSet.acquireChangeSet(null);
+    mChangeSet = ChangeSet.acquireChangeSet(null, false);
     mCustomAttributesDiff.init(attrs, attrs);
     mIsFullSpanDiff.init(false, false);
     SingleComponentSectionSpec.onCreateChangeSet(
@@ -266,7 +266,7 @@ public class SingleComponentSectionSpecTest {
     assertThat(mChangeSet.getChangeCount()).isEqualTo(0);
     assertThat((Boolean) change.getRenderInfo().getCustomAttribute("test")).isTrue();
 
-    mChangeSet = ChangeSet.acquireChangeSet(null);
+    mChangeSet = ChangeSet.acquireChangeSet(null, false);
     mCustomAttributesDiff.init(attrs, null);
     SingleComponentSectionSpec.onCreateChangeSet(
         mSectionContext,

@@ -34,7 +34,7 @@ public class ChangeSetTest {
 
   @Test
   public void testAddChange() {
-    final ChangeSet changeSet = ChangeSet.acquireChangeSet(null);
+    final ChangeSet changeSet = ChangeSet.acquireChangeSet(null, false);
 
     changeSet.addChange(Change.insert(0, ComponentRenderInfo.createEmpty()));
     assertThat(changeSet.getCount()).isEqualTo(1);
@@ -55,7 +55,7 @@ public class ChangeSetTest {
 
   @Test
   public void testRangedChange() throws Exception {
-    final ChangeSet changeSet = ChangeSet.acquireChangeSet(null);
+    final ChangeSet changeSet = ChangeSet.acquireChangeSet(null, false);
 
     changeSet.addChange(Change.insertRange(0, 10, dummyComponentInfos(10)));
     assertThat(changeSet.getCount()).isEqualTo(10);
@@ -87,18 +87,18 @@ public class ChangeSetTest {
 
   @Test
   public void testInitialCount() {
-    assertThat(acquireChangeSet(10, null).getCount()).isEqualTo(10);
-    assertThat(acquireChangeSet(null).getCount()).isEqualTo(0);
+    assertThat(acquireChangeSet(10, null, false).getCount()).isEqualTo(10);
+    assertThat(acquireChangeSet(null, false).getCount()).isEqualTo(0);
   }
 
   @Test
   public void testMerge() {
-    final ChangeSet changeSet = ChangeSet.acquireChangeSet(null);
+    final ChangeSet changeSet = ChangeSet.acquireChangeSet(null, false);
     changeSet.addChange(Change.insert(0, ComponentRenderInfo.createEmpty()));
     changeSet.addChange(Change.insert(1, ComponentRenderInfo.createEmpty()));
     changeSet.addChange(Change.insert(2, ComponentRenderInfo.createEmpty()));
 
-    final ChangeSet secondChangeSet = ChangeSet.acquireChangeSet(null);
+    final ChangeSet secondChangeSet = ChangeSet.acquireChangeSet(null, false);
     secondChangeSet.addChange(Change.insert(0, ComponentRenderInfo.createEmpty()));
     secondChangeSet.addChange(Change.insert(1, ComponentRenderInfo.createEmpty()));
     secondChangeSet.addChange(Change.insert(2, ComponentRenderInfo.createEmpty()));
@@ -131,7 +131,7 @@ public class ChangeSetTest {
 
   @Test
   public void testRelease() {
-    final ChangeSet changeSet = ChangeSet.acquireChangeSet(null);
+    final ChangeSet changeSet = ChangeSet.acquireChangeSet(null, false);
     changeSet.addChange(Change.insert(0, ComponentRenderInfo.createEmpty()));
     changeSet.addChange(Change.insert(1, ComponentRenderInfo.createEmpty()));
     changeSet.addChange(Change.insert(2, ComponentRenderInfo.createEmpty()));

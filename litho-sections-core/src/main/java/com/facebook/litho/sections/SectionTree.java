@@ -912,6 +912,7 @@ public class SectionTree {
       final PerfEvent logEvent =
           SectionsLogEventUtils.getSectionsPerformanceEvent(
               mContext, EVENT_SECTIONS_SET_ROOT, currentRoot, nextRoot);
+      final boolean enableStats = logger != null && logEvent != null && logger.isTracing(logEvent);
       if (logEvent != null) {
         logEvent.markerAnnotate(PARAM_ATTRIBUTION, attribution);
         logEvent.markerAnnotate(
@@ -935,7 +936,8 @@ public class SectionTree {
                 nextRoot,
                 pendingStateUpdates.mAllStateUpdates,
                 mSectionsDebugLogger,
-                mTag);
+                mTag,
+                enableStats);
         if (isTracing) {
           ComponentsSystrace.endSection();
         }
@@ -1237,7 +1239,8 @@ public class SectionTree {
       Section nextRoot,
       Map<String, List<StateUpdate>> pendingStateUpdates,
       SectionsDebugLogger sectionsDebugLogger,
-      String sectionTreeTag) {
+      String sectionTreeTag,
+      boolean enableStats) {
     nextRoot.setGlobalKey(nextRoot.getKey());
 
     final ComponentsLogger logger = context.getLogger();
@@ -1266,7 +1269,7 @@ public class SectionTree {
     }
     try {
       return ChangeSetState.generateChangeSet(
-          context, currentRoot, nextRoot, sectionsDebugLogger, sectionTreeTag, "", "");
+          context, currentRoot, nextRoot, sectionsDebugLogger, sectionTreeTag, "", "", enableStats);
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();

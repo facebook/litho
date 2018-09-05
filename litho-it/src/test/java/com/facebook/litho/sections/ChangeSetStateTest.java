@@ -88,7 +88,8 @@ public class ChangeSetStateTest {
             mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
-            mNextPrefix);
+            mNextPrefix,
+            false);
 
     final ChangeSet changeSet = changeSetState.getChangeSet();
 
@@ -132,7 +133,8 @@ public class ChangeSetStateTest {
             mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
-            mNextPrefix);
+            mNextPrefix,
+            false);
 
     final ChangeSet changeSet = changeSetState.getChangeSet();
 
@@ -150,7 +152,8 @@ public class ChangeSetStateTest {
             mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
-            mNextPrefix);
+            mNextPrefix,
+            false);
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
@@ -180,7 +183,8 @@ public class ChangeSetStateTest {
             mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
-            mNextPrefix);
+            mNextPrefix,
+            false);
 
     changeSetState.getChangeSet();
 
@@ -201,7 +205,8 @@ public class ChangeSetStateTest {
             mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
-            mNextPrefix);
+            mNextPrefix,
+            false);
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
@@ -230,7 +235,8 @@ public class ChangeSetStateTest {
         mSectionsDebugLogger,
         mSectionTreeTag,
         mCurrentPrefix,
-        mNextPrefix);
+        mNextPrefix,
+        false);
 
     final Section newleaf1 = TestSectionCreator.createChangeSetComponent(
         "leaf1",
@@ -249,7 +255,8 @@ public class ChangeSetStateTest {
             mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
-            mNextPrefix);
+            mNextPrefix,
+            false);
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
@@ -283,7 +290,8 @@ public class ChangeSetStateTest {
         mSectionsDebugLogger,
         mSectionTreeTag,
         mCurrentPrefix,
-        mNextPrefix);
+        mNextPrefix,
+        false);
 
     final Section newRoot = TestSectionCreator
         .createSectionComponent("node1", true, leaf1);
@@ -297,7 +305,8 @@ public class ChangeSetStateTest {
             mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
-            mNextPrefix);
+            mNextPrefix,
+            false);
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
@@ -336,7 +345,8 @@ public class ChangeSetStateTest {
         mSectionsDebugLogger,
         mSectionTreeTag,
         mCurrentPrefix,
-        mNextPrefix);
+        mNextPrefix,
+        false);
 
     final Section newRoot = TestSectionCreator
         .createSectionComponent("node1", true, leaf4, leaf3, leaf2, leaf1);
@@ -350,7 +360,8 @@ public class ChangeSetStateTest {
             mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
-            mNextPrefix);
+            mNextPrefix,
+            false);
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
@@ -412,7 +423,8 @@ public class ChangeSetStateTest {
         mSectionsDebugLogger,
         mSectionTreeTag,
         mCurrentPrefix,
-        mNextPrefix);
+        mNextPrefix,
+        false);
 
     final Section newRoot = TestSectionCreator
         .createSectionComponent("node1", true, leaf3, leaf4, leaf6, leaf5, leaf1);
@@ -426,7 +438,8 @@ public class ChangeSetStateTest {
             mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
-            mNextPrefix);
+            mNextPrefix,
+            false);
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
@@ -468,7 +481,8 @@ public class ChangeSetStateTest {
         mSectionsDebugLogger,
         mSectionTreeTag,
         mCurrentPrefix,
-        mNextPrefix);
+        mNextPrefix,
+        false);
 
     final Section newRoot = TestSectionCreator
         .createSectionComponent("node1", leaf2, leaf4, leaf5, leaf3);
@@ -482,7 +496,8 @@ public class ChangeSetStateTest {
             mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
-            mNextPrefix);
+            mNextPrefix,
+            false);
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
@@ -518,7 +533,8 @@ public class ChangeSetStateTest {
         mSectionsDebugLogger,
         mSectionTreeTag,
         mCurrentPrefix,
-        mNextPrefix);
+        mNextPrefix,
+        false);
 
     final Section newRoot = TestSectionCreator
         .createSectionComponent("node1",true, leaf2, leaf1, leaf4, leaf3);
@@ -532,7 +548,8 @@ public class ChangeSetStateTest {
             mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
-            mNextPrefix);
+            mNextPrefix,
+            false);
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
@@ -580,7 +597,8 @@ public class ChangeSetStateTest {
         mSectionsDebugLogger,
         mSectionTreeTag,
         mCurrentPrefix,
-        mNextPrefix);
+        mNextPrefix,
+        false);
 
     final Section newRoot = TestSectionCreator
         .createSectionComponent("node1", true, leaf2, leaf1);
@@ -594,7 +612,8 @@ public class ChangeSetStateTest {
             mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
-            mNextPrefix);
+            mNextPrefix,
+            false);
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
@@ -638,7 +657,8 @@ public class ChangeSetStateTest {
         mSectionsDebugLogger,
         mSectionTreeTag,
         mCurrentPrefix,
-        mNextPrefix);
+        mNextPrefix,
+        false);
 
     final Section newRoot = TestSectionCreator
         .createSectionComponent("node1", true, leaf2, leaf3, leaf1);
@@ -652,7 +672,8 @@ public class ChangeSetStateTest {
             mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
-            mNextPrefix);
+            mNextPrefix,
+            false);
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
@@ -693,7 +714,8 @@ public class ChangeSetStateTest {
         mSectionsDebugLogger,
         mSectionTreeTag,
         mCurrentPrefix,
-        mNextPrefix);
+        mNextPrefix,
+        false);
 
     final Section newRoot = TestSectionCreator
         .createSectionComponent("node1", true, leaf2, leaf1, leaf4);
@@ -707,7 +729,8 @@ public class ChangeSetStateTest {
             mSectionsDebugLogger,
             mSectionTreeTag,
             mCurrentPrefix,
-            mNextPrefix);
+            mNextPrefix,
+            false);
 
     final ChangeSet secondChangeSet = secondChangeSetState.getChangeSet();
 
