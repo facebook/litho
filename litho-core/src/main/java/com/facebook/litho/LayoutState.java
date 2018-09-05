@@ -58,7 +58,6 @@ import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LongSparseArray;
-import android.support.v4.view.accessibility.AccessibilityManagerCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -1334,7 +1333,8 @@ class LayoutState {
           previousLayoutState != null ? previousLayoutState.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
       layoutState.mAccessibilityManager =
           (AccessibilityManager) c.getSystemService(ACCESSIBILITY_SERVICE);
-      layoutState.mAccessibilityEnabled = isAccessibilityEnabled(layoutState.mAccessibilityManager);
+      layoutState.mAccessibilityEnabled =
+          AccessibilityUtils.isAccessibilityEnabled(layoutState.mAccessibilityManager);
       layoutState.mComponent = component;
       layoutState.mWidthSpec = widthSpec;
       layoutState.mHeightSpec = heightSpec;
@@ -1982,12 +1982,8 @@ class LayoutState {
   }
 
   boolean isCompatibleAccessibility() {
-    return isAccessibilityEnabled(mAccessibilityManager) == mAccessibilityEnabled;
-  }
-
-  private static boolean isAccessibilityEnabled(AccessibilityManager accessibilityManager) {
-    return accessibilityManager.isEnabled() &&
-        AccessibilityManagerCompat.isTouchExplorationEnabled(accessibilityManager);
+    return AccessibilityUtils.isAccessibilityEnabled(mAccessibilityManager)
+        == mAccessibilityEnabled;
   }
 
   /**

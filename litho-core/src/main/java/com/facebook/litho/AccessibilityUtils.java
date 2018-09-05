@@ -26,9 +26,6 @@ import android.view.accessibility.AccessibilityManager;
 import java.util.List;
 
 class AccessibilityUtils {
-  private static final boolean ACCESSIBILITY_ENABLED =
-      Boolean.getBoolean("is_accessibility_enabled");
-
   /**
    * @returns True if accessibility touch exploration is currently enabled
    * in the framework.
@@ -36,11 +33,16 @@ class AccessibilityUtils {
   public static boolean isAccessibilityEnabled(Context context) {
     final AccessibilityManager manager =
         (AccessibilityManager) context.getSystemService(ACCESSIBILITY_SERVICE);
-    return ACCESSIBILITY_ENABLED || isRunningApplicableAccessibilityService(manager);
+    return isAccessibilityEnabled(manager);
+  }
+
+  public static boolean isAccessibilityEnabled(AccessibilityManager manager) {
+    return Boolean.getBoolean("is_accessibility_enabled")
+        || isRunningApplicableAccessibilityService(manager);
   }
 
   public static boolean isRunningApplicableAccessibilityService(AccessibilityManager manager) {
-    if (!manager.isEnabled()) {
+    if (manager == null || !manager.isEnabled()) {
       return false;
     }
     return manager.isTouchExplorationEnabled()
