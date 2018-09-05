@@ -17,8 +17,17 @@
 package com.facebook.litho.sections;
 
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_GENERATE_CHANGESET;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGE_COUNT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_FINAL_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_CHANGE_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_DELETE_RANGE_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_DELETE_SINGLE_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_EFFECTIVE_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_FINAL_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_INSERT_RANGE_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_INSERT_SINGLE_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_MOVE_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_UPDATE_RANGE_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_CHANGESET_UPDATE_SINGLE_COUNT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_CURRENT_ROOT_COUNT;
 import static com.facebook.litho.sections.Section.acquireChildrenMap;
 import static com.facebook.litho.sections.Section.releaseChildrenMap;
 
@@ -34,8 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * ChangeSetState is responsible to generate a global ChangeSet between two {@link Section}s
- * trees.
+ * ChangeSetState is responsible to generate a global ChangeSet between two {@link Section}s trees.
  */
 public class ChangeSetState {
 
@@ -88,8 +96,31 @@ public class ChangeSetState {
             enableStats);
 
     if (logger != null && logEvent != null) {
-      logEvent.markerAnnotate(PARAM_CHANGE_COUNT, changeSetState.mChangeSet.getChangeCount());
-      logEvent.markerAnnotate(PARAM_FINAL_COUNT, changeSetState.mChangeSet.getCount());
+      logEvent.markerAnnotate(
+          PARAM_CURRENT_ROOT_COUNT, currentRoot == null ? -1 : currentRoot.getCount());
+      logEvent.markerAnnotate(
+          PARAM_CHANGESET_CHANGE_COUNT, changeSetState.mChangeSet.getChangeCount());
+      logEvent.markerAnnotate(PARAM_CHANGESET_FINAL_COUNT, changeSetState.mChangeSet.getCount());
+
+      final ChangeSet.ChangeSetStats changeSetStats = changeSetState.mChangeSet.getChangeSetStats();
+      if (changeSetStats != null) {
+        logEvent.markerAnnotate(
+            PARAM_CHANGESET_EFFECTIVE_COUNT, changeSetStats.getEffectiveChangesCount());
+        logEvent.markerAnnotate(
+            PARAM_CHANGESET_INSERT_SINGLE_COUNT, changeSetStats.getInsertSingleCount());
+        logEvent.markerAnnotate(
+            PARAM_CHANGESET_INSERT_RANGE_COUNT, changeSetStats.getInsertRangeCount());
+        logEvent.markerAnnotate(
+            PARAM_CHANGESET_DELETE_SINGLE_COUNT, changeSetStats.getDeleteSingleCount());
+        logEvent.markerAnnotate(
+            PARAM_CHANGESET_DELETE_RANGE_COUNT, changeSetStats.getDeleteRangeCount());
+        logEvent.markerAnnotate(
+            PARAM_CHANGESET_UPDATE_SINGLE_COUNT, changeSetStats.getUpdateSingleCount());
+        logEvent.markerAnnotate(
+            PARAM_CHANGESET_UPDATE_RANGE_COUNT, changeSetStats.getUpdateRangeCount());
+        logEvent.markerAnnotate(PARAM_CHANGESET_MOVE_COUNT, changeSetStats.getMoveCount());
+      }
+
       logger.logPerfEvent(logEvent);
     }
 

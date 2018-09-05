@@ -80,6 +80,10 @@ public final class ChangeSet {
 
     final int changeDelta = getChangeDelta(change);
     mFinalCount += changeDelta;
+
+    if (mChangeSetStats != null) {
+      mChangeSetStats = mChangeSetStats.merge(ChangeSetStats.fromChange(change, changeDelta));
+    }
   }
 
   private static int getChangeDelta(Change change) {
