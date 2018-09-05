@@ -970,10 +970,14 @@ public class LithoView extends ComponentHost {
         return;
       }
 
-      lithoView.refreshAccessibilityDelegatesIfNeeded(enabled);
-
-      lithoView.requestLayout();
+      lithoView.rerenderForAccessibility(enabled);
     }
+  }
+
+  public void rerenderForAccessibility(boolean enabled) {
+    refreshAccessibilityDelegatesIfNeeded(enabled);
+    // must force (not just request)
+    forceRelayout();
   }
 
   /**
