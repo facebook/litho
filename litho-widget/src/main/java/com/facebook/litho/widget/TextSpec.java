@@ -700,7 +700,19 @@ class TextSpec {
         return i;
       }
     }
+
+    // On versions kitkat and lower, there is a bug in layout.getEllipsisCount() where it does not
+    // return the correct value when a layout contains a newline. This double checks that the layout
+    // does not end in an ellipsis character if the os version is kitkat or less.
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT && endsWithEllipsis(layout.getText())) {
+      return layout.getLineCount() - 1;
+    }
+
     return -1;
+  }
+
+  private static boolean endsWithEllipsis(CharSequence text) {
+    return text.length() > 0 && text.charAt(text.length() - 1) == '\u2026';
   }
 
   @OnCreateMountContent
