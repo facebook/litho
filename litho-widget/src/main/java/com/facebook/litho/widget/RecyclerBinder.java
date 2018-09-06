@@ -219,7 +219,7 @@ public class RecyclerBinder
 
         int totalSize = mTotalItemsWithLayoutSize.addAndGet(hasVerticalLayout ? height : width);
         int layoutCount = mTotalItemsWithLayoutCount.incrementAndGet();
-        int averageSize = totalSize / layoutCount;
+        float averageSize = 1.0f * totalSize / layoutCount;
 
         // We only do this for the first layout, after the item is inserted.
         holder.updateMeasureListener(null);
@@ -234,8 +234,12 @@ public class RecyclerBinder
         // the average size of the items. The precomputed range size will depend on this number
         // and the range ratio.
         int estimatedViewportCount =
-            SizeSpec.getSize(hasVerticalLayout ? mLastHeightSpec : mLastWidthSpec) / averageSize
-                + 1;
+            averageSize == 0
+                ? 0
+                : (int)
+                    (SizeSpec.getSize(hasVerticalLayout ? mLastHeightSpec : mLastWidthSpec)
+                            / averageSize
+                        + 1);
 
         synchronized (RecyclerBinder.this) {
           if (mRange == null) {
