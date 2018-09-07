@@ -17,7 +17,6 @@
 package com.facebook.litho.specmodels.processor;
 
 import static com.facebook.litho.specmodels.model.SpecModelUtils.generateTypeSpec;
-import static com.facebook.litho.specmodels.processor.EventDeclarationsExtractor.getFields;
 import static com.facebook.litho.specmodels.processor.EventDeclarationsExtractor.getReturnType;
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getMethodParams;
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getTypeVariables;
@@ -100,7 +99,7 @@ public class TriggerMethodExtractor {
         final TypeName returnType =
             runMode == RunMode.ABI ? TypeName.VOID : getReturnType(elements, eventClass);
         final ImmutableList<FieldModel> fields =
-            runMode == RunMode.ABI ? ImmutableList.of() : getFields(eventClass);
+            runMode == RunMode.ABI ? ImmutableList.of() : FieldsExtractor.extractFields(eventClass);
 
         // Reuse EventMethodModel and EventDeclarationModel because we are capturing the same info
         final SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =

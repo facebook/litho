@@ -57,7 +57,8 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       SpecElementType specElementType,
       Object representedObject,
       SpecGenerator<LayoutSpecModel> layoutSpecGenerator,
-      ImmutableList<TypeVariableName> typeVariables) {
+      ImmutableList<TypeVariableName> typeVariables,
+      ImmutableList<FieldModel> fields) {
     mSpecModel =
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(qualifiedSpecClassName)
@@ -82,6 +83,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
             .dependencyInjectionHelper(dependencyInjectionHelper)
             .specElementType(specElementType)
             .representedObject(representedObject)
+            .fields(fields)
             .build();
     mIsPureRender = isPureRender;
     mLayoutSpecGenerator = layoutSpecGenerator;

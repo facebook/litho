@@ -80,7 +80,8 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
       SpecElementType specElementType,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       Object representedObject,
-      SpecGenerator<DiffSectionSpecModel> specGenerator) {
+      SpecGenerator<DiffSectionSpecModel> specGenerator,
+      ImmutableList<FieldModel> fields) {
     mSpecModel =
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(qualifiedSpecClassName)
@@ -102,6 +103,7 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
             .dependencyInjectionHelper(dependencyInjectionHelper)
             .specElementType(specElementType)
             .representedObject(representedObject)
+            .fields(fields)
             .build();
     mServiceParam = SectionSpecModelUtils.createServiceParam(mSpecModel);
     mSpecGenerator = specGenerator;

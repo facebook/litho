@@ -66,7 +66,8 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       TypeName mountType,
       SpecElementType specElementType,
       Object representedObject,
-      SpecGenerator<MountSpecModel> mountSpecGenerator) {
+      SpecGenerator<MountSpecModel> mountSpecGenerator,
+      ImmutableList<FieldModel> fields) {
     mSpecModel =
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(qualifiedSpecClassName)
@@ -90,6 +91,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .dependencyInjectionHelper(dependencyInjectionHelper)
             .specElementType(specElementType)
             .representedObject(representedObject)
+            .fields(fields)
             .build();
     mIsPureRender = isPureRender;
     mHasChildLithosViews = hasChildLithosViews;

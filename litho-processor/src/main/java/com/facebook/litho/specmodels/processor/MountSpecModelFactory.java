@@ -146,7 +146,8 @@ public class MountSpecModelFactory implements SpecModelFactory {
         getMountType(elements, element),
         SpecElementTypeDeterminator.determine(element),
         element,
-        mMountSpecGenerator);
+        mMountSpecGenerator,
+        FieldsExtractor.extractFields(element));
   }
 
   private static TypeName getMountType(Elements elements, TypeElement element) {

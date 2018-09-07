@@ -22,17 +22,13 @@ import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.FieldModel;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
@@ -57,7 +53,9 @@ public class EventDeclarationsExtractor {
         final TypeName returnType =
             runMode == RunMode.ABI ? TypeName.VOID : getReturnType(elements, type.asElement());
         final ImmutableList<FieldModel> fields =
-            runMode == RunMode.ABI ? ImmutableList.of() : getFields(type.asElement());
+            runMode == RunMode.ABI
+                ? ImmutableList.of()
+                : FieldsExtractor.extractFields(type.asElement());
         eventDeclarations.add(
             new EventDeclarationModel(
                 ClassName.bestGuess(type.asElement().toString()),
@@ -79,24 +77,5 @@ public class EventDeclarationsExtractor {
             elements, typeElement, Event.class, "returnType", TypeMirror.class);
 
     return typeMirror != null ? TypeName.get(typeMirror) : null;
-  }
-
-  static ImmutableList<FieldModel> getFields(Element element) {
-    final List<FieldModel> fieldModels = new ArrayList<>();
-    for (Element enclosedElement : element.getEnclosedElements()) {
-      if (enclosedElement.getKind().equals(ElementKind.FIELD)) {
-        final Set<Modifier> modifiers = enclosedElement.getModifiers();
-        fieldModels.add(
-            new FieldModel(
-                FieldSpec.builder(
-                        TypeName.get(enclosedElement.asType()),
-                        enclosedElement.getSimpleName().toString(),
-                        modifiers.toArray(new Modifier[modifiers.size()]))
-                    .build(),
-                enclosedElement));
-      }
-    }
-
-    return ImmutableList.copyOf(fieldModels);
   }
 }

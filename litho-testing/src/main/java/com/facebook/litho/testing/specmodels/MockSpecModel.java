@@ -101,7 +101,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   private final SpecElementType mSpecElementType;
   private final boolean mIsPureRender;
   private final SpecModel mEnclosedSpecModel;
-  private final ImmutableList<FieldModel> mFields;
 
   private MockSpecModel(
       String specName,
@@ -196,7 +195,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     mSpecElementType = specElementType;
     mIsPureRender = isPureRender;
     mEnclosedSpecModel = enclosedSpecModel;
-    mFields = ImmutableList.of();
   }
 
   @Override
@@ -221,7 +219,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
 
   @Override
   public ImmutableList<FieldModel> getFields() {
-    return mFields;
+    throw new RuntimeException("Mock was not provided with fields");
   }
 
   @Override

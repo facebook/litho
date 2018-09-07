@@ -80,7 +80,8 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
       SpecElementType specElementType,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       Object representedObject,
-      SpecGenerator<GroupSectionSpecModel> groupSectionSpecGenerator) {
+      SpecGenerator<GroupSectionSpecModel> groupSectionSpecGenerator,
+      ImmutableList<FieldModel> fields) {
     mSpecModel =
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(qualifiedSpecClassName)
@@ -102,6 +103,7 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
             .dependencyInjectionHelper(dependencyInjectionHelper)
             .specElementType(specElementType)
             .representedObject(representedObject)
+            .fields(fields)
             .build();
     mServiceParam = SectionSpecModelUtils.createServiceParam(mSpecModel);
     mGroupSectionSpecGenerator = groupSectionSpecGenerator;

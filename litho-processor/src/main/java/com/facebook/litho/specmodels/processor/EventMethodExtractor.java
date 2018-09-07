@@ -101,9 +101,7 @@ public class EventMethodExtractor {
                 ? TypeName.VOID
                 : EventDeclarationsExtractor.getReturnType(elements, eventClass);
         final ImmutableList<FieldModel> fields =
-            runMode == RunMode.ABI
-                ? ImmutableList.of()
-                : EventDeclarationsExtractor.getFields(eventClass);
+            runMode == RunMode.ABI ? ImmutableList.of() : FieldsExtractor.extractFields(eventClass);
 
         final SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =
             SpecMethodModel.<EventMethod, EventDeclarationModel>builder()
