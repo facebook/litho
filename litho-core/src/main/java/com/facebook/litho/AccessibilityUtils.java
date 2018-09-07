@@ -45,8 +45,10 @@ class AccessibilityUtils {
     if (manager == null || !manager.isEnabled()) {
       return false;
     }
-    return manager.isTouchExplorationEnabled()
-        || enabledServiceCanFocusAndRetrieveWindowContent(manager);
+
+    // also check enabledServiceCanFocusAndRetrieveWindowContent(manager) once ANR fix is
+    // implemented for getEnabledAccessibilityServiceList
+    return manager.isTouchExplorationEnabled();
   }
 
   public static boolean enabledServiceCanFocusAndRetrieveWindowContent(
