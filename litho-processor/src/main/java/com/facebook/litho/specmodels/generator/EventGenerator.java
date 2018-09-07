@@ -27,6 +27,7 @@ import com.facebook.litho.annotations.Param;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
+import com.facebook.litho.specmodels.model.FieldModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelUtils;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
@@ -130,7 +131,7 @@ public class EventGenerator {
         .endControlFlow();
 
     final CodeBlock.Builder resetCode = CodeBlock.builder();
-    for (EventDeclarationModel.FieldModel fieldModel : eventDeclaration.fields) {
+    for (FieldModel fieldModel : eventDeclaration.fields) {
       if (fieldModel.field.modifiers.contains(Modifier.FINAL)) {
         continue;
       }

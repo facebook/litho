@@ -31,6 +31,7 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
+import com.facebook.litho.specmodels.model.FieldModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
@@ -85,10 +86,10 @@ public class EventGeneratorTest {
             ClassName.OBJECT,
             ClassName.OBJECT,
             ImmutableList.of(
-                new EventDeclarationModel.FieldModel(
+                new FieldModel(
                     FieldSpec.builder(TypeName.INT, "field1", Modifier.PUBLIC).build(),
                     new Object()),
-                new EventDeclarationModel.FieldModel(
+                new FieldModel(
                     FieldSpec.builder(TypeName.INT, "field2", Modifier.PUBLIC).build(),
                     new Object())),
             new Object());

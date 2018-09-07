@@ -33,6 +33,7 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
+import com.facebook.litho.specmodels.model.FieldModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.squareup.javapoet.ClassName;
@@ -98,7 +99,7 @@ public class TriggerMethodExtractor {
 
         final TypeName returnType =
             runMode == RunMode.ABI ? TypeName.VOID : getReturnType(elements, eventClass);
-        final ImmutableList<EventDeclarationModel.FieldModel> fields =
+        final ImmutableList<FieldModel> fields =
             runMode == RunMode.ABI ? ImmutableList.of() : getFields(eventClass);
 
         // Reuse EventMethodModel and EventDeclarationModel because we are capturing the same info

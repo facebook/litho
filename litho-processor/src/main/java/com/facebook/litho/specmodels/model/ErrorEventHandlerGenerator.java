@@ -65,7 +65,7 @@ public final class ErrorEventHandlerGenerator {
                 ClassNames.ERROR_EVENT,
                 TypeName.VOID,
                 ImmutableList.of(
-                    new EventDeclarationModel.FieldModel(
+                    new FieldModel(
                         FieldSpec.builder(
                                 ClassName.bestGuess("java.lang.Exception"),
                                 "exception",

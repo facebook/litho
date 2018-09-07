@@ -58,20 +58,18 @@ public class EventValidationTest {
 
   @Test
   public void testNonPublicFields() {
-    EventDeclarationModel.FieldModel fieldModel1 =
-        new EventDeclarationModel.FieldModel(
+    FieldModel fieldModel1 =
+        new FieldModel(
             FieldSpec.builder(TypeName.INT, "field1", Modifier.PRIVATE).build(),
             mRepresentedObject1);
-    EventDeclarationModel.FieldModel fieldModel2 =
-        new EventDeclarationModel.FieldModel(
+    FieldModel fieldModel2 =
+        new FieldModel(
             FieldSpec.builder(TypeName.INT, "field2", Modifier.PROTECTED).build(),
             mRepresentedObject2);
-    EventDeclarationModel.FieldModel fieldModel3 =
-        new EventDeclarationModel.FieldModel(
-            FieldSpec.builder(TypeName.INT, "field3").build(),
-            mRepresentedObject3);
-    EventDeclarationModel.FieldModel fieldModel4 =
-        new EventDeclarationModel.FieldModel(
+    FieldModel fieldModel3 =
+        new FieldModel(FieldSpec.builder(TypeName.INT, "field3").build(), mRepresentedObject3);
+    FieldModel fieldModel4 =
+        new FieldModel(
             FieldSpec.builder(TypeName.INT, "field4", Modifier.PUBLIC).build(),
             mRepresentedObject4);
 
@@ -98,8 +96,8 @@ public class EventValidationTest {
 
   @Test
   public void testFinalFields() {
-    EventDeclarationModel.FieldModel fieldModel1 =
-        new EventDeclarationModel.FieldModel(
+    FieldModel fieldModel1 =
+        new FieldModel(
             FieldSpec.builder(TypeName.INT, "field1", Modifier.PUBLIC, Modifier.FINAL).build(),
             mRepresentedObject1);
 
@@ -296,7 +294,7 @@ public class EventValidationTest {
                     OBJECT,
                     INT,
                     ImmutableList.of(
-                        new EventDeclarationModel.FieldModel(
+                        new FieldModel(
                             FieldSpec.builder(BOOLEAN, "booleanParam").build(),
                             mRepresentedObject5)),
                     mRepresentedObject1))

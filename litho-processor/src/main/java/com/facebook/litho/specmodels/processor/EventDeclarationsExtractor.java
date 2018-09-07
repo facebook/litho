@@ -20,6 +20,7 @@ import com.facebook.litho.annotations.Event;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
+import com.facebook.litho.specmodels.model.FieldModel;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;
@@ -55,7 +56,7 @@ public class EventDeclarationsExtractor {
         final DeclaredType type = (DeclaredType) eventType.getValue();
         final TypeName returnType =
             runMode == RunMode.ABI ? TypeName.VOID : getReturnType(elements, type.asElement());
-        final ImmutableList<EventDeclarationModel.FieldModel> fields =
+        final ImmutableList<FieldModel> fields =
             runMode == RunMode.ABI ? ImmutableList.of() : getFields(type.asElement());
         eventDeclarations.add(
             new EventDeclarationModel(
@@ -80,17 +81,17 @@ public class EventDeclarationsExtractor {
     return typeMirror != null ? TypeName.get(typeMirror) : null;
   }
 
-  static ImmutableList<EventDeclarationModel.FieldModel> getFields(Element element) {
-    final List<EventDeclarationModel.FieldModel> fieldModels = new ArrayList<>();
+  static ImmutableList<FieldModel> getFields(Element element) {
+    final List<FieldModel> fieldModels = new ArrayList<>();
     for (Element enclosedElement : element.getEnclosedElements()) {
       if (enclosedElement.getKind().equals(ElementKind.FIELD)) {
         final Set<Modifier> modifiers = enclosedElement.getModifiers();
         fieldModels.add(
-            new EventDeclarationModel.FieldModel(
+            new FieldModel(
                 FieldSpec.builder(
-                    TypeName.get(enclosedElement.asType()),
-                    enclosedElement.getSimpleName().toString(),
-                    modifiers.toArray(new Modifier[modifiers.size()]))
+                        TypeName.get(enclosedElement.asType()),
+                        enclosedElement.getSimpleName().toString(),
+                        modifiers.toArray(new Modifier[modifiers.size()]))
                     .build(),
                 enclosedElement));
       }

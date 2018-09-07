@@ -18,7 +18,6 @@ package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;
 import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
@@ -60,27 +59,4 @@ public class EventDeclarationModel {
     return Objects.hash(name, returnType, fields, representedObject);
   }
 
-  public static class FieldModel {
-    public final FieldSpec field;
-    public final Object representedObject;
-
-    public FieldModel(FieldSpec field, Object representedObject) {
-      this.field = field;
-      this.representedObject = representedObject;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      FieldModel that = (FieldModel) o;
-      return Objects.equals(field, that.field)
-          && Objects.equals(representedObject, that.representedObject);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(field, representedObject);
-    }
-  }
 }

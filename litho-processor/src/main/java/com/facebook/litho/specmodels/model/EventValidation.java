@@ -58,7 +58,7 @@ public class EventValidation {
                 "Event declarations must be annotated with @Event."));
       }
 
-      for (EventDeclarationModel.FieldModel fieldModel : eventDeclaration.fields) {
+      for (FieldModel fieldModel : eventDeclaration.fields) {
         if (!fieldModel.field.modifiers.contains(Modifier.PUBLIC) ||
                 (fieldModel.field.modifiers.contains(Modifier.FINAL)
                         && !fieldModel.field.modifiers.contains(Modifier.STATIC))) {
@@ -157,9 +157,8 @@ public class EventValidation {
   }
 
   private static boolean hasMatchingField(
-      MethodParamModel param,
-      ImmutableList<EventDeclarationModel.FieldModel> fields) {
-    for (EventDeclarationModel.FieldModel field : fields) {
+      MethodParamModel param, ImmutableList<FieldModel> fields) {
+    for (FieldModel field : fields) {
       if (param.getName().equals(field.field.name)
           && (param.getTypeName().box().equals(field.field.type.box())
               || isFromEventTypeSpecifiedInAnnotation(param, field.field.type))) {
