@@ -67,6 +67,7 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<RenderDataDiffModel> mDiffs;
   private final ImmutableList<AnnotationSpec> mClassAnnotations;
   private final ImmutableList<TagModel> mTags;
+  private final ImmutableList<FieldModel> mFields;
   private final String mClassJavadoc;
   private final ImmutableList<PropJavadocModel> mPropJavadocs;
   private final boolean mIsPublic;
@@ -94,6 +95,7 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<BuilderMethodModel> implicitBuilderMethods,
       ImmutableList<AnnotationSpec> classAnnotations,
       ImmutableList<TagModel> tags,
+      ImmutableList<FieldModel> fields,
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
@@ -164,6 +166,7 @@ public final class SpecModelImpl implements SpecModel {
     mDiffs = getDiffs(delegateMethods);
     mClassAnnotations = classAnnotations;
     mTags = tags;
+    mFields = fields;
     mClassJavadoc = classJavadoc;
     mPropJavadocs = propJavadocs;
     mIsPublic = isPublic;
@@ -191,6 +194,11 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public TypeName getComponentTypeName() {
     return mComponentTypeName;
+  }
+
+  @Override
+  public ImmutableList<FieldModel> getFields() {
+    return mFields;
   }
 
   @Override
@@ -968,6 +976,7 @@ public final class SpecModelImpl implements SpecModel {
     private ImmutableList<BuilderMethodModel> mBuilderMethodModels;
     private ImmutableList<AnnotationSpec> mClassAnnotations;
     @Nullable private ImmutableList<TagModel> mTags;
+    private ImmutableList<FieldModel> mFields;
     private String mClassJavadoc;
     private ImmutableList<PropJavadocModel> mPropJavadocs;
     private boolean mIsPublic;
@@ -1076,6 +1085,11 @@ public final class SpecModelImpl implements SpecModel {
       return this;
     }
 
+    public Builder fields(ImmutableList<FieldModel> fields) {
+      mFields = fields;
+      return this;
+    }
+
     public Builder classJavadoc(String classJavadoc) {
       mClassJavadoc = classJavadoc;
       return this;
@@ -1141,6 +1155,7 @@ public final class SpecModelImpl implements SpecModel {
           mBuilderMethodModels,
           mClassAnnotations,
           mTags,
+          mFields,
           mClassJavadoc,
           mPropJavadocs,
           mIsPublic,
@@ -1214,6 +1229,10 @@ public final class SpecModelImpl implements SpecModel {
 
       if (mTags == null) {
         mTags = ImmutableList.of();
+      }
+
+      if (mFields == null) {
+        mFields = ImmutableList.of();
       }
 
       if (mBuilderMethodModels == null) {

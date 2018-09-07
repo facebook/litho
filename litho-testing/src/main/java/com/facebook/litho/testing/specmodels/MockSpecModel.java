@@ -23,6 +23,7 @@ import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
+import com.facebook.litho.specmodels.model.FieldModel;
 import com.facebook.litho.specmodels.model.HasEnclosedSpecModel;
 import com.facebook.litho.specmodels.model.HasPureRender;
 import com.facebook.litho.specmodels.model.InjectPropModel;
@@ -100,6 +101,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   private final SpecElementType mSpecElementType;
   private final boolean mIsPureRender;
   private final SpecModel mEnclosedSpecModel;
+  private final ImmutableList<FieldModel> mFields;
 
   private MockSpecModel(
       String specName,
@@ -194,6 +196,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     mSpecElementType = specElementType;
     mIsPureRender = isPureRender;
     mEnclosedSpecModel = enclosedSpecModel;
+    mFields = ImmutableList.of();
   }
 
   @Override
@@ -214,6 +217,11 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   @Override
   public TypeName getComponentTypeName() {
     return mComponentTypeName;
+  }
+
+  @Override
+  public ImmutableList<FieldModel> getFields() {
+    return mFields;
   }
 
   @Override

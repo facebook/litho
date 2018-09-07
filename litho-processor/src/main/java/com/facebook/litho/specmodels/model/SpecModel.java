@@ -44,6 +44,9 @@ public interface SpecModel {
    */
   TypeName getComponentTypeName();
 
+  /** @return the list of fields defined in the spec. */
+  ImmutableList<FieldModel> getFields();
+
   /**
    * @return the list of methods defined in the spec which will be delegated to by the component
    *     that is generated from this model.

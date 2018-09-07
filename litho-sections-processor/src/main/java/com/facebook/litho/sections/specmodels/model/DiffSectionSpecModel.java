@@ -24,6 +24,7 @@ import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
+import com.facebook.litho.specmodels.model.FieldModel;
 import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
@@ -124,6 +125,11 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
   @Override
   public TypeName getComponentTypeName() {
     return mSpecModel.getComponentTypeName();
+  }
+
+  @Override
+  public ImmutableList<FieldModel> getFields() {
+    return mSpecModel.getFields();
   }
 
   @Override

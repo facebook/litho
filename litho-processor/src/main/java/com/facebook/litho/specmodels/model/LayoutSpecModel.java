@@ -108,6 +108,11 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public ImmutableList<FieldModel> getFields() {
+    return mSpecModel.getFields();
+  }
+
+  @Override
   public ImmutableList<SpecMethodModel<DelegateMethod, Void>> getDelegateMethods() {
     return mSpecModel.getDelegateMethods();
   }
