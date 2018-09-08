@@ -89,7 +89,7 @@ public class RecyclerEventsController {
     mSectionsRecyclerView = SectionsrecyclerView;
   }
 
-  protected @Nullable RecyclerView getRecyclerView() {
+  public @Nullable RecyclerView getRecyclerView() {
     return mSectionsRecyclerView == null ? null : mSectionsRecyclerView.getRecyclerView();
   }
 }
