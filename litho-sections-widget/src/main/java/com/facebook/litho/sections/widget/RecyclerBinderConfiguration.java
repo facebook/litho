@@ -103,37 +103,48 @@ public class RecyclerBinderConfiguration {
    * TODO T23919104 mihaelao Do not enable this. This is an experimental feature and your Section
    * surface will take a perf hit if you use it. Talk to the Litho team if you think you need this.
    */
-  public void setHasDynamicItemHeight(boolean hasDynamicItemHeight) {
+  public RecyclerBinderConfiguration setHasDynamicItemHeight(boolean hasDynamicItemHeight) {
     mHasDynamicItemHeight = hasDynamicItemHeight;
+    return this;
   }
 
   /** Experimental feature, do not enable! */
-  public void setSplitLayoutTag(String splitLayoutTag) {
+  public RecyclerBinderConfiguration setSplitLayoutTag(String splitLayoutTag) {
     mSplitLayoutTag = splitLayoutTag;
+    return this;
   }
 
-  public void setUseBackgroundChangeSets(boolean useBackgroundChangeSets) {
+  public RecyclerBinderConfiguration setUseBackgroundChangeSets(boolean useBackgroundChangeSets) {
     mUseBackgroundChangeSets = useBackgroundChangeSets;
+    return this;
   }
 
-  public void setUseSharedLayoutStateFuture(boolean useSharedLayoutStateFuture) {
+  public RecyclerBinderConfiguration setUseSharedLayoutStateFuture(
+      boolean useSharedLayoutStateFuture) {
     mUseSharedLayoutStateFuture = useSharedLayoutStateFuture;
+    return this;
   }
 
-  public void setThreadPoolForSharedLayoutStateFutureConfig(LayoutThreadPoolConfiguration config) {
+  public RecyclerBinderConfiguration setThreadPoolForSharedLayoutStateFutureConfig(
+      LayoutThreadPoolConfiguration config) {
     mThreadPoolForSharedLayoutStateFutureConfig = config;
+    return this;
   }
 
-  public void setAsyncInitRange(boolean asyncInitRange) {
+  public RecyclerBinderConfiguration setAsyncInitRange(boolean asyncInitRange) {
     mAsyncInitRange = asyncInitRange;
+    return this;
   }
 
-  public void setEnableStableIds(boolean enableStableIds) {
+  public RecyclerBinderConfiguration setEnableStableIds(boolean enableStableIds) {
     mEnableStableIds = enableStableIds;
+    return this;
   }
 
-  public void setInvalidStateLogParamsList(List<ComponentLogParams> invalidStateLogParamsList) {
+  public RecyclerBinderConfiguration setInvalidStateLogParamsList(
+      List<ComponentLogParams> invalidStateLogParamsList) {
     mInvalidStateLogParamsList = invalidStateLogParamsList;
+    return this;
   }
 
   public double getRangeRatio() {
