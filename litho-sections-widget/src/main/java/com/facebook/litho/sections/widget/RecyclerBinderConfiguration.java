@@ -36,7 +36,7 @@ public class RecyclerBinderConfiguration {
   private boolean mHasDynamicItemHeight;
   private boolean mIsWrapContent;
   @Nullable private String mSplitLayoutTag;
-  private boolean mUseAsyncMutations = SectionsConfiguration.asyncMutations;
+  private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
   private boolean mEnableStableIds;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
   private boolean mUseSharedLayoutStateFuture;
@@ -112,8 +112,8 @@ public class RecyclerBinderConfiguration {
     mSplitLayoutTag = splitLayoutTag;
   }
 
-  public void setUseAsyncMutations(boolean useAsyncMutations) {
-    mUseAsyncMutations = useAsyncMutations;
+  public void setUseBackgroundChangeSets(boolean useBackgroundChangeSets) {
+    mUseBackgroundChangeSets = useBackgroundChangeSets;
   }
 
   public void setUseSharedLayoutStateFuture(boolean useSharedLayoutStateFuture) {
@@ -164,8 +164,8 @@ public class RecyclerBinderConfiguration {
     return mSplitLayoutTag;
   }
 
-  public boolean getUseAsyncMutations() {
-    return mUseAsyncMutations;
+  public boolean getUseBackgroundChangeSets() {
+    return mUseBackgroundChangeSets;
   }
 
   public boolean getUseSharedLayoutStateFuture() {

@@ -38,15 +38,19 @@ import java.util.List;
 public class SectionBinderTarget implements Target, Binder<RecyclerView> {
 
   private final RecyclerBinder mRecyclerBinder;
-  private final boolean mUseAsyncMutations;
+  private final boolean mUseBackgroundChangeSets;
 
-  public SectionBinderTarget(RecyclerBinder recyclerBinder) {
-    this(recyclerBinder, SectionsConfiguration.asyncMutations);
+  public static SectionBinderTarget createWithBackgroundChangeSets(RecyclerBinder recyclerBinder) {
+    return new SectionBinderTarget(recyclerBinder, true);
   }
 
-  public SectionBinderTarget(RecyclerBinder recyclerBinder, boolean useAsyncMutations) {
+  public SectionBinderTarget(RecyclerBinder recyclerBinder) {
+    this(recyclerBinder, SectionsConfiguration.useBackgroundChangeSets);
+  }
+
+  SectionBinderTarget(RecyclerBinder recyclerBinder, boolean useBackgroundChangeSets) {
     mRecyclerBinder = recyclerBinder;
-    mUseAsyncMutations = useAsyncMutations;
+    mUseBackgroundChangeSets = useBackgroundChangeSets;
   }
 
   @Override
@@ -95,7 +99,7 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
 
   @Override
   public void insert(int index, RenderInfo renderInfo) {
-    if (mUseAsyncMutations) {
+    if (mUseBackgroundChangeSets) {
       mRecyclerBinder.insertItemAtAsync(index, renderInfo);
     } else {
       mRecyclerBinder.insertItemAt(index, renderInfo);
@@ -104,7 +108,7 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
 
   @Override
   public void insertRange(int index, int count, List<RenderInfo> renderInfos) {
-    if (mUseAsyncMutations) {
+    if (mUseBackgroundChangeSets) {
       mRecyclerBinder.insertRangeAtAsync(index, renderInfos);
     } else {
       mRecyclerBinder.insertRangeAt(index, renderInfos);
@@ -113,7 +117,7 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
 
   @Override
   public void update(int index, RenderInfo renderInfo) {
-    if (mUseAsyncMutations) {
+    if (mUseBackgroundChangeSets) {
       mRecyclerBinder.updateItemAtAsync(index, renderInfo);
     } else {
       mRecyclerBinder.updateItemAt(index, renderInfo);
@@ -123,7 +127,7 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   @Override
   public void updateRange(
       int index, int count, List<RenderInfo> renderInfos) {
-    if (mUseAsyncMutations) {
+    if (mUseBackgroundChangeSets) {
       mRecyclerBinder.updateRangeAtAsync(index, renderInfos);
     } else {
       mRecyclerBinder.updateRangeAt(index, renderInfos);
@@ -132,7 +136,7 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
 
   @Override
   public void move(int fromPosition, int toPosition) {
-    if (mUseAsyncMutations) {
+    if (mUseBackgroundChangeSets) {
       mRecyclerBinder.moveItemAsync(fromPosition, toPosition);
     } else {
       mRecyclerBinder.moveItem(fromPosition, toPosition);
@@ -162,7 +166,7 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
 
   @Override
   public void delete(int index) {
-    if (mUseAsyncMutations) {
+    if (mUseBackgroundChangeSets) {
       mRecyclerBinder.removeItemAtAsync(index);
     } else {
       mRecyclerBinder.removeItemAt(index);
@@ -171,7 +175,7 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
 
   @Override
   public void deleteRange(int index, int count) {
-    if (mUseAsyncMutations) {
+    if (mUseBackgroundChangeSets) {
       mRecyclerBinder.removeRangeAtAsync(index, count);
     } else {
       mRecyclerBinder.removeRangeAt(index, count);
@@ -184,7 +188,7 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   }
 
   public void clear() {
-    if (mUseAsyncMutations) {
+    if (mUseBackgroundChangeSets) {
       mRecyclerBinder.clearAsync();
     } else {
       mRecyclerBinder.removeRangeAt(0, mRecyclerBinder.getItemCount());

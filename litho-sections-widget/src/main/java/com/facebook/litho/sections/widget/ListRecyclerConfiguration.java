@@ -143,7 +143,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
             .build(c);
     return (T)
         new SectionBinderTarget(
-            recyclerBinder, mRecyclerBinderConfiguration.getUseAsyncMutations());
+            recyclerBinder, mRecyclerBinderConfiguration.getUseBackgroundChangeSets());
   }
 
   @Nullable

@@ -43,6 +43,6 @@ public class SectionsConfiguration {
    */
   public static boolean trimSameInstancesOnly = false;
 
-  /** Whether inserts/updates/removes should be async. */
-  public static boolean asyncMutations = false;
+  /** Whether changesets can be applied from a background thread. */
+  public static boolean useBackgroundChangeSets = false;
 }

@@ -109,7 +109,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
             .build(c);
     return (T)
         new SectionBinderTarget(
-            recyclerBinder, mRecyclerBinderConfiguration.getUseAsyncMutations());
+            recyclerBinder, mRecyclerBinderConfiguration.getUseBackgroundChangeSets());
   }
 
   @Override
