@@ -65,8 +65,6 @@ public class LithoView extends ComponentHost {
   private boolean mIsAttached;
   // The bounds of the visible rect that was used for the previous incremental mount.
   private final Rect mPreviousMountVisibleRectBounds = new Rect();
-  // The view bounds when the previous incremental mount occurred.
-  private final Rect mPreviousMountViewBounds = new Rect();
 
   private boolean mForceLayout;
   private boolean mSuppressMeasureComponentTree;
@@ -821,8 +819,6 @@ public class LithoView extends ComponentHost {
       mPreviousMountVisibleRectBounds.set(currentVisibleArea);
     }
 
-    mPreviousMountViewBounds.set(getLeft(), getTop(), getRight(), getBottom());
-
     mMountState.mount(layoutState, currentVisibleArea, processVisibilityOutputs);
 
     if (rectNeedsRelease) {
@@ -837,7 +833,6 @@ public class LithoView extends ComponentHost {
   public void unmountAllItems() {
     mMountState.unmountAllItems();
     mPreviousMountVisibleRectBounds.setEmpty();
-    mPreviousMountViewBounds.setEmpty();
   }
 
   public Rect getPreviousMountBounds() {
@@ -847,7 +842,6 @@ public class LithoView extends ComponentHost {
   void setMountStateDirty() {
     mMountState.setDirty();
     mPreviousMountVisibleRectBounds.setEmpty();
-    mPreviousMountViewBounds.setEmpty();
   }
 
   boolean isMountStateDirty() {
