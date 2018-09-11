@@ -165,12 +165,6 @@ public class ComponentsPools {
 
   static YogaNode acquireYogaNode() {
     initYogaConfigIfNecessary();
-    if (sYogaConfig.getLogger() != ComponentsConfiguration.YOGA_LOGGER) {
-      synchronized (sYogaConfigLock) {
-        sYogaConfig.setLogger(ComponentsConfiguration.YOGA_LOGGER);
-      }
-    }
-
     YogaNode node = sYogaNodePool.acquire();
     if (node == null) {
       node =
