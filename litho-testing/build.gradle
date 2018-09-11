@@ -55,6 +55,7 @@ dependencies {
     implementation deps.powermockReflect
     implementation deps.robolectric
     implementation deps.supportAppCompat
+    implementation deps.textlayoutbuilder
     implementation deps.supportRecyclerView
     implementation deps.supportTestRunner
     compileOnly deps.supportAnnotations
