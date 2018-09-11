@@ -213,6 +213,7 @@ class LayoutState {
       new LinkedHashMap<>();
   private final Set<String> mDuplicatedTransitionKeys = new HashSet<>();
   private List<Transition> mTransitions;
+  private int mOrientation;
 
   @Nullable WorkingRangeContainer mWorkingRangeContainer;
 
@@ -228,6 +229,7 @@ class LayoutState {
     mStateHandler = mContext.getStateHandler();
     mReferenceCount.set(1);
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
+    mOrientation = context.getResources().getConfiguration().orientation;
   }
 
   /**
@@ -1428,9 +1430,9 @@ class LayoutState {
         if (ThreadUtils.isMainThread()
             && !layoutState.mCanPrefetchDisplayLists
             && canCollectDisplayListsSync(activity)) {
-          collectDisplayLists(layoutState);
+          collectDisplayLists(layoutState, previousLayoutState);
         } else if (layoutState.mCanPrefetchDisplayLists) {
-          queueDisplayListsForPrefetch(layoutState);
+          queueDisplayListsForPrefetch(layoutState, previousLayoutState);
         }
       }
 
@@ -1503,7 +1505,8 @@ class LayoutState {
     }
   }
 
-  private static void collectDisplayLists(LayoutState layoutState) {
+  private static void collectDisplayLists(
+      LayoutState layoutState, @Nullable LayoutState previousLayoutState) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection(
@@ -1511,10 +1514,10 @@ class LayoutState {
     }
 
     final Rect rect = layoutState.mDisplayListCreateRect;
-
+    final boolean isOrientationChanged = isOrientationChanged(layoutState, previousLayoutState);
     for (int i = 0, count = layoutState.getMountableOutputCount(); i < count; i++) {
       final LayoutOutput output = layoutState.getMountableOutputAt(i);
-      if (shouldCreateDisplayList(output, rect)) {
+      if (shouldCreateDisplayList(output, rect, isOrientationChanged)) {
         layoutState.createDisplayList(output);
       }
     }
@@ -1523,7 +1526,8 @@ class LayoutState {
     }
   }
 
-  private static boolean shouldCreateDisplayList(LayoutOutput output, Rect rect) {
+  private static boolean shouldCreateDisplayList(
+      LayoutOutput output, Rect rect, boolean isOrientationChanged) {
     final Component component = output.getComponent();
     final ComponentLifecycle lifecycle = component;
 
@@ -1533,7 +1537,7 @@ class LayoutState {
 
     output.getMountBounds(rect);
 
-    if (!output.hasValidDisplayList()) {
+    if (!output.hasValidDisplayList() || isOrientationChanged) {
       return true;
     }
 
@@ -1548,6 +1552,13 @@ class LayoutState {
     }
 
     return true;
+  }
+
+  /** @return true if orientation is changed between current and previous {@link LayoutState}s. */
+  private static boolean isOrientationChanged(
+      LayoutState layoutState, @Nullable LayoutState previousLayoutState) {
+    return previousLayoutState != null
+        && layoutState.mOrientation != previousLayoutState.mOrientation;
   }
 
   private static boolean canCollectDisplayListsSync(Activity activity) {
@@ -1674,12 +1685,13 @@ class LayoutState {
     }
   }
 
-  private static void queueDisplayListsForPrefetch(LayoutState layoutState) {
+  private static void queueDisplayListsForPrefetch(
+      LayoutState layoutState, @Nullable LayoutState previousLayoutState) {
     final Rect rect = layoutState.mDisplayListQueueRect;
-
+    final boolean isOrientationChanged = isOrientationChanged(layoutState, previousLayoutState);
     for (int i = 0, count = layoutState.getMountableOutputCount(); i < count; i++) {
       final LayoutOutput output = layoutState.getMountableOutputAt(i);
-      if (shouldCreateDisplayList(output, rect)) {
+      if (shouldCreateDisplayList(output, rect, isOrientationChanged)) {
         layoutState.mDisplayListsToPrefetch.add(i);
       }
     }
