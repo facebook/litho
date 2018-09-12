@@ -191,4 +191,10 @@ public class ComponentsConfiguration {
   public static boolean enableViewInfoDiffingForMountStateUpdates = false;
 
   public static boolean enableThreadTracingStacktrace = false;
+
+  /**
+   * Whether incremental mount should also be done when the LithoView is not visible at all (i.e. so
+   * that all of the mount items should be unmounted).
+   */
+  public static boolean incrementalMountWhenNotVisible = false;
 }

@@ -624,13 +624,27 @@ public class ComponentTree {
     // not in "depth order", this variable cannot be static.
     final Rect currentVisibleArea = ComponentsPools.acquireRect();
 
-    if (mLithoView.getLocalVisibleRect(currentVisibleArea)
-        // It might not be yet visible but animating from 0 height/width in which case we still need
-        // to mount them to trigger animation.
-        || animatingRootBoundsFromZero(currentVisibleArea)) {
+    if (ComponentsConfiguration.incrementalMountWhenNotVisible) {
+      boolean isVisible = mLithoView.getLocalVisibleRect(currentVisibleArea);
+
+      if (!isVisible) {
+        // We just do this so that every mount call when the LithoView is not visible is done with
+        // the same rect so that we can return early if possible.
+        currentVisibleArea.setEmpty();
+      }
+
       mountComponent(currentVisibleArea, true);
+    } else {
+      if (mLithoView.getLocalVisibleRect(currentVisibleArea)
+          // It might not be yet visible but animating from 0 height/width in which case we still
+          // need
+          // to mount them to trigger animation.
+          || animatingRootBoundsFromZero(currentVisibleArea)) {
+        mountComponent(currentVisibleArea, true);
+      }
+      // if false: no-op, doesn't have visible area, is not ready or not attached
     }
-    // if false: no-op, doesn't have visible area, is not ready or not attached
+
     ComponentsPools.release(currentVisibleArea);
   }
 
@@ -740,6 +754,13 @@ public class ComponentTree {
     }
 
     final boolean isDirtyMount = mLithoView.isMountStateDirty();
+
+    if (!isDirtyMount
+        && mHasMounted
+        && ComponentsConfiguration.incrementalMountWhenNotVisible
+        && currentVisibleArea.equals(mLithoView.getPreviousMountBounds())) {
+      return;
+    }
 
     mIsMounting = true;
 
