@@ -4,18 +4,18 @@
 # LICENSE file in the root directory of this source tree.
 load(
     "//:LITHO_DEFS.bzl",
-    "fb_core_android_library",
-    "make_dep_path",
-    "LITHO_JSR_TARGET",
-    "LITHO_JAVA_TARGET",
-    "LITHO_WIDGET_TARGET",
-    "LITHO_SECTIONS_TARGET",
-    "LITHO_SECTIONS_WIDGET_TARGET",
-    "LITHO_SECTIONS_ANNOTATIONS_TARGET",
     "LITHO_ANDROIDSUPPORT_TARGET",
+    "LITHO_JAVA_TARGET",
+    "LITHO_JSR_TARGET",
+    "LITHO_PROCESSOR_TARGET",
+    "LITHO_SECTIONS_ANNOTATIONS_TARGET",
     "LITHO_SECTIONS_COMMON_TARGET",
     "LITHO_SECTIONS_PROCESSOR_TARGET",
-    "LITHO_PROCESSOR_TARGET",
+    "LITHO_SECTIONS_TARGET",
+    "LITHO_SECTIONS_WIDGET_TARGET",
+    "LITHO_WIDGET_TARGET",
+    "fb_core_android_library",
+    "make_dep_path",
 )
 
 fb_core_android_library(
