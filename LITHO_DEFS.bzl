@@ -267,13 +267,17 @@ def define_fbjni_targets():
 
     fb_xplat_cxx_library(
         name = "jni",
-        soname = "libfb.$(ext)",
         srcs = native.glob(
             [
                 "src/main/cpp/fb/**/*.cpp",
             ],
         ),
         header_namespace = "",
+        exported_headers = subdir_glob(
+            [
+                ("src/main/cpp", "fb/**/*.h"),
+            ],
+        ),
         compiler_flags = [
             "-fno-omit-frame-pointer",
             "-fexceptions",
@@ -283,11 +287,6 @@ def define_fbjni_targets():
             "-DDISABLE_CPUCAP",
             "-DDISABLE_XPLAT",
         ],
-        exported_headers = subdir_glob(
-            [
-                ("src/main/cpp", "fb/**/*.h"),
-            ],
-        ),
         exported_platform_headers = [
             (
                 "^(?!android-arm$).*$",
@@ -304,11 +303,12 @@ def define_fbjni_targets():
                 ]),
             ),
         ],
+        soname = "libfb.$(ext)",
+        visibility = LITHO_VISIBILITY,
         deps = [
             LITHO_JNI_TARGET,
             ":ndklog",
         ],
-        visibility = LITHO_VISIBILITY,
     )
 
 # This target is only used in open source and will break the monobuild
@@ -328,7 +328,6 @@ def define_yogajni_targets():
 
     fb_xplat_cxx_library(
         name = "jni",
-        soname = "libyoga.$(ext)",
         srcs = native.glob(["src/main/cpp/jni/*.cpp"]),
         header_namespace = "",
         compiler_flags = [
@@ -338,12 +337,13 @@ def define_yogajni_targets():
             "-O3",
             "-std=c++11",
         ],
+        soname = "libyoga.$(ext)",
+        visibility = LITHO_VISIBILITY,
         deps = [
             make_dep_path("lib/yoga/src/main/cpp:yoga"),
             LITHO_FBJNI_TARGET,
             ":ndklog",
         ],
-        visibility = LITHO_VISIBILITY,
     )
 
 # This target is only used in open source and will break the monobuild
@@ -363,9 +363,8 @@ def define_cpp_yoga_targets():
     fb_xplat_cxx_library(
         name = "yoga",
         srcs = native.glob(["yoga/*.cpp"]),
-        deps = [
-            ":ndklog",
-        ],
+        header_namespace = "",
+        exported_headers = native.glob(["yoga/*.h"]),
         compiler_flags = [
             "-fno-omit-frame-pointer",
             "-fexceptions",
@@ -373,8 +372,9 @@ def define_cpp_yoga_targets():
             "-std=c++11",
             "-O3",
         ],
-        exported_headers = native.glob(["yoga/*.h"]),
         force_static = True,
-        header_namespace = "",
         visibility = LITHO_VISIBILITY,
+        deps = [
+            ":ndklog",
+        ],
     )
