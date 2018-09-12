@@ -1205,12 +1205,8 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
-    public T background(@Nullable Reference.Builder<? extends Drawable> builder) {
-      return background(builder.build());
-    }
-
     public T background(@Nullable Drawable background) {
-      return background(DrawableReference.create().drawable(background));
+      return background(DrawableReference.create().drawable(background).build());
     }
 
     public T backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
