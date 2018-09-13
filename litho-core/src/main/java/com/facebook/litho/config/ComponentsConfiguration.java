@@ -74,6 +74,12 @@ public class ComponentsConfiguration {
   public static boolean debugHighlightInteractiveBounds = false;
 
   /**
+   * LithoView overlay showing whether its ComponentTree was computed on UI thread (red) or bg
+   * thread (green).
+   */
+  public static boolean enableLithoViewDebugOverlay = false;
+
+  /**
    * Debug option to highlight mount bounds of mounted components.
    */
   public static boolean debugHighlightMountBounds = false;

@@ -52,6 +52,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.IntDef;
@@ -976,6 +977,19 @@ class LayoutState {
         ComponentsSystrace.endSection();
       }
       ComponentsPools.release(rect);
+    }
+
+    // 11. If enabled, show a debug foreground layer covering the whole LithoView showing which
+    // thread the LayoutState was calculated into.
+    if (ComponentsConfiguration.enableLithoViewDebugOverlay && layoutState.isLayoutRoot(node)) {
+      final int overlayColor = ThreadUtils.isMainThread() ? 0x33FF0000 : 0x3300FF00;
+      addDrawableComponent(
+          node,
+          layoutState,
+          null,
+          DrawableReference.create().drawable(new ColorDrawable(overlayColor)).build(),
+          OutputUnitType.FOREGROUND,
+          needsHostView);
     }
 
     // All children for the given host have been added, restore the previous
