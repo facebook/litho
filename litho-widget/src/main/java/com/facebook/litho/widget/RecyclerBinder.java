@@ -304,7 +304,6 @@ public class RecyclerBinder
   private final LayoutHandler mSharedLayoutStateFutureLayoutHandler;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
-  private volatile boolean mAsyncInsertsShouldWaitForMeasure = true;
   private volatile boolean mHasFilledViewport = false;
   private boolean mIsInitMounted = false; // Set to true when the first mount() is called.
 
@@ -811,14 +810,7 @@ public class RecyclerBinder
 
       mAsyncComponentTreeHolders.add(position, operation.mHolder);
 
-      // If the binder has not been measured yet, we will compute an initial page of content based
-      // on the measured size of this RecyclerBinder synchronously during measure, and the rest will
-      // be kicked off as async inserts.
-      if (mAsyncInsertsShouldWaitForMeasure) {
-        registerAsyncInsertBeforeInitialMeasure(operation);
-      } else {
-        registerAsyncInsert(operation);
-      }
+      registerAsyncInsert(operation);
     }
   }
 
@@ -844,14 +836,7 @@ public class RecyclerBinder
 
         mAsyncComponentTreeHolders.add(position + i, operation.mHolder);
 
-        // If the binder has not been measured yet, we will compute an initial page of content based
-        // on the measured size of this RecyclerBinder synchronously during measure, and the rest
-        // will be kicked off as async inserts.
-        if (mAsyncInsertsShouldWaitForMeasure) {
-          registerAsyncInsertBeforeInitialMeasure(operation);
-        } else {
-          registerAsyncInsert(operation);
-        }
+        registerAsyncInsert(operation);
       }
     }
   }
@@ -941,11 +926,6 @@ public class RecyclerBinder
   private void registerAsyncInsert(AsyncInsertOperation operation) {
     addToCurrentBatch(operation);
     startAsyncLayout(operation.mHolder);
-  }
-
-  @GuardedBy("this")
-  private void registerAsyncInsertBeforeInitialMeasure(AsyncInsertOperation operation) {
-    addToCurrentBatch(operation);
   }
 
   private void startAsyncLayout(ComponentTreeHolder holder) {
@@ -1647,17 +1627,6 @@ public class RecyclerBinder
     mLastWidthSpec = widthSpec;
     mLastHeightSpec = heightSpec;
 
-    if (mHasAsyncOperations
-        && mAsyncInsertsShouldWaitForMeasure
-        && !mComponentTreeHolders.isEmpty()) {
-      throw new IllegalStateException(
-          "ComponentTreeHolders should be empty if we are waiting for measure for initial inserts!");
-    }
-
-    // We now need to compute the size of the non scrolling side. We try to do this by using the
-    // calculated range (if we have one) or computing one.
-    boolean doFillViewportAfterFinishingMeasure = false;
-
     if (mRange == null) {
       ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
 
@@ -1670,15 +1639,12 @@ public class RecyclerBinder
             getActualChildrenWidthSpec(holderForRangeInfo.mHolder),
             getActualChildrenHeightSpec(holderForRangeInfo.mHolder),
             scrollDirection);
-
-        doFillViewportAfterFinishingMeasure = true;
       }
     }
 
     // At this point we might still not have a range. In this situation we should return the best
     // size we can detect from the size spec and update it when the first item comes in.
     final boolean canMeasure = reMeasureEventHandler != null;
-    final boolean isFirstMeasureForAsyncOperations;
     final int measuredWidth;
     final int measuredHeight;
 
@@ -1695,19 +1661,14 @@ public class RecyclerBinder
           measuredWidth = SizeSpec.getSize(widthSpec);
           mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
           mRequiresRemeasure.set(mWrapContent);
-          isFirstMeasureForAsyncOperations = mAsyncInsertsShouldWaitForMeasure;
-          mAsyncInsertsShouldWaitForMeasure = false;
         } else if (mRange != null) {
           measuredWidth = mRange.measuredSize;
           mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
           mRequiresRemeasure.set(mWrapContent);
-          isFirstMeasureForAsyncOperations = mAsyncInsertsShouldWaitForMeasure;
-          mAsyncInsertsShouldWaitForMeasure = false;
         } else {
           measuredWidth = 0;
           mRequiresRemeasure.set(true);
           mReMeasureEventEventHandler = reMeasureEventHandler;
-          isFirstMeasureForAsyncOperations = false;
         }
         break;
 
@@ -1725,36 +1686,22 @@ public class RecyclerBinder
           mReMeasureEventEventHandler =
               (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
           mRequiresRemeasure.set(mHasDynamicItemHeight || mWrapContent);
-          isFirstMeasureForAsyncOperations = mAsyncInsertsShouldWaitForMeasure;
-          mAsyncInsertsShouldWaitForMeasure = false;
         } else if (mRange != null) {
           measuredHeight = mRange.measuredSize;
           mReMeasureEventEventHandler =
               (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
           mRequiresRemeasure.set(mHasDynamicItemHeight || mWrapContent);
-          isFirstMeasureForAsyncOperations = mAsyncInsertsShouldWaitForMeasure;
-          mAsyncInsertsShouldWaitForMeasure = false;
         } else {
           measuredHeight = 0;
           mRequiresRemeasure.set(true);
           mReMeasureEventEventHandler = reMeasureEventHandler;
-          isFirstMeasureForAsyncOperations = false;
         }
         break;
     }
 
-    final boolean fillInitialLayoutsForAsyncOperations =
-        doFillViewportAfterFinishingMeasure
-            && isFirstMeasureForAsyncOperations
-            && mHasAsyncOperations;
-
     final Size wrapSize = mWrapContent ? new Size() : null;
 
-    // If we were in a position to recompute range, we are also in a position to re-fill the
-    // viewport
-    if (fillInitialLayoutsForAsyncOperations) {
-      fillAdapterWithInitialLayouts(measuredWidth, measuredHeight, wrapSize);
-    } else if (mWrapContent) {
+    if (mWrapContent) {
       fillListViewport(measuredWidth, measuredHeight, wrapSize);
     }
 
@@ -1784,54 +1731,6 @@ public class RecyclerBinder
 
     computeLayoutsToFillListViewport(
         mComponentTreeHolders, startIndex, maxWidth, maxHeight, outSize);
-
-    mHasFilledViewport = true;
-
-    if (mRange == null) {
-      final ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
-      if (holderForRangeInfo != null) {
-        initRange(
-            maxWidth,
-            maxHeight,
-            holderForRangeInfo.mHolder,
-            holderForRangeInfo.mPosition,
-            getActualChildrenWidthSpec(holderForRangeInfo.mHolder),
-            getActualChildrenHeightSpec(holderForRangeInfo.mHolder),
-            mLayoutInfo.getScrollDirection());
-      }
-    }
-
-    ComponentsSystrace.endSection();
-  }
-
-  @GuardedBy("this")
-  private void fillAdapterWithInitialLayouts(int maxWidth, int maxHeight, @Nullable Size outSize) {
-    ComponentsSystrace.beginSection("fillAdapterWithInitialLayouts");
-    if (mComponentTreeHolders.size() > 0) {
-      throw new RuntimeException(
-          "Should only fill adapter with initial layouts when there are no existing items in adapter!");
-    }
-
-    if (mAsyncInsertsShouldWaitForMeasure) {
-      throw new IllegalStateException(
-          "mAsyncInsertsShouldWaitForMeasure must be false to ensure no other inserts are added to those waiting for measure.");
-    }
-
-    final int numInserts = mAsyncComponentTreeHolders.size();
-    final ArrayList<ComponentTreeHolder> holdersForInsert = new ArrayList<>(numInserts);
-    for (int i = 0; i < numInserts; i++) {
-      holdersForInsert.add(mAsyncComponentTreeHolders.get(i));
-    }
-
-    final int numComputed =
-        computeLayoutsToFillListViewport(holdersForInsert, 0, maxWidth, maxHeight, outSize);
-    if (numComputed > 0) {
-      maybePostInsertInitialLayoutsIntoAdapter(holdersForInsert.subList(0, numComputed));
-    }
-
-    for (int i = numComputed; i < numInserts; i++) {
-      startAsyncLayout(mAsyncComponentTreeHolders.get(i));
-    }
 
     mHasFilledViewport = true;
 
@@ -1923,40 +1822,6 @@ public class RecyclerBinder
               + " items (holder.size() = "
               + totalSize
               + ")");
-    }
-  }
-
-  private void maybePostInsertInitialLayoutsIntoAdapter(final List<ComponentTreeHolder> toInsert) {
-    if (ThreadUtils.isMainThread()) {
-      insertInitialLayoutsIntoAdapter(toInsert);
-    } else {
-      mMainThreadHandler.post(
-          new Runnable() {
-            @Override
-            public void run() {
-              insertInitialLayoutsIntoAdapter(toInsert);
-            }
-          });
-    }
-  }
-
-  private void insertInitialLayoutsIntoAdapter(List<ComponentTreeHolder> toInsert) {
-    ThreadUtils.assertMainThread();
-
-    synchronized (this) {
-      for (int i = 0, size = toInsert.size(); i < size; i++) {
-        final ComponentTreeHolder holder = toInsert.get(i);
-        if (holder.isInserted()) {
-          continue;
-        }
-        holder.setInserted(true);
-        mComponentTreeHolders.add(i, holder);
-        mInternalAdapter.notifyItemInserted(i);
-      }
-
-      // Computing the initial layouts may have completed one or more batches - update and dispatch
-      // them
-      applyReadyBatches();
     }
   }
 

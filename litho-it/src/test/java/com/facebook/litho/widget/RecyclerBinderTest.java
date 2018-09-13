@@ -2316,51 +2316,6 @@ public class RecyclerBinderTest {
   }
 
   @Test
-  public void testInsertAsyncAfterInitialMeasureButNeedsRemeasure() {
-    final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder()
-            .rangeRatio(RANGE_RATIO)
-            .layoutInfo(
-                new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
-            .build(mComponentContext);
-    final Component component =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
-    final ComponentRenderInfo renderInfo =
-        ComponentRenderInfo.create().component(component).build();
-    final RecyclerView recyclerView = mock(RecyclerView.class);
-
-    recyclerBinder.mount(recyclerView);
-    recyclerBinder.measure(
-        new Size(),
-        makeSizeSpec(1000, EXACTLY),
-        makeSizeSpec(0, UNSPECIFIED),
-        mock(EventHandler.class));
-
-    recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-
-    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
-    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
-
-    verify(recyclerView).postOnAnimation(recyclerBinder.mRemeasureRunnable);
-
-    // Manually invoke the remeasure
-    recyclerBinder.measure(
-        new Size(),
-        makeSizeSpec(1000, EXACTLY),
-        makeSizeSpec(0, UNSPECIFIED),
-        mock(EventHandler.class));
-
-    assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
-    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
-
-    final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
-    assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
-    assertThat(holder.hasCompletedLatestLayout()).isTrue();
-    assertThat(holder.isTreeValid()).isTrue();
-  }
-
-  @Test
   public void testInsertAsyncWithSizeChangeBeforeCompletion() {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
@@ -2479,8 +2434,12 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
-    assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
 
     for (int i = 0; i < NUM_TO_INSERT; i++) {
       final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
@@ -2513,20 +2472,10 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
-    assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
-    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
-
-    for (int i = 0; i < 2; i++) {
-      final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
-      assertThat(holder.getRenderInfo().getComponent()).isEqualTo(components.get(i));
-      assertThat(holder.hasCompletedLatestLayout()).isTrue();
-      assertThat(holder.isTreeValid()).isTrue();
-    }
-
     // compute one layout to ensure batching behavior remains
     mLayoutThreadShadowLooper.runOneTask();
 
-    assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
 
     // finish computing all layouts - batch should now be applied
@@ -3399,6 +3348,7 @@ public class RecyclerBinderTest {
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
 
     verify(changeSetCompleteCallback).onDataBound();
   }
@@ -3445,12 +3395,14 @@ public class RecyclerBinderTest {
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
 
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
     // Mount view after insertions
     final LithoRecylerView recyclerView = new LithoRecylerView(RuntimeEnvironment.application);
     recyclerBinder.mount(recyclerView);
-
-    recyclerBinder.measure(
-        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
     // Simulate calling ViewGroup#dispatchDraw(Canvas).
     recyclerView.dispatchDraw(mock(Canvas.class));
@@ -3620,10 +3572,15 @@ public class RecyclerBinderTest {
 
     // Mount view after insertions
     final LithoRecylerView recyclerView = new LithoRecylerView(RuntimeEnvironment.application);
-    recyclerBinder.mount(recyclerView);
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(2 * 5);
+
+    recyclerBinder.mount(recyclerView);
 
     // Simulate calling ViewGroup#dispatchDraw(Canvas).
     recyclerView.dispatchDraw(mock(Canvas.class));
@@ -3705,6 +3662,8 @@ public class RecyclerBinderTest {
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Mount view after insertions
     recyclerBinder.mount(recyclerView);
