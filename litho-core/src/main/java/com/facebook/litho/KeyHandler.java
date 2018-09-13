@@ -59,7 +59,10 @@ public class KeyHandler {
   private void checkIsDuplicateKey(Component component) {
     if (mKnownGlobalKeys.contains(component.getGlobalKey())) {
       final String message =
-          "Found another " + component.getSimpleName() + " Component with the same key.";
+          "Found another "
+              + component.getSimpleName()
+              + " Component with the same key: "
+              + component.getKey();
       final String errorMessage = mLogger == null ? message : getDuplicateKeyMessage();
 
       if (component.hasState()) {
