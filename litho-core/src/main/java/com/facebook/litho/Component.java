@@ -437,7 +437,10 @@ public abstract class Component extends ComponentLifecycle
    * @return whether the given component will render because it returns non-null from its resolved
    *     onCreateLayout, based on its current props and state. Returns true if the resolved layout
    *     is non-null, otherwise false.
+   * @deprecated Using willRender is regarded as an anti-pattern, since it will load all classes
+   *     into memory in order to potentially decide not to use any of them.
    */
+  @Deprecated
   public static boolean willRender(ComponentContext c, Component component) {
     if (component == null) {
       return false;
