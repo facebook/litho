@@ -229,8 +229,6 @@ public class ComponentTree {
   @ThreadConfined(ThreadConfined.UI)
   private boolean mPreviousRenderStateSetFromBuilder = false;
 
-  private final Object mLayoutLock;
-
   protected final int mId;
 
   @GuardedBy("this")
@@ -269,7 +267,6 @@ public class ComponentTree {
     mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
     mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
 
-    mLayoutLock = builder.layoutLock;
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
     mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
     mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
@@ -916,7 +913,6 @@ public class ComponentTree {
       // We have no layout that matches the given spec, so we need to compute it on the main thread.
       LayoutState localLayoutState =
           calculateLayoutState(
-              mLayoutLock,
               mContext,
               component,
               widthSpec,
@@ -1662,7 +1658,6 @@ public class ComponentTree {
 
     LayoutState localLayoutState =
         calculateLayoutState(
-            mLayoutLock,
             mContext,
             root,
             widthSpec,
@@ -1967,7 +1962,6 @@ public class ComponentTree {
   }
 
   protected LayoutState calculateLayoutState(
-      @Nullable Object lock,
       ComponentContext context,
       Component root,
       int widthSpec,
@@ -1981,7 +1975,6 @@ public class ComponentTree {
     if (mUseSharedLayoutStateFuture) {
       LayoutStateFuture localLayoutStateFuture =
           new LayoutStateFuture(
-              lock,
               context,
               root,
               widthSpec,
@@ -2009,7 +2002,6 @@ public class ComponentTree {
       if (layoutState == null) {
         // If the LayoutState is already released, recalculate.
         return calculateLayoutState(
-            lock,
             context,
             root.makeShallowCopy(),
             widthSpec,
@@ -2023,7 +2015,6 @@ public class ComponentTree {
       return layoutState;
     } else {
       return calculateLayoutStateInternal(
-          lock,
           context,
           root,
           widthSpec,
@@ -2037,7 +2028,6 @@ public class ComponentTree {
   }
 
   private LayoutState calculateLayoutStateInternal(
-      @Nullable Object lock,
       ComponentContext context,
       Component root,
       int widthSpec,
@@ -2060,39 +2050,20 @@ public class ComponentTree {
               context, StateHandler.acquireNewInstance(mStateHandler), keyHandler, treeProps);
     }
 
-    if (lock != null) {
-      synchronized (lock) {
-        return LayoutState.calculate(
-            contextWithStateHandler,
-            root,
-            mId,
-            widthSpec,
-            heightSpec,
-            diffingEnabled,
-            previousLayoutState,
-            mCanPrefetchDisplayLists,
-            mCanCacheDrawingDisplayLists,
-            mShouldClipChildren,
-            mPersistInternalNodeTree,
-            source,
-            extraAttribution);
-      }
-    } else {
-      return LayoutState.calculate(
-          contextWithStateHandler,
-          root,
-          mId,
-          widthSpec,
-          heightSpec,
-          diffingEnabled,
-          previousLayoutState,
-          mCanPrefetchDisplayLists,
-          mCanCacheDrawingDisplayLists,
-          mShouldClipChildren,
-          mPersistInternalNodeTree,
-          source,
-          extraAttribution);
-    }
+    return LayoutState.calculate(
+        contextWithStateHandler,
+        root,
+        mId,
+        widthSpec,
+        heightSpec,
+        diffingEnabled,
+        previousLayoutState,
+        mCanPrefetchDisplayLists,
+        mCanCacheDrawingDisplayLists,
+        mShouldClipChildren,
+        mPersistInternalNodeTree,
+        source,
+        extraAttribution);
   }
 
   /** Wraps a {@link FutureTask} to deduplicate calculating the same LayoutState across threads. */
@@ -2116,7 +2087,6 @@ public class ComponentTree {
     private volatile LayoutState layoutState = null;
 
     private LayoutStateFuture(
-        @Nullable final Object lock,
         final ComponentContext context,
         final Component root,
         final int widthSpec,
@@ -2145,7 +2115,6 @@ public class ComponentTree {
                   }
                   final LayoutState result =
                       calculateLayoutStateInternal(
-                          lock,
                           context,
                           root,
                           widthSpec,
@@ -2358,7 +2327,6 @@ public class ComponentTree {
     private boolean isLayoutDiffingEnabled = true;
     private LayoutHandler layoutThreadHandler;
     private LayoutHandler preAllocateMountContentHandler;
-    private Object layoutLock;
     private StateHandler stateHandler;
     private RenderState previousRenderState;
     private boolean asyncStateUpdates = true;
@@ -2393,7 +2361,6 @@ public class ComponentTree {
       incrementalMountEnabled = true;
       isLayoutDiffingEnabled = true;
       layoutThreadHandler = null;
-      layoutLock = null;
       stateHandler = null;
       previousRenderState = null;
       asyncStateUpdates = true;
@@ -2481,15 +2448,6 @@ public class ComponentTree {
      */
     public Builder layoutThreadHandler(LayoutHandler handler) {
       layoutThreadHandler = handler;
-      return this;
-    }
-
-    /**
-     * Specify a lock to be acquired during layout. This is an advanced feature
-     * that can lead to deadlock if you don't know what you are doing.
-     */
-    public Builder layoutLock(Object layoutLock) {
-      this.layoutLock = layoutLock;
       return this;
     }
 

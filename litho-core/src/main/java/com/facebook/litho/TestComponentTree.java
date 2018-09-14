@@ -45,7 +45,6 @@ public class TestComponentTree extends ComponentTree {
 
   @Override
   protected LayoutState calculateLayoutState(
-      @Nullable Object lock,
       ComponentContext context,
       Component root,
       int widthSpec,
@@ -139,11 +138,6 @@ public class TestComponentTree extends ComponentTree {
     @Override
     public Builder layoutThreadLooper(Looper looper) {
       return (Builder) super.layoutThreadLooper(looper);
-    }
-
-    @Override
-    public Builder layoutLock(Object layoutLock) {
-      return (Builder) super.layoutLock(layoutLock);
     }
 
     @Override

@@ -67,13 +67,11 @@ public class ComponentTreeBuilderTest {
   public void testCreationWithInputs() {
     ComponentTree componentTree =
         mComponentTreeBuilder
-            .layoutLock(mLayoutLock)
             .layoutThreadLooper(mLooper)
             .build();
 
     assertSameAsInternalState(componentTree, mRoot, "mRoot");
     assertEqualToInternalState(componentTree, true, "mIsLayoutDiffingEnabled");
-    assertSameAsInternalState(componentTree, mLayoutLock, "mLayoutLock");
 
     assertThat(componentTree.isIncrementalMountEnabled()).isTrue();
     assertThat(mContext.getLogger()).isEqualTo(mComponentsLogger);
@@ -86,7 +84,6 @@ public class ComponentTreeBuilderTest {
   @Test
   public void testReleaseAndInit() {
     mComponentTreeBuilder
-        .layoutLock(mLayoutLock)
         .layoutThreadLooper(mLooper);
 
     mComponentTreeBuilder.release();
@@ -118,7 +115,6 @@ public class ComponentTreeBuilderTest {
 
   private static void assertDefaults(ComponentTree componentTree) {
     assertEqualToInternalState(componentTree, true, "mIsLayoutDiffingEnabled");
-    assertSameAsInternalState(componentTree, null, "mLayoutLock");
 
     assertThat(componentTree.isIncrementalMountEnabled()).isTrue();
   }

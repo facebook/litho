@@ -468,7 +468,6 @@ public class TreeDiffingTest {
     ComponentTree componentTree = ComponentTree.create(mContext, firstComponent).build();
     LayoutState state =
         componentTree.calculateLayoutState(
-            null,
             mContext,
             firstComponent,
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
@@ -483,7 +482,6 @@ public class TreeDiffingTest {
 
     LayoutState secondState =
         componentTree.calculateLayoutState(
-            null,
             mContext,
             secondComponent,
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
@@ -498,7 +496,6 @@ public class TreeDiffingTest {
 
     LayoutState thirdState =
         componentTree.calculateLayoutState(
-            null,
             mContext,
             thirdComponent,
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
@@ -522,7 +519,6 @@ public class TreeDiffingTest {
         .build();
     LayoutState state =
         componentTree.calculateLayoutState(
-            null,
             mContext,
             component1,
             makeSizeSpec(10, SizeSpec.EXACTLY),
@@ -537,7 +533,6 @@ public class TreeDiffingTest {
 
     LayoutState secondState =
         componentTree.calculateLayoutState(
-            null,
             mContext,
             component2,
             makeSizeSpec(10, SizeSpec.EXACTLY),
@@ -553,7 +548,6 @@ public class TreeDiffingTest {
 
     LayoutState thirdState =
         componentTree.calculateLayoutState(
-            null,
             mContext,
             component3,
             makeSizeSpec(10, SizeSpec.EXACTLY),
@@ -582,7 +576,6 @@ public class TreeDiffingTest {
         .build();
     LayoutState state =
         componentTree.calculateLayoutState(
-            null,
             mContext,
             component1,
             makeSizeSpec(10, SizeSpec.EXACTLY),
@@ -597,7 +590,6 @@ public class TreeDiffingTest {
 
     LayoutState secondState =
         componentTree.calculateLayoutState(
-            null,
             mContext,
             component2,
             makeSizeSpec(10, SizeSpec.EXACTLY),
@@ -612,7 +604,6 @@ public class TreeDiffingTest {
 
     LayoutState thirdState =
         componentTree.calculateLayoutState(
-            null,
             mContext,
             component3,
             makeSizeSpec(10, SizeSpec.EXACTLY),
@@ -635,7 +626,6 @@ public class TreeDiffingTest {
         .build();
     LayoutState state =
         componentTree.calculateLayoutState(
-            null,
             mContext,
             component1,
             makeSizeSpec(10, SizeSpec.EXACTLY),
@@ -650,7 +640,6 @@ public class TreeDiffingTest {
 
     LayoutState secondState =
         componentTree.calculateLayoutState(
-            null,
             mContext,
             component2,
             makeSizeSpec(10, SizeSpec.EXACTLY),
