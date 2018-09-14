@@ -57,6 +57,7 @@
   - id: tests-in-android-studio
 - title: Advanced Guides
   items:
+  - id: architecture-overview
   - id: recycler-component
   - id: custom-layout
   - id: tree-props
