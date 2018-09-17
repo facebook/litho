@@ -1304,7 +1304,26 @@ public class SectionTree {
       nextRoot.createInitialState(nextRoot.getScopedContext());
       nextRoot.createService(nextRoot.getScopedContext());
     } else {
-      nextRoot.transferService(nextRoot.getScopedContext(), currentRoot, nextRoot);
+      if (currentRoot.getService(currentRoot) == null) {
+        nextRoot.createService(nextRoot.getScopedContext());
+
+        if (nextRoot.getService(nextRoot) != null) {
+          final String errorMessage =
+              "We were about to transfer a null service from "
+                  + currentRoot
+                  + " to "
+                  + nextRoot
+                  + " while the later created a non-null service";
+          final ComponentsLogger logger = context.getLogger();
+          if (logger != null) {
+            logger.emitMessage(ERROR, errorMessage);
+          } else {
+            Log.e(SectionsDebug.TAG, errorMessage);
+          }
+        }
+      } else {
+        nextRoot.transferService(nextRoot.getScopedContext(), currentRoot, nextRoot);
+      }
       nextRoot.transferState(
           nextRoot.getScopedContext(),
           currentRoot.getStateContainer());
