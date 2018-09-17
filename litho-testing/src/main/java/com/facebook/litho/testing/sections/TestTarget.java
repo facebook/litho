@@ -144,6 +144,11 @@ public class TestTarget implements SectionTree.Target {
     mFocusToOffset = offset;
   }
 
+  @Override
+  public boolean supportsBackgroundChangeSets() {
+    return false;
+  }
+
   public void clear() {
     mOperations.clear();
     mNumChanges = 0;

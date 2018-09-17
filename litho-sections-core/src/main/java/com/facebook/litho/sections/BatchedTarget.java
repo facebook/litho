@@ -165,6 +165,11 @@ class BatchedTarget implements SectionTree.Target {
     maybeLogRequestFocusWithOffset(index, offset);
   }
 
+  @Override
+  public boolean supportsBackgroundChangeSets() {
+    return mTarget.supportsBackgroundChangeSets();
+  }
+
   private void maybeLogRequestFocusWithOffset(int index, int offset) {
     if (ENABLE_LOGGER && mComponentInfoSparseArray.size() != 0) {
       mSectionsDebugLogger.logRequestFocusWithOffset(

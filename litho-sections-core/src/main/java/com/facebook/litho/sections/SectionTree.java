@@ -135,6 +135,11 @@ public class SectionTree {
      * Request focus on the item with the given index, plus some additional offset.
      */
     void requestFocusWithOffset(int index, int offset);
+
+    /**
+     * @return whether this target supports applying change sets from a background thread.
+     */
+    boolean supportsBackgroundChangeSets();
   }
 
   private static final int MESSAGE_WHAT_BACKGROUND_CHANGESET_STATE_UPDATED = 1;

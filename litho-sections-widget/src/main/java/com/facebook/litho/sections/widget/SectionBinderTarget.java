@@ -187,6 +187,11 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
     return mRecyclerBinder.isWrapContent();
   }
 
+  @Override
+  public boolean supportsBackgroundChangeSets() {
+    return mUseBackgroundChangeSets;
+  }
+
   public void clear() {
     if (mUseBackgroundChangeSets) {
       mRecyclerBinder.clearAsync();
