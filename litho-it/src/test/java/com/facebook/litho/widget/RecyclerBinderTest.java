@@ -56,6 +56,7 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
@@ -71,6 +72,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
@@ -3793,6 +3796,50 @@ public class RecyclerBinderTest {
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
     verify(componentsLogger).emitMessage(eq(ComponentsLogger.LogLevel.ERROR), anyString());
     assertThat(recyclerBinder.mDataRenderedCallbacks).isEmpty();
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testAsyncOperationsFromMultipleThreadsCrashes() throws InterruptedException {
+    final boolean isDebugMode = ComponentsConfiguration.isDebugModeEnabled;
+
+    // Manually override this to cause change set thread checks
+    ComponentsConfiguration.isDebugModeEnabled = true;
+
+    try {
+      final RecyclerBinder recyclerBinder =
+          new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+      final Component component1 =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      final Component component2 =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      final ComponentRenderInfo renderInfo1 =
+          ComponentRenderInfo.create().component(component1).build();
+      final ComponentRenderInfo renderInfo2 =
+          ComponentRenderInfo.create().component(component2).build();
+
+      recyclerBinder.measure(
+          new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+      final CountDownLatch latch = new CountDownLatch(1);
+
+      new Thread(
+          new Runnable() {
+            @Override
+            public void run() {
+              try {
+                recyclerBinder.insertItemAtAsync(0, renderInfo2);
+              } finally {
+                latch.countDown();
+              }
+            }
+          }).start();
+
+      assertThat(latch.await(5000, TimeUnit.MILLISECONDS)).isTrue();
+
+      recyclerBinder.insertItemAtAsync(0, renderInfo1);
+    } finally {
+      ComponentsConfiguration.isDebugModeEnabled = isDebugMode;
+    }
   }
 
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {

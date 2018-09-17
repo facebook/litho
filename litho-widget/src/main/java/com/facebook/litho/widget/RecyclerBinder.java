@@ -76,6 +76,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
@@ -123,6 +124,7 @@ public class RecyclerBinder
   private boolean mAsyncInitRange;
 
   private String mSplitLayoutTag;
+  private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
 
   @GuardedBy("this")
   private final Deque<AsyncBatch> mAsyncBatches = new ArrayDeque<>();
@@ -731,9 +733,8 @@ public class RecyclerBinder
    * Update the item at index position. The {@link RecyclerView} will only be notified of the item
    * being updated after a layout calculation has been completed for the new {@link Component}.
    */
-  @UiThread
   public final void updateItemAtAsync(int position, RenderInfo renderInfo) {
-    ThreadUtils.assertMainThread();
+    assertSingleThreadForChangeSet();
 
     if (SectionsDebug.ENABLED) {
       Log.d(SectionsDebug.TAG, "(" + hashCode() + ") updateItemAtAsync " + position);
@@ -747,9 +748,8 @@ public class RecyclerBinder
    * notified of the item being updated after a layout calculation has been completed for the new
    * {@link Component}.
    */
-  @UiThread
   public final void updateRangeAtAsync(int position, List<RenderInfo> renderInfos) {
-    ThreadUtils.assertMainThread();
+    assertSingleThreadForChangeSet();
 
     if (SectionsDebug.ENABLED) {
       Log.d(
@@ -762,7 +762,6 @@ public class RecyclerBinder
     }
   }
 
-  @UiThread
   private void updateItemAtAsyncInner(int position, RenderInfo renderInfo) {
     final ComponentTreeHolder holder;
     final boolean renderInfoWasView;
@@ -798,9 +797,8 @@ public class RecyclerBinder
    * Inserts an item at position. The {@link RecyclerView} will only be notified of the item being
    * inserted after a layout calculation has been completed for the new {@link Component}.
    */
-  @UiThread
   public final void insertItemAtAsync(int position, RenderInfo renderInfo) {
-    ThreadUtils.assertMainThread();
+    assertSingleThreadForChangeSet();
 
     assertNoInsertOperationIfCircular();
 
@@ -822,9 +820,8 @@ public class RecyclerBinder
    * Component}s. There is not a guarantee that the {@link RecyclerView} will be notified about all
    * the items in the range at the same time.
    */
-  @UiThread
   public final void insertRangeAtAsync(int position, List<RenderInfo> renderInfos) {
-    ThreadUtils.assertMainThread();
+    assertSingleThreadForChangeSet();
 
     assertNoInsertOperationIfCircular();
 
@@ -941,9 +938,8 @@ public class RecyclerBinder
    * binder this will only be executed when all the operations have been completed (to ensure index
    * consistency).
    */
-  @UiThread
   public final void moveItemAsync(int fromPosition, int toPosition) {
-    ThreadUtils.assertMainThread();
+    assertSingleThreadForChangeSet();
 
     if (SectionsDebug.ENABLED) {
       Log.d(
@@ -966,9 +962,8 @@ public class RecyclerBinder
    * Removes an item from position. If there are other pending operations on this binder this will
    * only be executed when all the operations have been completed (to ensure index consistency).
    */
-  @UiThread
   public final void removeItemAtAsync(int position) {
-    ThreadUtils.assertMainThread();
+    assertSingleThreadForChangeSet();
 
     if (SectionsDebug.ENABLED) {
       Log.d(SectionsDebug.TAG, "(" + hashCode() + ") removeItemAtAsync " + position);
@@ -988,9 +983,8 @@ public class RecyclerBinder
    * binder this will only be executed when all the operations have been completed (to ensure index
    * consistency).
    */
-  @UiThread
   public final void removeRangeAtAsync(int position, int count) {
-    ThreadUtils.assertMainThread();
+    assertSingleThreadForChangeSet();
 
     assertNoRemoveOperationIfCircular(count);
 
@@ -1013,9 +1007,8 @@ public class RecyclerBinder
   }
 
   /** Removes all items in this binder async. */
-  @UiThread
   public final void clearAsync() {
-    ThreadUtils.assertMainThread();
+    assertSingleThreadForChangeSet();
 
     if (SectionsDebug.ENABLED) {
       Log.d(SectionsDebug.TAG, "(" + hashCode() + ") clear");
@@ -1353,19 +1346,24 @@ public class RecyclerBinder
   @UiThread
   public void notifyChangeSetComplete(
       boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
-    ThreadUtils.assertMainThread();
-
     if (SectionsDebug.ENABLED) {
       Log.d(SectionsDebug.TAG, "(" + hashCode() + ") notifyChangeSetComplete");
     }
 
     if (!mHasAsyncOperations) {
+      ThreadUtils.assertMainThread();
       changeSetCompleteCallback.onDataBound();
       mDataRenderedCallbacks.addLast(changeSetCompleteCallback);
       maybeDispatchDataRendered();
     } else {
+      assertSingleThreadForChangeSet();
       closeCurrentBatch(isDataChanged, changeSetCompleteCallback);
-      applyReadyBatches();
+      if (ThreadUtils.isMainThread()) {
+        applyReadyBatches();
+      } else {
+        mMainThreadHandler.post(mApplyReadyBatchesRunnable);
+      }
+      clearThreadForChangeSet();
     }
 
     if (isDataChanged) {
@@ -1490,6 +1488,32 @@ public class RecyclerBinder
     }
 
     maybePostUpdateViewportAndComputeRange();
+  }
+
+  private void assertSingleThreadForChangeSet() {
+    if (!ComponentsConfiguration.isDebugModeEnabled && !ComponentsConfiguration.isEndToEndTestRun) {
+      return;
+    }
+
+    final long currentThreadId = Thread.currentThread().getId();
+    final long previousThreadId = mCurrentChangeSetThreadId.getAndSet(currentThreadId);
+
+    if (currentThreadId != previousThreadId && previousThreadId != -1) {
+      throw new IllegalStateException(
+          "Multiple threads applying change sets at once! ("
+              + previousThreadId
+              + " and "
+              + currentThreadId
+              + ")");
+    }
+  }
+
+  private void clearThreadForChangeSet() {
+    if (!ComponentsConfiguration.isDebugModeEnabled && !ComponentsConfiguration.isEndToEndTestRun) {
+      return;
+    }
+
+    mCurrentChangeSetThreadId.set(-1);
   }
 
   /**
