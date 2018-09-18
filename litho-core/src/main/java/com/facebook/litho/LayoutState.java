@@ -52,7 +52,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.IntDef;
@@ -69,6 +68,7 @@ import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.displaylist.DisplayList;
 import com.facebook.litho.displaylist.DisplayListException;
+import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.drawable.ComparableDrawableReference;
 import com.facebook.litho.reference.BorderColorDrawableReference;
@@ -988,7 +988,7 @@ class LayoutState {
           node,
           layoutState,
           null,
-          ComparableDrawableReference.create(new ColorDrawable(overlayColor)),
+          ComparableColorDrawable.create(overlayColor),
           OutputUnitType.FOREGROUND,
           needsHostView);
     }
