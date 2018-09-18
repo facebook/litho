@@ -26,10 +26,9 @@ public class YogaEdgesWithIntsTest {
 
   @Test
   public void testDefault() {
-    YogaEdgesWithInts edgesOld = new CommonPropsHolder.YogaEdgesWithIntsImpl();
     YogaEdgesWithInts edgesNew = new CommonPropsHolder.YogaEdgesWithIntsImplOptimized();
 
-    YogaEdgesWithInts[] bothEdges = {edgesOld, edgesNew};
+    YogaEdgesWithInts[] bothEdges = {edgesNew};
 
     for (YogaEdgesWithInts edge : bothEdges) {
       assertThat(edge.size() == 0);
@@ -50,10 +49,9 @@ public class YogaEdgesWithIntsTest {
 
   @Test
   public void testDefaultZeros() {
-    YogaEdgesWithInts edgesOld = new CommonPropsHolder.YogaEdgesWithIntsImpl();
     YogaEdgesWithInts edgesNew = new CommonPropsHolder.YogaEdgesWithIntsImplOptimized();
 
-    YogaEdgesWithInts[] bothEdges = {edgesOld, edgesNew};
+    YogaEdgesWithInts[] bothEdges = {edgesNew};
 
     for (YogaEdgesWithInts edge : bothEdges) {
       assertThat(edge.size() == 0);

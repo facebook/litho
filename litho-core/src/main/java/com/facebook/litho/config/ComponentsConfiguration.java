@@ -110,9 +110,6 @@ public class ComponentsConfiguration {
    */
   public static boolean useGlobalKeys = true;
 
-  /** If true then the new version of the YogaEdgeWithInts will be used. */
-  public static boolean useNewYogaEdge = false;
-
   /** The default priority for threads that perform background layout calculations. */
   public static final int DEFAULT_BACKGROUND_THREAD_PRIORITY = 5;
 

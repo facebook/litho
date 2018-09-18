@@ -82,10 +82,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
   void positionPx(@Nullable YogaEdge edge, @Px int position) {
     mPrivateFlags |= PFLAG_POSITION_IS_SET;
     if (mPositions == null) {
-      mPositions =
-          ComponentsConfiguration.useNewYogaEdge
-              ? new YogaEdgesWithIntsImplOptimized()
-              : new YogaEdgesWithIntsImpl();
+      mPositions = new YogaEdgesWithIntsImplOptimized();
     }
 
     mPositions.add(edge, position);
@@ -627,10 +624,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mPrivateFlags |= PFLAG_MARGIN_IS_SET;
 
       if (mMargins == null) {
-        mMargins =
-            ComponentsConfiguration.useNewYogaEdge
-                ? new YogaEdgesWithIntsImplOptimized()
-                : new YogaEdgesWithIntsImpl();
+        mMargins = new YogaEdgesWithIntsImplOptimized();
       }
       mMargins.add(edge, margin);
     }
@@ -654,10 +648,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     private void paddingPx(@Nullable YogaEdge edge, @Px int padding) {
       mPrivateFlags |= PFLAG_PADDING_IS_SET;
       if (mPaddings == null) {
-        mPaddings =
-            ComponentsConfiguration.useNewYogaEdge
-                ? new YogaEdgesWithIntsImplOptimized()
-                : new YogaEdgesWithIntsImpl();
+        mPaddings = new YogaEdgesWithIntsImplOptimized();
       }
       mPaddings.add(edge, padding);
     }
@@ -743,10 +734,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     private void touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
       mPrivateFlags |= PFLAG_TOUCH_EXPANSION_IS_SET;
       if (mTouchExpansions == null) {
-        mTouchExpansions =
-            ComponentsConfiguration.useNewYogaEdge
-                ? new YogaEdgesWithIntsImplOptimized()
-                : new YogaEdgesWithIntsImpl();
+        mTouchExpansions = new YogaEdgesWithIntsImplOptimized();
       }
       mTouchExpansions.add(edge, touchExpansion);
     }
@@ -1011,51 +999,6 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     @Override
     public int getValue(int index) {
       return (mValues == null || mValues.length <= index) ? 0 : mValues[index];
-    }
-  }
-
-  static class YogaEdgesWithIntsImpl implements YogaEdgesWithInts {
-    YogaEdge[] mEdges = new YogaEdge[2];
-    int[] mValues = new int[2];
-    int mNumEntries;
-    int mSize = 2;
-
-    @Override
-    public void add(YogaEdge yogaEdge, int value) {
-      if (mNumEntries == mSize) {
-        increaseSize();
-      }
-
-      mEdges[mNumEntries] = yogaEdge;
-      mValues[mNumEntries] = value;
-      mNumEntries++;
-    }
-
-    @Override
-    public int size() {
-      return mNumEntries;
-    }
-
-    @Override
-    public YogaEdge getEdge(int index) {
-      return mEdges[index];
-    }
-
-    @Override
-    public int getValue(int index) {
-      return mValues[index];
-    }
-
-    private void increaseSize() {
-      YogaEdge[] oldEdges = mEdges;
-      int[] oldValues = mValues;
-
-      mSize *= 2;
-      mEdges = new YogaEdge[mSize];
-      mValues = new int[mSize];
-
-      System.arraycopy(oldEdges, 0, mEdges, 0, mNumEntries);
-      System.arraycopy(oldValues, 0, mValues, 0, mNumEntries);
     }
   }
 
