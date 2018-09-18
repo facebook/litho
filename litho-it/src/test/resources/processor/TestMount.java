@@ -643,14 +643,14 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   public static class Builder<S extends View> extends Component.Builder<Builder<S>> {
-    private static final String[] REQUIRED_PROPS_NAMES =
-        new String[] {"prop1", "prop3", "prop4", "prop5", "prop6", "prop7", "prop8"};
-
-    private static final int REQUIRED_PROPS_COUNT = 7;
-
     TestMount mTestMount;
 
     ComponentContext mContext;
+
+    private final String[] REQUIRED_PROPS_NAMES =
+        new String[] {"prop1", "prop3", "prop4", "prop5", "prop6", "prop7", "prop8"};
+
+    private final int REQUIRED_PROPS_COUNT = 7;
 
     private final BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 

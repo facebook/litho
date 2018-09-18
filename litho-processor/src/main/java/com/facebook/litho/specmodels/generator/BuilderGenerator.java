@@ -196,22 +196,12 @@ public class BuilderGenerator {
 
     if (numRequiredProps > 0) {
       propsBuilderClassBuilder.addField(
-          FieldSpec.builder(
-                  String[].class,
-                  REQUIRED_PROPS_NAMES,
-                  Modifier.PRIVATE,
-                  Modifier.FINAL,
-                  Modifier.STATIC)
+          FieldSpec.builder(String[].class, REQUIRED_PROPS_NAMES, Modifier.PRIVATE, Modifier.FINAL)
               .initializer("new String[] {$L}", commaSeparateAndQuoteStrings(requiredPropNames))
               .build());
 
       propsBuilderClassBuilder.addField(
-          FieldSpec.builder(
-                  int.class,
-                  REQUIRED_PROPS_COUNT,
-                  Modifier.PRIVATE,
-                  Modifier.FINAL,
-                  Modifier.STATIC)
+          FieldSpec.builder(int.class, REQUIRED_PROPS_COUNT, Modifier.PRIVATE, Modifier.FINAL)
               .initializer("$L", numRequiredProps)
               .build());
 

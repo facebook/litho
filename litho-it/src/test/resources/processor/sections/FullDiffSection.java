@@ -356,13 +356,13 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   }
 
   public static class Builder<T> extends Section.Builder<Builder<T>> {
-    private static final String[] REQUIRED_PROPS_NAMES = new String[] {"data", "prop1", "prop3"};
-
-    private static final int REQUIRED_PROPS_COUNT = 3;
-
     FullDiffSection mFullDiffSection;
 
     SectionContext mContext;
+
+    private final String[] REQUIRED_PROPS_NAMES = new String[] {"data", "prop1", "prop3"};
+
+    private final int REQUIRED_PROPS_COUNT = 3;
 
     private final BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
