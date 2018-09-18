@@ -48,7 +48,7 @@ public void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-`LithoView` is an Android `ViewGroup` that can render components; it is the bridge between Litho components and Android `View`s. The example sets the content for the activity to a `LithoView` that displays a `Text` component.
+`LithoView` is an Android `ViewGroup` that can render components; it is the bridge between Litho components and Android `Views`. The example sets the content for the activity to a `LithoView` that displays a `Text` component.
 
 How do the components come into play? Let's zero in on this piece of code:
 
