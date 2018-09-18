@@ -13,6 +13,7 @@ litho_android_library(
         "dataflow/**/*.java",
         "displaylist/*.java",
         "reference/*.java",
+        "drawable/*.java",
     ]),
     provided_deps = [
         LITHO_ANDROIDSUPPORT_TARGET,

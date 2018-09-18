@@ -40,7 +40,8 @@ import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.reference.DrawableReference;
+import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.drawable.ComparableDrawableReference;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -1201,15 +1202,28 @@ public abstract class Component extends ComponentLifecycle
       return touchExpansionPx(edge, mResourceResolver.dipsToPixels(touchExpansion));
     }
 
-    /** @deprecated just use {@link #background(Drawable)} instead. */
-    @Deprecated
-    public T background(@Nullable Reference<? extends Drawable> background) {
+    public T background(@Nullable ComparableDrawable background) {
       mComponent.getOrCreateCommonPropsHolder().background(background);
       return getThis();
     }
 
+    /**
+     * @deprecated just use {@link #background(ComparableDrawable)} instead to improve performance
+     *     while diffing drawables.
+     */
+    @Deprecated
+    public T background(@Nullable Reference<? extends Drawable> reference) {
+      background(reference != null ? new ComparableDrawableReference<>(reference) : null);
+      return getThis();
+    }
+
+    /**
+     * @deprecated just use {@link #background(ComparableDrawable)} instead to improve performance
+     *     while diffing drawables.
+     */
+    @Deprecated
     public T background(@Nullable Drawable background) {
-      return background(DrawableReference.create().drawable(background).build());
+      return background(background != null ? ComparableDrawableReference.create(background) : null);
     }
 
     public T backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
@@ -1222,7 +1236,7 @@ public abstract class Component extends ComponentLifecycle
 
     public T backgroundRes(@DrawableRes int resId) {
       if (resId == 0) {
-        return background((Reference<? extends Drawable>) null);
+        return background((ComparableDrawable) null);
       }
 
       return background(ContextCompat.getDrawable(mContext, resId));

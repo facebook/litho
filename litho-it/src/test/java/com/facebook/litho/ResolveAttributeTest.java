@@ -24,7 +24,6 @@ import static com.facebook.litho.it.R.dimen.default_dimen;
 import static com.facebook.litho.it.R.dimen.test_dimen;
 import static com.facebook.litho.it.R.dimen.test_dimen_float;
 import static com.facebook.litho.it.R.drawable.test_bg;
-import static com.facebook.litho.reference.Reference.acquire;
 import static com.facebook.yoga.YogaEdge.LEFT;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
@@ -54,7 +53,7 @@ public class ResolveAttributeTest {
     InternalNode node = Layout.create(mContext, column);
 
     Drawable d = mContext.getResources().getDrawable(test_bg);
-    assertThat(acquire(mContext, node.getBackground())).isEqualTo(d);
+    assertThat(node.getBackground().acquire(mContext)).isEqualTo(d);
   }
 
   @Test
@@ -76,7 +75,7 @@ public class ResolveAttributeTest {
     InternalNode node = Layout.create(mContext, column);
 
     Drawable d = mContext.getResources().getDrawable(test_bg);
-    assertThat(acquire(mContext, node.getBackground())).isEqualTo(d);
+    assertThat(node.getBackground().acquire(mContext)).isEqualTo(d);
   }
 
   @Test

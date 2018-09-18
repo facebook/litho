@@ -49,8 +49,8 @@ import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.reference.DrawableReference;
-import com.facebook.litho.reference.Reference;
+import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.drawable.ComparableDrawableReference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConstants;
@@ -123,7 +123,7 @@ class InternalNode implements ComponentLayout {
   private InternalNode mNestedTreeHolder;
   private long mPrivateFlags;
 
-  private Reference<? extends Drawable> mBackground;
+  private @Nullable ComparableDrawable mBackground;
   private Drawable mForeground;
   private final int[] mBorderColors = new int[Border.EDGE_COUNT];
   private final float[] mBorderRadius = new float[Border.RADIUS_COUNT];
@@ -259,7 +259,7 @@ class InternalNode implements ComponentLayout {
   }
 
   @Override
-  public Reference<? extends Drawable> getBackground() {
+  public @Nullable ComparableDrawable getBackground() {
     return mBackground;
   }
 
@@ -352,7 +352,7 @@ class InternalNode implements ComponentLayout {
 
   /**
    * @return Whether this node is holding a nested tree or not. The decision was made during tree
-   *     creation {@link ComponentLifecycle#createLayout(ComponentContext, Component, boolean)}.
+   *     creation {@link ComponentLifecycle#createLayout(ComponentContext, boolean)}.
    */
   boolean isNestedTreeHolder() {
     return mIsNestedTreeHolder;
@@ -758,20 +758,25 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
-  InternalNode background(Reference<? extends Drawable> background) {
+  InternalNode background(@Nullable ComparableDrawable background) {
     mPrivateFlags |= PFLAG_BACKGROUND_IS_SET;
     mBackground = background;
-    setPaddingFromDrawableReference(background);
+    setPaddingFromComparableDrawable(background);
     return this;
   }
 
-  InternalNode background(Drawable background) {
-    return background(DrawableReference.create().drawable(background).build());
+  /**
+   * @deprecated just use {@link #background(ComparableDrawable)} instead to improve performance
+   *     while diffing drawables.
+   */
+  @Deprecated
+  InternalNode background(@Nullable Drawable background) {
+    return background(background != null ? ComparableDrawableReference.create(background) : null);
   }
 
   InternalNode backgroundRes(@DrawableRes int resId) {
     if (resId == 0) {
-      return background((Reference<? extends Drawable>) null);
+      return background((ComparableDrawable) null);
     }
 
     return background(ContextCompat.getDrawable(mComponentContext, resId));
@@ -1781,11 +1786,11 @@ class InternalNode implements ComponentLayout {
     return mPendingTreeProps;
   }
 
-  private <T extends Drawable> void setPaddingFromDrawableReference(Reference<T> ref) {
-    if (ref == null) {
+  private void setPaddingFromComparableDrawable(@Nullable ComparableDrawable comparableDrawable) {
+    if (comparableDrawable == null) {
       return;
     }
-    final T drawable = Reference.acquire(mComponentContext, ref);
+    Drawable drawable = comparableDrawable.acquire(mComponentContext);
     if (drawable != null) {
       final Rect backgroundPadding = ComponentsPools.acquireRect();
       if (getDrawablePadding(drawable, backgroundPadding)) {
@@ -1794,9 +1799,8 @@ class InternalNode implements ComponentLayout {
         paddingPx(RIGHT, backgroundPadding.right);
         paddingPx(BOTTOM, backgroundPadding.bottom);
       }
-
-      Reference.release(mComponentContext, drawable, ref);
       ComponentsPools.release(backgroundPadding);
+      comparableDrawable.release(mComponentContext);
     }
   }
 

@@ -59,7 +59,7 @@ import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.reference.Reference;
+import com.facebook.litho.drawable.ComparableDrawable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -938,19 +938,17 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return false;
     }
 
-    ViewNodeInfo nextViewNodeInfo = layoutOutput.getViewNodeInfo();
-    ViewNodeInfo currentViewNodeInfo = currentMountItem.getViewNodeInfo();
-    if (((nextViewNodeInfo == null || currentViewNodeInfo == null)
-            && !(nextViewNodeInfo == null && currentViewNodeInfo == null))
-        || (nextViewNodeInfo != null && !nextViewNodeInfo.isEquivalentTo(currentViewNodeInfo))) {
+    final ViewNodeInfo nextViewNodeInfo = layoutOutput.getViewNodeInfo();
+    final ViewNodeInfo currentViewNodeInfo = currentMountItem.getViewNodeInfo();
+    if ((currentViewNodeInfo == null && nextViewNodeInfo != null)
+        || (currentViewNodeInfo != null && !currentViewNodeInfo.isEquivalentTo(nextViewNodeInfo))) {
       return true;
     }
 
-    NodeInfo nextNodeInfo = layoutOutput.getNodeInfo();
-    NodeInfo currentNodeInfo = currentMountItem.getNodeInfo();
-    if (((nextNodeInfo == null || currentNodeInfo == null)
-            && !(nextNodeInfo == null && currentNodeInfo == null))
-        || (nextNodeInfo != null && !nextNodeInfo.isEquivalentTo(currentNodeInfo))) {
+    final NodeInfo nextNodeInfo = layoutOutput.getNodeInfo();
+    final NodeInfo currentNodeInfo = currentMountItem.getNodeInfo();
+    if ((currentNodeInfo == null && nextNodeInfo != null)
+        || (currentNodeInfo != null && !currentNodeInfo.isEquivalentTo(nextNodeInfo))) {
       return true;
     }
 
@@ -2037,16 +2035,16 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static void setViewBackground(View view, ViewNodeInfo viewNodeInfo) {
-    final Reference<Drawable> backgroundReference = viewNodeInfo.getBackground();
-    if (backgroundReference != null) {
-      setBackgroundCompat(view, Reference.acquire(view.getContext(), backgroundReference));
+    final ComparableDrawable drawable = viewNodeInfo.getBackground();
+    if (drawable != null) {
+      setBackgroundCompat(view, drawable.acquire(view.getContext()));
     }
   }
 
   private static void unsetViewBackground(View view, ViewNodeInfo viewNodeInfo) {
-    final Reference<Drawable> backgroundReference = viewNodeInfo.getBackground();
-    if (backgroundReference != null) {
-      Reference.release(view.getContext(), view.getBackground(), backgroundReference);
+    final ComparableDrawable drawable = viewNodeInfo.getBackground();
+    if (drawable != null) {
+      drawable.release(view.getContext());
       setBackgroundCompat(view, null);
     }
   }

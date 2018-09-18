@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.graphics.drawable.Drawable;
+import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
@@ -51,7 +52,13 @@ public final class DebugLayoutNode {
 
   @Nullable
   public Reference<? extends Drawable> getBackground() {
-    return mNode.getBackground();
+    if (mNode.getBackground() == null) {
+      return null;
+    }
+
+    // TODO: (T34096400) remove Reference wrapping the drawable
+    Drawable drawable = mNode.getBackground().acquire(mNode.getContext());
+    return DrawableReference.create().drawable(drawable).build();
   }
 
   public void setBackgroundColor(int color) {
