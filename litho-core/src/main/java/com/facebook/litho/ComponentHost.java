@@ -116,12 +116,10 @@ public class ComponentHost extends ViewGroup {
     setChildrenDrawingOrderEnabled(true);
     refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context));
 
-    if (!ComponentsConfiguration.lazyComponentHost) {
-      mMountItems = new SparseArrayCompat<>();
-      mViewMountItems = new SparseArrayCompat<>();
-      mDrawableMountItems = new SparseArrayCompat<>();
-      mDisappearingItems = new ArrayList<>();
-    }
+    mMountItems = new SparseArrayCompat<>();
+    mViewMountItems = new SparseArrayCompat<>();
+    mDrawableMountItems = new SparseArrayCompat<>();
+    mDisappearingItems = new ArrayList<>();
   }
 
   /**

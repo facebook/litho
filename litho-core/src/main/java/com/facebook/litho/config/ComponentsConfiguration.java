@@ -152,9 +152,6 @@ public class ComponentsConfiguration {
   /** Configuration for asynchronous state update */
   public static boolean updateStateAsync = false;
 
-  /** Configuration for lazifying state of ComponentHost */
-  public static boolean lazyComponentHost = false;
-
   /** Assign transition keys to all LayoutOutputs, this enables Transition.allLayout() */
   public static boolean assignTransitionKeysToAllOutputs = false;
 
