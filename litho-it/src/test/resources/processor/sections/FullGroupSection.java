@@ -424,13 +424,14 @@ final class FullGroupSection<T> extends Section implements TestTag {
   }
 
   public static class Builder<T> extends Section.Builder<Builder<T>> {
+    private static final String[] REQUIRED_PROPS_NAMES =
+        new String[] {"prop1", "prop3", "prop4", "prop5"};
+
+    private static final int REQUIRED_PROPS_COUNT = 4;
+
     FullGroupSection mFullGroupSection;
 
     SectionContext mContext;
-
-    private final String[] REQUIRED_PROPS_NAMES = new String[] {"prop1", "prop3", "prop4", "prop5"};
-
-    private final int REQUIRED_PROPS_COUNT = 4;
 
     private final BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 

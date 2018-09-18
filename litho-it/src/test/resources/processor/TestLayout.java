@@ -586,13 +586,24 @@ public final class TestLayout<S extends View> extends Component implements TestT
   }
 
   public static class Builder<S extends View> extends Component.Builder<Builder<S>> {
+    private static final String[] REQUIRED_PROPS_NAMES =
+        new String[] {
+          "aspectRatio",
+          "child",
+          "focusable",
+          "handler",
+          "prop1",
+          "prop3",
+          "prop4",
+          "prop5",
+          "prop6"
+        };
+
+    private static final int REQUIRED_PROPS_COUNT = 9;
+
     TestLayout mTestLayout;
 
     ComponentContext mContext;
-
-    private final String[] REQUIRED_PROPS_NAMES = new String[] {"aspectRatio", "child", "focusable", "handler", "prop1", "prop3", "prop4", "prop5", "prop6"};
-
-    private final int REQUIRED_PROPS_COUNT = 9;
 
     private final BitSet mRequired = new BitSet(REQUIRED_PROPS_COUNT);
 
