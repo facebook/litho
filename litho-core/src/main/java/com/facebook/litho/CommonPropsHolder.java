@@ -82,7 +82,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
   void positionPx(@Nullable YogaEdge edge, @Px int position) {
     mPrivateFlags |= PFLAG_POSITION_IS_SET;
     if (mPositions == null) {
-      mPositions = new YogaEdgesWithIntsImplOptimized();
+      mPositions = new YogaEdgesWithInts();
     }
 
     mPositions.add(edge, position);
@@ -624,7 +624,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mPrivateFlags |= PFLAG_MARGIN_IS_SET;
 
       if (mMargins == null) {
-        mMargins = new YogaEdgesWithIntsImplOptimized();
+        mMargins = new YogaEdgesWithInts();
       }
       mMargins.add(edge, margin);
     }
@@ -648,7 +648,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     private void paddingPx(@Nullable YogaEdge edge, @Px int padding) {
       mPrivateFlags |= PFLAG_PADDING_IS_SET;
       if (mPaddings == null) {
-        mPaddings = new YogaEdgesWithIntsImplOptimized();
+        mPaddings = new YogaEdgesWithInts();
       }
       mPaddings.add(edge, padding);
     }
@@ -734,7 +734,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     private void touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
       mPrivateFlags |= PFLAG_TOUCH_EXPANSION_IS_SET;
       if (mTouchExpansions == null) {
-        mTouchExpansions = new YogaEdgesWithIntsImplOptimized();
+        mTouchExpansions = new YogaEdgesWithInts();
       }
       mTouchExpansions.add(edge, touchExpansion);
     }
@@ -942,12 +942,11 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     }
   }
 
-  static class YogaEdgesWithIntsImplOptimized implements YogaEdgesWithInts {
+  static class YogaEdgesWithInts {
 
     private long mEdges;
     @Nullable private int[] mValues;
 
-    @Override
     public void add(YogaEdge yogaEdge, int value) {
       int index = addEdge(yogaEdge);
       if (value != 0) {
@@ -986,17 +985,14 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mEdges |= ((long) val << (pos * 4));
     }
 
-    @Override
     public int size() {
       return lookup(0);
     }
 
-    @Override
     public YogaEdge getEdge(int index) {
       return YogaEdge.fromInt(lookup(index + 1));
     }
 
-    @Override
     public int getValue(int index) {
       return (mValues == null || mValues.length <= index) ? 0 : mValues[index];
     }

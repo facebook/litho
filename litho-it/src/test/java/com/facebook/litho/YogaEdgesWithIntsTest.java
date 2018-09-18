@@ -26,51 +26,43 @@ public class YogaEdgesWithIntsTest {
 
   @Test
   public void testDefault() {
-    YogaEdgesWithInts edgesNew = new CommonPropsHolder.YogaEdgesWithIntsImplOptimized();
+    CommonPropsHolder.YogaEdgesWithInts edge = new CommonPropsHolder.YogaEdgesWithInts();
 
-    YogaEdgesWithInts[] bothEdges = {edgesNew};
+    assertThat(edge.size() == 0);
+    edge.add(com.facebook.yoga.YogaEdge.ALL, 0);
+    assertThat(edge.size() == 1);
+    assertThat(edge.getEdge(0) == com.facebook.yoga.YogaEdge.ALL);
+    assertThat(edge.getValue(0) == 0);
 
-    for (YogaEdgesWithInts edge : bothEdges) {
-      assertThat(edge.size() == 0);
-      edge.add(com.facebook.yoga.YogaEdge.ALL, 0);
-      assertThat(edge.size() == 1);
-      assertThat(edge.getEdge(0) == com.facebook.yoga.YogaEdge.ALL);
-      assertThat(edge.getValue(0) == 0);
-
-      edge.add(com.facebook.yoga.YogaEdge.LEFT, 1);
-      edge.add(com.facebook.yoga.YogaEdge.RIGHT, 0);
-      assertThat(edge.size() == 3);
-      assertThat(edge.getEdge(1) == com.facebook.yoga.YogaEdge.LEFT);
-      assertThat(edge.getValue(1) == 1);
-      assertThat(edge.getEdge(2) == com.facebook.yoga.YogaEdge.RIGHT);
-      assertThat(edge.getValue(2) == 0);
-    }
+    edge.add(com.facebook.yoga.YogaEdge.LEFT, 1);
+    edge.add(com.facebook.yoga.YogaEdge.RIGHT, 0);
+    assertThat(edge.size() == 3);
+    assertThat(edge.getEdge(1) == com.facebook.yoga.YogaEdge.LEFT);
+    assertThat(edge.getValue(1) == 1);
+    assertThat(edge.getEdge(2) == com.facebook.yoga.YogaEdge.RIGHT);
+    assertThat(edge.getValue(2) == 0);
   }
 
   @Test
   public void testDefaultZeros() {
-    YogaEdgesWithInts edgesNew = new CommonPropsHolder.YogaEdgesWithIntsImplOptimized();
+    CommonPropsHolder.YogaEdgesWithInts edge = new CommonPropsHolder.YogaEdgesWithInts();
 
-    YogaEdgesWithInts[] bothEdges = {edgesNew};
+    assertThat(edge.size() == 0);
+    edge.add(com.facebook.yoga.YogaEdge.ALL, 0);
+    edge.add(com.facebook.yoga.YogaEdge.LEFT, 0);
+    edge.add(com.facebook.yoga.YogaEdge.TOP, 0);
+    edge.add(com.facebook.yoga.YogaEdge.BOTTOM, 0);
 
-    for (YogaEdgesWithInts edge : bothEdges) {
-      assertThat(edge.size() == 0);
-      edge.add(com.facebook.yoga.YogaEdge.ALL, 0);
-      edge.add(com.facebook.yoga.YogaEdge.LEFT, 0);
-      edge.add(com.facebook.yoga.YogaEdge.TOP, 0);
-      edge.add(com.facebook.yoga.YogaEdge.BOTTOM, 0);
+    assertThat(edge.size() == 4);
+    assertThat(edge.getEdge(3) == com.facebook.yoga.YogaEdge.BOTTOM);
+    assertThat(edge.getValue(0) == 0);
+    assertThat(edge.getValue(1) == 0);
+    assertThat(edge.getValue(2) == 0);
+    assertThat(edge.getValue(3) == 0);
 
-      assertThat(edge.size() == 4);
-      assertThat(edge.getEdge(3) == com.facebook.yoga.YogaEdge.BOTTOM);
-      assertThat(edge.getValue(0) == 0);
-      assertThat(edge.getValue(1) == 0);
-      assertThat(edge.getValue(2) == 0);
-      assertThat(edge.getValue(3) == 0);
-
-      edge.add(com.facebook.yoga.YogaEdge.RIGHT, 1);
-      assertThat(edge.size() == 5);
-      assertThat(edge.getEdge(5) == com.facebook.yoga.YogaEdge.RIGHT);
-      assertThat(edge.getValue(5) == 1);
-    }
+    edge.add(com.facebook.yoga.YogaEdge.RIGHT, 1);
+    assertThat(edge.size() == 5);
+    assertThat(edge.getEdge(5) == com.facebook.yoga.YogaEdge.RIGHT);
+    assertThat(edge.getValue(5) == 1);
   }
 }
