@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import android.animation.StateListAnimator;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.view.View;
 import com.facebook.litho.drawable.ComparableDrawable;
@@ -35,7 +34,7 @@ class ViewNodeInfo {
   private final AtomicInteger mReferenceCount = new AtomicInteger(0);
 
   private ComparableDrawable mBackground;
-  private Drawable mForeground;
+  private ComparableDrawable mForeground;
   private Rect mPadding;
   private Rect mExpandedTouchBounds;
   private YogaDirection mLayoutDirection;
@@ -51,11 +50,11 @@ class ViewNodeInfo {
     return mBackground;
   }
 
-  void setForeground(Drawable foreground) {
+  void setForeground(ComparableDrawable foreground) {
     mForeground = foreground;
   }
 
-  Drawable getForeground() {
+  ComparableDrawable getForeground() {
     return mForeground;
   }
 
@@ -180,7 +179,8 @@ class ViewNodeInfo {
       return false;
     }
 
-    if (!CommonUtils.equals(mForeground, other.mForeground)) {
+    if ((mForeground == null && other.mForeground != null)
+        || (mForeground != null && !mForeground.isEquivalentTo(other.mForeground))) {
       return false;
     }
 

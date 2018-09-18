@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import android.animation.StateListAnimator;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
@@ -236,7 +235,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     getOrCreateOtherProps().touchExpansionPx(edge, touchExpansion);
   }
 
-  void foreground(@Nullable Drawable foreground) {
+  void foreground(@Nullable ComparableDrawable foreground) {
     getOrCreateOtherProps().foreground(foreground);
   }
 
@@ -573,7 +572,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     @Px private int mMaxHeightPx;
     private float mMaxHeightPercent;
     private float mAspectRatio;
-    @Nullable private Drawable mForeground;
+    @Nullable private ComparableDrawable mForeground;
     @Nullable private String mTransitionKey;
     @Nullable private Border mBorder;
     @Nullable private StateListAnimator mStateListAnimator;
@@ -752,7 +751,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mTouchExpansions.add(edge, touchExpansion);
     }
 
-    private void foreground(Drawable foreground) {
+    private void foreground(@Nullable ComparableDrawable foreground) {
       mPrivateFlags |= PFLAG_FOREGROUND_IS_SET;
       mForeground = foreground;
     }

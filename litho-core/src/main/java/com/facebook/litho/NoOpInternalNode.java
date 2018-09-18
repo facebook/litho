@@ -16,19 +16,11 @@
 
 package com.facebook.litho;
 
-import static android.support.annotation.Dimension.DP;
-
 import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.AttrRes;
-import android.support.annotation.ColorInt;
-import android.support.annotation.DimenRes;
-import android.support.annotation.Dimension;
-import android.support.annotation.DrawableRes;
+import android.support.annotation.Nullable;
 import android.support.annotation.Px;
-import android.support.annotation.StringRes;
 import android.util.SparseArray;
-import com.facebook.litho.reference.Reference;
+import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaDirection;
@@ -314,7 +306,7 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode foreground(Drawable foreground) {
+  public InternalNode foreground(@Nullable ComparableDrawable foreground) {
     return this;
   }
 

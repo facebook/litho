@@ -24,12 +24,12 @@ import android.animation.StateListAnimator;
 import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.SparseArray;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.drawable.ComparableDrawableReference;
+import com.facebook.litho.drawable.ComparableDrawableWrapper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -120,7 +120,8 @@ public class CommonPropsTest {
     ComparableDrawable drawableReference =
         ComparableDrawableReference.create(new ColorDrawable(Color.RED));
     mCommonProps.background(drawableReference);
-    Drawable foreground = new ColorDrawable(Color.BLACK);
+    ComparableDrawable foreground =
+        ComparableDrawableWrapper.create(new ColorDrawable(Color.BLACK));
     mCommonProps.foreground(foreground);
 
     mCommonProps.wrapInView();

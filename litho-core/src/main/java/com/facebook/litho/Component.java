@@ -42,6 +42,7 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.drawable.ComparableDrawableReference;
+import com.facebook.litho.drawable.ComparableDrawableWrapper;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -1246,9 +1247,17 @@ public abstract class Component extends ComponentLifecycle
       return background(new ColorDrawable(backgroundColor));
     }
 
-    public T foreground(@Nullable Drawable foreground) {
+    public T foreground(@Nullable ComparableDrawable foreground) {
       mComponent.getOrCreateCommonPropsHolder().foreground(foreground);
       return getThis();
+    }
+
+    /**
+     * @deprecated just use {@link #foreground(ComparableDrawable)} instead to improve performance
+     *     while diffing drawables.
+     */
+    public T foreground(@Nullable Drawable foreground) {
+      return foreground(foreground != null ? ComparableDrawableWrapper.create(foreground) : null);
     }
 
     public T foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
@@ -1261,7 +1270,7 @@ public abstract class Component extends ComponentLifecycle
 
     public T foregroundRes(@DrawableRes int resId) {
       if (resId == 0) {
-        return foreground(null);
+        return foreground((ComparableDrawable) null);
       }
 
       return foreground(ContextCompat.getDrawable(mContext, resId));

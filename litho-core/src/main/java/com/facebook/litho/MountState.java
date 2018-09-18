@@ -2059,25 +2059,25 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static void setViewForeground(View view, ViewNodeInfo viewNodeInfo) {
-    final Drawable foreground = viewNodeInfo.getForeground();
+    final ComparableDrawable foreground = viewNodeInfo.getForeground();
     if (foreground != null) {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
         throw new IllegalStateException("MountState has a ViewNodeInfo with foreground however " +
             "the current Android version doesn't support foreground on Views");
       }
 
-      view.setForeground(foreground);
+      view.setForeground(foreground.acquire(view.getContext()));
     }
   }
 
   private static void unsetViewForeground(View view, ViewNodeInfo viewNodeInfo) {
-    final Drawable foreground = viewNodeInfo.getForeground();
+    final ComparableDrawable foreground = viewNodeInfo.getForeground();
     if (foreground != null) {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
         throw new IllegalStateException("MountState has a ViewNodeInfo with foreground however " +
             "the current Android version doesn't support foreground on Views");
       }
-
+      foreground.release(view.getContext());
       view.setForeground(null);
     }
   }

@@ -26,7 +26,6 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
@@ -34,6 +33,7 @@ import android.util.SparseArray;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.drawable.ComparableDrawableReference;
+import com.facebook.litho.drawable.ComparableDrawableWrapper;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
@@ -324,7 +324,8 @@ public class LayoutStateCreateTreeTest {
   public void testAddingAllAttributes() {
     final ComparableDrawable drawableReference =
         ComparableDrawableReference.create(new ColorDrawable(Color.RED));
-    final Drawable foreground = new ColorDrawable(Color.BLACK);
+    final ComparableDrawable foreground =
+        ComparableDrawableWrapper.create(new ColorDrawable(Color.BLACK));
     final EventHandler<ClickEvent> clickHandler = mock(EventHandler.class);
     final EventHandler<LongClickEvent> longClickHandler = mock(EventHandler.class);
     final EventHandler<TouchEvent> touchHandler = mock(EventHandler.class);

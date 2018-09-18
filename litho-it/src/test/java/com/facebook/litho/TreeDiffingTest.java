@@ -54,6 +54,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.util.SparseArrayCompat;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.drawable.ComparableDrawableReference;
+import com.facebook.litho.drawable.ComparableDrawableWrapper;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
 import com.facebook.litho.testing.TestComponent;
@@ -73,7 +74,7 @@ public class TreeDiffingTest {
 
   private static ComparableDrawable sRedDrawable;
   private static ComparableDrawable sBlackDrawable;
-  private static Drawable sTransparentDrawable;
+  private static ComparableDrawable sTransparentDrawable;
 
   private int mUnspecifiedSpec;
 
@@ -91,7 +92,7 @@ public class TreeDiffingTest {
         DrawableReference.create().drawable(new ColorDrawable(Color.BLACK)).build();
     sBlackDrawable = new ComparableDrawableReference<>(blackDrawableReference);
 
-    sTransparentDrawable = new ColorDrawable(TRANSPARENT);
+    sTransparentDrawable = ComparableDrawableWrapper.create(new ColorDrawable(TRANSPARENT));
   }
 
   @Test

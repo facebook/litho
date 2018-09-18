@@ -51,6 +51,7 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.drawable.ComparableDrawableReference;
+import com.facebook.litho.drawable.ComparableDrawableWrapper;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConstants;
@@ -124,7 +125,7 @@ class InternalNode implements ComponentLayout {
   private long mPrivateFlags;
 
   private @Nullable ComparableDrawable mBackground;
-  private Drawable mForeground;
+  private @Nullable ComparableDrawable mForeground;
   private final int[] mBorderColors = new int[Border.EDGE_COUNT];
   private final float[] mBorderRadius = new float[Border.RADIUS_COUNT];
   private @Nullable PathEffect mBorderPathEffect;
@@ -263,7 +264,7 @@ class InternalNode implements ComponentLayout {
     return mBackground;
   }
 
-  public Drawable getForeground() {
+  public @Nullable ComparableDrawable getForeground() {
     return mForeground;
   }
 
@@ -786,7 +787,7 @@ class InternalNode implements ComponentLayout {
     return background(new ColorDrawable(backgroundColor));
   }
 
-  InternalNode foreground(Drawable foreground) {
+  InternalNode foreground(@Nullable ComparableDrawable foreground) {
     mPrivateFlags |= PFLAG_FOREGROUND_IS_SET;
     mForeground = foreground;
     return this;
@@ -797,11 +798,12 @@ class InternalNode implements ComponentLayout {
       return foreground(null);
     }
 
-    return foreground(ContextCompat.getDrawable(mComponentContext, resId));
+    return foreground(
+        ComparableDrawableWrapper.create(ContextCompat.getDrawable(mComponentContext, resId)));
   }
 
   InternalNode foregroundColor(@ColorInt int foregroundColor) {
-    return foreground(new ColorDrawable(foregroundColor));
+    return foreground(ComparableDrawableWrapper.create(new ColorDrawable(foregroundColor)));
   }
 
   InternalNode wrapInView() {

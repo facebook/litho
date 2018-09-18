@@ -863,8 +863,7 @@ class LayoutState {
     }
 
     // 6. Add foreground if defined.
-    // TODO: (T33972976) node.getForeground() should return a comparable drawable
-    final Drawable foreground = node.getForeground();
+    final ComparableDrawable foreground = node.getForeground();
     if (foreground != null) {
       if (layoutOutput != null && layoutOutput.hasViewNodeInfo() && SDK_INT >= M) {
         layoutOutput.getViewNodeInfo().setForeground(foreground);
@@ -881,7 +880,7 @@ class LayoutState {
                 node,
                 layoutState,
                 convertForeground,
-                ComparableDrawableReference.create(foreground),
+                foreground,
                 OutputUnitType.FOREGROUND,
                 needsHostView);
 

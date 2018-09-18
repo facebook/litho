@@ -43,7 +43,7 @@ public final class DebugLayoutNode {
 
   @Nullable
   public Drawable getForeground() {
-    return mNode.getForeground();
+    return mNode.getForeground() != null ? mNode.getForeground().acquire(mNode.getContext()) : null;
   }
 
   public void setForegroundColor(int color) {
