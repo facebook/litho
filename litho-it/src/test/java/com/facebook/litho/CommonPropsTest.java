@@ -23,13 +23,11 @@ import static org.mockito.Mockito.verify;
 import android.animation.StateListAnimator;
 import android.annotation.TargetApi;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.util.SparseArray;
 import com.facebook.litho.annotations.ImportantForAccessibility;
+import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.drawable.ComparableDrawableReference;
-import com.facebook.litho.drawable.ComparableDrawableWrapper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -117,11 +115,9 @@ public class CommonPropsTest {
     mCommonProps.touchExpansionPx(YogaEdge.LEFT, 23);
     mCommonProps.touchExpansionPx(YogaEdge.ALL, 21);
 
-    ComparableDrawable drawableReference =
-        ComparableDrawableReference.create(new ColorDrawable(Color.RED));
-    mCommonProps.background(drawableReference);
-    ComparableDrawable foreground =
-        ComparableDrawableWrapper.create(new ColorDrawable(Color.BLACK));
+    ComparableDrawable background = ComparableColorDrawable.create(Color.RED);
+    mCommonProps.background(background);
+    ComparableDrawable foreground = ComparableColorDrawable.create(Color.BLACK);
     mCommonProps.foreground(foreground);
 
     mCommonProps.wrapInView();
@@ -261,7 +257,7 @@ public class CommonPropsTest {
     verify(mNode).touchExpansionPx(YogaEdge.LEFT, 23);
     verify(mNode).touchExpansionPx(YogaEdge.ALL, 21);
 
-    verify(mNode).background(drawableReference);
+    verify(mNode).background(background);
     verify(mNode).foreground(foreground);
 
     verify(mNode).wrapInView();

@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static android.R.drawable.btn_default;
 import static android.graphics.Color.BLACK;
-import static android.graphics.Color.TRANSPARENT;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutOutput.STATE_DIRTY;
 import static com.facebook.litho.LayoutOutput.STATE_UNKNOWN;
@@ -49,14 +48,9 @@ import static org.robolectric.RuntimeEnvironment.application;
 
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.support.v4.util.SparseArrayCompat;
+import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.drawable.ComparableDrawableReference;
-import com.facebook.litho.drawable.ComparableDrawableWrapper;
-import com.facebook.litho.reference.DrawableReference;
-import com.facebook.litho.reference.Reference;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
@@ -84,15 +78,10 @@ public class TreeDiffingTest {
   public void setup() throws Exception {
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mUnspecifiedSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
-    Reference<? extends Drawable> redDrawableReference =
-        DrawableReference.create().drawable(new ColorDrawable(Color.RED)).build();
-    sRedDrawable = new ComparableDrawableReference<>(redDrawableReference);
+    sRedDrawable = ComparableColorDrawable.create(Color.RED);
+    sBlackDrawable = ComparableColorDrawable.create(Color.BLACK);
 
-    Reference<? extends Drawable> blackDrawableReference =
-        DrawableReference.create().drawable(new ColorDrawable(Color.BLACK)).build();
-    sBlackDrawable = new ComparableDrawableReference<>(blackDrawableReference);
-
-    sTransparentDrawable = ComparableDrawableWrapper.create(new ColorDrawable(TRANSPARENT));
+    sTransparentDrawable = ComparableColorDrawable.create(Color.TRANSPARENT);
   }
 
   @Test
