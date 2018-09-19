@@ -92,9 +92,11 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
 
   public void showStickyHeader() {
     mStickyHeader.setVisibility(View.VISIBLE);
+    mStickyHeader.performIncrementalMount();
   }
 
   public void hideStickyHeader() {
+    mStickyHeader.unmountAllItems();
     mStickyHeader.setVisibility(View.GONE);
   }
 
