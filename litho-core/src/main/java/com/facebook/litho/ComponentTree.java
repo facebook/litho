@@ -622,7 +622,7 @@ public class ComponentTree {
     final Rect currentVisibleArea = ComponentsPools.acquireRect();
 
     if (ComponentsConfiguration.incrementalMountWhenNotVisible) {
-      boolean isVisible = mLithoView.getLocalVisibleRect(currentVisibleArea);
+      boolean isVisible = mIsAttached && mLithoView.getLocalVisibleRect(currentVisibleArea);
 
       if (!isVisible) {
         // We just do this so that every mount call when the LithoView is not visible is done with
