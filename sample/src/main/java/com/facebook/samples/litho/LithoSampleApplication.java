@@ -14,14 +14,14 @@ package com.facebook.samples.litho;
 
 import android.app.Application;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.sonar.plugins.litho.LithoSonarDescriptors;
+import com.facebook.flipper.plugins.litho.LithoSonarDescriptors;
 import com.facebook.soloader.SoLoader;
-import com.facebook.sonar.android.AndroidSonarClient;
-import com.facebook.sonar.android.utils.SonarUtils;
-import com.facebook.sonar.core.SonarClient;
-import com.facebook.sonar.plugins.console.JavascriptEnvironment;
-import com.facebook.sonar.plugins.inspector.DescriptorMapping;
-import com.facebook.sonar.plugins.inspector.InspectorSonarPlugin;
+import com.facebook.flipper.android.AndroidSonarClient;
+import com.facebook.flipper.android.utils.SonarUtils;
+import com.facebook.flipper.core.SonarClient;
+import com.facebook.flipper.plugins.console.JavascriptEnvironment;
+import com.facebook.flipper.plugins.inspector.DescriptorMapping;
+import com.facebook.flipper.plugins.inspector.InspectorSonarPlugin;
 
 public class LithoSampleApplication extends Application {
 
