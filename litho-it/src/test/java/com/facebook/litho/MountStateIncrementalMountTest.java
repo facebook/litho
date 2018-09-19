@@ -30,16 +30,18 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.ViewGroup;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -572,6 +574,43 @@ public class MountStateIncrementalMountTest {
     lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isTrue();
+  }
+
+  /**
+   * Tests incremental mount behaviour of a nested Litho View. We want to ensure that when a child
+   * view is first mounted due to a layout pass it does not also have performIncrementalMount called
+   * on it.
+   */
+  @Test
+  public void testIncrementalMountAfterLithoViewIsMounted() {
+    final LithoView lithoView = mock(LithoView.class);
+    when(lithoView.isIncrementalMountEnabled()).thenReturn(true);
+
+    final ViewGroupWithLithoViewChildren viewGroup = new ViewGroupWithLithoViewChildren(mContext);
+    viewGroup.addView(lithoView);
+
+    final LithoView lithoViewParent =
+        ComponentTestHelper.mountComponent(
+            TestViewComponent.create(mContext, true, true, true, true).testView(viewGroup), true);
+
+    // Mount views with visible rect
+    lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), false);
+    verify(lithoView).performIncrementalMount(any(Rect.class), eq(false));
+    reset(lithoView);
+    when(lithoView.isIncrementalMountEnabled()).thenReturn(true);
+
+    // Unmount views with visible rect outside
+    lithoViewParent.getComponentTree().mountComponent(new Rect(0, -10, 100, -5), false);
+    verify(lithoView, never()).performIncrementalMount(any(Rect.class), eq(false));
+    reset(lithoView);
+    when(lithoView.isIncrementalMountEnabled()).thenReturn(true);
+
+    // Mount again with visible rect
+    lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), false);
+
+    // Now LithoView performIncrementalMount should not be called as the LithoView is mounted when
+    // it is laid out and therefore doesn't need mounting again in the same frame
+    verify(lithoView, never()).performIncrementalMount(any(Rect.class), eq(false));
   }
 
   private void verifyLoggingAndResetLogger(int mountedCount, int unmountedCount) {

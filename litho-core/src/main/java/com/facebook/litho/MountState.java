@@ -70,6 +70,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Encapsulates the mounted state of a {@link Component}. Provides APIs to update state by recycling
@@ -136,6 +137,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       new LinkedHashMap<>();
   private @Nullable Transition mRootTransition;
   private boolean mTransitionsHasBeenCollected = false;
+  private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
 
   public MountState(LithoView view) {
     mIndexToItemMap = new LongSparseArray<>();
@@ -2856,6 +2858,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
               layoutState.getLayoutOutputPositionForId(layoutOutput.getId()),
               layoutOutput,
               layoutState);
+          mComponentIdsMountedInThisFrame.add(layoutOutput.getId());
         }
       }
     }
@@ -2874,6 +2877,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
               layoutState.getLayoutOutputPositionForId(layoutOutput.getId()),
               layoutOutput,
               layoutState);
+          mComponentIdsMountedInThisFrame.add(layoutOutput.getId());
         }
         mPreviousTopsIndex++;
       }
@@ -2892,16 +2896,20 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     for (int i = 0, size = mCanMountIncrementallyMountItems.size(); i < size; i++) {
       final MountItem mountItem = mCanMountIncrementallyMountItems.valueAt(i);
-      final int layoutOutputPosition =
-          layoutState.getLayoutOutputPositionForId(mCanMountIncrementallyMountItems.keyAt(i));
-      if (layoutOutputPosition != -1) {
-        mountItemIncrementally(
-            mountItem,
-            layoutState.getMountableOutputAt(layoutOutputPosition).getBounds(),
-            localVisibleRect,
-            processVisibilityOutputs);
+      final long layoutOutputId = mCanMountIncrementallyMountItems.keyAt(i);
+      if (!mComponentIdsMountedInThisFrame.contains(layoutOutputId)) {
+        final int layoutOutputPosition = layoutState.getLayoutOutputPositionForId(layoutOutputId);
+        if (layoutOutputPosition != -1) {
+          mountItemIncrementally(
+              mountItem,
+              layoutState.getMountableOutputAt(layoutOutputPosition).getBounds(),
+              localVisibleRect,
+              processVisibilityOutputs);
+        }
       }
     }
+
+    mComponentIdsMountedInThisFrame.clear();
 
     return true;
   }

@@ -25,7 +25,6 @@ import static com.facebook.yoga.YogaEdge.RIGHT;
 import static com.facebook.yoga.YogaEdge.TOP;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
@@ -35,10 +34,10 @@ import com.facebook.litho.it.R;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
-import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -170,22 +169,5 @@ public class MountStateViewTest {
   private void removeParent(View child) {
     final ViewGroup parent = (ViewGroup) child.getParent();
     parent.removeView(child);
-  }
-
-  private class ViewGroupWithLithoViewChildren extends ViewGroup implements HasLithoViewChildren {
-
-    ViewGroupWithLithoViewChildren(Context context) {
-      super(context);
-    }
-
-    @Override
-    public void obtainLithoViewChildren(List<LithoView> lithoViews) {
-      for (int i = 0, size = getChildCount(); i < size; i++) {
-        lithoViews.add((LithoView) getChildAt(i));
-      }
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {}
   }
 }
