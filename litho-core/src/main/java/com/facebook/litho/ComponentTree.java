@@ -755,6 +755,7 @@ public class ComponentTree {
     if (!isDirtyMount
         && mHasMounted
         && ComponentsConfiguration.incrementalMountWhenNotVisible
+        && currentVisibleArea != null
         && currentVisibleArea.equals(mLithoView.getPreviousMountBounds())) {
       return;
     }
