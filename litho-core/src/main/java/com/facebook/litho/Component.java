@@ -1018,7 +1018,12 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
-    /** @param percent a value between 0 and 100. */
+    /**
+     * Sets the width of the Component to be a percentage of its parent's width. Note that if the
+     * parent has unspecified width (e.g. it is an HScroll), then setting this will have no effect.
+     *
+     * @param percent a value between 0 and 100.
+     */
     public T widthPercent(float percent) {
       mComponent.getOrCreateCommonPropsHolder().widthPercent(percent);
       return getThis();
@@ -1099,7 +1104,13 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
-    /** @param percent a value between 0 and 100. */
+    /**
+     * Sets the height of the Component to be a percentage of its parent's height. Note that if the
+     * parent has unspecified height (e.g. it is a RecyclerView), then setting this will have no
+     * effect.
+     *
+     * @param percent a value between 0 and 100.
+     */
     public T heightPercent(float percent) {
       mComponent.getOrCreateCommonPropsHolder().heightPercent(percent);
       return getThis();
