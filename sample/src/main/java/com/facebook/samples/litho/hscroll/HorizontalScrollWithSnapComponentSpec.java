@@ -57,10 +57,10 @@ import java.util.Arrays;
 @LayoutSpec
 public class HorizontalScrollWithSnapComponentSpec {
 
-  static String[] SNAP_MODE_STRING =
+  static final String[] SNAP_MODE_STRING =
       new String[] {"SNAP_NONE", "SNAP_TO_START", "SNAP_TO_CENTER", "SNAP_TO_CENTER_CHILD"};
 
-  static int[] SNAP_MODE_INT =
+  static final int[] SNAP_MODE_INT =
       new int[] {SNAP_NONE, SNAP_TO_START, SNAP_TO_CENTER, SNAP_TO_CENTER_CHILD};
 
   @OnCreateInitialState

@@ -101,9 +101,9 @@ import java.util.List;
 )
 public class DataDiffSectionSpec<T> {
 
-  @PropDefault public static Boolean trimHeadAndTail = false;
-  @PropDefault public static Boolean trimSameInstancesOnly = false;
-  @PropDefault public static @Nullable Object dataIdentifier = null;
+  @PropDefault public static final Boolean trimHeadAndTail = false;
+  @PropDefault public static final Boolean trimSameInstancesOnly = false;
+  @PropDefault public static final @Nullable Object dataIdentifier = null;
 
   @OnDiff
   public static <T> void onCreateChangeSet(

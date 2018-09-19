@@ -39,8 +39,8 @@ import java.util.List;
 @GroupSectionSpec
 public class TestGroupSectionSpec {
 
-  @PropDefault public static Boolean trimHeadAndTail = false;
-  @PropDefault public static Boolean trimSameInstancesOnly = false;
+  @PropDefault public static final Boolean trimHeadAndTail = false;
+  @PropDefault public static final Boolean trimSameInstancesOnly = false;
 
   @OnCreateChildren
   protected static Children onCreateChildren(
