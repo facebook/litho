@@ -4,7 +4,7 @@
 # This source code is licensed under the license found in the
 # LICENSE-examples file in the root directory of this source tree.
 
-load("//:LITHO_DEFS.bzl", "LITHO_SAMPLE_BAREBONES_JAVA", "fb_android_resource")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_SAMPLE_BAREBONES_JAVA", "fb_android_resource")
 
 android_binary(
     name = "sample-barebones",

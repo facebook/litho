@@ -1,4 +1,4 @@
-load("//:LITHO_DEFS.bzl", "LITHO_BUILD_CONFIG_TARGET", "LITHO_GUAVA_TARGET", "LITHO_JAVA_TARGET", "LITHO_ROBOLECTRIC_TARGET", "LITHO_TESTING_TARGET", "LITHO_TEST_RES", "components_robolectric_test", "make_dep_path")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_BUILD_CONFIG_TARGET", "LITHO_GUAVA_TARGET", "LITHO_JAVA_TARGET", "LITHO_ROBOLECTRIC_TARGET", "LITHO_TESTING_TARGET", "LITHO_TEST_RES", "components_robolectric_test", "make_dep_path")
 
 components_robolectric_test(
     name = "viewtree",

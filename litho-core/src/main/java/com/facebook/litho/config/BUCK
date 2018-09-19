@@ -4,7 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 load(
-    "//:LITHO_DEFS.bzl",
+    "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_BUILD_CONFIG_TARGET",
     "LITHO_YOGA_TARGET",
     "litho_android_library",

@@ -2,7 +2,7 @@
 #
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
-load("//:LITHO_DEFS.bzl", "fb_java_library")
+load("//tools/build_defs/oss:litho_defs.bzl", "fb_java_library")
 
 fb_java_library(
     name = "junit",

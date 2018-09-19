@@ -3,7 +3,7 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//:LITHO_DEFS.bzl", "LITHO_VISIBILITY")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_VISIBILITY")
 
 prebuilt_jar(
     name = "screenshot",
