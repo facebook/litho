@@ -15,7 +15,7 @@ litho_android_library(
 
 android_prebuilt_aar(
     name = "flipper-aar",
-    aar = "flipper-0.7.3-20180918.182044-5.aar",
+    aar = "flipper-0.7.3-20180920.112748-6.aar",
     visibility = LITHO_VISIBILITY,
 )
 
