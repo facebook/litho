@@ -158,6 +158,7 @@ public class SectionTree {
   private final String mTag;
   private final Map<String, Range> mLastRanges = new HashMap<>();
   private final boolean mForceSyncStateUpdates;
+  private final boolean mUseBackgroundChangeSets;
 
   private LoadEventsHandler mLoadEventsHandler;
 
@@ -286,6 +287,7 @@ public class SectionTree {
     mAsyncPropUpdates = builder.mAsyncPropUpdates;
     mTag = builder.mTag;
     mTarget = new BatchedTarget(builder.mTarget, mSectionsDebugLogger, mTag);
+    mUseBackgroundChangeSets = mTarget.supportsBackgroundChangeSets();
     mFocusDispatcher = new FocusDispatcher(mTarget);
     mContext = SectionContext.withSectionTree(builder.mContext, this);
     mPendingChangeSets = new ArrayList<>();
@@ -1115,9 +1117,14 @@ public class SectionTree {
   }
 
   private void postNewChangeSets(Throwable tracedThrowable) {
+    if (mUseBackgroundChangeSets) {
+      applyChangeSetsToTargetBackgroundAllowed();
+      return;
+    }
+
     if (isMainThread()) {
       try {
-        postChangesetsToHandler();
+        applyChangeSetsToTargetUIThreadOnly();
       } catch (IndexOutOfBoundsException e) {
         throw new RuntimeException(getDebugInfo(this) + e.getMessage(), e);
       }
@@ -1130,7 +1137,7 @@ public class SectionTree {
                 public void tracedRun(Throwable tracedThrowable) {
                   final SectionTree tree = SectionTree.this;
                   try {
-                    tree.postChangesetsToHandler();
+                    tree.applyChangeSetsToTargetUIThreadOnly();
                   } catch (IndexOutOfBoundsException e) {
                     throw new RuntimeException(getDebugInfo(tree) + e.getMessage(), e);
                   }
@@ -1140,26 +1147,97 @@ public class SectionTree {
     }
   }
 
-  @UiThread
-  private void postChangesetsToHandler() {
-    assertMainThread();
-
-    final List<ChangeSet> changeSets;
-    final Section currentSection;
-    synchronized (this) {
-      if (mReleased) {
-        return;
-      }
-
-      changeSets = new ArrayList<>(mPendingChangeSets);
-      mPendingChangeSets.clear();
-      currentSection = mCurrentSection;
+  @ThreadConfined(ThreadConfined.ANY)
+  private void applyChangeSetsToTargetBackgroundAllowed() {
+    if (!mUseBackgroundChangeSets) {
+      throw new IllegalStateException(
+          "Must use UIThread-only variant when background change sets are not enabled.");
     }
 
     final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("applyChangeSetsToTargetBackgroundAllowed");
+    }
+
+    try {
+      // This whole operation (both determining the change sets to apply and applying them) must be
+      // synchronized so that we apply change sets from a single thread at a time and in the correct
+      // order.
+      synchronized (this) {
+        if (mReleased) {
+          return;
+        }
+
+        applyChangeSetsToTargetUnchecked(mCurrentSection, mPendingChangeSets);
+        mPendingChangeSets.clear();
+      }
+
+      if (isMainThread()) {
+        maybeDispatchFocusRequests();
+      } else {
+        sMainThreadHandler.post(
+            new Runnable() {
+              @Override
+              public void run() {
+                maybeDispatchFocusRequests();
+              }
+            });
+      }
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
+  }
+
+  @UiThread
+  private void applyChangeSetsToTargetUIThreadOnly() {
+    assertMainThread();
+    if (mUseBackgroundChangeSets) {
+      throw new IllegalStateException(
+          "Cannot use UIThread-only variant when background change sets are enabled.");
+    }
+
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("applyChangeSetsToTargetUIThreadOnly");
+    }
+
+    try {
+      final List<ChangeSet> changeSets;
+      final Section currentSection;
+      synchronized (this) {
+        if (mReleased) {
+          return;
+        }
+
+        changeSets = new ArrayList<>(mPendingChangeSets);
+        mPendingChangeSets.clear();
+        currentSection = mCurrentSection;
+      }
+
+      applyChangeSetsToTargetUnchecked(currentSection, changeSets);
+      maybeDispatchFocusRequests();
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
+  }
+
+  private void maybeDispatchFocusRequests() {
+    if (mFocusDispatcher.isLoadingCompleted()) {
+      mFocusDispatcher.waitForDataBound(false);
+      mFocusDispatcher.maybeDispatchFocusRequests();
+    }
+  }
+
+  private void applyChangeSetsToTargetUnchecked(
+      final Section currentSection, List<ChangeSet> changeSets) {
+    final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (isTracing) {
-      ComponentsSystrace.beginSection("applyChangesetToTarget");
+      ComponentsSystrace.beginSection("applyChangeSetToTarget");
     }
     boolean appliedChanges = false;
     try {
@@ -1202,43 +1280,38 @@ public class SectionTree {
           mTarget.dispatchLastEvent();
         }
       }
+
+      final boolean isDataChanged = appliedChanges;
+      mTarget.notifyChangeSetComplete(
+          isDataChanged,
+          new ChangeSetCompleteCallback() {
+            @Override
+            public void onDataBound() {
+              if (!isDataChanged) {
+                return;
+              }
+
+              if (isTracing) {
+                ComponentsSystrace.beginSection("dataBound");
+              }
+              try {
+                dataBound(currentSection);
+              } finally {
+                if (isTracing) {
+                  ComponentsSystrace.endSection();
+                }
+              }
+            }
+
+            @Override
+            public void onDataRendered(boolean isMounted, long uptimeMillis) {
+              dataRendered(currentSection, isDataChanged, isMounted, uptimeMillis);
+            }
+          });
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
-    }
-
-    final boolean isDataChanged = appliedChanges;
-    mTarget.notifyChangeSetComplete(
-        isDataChanged,
-        new ChangeSetCompleteCallback() {
-          @Override
-          public void onDataBound() {
-            if (!isDataChanged) {
-              return;
-            }
-
-            if (isTracing) {
-              ComponentsSystrace.beginSection("dataBound");
-            }
-            try {
-              dataBound(currentSection);
-            } finally {
-              if (isTracing) {
-                ComponentsSystrace.endSection();
-              }
-            }
-          }
-
-          @Override
-          public void onDataRendered(boolean isMounted, long uptimeMillis) {
-            dataRendered(currentSection, isDataChanged, isMounted, uptimeMillis);
-          }
-        });
-
-    if (mFocusDispatcher.isLoadingCompleted()) {
-      mFocusDispatcher.waitForDataBound(false);
-      mFocusDispatcher.maybeDispatchFocusRequests();
     }
   }
 

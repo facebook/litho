@@ -28,8 +28,16 @@ import com.facebook.litho.StateContainer;
 import com.facebook.litho.testing.sections.TestSectionCreator;
 import com.facebook.litho.testing.sections.TestTarget;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.widget.ChangeSetCompleteCallback;
 import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RenderInfo;
+import com.facebook.litho.widget.SmoothScrollAlignmentType;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -746,6 +754,108 @@ public class SectionTreeTest {
         .build();
   }
 
+  @Test
+  public void testAsyncChangesetWithoutBackgroundChangesetSupportCalledFromMainThread()
+      throws InterruptedException {
+    final Section leaf1 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1", Change.insert(0, makeComponentInfo()), Change.insert(1, makeComponentInfo()));
+
+    final Section node1 = TestSectionCreator.createSectionComponent("node1", leaf1);
+
+    final ThreadCheckingTarget target = new ThreadCheckingTarget(false);
+
+    final Section root = TestSectionCreator.createSectionComponent("root", node1);
+    final SectionTree tree = SectionTree.create(mSectionContext, target).build();
+    final CountDownLatch latch = new CountDownLatch(1);
+    final long mainThreadId = Thread.currentThread().getId();
+
+    new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                tree.setRoot(root);
+                latch.countDown();
+              }
+            })
+        .start();
+
+    assertThat(latch.await(5000, TimeUnit.MILLISECONDS)).isTrue();
+
+    ShadowLooper.runMainLooperOneTask();
+
+    assertThat(target.getNumInserts()).isEqualTo(2);
+
+    final List<Long> interactionThreadIds = target.getInteractionThreadIds();
+    assertThat(interactionThreadIds).isNotEmpty();
+    for (long id : interactionThreadIds) {
+      assertThat(id).isEqualTo(mainThreadId);
+    }
+  }
+
+  @Test
+  public void testAsyncChangesetWithBackgroundChangesetSupportCalledFromBackgroundThread()
+      throws InterruptedException {
+    final Section leaf1 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1", Change.insert(0, makeComponentInfo()), Change.insert(1, makeComponentInfo()));
+
+    final Section node1 = TestSectionCreator.createSectionComponent("node1", leaf1);
+
+    final ThreadCheckingTarget target = new ThreadCheckingTarget(true);
+
+    final Section root = TestSectionCreator.createSectionComponent("root", node1);
+    final SectionTree tree = SectionTree.create(mSectionContext, target).build();
+    final CountDownLatch latch = new CountDownLatch(1);
+    final AtomicLong bgThreadId = new AtomicLong();
+
+    new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                bgThreadId.set(Thread.currentThread().getId());
+                tree.setRoot(root);
+                latch.countDown();
+              }
+            })
+        .start();
+
+    assertThat(latch.await(5000, TimeUnit.MILLISECONDS)).isTrue();
+
+    assertThat(target.getNumInserts()).isEqualTo(2);
+
+    final List<Long> interactionThreadIds = target.getInteractionThreadIds();
+    assertThat(interactionThreadIds).isNotEmpty();
+    for (long id : interactionThreadIds) {
+      assertThat(id).isEqualTo(bgThreadId.get());
+    }
+  }
+
+  @Test
+  public void testMainThreadChangesetWithBackgroundChangesetSupportCalledFromMainThread() {
+    final Section leaf1 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1", Change.insert(0, makeComponentInfo()), Change.insert(1, makeComponentInfo()));
+
+    final Section node1 = TestSectionCreator.createSectionComponent("node1", leaf1);
+
+    final ThreadCheckingTarget target = new ThreadCheckingTarget(true);
+
+    final Section root = TestSectionCreator.createSectionComponent("root", node1);
+    final SectionTree tree = SectionTree.create(mSectionContext, target).build();
+    final long mainThreadId = Thread.currentThread().getId();
+
+    tree.setRoot(root);
+
+    assertThat(target.getNumInserts()).isEqualTo(2);
+
+    final List<Long> interactionThreadIds = target.getInteractionThreadIds();
+    assertThat(interactionThreadIds).isNotEmpty();
+    for (long id : interactionThreadIds) {
+      assertThat(id).isEqualTo(mainThreadId);
+    }
+  }
+
   private static void assertChangeSetHandled(TestTarget testTarget) {
     assertThat(testTarget.wereChangesHandled()).isTrue();
     assertThat(testTarget.wasNotifyChangeSetCompleteCalledWithChangedData()).isTrue();
@@ -768,5 +878,85 @@ public class SectionTreeTest {
 
   private static RenderInfo makeComponentInfo() {
     return ComponentRenderInfo.create().component(mock(Component.class)).build();
+  }
+
+  private static class ThreadCheckingTarget implements SectionTree.Target {
+
+    private final boolean mSupportsBackgroundChangeSets;
+    private final ArrayList<Long> mThreadIds = new ArrayList<>();
+    private final AtomicInteger mNumInserts = new AtomicInteger(0);
+
+    private ThreadCheckingTarget(boolean supportsBackgroundChangeSets) {
+      mSupportsBackgroundChangeSets = supportsBackgroundChangeSets;
+    }
+
+    private void recordInteraction() {
+      mThreadIds.add(Thread.currentThread().getId());
+    }
+
+    public List<Long> getInteractionThreadIds() {
+      return mThreadIds;
+    }
+
+    public int getNumInserts() {
+      return mNumInserts.get();
+    }
+
+    @Override
+    public void insert(int index, RenderInfo renderInfo) {
+      recordInteraction();
+      mNumInserts.addAndGet(1);
+    }
+
+    @Override
+    public void insertRange(int index, int count, List<RenderInfo> renderInfos) {
+      recordInteraction();
+      mNumInserts.addAndGet(renderInfos.size());
+    }
+
+    @Override
+    public void update(int index, RenderInfo renderInfo) {
+      recordInteraction();
+    }
+
+    @Override
+    public void updateRange(int index, int count, List<RenderInfo> renderInfos) {
+      recordInteraction();
+    }
+
+    @Override
+    public void delete(int index) {
+      recordInteraction();
+    }
+
+    @Override
+    public void deleteRange(int index, int count) {
+      recordInteraction();
+    }
+
+    @Override
+    public void move(int fromPosition, int toPosition) {
+      recordInteraction();
+    }
+
+    @Override
+    public void notifyChangeSetComplete(
+        boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
+      recordInteraction();
+    }
+
+    @Override
+    public void requestFocus(int index) {}
+
+    @Override
+    public void requestSmoothFocus(int index, int offset, SmoothScrollAlignmentType type) {}
+
+    @Override
+    public void requestFocusWithOffset(int index, int offset) {}
+
+    @Override
+    public boolean supportsBackgroundChangeSets() {
+      return mSupportsBackgroundChangeSets;
+    }
   }
 }
