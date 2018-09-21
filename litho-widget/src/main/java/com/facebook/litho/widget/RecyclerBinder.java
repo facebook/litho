@@ -1737,7 +1737,7 @@ public class RecyclerBinder
   @GuardedBy("this")
   private void fillListViewport(int maxWidth, int maxHeight, @Nullable Size outSize) {
     ComponentsSystrace.beginSection("fillListViewport");
-    final int firstVisiblePosition = mLayoutInfo.findFirstVisibleItemPosition();
+    final int firstVisiblePosition = mWrapContent ? 0 : mLayoutInfo.findFirstVisibleItemPosition();
 
     // NB: This does not handle 1) partially visible items 2) item decorations
     final int startIndex =
