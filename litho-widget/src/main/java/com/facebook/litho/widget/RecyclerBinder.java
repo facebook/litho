@@ -740,7 +740,11 @@ public class RecyclerBinder
       Log.d(SectionsDebug.TAG, "(" + hashCode() + ") updateItemAtAsync " + position);
     }
 
-    updateItemAtAsyncInner(position, renderInfo);
+    // TODO(t34154921): Experiment with applying new RenderInfo for updates immediately when in
+    // immediate mode
+    synchronized (this) {
+      addToCurrentBatch(new AsyncUpdateOperation(position, renderInfo));
+    }
   }
 
   /**
@@ -757,39 +761,8 @@ public class RecyclerBinder
           "(" + hashCode() + ") updateRangeAtAsync " + position + ", count: " + renderInfos.size());
     }
 
-    for (int i = 0, size = renderInfos.size(); i < size; i++) {
-      updateItemAtAsyncInner(position + i, renderInfos.get(i));
-    }
-  }
-
-  private void updateItemAtAsyncInner(int position, RenderInfo renderInfo) {
-    final ComponentTreeHolder holder;
-    final boolean renderInfoWasView;
-    final int indexInComponentTreeHolders;
     synchronized (this) {
-      holder = mAsyncComponentTreeHolders.get(position);
-      renderInfoWasView = holder.getRenderInfo().rendersView();
-
-      assertNotNullRenderInfo(renderInfo);
-      mRenderInfoViewCreatorController.maybeTrackViewCreator(renderInfo);
-      updateHolder(holder, renderInfo);
-
-      if (holder.isInserted()) {
-        // If it's inserted, we can just count on the normal range computation re-computing this
-        indexInComponentTreeHolders = mComponentTreeHolders.indexOf(holder);
-        mViewportManager.setShouldUpdate(
-            mViewportManager.updateAffectsVisibleRange(indexInComponentTreeHolders, 1));
-      } else {
-        indexInComponentTreeHolders = -1;
-
-        // TODO(T28668712): Handle updates outside of range
-        computeLayoutAsync(holder);
-      }
-    }
-
-    if (indexInComponentTreeHolders >= 0
-        && (renderInfoWasView || holder.getRenderInfo().rendersView())) {
-      mInternalAdapter.notifyItemChanged(indexInComponentTreeHolders);
+      addToCurrentBatch(new AsyncUpdateRangeOperation(position, renderInfos));
     }
   }
 
@@ -884,6 +857,15 @@ public class RecyclerBinder
       switch (operation.mOperation) {
         case Operation.INSERT:
           applyAsyncInsert((AsyncInsertOperation) operation);
+          break;
+        case Operation.UPDATE:
+          final AsyncUpdateOperation updateOperation = (AsyncUpdateOperation) operation;
+          updateItemAt(updateOperation.mPosition, updateOperation.mRenderInfo);
+          break;
+        case Operation.UPDATE_RANGE:
+          final AsyncUpdateRangeOperation updateRangeOperation =
+              (AsyncUpdateRangeOperation) operation;
+          updateRangeAt(updateRangeOperation.mPosition, updateRangeOperation.mRenderInfos);
           break;
         case Operation.REMOVE:
           removeItemAt(((AsyncRemoveOperation) operation).mPosition);
@@ -2514,13 +2496,22 @@ public class RecyclerBinder
   }
 
   /** Async operation types. */
-  @IntDef({Operation.INSERT, Operation.REMOVE, Operation.REMOVE_RANGE, Operation.MOVE})
+  @IntDef({
+    Operation.INSERT,
+    Operation.UPDATE,
+    Operation.UPDATE_RANGE,
+    Operation.REMOVE,
+    Operation.REMOVE_RANGE,
+    Operation.MOVE
+  })
   @Retention(RetentionPolicy.SOURCE)
   private @interface Operation {
     int INSERT = 0;
-    int REMOVE = 1;
-    int REMOVE_RANGE = 2;
-    int MOVE = 3;
+    int UPDATE = 1;
+    int UPDATE_RANGE = 2;
+    int REMOVE = 3;
+    int REMOVE_RANGE = 4;
+    int MOVE = 5;
   }
 
   /** An operation received from one of the *Async methods, pending execution. */
@@ -2542,6 +2533,30 @@ public class RecyclerBinder
       super(Operation.INSERT);
       mPosition = position;
       mHolder = holder;
+    }
+  }
+
+  private static final class AsyncUpdateOperation extends AsyncOperation {
+
+    private final int mPosition;
+    private final RenderInfo mRenderInfo;
+
+    public AsyncUpdateOperation(int position, RenderInfo renderInfo) {
+      super(Operation.UPDATE);
+      mPosition = position;
+      mRenderInfo = renderInfo;
+    }
+  }
+
+  private static final class AsyncUpdateRangeOperation extends AsyncOperation {
+
+    private final int mPosition;
+    private final List<RenderInfo> mRenderInfos;
+
+    public AsyncUpdateRangeOperation(int position, List<RenderInfo> renderInfos) {
+      super(Operation.UPDATE_RANGE);
+      mPosition = position;
+      mRenderInfos = renderInfos;
     }
   }
 

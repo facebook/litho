@@ -2919,38 +2919,6 @@ public class RecyclerBinderTest {
   }
 
   @Test
-  public void testUpdateAsyncOnNonInsertedView() {
-    final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
-    final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
-    final Component component =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
-    final RenderInfo renderInfo = ComponentRenderInfo.create().component(component).build();
-
-    recyclerBinder.measure(
-        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
-    recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-
-    final RenderInfo newRenderInfo =
-        ViewRenderInfo.create()
-            .viewBinder(new SimpleViewBinder())
-            .viewCreator(VIEW_CREATOR_1)
-            .build();
-    recyclerBinder.updateItemAtAsync(0, newRenderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-
-    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
-
-    mLayoutThreadShadowLooper.runToEndOfTasks();
-
-    verify(adapter, never()).notifyItemChanged(anyInt());
-
-    final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
-    assertThat(holder.getRenderInfo()).isEqualTo(newRenderInfo);
-    assertThat(holder.hasCompletedLatestLayout()).isTrue();
-  }
-
-  @Test
   public void testUpdateRangeAtAsync() {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
