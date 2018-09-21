@@ -308,6 +308,7 @@ public class RecyclerBinder
   private volatile boolean mHasAsyncOperations = false;
   private volatile boolean mHasFilledViewport = false;
   private boolean mIsInitMounted = false; // Set to true when the first mount() is called.
+  private @CommitPolicy int mCommitPolicy = CommitPolicy.IMMEDIATE;
 
   @GuardedBy("this")
   private @Nullable AsyncBatch mCurrentBatch = null;
@@ -838,6 +839,10 @@ public class RecyclerBinder
   }
 
   private static boolean isBatchReady(AsyncBatch batch) {
+    if (batch.mCommitPolicy == CommitPolicy.IMMEDIATE) {
+      return true;
+    }
+
     for (int i = 0, size = batch.mOperations.size(); i < size; i++) {
       final AsyncOperation operation = batch.mOperations.get(i);
       if (operation instanceof AsyncInsertOperation
@@ -906,13 +911,14 @@ public class RecyclerBinder
   @GuardedBy("this")
   private void registerAsyncInsert(AsyncInsertOperation operation) {
     addToCurrentBatch(operation);
-    startAsyncLayout(operation.mHolder);
-  }
 
-  private void startAsyncLayout(ComponentTreeHolder holder) {
+    final ComponentTreeHolder holder = operation.mHolder;
     holder.setNewLayoutReadyListener(mAsyncLayoutReadyListener);
-    holder.computeLayoutAsync(
-        mComponentContext, getActualChildrenWidthSpec(holder), getActualChildrenHeightSpec(holder));
+
+    // Otherwise, we'll kick off the layout at the end of measure
+    if (mIsMeasured.get()) {
+      computeLayoutAsync(holder);
+    }
   }
 
   /**
@@ -1012,7 +1018,7 @@ public class RecyclerBinder
   @GuardedBy("this")
   private void addToCurrentBatch(AsyncOperation operation) {
     if (mCurrentBatch == null) {
-      mCurrentBatch = new AsyncBatch();
+      mCurrentBatch = new AsyncBatch(mCommitPolicy);
     }
     mCurrentBatch.mOperations.add(operation);
   }
@@ -1433,7 +1439,7 @@ public class RecyclerBinder
       // We create a batch here even if it doesn't have any operations: this is so we can still
       // invoke the OnDataBoundListener at the appropriate time (after all preceding batches
       // complete)
-      mCurrentBatch = new AsyncBatch();
+      mCurrentBatch = new AsyncBatch(mCommitPolicy);
     }
 
     mCurrentBatch.mIsDataChanged = isDataChanged;
@@ -2489,6 +2495,11 @@ public class RecyclerBinder
     return mLayoutInfo.getChildHeightSpec(mLastHeightSpec, treeHolder.getRenderInfo());
   }
 
+  @VisibleForTesting
+  void setCommitPolicy(@CommitPolicy int commitPolicy) {
+    mCommitPolicy = commitPolicy;
+  }
+
   private AsyncInsertOperation createAsyncInsertOperation(int position, RenderInfo renderInfo) {
     final ComponentTreeHolder holder = createComponentTreeHolder(renderInfo);
     holder.setInserted(false);
@@ -2512,6 +2523,18 @@ public class RecyclerBinder
     int REMOVE = 3;
     int REMOVE_RANGE = 4;
     int MOVE = 5;
+  }
+
+  /**
+   * Defines when a batch should be committed: - IMMEDIATE: Commit batches to the RecyclerView as
+   * soon as possible. - LAYOUT_BEFORE_INSERT: Commit batches to the RecyclerView only after the
+   * layouts for all insert operations have been completed.
+   */
+  @IntDef({CommitPolicy.IMMEDIATE, CommitPolicy.LAYOUT_BEFORE_INSERT})
+  @Retention(RetentionPolicy.SOURCE)
+  @interface CommitPolicy {
+    int IMMEDIATE = 0;
+    int LAYOUT_BEFORE_INSERT = 1;
   }
 
   /** An operation received from one of the *Async methods, pending execution. */
@@ -2599,9 +2622,15 @@ public class RecyclerBinder
    * should be called once all these operations are applied.
    */
   private static final class AsyncBatch {
+
+    private final @CommitPolicy int mCommitPolicy;
     private final ArrayList<AsyncOperation> mOperations = new ArrayList<>();
     private boolean mIsDataChanged;
     private ChangeSetCompleteCallback mChangeSetCompleteCallback;
+
+    public AsyncBatch(@CommitPolicy int commitPolicy) {
+      mCommitPolicy = commitPolicy;
+    }
   }
 
   private class RangeScrollListener extends RecyclerView.OnScrollListener {

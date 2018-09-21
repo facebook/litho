@@ -2215,9 +2215,266 @@ public class RecyclerBinderTest {
   }
 
   @Test
-  public void testInsertAsync() {
+  public void testInsertAsyncOnMainThread() {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final Component component =
+        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+    final ComponentRenderInfo renderInfo =
+        ComponentRenderInfo.create().component(component).build();
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    recyclerBinder.insertItemAtAsync(0, renderInfo);
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
+
+    final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
+    assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(holder.hasCompletedLatestLayout()).isTrue();
+    assertThat(holder.isTreeValid()).isTrue();
+  }
+
+  @Test
+  public void testInsertAsyncOnBackgroundThread() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final Component component =
+        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+    final ComponentRenderInfo renderInfo =
+        ComponentRenderInfo.create().component(component).build();
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    runOnBackgroundThreadSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            recyclerBinder.insertItemAtAsync(0, renderInfo);
+            recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+          }
+        });
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
+
+    final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
+    assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
+    assertThat(holder.hasCompletedLatestLayout()).isTrue();
+    assertThat(holder.isTreeValid()).isTrue();
+  }
+
+  @Test
+  public void testMultipleInsertAsyncs() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final Component component =
+        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+    final ComponentRenderInfo renderInfo =
+        ComponentRenderInfo.create().component(component).build();
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    runOnBackgroundThreadSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            recyclerBinder.insertItemAtAsync(0, renderInfo);
+            recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+          }
+        });
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
+
+    final Component component2 =
+        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+    final ComponentRenderInfo renderInfo2 =
+        ComponentRenderInfo.create().component(component2).build();
+
+    runOnBackgroundThreadSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            recyclerBinder.insertItemAtAsync(0, renderInfo2);
+            recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+          }
+        });
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
+
+    final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
+    assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
+    assertThat(holder.hasCompletedLatestLayout()).isTrue();
+    assertThat(holder.isTreeValid()).isTrue();
+
+    final ComponentTreeHolder holder2 = recyclerBinder.getComponentTreeHolderAt(1);
+    assertThat(holder2.getRenderInfo().getComponent()).isEqualTo(component2);
+    assertThat(holder2.hasCompletedLatestLayout()).isTrue();
+    assertThat(holder2.isTreeValid()).isTrue();
+  }
+
+  @Test
+  public void testInsertAsyncBeforeInitialMeasure() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .asyncInitRange(true)
+            .build(mComponentContext);
+    final Component component =
+        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+    final ComponentRenderInfo renderInfo =
+        ComponentRenderInfo.create().component(component).build();
+
+    runOnBackgroundThreadSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            recyclerBinder.insertItemAtAsync(0, renderInfo);
+            recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+          }
+        });
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
+
+    final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
+    assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
+    assertThat(holder.hasCompletedLatestLayout()).isTrue();
+    assertThat(holder.isTreeValid()).isTrue();
+  }
+
+  @Test
+  public void testInsertRangeAsync() {
+    final int NUM_TO_INSERT = 5;
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final ArrayList<Component> components = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < NUM_TO_INSERT; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      components.add(component);
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    runOnBackgroundThreadSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            recyclerBinder.insertRangeAtAsync(0, renderInfos);
+            recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+          }
+        });
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
+
+    for (int i = 0; i < NUM_TO_INSERT; i++) {
+      final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
+      assertThat(holder.getRenderInfo().getComponent()).isEqualTo(components.get(i));
+      assertThat(holder.hasCompletedLatestLayout()).isTrue();
+      assertThat(holder.isTreeValid()).isTrue();
+    }
+  }
+
+  @Test
+  public void testInsertRangeAsyncBeforeInitialMeasure() {
+    final int NUM_TO_INSERT = 5;
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .asyncInitRange(true)
+            .build(mComponentContext);
+    final ArrayList<Component> components = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < NUM_TO_INSERT; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      components.add(component);
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    runOnBackgroundThreadSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            recyclerBinder.insertRangeAtAsync(0, renderInfos);
+            recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+          }
+        });
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
+
+    for (int i = 0; i < NUM_TO_INSERT; i++) {
+      final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
+      assertThat(holder.getRenderInfo().getComponent()).isEqualTo(components.get(i));
+      assertThat(holder.hasCompletedLatestLayout()).isTrue();
+      assertThat(holder.isTreeValid()).isTrue();
+    }
+  }
+
+  @Test
+  public void testInsertAsync_AsyncMode() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
     final Component component =
         TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
@@ -2243,9 +2500,10 @@ public class RecyclerBinderTest {
   }
 
   @Test
-  public void testMultipleInsertAsyncs() {
+  public void testMultipleInsertAsyncs_AsyncMode() {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
     final Component component =
         TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
@@ -2292,9 +2550,10 @@ public class RecyclerBinderTest {
   }
 
   @Test
-  public void testInsertAsyncBeforeInitialMeasure() {
+  public void testInsertAsyncBeforeInitialMeasure_AsyncMode() {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
     final Component component =
         TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
@@ -2316,6 +2575,169 @@ public class RecyclerBinderTest {
     assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
     assertThat(holder.hasCompletedLatestLayout()).isTrue();
     assertThat(holder.isTreeValid()).isTrue();
+  }
+
+  @Test
+  public void testInsertRangeAsync_AsyncMode() {
+    final int NUM_TO_INSERT = 5;
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
+    final ArrayList<Component> components = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < NUM_TO_INSERT; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      components.add(component);
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+    recyclerBinder.insertRangeAtAsync(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
+
+    for (int i = 0; i < NUM_TO_INSERT; i++) {
+      final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
+      assertThat(holder.getRenderInfo().getComponent()).isEqualTo(components.get(i));
+      assertThat(holder.hasCompletedLatestLayout()).isTrue();
+      assertThat(holder.isTreeValid()).isTrue();
+    }
+  }
+
+  @Test
+  public void testInsertRangeAsyncBeforeInitialMeasure_AsyncMode() {
+    final int NUM_TO_INSERT = 5;
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
+    final ArrayList<Component> components = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < NUM_TO_INSERT; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      components.add(component);
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.insertRangeAtAsync(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
+
+    for (int i = 0; i < NUM_TO_INSERT; i++) {
+      final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
+      assertThat(holder.getRenderInfo().getComponent()).isEqualTo(components.get(i));
+      assertThat(holder.hasCompletedLatestLayout()).isTrue();
+      assertThat(holder.isTreeValid()).isTrue();
+    }
+  }
+
+  @Test
+  public void testInsertRangeAsyncBeforeInitialMeasureRangeIsLargerThanMeasure_AsyncMode() {
+    final int NUM_TO_INSERT = 5;
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
+    final ArrayList<Component> components = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < NUM_TO_INSERT; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(600).heightPx(600).build();
+      components.add(component);
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.insertRangeAtAsync(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    // compute one layout to ensure batching behavior remains
+    mLayoutThreadShadowLooper.runOneTask();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
+
+    // finish computing all layouts - batch should now be applied
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
+
+    for (int i = 0; i < NUM_TO_INSERT; i++) {
+      final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
+      assertThat(holder.getRenderInfo().getComponent()).isEqualTo(components.get(i));
+      assertThat(holder.hasCompletedLatestLayout()).isTrue();
+      assertThat(holder.isTreeValid()).isTrue();
+    }
+  }
+
+  @Test
+  public void testInsertsDispatchedInBatch_AsyncMode() {
+    final int NUM_TO_INSERT = 5;
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
+    final ArrayList<Component> components = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < NUM_TO_INSERT; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      components.add(component);
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+    recyclerBinder.insertRangeAtAsync(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
+
+    // complete first layout
+    mLayoutThreadShadowLooper.runOneTask();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
+
+    // complete second layout
+    mLayoutThreadShadowLooper.runOneTask();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
+
+    // complete the rest of the layouts
+    for (int i = 2; i < NUM_TO_INSERT; i++) {
+      mLayoutThreadShadowLooper.runToEndOfTasks();
+    }
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
   }
 
   @Test
@@ -2379,122 +2801,6 @@ public class RecyclerBinderTest {
         recyclerBinder, 0, makeSizeSpec(500, EXACTLY), makeSizeSpec(0, UNSPECIFIED));
   }
 
-  @Test
-  public void testInsertRangeAsync() {
-    final int NUM_TO_INSERT = 5;
-    final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
-    final ArrayList<Component> components = new ArrayList<>();
-    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
-    for (int i = 0; i < NUM_TO_INSERT; i++) {
-      final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
-      components.add(component);
-      renderInfos.add(ComponentRenderInfo.create().component(component).build());
-    }
-
-    recyclerBinder.measure(
-        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
-    recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-
-    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
-    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
-
-    mLayoutThreadShadowLooper.runToEndOfTasks();
-
-    assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
-    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
-
-    for (int i = 0; i < NUM_TO_INSERT; i++) {
-      final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
-      assertThat(holder.getRenderInfo().getComponent()).isEqualTo(components.get(i));
-      assertThat(holder.hasCompletedLatestLayout()).isTrue();
-      assertThat(holder.isTreeValid()).isTrue();
-    }
-  }
-
-  @Test
-  public void testInsertRangeAsyncBeforeInitialMeasure() {
-    final int NUM_TO_INSERT = 5;
-    final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
-    final ArrayList<Component> components = new ArrayList<>();
-    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
-    for (int i = 0; i < NUM_TO_INSERT; i++) {
-      final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
-      components.add(component);
-      renderInfos.add(ComponentRenderInfo.create().component(component).build());
-    }
-
-    recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-
-    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
-    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
-
-    recyclerBinder.measure(
-        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
-
-    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
-    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
-
-    mLayoutThreadShadowLooper.runToEndOfTasks();
-
-    assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
-
-    for (int i = 0; i < NUM_TO_INSERT; i++) {
-      final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
-      assertThat(holder.getRenderInfo().getComponent()).isEqualTo(components.get(i));
-      assertThat(holder.hasCompletedLatestLayout()).isTrue();
-      assertThat(holder.isTreeValid()).isTrue();
-    }
-  }
-
-  @Test
-  public void testInsertRangeAsyncBeforeInitialMeasureRangeIsLargerThanMeasure() {
-    final int NUM_TO_INSERT = 5;
-    final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
-    final ArrayList<Component> components = new ArrayList<>();
-    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
-    for (int i = 0; i < NUM_TO_INSERT; i++) {
-      final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(600).heightPx(600).build();
-      components.add(component);
-      renderInfos.add(ComponentRenderInfo.create().component(component).build());
-    }
-
-    recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-
-    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
-    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
-
-    recyclerBinder.measure(
-        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
-
-    // compute one layout to ensure batching behavior remains
-    mLayoutThreadShadowLooper.runOneTask();
-
-    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
-    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
-
-    // finish computing all layouts - batch should now be applied
-    mLayoutThreadShadowLooper.runToEndOfTasks();
-
-    assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
-    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
-
-    for (int i = 0; i < NUM_TO_INSERT; i++) {
-      final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
-      assertThat(holder.getRenderInfo().getComponent()).isEqualTo(components.get(i));
-      assertThat(holder.hasCompletedLatestLayout()).isTrue();
-      assertThat(holder.isTreeValid()).isTrue();
-    }
-  }
-
   @Test(expected = RuntimeException.class)
   public void testThrowsIfSyncInsertAfterAsyncInsert() {
     mRecyclerBinder.insertItemAtAsync(0, createTestComponentRenderInfo());
@@ -2514,49 +2820,6 @@ public class RecyclerBinderTest {
     mRecyclerBinder.insertRangeAtAsync(0, firstInsert);
     mRecyclerBinder.insertRangeAt(firstInsert.size(), secondInsert);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-  }
-
-  @Test
-  public void testInsertsDispatchedInBatch() {
-    final int NUM_TO_INSERT = 5;
-    final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
-    final ArrayList<Component> components = new ArrayList<>();
-    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
-    for (int i = 0; i < NUM_TO_INSERT; i++) {
-      final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
-      components.add(component);
-      renderInfos.add(ComponentRenderInfo.create().component(component).build());
-    }
-
-    recyclerBinder.measure(
-        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
-    recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-
-    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
-    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
-
-    // complete first layout
-    mLayoutThreadShadowLooper.runOneTask();
-
-    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
-    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
-
-    // complete second layout
-    mLayoutThreadShadowLooper.runOneTask();
-
-    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
-    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
-
-    // complete the rest of the layouts
-    for (int i = 2; i < NUM_TO_INSERT; i++) {
-      mLayoutThreadShadowLooper.runToEndOfTasks();
-    }
-
-    assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
-    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
   }
 
   @Test
@@ -3261,7 +3524,68 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback2 =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .asyncInitRange(true)
+            .build(mComponentContext);
+    final ArrayList<RenderInfo> renderInfos1 = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos1.add(ComponentRenderInfo.create().component(component).build());
+      renderInfos2.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    runOnBackgroundThreadSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            recyclerBinder.insertRangeAtAsync(0, renderInfos1);
+            recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback1);
+          }
+        });
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
+    verify(changeSetCompleteCallback1, never()).onDataBound();
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(200, EXACTLY), makeSizeSpec(200, EXACTLY), null);
+
+    verify(changeSetCompleteCallback1, never()).onDataBound();
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    verify(changeSetCompleteCallback1).onDataBound();
+    reset(changeSetCompleteCallback1);
+
+    runOnBackgroundThreadSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            recyclerBinder.insertRangeAtAsync(renderInfos1.size(), renderInfos2);
+            recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback2);
+          }
+        });
+
+    verify(changeSetCompleteCallback2, never()).onDataBound();
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    verify(changeSetCompleteCallback1, never()).onDataBound();
+    verify(changeSetCompleteCallback2).onDataBound();
+  }
+
+  @Test
+  public void testOnDataBoundInsertAsync_AsyncMode() {
+    final ChangeSetCompleteCallback changeSetCompleteCallback1 =
+        mock(ChangeSetCompleteCallback.class);
+    final ChangeSetCompleteCallback changeSetCompleteCallback2 =
+        mock(ChangeSetCompleteCallback.class);
+    final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
     final ArrayList<RenderInfo> renderInfos1 = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
@@ -3300,11 +3624,12 @@ public class RecyclerBinderTest {
   }
 
   @Test
-  public void testOnDataBoundInsertAsyncLessThanViewport() {
+  public void testOnDataBoundInsertAsyncLessThanViewport_AsyncMode() {
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
@@ -3872,6 +4197,26 @@ public class RecyclerBinderTest {
     assertThat(holder).isNotNull();
     assertThat(holder.getRenderInfo().rendersComponent()).isTrue();
     assertThat(holder.getRenderInfo().getComponent()).isSameAs(component);
+  }
+
+  private static void runOnBackgroundThreadSync(final Runnable runnable) {
+    final CountDownLatch latch = new CountDownLatch(1);
+
+    new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                runnable.run();
+                latch.countDown();
+              }
+            })
+        .start();
+
+    try {
+      assertThat(latch.await(5000, TimeUnit.MILLISECONDS)).isTrue();
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private static class NoOpChangeSetCompleteCallback implements ChangeSetCompleteCallback {
