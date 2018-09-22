@@ -14,7 +14,7 @@ package com.facebook.samples.litho;
 
 import android.app.Application;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.flipper.android.AndroidSonarClient;
+import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.android.utils.FlipperUtils;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.plugins.console.JavascriptEnvironment;
@@ -33,7 +33,7 @@ public class LithoSampleApplication extends Application {
     SoLoader.init(this, false);
 
     if (FlipperUtils.shouldEnableSonar(this)) {
-      final FlipperClient client = AndroidSonarClient.getInstance(this);
+      final FlipperClient client = AndroidFlipperClient.getInstance(this);
       final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
       LithoSonarDescriptors.add(descriptorMapping);
       client.addPlugin(
