@@ -19,7 +19,7 @@ import com.facebook.flipper.android.utils.FlipperUtils;
 import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.plugins.console.JavascriptEnvironment;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
-import com.facebook.flipper.plugins.inspector.InspectorSonarPlugin;
+import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 import com.facebook.flipper.plugins.litho.LithoSonarDescriptors;
 import com.facebook.soloader.SoLoader;
 
@@ -37,7 +37,7 @@ public class LithoSampleApplication extends Application {
       final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
       LithoSonarDescriptors.add(descriptorMapping);
       client.addPlugin(
-          new InspectorSonarPlugin(this, descriptorMapping, new JavascriptEnvironment()));
+          new InspectorFlipperPlugin(this, descriptorMapping, new JavascriptEnvironment()));
       client.start();
     }
   }
