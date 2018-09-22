@@ -615,7 +615,9 @@ public abstract class Component extends ComponentLifecycle
       return this;
     }
 
-    return mLayoutVersionGenerator.compareAndSet(true, true) ? makeShallowCopy() : this;
+    final boolean shouldCreateNewInstance = mLayoutVersionGenerator.getAndSet(true);
+
+    return shouldCreateNewInstance ? makeShallowCopy() : this;
   }
 
   @Override
