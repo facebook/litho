@@ -1443,14 +1443,16 @@ class LayoutState {
         layoutState.mLayoutRoot = null;
       }
 
-      final Activity activity = getValidActivityForContext(c);
-      if (activity != null && isEligibleForCreatingDisplayLists()) {
-        if (ThreadUtils.isMainThread()
-            && !layoutState.mCanPrefetchDisplayLists
-            && canCollectDisplayListsSync(activity)) {
-          collectDisplayLists(layoutState, previousLayoutState);
-        } else if (layoutState.mCanPrefetchDisplayLists) {
-          queueDisplayListsForPrefetch(layoutState, previousLayoutState);
+      if (!ComponentsConfiguration.lazyDisplayListCreationOnly) {
+        final Activity activity = getValidActivityForContext(c);
+        if (activity != null && isEligibleForCreatingDisplayLists()) {
+          if (ThreadUtils.isMainThread()
+              && !layoutState.mCanPrefetchDisplayLists
+              && canCollectDisplayListsSync(activity)) {
+            collectDisplayLists(layoutState, previousLayoutState);
+          } else if (layoutState.mCanPrefetchDisplayLists) {
+            queueDisplayListsForPrefetch(layoutState, previousLayoutState);
+          }
         }
       }
 
@@ -1525,6 +1527,11 @@ class LayoutState {
 
   private static void collectDisplayLists(
       LayoutState layoutState, @Nullable LayoutState previousLayoutState) {
+    if (ComponentsConfiguration.lazyDisplayListCreationOnly) {
+      throw new RuntimeException(
+          "DisplayList should only be created lazily, this should not be called!");
+    }
+
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection(
@@ -1705,6 +1712,11 @@ class LayoutState {
 
   private static void queueDisplayListsForPrefetch(
       LayoutState layoutState, @Nullable LayoutState previousLayoutState) {
+    if (ComponentsConfiguration.lazyDisplayListCreationOnly) {
+      throw new RuntimeException(
+          "DisplayList should only be created lazily, this should not be called!");
+    }
+
     final Rect rect = layoutState.mDisplayListQueueRect;
     final boolean isOrientationChanged = isOrientationChanged(layoutState, previousLayoutState);
     for (int i = 0, count = layoutState.getMountableOutputCount(); i < count; i++) {

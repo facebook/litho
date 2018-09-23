@@ -197,4 +197,11 @@ public class ComponentsConfiguration {
    * that all of the mount items should be unmounted).
    */
   public static boolean incrementalMountWhenNotVisible = false;
+
+  /**
+   * Whether displayList-s should only be created by DisplayListDrawable when it executes draw(),
+   * thus preventing DL creation ahead of time - at LayoutState or by DisplayListPrefetcher on spare
+   * UI thread cycles
+   */
+  public static boolean lazyDisplayListCreationOnly = false;
 }
