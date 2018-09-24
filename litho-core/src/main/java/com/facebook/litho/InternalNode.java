@@ -47,6 +47,7 @@ import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.config.YogaDefaults;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.drawable.ComparableDrawableReference;
@@ -358,6 +359,10 @@ class InternalNode implements ComponentLayout {
     return mIsNestedTreeHolder;
   }
 
+  private boolean maybeSkipLayoutProp(long flag) {
+    return ComponentsConfiguration.enableSkipYogaPropExperiment && (mPrivateFlags & flag) != 0L;
+  }
+
   @Override
   public YogaDirection getResolvedLayoutDirection() {
     return mYogaNode.getLayoutDirection();
@@ -373,67 +378,108 @@ class InternalNode implements ComponentLayout {
   }
 
   InternalNode layoutDirection(YogaDirection direction) {
+    if (maybeSkipLayoutProp(PFLAG_LAYOUT_DIRECTION_IS_SET) && direction == YogaDefaults.DIRECTION) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_LAYOUT_DIRECTION_IS_SET;
     mYogaNode.setDirection(direction);
     return this;
   }
 
   InternalNode flexDirection(YogaFlexDirection direction) {
+    if (ComponentsConfiguration.enableSkipYogaPropExperiment
+        && direction == YogaDefaults.FLEX_DIRECTION) {
+      return this;
+    }
     mYogaNode.setFlexDirection(direction);
     return this;
   }
 
   InternalNode wrap(YogaWrap wrap) {
+    if (ComponentsConfiguration.enableSkipYogaPropExperiment && wrap == YogaDefaults.FLEX_WRAP) {
+      return this;
+    }
     mYogaNode.setWrap(wrap);
     return this;
   }
 
   InternalNode justifyContent(YogaJustify justifyContent) {
+    if (ComponentsConfiguration.enableSkipYogaPropExperiment
+        && justifyContent == YogaDefaults.JUSTIFY_CONTENT) {
+      return this;
+    }
     mYogaNode.setJustifyContent(justifyContent);
     return this;
   }
 
   InternalNode alignItems(YogaAlign alignItems) {
+    if (ComponentsConfiguration.enableSkipYogaPropExperiment
+        && alignItems == YogaDefaults.ALIGN_ITEM) {
+      return this;
+    }
     mYogaNode.setAlignItems(alignItems);
     return this;
   }
 
   InternalNode alignContent(YogaAlign alignContent) {
+    if (ComponentsConfiguration.enableSkipYogaPropExperiment
+        && alignContent == YogaDefaults.ALIGN_CONTENT) {
+      return this;
+    }
     mYogaNode.setAlignContent(alignContent);
     return this;
   }
 
   InternalNode alignSelf(YogaAlign alignSelf) {
+    if (maybeSkipLayoutProp(PFLAG_ALIGN_SELF_IS_SET) && alignSelf == YogaDefaults.ALIGN_SELF) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_ALIGN_SELF_IS_SET;
     mYogaNode.setAlignSelf(alignSelf);
     return this;
   }
 
   InternalNode positionType(YogaPositionType positionType) {
+    if (maybeSkipLayoutProp(PFLAG_POSITION_TYPE_IS_SET)
+        && positionType == YogaDefaults.POSITION_TYPE) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_POSITION_TYPE_IS_SET;
     mYogaNode.setPositionType(positionType);
     return this;
   }
 
   InternalNode flex(float flex) {
+    if (maybeSkipLayoutProp(PFLAG_FLEX_IS_SET) && flex == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_FLEX_IS_SET;
     mYogaNode.setFlex(flex);
     return this;
   }
 
   InternalNode flexGrow(float flexGrow) {
+    if (maybeSkipLayoutProp(PFLAG_FLEX_GROW_IS_SET) && flexGrow == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_FLEX_GROW_IS_SET;
     mYogaNode.setFlexGrow(flexGrow);
     return this;
   }
 
   InternalNode flexShrink(float flexShrink) {
+    if (maybeSkipLayoutProp(PFLAG_FLEX_SHRINK_IS_SET) && flexShrink == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_FLEX_SHRINK_IS_SET;
     mYogaNode.setFlexShrink(flexShrink);
     return this;
   }
 
   InternalNode flexBasisPx(@Px int flexBasis) {
+    if (maybeSkipLayoutProp(PFLAG_FLEX_BASIS_IS_SET) && flexBasis == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
     mYogaNode.setFlexBasis(flexBasis);
     return this;
@@ -446,6 +492,9 @@ class InternalNode implements ComponentLayout {
   }
 
   InternalNode flexBasisPercent(float percent) {
+    if (maybeSkipLayoutProp(PFLAG_FLEX_BASIS_IS_SET) && percent == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
     mYogaNode.setFlexBasisPercent(percent);
     return this;
@@ -464,12 +513,18 @@ class InternalNode implements ComponentLayout {
   }
 
   InternalNode marginPx(YogaEdge edge, @Px int margin) {
+    if (maybeSkipLayoutProp(PFLAG_MARGIN_IS_SET) && margin == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMargin(edge, margin);
     return this;
   }
 
   InternalNode marginPercent(YogaEdge edge, float percent) {
+    if (maybeSkipLayoutProp(PFLAG_MARGIN_IS_SET) && percent == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMarginPercent(edge, percent);
     return this;
@@ -490,6 +545,9 @@ class InternalNode implements ComponentLayout {
   }
 
   InternalNode paddingPx(YogaEdge edge, @Px int padding) {
+    if (maybeSkipLayoutProp(PFLAG_PADDING_IS_SET) && padding == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
 
     if (mIsNestedTreeHolder) {
@@ -503,6 +561,9 @@ class InternalNode implements ComponentLayout {
   }
 
   InternalNode paddingPercent(YogaEdge edge, float percent) {
+    if (maybeSkipLayoutProp(PFLAG_PADDING_IS_SET) && percent == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
 
     if (mIsNestedTreeHolder) {
@@ -583,6 +644,9 @@ class InternalNode implements ComponentLayout {
   }
 
   InternalNode widthPx(@Px int width) {
+    if (maybeSkipLayoutProp(PFLAG_WIDTH_IS_SET) && width == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_WIDTH_IS_SET;
     mYogaNode.setWidth(width);
     return this;
@@ -595,36 +659,54 @@ class InternalNode implements ComponentLayout {
   }
 
   InternalNode widthPercent(float percent) {
+    if (maybeSkipLayoutProp(PFLAG_WIDTH_IS_SET) && percent == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_WIDTH_IS_SET;
     mYogaNode.setWidthPercent(percent);
     return this;
   }
 
   InternalNode minWidthPx(@Px int minWidth) {
+    if (maybeSkipLayoutProp(PFLAG_MIN_WIDTH_IS_SET) && minWidth == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
     mYogaNode.setMinWidth(minWidth);
     return this;
   }
 
   InternalNode minWidthPercent(float percent) {
+    if (maybeSkipLayoutProp(PFLAG_MIN_WIDTH_IS_SET) && percent == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
     mYogaNode.setMinWidthPercent(percent);
     return this;
   }
 
   InternalNode maxWidthPx(@Px int maxWidth) {
+    if (maybeSkipLayoutProp(PFLAG_MAX_WIDTH_IS_SET) && maxWidth == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
     mYogaNode.setMaxWidth(maxWidth);
     return this;
   }
 
   InternalNode maxWidthPercent(float percent) {
+    if (maybeSkipLayoutProp(PFLAG_MAX_WIDTH_IS_SET) && percent == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
     mYogaNode.setMaxWidthPercent(percent);
     return this;
   }
 
   InternalNode heightPx(@Px int height) {
+    if (maybeSkipLayoutProp(PFLAG_HEIGHT_IS_SET) && height == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
     mYogaNode.setHeight(height);
     return this;
@@ -637,36 +719,54 @@ class InternalNode implements ComponentLayout {
   }
 
   InternalNode heightPercent(float percent) {
+    if (maybeSkipLayoutProp(PFLAG_HEIGHT_IS_SET) && percent == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
     mYogaNode.setHeightPercent(percent);
     return this;
   }
 
   InternalNode minHeightPx(@Px int minHeight) {
+    if (maybeSkipLayoutProp(PFLAG_MIN_HEIGHT_IS_SET) && minHeight == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
     mYogaNode.setMinHeight(minHeight);
     return this;
   }
 
   InternalNode minHeightPercent(float percent) {
+    if (maybeSkipLayoutProp(PFLAG_MIN_HEIGHT_IS_SET) && percent == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
     mYogaNode.setMinHeightPercent(percent);
     return this;
   }
 
   InternalNode maxHeightPx(@Px int maxHeight) {
+    if (maybeSkipLayoutProp(PFLAG_MAX_HEIGHT_IS_SET) && maxHeight == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
     mYogaNode.setMaxHeight(maxHeight);
     return this;
   }
 
   InternalNode maxHeightPercent(float percent) {
+    if (maybeSkipLayoutProp(PFLAG_MAX_HEIGHT_IS_SET) && percent == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
     mYogaNode.setMaxHeightPercent(percent);
     return this;
   }
 
   InternalNode aspectRatio(float aspectRatio) {
+    if (maybeSkipLayoutProp(PFLAG_ASPECT_RATIO_IS_SET) && aspectRatio == 0) {
+      return this;
+    }
     mPrivateFlags |= PFLAG_ASPECT_RATIO_IS_SET;
     mYogaNode.setAspectRatio(aspectRatio);
     return this;

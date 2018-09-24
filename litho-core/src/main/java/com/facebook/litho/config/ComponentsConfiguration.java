@@ -204,4 +204,7 @@ public class ComponentsConfiguration {
    * UI thread cycles
    */
   public static boolean lazyDisplayListCreationOnly = false;
+
+  /** This flag is to enable the experiment about skipping unnecessary Yoga calls. */
+  public static boolean enableSkipYogaPropExperiment = false;
 }
