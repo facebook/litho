@@ -32,7 +32,7 @@ public class LithoSampleApplication extends Application {
     Fresco.initialize(this);
     SoLoader.init(this, false);
 
-    if (FlipperUtils.shouldEnableSonar(this)) {
+    if (FlipperUtils.shouldEnableFlipper(this)) {
       final FlipperClient client = AndroidFlipperClient.getInstance(this);
       final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
       LithoFlipperDescriptors.add(descriptorMapping);
