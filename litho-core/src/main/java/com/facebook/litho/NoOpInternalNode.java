@@ -74,6 +74,11 @@ class NoOpInternalNode extends InternalNode {
     return 0;
   }
 
+  @Override
+  InternalNode background(@Nullable ComparableDrawable background) {
+    return this;
+  }
+
   @Px
   @Override
   public int getPaddingTop() {
