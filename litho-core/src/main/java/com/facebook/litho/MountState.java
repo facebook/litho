@@ -2046,8 +2046,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private static void unsetViewBackground(View view, ViewNodeInfo viewNodeInfo) {
     final ComparableDrawable drawable = viewNodeInfo.getBackground();
     if (drawable != null) {
-      drawable.release(view.getContext());
       setBackgroundCompat(view, null);
+      drawable.release(view.getContext());
     }
   }
 
@@ -2079,8 +2079,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         throw new IllegalStateException("MountState has a ViewNodeInfo with foreground however " +
             "the current Android version doesn't support foreground on Views");
       }
-      foreground.release(view.getContext());
       view.setForeground(null);
+      foreground.release(view.getContext());
     }
   }
 
