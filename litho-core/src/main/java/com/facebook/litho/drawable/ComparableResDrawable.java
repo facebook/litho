@@ -19,11 +19,13 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
+import javax.annotation.Nullable;
 
 /** ComparableResDrawable */
 public class ComparableResDrawable implements ComparableDrawable<Drawable> {
 
   @DrawableRes private final int mResId;
+  private @Nullable Drawable mDrawable;
 
   private ComparableResDrawable(@DrawableRes int resId) {
     this.mResId = resId;
@@ -31,7 +33,11 @@ public class ComparableResDrawable implements ComparableDrawable<Drawable> {
 
   @Override
   public Drawable acquire(Context context) {
-    return ContextCompat.getDrawable(context, mResId);
+    if (mDrawable == null) {
+      mDrawable = ContextCompat.getDrawable(context, mResId);
+    }
+
+    return mDrawable;
   }
 
   @Override
