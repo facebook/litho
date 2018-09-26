@@ -20,6 +20,7 @@ import static android.support.annotation.Dimension.DP;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.AttrRes;
@@ -32,17 +33,16 @@ import android.support.annotation.Px;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.content.ContextCompat;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.drawable.ComparableDrawableReference;
 import com.facebook.litho.drawable.ComparableDrawableWrapper;
-import com.facebook.litho.drawable.ComparableResDrawable;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -1253,11 +1253,11 @@ public abstract class Component extends ComponentLifecycle
         return background((ComparableDrawable) null);
       }
 
-      return background(ComparableResDrawable.create(resId));
+      return background(ContextCompat.getDrawable(mContext, resId));
     }
 
     public T backgroundColor(@ColorInt int backgroundColor) {
-      return background(ComparableColorDrawable.create(backgroundColor));
+      return background(new ColorDrawable(backgroundColor));
     }
 
     public T foreground(@Nullable ComparableDrawable foreground) {
@@ -1286,11 +1286,11 @@ public abstract class Component extends ComponentLifecycle
         return foreground((ComparableDrawable) null);
       }
 
-      return foreground(ComparableResDrawable.create(resId));
+      return foreground(ContextCompat.getDrawable(mContext, resId));
     }
 
     public T foregroundColor(@ColorInt int foregroundColor) {
-      return foreground(ComparableColorDrawable.create(foregroundColor));
+      return foreground(new ColorDrawable(foregroundColor));
     }
 
     public T wrapInView() {

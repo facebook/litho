@@ -64,8 +64,8 @@ class DrawableComponent<T extends Drawable> extends Component {
       ComponentContext context,
       Object mountedContent) {
     final MatrixDrawable<T> matrixDrawable = (MatrixDrawable<T>) mountedContent;
-    matrixDrawable.unmount();
     mDrawable.release(context);
+    matrixDrawable.unmount();
   }
 
   @Override
