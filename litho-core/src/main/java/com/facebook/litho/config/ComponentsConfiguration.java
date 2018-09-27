@@ -184,6 +184,18 @@ public class ComponentsConfiguration {
   public static boolean asyncInitRange = false;
 
   /**
+   * If true, a layout for the same ComponentTree will be calculated on a single thread at the same
+   * time.
+   */
+  public static boolean useSharedLayoutStateFuture = false;
+
+  /**
+   * If non-null, a thread pool will be used for async layouts where useSharedLayoutStateFuture is
+   * also enabled.
+   */
+  public static LayoutThreadPoolConfiguration sharedLayoutStateFutureThreadPoolConfig = null;
+
+  /**
    * Whether we should diff the view info attributes when checking for mount updates. This fixes
    * issues where updates to MountSpecs are not applied when changes in common view properties do
    * not change the measure of view.

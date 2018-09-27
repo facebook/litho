@@ -442,10 +442,11 @@ public class RecyclerBinder
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
     private String splitLayoutTag;
     private boolean enableStableIds;
-    private boolean useSharedLayoutStateFuture;
+    private boolean useSharedLayoutStateFuture = ComponentsConfiguration.useSharedLayoutStateFuture;
     private @Nullable List<ComponentLogParams> invalidStateLogParamsList;
     private RecyclerRangeTraverser recyclerRangeTraverser;
-    private LayoutThreadPoolConfiguration threadPoolForSharedLayoutStateFutureConfig;
+    private LayoutThreadPoolConfiguration threadPoolForSharedLayoutStateFutureConfig =
+        ComponentsConfiguration.sharedLayoutStateFutureThreadPoolConfig;
     private boolean asyncInitRange = ComponentsConfiguration.asyncInitRange;
 
     /**

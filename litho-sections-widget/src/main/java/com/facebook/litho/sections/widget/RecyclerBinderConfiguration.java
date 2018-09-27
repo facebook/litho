@@ -18,6 +18,7 @@ package com.facebook.litho.sections.widget;
 
 import android.support.annotation.Nullable;
 import com.facebook.litho.ComponentLogParams;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.widget.LayoutHandlerFactory;
@@ -39,9 +40,10 @@ public class RecyclerBinderConfiguration {
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
   private boolean mEnableStableIds;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
-  private boolean mUseSharedLayoutStateFuture;
-  private LayoutThreadPoolConfiguration mThreadPoolForSharedLayoutStateFutureConfig;
-  private boolean mAsyncInitRange;
+  private boolean mUseSharedLayoutStateFuture = ComponentsConfiguration.useSharedLayoutStateFuture;
+  private LayoutThreadPoolConfiguration mThreadPoolForSharedLayoutStateFutureConfig =
+      ComponentsConfiguration.sharedLayoutStateFutureThreadPoolConfig;
+  private boolean mAsyncInitRange = ComponentsConfiguration.asyncInitRange;
 
   public RecyclerBinderConfiguration(double rangeRatio) {
     this(rangeRatio, null, false);
