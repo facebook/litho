@@ -15,14 +15,14 @@ litho_android_library(
 
 android_prebuilt_aar(
     name = "flipper-aar",
-    aar = "flipper-0.7.3-20180924.103711-10.aar",
+    aar = ":flipper-binary-aar",
     visibility = LITHO_VISIBILITY,
 )
 
 remote_file(
     name = "flipper-binary-aar",
-    sha1 = "b1b9da0a3874dfa6fcbbf86289631ade57896f6b",
-    url = "mvn:com.facebook.flipper:flipper:aar:0.6.18",
+    sha1 = "c3682d05cc6d685928379806576b271982c729d0",
+    url = "mvn:com.facebook.flipper:flipper:aar:0.8.0",
 )
 
 android_prebuilt_aar(
@@ -33,6 +33,6 @@ android_prebuilt_aar(
 
 remote_file(
     name = "fbjni-binary-aar",
-    sha1 = "9be6a8ca7286f73b6d5ba3ddcc60653240ed03eb",
-    url = "mvn:com.facebook.flipper:fbjni:aar:0.6.18",
+    sha1 = "9a8784c15e5b41829feb35965ca44c831b8e84a6",
+    url = "mvn:com.facebook.flipper:fbjni:aar:0.8.0",
 )
