@@ -484,7 +484,8 @@ class TextInputSpec {
     protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
       super.onTextChanged(text, start, lengthBefore, lengthAfter);
       if (mTextChangedEventHandler != null) {
-        TextInput.dispatchTextChangedEvent(mTextChangedEventHandler, text.toString());
+        TextInput.dispatchTextChangedEvent(
+            mTextChangedEventHandler, EditTextWithEventHandlers.this, text.toString());
       }
     }
 
