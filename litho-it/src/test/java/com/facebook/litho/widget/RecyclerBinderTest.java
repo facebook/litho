@@ -4068,6 +4068,51 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void testNoAsyncInitRangeWithCanMeasure() {
+    mRecyclerBinder.setAsyncInitRange(true);
+    mRecyclerBinder.setCanMeasure(true);
+    final List<RenderInfo> components = new ArrayList<>();
+
+    for (int i = 0; i < 30; i++) {
+      final Component component =
+          new InlineLayoutSpec() {
+            @Override
+            protected Component onCreateLayout(ComponentContext c) {
+              return TestDrawableComponent.create(c).widthPx(100).heightPx(10).build();
+            }
+          };
+
+      final ComponentRenderInfo renderInfo =
+          ComponentRenderInfo.create().component(component).build();
+      components.add(renderInfo);
+    }
+
+    mRecyclerBinder.insertRangeAt(0, components);
+
+    mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    for (int i = 0; i < 30; i++) {
+      assertThat(mHoldersForComponents.get(components.get(i).getComponent())).isNotNull();
+    }
+
+    final Size size = new Size();
+    final int widthSpec = makeSizeSpec(100, AT_MOST);
+    final int heightSpec = makeSizeSpec(100, EXACTLY);
+
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+
+    TestComponentTreeHolder componentTreeHolder =
+        mHoldersForComponents.get(components.get(0).getComponent());
+
+    assertThat(componentTreeHolder.mLayoutSyncCalled).isTrue();
+
+    for (int i = 1; i < 10; i++) {
+      TestComponentTreeHolder holder = mHoldersForComponents.get(components.get(i).getComponent());
+      assertThat(holder.mLayoutAsyncCalled).isTrue();
+    }
+  }
+
+  @Test
   public void testDataRenderedCallbacksAreNotTriggered() {
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);

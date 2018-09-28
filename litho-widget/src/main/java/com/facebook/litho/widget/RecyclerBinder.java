@@ -176,7 +176,7 @@ public class RecyclerBinder
             return getMeasureListener(holder);
           }
 
-          if (mAsyncInitRange) {
+          if (!mCanMeasure && mAsyncInitRange) {
             return getMeasureListenerForInitRange(holder);
           }
 
@@ -1983,7 +1983,7 @@ public class RecyclerBinder
       int childrenWidthSpec,
       int childrenHeightSpec,
       int scrollDirection) {
-    if (mAsyncInitRange) {
+    if (!mCanMeasure && mAsyncInitRange) {
       initRangeAsync(holderPosition, childrenWidthSpec, childrenHeightSpec);
       return;
     }
