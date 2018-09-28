@@ -290,6 +290,7 @@ public class RecyclerBinder
   private final boolean mIsCircular;
   private final boolean mHasDynamicItemHeight;
   private final boolean mWrapContent;
+  private boolean mCanMeasure;
   private int mLastWidthSpec = LayoutManagerOverrideParams.UNINITIALIZED;
   private int mLastHeightSpec = LayoutManagerOverrideParams.UNINITIALIZED;
   private Size mMeasuredSize;
@@ -448,6 +449,7 @@ public class RecyclerBinder
     private LayoutThreadPoolConfiguration threadPoolForSharedLayoutStateFutureConfig =
         ComponentsConfiguration.sharedLayoutStateFutureThreadPoolConfig;
     private boolean asyncInitRange = ComponentsConfiguration.asyncInitRange;
+    private boolean canMeasure;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -618,6 +620,16 @@ public class RecyclerBinder
       return this;
     }
 
+    /**
+     * Only for horizontally scrolling layouts! If true, the height of the RecyclerView is not known
+     * when it's measured; the first item is measured and its height will determine the height of
+     * the RecyclerView.
+     */
+    public Builder canMeasure(boolean canMeasure) {
+      this.canMeasure = canMeasure;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
@@ -635,6 +647,16 @@ public class RecyclerBinder
   @Override
   public boolean isWrapContent() {
     return mWrapContent;
+  }
+
+  @Override
+  public boolean canMeasure() {
+    return mCanMeasure;
+  }
+
+  @Override
+  public void setCanMeasure(boolean canMeasure) {
+    mCanMeasure = canMeasure;
   }
 
   @UiThread
@@ -710,6 +732,7 @@ public class RecyclerBinder
     mHasDynamicItemHeight =
         mLayoutInfo.getScrollDirection() == HORIZONTAL ? builder.hasDynamicItemHeight : false;
     mWrapContent = builder.wrapContent;
+    mCanMeasure = builder.canMeasure;
 
     if (builder.recyclerRangeTraverser != null) {
       mRangeTraverser = builder.recyclerRangeTraverser;

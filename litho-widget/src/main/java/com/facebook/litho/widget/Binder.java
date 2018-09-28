@@ -89,4 +89,16 @@ public interface Binder<V extends ViewGroup> {
 
   /** Return true if wrap content is enabled, false otherwise. */
   boolean isWrapContent();
+
+  /**
+   * Only for horizontally scrolling layouts: return true if height is not known when measuring the
+   * view and the first item will be measured to determine the height.
+   */
+  boolean canMeasure();
+
+  /**
+   * Only for horizontally scrolling layouts: set to true if height is not known when measuring the
+   * view and the first item will need to be measured to determine the height of the view.
+   */
+  void setCanMeasure(boolean canMeasure);
 }

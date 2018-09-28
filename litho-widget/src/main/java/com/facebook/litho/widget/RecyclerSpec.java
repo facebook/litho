@@ -101,14 +101,13 @@ class RecyclerSpec {
       int widthSpec,
       int heightSpec,
       Size measureOutput,
-      @Prop Binder<RecyclerView> binder,
-      @Prop(optional = true) boolean canMeasure) {
+      @Prop Binder<RecyclerView> binder) {
 
     binder.measure(
         measureOutput,
         widthSpec,
         heightSpec,
-        (canMeasure || binder.isWrapContent()) ? Recycler.onRemeasure(c) : null);
+        (binder.canMeasure() || binder.isWrapContent()) ? Recycler.onRemeasure(c) : null);
   }
 
   @OnBoundsDefined

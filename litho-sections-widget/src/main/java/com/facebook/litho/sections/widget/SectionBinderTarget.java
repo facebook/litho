@@ -188,6 +188,16 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   }
 
   @Override
+  public boolean canMeasure() {
+    return mRecyclerBinder.canMeasure();
+  }
+
+  @Override
+  public void setCanMeasure(boolean canMeasure) {
+    mRecyclerBinder.setCanMeasure(canMeasure);
+  }
+
+  @Override
   public boolean supportsBackgroundChangeSets() {
     return mUseBackgroundChangeSets;
   }

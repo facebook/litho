@@ -137,7 +137,6 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int topPadding,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int bottomPadding,
       @Prop(optional = true) EventHandler<TouchEvent> recyclerTouchEventHandler,
-      @Prop(optional = true) boolean canMeasureRecycler,
       @Prop(optional = true) boolean horizontalFadingEdgeEnabled,
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
@@ -194,7 +193,6 @@ public class RecyclerCollectionComponentSpec {
             .refreshHandler(!canPTR ? null : RecyclerCollectionComponent.onRefresh(c, sectionTree))
             .pullToRefresh(canPTR)
             .itemDecoration(itemDecoration)
-            .canMeasure(canMeasureRecycler)
             .horizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled)
             .verticalFadingEdgeEnabled(verticalFadingEdgeEnabled)
             .fadingEdgeLengthDip(fadingEdgeLength)
@@ -211,7 +209,7 @@ public class RecyclerCollectionComponentSpec {
             .flexShrink(0)
             .touchHandler(recyclerTouchEventHandler);
 
-    if (!canMeasureRecycler && !recyclerConfiguration.isWrapContent()) {
+    if (!binder.canMeasure() && !recyclerConfiguration.isWrapContent()) {
       recycler.positionType(ABSOLUTE).positionPx(ALL, 0);
     }
 
@@ -261,6 +259,7 @@ public class RecyclerCollectionComponentSpec {
       // It's intended to be a temporary workaround, not something you should use often.
       @Prop(optional = true) boolean ignoreLoadingUpdates,
       @Prop(optional = true) String sectionTreeTag,
+      @Prop(optional = true) boolean canMeasureRecycler,
       StateValue<SnapHelper> snapHelper,
       StateValue<SectionTree> sectionTree,
       StateValue<RecyclerCollectionLoadEventsHandler> recyclerCollectionLoadEventsHandler,
@@ -317,6 +316,7 @@ public class RecyclerCollectionComponentSpec {
         };
 
     targetBinder.setViewportChangedListener(viewPortChanged);
+    targetBinder.setCanMeasure(canMeasureRecycler);
 
     if (ignoreLoadingUpdates) {
       loadingState.set(LoadingState.LOADED);
