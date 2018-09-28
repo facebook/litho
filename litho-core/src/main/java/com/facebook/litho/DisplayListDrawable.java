@@ -27,6 +27,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.displaylist.DisplayList;
 import com.facebook.litho.displaylist.DisplayListException;
 
@@ -46,6 +47,11 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
   private boolean mInvalidated;
 
   DisplayListDrawable(Drawable drawable, DisplayListContainer displayListContainer) {
+    if (ComponentsConfiguration.forceNotToCacheDisplayLists) {
+      throw new RuntimeException(
+          "DisplayLists are not supposed to be used, this should never be called");
+    }
+
     setWrappedDrawable(drawable, displayListContainer);
   }
 

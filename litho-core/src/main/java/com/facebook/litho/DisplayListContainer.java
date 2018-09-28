@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.support.annotation.Nullable;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.displaylist.DisplayList;
 
 /**
@@ -42,6 +43,11 @@ class DisplayListContainer {
   }
 
   void init(String name, boolean canCacheDrawingDisplayLists) {
+    if (ComponentsConfiguration.forceNotToCacheDisplayLists) {
+      throw new RuntimeException(
+          "DisplayLists are not supposed to be used, this should never be called");
+    }
+
     mName = name;
     mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
   }

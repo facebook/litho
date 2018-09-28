@@ -219,4 +219,7 @@ public class ComponentsConfiguration {
 
   /** This flag is to enable the experiment about skipping unnecessary Yoga calls. */
   public static boolean enableSkipYogaPropExperiment = false;
+
+  /** Never use Display Lists, despite ComponentTree configuration. */
+  public static boolean forceNotToCacheDisplayLists = false;
 }

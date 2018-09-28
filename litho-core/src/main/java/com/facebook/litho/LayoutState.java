@@ -1728,7 +1728,8 @@ class LayoutState {
   }
 
   public static boolean isEligibleForCreatingDisplayLists() {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+        && !ComponentsConfiguration.forceNotToCacheDisplayLists;
   }
 
   private static LayoutOutput findInteractiveRoot(LayoutState layoutState, LayoutOutput output) {
