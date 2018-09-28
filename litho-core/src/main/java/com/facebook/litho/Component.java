@@ -40,9 +40,7 @@ import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.drawable.ComparableDrawableReference;
-import com.facebook.litho.drawable.ComparableDrawableWrapper;
+import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -1216,28 +1214,16 @@ public abstract class Component extends ComponentLifecycle
       return touchExpansionPx(edge, mResourceResolver.dipsToPixels(touchExpansion));
     }
 
-    public T background(@Nullable ComparableDrawable background) {
+    /** @deprecated just use {@link #background(Drawable)} instead. */
+    @Deprecated
+    public T background(@Nullable Reference<? extends Drawable> background) {
       mComponent.getOrCreateCommonPropsHolder().background(background);
       return getThis();
     }
 
-    /**
-     * @deprecated just use {@link #background(ComparableDrawable)} instead to improve performance
-     *     while diffing drawables.
-     */
-    @Deprecated
-    public T background(@Nullable Reference<? extends Drawable> reference) {
-      background(reference != null ? new ComparableDrawableReference<>(reference) : null);
-      return getThis();
-    }
-
-    /**
-     * @deprecated just use {@link #background(ComparableDrawable)} instead to improve performance
-     *     while diffing drawables.
-     */
-    @Deprecated
     public T background(@Nullable Drawable background) {
-      return background(background != null ? ComparableDrawableReference.create(background) : null);
+      return background(
+          background != null ? DrawableReference.create().drawable(background).build() : null);
     }
 
     public T backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
@@ -1250,7 +1236,7 @@ public abstract class Component extends ComponentLifecycle
 
     public T backgroundRes(@DrawableRes int resId) {
       if (resId == 0) {
-        return background((ComparableDrawable) null);
+        return background((Reference<? extends Drawable>) null);
       }
 
       return background(ContextCompat.getDrawable(mContext, resId));
@@ -1260,17 +1246,9 @@ public abstract class Component extends ComponentLifecycle
       return background(new ColorDrawable(backgroundColor));
     }
 
-    public T foreground(@Nullable ComparableDrawable foreground) {
+    public T foreground(@Nullable Drawable foreground) {
       mComponent.getOrCreateCommonPropsHolder().foreground(foreground);
       return getThis();
-    }
-
-    /**
-     * @deprecated just use {@link #foreground(ComparableDrawable)} instead to improve performance
-     *     while diffing drawables.
-     */
-    public T foreground(@Nullable Drawable foreground) {
-      return foreground(foreground != null ? ComparableDrawableWrapper.create(foreground) : null);
     }
 
     public T foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
@@ -1283,7 +1261,7 @@ public abstract class Component extends ComponentLifecycle
 
     public T foregroundRes(@DrawableRes int resId) {
       if (resId == 0) {
-        return foreground((ComparableDrawable) null);
+        return foreground(null);
       }
 
       return foreground(ContextCompat.getDrawable(mContext, resId));

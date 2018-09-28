@@ -18,15 +18,15 @@ package com.facebook.litho;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.reference.Reference;
 
 class DrawableComponent<T extends Drawable> extends Component {
 
-  ComparableDrawable mDrawable;
+  Reference<T> mDrawable;
   int mDrawableWidth;
   int mDrawableHeight;
 
-  private DrawableComponent(ComparableDrawable drawable) {
+  private DrawableComponent(Reference drawable) {
     super("DrawableComponent");
     mDrawable = drawable;
   }
@@ -47,7 +47,8 @@ class DrawableComponent<T extends Drawable> extends Component {
       ComponentContext context,
       Object content) {
     MatrixDrawable drawable = (MatrixDrawable) content;
-    drawable.mount(mDrawable.acquire(context));
+
+    drawable.mount(Reference.acquire(context, getDrawable()));
   }
 
   @Override
@@ -64,7 +65,7 @@ class DrawableComponent<T extends Drawable> extends Component {
       ComponentContext context,
       Object mountedContent) {
     final MatrixDrawable<T> matrixDrawable = (MatrixDrawable<T>) mountedContent;
-    mDrawable.release(context);
+    Reference.release(context, matrixDrawable.getMountedDrawable(), getDrawable());
     matrixDrawable.unmount();
   }
 
@@ -78,20 +79,19 @@ class DrawableComponent<T extends Drawable> extends Component {
     return MountType.DRAWABLE;
   }
 
-  public static DrawableComponent create(ComparableDrawable drawable) {
+  public static DrawableComponent create(Reference<? extends Drawable> drawable) {
     return new DrawableComponent<>(drawable);
   }
 
   @Override
   protected boolean shouldUpdate(Component previous, Component next) {
-    final ComparableDrawable previousDrawable = ((DrawableComponent) previous).getDrawable();
-    final ComparableDrawable nextDrawable = ((DrawableComponent) next).getDrawable();
+    final Reference previousReference = ((DrawableComponent) previous).getDrawable();
+    final Reference nextReference = ((DrawableComponent) next).getDrawable();
 
-    return (previousDrawable == null && nextDrawable != null)
-        || (previousDrawable != null && !previousDrawable.isEquivalentTo(nextDrawable));
+    return Reference.shouldUpdate(previousReference, nextReference);
   }
 
-  private ComparableDrawable getDrawable() {
+  private Reference<T> getDrawable() {
     return mDrawable;
   }
 

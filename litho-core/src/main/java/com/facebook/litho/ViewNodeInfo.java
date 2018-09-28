@@ -18,9 +18,10 @@ package com.facebook.litho;
 
 import android.animation.StateListAnimator;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.view.View;
-import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaDirection;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
@@ -33,8 +34,8 @@ class ViewNodeInfo {
 
   private final AtomicInteger mReferenceCount = new AtomicInteger(0);
 
-  private ComparableDrawable mBackground;
-  private ComparableDrawable mForeground;
+  private Reference<Drawable> mBackground;
+  private Drawable mForeground;
   private Rect mPadding;
   private Rect mExpandedTouchBounds;
   private YogaDirection mLayoutDirection;
@@ -42,19 +43,19 @@ class ViewNodeInfo {
   private @Nullable StateListAnimator mStateListAnimator;
   private @DrawableRes int mStateListAnimatorRes;
 
-  void setBackground(ComparableDrawable background) {
-    mBackground = background;
+  void setBackground(Reference<? extends Drawable> background) {
+    mBackground = (Reference<Drawable>) background;
   }
 
-  ComparableDrawable getBackground() {
+  Reference<Drawable> getBackground() {
     return mBackground;
   }
 
-  void setForeground(ComparableDrawable foreground) {
+  void setForeground(Drawable foreground) {
     mForeground = foreground;
   }
 
-  ComparableDrawable getForeground() {
+  Drawable getForeground() {
     return mForeground;
   }
 
@@ -174,13 +175,12 @@ class ViewNodeInfo {
       return false;
     }
 
-    if ((mBackground == null && other.mBackground != null)
-        || (mBackground != null && !mBackground.isEquivalentTo(other.mBackground))) {
+    // TODO: (T33421916) We need compare Drawables more accurately
+    if (!CommonUtils.equals(mBackground, other.mBackground)) {
       return false;
     }
 
-    if ((mForeground == null && other.mForeground != null)
-        || (mForeground != null && !mForeground.isEquivalentTo(other.mForeground))) {
+    if (!CommonUtils.equals(mForeground, other.mForeground)) {
       return false;
     }
 

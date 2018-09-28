@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static android.R.drawable.btn_default;
 import static android.graphics.Color.BLACK;
+import static android.graphics.Color.RED;
 import static android.graphics.Color.TRANSPARENT;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutOutput.STATE_DIRTY;
@@ -52,11 +53,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.util.SparseArrayCompat;
-import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.drawable.ComparableDrawableReference;
-import com.facebook.litho.drawable.ComparableDrawableWrapper;
-import com.facebook.litho.reference.DrawableReference;
-import com.facebook.litho.reference.Reference;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
@@ -72,9 +68,9 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class TreeDiffingTest {
 
-  private static ComparableDrawable sRedDrawable;
-  private static ComparableDrawable sBlackDrawable;
-  private static ComparableDrawable sTransparentDrawable;
+  private static Drawable sRedDrawable;
+  private static Drawable sBlackDrawable;
+  private static Drawable sTransparentDrawable;
 
   private int mUnspecifiedSpec;
 
@@ -84,15 +80,10 @@ public class TreeDiffingTest {
   public void setup() throws Exception {
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mUnspecifiedSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
-    Reference<? extends Drawable> redDrawableReference =
-        DrawableReference.create().drawable(new ColorDrawable(Color.RED)).build();
-    sRedDrawable = new ComparableDrawableReference<>(redDrawableReference);
 
-    Reference<? extends Drawable> blackDrawableReference =
-        DrawableReference.create().drawable(new ColorDrawable(Color.BLACK)).build();
-    sBlackDrawable = new ComparableDrawableReference<>(blackDrawableReference);
-
-    sTransparentDrawable = ComparableDrawableWrapper.create(new ColorDrawable(TRANSPARENT));
+    sRedDrawable = new ColorDrawable(RED);
+    sBlackDrawable = new ColorDrawable(BLACK);
+    sTransparentDrawable = new ColorDrawable(TRANSPARENT);
   }
 
   @Test

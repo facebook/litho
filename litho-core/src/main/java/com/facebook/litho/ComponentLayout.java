@@ -16,10 +16,10 @@
 
 package com.facebook.litho;
 
-import android.support.annotation.Nullable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.Px;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaDirection;
 
 /**
@@ -57,8 +57,7 @@ public interface ComponentLayout {
 
   boolean isPaddingSet();
 
-  @Nullable
-  ComparableDrawable getBackground();
+  Reference<? extends Drawable> getBackground();
 
   YogaDirection getResolvedLayoutDirection();
 }

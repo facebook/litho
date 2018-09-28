@@ -17,10 +17,10 @@
 package com.facebook.litho;
 
 import android.content.res.TypedArray;
-import android.support.annotation.Nullable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.Px;
 import android.util.SparseArray;
-import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaDirection;
@@ -72,11 +72,6 @@ class NoOpInternalNode extends InternalNode {
   @Override
   public int getPaddingLeft() {
     return 0;
-  }
-
-  @Override
-  InternalNode background(@Nullable ComparableDrawable background) {
-    return this;
   }
 
   @Px
@@ -311,7 +306,12 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode foreground(@Nullable ComparableDrawable foreground) {
+  public InternalNode background(Reference<? extends Drawable> builder) {
+    return this;
+  }
+
+  @Override
+  public InternalNode foreground(Drawable foreground) {
     return this;
   }
 

@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.animation.StateListAnimator;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
@@ -26,7 +27,7 @@ import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -55,7 +56,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
   @Nullable private YogaEdgesWithInts mPositions;
   private int mWidthPx;
   private int mHeightPx;
-  @Nullable private ComparableDrawable mBackground;
+  @Nullable private Reference<? extends Drawable> mBackground;
   @Nullable private String mTestKey;
   private boolean mWrapInView;
   @AttrRes private int mDefStyleAttr;
@@ -98,7 +99,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     mHeightPx = height;
   }
 
-  void background(@Nullable ComparableDrawable background) {
+  void background(@Nullable Reference<? extends Drawable> background) {
     mPrivateFlags |= PFLAG_BACKGROUND_IS_SET;
     mBackground = background;
   }
@@ -232,7 +233,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     getOrCreateOtherProps().touchExpansionPx(edge, touchExpansion);
   }
 
-  void foreground(@Nullable ComparableDrawable foreground) {
+  void foreground(@Nullable Drawable foreground) {
     getOrCreateOtherProps().foreground(foreground);
   }
 
@@ -569,7 +570,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     @Px private int mMaxHeightPx;
     private float mMaxHeightPercent;
     private float mAspectRatio;
-    @Nullable private ComparableDrawable mForeground;
+    @Nullable private Drawable mForeground;
     @Nullable private String mTransitionKey;
     @Nullable private Border mBorder;
     @Nullable private StateListAnimator mStateListAnimator;
@@ -739,7 +740,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mTouchExpansions.add(edge, touchExpansion);
     }
 
-    private void foreground(@Nullable ComparableDrawable foreground) {
+    private void foreground(Drawable foreground) {
       mPrivateFlags |= PFLAG_FOREGROUND_IS_SET;
       mForeground = foreground;
     }

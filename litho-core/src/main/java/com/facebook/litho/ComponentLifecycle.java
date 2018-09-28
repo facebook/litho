@@ -337,7 +337,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       ComponentsSystrace.endSection();
     }
 
-    if (node == null || node == ComponentContext.NULL_LAYOUT) {
+    if (node == null) {
       return ComponentContext.NULL_LAYOUT;
     }
 

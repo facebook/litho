@@ -59,7 +59,7 @@ import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.reference.Reference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -940,17 +940,19 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return false;
     }
 
-    final ViewNodeInfo nextViewNodeInfo = layoutOutput.getViewNodeInfo();
-    final ViewNodeInfo currentViewNodeInfo = currentMountItem.getViewNodeInfo();
-    if ((currentViewNodeInfo == null && nextViewNodeInfo != null)
-        || (currentViewNodeInfo != null && !currentViewNodeInfo.isEquivalentTo(nextViewNodeInfo))) {
+    ViewNodeInfo nextViewNodeInfo = layoutOutput.getViewNodeInfo();
+    ViewNodeInfo currentViewNodeInfo = currentMountItem.getViewNodeInfo();
+    if (((nextViewNodeInfo == null || currentViewNodeInfo == null)
+            && !(nextViewNodeInfo == null && currentViewNodeInfo == null))
+        || (nextViewNodeInfo != null && !nextViewNodeInfo.isEquivalentTo(currentViewNodeInfo))) {
       return true;
     }
 
-    final NodeInfo nextNodeInfo = layoutOutput.getNodeInfo();
-    final NodeInfo currentNodeInfo = currentMountItem.getNodeInfo();
-    if ((currentNodeInfo == null && nextNodeInfo != null)
-        || (currentNodeInfo != null && !currentNodeInfo.isEquivalentTo(nextNodeInfo))) {
+    NodeInfo nextNodeInfo = layoutOutput.getNodeInfo();
+    NodeInfo currentNodeInfo = currentMountItem.getNodeInfo();
+    if (((nextNodeInfo == null || currentNodeInfo == null)
+            && !(nextNodeInfo == null && currentNodeInfo == null))
+        || (nextNodeInfo != null && !nextNodeInfo.isEquivalentTo(currentNodeInfo))) {
       return true;
     }
 
@@ -2037,16 +2039,16 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static void setViewBackground(View view, ViewNodeInfo viewNodeInfo) {
-    final ComparableDrawable drawable = viewNodeInfo.getBackground();
-    if (drawable != null) {
-      setBackgroundCompat(view, drawable.acquire(view.getContext()));
+    final Reference<Drawable> backgroundReference = viewNodeInfo.getBackground();
+    if (backgroundReference != null) {
+      setBackgroundCompat(view, Reference.acquire(view.getContext(), backgroundReference));
     }
   }
 
   private static void unsetViewBackground(View view, ViewNodeInfo viewNodeInfo) {
-    final ComparableDrawable drawable = viewNodeInfo.getBackground();
-    if (drawable != null) {
-      drawable.release(view.getContext());
+    final Reference<Drawable> backgroundReference = viewNodeInfo.getBackground();
+    if (backgroundReference != null) {
+      Reference.release(view.getContext(), view.getBackground(), backgroundReference);
       setBackgroundCompat(view, null);
     }
   }
@@ -2061,25 +2063,25 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static void setViewForeground(View view, ViewNodeInfo viewNodeInfo) {
-    final ComparableDrawable foreground = viewNodeInfo.getForeground();
+    final Drawable foreground = viewNodeInfo.getForeground();
     if (foreground != null) {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
         throw new IllegalStateException("MountState has a ViewNodeInfo with foreground however " +
             "the current Android version doesn't support foreground on Views");
       }
 
-      view.setForeground(foreground.acquire(view.getContext()));
+      view.setForeground(foreground);
     }
   }
 
   private static void unsetViewForeground(View view, ViewNodeInfo viewNodeInfo) {
-    final ComparableDrawable foreground = viewNodeInfo.getForeground();
+    final Drawable foreground = viewNodeInfo.getForeground();
     if (foreground != null) {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
         throw new IllegalStateException("MountState has a ViewNodeInfo with foreground however " +
             "the current Android version doesn't support foreground on Views");
       }
-      foreground.release(view.getContext());
+
       view.setForeground(null);
     }
   }
