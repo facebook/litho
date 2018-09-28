@@ -1073,6 +1073,11 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
+  InternalNode clipChildren(boolean clipChildren) {
+    getOrCreateNodeInfo().setClipChildren(clipChildren);
+    return this;
+  }
+
   InternalNode testKey(String testKey) {
     mTestKey = testKey;
     return this;

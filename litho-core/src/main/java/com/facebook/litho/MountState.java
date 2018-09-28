@@ -1481,6 +1481,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       setShadowElevation(view, nodeInfo.getShadowElevation());
       setOutlineProvider(view, nodeInfo.getOutlineProvider());
       setClipToOutline(view, nodeInfo.getClipToOutline());
+      setClipChildren(view, nodeInfo);
 
       setContentDescription(view, nodeInfo.getContentDescription());
 
@@ -1496,7 +1497,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
     if (viewNodeInfo != null) {
-      setViewClipChildren(view, viewNodeInfo);
       setViewStateListAnimator(view, viewNodeInfo);
       if (!isHostSpec(component)) {
         // Set view background, if applicable.  Do this before padding
@@ -1552,6 +1552,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       unsetShadowElevation(view, nodeInfo.getShadowElevation());
       unsetOutlineProvider(view, nodeInfo.getOutlineProvider());
       unsetClipToOutline(view, nodeInfo.getClipToOutline());
+      unsetClipChildren(view, nodeInfo.getClipChildren());
 
       if (!TextUtils.isEmpty(nodeInfo.getContentDescription())) {
         unsetContentDescription(view);
@@ -1577,7 +1578,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
     if (viewNodeInfo != null) {
-      unsetViewClipChildren(view);
       unsetViewStateListAnimator(view, viewNodeInfo);
       // Host view doesn't set its own padding, but gets absolute positions for inner content from
       // Yoga. Also bg/fg is used as separate drawables instead of using View's bg/fg attribute.
@@ -1903,6 +1903,21 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
+  private static void setClipChildren(View view, NodeInfo nodeInfo) {
+    if (nodeInfo.isClipChildrenSet() && view instanceof ViewGroup) {
+      ((ViewGroup) view).setClipChildren(nodeInfo.getClipChildren());
+    }
+  }
+
+  private static void unsetClipChildren(View view, boolean clipChildren) {
+    if (!clipChildren && view instanceof ViewGroup) {
+      // Default value for clipChildren is 'true'.
+      // If this ViewGroup had clipChildren set to 'false' before mounting we would reset this
+      // property here on recycling.
+      ((ViewGroup) view).setClipChildren(true);
+    }
+  }
+
   private static void setContentDescription(View view, CharSequence contentDescription) {
     if (TextUtils.isEmpty(contentDescription)) {
       return;
@@ -2112,19 +2127,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     view.setLayoutDirection(View.LAYOUT_DIRECTION_INHERIT);
-  }
-
-  private static void setViewClipChildren(View view, ViewNodeInfo viewNodeInfo) {
-    if (view instanceof ViewGroup) {
-      ((ViewGroup) view).setClipChildren(viewNodeInfo.getClipChildren());
-    }
-  }
-
-  private static void unsetViewClipChildren(View view) {
-    if (view instanceof ViewGroup) {
-      // Default value for clipChildren is 'true'.
-      ((ViewGroup) view).setClipChildren(true);
-    }
   }
 
   private static void setViewStateListAnimator(View view, ViewNodeInfo viewNodeInfo) {

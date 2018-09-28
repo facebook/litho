@@ -99,6 +99,8 @@ class NodeInfo {
   private static final int PFLAG_ALPHA_IS_SET = 1 << 20;
   private static final int PFLAG_ROTATION_IS_SET = 1 << 21;
   private static final int PFLAG_ACCESSIBILITY_ROLE_IS_SET = 1 << 22;
+  // When this flag is set, clipChildren was explicitly set on this node.
+  private static final int PFLAG_CLIP_CHILDREN_IS_SET = 1 << 23;
 
   private final AtomicInteger mReferenceCount = new AtomicInteger(0);
 
@@ -108,6 +110,8 @@ class NodeInfo {
   private float mShadowElevation;
   private ViewOutlineProvider mOutlineProvider;
   private boolean mClipToOutline;
+  // Default value for ViewGroup
+  private boolean mClipChildren = true;
   private float mScale = 1;
   private float mAlpha = 1;
   private float mRotation = 0;
@@ -186,6 +190,19 @@ class NodeInfo {
   public void setClipToOutline(boolean clipToOutline) {
     mPrivateFlags |= PFLAG_CLIP_TO_OUTLINE_IS_SET;
     mClipToOutline = clipToOutline;
+  }
+
+  public void setClipChildren(boolean clipChildren) {
+    mPrivateFlags |= PFLAG_CLIP_CHILDREN_IS_SET;
+    mClipChildren = clipChildren;
+  }
+
+  public boolean getClipChildren() {
+    return mClipChildren;
+  }
+
+  public boolean isClipChildrenSet() {
+    return (mPrivateFlags & PFLAG_CLIP_CHILDREN_IS_SET) != 0;
   }
 
   @Nullable
@@ -466,6 +483,10 @@ class NodeInfo {
       return false;
     }
 
+    if (mClipChildren != other.mClipChildren) {
+      return false;
+    }
+
     if (!CommonUtils.equals(mContentDescription, other.mContentDescription)) {
       return false;
     }
@@ -622,6 +643,10 @@ class NodeInfo {
     if ((newInfo.mPrivateFlags & PFLAG_CLIP_TO_OUTLINE_IS_SET) != 0) {
       mClipToOutline = newInfo.mClipToOutline;
     }
+    if (newInfo.isClipChildrenSet()) {
+      // Update field value and a flag
+      setClipChildren(newInfo.mClipChildren);
+    }
     if (newInfo.mViewTag != null) {
       mViewTag = newInfo.mViewTag;
     }
@@ -703,6 +728,9 @@ class NodeInfo {
     if ((mPrivateFlags & PFLAG_CLIP_TO_OUTLINE_IS_SET) != 0) {
       layout.clipToOutline(mClipToOutline);
     }
+    if ((mPrivateFlags & PFLAG_CLIP_CHILDREN_IS_SET) != 0) {
+      layout.clipChildren(mClipChildren);
+    }
     if (mViewTag != null) {
       layout.viewTag(mViewTag);
     }
@@ -780,6 +808,7 @@ class NodeInfo {
     mShadowElevation = 0;
     mOutlineProvider = null;
     mClipToOutline = false;
+    mClipChildren = true;
     mScale = 1;
     mAlpha = 1;
     mRotation = 0;

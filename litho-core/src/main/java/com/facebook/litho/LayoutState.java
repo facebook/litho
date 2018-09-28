@@ -365,8 +365,20 @@ class LayoutState {
     // to their respective hosts.
     // Moreover, if the component mounts a view, then we apply padding to the view itself later on.
     // Otherwise, apply the padding to the bounds of the layout output.
+    NodeInfo nodeInfo = node.getNodeInfo();
     if (isMountViewSpec) {
-      layoutOutput.setNodeInfo(node.getNodeInfo());
+      // LayoutState has non-default (false) value of clipChildren.
+      if (!layoutState.mClipChildren) {
+        // NodeInfo doesn't have clipChildren, so Component wasn't explicitly set with this
+        // property and it can be overridden by value from LayoutState.
+        if (nodeInfo == null) {
+          nodeInfo = NodeInfo.acquire();
+        }
+        if (!nodeInfo.isClipChildrenSet()) {
+          nodeInfo.setClipChildren(false);
+        }
+      }
+      layoutOutput.setNodeInfo(nodeInfo);
       // Acquire a ViewNodeInfo, set it up and release it after passing it to the LayoutOutput.
       final ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
       if (useNodePadding && node.isPaddingSet()) {
@@ -379,7 +391,6 @@ class LayoutState {
           t - hostTranslationY,
           r - hostTranslationX,
           b - hostTranslationY);
-      viewNodeInfo.setClipChildren(layoutState.mClipChildren);
       layoutOutput.setViewNodeInfo(viewNodeInfo);
       viewNodeInfo.release();
     } else {
@@ -388,7 +399,7 @@ class LayoutState {
       r -= paddingRight;
       b -= paddingBottom;
 
-      if (node.getNodeInfo() != null && node.getNodeInfo().getEnabledState() == ENABLED_SET_FALSE) {
+      if (nodeInfo != null && nodeInfo.getEnabledState() == ENABLED_SET_FALSE) {
         flags |= LAYOUT_FLAG_DISABLE_TOUCHABLE;
       }
     }
@@ -547,6 +558,7 @@ class LayoutState {
     final boolean hasClipToOutline = (nodeInfo != null && nodeInfo.getClipToOutline());
     final boolean isFocusableSetTrue =
         (nodeInfo != null && nodeInfo.getFocusState() == FOCUS_SET_TRUE);
+    final boolean hasClipChildrenSet = (nodeInfo != null && nodeInfo.isClipChildrenSet());
 
     return hasFocusChangeHandler
         || hasEnabledTouchEventHandlers
@@ -555,6 +567,7 @@ class LayoutState {
         || hasShadowElevation
         || hasOutlineProvider
         || hasClipToOutline
+        || hasClipChildrenSet
         || hasAccessibilityContent
         || isFocusableSetTrue;
   }

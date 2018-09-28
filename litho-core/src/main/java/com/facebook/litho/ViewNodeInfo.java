@@ -39,7 +39,6 @@ class ViewNodeInfo {
   private Rect mPadding;
   private Rect mExpandedTouchBounds;
   private YogaDirection mLayoutDirection;
-  private boolean mClipChildren;
   private @Nullable StateListAnimator mStateListAnimator;
   private @DrawableRes int mStateListAnimatorRes;
 
@@ -134,14 +133,6 @@ class ViewNodeInfo {
     return mExpandedTouchBounds;
   }
 
-  void setClipChildren(boolean clipChildren) {
-    mClipChildren = clipChildren;
-  }
-
-  boolean getClipChildren() {
-    return mClipChildren;
-  }
-
   @Nullable
   StateListAnimator getStateListAnimator() {
     return mStateListAnimator;
@@ -193,10 +184,6 @@ class ViewNodeInfo {
     }
 
     if (!CommonUtils.equals(mLayoutDirection, other.mLayoutDirection)) {
-      return false;
-    }
-
-    if (mClipChildren != other.mClipChildren) {
       return false;
     }
 

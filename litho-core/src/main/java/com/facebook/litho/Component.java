@@ -1417,6 +1417,20 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    /**
+     * Ports {@link android.view.ViewGroup#setClipChildren(boolean)} into components world. However,
+     * there is no guarantee that child of this component would be translated into direct view child
+     * in the resulting view hierarchy.
+     *
+     * @param clipChildren true to clip children to their bounds. False allows each child to draw
+     *     outside of its own bounds within the parent, it doesn't allow children to draw outside of
+     *     the parent itself.
+     */
+    public T clipChildren(boolean clipChildren) {
+      mComponent.getOrCreateCommonPropsHolder().clipChildren(clipChildren);
+      return getThis();
+    }
+
     public T testKey(@Nullable String testKey) {
       mComponent.getOrCreateCommonPropsHolder().testKey(testKey);
       return getThis();

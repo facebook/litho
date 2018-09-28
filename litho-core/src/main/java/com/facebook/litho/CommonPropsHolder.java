@@ -361,6 +361,10 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     getOrCreateNodeInfo().setClipToOutline(clipToOutline);
   }
 
+  void clipChildren(boolean clipChildren) {
+    getOrCreateNodeInfo().setClipChildren(clipChildren);
+  }
+
   void accessibilityRole(@Nullable @AccessibilityRole.AccessibilityRoleType String role) {
     getOrCreateNodeInfo().setAccessibilityRole(role);
   }
