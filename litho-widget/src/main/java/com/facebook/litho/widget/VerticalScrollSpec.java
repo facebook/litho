@@ -51,7 +51,8 @@ import javax.annotation.Nullable;
 
 /**
  * Component that wraps another component, allowing it to be vertically scrollable. It's analogous
- * to {@link android.widget.ScrollView}.
+ * to {@link android.widget.ScrollView}. TreeProps will only be set during @OnCreateInitialState
+ * once, so updating TreeProps on the parent will not reflect on the VerticalScroll.
  *
  * <p>See also: {@link com.facebook.litho.widget.HorizontalScroll} for horizontal scrollability.
  *
@@ -79,7 +80,13 @@ public class VerticalScrollSpec {
     scrollPosition.set(initialScrollPosition);
 
     childComponentTree.set(
-        ComponentTree.create(new ComponentContext(context.getBaseContext()), childComponent)
+        ComponentTree.create(
+                new ComponentContext(
+                    context.getBaseContext(),
+                    context.getLogTag(),
+                    context.getLogger(),
+                    context.getTreePropsCopy()),
+                childComponent)
             .incrementalMount(incrementalMountEnabled)
             .build());
   }
