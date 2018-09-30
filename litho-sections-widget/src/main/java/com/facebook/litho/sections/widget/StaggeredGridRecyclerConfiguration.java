@@ -106,6 +106,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
             .threadPoolForSharedLayoutStateFutureConfig(
                 mRecyclerBinderConfiguration.getThreadPoolForSharedLayoutStateFutureConfig())
             .asyncInitRange(mRecyclerBinderConfiguration.getAsyncInitRange())
+            .hscrollAsyncMode(mRecyclerBinderConfiguration.getHScrollAsyncMode())
             .build(c);
     return (T)
         new SectionBinderTarget(

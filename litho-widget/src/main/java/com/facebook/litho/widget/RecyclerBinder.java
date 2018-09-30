@@ -120,7 +120,7 @@ public class RecyclerBinder
   private final AtomicBoolean mShouldComputeRangeAfterInit = new AtomicBoolean();
   private final AtomicInteger mTotalItemsWithLayoutSize = new AtomicInteger();
   private final AtomicInteger mTotalItemsWithLayoutCount = new AtomicInteger();
-
+  private final boolean mHScrollAsyncMode;
   private boolean mAsyncInitRange;
 
   private String mSplitLayoutTag;
@@ -449,6 +449,7 @@ public class RecyclerBinder
         ComponentsConfiguration.sharedLayoutStateFutureThreadPoolConfig;
     private boolean asyncInitRange = ComponentsConfiguration.asyncInitRange;
     private boolean canMeasure;
+    private boolean hscrollAsyncMode = false;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -629,6 +630,18 @@ public class RecyclerBinder
       return this;
     }
 
+    /**
+     * Experimental. Configuration to change the behavior of HScroll's when they are nested within a
+     * vertical scroll. With this mode, the hscroll will attempt to compute all layouts in the
+     * background before mounting so that no layouts are computed on the main thread. All subsequent
+     * insertions will be treated with LAYOUT_BEFORE_INSERT policy to ensure those layouts also do
+     * not happen on the main thread.
+     */
+    public Builder hscrollAsyncMode(boolean hscrollAsyncMode) {
+      this.hscrollAsyncMode = hscrollAsyncMode;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
@@ -751,6 +764,10 @@ public class RecyclerBinder
     mInvalidStateLogParamsList = builder.invalidStateLogParamsList;
 
     mAsyncInitRange = builder.asyncInitRange;
+    mHScrollAsyncMode = builder.hscrollAsyncMode;
+    if (mHScrollAsyncMode) {
+      mCommitPolicy = CommitPolicy.LAYOUT_BEFORE_INSERT;
+    }
   }
 
   /**

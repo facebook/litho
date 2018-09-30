@@ -38,6 +38,7 @@ public class RecyclerBinderConfiguration {
   private boolean mIsWrapContent;
   @Nullable private String mSplitLayoutTag;
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
+  private boolean mHScrollAsyncMode = false;
   private boolean mEnableStableIds;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
   private boolean mUseSharedLayoutStateFuture = ComponentsConfiguration.useSharedLayoutStateFuture;
@@ -121,6 +122,12 @@ public class RecyclerBinderConfiguration {
     return this;
   }
 
+  /** Experimental. See {@link RecyclerBinder.Builder#hscrollAsyncMode(boolean)} for more info. */
+  public RecyclerBinderConfiguration setHScrollAsyncMode(boolean hscrollAsyncMode) {
+    mHScrollAsyncMode = hscrollAsyncMode;
+    return this;
+  }
+
   public RecyclerBinderConfiguration setUseSharedLayoutStateFuture(
       boolean useSharedLayoutStateFuture) {
     mUseSharedLayoutStateFuture = useSharedLayoutStateFuture;
@@ -179,6 +186,10 @@ public class RecyclerBinderConfiguration {
 
   public boolean getUseBackgroundChangeSets() {
     return mUseBackgroundChangeSets;
+  }
+
+  public boolean getHScrollAsyncMode() {
+    return mHScrollAsyncMode;
   }
 
   public boolean getUseSharedLayoutStateFuture() {

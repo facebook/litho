@@ -111,6 +111,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
             .threadPoolForSharedLayoutStateFutureConfig(
                 mRecyclerBinderConfiguration.getThreadPoolForSharedLayoutStateFutureConfig())
             .asyncInitRange(mRecyclerBinderConfiguration.getAsyncInitRange())
+            .hscrollAsyncMode(mRecyclerBinderConfiguration.getHScrollAsyncMode())
             .build(c);
     return (T)
         new SectionBinderTarget(
