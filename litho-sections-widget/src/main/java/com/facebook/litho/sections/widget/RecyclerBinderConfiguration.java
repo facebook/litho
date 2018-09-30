@@ -20,6 +20,7 @@ import android.support.annotation.Nullable;
 import com.facebook.litho.ComponentLogParams;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
+import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.widget.LayoutHandlerFactory;
 import com.facebook.litho.widget.RecyclerBinder;
@@ -117,6 +118,7 @@ public class RecyclerBinderConfiguration {
     return this;
   }
 
+  /** Experimental. See {@link SectionTree.Target#supportsBackgroundChangeSets()} for more info. */
   public RecyclerBinderConfiguration setUseBackgroundChangeSets(boolean useBackgroundChangeSets) {
     mUseBackgroundChangeSets = useBackgroundChangeSets;
     return this;
