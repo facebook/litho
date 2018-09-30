@@ -309,6 +309,7 @@ public class RecyclerBinder
   private volatile boolean mHasAsyncOperations = false;
   private boolean mIsInitMounted = false; // Set to true when the first mount() is called.
   private @CommitPolicy int mCommitPolicy = CommitPolicy.IMMEDIATE;
+  private boolean mIsFirstChangeSet = true;
 
   @GuardedBy("this")
   private @Nullable AsyncBatch mCurrentBatch = null;
@@ -1058,7 +1059,7 @@ public class RecyclerBinder
   @GuardedBy("this")
   private void addToCurrentBatch(AsyncOperation operation) {
     if (mCurrentBatch == null) {
-      mCurrentBatch = new AsyncBatch(mCommitPolicy);
+      mCurrentBatch = new AsyncBatch(mCommitPolicy, mIsFirstChangeSet);
     }
     mCurrentBatch.mOperations.add(operation);
   }
@@ -1399,6 +1400,40 @@ public class RecyclerBinder
     }
   }
 
+  private synchronized void maybeFillFirstChangeSet() {
+    if (!mHScrollAsyncMode || mAsyncBatches.isEmpty()) {
+      return;
+    }
+
+    final AsyncBatch firstBatch = mAsyncBatches.getFirst();
+    if (!firstBatch.mIsFirstChangeSet) {
+      return;
+    }
+
+    if (ThreadUtils.isMainThread()) {
+      firstBatch.mCommitPolicy = CommitPolicy.IMMEDIATE;
+      applyReadyBatches();
+    } else {
+      ComponentsSystrace.beginSection("fillFirstChangeSet");
+      try {
+        for (AsyncOperation operation : firstBatch.mOperations) {
+          if (operation instanceof AsyncInsertOperation) {
+            final ComponentTreeHolder holder = ((AsyncInsertOperation) operation).mHolder;
+            holder.computeLayoutSync(
+                mComponentContext,
+                getActualChildrenWidthSpec(holder),
+                getActualChildrenHeightSpec(holder),
+                null);
+          }
+        }
+
+        mMainThreadHandler.post(mApplyReadyBatchesRunnable);
+      } finally {
+        ComponentsSystrace.endSection();
+      }
+    }
+  }
+
   @ThreadConfined(UI)
   private void maybeDispatchDataRendered() {
     ThreadUtils.assertMainThread();
@@ -1479,8 +1514,10 @@ public class RecyclerBinder
       // We create a batch here even if it doesn't have any operations: this is so we can still
       // invoke the OnDataBoundListener at the appropriate time (after all preceding batches
       // complete)
-      mCurrentBatch = new AsyncBatch(mCommitPolicy);
+      mCurrentBatch = new AsyncBatch(mCommitPolicy, mIsFirstChangeSet);
     }
+
+    mIsFirstChangeSet = false;
 
     mCurrentBatch.mIsDataChanged = isDataChanged;
     mCurrentBatch.mChangeSetCompleteCallback = changeSetCompleteCallback;
@@ -1765,6 +1802,7 @@ public class RecyclerBinder
     mMeasuredSize = new Size(outSize.width, outSize.height);
     mIsMeasured.set(true);
 
+    maybeFillFirstChangeSet();
     updateAsyncInsertOperations();
 
     if (mRange != null) {
@@ -2661,13 +2699,15 @@ public class RecyclerBinder
    */
   private static final class AsyncBatch {
 
-    private final @CommitPolicy int mCommitPolicy;
+    private final boolean mIsFirstChangeSet;
     private final ArrayList<AsyncOperation> mOperations = new ArrayList<>();
     private boolean mIsDataChanged;
     private ChangeSetCompleteCallback mChangeSetCompleteCallback;
+    private @CommitPolicy int mCommitPolicy;
 
-    public AsyncBatch(@CommitPolicy int commitPolicy) {
+    public AsyncBatch(@CommitPolicy int commitPolicy, boolean isFirstChangeSet) {
       mCommitPolicy = commitPolicy;
+      mIsFirstChangeSet = isFirstChangeSet;
     }
   }
 

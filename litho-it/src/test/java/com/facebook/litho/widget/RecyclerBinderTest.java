@@ -4180,6 +4180,153 @@ public class RecyclerBinderTest {
     }
   }
 
+  @Test
+  public void testHScrollAsyncModeInsertFirstOnMainThread() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .layoutInfo(
+                new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
+            .rangeRatio(10)
+            .hscrollAsyncMode(true)
+            .build(mComponentContext);
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      final Component component2 =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+      renderInfos2.add(ComponentRenderInfo.create().component(component2).build());
+    }
+
+    recyclerBinder.insertRangeAtAsync(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    recyclerBinder.insertRangeAtAsync(5, renderInfos2);
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    // Measure on main means we don't pre-compute all the layouts
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(200, EXACTLY), makeSizeSpec(200, EXACTLY), null);
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(5);
+
+    // First is completed for range calculation
+    assertThat(recyclerBinder.getComponentTreeHolderAt(0).hasCompletedLatestLayout()).isTrue();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(1).hasCompletedLatestLayout()).isFalse();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(2).hasCompletedLatestLayout()).isFalse();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(3).hasCompletedLatestLayout()).isFalse();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(4).hasCompletedLatestLayout()).isFalse();
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(10);
+
+    assertThat(recyclerBinder.getComponentTreeHolderAt(5).hasCompletedLatestLayout()).isTrue();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(6).hasCompletedLatestLayout()).isTrue();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(7).hasCompletedLatestLayout()).isTrue();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(8).hasCompletedLatestLayout()).isTrue();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(9).hasCompletedLatestLayout()).isTrue();
+  }
+
+  @Test
+  public void testHScrollAsyncModeInsertFirstOnBGThread() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .layoutInfo(
+                new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
+            .rangeRatio(10)
+            .hscrollAsyncMode(true)
+            .build(mComponentContext);
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      final Component component2 =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+      renderInfos2.add(ComponentRenderInfo.create().component(component2).build());
+    }
+
+    recyclerBinder.insertRangeAtAsync(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    recyclerBinder.insertRangeAtAsync(5, renderInfos2);
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    runOnBackgroundThreadSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            recyclerBinder.measure(
+                new Size(), makeSizeSpec(200, EXACTLY), makeSizeSpec(200, EXACTLY), null);
+          }
+        });
+
+    ShadowLooper.runUiThreadTasks();
+
+    // Measure on background means we **do** pre-compute all the layouts in first changeset
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(5);
+
+    assertThat(recyclerBinder.getComponentTreeHolderAt(0).hasCompletedLatestLayout()).isTrue();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(1).hasCompletedLatestLayout()).isTrue();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(2).hasCompletedLatestLayout()).isTrue();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(3).hasCompletedLatestLayout()).isTrue();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(4).hasCompletedLatestLayout()).isTrue();
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(10);
+
+    assertThat(recyclerBinder.getComponentTreeHolderAt(5).hasCompletedLatestLayout()).isTrue();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(6).hasCompletedLatestLayout()).isTrue();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(7).hasCompletedLatestLayout()).isTrue();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(8).hasCompletedLatestLayout()).isTrue();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(9).hasCompletedLatestLayout()).isTrue();
+  }
+
+  @Test
+  public void testNoEagerLayoutCalculationWithHScrollAsyncModeOff() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .layoutInfo(
+                new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
+            .rangeRatio(10)
+            .hscrollAsyncMode(false)
+            .build(mComponentContext);
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.insertRangeAtAsync(0, renderInfos);
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    runOnBackgroundThreadSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            recyclerBinder.measure(
+                new Size(), makeSizeSpec(200, EXACTLY), makeSizeSpec(200, EXACTLY), null);
+          }
+        });
+
+    ShadowLooper.runUiThreadTasks();
+
+    // Measure on background means we **do** pre-compute all the layouts in first changeset
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(5);
+
+    assertThat(recyclerBinder.getComponentTreeHolderAt(0).hasCompletedLatestLayout()).isTrue();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(1).hasCompletedLatestLayout()).isFalse();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(2).hasCompletedLatestLayout()).isFalse();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(3).hasCompletedLatestLayout()).isFalse();
+    assertThat(recyclerBinder.getComponentTreeHolderAt(4).hasCompletedLatestLayout()).isFalse();
+  }
+
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
     return new RecyclerBinder.Builder()
         .rangeRatio(RANGE_RATIO)
