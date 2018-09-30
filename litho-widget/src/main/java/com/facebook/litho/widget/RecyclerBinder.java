@@ -307,7 +307,6 @@ public class RecyclerBinder
   private final LayoutHandler mSharedLayoutStateFutureLayoutHandler;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
-  private volatile boolean mHasFilledViewport = false;
   private boolean mIsInitMounted = false; // Set to true when the first mount() is called.
   private @CommitPolicy int mCommitPolicy = CommitPolicy.IMMEDIATE;
 
@@ -1769,8 +1768,6 @@ public class RecyclerBinder
 
     computeLayoutsToFillListViewport(
         mComponentTreeHolders, startIndex, maxWidth, maxHeight, outSize);
-
-    mHasFilledViewport = true;
 
     if (mRange == null) {
       final ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
