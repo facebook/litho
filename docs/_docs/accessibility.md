@@ -76,11 +76,12 @@ For example, here are the steps for overriding `onInitializeAccessibilityNodeInf
 ```java
 @OnEvent(OnInitializeAccessiblityNodeInfoEvent.class)
 static void onInitializeAccessibilityNodeInfoEvent(
+    ComponentContext c,
     @FromEvent AccessibilityDelegateCompat superDelegate,
-    @FromEvent View view,
-    @FromEvent AccessibilityNodeInfoCompat node) {
+    @FromEvent View host,
+    @FromEvent AccessibilityNodeInfoCompat info) {
   // Equivalent to calling super on a regular AccessibilityDelegate, not required
-  superDelegate.onInitializeAccessibilityNodeInfo(view, node);
+  superDelegate.onInitializeAccessibilityNodeInfo(host, info);
   // My implementation
 }
 ``` 
@@ -116,9 +117,9 @@ class PoliteComponentWrapper {
   static void onPopulateAccessibilityEvent(
       ComponentContext c,
       @FromEvent AccessibilityDelegateCompat superDelegate,
-      @FromEvent View view
+      @FromEvent View host,
       @FromEvent AccessibilityEvent event) {
-    superDelegate.onPopulateAccessibilityEvent(view, event);
+    superDelegate.onPopulateAccessibilityEvent(host, event);
     event.getText().add("please");
   }
 }
