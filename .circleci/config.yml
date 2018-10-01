@@ -30,11 +30,11 @@ aliases:
   # Build dependencies Cache aliases
   - &restore-cache-apt
     keys:
-      - v3-apt-{{ arch }}-{{ .Branch }}-{{ checksum "workspace/repo/scripts/apt-get-android-deps.sh" }}
+      - v4-apt-{{ arch }}-{{ .Branch }}-{{ checksum "workspace/repo/scripts/apt-get-android-deps.sh" }}
   - &save-cache-apt
     paths:
       - ~/vendor/apt
-    key: v3-apt-{{ arch }}-{{ .Branch }}-{{ checksum "workspace/repo/scripts/apt-get-android-deps.sh" }}
+    key: v4-apt-{{ arch }}-{{ .Branch }}-{{ checksum "workspace/repo/scripts/apt-get-android-deps.sh" }}
 
   # Repo Cache aliases
   - &restore-repo-cache
