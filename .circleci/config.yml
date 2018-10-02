@@ -139,7 +139,7 @@ store_litho_artifacts: &store_litho_artifacts
     path: ~/litho-working-dir/workspace/junit
 
 executors:
-  litho_executor:
+  litho-executor:
     docker:
       - image: circleci/android:api-28-ndk-r17b
     working_directory: ~/litho-working-dir
@@ -209,7 +209,7 @@ commands:
 
 jobs:
   checkout_code:
-    executor: litho_executor
+    executor: litho-executor
     steps:
       # Create folders needed
       - run: mkdir -p workspace
@@ -247,7 +247,7 @@ jobs:
             - repo
 
   build:
-    executor: litho_executor
+    executor: litho-executor
     steps:
       - attach_restore_setup_buck
       - run: *download-buck-dependencies
@@ -255,43 +255,43 @@ jobs:
       - save_cache: *save-repo-cache
 
   buck_sample_build:
-    executor: litho_executor
+    executor: litho-executor
     steps:
       - buck_build:
           module_name: "sample"
 
   buck_sample_barebones_build:
-    executor: litho_executor
+    executor: litho-executor
     steps:
       - buck_build:
           module_name: "sample-barebones"
 
   buck_sample_codelab_build:
-    executor: litho_executor
+    executor: litho-executor
     steps:
       - buck_build:
           module_name: "sample-codelab"
 
   gradle_sample_kotlin_build:
-    executor: litho_executor
+    executor: litho-executor
     steps:
       - gradle_build:
           module_name: "sample-kotlin"
   
   buck_litho_it_tests_run:
-    executor: litho_executor
+    executor: litho-executor
     steps:
       - buck_tests:
           module_name: "litho-it"
 
   buck_litho_it_powermock_tests_run:
-    executor: litho_executor
+    executor: litho-executor
     steps:
       - buck_tests:
           module_name: "litho-it-powermock"
 
   gradle_tests_run:
-    executor: litho_executor
+    executor: litho-executor
     steps:
       - attach_restore_setup_buck
       - run:
@@ -304,7 +304,7 @@ jobs:
       - *store_litho_artifacts
 
   publish_snapshot:
-    executor: litho_executor
+    executor: litho-executor
     steps:
       - attach_restore_setup_buck
       - run: *setup-keys
