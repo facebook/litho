@@ -1407,12 +1407,20 @@ public class RecyclerBinder
     }
   }
 
-  private synchronized void maybeFillFirstChangeSet() {
-    if (!mHScrollAsyncMode || mAsyncBatches.isEmpty()) {
+  private void maybeFillFirstChangeSet() {
+    if (!mHScrollAsyncMode) {
       return;
     }
 
-    final AsyncBatch firstBatch = mAsyncBatches.getFirst();
+    final AsyncBatch firstBatch;
+    synchronized (this) {
+      if (mAsyncBatches.isEmpty()) {
+        return;
+      }
+
+      firstBatch = mAsyncBatches.getFirst();
+    }
+
     if (!firstBatch.mIsFirstChangeSet) {
       return;
     }
@@ -1425,12 +1433,15 @@ public class RecyclerBinder
       try {
         for (AsyncOperation operation : firstBatch.mOperations) {
           if (operation instanceof AsyncInsertOperation) {
+            final int widthSpec;
+            final int heightSpec;
             final ComponentTreeHolder holder = ((AsyncInsertOperation) operation).mHolder;
-            holder.computeLayoutSync(
-                mComponentContext,
-                getActualChildrenWidthSpec(holder),
-                getActualChildrenHeightSpec(holder),
-                null);
+            synchronized (this) {
+              widthSpec = getActualChildrenWidthSpec(holder);
+              heightSpec = getActualChildrenHeightSpec(holder);
+            }
+
+            holder.computeLayoutSync(mComponentContext, widthSpec, heightSpec, null);
           }
         }
 
