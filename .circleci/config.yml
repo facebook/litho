@@ -126,17 +126,18 @@ aliases:
       find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/litho-working-dir/workspace/junit/ \;
     when: always
 
-circle_ci_android_container_config: &circle_ci_android_container_config
-  docker:
-    - image: circleci/android:api-28-ndk-r17b
-  working_directory: ~/litho-working-dir
-  environment:
-    # Borrowed from https://github.com/chrisbanes/tivi/blob/master/.circleci/config.yml
-    # Sometimes gradle_tests_run job would fail with OOM error from CI. This is an attempt to fix it!
-    _JAVA_OPTIONS: "-Xmx1500m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2"
-    TERM: 'dumb'
-    ANDROID_NDK_REPOSITORY: '/opt/ndk'
-    ANDROID_NDK_HOME: '/opt/ndk/android-ndk-r15c/'
+executors:
+  litho_executor:
+    docker:
+      - image: circleci/android:api-28-ndk-r17b
+    working_directory: ~/litho-working-dir
+    environment:
+      # Borrowed from https://github.com/chrisbanes/tivi/blob/master/.circleci/config.yml
+      # Sometimes gradle_tests_run job would fail with OOM error from CI. This is an attempt to fix it!
+      _JAVA_OPTIONS: "-Xmx1500m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -XX:ParallelGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2"
+      TERM: 'dumb'
+      ANDROID_NDK_REPOSITORY: '/opt/ndk'
+      ANDROID_NDK_HOME: '/opt/ndk/android-ndk-r15c/'
 
 attach_workspace: &attach_workspace
   attach_workspace:
@@ -152,7 +153,7 @@ store_litho_artifacts: &store_litho_artifacts
 
 jobs:
   checkout_code:
-    <<: *circle_ci_android_container_config
+    executor: litho_executor
     steps:
       # Create folders needed
       - run: mkdir -p workspace
@@ -190,7 +191,7 @@ jobs:
             - repo
 
   build:
-    <<: *circle_ci_android_container_config
+    executor: litho_executor
     steps:
       - *attach_workspace
       - run: *create-android-ndk-dir
@@ -204,7 +205,7 @@ jobs:
       - save_cache: *save-repo-cache
 
   buck_sample_build:
-    <<: *circle_ci_android_container_config
+    executor: litho_executor
     steps:
       - *attach_workspace
       - run: *create-android-ndk-dir
@@ -221,7 +222,7 @@ jobs:
             buck build sample --num-threads=4
 
   buck_sample_barebones_build:
-    <<: *circle_ci_android_container_config
+    executor: litho_executor
     steps:
       - *attach_workspace
       - run: *create-android-ndk-dir
@@ -238,7 +239,7 @@ jobs:
             buck build sample-barebones --num-threads=4
 
   buck_sample_codelab_build:
-    <<: *circle_ci_android_container_config
+    executor: litho_executor
     steps:
       - *attach_workspace
       - run: *create-android-ndk-dir
@@ -255,7 +256,7 @@ jobs:
             buck build sample-codelab --num-threads=4
 
   gradle_sample_kotlin_build:
-    <<: *circle_ci_android_container_config
+    executor: litho_executor
     steps:
       - *attach_workspace
       - run: *create-android-ndk-dir
@@ -271,7 +272,7 @@ jobs:
             ./gradlew :sample-kotlin:assembleDebug --no-daemon --max-workers 2
 
   buck_litho_it_tests_run:
-    <<: *circle_ci_android_container_config
+    executor: litho_executor
     steps:
       - *attach_workspace
       - run: *create-android-ndk-dir
@@ -291,7 +292,7 @@ jobs:
       - *store_litho_artifacts
 
   buck_litho_it_powermock_tests_run:
-    <<: *circle_ci_android_container_config
+    executor: litho_executor
     steps:
       - *attach_workspace
       - run: *create-android-ndk-dir
@@ -311,7 +312,7 @@ jobs:
       - *store_litho_artifacts
 
   gradle_tests_run:
-    <<: *circle_ci_android_container_config
+    executor: litho_executor
     steps:
       - *attach_workspace
       - run: *create-android-ndk-dir
@@ -330,7 +331,7 @@ jobs:
       - *store_litho_artifacts
 
   publish_snapshot:
-    <<: *circle_ci_android_container_config
+    executor: litho_executor
     steps:
       - *attach_workspace
       - run: *create-android-ndk-dir
