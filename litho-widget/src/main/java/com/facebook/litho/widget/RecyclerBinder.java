@@ -129,6 +129,7 @@ public class RecyclerBinder
   @GuardedBy("this")
   private final Deque<AsyncBatch> mAsyncBatches = new ArrayDeque<>();
 
+  @ThreadConfined(ThreadConfined.UI)
   @VisibleForTesting
   final Deque<ChangeSetCompleteCallback> mDataRenderedCallbacks = new ArrayDeque<>();
 
@@ -859,23 +860,28 @@ public class RecyclerBinder
   private void applyReadyBatches() {
     ThreadUtils.assertMainThread();
 
-    synchronized (this) {
-      boolean appliedBatch = false;
-      while (!mAsyncBatches.isEmpty()) {
-        final AsyncBatch batch = mAsyncBatches.peekFirst();
+    boolean appliedBatch = false;
+    while (true) {
+      final AsyncBatch batch;
+      synchronized (this) {
+        if (mAsyncBatches.isEmpty()) {
+          break;
+        }
+
+        batch = mAsyncBatches.peekFirst();
         if (!isBatchReady(batch)) {
           break;
         }
 
         mAsyncBatches.pollFirst();
-        applyBatch(batch);
-
-        appliedBatch |= batch.mIsDataChanged;
       }
 
-      if (appliedBatch) {
-        maybeUpdateRangeOrRemeasureForMutation();
-      }
+      applyBatch(batch);
+      appliedBatch |= batch.mIsDataChanged;
+    }
+
+    if (appliedBatch) {
+      maybeUpdateRangeOrRemeasureForMutation();
     }
   }
 
@@ -894,39 +900,40 @@ public class RecyclerBinder
     return true;
   }
 
-  @GuardedBy("this")
   @UiThread
   private void applyBatch(AsyncBatch batch) {
-    for (int i = 0, size = batch.mOperations.size(); i < size; i++) {
-      final AsyncOperation operation = batch.mOperations.get(i);
+    synchronized (this) {
+      for (int i = 0, size = batch.mOperations.size(); i < size; i++) {
+        final AsyncOperation operation = batch.mOperations.get(i);
 
-      switch (operation.mOperation) {
-        case Operation.INSERT:
-          applyAsyncInsert((AsyncInsertOperation) operation);
-          break;
-        case Operation.UPDATE:
-          final AsyncUpdateOperation updateOperation = (AsyncUpdateOperation) operation;
-          updateItemAt(updateOperation.mPosition, updateOperation.mRenderInfo);
-          break;
-        case Operation.UPDATE_RANGE:
-          final AsyncUpdateRangeOperation updateRangeOperation =
-              (AsyncUpdateRangeOperation) operation;
-          updateRangeAt(updateRangeOperation.mPosition, updateRangeOperation.mRenderInfos);
-          break;
-        case Operation.REMOVE:
-          removeItemAt(((AsyncRemoveOperation) operation).mPosition);
-          break;
-        case Operation.REMOVE_RANGE:
-          final AsyncRemoveRangeOperation removeRangeOperation =
-              (AsyncRemoveRangeOperation) operation;
-          removeRangeAt(removeRangeOperation.mPosition, removeRangeOperation.mCount);
-          break;
-        case Operation.MOVE:
-          final AsyncMoveOperation moveOperation = (AsyncMoveOperation) operation;
-          moveItem(moveOperation.mFromPosition, moveOperation.mToPosition);
-          break;
-        default:
-          throw new RuntimeException("Unhandled operation type: " + operation.mOperation);
+        switch (operation.mOperation) {
+          case Operation.INSERT:
+            applyAsyncInsert((AsyncInsertOperation) operation);
+            break;
+          case Operation.UPDATE:
+            final AsyncUpdateOperation updateOperation = (AsyncUpdateOperation) operation;
+            updateItemAt(updateOperation.mPosition, updateOperation.mRenderInfo);
+            break;
+          case Operation.UPDATE_RANGE:
+            final AsyncUpdateRangeOperation updateRangeOperation =
+                (AsyncUpdateRangeOperation) operation;
+            updateRangeAt(updateRangeOperation.mPosition, updateRangeOperation.mRenderInfos);
+            break;
+          case Operation.REMOVE:
+            removeItemAt(((AsyncRemoveOperation) operation).mPosition);
+            break;
+          case Operation.REMOVE_RANGE:
+            final AsyncRemoveRangeOperation removeRangeOperation =
+                (AsyncRemoveRangeOperation) operation;
+            removeRangeAt(removeRangeOperation.mPosition, removeRangeOperation.mCount);
+            break;
+          case Operation.MOVE:
+            final AsyncMoveOperation moveOperation = (AsyncMoveOperation) operation;
+            moveItem(moveOperation.mFromPosition, moveOperation.mToPosition);
+            break;
+          default:
+            throw new RuntimeException("Unhandled operation type: " + operation.mOperation);
+        }
       }
     }
 
