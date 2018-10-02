@@ -19,6 +19,7 @@ package com.facebook.litho;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -256,6 +257,8 @@ public final class DebugComponent {
           for (CharSequence charSequence : ((TextContent) content).getTextItems()) {
             sb.append(charSequence);
           }
+        } else if (content instanceof TextView) {
+          sb.append(((TextView) content).getText());
         }
       }
     }
