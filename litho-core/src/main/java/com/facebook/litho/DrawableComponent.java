@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.reference.Reference;
 
 class DrawableComponent<T extends Drawable> extends Component {
@@ -65,8 +66,15 @@ class DrawableComponent<T extends Drawable> extends Component {
       ComponentContext context,
       Object mountedContent) {
     final MatrixDrawable<T> matrixDrawable = (MatrixDrawable<T>) mountedContent;
-    Reference.release(context, matrixDrawable.getMountedDrawable(), getDrawable());
+    final T innerMountedDrawable = matrixDrawable.getMountedDrawable();
+
+    if (!ComponentsConfiguration.unmountThenReleaseDrawableCmp) {
+      Reference.release(context, innerMountedDrawable, getDrawable());
+    }
     matrixDrawable.unmount();
+    if (ComponentsConfiguration.unmountThenReleaseDrawableCmp) {
+      Reference.release(context, innerMountedDrawable, getDrawable());
+    }
   }
 
   @Override

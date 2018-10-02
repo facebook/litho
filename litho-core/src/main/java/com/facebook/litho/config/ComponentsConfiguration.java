@@ -222,4 +222,7 @@ public class ComponentsConfiguration {
 
   /** Never use Display Lists, despite ComponentTree configuration. */
   public static boolean forceNotToCacheDisplayLists = false;
+
+  public static boolean unsetThenReleaseDrawableBackground = false;
+  public static boolean unmountThenReleaseDrawableCmp = false;
 }
