@@ -157,10 +157,10 @@ commands:
     steps:
       - *attach_workspace
       - run: *create-android-ndk-dir
-      - restore-cache: *restore-cache-ndk
-      - restore-cache: *restore-cache-buck
-      - restore-cache: *restore-repo-cache
-      - restore-cache: *restore-cache-android-packages
+      - restore_cache: *restore-cache-ndk
+      - restore_cache: *restore-cache-buck
+      - restore_cache: *restore-repo-cache
+      - restore_cache: *restore-cache-android-packages
       - run: *setup-buck
 
   buck_build:
@@ -221,24 +221,24 @@ jobs:
 
       # Manage Android NDK caches
       - run: *create-android-ndk-dir
-      - restore-cache: *restore-cache-ndk
+      - restore_cache: *restore-cache-ndk
       - run: *install-ndk
-      - save-cache: *save-cache-ndk
+      - save_cache: *save-cache-ndk
 
       # Manage Android build depencies caches
-      - restore-cache: *restore-cache-apt
+      - restore_cache: *restore-cache-apt
       - run: *install-android-build-dependencies
-      - save-cache: *save-cache-apt
+      - save_cache: *save-cache-apt
 
       # Manage Android SDK caches
-      - restore-cache: *restore-cache-android-packages
+      - restore_cache: *restore-cache-android-packages
       - run: *install-android-packages
-      - save-cache: *save-cache-android-packages
+      - save_cache: *save-cache-android-packages
 
       # Manage BUCK caches
-      - restore-cache: *restore-cache-buck
+      - restore_cache: *restore-cache-buck
       - run: *download-buck
-      - save-cache: *save-cache-buck
+      - save_cache: *save-cache-buck
 
       # Persist repo code
       - persist_to_workspace:
