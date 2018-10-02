@@ -113,7 +113,7 @@ aliases:
       cd workspace
       mkdir -p junit
       cd repo
-      find . -type f -name "litho_it_*tests*.xml" -exec cp {} ~/litho-working-dir/workspace/junit/ \;
+      find . -type f -name "litho-it*tests*.xml" -exec cp {} ~/litho-working-dir/workspace/junit/ \;
     when: always
 
   # Save Litho Gradle test results
