@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import android.view.View;
 import com.facebook.litho.annotations.Event;
 
 /**
@@ -24,4 +25,5 @@ import com.facebook.litho.annotations.Event;
  */
 @Event
 public class VisibleEvent {
+  public View view;
 }

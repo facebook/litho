@@ -551,7 +551,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           // component has changed so we should generate new visibility events for the new
           // component.
           if (visibilityItem.getInvisibleHandler() != null) {
-            EventDispatcherUtils.dispatchOnInvisible(visibilityItem.getInvisibleHandler());
+            EventDispatcherUtils
+                .dispatchOnInvisible(visibilityItem.getInvisibleHandler(), mLithoView);
           }
 
           if (visibilityChangedHandler != null) {
@@ -589,7 +590,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
 
           if (visibleHandler != null) {
-            EventDispatcherUtils.dispatchOnVisible(visibleHandler);
+            EventDispatcherUtils.dispatchOnVisible(visibleHandler, mLithoView);
           }
         }
 
@@ -752,7 +753,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
             visibilityItem.getVisibilityChangedHandler();
 
         if (invisibleHandler != null) {
-          EventDispatcherUtils.dispatchOnInvisible(invisibleHandler);
+          EventDispatcherUtils.dispatchOnInvisible(invisibleHandler, mLithoView);
         }
 
         if (visibilityItem.isInFocusedRange()) {
