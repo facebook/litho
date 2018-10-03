@@ -21,11 +21,11 @@ import static com.facebook.litho.displaylist.Utils.safeInvoke;
 import android.graphics.Canvas;
 import android.view.DisplayListCanvas;
 import android.view.RenderNode;
+import com.facebook.infer.annotation.OkToExtend;
 import java.lang.reflect.Method;
 
-/**
- * Implementation of {@link PlatformDisplayList} for Android Marshmallow.
- */
+/** Implementation of {@link PlatformDisplayList} for Android Marshmallow. */
+@OkToExtend
 public class DisplayListMarshmallow implements PlatformDisplayList {
 
   private static Class sRenderNodeClass;

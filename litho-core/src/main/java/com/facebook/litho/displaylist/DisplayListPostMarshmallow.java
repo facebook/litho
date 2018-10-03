@@ -16,19 +16,19 @@
 
 package com.facebook.litho.displaylist;
 
+import android.support.annotation.Nullable;
 import android.view.RenderNode;
 
-/**
- * Implementation of {@link PlatformDisplayList} for Android Nougat.
- */
-public class DisplayListNougat extends DisplayListMarshmallow {
+/** Implementation of {@link PlatformDisplayList} for Android Nougat. */
+public class DisplayListPostMarshmallow extends DisplayListMarshmallow {
 
+  @Nullable
   static PlatformDisplayList createDisplayList(String debugName) {
     try {
       ensureInitialized();
       if (sInitialized) {
         RenderNode renderNode = RenderNode.create(debugName, null);
-        return new DisplayListNougat(renderNode);
+        return new DisplayListPostMarshmallow(renderNode);
       }
     } catch (Throwable e) {
       sInitializationFailed = true;
@@ -37,7 +37,7 @@ public class DisplayListNougat extends DisplayListMarshmallow {
     return null;
   }
 
-  private DisplayListNougat(RenderNode displayList) {
+  private DisplayListPostMarshmallow(RenderNode displayList) {
     super(displayList);
   }
 

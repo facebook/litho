@@ -47,38 +47,29 @@ public class DisplayList {
           "DisplayLists are not supposed to be used, this should never be called");
     }
 
-    final PlatformDisplayList platformDisplayList;
-    switch (Build.VERSION.SDK_INT) {
-      case 25: // Nougat MR1
-      case 24: // Nougat
-        platformDisplayList = DisplayListNougat.createDisplayList(name);
-        break;
-      case Build.VERSION_CODES.M:
-        platformDisplayList = DisplayListMarshmallow.createDisplayList(name);
-        break;
-      case Build.VERSION_CODES.LOLLIPOP_MR1:
-      case Build.VERSION_CODES.LOLLIPOP:
-        platformDisplayList = DisplayListLollipop.createDisplayList(name);
-        break;
-      case Build.VERSION_CODES.KITKAT_WATCH:
-      case Build.VERSION_CODES.KITKAT:
-      case Build.VERSION_CODES.JELLY_BEAN_MR2:
-        platformDisplayList = DisplayListJBMR2.createDisplayList(name);
-        break;
-      case Build.VERSION_CODES.JELLY_BEAN_MR1:
-      case Build.VERSION_CODES.JELLY_BEAN:
-        platformDisplayList = DisplayListJB.createDisplayList(name);
-        break;
-      default:
-        platformDisplayList = null;
-        break;
-    }
-
+    final PlatformDisplayList platformDisplayList = createPlatformDisplayList(name);
     if (platformDisplayList == null) {
       return null;
     }
-
     return new DisplayList(platformDisplayList);
+  }
+
+  @Nullable
+  private static PlatformDisplayList createPlatformDisplayList(String name) {
+    final int sdkVersion = Build.VERSION.SDK_INT;
+    if (sdkVersion >= Build.VERSION_CODES.N) {
+      return DisplayListPostMarshmallow.createDisplayList(name);
+    } else if (sdkVersion >= Build.VERSION_CODES.M) {
+      return DisplayListMarshmallow.createDisplayList(name);
+    } else if (sdkVersion >= Build.VERSION_CODES.LOLLIPOP) {
+      return DisplayListLollipop.createDisplayList(name);
+    } else if (sdkVersion >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      return DisplayListJBMR2.createDisplayList(name);
+    } else if (sdkVersion >= Build.VERSION_CODES.JELLY_BEAN) {
+      return DisplayListJB.createDisplayList(name);
+    } else {
+      return null;
+    }
   }
 
   /**
