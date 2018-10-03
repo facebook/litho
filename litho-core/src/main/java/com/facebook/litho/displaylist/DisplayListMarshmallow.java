@@ -105,6 +105,16 @@ public class DisplayListMarshmallow implements PlatformDisplayList {
   }
 
   @Override
+  public void setTranslationX(float translationX) {
+    mDisplayList.setTranslationX(translationX);
+  }
+
+  @Override
+  public void setTranslationY(float translationY) {
+    mDisplayList.setTranslationY(translationY);
+  }
+
+  @Override
   public boolean isValid() {
     return mDisplayList.isValid();
   }

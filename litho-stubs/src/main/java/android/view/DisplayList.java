@@ -31,6 +31,10 @@ public abstract class DisplayList {
 
   public abstract void setLeftTopRightBottom(int left, int top, int right, int bottom);
 
+  public abstract void setTranslationX(float translationX);
+
+  public abstract void setTranslationY(float translationY);
+
   public abstract boolean isValid();
 
   public abstract void invalidate();

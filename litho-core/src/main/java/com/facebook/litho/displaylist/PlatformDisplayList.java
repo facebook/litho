@@ -35,5 +35,9 @@ interface PlatformDisplayList {
 
   void setBounds(int left, int top, int right, int bottom) throws DisplayListException;
 
+  void setTranslationX(float translationX) throws DisplayListException;
+
+  void setTranslationY(float translationY) throws DisplayListException;
+
   boolean isValid();
 }

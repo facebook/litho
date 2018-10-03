@@ -17,6 +17,7 @@
 package com.facebook.litho.displaylist;
 
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -32,6 +33,10 @@ import com.facebook.litho.config.ComponentsConfiguration;
 public class DisplayList {
   private final PlatformDisplayList mDisplayListImpl;
   private boolean mStarted;
+  private int mLeft;
+  private int mTop;
+  private int mRight;
+  private int mBottom;
 
   private DisplayList(PlatformDisplayList displayListImpl) {
     mDisplayListImpl = displayListImpl;
@@ -127,7 +132,28 @@ public class DisplayList {
    * @throws DisplayListException if setting the bouds failed
    */
   public void setBounds(int left, int top, int right, int bottom) throws DisplayListException {
+    mLeft = left;
+    mTop = top;
+    mRight = right;
+    mBottom = bottom;
     mDisplayListImpl.setBounds(left, top, right, bottom);
+  }
+
+  /**
+   * @returns the bounds set to this DisplayList. This does *NOT* take into account X/Y translations
+   */
+  public Rect getBounds() {
+    return new Rect(mLeft, mTop, mRight, mBottom);
+  }
+
+  /** Set X translation to this DisplayList */
+  public void setTranslationX(float translationX) throws DisplayListException {
+    mDisplayListImpl.setTranslationX(translationX);
+  }
+
+  /** Set Y translation to this DisplayList */
+  public void setTranslationY(float translationY) throws DisplayListException {
+    mDisplayListImpl.setTranslationY(translationY);
   }
 
   public boolean isValid() {

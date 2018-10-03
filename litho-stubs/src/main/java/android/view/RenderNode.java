@@ -52,6 +52,14 @@ public class RenderNode {
     throw new RuntimeException("Stub!");
   }
 
+  public boolean setTranslationX(float translationX) {
+    throw new RuntimeException("Stub!");
+  }
+
+  public boolean setTranslationY(float translationY) {
+    throw new RuntimeException("Stub!");
+  }
+
   public void output() {
     throw new RuntimeException("Stub!");
   }
