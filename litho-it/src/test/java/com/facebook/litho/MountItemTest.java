@@ -213,7 +213,7 @@ public class MountItemTest {
   public void testIsAccessibleWithNullComponent() {
     final MountItem mountItem = new MountItem();
     mountItem.init(
-        null,
+        mComponent,
         mComponentHost,
         mContent,
         mNodeInfo,
@@ -293,6 +293,7 @@ public class MountItemTest {
   public void testUpdateDoesntChangeFlags() {
     LayoutOutput layoutOutput = new LayoutOutput();
     layoutOutput.setNodeInfo(mNodeInfo);
+    layoutOutput.setComponent(mComponent);
     final MountItem mountItem = new MountItem();
     View view = new View(RuntimeEnvironment.application);
 

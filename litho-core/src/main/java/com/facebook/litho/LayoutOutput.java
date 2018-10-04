@@ -68,6 +68,10 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   }
 
   void setComponent(Component component) {
+    if (component == null) {
+      throw new RuntimeException("Trying to set a null Component on a LayoutOutput!");
+    }
+
     mComponent = component;
   }
 

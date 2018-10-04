@@ -67,6 +67,9 @@ class MountItem {
    */
   void update(LayoutOutput layoutOutput) {
     mComponent = layoutOutput.getComponent();
+    if (mComponent == null) {
+      throw new RuntimeException("Trying to update a MountItem with a null Component!");
+    }
     mLayoutFlags = layoutOutput.getFlags();
     mImportantForAccessibility = layoutOutput.getImportantForAccessibility();
     mDisplayListDrawable =
@@ -118,6 +121,9 @@ class MountItem {
       String transitionKey) {
     if (mHost != null) {
       throw new RuntimeException("Calling init() on a MountItem that has not been released!");
+    }
+    if (component == null) {
+      throw new RuntimeException("Calling init() on a MountItem with a null Component!");
     }
 
     mComponent = component;

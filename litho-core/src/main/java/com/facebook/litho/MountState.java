@@ -490,6 +490,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   void processVisibilityOutputs(
       LayoutState layoutState, Rect localVisibleRect, @Nullable PerfEvent mountPerfEvent) {
+    assertMainThread();
+
     if (localVisibleRect == null) {
       return;
     }
@@ -734,6 +736,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   void clearVisibilityItems() {
+    assertMainThread();
     boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("MountState.clearVisibilityItems");
@@ -842,6 +845,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       int index) {
     final Component layoutOutputComponent = layoutOutput.getComponent();
     final Component itemComponent = currentMountItem.getComponent();
+    if (layoutOutputComponent == null) {
+      throw new RuntimeException("Trying to update a MountItem with a null Component.");
+    }
 
     // 1. Check if the mount item generated from the old component should be updated.
     final boolean shouldUpdateMountItem =
@@ -1345,6 +1351,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     // 2. Generate the component's mount state (this might also be a ComponentHost View).
     final Component component = layoutOutput.getComponent();
+    if (component == null) {
+      throw new RuntimeException("Trying to mount a LayoutOutput with a null Component.");
+    }
     final Object content = ComponentsPools.acquireMountContent(mContext, component);
 
     final ComponentContext context = getContextForComponent(component);
@@ -2242,6 +2251,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   void unmountAllItems() {
+    assertMainThread();
     if (mLayoutOutputsIds == null) {
       return;
     }
@@ -2404,10 +2414,12 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   int getItemCount() {
+    assertMainThread();
     return mLayoutOutputsIds == null ? 0 : mLayoutOutputsIds.length;
   }
 
   MountItem getItemAt(int i) {
+    assertMainThread();
     return mIndexToItemMap.get(mLayoutOutputsIds[i]);
   }
 
@@ -2739,6 +2751,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
    * {@link ComponentLifecycle}.
    */
   void unbind() {
+    assertMainThread();
     if (mLayoutOutputsIds == null) {
       return;
     }
@@ -2768,6 +2781,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   void detach() {
+    assertMainThread();
     unbind();
   }
 
@@ -2777,6 +2791,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
    * {@link LithoView} that owns the MountState.
    */
   void rebind() {
+    assertMainThread();
+
     if (mLayoutOutputsIds == null) {
       return;
     }
@@ -2924,6 +2940,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   LithoView getLithoView() {
+    assertMainThread();
     return mLithoView;
   }
 
@@ -2948,6 +2965,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
    * @param layoutState that is going to be mounted.
    */
   void collectAllTransitions(LayoutState layoutState, ComponentTree componentTree) {
+    assertMainThread();
     if (mTransitionsHasBeenCollected) {
       return;
     }

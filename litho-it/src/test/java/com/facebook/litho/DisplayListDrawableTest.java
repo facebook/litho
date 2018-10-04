@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.robolectric.RuntimeEnvironment;
 
 /**
  * Test for {@link DisplayListDrawable}
@@ -92,11 +93,14 @@ public class DisplayListDrawableTest  {
     LayoutOutput layoutOutput = ComponentsPools.acquireLayoutOutput();
     layoutOutput.initDisplayListContainer("Test", false);
     layoutOutput.setDisplayList(mDisplayList);
-    MountItem mountItem = ComponentsPools.acquireMountItem(null, null, mDrawable, layoutOutput);
+    Component emptyTestComponent =
+        Row.create(new ComponentContext(RuntimeEnvironment.application)).build();
+    MountItem mountItem =
+        ComponentsPools.acquireMountItem(emptyTestComponent, null, mDrawable, layoutOutput);
     DisplayListDrawable displayListDrawable = mountItem.getDisplayListDrawable();
 
     layoutOutput.setDisplayList(null);
-    mountItem.init(null, null, mDrawable, layoutOutput, displayListDrawable);
+    mountItem.init(emptyTestComponent, null, mDrawable, layoutOutput, displayListDrawable);
 
     displayListDrawable.draw(mCanvas);
     verify(mDrawable).draw(mCanvas);
