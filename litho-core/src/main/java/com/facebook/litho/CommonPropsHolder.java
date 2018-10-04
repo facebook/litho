@@ -312,23 +312,24 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     getOrCreateOtherProps().visibleWidthRatio(visibleWidthRatio);
   }
 
-  void visibleHandler(EventHandler<VisibleEvent> visibleHandler) {
+  void visibleHandler(@Nullable EventHandler<VisibleEvent> visibleHandler) {
     getOrCreateOtherProps().visibleHandler(visibleHandler);
   }
 
-  void focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler) {
+  void focusedHandler(@Nullable EventHandler<FocusedVisibleEvent> focusedHandler) {
     getOrCreateOtherProps().focusedHandler(focusedHandler);
   }
 
-  void unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
+  void unfocusedHandler(@Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
     getOrCreateOtherProps().unfocusedHandler(unfocusedHandler);
   }
 
-  void fullImpressionHandler(EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
+  void fullImpressionHandler(
+      @Nullable EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
     getOrCreateOtherProps().fullImpressionHandler(fullImpressionHandler);
   }
 
-  void invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
+  void invisibleHandler(@Nullable EventHandler<InvisibleEvent> invisibleHandler) {
     getOrCreateOtherProps().invisibleHandler(invisibleHandler);
   }
 
@@ -759,28 +760,28 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mVisibleWidthRatio = visibleWidthRatio;
     }
 
-    private void visibleHandler(EventHandler<VisibleEvent> visibleHandler) {
+    private void visibleHandler(@Nullable EventHandler<VisibleEvent> visibleHandler) {
       mPrivateFlags |= PFLAG_VISIBLE_HANDLER_IS_SET;
       mVisibleHandler = visibleHandler;
     }
 
-    private void focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler) {
+    private void focusedHandler(@Nullable EventHandler<FocusedVisibleEvent> focusedHandler) {
       mPrivateFlags |= PFLAG_FOCUSED_HANDLER_IS_SET;
       mFocusedHandler = focusedHandler;
     }
 
-    private void unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
+    private void unfocusedHandler(@Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
       mPrivateFlags |= PFLAG_UNFOCUSED_HANDLER_IS_SET;
       mUnfocusedHandler = unfocusedHandler;
     }
 
     private void fullImpressionHandler(
-        EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
+        @Nullable EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
       mPrivateFlags |= PFLAG_FULL_IMPRESSION_HANDLER_IS_SET;
       mFullImpressionHandler = fullImpressionHandler;
     }
 
-    private void invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
+    private void invisibleHandler(@Nullable EventHandler<InvisibleEvent> invisibleHandler) {
       mPrivateFlags |= PFLAG_INVISIBLE_HANDLER_IS_SET;
       mInvisibleHandler = invisibleHandler;
     }

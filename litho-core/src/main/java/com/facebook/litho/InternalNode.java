@@ -137,11 +137,11 @@ class InternalNode implements ComponentLayout {
   private String mTransitionKey;
   private float mVisibleHeightRatio;
   private float mVisibleWidthRatio;
-  private EventHandler<VisibleEvent> mVisibleHandler;
-  private EventHandler<FocusedVisibleEvent> mFocusedHandler;
-  private EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
-  private EventHandler<FullImpressionVisibleEvent> mFullImpressionHandler;
-  private EventHandler<InvisibleEvent> mInvisibleHandler;
+  @Nullable private EventHandler<VisibleEvent> mVisibleHandler;
+  @Nullable private EventHandler<FocusedVisibleEvent> mFocusedHandler;
+  @Nullable private EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
+  @Nullable private EventHandler<FullImpressionVisibleEvent> mFullImpressionHandler;
+  @Nullable private EventHandler<InvisibleEvent> mInvisibleHandler;
   private @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
   private String mTestKey;
   private Edges mTouchExpansion;
@@ -970,53 +970,58 @@ class InternalNode implements ComponentLayout {
     return mVisibleWidthRatio;
   }
 
-  InternalNode visibleHandler(EventHandler<VisibleEvent> visibleHandler) {
+  InternalNode visibleHandler(@Nullable EventHandler<VisibleEvent> visibleHandler) {
     mPrivateFlags |= PFLAG_VISIBLE_HANDLER_IS_SET;
     mVisibleHandler = addVisibilityHandler(mVisibleHandler, visibleHandler);
     return this;
   }
 
+  @Nullable
   EventHandler<VisibleEvent> getVisibleHandler() {
     return mVisibleHandler;
   }
 
-  InternalNode focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler) {
+  InternalNode focusedHandler(@Nullable EventHandler<FocusedVisibleEvent> focusedHandler) {
     mPrivateFlags |= PFLAG_FOCUSED_HANDLER_IS_SET;
     mFocusedHandler = addVisibilityHandler(mFocusedHandler, focusedHandler);
     return this;
   }
 
+  @Nullable
   EventHandler<FocusedVisibleEvent> getFocusedHandler() {
     return mFocusedHandler;
   }
 
-  InternalNode unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
+  InternalNode unfocusedHandler(@Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
     mPrivateFlags |= PFLAG_UNFOCUSED_HANDLER_IS_SET;
     mUnfocusedHandler = addVisibilityHandler(mUnfocusedHandler, unfocusedHandler);
     return this;
   }
 
+  @Nullable
   EventHandler<UnfocusedVisibleEvent> getUnfocusedHandler() {
     return mUnfocusedHandler;
   }
 
   InternalNode fullImpressionHandler(
-      EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
+      @Nullable EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
     mPrivateFlags |= PFLAG_FULL_IMPRESSION_HANDLER_IS_SET;
     mFullImpressionHandler = addVisibilityHandler(mFullImpressionHandler, fullImpressionHandler);
     return this;
   }
 
+  @Nullable
   EventHandler<FullImpressionVisibleEvent> getFullImpressionHandler() {
     return mFullImpressionHandler;
   }
 
-  InternalNode invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
+  InternalNode invisibleHandler(@Nullable EventHandler<InvisibleEvent> invisibleHandler) {
     mPrivateFlags |= PFLAG_INVISIBLE_HANDLER_IS_SET;
     mInvisibleHandler = addVisibilityHandler(mInvisibleHandler, invisibleHandler);
     return this;
   }
 
+  @Nullable
   EventHandler<InvisibleEvent> getInvisibleHandler() {
     return mInvisibleHandler;
   }
@@ -1034,13 +1039,16 @@ class InternalNode implements ComponentLayout {
     return mVisibilityChangedHandler;
   }
 
-  private static @Nullable <T> EventHandler<T> addVisibilityHandler(
+  @Nullable
+  private static <T> EventHandler<T> addVisibilityHandler(
       @Nullable EventHandler<T> existingEventHandler, @Nullable EventHandler<T> newEventHandler) {
     if (existingEventHandler == null) {
       return newEventHandler;
-    } else {
-      return new DelegatingEventHandler<>(existingEventHandler, newEventHandler);
     }
+    if (newEventHandler == null) {
+      return existingEventHandler;
+    }
+    return new DelegatingEventHandler<>(existingEventHandler, newEventHandler);
   }
 
   InternalNode contentDescription(CharSequence contentDescription) {

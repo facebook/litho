@@ -36,8 +36,8 @@ class VisibilityItem {
   private int mFlags;
   // The invisible event and unfocused event handlers are required to make it possible to dispatch
   // the corresponding event when unbind is called or when the MountState is reset.
-  private EventHandler<InvisibleEvent> mInvisibleHandler;
-  private EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
+  @Nullable private EventHandler<InvisibleEvent> mInvisibleHandler;
+  @Nullable private EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
   private @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
   private boolean mDoNotClearInThisPass;
 
@@ -63,9 +63,8 @@ class VisibilityItem {
     mInvisibleHandler = invisibleHandler;
   }
 
-  /**
-   * Returns the invisible event handler.
-   */
+  /** Returns the invisible event handler. */
+  @Nullable
   EventHandler<InvisibleEvent> getInvisibleHandler() {
     return mInvisibleHandler;
   }
@@ -77,14 +76,14 @@ class VisibilityItem {
     mUnfocusedHandler = unfocusedHandler;
   }
 
-  /**
-   * Returns the unfocused event handler.
-   */
+  /** Returns the unfocused event handler. */
+  @Nullable
   EventHandler<UnfocusedVisibleEvent> getUnfocusedHandler() {
     return mUnfocusedHandler;
   }
 
-  void setVisibilityChangedHandler(EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
+  void setVisibilityChangedHandler(
+      @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
     mVisibilityChangedHandler = visibilityChangedHandler;
   }
 

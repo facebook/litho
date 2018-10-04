@@ -33,7 +33,6 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.SparseArrayCompat;
 import android.util.SparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.internal.ArraySet;
 import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaDirection;
@@ -297,7 +296,7 @@ public class ComponentsPools {
       String globalKey,
       EventHandler<InvisibleEvent> invisibleHandler,
       EventHandler<UnfocusedVisibleEvent> unfocusedHandler,
-      EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
+      @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
     VisibilityItem item = sVisibilityItemPool.acquire();
     if (item == null) {
       item = new VisibilityItem();
