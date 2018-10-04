@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pools.SynchronizedPool;
 import android.support.v7.util.ListUpdateCallback;
 import com.facebook.litho.Component;
@@ -268,6 +269,11 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
     }
     message.append("]");
     ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, message.toString());
+  }
+
+  @VisibleForTesting
+  List<Operation> getOperations() {
+    return mOperations;
   }
 
   public static class Operation {
