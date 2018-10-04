@@ -21,6 +21,7 @@ import android.support.v4.util.Pools.SynchronizedPool;
 import android.support.v7.util.ListUpdateCallback;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
     void executeOperations(@Nullable ComponentContext c, List<Operation> operations);
   }
 
+  private int mOldDataSize;
   private List<T> mData;
   private List<Operation> mOperations;
   private List<ComponentContainer> mPlaceholders;
@@ -110,6 +112,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
       ComponentRenderer<T> componentRenderer,
       OperationExecutor operationExecutor,
       int headOffset) {
+    mOldDataSize = oldDataSize;
     mData = data;
     mComponentRenderer = componentRenderer;
     mOperationExecutor = operationExecutor;
@@ -174,15 +177,46 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
 
   public void applyChangeset(ComponentContext c) {
     final boolean isTracing = ComponentsSystrace.isTracing();
-    for (int i = 0, size = mPlaceholders.size(); i < size; i++) {
-      if (mPlaceholders.get(i).mNeedsComputation) {
+
+    if (mData != null && mData.size() != mPlaceholders.size()) {
+      logErrorForInconsistentSize(c);
+
+      // Release mPlaceholders and mOperations since they aren't matching with mData anymore.
+      for (int i = 0, size = mPlaceholders.size(); i < size; i++) {
+        mPlaceholders.get(i).release();
+      }
+      for (int i = 0, size = mOperations.size(); i < size; i++) {
+        mOperations.get(i).release();
+      }
+
+      final int dataSize = mData.size();
+      final List<ComponentContainer> placeholders = new ArrayList<>(dataSize);
+      for (int i = 0; i < dataSize; i++) {
         final Object model = mData.get(i);
+        final ComponentContainer componentContainer = ComponentContainer.acquire();
         if (isTracing) {
           ComponentsSystrace.beginSection("renderInfo:" + getModelName(model));
         }
-        mPlaceholders.get(i).mRenderInfo = mComponentRenderer.render(model, i);
+        componentContainer.mRenderInfo = mComponentRenderer.render(model, i);
         if (isTracing) {
           ComponentsSystrace.endSection();
+        }
+        placeholders.add(i, componentContainer);
+      }
+      mOperations = new ArrayList<>();
+      mOperations.add(Operation.acquire(Operation.DELETE, 0, mOldDataSize, null));
+      mOperations.add(Operation.acquire(Operation.INSERT, 0, -1, placeholders));
+    } else {
+      for (int i = 0, size = mPlaceholders.size(); i < size; i++) {
+        if (mPlaceholders.get(i).mNeedsComputation) {
+          final Object model = mData.get(i);
+          if (isTracing) {
+            ComponentsSystrace.beginSection("renderInfo:" + getModelName(model));
+          }
+          mPlaceholders.get(i).mRenderInfo = mComponentRenderer.render(model, i);
+          if (isTracing) {
+            ComponentsSystrace.endSection();
+          }
         }
       }
     }
@@ -200,6 +234,40 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
     return model instanceof DataDiffModelName
         ? ((DataDiffModelName) model).getName()
         : model.getClass().getSimpleName();
+  }
+
+  /** Emit a soft error if the size between mPlaceholders and mData aren't the same. */
+  private void logErrorForInconsistentSize(ComponentContext c) {
+    final StringBuilder message = new StringBuilder();
+    message
+        .append("Inconsistent size between mPlaceholders(")
+        .append(mPlaceholders.size())
+        .append(") and mData(")
+        .append(mData.size())
+        .append("); ");
+
+    message.append("mOperations: [");
+    for (int i = 0, size = mOperations.size(); i < size; i++) {
+      final Operation operation = mOperations.get(i);
+      message
+          .append("[type=")
+          .append(operation.getType())
+          .append(", index=")
+          .append(operation.getIndex())
+          .append(", toIndex=")
+          .append(operation.getToIndex());
+      if (operation.mComponentContainers != null) {
+        message.append(", count=").append(operation.mComponentContainers.size());
+      }
+      message.append("], ");
+    }
+    message.append("]; ");
+    message.append("mData: [");
+    for (int i = 0, size = mData.size(); i < size; i++) {
+      message.append("[").append(mData.get(i)).append("], ");
+    }
+    message.append("]");
+    ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, message.toString());
   }
 
   public static class Operation {
