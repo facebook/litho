@@ -11,6 +11,7 @@ android_binary(
     includes_vector_drawables = True,
     keystore = ":debug_keystore",
     manifest = "src/main/AndroidManifest.xml",
+    use_split_dex = True,
     deps = [
         LITHO_SAMPLE_JAVA,
     ],
