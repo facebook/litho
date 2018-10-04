@@ -2234,9 +2234,7 @@ public class ComponentTree {
         // Only check against previousLayoutState if diffing is enabled.
         return false;
       }
-      if (treeProps != null ? !treeProps.equals(that.treeProps) : that.treeProps != null) {
-        return false;
-      }
+
       return true;
     }
 
@@ -2248,7 +2246,6 @@ public class ComponentTree {
       result = 31 * result + heightSpec;
       result = 31 * result + (diffingEnabled ? 1 : 0);
       result = 31 * result + (previousLayoutState != null ? previousLayoutState.hashCode() : 0);
-      result = 31 * result + (treeProps != null ? treeProps.hashCode() : 0);
       return result;
     }
   }
