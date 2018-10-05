@@ -851,13 +851,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     // 1. Check if the mount item generated from the old component should be updated.
     final boolean shouldUpdateMountItem =
-        shouldUpdateMountItem(
-            layoutOutput,
-            currentMountItem,
-            useUpdateValueFromLayoutOutput,
-            mIndexToItemMap,
-            mLayoutOutputsIds,
-            logger);
+        shouldUpdateMountItem(layoutOutput, currentMountItem, useUpdateValueFromLayoutOutput);
 
     final boolean shouldUpdate = shouldUpdateMountItem;
     final boolean shouldUpdateViewInfo =
@@ -968,10 +962,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private static boolean shouldUpdateMountItem(
       LayoutOutput layoutOutput,
       MountItem currentMountItem,
-      boolean useUpdateValueFromLayoutOutput,
-      LongSparseArray<MountItem> indexToItemMap,
-      long[] layoutOutputsIds,
-      ComponentsLogger logger) {
+      boolean useUpdateValueFromLayoutOutput) {
     @LayoutOutput.UpdateState final int updateState = layoutOutput.getUpdateState();
     final Component currentComponent = currentMountItem.getComponent();
     final ComponentLifecycle currentLifecycle = currentComponent;
