@@ -53,7 +53,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   private int mUpdateState;
   private int mImportantForAccessibility;
-  private @Nullable DisplayListContainer mDisplayListContainer;
 
   private @Nullable String mTransitionKey;
 
@@ -196,58 +195,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mImportantForAccessibility = importantForAccessibility;
   }
 
-  void initDisplayListContainer(String name, boolean canCacheDrawingDisplayList) {
-    if (mDisplayListContainer != null) {
-      throw new IllegalStateException("Trying to init displaylistcontainer but it already exists");
-    }
-    mDisplayListContainer = ComponentsPools.acquireDisplayListContainer();
-    mDisplayListContainer.init(name, canCacheDrawingDisplayList);
-  }
-
-  void setDisplayListContainer(DisplayListContainer displayListContainer) {
-    if (mDisplayListContainer != null) {
-      mDisplayListContainer.release();
-    }
-    mDisplayListContainer = displayListContainer;
-  }
-
-  @Nullable DisplayListContainer getDisplayListContainer() {
-    return mDisplayListContainer;
-  }
-
-  /*
-   * Usually if displaylists are supported, it means we initialized the displaylist container.
-   * However, there are cases when we need to query some displaylist data when this output has been
-   * released. In such cases we need to perform this check.
-   */
-  boolean hasDisplayListContainer() {
-    return mDisplayListContainer != null;
-  }
-
-  boolean hasValidDisplayList() {
-    if (mDisplayListContainer == null) {
-      throw new IllegalStateException(
-          "Trying to check displaylist validity when generating displaylist is not supported " +
-              "for this output");
-    }
-    return mDisplayListContainer.hasValidDisplayList();
-  }
-
-  @Nullable DisplayList getDisplayList() {
-    if (mDisplayListContainer == null) {
-      throw new IllegalStateException(
-          "Trying to get displaylist when generating displaylist is not supported for this output");
-    }
-    return mDisplayListContainer.getDisplayList();
-  }
-
-  void setDisplayList(DisplayList displayList) {
-    // We might have recycled the container already so we need to have this check.
-    if (mDisplayListContainer != null) {
-      mDisplayListContainer.setDisplayList(displayList);
-    }
-  }
-
   void setViewNodeInfo(ViewNodeInfo viewNodeInfo) {
     if (mViewNodeInfo != null) {
       throw new IllegalStateException("Try to set a new ViewNodeInfo in a LayoutOutput that" +
@@ -307,10 +254,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     if (mViewNodeInfo != null) {
       mViewNodeInfo.release();
       mViewNodeInfo = null;
-    }
-    if (mDisplayListContainer != null) {
-      mDisplayListContainer.release();
-      mDisplayListContainer = null;
     }
     mBounds.setEmpty();
     mHostTranslationX = 0;

@@ -72,9 +72,7 @@ class MountItem {
     }
     mLayoutFlags = layoutOutput.getFlags();
     mImportantForAccessibility = layoutOutput.getImportantForAccessibility();
-    mDisplayListDrawable =
-        acquireDisplayListDrawableIfNeeded(
-            mContent, layoutOutput.getDisplayListContainer(), mDisplayListDrawable);
+    mDisplayListDrawable = acquireDisplayListDrawableIfNeeded(mContent, null, mDisplayListDrawable);
     mTransitionKey = layoutOutput.getTransitionKey();
 
     releaseNodeInfos();
@@ -94,9 +92,7 @@ class MountItem {
       Object content,
       LayoutOutput layoutOutput,
       @Nullable DisplayListDrawable displayListDrawable) {
-    displayListDrawable =
-        acquireDisplayListDrawableIfNeeded(
-            content, layoutOutput.getDisplayListContainer(), displayListDrawable);
+    displayListDrawable = acquireDisplayListDrawableIfNeeded(content, null, displayListDrawable);
     init(
         component,
         host,

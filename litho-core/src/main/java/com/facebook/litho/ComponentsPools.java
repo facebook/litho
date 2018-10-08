@@ -247,7 +247,7 @@ public class ComponentsPools {
       return null;
     }
 
-    return acquireDisplayListDrawable((Drawable) content, layoutOutput.getDisplayListContainer());
+    return acquireDisplayListDrawable((Drawable) content, null);
   }
 
   static MountItem acquireMountItem(
