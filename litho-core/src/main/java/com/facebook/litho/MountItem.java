@@ -22,7 +22,6 @@ import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.view.View;
-import com.facebook.litho.displaylist.DisplayList;
 
 /**
  * Represents a mounted UI element in a {@link MountState}. It holds a
@@ -72,7 +71,7 @@ class MountItem {
     }
     mLayoutFlags = layoutOutput.getFlags();
     mImportantForAccessibility = layoutOutput.getImportantForAccessibility();
-    mDisplayListDrawable = acquireDisplayListDrawableIfNeeded(mContent, null, mDisplayListDrawable);
+    mDisplayListDrawable = acquireDisplayListDrawableIfNeeded(mContent, mDisplayListDrawable);
     mTransitionKey = layoutOutput.getTransitionKey();
 
     releaseNodeInfos();
@@ -92,7 +91,7 @@ class MountItem {
       Object content,
       LayoutOutput layoutOutput,
       @Nullable DisplayListDrawable displayListDrawable) {
-    displayListDrawable = acquireDisplayListDrawableIfNeeded(content, null, displayListDrawable);
+    displayListDrawable = acquireDisplayListDrawableIfNeeded(content, displayListDrawable);
     init(
         component,
         host,
@@ -164,35 +163,8 @@ class MountItem {
   }
 
   private static @Nullable DisplayListDrawable acquireDisplayListDrawableIfNeeded(
-      Object content,
-      @Nullable DisplayListContainer layoutOutputDisplayListContainer,
-      @Nullable DisplayListDrawable mountItemDisplayListDrawable) {
-
-    if (layoutOutputDisplayListContainer == null) {
-      // If we do not have DisplayListContainer it would mean that we do not support generating
-      // displaylists, hence this mount item should not have DisplayListDrawable.
-      if (mountItemDisplayListDrawable != null) {
-        ComponentsPools.release(mountItemDisplayListDrawable);
-      }
-      return null;
-    }
-
-    final DisplayList displayList = layoutOutputDisplayListContainer.getDisplayList();
-    if (mountItemDisplayListDrawable == null
-        && (layoutOutputDisplayListContainer.canCacheDrawingDisplayLists()
-            || displayList != null)) {
-      mountItemDisplayListDrawable =
-          ComponentsPools.acquireDisplayListDrawable(
-              (Drawable) content, layoutOutputDisplayListContainer);
-    } else if (mountItemDisplayListDrawable != null) {
-      mountItemDisplayListDrawable.setWrappedDrawable((Drawable) content);
-    }
-
-    if (displayList != null && mountItemDisplayListDrawable != null) {
-      mountItemDisplayListDrawable.suppressInvalidations(true);
-    }
-
-    return mountItemDisplayListDrawable;
+      Object content, @Nullable DisplayListDrawable mountItemDisplayListDrawable) {
+    return null;
   }
 
   @Nullable

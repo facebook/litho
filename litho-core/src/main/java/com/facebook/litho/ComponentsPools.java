@@ -88,9 +88,6 @@ public class ComponentsPools {
   private static final Map<Context, SparseArray<MountContentPool>> sMountContentPoolsByContext =
       new HashMap<>(4);
 
-  static final RecyclePool<DisplayListContainer> sDisplayListContainerPool =
-      new RecyclePool<>("DisplayListContainer", PoolsConfig.sDisplayListContainerSize, true);
-
   static final RecyclePool<VisibilityOutput> sVisibilityOutputPool =
       new RecyclePool<>("VisibilityOutput", 64, true);
 
@@ -247,7 +244,7 @@ public class ComponentsPools {
       return null;
     }
 
-    return acquireDisplayListDrawable((Drawable) content, null);
+    return acquireDisplayListDrawable((Drawable) content);
   }
 
   static MountItem acquireMountItem(
@@ -274,15 +271,6 @@ public class ComponentsPools {
     output.acquire();
 
     return output;
-  }
-
-  static DisplayListContainer acquireDisplayListContainer() {
-    DisplayListContainer displayListContainer = sDisplayListContainerPool.acquire();
-    if (displayListContainer == null) {
-      displayListContainer = new DisplayListContainer();
-    }
-
-    return displayListContainer;
   }
 
   static VisibilityOutput acquireVisibilityOutput() {
@@ -439,11 +427,6 @@ public class ComponentsPools {
   @ThreadSafe(enableChecks = false)
   static void release(LayoutOutput output) {
     sLayoutOutputPool.release(output);
-  }
-
-  static void release(DisplayListContainer displayListContainer) {
-    displayListContainer.release();
-    sDisplayListContainerPool.release(displayListContainer);
   }
 
   @ThreadSafe(enableChecks = false)
@@ -712,7 +695,6 @@ public class ComponentsPools {
     sViewNodeInfoPool.clear();
     sMountItemPool.clear();
     sLayoutOutputPool.clear();
-    sDisplayListContainerPool.clear();
     sVisibilityOutputPool.clear();
     sVisibilityItemPool.clear();
     if (sTestOutputPool != null) {
@@ -753,9 +735,7 @@ public class ComponentsPools {
     return false;
   }
 
-  public static DisplayListDrawable acquireDisplayListDrawable(
-      Drawable content, DisplayListContainer displayListContainer) {
-
+  public static DisplayListDrawable acquireDisplayListDrawable(Drawable content) {
     // When we are wrapping drawable with DisplayListDrawable we need to make sure that
     // wrapped DisplayListDrawable has the same view callback as original one had for correct
     // view invalidations.
