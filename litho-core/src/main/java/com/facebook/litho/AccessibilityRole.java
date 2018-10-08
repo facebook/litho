@@ -64,6 +64,7 @@ public class AccessibilityRole {
     SCROLL_VIEW,
     HORIZONTAL_SCROLL_VIEW,
     KEYBOARD_KEY,
+    HEADER,
   })
   public @interface AccessibilityRoleType {}
 
@@ -98,4 +99,5 @@ public class AccessibilityRole {
   public static final String SCROLL_VIEW = "android.widget.ScrollView";
   public static final String HORIZONTAL_SCROLL_VIEW = "android.widget.HorizontalScrollView";
   public static final String KEYBOARD_KEY = "android.inputmethodservice.Keyboard$Key";
+  public static final String HEADER = "android.widget.TabWidget";
 }
