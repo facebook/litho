@@ -272,8 +272,6 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         heightSpec,
         false /* shouldGenerateDiffTree */,
         null /* previousDiffTreeRoot */,
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */,
         false,
         LayoutState.CalculateLayoutSource.TEST,

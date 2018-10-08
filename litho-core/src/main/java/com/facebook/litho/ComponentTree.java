@@ -2059,8 +2059,6 @@ public class ComponentTree {
         heightSpec,
         diffingEnabled,
         previousLayoutState,
-        mCanPrefetchDisplayLists,
-        mCanCacheDrawingDisplayLists,
         mShouldClipChildren,
         mPersistInternalNodeTree,
         source,

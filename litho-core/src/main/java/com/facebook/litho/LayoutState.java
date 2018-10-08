@@ -47,10 +47,8 @@ import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
-import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -61,14 +59,10 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LongSparseArray;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.Window;
 import android.view.accessibility.AccessibilityManager;
-import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.displaylist.DisplayList;
-import com.facebook.litho.displaylist.DisplayListException;
 import com.facebook.litho.reference.BorderColorDrawableReference;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
@@ -83,10 +77,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.CheckReturnValue;
@@ -145,15 +137,6 @@ class LayoutState {
   private final Map<String, Rect> mComponentKeyToBounds = new HashMap<>();
   private final List<Component> mComponents = new ArrayList<>();
 
-  @ThreadConfined(ThreadConfined.UI)
-  private final Rect mDisplayListCreateRect = new Rect();
-
-  @ThreadConfined(ThreadConfined.ANY)
-  private final Rect mDisplayListQueueRect = new Rect();
-
-  private static final int[] DRAWABLE_STATE_ENABLED = new int[]{android.R.attr.state_enabled};
-  private static final int[] DRAWABLE_STATE_NOT_ENABLED = new int[]{};
-
   private volatile ComponentContext mContext;
 
   private Component mComponent;
@@ -166,7 +149,6 @@ class LayoutState {
   private final LongSparseArray<Integer> mOutputsIdToPositionMap = new LongSparseArray<>(8);
   private final ArrayList<LayoutOutput> mMountableOutputTops = new ArrayList<>();
   private final ArrayList<LayoutOutput> mMountableOutputBottoms = new ArrayList<>();
-  private final Queue<Integer> mDisplayListsToPrefetch = new LinkedList<>();
 
   @Nullable private LayoutStateOutputIdCalculator mLayoutStateOutputIdCalculator;
 
@@ -205,8 +187,6 @@ class LayoutState {
   private boolean mAccessibilityEnabled = false;
 
   private StateHandler mStateHandler;
-  private boolean mCanPrefetchDisplayLists;
-  private boolean mCanCacheDrawingDisplayLists;
   private boolean mClipChildren = true;
   private List<Component> mComponentsNeedingPreviousRenderData;
   @Nullable private OutputUnitsAffinityGroup<LayoutOutput> mCurrentLayoutOutputAffinityGroup;
@@ -421,13 +401,6 @@ class LayoutState {
     }
 
     layoutOutput.setFlags(flags);
-
-    final ComponentLifecycle lifecycle = component;
-    if (isEligibleForCreatingDisplayLists() && lifecycle.shouldUseDisplayList()) {
-      layoutOutput.initDisplayListContainer(
-        lifecycle.getClass().getSimpleName(),
-        layoutState.mCanCacheDrawingDisplayLists);
-    }
 
     if (isTracing) {
       ComponentsSystrace.endSection();
@@ -737,12 +710,6 @@ class LayoutState {
           OutputUnitType.CONTENT,
           previousId,
           isCachedOutputUpdated);
-    }
-
-    // If we don't need to update this output we can safely re-use the display list from the
-    // previous output.
-    if (ThreadUtils.isMainThread() && isCachedOutputUpdated) {
-      layoutOutput.setDisplayListContainer(currentDiffNode.getContent().getDisplayListContainer());
     }
 
     // 2. Add background if defined.
@@ -1298,8 +1265,6 @@ class LayoutState {
         heightSpec,
         false /* shouldGenerateDiffTree */,
         null /* previousDiffTreeRoot */,
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */,
         false /* persistInternalNodeTree */,
         source,
@@ -1314,8 +1279,6 @@ class LayoutState {
       int heightSpec,
       boolean shouldGenerateDiffTree,
       @Nullable LayoutState previousLayoutState,
-      boolean canPrefetchDisplayLists,
-      boolean canCacheDrawingDisplayLists,
       boolean clipChildren,
       boolean persistInternalNodeTree,
       @CalculateLayoutSource int source,
@@ -1367,8 +1330,6 @@ class LayoutState {
       layoutState.mComponent = component;
       layoutState.mWidthSpec = widthSpec;
       layoutState.mHeightSpec = heightSpec;
-      layoutState.mCanPrefetchDisplayLists = canPrefetchDisplayLists;
-      layoutState.mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
       layoutState.mClipChildren = clipChildren;
       layoutState.mRootComponentName = component.getSimpleName();
 
@@ -1452,19 +1413,6 @@ class LayoutState {
         layoutState.mLayoutRoot = null;
       }
 
-      if (!ComponentsConfiguration.lazyDisplayListCreationOnly) {
-        final Activity activity = getValidActivityForContext(c);
-        if (activity != null && isEligibleForCreatingDisplayLists()) {
-          if (ThreadUtils.isMainThread()
-              && !layoutState.mCanPrefetchDisplayLists
-              && canCollectDisplayListsSync(activity)) {
-            collectDisplayLists(layoutState, previousLayoutState);
-          } else if (layoutState.mCanPrefetchDisplayLists) {
-            queueDisplayListsForPrefetch(layoutState, previousLayoutState);
-          }
-        }
-      }
-
       if (logLayoutState != null) {
         logger.logPerfEvent(logLayoutState);
       }
@@ -1534,83 +1482,6 @@ class LayoutState {
     }
   }
 
-  private static void collectDisplayLists(
-      LayoutState layoutState, @Nullable LayoutState previousLayoutState) {
-    if (ComponentsConfiguration.lazyDisplayListCreationOnly) {
-      throw new RuntimeException(
-          "DisplayList should only be created lazily, this should not be called!");
-    }
-
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection(
-          "collectDisplayLists:" + layoutState.mComponent.getSimpleName());
-    }
-
-    final Rect rect = layoutState.mDisplayListCreateRect;
-    final boolean isOrientationChanged = isOrientationChanged(layoutState, previousLayoutState);
-    for (int i = 0, count = layoutState.getMountableOutputCount(); i < count; i++) {
-      final LayoutOutput output = layoutState.getMountableOutputAt(i);
-      if (shouldCreateDisplayList(output, rect, isOrientationChanged)) {
-        layoutState.createDisplayList(output);
-      }
-    }
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
-  }
-
-  private static boolean shouldCreateDisplayList(
-      LayoutOutput output, Rect rect, boolean isOrientationChanged) {
-    final Component component = output.getComponent();
-    final ComponentLifecycle lifecycle = component;
-
-    if (!lifecycle.shouldUseDisplayList()) {
-      return false;
-    }
-
-    output.getMountBounds(rect);
-
-    if (!output.hasValidDisplayList() || isOrientationChanged) {
-      return true;
-    }
-
-    // This output already has a valid DisplayList from diffing. No need to re-create it.
-    // Just update its bounds.
-    final DisplayList displayList = output.getDisplayList();
-    try {
-      displayList.setBounds(rect.left, rect.top, rect.right, rect.bottom);
-      return false;
-    } catch (DisplayListException e) {
-      // Nothing to do here.
-    }
-
-    return true;
-  }
-
-  /** @return true if orientation is changed between current and previous {@link LayoutState}s. */
-  private static boolean isOrientationChanged(
-      LayoutState layoutState, @Nullable LayoutState previousLayoutState) {
-    return previousLayoutState != null
-        && layoutState.mOrientation != previousLayoutState.mOrientation;
-  }
-
-  private static boolean canCollectDisplayListsSync(Activity activity) {
-    // If we have no window or the hierarchy has never been drawn before we cannot guarantee that
-    // a valid GL context exists. In this case just bail.
-    final Window window = activity.getWindow();
-    if (window == null) {
-      return false;
-    }
-
-    final View decorView = window.getDecorView();
-    if (decorView == null || decorView.getDrawingTime() == 0) {
-      return false;
-    }
-
-    return true;
-  }
-
   boolean isActivityValid() {
     return getValidActivityForContext(mContext) != null;
   }
@@ -1641,130 +1512,6 @@ class LayoutState {
     }
     mLayoutStateOutputIdCalculator.calculateAndSetVisibilityOutputId(
         visibilityOutput, level, previousId);
-  }
-
-  void createDisplayList(LayoutOutput output) {
-    ThreadUtils.assertMainThread();
-
-    final ComponentContext context = mContext;
-    if (context == null) {
-      // This instance has been released.
-      return;
-    }
-
-    final Component component = output.getComponent();
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("createDisplayList: " + component.getSimpleName());
-    }
-
-    final ComponentLifecycle lifecycle = component;
-    final DisplayList displayList = DisplayList.createDisplayList(
-        lifecycle.getClass().getSimpleName());
-
-    if (displayList == null) {
-      ComponentsSystrace.endSection();
-      return;
-    }
-
-    Drawable drawable = (Drawable) ComponentsPools.acquireMountContent(context, lifecycle);
-
-    final LayoutOutput clickableOutput = findInteractiveRoot(this, output);
-    boolean isStateEnabled = false;
-
-    if (clickableOutput != null && clickableOutput.getNodeInfo() != null) {
-      final NodeInfo nodeInfo = clickableOutput.getNodeInfo();
-
-      if (nodeInfo.hasTouchEventHandlers() || nodeInfo.getFocusState() == FOCUS_SET_TRUE) {
-        isStateEnabled = true;
-      }
-    }
-
-    if (isStateEnabled) {
-      drawable.setState(DRAWABLE_STATE_ENABLED);
-    } else {
-      drawable.setState(DRAWABLE_STATE_NOT_ENABLED);
-    }
-
-    lifecycle.mount(
-        component.getScopedContext() != null ? component.getScopedContext() : context,
-        drawable);
-    lifecycle.bind(context, drawable);
-
-    final Rect rect = mDisplayListCreateRect;
-
-    output.getMountBounds(rect);
-    drawable.setBounds(0, 0, rect.width(), rect.height());
-
-    try {
-      final Canvas canvas = displayList.start(rect.width(), rect.height());
-      drawable.draw(canvas);
-
-      displayList.end(canvas);
-      displayList.setBounds(rect.left, rect.top, rect.right, rect.bottom);
-
-      output.setDisplayList(displayList);
-    } catch (DisplayListException e) {
-      // Display list creation failed. Make sure the DisplayList for this output is set
-      // to null.
-      output.setDisplayList(null);
-    }
-
-    lifecycle.unbind(context, drawable);
-    lifecycle.unmount(context, drawable);
-    ComponentsPools.release(context, lifecycle, drawable);
-
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
-  }
-
-  private static void queueDisplayListsForPrefetch(
-      LayoutState layoutState, @Nullable LayoutState previousLayoutState) {
-    if (ComponentsConfiguration.lazyDisplayListCreationOnly) {
-      throw new RuntimeException(
-          "DisplayList should only be created lazily, this should not be called!");
-    }
-
-    final Rect rect = layoutState.mDisplayListQueueRect;
-    final boolean isOrientationChanged = isOrientationChanged(layoutState, previousLayoutState);
-    for (int i = 0, count = layoutState.getMountableOutputCount(); i < count; i++) {
-      final LayoutOutput output = layoutState.getMountableOutputAt(i);
-      if (shouldCreateDisplayList(output, rect, isOrientationChanged)) {
-        layoutState.mDisplayListsToPrefetch.add(i);
-      }
-    }
-
-    if (!layoutState.mDisplayListsToPrefetch.isEmpty()) {
-      DisplayListPrefetcher.getInstance().addLayoutState(layoutState);
-    }
-  }
-
-  public static boolean isEligibleForCreatingDisplayLists() {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-        && !ComponentsConfiguration.forceNotToCacheDisplayLists;
-  }
-
-  private static LayoutOutput findInteractiveRoot(LayoutState layoutState, LayoutOutput output) {
-    if (output.getId() == ROOT_HOST_ID) {
-      return output;
-    }
-
-    if ((output.getFlags() & LAYOUT_FLAG_DUPLICATE_PARENT_STATE) != 0) {
-      final int parentPosition = layoutState.getLayoutOutputPositionForId(output.getHostMarker());
-      if (parentPosition >= 0) {
-        final LayoutOutput parent = layoutState.mMountableOutputs.get(parentPosition);
-        if (parent == null) {
-          return null;
-        }
-
-        return findInteractiveRoot(layoutState, parent);
-      }
-
-      return null;
-    }
-
-    return output;
   }
 
   @VisibleForTesting
@@ -2254,7 +2001,6 @@ class LayoutState {
       mMountableOutputTops.clear();
       mMountableOutputBottoms.clear();
       mOutputsIdToPositionMap.clear();
-      mDisplayListsToPrefetch.clear();
 
       for (Rect rect : mComponentKeyToBounds.values()) {
         ComponentsPools.release(rect);
@@ -2444,44 +2190,6 @@ class LayoutState {
     layoutState.mMountableOutputs.add(layoutOutput);
     layoutState.mMountableOutputTops.add(layoutOutput);
     layoutState.mMountableOutputBottoms.add(layoutOutput);
-  }
-
-  /** @return whether there are any items in the queue for Display Lists prefetching. */
-  boolean hasItemsForDLPrefetch() {
-    return !mDisplayListsToPrefetch.isEmpty();
-  }
-
-  /**
-   * Remove items that have already valid displaylist. This item might have been already drawn on
-   * the screen in which case we will have valid displaylist so we can skip them.
-   */
-  void trimDisplayListItemsQueue() {
-    if (mMountableOutputs.isEmpty()) {
-      // Item has been released, remove all pending items for displaylist prefetch.
-      mDisplayListsToPrefetch.clear();
-      return;
-    }
-    Integer currentIndex = mDisplayListsToPrefetch.peek();
-    while (currentIndex != null) {
-      final LayoutOutput layoutOutput = mMountableOutputs.get(currentIndex);
-      if (!layoutOutput.hasDisplayListContainer() || layoutOutput.hasValidDisplayList()) {
-        // Either this item has been released or we have already computed displaylist for this item.
-        // In either case remove it from the queue.
-        mDisplayListsToPrefetch.remove();
-        currentIndex = mDisplayListsToPrefetch.peek();
-      } else {
-        break;
-      }
-    }
-  }
-
-  /**
-   * Removes and returns next {@link LayoutOutput} from the queue for Display Lists.
-   * Note that it is callers responsibility to make sure queue is not empty.
-   */
-  LayoutOutput getNextLayoutOutputForDLPrefetch() {
-    final int layoutOutputIndex = mDisplayListsToPrefetch.poll();
-    return getMountableOutputAt(layoutOutputIndex);
   }
 
   /**

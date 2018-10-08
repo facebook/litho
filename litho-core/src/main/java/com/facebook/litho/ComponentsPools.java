@@ -33,6 +33,7 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.SparseArrayCompat;
 import android.util.SparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.internal.ArraySet;
 import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaDirection;
@@ -231,7 +232,8 @@ public class ComponentsPools {
 
   private static @Nullable DisplayListDrawable wrapDrawableIfPossible(
       Component component, Object content, LayoutOutput layoutOutput) {
-    if (!LayoutState.isEligibleForCreatingDisplayLists()) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
+        || ComponentsConfiguration.forceNotToCacheDisplayLists) {
       return null;
     }
 

@@ -75,7 +75,6 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
-import com.facebook.litho.utils.DisplayListUtils;
 import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
 import com.facebook.yoga.YogaDirection;
 
@@ -475,7 +474,8 @@ class TextSpec {
     layoutBuilder.setText(null);
     sTextLayoutBuilderPool.release(layoutBuilder);
 
-    if (glyphWarming && !DisplayListUtils.isEligibleForCreatingDisplayLists()) {
+    if (glyphWarming) {
+      // TODO(T34488162): we also don't want this to happen when we are using DL (legacy?)
       TextureWarmer.getInstance().warmLayout(newLayout);
     }
 

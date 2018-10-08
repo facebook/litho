@@ -64,8 +64,6 @@ public class TestComponentTree extends ComponentTree {
         heightSpec,
         diffingEnabled,
         previousLayoutState,
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
         true /* clipChildren */,
         false /* persistInternalNodeTree */,
         source,

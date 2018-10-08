@@ -61,7 +61,6 @@ import com.facebook.litho.ThreadPoolLayoutHandler;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
-import com.facebook.litho.utils.DisplayListUtils;
 import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory;
@@ -106,7 +105,6 @@ public class RecyclerBinder
   private final LayoutInfo mLayoutInfo;
   private final RecyclerView.Adapter mInternalAdapter;
   private final ComponentContext mComponentContext;
-  private final RangeScrollListener mRangeScrollListener = new RangeScrollListener();
   private final LayoutHandlerFactory mLayoutHandlerFactory;
   private final @Nullable LithoViewFactory mLithoViewFactory;
   private final ComponentTreeHolderFactory mComponentTreeHolderFactory;
@@ -2158,7 +2156,6 @@ public class RecyclerBinder
 
     view.setLayoutManager(layoutManager);
     view.setAdapter(mInternalAdapter);
-    view.addOnScrollListener(mRangeScrollListener);
     view.addOnScrollListener(mViewportManager.getScrollListener());
 
     if (view instanceof HasPostDispatchDrawListener) {
@@ -2255,7 +2252,6 @@ public class RecyclerBinder
       mCurrentOffset = 0;
     }
 
-    view.removeOnScrollListener(mRangeScrollListener);
     view.removeOnScrollListener(mViewportManager.getScrollListener());
 
     if (view instanceof HasPostDispatchDrawListener) {
@@ -2726,16 +2722,6 @@ public class RecyclerBinder
     public AsyncBatch(@CommitPolicy int commitPolicy, boolean isFirstChangeSet) {
       mCommitPolicy = commitPolicy;
       mIsFirstChangeSet = isFirstChangeSet;
-    }
-  }
-
-  private class RangeScrollListener extends RecyclerView.OnScrollListener {
-
-    @Override
-    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-      if (mCanPrefetchDisplayLists) {
-        DisplayListUtils.prefetchDisplayLists(recyclerView);
-      }
     }
   }
 
