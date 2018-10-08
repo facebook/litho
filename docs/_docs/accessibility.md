@@ -74,11 +74,11 @@ For example, here are the steps for overriding `onInitializeAccessibilityNodeInf
 1. Implementing an event handler
 
 ```java
-@OnEvent(OnInitializeAccessiblityNodeInfoEvent.class)
+@OnEvent(OnInitializeAccessibilityNodeInfoEvent.class)
 static void onInitializeAccessibilityNodeInfoEvent(
     @FromEvent AccessibilityDelegateCompat superDelegate,
-    @FromEvent View view,
-    @FromEvent AccessibilityNodeInfoCompat node) {
+    @FromEvent View host,
+    @FromEvent AccessibilityNodeInfoCompat info) {
   // Equivalent to calling super on a regular AccessibilityDelegate, not required
   superDelegate.onInitializeAccessibilityNodeInfo(view, node);
   // My implementation
