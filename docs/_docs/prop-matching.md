@@ -308,7 +308,7 @@ def litho_testspec(
     deps.extend(
         [
             "//java/com/facebook/litho:litho",
-            "//third-party/android/support/v4:lib-support-v4",
+            "//third-party/android/support-new:support-v4",
             "//libraries/components/litho-testing/src/main/java/com/facebook/litho/testing:testing",
             "//libraries/components/litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj",
             "//third-party/java/jsr-305:jsr-305",
