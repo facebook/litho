@@ -33,7 +33,6 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.SparseArrayCompat;
 import android.util.SparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.internal.ArraySet;
 import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaDirection;
@@ -220,31 +219,10 @@ public class ComponentsPools {
         content,
         null,
         viewNodeInfo,
-        null,
         0,
         IMPORTANT_FOR_ACCESSIBILITY_AUTO,
         null);
     return item;
-  }
-
-  private static @Nullable DisplayListDrawable wrapDrawableIfPossible(
-      Component component, Object content, LayoutOutput layoutOutput) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
-        || ComponentsConfiguration.forceNotToCacheDisplayLists) {
-      return null;
-    }
-
-    if (component == null || !component.shouldUseDisplayList()) {
-      return null;
-    }
-
-    if (content == null
-        || content instanceof DisplayListDrawable
-        || !(content instanceof Drawable)) {
-      return null;
-    }
-
-    return acquireDisplayListDrawable((Drawable) content);
   }
 
   static MountItem acquireMountItem(
@@ -254,12 +232,7 @@ public class ComponentsPools {
       item = new MountItem();
     }
 
-    item.init(
-        component,
-        host,
-        content,
-        layoutOutput,
-        wrapDrawableIfPossible(component, content, layoutOutput));
+    item.init(component, host, content, layoutOutput);
     return item;
   }
 

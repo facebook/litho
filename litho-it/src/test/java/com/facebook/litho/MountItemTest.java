@@ -92,7 +92,6 @@ public class MountItemTest {
         mContent,
         mNodeInfo,
         null,
-        null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_YES,
         null);
@@ -132,7 +131,6 @@ public class MountItemTest {
         mContent,
         mNodeInfo,
         null,
-        null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_YES,
         null);
@@ -147,7 +145,6 @@ public class MountItemTest {
         mComponentHost,
         mContent,
         mNodeInfo,
-        null,
         null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_YES,
@@ -173,7 +170,6 @@ public class MountItemTest {
         view,
         mNodeInfo,
         null,
-        null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_YES,
         null);
@@ -197,7 +193,6 @@ public class MountItemTest {
         view,
         mNodeInfo,
         null,
-        null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_YES,
         null);
@@ -218,7 +213,6 @@ public class MountItemTest {
         mContent,
         mNodeInfo,
         null,
-        null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_AUTO,
         null);
@@ -238,7 +232,6 @@ public class MountItemTest {
         mContent,
         mNodeInfo,
         null,
-        null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_AUTO,
         null);
@@ -257,7 +250,6 @@ public class MountItemTest {
         mContent,
         mNodeInfo,
         null,
-        null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_NO,
         null);
@@ -275,7 +267,6 @@ public class MountItemTest {
         mComponentHost,
         mContent,
         mNodeInfo,
-        null,
         null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_AUTO,
@@ -297,7 +288,7 @@ public class MountItemTest {
     final MountItem mountItem = new MountItem();
     View view = new View(RuntimeEnvironment.application);
 
-    mountItem.init(mComponent, mComponentHost, view, layoutOutput, null);
+    mountItem.init(mComponent, mComponentHost, view, layoutOutput);
 
     assertThat(mountItem.isViewClickable()).isFalse();
 

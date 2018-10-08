@@ -1226,27 +1226,17 @@ public class ComponentHost extends ViewGroup {
     ensureDrawableMountItems();
     mDrawableMountItems.put(index, mountItem);
     final Drawable drawable = (Drawable) mountItem.getContent();
-    final DisplayListDrawable displayListDrawable = mountItem.getDisplayListDrawable();
 
     ComponentHostUtils.mountDrawable(
-        this,
-        displayListDrawable != null ? displayListDrawable : drawable,
-        bounds,
-        mountItem.getLayoutFlags(),
-        mountItem.getNodeInfo());
+        this, drawable, bounds, mountItem.getLayoutFlags(), mountItem.getNodeInfo());
   }
 
   private void unmountDrawable(MountItem mountItem) {
     assertMainThread();
 
-    final Drawable contentDrawable = (Drawable) mountItem.getContent();
-    final Drawable drawable = mountItem.getDisplayListDrawable() == null
-        ? contentDrawable
-        : mountItem.getDisplayListDrawable();
-
+    final Drawable drawable = (Drawable) mountItem.getContent();
     drawable.setCallback(null);
-
-    this.invalidate(drawable.getBounds());
+    invalidate(drawable.getBounds());
 
     releaseScrapDataStructuresIfNeeded();
   }
@@ -1326,10 +1316,7 @@ public class ComponentHost extends ViewGroup {
           i++) {
         final long startDrawNs = System.nanoTime();
         final MountItem mountItem = mMountItems.valueAt(i);
-
-        final Object content = mountItem.getDisplayListDrawable() != null ?
-            mountItem.getDisplayListDrawable() :
-            mountItem.getContent();
+        final Object content = mountItem.getContent();
 
         // During a ViewGroup's dispatchDraw() call with children drawing order enabled,
         // getChildDrawingOrder() will be called before each child view is drawn. This
@@ -1377,8 +1364,7 @@ public class ComponentHost extends ViewGroup {
 
   private static String getMountItemName(MountItem mountItem) {
     String traceName = mountItem.getComponent().getSimpleName();
-    final DisplayListDrawable displayListDrawable = mountItem.getDisplayListDrawable();
-    if (displayListDrawable != null) {
+    if (mountItem.getContent() instanceof DisplayListDrawable) {
       traceName += "DL";
     }
     return traceName;

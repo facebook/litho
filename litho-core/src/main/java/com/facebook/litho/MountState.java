@@ -926,10 +926,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           currentMountItem.getNodeInfo());
     }
 
-    if (currentMountItem.getDisplayListDrawable() != null) {
-      currentMountItem.getDisplayListDrawable().suppressInvalidations(false);
-    }
-
     return shouldUpdate;
   }
 
@@ -1376,10 +1372,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         sTempRect.right,
         sTempRect.bottom,
         true /* force */);
-
-    if (item.getDisplayListDrawable() != null) {
-      item.getDisplayListDrawable().suppressInvalidations(false);
-    }
 
     // 6. Update the mount stats
     if (mMountStats.isLoggingEnabled) {

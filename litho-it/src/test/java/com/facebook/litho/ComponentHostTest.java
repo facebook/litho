@@ -875,7 +875,6 @@ public class ComponentHostTest {
         content,
         nodeInfo,
         null,
-        null,
         flags,
         IMPORTANT_FOR_ACCESSIBILITY_AUTO,
         null);
@@ -907,7 +906,6 @@ public class ComponentHostTest {
         content,
         null,
         viewNodeInfo,
-        null,
         0,
         IMPORTANT_FOR_ACCESSIBILITY_AUTO,
         null);

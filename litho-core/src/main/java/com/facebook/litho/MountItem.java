@@ -47,7 +47,6 @@ class MountItem {
   private ComponentHost mHost;
   private boolean mIsBound;
   private int mImportantForAccessibility;
-  private @Nullable DisplayListDrawable mDisplayListDrawable;
   private @Nullable String mTransitionKey;
 
   // ComponentHost flags defined in the LayoutOutput specifying
@@ -71,7 +70,6 @@ class MountItem {
     }
     mLayoutFlags = layoutOutput.getFlags();
     mImportantForAccessibility = layoutOutput.getImportantForAccessibility();
-    mDisplayListDrawable = acquireDisplayListDrawableIfNeeded(mContent, mDisplayListDrawable);
     mTransitionKey = layoutOutput.getTransitionKey();
 
     releaseNodeInfos();
@@ -85,20 +83,13 @@ class MountItem {
     }
   }
 
-  void init(
-      Component component,
-      ComponentHost host,
-      Object content,
-      LayoutOutput layoutOutput,
-      @Nullable DisplayListDrawable displayListDrawable) {
-    displayListDrawable = acquireDisplayListDrawableIfNeeded(content, displayListDrawable);
+  void init(Component component, ComponentHost host, Object content, LayoutOutput layoutOutput) {
     init(
         component,
         host,
         content,
         layoutOutput.getNodeInfo(),
         layoutOutput.getViewNodeInfo(),
-        displayListDrawable,
         layoutOutput.getFlags(),
         layoutOutput.getImportantForAccessibility(),
         layoutOutput.getTransitionKey());
@@ -110,7 +101,6 @@ class MountItem {
       Object content,
       NodeInfo nodeInfo,
       ViewNodeInfo viewNodeInfo,
-      @Nullable DisplayListDrawable displayListDrawable,
       int layoutFlags,
       int importantForAccessibility,
       String transitionKey) {
@@ -126,7 +116,6 @@ class MountItem {
     mHost = host;
     mLayoutFlags = layoutFlags;
     mImportantForAccessibility = importantForAccessibility;
-    mDisplayListDrawable = displayListDrawable;
     mTransitionKey = transitionKey;
 
     if (nodeInfo != null) {
@@ -160,11 +149,6 @@ class MountItem {
         mMountViewFlags |= FLAG_VIEW_SELECTED;
       }
     }
-  }
-
-  private static @Nullable DisplayListDrawable acquireDisplayListDrawableIfNeeded(
-      Object content, @Nullable DisplayListDrawable mountItemDisplayListDrawable) {
-    return null;
   }
 
   @Nullable
@@ -224,11 +208,6 @@ class MountItem {
 
   void release(ComponentContext context) {
     ComponentsPools.release(context, mComponent, mContent);
-
-    if (mDisplayListDrawable != null) {
-      ComponentsPools.release(mDisplayListDrawable);
-      mDisplayListDrawable = null;
-    }
 
     releaseNodeInfos();
 
@@ -300,10 +279,5 @@ class MountItem {
    */
   void setIsBound(boolean bound) {
     mIsBound = bound;
-  }
-
-  @Nullable
-  DisplayListDrawable getDisplayListDrawable() {
-    return mDisplayListDrawable;
   }
 }
