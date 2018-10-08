@@ -34,15 +34,18 @@ import javax.annotation.Nullable;
  */
 public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & Binder<RecyclerView>>
     implements RecyclerConfiguration {
-  private static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
-      new RecyclerBinderConfiguration(4.0);
-
   private final int mNumSpans;
   private final int mOrientation;
   private final boolean mReverseLayout;
   private final int mGapStrategy;
   private final RecyclerBinderConfiguration mRecyclerBinderConfiguration;
 
+  public static Builder create() {
+    return new Builder();
+  }
+
+  /** Use {@link #create()} instead. */
+  @Deprecated
   public static StaggeredGridRecyclerConfiguration createWithRecyclerBinderConfiguration(
       int numSpans, RecyclerBinderConfiguration recyclerBinderConfiguration) {
     return new StaggeredGridRecyclerConfiguration(
@@ -53,14 +56,20 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
         recyclerBinderConfiguration);
   }
 
+  /** Use {@link #create()} instead. */
+  @Deprecated
   public StaggeredGridRecyclerConfiguration(int numSpans) {
     this(numSpans, StaggeredGridLayoutManager.VERTICAL, false);
   }
 
+  /** Use {@link #create()} instead. */
+  @Deprecated
   public StaggeredGridRecyclerConfiguration(int numSpans, int orientation, boolean reverseLayout) {
-    this(numSpans, orientation, reverseLayout, RECYCLER_BINDER_CONFIGURATION);
+    this(numSpans, orientation, reverseLayout, Builder.RECYCLER_BINDER_CONFIGURATION);
   }
 
+  /** Use {@link #create()} instead. */
+  @Deprecated
   public StaggeredGridRecyclerConfiguration(
       int numSpans,
       int orientation,
@@ -74,6 +83,8 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
         recyclerBinderConfiguration);
   }
 
+  /** Use {@link #create()} instead. */
+  @Deprecated
   public StaggeredGridRecyclerConfiguration(
       int numSpans,
       int orientation,
@@ -86,7 +97,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
     mGapStrategy = gapStrategy;
     mRecyclerBinderConfiguration =
         recyclerBinderConfiguration == null
-            ? RECYCLER_BINDER_CONFIGURATION
+            ? Builder.RECYCLER_BINDER_CONFIGURATION
             : recyclerBinderConfiguration;
   }
 
@@ -131,5 +142,53 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
   @Override
   public boolean isWrapContent() {
     return mRecyclerBinderConfiguration.isWrapContent();
+  }
+
+  public static class Builder {
+    static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
+        new RecyclerBinderConfiguration(4.0);
+    private int mNumSpans = 2;
+    private int mOrientation = StaggeredGridLayoutManager.VERTICAL;
+    private boolean mReverseLayout = false;
+    private int mGapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE;
+    private RecyclerBinderConfiguration mRecyclerBinderConfiguration =
+        RECYCLER_BINDER_CONFIGURATION;
+
+    Builder() {}
+
+    public Builder numSpans(int numSpans) {
+      mNumSpans = numSpans;
+      return this;
+    }
+
+    public Builder orientation(int orientation) {
+      mOrientation = orientation;
+      return this;
+    }
+
+    public Builder reverseLayout(boolean reverseLayout) {
+      mReverseLayout = reverseLayout;
+      return this;
+    }
+
+    public Builder gapStrategy(int gapStrategy) {
+      mGapStrategy = gapStrategy;
+      return this;
+    }
+
+    public Builder recyclerBinderConfiguration(
+        RecyclerBinderConfiguration recyclerBinderConfiguration) {
+      mRecyclerBinderConfiguration = recyclerBinderConfiguration;
+      return this;
+    }
+
+    /**
+     * Builds a {@link StaggeredGridRecyclerConfiguration} using the parameters specified in this
+     * builder.
+     */
+    public StaggeredGridRecyclerConfiguration build() {
+      return new StaggeredGridRecyclerConfiguration(
+          mNumSpans, mOrientation, mReverseLayout, mGapStrategy, mRecyclerBinderConfiguration);
+    }
   }
 }
