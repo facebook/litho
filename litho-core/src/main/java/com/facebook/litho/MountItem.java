@@ -185,8 +185,7 @@ class MountItem {
           ComponentsPools.acquireDisplayListDrawable(
               (Drawable) content, layoutOutputDisplayListContainer);
     } else if (mountItemDisplayListDrawable != null) {
-      mountItemDisplayListDrawable.setWrappedDrawable(
-          (Drawable) content, layoutOutputDisplayListContainer);
+      mountItemDisplayListDrawable.setWrappedDrawable((Drawable) content);
     }
 
     if (displayList != null && mountItemDisplayListDrawable != null) {

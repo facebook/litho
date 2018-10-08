@@ -763,9 +763,9 @@ public class ComponentsPools {
 
     DisplayListDrawable displayListDrawable = sDisplayListDrawablePool.acquire();
     if (displayListDrawable == null) {
-      displayListDrawable = new DisplayListDrawable(content, displayListContainer);
+      displayListDrawable = new DisplayListDrawable(content);
     } else {
-      displayListDrawable.setWrappedDrawable(content, displayListContainer);
+      displayListDrawable.setWrappedDrawable(content);
     }
     displayListDrawable.setCallback(callback);
 

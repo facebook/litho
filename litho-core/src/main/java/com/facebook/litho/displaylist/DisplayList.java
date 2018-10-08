@@ -42,11 +42,9 @@ public class DisplayList {
     mDisplayListImpl = displayListImpl;
   }
 
-  /**
-   * Creates a new DisplayList for a specific Context with a Debug name.
-   */
+  /** Creates a new DisplayList for a specific Context with a Debug name. */
   @Nullable
-  public static DisplayList createDisplayList(String name) {
+  public static DisplayList createDisplayList(@Nullable String name) {
     if (ComponentsConfiguration.forceNotToCacheDisplayLists) {
       throw new RuntimeException(
           "DisplayLists are not supposed to be used, this should never be called");
@@ -60,7 +58,7 @@ public class DisplayList {
   }
 
   @Nullable
-  private static PlatformDisplayList createPlatformDisplayList(String name) {
+  private static PlatformDisplayList createPlatformDisplayList(@Nullable String name) {
     final int sdkVersion = Build.VERSION.SDK_INT;
     if (sdkVersion >= Build.VERSION_CODES.N) {
       return DisplayListPostMarshmallow.createDisplayList(name);

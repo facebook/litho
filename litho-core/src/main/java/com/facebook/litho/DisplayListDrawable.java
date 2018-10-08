@@ -27,6 +27,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.support.annotation.VisibleForTesting;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.displaylist.DisplayList;
 import com.facebook.litho.displaylist.DisplayListException;
@@ -38,64 +39,86 @@ import com.facebook.litho.displaylist.DisplayListException;
 class DisplayListDrawable extends Drawable implements Drawable.Callback {
 
   private Drawable mDrawable;
-  // Note that this instance is shared between this object and corresponding LayoutOutput object.
-  // This optimization is done to make sure that DisplayListPrefetcher can create displaylist of the
-  // mountable content on spare UI cycles while this item is not yet on viewport and use displaylist
-  // to draw contents when it appears on the screen.
-  private @Nullable DisplayListContainer mDisplayListContainer;
+  private @Nullable String mName;
+  private @Nullable DisplayList mDisplayList;
   private boolean mIgnoreInvalidations;
-  private boolean mInvalidated;
+  private boolean mInvalidated; // If the DL is up-to-date
+  private boolean mDoNotAttemptDLDrawing = false;
 
-  DisplayListDrawable(Drawable drawable, DisplayListContainer displayListContainer) {
+  DisplayListDrawable(Drawable drawable) {
     if (ComponentsConfiguration.forceNotToCacheDisplayLists) {
       throw new RuntimeException(
           "DisplayLists are not supposed to be used, this should never be called");
     }
 
-    setWrappedDrawable(drawable, displayListContainer);
+    setWrappedDrawable(drawable);
   }
 
   @Override
   public void draw(Canvas canvas) {
-    if (mDisplayListContainer == null) {
+    if (mDrawable == null) {
+      throw new IllegalStateException("The wrapped drawable hasn't been set yet");
+    }
+
+    if (mDoNotAttemptDLDrawing) {
+      // We tried before, it didn't go well, we are not doing it again
       mDrawable.draw(canvas);
       return;
     }
 
-    DisplayList displayList = mDisplayListContainer.getDisplayList();
-    if (displayList == null && mDisplayListContainer.canCacheDrawingDisplayLists()) {
-      displayList = DisplayList.createDisplayList(mDisplayListContainer.getName());
-      mDisplayListContainer.setDisplayList(displayList);
-      mInvalidated = true;
-    }
+    if (mDisplayList == null) {
+      final DisplayList displayList = DisplayList.createDisplayList(mName);
 
-    if (displayList == null) {
-      mDrawable.draw(canvas);
-      return;
-    }
+      if (displayList == null) {
+        // DL was not created, just draw the drawable itself and return
+        mDrawable.draw(canvas);
+        return;
+      }
 
+      setDisplayList(displayList);
+    }
+    // At this point we have a DL (non-null), but it isn't necessarily up-to-date
     try {
-      if (mInvalidated || !displayList.isValid()) {
+      if (mInvalidated || !mDisplayList.isValid()) {
         drawContentIntoDisplayList();
         mInvalidated = false;
       }
 
-      if (displayList.isValid()) {
-        displayList.draw(canvas);
-      } else {
+      if (!mDisplayList.isValid()) {
+        // DL still isn't valid, just draw the drawable itself and return
         mDrawable.draw(canvas);
+        return;
       }
+      // At this point we have a valid DL, that we can draw
+      mDisplayList.draw(canvas);
     } catch (DisplayListException e) {
       // Let's make sure next draw calls will just bail the DisplayList part.
-      mDisplayListContainer = null;
+      mDoNotAttemptDLDrawing = true;
+      mDisplayList = null;
       mDrawable.draw(canvas);
     }
   }
 
-  boolean willDrawDisplayList() {
-    return mDisplayListContainer != null &&
-        (mDisplayListContainer.hasValidDisplayList()
-            || mDisplayListContainer.canCacheDrawingDisplayLists());
+  /** The only reason this method exists is so we can mock it in tests. */
+  @VisibleForTesting
+  void setDisplayList(DisplayList displayList) {
+    mDisplayList = displayList;
+    // DL needs to be re-drawn
+    mInvalidated = true;
+  }
+
+  /** Draw original drawable to {@link DisplayList}'s canvas. */
+  @UiThread
+  private void drawContentIntoDisplayList() throws DisplayListException {
+    final Rect bounds = mDrawable.getBounds();
+    final Canvas displayListCanvas = mDisplayList.start(bounds.width(), bounds.height());
+
+    displayListCanvas.translate(-bounds.left, -bounds.top);
+    mDrawable.draw(displayListCanvas);
+    displayListCanvas.translate(bounds.left, bounds.top);
+
+    mDisplayList.end(displayListCanvas);
+    mDisplayList.setBounds(bounds.left, bounds.top, bounds.right, bounds.bottom);
   }
 
   @Override
@@ -199,7 +222,7 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
     Drawable mutated = wrapped.mutate();
     if (mutated != wrapped) {
       // If mutate() returned a new instance, update our reference
-      setWrappedDrawable(mutated, mDisplayListContainer);
+      setWrappedDrawable(mutated);
     }
     // We return ourselves, since only the wrapped drawable needs to mutate
     return this;
@@ -216,7 +239,7 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
     // equals to the bounds of its content to make sure that the view invalidation works as
     // expected.
     setBounds(mDrawable.getBounds());
-    mInvalidated = true;
+    mInvalidated = true; // DL needs to be re-created
   }
 
   @Override
@@ -251,21 +274,23 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
     mDrawable.setTintMode(tintMode);
   }
 
-  /**
-   * Sets the current wrapped {@link Drawable}
-   */
-  void setWrappedDrawable(Drawable drawable, DisplayListContainer displayListContainer) {
+  /** Sets the current wrapped {@link Drawable} */
+  void setWrappedDrawable(Drawable drawable) {
+    if (drawable == null) {
+      throw new IllegalArgumentException("The wrapped drawable must not be null");
+    }
+
     if (mDrawable != null) {
       mDrawable.setCallback(null);
     }
 
     mDrawable = drawable;
+    mDrawable.setCallback(this);
 
-    if (drawable != null) {
-      drawable.setCallback(this);
-    }
+    // DL needs to be re-created
+    mInvalidated = true;
 
-    mDisplayListContainer = displayListContainer;
+    // Notify callback about invalidation
     invalidateSelf();
   }
 
@@ -276,35 +301,11 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
   public void release() {
     setCallback(null);
     mIgnoreInvalidations = false;
-    // Do not release DisplayListContainer yet, just dereference the object,
-    // as it might be still referenced by LayoutOutput.
-    mDisplayListContainer = null;
+    mInvalidated = false;
+    mDoNotAttemptDLDrawing = false;
     mDrawable.setCallback(null);
     mDrawable = null;
-  }
-
-  /**
-   * Draw original drawable to {@link DisplayList}'s canvas.
-   */
-  @UiThread
-  private void drawContentIntoDisplayList() {
-    final DisplayList displayList = mDisplayListContainer.getDisplayList();
-    if (displayList == null) {
-      return;
-    }
-
-    try {
-      final Rect bounds = mDrawable.getBounds();
-      final Canvas displayListCanvas = displayList.start(bounds.width(), bounds.height());
-
-      displayListCanvas.translate(-bounds.left, -bounds.top);
-      mDrawable.draw(displayListCanvas);
-      displayListCanvas.translate(bounds.left, bounds.top);
-
-      displayList.end(displayListCanvas);
-      displayList.setBounds(bounds.left, bounds.top, bounds.right, bounds.bottom);
-    } catch (DisplayListException e) {
-      // Nothing to do.
-    }
+    mName = null;
+    mDisplayList = null;
   }
 }
