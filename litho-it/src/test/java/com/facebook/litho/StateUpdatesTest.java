@@ -22,6 +22,7 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.os.Looper;
+import com.facebook.litho.stats.LithoStats;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -292,6 +293,18 @@ public class StateUpdatesTest {
     mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
     assertThat(mTestComponent.getComponentForStateUpdate().getCount()).isEqualTo(INITIAL_COUNT_STATE_VALUE + 2);
+  }
+
+  @Test
+  public void testStateStatsTest() {
+    final long before = LithoStats.getStateUpdates();
+
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    final long after = LithoStats.getStateUpdates();
+
+    assertThat(after - before).isEqualTo(1);
   }
 
   private StateHandler getStateHandler() {

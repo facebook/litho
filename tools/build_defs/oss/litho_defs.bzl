@@ -38,6 +38,8 @@ LITHO_WIDGET_TARGET = make_dep_path("litho-widget/src/main/java/com/facebook/lit
 
 LITHO_LITHO_FRESCO_TARGET = make_dep_path("litho-fresco/src/main/java/com/facebook/litho/fresco:fresco")
 
+LITHO_STATS_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/stats:stats")
+
 LITHO_TESTING_CORE_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho")
 
 LITHO_TESTING_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:testing")

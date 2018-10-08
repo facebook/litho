@@ -22,6 +22,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.Pools;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.stats.LithoStats;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -168,6 +169,7 @@ public class StateHandler {
       for (StateUpdate update : stateUpdatesForKey) {
         update.updateState(component.getStateContainer(), component);
       }
+      LithoStats.incStateUpdate(stateUpdatesForKey.size());
     }
 
     synchronized (this) {
