@@ -966,6 +966,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final Component nextComponent = layoutOutput.getComponent();
     final ComponentLifecycle nextLifecycle = nextComponent;
 
+    // If the orientation has changed, we should definitely update.
+    if (layoutOutput.getOrientation() != currentMountItem.getOrientation()) {
+      return true;
+    }
+
     // If the two components have different sizes and the mounted content depends on the size we
     // just return true immediately.
     if (!sameSize(layoutOutput, currentMountItem) && nextLifecycle.isMountSizeDependent()) {

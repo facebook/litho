@@ -21,7 +21,6 @@ import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUT
 import android.graphics.Rect;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
-import com.facebook.litho.displaylist.DisplayList;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -53,6 +52,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   private int mUpdateState;
   private int mImportantForAccessibility;
+  private int mOrientation;
 
   private @Nullable String mTransitionKey;
 
@@ -193,6 +193,14 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   public void setImportantForAccessibility(int importantForAccessibility) {
     mImportantForAccessibility = importantForAccessibility;
+  }
+
+  int getOrientation() {
+    return mOrientation;
+  }
+
+  void setOrientation(int orientation) {
+    mOrientation = orientation;
   }
 
   void setViewNodeInfo(ViewNodeInfo viewNodeInfo) {

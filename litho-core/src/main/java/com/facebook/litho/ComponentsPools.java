@@ -212,7 +212,6 @@ public class ComponentsPools {
 
     final ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
     viewNodeInfo.setLayoutDirection(YogaDirection.INHERIT);
-
     item.init(
         component,
         host,
@@ -221,6 +220,7 @@ public class ComponentsPools {
         viewNodeInfo,
         0,
         IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        host.getContext().getResources().getConfiguration().orientation,
         null);
     return item;
   }

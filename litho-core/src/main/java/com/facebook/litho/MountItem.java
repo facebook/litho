@@ -60,6 +60,7 @@ class MountItem {
   private boolean mIsBound;
   private int mImportantForAccessibility;
   private @Nullable String mTransitionKey;
+  private int mOrientation;
 
   // ComponentHost flags defined in the LayoutOutput specifying
   // the behaviour of this item when mounted.
@@ -82,6 +83,7 @@ class MountItem {
     }
     mLayoutFlags = layoutOutput.getFlags();
     mImportantForAccessibility = layoutOutput.getImportantForAccessibility();
+    mOrientation = layoutOutput.getOrientation();
     mTransitionKey = layoutOutput.getTransitionKey();
 
     releaseNodeInfos();
@@ -104,6 +106,7 @@ class MountItem {
         layoutOutput.getViewNodeInfo(),
         layoutOutput.getFlags(),
         layoutOutput.getImportantForAccessibility(),
+        layoutOutput.getOrientation(),
         layoutOutput.getTransitionKey());
   }
 
@@ -115,6 +118,7 @@ class MountItem {
       ViewNodeInfo viewNodeInfo,
       int layoutFlags,
       int importantForAccessibility,
+      int orientation,
       String transitionKey) {
     if (mHost != null) {
       throw new RuntimeException("Calling init() on a MountItem that has not been released!");
@@ -128,6 +132,7 @@ class MountItem {
     mHost = host;
     mLayoutFlags = layoutFlags;
     mImportantForAccessibility = importantForAccessibility;
+    mOrientation = orientation;
     mTransitionKey = transitionKey;
 
     if (nodeInfo != null) {
@@ -210,6 +215,10 @@ class MountItem {
 
   int getImportantForAccessibility() {
     return mImportantForAccessibility;
+  }
+
+  int getOrientation() {
+    return mOrientation;
   }
 
   NodeInfo getNodeInfo() {

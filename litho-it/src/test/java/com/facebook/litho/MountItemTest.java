@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
@@ -94,6 +95,7 @@ public class MountItemTest {
         null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_YES,
+        ORIENTATION_PORTRAIT,
         null);
   }
 
@@ -134,6 +136,7 @@ public class MountItemTest {
         null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_YES,
+        ORIENTATION_PORTRAIT,
         null);
 
     assertThat(MountItem.isDuplicateParentState(mMountItem.getLayoutFlags())).isTrue();
@@ -149,6 +152,7 @@ public class MountItemTest {
         null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_YES,
+        ORIENTATION_PORTRAIT,
         null);
 
     assertThat(MountItem.isDuplicateParentState(mMountItem.getLayoutFlags())).isFalse();
@@ -173,6 +177,7 @@ public class MountItemTest {
         null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_YES,
+        ORIENTATION_PORTRAIT,
         null);
 
     assertThat(mMountItem.isViewClickable()).isTrue();
@@ -196,6 +201,7 @@ public class MountItemTest {
         null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_YES,
+        ORIENTATION_PORTRAIT,
         null);
 
     assertThat(mMountItem.isViewClickable()).isFalse();
@@ -216,6 +222,7 @@ public class MountItemTest {
         null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        ORIENTATION_PORTRAIT,
         null);
 
     assertThat(mountItem.isAccessible()).isFalse();
@@ -235,6 +242,7 @@ public class MountItemTest {
         null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        ORIENTATION_PORTRAIT,
         null);
 
     assertThat(mountItem.isAccessible()).isTrue();
@@ -253,6 +261,7 @@ public class MountItemTest {
         null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_NO,
+        ORIENTATION_PORTRAIT,
         null);
 
     assertThat(mountItem.isAccessible()).isFalse();
@@ -271,6 +280,7 @@ public class MountItemTest {
         null,
         mFlags,
         IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        ORIENTATION_PORTRAIT,
         null);
 
     assertThat(mountItem.isAccessible()).isTrue();
