@@ -43,7 +43,19 @@ class MountItem {
   private NodeInfo mNodeInfo;
   private ViewNodeInfo mViewNodeInfo;
   private Component mComponent;
-  private Object mContent;
+  /**
+   * Mount content created by the {@link MountItem#mComponent}. It will be properly recycled by a
+   * MountItem in {@link MountItem#release(ComponentContext)} ()}
+   */
+  private Object mBaseContent;
+  /**
+   * Used when the original content {@link MountItem#mBaseContent} should not be mounted directly,
+   * but requires some additional wrapping, for instance in {@link DisplayListDrawable}. This will
+   * not be recycled by a MountItem, thus if any recycling needs to take place, it should be done
+   * prior to releasing MountItem
+   */
+  private Object mWrappedContent;
+
   private ComponentHost mHost;
   private boolean mIsBound;
   private int mImportantForAccessibility;
@@ -112,7 +124,7 @@ class MountItem {
     }
 
     mComponent = component;
-    mContent = content;
+    mBaseContent = content;
     mHost = host;
     mLayoutFlags = layoutFlags;
     mImportantForAccessibility = importantForAccessibility;
@@ -126,8 +138,8 @@ class MountItem {
       mViewNodeInfo = viewNodeInfo.acquireRef();
     }
 
-    if (mContent instanceof View) {
-      final View view = (View) mContent;
+    if (mBaseContent instanceof View) {
+      final View view = (View) mBaseContent;
 
       if (view.isClickable()) {
         mMountViewFlags |= FLAG_VIEW_CLICKABLE;
@@ -164,8 +176,32 @@ class MountItem {
     return mHost;
   }
 
-  Object getContent() {
-    return mContent;
+  /**
+   * @return Mount content created by the component. This is not necessarily will be mounted into
+   *     {@link ComponentHost}, it may be preliminarily wrapped
+   * @see #getMountableContent()
+   * @see #setWrappedContent(Object)
+   */
+  Object getBaseContent() {
+    return mBaseContent;
+  }
+
+  /**
+   * Sets wrapped content, that should be mounted instead of the base content (created by the
+   * component). We still keep a reference to the original content for recycling
+   */
+  void setWrappedContent(Object wrappedContent) {
+    mWrappedContent = wrappedContent;
+  }
+
+  /**
+   * @return content to mount, this may be the base content (created by the component) or wrapped
+   *     content, if provided
+   * @see #setWrappedContent(Object)
+   * @see #getBaseContent()
+   */
+  Object getMountableContent() {
+    return mWrappedContent != null ? mWrappedContent : mBaseContent;
   }
 
   int getLayoutFlags() {
@@ -207,13 +243,14 @@ class MountItem {
   }
 
   void release(ComponentContext context) {
-    ComponentsPools.release(context, mComponent, mContent);
+    ComponentsPools.release(context, mComponent, mBaseContent);
 
     releaseNodeInfos();
 
     mComponent = null;
     mHost = null;
-    mContent = null;
+    mBaseContent = null;
+    mWrappedContent = null;
     mLayoutFlags = 0;
     mMountViewFlags = 0;
     mIsBound = false;

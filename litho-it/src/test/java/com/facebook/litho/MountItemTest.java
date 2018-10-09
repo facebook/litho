@@ -110,7 +110,8 @@ public class MountItemTest {
   public void testGetters() {
     assertThat(mMountItem.getComponent()).isSameAs((Component) mComponent);
     assertThat(mMountItem.getHost()).isSameAs(mComponentHost);
-    assertThat(mMountItem.getContent()).isSameAs(mContent);
+    assertThat(mMountItem.getBaseContent()).isSameAs(mContent);
+    assertThat(mMountItem.getMountableContent()).isSameAs(mContent);
     assertThat(mMountItem.getNodeInfo().getContentDescription()).isSameAs(mContentDescription);
     assertThat(mMountItem.getNodeInfo().getClickHandler()).isSameAs(mClickHandler);
     assertThat(mMountItem.getNodeInfo().getFocusChangeHandler()).isSameAs(mFocusChangeHandler);
@@ -299,11 +300,35 @@ public class MountItemTest {
   }
 
   @Test
+  public void testWrappedContent() {
+    // Wrapped content isn't set
+    assertThat(mMountItem.getBaseContent()).isSameAs(mContent);
+    assertThat(mMountItem.getMountableContent()).isSameAs(mContent);
+
+    final Object wrappedContent = new View(RuntimeEnvironment.application);
+    mMountItem.setWrappedContent(wrappedContent);
+
+    // Wrapped content is set, which should not affect just content
+    assertThat(mMountItem.getBaseContent()).isSameAs(mContent);
+    assertThat(mMountItem.getMountableContent()).isSameAs(wrappedContent);
+
+    mMountItem.setWrappedContent(null);
+
+    // No wrapped content again
+    assertThat(mMountItem.getBaseContent()).isSameAs(mContent);
+    assertThat(mMountItem.getMountableContent()).isSameAs(mContent);
+  }
+
+  @Test
   public void testRelease() {
+    final Object wrappedContent = new View(RuntimeEnvironment.application);
+    mMountItem.setWrappedContent(wrappedContent);
+
     mMountItem.release(new ComponentContext(RuntimeEnvironment.application));
     assertThat(mMountItem.getComponent()).isNull();
     assertThat(mMountItem.getHost()).isNull();
-    assertThat(mMountItem.getContent()).isNull();
+    assertThat(mMountItem.getBaseContent()).isNull();
+    assertThat(mMountItem.getMountableContent()).isNull();
     assertThat(mMountItem.getNodeInfo()).isNull();
     assertThat(mMountItem.getLayoutFlags()).isEqualTo(0);
     assertThat(mMountItem.getImportantForAccessibility())
