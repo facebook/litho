@@ -2062,6 +2062,8 @@ public class ComponentTree {
               context, StateHandler.acquireNewInstance(mStateHandler), keyHandler, treeProps);
     }
 
+    // If enabled, show a debug foreground layer covering the whole LithoView showing which
+    // thread the LayoutState was calculated into and the number of calculations.
     if (ComponentsConfiguration.enableLithoViewDebugOverlay) {
       synchronized (mDebugLock) {
         if (mDebugController == null) {

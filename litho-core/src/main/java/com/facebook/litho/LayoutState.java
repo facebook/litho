@@ -960,19 +960,6 @@ class LayoutState {
       ComponentsPools.release(rect);
     }
 
-    // 11. If enabled, show a debug foreground layer covering the whole LithoView showing which
-    // thread the LayoutState was calculated into.
-    if (ComponentsConfiguration.enableLithoViewDebugOverlay && layoutState.isLayoutRoot(node)) {
-      final int overlayColor = ThreadUtils.isMainThread() ? 0x33FF0000 : 0x3300FF00;
-      addDrawableComponent(
-          node,
-          layoutState,
-          null,
-          DrawableReference.create().drawable(new ColorDrawable(overlayColor)).build(),
-          OutputUnitType.FOREGROUND,
-          needsHostView);
-    }
-
     // All children for the given host have been added, restore the previous
     // host, level, and duplicate parent state value in the recursive queue.
     if (layoutState.mCurrentHostMarker != currentHostMarker) {
