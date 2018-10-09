@@ -78,7 +78,7 @@ class CardSpec {
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float elevation,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int shadowBottomOverride) {
 
-    final Resources resources = c.getResources();
+    final Resources resources = c.getBaseContext().getResources();
 
     if (cornerRadius == -1) {
       cornerRadius = pixels(resources, DEFAULT_CORNER_RADIUS_DP);

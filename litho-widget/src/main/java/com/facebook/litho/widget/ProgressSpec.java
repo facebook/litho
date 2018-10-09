@@ -137,7 +137,7 @@ class ProgressSpec {
 
       if (attr == R.styleable.Progress_android_indeterminateDrawable) {
         indeterminateDrawable =
-            ContextCompat.getDrawable(c, styledAttributes.getResourceId(attr, 0));
+            ContextCompat.getDrawable(c.getBaseContext(), styledAttributes.getResourceId(attr, 0));
       }
     }
 

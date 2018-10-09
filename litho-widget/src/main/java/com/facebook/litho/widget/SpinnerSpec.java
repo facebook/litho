@@ -107,8 +107,11 @@ public class SpinnerSpec {
       @Prop(resType = ResType.COLOR, optional = true) int selectedTextColor,
       @Prop(resType = ResType.DRAWABLE, optional = true) @Nullable Drawable caret) {
     assertAPI11orHigher();
-    caret = caret == null ? new CaretDrawable(c, DEFAULT_CARET_COLOR) : caret;
-    selectedTextSize = selectedTextSize == -1 ? spToPx(c, DEFAULT_TEXT_SIZE_SP) : selectedTextSize;
+    caret = caret == null ? new CaretDrawable(c.getBaseContext(), DEFAULT_CARET_COLOR) : caret;
+    selectedTextSize =
+        selectedTextSize == -1
+            ? spToPx(c.getBaseContext(), DEFAULT_TEXT_SIZE_SP)
+            : selectedTextSize;
 
     return Row.create(c)
         .minHeightDip(SPINNER_HEIGHT)
@@ -157,11 +160,11 @@ public class SpinnerSpec {
       @Prop final List<String> options,
       @Prop(resType = ResType.INT, optional = true) int itemLayout) {
     final EventHandler eventHandler = Spinner.getItemSelectedEventHandler(c);
-    final ListPopupWindow popup = new ListPopupWindow(c);
+    final ListPopupWindow popup = new ListPopupWindow(c.getBaseContext());
     popup.setAnchorView(view);
     popup.setModal(true);
     popup.setPromptPosition(ListPopupWindow.POSITION_PROMPT_ABOVE);
-    popup.setAdapter(new ArrayAdapter<>(c, itemLayout, options));
+    popup.setAdapter(new ArrayAdapter<>(c.getBaseContext(), itemLayout, options));
     popup.setOnItemClickListener(
         new AdapterView.OnItemClickListener() {
           @Override

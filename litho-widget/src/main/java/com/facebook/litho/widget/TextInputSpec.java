@@ -413,7 +413,8 @@ class TextInputSpec {
       return specifiedBackground;
     }
     final int[] attrs = {android.R.attr.background};
-    TypedArray a = c.obtainStyledAttributes(null, attrs, android.R.attr.editTextStyle, 0);
+    TypedArray a =
+        c.getBaseContext().obtainStyledAttributes(null, attrs, android.R.attr.editTextStyle, 0);
     Drawable defaultBackground = a.getDrawable(0);
     a.recycle();
     return defaultBackground;
@@ -426,7 +427,7 @@ class TextInputSpec {
     if (view != null) {
       if (view.requestFocus()) {
         InputMethodManager imm =
-            (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
+            (InputMethodManager) c.getBaseContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(view, 0);
       }
     }
@@ -439,7 +440,7 @@ class TextInputSpec {
     if (view != null) {
       view.clearFocus();
       InputMethodManager imm =
-          (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
+          (InputMethodManager) c.getBaseContext().getSystemService(Context.INPUT_METHOD_SERVICE);
       imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
   }

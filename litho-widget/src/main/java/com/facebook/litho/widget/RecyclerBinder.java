@@ -649,7 +649,7 @@ public class RecyclerBinder
               c.getBaseContext(), c.getLogTag(), c.getLogger(), c.getTreePropsCopy());
 
       if (layoutInfo == null) {
-        layoutInfo = new LinearLayoutInfo(c, VERTICAL, false);
+        layoutInfo = new LinearLayoutInfo(c.getBaseContext(), VERTICAL, false);
       }
 
       return new RecyclerBinder(this);
@@ -2748,7 +2748,7 @@ public class RecyclerBinder
       final ViewCreator viewCreator = mRenderInfoViewCreatorController.getViewCreator(viewType);
 
       if (viewCreator != null) {
-        final View view = viewCreator.createView(mComponentContext, parent);
+        final View view = viewCreator.createView(mComponentContext.getBaseContext(), parent);
         return new BaseViewHolder(view, false);
       } else {
         final LithoView lithoView =
