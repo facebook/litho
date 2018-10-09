@@ -129,7 +129,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return;
     }
 
-    final Drawable drawable = (Drawable) mountItem.getBaseContent();
+    final Drawable drawable = (Drawable) mountItem.getMountableContent();
     final Rect bounds = drawable.getBounds();
 
     final Component component = mountItem.getComponent();
@@ -171,7 +171,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return INVALID_ID;
     }
 
-    final Drawable drawable = (Drawable) mountItem.getBaseContent();
+    final Drawable drawable = (Drawable) mountItem.getMountableContent();
     final Rect bounds = drawable.getBounds();
 
     // Try to find an extra accessibility node that intersects with

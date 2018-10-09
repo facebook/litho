@@ -373,7 +373,7 @@ public final class DebugComponent {
         final Component component = mountItem == null ? null : mountItem.getComponent();
 
         if (component != null && component == mNode.getRootComponent()) {
-          return mountItem.getBaseContent();
+          return mountItem.getMountableContent();
         }
       }
     }

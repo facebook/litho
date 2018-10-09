@@ -151,7 +151,7 @@ public class ComponentHost extends ViewGroup {
    * @param bounds the bounds of the item that is to be mounted into the host
    */
   public void mount(int index, MountItem mountItem, Rect bounds) {
-    final Object content = mountItem.getBaseContent();
+    final Object content = mountItem.getMountableContent();
     if (content instanceof Drawable) {
       mountDrawable(index, mountItem, bounds);
     } else if (content instanceof View) {
@@ -204,7 +204,7 @@ public class ComponentHost extends ViewGroup {
    * @param mountItem item to be unmounted from the host.
    */
   public void unmount(int index, MountItem mountItem) {
-    final Object content = mountItem.getBaseContent();
+    final Object content = mountItem.getMountableContent();
     if (content instanceof Drawable) {
       ensureDrawableMountItems();
 
@@ -226,7 +226,7 @@ public class ComponentHost extends ViewGroup {
   }
 
   void startUnmountDisappearingItem(int index, MountItem mountItem) {
-    final Object content = mountItem.getBaseContent();
+    final Object content = mountItem.getMountableContent();
 
     if (content instanceof Drawable) {
       ensureDrawableMountItems();
@@ -253,7 +253,7 @@ public class ComponentHost extends ViewGroup {
           "Tried to remove non-existent disappearing item, transitionKey: " + key);
     }
 
-    final Object content = disappearingItem.getBaseContent();
+    final Object content = disappearingItem.getMountableContent();
     if (content instanceof Drawable) {
       unmountDrawable(disappearingItem);
     } else if (content instanceof View) {
@@ -306,7 +306,7 @@ public class ComponentHost extends ViewGroup {
       return;
     }
 
-    if (this.equals(mountItem.getBaseContent())) {
+    if (this.equals(mountItem.getMountableContent())) {
       // Don't delegate to ourselves or we'll cause a StackOverflowError
       return;
     }
@@ -317,7 +317,7 @@ public class ComponentHost extends ViewGroup {
     }
 
     mTouchExpansionDelegate.registerTouchExpansion(
-        index, (View) mountItem.getBaseContent(), expandedTouchBounds);
+        index, (View) mountItem.getMountableContent(), expandedTouchBounds);
   }
 
   void maybeUnregisterTouchExpansion(int index, MountItem mountItem) {
@@ -330,7 +330,7 @@ public class ComponentHost extends ViewGroup {
       return;
     }
 
-    if (this.equals(mountItem.getBaseContent())) {
+    if (this.equals(mountItem.getMountableContent())) {
       // Recursive delegation is never registered
       return;
     }
@@ -380,7 +380,7 @@ public class ComponentHost extends ViewGroup {
 
     final List<Drawable> drawables = new ArrayList<>(mDrawableMountItems.size());
     for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
-      Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getBaseContent();
+      Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getMountableContent();
       drawables.add(drawable);
     }
 
@@ -468,7 +468,7 @@ public class ComponentHost extends ViewGroup {
     }
     maybeMoveTouchExpansionIndexes(item, oldIndex, newIndex);
 
-    final Object content = item.getBaseContent();
+    final Object content = item.getMountableContent();
 
     ensureViewMountItems();
 
@@ -743,7 +743,7 @@ public class ComponentHost extends ViewGroup {
     for (int index = 0, size = mDisappearingItems == null ? 0 : mDisappearingItems.size();
         index < size;
         ++index) {
-      final Object content = mDisappearingItems.get(index).getBaseContent();
+      final Object content = mDisappearingItems.get(index).getMountableContent();
       if (content instanceof Drawable) {
         ((Drawable) content).draw(canvas);
       }
@@ -784,9 +784,9 @@ public class ComponentHost extends ViewGroup {
           i--) {
         final MountItem item = mDrawableMountItems.valueAt(i);
 
-        if (item.getBaseContent() instanceof Touchable
+        if (item.getMountableContent() instanceof Touchable
             && !isTouchableDisabled(item.getLayoutFlags())) {
-          final Touchable t = (Touchable) item.getBaseContent();
+          final Touchable t = (Touchable) item.getMountableContent();
           if (t.shouldHandleTouchEvent(event) && t.onTouchEvent(event, this)) {
             handled = true;
             break;
@@ -853,7 +853,7 @@ public class ComponentHost extends ViewGroup {
       final MountItem mountItem = mDrawableMountItems.valueAt(i);
       ComponentHostUtils.maybeSetDrawableState(
           this,
-          (Drawable) mountItem.getBaseContent(),
+          (Drawable) mountItem.getMountableContent(),
           mountItem.getLayoutFlags(),
           mountItem.getNodeInfo());
     }
@@ -866,7 +866,7 @@ public class ComponentHost extends ViewGroup {
     for (int i = 0, size = (mDrawableMountItems == null) ? 0 : mDrawableMountItems.size();
         i < size;
         i++) {
-      final Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getBaseContent();
+      final Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getMountableContent();
       DrawableCompat.jumpToCurrentState(drawable);
     }
   }
@@ -878,7 +878,7 @@ public class ComponentHost extends ViewGroup {
     for (int i = 0, size = (mDrawableMountItems == null) ? 0 : mDrawableMountItems.size();
         i < size;
         i++) {
-      final Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getBaseContent();
+      final Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getMountableContent();
       drawable.setVisible(visibility == View.VISIBLE, false);
     }
   }
@@ -1159,7 +1159,7 @@ public class ComponentHost extends ViewGroup {
         if (drawables == null) {
           drawables = new ArrayList<>();
         }
-        drawables.add((Drawable) mountItem.getBaseContent());
+        drawables.add((Drawable) mountItem.getMountableContent());
       }
     }
     return drawables;
@@ -1178,7 +1178,7 @@ public class ComponentHost extends ViewGroup {
     int index = 0;
     final int viewMountItemCount = mViewMountItems == null ? 0 : mViewMountItems.size();
     for (int i = 0; i < viewMountItemCount; i++) {
-      final View child = (View) mViewMountItems.valueAt(i).getBaseContent();
+      final View child = (View) mViewMountItems.valueAt(i).getMountableContent();
       mChildDrawingOrder[index++] = indexOfChild(child);
     }
 
@@ -1186,7 +1186,7 @@ public class ComponentHost extends ViewGroup {
     for (int i = 0, size = mDisappearingItems == null ? 0 : mDisappearingItems.size();
         i < size;
         i++) {
-      final Object child = mDisappearingItems.get(i).getBaseContent();
+      final Object child = mDisappearingItems.get(i).getMountableContent();
       if (child instanceof View) {
         mChildDrawingOrder[index++] = indexOfChild((View) child);
       }
@@ -1224,7 +1224,7 @@ public class ComponentHost extends ViewGroup {
 
     ensureDrawableMountItems();
     mDrawableMountItems.put(index, mountItem);
-    final Drawable drawable = (Drawable) mountItem.getBaseContent();
+    final Drawable drawable = (Drawable) mountItem.getMountableContent();
 
     ComponentHostUtils.mountDrawable(
         this, drawable, bounds, mountItem.getLayoutFlags(), mountItem.getNodeInfo());
@@ -1233,7 +1233,7 @@ public class ComponentHost extends ViewGroup {
   private void unmountDrawable(MountItem mountItem) {
     assertMainThread();
 
-    final Drawable drawable = (Drawable) mountItem.getBaseContent();
+    final Drawable drawable = (Drawable) mountItem.getMountableContent();
     drawable.setCallback(null);
     invalidate(drawable.getBounds());
 
@@ -1315,7 +1315,7 @@ public class ComponentHost extends ViewGroup {
           i++) {
         final long startDrawNs = System.nanoTime();
         final MountItem mountItem = mMountItems.valueAt(i);
-        final Object content = mountItem.getBaseContent();
+        final Object content = mountItem.getMountableContent();
 
         // During a ViewGroup's dispatchDraw() call with children drawing order enabled,
         // getChildDrawingOrder() will be called before each child view is drawn. This
@@ -1363,7 +1363,7 @@ public class ComponentHost extends ViewGroup {
 
   private static String getMountItemName(MountItem mountItem) {
     String traceName = mountItem.getComponent().getSimpleName();
-    if (mountItem.getBaseContent() instanceof DisplayListDrawable) {
+    if (mountItem.getMountableContent() instanceof DisplayListDrawable) {
       traceName += "DL";
     }
     return traceName;
