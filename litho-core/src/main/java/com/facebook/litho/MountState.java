@@ -143,7 +143,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     mIndexToItemMap = new LongSparseArray<>();
     mVisibilityIdToItemMap = new LongSparseArray<>();
     mCanMountIncrementallyMountItems = new LongSparseArray<>();
-    mContext = (ComponentContext) view.getContext();
+    mContext = view.getComponentContext();
     mLithoView = view;
     mIsDirty = true;
 

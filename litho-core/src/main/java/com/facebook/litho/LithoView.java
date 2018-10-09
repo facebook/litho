@@ -62,6 +62,7 @@ public class LithoView extends ComponentHost {
 
   @Nullable private ComponentTree mComponentTree;
   private final MountState mMountState;
+  private final ComponentContext mComponentContext;
   private boolean mIsAttached;
   // The bounds of the visible rect that was used for the previous incremental mount.
   private final Rect mPreviousMountVisibleRectBounds = new Rect();
@@ -134,6 +135,7 @@ public class LithoView extends ComponentHost {
   public LithoView(ComponentContext context, AttributeSet attrs) {
     super(context, attrs);
 
+    mComponentContext = context;
     mMountState = new MountState(this);
     mAccessibilityManager = (AccessibilityManager) context.getSystemService(ACCESSIBILITY_SERVICE);
   }
@@ -411,7 +413,7 @@ public class LithoView extends ComponentHost {
    * {@link Context} originally used to create this LithoView itself.
    */
   public ComponentContext getComponentContext() {
-    return (ComponentContext) getContext();
+    return mComponentContext;
   }
 
   @Override
