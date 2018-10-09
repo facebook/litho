@@ -119,11 +119,43 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
 
     mDisplayList.end(displayListCanvas);
     mDisplayList.setBounds(bounds.left, bounds.top, bounds.right, bounds.bottom);
+    // Also need to clean up translation we set to the DL in order to adjust positioning without
+    // changing bounds, as now drawable bounds and DL bounds are same
+    mDisplayList.setTranslationX(0);
+    mDisplayList.setTranslationY(0);
   }
 
   @Override
+  @UiThread
   protected void onBoundsChange(Rect bounds) {
+    // We want to pass bounds to the underlying Drawable, but it's gonna call invalidateSelf() in
+    // setBounds(), we don't really need that callback, but what makes it even worse is the fact
+    // that it invalidates *before* it applies the new bounds, however, when we receive the
+    // invalidation callback we sync the bounds, thus applying the old bounds back here. To avoid
+    // all this we are removing callback before setting bounds, and setting it right back after
+    mDrawable.setCallback(null);
     mDrawable.setBounds(bounds);
+    mDrawable.setCallback(this);
+
+    if (mDisplayList == null || !mDisplayList.isValid()) {
+      return;
+    }
+
+    final Rect dlBounds = mDisplayList.getBounds();
+    if (bounds.height() == dlBounds.height() && bounds.width() == dlBounds.width()) {
+      try {
+        final int dx = bounds.left - dlBounds.left;
+        final int dy = bounds.top - dlBounds.top;
+        mDisplayList.setTranslationX(dx);
+        mDisplayList.setTranslationY(dy);
+      } catch (DisplayListException e) {
+        // We'll re-create DL in draw()
+        mDisplayList = null;
+      }
+    } else {
+      // We'll need to re-draw into DL
+      mInvalidated = true;
+    }
   }
 
   @Override
@@ -307,5 +339,25 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
     mDrawable = null;
     mName = null;
     mDisplayList = null;
+  }
+
+  @Override
+  public String toString() {
+    return "DisplayListDrawable("
+        + hashCode()
+        + "){"
+        + "\n\tbounds="
+        + getBounds()
+        + "\n\torigin="
+        + mDrawable
+        + "\n\torigin bounds="
+        + mDrawable.getBounds()
+        + "\n\tDL="
+        + mDisplayList
+        + "\n\tinvalidated="
+        + mInvalidated
+        + "\n\tskipping DL="
+        + mDoNotAttemptDLDrawing
+        + '}';
   }
 }
