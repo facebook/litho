@@ -168,15 +168,19 @@ public class RenderThreadTransition extends TransitionAnimationBinding {
   private static Animator createAnimator(
       View target, AnimatedProperty animatedProperty, float finalValue) {
     if (canUseRenderThread()) {
-      final int renderNodeAnimatorProperty = getRenderNodeAnimatorProperty(animatedProperty);
-      final RenderNodeAnimator animator =
-          new RenderNodeAnimator(renderNodeAnimatorProperty, finalValue);
-      animator.setTarget(target);
-      return animator;
-    } else {
-      final Property viewAnimatorProperty = getViewAnimatorProperty(animatedProperty);
-      return ObjectAnimator.ofFloat(target, viewAnimatorProperty, finalValue);
+      try {
+        final int renderNodeAnimatorProperty = getRenderNodeAnimatorProperty(animatedProperty);
+        final RenderNodeAnimator animator =
+            new RenderNodeAnimator(renderNodeAnimatorProperty, finalValue);
+        animator.setTarget(target);
+        return animator;
+      } catch (IllegalStateException e) {
+        Log.e(TAG, "Couldn't create RT animator, falling back to ObjectAnimator", e);
+      }
     }
+
+    final Property viewAnimatorProperty = getViewAnimatorProperty(animatedProperty);
+    return ObjectAnimator.ofFloat(target, viewAnimatorProperty, finalValue);
   }
 
   private static int getRenderNodeAnimatorProperty(AnimatedProperty animatedProperty) {
