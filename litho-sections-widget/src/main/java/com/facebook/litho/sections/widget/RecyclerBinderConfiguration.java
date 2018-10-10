@@ -128,12 +128,6 @@ public class RecyclerBinderConfiguration {
   }
 
   /** TODO T34627443 replace usage with builder */
-  public RecyclerBinderConfiguration setSplitLayoutTag(String splitLayoutTag) {
-    mSplitLayoutTag = splitLayoutTag;
-    return this;
-  }
-
-  /** TODO T34627443 replace usage with builder */
   public RecyclerBinderConfiguration setUseBackgroundChangeSets(boolean useBackgroundChangeSets) {
     mUseBackgroundChangeSets = useBackgroundChangeSets;
     return this;
