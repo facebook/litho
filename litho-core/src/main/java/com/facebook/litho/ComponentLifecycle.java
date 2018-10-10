@@ -224,13 +224,17 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   @ThreadSafe(enableChecks = false)
-  public Object createMountContent(ComponentContext c) {
+  public Object createMountContent(Context c) {
+    if (c instanceof ComponentContext) {
+      throw new IllegalStateException("Do not use ComponentContext to create mount content!");
+    }
+
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("createMountContent:" + ((Component) this).getSimpleName());
     }
     try {
-      return onCreateMountContent(c.getBaseContext());
+      return onCreateMountContent(c);
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();

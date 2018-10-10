@@ -50,7 +50,6 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.IntDef;
@@ -1456,7 +1455,7 @@ class LayoutState {
             ComponentsSystrace.beginSection("preAllocateMountContent:" + component.getSimpleName());
           }
 
-          ComponentsPools.maybePreallocateContent(mContext, component);
+          ComponentsPools.maybePreallocateContent(mContext.getBaseContext(), component);
 
           if (isTracing) {
             ComponentsSystrace.endSection();

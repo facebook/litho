@@ -1348,7 +1348,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (component == null) {
       throw new RuntimeException("Trying to mount a LayoutOutput with a null Component.");
     }
-    final Object content = ComponentsPools.acquireMountContent(mContext, component);
+    final Object content =
+        ComponentsPools.acquireMountContent(mContext.getBaseContext(), component);
 
     final ComponentContext context = getContextForComponent(component);
     component.mount(
@@ -2237,7 +2238,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         mCanMountIncrementallyMountItems.removeAt(index);
       }
     }
-    ComponentsPools.release(context, item);
+    ComponentsPools.release(context.getBaseContext(), item);
   }
 
   void unmountAllItems() {
@@ -2340,7 +2341,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       mCanMountIncrementallyMountItems.delete(mLayoutOutputsIds[index]);
     }
 
-    ComponentsPools.release(mContext, item);
+    ComponentsPools.release(mContext.getBaseContext(), item);
 
     if (mMountStats.isLoggingEnabled) {
       mMountStats.unmountedTimes.add((System.nanoTime() - startTime) / NS_IN_MS);
@@ -2400,7 +2401,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           mCanMountIncrementallyMountItems.removeAt(index);
         }
       }
-      ComponentsPools.release(mContext, item);
+      ComponentsPools.release(mContext.getBaseContext(), item);
     }
   }
 

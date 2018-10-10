@@ -392,7 +392,7 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
-  static void release(ComponentContext context, MountItem item) {
+  static void release(Context context, MountItem item) {
     item.release(context);
     sMountItemPool.release(item);
   }
@@ -444,7 +444,12 @@ public class ComponentsPools {
     sDiffPool.release(diff);
   }
 
-  static Object acquireMountContent(ComponentContext context, ComponentLifecycle lifecycle) {
+  static Object acquireMountContent(Context context, ComponentLifecycle lifecycle) {
+    // TODO tT34736597 remove this exception
+    if (context instanceof ComponentContext) {
+      throw new IllegalStateException("Do not use ComponentContext to acquire mount content!");
+    }
+
     final MountContentPool pool = getMountContentPool(context, lifecycle);
     if (pool == null) {
       return lifecycle.createMountContent(context);
@@ -453,7 +458,12 @@ public class ComponentsPools {
     return pool.acquire(context, lifecycle);
   }
 
-  static void release(ComponentContext context, ComponentLifecycle lifecycle, Object mountContent) {
+  static void release(Context context, ComponentLifecycle lifecycle, Object mountContent) {
+    // TODO tT34736597 remove this exception
+    if (context instanceof ComponentContext) {
+      throw new IllegalStateException("Do not use ComponentContext to release mount content!");
+    }
+
     final MountContentPool pool = getMountContentPool(context, lifecycle);
     if (pool != null) {
       pool.release(mountContent);
@@ -464,8 +474,12 @@ public class ComponentsPools {
    * Pre-allocates mount content for this component type within the pool for this context unless the
    * pre-allocation limit has been hit in which case we do nothing.
    */
-  public static void maybePreallocateContent(
-      ComponentContext context, ComponentLifecycle lifecycle) {
+  public static void maybePreallocateContent(Context context, ComponentLifecycle lifecycle) {
+    // TODO tT34736597 remove this exception
+    if (context instanceof ComponentContext) {
+      throw new IllegalStateException("Do not use ComponentContext to acquire mount content!");
+    }
+
     final MountContentPool pool = getMountContentPool(context, lifecycle);
     if (pool != null) {
       pool.maybePreallocateContent(context, lifecycle);
@@ -473,12 +487,15 @@ public class ComponentsPools {
   }
 
   private static @Nullable MountContentPool getMountContentPool(
-      ComponentContext wrappedContext, ComponentLifecycle lifecycle) {
+      Context context, ComponentLifecycle lifecycle) {
+    // TODO tT34736597 remove this exception
+    if (context instanceof ComponentContext) {
+      throw new IllegalStateException("Do not use ComponentContext to acquire mount content!");
+    }
+
     if (lifecycle.poolSize() == 0) {
       return null;
     }
-
-    final Context context = getContextForMountPool(wrappedContext);
 
     synchronized (sMountContentLock) {
       SparseArray<MountContentPool> poolsArray = sMountContentPoolsByContext.get(context);
@@ -501,15 +518,6 @@ public class ComponentsPools {
 
       return pool;
     }
-  }
-
-  private static Context getContextForMountPool(ComponentContext wrappedContext) {
-    final Context innerContext = wrappedContext.getBaseContext();
-    if (innerContext instanceof ComponentContext) {
-      throw new IllegalStateException("Double wrapped ComponentContext.");
-    }
-
-    return innerContext;
   }
 
   @GuardedBy("sMountContentLock")

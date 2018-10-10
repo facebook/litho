@@ -334,7 +334,7 @@ public class MountItemTest {
     final Object wrappedContent = new View(RuntimeEnvironment.application);
     mMountItem.setWrappedContent(wrappedContent);
 
-    mMountItem.release(new ComponentContext(RuntimeEnvironment.application));
+    mMountItem.release(RuntimeEnvironment.application);
     assertThat(mMountItem.getComponent()).isNull();
     assertThat(mMountItem.getHost()).isNull();
     assertThat(mMountItem.getBaseContent()).isNull();

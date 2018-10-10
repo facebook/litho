@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import android.content.Context;
 import android.support.v4.util.Pools;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,7 +76,7 @@ public class ViewCompatComponent<V extends View> extends Component {
   @Override
   protected void onMeasure(
       ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
-    final V toMeasure = (V) ComponentsPools.acquireMountContent(c, this);
+    final V toMeasure = (V) ComponentsPools.acquireMountContent(c.getBaseContext(), this);
     final ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(size.width, size.height);
 
     toMeasure.setLayoutParams(layoutParams);
@@ -93,7 +94,7 @@ public class ViewCompatComponent<V extends View> extends Component {
 
     mViewBinder.unbind(toMeasure);
 
-    ComponentsPools.release(c, this, toMeasure);
+    ComponentsPools.release(c.getBaseContext(), this, toMeasure);
   }
 
   @Override
@@ -118,7 +119,7 @@ public class ViewCompatComponent<V extends View> extends Component {
   }
 
   @Override
-  public V createMountContent(ComponentContext c) {
+  public V createMountContent(Context c) {
     return (V) mViewCreator.createView(c, null);
   }
 
