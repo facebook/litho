@@ -28,6 +28,7 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
+import android.util.Log;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.displaylist.DisplayList;
 import com.facebook.litho.displaylist.DisplayListException;
@@ -37,6 +38,9 @@ import com.facebook.litho.displaylist.DisplayListException;
  * wrapped {@link android.graphics.drawable.Drawable}.
  */
 class DisplayListDrawable extends Drawable implements Drawable.Callback {
+
+  private static final boolean DEBUG = false;
+  private static final String LOG_TAG = "DisplayListDrawable";
 
   private Drawable mDrawable;
   private @Nullable String mName;
@@ -60,8 +64,12 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
       throw new IllegalStateException("The wrapped drawable hasn't been set yet");
     }
 
+    logDebug("Drawing", false);
+
     if (mDoNotAttemptDLDrawing) {
       // We tried before, it didn't go well, we are not doing it again
+      logDebug("\t> origin (not attempting DL drawing)", false);
+
       mDrawable.draw(canvas);
       return;
     }
@@ -71,6 +79,8 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
 
       if (displayList == null) {
         // DL was not created, just draw the drawable itself and return
+        logDebug("\t> origin (DL wasn't created)", false);
+
         mDrawable.draw(canvas);
         return;
       }
@@ -86,13 +96,19 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
 
       if (!mDisplayList.isValid()) {
         // DL still isn't valid, just draw the drawable itself and return
+        logDebug("\t> origin (DL isn't valid)", false);
+
         mDrawable.draw(canvas);
         return;
       }
       // At this point we have a valid DL, that we can draw
+      logDebug("\t> DL", false);
+
       mDisplayList.draw(canvas);
     } catch (DisplayListException e) {
       // Let's make sure next draw calls will just bail the DisplayList part.
+      logDebug("\t> origin (exception)\n\t" + e, false);
+
       mDoNotAttemptDLDrawing = true;
       mDisplayList = null;
       mDrawable.draw(canvas);
@@ -104,12 +120,14 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
   void setDisplayList(DisplayList displayList) {
     mDisplayList = displayList;
     // DL needs to be re-drawn
-    mInvalidated = true;
+    invalidateDL();
   }
 
   /** Draw original drawable to {@link DisplayList}'s canvas. */
   @UiThread
   private void drawContentIntoDisplayList() throws DisplayListException {
+    logDebug("Drawing content into DL", false);
+
     final Rect bounds = mDrawable.getBounds();
     final Canvas displayListCanvas = mDisplayList.start(bounds.width(), bounds.height());
 
@@ -119,7 +137,7 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
 
     mDisplayList.end(displayListCanvas);
     mDisplayList.setBounds(bounds.left, bounds.top, bounds.right, bounds.bottom);
-    // Also need to clean up translation we set to the DL in order to adjust positioning without
+    // Also need to clean up translation we had set to the DL in order to adjust positioning without
     // changing bounds, as now drawable bounds and DL bounds are same
     mDisplayList.setTranslationX(0);
     mDisplayList.setTranslationY(0);
@@ -128,6 +146,8 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
   @Override
   @UiThread
   protected void onBoundsChange(Rect bounds) {
+    logDebug("On bounds change, bounds=" + bounds, false);
+
     // We want to pass bounds to the underlying Drawable, but it's gonna call invalidateSelf() in
     // setBounds(), we don't really need that callback, but what makes it even worse is the fact
     // that it invalidates *before* it applies the new bounds, however, when we receive the
@@ -137,7 +157,8 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
     mDrawable.setBounds(bounds);
     mDrawable.setCallback(this);
 
-    if (mDisplayList == null || !mDisplayList.isValid()) {
+    if (mDisplayList == null || !mDisplayList.isValid() || mInvalidated) {
+      logDebug("\t> no valid DL", false);
       return;
     }
 
@@ -146,15 +167,22 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
       try {
         final int dx = bounds.left - dlBounds.left;
         final int dy = bounds.top - dlBounds.top;
+
+        logDebug("\t> size didn't change, translating, dx=" + dx + ", dy=" + dy, false);
+
         mDisplayList.setTranslationX(dx);
         mDisplayList.setTranslationY(dy);
       } catch (DisplayListException e) {
         // We'll re-create DL in draw()
+        logDebug("\t> couldn't translate\n\t" + e, false);
+
         mDisplayList = null;
       }
     } else {
       // We'll need to re-draw into DL
-      mInvalidated = true;
+      logDebug("\t> size changed, invalidating", false);
+
+      invalidateDL();
     }
   }
 
@@ -262,6 +290,8 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
 
   @Override
   public void invalidateDrawable(Drawable who) {
+    logDebug("Invalidating drawable", true);
+
     invalidateSelf();
     if (mIgnoreInvalidations) {
       return;
@@ -271,7 +301,7 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
     // equals to the bounds of its content to make sure that the view invalidation works as
     // expected.
     setBounds(mDrawable.getBounds());
-    mInvalidated = true; // DL needs to be re-created
+    invalidateDL(); // DL needs to be re-created
   }
 
   @Override
@@ -320,7 +350,7 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
     mDrawable.setCallback(this);
 
     // DL needs to be re-created
-    mInvalidated = true;
+    invalidateDL();
 
     // Notify callback about invalidation
     invalidateSelf();
@@ -328,6 +358,11 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
 
   public void suppressInvalidations(boolean suppress) {
     mIgnoreInvalidations = suppress;
+  }
+
+  private void invalidateDL() {
+    logDebug("invalidateDL", true);
+    mInvalidated = true;
   }
 
   public void release() {
@@ -350,7 +385,7 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
         + getBounds()
         + "\n\torigin="
         + mDrawable
-        + "\n\torigin bounds="
+        + " bounds="
         + mDrawable.getBounds()
         + "\n\tDL="
         + mDisplayList
@@ -359,5 +394,11 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
         + "\n\tskipping DL="
         + mDoNotAttemptDLDrawing
         + '}';
+  }
+
+  private static void logDebug(String message, boolean withStackTrace) {
+    if (DEBUG) {
+      Log.d(LOG_TAG, message, withStackTrace ? new RuntimeException() : null);
+    }
   }
 }
