@@ -186,7 +186,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
 
   public static class Builder {
     static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
-        new RecyclerBinderConfiguration(4.0);
+        RecyclerBinderConfiguration.create().build();
     static final LinearLayoutInfoFactory LINEAR_LAYOUT_INFO_FACTORY =
         new DefaultLinearLayoutInfoFactory();
     private int mOrientation = LinearLayoutManager.VERTICAL;

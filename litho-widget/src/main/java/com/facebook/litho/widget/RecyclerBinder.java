@@ -424,8 +424,9 @@ public class RecyclerBinder
       };
 
   public static class Builder {
+    public static final float DEFAULT_RANGE_RATIO = 4f;
 
-    private float rangeRatio = 4f;
+    private float rangeRatio = DEFAULT_RANGE_RATIO;
     private LayoutInfo layoutInfo;
     private @Nullable LayoutHandlerFactory layoutHandlerFactory;
     private boolean canPrefetchDisplayLists;
