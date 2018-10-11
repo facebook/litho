@@ -663,13 +663,13 @@ class EditTextSpec {
       editText.setSelection(selection);
     }
 
-    if (textColor != 0) {
+    if (textColor != 0 || textColorStateList == null) {
       editText.setTextColor(textColor);
     } else {
       editText.setTextColor(textColorStateList);
     }
 
-    if (hintColor != 0) {
+    if (hintColor != 0 || hintColorStateList == null) {
       editText.setHintTextColor(hintColor);
     } else {
       editText.setHintTextColor(hintColorStateList);
