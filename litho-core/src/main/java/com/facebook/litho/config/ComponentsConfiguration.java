@@ -210,19 +210,15 @@ public class ComponentsConfiguration {
    */
   public static boolean incrementalMountWhenNotVisible = false;
 
-  /**
-   * Whether displayList-s should only be created by DisplayListDrawable when it executes draw(),
-   * thus preventing DL creation ahead of time - at LayoutState or by DisplayListPrefetcher on spare
-   * UI thread cycles
-   */
-  public static boolean lazyDisplayListCreationOnly = false;
-
   /** This flag is to enable the experiment about skipping unnecessary Yoga calls. */
   public static boolean enableSkipYogaPropExperiment = false;
 
-  /** Never use Display Lists, despite ComponentTree configuration. */
-  public static boolean forceNotToCacheDisplayLists = false;
-
   public static boolean unsetThenReleaseDrawableBackground = false;
   public static boolean unmountThenReleaseDrawableCmp = false;
+
+  /** Whether eligible content should be wrapped into DisplayListDrawables */
+  public static boolean displayListWrappingEnabled = false;
+
+  /** Whether all drawables are eligible for wrapping into DisplayListDrawables */
+  public static boolean useDisplayListForAllDrawbles = false;
 }

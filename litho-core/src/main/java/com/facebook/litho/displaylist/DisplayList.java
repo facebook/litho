@@ -20,7 +20,6 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.Nullable;
-import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
  * A DisplayList is a cache for drawing commands. Calling {@link DisplayList#start(int, int)}
@@ -45,11 +44,6 @@ public class DisplayList {
   /** Creates a new DisplayList for a specific Context with a Debug name. */
   @Nullable
   public static DisplayList createDisplayList(@Nullable String name) {
-    if (ComponentsConfiguration.forceNotToCacheDisplayLists) {
-      throw new RuntimeException(
-          "DisplayLists are not supposed to be used, this should never be called");
-    }
-
     final PlatformDisplayList platformDisplayList = createPlatformDisplayList(name);
     if (platformDisplayList == null) {
       return null;
