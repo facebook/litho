@@ -468,7 +468,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         group = new OutputUnitsAffinityGroup<>();
         animatingContent.put(mountItem.getTransitionKey(), group);
       }
-      group.replace(type, mountItem.getBaseContent());
+      group.replace(type, mountItem.getMountableContent());
     }
     for (String transitionKey : animatingContent.keySet()) {
       mTransitionManager.setMountContent(transitionKey, animatingContent.get(transitionKey));
@@ -482,7 +482,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       for (int j = 0, sz = mountItemsGroup.size(); j < sz; j++) {
         final @OutputUnitType int type = mountItemsGroup.typeAt(j);
         final MountItem mountItem = mountItemsGroup.getAt(j);
-        mountContentGroup.add(type, mountItem.getBaseContent());
+        mountContentGroup.add(type, mountItem.getMountableContent());
       }
       mTransitionManager.setMountContent(transitionKey, mountContentGroup);
     }
@@ -1033,7 +1033,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
             && ((View) item.getBaseContent()).isLayoutRequested();
 
     applyBoundsToMountContent(
-        item.getBaseContent(),
+        item.getMountableContent(),
         sTempRect.left,
         sTempRect.top,
         sTempRect.right,
@@ -1370,11 +1370,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     component.bind(context, content);
     item.setIsBound(true);
 
+    item.setWrappedContent(wrapContentIfNeeded(component, content));
+
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
     layoutOutput.getMountBounds(sTempRect);
     applyBoundsToMountContent(
-        content,
+        item.getMountableContent(),
         sTempRect.left,
         sTempRect.top,
         sTempRect.right,
@@ -1389,6 +1391,23 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       mMountStats.extras.add(
           LogTreePopulator.getAnnotationBundleFromLogger(component, context.getLogger()));
     }
+  }
+
+  @VisibleForTesting
+  @Nullable
+  static Object wrapContentIfNeeded(Component component, Object content) {
+    // For the time being the only wrapping we may do is of a Drawable into a DisplayListDrawable,
+    // but this may be expanded
+    if (ComponentsConfiguration.displayListWrappingEnabled
+        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      // DL can be used in general, let's check if the content is eligible
+      if (component.shouldUseDisplayList()
+          || ((content instanceof Drawable)
+              && ComponentsConfiguration.useDisplayListForAllDrawbles)) {
+        return ComponentsPools.acquireDisplayListDrawable((Drawable) content);
+      }
+    }
+    return null;
   }
 
   // The content might be null because it's the LayoutSpec for the root host
