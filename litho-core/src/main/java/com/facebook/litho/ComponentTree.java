@@ -142,8 +142,6 @@ public class ComponentTree {
   private @Nullable UpdateStateSyncRunnable mUpdateStateSyncRunnable;
 
   private final ComponentContext mContext;
-  private final boolean mCanPrefetchDisplayLists;
-  private final boolean mCanCacheDrawingDisplayLists;
   private final boolean mShouldClipChildren;
   private final boolean mPersistInternalNodeTree;
 
@@ -273,8 +271,6 @@ public class ComponentTree {
     mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
 
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
-    mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
-    mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
     mShouldClipChildren = builder.shouldClipChildren;
     mHasMounted = builder.hasMounted;
     mMeasureListener = builder.mMeasureListener;
@@ -2354,8 +2350,6 @@ public class ComponentTree {
     private RenderState previousRenderState;
     private boolean asyncStateUpdates = true;
     private int overrideComponentTreeId = -1;
-    private boolean canPrefetchDisplayLists = false;
-    private boolean canCacheDrawingDisplayLists = false;
     private boolean shouldClipChildren = true;
     private boolean hasMounted = false;
     private MeasureListener mMeasureListener;
@@ -2388,8 +2382,6 @@ public class ComponentTree {
       previousRenderState = null;
       asyncStateUpdates = true;
       overrideComponentTreeId = -1;
-      canPrefetchDisplayLists = false;
-      canCacheDrawingDisplayLists = false;
       shouldClipChildren = true;
       hasMounted = false;
       preAllocateMountContentHandler = null;
@@ -2507,32 +2499,6 @@ public class ComponentTree {
      */
     public Builder overrideComponentTreeId(int overrideComponentTreeId) {
       this.overrideComponentTreeId = overrideComponentTreeId;
-      return this;
-    }
-
-    /**
-     * Specify whether the ComponentTree allows to prefetch display lists of its components
-     * on idle time of UI thread.
-     *
-     * NOTE: To make display lists prefetching work, besides setting this flag
-     * {@link com.facebook.litho.utils.DisplayListUtils#prefetchDisplayLists(View)}
-     * should be called on scrollable surfaces like {@link android.support.v7.widget.RecyclerView}
-     * during scrolling.
-     */
-    public Builder canPrefetchDisplayLists(boolean canPrefetch) {
-      this.canPrefetchDisplayLists = canPrefetch;
-      return this;
-    }
-
-    /**
-     * Specify whether the ComponentTree allows to cache display lists of the components after it
-     * was first drawng.
-     *
-     * NOTE: To make display lists caching work, {@link #canPrefetchDisplayLists(boolean)} should
-     * be set to true.
-     */
-    public Builder canCacheDrawingDisplayLists(boolean canCacheDrawingDisplayLists) {
-      this.canCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
       return this;
     }
 

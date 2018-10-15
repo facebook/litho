@@ -82,8 +82,6 @@ public class ComponentTreeHolder {
   private int mId;
   private boolean mIsTreeValid;
   private @Nullable LayoutHandler mLayoutHandler;
-  private boolean mCanPrefetchDisplayLists;
-  private boolean mCanCacheDrawingDisplayLists;
   private LayoutHandler mPreallocateMountContentHandler;
   private boolean mCanPreallocateOnDefaultHandler;
   private boolean mShouldPreallocatePerMountSpec;
@@ -177,8 +175,6 @@ public class ComponentTreeHolder {
 
       componentTreeHolder.mRenderInfo = renderInfo;
       componentTreeHolder.mLayoutHandler = layoutHandler;
-      componentTreeHolder.mCanPrefetchDisplayLists = canPrefetchDisplayLists;
-      componentTreeHolder.mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
       componentTreeHolder.mPreallocateMountContentHandler = preallocateMountContentHandler;
       componentTreeHolder.mCanPreallocateOnDefaultHandler = canPreallocateOnDefaultHandler;
       componentTreeHolder.mShouldPreallocatePerMountSpec = shouldPreallocatePerMountSpec;
@@ -392,8 +388,6 @@ public class ComponentTreeHolder {
     clearStateHandler();
     mRenderInfo = null;
     mLayoutHandler = null;
-    mCanPrefetchDisplayLists = false;
-    mCanCacheDrawingDisplayLists = false;
     mPreallocateMountContentHandler = null;
     mShouldPreallocatePerMountSpec = false;
     mCanPreallocateOnDefaultHandler = false;
@@ -427,8 +421,6 @@ public class ComponentTreeHolder {
           builder
               .layoutThreadHandler(mLayoutHandler)
               .stateHandler(mStateHandler)
-              .canPrefetchDisplayLists(mCanPrefetchDisplayLists)
-              .canCacheDrawingDisplayLists(mCanCacheDrawingDisplayLists)
               .shouldClipChildren(clipChildren)
               .preAllocateMountContentHandler(mPreallocateMountContentHandler)
               .preallocateOnDefaultHandler(mCanPreallocateOnDefaultHandler)
