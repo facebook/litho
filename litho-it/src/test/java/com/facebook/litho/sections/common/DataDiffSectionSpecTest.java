@@ -88,60 +88,6 @@ public class DataDiffSectionSpecTest {
   }
 
   @Test
-  public void testInitialUpdateWithDataIdentifier() {
-    mSectionTree.setRoot(
-        TestGroupSection.create(mSectionContext)
-            .data(generateData(100))
-            .dataIdentifier("items")
-            .build());
-
-    final List<Operation> executedOperations = mTestTarget.getOperations();
-    assertThat(executedOperations.size()).isEqualTo(1);
-    assertRangeOperation(executedOperations.get(0), TestTarget.INSERT_RANGE, 0, 100);
-  }
-
-  @Test
-  public void testInsertionUpdateWithSameDataIdentifier() {
-    mSectionTree.setRoot(
-        TestGroupSection.create(mSectionContext)
-            .data(generateData(100))
-            .dataIdentifier("items")
-            .build());
-    mTestTarget.clear();
-
-    mSectionTree.setRoot(
-        TestGroupSection.create(mSectionContext)
-            .data(generateData(200))
-            .dataIdentifier("items")
-            .build());
-    final List<Operation> executedOperations = mTestTarget.getOperations();
-
-    assertThat(executedOperations.size()).isEqualTo(1);
-    assertRangeOperation(executedOperations.get(0), TestTarget.INSERT_RANGE, 100, 100);
-  }
-
-  @Test
-  public void testInsertionUpdateWithDifferentDataIdentifier() {
-    mSectionTree.setRoot(
-        TestGroupSection.create(mSectionContext)
-            .data(generateData(100))
-            .dataIdentifier("items")
-            .build());
-    mTestTarget.clear();
-
-    mSectionTree.setRoot(
-        TestGroupSection.create(mSectionContext)
-            .data(generateData(200))
-            .dataIdentifier("new_items")
-            .build());
-    final List<Operation> executedOperations = mTestTarget.getOperations();
-
-    assertThat(executedOperations.size()).isEqualTo(2);
-    assertRangeOperation(executedOperations.get(0), TestTarget.DELETE_RANGE, 0, 100);
-    assertRangeOperation(executedOperations.get(1), TestTarget.INSERT_RANGE, 0, 200);
-  }
-
-  @Test
   public void testInsertData() {
     mSectionTree.setRoot(TestGroupSection.create(mSectionContext).data(generateData(100)).build());
     List<Operation> executedOperations = mTestTarget.getOperations();

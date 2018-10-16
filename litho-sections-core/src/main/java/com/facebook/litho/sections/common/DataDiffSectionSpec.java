@@ -103,14 +103,12 @@ public class DataDiffSectionSpec<T> {
 
   @PropDefault public static final Boolean trimHeadAndTail = false;
   @PropDefault public static final Boolean trimSameInstancesOnly = false;
-  @PropDefault public static final @Nullable Object dataIdentifier = null;
 
   @OnDiff
   public static <T> void onCreateChangeSet(
       SectionContext c,
       ChangeSet changeSet,
       @Prop Diff<List<T>> data,
-      @Prop(optional = true) Diff<Object> dataIdentifier,
       @Prop(optional = true) @Nullable Diff<Boolean> detectMoves,
       @Prop(optional = true) Diff<Boolean> trimHeadAndTail,
       @Prop(optional = true) Diff<Boolean> trimSameInstancesOnly) {
@@ -118,7 +116,6 @@ public class DataDiffSectionSpec<T> {
     final List<T> previousData = data.getPrevious();
     final List<T> nextData = data.getNext();
     final int previousDataSize = previousData == null ? 0 : previousData.size();
-    final int nextDataSize = nextData == null ? 0 : nextData.size();
     final ComponentRenderer componentRenderer =
         new ComponentRenderer(DataDiffSection.getRenderEventHandler(c));
     final DiffSectionOperationExecutor operationExecutor =
@@ -126,67 +123,50 @@ public class DataDiffSectionSpec<T> {
     final RecyclerBinderUpdateCallback<T> updatesCallback;
     final boolean isTracing = ComponentsSystrace.isTracing();
 
-    if (!isSameDataIdentifier(dataIdentifier)) {
-      updatesCallback =
-          acquire(previousDataSize, nextData, componentRenderer, operationExecutor, 0);
-      if (isTracing) {
-        ComponentsSystrace.beginSection("FastPathDiff");
-      }
-      if (previousDataSize > 0) {
-        updatesCallback.onRemoved(0, previousDataSize);
-      }
-      if (nextDataSize > 0) {
-        updatesCallback.onInserted(0, nextDataSize);
-      }
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
-    } else {
-      final boolean shouldTrim =
-          trimHeadAndTail == null || trimHeadAndTail.getNext() == null
-              ? SectionsConfiguration.trimDataDiffSectionHeadAndTail
-              : trimHeadAndTail.getNext().booleanValue();
+    final boolean shouldTrim =
+        trimHeadAndTail == null || trimHeadAndTail.getNext() == null
+            ? SectionsConfiguration.trimDataDiffSectionHeadAndTail
+            : trimHeadAndTail.getNext().booleanValue();
 
-      final boolean shouldTrimSameInstanceOnly =
-          trimSameInstancesOnly == null || trimSameInstancesOnly.getNext() == null
-              ? SectionsConfiguration.trimSameInstancesOnly
-              : trimSameInstancesOnly.getNext().booleanValue();
+    final boolean shouldTrimSameInstanceOnly =
+        trimSameInstancesOnly == null || trimSameInstancesOnly.getNext() == null
+            ? SectionsConfiguration.trimSameInstancesOnly
+            : trimSameInstancesOnly.getNext().booleanValue();
 
-      final Callback<T> callback =
-          Callback.acquire(
-              c, data.getPrevious(), data.getNext(), shouldTrim, shouldTrimSameInstanceOnly);
+    final Callback<T> callback =
+        Callback.acquire(
+            c, data.getPrevious(), data.getNext(), shouldTrim, shouldTrimSameInstanceOnly);
 
-      final ComponentsLogger logger = c.getLogger();
-      final PerfEvent logEvent =
-          logger == null
-              ? null
-              : LogTreePopulator.populatePerfEventFromLogger(
-                  c, logger, logger.newPerformanceEvent(EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF));
+    final ComponentsLogger logger = c.getLogger();
+    final PerfEvent logEvent =
+        logger == null
+            ? null
+            : LogTreePopulator.populatePerfEventFromLogger(
+                c, logger, logger.newPerformanceEvent(EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF));
 
-      if (isTracing) {
-        ComponentsSystrace.beginSection("DiffUtil.calculateDiff");
-      }
-      final DiffUtil.DiffResult result =
-          DiffUtil.calculateDiff(callback, isDetectMovesEnabled(detectMoves));
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
-
-      if (logEvent != null) {
-        logger.logPerfEvent(logEvent);
-      }
-
-      updatesCallback =
-          acquire(
-              previousDataSize,
-              nextData,
-              componentRenderer,
-              operationExecutor,
-              callback.getTrimmedHeadItemsCount());
-      result.dispatchUpdatesTo(updatesCallback);
-
-      Callback.release(callback);
+    if (isTracing) {
+      ComponentsSystrace.beginSection("DiffUtil.calculateDiff");
     }
+    final DiffUtil.DiffResult result =
+        DiffUtil.calculateDiff(callback, isDetectMovesEnabled(detectMoves));
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
+
+    if (logEvent != null) {
+      logger.logPerfEvent(logEvent);
+    }
+
+    updatesCallback =
+        acquire(
+            previousDataSize,
+            nextData,
+            componentRenderer,
+            operationExecutor,
+            callback.getTrimmedHeadItemsCount());
+    result.dispatchUpdatesTo(updatesCallback);
+
+    Callback.release(callback);
 
     updatesCallback.applyChangeset(c);
     release(updatesCallback);
@@ -198,12 +178,6 @@ public class DataDiffSectionSpec<T> {
    */
   private static boolean isDetectMovesEnabled(@Nullable Diff<Boolean> detectMoves) {
     return detectMoves == null || detectMoves.getNext() == null || detectMoves.getNext();
-  }
-
-  private static boolean isSameDataIdentifier(Diff<Object> dataIdentifier) {
-    final Object previous = dataIdentifier.getPrevious();
-    final Object next = dataIdentifier.getNext();
-    return previous == null ? next == null : previous.equals(next);
   }
 
   private static class DiffSectionOperationExecutor implements
