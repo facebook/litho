@@ -25,7 +25,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.Binder;
 import com.facebook.litho.widget.GridLayoutInfo;
-import com.facebook.litho.widget.RecyclerBinder;
+import com.facebook.litho.widget.LayoutInfo;
 import javax.annotation.Nullable;
 
 /**
@@ -99,30 +99,6 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   }
 
   @Override
-  public T buildTarget(ComponentContext c) {
-    final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder()
-            .rangeRatio((float) mRecyclerBinderConfiguration.getRangeRatio())
-            .layoutInfo(
-                new GridLayoutInfo(
-                    c, mNumColumns, mOrientation, mReverseLayout, mAllowMeasureOverride))
-            .layoutHandlerFactory(mRecyclerBinderConfiguration.getLayoutHandlerFactory())
-            .wrapContent(mRecyclerBinderConfiguration.isWrapContent())
-            .enableStableIds(mRecyclerBinderConfiguration.getEnableStableIds())
-            .invalidStateLogParamsList(mRecyclerBinderConfiguration.getInvalidStateLogParamsList())
-            .useSharedLayoutStateFuture(
-                mRecyclerBinderConfiguration.getUseSharedLayoutStateFuture())
-            .threadPoolForSharedLayoutStateFutureConfig(
-                mRecyclerBinderConfiguration.getThreadPoolForSharedLayoutStateFutureConfig())
-            .asyncInitRange(mRecyclerBinderConfiguration.getAsyncInitRange())
-            .hscrollAsyncMode(mRecyclerBinderConfiguration.getHScrollAsyncMode())
-            .build(c);
-    return (T)
-        new SectionBinderTarget(
-            recyclerBinder, mRecyclerBinderConfiguration.getUseBackgroundChangeSets());
-  }
-
-  @Override
   public @Nullable SnapHelper getSnapHelper() {
     return null;
   }
@@ -138,13 +114,19 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   }
 
   @Override
-  public boolean isWrapContent() {
-    return mRecyclerBinderConfiguration.isWrapContent();
+  public LayoutInfo getLayoutInfo(ComponentContext c) {
+    return new GridLayoutInfo(c, mNumColumns, mOrientation, mReverseLayout, mAllowMeasureOverride);
+  }
+
+  @Override
+  public RecyclerBinderConfiguration getRecyclerBinderConfiguration() {
+    return mRecyclerBinderConfiguration;
   }
 
   public static class Builder {
     static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
-        new RecyclerBinderConfiguration(4.0);
+        RecyclerBinderConfiguration.create().build();
+
     private int mOrientation = LinearLayoutManager.VERTICAL;
     private int mNumColumns = 2;
     private boolean mReverseLayout = false;

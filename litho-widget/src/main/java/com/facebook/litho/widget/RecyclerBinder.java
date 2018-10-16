@@ -105,7 +105,7 @@ public class RecyclerBinder
   private final LayoutInfo mLayoutInfo;
   private final RecyclerView.Adapter mInternalAdapter;
   private final ComponentContext mComponentContext;
-  private final LayoutHandlerFactory mLayoutHandlerFactory;
+  @Nullable private final LayoutHandlerFactory mLayoutHandlerFactory;
   private final @Nullable LithoViewFactory mLithoViewFactory;
   private final ComponentTreeHolderFactory mComponentTreeHolderFactory;
   private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
@@ -477,10 +477,10 @@ public class RecyclerBinder
 
     /**
      * @param layoutHandlerFactory the RecyclerBinder will use this layoutHandlerFactory when
-     * creating {@link ComponentTree}s in order to specify on which thread layout calculation
-     * should happen.
+     *     creating {@link ComponentTree}s in order to specify on which thread layout calculation
+     *     should happen.
      */
-    public Builder layoutHandlerFactory(LayoutHandlerFactory layoutHandlerFactory) {
+    public Builder layoutHandlerFactory(@Nullable LayoutHandlerFactory layoutHandlerFactory) {
       this.layoutHandlerFactory = layoutHandlerFactory;
       return this;
     }

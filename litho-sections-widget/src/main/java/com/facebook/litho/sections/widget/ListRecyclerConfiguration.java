@@ -28,8 +28,8 @@ import android.support.v7.widget.SnapHelper;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.Binder;
+import com.facebook.litho.widget.LayoutInfo;
 import com.facebook.litho.widget.LinearLayoutInfo;
-import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.SnapUtil;
 import javax.annotation.Nullable;
 
@@ -125,36 +125,6 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
             : linearLayoutInfoFactory;
   }
 
-  @Override
-  public T buildTarget(ComponentContext c) {
-    final LinearLayoutInfo linearLayoutInfo;
-    linearLayoutInfo =
-        mLinearLayoutInfoFactory.createLinearLayoutInfo(c, mOrientation, mReverseLayout);
-
-    final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder()
-            .rangeRatio((float) mRecyclerBinderConfiguration.getRangeRatio())
-            .layoutInfo(linearLayoutInfo)
-            .layoutHandlerFactory(mRecyclerBinderConfiguration.getLayoutHandlerFactory())
-            .canPrefetchDisplayLists(mRecyclerBinderConfiguration.canPrefetchDisplayLists())
-            .isCircular(mRecyclerBinderConfiguration.isCircular())
-            .wrapContent(mRecyclerBinderConfiguration.isWrapContent())
-            .hasDynamicItemHeight(mRecyclerBinderConfiguration.hasDynamicItemHeight())
-            .splitLayoutTag(mRecyclerBinderConfiguration.getSplitLayoutTag())
-            .enableStableIds(mRecyclerBinderConfiguration.getEnableStableIds())
-            .invalidStateLogParamsList(mRecyclerBinderConfiguration.getInvalidStateLogParamsList())
-            .useSharedLayoutStateFuture(
-                mRecyclerBinderConfiguration.getUseSharedLayoutStateFuture())
-            .threadPoolForSharedLayoutStateFutureConfig(
-                mRecyclerBinderConfiguration.getThreadPoolForSharedLayoutStateFutureConfig())
-            .asyncInitRange(mRecyclerBinderConfiguration.getAsyncInitRange())
-            .hscrollAsyncMode(mRecyclerBinderConfiguration.getHScrollAsyncMode())
-            .build(c);
-    return (T)
-        new SectionBinderTarget(
-            recyclerBinder, mRecyclerBinderConfiguration.getUseBackgroundChangeSets());
-  }
-
   @Nullable
   @Override
   public SnapHelper getSnapHelper() {
@@ -172,8 +142,13 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   }
 
   @Override
-  public boolean isWrapContent() {
-    return mRecyclerBinderConfiguration.isWrapContent();
+  public LayoutInfo getLayoutInfo(ComponentContext c) {
+    return mLinearLayoutInfoFactory.createLinearLayoutInfo(c, mOrientation, mReverseLayout);
+  }
+
+  @Override
+  public RecyclerBinderConfiguration getRecyclerBinderConfiguration() {
+    return mRecyclerBinderConfiguration;
   }
 
   private static class DefaultLinearLayoutInfoFactory implements LinearLayoutInfoFactory {
@@ -189,6 +164,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
         RecyclerBinderConfiguration.create().build();
     static final LinearLayoutInfoFactory LINEAR_LAYOUT_INFO_FACTORY =
         new DefaultLinearLayoutInfoFactory();
+
     private int mOrientation = LinearLayoutManager.VERTICAL;
     private boolean mReverseLayout = false;
     @SnapMode private int mSnapMode = SNAP_NONE;

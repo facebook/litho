@@ -56,12 +56,12 @@ import com.facebook.litho.sections.LoadEventsHandler;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionTree;
-import com.facebook.litho.sections.SectionTree.Target;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.widget.Binder;
 import com.facebook.litho.widget.LithoRecylerView;
 import com.facebook.litho.widget.PTRRefreshEvent;
 import com.facebook.litho.widget.Recycler;
+import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.RecyclerEventsController;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.List;
@@ -209,7 +209,8 @@ public class RecyclerCollectionComponentSpec {
             .flexShrink(0)
             .touchHandler(recyclerTouchEventHandler);
 
-    if (!binder.canMeasure() && !recyclerConfiguration.isWrapContent()) {
+    if (!binder.canMeasure()
+        && !recyclerConfiguration.getRecyclerBinderConfiguration().isWrapContent()) {
       recycler.positionType(ABSOLUTE).positionPx(ALL, 0);
     }
 
@@ -243,7 +244,7 @@ public class RecyclerCollectionComponentSpec {
   }
 
   @OnCreateInitialState
-  static <E extends Binder<RecyclerView> & Target> void createInitialState(
+  static void createInitialState(
       final ComponentContext c,
       @Prop Section section,
       @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,
@@ -267,7 +268,30 @@ public class RecyclerCollectionComponentSpec {
       StateValue<LoadingState> loadingState,
       StateValue<RecyclerCollectionEventsController> internalEventsController) {
 
-    E targetBinder = recyclerConfiguration.buildTarget(c);
+    RecyclerBinderConfiguration binderConfiguration =
+        recyclerConfiguration.getRecyclerBinderConfiguration();
+
+    RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .layoutInfo(recyclerConfiguration.getLayoutInfo(c))
+            .rangeRatio(binderConfiguration.getRangeRatio())
+            .layoutHandlerFactory(binderConfiguration.getLayoutHandlerFactory())
+            .wrapContent(binderConfiguration.isWrapContent())
+            .enableStableIds(binderConfiguration.getEnableStableIds())
+            .invalidStateLogParamsList(binderConfiguration.getInvalidStateLogParamsList())
+            .useSharedLayoutStateFuture(binderConfiguration.getUseSharedLayoutStateFuture())
+            .threadPoolForSharedLayoutStateFutureConfig(
+                binderConfiguration.getThreadPoolForSharedLayoutStateFutureConfig())
+            .asyncInitRange(binderConfiguration.getAsyncInitRange())
+            .hscrollAsyncMode(binderConfiguration.getHScrollAsyncMode())
+            .canPrefetchDisplayLists(binderConfiguration.canPrefetchDisplayLists())
+            .isCircular(binderConfiguration.isCircular())
+            .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
+            .splitLayoutTag(binderConfiguration.getSplitLayoutTag())
+            .build(c);
+
+    SectionBinderTarget targetBinder =
+        new SectionBinderTarget(recyclerBinder, binderConfiguration.getUseBackgroundChangeSets());
 
     final SectionContext sectionContext = new SectionContext(c);
     binder.set(targetBinder);

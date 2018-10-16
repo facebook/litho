@@ -28,7 +28,7 @@ import java.util.List;
 
 /** Configuration setting for {@link RecyclerBinder}. */
 public class RecyclerBinderConfiguration {
-  private final double mRangeRatio;
+  private final float mRangeRatio;
   @Nullable private final LayoutHandlerFactory mLayoutHandlerFactory;
   private final boolean mCanPrefetchDisplayLists;
   private final boolean mIsCircular;
@@ -89,7 +89,7 @@ public class RecyclerBinderConfiguration {
       boolean canPrefetchDisplayLists,
       boolean isCircular,
       boolean isWrapContent) {
-    mRangeRatio = rangeRatio > 0 ? rangeRatio : Builder.DEFAULT_RANGE;
+    mRangeRatio = rangeRatio > 0 ? (float) rangeRatio : Builder.DEFAULT_RANGE;
     mLayoutHandlerFactory = idleExecutor;
     mCanPrefetchDisplayLists = canPrefetchDisplayLists;
     mIsCircular = isCircular;
@@ -97,7 +97,7 @@ public class RecyclerBinderConfiguration {
   }
 
   RecyclerBinderConfiguration(
-      double rangeRatio,
+      float rangeRatio,
       @Nullable LayoutHandlerFactory layoutHandlerFactory,
       boolean canPrefetchDisplayLists,
       boolean circular,
@@ -127,7 +127,7 @@ public class RecyclerBinderConfiguration {
     mAsyncInitRange = asyncInitRange;
   }
 
-  public double getRangeRatio() {
+  public float getRangeRatio() {
     return mRangeRatio;
   }
 
@@ -184,24 +184,24 @@ public class RecyclerBinderConfiguration {
   }
 
   public static class Builder {
-    static final double DEFAULT_RANGE = RecyclerBinder.Builder.DEFAULT_RANGE_RATIO;
     public static final LayoutThreadPoolConfiguration
         DEFAULT_SHARED_LAYOUT_STATE_FUTURE_THREAD_POOL_CONFIG =
             ComponentsConfiguration.sharedLayoutStateFutureThreadPoolConfig;
+    static final float DEFAULT_RANGE = RecyclerBinder.Builder.DEFAULT_RANGE_RATIO;
 
     @Nullable private LayoutHandlerFactory mLayoutHandlerFactory;
     @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
     @Nullable private String mSplitLayoutTag;
     private LayoutThreadPoolConfiguration mThreadPoolForSharedLayoutStateFutureConfig =
         DEFAULT_SHARED_LAYOUT_STATE_FUTURE_THREAD_POOL_CONFIG;
-    private double mRangeRatio = DEFAULT_RANGE;
+    private float mRangeRatio = DEFAULT_RANGE;
     private boolean mCanPrefetchDisplayLists = false;
     private boolean mCircular = false;
     private boolean mWrapContent = false;
     private boolean mDynamicItemHeight = false;
-    private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
     private boolean mHScrollAsyncMode = false;
     private boolean mEnableStableIds = false;
+    private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
     private boolean mUseSharedLayoutStateFuture =
         ComponentsConfiguration.useSharedLayoutStateFuture;
     private boolean mAsyncInitRange = ComponentsConfiguration.asyncInitRange;
@@ -249,7 +249,7 @@ public class RecyclerBinderConfiguration {
      *     1st visible item to be computed = 5 * 10 = 50 total number of items after the last
      *     visible item to be computed = 5 * 10 = 50
      */
-    public Builder rangeRatio(double rangeRatio) {
+    public Builder rangeRatio(float rangeRatio) {
       mRangeRatio = rangeRatio > 0 ? rangeRatio : DEFAULT_RANGE;
       return this;
     }

@@ -24,7 +24,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.Binder;
-import com.facebook.litho.widget.RecyclerBinder;
+import com.facebook.litho.widget.LayoutInfo;
 import com.facebook.litho.widget.StaggeredGridLayoutInfo;
 import javax.annotation.Nullable;
 
@@ -102,29 +102,6 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
   }
 
   @Override
-  public T buildTarget(ComponentContext c) {
-    final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder()
-            .rangeRatio((float) mRecyclerBinderConfiguration.getRangeRatio())
-            .layoutInfo(
-                new StaggeredGridLayoutInfo(mNumSpans, mOrientation, mReverseLayout, mGapStrategy))
-            .layoutHandlerFactory(mRecyclerBinderConfiguration.getLayoutHandlerFactory())
-            .wrapContent(mRecyclerBinderConfiguration.isWrapContent())
-            .enableStableIds(mRecyclerBinderConfiguration.getEnableStableIds())
-            .invalidStateLogParamsList(mRecyclerBinderConfiguration.getInvalidStateLogParamsList())
-            .useSharedLayoutStateFuture(
-                mRecyclerBinderConfiguration.getUseSharedLayoutStateFuture())
-            .threadPoolForSharedLayoutStateFutureConfig(
-                mRecyclerBinderConfiguration.getThreadPoolForSharedLayoutStateFutureConfig())
-            .asyncInitRange(mRecyclerBinderConfiguration.getAsyncInitRange())
-            .hscrollAsyncMode(mRecyclerBinderConfiguration.getHScrollAsyncMode())
-            .build(c);
-    return (T)
-        new SectionBinderTarget(
-            recyclerBinder, mRecyclerBinderConfiguration.getUseBackgroundChangeSets());
-  }
-
-  @Override
   public @Nullable SnapHelper getSnapHelper() {
     return null;
   }
@@ -140,13 +117,19 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
   }
 
   @Override
-  public boolean isWrapContent() {
-    return mRecyclerBinderConfiguration.isWrapContent();
+  public LayoutInfo getLayoutInfo(ComponentContext c) {
+    return new StaggeredGridLayoutInfo(mNumSpans, mOrientation, mReverseLayout, mGapStrategy);
+  }
+
+  @Override
+  public RecyclerBinderConfiguration getRecyclerBinderConfiguration() {
+    return mRecyclerBinderConfiguration;
   }
 
   public static class Builder {
     static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
-        new RecyclerBinderConfiguration(4.0);
+        RecyclerBinderConfiguration.create().build();
+
     private int mNumSpans = 2;
     private int mOrientation = StaggeredGridLayoutManager.VERTICAL;
     private boolean mReverseLayout = false;
