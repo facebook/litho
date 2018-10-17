@@ -230,6 +230,11 @@ public abstract class Component extends ComponentLifecycle
     mGlobalKey = key;
   }
 
+  /** @return if has a manually set key */
+  boolean hasManualKey() {
+    return mHasManualKey;
+  }
+
   /**
    *
    * @return a key that is local to the component's parent.
