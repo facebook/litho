@@ -4,6 +4,7 @@ com.facebook.litho.annotations
 com.facebook.litho.config
 com.facebook.litho.dataflow
 com.facebook.litho.dataflow.springs
+com.facebook.litho.debug
 com.facebook.litho.displaylist
 com.facebook.litho.fresco
 com.facebook.litho.internal
@@ -22,6 +23,7 @@ com.facebook.litho.specmodels.model
 com.facebook.litho.specmodels.model.testing
 com.facebook.litho.specmodels.processor
 com.facebook.litho.specmodels.processor.testing
+com.facebook.litho.stats
 com.facebook.litho.testing
 com.facebook.litho.testing.assertj
 com.facebook.litho.testing.espresso
