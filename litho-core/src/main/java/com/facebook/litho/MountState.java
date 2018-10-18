@@ -1403,7 +1403,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       // DL can be used in general, let's check if the content is eligible
       if (component.shouldUseDisplayList()
           || ((content instanceof Drawable)
-              && ComponentsConfiguration.useDisplayListForAllDrawbles)) {
+              && ComponentsConfiguration.useDisplayListForAllDrawables)) {
         return ComponentsPools.acquireDisplayListDrawable((Drawable) content);
       }
     }

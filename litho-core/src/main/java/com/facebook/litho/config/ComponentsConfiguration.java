@@ -220,5 +220,5 @@ public class ComponentsConfiguration {
   public static boolean displayListWrappingEnabled = false;
 
   /** Whether all drawables are eligible for wrapping into DisplayListDrawables */
-  public static boolean useDisplayListForAllDrawbles = false;
+  public static boolean useDisplayListForAllDrawables = false;
 }
