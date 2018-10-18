@@ -1961,7 +1961,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     ViewCompat.setImportantForAccessibility(view, IMPORTANT_FOR_ACCESSIBILITY_AUTO);
   }
 
-  private static void setFocusable(View view, @NodeInfo.FocusState short focusState) {
+  private static void setFocusable(View view, @NodeInfo.FocusState int focusState) {
     if (focusState == NodeInfo.FOCUS_SET_TRUE) {
       view.setFocusable(true);
     } else if (focusState == NodeInfo.FOCUS_SET_FALSE) {
@@ -1973,7 +1973,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     view.setFocusable(mountItem.isViewFocusable());
   }
 
-  private static void setEnabled(View view, @NodeInfo.EnabledState short enabledState) {
+  private static void setEnabled(View view, @NodeInfo.EnabledState int enabledState) {
     if (enabledState == NodeInfo.ENABLED_SET_TRUE) {
       view.setEnabled(true);
     } else if (enabledState == NodeInfo.ENABLED_SET_FALSE) {
@@ -1985,7 +1985,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     view.setEnabled(mountItem.isViewEnabled());
   }
 
-  private static void setSelected(View view, @NodeInfo.SelectedState short selectedState) {
+  private static void setSelected(View view, @NodeInfo.SelectedState int selectedState) {
     if (selectedState == NodeInfo.SELECTED_SET_TRUE) {
       view.setSelected(true);
     } else if (selectedState == NodeInfo.SELECTED_SET_FALSE) {

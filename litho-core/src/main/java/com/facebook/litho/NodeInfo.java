@@ -32,25 +32,25 @@ import java.util.concurrent.atomic.AtomicInteger;
 @ThreadConfined(ThreadConfined.ANY)
 class NodeInfo {
 
-  static final short FOCUS_UNSET = 0;
-  static final short FOCUS_SET_TRUE = 1;
-  static final short FOCUS_SET_FALSE = 2;
+  static final int FOCUS_UNSET = 0;
+  static final int FOCUS_SET_TRUE = 1;
+  static final int FOCUS_SET_FALSE = 2;
 
   @IntDef({FOCUS_UNSET, FOCUS_SET_TRUE, FOCUS_SET_FALSE})
   @Retention(RetentionPolicy.SOURCE)
   @interface FocusState {}
 
-  static final short ENABLED_UNSET = 0;
-  static final short ENABLED_SET_TRUE = 1;
-  static final short ENABLED_SET_FALSE = 2;
+  static final int ENABLED_UNSET = 0;
+  static final int ENABLED_SET_TRUE = 1;
+  static final int ENABLED_SET_FALSE = 2;
 
   @IntDef({ENABLED_UNSET, ENABLED_SET_TRUE, ENABLED_SET_FALSE})
   @Retention(RetentionPolicy.SOURCE)
   @interface EnabledState {}
 
-  static final short SELECTED_UNSET = 0;
-  static final short SELECTED_SET_TRUE = 1;
-  static final short SELECTED_SET_FALSE = 2;
+  static final int SELECTED_UNSET = 0;
+  static final int SELECTED_SET_TRUE = 1;
+  static final int SELECTED_SET_FALSE = 2;
 
   @IntDef({SELECTED_UNSET, SELECTED_SET_TRUE, SELECTED_SET_FALSE})
   @Retention(RetentionPolicy.SOURCE)
@@ -134,11 +134,9 @@ class NodeInfo {
   private EventHandler<SendAccessibilityEventEvent> mSendAccessibilityEventHandler;
   private EventHandler<SendAccessibilityEventUncheckedEvent>
       mSendAccessibilityEventUncheckedHandler;
-  @FocusState
-  private short mFocusState = FOCUS_UNSET;
-  @EnabledState
-  private short mEnabledState = ENABLED_UNSET;
-  @SelectedState private short mSelectedState = SELECTED_UNSET;
+  @FocusState private int mFocusState = FOCUS_UNSET;
+  @EnabledState private int mEnabledState = ENABLED_UNSET;
+  @SelectedState private int mSelectedState = SELECTED_UNSET;
 
   private int mPrivateFlags;
 
@@ -383,7 +381,7 @@ class NodeInfo {
   }
 
   @NodeInfo.FocusState
-  short getFocusState() {
+  int getFocusState() {
     return mFocusState;
   }
 
@@ -396,7 +394,7 @@ class NodeInfo {
   }
 
   @EnabledState
-  short getEnabledState() {
+  int getEnabledState() {
     return mEnabledState;
   }
 
@@ -409,7 +407,7 @@ class NodeInfo {
   }
 
   @SelectedState
-  short getSelectedState() {
+  int getSelectedState() {
     return mSelectedState;
   }
 

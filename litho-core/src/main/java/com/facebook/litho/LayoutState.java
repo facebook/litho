@@ -174,7 +174,7 @@ class LayoutState {
   private int mCurrentHostOutputPosition = -1;
 
   private boolean mShouldDuplicateParentState = true;
-  @NodeInfo.EnabledState private short mParentEnabledState = ENABLED_UNSET;
+  @NodeInfo.EnabledState private int mParentEnabledState = ENABLED_UNSET;
 
   private boolean mShouldGenerateDiffTree = false;
   private int mComponentTreeId = -1;
@@ -801,7 +801,7 @@ class LayoutState {
 
     layoutState.mCurrentX += node.getX();
     layoutState.mCurrentY += node.getY();
-    @NodeInfo.EnabledState final short parentEnabledState = layoutState.mParentEnabledState;
+    @NodeInfo.EnabledState final int parentEnabledState = layoutState.mParentEnabledState;
     layoutState.mParentEnabledState = (node.getNodeInfo() != null)
         ? node.getNodeInfo().getEnabledState()
         : ENABLED_UNSET;
