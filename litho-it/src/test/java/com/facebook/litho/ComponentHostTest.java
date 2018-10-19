@@ -42,10 +42,12 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.v4.util.SparseArrayCompat;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -57,6 +59,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 /**
  * Tests {@link ComponentHost}
@@ -665,6 +668,70 @@ public class ComponentHostTest {
 
     assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 0)).isEqualTo(0);
     assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 1)).isEqualTo(1);
+  }
+
+  /**
+   * {@link ViewGroup#getClipChildren()} method was only added in API 18, but plays important role
+   * here, so will need to run this test for two SDK versions. And since {@link
+   * ComponentsTestRunner} does not support multiple values for @Config.sdk, there are two separated
+   * test methods {@see #testTemporaryChildClippingDisablingJB} {@see
+   * #testTemporaryChildClippingDisablingLollipop}
+   */
+  private void testTemporaryChildClippingDisabling() {
+    ComponentHost componentHost = new ComponentHost(mContext);
+
+    assertThat(componentHost.getClipChildren()).isTrue();
+
+    // 1. Testing disable > restore
+    componentHost.temporaryDisableChildClipping();
+
+    assertThat(componentHost.getClipChildren()).isFalse();
+
+    componentHost.restoreChildClipping();
+
+    assertThat(componentHost.getClipChildren()).isTrue();
+
+    // 2. Testing disable > set > restore
+    componentHost.temporaryDisableChildClipping();
+    componentHost.setClipChildren(true);
+
+    assertThat(componentHost.getClipChildren()).isFalse();
+
+    componentHost.restoreChildClipping();
+
+    assertThat(componentHost.getClipChildren()).isTrue();
+
+    // 3. Same as 1 (disable > restore), but starting with clipping tuned off initially
+    componentHost.setClipChildren(false);
+    componentHost.temporaryDisableChildClipping();
+
+    assertThat(componentHost.getClipChildren()).isFalse();
+
+    componentHost.restoreChildClipping();
+
+    assertThat(componentHost.getClipChildren()).isFalse();
+
+    // 4. Same as 2 (disable > set > restore), with reverted values
+    componentHost.temporaryDisableChildClipping();
+    componentHost.setClipChildren(true);
+
+    assertThat(componentHost.getClipChildren()).isFalse();
+
+    componentHost.restoreChildClipping();
+
+    assertThat(componentHost.getClipChildren()).isTrue();
+  }
+
+  @Config(sdk = Build.VERSION_CODES.JELLY_BEAN)
+  @Test
+  public void testTemporaryChildClippingDisablingJB() {
+    testTemporaryChildClippingDisabling();
+  }
+
+  @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
+  @Test
+  public void testTemporaryChildClippingDisablingLollipop() {
+    testTemporaryChildClippingDisabling();
   }
 
   @Test

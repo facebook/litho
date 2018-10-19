@@ -98,6 +98,15 @@ public class ComponentHost extends ViewGroup {
 
   private TouchExpansionDelegate mTouchExpansionDelegate;
 
+  /**
+   * {@link ViewGroup#getClipChildren()} was only added in API 18, will need to keep track of this
+   * flag ourselves on the lower versions
+   */
+  private boolean mClipChildren = true;
+
+  private boolean mClippingTemporaryDisabled = false;
+  private boolean mClippingToRestore = false;
+
   public ComponentHost(Context context) {
     this(context, null);
   }
@@ -983,6 +992,70 @@ public class ComponentHost extends ViewGroup {
     return ComponentsConfiguration.hostHasOverlappingRendering;
   }
 
+  @Override
+  public void setClipChildren(boolean clipChildren) {
+    if (mClippingTemporaryDisabled) {
+      mClippingToRestore = clipChildren;
+      return;
+    }
+
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      // There is no ViewGroup.getClipChildren() method on API < 18, will keep track this way
+      mClipChildren = clipChildren;
+    }
+    super.setClipChildren(clipChildren);
+  }
+
+  @Override
+  public boolean getClipChildren() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      // There is no ViewGroup.getClipChildren() method on API < 18
+      return mClipChildren;
+    } else {
+      return super.getClipChildren();
+    }
+  }
+
+  /**
+   * Temporary disables child clipping, the previous state could be restored by calling {@link
+   * #restoreChildClipping()}. While clipping is disabled calling {@link #setClipChildren(boolean)}
+   * would have no immediate effect, but the restored state would reflect the last set value
+   */
+  void temporaryDisableChildClipping() {
+    if (mClippingTemporaryDisabled) {
+      return;
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      mClippingToRestore = getClipChildren();
+    } else {
+      mClippingToRestore = mClipChildren;
+    }
+
+    // The order here is crucial, we first need to set clipping then update
+    // mClippingTemporaryDisabled flag
+    setClipChildren(false);
+
+    mClippingTemporaryDisabled = true;
+  }
+
+  /**
+   * Restores child clipping to the state it was in when {@link #temporaryDisableChildClipping()}
+   * was called, unless there were attempts to set a new value, while the clipping was disabled,
+   * then would be restored to the last set value
+   */
+  void restoreChildClipping() {
+    if (!mClippingTemporaryDisabled) {
+      return;
+    }
+
+    // The order here is crucial, we first need to update mClippingTemporaryDisabled flag then set
+    // clipping
+    mClippingTemporaryDisabled = false;
+
+    setClipChildren(mClippingToRestore);
+  }
+  
   /**
    * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
    * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
@@ -1272,6 +1345,7 @@ public class ComponentHost extends ViewGroup {
       // Cancel any pending clicks.
       view.cancelPendingInputEvents();
     }
+
     // The ComponentHost's parent will send an ACTION_CANCEL if it's going to receive
     // other motion events for the recycled child.
     ViewCompat.dispatchStartTemporaryDetach(view);

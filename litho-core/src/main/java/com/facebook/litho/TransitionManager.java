@@ -752,7 +752,11 @@ public class TransitionManager {
 
   private void recursivelySetChildClippingForView(View view, boolean clipChildren) {
     if (view instanceof ComponentHost) {
-      ((ComponentHost) view).setClipChildren(clipChildren);
+      if (clipChildren) {
+        ((ComponentHost) view).restoreChildClipping();
+      } else {
+        ((ComponentHost) view).temporaryDisableChildClipping();
+      }
     }
 
     final ViewParent parent = view.getParent();
