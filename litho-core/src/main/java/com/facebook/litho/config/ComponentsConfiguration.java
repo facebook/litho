@@ -221,4 +221,6 @@ public class ComponentsConfiguration {
 
   /** Whether all drawables are eligible for wrapping into DisplayListDrawables */
   public static boolean useDisplayListForAllDrawables = false;
+
+  public static boolean shouldUpdateMountSpecOnly = false;
 }

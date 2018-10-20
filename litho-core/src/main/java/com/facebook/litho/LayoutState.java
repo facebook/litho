@@ -1806,6 +1806,23 @@ class LayoutState {
     final int layoutCount = layoutNode.getChildCount();
     final int diffCount = diffNode.getChildCount();
 
+    if (ComponentsConfiguration.shouldUpdateMountSpecOnly) {
+
+      if (layoutCount != 0 && diffCount != 0) {
+        for (int i = 0; i < layoutCount && i < diffCount; i++) {
+          applyDiffNodeToUnchangedNodes(layoutNode.getChildAt(i), diffNode.getChildAt(i));
+        }
+
+      // Apply the DiffNode to a leaf node (i.e. MountSpec) only if it should NOT update.
+      } else if (!shouldComponentUpdate(layoutNode, diffNode)) {
+        applyDiffNodeToLayoutNode(layoutNode, diffNode);
+      }
+
+      // return value not needed in this experiment.
+      // Should be removed when experiment is cleaned up.
+      return true;
+    }
+
     // Layout node needs to be updated if:
     //   - it has a different number of children.
     //   - one of its children needs updating.
