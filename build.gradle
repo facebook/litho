@@ -92,7 +92,7 @@ ext.deps = [
 // For releases, we want to depend on a stable version of Yoga.
 ext.deps.yoga =
     isSnapshot()
-        ? 'com.facebook.yoga:yoga:1.10.1-SNAPSHOT'
+        ? 'com.facebook.yoga:yoga:1.10.0-SNAPSHOT'
         : 'com.facebook.yoga:yoga:1.10.0'
 
 // This should hopefully only serve as a temporary measure until
