@@ -2190,8 +2190,9 @@ public class RecyclerBinder
 
     mViewportManager.addViewportChangedListener(mViewportChangedListener);
 
-    if (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION &&
-        mCurrentFirstVisiblePosition >= 0) {
+    if (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION
+        && mCurrentFirstVisiblePosition >= 0
+        && !mIsCircular) {
       if (mSmoothScrollAlignmentType != null) {
         scrollSmoothToPosition(
             mCurrentFirstVisiblePosition, mCurrentOffset, mSmoothScrollAlignmentType);
@@ -2208,7 +2209,13 @@ public class RecyclerBinder
       final int jumpToMiddle = Integer.MAX_VALUE / 2;
       final int offsetFirstItem =
           mComponentTreeHolders.isEmpty() ? 0 : jumpToMiddle % mComponentTreeHolders.size();
-      view.scrollToPosition(jumpToMiddle - offsetFirstItem);
+      view.scrollToPosition(
+          jumpToMiddle
+              - offsetFirstItem
+              + (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION
+                      && mCurrentFirstVisiblePosition >= 0
+                  ? mCurrentFirstVisiblePosition
+                  : 0));
     }
 
     enableStickyHeader(mMountedView);

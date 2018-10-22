@@ -1982,6 +1982,17 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void testCircularRecyclerItemFirstVisibleWithScrollToIndex() {
+    RecyclerView recyclerView = mock(RecyclerView.class);
+    when(mCircularLayoutInfo.getLayoutManager()).thenReturn(mock(RecyclerView.LayoutManager.class));
+
+    mCircularRecyclerBinder.scrollToPosition(1);
+    mCircularRecyclerBinder.mount(recyclerView);
+
+    verify(recyclerView).scrollToPosition(Integer.MAX_VALUE / 2 + 1);
+  }
+
+  @Test
   public void testCircularRecyclerInitRange() {
     final List<ComponentRenderInfo> components = prepareLoadedBinder(mCircularRecyclerBinder, 10);
     TestComponentTreeHolder holder = mHoldersForComponents.get(components.get(0).getComponent());
