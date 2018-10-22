@@ -100,6 +100,11 @@ public class ComponentContext extends ContextWrapper {
     this(context, logTag, logger, null, null, treeProps);
   }
 
+  public ComponentContext(
+      Context context, StateHandler stateHandler, String logTag, ComponentsLogger logger) {
+    this(context, logTag, logger, stateHandler, null, null);
+  }
+
   private ComponentContext(
       Context context,
       String logTag,
