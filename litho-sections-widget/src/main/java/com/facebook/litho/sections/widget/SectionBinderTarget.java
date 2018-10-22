@@ -146,7 +146,11 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   @Override
   public void notifyChangeSetComplete(
       boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
-    mRecyclerBinder.notifyChangeSetComplete(isDataChanged, changeSetCompleteCallback);
+    if (mUseBackgroundChangeSets) {
+      mRecyclerBinder.notifyChangeSetCompleteAsync(isDataChanged, changeSetCompleteCallback);
+    } else {
+      mRecyclerBinder.notifyChangeSetComplete(isDataChanged, changeSetCompleteCallback);
+    }
   }
 
   @Override

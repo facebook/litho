@@ -2227,7 +2227,7 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
 
@@ -2257,7 +2257,7 @@ public class RecyclerBinderTest {
           @Override
           public void run() {
             recyclerBinder.insertItemAtAsync(0, renderInfo);
-            recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+            recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
           }
         });
 
@@ -2293,7 +2293,7 @@ public class RecyclerBinderTest {
           @Override
           public void run() {
             recyclerBinder.insertItemAtAsync(0, renderInfo);
-            recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+            recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
           }
         });
 
@@ -2316,7 +2316,7 @@ public class RecyclerBinderTest {
           @Override
           public void run() {
             recyclerBinder.insertItemAtAsync(0, renderInfo2);
-            recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+            recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
           }
         });
 
@@ -2357,7 +2357,7 @@ public class RecyclerBinderTest {
           @Override
           public void run() {
             recyclerBinder.insertItemAtAsync(0, renderInfo);
-            recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+            recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
           }
         });
 
@@ -2403,7 +2403,7 @@ public class RecyclerBinderTest {
           @Override
           public void run() {
             recyclerBinder.insertRangeAtAsync(0, renderInfos);
-            recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+            recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
           }
         });
 
@@ -2446,7 +2446,7 @@ public class RecyclerBinderTest {
           @Override
           public void run() {
             recyclerBinder.insertRangeAtAsync(0, renderInfos);
-            recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+            recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
           }
         });
 
@@ -2483,7 +2483,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
@@ -2512,7 +2512,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
@@ -2528,7 +2528,7 @@ public class RecyclerBinderTest {
         ComponentRenderInfo.create().component(component2).build();
 
     recyclerBinder.insertItemAtAsync(0, renderInfo2);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
@@ -2560,7 +2560,7 @@ public class RecyclerBinderTest {
         ComponentRenderInfo.create().component(component).build();
 
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
@@ -2595,7 +2595,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
@@ -2629,7 +2629,7 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
@@ -2668,7 +2668,7 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
@@ -2714,7 +2714,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
@@ -2752,7 +2752,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(500, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
@@ -2786,7 +2786,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(500, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -2805,7 +2805,7 @@ public class RecyclerBinderTest {
   public void testThrowsIfSyncInsertAfterAsyncInsert() {
     mRecyclerBinder.insertItemAtAsync(0, createTestComponentRenderInfo());
     mRecyclerBinder.insertItemAt(1, createTestComponentRenderInfo());
-    mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    mRecyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
   }
 
   @Test(expected = RuntimeException.class)
@@ -2819,7 +2819,7 @@ public class RecyclerBinderTest {
 
     mRecyclerBinder.insertRangeAtAsync(0, firstInsert);
     mRecyclerBinder.insertRangeAt(firstInsert.size(), secondInsert);
-    mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    mRecyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
   }
 
   @Test
@@ -2834,14 +2834,14 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
 
     recyclerBinder.removeItemAtAsync(0);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
@@ -2865,7 +2865,7 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(0));
     recyclerBinder.insertItemAtAsync(1, renderInfos.get(1));
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
@@ -2873,7 +2873,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(2));
     recyclerBinder.removeItemAtAsync(0);
     recyclerBinder.insertItemAtAsync(2, renderInfos.get(3));
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(3);
@@ -2898,13 +2898,13 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(4);
 
     recyclerBinder.moveItemAsync(0, 2);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(4);
@@ -2931,7 +2931,7 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(0));
     recyclerBinder.insertItemAtAsync(1, renderInfos.get(1));
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
@@ -2939,7 +2939,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(2));
     recyclerBinder.moveItemAsync(0, 1);
     recyclerBinder.insertItemAtAsync(2, renderInfos.get(3));
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(4);
@@ -2960,7 +2960,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final ComponentRenderInfo newRenderInfo =
@@ -2969,7 +2969,7 @@ public class RecyclerBinderTest {
                 TestDrawableComponent.create(mComponentContext).widthPx(50).heightPx(50).build())
             .build();
     recyclerBinder.updateItemAtAsync(0, newRenderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     verify(adapter, never()).notifyItemChanged(anyInt());
 
@@ -2991,7 +2991,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
 
@@ -3001,7 +3001,7 @@ public class RecyclerBinderTest {
                 TestDrawableComponent.create(mComponentContext).widthPx(50).heightPx(50).build())
             .build();
     recyclerBinder.updateItemAtAsync(0, newRenderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     verify(adapter, never()).notifyItemChanged(anyInt());
@@ -3031,7 +3031,7 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(0));
     recyclerBinder.insertItemAtAsync(1, renderInfos.get(1));
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
@@ -3051,7 +3051,7 @@ public class RecyclerBinderTest {
     recyclerBinder.updateItemAtAsync(0, newRenderInfo0);
     recyclerBinder.insertItemAtAsync(2, renderInfos.get(3));
     recyclerBinder.updateItemAtAsync(1, newRenderInfo1);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(4);
@@ -3078,7 +3078,7 @@ public class RecyclerBinderTest {
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(0));
     recyclerBinder.insertItemAtAsync(1, renderInfos.get(1));
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
@@ -3107,7 +3107,7 @@ public class RecyclerBinderTest {
     recyclerBinder.updateItemAtAsync(1, newRenderInfo1);
     recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(4, renderInfos.size()));
     recyclerBinder.updateItemAtAsync(2, newRenderInfo2);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(6);
@@ -3130,7 +3130,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final RenderInfo newRenderInfo =
@@ -3139,7 +3139,7 @@ public class RecyclerBinderTest {
             .viewCreator(VIEW_CREATOR_1)
             .build();
     recyclerBinder.updateItemAtAsync(0, newRenderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     verify(adapter).notifyItemChanged(0);
 
@@ -3161,7 +3161,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final ComponentRenderInfo newRenderInfo =
@@ -3170,7 +3170,7 @@ public class RecyclerBinderTest {
                 TestDrawableComponent.create(mComponentContext).widthPx(50).heightPx(50).build())
             .build();
     recyclerBinder.updateItemAtAsync(0, newRenderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     verify(adapter).notifyItemChanged(0);
 
@@ -3197,7 +3197,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(0, 5));
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(5);
@@ -3214,7 +3214,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(5));
     recyclerBinder.updateRangeAtAsync(0, newRenderInfos);
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(6));
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(7);
@@ -3243,7 +3243,7 @@ public class RecyclerBinderTest {
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
     recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(0, 5));
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(5);
@@ -3251,7 +3251,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(5));
     recyclerBinder.removeRangeAtAsync(0, 3);
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(6));
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(4);
@@ -3276,7 +3276,7 @@ public class RecyclerBinderTest {
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(0, 3));
     recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(3, renderInfos.size()));
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
@@ -3314,7 +3314,7 @@ public class RecyclerBinderTest {
     recyclerBinder.removeRangeAtAsync(1, 3);
     recyclerBinder.updateItemAtAsync(
         3, ComponentRenderInfo.create().component(updatedIndex3).build());
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
@@ -3347,7 +3347,7 @@ public class RecyclerBinderTest {
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
     recyclerBinder.clearAsync();
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -3369,7 +3369,7 @@ public class RecyclerBinderTest {
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
     recyclerBinder.clearAsync();
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -3393,12 +3393,12 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(0, 3));
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos.subList(3, 6));
     recyclerBinder.removeRangeAtAsync(0, 3);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     recyclerBinder.measure(
@@ -3419,7 +3419,7 @@ public class RecyclerBinderTest {
     recyclerBinder.updateItemAtAsync(0, ComponentRenderInfo.create().component(component0).build());
     recyclerBinder.updateItemAtAsync(1, ComponentRenderInfo.create().component(component1).build());
     recyclerBinder.updateItemAtAsync(2, ComponentRenderInfo.create().component(component2).build());
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(3);
@@ -3442,11 +3442,11 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     recyclerBinder.removeRangeAtAsync(0, renderInfos.size());
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     recyclerBinder.measure(
@@ -3542,7 +3542,7 @@ public class RecyclerBinderTest {
           @Override
           public void run() {
             recyclerBinder.insertRangeAtAsync(0, renderInfos1);
-            recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback1);
+            recyclerBinder.notifyChangeSetCompleteAsync(true, changeSetCompleteCallback1);
           }
         });
 
@@ -3565,7 +3565,7 @@ public class RecyclerBinderTest {
           @Override
           public void run() {
             recyclerBinder.insertRangeAtAsync(renderInfos1.size(), renderInfos2);
-            recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback2);
+            recyclerBinder.notifyChangeSetCompleteAsync(true, changeSetCompleteCallback2);
           }
         });
 
@@ -3596,7 +3596,7 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos1);
-    recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback1);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, changeSetCompleteCallback1);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
     assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
@@ -3613,7 +3613,7 @@ public class RecyclerBinderTest {
     reset(changeSetCompleteCallback1);
 
     recyclerBinder.insertRangeAtAsync(renderInfos1.size(), renderInfos2);
-    recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback2);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, changeSetCompleteCallback2);
 
     verify(changeSetCompleteCallback2, never()).onDataBound();
 
@@ -3638,7 +3638,7 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, changeSetCompleteCallback);
 
     verify(changeSetCompleteCallback, never()).onDataBound();
 
@@ -3689,7 +3689,7 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, changeSetCompleteCallback);
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
@@ -3859,11 +3859,11 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos1);
-    recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback1);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, changeSetCompleteCallback1);
     verify(changeSetCompleteCallback1, never()).onDataRendered(eq(true), anyLong());
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos2);
-    recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback2);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, changeSetCompleteCallback2);
     verify(changeSetCompleteCallback2, never()).onDataRendered(eq(true), anyLong());
 
     // Mount view after insertions
@@ -3954,7 +3954,7 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, changeSetCompleteCallback);
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
@@ -4010,7 +4010,7 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, changeSetCompleteCallback);
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
@@ -4201,10 +4201,10 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     recyclerBinder.insertRangeAtAsync(5, renderInfos2);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     // Measure on main means we don't pre-compute all the layouts
     recyclerBinder.measure(
@@ -4251,10 +4251,10 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     recyclerBinder.insertRangeAtAsync(5, renderInfos2);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     runOnBackgroundThreadSync(
         new Runnable() {
@@ -4304,7 +4304,7 @@ public class RecyclerBinderTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     runOnBackgroundThreadSync(
         new Runnable() {

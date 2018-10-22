@@ -1377,6 +1377,32 @@ public class RecyclerBinder
 
   /**
    * Called after all the change set operations (inserts, removes, etc.) in a batch have completed.
+   * Async variant, may be called off the main thread.
+   */
+  public void notifyChangeSetCompleteAsync(
+      boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
+    if (SectionsDebug.ENABLED) {
+      Log.d(SectionsDebug.TAG, "(" + hashCode() + ") notifyChangeSetCompleteAsync");
+    }
+
+    mHasAsyncOperations = true;
+
+    assertSingleThreadForChangeSet();
+    closeCurrentBatch(isDataChanged, changeSetCompleteCallback);
+    if (ThreadUtils.isMainThread()) {
+      applyReadyBatches();
+    } else {
+      mMainThreadHandler.post(mApplyReadyBatchesRunnable);
+    }
+    clearThreadForChangeSet();
+
+    if (isDataChanged) {
+      maybeUpdateRangeOrRemeasureForMutation();
+    }
+  }
+
+  /**
+   * Called after all the change set operations (inserts, removes, etc.) in a batch have completed.
    */
   @UiThread
   public void notifyChangeSetComplete(
@@ -1385,21 +1411,16 @@ public class RecyclerBinder
       Log.d(SectionsDebug.TAG, "(" + hashCode() + ") notifyChangeSetComplete");
     }
 
-    if (!mHasAsyncOperations) {
-      ThreadUtils.assertMainThread();
-      changeSetCompleteCallback.onDataBound();
-      mDataRenderedCallbacks.addLast(changeSetCompleteCallback);
-      maybeDispatchDataRendered();
-    } else {
-      assertSingleThreadForChangeSet();
-      closeCurrentBatch(isDataChanged, changeSetCompleteCallback);
-      if (ThreadUtils.isMainThread()) {
-        applyReadyBatches();
-      } else {
-        mMainThreadHandler.post(mApplyReadyBatchesRunnable);
-      }
-      clearThreadForChangeSet();
+    ThreadUtils.assertMainThread();
+
+    if (mHasAsyncOperations) {
+      throw new RuntimeException(
+          "Trying to do a sync notifyChangeSetComplete when using asynchronous mutations!");
     }
+
+    changeSetCompleteCallback.onDataBound();
+    mDataRenderedCallbacks.addLast(changeSetCompleteCallback);
+    maybeDispatchDataRendered();
 
     if (isDataChanged) {
       maybeUpdateRangeOrRemeasureForMutation();

@@ -279,7 +279,7 @@ public class RecyclerBinderWrapContentTest {
         ComponentRenderInfo.create().component(component).build();
 
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -295,7 +295,7 @@ public class RecyclerBinderWrapContentTest {
           TestDrawableComponent.create(mComponentContext).measuredHeight(100).build();
       recyclerBinder.insertItemAtAsync(
           i + 1, ComponentRenderInfo.create().component(newComponent).build());
-      recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+      recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     }
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
@@ -328,7 +328,7 @@ public class RecyclerBinderWrapContentTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -347,7 +347,7 @@ public class RecyclerBinderWrapContentTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, newRenderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -371,7 +371,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeItemAtAsync(0);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -396,7 +396,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeRangeAtAsync(0, 3);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -430,7 +430,7 @@ public class RecyclerBinderWrapContentTest {
     final RenderInfo renderInfo = ComponentRenderInfo.create().component(newComponent).build();
 
     recyclerBinder.updateItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -462,7 +462,7 @@ public class RecyclerBinderWrapContentTest {
       newRenderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
     recyclerBinder.updateRangeAtAsync(0, newRenderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -685,7 +685,7 @@ public class RecyclerBinderWrapContentTest {
         ComponentRenderInfo.create().component(component).build();
 
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -701,7 +701,7 @@ public class RecyclerBinderWrapContentTest {
           TestDrawableComponent.create(mComponentContext).measuredWidth(100).build();
       recyclerBinder.insertItemAtAsync(
           i + 1, ComponentRenderInfo.create().component(newComponent).build());
-      recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+      recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     }
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
@@ -736,7 +736,7 @@ public class RecyclerBinderWrapContentTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -755,7 +755,7 @@ public class RecyclerBinderWrapContentTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, newRenderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -970,7 +970,7 @@ public class RecyclerBinderWrapContentTest {
     }
     if (async) {
       recyclerBinder.insertRangeAtAsync(0, components);
-      recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+      recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
       mLayoutThreadShadowLooper.runToEndOfTasks();
     } else {
       recyclerBinder.insertRangeAt(0, components);
