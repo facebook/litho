@@ -154,6 +154,10 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
     // all this we are removing callback before setting bounds, and setting it right back after
     mDrawable.setCallback(null);
     mDrawable.setBounds(bounds);
+    // TODO(t22432769): Remove this after D5965597 lands
+    if (mDrawable instanceof MatrixDrawable) {
+      ((MatrixDrawable) mDrawable).bind(bounds.width(), bounds.height());
+    }
     mDrawable.setCallback(this);
 
     if (mDisplayList == null || !mDisplayList.isValid() || mInvalidated) {
