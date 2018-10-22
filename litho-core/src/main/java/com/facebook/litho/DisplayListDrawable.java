@@ -19,7 +19,9 @@ package com.facebook.litho;
 import android.annotation.TargetApi;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Region;
@@ -40,6 +42,7 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
 
   private static final boolean DEBUG = false;
   private static final String LOG_TAG = "DisplayListDrawable";
+  private static Paint sDebugBorderPaint;
 
   private Drawable mDrawable;
   private @Nullable String mName;
@@ -128,6 +131,8 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
     displayListCanvas.translate(-bounds.left, -bounds.top);
     mDrawable.draw(displayListCanvas);
     displayListCanvas.translate(bounds.left, bounds.top);
+
+    drawDebugBorder(bounds, displayListCanvas);
 
     mDisplayList.end(displayListCanvas);
     mDisplayList.setBounds(bounds.left, bounds.top, bounds.right, bounds.bottom);
@@ -394,5 +399,28 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
     if (DEBUG) {
       Log.d(LOG_TAG, message, withStackTrace ? new RuntimeException() : null);
     }
+  }
+
+  private static void drawDebugBorder(Rect bounds, Canvas canvas) {
+    if (!DEBUG) {
+      return;
+    }
+
+    if (sDebugBorderPaint == null) {
+      sDebugBorderPaint = new Paint();
+      sDebugBorderPaint.setColor(Color.GREEN);
+      sDebugBorderPaint.setStrokeWidth(2);
+    }
+
+    final float w = bounds.width();
+    final float h = bounds.height();
+    final float[] points = {
+      0, 0, w, 0, // top line
+      w, 0, w, h, // right line
+      w, h, 0, h, // bottom line
+      0, h, 0, 0, // left line
+    };
+
+    canvas.drawLines(points, sDebugBorderPaint);
   }
 }
