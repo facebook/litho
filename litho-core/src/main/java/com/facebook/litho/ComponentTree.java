@@ -2180,7 +2180,10 @@ public class ComponentTree {
       if (isMainThread() && !futureTask.isDone() && runningThreadId != Process.myTid()) {
         // Main thread is about to be blocked, raise the running thread priority.
         originalThreadPriority =
-            ThreadUtils.tryRaiseThreadPriority(runningThreadId, Process.THREAD_PRIORITY_DISPLAY);
+            ComponentsConfiguration.inheritPriorityFromUiThread
+                ? ThreadUtils.tryInheritThreadPriorityFromCurrentThread(runningThreadId)
+                : ThreadUtils.tryRaiseThreadPriority(
+                    runningThreadId, Process.THREAD_PRIORITY_DISPLAY);
         didRaiseThreadPriority = true;
       } else {
         originalThreadPriority = THREAD_PRIORITY_DEFAULT;

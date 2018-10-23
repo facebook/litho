@@ -223,4 +223,10 @@ public class ComponentsConfiguration {
   public static boolean useDisplayListForAllDrawables = false;
 
   public static boolean shouldUpdateMountSpecOnly = false;
+
+  /**
+   * Whether the background thread that's currently running the layout should have its priority
+   * raised to the thread priority of the UI thread.
+   */
+  public static boolean inheritPriorityFromUiThread = false;
 }
