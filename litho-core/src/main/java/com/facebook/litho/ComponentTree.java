@@ -43,7 +43,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
-import android.view.View;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -2238,21 +2237,12 @@ public class ComponentTree {
       if (heightSpec != that.heightSpec) {
         return false;
       }
-      if (diffingEnabled != that.diffingEnabled) {
-        return false;
-      }
       if (!context.equals(that.context)) {
         return false;
       }
       if (root.getId() != that.root.getId()) {
         // We only care that the root id is the same since the root is shallow copied before
         // it's passed to us and will never be the same object.
-        return false;
-      }
-      if (diffingEnabled && previousLayoutState != null
-          ? !previousLayoutState.equals(that.previousLayoutState)
-          : that.previousLayoutState != null) {
-        // Only check against previousLayoutState if diffing is enabled.
         return false;
       }
 
@@ -2265,8 +2255,6 @@ public class ComponentTree {
       result = 31 * result + root.getId();
       result = 31 * result + widthSpec;
       result = 31 * result + heightSpec;
-      result = 31 * result + (diffingEnabled ? 1 : 0);
-      result = 31 * result + (previousLayoutState != null ? previousLayoutState.hashCode() : 0);
       return result;
     }
   }
