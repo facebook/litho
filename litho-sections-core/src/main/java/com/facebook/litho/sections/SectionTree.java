@@ -1424,9 +1424,10 @@ public class SectionTree {
     }
 
     if (!nextRoot.isDiffSectionSpec()) {
-      final Map<String, Pair<Section, Integer>> currentComponentChildren = currentRoot == null ?
-          null :
-          Section.acquireChildrenMap(currentRoot);
+      final Map<String, Pair<Section, Integer>> currentComponentChildren =
+          currentRoot == null || currentRoot.isDiffSectionSpec()
+              ? null
+              : Section.acquireChildrenMap(currentRoot);
 
       final TreeProps parentTreeProps = context.getTreeProps();
       nextRoot.populateTreeProps(parentTreeProps);
