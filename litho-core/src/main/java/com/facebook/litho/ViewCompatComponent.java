@@ -59,7 +59,7 @@ public class ViewCompatComponent<V extends View> extends Component {
   }
 
   private ViewCompatComponent(ViewCreator viewCreator, String componentName) {
-    super("ViewCompatComponent_" + componentName, viewCreator);
+    super("ViewCompatComponent_" + componentName, System.identityHashCode(viewCreator));
     mViewCreator = viewCreator;
   }
 
