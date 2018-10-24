@@ -173,6 +173,10 @@ public class ComponentContext extends ContextWrapper {
     return componentContext;
   }
 
+  public final Context getAndroidContext() {
+    return getBaseContext();
+  }
+
   ComponentContext makeNewCopy() {
     return new ComponentContext(this);
   }
