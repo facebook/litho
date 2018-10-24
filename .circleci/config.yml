@@ -3,20 +3,20 @@ aliases:
   # NDK Cache aliases
   - &restore-cache-ndk
     keys:
-      - v2-android-ndk-{{ arch }}-r15c-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
+      - v3-android-ndk-{{ arch }}-r15c-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
   - &save-cache-ndk
     paths:
       - /opt/ndk
-    key: v2-android-ndk-{{ arch }}-r15c-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
+    key: v3-android-ndk-{{ arch }}-r15c-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
 
   # SDK Cache aliases
   - &restore-cache-android-packages
     keys:
-      - v5-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
+      - v6-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
   - &save-cache-android-packages
     paths:
       - /opt/android/sdk
-    key: v5-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
+    key: v6-android-sdkmanager-packages-{{ arch }}-api-27-alpha-{{ checksum "workspace/repo/scripts/circle-ci-android-setup.sh" }}
 
   # BUCK Cache aliases
   - &restore-cache-buck
