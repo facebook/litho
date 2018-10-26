@@ -961,6 +961,7 @@ public class LithoView extends ComponentHost {
 
     @Override
     public void onAccessibilityStateChanged(boolean enabled) {
+      AccessibilityUtils.invalidateCachedIsAccessibilityEnabled();
       final LithoView lithoView = mLithoView.get();
       if (lithoView == null) {
         return;

@@ -25,20 +25,53 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import java.util.List;
 
-class AccessibilityUtils {
+public class AccessibilityUtils {
+
+  public static boolean isCachingEnabled = false;
+  private static volatile boolean isCachedIsAccessibilityEnabledSet = false;
+  private static volatile boolean cachedIsAccessibilityEnabled;
+
   /**
    * @returns True if accessibility touch exploration is currently enabled
    * in the framework.
    */
   public static boolean isAccessibilityEnabled(Context context) {
-    final AccessibilityManager manager =
-        (AccessibilityManager) context.getSystemService(ACCESSIBILITY_SERVICE);
-    return isAccessibilityEnabled(manager);
+    if (isCachingEnabled) {
+      if (!isCachedIsAccessibilityEnabledSet) {
+        final AccessibilityManager manager =
+            (AccessibilityManager) context.getSystemService(ACCESSIBILITY_SERVICE);
+        updateCachedIsAccessibilityEnabled(manager);
+      }
+      return cachedIsAccessibilityEnabled;
+    } else {
+      final AccessibilityManager manager =
+          (AccessibilityManager) context.getSystemService(ACCESSIBILITY_SERVICE);
+      return isAccessibilityEnabled(manager);
+    }
   }
 
   public static boolean isAccessibilityEnabled(AccessibilityManager manager) {
-    return Boolean.getBoolean("is_accessibility_enabled")
-        || isRunningApplicableAccessibilityService(manager);
+    if (isCachingEnabled) {
+      if (!isCachedIsAccessibilityEnabledSet) {
+        updateCachedIsAccessibilityEnabled(manager);
+      }
+      return cachedIsAccessibilityEnabled;
+    } else {
+      return Boolean.getBoolean("is_accessibility_enabled")
+          || isRunningApplicableAccessibilityService(manager);
+    }
+  }
+
+  private static synchronized void updateCachedIsAccessibilityEnabled(
+      AccessibilityManager manager) {
+    cachedIsAccessibilityEnabled =
+        Boolean.getBoolean("is_accessibility_enabled")
+            || isRunningApplicableAccessibilityService(manager);
+    isCachedIsAccessibilityEnabledSet = true;
+  }
+
+  public static synchronized void invalidateCachedIsAccessibilityEnabled() {
+    isCachedIsAccessibilityEnabledSet = false;
   }
 
   public static boolean isRunningApplicableAccessibilityService(AccessibilityManager manager) {
@@ -46,9 +79,12 @@ class AccessibilityUtils {
       return false;
     }
 
-    // also check enabledServiceCanFocusAndRetrieveWindowContent(manager) once ANR fix is
-    // implemented for getEnabledAccessibilityServiceList
-    return manager.isTouchExplorationEnabled();
+    if (isCachingEnabled) {
+      return manager.isTouchExplorationEnabled()
+          || enabledServiceCanFocusAndRetrieveWindowContent(manager);
+    } else {
+      return manager.isTouchExplorationEnabled();
+    }
   }
 
   public static boolean enabledServiceCanFocusAndRetrieveWindowContent(
