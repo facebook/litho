@@ -42,6 +42,7 @@ import com.facebook.litho.Size;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.TreeProps;
+import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
@@ -66,55 +67,65 @@ import javax.annotation.Nullable;
 public final class TestMount<S extends View> extends Component implements TestTag {
   static final Pools.SynchronizedPool<TestEvent> sTestEventPool = new Pools.SynchronizedPool<TestEvent>(2);
 
+  @Comparable(type = 14)
   private TestMountStateContainer mStateContainer;
 
   @Prop(
       resType = ResType.NONE,
       optional = false
   )
+  @Comparable(type = 3)
   int prop1;
 
   @Prop(
       resType = ResType.NONE,
       optional = true
   )
+  @Comparable(type = 3)
   boolean prop2 = TestMountSpec.prop2;
 
   @Prop(
       resType = ResType.NONE,
       optional = false
   )
+  @Comparable(type = 13)
   Object prop3;
 
   @Prop(
       resType = ResType.NONE,
       optional = false
   )
+  @Comparable(type = 2)
   char[] prop4;
 
   @Prop(
       resType = ResType.NONE,
       optional = false
   )
+  @Comparable(type = 3)
   char prop5;
 
   @Prop(
       resType = ResType.NONE,
       optional = false
   )
+  @Comparable(type = 3)
   long prop6;
 
   @Nullable
   @Prop(resType = ResType.STRING, optional = false)
+  @Comparable(type = 13)
   CharSequence prop7;
 
   @Prop(
       resType = ResType.NONE,
       optional = false
   )
+  @Comparable(type = 3)
   long prop8;
 
   @TreeProp
+  @Comparable(type = 13)
   TestTreeProp treeProp;
 
   Integer boundsDefinedOutput;
@@ -617,9 +628,11 @@ public final class TestMount<S extends View> extends Component implements TestTa
   )
   static class TestMountStateContainer<S extends View> implements StateContainer {
     @State
+    @Comparable(type = 3)
     long state1;
 
     @State
+    @Comparable(type = 13)
     S state2;
   }
 

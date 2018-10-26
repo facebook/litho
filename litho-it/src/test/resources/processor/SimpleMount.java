@@ -22,6 +22,7 @@ import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Size;
+import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -34,9 +35,11 @@ import java.util.BitSet;
  */
 public final class SimpleMount extends Component {
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 10)
   Component content;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 1)
   double ratio;
 
   private SimpleMount() {

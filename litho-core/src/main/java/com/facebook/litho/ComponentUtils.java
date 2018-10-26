@@ -16,15 +16,9 @@
 
 package com.facebook.litho;
 
-import android.support.annotation.VisibleForTesting;
-import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.annotations.State;
-import com.facebook.litho.annotations.TreeProp;
+import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.reference.Reference;
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Deque;
@@ -50,14 +44,11 @@ public class ComponentUtils {
     }
 
     for (Field field : obj1.getClass().getDeclaredFields()) {
-
-      if (!(field.isAnnotationPresent(Prop.class)
-          || field.isAnnotationPresent(TreeProp.class)
-          || field.isAnnotationPresent(State.class)
-          || StateContainer.class.isAssignableFrom(field.getType()))) {
+      if (!field.isAnnotationPresent(Comparable.class)) {
         continue;
       }
 
+      final Class<?> classType = field.getType();
       final Object val1;
       final Object val2;
       try {
@@ -69,65 +60,86 @@ public class ComponentUtils {
         throw new IllegalStateException("Unable to get fields by reflection.", e);
       }
 
-      final Class<?> classType = field.getType();
-      final Type type = field.getGenericType();
-      if (classType.isArray()) {
-        if (!areArraysEquals(classType, val1, val2)) {
-          return false;
-        }
-
-      } else if (Double.TYPE.isAssignableFrom(classType)) {
-        if (Double.compare((Double) val1, (Double) val2) != 0) {
-          return false;
-        }
-
-      } else if (Float.TYPE.isAssignableFrom(classType)) {
-        if (Float.compare((Float) val1, (Float) val2) != 0) {
-          return false;
-        }
-
-      } else if (Reference.class.isAssignableFrom(classType)) {
-        if (Reference.shouldUpdate((Reference) val1, (Reference) val2)) {
-          return false;
-        }
-
-      } else if (Collection.class.isAssignableFrom(classType)) {
-        final Collection c1 = (Collection) val1;
-        final Collection c2 = (Collection) val2;
-        final int level = levelOfComponentsInCollection(type);
-        if (level > 0) {
-          if (!areComponentCollectionsEquals(level, c1, c2)) {
+      @Comparable.Type int comparableType = field.getAnnotation(Comparable.class).type();
+      switch (comparableType) {
+        case Comparable.FLOAT:
+          if (Float.compare((Float) val1, (Float) val2) != 0) {
             return false;
           }
-        } else {
+          break;
+
+        case Comparable.DOUBLE:
+          if (Double.compare((Double) val1, (Double) val2) != 0) {
+            return false;
+          }
+          break;
+
+        case Comparable.ARRAY:
+          if (!areArraysEquals(classType, val1, val2)) {
+            return false;
+          }
+          break;
+
+        case Comparable.PRIMITIVE:
+          if (!val1.equals(val2)) {
+            return false;
+          }
+          break;
+
+        case Comparable.REFERENCE:
+          if (Reference.shouldUpdate((Reference) val1, (Reference) val2)) {
+            return false;
+          }
+          break;
+
+        case Comparable.COLLECTION_COMPLEVEL_0:
+          final Collection c1 = (Collection) val1;
+          final Collection c2 = (Collection) val2;
           if (c1 != null ? !c1.equals(c2) : c2 != null) {
             return false;
           }
-        }
+          break;
 
-      } else if (Component.class.isAssignableFrom(classType)) {
-        if (val1 != null ? !((Component) val1).isEquivalentTo((Component) val2) : val2 != null) {
-          return false;
-        }
+        case Comparable.COLLECTION_COMPLEVEL_1:
+        case Comparable.COLLECTION_COMPLEVEL_2:
+        case Comparable.COLLECTION_COMPLEVEL_3:
+        case Comparable.COLLECTION_COMPLEVEL_4:
+          // N.B. This relies on the IntDef to be in increasing order.
+          int level = comparableType - Comparable.COLLECTION_COMPLEVEL_0;
+          if (!areComponentCollectionsEquals(level, (Collection) val1, (Collection) val2)) {
+            return false;
+          }
+          break;
 
-      } else if (EventHandler.class.isAssignableFrom(classType)
-          || (type instanceof ParameterizedType
-              && EventHandler.class.isAssignableFrom(
-                  (Class) ((ParameterizedType) type).getRawType()))) {
-        if (val1 != null
-            ? !((EventHandler) val1).isEquivalentTo((EventHandler) val2)
-            : val2 != null) {
-          return false;
-        }
+        case Comparable.COMPONENT:
+        case Comparable.SECTION:
+          if (val1 != null ? !((Equivalence) val1).isEquivalentTo(val2) : val2 != null) {
+            return false;
+          }
+          break;
 
-        // StateContainers have also fields that we need to check for being equivalent.
-      } else if (StateContainer.class.isAssignableFrom(classType)) {
-        if (!hasEquivalentFields(val1, val2)) {
-          return false;
-        }
+        case Comparable.EVENT_HANDLER:
+        case Comparable.EVENT_HANDLER_IN_PARAMETERIZED_TYPE:
+          if (val1 != null
+              ? !((EventHandler) val1).isEquivalentTo((EventHandler) val2)
+              : val2 != null) {
+            return false;
+          }
+          break;
 
-      } else if (val1 != null ? !val1.equals(val2) : val2 != null) {
-        return false;
+        case Comparable.OTHER:
+          if (val1 != null ? !val1.equals(val2) : val2 != null) {
+            return false;
+          }
+          break;
+
+        case Comparable.STATE_CONTAINER:
+          // If we have a state container field, we need to recursively call this method to
+          // inspect the state fields.
+          if (!hasEquivalentFields(val1, val2)) {
+            return false;
+          }
+          break;
       }
     }
 
@@ -205,38 +217,6 @@ public class ComponentUtils {
     }
 
     return true;
-  }
-
-  /**
-   * Calculate the level of the target Component/Section. The level here means how many bracket
-   * pairs are needed to break until reaching the component type. For example, the level of
-   * {@literal List<Component>} is 1, and the level of {@literal List<List<Component>>} is 2.
-   *
-   * @return the level of the target component, or 0 if the target isn't a component.
-   */
-  @VisibleForTesting
-  static int levelOfComponentsInCollection(Type type) {
-    int level = 0;
-
-    while (true) {
-      if (isParameterizedCollection(type)) {
-        type = ((ParameterizedType) type).getActualTypeArguments()[0];
-        level++;
-
-      } else if (type instanceof WildcardType) {
-        type = ((WildcardType) type).getUpperBounds()[0];
-
-      } else {
-        break;
-      }
-    }
-
-    return (type instanceof Class) && Component.class.isAssignableFrom((Class) type) ? level : 0;
-  }
-
-  private static boolean isParameterizedCollection(Type type) {
-    return (type instanceof ParameterizedType)
-        && Collection.class.isAssignableFrom((Class) ((ParameterizedType) type).getRawType());
   }
 
   /**

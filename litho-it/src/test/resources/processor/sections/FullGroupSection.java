@@ -29,6 +29,7 @@ import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.TreeProps;
+import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
@@ -57,24 +58,31 @@ final class FullGroupSection<T> extends Section implements TestTag {
   static final Pools.SynchronizedPool<TestEvent> sTestEventPool =
       new Pools.SynchronizedPool<TestEvent>(2);
 
+  @Comparable(type = 14)
   private FullGroupSectionStateContainer mStateContainer;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 3)
   int prop1;
 
   @Prop(resType = ResType.NONE, optional = true)
+  @Comparable(type = 13)
   String prop2;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 10)
   Component prop3;
 
   @Prop(resType = ResType.STRING, optional = false)
+  @Comparable(type = 13)
   String prop4;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 15)
   Section prop5;
 
   @TreeProp
+  @Comparable(type = 13)
   FullGroupSectionSpec.TreePropWrapper treeProp;
 
   String _service;
@@ -418,9 +426,13 @@ final class FullGroupSection<T> extends Section implements TestTag {
 
   @VisibleForTesting(otherwise = 2)
   static class FullGroupSectionStateContainer<T> implements StateContainer {
-    @State T state1;
+    @State
+    @Comparable(type = 13)
+    T state1;
 
-    @State Object state2;
+    @State
+    @Comparable(type = 13)
+    Object state2;
   }
 
   public static class Builder<T> extends Section.Builder<Builder<T>> {

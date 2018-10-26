@@ -173,6 +173,9 @@ public class ComponentBodyGeneratorTest {
                 + ")\n"
                 + "static class TestStateContainer implements com.facebook.litho.StateContainer {\n"
                 + "  @com.facebook.litho.annotations.State\n"
+                + "  @com.facebook.litho.annotations.Comparable(\n"
+                + "      type = 3\n"
+                + "  )\n"
                 + "  int arg1;\n"
                 + "}\n");
   }
@@ -187,6 +190,9 @@ public class ComponentBodyGeneratorTest {
                 + "static class TestWithTransitionStateContainer implements com.facebook.litho.StateContainer, "
                 + "com.facebook.litho.ComponentLifecycle.TransitionContainer {\n"
                 + "  @com.facebook.litho.annotations.State\n"
+                + "  @com.facebook.litho.annotations.Comparable(\n"
+                + "      type = 3\n"
+                + "  )\n"
                 + "  int arg1;\n"
                 + "\n"
                 + "  java.util.List<com.facebook.litho.Transition> _transitions = new java.util.ArrayList<>();\n"
@@ -234,6 +240,9 @@ public class ComponentBodyGeneratorTest {
                 + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
                 + "    optional = false\n"
                 + ")\n"
+                + "@com.facebook.litho.annotations.Comparable(\n"
+                + "    type = 3\n"
+                + ")\n"
                 + "boolean arg0 = TestSpec.arg0;\n");
     assertThat(dataHolder.getFieldSpecs().get(1).toString())
         .isEqualTo(
@@ -241,6 +250,9 @@ public class ComponentBodyGeneratorTest {
                 + "@com.facebook.litho.annotations.Prop(\n"
                 + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
                 + "    optional = false\n"
+                + ")\n"
+                + "@com.facebook.litho.annotations.Comparable(\n"
+                + "    type = 10\n"
                 + ")\n"
                 + "com.facebook.litho.Component arg4;\n");
   }
@@ -255,6 +267,9 @@ public class ComponentBodyGeneratorTest {
                 + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
                 + "    optional = false\n"
                 + ")\n"
+                + "@com.facebook.litho.annotations.Comparable(\n"
+                + "    type = 5\n"
+                + ")\n"
                 + "java.util.List<java.lang.Number> numbers;\n");
   }
 
@@ -263,7 +278,12 @@ public class ComponentBodyGeneratorTest {
     TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateTreeProps(mSpecModelDI);
     assertThat(dataHolder.getFieldSpecs()).hasSize(3);
     assertThat(dataHolder.getFieldSpecs().get(0).toString())
-        .isEqualTo("@com.facebook.litho.annotations.TreeProp\nlong arg3;\n");
+        .isEqualTo(
+            "@com.facebook.litho.annotations.TreeProp\n"
+            + "@com.facebook.litho.annotations.Comparable(\n"
+            + "    type = 3\n"
+            + ")\n"
+            + "long arg3;\n");
   }
 
   @Test

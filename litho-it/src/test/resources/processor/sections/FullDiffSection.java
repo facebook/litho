@@ -26,6 +26,7 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
@@ -49,18 +50,23 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   static final Pools.SynchronizedPool<TestEvent> sTestEventPool =
       new Pools.SynchronizedPool<TestEvent>(2);
 
+  @Comparable(type = 14)
   private FullDiffSectionStateContainer mStateContainer;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 5)
   List<T> data;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 13)
   Integer prop1;
 
   @Prop(resType = ResType.NONE, optional = true)
+  @Comparable(type = 13)
   String prop2;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 10)
   Component prop3;
 
   String _service;
@@ -352,7 +358,9 @@ public final class FullDiffSection<T> extends Section implements TestTag {
 
   @VisibleForTesting(otherwise = 2)
   static class FullDiffSectionStateContainer<T> implements StateContainer {
-    @State Object state1;
+    @State
+    @Comparable(type = 13)
+    Object state1;
   }
 
   public static class Builder<T> extends Section.Builder<Builder<T>> {

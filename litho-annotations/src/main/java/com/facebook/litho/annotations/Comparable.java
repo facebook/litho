@@ -64,4 +64,7 @@ public @interface Comparable {
     SECTION
   })
   @interface Type {}
+
+  @Comparable.Type
+  int type();
 }

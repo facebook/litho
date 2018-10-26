@@ -39,6 +39,7 @@ import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
 import com.facebook.litho.TreeProps;
+import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
@@ -67,63 +68,76 @@ import java.util.List;
 public final class TestLayout<S extends View> extends Component implements TestTag {
   static final Pools.SynchronizedPool<TestEvent> sTestEventPool = new Pools.SynchronizedPool<TestEvent>(2);
 
+  @Comparable(type = 14)
   private TestLayoutStateContainer mStateContainer;
 
   private TestLayoutRenderData mPreviousRenderData;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 0)
   float aspectRatio;
 
   @Prop(
       resType = ResType.NONE,
       optional = false
   )
+  @Comparable(type = 10)
   Component child;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 3)
   boolean focusable;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 12)
   EventHandler<ClickEvent> handler;
 
   @Prop(resType = ResType.STRING, optional = true)
+  @Comparable(type = 5)
   List<String> names = TestLayoutSpec.names;
 
   @Prop(
       resType = ResType.NONE,
       optional = false
   )
+  @Comparable(type = 3)
   int prop1;
 
   @Prop(
       resType = ResType.NONE,
       optional = true
   )
+  @Comparable(type = 3)
   boolean prop2 = TestLayoutSpec.prop2;
 
   @Nullable
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 13)
   Object prop3;
 
   @Prop(
       resType = ResType.NONE,
       optional = false
   )
+  @Comparable(type = 2)
   char[] prop4;
 
   @Prop(
       resType = ResType.NONE,
       optional = false
   )
+  @Comparable(type = 3)
   char prop5;
 
   @Prop(
       resType = ResType.NONE,
       optional = false
   )
+  @Comparable(type = 3)
   long prop6;
 
   @TreeProp
+  @Comparable(type = 13)
   TestTreeProp treeProp;
 
   EventHandler testEventHandler;
@@ -544,12 +558,15 @@ public final class TestLayout<S extends View> extends Component implements TestT
   )
   static class TestLayoutStateContainer<S extends View> implements StateContainer {
     @State
+    @Comparable(type = 3)
     long state1;
 
     @State
+    @Comparable(type = 13)
     S state2;
 
     @State
+    @Comparable(type = 3)
     int state3;
   }
 

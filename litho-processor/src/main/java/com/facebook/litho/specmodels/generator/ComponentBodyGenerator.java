@@ -77,7 +77,13 @@ public class ComponentBodyGenerator {
     if (hasState) {
       final ClassName stateContainerClass =
           ClassName.bestGuess(getStateContainerClassName(specModel));
-      builder.addField(stateContainerClass, STATE_CONTAINER_FIELD_NAME, Modifier.PRIVATE);
+      builder.addField(
+          FieldSpec.builder(stateContainerClass, STATE_CONTAINER_FIELD_NAME, Modifier.PRIVATE)
+              .addAnnotation(
+                  AnnotationSpec.builder(Comparable.class)
+                      .addMember("type", "$L", Comparable.STATE_CONTAINER)
+                      .build())
+              .build());
       builder.addMethod(generateStateContainerGetter(specModel.getStateContainerClass()));
     }
 
@@ -145,9 +151,14 @@ public class ComponentBodyGenerator {
     }
 
     for (StateParamModel stateValue : specModel.getStateValues()) {
-      stateContainerClassBuilder.addField(FieldSpec.builder(
-          stateValue.getTypeName(),
-          stateValue.getName()).addAnnotation(State.class).build());
+      stateContainerClassBuilder.addField(
+          FieldSpec.builder(stateValue.getTypeName(), stateValue.getName())
+              .addAnnotation(State.class)
+              .addAnnotation(
+                  AnnotationSpec.builder(Comparable.class)
+                      .addMember("type", "$L", getComparableType(specModel, stateValue))
+                      .build())
+              .build());
     }
 
     if (hasUpdateStateWithTransition) {
@@ -289,6 +300,10 @@ public class ComponentBodyGenerator {
                   AnnotationSpec.builder(Prop.class)
                       .addMember("resType", "$T.$L", ResType.class, prop.getResType())
                       .addMember("optional", "$L", prop.isOptional())
+                      .build())
+              .addAnnotation(
+                  AnnotationSpec.builder(Comparable.class)
+                      .addMember("type", "$L", getComparableType(specModel, prop))
                       .build());
       if (prop.hasDefault(specModel.getPropDefaults())) {
         assignInitializer(fieldBuilder, specModel, prop);
@@ -343,6 +358,10 @@ public class ComponentBodyGenerator {
       typeSpecDataHolder.addField(
           FieldSpec.builder(treeProp.getTypeName(), treeProp.getName())
               .addAnnotation(TreeProp.class)
+              .addAnnotation(
+                  AnnotationSpec.builder(Comparable.class)
+                      .addMember("type", "$L", getComparableType(specModel, treeProp))
+                      .build())
               .build());
     }
 
@@ -766,7 +785,8 @@ public class ComponentBodyGenerator {
     return codeBlock.build();
   }
 
-  private static int getComparableType(SpecModel specModel, MethodParamModel field) {
+  private static @Comparable.Type int getComparableType(
+      SpecModel specModel, MethodParamModel field) {
     if (field.getTypeName().equals(TypeName.FLOAT)) {
       return Comparable.FLOAT;
 
