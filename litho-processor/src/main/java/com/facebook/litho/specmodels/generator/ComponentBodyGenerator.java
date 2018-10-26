@@ -20,6 +20,7 @@ import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOU
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
 
 import android.support.annotation.VisibleForTesting;
+import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
@@ -636,58 +637,76 @@ public class ComponentBodyGenerator {
       String implInstanceName,
       MethodParamModel field) {
     final CodeBlock.Builder codeBlock = CodeBlock.builder();
-
     final String implAccessor = getImplAccessor(specModel, field);
-    if (field.getTypeName().equals(TypeName.FLOAT)) {
-      codeBlock
-          .beginControlFlow(
-              "if (Float.compare($L, $L.$L) != 0)",
-              implAccessor,
-              implInstanceName,
-              implAccessor)
-          .addStatement("return false")
-          .endControlFlow();
-    } else if (field.getTypeName().equals(TypeName.DOUBLE)) {
-      codeBlock
-          .beginControlFlow(
-              "if (Double.compare($L, $L.$L) != 0)",
-              implAccessor,
-              implInstanceName,
-              implAccessor)
-          .addStatement("return false")
-          .endControlFlow();
-    } else if (field.getTypeName() instanceof ArrayTypeName) {
-      codeBlock
-          .beginControlFlow(
-              "if (!$T.equals($L, $L.$L))",
-              Arrays.class,
-              implAccessor,
-              implInstanceName,
-              implAccessor)
-          .addStatement("return false")
-          .endControlFlow();
-    } else if (field.getTypeName().isPrimitive()) {
-      codeBlock
-          .beginControlFlow(
-              "if ($L != $L.$L)",
-              implAccessor,
-              implInstanceName,
-              implAccessor)
-          .addStatement("return false")
-          .endControlFlow();
-    } else if (field.getTypeName().equals(ClassNames.REFERENCE)) {
-      codeBlock
-          .beginControlFlow(
-              "if (Reference.shouldUpdate($L, $L.$L))",
-              implAccessor,
-              implInstanceName,
-              implAccessor)
-          .addStatement("return false")
-          .endControlFlow();
-    } else if (field.getTypeSpec().isSubInterface(ClassNames.COLLECTION)) {
-      final int level =
-          calculateLevelOfComponentInCollections((DeclaredTypeSpec) field.getTypeSpec());
-      if (level > 0) {
+    @Comparable.Type int comparableType = getComparableType(specModel, field);
+
+    switch (comparableType) {
+      case Comparable.FLOAT:
+        codeBlock
+            .beginControlFlow(
+                "if (Float.compare($L, $L.$L) != 0)", implAccessor, implInstanceName, implAccessor)
+            .addStatement("return false")
+            .endControlFlow();
+        break;
+
+      case Comparable.DOUBLE:
+        codeBlock
+            .beginControlFlow(
+                "if (Double.compare($L, $L.$L) != 0)", implAccessor, implInstanceName, implAccessor)
+            .addStatement("return false")
+            .endControlFlow();
+        break;
+
+      case Comparable.ARRAY:
+        codeBlock
+            .beginControlFlow(
+                "if (!$T.equals($L, $L.$L))",
+                Arrays.class,
+                implAccessor,
+                implInstanceName,
+                implAccessor)
+            .addStatement("return false")
+            .endControlFlow();
+        break;
+
+      case Comparable.PRIMITIVE:
+        codeBlock
+            .beginControlFlow("if ($L != $L.$L)", implAccessor, implInstanceName, implAccessor)
+            .addStatement("return false")
+            .endControlFlow();
+        break;
+
+      case Comparable.REFERENCE:
+        codeBlock
+            .beginControlFlow(
+                "if (Reference.shouldUpdate($L, $L.$L))",
+                implAccessor,
+                implInstanceName,
+                implAccessor)
+            .addStatement("return false")
+            .endControlFlow();
+        break;
+
+      case Comparable.COLLECTION_COMPLEVEL_0:
+        codeBlock
+            .beginControlFlow(
+                "if ($L != null ? !$L.equals($L.$L) : $L.$L != null)",
+                implAccessor,
+                implAccessor,
+                implInstanceName,
+                implAccessor,
+                implInstanceName,
+                implAccessor)
+            .addStatement("return false")
+            .endControlFlow();
+        break;
+
+      case Comparable.COLLECTION_COMPLEVEL_1:
+      case Comparable.COLLECTION_COMPLEVEL_2:
+      case Comparable.COLLECTION_COMPLEVEL_3:
+      case Comparable.COLLECTION_COMPLEVEL_4:
+        // N.B. This relies on the IntDef to be in increasing order.
+        int level = comparableType - Comparable.COLLECTION_COMPLEVEL_0;
         codeBlock
             .beginControlFlow("if ($L != null)", implAccessor)
             .beginControlFlow(
@@ -708,47 +727,94 @@ public class ComponentBodyGenerator {
             .nextControlFlow("else if ($L.$L != null)", implInstanceName, implAccessor)
             .addStatement("return false")
             .endControlFlow();
-      } else {
+        break;
+
+      case Comparable.COMPONENT:
+      case Comparable.SECTION:
+      case Comparable.EVENT_HANDLER:
+      case Comparable.EVENT_HANDLER_IN_PARAMETERIZED_TYPE:
         codeBlock
             .beginControlFlow(
-                "if ($L != null ? !$L.equals($L.$L) : $L.$L != null)",
+                "if ($L != null ? !$L.$L($L.$L) : $L.$L != null)",
                 implAccessor,
                 implAccessor,
+                "isEquivalentTo",
                 implInstanceName,
                 implAccessor,
                 implInstanceName,
                 implAccessor)
             .addStatement("return false")
             .endControlFlow();
-      }
-    } else {
-      final String equalMethodName =
-          shouldUseIsEquivalentTo(specModel, field) ? "isEquivalentTo" : "equals";
+        break;
 
-      codeBlock
-          .beginControlFlow(
-              "if ($L != null ? !$L.$L($L.$L) : $L.$L != null)",
-              implAccessor,
-              implAccessor,
-              equalMethodName,
-              implInstanceName,
-              implAccessor,
-              implInstanceName,
-              implAccessor)
-          .addStatement("return false")
-          .endControlFlow();
+      case Comparable.OTHER:
+        codeBlock
+            .beginControlFlow(
+                "if ($L != null ? !$L.$L($L.$L) : $L.$L != null)",
+                implAccessor,
+                implAccessor,
+                "equals",
+                implInstanceName,
+                implAccessor,
+                implInstanceName,
+                implAccessor)
+            .addStatement("return false")
+            .endControlFlow();
+        break;
     }
 
     return codeBlock.build();
   }
 
-  private static boolean shouldUseIsEquivalentTo(SpecModel specModel, MethodParamModel field) {
-    final TypeName typeName = field.getTypeName();
-    return (typeName.equals(ClassNames.COMPONENT)
-        || typeName.equals(ClassNames.EVENT_HANDLER)
-        || (typeName instanceof ParameterizedTypeName
-            && ((ParameterizedTypeName) typeName).rawType.equals(ClassNames.EVENT_HANDLER))
-        || typeName.equals(specModel.getComponentClass()));
+  private static int getComparableType(SpecModel specModel, MethodParamModel field) {
+    if (field.getTypeName().equals(TypeName.FLOAT)) {
+      return Comparable.FLOAT;
+
+    } else if (field.getTypeName().equals(TypeName.DOUBLE)) {
+      return Comparable.DOUBLE;
+
+    } else if (field.getTypeName() instanceof ArrayTypeName) {
+      return Comparable.ARRAY;
+
+    } else if (field.getTypeName().isPrimitive()) {
+      return Comparable.PRIMITIVE;
+
+    } else if (field.getTypeName().equals(ClassNames.REFERENCE)) {
+      return Comparable.REFERENCE;
+
+    } else if (field.getTypeSpec().isSubInterface(ClassNames.COLLECTION)) {
+      final int level =
+          calculateLevelOfComponentInCollections((DeclaredTypeSpec) field.getTypeSpec());
+      switch (level) {
+        case 0:
+          return Comparable.COLLECTION_COMPLEVEL_0;
+        case 1:
+          return Comparable.COLLECTION_COMPLEVEL_1;
+        case 2:
+          return Comparable.COLLECTION_COMPLEVEL_2;
+        case 3:
+          return Comparable.COLLECTION_COMPLEVEL_3;
+        case 4:
+          return Comparable.COLLECTION_COMPLEVEL_4;
+        default:
+          throw new IllegalStateException("Collection Component level not supported.");
+      }
+
+    } else if (field.getTypeName().equals(ClassNames.COMPONENT)) {
+      return Comparable.COMPONENT;
+
+    } else if (field.getTypeName().equals(ClassNames.SECTION)) {
+      return Comparable.SECTION;
+
+    } else if (field.getTypeName().equals(ClassNames.EVENT_HANDLER)) {
+      return Comparable.EVENT_HANDLER;
+
+    } else if (field.getTypeName() instanceof ParameterizedTypeName
+        && ((ParameterizedTypeName) field.getTypeName()).rawType.equals(ClassNames.EVENT_HANDLER)) {
+      return Comparable.EVENT_HANDLER_IN_PARAMETERIZED_TYPE;
+    }
+
+    return Comparable.OTHER;
   }
 
   static String getImplAccessor(SpecModel specModel, MethodParamModel methodParamModel) {
