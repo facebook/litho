@@ -64,7 +64,7 @@ import javax.annotation.Nullable;
  * values for individual props. {@link Component} instances are immutable after creation.
  */
 public abstract class Component extends ComponentLifecycle
-    implements Cloneable, HasEventDispatcher, HasEventTrigger {
+    implements Cloneable, HasEventDispatcher, HasEventTrigger, Equivalence<Component> {
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private int mId = sIdGenerator.getAndIncrement();
@@ -140,13 +140,14 @@ public abstract class Component extends ComponentLifecycle
   /**
    * Compares this component to a different one to check if they are the same
    *
-   * This is used to be able to skip rendering a component again. We avoid using the
-   * {@link Object#equals(Object)} so we can optimize the code better over time since we don't have
-   * to adhere to the contract required for a equals method.
+   * <p>This is used to be able to skip rendering a component again. We avoid using the {@link
+   * Object#equals(Object)} so we can optimize the code better over time since we don't have to
+   * adhere to the contract required for a equals method.
    *
    * @param other the component to compare to
    * @return true if the components are of the same type and have the same props
    */
+  @Override
   public boolean isEquivalentTo(Component other) {
     if (this == other) {
       return true;

@@ -19,6 +19,7 @@ package com.facebook.litho.sections;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pair;
 import com.facebook.litho.ComponentUtils;
+import com.facebook.litho.Equivalence;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTriggersContainer;
@@ -45,7 +46,7 @@ import javax.annotation.Nullable;
  * to set values for individual props. {@link Section} instances are immutable after creation.
  */
 public abstract class Section extends SectionLifecycle
-    implements Cloneable, HasEventDispatcher, HasEventTrigger {
+    implements Cloneable, HasEventDispatcher, HasEventTrigger, Equivalence<Section> {
 
   private Section mParent;
   private boolean mInvalidated;
@@ -304,6 +305,7 @@ public abstract class Section extends SectionLifecycle
    * @param other the component to compare to
    * @return true if the components are of the same type and have the same props
    */
+  @Override
   public boolean isEquivalentTo(Section other) {
     if (this == other) {
       return true;
