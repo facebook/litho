@@ -726,7 +726,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   @Override
-  public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+  public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
     if (ComponentsConfiguration.enableOnErrorHandling && eventHandler.id == ERROR_EVENT_HANDLER_ID) {
       ((Component) this).getErrorHandler().dispatchEvent(((ErrorEvent) eventState));
     }
@@ -805,7 +805,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @return a {@link TransitionSet} specifying how to animate this component to its new layout and
    *     props.
    */
-  protected Transition onCreateTransition(ComponentContext c) {
+  protected @Nullable Transition onCreateTransition(ComponentContext c) {
     return null;
   }
 
@@ -858,7 +858,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return false;
   }
 
-  protected RenderData recordRenderData(RenderData toRecycle) {
+  protected @Nullable RenderData recordRenderData(RenderData toRecycle) {
     return null;
   }
 

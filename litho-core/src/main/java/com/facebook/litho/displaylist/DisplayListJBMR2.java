@@ -18,6 +18,7 @@ package com.facebook.litho.displaylist;
 
 import android.graphics.Canvas;
 import android.view.DisplayList;
+import javax.annotation.Nullable;
 
 /**
  * Implementation of {@link PlatformDisplayList} for Android JellyBeans MR2 and KitKat.
@@ -28,7 +29,7 @@ class DisplayListJBMR2 extends DisplayListJB {
     super(displayList);
   }
 
-  static PlatformDisplayList createDisplayList(String debugName) {
+  static @Nullable PlatformDisplayList createDisplayList(String debugName) {
     final DisplayList displayList = instantiateDisplayList(debugName);
 
     if (displayList == null) {

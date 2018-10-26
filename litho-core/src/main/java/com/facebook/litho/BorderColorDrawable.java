@@ -29,6 +29,7 @@ import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import java.util.Arrays;
+import javax.annotation.Nullable;
 
 /** Drawable that draws border lines with given color, widths and path effect. */
 public class BorderColorDrawable extends Drawable {
@@ -303,7 +304,7 @@ public class BorderColorDrawable extends Drawable {
     canvas.restoreToCount(saveCount);
   }
 
-  private Path path() {
+  private @Nullable Path path() {
     return mDrawBorderWithPath ? mPath : null;
   }
 

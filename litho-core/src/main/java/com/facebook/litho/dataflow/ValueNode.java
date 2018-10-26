@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * A single node in a {@link DataFlowGraph}. Nodes are added to a {@link DataFlowGraph} using
@@ -126,6 +127,7 @@ public abstract class ValueNode {
     return "[" + inputNames + "]";
   }
 
+  @Nullable
   ValueNode getInputUnsafe(String name) {
     if (mInputs == null) {
       return null;

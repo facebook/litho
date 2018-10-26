@@ -96,7 +96,7 @@ public class StateHandler {
     }
   }
 
-  public static StateHandler acquireNewInstance(@Nullable StateHandler stateHandler) {
+  public static @Nullable StateHandler acquireNewInstance(@Nullable StateHandler stateHandler) {
     return ComponentsConfiguration.useStateHandlers
         ? ComponentsPools.acquireStateHandler(stateHandler)
         : null;

@@ -276,6 +276,7 @@ public class ComponentHost extends ViewGroup {
     return mDisappearingItems != null && !mDisappearingItems.isEmpty();
   }
 
+  @Nullable
   List<String> getDisappearingItemKeys() {
     if (!hasDisappearingItems()) {
       return null;
@@ -362,12 +363,12 @@ public class ComponentHost extends ViewGroup {
   }
 
   /**
-   * Hosts are guaranteed to have only one accessible component
-   * in them due to the way the view hierarchy is constructed in {@link LayoutState}.
-   * There might be other non-accessible components in the same hosts such as
-   * a background/foreground component though. This is why this method iterates over
-   * all mount items in order to find the accessible one.
+   * Hosts are guaranteed to have only one accessible component in them due to the way the view
+   * hierarchy is constructed in {@link LayoutState}. There might be other non-accessible components
+   * in the same hosts such as a background/foreground component though. This is why this method
+   * iterates over all mount items in order to find the accessible one.
    */
+  @Nullable
   MountItem getAccessibleMountItem() {
     for (int i = 0; i < getMountItemCount(); i++) {
       MountItem item = getMountItemAt(i);

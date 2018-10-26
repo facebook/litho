@@ -125,6 +125,7 @@ class ViewNodeInfo {
         b + touchExpansionBottom);
   }
 
+  @Nullable
   Rect getExpandedTouchBounds() {
     if (mExpandedTouchBounds == null || mExpandedTouchBounds.isEmpty()) {
       return null;

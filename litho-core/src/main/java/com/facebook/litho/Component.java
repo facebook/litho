@@ -162,7 +162,7 @@ public abstract class Component extends ComponentLifecycle
     return ComponentUtils.hasEquivalentFields(this, other);
   }
 
-  protected StateContainer getStateContainer() {
+  protected @Nullable StateContainer getStateContainer() {
     return null;
   }
 
@@ -1656,7 +1656,7 @@ public abstract class Component extends ComponentLifecycle
     public EventDispatcher getEventDispatcher() {
       return new EventDispatcher() {
         @Override
-        public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+        public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
           if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
             throw new RuntimeException(((ErrorEvent) eventState).exception);
           }

@@ -15,6 +15,8 @@
  */
 package com.facebook.litho;
 
+import javax.annotation.Nullable;
+
 /**
  * A family of output units ({@link LayoutOutput}s or {@link MountItem}s) generated for the same
  * {@link Component}. Used by {@link LayoutState}, {@link MountState} and {@link TransitionManager}
@@ -144,7 +146,7 @@ public class OutputUnitsAffinityGroup<T> {
     return sb.toString();
   }
 
-  private static String typeToString(@OutputUnitType int type) {
+  private static @Nullable String typeToString(@OutputUnitType int type) {
     switch (type) {
       case OutputUnitType.CONTENT:
         return "CONTENT";

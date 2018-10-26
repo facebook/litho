@@ -20,6 +20,7 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView.ScaleType;
+import javax.annotation.Nullable;
 
 /**
  * Static class containing a factory method for creating a matrix to apply to a drawable.
@@ -39,8 +40,8 @@ public final class DrawableMatrix extends Matrix {
   }
 
   /**
-   * Create a matrix to be applied to a drawable which scales the drawable according to its
-   * scale type.
+   * Create a matrix to be applied to a drawable which scales the drawable according to its scale
+   * type.
    *
    * @param d The drawable to create a matrix for
    * @param scaleType A scale type describing how to scale the drawable.
@@ -48,11 +49,8 @@ public final class DrawableMatrix extends Matrix {
    * @param height The height of the drawable's container.
    * @return The scale matrix or null if the drawable does not need to be scaled.
    */
-  public static DrawableMatrix create(
-      final Drawable d,
-      ScaleType scaleType,
-      final int width,
-      final int height) {
+  public static @Nullable DrawableMatrix create(
+      final Drawable d, ScaleType scaleType, final int width, final int height) {
 
     if (scaleType == null) {
       scaleType = ScaleType.FIT_CENTER;

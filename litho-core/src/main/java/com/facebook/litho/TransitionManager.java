@@ -473,7 +473,7 @@ public class TransitionManager {
     }
   }
 
-  private AnimationBinding createAnimationsForTransitionSet(TransitionSet transitionSet) {
+  private @Nullable AnimationBinding createAnimationsForTransitionSet(TransitionSet transitionSet) {
     final ArrayList<Transition> children = transitionSet.getChildren();
     final ArrayList<AnimationBinding> createdAnimations = new ArrayList<>();
     for (int i = 0, size = children.size(); i < size; i++) {
@@ -490,7 +490,7 @@ public class TransitionManager {
     return transitionSet.createAnimation(createdAnimations);
   }
 
-  private AnimationBinding createAnimationsForTransitionUnit(TransitionUnit transition) {
+  private @Nullable AnimationBinding createAnimationsForTransitionUnit(TransitionUnit transition) {
     final Transition.AnimationTarget animationTarget = transition.getAnimationTarget();
     final ArrayList<AnimationBinding> createdAnimations = new ArrayList<>();
     switch (animationTarget.componentTarget.componentTargetType) {

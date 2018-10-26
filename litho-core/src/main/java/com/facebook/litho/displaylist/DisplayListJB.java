@@ -19,6 +19,7 @@ package com.facebook.litho.displaylist;
 import android.view.DisplayList;
 import android.view.HardwareCanvas;
 import java.lang.reflect.Constructor;
+import javax.annotation.Nullable;
 
 /**
  * Implementation of {@link PlatformDisplayList} for Android JellyBeans.
@@ -45,7 +46,7 @@ class DisplayListJB implements PlatformDisplayList {
     sInitialized = true;
   }
 
-  static PlatformDisplayList createDisplayList(String debugName) {
+  static @Nullable PlatformDisplayList createDisplayList(String debugName) {
     DisplayList displayList = instantiateDisplayList(debugName);
     if (displayList == null) {
       return null;
@@ -54,7 +55,7 @@ class DisplayListJB implements PlatformDisplayList {
     return new DisplayListJB(displayList);
   }
 
-  static DisplayList instantiateDisplayList(String debugName) {
+  static @Nullable DisplayList instantiateDisplayList(String debugName) {
     try {
       ensureInitialized();
 

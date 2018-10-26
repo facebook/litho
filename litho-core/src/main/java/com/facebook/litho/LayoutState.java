@@ -1937,6 +1937,7 @@ class LayoutState {
     return mTestOutputs == null ? 0 : mTestOutputs.size();
   }
 
+  @Nullable
   TestOutput getTestOutputAt(int index) {
     return mTestOutputs == null ? null : mTestOutputs.get(index);
   }
@@ -2240,7 +2241,7 @@ class LayoutState {
     mWorkingRangeContainer.dispatchOnExitedRangeIfNeeded(stateHandler);
   }
 
-  private static String getTransitionKeyForNode(InternalNode node) {
+  private static @Nullable String getTransitionKeyForNode(InternalNode node) {
     if (node.hasTransitionKey()) {
       return node.getTransitionKey();
     }

@@ -23,6 +23,7 @@ import android.view.DisplayListCanvas;
 import android.view.RenderNode;
 import com.facebook.infer.annotation.OkToExtend;
 import java.lang.reflect.Method;
+import javax.annotation.Nullable;
 
 /** Implementation of {@link PlatformDisplayList} for Android Marshmallow. */
 @OkToExtend
@@ -49,7 +50,7 @@ public class DisplayListMarshmallow implements PlatformDisplayList {
     sInitialized = true;
   }
 
-  static PlatformDisplayList createDisplayList(String debugName) {
+  static @Nullable PlatformDisplayList createDisplayList(String debugName) {
     try {
       ensureInitialized();
       if (sInitialized) {

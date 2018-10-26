@@ -1287,6 +1287,7 @@ class InternalNode implements ComponentLayout {
     return mYogaNode.getStyleDirection();
   }
 
+  @Nullable
   InternalNode getChildAt(int index) {
     if (mYogaNode.getChildAt(index) == null) {
       return null;
@@ -1303,6 +1304,7 @@ class InternalNode implements ComponentLayout {
     return -1;
   }
 
+  @Nullable
   InternalNode getParent() {
     if (mYogaNode == null || mYogaNode.getOwner() == null) {
       return null;
@@ -1357,6 +1359,7 @@ class InternalNode implements ComponentLayout {
     return mComponents;
   }
 
+  @Nullable
   Component getRootComponent() {
     return mComponents.size() == 0 ? null : mComponents.get(0);
   }

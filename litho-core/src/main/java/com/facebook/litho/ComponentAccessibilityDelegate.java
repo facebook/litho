@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Class that is used to set up accessibility for {@link ComponentHost}s.
@@ -199,13 +200,12 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   }
 
   /**
-   * Returns a {AccessibilityNodeProviderCompat} if the host contains a component
-   * that implements custom accessibility logic. Returns {@code NULL} otherwise.
-   * Components with accessibility content are automatically wrapped in hosts by
-   * {@link LayoutState}.
+   * Returns a {AccessibilityNodeProviderCompat} if the host contains a component that implements
+   * custom accessibility logic. Returns {@code NULL} otherwise. Components with accessibility
+   * content are automatically wrapped in hosts by {@link LayoutState}.
    */
   @Override
-  public AccessibilityNodeProviderCompat getAccessibilityNodeProvider(View host) {
+  public @Nullable AccessibilityNodeProviderCompat getAccessibilityNodeProvider(View host) {
     final MountItem mountItem = getAccessibleMountItem(mView);
     if (mountItem != null && mountItem.getComponent().implementsExtraAccessibilityNodes()) {
       return super.getAccessibilityNodeProvider(host);
@@ -214,7 +214,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     return null;
   }
 
-  private static MountItem getAccessibleMountItem(View view) {
+  private static @Nullable MountItem getAccessibleMountItem(View view) {
     if (!(view instanceof ComponentHost)) {
       return null;
     }
