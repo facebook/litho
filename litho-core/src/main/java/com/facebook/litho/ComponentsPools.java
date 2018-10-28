@@ -33,6 +33,7 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.SparseArrayCompat;
 import android.util.SparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.internal.ArraySet;
 import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaDirection;
@@ -150,7 +151,7 @@ public class ComponentsPools {
   static boolean sIsManualCallbacks;
 
   static LayoutState acquireLayoutState(ComponentContext context) {
-    LayoutState state = sLayoutStatePool.acquire();
+    LayoutState state = ComponentsConfiguration.disablePools ? null : sLayoutStatePool.acquire();
     if (state == null) {
       state = new LayoutState();
     }
@@ -161,7 +162,7 @@ public class ComponentsPools {
 
   static YogaNode acquireYogaNode() {
     initYogaConfigIfNecessary();
-    YogaNode node = sYogaNodePool.acquire();
+    YogaNode node = ComponentsConfiguration.disablePools ? null : sYogaNodePool.acquire();
     if (node == null) {
       node =
           PoolsConfig.sYogaNodeFactory != null
@@ -173,7 +174,7 @@ public class ComponentsPools {
   }
 
   static InternalNode acquireInternalNode(ComponentContext componentContext) {
-    InternalNode node = sInternalNodePool.acquire();
+    InternalNode node = ComponentsConfiguration.disablePools ? null : sInternalNodePool.acquire();
     if (node == null) {
       node =
           PoolsConfig.sInternalNodeFactory != null
@@ -186,7 +187,7 @@ public class ComponentsPools {
   }
 
   static NodeInfo acquireNodeInfo() {
-    NodeInfo nodeInfo = sNodeInfoPool.acquire();
+    NodeInfo nodeInfo = ComponentsConfiguration.disablePools ? null : sNodeInfoPool.acquire();
     if (nodeInfo == null) {
       nodeInfo = new NodeInfo();
     }
@@ -195,7 +196,8 @@ public class ComponentsPools {
   }
 
   static ViewNodeInfo acquireViewNodeInfo() {
-    ViewNodeInfo viewNodeInfo = sViewNodeInfoPool.acquire();
+    ViewNodeInfo viewNodeInfo =
+        ComponentsConfiguration.disablePools ? null : sViewNodeInfoPool.acquire();
     if (viewNodeInfo == null) {
       viewNodeInfo = new ViewNodeInfo();
     }
@@ -205,7 +207,7 @@ public class ComponentsPools {
 
   static MountItem acquireRootHostMountItem(
       Component component, ComponentHost host, Object content) {
-    MountItem item = sMountItemPool.acquire();
+    MountItem item = ComponentsConfiguration.disablePools ? null : sMountItemPool.acquire();
     if (item == null) {
       item = new MountItem();
     }
@@ -227,7 +229,7 @@ public class ComponentsPools {
 
   static MountItem acquireMountItem(
       Component component, ComponentHost host, Object content, LayoutOutput layoutOutput) {
-    MountItem item = sMountItemPool.acquire();
+    MountItem item = ComponentsConfiguration.disablePools ? null : sMountItemPool.acquire();
     if (item == null) {
       item = new MountItem();
     }
@@ -237,7 +239,7 @@ public class ComponentsPools {
   }
 
   static LayoutOutput acquireLayoutOutput() {
-    LayoutOutput output = sLayoutOutputPool.acquire();
+    LayoutOutput output = ComponentsConfiguration.disablePools ? null : sLayoutOutputPool.acquire();
     if (output == null) {
       output = new LayoutOutput();
     }
@@ -247,7 +249,8 @@ public class ComponentsPools {
   }
 
   static VisibilityOutput acquireVisibilityOutput() {
-    VisibilityOutput output = sVisibilityOutputPool.acquire();
+    VisibilityOutput output =
+        ComponentsConfiguration.disablePools ? null : sVisibilityOutputPool.acquire();
     if (output == null) {
       output = new VisibilityOutput();
     }
@@ -260,7 +263,8 @@ public class ComponentsPools {
       EventHandler<InvisibleEvent> invisibleHandler,
       EventHandler<UnfocusedVisibleEvent> unfocusedHandler,
       @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
-    VisibilityItem item = sVisibilityItemPool.acquire();
+    VisibilityItem item =
+        ComponentsConfiguration.disablePools ? null : sVisibilityItemPool.acquire();
     if (item == null) {
       item = new VisibilityItem();
     }
@@ -277,7 +281,7 @@ public class ComponentsPools {
     if (sTestOutputPool == null) {
       sTestOutputPool = new RecyclePool<>("TestOutput", 64, true);
     }
-    TestOutput output = sTestOutputPool.acquire();
+    TestOutput output = ComponentsConfiguration.disablePools ? null : sTestOutputPool.acquire();
     if (output == null) {
       output = new TestOutput();
     }
@@ -289,7 +293,7 @@ public class ComponentsPools {
     if (sTestItemPool == null) {
       sTestItemPool = new RecyclePool<>("TestItem", 64, true);
     }
-    TestItem item = sTestItemPool.acquire();
+    TestItem item = ComponentsConfiguration.disablePools ? null : sTestItemPool.acquire();
     if (item == null) {
       item = new TestItem();
     }
@@ -299,7 +303,7 @@ public class ComponentsPools {
   }
 
   static Output acquireOutput() {
-    Output output = sOutputPool.acquire();
+    Output output = ComponentsConfiguration.disablePools ? null : sOutputPool.acquire();
     if (output == null) {
       output = new Output();
     }
@@ -308,7 +312,7 @@ public class ComponentsPools {
   }
 
   static DiffNode acquireDiffNode() {
-    DiffNode node = sDiffNodePool.acquire();
+    DiffNode node = ComponentsConfiguration.disablePools ? null : sDiffNodePool.acquire();
     if (node == null) {
       node = new DiffNode();
     }
@@ -317,7 +321,7 @@ public class ComponentsPools {
   }
 
   public static <T> Diff acquireDiff(T previous, T next) {
-    Diff diff = sDiffPool.acquire();
+    Diff diff = ComponentsConfiguration.disablePools ? null : sDiffPool.acquire();
     if (diff == null) {
       diff = new Diff();
     }
@@ -327,7 +331,8 @@ public class ComponentsPools {
   }
 
   static ComponentTree.Builder acquireComponentTreeBuilder(ComponentContext c, Component root) {
-    ComponentTree.Builder componentTreeBuilder = sComponentTreeBuilderPool.acquire();
+    ComponentTree.Builder componentTreeBuilder =
+        ComponentsConfiguration.disablePools ? null : sComponentTreeBuilderPool.acquire();
     if (componentTreeBuilder == null) {
       componentTreeBuilder = new ComponentTree.Builder();
     }
@@ -338,7 +343,8 @@ public class ComponentsPools {
   }
 
   static StateHandler acquireStateHandler(@Nullable StateHandler fromStateHandler) {
-    StateHandler stateHandler = sStateHandlerPool.acquire();
+    StateHandler stateHandler =
+        ComponentsConfiguration.disablePools ? null : sStateHandlerPool.acquire();
     if (stateHandler == null) {
       stateHandler = new StateHandler();
     }
@@ -355,12 +361,18 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   static void release(ComponentTree.Builder componentTreeBuilder) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     componentTreeBuilder.release();
     sComponentTreeBuilderPool.release(componentTreeBuilder);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(StateHandler stateHandler) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     stateHandler.release();
     sStateHandlerPool.release(stateHandler);
   }
@@ -372,6 +384,9 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   static void release(YogaNode node) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     node.reset();
     sYogaNodePool.release(node);
   }
@@ -393,6 +408,9 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   static void release(Context context, MountItem item) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     item.release(context);
     sMountItemPool.release(item);
   }
@@ -404,42 +422,63 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   static void release(VisibilityOutput output) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     output.release();
     sVisibilityOutputPool.release(output);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(VisibilityItem item) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     item.release();
     sVisibilityItemPool.release(item);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(TestOutput testOutput) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     testOutput.release();
     sTestOutputPool.release(testOutput);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(TestItem testItem) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     testItem.release();
     sTestItemPool.release(testItem);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(DiffNode node) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     node.release();
     sDiffNodePool.release(node);
   }
 
   @ThreadSafe(enableChecks = false)
   static void release(Output output) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     output.release();
     sOutputPool.release(output);
   }
 
   @ThreadSafe(enableChecks = false)
   public static void release(Diff diff) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     diff.release();
     sDiffPool.release(diff);
   }
@@ -548,7 +587,7 @@ public class ComponentsPools {
   }
 
   static RectF acquireRectF() {
-    RectF rect = sRectFPool.acquire();
+    RectF rect = ComponentsConfiguration.disablePools ? null : sRectFPool.acquire();
     if (rect == null) {
       rect = new RectF();
     }
@@ -558,12 +597,15 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   static void releaseRectF(RectF rect) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     rect.setEmpty();
     sRectFPool.release(rect);
   }
 
   static Rect acquireRect() {
-    Rect rect = sRectPool.acquire();
+    Rect rect = ComponentsConfiguration.disablePools ? null : sRectPool.acquire();
     if (rect == null) {
       rect = new Rect();
     }
@@ -573,12 +615,15 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   static void release(Rect rect) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     rect.setEmpty();
     sRectPool.release(rect);
   }
 
   static Edges acquireEdges() {
-    Edges spacing = sEdgesPool.acquire();
+    Edges spacing = ComponentsConfiguration.disablePools ? null : sEdgesPool.acquire();
     if (spacing == null) {
       spacing = new Edges();
     }
@@ -588,6 +633,9 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   static void release(Edges edges) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     edges.reset();
     sEdgesPool.release(edges);
   }
@@ -722,7 +770,8 @@ public class ComponentsPools {
     // view invalidations.
     final Drawable.Callback callback = content.getCallback();
 
-    DisplayListDrawable displayListDrawable = sDisplayListDrawablePool.acquire();
+    DisplayListDrawable displayListDrawable =
+        ComponentsConfiguration.disablePools ? null : sDisplayListDrawablePool.acquire();
     if (displayListDrawable == null) {
       displayListDrawable = new DisplayListDrawable(content);
     } else {
@@ -735,15 +784,19 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   public static void release(DisplayListDrawable displayListDrawable) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     displayListDrawable.release();
     sDisplayListDrawablePool.release(displayListDrawable);
   }
 
   public static BorderColorDrawable acquireBorderColorDrawable() {
-    if (sBorderColorDrawablePool == null) {
+    if (sBorderColorDrawablePool == null && !ComponentsConfiguration.disablePools) {
       sBorderColorDrawablePool = new RecyclePool<>("BorderColorDrawable", 10, true);
     }
-    BorderColorDrawable drawable = sBorderColorDrawablePool.acquire();
+    BorderColorDrawable drawable =
+        ComponentsConfiguration.disablePools ? null : sBorderColorDrawablePool.acquire();
     if (drawable == null) {
       drawable = new BorderColorDrawable();
     }
@@ -753,12 +806,15 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   public static void release(BorderColorDrawable borderColorDrawable) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     borderColorDrawable.reset();
     sBorderColorDrawablePool.release(borderColorDrawable);
   }
 
   public static <E> ArraySet<E> acquireArraySet() {
-    ArraySet<E> set = sArraySetPool.acquire();
+    ArraySet<E> set = ComponentsConfiguration.disablePools ? null : sArraySetPool.acquire();
     if (set == null) {
       set = new ArraySet<>();
     }
@@ -767,12 +823,15 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   public static void release(ArraySet set) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     set.clear();
     sArraySetPool.release(set);
   }
 
   public static <E> ArrayDeque<E> acquireArrayDeque() {
-    ArrayDeque<E> deque = sArrayDequePool.acquire();
+    ArrayDeque<E> deque = ComponentsConfiguration.disablePools ? null : sArrayDequePool.acquire();
     if (deque == null) {
       deque = new ArrayDeque<>();
     }
@@ -781,12 +840,16 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   public static void release(ArrayDeque deque) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     deque.clear();
     sArrayDequePool.release(deque);
   }
 
   public static RenderState acquireRenderState() {
-    RenderState renderState = sRenderStatePool.acquire();
+    RenderState renderState =
+        ComponentsConfiguration.disablePools ? null : sRenderStatePool.acquire();
     if (renderState == null) {
       renderState = new RenderState();
     }
@@ -795,12 +858,16 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   public static void release(RenderState renderState) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     renderState.reset();
     sRenderStatePool.release(renderState);
   }
 
   public static ArrayList<LithoView> acquireLithoViewArrayList() {
-    ArrayList<LithoView> arrayList = sLithoViewArrayListPool.acquire();
+    ArrayList<LithoView> arrayList =
+        ComponentsConfiguration.disablePools ? null : sLithoViewArrayListPool.acquire();
     if (arrayList == null) {
       arrayList = new ArrayList<>(5);
     }
@@ -810,6 +877,9 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   public static void release(ArrayList<LithoView> arrayList) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     arrayList.clear();
     sLithoViewArrayListPool.release(arrayList);
   }

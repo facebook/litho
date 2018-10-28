@@ -368,7 +368,7 @@ public abstract class Component extends ComponentLifecycle
     mLastMeasuredLayout = null;
   }
 
-  void release() {
+  void reset() {
     mIsLayoutStarted = false;
   }
 

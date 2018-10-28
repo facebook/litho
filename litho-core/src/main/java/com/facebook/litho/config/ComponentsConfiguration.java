@@ -229,4 +229,6 @@ public class ComponentsConfiguration {
    * raised to the thread priority of the UI thread.
    */
   public static boolean inheritPriorityFromUiThread = false;
+
+  public static boolean disablePools = false;
 }

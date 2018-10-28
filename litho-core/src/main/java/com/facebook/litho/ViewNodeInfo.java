@@ -21,6 +21,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.view.View;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaDirection;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -225,6 +226,10 @@ class ViewNodeInfo {
     if (count < 0) {
       throw new IllegalStateException("Trying to release a recycled ViewNodeInfo.");
     } else if (count > 0) {
+      return;
+    }
+
+    if (ComponentsConfiguration.disablePools) {
       return;
     }
 

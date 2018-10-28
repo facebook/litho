@@ -21,6 +21,7 @@ import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUT
 import android.graphics.Rect;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -252,9 +253,14 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     }
 
     if (mComponent != null) {
-      mComponent.release();
+      mComponent.reset();
       mComponent = null;
     }
+
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
+
     if (mNodeInfo != null) {
       mNodeInfo.release();
       mNodeInfo = null;

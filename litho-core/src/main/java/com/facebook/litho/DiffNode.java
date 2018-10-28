@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -149,6 +150,10 @@ class DiffNode implements Cloneable {
   }
 
   void release() {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
+
     mComponent = null;
 
     mContent = null;

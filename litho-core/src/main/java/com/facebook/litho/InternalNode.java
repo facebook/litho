@@ -1738,6 +1738,10 @@ class InternalNode implements ComponentLayout {
    * facilitate recycling.
    */
   void release() {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
+
     if (mYogaNode != null) {
       if (mYogaNode.getOwner() != null || mYogaNode.getChildCount() > 0) {
         throw new IllegalStateException("You should not free an attached Internalnode");

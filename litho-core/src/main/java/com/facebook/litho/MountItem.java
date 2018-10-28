@@ -23,6 +23,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.view.View;
+import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
  * Represents a mounted UI element in a {@link MountState}. It holds a
@@ -254,6 +255,10 @@ class MountItem {
 
   void release(Context context) {
     ComponentsPools.release(context, mComponent, mBaseContent);
+
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
 
     releaseNodeInfos();
 

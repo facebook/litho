@@ -27,6 +27,7 @@ import com.facebook.litho.Output;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnDataBound;
@@ -160,6 +161,9 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
   }
 
   protected void releaseDiff(Diff diff) {
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
     ComponentsPools.release(diff);
   }
 

@@ -21,6 +21,7 @@ import android.support.annotation.Nullable;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -779,6 +780,10 @@ class NodeInfo {
     if (count < 0) {
       throw new IllegalStateException("Trying to release a recycled NodeInfo.");
     } else if (count > 0) {
+      return;
+    }
+
+    if (ComponentsConfiguration.disablePools) {
       return;
     }
 

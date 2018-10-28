@@ -1983,6 +1983,11 @@ class LayoutState {
     if (count < 0) {
       throw new IllegalStateException("Trying to releaseRef a recycled LayoutState");
     }
+
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
+
     if (count == 0) {
       mContext = null;
       mComponent = null;
