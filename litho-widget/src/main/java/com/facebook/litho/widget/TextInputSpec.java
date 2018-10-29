@@ -59,7 +59,6 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 
@@ -146,7 +145,8 @@ class TextInputSpec {
       Size size,
       @Prop(optional = true, resType = ResType.DRAWABLE) Drawable inputBackground,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
-      @Prop(optional = true) Typeface typeface) {
+      @Prop(optional = true) Typeface typeface,
+      @State AtomicReference<CharSequence> savedText) {
 
     // For width we always take all available space, or collapse to 0 if unspecified.
     if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
@@ -317,7 +317,6 @@ class TextInputSpec {
   static void onMount(
       final ComponentContext c,
       EditTextWithEventHandlers editText,
-      @Prop(optional = true, resType = ResType.STRING) CharSequence initialText,
       @Prop(optional = true, resType = ResType.STRING) CharSequence hint,
       @Prop(optional = true, resType = ResType.DRAWABLE) Drawable inputBackground,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowRadius,
@@ -335,10 +334,10 @@ class TextInputSpec {
       @Prop(optional = true) int imeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @State AtomicReference<EditTextWithEventHandlers> mountedView,
-      @State AtomicBoolean configuredInitialText,
-      @State AtomicReference<String> savedText) {
+      @State AtomicReference<CharSequence> savedText) {
     mountedView.set(editText);
 
+    // TODO: T33972982 For muultiline add EditorInfo.TYPE_CLASS_TEXT
     editText.setInputType(inputType & ~EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
 
     // Needs to be set before the text so it would apply to the current text
@@ -348,16 +347,11 @@ class TextInputSpec {
       editText.setFilters(NO_FILTERS);
     }
 
-    // Set initialText on the EditText during the very first mount...
-    if (!configuredInitialText.getAndSet(true)) {
-      editText.setText(initialText);
-    } else {
-      // And restore any saved text on first mount after unmount.
-      String s = savedText.getAndSet(null);
-      String currentText = editText.getText().toString();
-      if (s != null && !equals(currentText, s)) {
-        editText.setText(s);
-      }
+    // Set initialText on the EditText during the very first mount after initial state creation
+    // And restore any saved text on first mount after unmount.
+    CharSequence s = savedText.getAndSet(null);
+    if (s != null && !equals(editText.getText().toString(), s.toString())) {
+      editText.setText(s);
     }
     editText.setHint(hint);
     editText.setMinLines(1);
@@ -399,12 +393,12 @@ class TextInputSpec {
       ComponentContext c,
       EditTextWithEventHandlers editText,
       @State AtomicReference<EditTextWithEventHandlers> mountedView,
-      @State AtomicReference<String> savedText) {
+      @State AtomicReference<CharSequence> savedText) {
     editText.setTextChangedEventHandler(null);
     editText.setSelectionChangedEventHandler(null);
     editText.setKeyUpEventHandler(null);
     editText.setEditorActionEventHandler(null);
-    savedText.set(editText.getText().toString());
+    savedText.set(editText.getText());
     mountedView.set(null);
   }
 
@@ -460,11 +454,10 @@ class TextInputSpec {
   static void onCreateInitialState(
       final ComponentContext c,
       StateValue<AtomicReference<EditTextWithEventHandlers>> mountedView,
-      StateValue<AtomicBoolean> configuredInitialText,
-      StateValue<AtomicReference<String>> savedText) {
+      StateValue<AtomicReference<CharSequence>> savedText,
+      @Prop(optional = true, resType = ResType.STRING) CharSequence initialText) {
     mountedView.set(new AtomicReference<EditTextWithEventHandlers>());
-    configuredInitialText.set(new AtomicBoolean());
-    savedText.set(new AtomicReference<String>());
+    savedText.set(new AtomicReference<>(initialText));
   }
 
   static class EditTextWithEventHandlers extends EditText
