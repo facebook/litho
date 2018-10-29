@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
 import static android.view.View.TEXT_ALIGNMENT_GRAVITY;
@@ -120,6 +121,8 @@ class TextInputSpec {
   @PropDefault
   protected static final ColorStateList hintColorStateList = ColorStateList.valueOf(Color.LTGRAY);
 
+  @PropDefault static final CharSequence hint = "";
+  @PropDefault static final CharSequence initialText = "";
   @PropDefault protected static final int shadowColor = Color.GRAY;
   @PropDefault protected static final int textSize = 13;
   @PropDefault protected static final Typeface typeface = Typeface.DEFAULT;
@@ -136,6 +139,17 @@ class TextInputSpec {
   /** UI thread only; used in OnMount. */
   private static final InputFilter[] NO_FILTERS = new InputFilter[0];
 
+  @OnCreateInitialState
+  static void onCreateInitialState(
+      final ComponentContext c,
+      StateValue<AtomicReference<EditTextWithEventHandlers>> mountedView,
+      StateValue<AtomicReference<CharSequence>> savedText,
+      @Prop(optional = true, resType = ResType.STRING) CharSequence initialText) {
+    mountedView.set(new AtomicReference<EditTextWithEventHandlers>());
+
+    savedText.set(new AtomicReference<>(initialText));
+  }
+
   @OnMeasure
   static void onMeasure(
       ComponentContext c,
@@ -143,10 +157,44 @@ class TextInputSpec {
       int widthSpec,
       int heightSpec,
       Size size,
+      @Prop(optional = true, resType = ResType.STRING) CharSequence hint,
       @Prop(optional = true, resType = ResType.DRAWABLE) Drawable inputBackground,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowRadius,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowDx,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowDy,
+      @Prop(optional = true, resType = ResType.COLOR) int shadowColor,
+      @Prop(optional = true) ColorStateList textColorStateList,
+      @Prop(optional = true) ColorStateList hintColorStateList,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true) Typeface typeface,
+      @Prop(optional = true) int textAlignment,
+      @Prop(optional = true) int gravity,
+      @Prop(optional = true) boolean editable,
+      @Prop(optional = true) int inputType,
+      @Prop(optional = true) int imeOptions,
+      @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @State AtomicReference<CharSequence> savedText) {
+
+    EditText forMeasure = new EditText(c);
+    setParams(
+        forMeasure,
+        hint,
+        getBackgroundOrDefault(c, inputBackground),
+        shadowRadius,
+        shadowDx,
+        shadowDy,
+        shadowColor,
+        textColorStateList,
+        hintColorStateList,
+        textSize,
+        typeface,
+        textAlignment,
+        gravity,
+        editable,
+        inputType,
+        imeOptions,
+        inputFilters,
+        savedText.get());
 
     // For width we always take all available space, or collapse to 0 if unspecified.
     if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
@@ -162,8 +210,10 @@ class TextInputSpec {
       rect = new Rect();
       sMeasureRect.set(rect);
     }
-    // We can ignore the return value of getPadding, since it zeros rect if there's no padding.
-    background.getPadding(rect);
+    if (background != null) {
+      // We can ignore the return value of getPadding, since it zeros rect if there's no padding.
+      background.getPadding(rect);
+    }
 
     Paint paint = sPaint.get();
     if (paint == null) {
@@ -173,6 +223,74 @@ class TextInputSpec {
     paint.setTextSize(textSize);
     paint.setTypeface(typeface);
     size.height = (int) Math.ceil(paint.getFontMetrics(null)) + rect.top + rect.bottom;
+  }
+
+  private static void setParams(
+      EditText editText,
+      @Nullable CharSequence hint,
+      @Nullable Drawable background,
+      float shadowRadius,
+      float shadowDx,
+      float shadowDy,
+      int shadowColor,
+      ColorStateList textColorStateList,
+      ColorStateList hintColorStateList,
+      int textSize,
+      Typeface typeface,
+      int textAlignment,
+      int gravity,
+      boolean editable,
+      int inputType,
+      int imeOptions,
+      @Nullable List<InputFilter> inputFilters,
+      @Nullable CharSequence text) {
+
+    // TODO: T33972982 For multiline add EditorInfo.TYPE_CLASS_TEXT
+    editText.setInputType(inputType & ~EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
+    editText.setLines(1);
+    //      if ((mInputType & EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE)
+    //          == EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE) {
+    //        editText.setInputType(mInputType | EditorInfo.TYPE_CLASS_TEXT);
+    //      }
+
+    // Needs to be set before the text so it would apply to the current text
+    if (inputFilters != null) {
+      editText.setFilters(inputFilters.toArray(new InputFilter[inputFilters.size()]));
+    } else {
+      editText.setFilters(NO_FILTERS);
+    }
+    editText.setHint(hint);
+
+    if (SDK_INT < JELLY_BEAN) {
+      editText.setBackgroundDrawable(background);
+    } else {
+      editText.setBackground(background);
+    }
+    // From the docs for setBackground:
+    // "If the background has padding, this View's padding is set to the background's padding.
+    // However, when a background is removed, this View's padding isn't touched. If setting the
+    // padding is desired, please use setPadding."
+    if (background == null || !background.getPadding(sBackgroundPaddingRect)) {
+      editText.setPadding(0, 0, 0, 0);
+    }
+    editText.setShadowLayer(shadowRadius, shadowDx, shadowDy, shadowColor);
+    editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+    editText.setTypeface(typeface, 0);
+    editText.setGravity(gravity);
+    editText.setImeOptions(imeOptions);
+    editText.setFocusable(editable);
+    editText.setFocusableInTouchMode(editable);
+    editText.setClickable(editable);
+    editText.setLongClickable(editable);
+    editText.setCursorVisible(editable);
+    editText.setTextColor(textColorStateList);
+    editText.setHintTextColor(hintColorStateList);
+    if (SDK_INT >= JELLY_BEAN_MR1) {
+      editText.setTextAlignment(textAlignment);
+    }
+    if (text != null && !TextInputSpec.equals(editText.getText().toString(), text.toString())) {
+      editText.setText(text);
+    }
   }
 
   @ShouldUpdate
@@ -333,54 +451,30 @@ class TextInputSpec {
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int imeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
-      @State AtomicReference<EditTextWithEventHandlers> mountedView,
-      @State AtomicReference<CharSequence> savedText) {
+      @State AtomicReference<CharSequence> savedText,
+      @State AtomicReference<EditTextWithEventHandlers> mountedView) {
     mountedView.set(editText);
 
-    // TODO: T33972982 For muultiline add EditorInfo.TYPE_CLASS_TEXT
-    editText.setInputType(inputType & ~EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
-
-    // Needs to be set before the text so it would apply to the current text
-    if (inputFilters != null) {
-      editText.setFilters(inputFilters.toArray(new InputFilter[inputFilters.size()]));
-    } else {
-      editText.setFilters(NO_FILTERS);
-    }
-
-    // Set initialText on the EditText during the very first mount after initial state creation
-    // And restore any saved text on first mount after unmount.
-    CharSequence s = savedText.getAndSet(null);
-    if (s != null && !equals(editText.getText().toString(), s.toString())) {
-      editText.setText(s);
-    }
-    editText.setHint(hint);
-    editText.setMinLines(1);
-    editText.setMaxLines(1);
-    final Drawable background = getBackgroundOrDefault(c, inputBackground);
-    editText.setBackgroundDrawable(background);
-    // From the docs for setBackground:
-    // "If the background has padding, this View's padding is set to the background's padding.
-    // However, when a background is removed, this View's padding isn't touched. If setting the
-    // padding is desired, please use setPadding."
-    if (background == null || !background.getPadding(sBackgroundPaddingRect)) {
-      editText.setPadding(0, 0, 0, 0);
-    }
-    editText.setShadowLayer(shadowRadius, shadowDx, shadowDy, shadowColor);
-    editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-    editText.setTypeface(typeface, 0);
-    editText.setGravity(gravity);
-    editText.setImeOptions(imeOptions);
-    editText.setFocusable(editable);
-    editText.setFocusableInTouchMode(editable);
-    editText.setClickable(editable);
-    editText.setLongClickable(editable);
-    editText.setCursorVisible(editable);
-    editText.setTextColor(textColorStateList);
-    editText.setHintTextColor(hintColorStateList);
-    if (SDK_INT >= JELLY_BEAN_MR1) {
-      editText.setTextAlignment(textAlignment);
-    }
-    editText.setGravity(gravity);
+    setParams(
+        editText,
+        hint,
+        getBackgroundOrDefault(c, inputBackground),
+        shadowRadius,
+        shadowDx,
+        shadowDy,
+        shadowColor,
+        textColorStateList,
+        hintColorStateList,
+        textSize,
+        typeface,
+        textAlignment,
+        gravity,
+        editable,
+        inputType,
+        imeOptions,
+        inputFilters,
+        savedText.getAndSet(
+            null) /* Saved text would be either from the initial or restored on first mount after unmount. */);
 
     editText.setTextChangedEventHandler(TextInput.getTextChangedEventHandler(c));
     editText.setSelectionChangedEventHandler(TextInput.getSelectionChangedEventHandler(c));
@@ -402,6 +496,7 @@ class TextInputSpec {
     mountedView.set(null);
   }
 
+  @Nullable
   static Drawable getBackgroundOrDefault(ComponentContext c, Drawable specifiedBackground) {
     if (specifiedBackground != null) {
       return specifiedBackground;
@@ -448,16 +543,6 @@ class TextInputSpec {
     if (view != null) {
       view.setText(text);
     }
-  }
-
-  @OnCreateInitialState
-  static void onCreateInitialState(
-      final ComponentContext c,
-      StateValue<AtomicReference<EditTextWithEventHandlers>> mountedView,
-      StateValue<AtomicReference<CharSequence>> savedText,
-      @Prop(optional = true, resType = ResType.STRING) CharSequence initialText) {
-    mountedView.set(new AtomicReference<EditTextWithEventHandlers>());
-    savedText.set(new AtomicReference<>(initialText));
   }
 
   static class EditTextWithEventHandlers extends EditText
