@@ -626,7 +626,7 @@ public class LayoutStateCreateTreeTest {
 
     @Override
     ComponentContext makeNewCopy() {
-      return new MockInternalNodeComponentContext(this);
+      return new MockInternalNodeComponentContext(this.getAndroidContext());
     }
   }
 

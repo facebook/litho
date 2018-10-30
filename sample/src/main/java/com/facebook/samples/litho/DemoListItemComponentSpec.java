@@ -47,8 +47,9 @@ public class DemoListItemComponentSpec {
       @Prop final DemoListActivity.DemoListDataModel model,
       @Prop final int[] currentIndices) {
     final Intent intent =
-        new Intent(c, model.datamodels == null ? model.klass : DemoListActivity.class);
+        new Intent(
+            c.getAndroidContext(), model.datamodels == null ? model.klass : DemoListActivity.class);
     intent.putExtra(DemoListActivity.INDICES, currentIndices);
-    c.startActivity(intent);
+    c.getAndroidContext().startActivity(intent);
   }
 }

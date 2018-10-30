@@ -768,7 +768,11 @@ class LayoutState {
     }
 
     // 4. Extract the Transitions.
-    if (TransitionUtils.areTransitionsEnabled(component.getScopedContext())) {
+    final Context scopedAndroidContext =
+        component.getScopedContext() == null
+            ? null
+            : component.getScopedContext().getAndroidContext();
+    if (TransitionUtils.areTransitionsEnabled(scopedAndroidContext)) {
       if (isTracing) {
         ComponentsSystrace.beginSection("extractTransitions:" + component.getSimpleName());
       }
@@ -1313,7 +1317,7 @@ class LayoutState {
       layoutState.mPreviousLayoutStateId =
           previousLayoutState != null ? previousLayoutState.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
       layoutState.mAccessibilityManager =
-          (AccessibilityManager) c.getSystemService(ACCESSIBILITY_SERVICE);
+          (AccessibilityManager) c.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
       layoutState.mAccessibilityEnabled =
           AccessibilityUtils.isAccessibilityEnabled(layoutState.mAccessibilityManager);
       layoutState.mComponent = component;
@@ -1457,7 +1461,7 @@ class LayoutState {
             ComponentsSystrace.beginSection("preAllocateMountContent:" + component.getSimpleName());
           }
 
-          ComponentsPools.maybePreallocateContent(mContext.getBaseContext(), component);
+          ComponentsPools.maybePreallocateContent(mContext.getAndroidContext(), component);
 
           if (isTracing) {
             ComponentsSystrace.endSection();
@@ -1472,7 +1476,7 @@ class LayoutState {
   }
 
   boolean isActivityValid() {
-    return getValidActivityForContext(mContext) != null;
+    return getValidActivityForContext(mContext.getAndroidContext()) != null;
   }
 
   private void clearLayoutStateOutputIdCalculator() {
@@ -1725,7 +1729,7 @@ class LayoutState {
       nestedTreeHolder.copyInto(root);
       diffTreeRoot = nestedTreeHolder.getDiffNode();
     } else if (root.getStyleDirection() == com.facebook.yoga.YogaDirection.INHERIT
-        && LayoutState.isLayoutDirectionRTL(c)) {
+        && LayoutState.isLayoutDirectionRTL(c.getAndroidContext())) {
       root.layoutDirection(YogaDirection.RTL);
     }
 

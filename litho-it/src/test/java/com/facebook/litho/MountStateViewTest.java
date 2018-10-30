@@ -150,7 +150,8 @@ public class MountStateViewTest {
     assertThat(testComponent1.isMounted()).isTrue();
     assertThat(testComponent2.isMounted()).isTrue();
 
-    final ViewGroupWithLithoViewChildren viewGroup = new ViewGroupWithLithoViewChildren(mContext);
+    final ViewGroupWithLithoViewChildren viewGroup =
+        new ViewGroupWithLithoViewChildren(mContext.getAndroidContext());
     removeParent(child1);
     removeParent(child2);
     viewGroup.addView(child1);

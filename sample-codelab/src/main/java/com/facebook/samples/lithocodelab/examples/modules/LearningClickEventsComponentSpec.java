@@ -91,21 +91,24 @@ public class LearningClickEventsComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onClickFirstChild(ComponentContext c) {
-    Toast.makeText(c, "First child clicked!", LENGTH_SHORT).show();
+    Toast.makeText(c.getAndroidContext(), "First child clicked!", LENGTH_SHORT).show();
   }
 
   @OnEvent(ClickEvent.class)
   static void onClickSecondChild(ComponentContext c, @Prop String secondChildString) {
-    Toast.makeText(c, "Second child clicked: " + secondChildString, LENGTH_SHORT).show();
+    Toast.makeText(
+            c.getAndroidContext(), "Second child clicked: " + secondChildString, LENGTH_SHORT)
+        .show();
   }
 
   @OnEvent(ClickEvent.class)
   static void onClickThirdChild(ComponentContext c) {
-    Toast.makeText(c, "Third child clicked!", LENGTH_SHORT).show();
+    Toast.makeText(c.getAndroidContext(), "Third child clicked!", LENGTH_SHORT).show();
   }
 
   @OnEvent(ClickEvent.class)
   static void onClickAbsoluteChild(ComponentContext c, @Param String absoluteParam) {
-    Toast.makeText(c, "Absolute child clicked: " + absoluteParam, LENGTH_SHORT).show();
+    Toast.makeText(c.getAndroidContext(), "Absolute child clicked: " + absoluteParam, LENGTH_SHORT)
+        .show();
   }
 }

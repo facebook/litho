@@ -313,7 +313,8 @@ public class InternalNodeTest {
   public void testPaddingIsSetFromDrawable() {
     InternalNode node = acquireInternalNode();
 
-    Drawable drawable = ContextCompat.getDrawable(node.getContext(), background_with_padding);
+    Drawable drawable =
+        ContextCompat.getDrawable(node.getContext().getAndroidContext(), background_with_padding);
     node.background(drawable);
 
     assertThat(isFlagSet(node, "PFLAG_PADDING_IS_SET")).isTrue();
@@ -323,7 +324,9 @@ public class InternalNodeTest {
   public void testPaddingIsNotSetFromDrawable() {
     InternalNode node = acquireInternalNode();
 
-    Drawable drawable = ContextCompat.getDrawable(node.getContext(), background_without_padding);
+    Drawable drawable =
+        ContextCompat.getDrawable(
+            node.getContext().getAndroidContext(), background_without_padding);
     node.background(drawable);
 
     assertThat(isFlagSet(node, "PFLAG_PADDING_IS_SET")).isFalse();

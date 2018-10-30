@@ -44,10 +44,10 @@ public class ReferenceTest {
     TestReferenceLifecycle referenceLifecycle = new TestReferenceLifecycle();
     TestReference reference = new TestReference(referenceLifecycle);
 
-    Drawable acquiredDrawable = acquire(mContext, reference);
+    Drawable acquiredDrawable = acquire(mContext.getAndroidContext(), reference);
     assertThat(referenceLifecycle.mAcquired).isTrue();
 
-    release(mContext, acquiredDrawable, reference);
+    release(mContext.getAndroidContext(), acquiredDrawable, reference);
     assertThat(referenceLifecycle.mReleased).isTrue();
   }
 

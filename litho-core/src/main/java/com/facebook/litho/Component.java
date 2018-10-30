@@ -1245,7 +1245,7 @@ public abstract class Component extends ComponentLifecycle
         return background((Reference<? extends Drawable>) null);
       }
 
-      return background(ContextCompat.getDrawable(mContext, resId));
+      return background(ContextCompat.getDrawable(mContext.getBaseContext(), resId));
     }
 
     public T backgroundColor(@ColorInt int backgroundColor) {
@@ -1270,7 +1270,7 @@ public abstract class Component extends ComponentLifecycle
         return foreground(null);
       }
 
-      return foreground(ContextCompat.getDrawable(mContext, resId));
+      return foreground(ContextCompat.getDrawable(mContext.getBaseContext(), resId));
     }
 
     public T foregroundColor(@ColorInt int foregroundColor) {
@@ -1371,11 +1371,12 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T contentDescription(@StringRes int stringId) {
-      return contentDescription(mContext.getResources().getString(stringId));
+      return contentDescription(mContext.getBaseContext().getResources().getString(stringId));
     }
 
     public T contentDescription(@StringRes int stringId, Object... formatArgs) {
-      return contentDescription(mContext.getResources().getString(stringId, formatArgs));
+      return contentDescription(
+          mContext.getBaseContext().getResources().getString(stringId, formatArgs));
     }
 
     public T viewTag(@Nullable Object viewTag) {
@@ -1578,7 +1579,8 @@ public abstract class Component extends ComponentLifecycle
         // We cannot do it on the versions prior to Android 8.0 since there is a possible race
         // condition when loading state list animators, thus we will avoid doing it off the UI
         // thread
-        return stateListAnimator(AnimatorInflater.loadStateListAnimator(mContext, resId));
+        return stateListAnimator(
+            AnimatorInflater.loadStateListAnimator(mContext.getBaseContext(), resId));
       }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         mComponent.getOrCreateCommonPropsHolder().stateListAnimatorRes(resId);

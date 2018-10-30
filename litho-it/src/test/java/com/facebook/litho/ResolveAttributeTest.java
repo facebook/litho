@@ -54,7 +54,7 @@ public class ResolveAttributeTest {
     InternalNode node = Layout.create(mContext, column);
 
     Drawable d = mContext.getResources().getDrawable(test_bg);
-    assertThat(acquire(mContext, node.getBackground())).isEqualTo(d);
+    assertThat(acquire(mContext.getAndroidContext(), node.getBackground())).isEqualTo(d);
   }
 
   @Test
@@ -76,7 +76,7 @@ public class ResolveAttributeTest {
     InternalNode node = Layout.create(mContext, column);
 
     Drawable d = mContext.getResources().getDrawable(test_bg);
-    assertThat(acquire(mContext, node.getBackground())).isEqualTo(d);
+    assertThat(acquire(mContext.getAndroidContext(), node.getBackground())).isEqualTo(d);
   }
 
   @Test

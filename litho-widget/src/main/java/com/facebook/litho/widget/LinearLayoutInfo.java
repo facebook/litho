@@ -25,6 +25,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutParams;
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.SizeSpec;
 import java.util.List;
 
@@ -41,6 +42,10 @@ public class LinearLayoutInfo implements LayoutInfo {
 
   public LinearLayoutInfo(LinearLayoutManager linearLayoutManager) {
     mLinearLayoutManager = linearLayoutManager;
+  }
+
+  public LinearLayoutInfo(ComponentContext context, int orientation, boolean reverseLayout) {
+    this(context.getBaseContext(), orientation, reverseLayout);
   }
 
   public LinearLayoutInfo(Context context, int orientation, boolean reverseLayout) {

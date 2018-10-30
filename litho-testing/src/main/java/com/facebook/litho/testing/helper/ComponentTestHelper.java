@@ -29,7 +29,6 @@ import android.widget.FrameLayout;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
-import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.TestComponentTree;
@@ -419,7 +418,7 @@ public final class ComponentTestHelper {
       EventHandler onVisibleHandler,
       Component component) {
     LithoView lithoView = new LithoView(context);
-    FrameLayout parent = new FrameLayout(context);
+    FrameLayout parent = new FrameLayout(context.getAndroidContext());
 
     parent.addView(lithoView);
 

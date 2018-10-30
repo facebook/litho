@@ -46,7 +46,7 @@ public class VisibilityEventsTest {
     mContext = new ComponentContext(RuntimeEnvironment.application);
 
     mLithoView = new LithoView(mContext);
-    mParent = new FrameLayout(mContext);
+    mParent = new FrameLayout(mContext.getAndroidContext());
     mParent.setLeft(0);
     mParent.setTop(0);
     mParent.setRight(10);

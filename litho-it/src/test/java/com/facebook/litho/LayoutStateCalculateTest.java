@@ -2629,7 +2629,11 @@ public class LayoutStateCalculateTest {
     assertThat(cachedLayout).isNotNull();
 
     calculateLayoutState(
-        c, componentSpy, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+        c.getAndroidContext(),
+        componentSpy,
+        -1,
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY));
 
     assertThat(componentSpy.getLayoutCreatedInWillRenderForTesting()).isNull();
 
@@ -2704,7 +2708,8 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    calculateLayoutState(c, root, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+    calculateLayoutState(
+        c.getAndroidContext(), root, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
     verify(componentSpy, times(1)).updateInternalChildState(any(ComponentContext.class));
   }
 

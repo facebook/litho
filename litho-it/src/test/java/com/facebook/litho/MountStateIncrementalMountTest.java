@@ -586,7 +586,8 @@ public class MountStateIncrementalMountTest {
     final LithoView lithoView = mock(LithoView.class);
     when(lithoView.isIncrementalMountEnabled()).thenReturn(true);
 
-    final ViewGroupWithLithoViewChildren viewGroup = new ViewGroupWithLithoViewChildren(mContext);
+    final ViewGroupWithLithoViewChildren viewGroup =
+        new ViewGroupWithLithoViewChildren(mContext.getAndroidContext());
     viewGroup.addView(lithoView);
 
     final LithoView lithoViewParent =

@@ -112,7 +112,7 @@ public class ComponentHostTest {
     assertThat(mHost.getInvalidationCount()).isEqualTo(2);
     assertThat(mHost.getInvalidationRect()).isEqualTo(d2.getBounds());
 
-    View v1 = new View(mContext);
+    View v1 = new View(mContext.getAndroidContext());
     Rect v1Bounds = new Rect(0, 0, 10, 10);
     v1.measure(
         makeMeasureSpec(v1Bounds.width(), EXACTLY),
@@ -158,7 +158,7 @@ public class ComponentHostTest {
     mount(1, new ColorDrawable());
     assertThat(mHost.getMountItemCount()).isEqualTo(2);
 
-    MountItem mountItem3 = mount(2, new View(mContext));
+    MountItem mountItem3 = mount(2, new View(mContext.getAndroidContext()));
     assertThat(mHost.getMountItemCount()).isEqualTo(3);
 
     unmount(0, mountItem1);
@@ -181,7 +181,7 @@ public class ComponentHostTest {
     assertThat(mHost.getMountItemAt(2)).isNull();
 
     MountItem mountItem1 = mount(0, new ColorDrawable());
-    MountItem mountItem2 = mount(1, new View(mContext));
+    MountItem mountItem2 = mount(1, new View(mContext.getAndroidContext()));
     MountItem mountItem3 = mount(5, new ColorDrawable());
 
     assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem1);
@@ -213,7 +213,7 @@ public class ComponentHostTest {
 
     MountItem mountItem1 = mount(0, new ColorDrawable());
     MountItem mountItem2 = mount(1, touchableDrawableOnItem2);
-    MountItem mountItem3 = mount(2, new View(mContext));
+    MountItem mountItem3 = mount(2, new View(mContext.getAndroidContext()));
     MountItem mountItem4 = mount(5, touchableDrawableOnItem4);
 
     assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem1);
@@ -240,11 +240,11 @@ public class ComponentHostTest {
     MountItem mountItem1 = mount(0, new ColorDrawable());
     MountItem mountItem2 =
         mount(1, new TouchableDrawable(), MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE);
-    MountItem mountItem3 = mount(2, new View(mContext));
+    MountItem mountItem3 = mount(2, new View(mContext.getAndroidContext()));
     MountItem mountItem4 = mount(4, spy(new TouchableDrawable()));
     MountItem mountItem5 =
         mount(5, new TouchableDrawable(), MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE);
-    MountItem mountItem6 = mount(7, new View(mContext));
+    MountItem mountItem6 = mount(7, new View(mContext.getAndroidContext()));
     MountItem mountItem7 =
         mount(8, new TouchableDrawable(), MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE);
 
@@ -266,7 +266,7 @@ public class ComponentHostTest {
   @Test
   public void testMoveItem() {
     MountItem mountItem1 = mount(1, new ColorDrawable());
-    MountItem mountItem2 = mount(2, new View(mContext));
+    MountItem mountItem2 = mount(2, new View(mContext.getAndroidContext()));
 
     assertThat(mHost.getMountItemCount()).isEqualTo(2);
 
@@ -451,7 +451,7 @@ public class ComponentHostTest {
     Drawable d2 = new ColorDrawable();
     mount(1, d2);
 
-    MountItem mountItem3 = mount(2, new View(mContext));
+    MountItem mountItem3 = mount(2, new View(mContext.getAndroidContext()));
 
     List<Drawable> drawables = mHost.getDrawables();
     assertThat(drawables).hasSize(2);
@@ -632,10 +632,10 @@ public class ComponentHostTest {
 
   @Test
   public void testGetChildDrawingOrder() {
-    View v1 = new View(mContext);
+    View v1 = new View(mContext.getAndroidContext());
     mount(2, v1);
 
-    View v2 = new View(mContext);
+    View v2 = new View(mContext.getAndroidContext());
     MountItem mountItem2 = mount(0, v2);
 
     assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 0)).isEqualTo(1);
@@ -736,13 +736,13 @@ public class ComponentHostTest {
 
   @Test
   public void testDisappearingItems() {
-    View v1 = new View(mContext);
+    View v1 = new View(mContext.getAndroidContext());
     mount(0, v1);
 
     Drawable d1 = new ColorDrawable(BLACK);
     MountItem mountItem1 = mount(1, d1);
 
-    View v2 = new View(mContext);
+    View v2 = new View(mContext.getAndroidContext());
     MountItem mountItem2 = mount(2, v2);
 
     Drawable d2 = new ColorDrawable(BLACK);
@@ -780,16 +780,16 @@ public class ComponentHostTest {
   @Ignore("t19681984")
   @Test
   public void testDisappearingItemDrawingOrder() {
-    View v1 = new View(mContext);
+    View v1 = new View(mContext.getAndroidContext());
     mount(5, v1);
 
-    View v2 = new View(mContext);
+    View v2 = new View(mContext.getAndroidContext());
     mount(2, v2);
 
-    View v3 = new View(mContext);
+    View v3 = new View(mContext.getAndroidContext());
     MountItem mountItem3 = mount(4, v3);
 
-    View v4 = new View(mContext);
+    View v4 = new View(mContext.getAndroidContext());
     MountItem mountItem4 = mount(0, v4);
 
     assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 0)).isEqualTo(3);

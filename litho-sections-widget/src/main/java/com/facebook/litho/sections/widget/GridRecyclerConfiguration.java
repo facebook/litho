@@ -115,7 +115,8 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
 
   @Override
   public LayoutInfo getLayoutInfo(ComponentContext c) {
-    return new GridLayoutInfo(c, mNumColumns, mOrientation, mReverseLayout, mAllowMeasureOverride);
+    return new GridLayoutInfo(
+        c.getBaseContext(), mNumColumns, mOrientation, mReverseLayout, mAllowMeasureOverride);
   }
 
   @Override

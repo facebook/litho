@@ -137,7 +137,8 @@ public class LithoView extends ComponentHost {
 
     mComponentContext = context;
     mMountState = new MountState(this);
-    mAccessibilityManager = (AccessibilityManager) context.getSystemService(ACCESSIBILITY_SERVICE);
+    mAccessibilityManager =
+        (AccessibilityManager) context.getBaseContext().getSystemService(ACCESSIBILITY_SERVICE);
   }
 
   private static void performLayoutOnChildrenIfNecessary(ComponentHost host) {

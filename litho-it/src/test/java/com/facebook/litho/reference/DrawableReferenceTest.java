@@ -36,11 +36,8 @@ public class DrawableReferenceTest {
     Drawable drawable = new ColorDrawable();
     ComponentContext context = new ComponentContext(application);
 
-    assertThat(drawable).isEqualTo(acquire(
-        context,
-        create()
-            .drawable(drawable)
-            .build()));
+    assertThat(drawable)
+        .isEqualTo(acquire(context.getAndroidContext(), create().drawable(drawable).build()));
   }
 
 }
