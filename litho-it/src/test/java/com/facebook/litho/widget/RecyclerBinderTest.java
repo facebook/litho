@@ -204,7 +204,8 @@ public class RecyclerBinderTest {
     when(layoutInfo.getScrollDirection()).thenReturn(orientation);
 
     when(layoutInfo.getLayoutManager())
-        .thenReturn(new LinearLayoutManager(mComponentContext, orientation, false));
+        .thenReturn(
+            new LinearLayoutManager(mComponentContext.getAndroidContext(), orientation, false));
 
     when(layoutInfo.approximateRangeSize(anyInt(), anyInt(), anyInt(), anyInt()))
         .thenReturn(RANGE_SIZE);
@@ -1745,7 +1746,7 @@ public class RecyclerBinderTest {
   @Test
   public void testViewBinderBindAndUnbind() {
     final View view = mock(View.class);
-    final RecyclerView recyclerView = new RecyclerView(mComponentContext);
+    final RecyclerView recyclerView = new RecyclerView(mComponentContext.getAndroidContext());
     ViewBinder viewBinder = mock(ViewBinder.class);
     final ViewCreator<View> viewCreator =
         new ViewCreator<View>() {
@@ -1765,7 +1766,7 @@ public class RecyclerBinderTest {
         recyclerView
             .getAdapter()
             .onCreateViewHolder(
-                new FrameLayout(mComponentContext),
+                new FrameLayout(mComponentContext.getAndroidContext()),
                 RenderInfoViewCreatorController.DEFAULT_COMPONENT_VIEW_TYPE + 1);
 
     recyclerView.getAdapter().onBindViewHolder(vh, 0);

@@ -132,7 +132,7 @@ public class RecyclerSpecTest {
   public void testUpdateStateAsyncWithRemeasureEvent() {
     final Recycler recycler = Recycler.create(mComponentContext).binder(mock(Binder.class)).build();
     final TestComponentContext testComponentContext =
-        new TestComponentContext(mComponentContext, recycler);
+        new TestComponentContext(mComponentContext.getAndroidContext(), recycler);
 
     RecyclerSpec.onRemeasure(testComponentContext, 0);
     assertThat(testComponentContext.isUpdateStateAsync()).isTrue();
