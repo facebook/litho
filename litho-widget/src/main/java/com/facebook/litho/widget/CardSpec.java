@@ -96,12 +96,7 @@ class CardSpec {
       cornerRadius = pixels(resources, DEFAULT_CORNER_RADIUS_DP);
     }
 
-    if (disableClipTopLeft
-        || disableClipTopRight
-        || disableClipBottomLeft
-        || disableClipBottomRight) {
-      elevation = 0;
-    } else if (elevation == -1) {
+    if (elevation == -1) {
       elevation = pixels(resources, DEFAULT_SHADOW_SIZE_DP);
     }
 
@@ -114,8 +109,9 @@ class CardSpec {
         .child(
             Column.create(c)
                 .marginPx(HORIZONTAL, shadowHorizontal)
-                .marginPx(TOP, shadowTop)
-                .marginPx(BOTTOM, shadowBottom)
+                .marginPx(TOP, disableClipTopLeft && disableClipTopRight ? 0 : shadowTop)
+                .marginPx(
+                    BOTTOM, disableClipBottomLeft && disableClipBottomRight ? 0 : shadowBottom)
                 .backgroundColor(cardBackgroundColor)
                 .child(content)
                 .child(
@@ -135,6 +131,8 @@ class CardSpec {
                     .shadowEndColor(shadowEndColor)
                     .cornerRadiusPx(cornerRadius)
                     .shadowSizePx(elevation)
+                    .hideTopShadow(disableClipTopLeft && disableClipTopRight)
+                    .hideBottomShadow(disableClipBottomLeft && disableClipBottomRight)
                     .positionType(ABSOLUTE)
                     .positionPx(ALL, 0)
                 : null)
