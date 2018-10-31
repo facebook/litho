@@ -53,6 +53,7 @@ import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUnmount;
+import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
@@ -142,9 +143,10 @@ class TextInputSpec {
       final ComponentContext c,
       StateValue<AtomicReference<EditTextWithEventHandlers>> mountedView,
       StateValue<AtomicReference<CharSequence>> savedText,
+      StateValue<Integer> measureSeqNumber,
       @Prop(optional = true, resType = ResType.STRING) CharSequence initialText) {
     mountedView.set(new AtomicReference<EditTextWithEventHandlers>());
-
+    measureSeqNumber.set(0);
     savedText.set(new AtomicReference<>(initialText));
   }
 
@@ -171,7 +173,8 @@ class TextInputSpec {
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int imeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
-      @State AtomicReference<CharSequence> savedText) {
+      @State AtomicReference<CharSequence> savedText,
+      @State int measureSeqNumber) {
     // For width we always take all available space, or collapse to 0 if unspecified.
     if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
       size.width = 0;
@@ -199,10 +202,9 @@ class TextInputSpec {
         inputType,
         imeOptions,
         inputFilters,
-        // 1. After init before mount: Measured size savedText = initText.
-        // 2. After mount before unmount: savedText will be null and skipped in setParams. Measured
-        // size can be different.
-        // 3. After unmount: Measured size saveText = text from underlying editText.
+        // onMeasure happens:
+        // 1. After initState before onMount: savedText = initText.
+        // 2. After onMount before onUnmount: savedText preserved from underlying editText.
         savedText.get());
     forMeasure.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec));
@@ -233,10 +235,6 @@ class TextInputSpec {
     // TODO: T33972982 For multiline add EditorInfo.TYPE_CLASS_TEXT
     editText.setInputType(inputType & ~EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
     editText.setLines(1);
-    //      if ((mInputType & EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE)
-    //          == EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE) {
-    //        editText.setInputType(mInputType | EditorInfo.TYPE_CLASS_TEXT);
-    //      }
 
     // Needs to be set before the text so it would apply to the current text
     if (inputFilters != null) {
@@ -296,7 +294,11 @@ class TextInputSpec {
       @Prop(optional = true) Diff<Boolean> editable,
       @Prop(optional = true) Diff<Integer> inputType,
       @Prop(optional = true) Diff<Integer> imeOptions,
-      @Prop(optional = true, varArg = "inputFilter") Diff<List<InputFilter>> inputFilters) {
+      @Prop(optional = true, varArg = "inputFilter") Diff<List<InputFilter>> inputFilters,
+      @State Diff<Integer> measureSeqNumber) {
+    if (!equals(measureSeqNumber.getPrevious(), measureSeqNumber.getNext())) {
+      return true;
+    }
     if (!equals(initialText.getPrevious(), initialText.getNext())) {
       return true;
     }
@@ -458,10 +460,12 @@ class TextInputSpec {
         inputType,
         imeOptions,
         inputFilters,
-        // 1. After init savedText = init text.
-        // 2. After unmount savedText = text from the underlying EditText.
-        savedText.getAndSet(null));
-
+        // onMount happens:
+        // 1. After initState: savedText = initText.
+        // 2. After onUnmount: savedText preserved from underlying editText.
+        savedText.get());
+    editText.setComponentContext(c);
+    editText.setTextState(savedText);
     editText.setTextChangedEventHandler(TextInput.getTextChangedEventHandler(c));
     editText.setSelectionChangedEventHandler(TextInput.getSelectionChangedEventHandler(c));
     editText.setKeyUpEventHandler(TextInput.getKeyUpEventHandler(c));
@@ -472,13 +476,13 @@ class TextInputSpec {
   static void onUnmount(
       ComponentContext c,
       EditTextWithEventHandlers editText,
-      @State AtomicReference<EditTextWithEventHandlers> mountedView,
-      @State AtomicReference<CharSequence> savedText) {
+      @State AtomicReference<EditTextWithEventHandlers> mountedView) {
+    editText.setComponentContext(null);
+    editText.setTextState(null);
     editText.setTextChangedEventHandler(null);
     editText.setSelectionChangedEventHandler(null);
     editText.setKeyUpEventHandler(null);
     editText.setEditorActionEventHandler(null);
-    savedText.set(editText.getText());
     mountedView.set(null);
   }
 
@@ -524,11 +528,21 @@ class TextInputSpec {
   static void setText(
       ComponentContext c,
       @State AtomicReference<EditTextWithEventHandlers> mountedView,
+      @State AtomicReference<CharSequence> savedText,
       @FromTrigger String text) {
     EditTextWithEventHandlers view = mountedView.get();
     if (view != null) {
+      // If line count changes state update will be triggered by view
       view.setText(text);
+    } else {
+      savedText.set(text);
+      com.facebook.litho.widget.TextInput.remeasureForUpdatedText(c);
     }
+  }
+
+  @OnUpdateState
+  static void remeasureForUpdatedText(StateValue<Integer> measureSeqNumber) {
+    measureSeqNumber.set(measureSeqNumber.get() + 1);
   }
 
   static class EditTextWithEventHandlers extends EditText
@@ -537,6 +551,10 @@ class TextInputSpec {
     private @Nullable EventHandler<SelectionChangedEvent> mSelectionChangedEventHandler;
     private @Nullable EventHandler<KeyUpEvent> mKeyUpEventHandler;
     private @Nullable EventHandler<EditorActionEvent> mEditorActionEventHandler;
+    private @Nullable ComponentContext mComponentContext;
+    private @Nullable AtomicReference<CharSequence> mTextState;
+    private int mLineCount = -1;
+    private boolean mMeasured;
 
     public EditTextWithEventHandlers(Context context) {
       super(context);
@@ -552,6 +570,22 @@ class TextInputSpec {
         TextInput.dispatchTextChangedEvent(
             mTextChangedEventHandler, EditTextWithEventHandlers.this, text.toString());
       }
+      if (mTextState != null) {
+        mTextState.set(text);
+      }
+      // Line count of changed text.
+      int lineCount = getLineCount();
+      if (mMeasured && mLineCount != lineCount && mComponentContext != null) {
+        com.facebook.litho.widget.TextInput.remeasureForUpdatedText(mComponentContext);
+      }
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+      super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+      mMeasured = true;
+      // Line count of the current text.
+      mLineCount = getLineCount();
     }
 
     @Override
@@ -595,6 +629,16 @@ class TextInputSpec {
     void setEditorActionEventHandler(
         @Nullable EventHandler<EditorActionEvent> editorActionEventHandler) {
       mEditorActionEventHandler = editorActionEventHandler;
+    }
+
+    /** Sets context for state update, when the text height has changed. */
+    void setComponentContext(@Nullable ComponentContext componentContext) {
+      mComponentContext = componentContext;
+    }
+
+    /** Sets reference to keep current text up to date. */
+    void setTextState(@Nullable AtomicReference<CharSequence> savedText) {
+      mTextState = savedText;
     }
   }
 }
