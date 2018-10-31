@@ -480,10 +480,9 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     if (endOffset < 0) {
       end = mLayout.getPrimaryHorizontal(0);
     } else {
-      final float[] endWidth = new float[1];
-      mLayout.getPaint().getTextWidths(mText, endOffset, endOffset + 1, endWidth);
+      final float width = mLayout.getLineWidth(line);
       end =
-          getHorizontal(endOffset, line) + (mLayout.isRtlCharAt(endOffset) ? -1 : 1) * endWidth[0];
+          getHorizontal(endOffset, line) + (mLayout.isRtlCharAt(endOffset) ? -1 : 1) * width;
     }
 
     if (start > end) {
