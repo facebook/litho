@@ -18,33 +18,52 @@ package com.facebook.litho.widget;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 
-// TODO: T33972982 more
 /** Tests {@link TextInput} component. */
 @RunWith(ComponentsTestRunner.class)
 public class TextInputSpecTest {
-  @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
+  private ComponentContext mContext;
 
-  private static final String TEXT = "Hello Components";
+  @Before
+  public void setup() {
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+  }
 
   @Test
   public void testTextInputWithText() {
-    final ComponentContext c = mComponentsRule.getContext();
-    TextInput.Builder component =
-        TextInput.create(c).textChangedEventHandler(null).textSizePx(10).initialText(TEXT);
+    String text = "Dummy text";
+    int textSize = 10;
+    Component.Builder component = TextInput.create(mContext).textSizePx(textSize).initialText(text);
+    final android.widget.EditText editText = getEditText(component);
 
+    assertThat(editText.getText().toString()).isEqualTo(text);
+    assertThat(editText.getTextSize()).isEqualTo(textSize);
+  }
+
+  @Test
+  public void testTextInputMultiline() {
+    String multiline = "a\nb\nc";
+
+    Component.Builder component = TextInput.create(mContext).initialText(multiline);
+    android.widget.EditText editText = getEditText(component);
+    assertThat(editText.getLineCount()).isEqualTo(1);
+
+    component = TextInput.create(mContext).initialText(multiline).multiline(true);
+    editText = getEditText(component);
+    assertThat(editText.getLineCount()).isEqualTo(3);
+  }
+
+  private static android.widget.EditText getEditText(Component.Builder component) {
     final LithoView lithoView = ComponentTestHelper.mountComponent(component);
-
-    final android.widget.EditText editText = (android.widget.EditText) lithoView.getChildAt(0);
-    assertThat(editText.getText().toString()).isEqualTo(TEXT);
-    assertThat(editText.getTextSize()).isEqualTo(10);
+    return (android.widget.EditText) lithoView.getChildAt(0);
   }
 }

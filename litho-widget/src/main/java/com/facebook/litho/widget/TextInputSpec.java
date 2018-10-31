@@ -101,9 +101,11 @@ import javax.annotation.Nullable;
  * @prop gravity Gravity for the text within its container.
  * @prop editable If set, allows the text to be editable.
  * @prop inputType Type of data being placed in a text field, used to help an input method decide
- *     how to let the user enter text.
+ *     how to let the user enter text. To add multiline use multiline(true) method.
  * @prop imeOptions Type of data in the text field, reported to an IME when it has focus.
  * @prop inputFilters Used to filter the input to e.g. a max character count.
+ * @prop multiline If set to true, type of the input will be changed to multiline TEXT. Because
+ *     passwords or numbers couldn't be multiline by definition.
  */
 @MountSpec(
   isPureRender = true,
@@ -132,6 +134,7 @@ class TextInputSpec {
   @PropDefault protected static final boolean editable = true;
   @PropDefault protected static final int inputType = EditorInfo.TYPE_CLASS_TEXT;
   @PropDefault protected static final int imeOptions = EditorInfo.IME_NULL;
+  @PropDefault static final boolean multiline = false;
 
   /** UI thread only; used in OnMount. */
   private static final Rect sBackgroundPaddingRect = new Rect();
@@ -173,6 +176,7 @@ class TextInputSpec {
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int imeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
+      @Prop(optional = true) boolean multiline,
       @State AtomicReference<CharSequence> savedText,
       @State int measureSeqNumber) {
     // For width we always take all available space, or collapse to 0 if unspecified.
@@ -202,6 +206,7 @@ class TextInputSpec {
         inputType,
         imeOptions,
         inputFilters,
+        multiline,
         // onMeasure happens:
         // 1. After initState before onMount: savedText = initText.
         // 2. After onMount before onUnmount: savedText preserved from underlying editText.
@@ -230,11 +235,15 @@ class TextInputSpec {
       int inputType,
       int imeOptions,
       @Nullable List<InputFilter> inputFilters,
+      boolean multiline,
       @Nullable CharSequence text) {
-
-    // TODO: T33972982 For multiline add EditorInfo.TYPE_CLASS_TEXT
-    editText.setInputType(inputType & ~EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
-    editText.setLines(1);
+    if (multiline) {
+      editText.setInputType(
+          inputType | EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
+    } else {
+      editText.setInputType(inputType & ~EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
+      editText.setLines(1);
+    }
 
     // Needs to be set before the text so it would apply to the current text
     if (inputFilters != null) {
@@ -438,6 +447,7 @@ class TextInputSpec {
       @Prop(optional = true) int inputType,
       @Prop(optional = true) int imeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
+      @Prop(optional = true) boolean multiline,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedView) {
     mountedView.set(editText);
@@ -460,6 +470,7 @@ class TextInputSpec {
         inputType,
         imeOptions,
         inputFilters,
+        multiline,
         // onMount happens:
         // 1. After initState: savedText = initText.
         // 2. After onUnmount: savedText preserved from underlying editText.
