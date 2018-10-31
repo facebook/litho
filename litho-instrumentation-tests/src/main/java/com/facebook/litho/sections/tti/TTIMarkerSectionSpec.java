@@ -60,6 +60,6 @@ public class TTIMarkerSectionSpec {
       @FromEvent RenderCompleteEvent.RenderState renderState,
       @FromEvent long timestampMillis) {
     final boolean hasMounted = renderState == RenderCompleteEvent.RenderState.RENDER_DRAWN;
-    Toast.makeText(c, renderMarker, Toast.LENGTH_SHORT).show();
+    Toast.makeText(c.getAndroidContext(), renderMarker, Toast.LENGTH_SHORT).show();
   }
 }

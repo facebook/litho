@@ -46,7 +46,10 @@ public class DemoListItemComponentTest {
 
     lithoView.performClick();
 
-    final Intent nextIntent = shadowOf(mComponentsRule.getContext()).getNextStartedActivity();
+    final Intent nextIntent =
+        shadowOf(mComponentsRule.getContext().getAndroidContext())
+            .getShadowApplication()
+            .getNextStartedActivity();
     assertThat(nextIntent.getComponent().getClassName()).isSameAs(activityClassToLaunch.getName());
   }
 
@@ -66,7 +69,10 @@ public class DemoListItemComponentTest {
         .getEventDispatcher()
         .dispatchOnEvent(DemoListItemComponent.onClick(componentContext), new ClickEvent());
 
-    final Intent nextIntent = shadowOf(mComponentsRule.getContext()).getNextStartedActivity();
+    final Intent nextIntent =
+        shadowOf(mComponentsRule.getContext().getAndroidContext())
+            .getShadowApplication()
+            .getNextStartedActivity();
     assertThat(nextIntent.getComponent().getClassName()).isSameAs(activityClassToLaunch.getName());
   }
 }
