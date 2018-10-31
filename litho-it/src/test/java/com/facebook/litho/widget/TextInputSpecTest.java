@@ -27,7 +27,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-/** Tests {@link EditText} component. */
+// TODO: T33972982 more
+/** Tests {@link TextInput} component. */
 @RunWith(ComponentsTestRunner.class)
 public class TextInputSpecTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();

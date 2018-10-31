@@ -26,7 +26,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -59,6 +58,7 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.utils.MeasureUtils;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
@@ -132,8 +132,6 @@ class TextInputSpec {
   @PropDefault protected static final int inputType = EditorInfo.TYPE_CLASS_TEXT;
   @PropDefault protected static final int imeOptions = EditorInfo.IME_NULL;
 
-  private static final ThreadLocal<Rect> sMeasureRect = new ThreadLocal<>();
-  private static final ThreadLocal<Paint> sPaint = new ThreadLocal<>();
   /** UI thread only; used in OnMount. */
   private static final Rect sBackgroundPaddingRect = new Rect();
   /** UI thread only; used in OnMount. */
@@ -174,8 +172,15 @@ class TextInputSpec {
       @Prop(optional = true) int imeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @State AtomicReference<CharSequence> savedText) {
+    // For width we always take all available space, or collapse to 0 if unspecified.
+    if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
+      size.width = 0;
+    } else {
+      size.width = SizeSpec.getSize(widthSpec);
+    }
 
-    EditText forMeasure = new EditText(c);
+    // The height should be the measured height of EditText with relevant params
+    final EditText forMeasure = new EditText(c);
     setParams(
         forMeasure,
         hint,
@@ -194,35 +199,15 @@ class TextInputSpec {
         inputType,
         imeOptions,
         inputFilters,
+        // 1. After init before mount: Measured size savedText = initText.
+        // 2. After mount before unmount: savedText will be null and skipped in setParams. Measured
+        // size can be different.
+        // 3. After unmount: Measured size saveText = text from underlying editText.
         savedText.get());
+    forMeasure.measure(
+        MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec));
 
-    // For width we always take all available space, or collapse to 0 if unspecified.
-    if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
-      size.width = 0;
-    } else {
-      size.width = SizeSpec.getSize(widthSpec);
-    }
-
-    // The height should be the sum of the font line height and the top/bottom padding.
-    final Drawable background = getBackgroundOrDefault(c, inputBackground);
-    Rect rect = sMeasureRect.get();
-    if (rect == null) {
-      rect = new Rect();
-      sMeasureRect.set(rect);
-    }
-    if (background != null) {
-      // We can ignore the return value of getPadding, since it zeros rect if there's no padding.
-      background.getPadding(rect);
-    }
-
-    Paint paint = sPaint.get();
-    if (paint == null) {
-      paint = new Paint();
-      sPaint.set(paint);
-    }
-    paint.setTextSize(textSize);
-    paint.setTypeface(typeface);
-    size.height = (int) Math.ceil(paint.getFontMetrics(null)) + rect.top + rect.bottom;
+    size.height = forMeasure.getMeasuredHeight();
   }
 
   private static void setParams(
@@ -473,8 +458,9 @@ class TextInputSpec {
         inputType,
         imeOptions,
         inputFilters,
-        savedText.getAndSet(
-            null) /* Saved text would be either from the initial or restored on first mount after unmount. */);
+        // 1. After init savedText = init text.
+        // 2. After unmount savedText = text from the underlying EditText.
+        savedText.getAndSet(null));
 
     editText.setTextChangedEventHandler(TextInput.getTextChangedEventHandler(c));
     editText.setSelectionChangedEventHandler(TextInput.getSelectionChangedEventHandler(c));
