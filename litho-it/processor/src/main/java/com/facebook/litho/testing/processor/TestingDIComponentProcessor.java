@@ -93,7 +93,7 @@ public class TestingDIComponentProcessor extends AbstractComponentsProcessor {
     @Override
     public CodeBlock generateFactoryMethodsComponentInstance(SpecModel specModel) {
       return CodeBlock.of(
-          "$L instance = new $L(context);\n",
+          "$L instance = new $L(context.getAndroidContext());\n",
           specModel.getComponentName(),
           specModel.getComponentName());
     }

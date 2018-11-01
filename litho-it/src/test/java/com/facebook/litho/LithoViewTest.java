@@ -32,6 +32,8 @@ import static org.mockito.Mockito.verify;
 import static org.robolectric.RuntimeEnvironment.application;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
@@ -287,7 +289,7 @@ public class LithoViewTest {
 
   private LithoView setupLithoViewForDoubleMeasureTest(
       int screenWidthDp, float density, int screenWidthPx) {
-    final ComponentContext context = spy(new ComponentContext(RuntimeEnvironment.application));
+    final Context context = spy(new ContextWrapper(RuntimeEnvironment.application));
     final Resources resources = spy(context.getResources());
 
     doReturn(resources).when(context).getResources();

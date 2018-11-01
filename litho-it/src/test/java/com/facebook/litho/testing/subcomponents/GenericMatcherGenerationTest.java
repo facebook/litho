@@ -53,7 +53,8 @@ public class GenericMatcherGenerationTest {
   @Test
   public void testGenericPropMatching() {
     final ComponentContext c = mComponentsRule.getContext();
-    final Component component = new MyGeneric<>(c).create(c).genericProp(mGenericProp).build();
+    final Component component =
+        new MyGeneric<>(c.getAndroidContext()).create(c).genericProp(mGenericProp).build();
     final Condition<InspectableComponent> matcher =
         TestMyGeneric.matcher(c).genericProp(mGenericProp).build();
 

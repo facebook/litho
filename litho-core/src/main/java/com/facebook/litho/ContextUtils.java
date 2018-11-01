@@ -52,11 +52,6 @@ public class ContextUtils {
   static Context getRootContext(Context context) {
     Context currentContext = context;
 
-    // Common case is there is exactly one wrapping ComponentContext
-    if (currentContext instanceof ComponentContext) {
-      currentContext = ((ComponentContext) currentContext).getBaseContext();
-    }
-
     while (currentContext instanceof ContextWrapper
         && !(currentContext instanceof Activity)
         && !(currentContext instanceof Application)

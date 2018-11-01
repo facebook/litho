@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import android.content.Context;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 
@@ -26,11 +25,11 @@ import android.support.annotation.StyleRes;
  */
 class TestComponentContext extends ComponentContext {
 
-  TestComponentContext(Context c) {
+  TestComponentContext(ComponentContext c) {
     super(c);
   }
 
-  TestComponentContext(Context c, StateHandler stateHandler) {
+  TestComponentContext(ComponentContext c, StateHandler stateHandler) {
     super(c, stateHandler);
   }
 

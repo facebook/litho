@@ -120,10 +120,10 @@ public class ComponentHost extends ViewGroup {
   }
 
   public ComponentHost(ComponentContext context, AttributeSet attrs) {
-    super(context, attrs);
+    super(context.getBaseContext(), attrs);
     setWillNotDraw(false);
     setChildrenDrawingOrderEnabled(true);
-    refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context));
+    refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context.getBaseContext()));
 
     mMountItems = new SparseArrayCompat<>();
     mViewMountItems = new SparseArrayCompat<>();

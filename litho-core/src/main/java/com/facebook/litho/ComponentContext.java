@@ -17,10 +17,13 @@
 package com.facebook.litho;
 
 import android.content.Context;
-import android.content.ContextWrapper;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.os.Looper;
 import android.support.annotation.AttrRes;
+import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 import android.support.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -30,10 +33,11 @@ import com.facebook.litho.config.ComponentsConfiguration;
  * A Context subclass for use within the Components framework. Contains extra bookkeeping
  * information used internally in the library.
  */
-public class ComponentContext extends ContextWrapper {
+public class ComponentContext {
 
   static final InternalNode NULL_LAYOUT = new NoOpInternalNode();
 
+  private final Context mContext;
   private final String mLogTag;
   private final ComponentsLogger mLogger;
   @Nullable private final StateHandler mStateHandler;
@@ -62,6 +66,34 @@ public class ComponentContext extends ContextWrapper {
   @AttrRes
   @ThreadConfined(ThreadConfined.ANY)
   private int mDefStyleAttr = 0;
+
+  public ComponentContext(ComponentContext context) {
+    this(context, context.mStateHandler, context.mKeyHandler, context.mTreeProps);
+  }
+
+  public ComponentContext(ComponentContext context, StateHandler stateHandler) {
+    this(context, stateHandler, context.mKeyHandler, context.mTreeProps);
+  }
+
+  protected ComponentContext(
+      ComponentContext context,
+      StateHandler stateHandler,
+      KeyHandler keyHandler,
+      TreeProps treeProps) {
+    mContext = context.getAndroidContext();
+    mResourceCache = context.mResourceCache;
+    mWidthSpec = context.mWidthSpec;
+    mHeightSpec = context.mHeightSpec;
+    mComponentScope = context.mComponentScope;
+    mComponentTree = context.mComponentTree;
+
+    mLogger = context.mLogger;
+    mLogTag = context.mLogTag;
+
+    mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
+    mKeyHandler = keyHandler != null ? keyHandler : context.mKeyHandler;
+    mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
+  }
 
   public ComponentContext(Context context) {
     this(context, null, null, null, null, null);
@@ -112,46 +144,25 @@ public class ComponentContext extends ContextWrapper {
       StateHandler stateHandler,
       KeyHandler keyHandler,
       @Nullable TreeProps treeProps) {
-    super((context instanceof ComponentContext)
-        ? ((ComponentContext) context).getBaseContext()
-        : context);
+    mContext = context;
 
     if (logger != null && logTag == null) {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
     }
 
-    final ComponentContext componentContext = (context instanceof ComponentContext)
-        ? (ComponentContext) context
-        : null;
-    final boolean transferLogging = (componentContext != null && logTag == null && logger == null);
-    final boolean transferStateHandler = (componentContext != null && stateHandler == null);
-    final boolean transferKeyHandler = (componentContext != null && keyHandler == null);
-
-    if (componentContext != null) {
-      mTreeProps = componentContext.mTreeProps;
-      mResourceCache = componentContext.mResourceCache;
-      mWidthSpec = componentContext.mWidthSpec;
-      mHeightSpec = componentContext.mHeightSpec;
-      mComponentScope = componentContext.mComponentScope;
-      mComponentTree = componentContext.mComponentTree;
-    } else {
-      mResourceCache = ResourceCache.getLatest(context.getResources().getConfiguration());
-    }
-
-    if (treeProps != null) {
-      mTreeProps = treeProps;
-    }
-    mLogger = transferLogging ? componentContext.mLogger : logger;
-    mLogTag = transferLogging ? componentContext.mLogTag : logTag;
-    mStateHandler = transferStateHandler ? componentContext.mStateHandler : stateHandler;
-    mKeyHandler = transferKeyHandler ? componentContext.mKeyHandler : keyHandler;
+    mResourceCache = ResourceCache.getLatest(context.getResources().getConfiguration());
+    mTreeProps = treeProps;
+    mLogger = logger;
+    mLogTag = logTag;
+    mStateHandler = stateHandler;
+    mKeyHandler = keyHandler;
   }
 
   static ComponentContext withComponentTree(
       ComponentContext context,
       ComponentTree componentTree) {
     ComponentContext componentContext =
-        new ComponentContext(context, ComponentsPools.acquireStateHandler(), context.mKeyHandler);
+        new ComponentContext(context, ComponentsPools.acquireStateHandler());
     componentContext.mComponentTree = componentTree;
 
     return componentContext;
@@ -173,12 +184,44 @@ public class ComponentContext extends ContextWrapper {
     return componentContext;
   }
 
+  ComponentContext makeNewCopy() {
+    return new ComponentContext(this);
+  }
+
   public final Context getAndroidContext() {
     return getBaseContext();
   }
 
-  ComponentContext makeNewCopy() {
-    return new ComponentContext(this);
+  public final Context getApplicationContext() {
+    return mContext.getApplicationContext();
+  }
+
+  public Context getBaseContext() {
+    return mContext;
+  }
+
+  public Resources getResources() {
+    return mContext.getResources();
+  }
+
+  public final Looper getMainLooper() {
+    return mContext.getMainLooper();
+  }
+
+  public CharSequence getText(@StringRes int resId) {
+    return mContext.getResources().getText(resId);
+  }
+
+  public String getString(@StringRes int resId) {
+    return mContext.getResources().getString(resId);
+  }
+
+  public String getString(@StringRes int resId, Object... formatArgs) {
+    return mContext.getResources().getString(resId, formatArgs);
+  }
+
+  public int getColor(@ColorRes int id) {
+    return mContext.getResources().getColor(id);
   }
 
   public Component getComponentScope() {
@@ -255,11 +298,8 @@ public class ComponentContext extends ContextWrapper {
   }
 
   public TypedArray obtainStyledAttributes(int[] attrs, @AttrRes int defStyleAttr) {
-    return obtainStyledAttributes(
-        null,
-        attrs,
-        defStyleAttr != 0 ? defStyleAttr : mDefStyleAttr,
-        mDefStyleRes);
+    return mContext.obtainStyledAttributes(
+        null, attrs, defStyleAttr != 0 ? defStyleAttr : mDefStyleAttr, mDefStyleRes);
   }
 
   public String getLogTag() {
@@ -403,11 +443,9 @@ public class ComponentContext extends ContextWrapper {
     if (defStyleAttr != 0 || defStyleRes != 0) {
       setDefStyle(defStyleAttr, defStyleRes);
 
-      final TypedArray typedArray = obtainStyledAttributes(
-          null,
-          R.styleable.ComponentLayout,
-          defStyleAttr,
-          defStyleRes);
+      final TypedArray typedArray =
+          mContext.obtainStyledAttributes(
+              null, R.styleable.ComponentLayout, defStyleAttr, defStyleRes);
       node.applyAttributes(typedArray);
       typedArray.recycle();
 

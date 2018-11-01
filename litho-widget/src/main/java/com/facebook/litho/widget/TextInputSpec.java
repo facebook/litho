@@ -187,7 +187,7 @@ class TextInputSpec {
     }
 
     // The height should be the measured height of EditText with relevant params
-    final EditText forMeasure = new EditText(c);
+    final EditText forMeasure = new EditText(c.getAndroidContext());
     setParams(
         forMeasure,
         hint,

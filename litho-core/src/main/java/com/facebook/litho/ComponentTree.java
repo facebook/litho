@@ -843,7 +843,7 @@ public class ComponentTree {
       mLithoView.clearComponentTree();
     }
 
-    if (!hasSameRootContext(view.getContext(), mContext)) {
+    if (!hasSameRootContext(view.getContext(), mContext.getBaseContext())) {
       // This would indicate bad things happening, like leaking a context.
       throw new IllegalArgumentException(
           "Base view context differs, view context is: " + view.getContext() +
