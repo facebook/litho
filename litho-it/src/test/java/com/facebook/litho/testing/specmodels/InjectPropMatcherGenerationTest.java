@@ -51,7 +51,7 @@ public class InjectPropMatcherGenerationTest {
   public void testInjectPropMatching() {
     final ComponentContext c = mComponentsRule.getContext();
     final MyInjectProp component =
-        new MyInjectProp(c).create(c).normalString("normal string").build();
+        new MyInjectProp(c.getAndroidContext()).create(c).normalString("normal string").build();
     // Faking some DI mechanism doing its thing.
     component.injectedString = "injected string";
     component.injectedKettle = new MyInjectPropSpec.Kettle(92f);
