@@ -90,7 +90,7 @@ object BoundsAnimationComponentSpec {
 
   @OnUpdateState
   fun toggleABT(autoBoundsTransitionEnabled: StateValue<Boolean>) {
-    autoBoundsTransitionEnabled.set(!autoBoundsTransitionEnabled.get())
+    autoBoundsTransitionEnabled.set(!(autoBoundsTransitionEnabled.get()!!))
   }
 
   private fun affectedChildren(c: ComponentContext, flag1: Boolean): Component =
@@ -126,7 +126,7 @@ object BoundsAnimationComponentSpec {
 
   @OnUpdateState
   fun toggleFlag1(flag1: StateValue<Boolean>) {
-    flag1.set(!flag1.get())
+    flag1.set(!(flag1.get()!!))
   }
 
   private fun affectedSiblings(c: ComponentContext, flag2: Boolean): Component =
@@ -157,7 +157,7 @@ object BoundsAnimationComponentSpec {
 
   @OnUpdateState
   fun toggleFlag2(flag2: StateValue<Boolean>) {
-    flag2.set(!flag2.get())
+    flag2.set(!(flag2.get()!!))
   }
 
   private fun affectedParent(c: ComponentContext, flag3: Boolean): Component =
@@ -184,7 +184,7 @@ object BoundsAnimationComponentSpec {
 
   @OnUpdateState
   fun toggleFlag3(flag3: StateValue<Boolean>) {
-    flag3.set(!flag3.get())
+    flag3.set(!(flag3.get()!!))
   }
 
   private fun altogether(c: ComponentContext, flag4: Boolean): Component =
@@ -239,7 +239,7 @@ object BoundsAnimationComponentSpec {
 
   @OnUpdateState
   fun toggleFlag4(flag4: StateValue<Boolean>) {
-    flag4.set(!flag4.get())
+    flag4.set(!(flag4.get()!!))
   }
 
   @OnCreateTransition

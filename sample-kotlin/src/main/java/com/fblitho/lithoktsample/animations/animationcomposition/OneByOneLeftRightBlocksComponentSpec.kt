@@ -89,7 +89,7 @@ object OneByOneLeftRightBlocksComponentSpec {
 
   @OnUpdateState
   fun updateState(state: StateValue<Int>) {
-    state.set((state.get() + 1) % 6)
+    state.set((state.get()!! + 1) % 6)
   }
 
   @OnCreateTransition

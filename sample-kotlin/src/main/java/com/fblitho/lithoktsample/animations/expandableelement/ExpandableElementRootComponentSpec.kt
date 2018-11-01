@@ -120,7 +120,7 @@ object ExpandableElementRootComponentSpec {
           1,
           Message(true, "Just Added #$counterValue",
               true, "Recently", true))
-      counter.set(counterValue + 1)
+      counter.set(counterValue!! + 1)
     } else if (initialMessagesSize < updatedMessageList.size) {
       updatedMessageList.removeAt(1)
     }

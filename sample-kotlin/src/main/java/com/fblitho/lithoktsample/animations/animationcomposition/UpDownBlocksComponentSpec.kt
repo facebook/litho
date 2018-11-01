@@ -68,7 +68,7 @@ object UpDownBlocksComponentSpec {
 
   @OnUpdateState
   fun updateState(top: StateValue<Boolean>) {
-    top.set(!top.get())
+    top.set(!(top.get()!!))
   }
 
   @OnCreateTransition
