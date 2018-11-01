@@ -45,6 +45,7 @@ import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -1400,6 +1401,14 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     // but this may be expanded
     if (ComponentsConfiguration.displayListWrappingEnabled
         && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      // We do not want to wrap RippleDrawables, as it doesn't play along with RenderNodeAnimator
+      // well
+      if (content instanceof RippleDrawable
+          || (content instanceof MatrixDrawable
+              && ((MatrixDrawable) content).getCurrent() instanceof RippleDrawable)) {
+        return null;
+      }
+
       // DL can be used in general, let's check if the content is eligible
       if (component.shouldUseDisplayList()
           || ((content instanceof Drawable)
