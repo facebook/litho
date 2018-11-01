@@ -19,19 +19,37 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /** Provides global counters about Litho internals. Useful for performance analyses. */
 public final class LithoStats {
-  private static final AtomicLong mStateUpdates = new AtomicLong(0);
+  private static final AtomicLong sStateUpdates = new AtomicLong(0);
+  private static final AtomicLong sStateUpdatesSync = new AtomicLong(0);
 
-  /** @return the global count of state updates that have happened in the process. */
+  /**
+   * @return the global count of all state updates (async, lazy and sync) that have happened in the
+   *     process.
+   */
   public static long getStateUpdates() {
-    return mStateUpdates.get();
+    return sStateUpdates.get();
+  }
+
+  /** @return the global count of synchronous state updates that have happened in the process. */
+  public static long getStateUpdatesSync() {
+    return sStateUpdatesSync.get();
   }
 
   /**
    * Increment the count of performed state updates by {@param num}.
    *
-   * @return The new total number of state updates recorded.
+   * @return The new total number of all state updates recorded.
    */
   public static long incStateUpdate(final long num) {
-    return mStateUpdates.addAndGet(num);
+    return sStateUpdates.addAndGet(num);
+  }
+
+  /**
+   * Increment the count of performed synchronous state updates by {@param num}.
+   *
+   * @return The new total number of synchronous state updates recorded.
+   */
+  public static long incStateUpdateSync(final long num) {
+    return sStateUpdatesSync.addAndGet(num);
   }
 }

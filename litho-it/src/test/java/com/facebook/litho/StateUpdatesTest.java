@@ -307,6 +307,30 @@ public class StateUpdatesTest {
     assertThat(after - before).isEqualTo(1);
   }
 
+  @Test
+  public void testSyncStateStatsWhenAsyncTest() {
+    final long before = LithoStats.getStateUpdatesSync();
+
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    final long after = LithoStats.getStateUpdatesSync();
+
+    assertThat(after - before).isEqualTo(0);
+  }
+
+  @Test
+  public void testSyncStateStatsWhenSyncTest() {
+    final long before = LithoStats.getStateUpdatesSync();
+
+    mComponentTree.updateStateSync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    final long after = LithoStats.getStateUpdatesSync();
+
+    assertThat(after - before).isEqualTo(1);
+  }
+
   private StateHandler getStateHandler() {
     return Whitebox.getInternalState(mComponentTree, "mStateHandler");
   }

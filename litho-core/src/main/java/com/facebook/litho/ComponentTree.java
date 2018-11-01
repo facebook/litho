@@ -51,6 +51,7 @@ import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.debug.DebugOverlayController;
+import com.facebook.litho.stats.LithoStats;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
@@ -1086,6 +1087,7 @@ public class ComponentTree {
       mStateHandler.queueStateUpdate(componentKey, stateUpdate);
     }
 
+    LithoStats.incStateUpdateSync(1);
     final Looper looper = Looper.myLooper();
 
     if (looper == null) {
