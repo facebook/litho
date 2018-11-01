@@ -190,10 +190,9 @@ public class ComponentsConfiguration {
   public static boolean useSharedLayoutStateFuture = false;
 
   /**
-   * If non-null, a thread pool will be used for async layouts where useSharedLayoutStateFuture is
-   * also enabled.
+   * If non-null, a thread pool will be used for async layouts instead of a single layout thread.
    */
-  public static LayoutThreadPoolConfiguration sharedLayoutStateFutureThreadPoolConfig = null;
+  public static LayoutThreadPoolConfiguration threadPoolConfiguration = null;
 
   /**
    * Whether we should diff the view info attributes when checking for mount updates. This fixes

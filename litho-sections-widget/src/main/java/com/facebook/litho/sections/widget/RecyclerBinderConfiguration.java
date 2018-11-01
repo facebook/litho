@@ -39,8 +39,8 @@ public class RecyclerBinderConfiguration {
   private boolean mHScrollAsyncMode;
   private boolean mEnableStableIds;
   private boolean mUseSharedLayoutStateFuture = ComponentsConfiguration.useSharedLayoutStateFuture;
-  private LayoutThreadPoolConfiguration mThreadPoolForSharedLayoutStateFutureConfig =
-      ComponentsConfiguration.sharedLayoutStateFutureThreadPoolConfig;
+  private LayoutThreadPoolConfiguration mThreadPoolConfiguration =
+      ComponentsConfiguration.threadPoolConfiguration;
   private boolean mAsyncInitRange = ComponentsConfiguration.asyncInitRange;
   @Nullable private String mSplitLayoutTag;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
@@ -104,7 +104,7 @@ public class RecyclerBinderConfiguration {
       boolean wrapContent,
       @Nullable List<ComponentLogParams> invalidStateLogParamsList,
       @Nullable String splitLayoutTag,
-      LayoutThreadPoolConfiguration threadPoolForSharedLayoutStateFutureConfig,
+      LayoutThreadPoolConfiguration threadPoolConfiguration,
       boolean dynamicItemHeight,
       boolean useBackgroundChangeSets,
       boolean hScrollAsyncMode,
@@ -118,7 +118,7 @@ public class RecyclerBinderConfiguration {
     mIsWrapContent = wrapContent;
     mInvalidStateLogParamsList = invalidStateLogParamsList;
     mSplitLayoutTag = splitLayoutTag;
-    mThreadPoolForSharedLayoutStateFutureConfig = threadPoolForSharedLayoutStateFutureConfig;
+    mThreadPoolConfiguration = threadPoolConfiguration;
     mHasDynamicItemHeight = dynamicItemHeight;
     mUseBackgroundChangeSets = useBackgroundChangeSets;
     mHScrollAsyncMode = hScrollAsyncMode;
@@ -167,8 +167,8 @@ public class RecyclerBinderConfiguration {
     return mUseSharedLayoutStateFuture;
   }
 
-  public LayoutThreadPoolConfiguration getThreadPoolForSharedLayoutStateFutureConfig() {
-    return mThreadPoolForSharedLayoutStateFutureConfig;
+  public LayoutThreadPoolConfiguration getThreadPoolConfiguration() {
+    return mThreadPoolConfiguration;
   }
 
   public boolean getAsyncInitRange() {
@@ -184,16 +184,14 @@ public class RecyclerBinderConfiguration {
   }
 
   public static class Builder {
-    public static final LayoutThreadPoolConfiguration
-        DEFAULT_SHARED_LAYOUT_STATE_FUTURE_THREAD_POOL_CONFIG =
-            ComponentsConfiguration.sharedLayoutStateFutureThreadPoolConfig;
+    public static final LayoutThreadPoolConfiguration DEFAULT_THREAD_POOL_CONFIG =
+        ComponentsConfiguration.threadPoolConfiguration;
     static final float DEFAULT_RANGE = RecyclerBinder.Builder.DEFAULT_RANGE_RATIO;
 
     @Nullable private LayoutHandlerFactory mLayoutHandlerFactory;
     @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
     @Nullable private String mSplitLayoutTag;
-    private LayoutThreadPoolConfiguration mThreadPoolForSharedLayoutStateFutureConfig =
-        DEFAULT_SHARED_LAYOUT_STATE_FUTURE_THREAD_POOL_CONFIG;
+    private LayoutThreadPoolConfiguration mThreadPoolConfiguration = DEFAULT_THREAD_POOL_CONFIG;
     private float mRangeRatio = DEFAULT_RANGE;
     private boolean mCanPrefetchDisplayLists = false;
     private boolean mCircular = false;
@@ -230,13 +228,12 @@ public class RecyclerBinderConfiguration {
     }
 
     /** Null value will fall back to the non-null default one. */
-    public Builder threadPoolForSharedLayoutStateFutureConfig(
-        @Nullable LayoutThreadPoolConfiguration threadPoolForSharedLayoutStateFutureConfig) {
-      if (threadPoolForSharedLayoutStateFutureConfig != null) {
-        mThreadPoolForSharedLayoutStateFutureConfig = threadPoolForSharedLayoutStateFutureConfig;
+    public Builder threadPoolConfiguration(
+        @Nullable LayoutThreadPoolConfiguration threadPoolConfiguration) {
+      if (threadPoolConfiguration != null) {
+        mThreadPoolConfiguration = threadPoolConfiguration;
       } else {
-        mThreadPoolForSharedLayoutStateFutureConfig =
-            DEFAULT_SHARED_LAYOUT_STATE_FUTURE_THREAD_POOL_CONFIG;
+        mThreadPoolConfiguration = DEFAULT_THREAD_POOL_CONFIG;
       }
       return this;
     }
@@ -332,7 +329,7 @@ public class RecyclerBinderConfiguration {
           mWrapContent,
           mInvalidStateLogParamsList,
           mSplitLayoutTag,
-          mThreadPoolForSharedLayoutStateFutureConfig,
+          mThreadPoolConfiguration,
           mDynamicItemHeight,
           mUseBackgroundChangeSets,
           mHScrollAsyncMode,

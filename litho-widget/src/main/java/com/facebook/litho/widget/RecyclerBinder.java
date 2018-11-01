@@ -303,7 +303,7 @@ public class RecyclerBinder
   private final boolean mCanPrefetchDisplayLists;
   private final boolean mCanCacheDrawingDisplayLists;
   private final boolean mUseSharedLayoutStateFuture;
-  private final LayoutHandler mSharedLayoutStateFutureLayoutHandler;
+  private final LayoutHandler mThreadPoolHandler;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
   private boolean mIsInitMounted = false; // Set to true when the first mount() is called.
@@ -446,8 +446,8 @@ public class RecyclerBinder
     private boolean useSharedLayoutStateFuture = ComponentsConfiguration.useSharedLayoutStateFuture;
     private @Nullable List<ComponentLogParams> invalidStateLogParamsList;
     private RecyclerRangeTraverser recyclerRangeTraverser;
-    private LayoutThreadPoolConfiguration threadPoolForSharedLayoutStateFutureConfig =
-        ComponentsConfiguration.sharedLayoutStateFutureThreadPoolConfig;
+    private LayoutThreadPoolConfiguration threadPoolConfig =
+        ComponentsConfiguration.threadPoolConfiguration;
     private boolean asyncInitRange = ComponentsConfiguration.asyncInitRange;
     private boolean canMeasure;
     private boolean hscrollAsyncMode = false;
@@ -588,9 +588,8 @@ public class RecyclerBinder
       return this;
     }
 
-    public Builder threadPoolForSharedLayoutStateFutureConfig(
-        LayoutThreadPoolConfiguration config) {
-      this.threadPoolForSharedLayoutStateFutureConfig = config;
+    public Builder threadPoolConfig(LayoutThreadPoolConfiguration config) {
+      this.threadPoolConfig = config;
       return this;
     }
 
@@ -726,12 +725,12 @@ public class RecyclerBinder
     mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
     mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
-    final LayoutThreadPoolConfiguration sharedLayoutFutureConfig =
-        builder.threadPoolForSharedLayoutStateFutureConfig;
-    if (mUseSharedLayoutStateFuture && sharedLayoutFutureConfig != null) {
-      mSharedLayoutStateFutureLayoutHandler = new ThreadPoolLayoutHandler(sharedLayoutFutureConfig);
+
+    final LayoutThreadPoolConfiguration threadPoolConfig = builder.threadPoolConfig;
+    if (threadPoolConfig != null) {
+      mThreadPoolHandler = new ThreadPoolLayoutHandler(threadPoolConfig);
     } else {
-      mSharedLayoutStateFutureLayoutHandler = null;
+      mThreadPoolHandler = null;
     }
 
     mRenderInfoViewCreatorController =
@@ -2971,10 +2970,10 @@ public class RecyclerBinder
   }
 
   private ComponentTreeHolder createComponentTreeHolder(RenderInfo renderInfo) {
-    if (mSharedLayoutStateFutureLayoutHandler != null) {
+    if (mThreadPoolHandler != null) {
       return mComponentTreeHolderFactory.create(
           renderInfo,
-          mSharedLayoutStateFutureLayoutHandler,
+          mThreadPoolHandler,
           mCanPrefetchDisplayLists,
           mCanCacheDrawingDisplayLists,
           mUseSharedLayoutStateFuture,

@@ -280,8 +280,7 @@ public class RecyclerCollectionComponentSpec {
             .enableStableIds(binderConfiguration.getEnableStableIds())
             .invalidStateLogParamsList(binderConfiguration.getInvalidStateLogParamsList())
             .useSharedLayoutStateFuture(binderConfiguration.getUseSharedLayoutStateFuture())
-            .threadPoolForSharedLayoutStateFutureConfig(
-                binderConfiguration.getThreadPoolForSharedLayoutStateFutureConfig())
+            .threadPoolConfig(binderConfiguration.getThreadPoolConfiguration())
             .asyncInitRange(binderConfiguration.getAsyncInitRange())
             .hscrollAsyncMode(binderConfiguration.getHScrollAsyncMode())
             .canPrefetchDisplayLists(binderConfiguration.canPrefetchDisplayLists())
