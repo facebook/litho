@@ -30,7 +30,9 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -106,6 +108,7 @@ import javax.annotation.Nullable;
  * @prop inputFilters Used to filter the input to e.g. a max character count.
  * @prop multiline If set to true, type of the input will be changed to multiline TEXT. Because
  *     passwords or numbers couldn't be multiline by definition.
+ * @prop textWatchers Used to register text watchers e.g. mentions detection.
  */
 @MountSpec(
   isPureRender = true,
@@ -448,6 +451,7 @@ class TextInputSpec {
       @Prop(optional = true) int imeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @Prop(optional = true) boolean multiline,
+      @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedView) {
     mountedView.set(editText);
@@ -481,6 +485,7 @@ class TextInputSpec {
     editText.setSelectionChangedEventHandler(TextInput.getSelectionChangedEventHandler(c));
     editText.setKeyUpEventHandler(TextInput.getKeyUpEventHandler(c));
     editText.setEditorActionEventHandler(TextInput.getEditorActionEventHandler(c));
+    editText.attachWatchers(textWatchers);
   }
 
   @OnUnmount
@@ -494,6 +499,7 @@ class TextInputSpec {
     editText.setSelectionChangedEventHandler(null);
     editText.setKeyUpEventHandler(null);
     editText.setEditorActionEventHandler(null);
+    editText.detachWatchers();
     mountedView.set(null);
   }
 
@@ -566,6 +572,7 @@ class TextInputSpec {
     private @Nullable AtomicReference<CharSequence> mTextState;
     private int mLineCount = -1;
     private boolean mMeasured;
+    private @Nullable TextWatcher mTextWatcher;
 
     public EditTextWithEventHandlers(Context context) {
       super(context);
@@ -650,6 +657,51 @@ class TextInputSpec {
     /** Sets reference to keep current text up to date. */
     void setTextState(@Nullable AtomicReference<CharSequence> savedText) {
       mTextState = savedText;
+    }
+
+    void attachWatchers(@Nullable List<TextWatcher> textWatchers) {
+      if (textWatchers != null && textWatchers.size() > 0) {
+        mTextWatcher =
+            textWatchers.size() == 1 ? textWatchers.get(0) : new CompositeTextWatcher(textWatchers);
+        addTextChangedListener(mTextWatcher);
+      }
+    }
+
+    void detachWatchers() {
+      if (mTextWatcher != null) {
+        removeTextChangedListener(mTextWatcher);
+        mTextWatcher = null;
+      }
+    }
+
+    static final class CompositeTextWatcher implements TextWatcher {
+
+      private final List<TextWatcher> mTextWatchers;
+
+      CompositeTextWatcher(List<TextWatcher> textWatchers) {
+        mTextWatchers = textWatchers;
+      }
+
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        for (TextWatcher w : mTextWatchers) {
+          w.beforeTextChanged(s, start, count, after);
+        }
+      }
+
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+        for (TextWatcher w : mTextWatchers) {
+          w.onTextChanged(s, start, before, count);
+        }
+      }
+
+      @Override
+      public void afterTextChanged(Editable editable) {
+        for (TextWatcher w : mTextWatchers) {
+          w.afterTextChanged(editable);
+        }
+      }
     }
   }
 }
