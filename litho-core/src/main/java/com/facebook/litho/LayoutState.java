@@ -1111,7 +1111,8 @@ class LayoutState {
     } else {
       if (layoutState.mTransitionKeyMapping.put(transitionKey, group) != null) {
         // Already seen component with the same manually set transition key
-        throw new RuntimeException(
+        ComponentsReporter.emitMessage(
+            ComponentsReporter.LogLevel.FATAL,
             "The transitionKey '"
                 + transitionKey
                 + "' is defined multiple times in the same layout. transitionKeys must be unique "
