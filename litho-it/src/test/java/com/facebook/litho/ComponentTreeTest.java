@@ -21,6 +21,8 @@ import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
@@ -580,6 +582,245 @@ public class ComponentTreeTest {
 
   private static ComponentTree getComponentTree(LithoView lithoView) {
     return Whitebox.getInternalState(lithoView, "mComponentTree");
+  }
+
+  @Test
+  public void testCreateOneLayoutStateFuture() {
+    MyTestComponent root1 = new MyTestComponent("MyTestComponent");
+    root1.testId = 1;
+
+    ThreadPoolLayoutHandler handler =
+        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, root1)
+            .layoutThreadHandler(handler)
+            .useSharedLayoutStateFuture(true)
+            .build();
+
+    componentTree.setLithoView(new LithoView(mContext));
+    componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
+    componentTree.attach();
+
+    final Object unlockWaitingOnCreateLayout = new Object();
+
+    MyTestComponent root2 = new MyTestComponent("MyTestComponent");
+    root2.testId = 2;
+    root2.unlockWaitingOnCreateLayout = unlockWaitingOnCreateLayout;
+
+    componentTree.setRootAsync(root2);
+
+    synchronized (unlockWaitingOnCreateLayout) {
+      try {
+        unlockWaitingOnCreateLayout.wait();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+
+    assertEquals(1, componentTree.getLayoutStateFutures().size());
+    ComponentTree.LayoutStateFuture layoutStateFuture =
+        componentTree.getLayoutStateFutures().get(0);
+
+    handler.post(
+        new Runnable() {
+          @Override
+          public void run() {
+            assertEquals(1, layoutStateFuture.getWaitingCount());
+            layoutStateFuture.runAndGet();
+            assertEquals(0, layoutStateFuture.getWaitingCount());
+            assertEquals(0, componentTree.getLayoutStateFutures().size());
+          }
+        });
+  }
+
+  @Test
+  public void testLayoutStateFutureMainWaitingOnBg() {
+    MyTestComponent root1 = new MyTestComponent("MyTestComponent");
+    root1.testId = 1;
+
+    ThreadPoolLayoutHandler handler =
+        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, root1)
+            .layoutThreadHandler(handler)
+            .useSharedLayoutStateFuture(true)
+            .build();
+
+    componentTree.setLithoView(new LithoView(mContext));
+    componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
+    componentTree.attach();
+
+    final Object unlockWaitingOnCreateLayout = new Object();
+    final Object lockOnCreateLayoutFinish = new Object();
+
+    MyTestComponent root2 = new MyTestComponent("MyTestComponent");
+    root2.testId = 2;
+    root2.unlockWaitingOnCreateLayout = unlockWaitingOnCreateLayout;
+    root2.lockOnCreateLayoutFinish = lockOnCreateLayoutFinish;
+
+    MyTestComponent root3 = new MyTestComponent("MyTestComponent");
+    root3.testId = 2;
+
+    componentTree.setRootAsync(root2);
+
+    // Wait for first thread to get into onCreateLayout
+    synchronized (unlockWaitingOnCreateLayout) {
+      try {
+        unlockWaitingOnCreateLayout.wait();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+
+    assertEquals(1, componentTree.getLayoutStateFutures().size());
+
+    Thread thread =
+        new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                componentTree.calculateLayoutState(
+                    mContext,
+                    root3,
+                    mWidthSpec,
+                    mHeightSpec,
+                    true,
+                    null,
+                    null,
+                    LayoutState.CalculateLayoutSource.TEST,
+                    null);
+
+                // At this point, the current thread is unblocked after waiting for the first to
+                // finish layout.
+                assertFalse(root3.hasRunLayout);
+                assertTrue(root2.hasRunLayout);
+              }
+            });
+
+    // Schedule second thread to start
+    thread.start();
+
+    // Unblock the first thread to continue through onCreateLayout. The second thread will only
+    // unblock once the first thread's onCreateLayout finishes
+    synchronized (lockOnCreateLayoutFinish) {
+      lockOnCreateLayoutFinish.notify();
+    }
+  }
+
+  @Test
+  public void testRecalculateDifferentRoots() {
+    MyTestComponent root1 = new MyTestComponent("MyTestComponent");
+    root1.testId = 1;
+
+    ThreadPoolLayoutHandler handler =
+        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, root1)
+            .layoutThreadHandler(handler)
+            .useSharedLayoutStateFuture(true)
+            .build();
+
+    componentTree.setLithoView(new LithoView(mContext));
+    componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
+    componentTree.attach();
+
+    final Object unlockWaitingOnCreateLayout = new Object();
+    final Object lockOnCreateLayoutFinish = new Object();
+
+    MyTestComponent root2 = new MyTestComponent("MyTestComponent");
+    root2.testId = 2;
+    root2.unlockWaitingOnCreateLayout = unlockWaitingOnCreateLayout;
+    root2.lockOnCreateLayoutFinish = lockOnCreateLayoutFinish;
+
+    MyTestComponent root3 = new MyTestComponent("MyTestComponent");
+    root3.testId = 2;
+
+    componentTree.setRootAsync(root2);
+
+    // Wait for first thread to get into onCreateLayout
+    synchronized (unlockWaitingOnCreateLayout) {
+      try {
+        unlockWaitingOnCreateLayout.wait();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+
+    assertEquals(1, componentTree.getLayoutStateFutures().size());
+
+    Thread thread =
+        new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                componentTree.calculateLayoutState(
+                    mContext,
+                    root3,
+                    mWidthSpec,
+                    mHeightSpec,
+                    true,
+                    null,
+                    null,
+                    LayoutState.CalculateLayoutSource.TEST,
+                    null);
+
+                // At this point, the current thread is unblocked after waiting for the first to
+                // finish layout.
+                assertTrue(root3.hasRunLayout);
+                assertTrue(root2.hasRunLayout);
+              }
+            });
+
+    // Schedule second thread to start
+    thread.start();
+
+    // Unblock the first thread to continue through onCreateLayout. The second thread will only
+    // unblock once the first thread's onCreateLayout finishes
+    synchronized (lockOnCreateLayoutFinish) {
+      lockOnCreateLayoutFinish.notify();
+    }
+  }
+
+  class MyTestComponent extends Component {
+
+    Object unlockWaitingOnCreateLayout;
+    Object lockOnCreateLayoutFinish;
+    int testId;
+    boolean hasRunLayout;
+
+    protected MyTestComponent(String simpleName) {
+      super(simpleName);
+    }
+
+    @Override
+    protected Component onCreateLayout(ComponentContext c) {
+      if (unlockWaitingOnCreateLayout != null) {
+        synchronized (unlockWaitingOnCreateLayout) {
+          unlockWaitingOnCreateLayout.notify();
+        }
+      }
+
+      if (lockOnCreateLayoutFinish != null) {
+        synchronized (lockOnCreateLayoutFinish) {
+          try {
+            lockOnCreateLayoutFinish.wait();
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+        }
+      }
+
+      hasRunLayout = true;
+      return Column.create(c).build();
+    }
+
+    @Override
+    protected int getId() {
+      return testId;
+    }
   }
 
   private static boolean componentTreeHasSizeSpec(ComponentTree componentTree) {

@@ -177,9 +177,8 @@ public class ComponentTree {
   private final boolean mUseSharedLayoutStateFuture;
   private final Object mLayoutStateFutureLock = new Object();
 
-  @Nullable
   @GuardedBy("mLayoutStateFutureLock")
-  private LayoutStateFuture mLayoutStateFuture;
+  private final List<LayoutStateFuture> mLayoutStateFutures = new ArrayList<>();
 
   private volatile boolean mHasMounted;
 
@@ -1812,10 +1811,11 @@ public class ComponentTree {
       }
 
       synchronized (mLayoutStateFutureLock) {
-        if (mLayoutStateFuture != null) {
-          mLayoutStateFuture.release();
-          mLayoutStateFuture = null;
+        for (int i = 0; i < mLayoutStateFutures.size(); i++) {
+          mLayoutStateFutures.get(i).release();
         }
+
+        mLayoutStateFutures.clear();
       }
 
       if (mPreAllocateMountContentHandler != null) {
@@ -1968,7 +1968,7 @@ public class ComponentTree {
     }
   }
 
-  protected LayoutState calculateLayoutState(
+  protected @Nullable LayoutState calculateLayoutState(
       ComponentContext context,
       Component root,
       int widthSpec,
@@ -1993,32 +1993,37 @@ public class ComponentTree {
               extraAttribution);
 
       synchronized (mLayoutStateFutureLock) {
-        if (localLayoutStateFuture.equals(mLayoutStateFuture)) {
-          // Use the latest LayoutState calculation if it's the same.
-          localLayoutStateFuture = mLayoutStateFuture;
-        } else {
-          // Otherwise set our calculation as the latest one.
-          if (mLayoutStateFuture != null) {
-            mLayoutStateFuture.release();
+        boolean canReuse = false;
+        for (int i = 0; i < mLayoutStateFutures.size(); i++) {
+          if (mLayoutStateFutures.get(i).equals(localLayoutStateFuture)) {
+            // Use the latest LayoutState calculation if it's the same.
+            localLayoutStateFuture = mLayoutStateFutures.get(i);
+            canReuse = true;
+            break;
           }
-          mLayoutStateFuture = localLayoutStateFuture;
         }
+        if (!canReuse) {
+          mLayoutStateFutures.add(localLayoutStateFuture);
+        }
+
+        localLayoutStateFuture.registerForResponse();
       }
 
       final LayoutState layoutState = localLayoutStateFuture.runAndGet();
-      if (layoutState == null) {
-        // If the LayoutState is already released, recalculate.
-        return calculateLayoutState(
-            context,
-            root.makeShallowCopy(),
-            widthSpec,
-            heightSpec,
-            diffingEnabled,
-            previousLayoutState,
-            treeProps,
-            source,
-            extraAttribution);
+
+      synchronized (mLayoutStateFutureLock) {
+        localLayoutStateFuture.unregisterForResponse();
+
+        // This future has finished executing, if no other threads were waiting for the response we
+        // can remove it.
+        if (localLayoutStateFuture.getWaitingCount() == 0) {
+          localLayoutStateFuture.release();
+          if (mLayoutStateFutures.contains(localLayoutStateFuture)) {
+            mLayoutStateFutures.remove(localLayoutStateFuture);
+          }
+        }
       }
+
       return layoutState;
     } else {
       return calculateLayoutStateInternal(
@@ -2087,8 +2092,14 @@ public class ComponentTree {
         extraAttribution);
   }
 
+  @VisibleForTesting
+  List<LayoutStateFuture> getLayoutStateFutures() {
+    return mLayoutStateFutures;
+  }
+
   /** Wraps a {@link FutureTask} to deduplicate calculating the same LayoutState across threads. */
-  private class LayoutStateFuture {
+  @VisibleForTesting
+  class LayoutStateFuture {
 
     private final AtomicInteger runningThreadId = new AtomicInteger(-1);
     private final ComponentContext context;
@@ -2099,6 +2110,7 @@ public class ComponentTree {
     @Nullable private final LayoutState previousLayoutState;
     @Nullable private final TreeProps treeProps;
     private final FutureTask<LayoutState> futureTask;
+    private volatile int refCount;
 
     @GuardedBy("LayoutStateFuture.this")
     private volatile boolean released = false;
@@ -2169,7 +2181,25 @@ public class ComponentTree {
       released = true;
     }
 
-    private @Nullable LayoutState runAndGet() {
+    void unregisterForResponse() {
+      refCount--;
+
+      if (refCount < 0) {
+        throw new IllegalStateException("LayoutStateFuture ref count is below 0");
+      }
+    }
+
+    void registerForResponse() {
+      refCount++;
+    }
+
+    public int getWaitingCount() {
+      return refCount;
+    }
+
+    @VisibleForTesting
+    @Nullable
+    LayoutState runAndGet() {
       if (runningThreadId.compareAndSet(-1, Process.myTid())) {
         futureTask.run();
       }
