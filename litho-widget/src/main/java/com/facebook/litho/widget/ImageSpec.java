@@ -70,7 +70,7 @@ class ImageSpec {
       final int attr = a.getIndex(i);
 
       if (attr == R.styleable.Image_android_src) {
-        drawable.set(c.getBaseContext().getResources().getDrawable(a.getResourceId(attr, 0)));
+        drawable.set(c.getAndroidContext().getResources().getDrawable(a.getResourceId(attr, 0)));
       } else if (attr == R.styleable.Image_android_scaleType) {
         scaleType.set(SCALE_TYPE[a.getInteger(attr, -1)]);
       }

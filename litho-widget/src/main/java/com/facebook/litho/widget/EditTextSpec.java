@@ -311,7 +311,7 @@ class EditTextSpec {
       @State(canUpdateLazily = true) String input) {
 
     // TODO(11759579) - don't allocate a new EditText in every measure.
-    final EditTextForMeasure editText = new EditTextForMeasure(c.getBaseContext());
+    final EditTextForMeasure editText = new EditTextForMeasure(c.getAndroidContext());
 
     initEditText(
         editText,
@@ -355,11 +355,11 @@ class EditTextSpec {
 
     Reference<Drawable> backgroundRef = (Reference<Drawable>) layout.getBackground();
     Drawable background =
-        backgroundRef != null ? Reference.acquire(c.getBaseContext(), backgroundRef) : null;
+        backgroundRef != null ? Reference.acquire(c.getAndroidContext(), backgroundRef) : null;
     if (background != null) {
       Rect rect = new Rect();
       background.getPadding(rect);
-      Reference.release(c.getBaseContext(), background, backgroundRef);
+      Reference.release(c.getAndroidContext(), background, backgroundRef);
 
       if (rect.left != 0 || rect.top != 0 || rect.right != 0 || rect.bottom != 0) {
         // Padding from the background will be added to the layout separately, so does not need to
@@ -511,7 +511,8 @@ class EditTextSpec {
     if (eventHandler != null) {
       if (eventHandler.requestFocus()) {
         InputMethodManager imm =
-            (InputMethodManager) c.getBaseContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            (InputMethodManager)
+                c.getAndroidContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(eventHandler, 0);
       }
     }
@@ -524,7 +525,7 @@ class EditTextSpec {
     if (eventHandler != null) {
       eventHandler.clearFocus();
       InputMethodManager imm =
-          (InputMethodManager) c.getBaseContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+          (InputMethodManager) c.getAndroidContext().getSystemService(Context.INPUT_METHOD_SERVICE);
       imm.hideSoftInputFromWindow(eventHandler.getWindowToken(), 0);
     }
   }

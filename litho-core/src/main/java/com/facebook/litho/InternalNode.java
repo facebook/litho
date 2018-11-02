@@ -874,7 +874,7 @@ class InternalNode implements ComponentLayout {
       return background((Reference<? extends Drawable>) null);
     }
 
-    return background(ContextCompat.getDrawable(mComponentContext.getBaseContext(), resId));
+    return background(ContextCompat.getDrawable(mComponentContext.getAndroidContext(), resId));
   }
 
   InternalNode backgroundColor(@ColorInt int backgroundColor) {
@@ -892,7 +892,7 @@ class InternalNode implements ComponentLayout {
       return foreground(null);
     }
 
-    return foreground(ContextCompat.getDrawable(mComponentContext.getBaseContext(), resId));
+    return foreground(ContextCompat.getDrawable(mComponentContext.getAndroidContext(), resId));
   }
 
   InternalNode foregroundColor(@ColorInt int foregroundColor) {
@@ -1905,7 +1905,7 @@ class InternalNode implements ComponentLayout {
     if (ref == null) {
       return;
     }
-    final T drawable = Reference.acquire(mComponentContext.getBaseContext(), ref);
+    final T drawable = Reference.acquire(mComponentContext.getAndroidContext(), ref);
     if (drawable != null) {
       final Rect backgroundPadding = ComponentsPools.acquireRect();
       if (getDrawablePadding(drawable, backgroundPadding)) {
@@ -1915,7 +1915,7 @@ class InternalNode implements ComponentLayout {
         paddingPx(BOTTOM, backgroundPadding.bottom);
       }
 
-      Reference.release(mComponentContext.getBaseContext(), drawable, ref);
+      Reference.release(mComponentContext.getAndroidContext(), drawable, ref);
       ComponentsPools.release(backgroundPadding);
     }
   }

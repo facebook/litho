@@ -44,8 +44,8 @@ public class ResourceResolver {
   }
 
   public void init(ComponentContext context) {
-    mResources = context.getBaseContext().getResources();
-    mTheme = context.getBaseContext().getTheme();
+    mResources = context.getAndroidContext().getResources();
+    mTheme = context.getAndroidContext().getTheme();
     mResourceCache = context.getResourceCache();
   }
 

@@ -45,7 +45,7 @@ public class LinearLayoutInfo implements LayoutInfo {
   }
 
   public LinearLayoutInfo(ComponentContext context, int orientation, boolean reverseLayout) {
-    this(context.getBaseContext(), orientation, reverseLayout);
+    this(context.getAndroidContext(), orientation, reverseLayout);
   }
 
   public LinearLayoutInfo(Context context, int orientation, boolean reverseLayout) {

@@ -366,7 +366,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
 
     node.appendComponent((Component) this);
-    if (TransitionUtils.areTransitionsEnabled(context.getBaseContext())) {
+    if (TransitionUtils.areTransitionsEnabled(context.getAndroidContext())) {
       if (needsPreviousRenderData()) {
         node.addComponentNeedingPreviousRenderData((Component) this);
       } else {

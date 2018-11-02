@@ -646,10 +646,10 @@ public class RecyclerBinder
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
           new ComponentContext(
-              c.getBaseContext(), c.getLogTag(), c.getLogger(), c.getTreePropsCopy());
+              c.getAndroidContext(), c.getLogTag(), c.getLogger(), c.getTreePropsCopy());
 
       if (layoutInfo == null) {
-        layoutInfo = new LinearLayoutInfo(c.getBaseContext(), VERTICAL, false);
+        layoutInfo = new LinearLayoutInfo(c.getAndroidContext(), VERTICAL, false);
       }
 
       return new RecyclerBinder(this);
@@ -2328,7 +2328,7 @@ public class RecyclerBinder
     final int target = type == SmoothScrollAlignmentType.SNAP_TO_CENTER ? position + 1 : position;
 
     final RecyclerView.SmoothScroller smoothScroller =
-        SnapUtil.getSmoothScrollerWithOffset(mComponentContext.getBaseContext(), offset, type);
+        SnapUtil.getSmoothScrollerWithOffset(mComponentContext.getAndroidContext(), offset, type);
     smoothScroller.setTargetPosition(target);
     mMountedView.getLayoutManager().startSmoothScroll(smoothScroller);
   }
@@ -2774,7 +2774,7 @@ public class RecyclerBinder
       final ViewCreator viewCreator = mRenderInfoViewCreatorController.getViewCreator(viewType);
 
       if (viewCreator != null) {
-        final View view = viewCreator.createView(mComponentContext.getBaseContext(), parent);
+        final View view = viewCreator.createView(mComponentContext.getAndroidContext(), parent);
         return new BaseViewHolder(view, false);
       } else {
         final LithoView lithoView =

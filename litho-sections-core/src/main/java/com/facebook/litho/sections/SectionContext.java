@@ -43,7 +43,7 @@ public class SectionContext extends ComponentContext {
 
   public SectionContext(ComponentContext context) {
     this(
-        context.getBaseContext(),
+        context.getAndroidContext(),
         context.getLogTag(),
         context.getLogger(),
         context.getTreePropsCopy());

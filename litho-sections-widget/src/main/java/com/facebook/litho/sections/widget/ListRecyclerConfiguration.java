@@ -144,7 +144,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   @Override
   public LayoutInfo getLayoutInfo(ComponentContext c) {
     return mLinearLayoutInfoFactory.createLinearLayoutInfo(
-        c.getBaseContext(), mOrientation, mReverseLayout);
+        c.getAndroidContext(), mOrientation, mReverseLayout);
   }
 
   @Override

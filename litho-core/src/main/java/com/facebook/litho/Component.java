@@ -181,15 +181,15 @@ public abstract class Component extends ComponentLifecycle
   // TODO(t30797526): Remove
   private static void assertSameBaseContext(
       ComponentContext scopedContext, ComponentContext willRenderContext) {
-    if (scopedContext.getBaseContext() != willRenderContext.getBaseContext()) {
+    if (scopedContext.getAndroidContext() != willRenderContext.getAndroidContext()) {
       final ComponentsLogger logger = scopedContext.getLogger();
       if (logger != null) {
         logger.emitMessage(
             ComponentsLogger.LogLevel.ERROR,
             "Found mismatching base contexts between the Component's Context ("
-                + scopedContext.getBaseContext()
+                + scopedContext.getAndroidContext()
                 + ") and the Context used in willRender ("
-                + willRenderContext.getBaseContext()
+                + willRenderContext.getAndroidContext()
                 + ")!");
       }
     }
@@ -1245,7 +1245,7 @@ public abstract class Component extends ComponentLifecycle
         return background((Reference<? extends Drawable>) null);
       }
 
-      return background(ContextCompat.getDrawable(mContext.getBaseContext(), resId));
+      return background(ContextCompat.getDrawable(mContext.getAndroidContext(), resId));
     }
 
     public T backgroundColor(@ColorInt int backgroundColor) {
@@ -1270,7 +1270,7 @@ public abstract class Component extends ComponentLifecycle
         return foreground(null);
       }
 
-      return foreground(ContextCompat.getDrawable(mContext.getBaseContext(), resId));
+      return foreground(ContextCompat.getDrawable(mContext.getAndroidContext(), resId));
     }
 
     public T foregroundColor(@ColorInt int foregroundColor) {
@@ -1371,12 +1371,12 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T contentDescription(@StringRes int stringId) {
-      return contentDescription(mContext.getBaseContext().getResources().getString(stringId));
+      return contentDescription(mContext.getAndroidContext().getResources().getString(stringId));
     }
 
     public T contentDescription(@StringRes int stringId, Object... formatArgs) {
       return contentDescription(
-          mContext.getBaseContext().getResources().getString(stringId, formatArgs));
+          mContext.getAndroidContext().getResources().getString(stringId, formatArgs));
     }
 
     public T viewTag(@Nullable Object viewTag) {
@@ -1580,7 +1580,7 @@ public abstract class Component extends ComponentLifecycle
         // condition when loading state list animators, thus we will avoid doing it off the UI
         // thread
         return stateListAnimator(
-            AnimatorInflater.loadStateListAnimator(mContext.getBaseContext(), resId));
+            AnimatorInflater.loadStateListAnimator(mContext.getAndroidContext(), resId));
       }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         mComponent.getOrCreateCommonPropsHolder().stateListAnimatorRes(resId);

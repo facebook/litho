@@ -90,7 +90,7 @@ class CardSpec {
       @Prop(optional = true) boolean disableClipBottomLeft,
       @Prop(optional = true) boolean disableClipBottomRight) {
 
-    final Resources resources = c.getBaseContext().getResources();
+    final Resources resources = c.getAndroidContext().getResources();
 
     if (cornerRadius == -1) {
       cornerRadius = pixels(resources, DEFAULT_CORNER_RADIUS_DP);

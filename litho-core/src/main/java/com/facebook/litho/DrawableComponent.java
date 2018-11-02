@@ -49,7 +49,7 @@ class DrawableComponent<T extends Drawable> extends Component {
       Object content) {
     MatrixDrawable drawable = (MatrixDrawable) content;
 
-    drawable.mount(Reference.acquire(context.getBaseContext(), getDrawable()));
+    drawable.mount(Reference.acquire(context.getAndroidContext(), getDrawable()));
   }
 
   @Override
@@ -69,11 +69,11 @@ class DrawableComponent<T extends Drawable> extends Component {
     final T innerMountedDrawable = matrixDrawable.getMountedDrawable();
 
     if (!ComponentsConfiguration.unmountThenReleaseDrawableCmp) {
-      Reference.release(context.getBaseContext(), innerMountedDrawable, getDrawable());
+      Reference.release(context.getAndroidContext(), innerMountedDrawable, getDrawable());
     }
     matrixDrawable.unmount();
     if (ComponentsConfiguration.unmountThenReleaseDrawableCmp) {
-      Reference.release(context.getBaseContext(), innerMountedDrawable, getDrawable());
+      Reference.release(context.getAndroidContext(), innerMountedDrawable, getDrawable());
     }
   }
 

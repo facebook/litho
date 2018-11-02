@@ -85,7 +85,7 @@ public class VerticalScrollSpec {
     childComponentTree.set(
         ComponentTree.create(
                 new ComponentContext(
-                    context.getBaseContext(),
+                    context.getAndroidContext(),
                     context.getLogTag(),
                     context.getLogger(),
                     context.getTreePropsCopy()),
