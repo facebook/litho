@@ -175,10 +175,6 @@ public class RecyclerBinder
             return getMeasureListener(holder);
           }
 
-          if (!mCanMeasure && mAsyncInitRange) {
-            return getMeasureListenerForInitRange(holder);
-          }
-
           return null;
         }
       };
@@ -205,57 +201,6 @@ public class RecyclerBinder
         }
 
         requestRemeasure();
-      }
-    };
-  }
-
-  // TODO T33427406 Merge this into NewLayoutStateReadyListener.
-  private MeasureListener getMeasureListenerForInitRange(final ComponentTreeHolder holder) {
-    return new MeasureListener() {
-      @Override
-      public void onSetRootAndSizeSpec(int width, int height) {
-
-        // For each new layout that is calculated, we recompute an average item size.
-        boolean hasVerticalLayout = mLayoutInfo.getScrollDirection() == OrientationHelper.VERTICAL;
-
-        int totalSize = mTotalItemsWithLayoutSize.addAndGet(hasVerticalLayout ? height : width);
-        int layoutCount = mTotalItemsWithLayoutCount.incrementAndGet();
-        float averageSize = 1.0f * totalSize / layoutCount;
-
-        // We only do this for the first layout, after the item is inserted.
-        holder.updateMeasureListener(null);
-
-        // Don't create range until we have finished the layouts for the minimum number of items
-        // to calculate an average.
-        if (layoutCount < MIN_RANGE_SIZE) {
-          return;
-        }
-
-        // We estimate how many items are needed to fill the RecyclerView's measured size based on
-        // the average size of the items. The precomputed range size will depend on this number
-        // and the range ratio.
-        int estimatedViewportCount =
-            averageSize == 0
-                ? 0
-                : (int)
-                    (SizeSpec.getSize(hasVerticalLayout ? mLastHeightSpec : mLastWidthSpec)
-                            / averageSize
-                        + 1);
-
-        synchronized (RecyclerBinder.this) {
-          if (mRange == null) {
-            mRange = new RangeCalculationResult();
-            mRange.measuredSize = hasVerticalLayout ? width : height;
-          }
-
-          mRange.estimatedViewportCount = estimatedViewportCount;
-
-          // As soon as we have an estimation for the range size, we can compute range if it was
-          // requested during measure.
-          if (mShouldComputeRangeAfterInit.compareAndSet(true, false)) {
-            computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
-          }
-        }
       }
     };
   }
@@ -1823,8 +1768,6 @@ public class RecyclerBinder
 
     if (mRange != null) {
       computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
-    } else if (mAsyncInitRange) {
-      mShouldComputeRangeAfterInit.getAndSet(true);
     }
   }
 
@@ -2024,18 +1967,6 @@ public class RecyclerBinder
     }
   }
 
-  @GuardedBy("this")
-  private void initRangeAsync(
-      int rangeStartPosition, int childrenWidthSpec, int childrenHeightSpec) {
-    final int rangeEndPosition =
-        rangeStartPosition + Math.min(mComponentTreeHolders.size(), MIN_RANGE_SIZE);
-
-    for (int i = rangeStartPosition; i < rangeEndPosition; i++) {
-      final ComponentTreeHolder holder = mComponentTreeHolders.get(i);
-      holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
-    }
-  }
-
   @VisibleForTesting
   public void setAsyncInitRange(boolean asyncInitRange) {
     mAsyncInitRange = asyncInitRange;
@@ -2051,11 +1982,6 @@ public class RecyclerBinder
       int childrenWidthSpec,
       int childrenHeightSpec,
       int scrollDirection) {
-    if (!mCanMeasure && mAsyncInitRange) {
-      initRangeAsync(holderPosition, childrenWidthSpec, childrenHeightSpec);
-      return;
-    }
-
     ComponentsSystrace.beginSection("initRange");
     try {
       final Size size = new Size();
