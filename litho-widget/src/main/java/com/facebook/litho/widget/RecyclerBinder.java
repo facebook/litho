@@ -308,7 +308,7 @@ public class RecyclerBinder
   private volatile boolean mHasAsyncOperations = false;
   private boolean mIsInitMounted = false; // Set to true when the first mount() is called.
   private @CommitPolicy int mCommitPolicy = CommitPolicy.IMMEDIATE;
-  private boolean mIsFirstChangeSet = true;
+  private boolean mHasFilledViewport = false;
 
   @GuardedBy("this")
   private @Nullable AsyncBatch mCurrentBatch = null;
@@ -765,9 +765,6 @@ public class RecyclerBinder
 
     mAsyncInitRange = builder.asyncInitRange;
     mHScrollAsyncMode = builder.hscrollAsyncMode;
-    if (mHScrollAsyncMode) {
-      mCommitPolicy = CommitPolicy.LAYOUT_BEFORE_INSERT;
-    }
   }
 
   /**
@@ -1064,7 +1061,7 @@ public class RecyclerBinder
   @GuardedBy("this")
   private void addToCurrentBatch(AsyncOperation operation) {
     if (mCurrentBatch == null) {
-      mCurrentBatch = new AsyncBatch(mCommitPolicy, mIsFirstChangeSet);
+      mCurrentBatch = new AsyncBatch(mCommitPolicy);
     }
     mCurrentBatch.mOperations.add(operation);
   }
@@ -1424,49 +1421,35 @@ public class RecyclerBinder
     }
   }
 
-  private void maybeFillFirstChangeSet() {
-    if (!mHScrollAsyncMode) {
+  @GuardedBy("this")
+  private void maybeFillHScrollViewport() {
+    if (!mHScrollAsyncMode || mHasFilledViewport) {
       return;
     }
 
-    final AsyncBatch firstBatch;
-    synchronized (this) {
-      if (mAsyncBatches.isEmpty()) {
-        return;
-      }
-
-      firstBatch = mAsyncBatches.getFirst();
-    }
-
-    if (!firstBatch.mIsFirstChangeSet) {
-      return;
-    }
+    // Now that we're filling, all new batches should be inserted async to not drop frames
+    mCommitPolicy = CommitPolicy.LAYOUT_BEFORE_INSERT;
 
     if (ThreadUtils.isMainThread()) {
-      firstBatch.mCommitPolicy = CommitPolicy.IMMEDIATE;
       applyReadyBatches();
     } else {
-      ComponentsSystrace.beginSection("fillFirstChangeSet");
-      try {
-        for (AsyncOperation operation : firstBatch.mOperations) {
+      if (!mComponentTreeHolders.isEmpty()) {
+        fillListViewport(mMeasuredSize.width, mMeasuredSize.height, null);
+      } else if (!mAsyncBatches.isEmpty()) {
+        List<ComponentTreeHolder> insertsInFirstBatch = new ArrayList<>();
+        for (AsyncOperation operation : mAsyncBatches.getFirst().mOperations) {
           if (operation instanceof AsyncInsertOperation) {
-            final int widthSpec;
-            final int heightSpec;
-            final ComponentTreeHolder holder = ((AsyncInsertOperation) operation).mHolder;
-            synchronized (this) {
-              widthSpec = getActualChildrenWidthSpec(holder);
-              heightSpec = getActualChildrenHeightSpec(holder);
-            }
-
-            holder.computeLayoutSync(mComponentContext, widthSpec, heightSpec, null);
+            insertsInFirstBatch.add(((AsyncInsertOperation) operation).mHolder);
           }
         }
-
-        mMainThreadHandler.post(mApplyReadyBatchesRunnable);
-      } finally {
-        ComponentsSystrace.endSection();
+        computeLayoutsToFillListViewport(
+            insertsInFirstBatch, 0, mMeasuredSize.width, mMeasuredSize.height, null);
       }
+
+      mMainThreadHandler.post(mApplyReadyBatchesRunnable);
     }
+
+    mHasFilledViewport = true;
   }
 
   @ThreadConfined(UI)
@@ -1549,10 +1532,8 @@ public class RecyclerBinder
       // We create a batch here even if it doesn't have any operations: this is so we can still
       // invoke the OnDataBoundListener at the appropriate time (after all preceding batches
       // complete)
-      mCurrentBatch = new AsyncBatch(mCommitPolicy, mIsFirstChangeSet);
+      mCurrentBatch = new AsyncBatch(mCommitPolicy);
     }
-
-    mIsFirstChangeSet = false;
 
     mCurrentBatch.mIsDataChanged = isDataChanged;
     mCurrentBatch.mChangeSetCompleteCallback = changeSetCompleteCallback;
@@ -1837,7 +1818,7 @@ public class RecyclerBinder
     mMeasuredSize = new Size(outSize.width, outSize.height);
     mIsMeasured.set(true);
 
-    maybeFillFirstChangeSet();
+    maybeFillHScrollViewport();
     updateAsyncInsertOperations();
 
     if (mRange != null) {
@@ -2739,15 +2720,13 @@ public class RecyclerBinder
    */
   private static final class AsyncBatch {
 
-    private final boolean mIsFirstChangeSet;
     private final ArrayList<AsyncOperation> mOperations = new ArrayList<>();
     private boolean mIsDataChanged;
     private ChangeSetCompleteCallback mChangeSetCompleteCallback;
     private @CommitPolicy int mCommitPolicy;
 
-    public AsyncBatch(@CommitPolicy int commitPolicy, boolean isFirstChangeSet) {
+    public AsyncBatch(@CommitPolicy int commitPolicy) {
       mCommitPolicy = commitPolicy;
-      mIsFirstChangeSet = isFirstChangeSet;
     }
   }
 
