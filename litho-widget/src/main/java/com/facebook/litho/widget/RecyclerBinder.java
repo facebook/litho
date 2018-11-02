@@ -249,6 +249,7 @@ public class RecyclerBinder
   private final boolean mCanCacheDrawingDisplayLists;
   private final boolean mUseSharedLayoutStateFuture;
   private final LayoutHandler mThreadPoolHandler;
+  private final LayoutThreadPoolConfiguration mThreadPoolConfig;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
   private boolean mIsInitMounted = false; // Set to true when the first mount() is called.
@@ -671,9 +672,10 @@ public class RecyclerBinder
     mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
 
-    final LayoutThreadPoolConfiguration threadPoolConfig = builder.threadPoolConfig;
-    if (threadPoolConfig != null) {
-      mThreadPoolHandler = new ThreadPoolLayoutHandler(threadPoolConfig);
+    mThreadPoolConfig = builder.threadPoolConfig;
+
+    if (mThreadPoolConfig != null) {
+      mThreadPoolHandler = new ThreadPoolLayoutHandler(mThreadPoolConfig);
     } else {
       mThreadPoolHandler = null;
     }
@@ -1967,6 +1969,24 @@ public class RecyclerBinder
     }
   }
 
+  @GuardedBy("this")
+  private void maybeScheduleAsyncLayoutsDuringInitRange(
+      int rangeStartPosition, int childrenWidthSpec, int childrenHeightSpec) {
+    if (!mAsyncInitRange || mComponentTreeHolders == null || mComponentTreeHolders.isEmpty()) {
+      // checked null for tests
+      return;
+    }
+
+    int numThreads = mThreadPoolConfig == null ? 1 : mThreadPoolConfig.getCorePoolSize();
+    int rangeEndPosition = Math.min(rangeStartPosition + numThreads, mComponentTreeHolders.size());
+    for (int i = rangeStartPosition; i < rangeEndPosition; i++) {
+      final ComponentTreeHolder holder = mComponentTreeHolders.get(i);
+      if (!holder.isTreeValid()) {
+        holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
+      }
+    }
+  }
+
   @VisibleForTesting
   public void setAsyncInitRange(boolean asyncInitRange) {
     mAsyncInitRange = asyncInitRange;
@@ -1982,6 +2002,8 @@ public class RecyclerBinder
       int childrenWidthSpec,
       int childrenHeightSpec,
       int scrollDirection) {
+    maybeScheduleAsyncLayoutsDuringInitRange(
+        holderPosition + 1, childrenWidthSpec, childrenHeightSpec);
     ComponentsSystrace.beginSection("initRange");
     try {
       final Size size = new Size();
