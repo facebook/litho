@@ -64,7 +64,8 @@ class CardClipDrawable extends Drawable {
     if ((mDisableClipCorners & edge) != 0) {
       return;
     }
-    mDisableClipCorners |= edge;
+    mDisableClipCorners = edge;
+    mDirty = true;
     invalidateSelf();
   }
 
@@ -115,6 +116,7 @@ class CardClipDrawable extends Drawable {
     }
 
     mCornerPaint.setColor(clippingColor);
+    mDirty = true;
     invalidateSelf();
   }
 
@@ -125,7 +127,6 @@ class CardClipDrawable extends Drawable {
     }
 
     mCornerRadius = radius;
-
     mDirty = true;
     invalidateSelf();
   }
