@@ -196,6 +196,8 @@ public class ComponentContext {
     return mContext.getApplicationContext();
   }
 
+  /** @deprecated please use {@link #getAndroidContext()} instead. */
+  @Deprecated
   public Context getBaseContext() {
     return mContext;
   }
