@@ -135,7 +135,7 @@ Only pure render Components can assume that when props do not change remounting 
 
 ``` java
 @ShouldUpdate(onMount = true)
-public boolean shouldUpdate(Diff<String> someStringProp) {
+static boolean shouldUpdate(@Prop Diff<String> someStringProp) {
   return !someStringProp.getPrevious().equals(someStringProp.getNext());
 }
 ```
