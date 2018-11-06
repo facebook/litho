@@ -205,7 +205,7 @@ public class Border {
      * @param edge The {@link YogaEdge} that will have its width modified
      * @param width The desired width in density independent pixels
      */
-    public Builder widthDip(YogaEdge edge, @Dimension(unit = DP) int width) {
+    public Builder widthDip(YogaEdge edge, @Dimension(unit = DP) float width) {
       checkNotBuilt();
       return widthPx(edge, mResourceResolver.dipsToPixels(width));
     }
