@@ -38,9 +38,12 @@ public class ViewCompatComponent<V extends View> extends Component {
 
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
+  private static final int UNSPECIFIED_POOL_SIZE = -1;
 
   private final ViewCreator mViewCreator;
   private ViewBinder<V> mViewBinder;
+
+  private int mPoolSize = UNSPECIFIED_POOL_SIZE;
 
   public static <V extends View> ViewCompatComponent<V> get(
       ViewCreator<V> viewCreator,
@@ -137,6 +140,11 @@ public class ViewCompatComponent<V extends View> extends Component {
       return this;
     }
 
+    public Builder<V> contentPoolSize(int size) {
+      mViewCompatComponent.mPoolSize = size;
+      return this;
+    }
+
     @Override
     public Builder<V> getThis() {
       return this;
@@ -159,5 +167,10 @@ public class ViewCompatComponent<V extends View> extends Component {
       mViewCompatComponent = null;
       sBuilderPool.release(this);
     }
+  }
+
+  @Override
+  protected int poolSize() {
+    return mPoolSize == UNSPECIFIED_POOL_SIZE ? super.poolSize() : mPoolSize;
   }
 }
