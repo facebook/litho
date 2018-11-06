@@ -39,6 +39,8 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   LayoutHandler mLayoutHandler;
   Object mUnlockInComputeLayout;
   Object mWaitOnLockToFinishLayout;
+  private int mLastRequestedWidthSpec;
+  private int mLastRequestedHeightSpec;
 
   TestComponentTreeHolder(RenderInfo renderInfo) {
     mRenderInfo = renderInfo;
@@ -93,6 +95,8 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
 
     mComponentTree = mock(ComponentTree.class);
     mTreeValid = true;
+    mLastRequestedWidthSpec = widthSpec;
+    mLastRequestedHeightSpec = heightSpec;
     mLayoutAsyncCalled = true;
     mChildWidth = SizeSpec.getSize(widthSpec);
     mChildHeight = SizeSpec.getSize(heightSpec);
@@ -119,6 +123,8 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
 
     mComponentTree = mock(ComponentTree.class);
     mTreeValid = true;
+    mLastRequestedWidthSpec = widthSpec;
+    mLastRequestedHeightSpec = heightSpec;
     if (size != null) {
       size.width = SizeSpec.getSize(widthSpec);
       size.height = SizeSpec.getSize(heightSpec);
@@ -141,6 +147,13 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   @Override
   public synchronized boolean isTreeValid() {
     return mTreeValid;
+  }
+
+  @Override
+  public synchronized boolean isTreeValidForSizeSpecs(int widthSpec, int heightSpec) {
+    return isTreeValid()
+        && mLastRequestedWidthSpec == widthSpec
+        && mLastRequestedHeightSpec == heightSpec;
   }
 
   @Override

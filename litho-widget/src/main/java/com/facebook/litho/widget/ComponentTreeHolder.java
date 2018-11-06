@@ -308,6 +308,12 @@ public class ComponentTreeHolder {
     return mIsTreeValid;
   }
 
+  public synchronized boolean isTreeValidForSizeSpecs(int widthSpec, int heightSpec) {
+    return isTreeValid()
+        && mLastRequestedWidthSpec == widthSpec
+        && mLastRequestedHeightSpec == heightSpec;
+  }
+
   public synchronized @Nullable ComponentTree getComponentTree() {
     return mComponentTree;
   }

@@ -1557,15 +1557,16 @@ public class RecyclerBinder
   @Override
   public final synchronized ComponentTree getComponentForStickyHeaderAt(int position) {
     final ComponentTreeHolder holder = mComponentTreeHolders.get(position);
-    if (holder.isTreeValid()) {
+    final int childrenWidthSpec = getActualChildrenWidthSpec(holder);
+    final int childrenHeightSpec = getActualChildrenHeightSpec(holder);
+
+    if (holder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
       return holder.getComponentTree();
     }
 
     // This could happen when RecyclerView is populated with new data, and first position is not 0.
     // It is possible that sticky header is above the first visible position and also it is outside
     // calculated range and its layout has not been calculated yet.
-    final int childrenWidthSpec = getActualChildrenWidthSpec(holder);
-    final int childrenHeightSpec = getActualChildrenHeightSpec(holder);
     holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
 
     return holder.getComponentTree();
@@ -1904,6 +1905,11 @@ public class RecyclerBinder
     // computation will be canceled (if it hasn't started) and this new one will run.
     final int widthSpec = getActualChildrenWidthSpec(holder);
     final int heightSpec = getActualChildrenHeightSpec(holder);
+
+    if (holder.isTreeValidForSizeSpecs(widthSpec, heightSpec)) {
+      return;
+    }
+
     holder.computeLayoutAsync(mComponentContext, widthSpec, heightSpec);
   }
 
@@ -2458,7 +2464,7 @@ public class RecyclerBinder
     }
 
     if (index >= rangeStart && index <= rangeEnd) {
-      if (!holder.isTreeValid()) {
+      if (!holder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
         holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
       }
     } else {
@@ -2728,7 +2734,7 @@ public class RecyclerBinder
         lithoView.setInvalidStateLogParamsList(mInvalidStateLogParamsList);
         final int childrenWidthSpec = getActualChildrenWidthSpec(componentTreeHolder);
         final int childrenHeightSpec = getActualChildrenHeightSpec(componentTreeHolder);
-        if (!componentTreeHolder.isTreeValid()) {
+        if (!componentTreeHolder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
           final Size size = new Size();
           componentTreeHolder.computeLayoutSync(
               mComponentContext, childrenWidthSpec, childrenHeightSpec, size);
