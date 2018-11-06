@@ -162,9 +162,9 @@ public class DataFlowGraph {
     final SimpleArrayMap<ValueNode, Integer> nodesToOutputsLeft = new SimpleArrayMap<>();
 
     for (int i = 0, bindingsSize = mBindings.size(); i < bindingsSize; i++) {
-      final ArraySet<ValueNode> nodes = mBindings.get(i).getAllNodes();
+      final ArrayList<ValueNode> nodes = mBindings.get(i).getAllNodes();
       for (int j = 0, nodesSize = nodes.size(); j < nodesSize; j++) {
-        final ValueNode node = nodes.valueAt(j);
+        final ValueNode node = nodes.get(j);
         final int outputCount = node.getOutputCount();
         if (outputCount == 0) {
           leafNodes.add(node);
@@ -251,9 +251,9 @@ public class DataFlowGraph {
     for (int i = mBindings.size() - 1; i >= 0; i--) {
       final GraphBinding binding = mBindings.get(i);
       boolean allAreFinished = true;
-      final ArraySet<ValueNode> nodesToCheck = binding.getAllNodes();
+      final ArrayList<ValueNode> nodesToCheck = binding.getAllNodes();
       for (int j = 0, nodesSize = nodesToCheck.size(); j < nodesSize; j++) {
-        final NodeState nodeState = mNodeStates.get(nodesToCheck.valueAt(j));
+        final NodeState nodeState = mNodeStates.get(nodesToCheck.get(j));
         if (!nodeState.isFinished) {
           allAreFinished = false;
           break;
@@ -267,9 +267,9 @@ public class DataFlowGraph {
 
   @GuardedBy("this")
   private void registerNodes(GraphBinding binding) {
-    final ArraySet<ValueNode> nodes = binding.getAllNodes();
+    final ArrayList<ValueNode> nodes = binding.getAllNodes();
     for (int i = 0, size = nodes.size(); i < size; i++) {
-      final ValueNode node = nodes.valueAt(i);
+      final ValueNode node = nodes.get(i);
       final NodeState nodeState = mNodeStates.get(node);
       if (nodeState != null) {
         nodeState.refCount++;
@@ -283,9 +283,9 @@ public class DataFlowGraph {
 
   @GuardedBy("this")
   private void unregisterNodes(GraphBinding binding) {
-    final ArraySet<ValueNode> nodes = binding.getAllNodes();
+    final ArrayList<ValueNode> nodes = binding.getAllNodes();
     for (int i = 0, size = nodes.size(); i < size; i++) {
-      final ValueNode node = nodes.valueAt(i);
+      final ValueNode node = nodes.get(i);
       final NodeState nodeState = mNodeStates.get(node);
       nodeState.refCount--;
       if (nodeState.refCount == 0) {
