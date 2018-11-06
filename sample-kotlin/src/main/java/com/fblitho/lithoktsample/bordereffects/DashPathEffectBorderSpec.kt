@@ -32,7 +32,7 @@ object DashPathEffectBorderSpec {
           .border(
               Border.create(c)
                   .color(YogaEdge.ALL, NiceColor.BLUE)
-                  .widthDip(YogaEdge.ALL, 5)
+                  .widthDip(YogaEdge.ALL, 5f)
                   .dashEffect(floatArrayOf(10f, 5f), 0f)
                   .build())
           .build()

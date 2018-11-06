@@ -33,7 +33,7 @@ object AlternateColorCornerPathEffectBorderSpec {
                   .text("This component has a path effect with rounded corners + multiple colors"))
           .border(
               Border.create(c)
-                  .widthDip(YogaEdge.ALL, 20)
+                  .widthDip(YogaEdge.ALL, 20f)
                   .color(YogaEdge.LEFT, NiceColor.RED)
                   .color(YogaEdge.TOP, NiceColor.ORANGE)
                   .color(YogaEdge.RIGHT, NiceColor.GREEN)

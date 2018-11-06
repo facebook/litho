@@ -32,7 +32,7 @@ object VaryingRadiiBorderSpec {
           .child(Text.create(c).textSizeSp(20f).text("This component has varying corner radii"))
           .border(
               Border.create(c)
-                  .widthDip(YogaEdge.ALL, 3)
+                  .widthDip(YogaEdge.ALL, 3f)
                   .color(YogaEdge.LEFT, Color.BLACK)
                   .color(YogaEdge.TOP, NiceColor.GREEN)
                   .color(YogaEdge.BOTTOM, NiceColor.BLUE)

@@ -32,7 +32,7 @@ object AllBorderSpec {
                   .textSizeSp(20f)
                   .text("This component has all borders specified to the same color + width"))
           .border(
-              Border.create(c).color(YogaEdge.ALL, NiceColor.BLUE).widthDip(YogaEdge.ALL, 5)
+              Border.create(c).color(YogaEdge.ALL, NiceColor.BLUE).widthDip(YogaEdge.ALL, 5f)
                   .build())
           .build()
 }
