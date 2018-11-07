@@ -16,10 +16,13 @@
 
 package com.facebook.litho;
 
+import javax.annotation.Nullable;
+
 /**
  * A class implementing this interface will expose a method to dispatch an
  * {@link com.facebook.litho.annotations.Event} given an {@link EventHandler}.
  */
 public interface EventDispatcher {
+  @Nullable
   Object dispatchOnEvent(EventHandler eventHandler, Object eventState);
 }

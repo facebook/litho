@@ -317,6 +317,7 @@ public abstract class Section extends SectionLifecycle
     return ComponentUtils.hasEquivalentFields(this, other);
   }
 
+  @Nullable
   protected StateContainer getStateContainer() {
     return null;
   }

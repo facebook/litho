@@ -484,9 +484,10 @@ public class SectionTree {
   }
 
   /** Calculates the global starting index for each section in the hierarchy. */
+  @Nullable
   @UiThread
   private SectionLocationInfo findSectionForKeyRecursive(
-      Section root, String key, int prevChildrenCount) {
+      @Nullable Section root, String key, int prevChildrenCount) {
     if (root == null) {
       return null;
     }
@@ -830,7 +831,7 @@ public class SectionTree {
     addStateUpdateInternal(key, stateUpdate, true);
   }
 
-  private static Section copy(Section section, boolean deep) {
+  private static @Nullable Section copy(Section section, boolean deep) {
     return section != null ? section.makeShallowCopy(deep) : null;
   }
 

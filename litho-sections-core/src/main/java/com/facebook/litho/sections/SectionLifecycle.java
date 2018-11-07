@@ -38,11 +38,11 @@ import com.facebook.litho.widget.SmoothScrollAlignmentType;
 public abstract class SectionLifecycle implements EventDispatcher, EventTriggerTarget {
 
   /**
-   * This methods will delegate to the {@link GroupSectionSpec}
-   * method annotated with {@link com.facebook.litho.sections.annotations.OnCreateChildren}
+   * This methods will delegate to the {@link GroupSectionSpec} method annotated with {@link
+   * com.facebook.litho.sections.annotations.OnCreateChildren}
    */
-  protected Children createChildren(
-      SectionContext c) {
+  @Nullable
+  protected Children createChildren(SectionContext c) {
     return null;
   }
 
@@ -87,6 +87,7 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
 
   }
 
+  @Nullable
   @Override
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
     // Do nothing by default.
@@ -133,6 +134,7 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
       Section newSection) {
   }
 
+  @Nullable
   protected Object getService(Section section) {
     return null;
   }
@@ -257,6 +259,7 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
     return previousTreeProps;
   }
 
+  @Nullable
   public static EventHandler getLoadingEventHandler(SectionContext context) {
     Section scopedSection = context.getSectionScope();
     if (scopedSection == null) {
