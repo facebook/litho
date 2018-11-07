@@ -35,7 +35,6 @@ import com.facebook.litho.animation.ParallelBinding;
 import com.facebook.litho.animation.PropertyAnimation;
 import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.litho.animation.Resolver;
-import com.facebook.litho.internal.ArraySet;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -189,12 +188,12 @@ public class TransitionManager {
     public boolean seenInLastTransition = false;
   }
 
-  private final Map<AnimationBinding, ArraySet<PropertyHandle>> mAnimationsToPropertyHandles =
+  private final Map<AnimationBinding, List<PropertyHandle>> mAnimationsToPropertyHandles =
       new HashMap<>();
   private final Map<String, AnimationState> mAnimationStates = new HashMap<>();
   private final SparseArrayCompat<String> mTraceNames = new SparseArrayCompat<>();
   private final Map<PropertyHandle, Float> mInitialStatesToRestore = new HashMap<>();
-  private final ArraySet<AnimationBinding> mRunningRootAnimations = new ArraySet<>();
+  private final ArrayList<AnimationBinding> mRunningRootAnimations = new ArrayList<>();
   private final TransitionsAnimationBindingListener mAnimationBindingListener =
       new TransitionsAnimationBindingListener();
   private final RootAnimationListener mRootAnimationListener = new RootAnimationListener();
@@ -364,7 +363,7 @@ public class TransitionManager {
     // Calling stop will cause the animation to be removed from the set, so iterate in reverse
     // order.
     for (int i = mRunningRootAnimations.size() - 1; i >= 0; i--) {
-      mRunningRootAnimations.valueAt(i).stop();
+      mRunningRootAnimations.get(i).stop();
     }
     mRunningRootAnimations.clear();
 
@@ -669,7 +668,7 @@ public class TransitionManager {
 
     // Currently, all supported animations can only animate one property at a time, but we think
     // this will change in the future so we maintain a set here.
-    final ArraySet<PropertyHandle> animatedPropertyHandles = new ArraySet<>();
+    final List<PropertyHandle> animatedPropertyHandles = new ArrayList<>();
     animatedPropertyHandles.add(propertyHandle);
     mAnimationsToPropertyHandles.put(animation, animatedPropertyHandles);
 
@@ -930,7 +929,7 @@ public class TransitionManager {
     }
 
     private void finishAnimation(AnimationBinding binding) {
-      final ArraySet<PropertyHandle> keys = mAnimationsToPropertyHandles.remove(binding);
+      final List<PropertyHandle> keys = mAnimationsToPropertyHandles.remove(binding);
       if (keys == null) {
         return;
       }
@@ -939,7 +938,7 @@ public class TransitionManager {
       // and see if it was the last active animation. If it was, we know that item is no longer
       // animating and we can release the animation state.
       for (int i = 0, size = keys.size(); i < size; i++) {
-        final PropertyHandle propertyHandle = keys.valueAt(i);
+        final PropertyHandle propertyHandle = keys.get(i);
         final String key = propertyHandle.getTransitionKey();
         final AnimatedProperty property = propertyHandle.getProperty();
         final AnimationState animationState = mAnimationStates.get(key);
