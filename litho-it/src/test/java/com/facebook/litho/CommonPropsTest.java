@@ -28,8 +28,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.SparseArray;
 import com.facebook.litho.annotations.ImportantForAccessibility;
+import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.drawable.DefaultComparableDrawable;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
+import com.facebook.litho.testing.drawable.TestColorDrawable;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -117,7 +120,9 @@ public class CommonPropsTest {
     mCommonProps.touchExpansionPx(YogaEdge.LEFT, 23);
     mCommonProps.touchExpansionPx(YogaEdge.ALL, 21);
 
-    Reference<? extends Drawable> drawableReference = DrawableReference.create().build();
+    ComparableDrawable comparable =
+        DefaultComparableDrawable.create(new TestColorDrawable(Color.BLACK));
+    Reference<ComparableDrawable> drawableReference = DrawableReference.create(comparable);
     mCommonProps.background(drawableReference);
     Drawable foreground = new ColorDrawable(Color.BLACK);
     mCommonProps.foreground(foreground);

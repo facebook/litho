@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static android.R.drawable.btn_default;
 import static android.graphics.Color.BLACK;
-import static android.graphics.Color.RED;
 import static android.graphics.Color.TRANSPARENT;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutOutput.STATE_DIRTY;
@@ -52,6 +51,8 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.v4.util.SparseArrayCompat;
+import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.drawable.DefaultComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
@@ -68,8 +69,8 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class TreeDiffingTest {
 
-  private static Drawable sRedDrawable;
-  private static Drawable sBlackDrawable;
+  private static ComparableDrawable sRedDrawable;
+  private static ComparableDrawable sBlackDrawable;
   private static Drawable sTransparentDrawable;
 
   private int mUnspecifiedSpec;
@@ -80,9 +81,8 @@ public class TreeDiffingTest {
   public void setup() throws Exception {
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mUnspecifiedSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
-
-    sRedDrawable = new TestColorDrawable(RED);
-    sBlackDrawable = new TestColorDrawable(BLACK);
+    sRedDrawable = DefaultComparableDrawable.create(new TestColorDrawable(Color.RED));
+    sBlackDrawable = DefaultComparableDrawable.create(new TestColorDrawable(Color.BLACK));
     sTransparentDrawable = new TestColorDrawable(TRANSPARENT);
   }
 

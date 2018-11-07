@@ -16,7 +16,6 @@
 
 package com.facebook.litho.reference;
 
-import static com.facebook.litho.reference.DrawableReference.create;
 import static com.facebook.litho.reference.Reference.acquire;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
@@ -40,7 +39,9 @@ public class DrawableReferenceTest {
     Context context = new ComponentContext(application).getAndroidContext();
 
     DefaultComparableDrawable comparable =
-        (DefaultComparableDrawable) acquire(context, create().drawable(drawable).build());
+        (DefaultComparableDrawable)
+            acquire(context, DrawableReference.create(DefaultComparableDrawable.create(drawable)));
+
     assertThat(comparable.getWrappedDrawable()).isEqualTo(drawable);
   }
 }

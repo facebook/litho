@@ -45,6 +45,8 @@ public final class DrawableReference extends ReferenceLifecycle<ComparableDrawab
     return sInstance;
   }
 
+  /** @deprecated */
+  @Deprecated
   public static PropsBuilder create() {
     return new PropsBuilder(new State());
   }
@@ -61,7 +63,7 @@ public final class DrawableReference extends ReferenceLifecycle<ComparableDrawab
    * @return the no-op drawable reference
    */
   public static Reference<ComparableDrawable> create(ComparableDrawable drawable) {
-    return create().drawable(drawable).build();
+    return new PropsBuilder(new State()).drawable(drawable).build();
   }
 
   @Override
