@@ -189,17 +189,11 @@ public class ComponentContext {
   }
 
   public final Context getAndroidContext() {
-    return getBaseContext();
+    return mContext;
   }
 
   public final Context getApplicationContext() {
     return mContext.getApplicationContext();
-  }
-
-  /** @deprecated please use {@link #getAndroidContext()} instead. */
-  @Deprecated
-  public Context getBaseContext() {
-    return mContext;
   }
 
   public Resources getResources() {
