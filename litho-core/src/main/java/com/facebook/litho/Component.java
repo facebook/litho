@@ -316,16 +316,6 @@ public abstract class Component extends ComponentLifecycle
     return uniqueKey;
   }
 
-  Component makeCopyWithNullContext() {
-    try {
-      final Component component = (Component) super.clone();
-      component.mScopedContext = null;
-      return component;
-    } catch (CloneNotSupportedException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
   public Component makeShallowCopy() {
     try {
       final Component component = (Component) super.clone();
