@@ -168,8 +168,7 @@ class ViewNodeInfo {
       return false;
     }
 
-    // TODO: (T33421916) We need compare Drawables more accurately
-    if (!CommonUtils.equals(mBackground, other.mBackground)) {
+    if (Reference.shouldUpdate(mBackground, other.mBackground)) {
       return false;
     }
 

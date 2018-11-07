@@ -50,6 +50,8 @@ import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.YogaDefaults;
+import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.drawable.DefaultComparableDrawable;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
@@ -865,8 +867,15 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
+  InternalNode background(ComparableDrawable background) {
+    return background(background != null ? DrawableReference.create(background) : null);
+  }
+
   InternalNode background(Drawable background) {
-    return background(DrawableReference.create().drawable(background).build());
+    if (background instanceof ComparableDrawable) {
+      return background((ComparableDrawable) background);
+    }
+    return background(background != null ? DefaultComparableDrawable.create(background) : null);
   }
 
   InternalNode backgroundRes(@DrawableRes int resId) {

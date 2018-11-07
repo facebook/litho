@@ -50,12 +50,12 @@ import static org.robolectric.RuntimeEnvironment.application;
 
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.util.SparseArrayCompat;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
+import com.facebook.litho.testing.drawable.TestColorDrawable;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaMeasureFunction;
@@ -81,9 +81,9 @@ public class TreeDiffingTest {
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mUnspecifiedSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
 
-    sRedDrawable = new ColorDrawable(RED);
-    sBlackDrawable = new ColorDrawable(BLACK);
-    sTransparentDrawable = new ColorDrawable(TRANSPARENT);
+    sRedDrawable = new TestColorDrawable(RED);
+    sBlackDrawable = new TestColorDrawable(BLACK);
+    sTransparentDrawable = new TestColorDrawable(TRANSPARENT);
   }
 
   @Test

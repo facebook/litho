@@ -322,7 +322,7 @@ public class LayoutStateCreateTreeTest {
   @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public void testAddingAllAttributes() {
-    final Reference<Drawable> drawableReference = DrawableReference.create().build();
+    final Reference<? extends Drawable> drawableReference = DrawableReference.create().build();
     final Drawable foreground = new ColorDrawable(Color.BLACK);
     final EventHandler<ClickEvent> clickHandler = mock(EventHandler.class);
     final EventHandler<LongClickEvent> longClickHandler = mock(EventHandler.class);

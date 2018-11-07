@@ -30,6 +30,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
+import com.facebook.litho.drawable.DefaultComparableDrawable;
 import com.facebook.litho.it.R;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
@@ -54,7 +55,9 @@ public class ResolveAttributeTest {
     InternalNode node = Layout.create(mContext, column);
 
     Drawable d = mContext.getResources().getDrawable(test_bg);
-    assertThat(acquire(mContext.getAndroidContext(), node.getBackground())).isEqualTo(d);
+    DefaultComparableDrawable comparable =
+        (DefaultComparableDrawable) acquire(mContext.getAndroidContext(), node.getBackground());
+    assertThat(comparable.getWrappedDrawable()).isEqualTo(d);
   }
 
   @Test
@@ -76,7 +79,9 @@ public class ResolveAttributeTest {
     InternalNode node = Layout.create(mContext, column);
 
     Drawable d = mContext.getResources().getDrawable(test_bg);
-    assertThat(acquire(mContext.getAndroidContext(), node.getBackground())).isEqualTo(d);
+    DefaultComparableDrawable comparable =
+        (DefaultComparableDrawable) acquire(mContext.getAndroidContext(), node.getBackground());
+    assertThat(comparable.getWrappedDrawable()).isEqualTo(d);
   }
 
   @Test

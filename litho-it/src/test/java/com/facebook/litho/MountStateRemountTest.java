@@ -24,13 +24,14 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.powermock.reflect.Whitebox.getInternalState;
 
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.v4.util.LongSparseArray;
 import android.view.View;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.drawable.TestColorDrawable;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.EditText;
@@ -304,14 +305,14 @@ public class MountStateRemountTest {
                 EditText.create(mContext)
                     .text("Hello World")
                     .textSizeSp(12)
-                    .backgroundColor(Color.RED))
+                    .background(new TestColorDrawable(Color.RED)))
             .build();
 
     final LithoView lithoView = mountComponent(mContext, oldComponent, 400, 400);
 
     final View oldView = lithoView.getChildAt(0);
 
-    final ColorDrawable oldDrawable = (ColorDrawable) oldView.getBackground();
+    final ComparableDrawable oldDrawable = (ComparableDrawable) oldView.getBackground();
 
     final Component newComponent =
         Column.create(mContext)
@@ -321,7 +322,7 @@ public class MountStateRemountTest {
                 EditText.create(mContext)
                     .text("Hello World")
                     .textSizeSp(12)
-                    .backgroundColor(Color.CYAN))
+                    .background(new TestColorDrawable(Color.CYAN)))
             .build();
 
     mountComponent(mContext, lithoView, newComponent, 400, 400);
@@ -330,9 +331,9 @@ public class MountStateRemountTest {
 
     assertThat(newView).isSameAs(oldView);
 
-    final ColorDrawable newDrawable = (ColorDrawable) newView.getBackground();
+    final ComparableDrawable newDrawable = (ComparableDrawable) newView.getBackground();
 
-    assertThat(newDrawable.getColor()).isNotEqualTo(oldDrawable.getColor());
+    assertThat(oldDrawable.isEquivalentTo(newDrawable)).isFalse();
 
     ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = false;
   }

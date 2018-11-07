@@ -14,6 +14,7 @@ litho_android_library(
         "displaylist/*.java",
         "reference/*.java",
         "debug/*.java",
+        "drawable/*.java",
     ]),
     provided_deps = [
         LITHO_ANDROIDSUPPORT_TARGET,

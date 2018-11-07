@@ -117,7 +117,7 @@ public class CommonPropsTest {
     mCommonProps.touchExpansionPx(YogaEdge.LEFT, 23);
     mCommonProps.touchExpansionPx(YogaEdge.ALL, 21);
 
-    Reference<Drawable> drawableReference = DrawableReference.create().build();
+    Reference<? extends Drawable> drawableReference = DrawableReference.create().build();
     mCommonProps.background(drawableReference);
     Drawable foreground = new ColorDrawable(Color.BLACK);
     mCommonProps.foreground(foreground);

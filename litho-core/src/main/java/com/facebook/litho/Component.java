@@ -40,6 +40,8 @@ import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.drawable.DefaultComparableDrawable;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
@@ -1227,9 +1229,15 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    public T background(@Nullable ComparableDrawable background) {
+      return background(background != null ? DrawableReference.create(background) : null);
+    }
+
     public T background(@Nullable Drawable background) {
-      return background(
-          background != null ? DrawableReference.create().drawable(background).build() : null);
+      if (background instanceof ComparableDrawable) {
+        return background((ComparableDrawable) background);
+      }
+      return background(background != null ? DefaultComparableDrawable.create(background) : null);
     }
 
     public T backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {

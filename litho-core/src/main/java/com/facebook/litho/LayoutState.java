@@ -62,6 +62,7 @@ import android.view.accessibility.AccessibilityManager;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.drawable.DefaultComparableDrawable;
 import com.facebook.litho.reference.BorderColorDrawableReference;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
@@ -863,7 +864,7 @@ class LayoutState {
                 node,
                 layoutState,
                 convertForeground,
-                DrawableReference.create().drawable(foreground).build(),
+                DrawableReference.create(DefaultComparableDrawable.create(foreground)),
                 OutputUnitType.FOREGROUND,
                 needsHostView);
 

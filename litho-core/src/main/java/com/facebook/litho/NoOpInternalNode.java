@@ -18,8 +18,10 @@ package com.facebook.litho;
 
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.util.SparseArray;
+import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
@@ -307,6 +309,11 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode background(Reference<? extends Drawable> builder) {
+    return this;
+  }
+
+  @Override
+  InternalNode background(@Nullable ComparableDrawable background) {
     return this;
   }
 

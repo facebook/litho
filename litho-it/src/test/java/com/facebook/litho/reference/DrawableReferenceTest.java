@@ -21,9 +21,12 @@ import static com.facebook.litho.reference.Reference.acquire;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
-import android.graphics.drawable.ColorDrawable;
+import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.drawable.DefaultComparableDrawable;
+import com.facebook.litho.testing.drawable.TestColorDrawable;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,12 +36,11 @@ public class DrawableReferenceTest {
 
   @Test
   public void testAcquire() {
-    Drawable drawable = new ColorDrawable();
-    ComponentContext context = new ComponentContext(application);
+    Drawable drawable = new TestColorDrawable(Color.BLACK);
+    Context context = new ComponentContext(application).getAndroidContext();
 
-    assertThat(drawable)
-        .isEqualTo(acquire(context.getAndroidContext(), create().drawable(drawable).build()));
+    DefaultComparableDrawable comparable =
+        (DefaultComparableDrawable) acquire(context, create().drawable(drawable).build());
+    assertThat(comparable.getWrappedDrawable()).isEqualTo(drawable);
   }
-
 }
-
