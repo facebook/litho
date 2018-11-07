@@ -41,6 +41,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.utils.MeasureUtils;
+import javax.annotation.Nullable;
 
 /**
  * Renders an infinitely spinning progress bar.
@@ -127,7 +128,7 @@ class ProgressSpec {
     return new ProgressView(c);
   }
 
-  static Drawable getStyledIndeterminateDrawable(ComponentContext c, int defStyle) {
+  static @Nullable Drawable getStyledIndeterminateDrawable(ComponentContext c, int defStyle) {
     Drawable indeterminateDrawable = null;
 
     final TypedArray styledAttributes = c.obtainStyledAttributes(R.styleable.Progress, defStyle);

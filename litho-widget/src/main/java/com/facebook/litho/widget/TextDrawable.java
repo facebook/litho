@@ -558,7 +558,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     return result;
   }
 
-  private Path getSelectionPath() {
+  private @Nullable Path getSelectionPath() {
     if (mSelectionStart == mSelectionEnd) {
       return null;
     }

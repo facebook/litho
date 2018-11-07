@@ -115,7 +115,7 @@ public class StartSnapHelper extends SnapHelper {
   }
 
   @Override
-  protected LinearSmoothScroller createSnapScroller(LayoutManager layoutManager) {
+  protected @Nullable LinearSmoothScroller createSnapScroller(LayoutManager layoutManager) {
     if (!(layoutManager instanceof RecyclerView.SmoothScroller.ScrollVectorProvider)) {
       return null;
     }

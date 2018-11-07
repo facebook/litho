@@ -26,6 +26,7 @@ import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Wrapper that encapsulates all the features {@link RecyclerSpec} provides such as sticky header
@@ -134,7 +135,7 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
         stickyHeaderTop + mStickyHeader.getMeasuredHeight());
   }
 
-  static SectionsRecyclerView getParentRecycler(RecyclerView recyclerView) {
+  static @Nullable SectionsRecyclerView getParentRecycler(RecyclerView recyclerView) {
     if (recyclerView.getParent() instanceof SectionsRecyclerView) {
       return (SectionsRecyclerView) recyclerView.getParent();
     }
