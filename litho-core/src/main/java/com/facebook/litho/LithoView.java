@@ -598,8 +598,7 @@ public class LithoView extends ComponentHost {
     if (hasTransientState) {
       if (mTransientStateCount == 0
           && mComponentTree != null
-          && mComponentTree.isIncrementalMountEnabled()
-          && !mComponentTree.isIncrementalMountOnPreDraw()) {
+          && mComponentTree.isIncrementalMountEnabled()) {
         final Rect rect = ComponentsPools.acquireRect();
         rect.set(0, 0, getWidth(), getHeight());
         performIncrementalMount(rect, false);
@@ -610,8 +609,7 @@ public class LithoView extends ComponentHost {
       mTransientStateCount--;
       if (mTransientStateCount == 0
           && mComponentTree != null
-          && mComponentTree.isIncrementalMountEnabled()
-          && !mComponentTree.isIncrementalMountOnPreDraw()) {
+          && mComponentTree.isIncrementalMountEnabled()) {
         // We mounted everything when the transient state was set on this view. We need to do this
         // partly to unmount content that is not visible but mostly to get the correct visibility
         // events to be fired.
@@ -696,7 +694,6 @@ public class LithoView extends ComponentHost {
   private void maybePerformIncrementalMountOnView() {
     if (mComponentTree == null
         || !mComponentTree.isIncrementalMountEnabled()
-        || mComponentTree.isIncrementalMountOnPreDraw()
         || !(getParent() instanceof View)) {
       return;
     }
@@ -758,10 +755,7 @@ public class LithoView extends ComponentHost {
     }
 
     if (mComponentTree.isIncrementalMountEnabled()) {
-      if (!mComponentTree.isIncrementalMountOnPreDraw()) {
-        // If we're going to mount in pre-draw then we don't need to bother with this.
-        mComponentTree.mountComponent(visibleRect, processVisibilityOutputs);
-      }
+      mComponentTree.mountComponent(visibleRect, processVisibilityOutputs);
     } else {
       throw new IllegalStateException("To perform incremental mounting, you need first to enable" +
           " it when creating the ComponentTree.");
@@ -774,9 +768,7 @@ public class LithoView extends ComponentHost {
     }
 
     if (mComponentTree.isIncrementalMountEnabled()) {
-      if (!mComponentTree.isIncrementalMountOnPreDraw()) {
-        mComponentTree.incrementalMountComponent();
-      }
+      mComponentTree.incrementalMountComponent();
     } else {
       throw new IllegalStateException("To perform incremental mounting, you need first to enable" +
           " it when creating the ComponentTree.");
@@ -801,8 +793,7 @@ public class LithoView extends ComponentHost {
     boolean rectNeedsRelease = false;
     if (mTransientStateCount > 0
         && mComponentTree != null
-        && mComponentTree.isIncrementalMountEnabled()
-        && !mComponentTree.isIncrementalMountOnPreDraw()) {
+        && mComponentTree.isIncrementalMountEnabled()) {
       // If transient state is set but the MountState is dirty we want to re-mount everything.
       // Otherwise, we don't need to do anything as the entire LithoView was mounted when the
       // transient state was set.

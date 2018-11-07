@@ -154,9 +154,6 @@ public class ComponentTree {
   private final boolean mIncrementalMountEnabled;
 
   @ThreadConfined(ThreadConfined.UI)
-  private final boolean mIncrementalMountOnPreDraw;
-
-  @ThreadConfined(ThreadConfined.UI)
   private final boolean mIsLayoutDiffingEnabled;
 
   @ThreadConfined(ThreadConfined.UI)
@@ -262,7 +259,6 @@ public class ComponentTree {
     mContext = ComponentContext.withComponentTree(builder.context, this);
     mRoot = wrapRootInErrorBoundary(builder.root);
 
-    mIncrementalMountOnPreDraw = ComponentsConfiguration.incrementalMountOnPreDraw;
     mIncrementalMountEnabled = builder.incrementalMountEnabled;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mLayoutThreadHandler = builder.layoutThreadHandler;
@@ -594,18 +590,6 @@ public class ComponentTree {
   }
 
   void incrementalMountComponent() {
-    if (mIncrementalMountOnPreDraw) {
-      return;
-    }
-
-    incrementalMountComponentInternal();
-  }
-
-  void incrementalMountComponentOnPreDraw() {
-    incrementalMountComponentInternal();
-  }
-
-  private void incrementalMountComponentInternal() {
     assertMainThread();
 
     if (!mIncrementalMountEnabled) {
@@ -988,11 +972,6 @@ public class ComponentTree {
    */
   public boolean isIncrementalMountEnabled() {
     return mIncrementalMountEnabled;
-  }
-
-  /** Whether this component does incremental mount in onPreDraw */
-  public boolean isIncrementalMountOnPreDraw() {
-    return mIncrementalMountOnPreDraw;
   }
 
   synchronized Component getRoot() {
