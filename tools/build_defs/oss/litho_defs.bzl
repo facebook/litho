@@ -26,6 +26,8 @@ LITHO_ANNOTATIONS_TARGET = make_dep_path("litho-annotations/src/main/java/com/fa
 
 LITHO_CONFIG_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/config:config")
 
+LITHO_BOOST_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/boost:boost")
+
 LITHO_DISPLAYLISTSTUBS_TARGET = make_dep_path("litho-stubs:stubs")
 
 LITHO_VIEWCOMPAT_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/viewcompat:viewcompat")
