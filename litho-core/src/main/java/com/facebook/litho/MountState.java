@@ -2082,22 +2082,22 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static void setViewBackground(View view, ViewNodeInfo viewNodeInfo) {
-    final Reference<Drawable> backgroundReference = viewNodeInfo.getBackground();
+    final Reference<? extends Drawable> backgroundReference = viewNodeInfo.getBackground();
     if (backgroundReference != null) {
       setBackgroundCompat(view, Reference.acquire(view.getContext(), backgroundReference));
     }
   }
 
   private static void unsetViewBackground(View view, ViewNodeInfo viewNodeInfo) {
-    final Reference<Drawable> backgroundReference = viewNodeInfo.getBackground();
+    final Reference<? extends Drawable> backgroundReference = viewNodeInfo.getBackground();
     final Drawable drawable = view.getBackground();
     if (backgroundReference != null) {
       if (!ComponentsConfiguration.unsetThenReleaseDrawableBackground) {
-        Reference.release(view.getContext(), drawable, backgroundReference);
+        Reference.release(view.getContext(), drawable, (Reference<Drawable>) backgroundReference);
       }
       setBackgroundCompat(view, null);
       if (ComponentsConfiguration.unsetThenReleaseDrawableBackground) {
-        Reference.release(view.getContext(), drawable, backgroundReference);
+        Reference.release(view.getContext(), drawable, (Reference<Drawable>) backgroundReference);
       }
     }
   }

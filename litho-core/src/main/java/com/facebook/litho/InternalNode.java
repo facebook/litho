@@ -126,8 +126,8 @@ class InternalNode implements ComponentLayout {
   private InternalNode mNestedTreeHolder;
   private long mPrivateFlags;
 
-  private Reference<? extends Drawable> mBackground;
-  private Drawable mForeground;
+  private @Nullable Reference<? extends Drawable> mBackground;
+  private @Nullable ComparableDrawable mForeground;
   private final int[] mBorderColors = new int[Border.EDGE_COUNT];
   private final float[] mBorderRadius = new float[Border.RADIUS_COUNT];
   private @Nullable PathEffect mBorderPathEffect;
@@ -262,11 +262,11 @@ class InternalNode implements ComponentLayout {
   }
 
   @Override
-  public Reference<? extends Drawable> getBackground() {
+  public @Nullable Reference<? extends Drawable> getBackground() {
     return mBackground;
   }
 
-  public Drawable getForeground() {
+  public @Nullable ComparableDrawable getForeground() {
     return mForeground;
   }
 
@@ -355,7 +355,7 @@ class InternalNode implements ComponentLayout {
 
   /**
    * @return Whether this node is holding a nested tree or not. The decision was made during tree
-   *     creation {@link ComponentLifecycle#createLayout(ComponentContext, Component, boolean)}.
+   *     creation {@link ComponentLifecycle#createLayout(ComponentContext, boolean)}.
    */
   boolean isNestedTreeHolder() {
     return mIsNestedTreeHolder;
@@ -860,18 +860,18 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
-  InternalNode background(Reference<? extends Drawable> background) {
+  InternalNode background(@Nullable Reference<? extends Drawable> background) {
     mPrivateFlags |= PFLAG_BACKGROUND_IS_SET;
     mBackground = background;
     setPaddingFromDrawableReference(background);
     return this;
   }
 
-  InternalNode background(ComparableDrawable background) {
+  InternalNode background(@Nullable ComparableDrawable background) {
     return background(background != null ? DrawableReference.create(background) : null);
   }
 
-  InternalNode background(Drawable background) {
+  InternalNode background(@Nullable Drawable background) {
     if (background instanceof ComparableDrawable) {
       return background((ComparableDrawable) background);
     }
@@ -890,7 +890,7 @@ class InternalNode implements ComponentLayout {
     return background(new ColorDrawable(backgroundColor));
   }
 
-  InternalNode foreground(Drawable foreground) {
+  InternalNode foreground(@Nullable ComparableDrawable foreground) {
     mPrivateFlags |= PFLAG_FOREGROUND_IS_SET;
     mForeground = foreground;
     return this;
@@ -901,11 +901,12 @@ class InternalNode implements ComponentLayout {
       return foreground(null);
     }
 
-    return foreground(ContextCompat.getDrawable(mComponentContext.getAndroidContext(), resId));
+    Drawable drawable = ContextCompat.getDrawable(mComponentContext.getAndroidContext(), resId);
+    return foreground(DefaultComparableDrawable.create(drawable));
   }
 
   InternalNode foregroundColor(@ColorInt int foregroundColor) {
-    return foreground(new ColorDrawable(foregroundColor));
+    return foreground(DefaultComparableDrawable.create(new ColorDrawable(foregroundColor)));
   }
 
   InternalNode wrapInView() {

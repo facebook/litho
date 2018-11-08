@@ -24,7 +24,6 @@ import android.animation.StateListAnimator;
 import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.SparseArray;
 import com.facebook.litho.annotations.ImportantForAccessibility;
@@ -124,7 +123,8 @@ public class CommonPropsTest {
         DefaultComparableDrawable.create(new TestColorDrawable(Color.BLACK));
     Reference<ComparableDrawable> drawableReference = DrawableReference.create(comparable);
     mCommonProps.background(drawableReference);
-    Drawable foreground = new ColorDrawable(Color.BLACK);
+    ComparableDrawable foreground =
+        DefaultComparableDrawable.create(new ColorDrawable(Color.BLACK));
     mCommonProps.foreground(foreground);
 
     mCommonProps.wrapInView();

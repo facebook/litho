@@ -1250,9 +1250,16 @@ public abstract class Component extends ComponentLifecycle
       return background(new ColorDrawable(backgroundColor));
     }
 
-    public T foreground(@Nullable Drawable foreground) {
+    public T foreground(@Nullable ComparableDrawable foreground) {
       mComponent.getOrCreateCommonPropsHolder().foreground(foreground);
       return getThis();
+    }
+
+    public T foreground(@Nullable Drawable foreground) {
+      if (foreground instanceof ComparableDrawable) {
+        return foreground((ComparableDrawable) foreground);
+      }
+      return foreground(foreground != null ? DefaultComparableDrawable.create(foreground) : null);
     }
 
     public T foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {

@@ -25,8 +25,6 @@ import android.animation.StateListAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
@@ -39,6 +37,7 @@ import com.facebook.litho.reference.Reference;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
+import com.facebook.litho.testing.drawable.TestColorDrawable;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaAlign;
@@ -325,9 +324,10 @@ public class LayoutStateCreateTreeTest {
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public void testAddingAllAttributes() {
     final Reference<ComparableDrawable> background =
-        DrawableReference.create(DefaultComparableDrawable.create(new ColorDrawable(Color.RED)));
-
-    final Drawable foreground = new ColorDrawable(Color.BLACK);
+        DrawableReference.create(
+            DefaultComparableDrawable.create(new TestColorDrawable(Color.RED)));
+    final ComparableDrawable foreground =
+        DefaultComparableDrawable.create(new TestColorDrawable(Color.BLACK));
     final EventHandler<ClickEvent> clickHandler = mock(EventHandler.class);
     final EventHandler<LongClickEvent> longClickHandler = mock(EventHandler.class);
     final EventHandler<TouchEvent> touchHandler = mock(EventHandler.class);

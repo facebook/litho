@@ -318,7 +318,7 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode foreground(Drawable foreground) {
+  public InternalNode foreground(@Nullable ComparableDrawable foreground) {
     return this;
   }
 

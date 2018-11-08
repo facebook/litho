@@ -62,7 +62,7 @@ import android.view.accessibility.AccessibilityManager;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.drawable.DefaultComparableDrawable;
+import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.reference.BorderColorDrawableReference;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
@@ -847,7 +847,7 @@ class LayoutState {
     }
 
     // 6. Add foreground if defined.
-    final Drawable foreground = node.getForeground();
+    final ComparableDrawable foreground = node.getForeground();
     if (foreground != null) {
       if (layoutOutput != null && layoutOutput.hasViewNodeInfo() && SDK_INT >= M) {
         layoutOutput.getViewNodeInfo().setForeground(foreground);
@@ -864,7 +864,7 @@ class LayoutState {
                 node,
                 layoutState,
                 convertForeground,
-                DrawableReference.create(DefaultComparableDrawable.create(foreground)),
+                DrawableReference.create(foreground),
                 OutputUnitType.FOREGROUND,
                 needsHostView);
 

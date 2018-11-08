@@ -22,6 +22,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.view.View;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaDirection;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,8 +36,8 @@ class ViewNodeInfo {
 
   private final AtomicInteger mReferenceCount = new AtomicInteger(0);
 
-  private Reference<Drawable> mBackground;
-  private Drawable mForeground;
+  private Reference<? extends Drawable> mBackground;
+  private ComparableDrawable mForeground;
   private Rect mPadding;
   private Rect mExpandedTouchBounds;
   private YogaDirection mLayoutDirection;
@@ -44,18 +45,18 @@ class ViewNodeInfo {
   private @DrawableRes int mStateListAnimatorRes;
 
   void setBackground(Reference<? extends Drawable> background) {
-    mBackground = (Reference<Drawable>) background;
+    mBackground = background;
   }
 
-  Reference<Drawable> getBackground() {
+  Reference<? extends Drawable> getBackground() {
     return mBackground;
   }
 
-  void setForeground(Drawable foreground) {
+  void setForeground(ComparableDrawable foreground) {
     mForeground = foreground;
   }
 
-  Drawable getForeground() {
+  ComparableDrawable getForeground() {
     return mForeground;
   }
 
@@ -172,7 +173,8 @@ class ViewNodeInfo {
       return false;
     }
 
-    if (!CommonUtils.equals(mForeground, other.mForeground)) {
+    if ((mForeground == null && other.mForeground != null)
+        || (mForeground != null && !mForeground.isEquivalentTo(other.mForeground))) {
       return false;
     }
 
