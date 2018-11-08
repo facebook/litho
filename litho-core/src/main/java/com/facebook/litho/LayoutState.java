@@ -63,7 +63,6 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.reference.BorderColorDrawableReference;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaConstants;
@@ -1059,18 +1058,19 @@ class LayoutState {
     final YogaEdge leftEdge = isRtl ? YogaEdge.RIGHT : YogaEdge.LEFT;
     final YogaEdge rightEdge = isRtl ? YogaEdge.LEFT : YogaEdge.RIGHT;
 
-    return BorderColorDrawableReference.create(node.getContext())
-        .pathEffect(node.getBorderPathEffect())
-        .borderLeftColor(Border.getEdgeColor(borderColors, leftEdge))
-        .borderTopColor(Border.getEdgeColor(borderColors, YogaEdge.TOP))
-        .borderRightColor(Border.getEdgeColor(borderColors, rightEdge))
-        .borderBottomColor(Border.getEdgeColor(borderColors, YogaEdge.BOTTOM))
-        .borderLeftWidth(node.getLayoutBorder(leftEdge))
-        .borderTopWidth(node.getLayoutBorder(YogaEdge.TOP))
-        .borderRightWidth(node.getLayoutBorder(rightEdge))
-        .borderBottomWidth(node.getLayoutBorder(YogaEdge.BOTTOM))
-        .borderRadius(borderRadius)
-        .build();
+    return DrawableReference.create(
+        new BorderColorDrawable.Builder()
+            .pathEffect(node.getBorderPathEffect())
+            .borderLeftColor(Border.getEdgeColor(borderColors, leftEdge))
+            .borderTopColor(Border.getEdgeColor(borderColors, YogaEdge.TOP))
+            .borderRightColor(Border.getEdgeColor(borderColors, rightEdge))
+            .borderBottomColor(Border.getEdgeColor(borderColors, YogaEdge.BOTTOM))
+            .borderLeftWidth(node.getLayoutBorder(leftEdge))
+            .borderTopWidth(node.getLayoutBorder(YogaEdge.TOP))
+            .borderRightWidth(node.getLayoutBorder(rightEdge))
+            .borderBottomWidth(node.getLayoutBorder(YogaEdge.BOTTOM))
+            .borderRadius(borderRadius)
+            .build());
   }
 
   private static void addLayoutOutputIdToPositionsMap(

@@ -771,28 +771,6 @@ public class ComponentsPools {
     sDisplayListDrawablePool.release(displayListDrawable);
   }
 
-  public static BorderColorDrawable acquireBorderColorDrawable() {
-    if (sBorderColorDrawablePool == null && !ComponentsConfiguration.disablePools) {
-      sBorderColorDrawablePool = new RecyclePool<>("BorderColorDrawable", 10, true);
-    }
-    BorderColorDrawable drawable =
-        ComponentsConfiguration.disablePools ? null : sBorderColorDrawablePool.acquire();
-    if (drawable == null) {
-      drawable = new BorderColorDrawable();
-    }
-
-    return drawable;
-  }
-
-  @ThreadSafe(enableChecks = false)
-  public static void release(BorderColorDrawable borderColorDrawable) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    borderColorDrawable.reset();
-    sBorderColorDrawablePool.release(borderColorDrawable);
-  }
-
   public static <E> ArraySet<E> acquireArraySet() {
     ArraySet<E> set = ComponentsConfiguration.disablePools ? null : sArraySetPool.acquire();
     if (set == null) {
