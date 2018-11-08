@@ -938,19 +938,19 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return false;
     }
 
-    ViewNodeInfo nextViewNodeInfo = layoutOutput.getViewNodeInfo();
-    ViewNodeInfo currentViewNodeInfo = currentMountItem.getViewNodeInfo();
-    if (((nextViewNodeInfo == null || currentViewNodeInfo == null)
-            && !(nextViewNodeInfo == null && currentViewNodeInfo == null))
-        || (nextViewNodeInfo != null && !nextViewNodeInfo.isEquivalentTo(currentViewNodeInfo))) {
+    final ViewNodeInfo nextViewNodeInfo = layoutOutput.getViewNodeInfo();
+    final ViewNodeInfo currentViewNodeInfo = currentMountItem.getViewNodeInfo();
+    if ((currentViewNodeInfo == null && nextViewNodeInfo != null)
+        || (currentViewNodeInfo != null && !currentViewNodeInfo.isEquivalentTo(nextViewNodeInfo))) {
+
       return true;
     }
 
-    NodeInfo nextNodeInfo = layoutOutput.getNodeInfo();
-    NodeInfo currentNodeInfo = currentMountItem.getNodeInfo();
-    if (((nextNodeInfo == null || currentNodeInfo == null)
-            && !(nextNodeInfo == null && currentNodeInfo == null))
-        || (nextNodeInfo != null && !nextNodeInfo.isEquivalentTo(currentNodeInfo))) {
+    final NodeInfo nextNodeInfo = layoutOutput.getNodeInfo();
+    final NodeInfo currentNodeInfo = currentMountItem.getNodeInfo();
+    if ((currentNodeInfo == null && nextNodeInfo != null)
+        || (currentNodeInfo != null && !currentNodeInfo.isEquivalentTo(nextNodeInfo))) {
+
       return true;
     }
 
