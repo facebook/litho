@@ -201,6 +201,9 @@ public class ComponentsConfiguration {
   /** Whether Drawable Reference should get it's lifecycle using a non synchronized getter */
   public static boolean isDrawableReferenceNonSynchronized = false;
 
+  /** Whether we should use Comparable Drawable for more efficient diffing of drawables */
+  public static boolean enableComparableDrawable = false;
+
   /**
    * Whether DefaultComparableDrawables are always equivalent during view info diffing. This is to
    * test if the current default implementation of DefaultComparableDrawable#isEquivalentTo() is

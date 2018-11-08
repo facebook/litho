@@ -36,10 +36,12 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PathEffect;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Px;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
@@ -890,11 +892,20 @@ class InternalNode implements ComponentLayout {
     if (resId == 0) {
       return background((ComparableDrawable) null);
     }
-    return background(ComparableResDrawable.create(mComponentContext.getAndroidContext(), resId));
+
+    if (ComponentsConfiguration.enableComparableDrawable) {
+      return background(ComparableResDrawable.create(mComponentContext.getAndroidContext(), resId));
+    } else {
+      return background(ContextCompat.getDrawable(mComponentContext.getAndroidContext(), resId));
+    }
   }
 
   InternalNode backgroundColor(@ColorInt int backgroundColor) {
-    return background(ComparableColorDrawable.create(backgroundColor));
+    if (ComponentsConfiguration.enableComparableDrawable) {
+      return background(ComparableColorDrawable.create(backgroundColor));
+    } else {
+      return background(new ColorDrawable(backgroundColor));
+    }
   }
 
   /**
@@ -916,11 +927,19 @@ class InternalNode implements ComponentLayout {
       return foreground(null);
     }
 
-    return foreground(ComparableResDrawable.create(mComponentContext.getAndroidContext(), resId));
+    if (ComponentsConfiguration.enableComparableDrawable) {
+      return foreground(ComparableResDrawable.create(mComponentContext.getAndroidContext(), resId));
+    } else {
+      return foreground(ContextCompat.getDrawable(mComponentContext.getAndroidContext(), resId));
+    }
   }
 
   InternalNode foregroundColor(@ColorInt int foregroundColor) {
-    return foreground(ComparableColorDrawable.create(foregroundColor));
+    if (ComponentsConfiguration.enableComparableDrawable) {
+      return foreground(ComparableColorDrawable.create(foregroundColor));
+    } else {
+      return foreground(new ColorDrawable(foregroundColor));
+    }
   }
 
   InternalNode wrapInView() {

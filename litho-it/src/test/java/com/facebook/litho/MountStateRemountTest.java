@@ -256,7 +256,9 @@ public class MountStateRemountTest {
     // Check that props were not set again
     assertThat(newTag).isSameAs(oldTag);
     assertThat(newContentDescription).isSameAs(oldContentDescription);
-    assertThat(oldBackground).isSameAs(newBackground);
+    if (ComponentsConfiguration.enableComparableDrawable) {
+      assertThat(oldBackground).isSameAs(newBackground);
+    }
 
     ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = false;
   }
