@@ -84,15 +84,12 @@ public class ComponentsTestRunner extends RobolectricTestRunner {
         getResPrefix() + "AndroidManifest.xml",
         "",
         "",
-        config.abiSplit(),
         "res",
         "assets",
-        config.buildDir(),
         new Class[]{},
         config.instrumentedPackages(),
         Application.class,
-        new String[0],
-        null
+        new String[0]
     );
   }
 }
