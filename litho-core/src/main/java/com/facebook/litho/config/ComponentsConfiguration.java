@@ -198,6 +198,9 @@ public class ComponentsConfiguration {
    */
   public static boolean enableViewInfoDiffingForMountStateUpdates = false;
 
+  /** Whether Drawable Reference should get it's lifecycle using a non synchronized getter */
+  public static boolean isDrawableReferenceNonSynchronized = false;
+
   public static boolean enableThreadTracingStacktrace = false;
 
   /**

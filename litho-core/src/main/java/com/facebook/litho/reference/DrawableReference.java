@@ -17,6 +17,7 @@
 package com.facebook.litho.reference;
 
 import android.graphics.drawable.Drawable;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
 
 /**
@@ -31,7 +32,10 @@ public final class DrawableReference extends Reference<ComparableDrawable> {
   ComparableDrawable mDrawable;
 
   private DrawableReference(ComparableDrawable drawable) {
-    super(DrawableReferenceLifecycle.get());
+    super(
+        ComponentsConfiguration.isDrawableReferenceNonSynchronized
+            ? DrawableReferenceLifecycle.get()
+            : DrawableReferenceLifecycle.syncGet());
     mDrawable = drawable;
   }
 

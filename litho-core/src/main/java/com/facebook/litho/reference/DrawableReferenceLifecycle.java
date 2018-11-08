@@ -37,6 +37,10 @@ final class DrawableReferenceLifecycle extends ReferenceLifecycle<ComparableDraw
     return sInstance;
   }
 
+  public static synchronized DrawableReferenceLifecycle syncGet() {
+    return sInstance;
+  }
+
   @Override
   protected ComparableDrawable onAcquire(Context context, Reference<ComparableDrawable> reference) {
     return ((DrawableReference) reference).mDrawable;
