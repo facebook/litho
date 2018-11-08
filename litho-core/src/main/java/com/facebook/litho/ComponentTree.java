@@ -178,8 +178,9 @@ public class ComponentTree {
   private final boolean mUseSharedLayoutStateFuture;
   private final Object mLayoutStateFutureLock = new Object();
 
+  @Nullable
   @GuardedBy("mLayoutStateFutureLock")
-  private final List<LayoutStateFuture> mLayoutStateFutures = new ArrayList<>();
+  private LayoutStateFuture mLayoutStateFuture;
 
   private volatile boolean mHasMounted;
 
@@ -1818,11 +1819,10 @@ public class ComponentTree {
       }
 
       synchronized (mLayoutStateFutureLock) {
-        for (int i = 0; i < mLayoutStateFutures.size(); i++) {
-          mLayoutStateFutures.get(i).release();
+        if (mLayoutStateFuture != null) {
+          mLayoutStateFuture.releaseRef();
         }
-
-        mLayoutStateFutures.clear();
+        mLayoutStateFuture = null;
       }
 
       if (mPreAllocateMountContentHandler != null) {
@@ -1984,7 +1984,7 @@ public class ComponentTree {
     }
   }
 
-  protected @Nullable LayoutState calculateLayoutState(
+  protected LayoutState calculateLayoutState(
       ComponentContext context,
       Component root,
       int widthSpec,
@@ -2009,36 +2009,29 @@ public class ComponentTree {
               extraAttribution);
 
       synchronized (mLayoutStateFutureLock) {
-        boolean canReuse = false;
-        for (int i = 0; i < mLayoutStateFutures.size(); i++) {
-          if (mLayoutStateFutures.get(i).equals(localLayoutStateFuture)) {
-            // Use the latest LayoutState calculation if it's the same.
-            localLayoutStateFuture = mLayoutStateFutures.get(i);
-            canReuse = true;
-            break;
+        if (localLayoutStateFuture.equals(mLayoutStateFuture)) {
+          // Use the latest LayoutState calculation if it's the same.
+          localLayoutStateFuture.releaseRef();
+          localLayoutStateFuture = mLayoutStateFuture;
+        } else {
+          // Otherwise set our calculation as the latest one.
+          if (mLayoutStateFuture != null) {
+            mLayoutStateFuture.releaseRef();
           }
-        }
-        if (!canReuse) {
-          mLayoutStateFutures.add(localLayoutStateFuture);
+          mLayoutStateFuture = localLayoutStateFuture;
         }
 
-        localLayoutStateFuture.registerForResponse();
+        // always acquire an *extra* ref on the LayoutStateFuture before calling runAndGet()
+        // this must be guarded by mLayoutStateFutureLock to make sure the Future isn't released
+        // before runAndGet() is called.
+        localLayoutStateFuture.acquireRef();
       }
+
 
       final LayoutState layoutState = localLayoutStateFuture.runAndGet();
 
-      synchronized (mLayoutStateFutureLock) {
-        localLayoutStateFuture.unregisterForResponse();
-
-        // This future has finished executing, if no other threads were waiting for the response we
-        // can remove it.
-        if (localLayoutStateFuture.getWaitingCount() == 0) {
-          localLayoutStateFuture.release();
-          if (mLayoutStateFutures.contains(localLayoutStateFuture)) {
-            mLayoutStateFutures.remove(localLayoutStateFuture);
-          }
-        }
-      }
+      // releaseRef() after runAndGet() to allow
+      localLayoutStateFuture.releaseRef();
 
       return layoutState;
     } else {
@@ -2092,8 +2085,10 @@ public class ComponentTree {
   }
 
   @VisibleForTesting
-  List<LayoutStateFuture> getLayoutStateFutures() {
-    return mLayoutStateFutures;
+  LayoutStateFuture getLayoutStateFuture() {
+    synchronized (mLayoutStateFutureLock) {
+      return mLayoutStateFuture;
+    }
   }
 
   /** Wraps a {@link FutureTask} to deduplicate calculating the same LayoutState across threads. */
@@ -2105,15 +2100,12 @@ public class ComponentTree {
     private final Component root;
     private final int widthSpec;
     private final int heightSpec;
-    private final boolean diffingEnabled;
-    @Nullable private final LayoutState previousLayoutState;
-    @Nullable private final TreeProps treeProps;
     private final FutureTask<LayoutState> futureTask;
-    private volatile int refCount;
 
     @GuardedBy("LayoutStateFuture.this")
-    private volatile boolean released = false;
+    private volatile int refCount = 1;
 
+    // The contract around
     @GuardedBy("LayoutStateFuture.this")
     @Nullable
     private volatile LayoutState layoutState = null;
@@ -2132,21 +2124,12 @@ public class ComponentTree {
       this.root = root;
       this.widthSpec = widthSpec;
       this.heightSpec = heightSpec;
-      this.diffingEnabled = diffingEnabled;
-      this.previousLayoutState = previousLayoutState;
-      this.treeProps = treeProps;
       this.futureTask =
           new FutureTask<>(
               new Callable<LayoutState>() {
                 @Override
                 public @Nullable LayoutState call() {
-                  synchronized (LayoutStateFuture.this) {
-                    if (released) {
-                      return null;
-                    }
-                  }
-                  final LayoutState result =
-                      calculateLayoutStateInternal(
+                  LayoutState result = calculateLayoutStateInternal(
                           context,
                           root,
                           widthSpec,
@@ -2157,47 +2140,44 @@ public class ComponentTree {
                           source,
                           extraAttribution);
                   synchronized (LayoutStateFuture.this) {
-                    if (released) {
-                      result.releaseRef();
-                      return null;
-                    } else {
-                      layoutState = result;
-                      return result;
-                    }
+                    // This callable is only ever called once, so layoutState will always be null
+                    layoutState = result;
                   }
+                  return result;
                 }
               });
     }
 
-    private synchronized void release() {
-      if (released) {
-        return;
+    @GuardedBy("mLayoutStateFutureLock")
+    private synchronized void acquireRef() {
+      if (refCount <= 0) {
+        throw new IllegalStateException("Trying to acquire a released LayoutStateFuture");
       }
-      if (layoutState != null) {
-        layoutState.releaseRef();
-        layoutState = null;
-      }
-      released = true;
-    }
-
-    void unregisterForResponse() {
-      refCount--;
-
-      if (refCount < 0) {
-        throw new IllegalStateException("LayoutStateFuture ref count is below 0");
-      }
-    }
-
-    void registerForResponse() {
       refCount++;
     }
 
-    public int getWaitingCount() {
-      return refCount;
+    private synchronized void releaseRef() {
+      if (refCount <= 0) {
+        throw new IllegalStateException("Trying to release an already released LayoutStateFuture");
+      }
+      refCount--;
+      if (refCount == 0) {
+        layoutState.releaseRef();
+        layoutState = null;
+      }
     }
 
     @VisibleForTesting
-    @Nullable
+    int getRefCount() {
+      return refCount;
+    }
+
+    /**
+     * Run the future if it hasn't been run yet, and return the calculated {@link LayoutState}.
+     * {@link #acquireRef()} MUST be called before calling this, and {@link #releaseRef()} MUST be
+     * called after.
+     */
+    @VisibleForTesting
     LayoutState runAndGet() {
       if (runningThreadId.compareAndSet(-1, Process.myTid())) {
         futureTask.run();
@@ -2231,9 +2211,8 @@ public class ComponentTree {
         didRaiseThreadPriority = false;
       }
 
-      final LayoutState result;
       try {
-        result = futureTask.get();
+        return futureTask.get().acquireRef();
       } catch (ExecutionException e) {
         final Throwable cause = e.getCause();
         if (cause instanceof RuntimeException) {
@@ -2255,16 +2234,6 @@ public class ComponentTree {
             }
           }
         }
-      }
-
-      if (result == null) {
-        return null;
-      }
-      synchronized (LayoutStateFuture.this) {
-        if (released) {
-          return null;
-        }
-        return result.acquireRef();
       }
     }
 

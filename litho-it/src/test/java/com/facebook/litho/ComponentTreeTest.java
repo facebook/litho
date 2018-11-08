@@ -22,6 +22,7 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
@@ -653,18 +654,16 @@ public class ComponentTreeTest {
       e.printStackTrace();
     }
 
-    assertEquals(1, componentTree.getLayoutStateFutures().size());
-    ComponentTree.LayoutStateFuture layoutStateFuture =
-        componentTree.getLayoutStateFutures().get(0);
+    ComponentTree.LayoutStateFuture layoutStateFuture = componentTree.getLayoutStateFuture();
+    assertNotNull(layoutStateFuture);
 
     handler.post(
         new Runnable() {
           @Override
           public void run() {
-            assertEquals(1, layoutStateFuture.getWaitingCount());
+            assertEquals(componentTree.getLayoutStateFuture(), layoutStateFuture);
             layoutStateFuture.runAndGet();
-            assertEquals(0, layoutStateFuture.getWaitingCount());
-            assertEquals(0, componentTree.getLayoutStateFutures().size());
+            assertEquals(componentTree.getLayoutStateFuture(), layoutStateFuture);
           }
         });
   }
@@ -707,7 +706,7 @@ public class ComponentTreeTest {
       e.printStackTrace();
     }
 
-    assertEquals(1, componentTree.getLayoutStateFutures().size());
+    assertNotNull(componentTree.getLayoutStateFuture());
 
     Thread thread =
         new Thread(
@@ -778,7 +777,7 @@ public class ComponentTreeTest {
       e.printStackTrace();
     }
 
-    assertEquals(1, componentTree.getLayoutStateFutures().size());
+    assertNotNull(componentTree.getLayoutStateFuture());
 
     Thread thread =
         new Thread(
