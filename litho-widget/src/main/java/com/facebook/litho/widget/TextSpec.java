@@ -163,6 +163,7 @@ class TextSpec {
   @PropDefault protected static final int textStyle = DEFAULT_TYPEFACE.getStyle();
   @PropDefault protected static final Typeface typeface = DEFAULT_TYPEFACE;
   @PropDefault protected static final float spacingMultiplier = 1.0f;
+  @PropDefault protected static final float lineHeight = Float.MIN_VALUE;
   @PropDefault protected static final VerticalGravity verticalGravity = VerticalGravity.TOP;
   @PropDefault protected static final boolean glyphWarming = false;
   @PropDefault protected static final boolean shouldIncludeFontPadding = true;
@@ -273,6 +274,7 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float extraSpacing,
       @Prop(optional = true, resType = ResType.FLOAT) float spacingMultiplier,
+      @Prop(optional = true, resType = ResType.DIMEN_TEXT) float lineHeight,
       @Prop(optional = true, resType = ResType.FLOAT) float letterSpacing,
       @Prop(optional = true) int textStyle,
       @Prop(optional = true) @Nullable Typeface typeface,
@@ -312,6 +314,7 @@ class TextSpec {
             extraSpacing,
             spacingMultiplier,
             letterSpacing,
+            lineHeight,
             textStyle,
             typeface,
             textAlignment,
@@ -335,11 +338,16 @@ class TextSpec {
     int preferredHeight = LayoutMeasureUtil.getHeight(newLayout);
     final int lineCount = newLayout.getLineCount();
     if (lineCount < minLines) {
-      final TextPaint paint = newLayout.getPaint();
+      final float computedLineHeight;
+      if (lineHeight == TextSpec.lineHeight) {
+        final TextPaint paint = newLayout.getPaint();
 
-      final int lineHeight =
-          Math.round(paint.getFontMetricsInt(null) * spacingMultiplier + extraSpacing);
-      preferredHeight += lineHeight * (minLines - lineCount);
+        computedLineHeight =
+            Math.round(paint.getFontMetricsInt(null) * spacingMultiplier + extraSpacing);
+      } else {
+        computedLineHeight = lineHeight;
+      }
+      preferredHeight += computedLineHeight * (minLines - lineCount);
     }
 
     size.height = SizeSpec.resolveSize(heightSpec, preferredHeight);
@@ -378,6 +386,7 @@ class TextSpec {
       float extraSpacing,
       float spacingMultiplier,
       float letterSpacing,
+      float lineHeight,
       int textStyle,
       Typeface typeface,
       Alignment textAlignment,
@@ -469,6 +478,10 @@ class TextSpec {
           : TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR);
     }
 
+    if (lineHeight != TextSpec.lineHeight) {
+      layoutBuilder.setLineHeight(lineHeight);
+    }
+
     newLayout = layoutBuilder.build();
 
     layoutBuilder.setText(null);
@@ -505,6 +518,7 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float extraSpacing,
       @Prop(optional = true, resType = ResType.FLOAT) float spacingMultiplier,
+      @Prop(optional = true, resType = ResType.DIMEN_TEXT) float lineHeight,
       @Prop(optional = true, resType = ResType.FLOAT) float letterSpacing,
       @Prop(optional = true) VerticalGravity verticalGravity,
       @Prop(optional = true) int textStyle,
@@ -558,6 +572,7 @@ class TextSpec {
               textSize,
               extraSpacing,
               spacingMultiplier,
+              lineHeight,
               letterSpacing,
               textStyle,
               typeface,
@@ -622,6 +637,7 @@ class TextSpec {
                 extraSpacing,
                 spacingMultiplier,
                 letterSpacing,
+                lineHeight,
                 textStyle,
                 typeface,
                 textAlignment,
