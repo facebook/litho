@@ -22,7 +22,9 @@ import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 
 import android.os.Process;
+import android.support.annotation.Nullable;
 import com.facebook.litho.BuildConfig;
+import com.facebook.litho.boost.LithoAffinityBoosterFactory;
 import com.facebook.yoga.YogaLogger;
 
 /**
@@ -240,4 +242,12 @@ public class ComponentsConfiguration {
   public static boolean inheritPriorityFromUiThread = false;
 
   public static boolean disablePools = false;
+
+  public static @Nullable LithoAffinityBoosterFactory affinityBoosterFactory = null;
+
+  /**
+   * If true, the {@link #affinityBoosterFactory} will be used to bump the LayoutStateFuture thread
+   * that the main thread is waiting on a powerful core.
+   */
+  public static boolean boostAffinityLayoutStateFuture;
 }

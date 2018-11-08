@@ -49,6 +49,8 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.annotations.MountSpec;
+import com.facebook.litho.boost.LithoAffinityBooster;
+import com.facebook.litho.boost.LithoAffinityBoosterFactory;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.debug.DebugOverlayController;
 import com.facebook.litho.stats.LithoStats;
@@ -92,6 +94,8 @@ public class ComponentTree {
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
   private static final int SCHEDULE_LAYOUT_SYNC = 2;
   private final @Nullable String mSplitLayoutTag;
+  private final @Nullable LithoAffinityBoosterFactory mAffinityBoosterFactory;
+  private final boolean mBoostAfinityLayoutStateFuture;
   private boolean mReleased;
   private String mReleasedComponent;
 
@@ -272,6 +276,8 @@ public class ComponentTree {
     mSplitLayoutTag = builder.splitLayoutTag;
     mPersistInternalNodeTree = builder.persistInternalNodeTree;
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
+    mAffinityBoosterFactory = builder.affinityBoosterFactory;
+    mBoostAfinityLayoutStateFuture = builder.boostAffinityLayoutStateFuture;
 
     ensureLayoutThreadHandler();
 
@@ -2188,6 +2194,8 @@ public class ComponentTree {
       final int runningThreadId = this.runningThreadId.get();
       final int originalThreadPriority;
       final boolean didRaiseThreadPriority;
+      LithoAffinityBooster booster = null;
+
       if (isMainThread() && !futureTask.isDone() && runningThreadId != Process.myTid()) {
         // Main thread is about to be blocked, raise the running thread priority.
         originalThreadPriority =
@@ -2196,6 +2204,16 @@ public class ComponentTree {
                 : ThreadUtils.tryRaiseThreadPriority(
                     runningThreadId, Process.THREAD_PRIORITY_DISPLAY);
         didRaiseThreadPriority = true;
+
+        if (mBoostAfinityLayoutStateFuture) {
+          booster =
+              mAffinityBoosterFactory.acquireInstance(
+                  "LayoutStateFuture_" + runningThreadId, runningThreadId);
+          if (booster != null) {
+            booster.request();
+          }
+        }
+
       } else {
         originalThreadPriority = THREAD_PRIORITY_DEFAULT;
         didRaiseThreadPriority = false;
@@ -2219,6 +2237,10 @@ public class ComponentTree {
           try {
             Process.setThreadPriority(runningThreadId, originalThreadPriority);
           } catch (IllegalArgumentException | SecurityException ignored) {
+          } finally {
+            if (booster != null) {
+              booster.release();
+            }
           }
         }
       }
@@ -2360,6 +2382,8 @@ public class ComponentTree {
     private String splitLayoutTag;
     private boolean persistInternalNodeTree = false;
     private boolean useSharedLayoutStateFuture = false;
+    private @Nullable LithoAffinityBoosterFactory affinityBoosterFactory;
+    private boolean boostAffinityLayoutStateFuture;
 
     protected Builder() {
     }
@@ -2371,6 +2395,11 @@ public class ComponentTree {
     protected void init(ComponentContext context, Component root) {
       this.context = context;
       this.root = root;
+      /** Right now we don't care about testing this per surface, so we'll use the config value. */
+      this.affinityBoosterFactory = ComponentsConfiguration.affinityBoosterFactory;
+      this.boostAffinityLayoutStateFuture =
+          this.affinityBoosterFactory != null
+              && ComponentsConfiguration.boostAffinityLayoutStateFuture;
     }
 
     protected void release() {
@@ -2390,6 +2419,8 @@ public class ComponentTree {
       splitLayoutTag = null;
       persistInternalNodeTree = false;
       useSharedLayoutStateFuture = false;
+      affinityBoosterFactory = null;
+      boostAffinityLayoutStateFuture = false;
     }
 
     /**
