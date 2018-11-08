@@ -30,14 +30,13 @@ import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 import android.util.SparseArray;
 import com.facebook.litho.annotations.ImportantForAccessibility;
+import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.drawable.DefaultComparableDrawable;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
-import com.facebook.litho.testing.drawable.TestColorDrawable;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaAlign;
@@ -323,11 +322,9 @@ public class LayoutStateCreateTreeTest {
   @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public void testAddingAllAttributes() {
-    final Reference<ComparableDrawable> background =
-        DrawableReference.create(
-            DefaultComparableDrawable.create(new TestColorDrawable(Color.RED)));
-    final ComparableDrawable foreground =
-        DefaultComparableDrawable.create(new TestColorDrawable(Color.BLACK));
+    final ComparableDrawable background = ComparableColorDrawable.create(Color.RED);
+    final Reference<ComparableDrawable> bgRef = DrawableReference.create(background);
+    final ComparableDrawable foreground = ComparableColorDrawable.create(Color.BLACK);
     final EventHandler<ClickEvent> clickHandler = mock(EventHandler.class);
     final EventHandler<LongClickEvent> longClickHandler = mock(EventHandler.class);
     final EventHandler<TouchEvent> touchHandler = mock(EventHandler.class);
@@ -413,7 +410,7 @@ public class LayoutStateCreateTreeTest {
                 .touchExpansionPx(YogaEdge.RIGHT, 22)
                 .touchExpansionPx(YogaEdge.LEFT, 23)
                 .touchExpansionPx(YogaEdge.ALL, 21)
-                .background(background)
+                .background(bgRef)
                 .foreground(foreground)
                 .wrapInView()
                 .clickHandler(clickHandler)
@@ -514,7 +511,7 @@ public class LayoutStateCreateTreeTest {
     verify(node).touchExpansionPx(YogaEdge.LEFT, 23);
     verify(node).touchExpansionPx(YogaEdge.ALL, 21);
 
-    verify(node).background(background);
+    verify(node).background(bgRef);
     verify(node).foreground(foreground);
 
     verify(node).wrapInView();

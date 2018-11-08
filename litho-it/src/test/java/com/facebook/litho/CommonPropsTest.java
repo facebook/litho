@@ -23,15 +23,13 @@ import static org.mockito.Mockito.verify;
 import android.animation.StateListAnimator;
 import android.annotation.TargetApi;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.util.SparseArray;
 import com.facebook.litho.annotations.ImportantForAccessibility;
+import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.drawable.DefaultComparableDrawable;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
-import com.facebook.litho.testing.drawable.TestColorDrawable;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -118,13 +116,10 @@ public class CommonPropsTest {
     mCommonProps.touchExpansionPx(YogaEdge.RIGHT, 22);
     mCommonProps.touchExpansionPx(YogaEdge.LEFT, 23);
     mCommonProps.touchExpansionPx(YogaEdge.ALL, 21);
-
-    ComparableDrawable comparable =
-        DefaultComparableDrawable.create(new TestColorDrawable(Color.BLACK));
-    Reference<ComparableDrawable> drawableReference = DrawableReference.create(comparable);
-    mCommonProps.background(drawableReference);
-    ComparableDrawable foreground =
-        DefaultComparableDrawable.create(new ColorDrawable(Color.BLACK));
+    ComparableDrawable background = ComparableColorDrawable.create(Color.RED);
+    Reference<ComparableDrawable> bgRef = DrawableReference.create(background);
+    mCommonProps.background(bgRef);
+    ComparableDrawable foreground = ComparableColorDrawable.create(Color.BLACK);
     mCommonProps.foreground(foreground);
 
     mCommonProps.wrapInView();
@@ -264,7 +259,7 @@ public class CommonPropsTest {
     verify(mNode).touchExpansionPx(YogaEdge.LEFT, 23);
     verify(mNode).touchExpansionPx(YogaEdge.ALL, 21);
 
-    verify(mNode).background(drawableReference);
+    verify(mNode).background(bgRef);
     verify(mNode).foreground(foreground);
 
     verify(mNode).wrapInView();

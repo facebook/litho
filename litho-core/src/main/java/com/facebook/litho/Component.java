@@ -20,7 +20,6 @@ import static android.support.annotation.Dimension.DP;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.AttrRes;
@@ -40,6 +39,7 @@ import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.drawable.DefaultComparableDrawable;
 import com.facebook.litho.reference.DrawableReference;
@@ -1247,7 +1247,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T backgroundColor(@ColorInt int backgroundColor) {
-      return background(new ColorDrawable(backgroundColor));
+      return background(ComparableColorDrawable.create(backgroundColor));
     }
 
     public T foreground(@Nullable ComparableDrawable foreground) {
@@ -1279,7 +1279,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T foregroundColor(@ColorInt int foregroundColor) {
-      return foreground(new ColorDrawable(foregroundColor));
+      return foreground(ComparableColorDrawable.create(foregroundColor));
     }
 
     public T wrapInView() {

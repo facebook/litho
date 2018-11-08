@@ -36,7 +36,6 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PathEffect;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
@@ -50,6 +49,7 @@ import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.YogaDefaults;
+import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.drawable.DefaultComparableDrawable;
 import com.facebook.litho.reference.DrawableReference;
@@ -887,7 +887,7 @@ class InternalNode implements ComponentLayout {
   }
 
   InternalNode backgroundColor(@ColorInt int backgroundColor) {
-    return background(new ColorDrawable(backgroundColor));
+    return background(ComparableColorDrawable.create(backgroundColor));
   }
 
   InternalNode foreground(@Nullable ComparableDrawable foreground) {
@@ -906,7 +906,7 @@ class InternalNode implements ComponentLayout {
   }
 
   InternalNode foregroundColor(@ColorInt int foregroundColor) {
-    return foreground(DefaultComparableDrawable.create(new ColorDrawable(foregroundColor)));
+    return foreground(ComparableColorDrawable.create(foregroundColor));
   }
 
   InternalNode wrapInView() {

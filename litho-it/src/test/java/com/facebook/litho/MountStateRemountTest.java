@@ -24,6 +24,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.powermock.reflect.Whitebox.getInternalState;
 
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.v4.util.LongSparseArray;
 import android.view.View;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -204,41 +205,58 @@ public class MountStateRemountTest {
             .backgroundColor(Color.WHITE)
             .child(
                 EditText.create(mContext)
+                    .backgroundColor(Color.RED)
+                    .foregroundColor(Color.CYAN)
                     .text("Hello World")
                     .viewTag("Alpha")
                     .contentDescription("some description"))
             .build();
 
-    final LithoView lithoView = mountComponent(mContext, oldComponent, 400, 400);
+    final LithoView lithoView = new LithoView(mContext);
+    final ComponentTree componentTree =
+        ComponentTree.create(mContext, oldComponent)
+            .incrementalMount(false)
+            .layoutDiffing(true)
+            .build();
+
+    mountComponent(
+        lithoView, componentTree, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
     final View oldView = lithoView.getChildAt(0);
 
     final Object oldTag = oldView.getTag();
     final String oldContentDescription = oldView.getContentDescription().toString();
+    final Drawable oldBackground = oldView.getBackground();
 
     final Component newComponent =
         Column.create(mContext)
             .backgroundColor(Color.WHITE)
             .child(
                 EditText.create(mContext)
+                    .backgroundColor(Color.RED)
+                    .foregroundColor(Color.CYAN)
                     .text("Hello World")
                     .viewTag("Alpha")
                     .contentDescription("some description"))
             .build();
 
-    mountComponent(mContext, lithoView, newComponent, 400, 400);
+    componentTree.setRootAndSizeSpec(
+        newComponent, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
+
+    componentTree.setSizeSpec(makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
     View newView = lithoView.getChildAt(0);
 
     assertThat(newView).isSameAs(oldView);
 
-    Object newTag = newView.getTag();
-    String newContentDescription = newView.getContentDescription().toString();
+    final Object newTag = newView.getTag();
+    final String newContentDescription = newView.getContentDescription().toString();
+    final Drawable newBackground = newView.getBackground();
 
+    // Check that props were not set again
     assertThat(newTag).isSameAs(oldTag);
     assertThat(newContentDescription).isSameAs(oldContentDescription);
-
-    // TODO: (T33421916) add tests to assert if background and foreground remain the same
+    assertThat(oldBackground).isSameAs(newBackground);
 
     ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = false;
   }
@@ -259,7 +277,15 @@ public class MountStateRemountTest {
                     .enabled(true))
             .build();
 
-    final LithoView lithoView = mountComponent(mContext, oldComponent, 400, 400);
+    final LithoView lithoView = new LithoView(mContext);
+    final ComponentTree componentTree =
+        ComponentTree.create(mContext, oldComponent)
+            .incrementalMount(false)
+            .layoutDiffing(true)
+            .build();
+
+    mountComponent(
+        lithoView, componentTree, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
     final View oldView = lithoView.getChildAt(0);
 
@@ -278,7 +304,10 @@ public class MountStateRemountTest {
                     .enabled(false))
             .build();
 
-    mountComponent(mContext, lithoView, newComponent, 400, 400);
+    componentTree.setRootAndSizeSpec(
+        newComponent, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
+
+    componentTree.setSizeSpec(makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
     final View newView = lithoView.getChildAt(0);
 
@@ -308,7 +337,15 @@ public class MountStateRemountTest {
                     .background(new TestColorDrawable(Color.RED)))
             .build();
 
-    final LithoView lithoView = mountComponent(mContext, oldComponent, 400, 400);
+    final LithoView lithoView = new LithoView(mContext);
+    final ComponentTree componentTree =
+        ComponentTree.create(mContext, oldComponent)
+            .incrementalMount(false)
+            .layoutDiffing(true)
+            .build();
+
+    mountComponent(
+        lithoView, componentTree, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
     final View oldView = lithoView.getChildAt(0);
 
@@ -325,7 +362,10 @@ public class MountStateRemountTest {
                     .background(new TestColorDrawable(Color.CYAN)))
             .build();
 
-    mountComponent(mContext, lithoView, newComponent, 400, 400);
+    componentTree.setRootAndSizeSpec(
+        newComponent, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
+
+    componentTree.setSizeSpec(makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
     final View newView = lithoView.getChildAt(0);
 
