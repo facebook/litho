@@ -16,7 +16,7 @@
 
 package com.facebook.litho.testing.shadows;
 
-import static org.robolectric.internal.Shadow.directlyOn;
+import static org.robolectric.shadow.api.Shadow.directlyOn;
 
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;

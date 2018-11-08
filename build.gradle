@@ -71,7 +71,7 @@ ext.deps = [
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.11.2',
         // Debugging and testing
         guava              : 'com.google.guava:guava:20.0',
-        robolectric        : 'org.robolectric:robolectric:3.0',
+        robolectric        : 'org.robolectric:robolectric:3.3',
         junit              : 'junit:junit:4.12',
         hamcrestLibrary    : 'org.hamcrest:hamcrest-library:1.3',
         powermockReflect   : 'org.powermock:powermock-reflect:1.5.6',

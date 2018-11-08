@@ -77,16 +77,22 @@ public class ComponentsTestRunner extends RobolectricTestRunner {
     final Config config = super.getConfig(method);
     // We are hard-coding the path here instead of relying on BUCK internals
     // to allow for building with gradle in the Open Source version.
-    return new Config.Implementation(config, new Config.Implementation(
-        new int[]{},
+    return new Config.Implementation(
+        config.sdk(),
+        config.minSdk(),
+        config.maxSdk(),
         getResPrefix() + "AndroidManifest.xml",
         "",
         "",
+        config.abiSplit(),
         "res",
         "assets",
+        config.buildDir(),
         new Class[]{},
+        config.instrumentedPackages(),
         Application.class,
         new String[0],
-        null));
+        null
+    );
   }
 }
