@@ -323,6 +323,11 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode foreground(@Nullable Drawable foreground) {
+    return this;
+  }
+
+  @Override
   public InternalNode wrapInView() {
     return this;
   }

@@ -45,7 +45,10 @@ public final class DrawableReference extends ReferenceLifecycle<ComparableDrawab
     return sInstance;
   }
 
-  /** @deprecated */
+  /**
+   * @deprecated Use {@link #create(ComparableDrawable)} for efficient diffing
+   * @see ComparableDrawable
+   */
   @Deprecated
   public static PropsBuilder create() {
     return new PropsBuilder(new State());

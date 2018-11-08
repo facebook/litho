@@ -1212,17 +1212,34 @@ public abstract class Component extends ComponentLifecycle
       return touchExpansionPx(edge, mResourceResolver.dipsToPixels(touchExpansion));
     }
 
-    /** @deprecated just use {@link #background(Drawable)} instead. */
+    /**
+     * @deprecated use {@link #background(ComparableDrawable)} more efficient diffing of drawables.
+     * @see ComparableDrawable
+     */
     @Deprecated
     public T background(@Nullable Reference<? extends Drawable> background) {
       mComponent.getOrCreateCommonPropsHolder().background(background);
       return getThis();
     }
 
+    /**
+     * Set the background of this component. The background drawable must extend {@link *
+     * ComparableDrawable} for more efficient diffing while when drawables are remounted or updated.
+     * * If the drawable does not extend {@link ComparableDrawable} then create a new class which *
+     * extends {@link ComparableDrawable} and implement the * {@link
+     * ComparableDrawable#isEquivalentTo(ComparableDrawable)}.
+     *
+     * @see ComparableDrawable
+     */
     public T background(@Nullable ComparableDrawable background) {
       return background(background != null ? DrawableReference.create(background) : null);
     }
 
+    /**
+     * @deprecated use {@link #background(ComparableDrawable)} more efficient diffing of drawables.
+     * @see ComparableDrawable
+     */
+    @Deprecated
     public T background(@Nullable Drawable background) {
       if (background instanceof ComparableDrawable) {
         return background((ComparableDrawable) background);
@@ -1240,7 +1257,7 @@ public abstract class Component extends ComponentLifecycle
 
     public T backgroundRes(@DrawableRes int resId) {
       if (resId == 0) {
-        return background((Reference<? extends Drawable>) null);
+        return background((ComparableDrawable) null);
       }
 
       return background(ComparableResDrawable.create(mContext.getAndroidContext(), resId));
@@ -1250,11 +1267,24 @@ public abstract class Component extends ComponentLifecycle
       return background(ComparableColorDrawable.create(backgroundColor));
     }
 
+    /**
+     * Set the foreground of this component. The foreground drawable must extend {@link
+     * ComparableDrawable} for more efficient diffing while when drawables are remounted or updated.
+     * If the drawable does not extend {@link ComparableDrawable} then create a new class which
+     * extends {@link ComparableDrawable} and implement the {@link
+     * ComparableDrawable#isEquivalentTo(ComparableDrawable)}.
+     *
+     * @see ComparableDrawable
+     */
     public T foreground(@Nullable ComparableDrawable foreground) {
       mComponent.getOrCreateCommonPropsHolder().foreground(foreground);
       return getThis();
     }
 
+    /**
+     * @deprecated use {@link #foreground(ComparableDrawable)} more efficient diffing of drawables.
+     */
+    @Deprecated
     public T foreground(@Nullable Drawable foreground) {
       if (foreground instanceof ComparableDrawable) {
         return foreground((ComparableDrawable) foreground);

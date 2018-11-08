@@ -26,10 +26,14 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.View;
 
 /**
- * Drawable which delegates all calls to its wrapped {@link Drawable}.
+ * Default Comparable Drawable delegates all calls to its wrapped {@link Drawable}.
  *
  * <p>The wrapped {@link Drawable} <em>must</em> be fully released from any {@link View} before
  * wrapping, otherwise internal {@link Drawable.Callback} may be dropped.
+ *
+ * <p>Using this is not the recommended as semantically equal drawables will not be considered
+ * equivalent because they will have different references, which could cause make diffing in
+ * efficient.
  */
 public class DefaultComparableDrawable extends ComparableDrawable implements Drawable.Callback {
 

@@ -860,6 +860,10 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
+  /**
+   * @deprecated use {@link #background(ComparableDrawable)} more efficient diffing of drawables.
+   */
+  @Deprecated
   InternalNode background(@Nullable Reference<? extends Drawable> background) {
     mPrivateFlags |= PFLAG_BACKGROUND_IS_SET;
     mBackground = background;
@@ -871,6 +875,10 @@ class InternalNode implements ComponentLayout {
     return background(background != null ? DrawableReference.create(background) : null);
   }
 
+  /**
+   * @deprecated use {@link #background(ComparableDrawable)} more efficient diffing of drawables.
+   */
+  @Deprecated
   InternalNode background(@Nullable Drawable background) {
     if (background instanceof ComparableDrawable) {
       return background((ComparableDrawable) background);
@@ -880,13 +888,21 @@ class InternalNode implements ComponentLayout {
 
   InternalNode backgroundRes(@DrawableRes int resId) {
     if (resId == 0) {
-      return background((Reference<? extends Drawable>) null);
+      return background((ComparableDrawable) null);
     }
     return background(ComparableResDrawable.create(mComponentContext.getAndroidContext(), resId));
   }
 
   InternalNode backgroundColor(@ColorInt int backgroundColor) {
     return background(ComparableColorDrawable.create(backgroundColor));
+  }
+
+  /**
+   * @deprecated use {@link #foreground(ComparableDrawable)} more efficient diffing of drawables.
+   */
+  @Deprecated
+  InternalNode foreground(@Nullable Drawable foreground) {
+    return foreground(foreground != null ? DefaultComparableDrawable.create(foreground) : null);
   }
 
   InternalNode foreground(@Nullable ComparableDrawable foreground) {
@@ -1909,7 +1925,7 @@ class InternalNode implements ComponentLayout {
     return mPendingTreeProps;
   }
 
-  private <T extends Drawable> void setPaddingFromDrawableReference(Reference<T> ref) {
+  private <T extends Drawable> void setPaddingFromDrawableReference(@Nullable Reference<T> ref) {
     if (ref == null) {
       return;
     }

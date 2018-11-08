@@ -17,7 +17,16 @@ package com.facebook.litho.drawable;
 
 import android.graphics.drawable.Drawable;
 
-/** ComparableDrawable */
+/**
+ * Comparable Drawable allows drawables to be compared by explicitly implementing the {@link
+ * #isEquivalentTo(ComparableDrawable)}. This allows drawables to be compared in a more meaningful
+ * way, instead of using {@link Drawable#equals(Object)} which only checks if the references are
+ * equal.
+ *
+ * @see DefaultComparableDrawable
+ * @see ComparableColorDrawable
+ * @see ComparableResDrawable
+ */
 public abstract class ComparableDrawable extends Drawable {
 
   /**

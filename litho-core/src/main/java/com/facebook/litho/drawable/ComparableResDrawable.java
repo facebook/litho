@@ -21,6 +21,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
 
+/** A comparable implementation of drawables sourced from android resources. */
 public class ComparableResDrawable extends DefaultComparableDrawable {
 
   @DrawableRes private final int mResId;
