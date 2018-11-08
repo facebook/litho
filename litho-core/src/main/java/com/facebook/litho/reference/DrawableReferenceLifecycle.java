@@ -16,6 +16,7 @@
 
 package com.facebook.litho.reference;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 
@@ -26,46 +27,29 @@ import com.facebook.litho.drawable.ComparableDrawable;
  * the time and should only be used when the other built in specs are not applicable and it's not
  * possible to write a custom ReferenceSpec
  */
-public final class DrawableReference extends Reference<ComparableDrawable> {
+final class DrawableReferenceLifecycle extends ReferenceLifecycle<ComparableDrawable> {
 
-  ComparableDrawable mDrawable;
+  private static DrawableReferenceLifecycle sInstance;
 
-  private DrawableReference(ComparableDrawable drawable) {
-    super(DrawableReferenceLifecycle.get());
-    mDrawable = drawable;
-  }
+  private DrawableReferenceLifecycle() {}
 
-  @Override
-  public int hashCode() {
-    return mDrawable != null ? mDrawable.hashCode() : 0;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+  public static synchronized DrawableReferenceLifecycle get() {
+    if (sInstance == null) {
+      sInstance = new DrawableReferenceLifecycle();
     }
-
-    if (!(o instanceof DrawableReference)) {
-      return false;
-    }
-
-    DrawableReference state = (DrawableReference) o;
-    return mDrawable == state.mDrawable;
+    return sInstance;
   }
 
   @Override
-  public String getSimpleName() {
-    return "DrawableReference";
+  protected ComparableDrawable onAcquire(Context context, Reference<ComparableDrawable> reference) {
+    return ((DrawableReference) reference).mDrawable;
   }
 
-  /**
-   * Utility method to create Comparable Drawable Reference
-   *
-   * @param drawable the drawable to wrap
-   * @return the no-op drawable reference
-   */
-  public static Reference<ComparableDrawable> create(ComparableDrawable drawable) {
-    return new DrawableReference(drawable);
+  @Override
+  protected boolean shouldUpdate(
+      Reference<ComparableDrawable> previous, Reference<ComparableDrawable> next) {
+    ComparableDrawable previousDrawable = ((DrawableReference) previous).mDrawable;
+    ComparableDrawable nextDrawable = ((DrawableReference) next).mDrawable;
+    return !previousDrawable.isEquivalentTo(nextDrawable);
   }
 }
