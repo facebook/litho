@@ -32,7 +32,6 @@ import android.support.annotation.Px;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 import android.support.annotation.VisibleForTesting;
-import android.support.v4.content.ContextCompat;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ReturnsOwnership;
@@ -41,6 +40,7 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.drawable.ComparableResDrawable;
 import com.facebook.litho.drawable.DefaultComparableDrawable;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
@@ -1243,7 +1243,7 @@ public abstract class Component extends ComponentLifecycle
         return background((Reference<? extends Drawable>) null);
       }
 
-      return background(ContextCompat.getDrawable(mContext.getAndroidContext(), resId));
+      return background(ComparableResDrawable.create(mContext.getAndroidContext(), resId));
     }
 
     public T backgroundColor(@ColorInt int backgroundColor) {
@@ -1275,7 +1275,7 @@ public abstract class Component extends ComponentLifecycle
         return foreground(null);
       }
 
-      return foreground(ContextCompat.getDrawable(mContext.getAndroidContext(), resId));
+      return foreground(ComparableResDrawable.create(mContext.getAndroidContext(), resId));
     }
 
     public T foregroundColor(@ColorInt int foregroundColor) {

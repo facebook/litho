@@ -242,6 +242,11 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     getOrCreateNodeInfo().setClickHandler(clickHandler);
   }
 
+  @Nullable
+  public Reference<? extends Drawable> getBackground() {
+    return mBackground;
+  }
+
   @Override
   @Nullable
   public EventHandler<ClickEvent> getClickHandler() {

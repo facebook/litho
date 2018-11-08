@@ -33,8 +33,6 @@ import static org.junit.Assert.assertTrue;
 import static org.powermock.reflect.Whitebox.getInternalState;
 import static org.robolectric.RuntimeEnvironment.application;
 
-import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
@@ -313,9 +311,7 @@ public class InternalNodeTest {
   public void testPaddingIsSetFromDrawable() {
     InternalNode node = acquireInternalNode();
 
-    Drawable drawable =
-        ContextCompat.getDrawable(node.getContext().getAndroidContext(), background_with_padding);
-    node.background(drawable);
+    node.backgroundRes(background_with_padding);
 
     assertThat(isFlagSet(node, "PFLAG_PADDING_IS_SET")).isTrue();
   }
@@ -324,10 +320,7 @@ public class InternalNodeTest {
   public void testPaddingIsNotSetFromDrawable() {
     InternalNode node = acquireInternalNode();
 
-    Drawable drawable =
-        ContextCompat.getDrawable(
-            node.getContext().getAndroidContext(), background_without_padding);
-    node.background(drawable);
+    node.backgroundRes(background_without_padding);
 
     assertThat(isFlagSet(node, "PFLAG_PADDING_IS_SET")).isFalse();
   }

@@ -40,7 +40,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Px;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
@@ -51,6 +50,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.YogaDefaults;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.drawable.ComparableResDrawable;
 import com.facebook.litho.drawable.DefaultComparableDrawable;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
@@ -882,8 +882,7 @@ class InternalNode implements ComponentLayout {
     if (resId == 0) {
       return background((Reference<? extends Drawable>) null);
     }
-
-    return background(ContextCompat.getDrawable(mComponentContext.getAndroidContext(), resId));
+    return background(ComparableResDrawable.create(mComponentContext.getAndroidContext(), resId));
   }
 
   InternalNode backgroundColor(@ColorInt int backgroundColor) {
@@ -901,8 +900,7 @@ class InternalNode implements ComponentLayout {
       return foreground(null);
     }
 
-    Drawable drawable = ContextCompat.getDrawable(mComponentContext.getAndroidContext(), resId);
-    return foreground(DefaultComparableDrawable.create(drawable));
+    return foreground(ComparableResDrawable.create(mComponentContext.getAndroidContext(), resId));
   }
 
   InternalNode foregroundColor(@ColorInt int foregroundColor) {
