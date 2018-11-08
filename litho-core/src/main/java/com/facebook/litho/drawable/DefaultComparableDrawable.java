@@ -24,6 +24,8 @@ import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.View;
+import com.facebook.litho.config.ComponentsConfiguration;
+import javax.annotation.Nullable;
 
 /**
  * Default Comparable Drawable delegates all calls to its wrapped {@link Drawable}.
@@ -238,5 +240,26 @@ public class DefaultComparableDrawable extends ComparableDrawable implements Dra
 
   public static DefaultComparableDrawable create(Drawable drawable) {
     return new DefaultComparableDrawable(drawable);
+  }
+
+  public static boolean isDefaultComparableDrawable(ComparableDrawable comparable) {
+    return (comparable instanceof DefaultComparableDrawable);
+  }
+
+  public static boolean isEquivalentToWithExperiment(
+      @Nullable ComparableDrawable x, @Nullable ComparableDrawable y) {
+    if (x == null) {
+      return y == null;
+    } else if (y == null) {
+      return false;
+    }
+
+    if (ComponentsConfiguration.areDefaultComparableDrawablesAlwaysEquivalent
+        && isDefaultComparableDrawable(x)
+        && isDefaultComparableDrawable(y)) {
+      return true;
+    }
+
+    return x.isEquivalentTo(y);
   }
 }

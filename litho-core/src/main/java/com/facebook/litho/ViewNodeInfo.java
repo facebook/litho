@@ -23,6 +23,8 @@ import android.support.annotation.DrawableRes;
 import android.view.View;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.drawable.DefaultComparableDrawable;
+import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaDirection;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -169,12 +171,11 @@ class ViewNodeInfo {
       return false;
     }
 
-    if (Reference.shouldUpdate(mBackground, other.mBackground)) {
+    if (!DrawableReference.isEquivalentWithExperiment(mBackground, other.mBackground)) {
       return false;
     }
 
-    if ((mForeground == null && other.mForeground != null)
-        || (mForeground != null && !mForeground.isEquivalentTo(other.mForeground))) {
+    if (!DefaultComparableDrawable.isEquivalentToWithExperiment(mForeground, other.mForeground)) {
       return false;
     }
 

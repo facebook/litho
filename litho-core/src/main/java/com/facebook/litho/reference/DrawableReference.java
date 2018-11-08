@@ -19,6 +19,8 @@ package com.facebook.litho.reference;
 import android.graphics.drawable.Drawable;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.drawable.DefaultComparableDrawable;
+import javax.annotation.Nullable;
 
 /**
  * A very simple Reference for {@link Drawable} used in all the cases where it's not
@@ -29,7 +31,7 @@ import com.facebook.litho.drawable.ComparableDrawable;
  */
 public final class DrawableReference extends Reference<ComparableDrawable> {
 
-  ComparableDrawable mDrawable;
+  final ComparableDrawable mDrawable;
 
   private DrawableReference(ComparableDrawable drawable) {
     super(
@@ -71,5 +73,29 @@ public final class DrawableReference extends Reference<ComparableDrawable> {
    */
   public static Reference<ComparableDrawable> create(ComparableDrawable drawable) {
     return new DrawableReference(drawable);
+  }
+
+  public static boolean isEquivalentWithExperiment(
+      @Nullable Reference<? extends Drawable> x, @Nullable Reference<? extends Drawable> y) {
+    if (x == null) {
+      return y == null;
+    } else if (y == null) {
+      return false;
+    }
+
+    if (ComponentsConfiguration.areDefaultComparableDrawablesAlwaysEquivalent
+        && isDefaultComparableDrawableReference(x)
+        && isDefaultComparableDrawableReference(y)) {
+      return true;
+    }
+
+    return !Reference.shouldUpdate(x, y);
+  }
+
+  private static boolean isDefaultComparableDrawableReference(
+      Reference<? extends Drawable> reference) {
+    return (reference instanceof DrawableReference)
+        && DefaultComparableDrawable.isDefaultComparableDrawable(
+            ((DrawableReference) reference).mDrawable);
   }
 }
