@@ -29,14 +29,11 @@ import com.facebook.litho.drawable.ComparableDrawable;
  */
 final class DrawableReferenceLifecycle extends ReferenceLifecycle<ComparableDrawable> {
 
-  private static DrawableReferenceLifecycle sInstance;
+  private static final DrawableReferenceLifecycle sInstance = new DrawableReferenceLifecycle();
 
   private DrawableReferenceLifecycle() {}
 
-  public static synchronized DrawableReferenceLifecycle get() {
-    if (sInstance == null) {
-      sInstance = new DrawableReferenceLifecycle();
-    }
+  public static DrawableReferenceLifecycle get() {
     return sInstance;
   }
 
