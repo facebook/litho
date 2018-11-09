@@ -72,6 +72,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -118,6 +119,7 @@ public class RecyclerBinder
 
   private String mSplitLayoutTag;
   private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
+  @VisibleForTesting final boolean mTraverseLayoutBackwards;
 
   @GuardedBy("this")
   private final Deque<AsyncBatch> mAsyncBatches = new ArrayDeque<>();
@@ -687,10 +689,11 @@ public class RecyclerBinder
         mLayoutInfo.getScrollDirection() == HORIZONTAL ? builder.hasDynamicItemHeight : false;
     mWrapContent = builder.wrapContent;
     mCanMeasure = builder.canMeasure;
+    mTraverseLayoutBackwards = getStackFromEnd() ^ getReverseLayout();
 
     if (builder.recyclerRangeTraverser != null) {
       mRangeTraverser = builder.recyclerRangeTraverser;
-    } else if (getStackFromEnd() ^ getReverseLayout()) { // layout from end
+    } else if (mTraverseLayoutBackwards) { // layout from end
       mRangeTraverser = RecyclerRangeTraverser.BACKWARD_TRAVERSER;
     } else {
       mRangeTraverser = RecyclerRangeTraverser.FORWARD_TRAVERSER;
@@ -1495,16 +1498,15 @@ public class RecyclerBinder
       }
 
       if (mRange == null) {
-        int firstComponent = findFirstComponentPosition(mComponentTreeHolders);
-        if (firstComponent >= 0) {
-          final ComponentTreeHolder holder = mComponentTreeHolders.get(firstComponent);
+        final int initialComponentPosition =
+            findInitialComponentPosition(mComponentTreeHolders, mTraverseLayoutBackwards);
+        if (initialComponentPosition >= 0) {
+          final ComponentTreeHolderRangeInfo holderRangeInfo =
+              new ComponentTreeHolderRangeInfo(initialComponentPosition, mComponentTreeHolders);
           initRange(
               mMeasuredSize.width,
               mMeasuredSize.height,
-              holder,
-              firstComponent,
-              getActualChildrenWidthSpec(holder),
-              getActualChildrenHeightSpec(holder),
+              holderRangeInfo,
               mLayoutInfo.getScrollDirection());
         }
       }
@@ -1678,16 +1680,12 @@ public class RecyclerBinder
     mLastHeightSpec = heightSpec;
 
     if (mRange == null) {
-      ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
-
+      final ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
       if (holderForRangeInfo != null) {
         initRange(
             SizeSpec.getSize(widthSpec),
             SizeSpec.getSize(heightSpec),
-            holderForRangeInfo.mHolder,
-            holderForRangeInfo.mPosition,
-            getActualChildrenWidthSpec(holderForRangeInfo.mHolder),
-            getActualChildrenHeightSpec(holderForRangeInfo.mHolder),
+            holderForRangeInfo,
             scrollDirection);
       }
     }
@@ -1784,14 +1782,7 @@ public class RecyclerBinder
     if (mRange == null) {
       final ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
       if (holderForRangeInfo != null) {
-        initRange(
-            maxWidth,
-            maxHeight,
-            holderForRangeInfo.mHolder,
-            holderForRangeInfo.mPosition,
-            getActualChildrenWidthSpec(holderForRangeInfo.mHolder),
-            getActualChildrenHeightSpec(holderForRangeInfo.mHolder),
-            mLayoutInfo.getScrollDirection());
+        initRange(maxWidth, maxHeight, holderForRangeInfo, mLayoutInfo.getScrollDirection());
       }
     }
 
@@ -1908,13 +1899,21 @@ public class RecyclerBinder
     holder.computeLayoutAsync(mComponentContext, widthSpec, heightSpec);
   }
 
-  private static int findFirstComponentPosition(List<ComponentTreeHolder> holders) {
-    for (int i = 0, size = holders.size(); i < size; i++) {
-      if (holders.get(i).getRenderInfo().rendersComponent()) {
-        return i;
+  static int findInitialComponentPosition(
+      List<ComponentTreeHolder> holders, boolean traverseBackwards) {
+    if (traverseBackwards) {
+      for (int i = holders.size() - 1; i >= 0; i--) {
+        if (holders.get(i).getRenderInfo().rendersComponent()) {
+          return i;
+        }
+      }
+    } else {
+      for (int i = 0, size = holders.size(); i < size; i++) {
+        if (holders.get(i).getRenderInfo().rendersComponent()) {
+          return i;
+        }
       }
     }
-
     return -1;
   }
 
@@ -1972,19 +1971,17 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private void maybeScheduleAsyncLayoutsDuringInitRange(
-      int rangeStartPosition, int childrenWidthSpec, int childrenHeightSpec) {
+      final ComponentAsyncInitRangeIterator asyncRangeIterator,
+      int childrenWidthSpec,
+      int childrenHeightSpec) {
     if (!mAsyncInitRange || mComponentTreeHolders == null || mComponentTreeHolders.isEmpty()) {
       // checked null for tests
       return;
     }
 
-    int numThreads = mThreadPoolConfig == null ? 1 : mThreadPoolConfig.getCorePoolSize();
-    int rangeEndPosition = Math.min(rangeStartPosition + numThreads, mComponentTreeHolders.size());
-    for (int i = rangeStartPosition; i < rangeEndPosition; i++) {
-      final ComponentTreeHolder holder = mComponentTreeHolders.get(i);
-      if (!holder.isTreeValid()) {
-        holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
-      }
+    while (asyncRangeIterator.hasNext()) {
+      final ComponentTreeHolder nextHolder = asyncRangeIterator.next();
+      nextHolder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
     }
   }
 
@@ -1996,15 +1993,21 @@ public class RecyclerBinder
   @VisibleForTesting
   @GuardedBy("this")
   void initRange(
-      int width,
-      int height,
-      ComponentTreeHolder holder,
-      int holderPosition,
-      int childrenWidthSpec,
-      int childrenHeightSpec,
-      int scrollDirection) {
+      int width, int height, ComponentTreeHolderRangeInfo holderRangeInfo, int scrollDirection) {
+
+    final ComponentTreeHolder holder = holderRangeInfo.mHolders.get(holderRangeInfo.mPosition);
+    final int childrenWidthSpec = getActualChildrenWidthSpec(holder);
+    final int childrenHeightSpec = getActualChildrenHeightSpec(holder);
+
+    final ComponentAsyncInitRangeIterator asyncInitRangeIterator =
+        new ComponentAsyncInitRangeIterator(
+            holderRangeInfo.mHolders,
+            holderRangeInfo.mPosition,
+            mThreadPoolConfig == null ? 1 : mThreadPoolConfig.getCorePoolSize(),
+            mTraverseLayoutBackwards);
+
     maybeScheduleAsyncLayoutsDuringInitRange(
-        holderPosition + 1, childrenWidthSpec, childrenHeightSpec);
+        asyncInitRangeIterator, childrenWidthSpec, childrenHeightSpec);
     ComponentsSystrace.beginSection("initRange");
     try {
       final Size size = new Size();
@@ -2934,19 +2937,19 @@ public class RecyclerBinder
     ComponentTreeHolderRangeInfo holderForRangeInfo = null;
 
     if (!mComponentTreeHolders.isEmpty()) {
-      final int positionToComputeLayout = findFirstComponentPosition(mComponentTreeHolders);
+      final int positionToComputeLayout =
+          findInitialComponentPosition(mComponentTreeHolders, mTraverseLayoutBackwards);
       if (mCurrentFirstVisiblePosition < mComponentTreeHolders.size()
           && positionToComputeLayout >= 0) {
         holderForRangeInfo =
-            new ComponentTreeHolderRangeInfo(
-                positionToComputeLayout, mComponentTreeHolders.get(positionToComputeLayout));
+            new ComponentTreeHolderRangeInfo(positionToComputeLayout, mComponentTreeHolders);
       }
     } else if (!mAsyncComponentTreeHolders.isEmpty()) {
-      final int positionToComputeLayout = findFirstComponentPosition(mAsyncComponentTreeHolders);
+      final int positionToComputeLayout =
+          findInitialComponentPosition(mAsyncComponentTreeHolders, mTraverseLayoutBackwards);
       if (positionToComputeLayout >= 0) {
         holderForRangeInfo =
-            new ComponentTreeHolderRangeInfo(
-                positionToComputeLayout, mAsyncComponentTreeHolders.get(positionToComputeLayout));
+            new ComponentTreeHolderRangeInfo(positionToComputeLayout, mAsyncComponentTreeHolders);
       }
     }
 
@@ -2955,11 +2958,69 @@ public class RecyclerBinder
 
   private static class ComponentTreeHolderRangeInfo {
     private final int mPosition;
-    private final ComponentTreeHolder mHolder;
+    private final List<ComponentTreeHolder> mHolders;
 
-    private ComponentTreeHolderRangeInfo(int position, ComponentTreeHolder holder) {
+    private ComponentTreeHolderRangeInfo(int position, List<ComponentTreeHolder> holders) {
       mPosition = position;
-      mHolder = holder;
+      mHolders = holders;
     }
+  }
+
+  @VisibleForTesting
+  /** Used for finding components to calculate layout during async init range */
+  static class ComponentAsyncInitRangeIterator implements Iterator<ComponentTreeHolder> {
+
+    private final boolean mTraverseLayoutBackwards;
+    private final List<ComponentTreeHolder> mHolders;
+
+    private int mCurrentPosition;
+    private int mNumberOfItemsToProcess;
+
+    ComponentAsyncInitRangeIterator(
+        List<ComponentTreeHolder> holders,
+        int initialPosition,
+        int numberOfItemsToProcess,
+        boolean traverseLayoutBackwards) {
+      mHolders = holders;
+      mCurrentPosition = traverseLayoutBackwards ? initialPosition - 1 : initialPosition + 1;
+      mNumberOfItemsToProcess = numberOfItemsToProcess;
+      mTraverseLayoutBackwards = traverseLayoutBackwards;
+    }
+
+    @Override
+    public boolean hasNext() {
+      while (mNumberOfItemsToProcess > 0 && isValidPosition(mCurrentPosition)) {
+        final ComponentTreeHolder holder = mHolders.get(mCurrentPosition);
+        if (holder.getRenderInfo().rendersComponent() && !holder.isTreeValid()) {
+          return true;
+        } else {
+          shiftToNextPosition();
+        }
+      }
+      return false;
+    }
+
+    boolean isValidPosition(int position) {
+      return position >= 0 && position < mHolders.size();
+    }
+
+    @Override
+    public ComponentTreeHolder next() {
+      final ComponentTreeHolder holder = mHolders.get(mCurrentPosition);
+      shiftToNextPosition();
+      mNumberOfItemsToProcess--;
+      return holder;
+    }
+
+    private void shiftToNextPosition() {
+      if (mTraverseLayoutBackwards) {
+        mCurrentPosition--;
+      } else {
+        mCurrentPosition++;
+      }
+    }
+
+    @Override
+    public void remove() {}
   }
 }
