@@ -74,7 +74,6 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
@@ -91,7 +90,6 @@ public class RecyclerBinder
   private static final Size sDummySize = new Size();
   private static final String TAG = RecyclerBinder.class.getSimpleName();
   private static final int POST_UPDATE_VIEWPORT_AND_COMPUTE_RANGE_MAX_ATTEMPTS = 3;
-  @VisibleForTesting static final int MIN_RANGE_SIZE = 3;
   private static final int DATA_RENDERED_CALLBACKS_QUEUE_MAX_SIZE = 20;
 
   private static Field mViewHolderField;
@@ -115,9 +113,6 @@ public class RecyclerBinder
   private final boolean mEnableStableIds;
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
   private final RecyclerRangeTraverser mRangeTraverser;
-  private final AtomicBoolean mShouldComputeRangeAfterInit = new AtomicBoolean();
-  private final AtomicInteger mTotalItemsWithLayoutSize = new AtomicInteger();
-  private final AtomicInteger mTotalItemsWithLayoutCount = new AtomicInteger();
   private final boolean mHScrollAsyncMode;
   private boolean mAsyncInitRange;
 
