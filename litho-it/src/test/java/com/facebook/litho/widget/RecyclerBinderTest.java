@@ -4538,6 +4538,33 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getComponentTreeHolderAt(4).hasCompletedLatestLayout()).isFalse();
   }
 
+  @Test
+  public void testBothLayoutHandlerFactoryAndThreadPoolConfigProvided() {
+    final LayoutHandler layoutHandler = mock(LayoutHandler.class);
+    final Component component = mock(Component.class);
+    final RecyclerBinder binder =
+        mRecyclerBinderBuilder
+            .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(3, 3, 0))
+            .layoutHandlerFactory(
+                new LayoutHandlerFactory() {
+                  @Override
+                  public LayoutHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
+                    return layoutHandler;
+                  }
+
+                  @Override
+                  public boolean shouldUpdateLayoutHandler(
+                      RenderInfo previousRenderInfo, RenderInfo newRenderInfo) {
+                    return false;
+                  }
+                })
+            .build(mComponentContext);
+
+    binder.insertItemAt(0, ComponentRenderInfo.create().component(component).build());
+
+    assertThat(mHoldersForComponents.get(component).mLayoutHandler).isSameAs(layoutHandler);
+  }
+
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
     return new RecyclerBinder.Builder()
         .rangeRatio(RANGE_RATIO)

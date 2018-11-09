@@ -531,6 +531,14 @@ public class RecyclerBinder
       return this;
     }
 
+    /**
+     * @param config RecyclerBinder will use this {@link LayoutThreadPoolConfiguration} to create
+     *     {@link ThreadPoolLayoutHandler} which will be used to calculate layout in pool of
+     *     threads.
+     *     <p>Note: if {@link #layoutHandlerFactory(LayoutHandlerFactory)} is provided, the handler
+     *     created by the factory will be used instead of the one that would have been created by
+     *     this config.
+     */
     public Builder threadPoolConfig(LayoutThreadPoolConfiguration config) {
       this.threadPoolConfig = config;
       return this;
@@ -671,11 +679,10 @@ public class RecyclerBinder
 
     mThreadPoolConfig = builder.threadPoolConfig;
 
-    if (mThreadPoolConfig != null) {
-      mThreadPoolHandler = new ThreadPoolLayoutHandler(mThreadPoolConfig);
-    } else {
-      mThreadPoolHandler = null;
-    }
+    mThreadPoolHandler =
+        mThreadPoolConfig != null && mLayoutHandlerFactory == null
+            ? new ThreadPoolLayoutHandler(mThreadPoolConfig)
+            : null;
 
     mRenderInfoViewCreatorController =
         new RenderInfoViewCreatorController(
@@ -2901,22 +2908,17 @@ public class RecyclerBinder
   }
 
   private ComponentTreeHolder createComponentTreeHolder(RenderInfo renderInfo) {
-    if (mThreadPoolHandler != null) {
-      return mComponentTreeHolderFactory.create(
-          renderInfo,
-          mThreadPoolHandler,
-          mCanPrefetchDisplayLists,
-          mCanCacheDrawingDisplayLists,
-          mUseSharedLayoutStateFuture,
-          mComponentTreeMeasureListenerFactory,
-          mSplitLayoutTag);
+    final LayoutHandler layoutHandler;
+    if (mLayoutHandlerFactory != null) {
+      layoutHandler = mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo);
+    } else if (mThreadPoolHandler != null) {
+      layoutHandler = mThreadPoolHandler;
+    } else {
+      layoutHandler = null;
     }
-
     return mComponentTreeHolderFactory.create(
         renderInfo,
-        mLayoutHandlerFactory != null
-            ? mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo)
-            : null,
+        layoutHandler,
         mCanPrefetchDisplayLists,
         mCanCacheDrawingDisplayLists,
         mUseSharedLayoutStateFuture,
