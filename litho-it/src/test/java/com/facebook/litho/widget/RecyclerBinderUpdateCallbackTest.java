@@ -28,9 +28,11 @@ import static org.mockito.Mockito.verify;
 
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsReporter;
+import com.facebook.litho.DefaultComponentsReporter;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -89,6 +91,11 @@ public class RecyclerBinderUpdateCallbackTest {
         .when(mReporter)
         .emitMessage(eq(ComponentsReporter.LogLevel.ERROR), anyString());
     ComponentsReporter.provide(mReporter);
+  }
+
+  @After
+  public void tearDown() {
+    ComponentsReporter.provide(new DefaultComponentsReporter());
   }
 
   @Test

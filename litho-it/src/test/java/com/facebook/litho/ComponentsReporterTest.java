@@ -25,6 +25,7 @@ import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.assertj.core.api.ThrowableAssert;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +44,11 @@ public class ComponentsReporterTest {
   public void setup() {
     mReporter = new TestComponentsReporter();
     ComponentsReporter.provide(mReporter);
+  }
+
+  @After
+  public void tearDown() {
+    ComponentsReporter.provide(new DefaultComponentsReporter());
   }
 
   @Test
