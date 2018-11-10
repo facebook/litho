@@ -49,6 +49,11 @@ public class TreePropsWrappedRenderInfo implements RenderInfo {
   }
 
   @Override
+  public boolean isLazy() {
+    return false;
+  }
+
+  @Override
   public boolean rendersComponent() {
     return mRenderInfo.rendersComponent();
   }

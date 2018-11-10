@@ -1224,7 +1224,10 @@ public class RecyclerBinder
 
         // If this item is rendered with a view (or was rendered with a view before now) we still
         // need to notify the RecyclerView's adapter that something changed.
-        if (newRenderInfo.rendersView() || holder.getRenderInfo().rendersView()) {
+        if (newRenderInfo.isLazy()
+            || holder.getRenderInfo().isLazy()
+            || newRenderInfo.rendersView()
+            || holder.getRenderInfo().rendersView()) {
           mInternalAdapter.notifyItemChanged(position + i);
         }
 
@@ -1910,13 +1913,15 @@ public class RecyclerBinder
       List<ComponentTreeHolder> holders, boolean traverseBackwards) {
     if (traverseBackwards) {
       for (int i = holders.size() - 1; i >= 0; i--) {
-        if (holders.get(i).getRenderInfo().rendersComponent()) {
+        RenderInfo renderInfo = holders.get(i).getRenderInfo();
+        if (renderInfo.isLazy() || renderInfo.rendersComponent()) {
           return i;
         }
       }
     } else {
       for (int i = 0, size = holders.size(); i < size; i++) {
-        if (holders.get(i).getRenderInfo().rendersComponent()) {
+        RenderInfo renderInfo = holders.get(i).getRenderInfo();
+        if (renderInfo.isLazy() || renderInfo.rendersComponent()) {
           return i;
         }
       }
@@ -2450,6 +2455,7 @@ public class RecyclerBinder
 
     final ComponentTreeHolder holder;
     final int childrenWidthSpec, childrenHeightSpec;
+    final boolean isInRange = (index >= rangeStart && index <= rangeEnd);
 
     synchronized (this) {
       // Someone modified the ComponentsTreeHolders while we were computing this range. We
@@ -2460,15 +2466,17 @@ public class RecyclerBinder
 
       holder = mComponentTreeHolders.get(index);
 
-      if (holder.getRenderInfo().rendersView()) {
+      // Only check rendersView() if isInRange to lazily query RenderInfos.
+      if (isInRange && holder.getRenderInfo().rendersView()) {
         return true;
       }
 
-      childrenWidthSpec = getActualChildrenWidthSpec(holder);
-      childrenHeightSpec = getActualChildrenHeightSpec(holder);
+      // Only get child specs if isInRange, otherwise they're unused anyway.
+      childrenWidthSpec = isInRange ? getActualChildrenWidthSpec(holder) : 0 ;
+      childrenHeightSpec = isInRange ? getActualChildrenHeightSpec(holder) : 0;
     }
 
-    if (index >= rangeStart && index <= rangeEnd) {
+    if (isInRange) {
       if (!holder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
         holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
       }

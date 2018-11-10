@@ -116,6 +116,11 @@ public abstract class BaseRenderInfo implements RenderInfo {
     throw new UnsupportedOperationException();
   }
 
+  @Override
+  public boolean isLazy() {
+    return false;
+  }
+
   /**
    * @return true, if {@link RenderInfo} was created through {@link ViewRenderInfo#create()}, or
    *     false otherwise. This should be queried before accessing view related methods, such as

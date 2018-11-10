@@ -43,6 +43,8 @@ public interface RenderInfo {
   @Nullable
   EventHandler<RenderCompleteEvent> getRenderCompleteEventHandler();
 
+  boolean isLazy();
+
   boolean rendersView();
 
   ViewBinder getViewBinder();
