@@ -20,6 +20,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.AccessibilityDelegateCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeProviderCompat;
 import android.support.v4.widget.ExploreByTouchHelper;
@@ -43,15 +44,24 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   private final AccessibilityDelegateCompat mSuperDelegate;
   private static final Rect sDefaultBounds = new Rect(0, 0, 1, 1);
 
-  ComponentAccessibilityDelegate(View view, NodeInfo nodeInfo) {
+  ComponentAccessibilityDelegate(
+      View view, NodeInfo nodeInfo, boolean originalFocus, int originalImportantForAccessibility) {
     super(view);
     mView = view;
     mNodeInfo = nodeInfo;
     mSuperDelegate = new SuperDelegate();
+
+    // We need to reset these two properties, as ExploreByTouchHelper sets focusable to "true" and
+    // importantForAccessibility to "Yes" (if it is Auto). If we don't reset these it would force
+    // every element that has this delegate attached to be focusable, and not allow for
+    // announcement coalescing.
+    mView.setFocusable(originalFocus);
+    ViewCompat.setImportantForAccessibility(mView, originalImportantForAccessibility);
   }
 
-  ComponentAccessibilityDelegate(View view) {
-    this(view, null);
+  ComponentAccessibilityDelegate(
+      View view, boolean originalFocus, int originalImportantForAccessibility) {
+    this(view, null, originalFocus, originalImportantForAccessibility);
   }
 
   /**

@@ -951,7 +951,9 @@ public class ComponentHost extends ViewGroup {
     }
 
     if (isAccessibilityEnabled && mComponentAccessibilityDelegate == null) {
-      mComponentAccessibilityDelegate = new ComponentAccessibilityDelegate(this);
+      mComponentAccessibilityDelegate =
+          new ComponentAccessibilityDelegate(
+              this, this.isFocusable(), ViewCompat.getImportantForAccessibility(this));
     }
 
     ViewCompat.setAccessibilityDelegate(
@@ -972,7 +974,12 @@ public class ComponentHost extends ViewGroup {
             (NodeInfo) child.getTag(R.id.component_node_info);
         if (nodeInfo != null) {
           ViewCompat.setAccessibilityDelegate(
-              child, new ComponentAccessibilityDelegate(child, nodeInfo));
+              child,
+              new ComponentAccessibilityDelegate(
+                  child,
+                  nodeInfo,
+                  child.isFocusable(),
+                  ViewCompat.getImportantForAccessibility(child)));
         }
       }
     }
