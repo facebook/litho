@@ -559,7 +559,7 @@ class TextInputSpec {
       ComponentContext c,
       @State AtomicReference<EditTextWithEventHandlers> mountedView,
       @State AtomicReference<CharSequence> savedText,
-      @FromTrigger String text) {
+      @FromTrigger CharSequence text) {
     EditTextWithEventHandlers view = mountedView.get();
     if (view != null) {
       // If line count changes state update will be triggered by view

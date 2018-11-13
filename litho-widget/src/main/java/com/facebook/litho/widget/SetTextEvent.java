@@ -21,5 +21,5 @@ import com.facebook.litho.annotations.Event;
 /** Use this with TextInput to set the field's current text. */
 @Event
 public class SetTextEvent {
-  public String text;
+  public CharSequence text;
 }

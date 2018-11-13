@@ -308,7 +308,7 @@ class EditTextSpec {
       @Prop(optional = true) boolean requestFocus,
       @Prop(optional = true) int cursorDrawableRes,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
-      @State(canUpdateLazily = true) String input) {
+      @State(canUpdateLazily = true) CharSequence input) {
 
     // TODO(11759579) - don't allocate a new EditText in every measure.
     final EditTextForMeasure editText = new EditTextForMeasure(c.getAndroidContext());
@@ -429,7 +429,7 @@ class EditTextSpec {
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @State AtomicReference<EditTextWithEventHandlers> mountedView,
       @State AtomicBoolean configuredInitialText,
-      @State(canUpdateLazily = true) String input) {
+      @State(canUpdateLazily = true) CharSequence input) {
 
     mountedView.set(editText);
 
@@ -534,7 +534,7 @@ class EditTextSpec {
   static void setText(
       ComponentContext c,
       @State AtomicReference<EditTextWithEventHandlers> mountedView,
-      @FromTrigger String text) {
+      @FromTrigger CharSequence text) {
     ThreadUtils.assertMainThread();
 
     com.facebook.litho.widget.EditText.lazyUpdateInput(c, text);
@@ -546,7 +546,7 @@ class EditTextSpec {
   }
 
   @OnUpdateState
-  static void updateInput(StateValue<String> input, @Param String newInput) {
+  static void updateInput(StateValue<CharSequence> input, @Param CharSequence newInput) {
     input.set(newInput);
   }
 
