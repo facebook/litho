@@ -111,6 +111,8 @@ import javax.annotation.Nullable;
  *     passwords or numbers couldn't be multiline by definition.
  * @prop textWatchers Used to register text watchers e.g. mentions detection.
  * @prop ellipsize If sets, specifies the position of the text to be ellispized.
+ * @prop minLines Minimum number of lines to show.
+ * @prop maxLines Maximum number of lines to show.
  */
 @MountSpec(
   isPureRender = true,
@@ -140,6 +142,8 @@ class TextInputSpec {
   @PropDefault protected static final int inputType = EditorInfo.TYPE_CLASS_TEXT;
   @PropDefault protected static final int imeOptions = EditorInfo.IME_NULL;
   @PropDefault static final boolean multiline = false;
+  @PropDefault protected static final int minLines = 1;
+  @PropDefault protected static final int maxLines = Integer.MAX_VALUE;
 
   /** UI thread only; used in OnMount. */
   private static final Rect sBackgroundPaddingRect = new Rect();
@@ -183,6 +187,8 @@ class TextInputSpec {
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @Prop(optional = true) boolean multiline,
       @Prop(optional = true) TextUtils.TruncateAt ellipsize,
+      @Prop(optional = true) int minLines,
+      @Prop(optional = true) int maxLines,
       @State AtomicReference<CharSequence> savedText,
       @State int measureSeqNumber) {
     // For width we always take all available space, or collapse to 0 if unspecified.
@@ -214,6 +220,8 @@ class TextInputSpec {
         inputFilters,
         multiline,
         ellipsize,
+        minLines,
+        maxLines,
         // onMeasure happens:
         // 1. After initState before onMount: savedText = initText.
         // 2. After onMount before onUnmount: savedText preserved from underlying editText.
@@ -244,10 +252,14 @@ class TextInputSpec {
       @Nullable List<InputFilter> inputFilters,
       boolean multiline,
       @Nullable TextUtils.TruncateAt ellipsize,
+      int minLines,
+      int maxLines,
       @Nullable CharSequence text) {
     if (multiline) {
       editText.setInputType(
           inputType | EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
+      editText.setMinLines(minLines);
+      editText.setMaxLines(maxLines);
     } else {
       editText.setInputType(inputType & ~EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
       editText.setLines(1);
@@ -314,6 +326,9 @@ class TextInputSpec {
       @Prop(optional = true) Diff<Integer> imeOptions,
       @Prop(optional = true, varArg = "inputFilter") Diff<List<InputFilter>> inputFilters,
       @Prop(optional = true) Diff<TextUtils.TruncateAt> ellipsize,
+      @Prop(optional = true) Diff<Boolean> multiline,
+      @Prop(optional = true) Diff<Integer> minLines,
+      @Prop(optional = true) Diff<Integer> maxLines,
       @State Diff<Integer> measureSeqNumber) {
     if (!equals(measureSeqNumber.getPrevious(), measureSeqNumber.getNext())) {
       return true;
@@ -369,6 +384,19 @@ class TextInputSpec {
     if (!equals(ellipsize.getPrevious(), ellipsize.getNext())) {
       return true;
     }
+    if (!equals(multiline.getPrevious(), multiline.getNext())) {
+      return true;
+    }
+    // Minimum and maximum line count should only get checked if multiline is set
+    if (multiline.getNext()) {
+      if (!equals(minLines.getPrevious(), minLines.getNext())) {
+        return true;
+      }
+      if (!equals(maxLines.getPrevious(), maxLines.getNext())) {
+        return true;
+      }
+    }
+
     // Save the nastiest for last: trying to diff drawables.
     Drawable previousBackground = inputBackground.getPrevious();
     Drawable nextBackground = inputBackground.getNext();
@@ -461,6 +489,8 @@ class TextInputSpec {
       @Prop(optional = true) int imeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @Prop(optional = true) boolean multiline,
+      @Prop(optional = true) int minLines,
+      @Prop(optional = true) int maxLines,
       @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers,
       @Prop(optional = true) TextUtils.TruncateAt ellipsize,
       @State AtomicReference<CharSequence> savedText,
@@ -487,6 +517,8 @@ class TextInputSpec {
         inputFilters,
         multiline,
         ellipsize,
+        minLines,
+        maxLines,
         // onMount happens:
         // 1. After initState: savedText = initText.
         // 2. After onUnmount: savedText preserved from underlying editText.
