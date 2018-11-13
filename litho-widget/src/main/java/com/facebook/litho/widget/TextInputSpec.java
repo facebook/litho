@@ -32,6 +32,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -109,6 +110,7 @@ import javax.annotation.Nullable;
  * @prop multiline If set to true, type of the input will be changed to multiline TEXT. Because
  *     passwords or numbers couldn't be multiline by definition.
  * @prop textWatchers Used to register text watchers e.g. mentions detection.
+ * @prop ellipsize If sets, specifies the position of the text to be ellispized.
  */
 @MountSpec(
   isPureRender = true,
@@ -180,6 +182,7 @@ class TextInputSpec {
       @Prop(optional = true) int imeOptions,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @Prop(optional = true) boolean multiline,
+      @Prop(optional = true) TextUtils.TruncateAt ellipsize,
       @State AtomicReference<CharSequence> savedText,
       @State int measureSeqNumber) {
     // For width we always take all available space, or collapse to 0 if unspecified.
@@ -210,6 +213,7 @@ class TextInputSpec {
         imeOptions,
         inputFilters,
         multiline,
+        ellipsize,
         // onMeasure happens:
         // 1. After initState before onMount: savedText = initText.
         // 2. After onMount before onUnmount: savedText preserved from underlying editText.
@@ -239,6 +243,7 @@ class TextInputSpec {
       int imeOptions,
       @Nullable List<InputFilter> inputFilters,
       boolean multiline,
+      @Nullable TextUtils.TruncateAt ellipsize,
       @Nullable CharSequence text) {
     if (multiline) {
       editText.setInputType(
@@ -280,6 +285,7 @@ class TextInputSpec {
     editText.setCursorVisible(editable);
     editText.setTextColor(textColorStateList);
     editText.setHintTextColor(hintColorStateList);
+    editText.setEllipsize(ellipsize);
     if (SDK_INT >= JELLY_BEAN_MR1) {
       editText.setTextAlignment(textAlignment);
     }
@@ -307,6 +313,7 @@ class TextInputSpec {
       @Prop(optional = true) Diff<Integer> inputType,
       @Prop(optional = true) Diff<Integer> imeOptions,
       @Prop(optional = true, varArg = "inputFilter") Diff<List<InputFilter>> inputFilters,
+      @Prop(optional = true) Diff<TextUtils.TruncateAt> ellipsize,
       @State Diff<Integer> measureSeqNumber) {
     if (!equals(measureSeqNumber.getPrevious(), measureSeqNumber.getNext())) {
       return true;
@@ -357,6 +364,9 @@ class TextInputSpec {
       return true;
     }
     if (!equalInputFilters(inputFilters.getPrevious(), inputFilters.getNext())) {
+      return true;
+    }
+    if (!equals(ellipsize.getPrevious(), ellipsize.getNext())) {
       return true;
     }
     // Save the nastiest for last: trying to diff drawables.
@@ -452,6 +462,7 @@ class TextInputSpec {
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @Prop(optional = true) boolean multiline,
       @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers,
+      @Prop(optional = true) TextUtils.TruncateAt ellipsize,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedView) {
     mountedView.set(editText);
@@ -475,6 +486,7 @@ class TextInputSpec {
         imeOptions,
         inputFilters,
         multiline,
+        ellipsize,
         // onMount happens:
         // 1. After initState: savedText = initText.
         // 2. After onUnmount: savedText preserved from underlying editText.
