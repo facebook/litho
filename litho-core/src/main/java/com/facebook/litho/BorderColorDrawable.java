@@ -81,7 +81,7 @@ public class BorderColorDrawable extends ComparableDrawable {
       }
     }
 
-    if (mDrawBorderWithPath) {
+    if (mDrawBorderWithPath && mState.mBorderRadius.length != 8) {
       // Need to duplicate values because Android expects X / Y radii specified separately
       float[] radii = new float[8];
       for (int i = 0; i < 4; ++i) {
@@ -405,6 +405,14 @@ public class BorderColorDrawable extends ComparableDrawable {
       return this;
     }
 
+    public Builder borderColor(@ColorInt int color) {
+      mState.mBorderLeftColor = color;
+      mState.mBorderTopColor = color;
+      mState.mBorderRightColor = color;
+      mState.mBorderBottomColor = color;
+      return this;
+    }
+
     public Builder borderLeftColor(@ColorInt int color) {
       mState.mBorderLeftColor = color;
       return this;
@@ -422,6 +430,14 @@ public class BorderColorDrawable extends ComparableDrawable {
 
     public Builder borderBottomColor(@ColorInt int color) {
       mState.mBorderBottomColor = color;
+      return this;
+    }
+
+    public Builder borderWidth(@Px int border) {
+      mState.mBorderLeftWidth = border;
+      mState.mBorderTopWidth = border;
+      mState.mBorderRightWidth = border;
+      mState.mBorderBottomWidth = border;
       return this;
     }
 
