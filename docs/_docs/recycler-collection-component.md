@@ -6,7 +6,7 @@ permalink: /docs/recycler-collection-component
 ---
 
 [RecyclerView](https://developer.android.com/reference/android/support/v7/widget/RecyclerView.html) is one of the fundamental building blocks for any Android application that contain a scrolling list of items.
-Litho recommends using [RecyclerCollectionComponent](/javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent) and [Sections](/docs/sections-intro) to build scrolling lists of easily.  With these apis you can builds everything from simple, homogeneous lists to complex, heterogeneous lists backed by multiple data sources while taking advantage of features such as background layout and incremental mount.
+Litho recommends using [RecyclerCollectionComponent](/javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent) and [Sections](/docs/sections-intro) to build scrolling lists easily.  With these apis you can builds everything from simple, homogeneous lists to complex, heterogeneous lists backed by multiple data sources while taking advantage of features such as background layout and incremental mount.
 
 ### Create a RecyclerCollectionComponent
 
@@ -74,7 +74,7 @@ Other snapping options are SNAP_NONE, SNAP_TO_END, SNAP_TO_CENTER.
 You can set the height of horizontally scrolling `RecyclerCollectionComponent` in three ways:
 1) The most performant way: A fixed height is set on the H-Scroll component.
 In this case, the client knows the height of the h-scroll when it creates it. The height cannot be changed once the h-scroll gets measured. Children of this h-scroll are measured with at most the height of the h-scroll and positioned at the start of the h-scroll. In Litho this is the most efficient way to set the height of an h-scroll and it's advisable to use this option whenever possible.
-To do this, just set the height throught the `height` prop on your `RecyclerCollectionComponent`:
+To do this, just set the height through the `height` prop on your `RecyclerCollectionComponent`:
 ```java
 final Component component =
     RecyclerCollectionComponent.create(context)

@@ -56,7 +56,7 @@ This is what you need to know when writing an `@OnCreateInitialState` method:
 * All other parameters must have a corresponding parameter annotated with `@State` in the other lifecycle methods, and their type must be a [StateValue](/javadoc/com/facebook/litho/StateValue) that is parameterized with the type of the matching `@State` element.
 * `@OnCreateInitialState` methods are not mandatory. If you do not define one or if you only initialize some states, the uninitialized ones will take Java defaults.
 * `@OnCreateInitialState` is called only once for each component, when it first gets added to the `ComponentTree`. Following layout recalculations of the same `ComponentTree` will not call this again if the key of the component doesn't change.
-* You should never need to call `@OnCreateInitialState` yourself.
+* You should never need to call the `@OnCreateInitialState` method yourself.
 
 Here's how you would initialize the checkbox state with a value passed down from the parent:
 
