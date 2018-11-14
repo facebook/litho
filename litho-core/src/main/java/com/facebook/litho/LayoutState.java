@@ -976,6 +976,11 @@ class LayoutState {
         transitionKey, isTransitionKeyGenerated, layoutState);
     layoutState.mCurrentLayoutOutputAffinityGroup = currentLayoutOutputAffinityGroup;
 
+    // NOTE: This is temporary to test regression detection mechanism and will be reverted within a
+    // day.
+    Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
+    Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
+
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
@@ -1388,8 +1393,6 @@ class LayoutState {
       if (isTracing) {
         ComponentsSystrace.beginSection("sortMountableOutputs");
       }
-      Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
-      Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
