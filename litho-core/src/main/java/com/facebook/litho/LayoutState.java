@@ -1611,12 +1611,12 @@ class LayoutState {
 
     if (nestedTree == null
         || !hasCompatibleSizeSpec(
-        nestedTree.getLastWidthSpec(),
-        nestedTree.getLastHeightSpec(),
-        widthSpec,
-        heightSpec,
-        nestedTree.getLastMeasuredWidth(),
-        nestedTree.getLastMeasuredHeight())) {
+            nestedTree.getLastWidthSpec(),
+            nestedTree.getLastHeightSpec(),
+            widthSpec,
+            heightSpec,
+            nestedTree.getLastMeasuredWidth(),
+            nestedTree.getLastMeasuredHeight())) {
       if (nestedTree != null) {
         if (nestedTree != NULL_LAYOUT) {
           releaseNodeTree(nestedTree, true /* isNestedTree */);

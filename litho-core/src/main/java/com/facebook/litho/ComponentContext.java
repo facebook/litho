@@ -382,7 +382,7 @@ public class ComponentContext {
     if (node != NULL_LAYOUT) {
       applyStyle(node, defStyleAttr, defStyleRes);
     }
-    
+
     return node;
   }
 

@@ -250,4 +250,10 @@ public class ComponentsConfiguration {
    * that the main thread is waiting on a powerful core.
    */
   public static boolean boostAffinityLayoutStateFuture;
+
+  /**
+   * Whether the OnShouldCreateLayoutWithNewSizeSpec is used with Layout Spec with size spec. This
+   * will also disable the associated layout caching.
+   */
+  public static boolean enableShouldCreateLayoutWithNewSizeSpec = false;
 }

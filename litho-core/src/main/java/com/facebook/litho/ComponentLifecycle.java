@@ -27,7 +27,9 @@ import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.support.v4.widget.ExploreByTouchHelper;
 import android.view.View;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.facebook.litho.annotations.OnShouldCreateLayoutWithNewSizeSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaMeasureFunction;
@@ -197,6 +199,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   private final int mTypeId;
 
+  @Nullable Component mLastCachedLayout;
+
   ComponentLifecycle() {
     this(null);
   }
@@ -312,7 +316,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       ComponentsSystrace.beginSection("createLayout:" + ((Component) this).getSimpleName());
     }
 
-    InternalNode node = null;
+    InternalNode node;
     try {
       if (deferNestedTreeResolution) {
         node = ComponentsPools.acquireInternalNode(context);
@@ -389,12 +393,25 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return node;
   }
 
+  @ThreadSafe(enableChecks = false)
   private Component createComponentLayout(ComponentContext context) {
     Component layoutComponent = null;
     if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
       try {
-        layoutComponent =
-            onCreateLayoutWithSizeSpec(context, context.getWidthSpec(), context.getHeightSpec());
+        if (ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec
+            && isLayoutSpecWithSizeSpecCheck()) {
+          if (shouldUseCachedLayout(context)) {
+            layoutComponent = mLastCachedLayout;
+          } else {
+            layoutComponent =
+                onCreateLayoutWithSizeSpec(
+                    context, context.getWidthSpec(), context.getHeightSpec());
+            mLastCachedLayout = layoutComponent;
+          }
+        } else {
+          layoutComponent =
+              onCreateLayoutWithSizeSpec(context, context.getWidthSpec(), context.getHeightSpec());
+        }
       } catch (Exception e) {
         dispatchErrorEvent(context, e);
       }
@@ -405,6 +422,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
         dispatchErrorEvent(context, e);
       }
     }
+
     return layoutComponent;
   }
 
@@ -553,6 +571,14 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * to specific size constraints.
    */
   protected boolean canMeasure() {
+    return false;
+  }
+
+  /**
+   * @return {@code true} iff the {@link LayoutSpec} implements {@link
+   *     OnShouldCreateLayoutWithNewSizeSpec} to {@code true}.
+   */
+  protected boolean isLayoutSpecWithSizeSpecCheck() {
     return false;
   }
 
@@ -795,6 +821,17 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    */
   protected boolean shouldUpdate(Component previous, Component next) {
     return !previous.isEquivalentTo(next);
+  }
+
+  private boolean shouldUseCachedLayout(ComponentContext context) {
+    return mLastCachedLayout != null
+        && !onShouldCreateLayoutWithNewSizeSpec(
+            context, context.getWidthSpec(), context.getHeightSpec());
+  }
+
+  protected boolean onShouldCreateLayoutWithNewSizeSpec(
+      ComponentContext context, int newWidthSpec, int newHeightSpec) {
+    return true;
   }
 
   /**

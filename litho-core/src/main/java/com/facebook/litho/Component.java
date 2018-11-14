@@ -327,6 +327,7 @@ public abstract class Component extends ComponentLifecycle
       component.mScopedContext = null;
       component.mChildCounters = null;
       component.mLastMeasuredLayout = null;
+      component.mLastCachedLayout = null; // so that it is not used on state update
 
       return component;
     } catch (CloneNotSupportedException e) {
