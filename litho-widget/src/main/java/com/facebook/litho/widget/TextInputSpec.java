@@ -50,11 +50,13 @@ import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.FromTrigger;
 import com.facebook.litho.annotations.MountSpec;
+import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnTrigger;
+import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Prop;
@@ -113,6 +115,7 @@ import javax.annotation.Nullable;
  * @prop ellipsize If sets, specifies the position of the text to be ellispized.
  * @prop minLines Minimum number of lines to show.
  * @prop maxLines Maximum number of lines to show.
+ * @prop textWatchers Used to register text watchers e.g. mentions detection.
  */
 @MountSpec(
   isPureRender = true,
@@ -396,7 +399,6 @@ class TextInputSpec {
         return true;
       }
     }
-
     // Save the nastiest for last: trying to diff drawables.
     Drawable previousBackground = inputBackground.getPrevious();
     Drawable nextBackground = inputBackground.getNext();
@@ -491,7 +493,6 @@ class TextInputSpec {
       @Prop(optional = true) boolean multiline,
       @Prop(optional = true) int minLines,
       @Prop(optional = true) int maxLines,
-      @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers,
       @Prop(optional = true) TextUtils.TruncateAt ellipsize,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedView) {
@@ -529,6 +530,13 @@ class TextInputSpec {
     editText.setSelectionChangedEventHandler(TextInput.getSelectionChangedEventHandler(c));
     editText.setKeyUpEventHandler(TextInput.getKeyUpEventHandler(c));
     editText.setEditorActionEventHandler(TextInput.getEditorActionEventHandler(c));
+  }
+
+  @OnBind
+  static void onBind(
+      final ComponentContext c,
+      EditTextWithEventHandlers editText,
+      @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers) {
     editText.attachWatchers(textWatchers);
   }
 
@@ -543,8 +551,12 @@ class TextInputSpec {
     editText.setSelectionChangedEventHandler(null);
     editText.setKeyUpEventHandler(null);
     editText.setEditorActionEventHandler(null);
-    editText.detachWatchers();
     mountedView.set(null);
+  }
+
+  @OnUnbind
+  static void onUnbind(final ComponentContext c, EditTextWithEventHandlers editText) {
+    editText.detachWatchers();
   }
 
   @Nullable
