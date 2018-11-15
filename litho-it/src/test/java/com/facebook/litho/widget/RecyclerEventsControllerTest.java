@@ -24,6 +24,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.support.v7.widget.RecyclerView;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.After;
@@ -35,18 +36,38 @@ import org.junit.runner.RunWith;
 public class RecyclerEventsControllerTest {
 
   private SectionsRecyclerView mSectionsRecyclerView;
+  private RecyclerView mRecyclerView;
   private RecyclerEventsController mRecyclerEventsController;
+  private RecyclerEventsController.OnRecyclerUpdateListener mOnRecyclerUpdateListener;
 
   @Before
   public void setup() {
-    mRecyclerEventsController = new RecyclerEventsController();
     mSectionsRecyclerView = mock(SectionsRecyclerView.class);
+    mRecyclerView = mock(RecyclerView.class);
+    mOnRecyclerUpdateListener = mock(RecyclerEventsController.OnRecyclerUpdateListener.class);
+
+    when(mSectionsRecyclerView.getRecyclerView()).thenReturn(mRecyclerView);
+
+    mRecyclerEventsController = new RecyclerEventsController();
     mRecyclerEventsController.setSectionsRecyclerView(mSectionsRecyclerView);
   }
 
   @After
   public void teardown() {
     ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_DISABLED);
+  }
+
+  @Test
+  public void testOnRecyclerListener() {
+    verify(mOnRecyclerUpdateListener, never()).onUpdate(any(RecyclerView.class));
+
+    mRecyclerEventsController.setOnRecyclerUpdateListener(mOnRecyclerUpdateListener);
+    mRecyclerEventsController.setSectionsRecyclerView(null);
+
+    mRecyclerEventsController.setSectionsRecyclerView(mSectionsRecyclerView);
+
+    verify(mOnRecyclerUpdateListener, times(1)).onUpdate(null);
+    verify(mOnRecyclerUpdateListener, times(1)).onUpdate(mRecyclerView);
   }
 
   @Test
