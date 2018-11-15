@@ -126,9 +126,7 @@ public final class AnimatedProperties {
         final View view = (View) mountContent;
         float parentX = getPositionRelativeToLithoView((View) view.getParent(), true);
         view.setX(value - parentX);
-      } else if ((ComponentsConfiguration.doNotForceWrappingInViewForAnimation
-              || ComponentsConfiguration.assignTransitionKeysToAllOutputs)
-          && (mountContent instanceof Drawable)) {
+      } else if (mountContent instanceof Drawable) {
         final Drawable drawable = (Drawable) mountContent;
         float parentX = getPositionRelativeToLithoView(getHostView(drawable), true);
         BoundsHelper.applyXYToDrawableForAnimation(
@@ -174,9 +172,7 @@ public final class AnimatedProperties {
         final View view = (View) mountContent;
         float parentY = getPositionRelativeToLithoView((View) view.getParent(), false);
         view.setY(value - parentY);
-      } else if ((ComponentsConfiguration.doNotForceWrappingInViewForAnimation
-              || ComponentsConfiguration.assignTransitionKeysToAllOutputs)
-          && (mountContent instanceof Drawable)) {
+      } else if (mountContent instanceof Drawable) {
         final Drawable drawable = (Drawable) mountContent;
         float parentY = getPositionRelativeToLithoView(getHostView(drawable), false);
         BoundsHelper.applyXYToDrawableForAnimation(
@@ -235,10 +231,6 @@ public final class AnimatedProperties {
                 animatingDrawables.get(index), width, height);
           }
         }
-      } else if (!ComponentsConfiguration.doNotForceWrappingInViewForAnimation
-          && !ComponentsConfiguration.assignTransitionKeysToAllOutputs) {
-        throw new UnsupportedOperationException(
-            "Setting width on unsupported mount content: " + mountContent);
       } else if (mountContent instanceof View) {
         final View view = (View) mountContent;
         final int left = view.getLeft();
@@ -298,10 +290,6 @@ public final class AnimatedProperties {
                 animatingDrawables.get(index), width, height);
           }
         }
-      } else if (!ComponentsConfiguration.doNotForceWrappingInViewForAnimation
-          && !ComponentsConfiguration.assignTransitionKeysToAllOutputs) {
-        throw new UnsupportedOperationException(
-            "Setting height on unsupported mount content: " + mountContent);
       } else if (mountContent instanceof View) {
         final View view = (View) mountContent;
         final int top = view.getTop();
@@ -334,7 +322,7 @@ public final class AnimatedProperties {
     public float get(Object mountContent) {
       if (mountContent instanceof View) {
         return ((View) mountContent).getAlpha();
-      } else if (!ComponentsConfiguration.doNotForceWrappingInViewForAnimation) {
+      } else if (!ComponentsConfiguration.allowAnimatingDrawables) {
         throw new UnsupportedOperationException(
             "Tried to get alpha of unsupported mount content: " + mountContent);
       } else if (mountContent instanceof Drawable) {
@@ -354,7 +342,7 @@ public final class AnimatedProperties {
     public void set(Object mountContent, float value) {
       if (mountContent instanceof View) {
         ((View) mountContent).setAlpha(value);
-      } else if (!ComponentsConfiguration.doNotForceWrappingInViewForAnimation) {
+      } else if (!ComponentsConfiguration.allowAnimatingDrawables) {
         throw new UnsupportedOperationException(
             "Setting alpha on unsupported mount content: " + mountContent);
       } else if (mountContent instanceof Drawable) {

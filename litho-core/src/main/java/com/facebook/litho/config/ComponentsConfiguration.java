@@ -117,16 +117,6 @@ public class ComponentsConfiguration {
 
   public static int defaultChangeSetThreadPriority = Process.THREAD_PRIORITY_BACKGROUND;
 
-  /**
-   * Whether components with transitions set on don't necessarily have to be wrapped in views
-   *
-   * <p>If enabled, we'll decide if a component needs to be wrapped in a view for running
-   * Transitions at the layout phase, taking into account among others factors like: number of
-   * children, if background is set, etc. This is under development, thus, when enabled, some
-   * functionality may not work as expected or not work at all.
-   */
-  public static boolean doNotForceWrappingInViewForAnimation = false;
-
   /** If true then we'll allocate YogaEdgesWithIntsImplOptimized arrays in batches */
   public static boolean useBatchArrayAllocator = false;
 
@@ -150,9 +140,6 @@ public class ComponentsConfiguration {
 
   /** Configuration for asynchronous state update */
   public static boolean updateStateAsync = false;
-
-  /** Assign transition keys to all LayoutOutputs, this enables Transition.allLayout() */
-  public static boolean assignTransitionKeysToAllOutputs = false;
 
   /**
    * If false, we won't create state handlers. It's highly discouraged to to change this to false,
@@ -262,4 +249,12 @@ public class ComponentsConfiguration {
    * stale state. See T36730891 for details
    */
   public static boolean enableStateDidUpdate = true;
+
+  /**
+   * Whether we allow animating drawables' properties (other than bounds)
+   */
+  public static boolean allowAnimatingDrawables = false;
+
+  /** Assign transition keys to all LayoutOutputs, this enables Transition.allLayout() */
+  public static boolean assignTransitionKeysToAllOutputs = false;
 }

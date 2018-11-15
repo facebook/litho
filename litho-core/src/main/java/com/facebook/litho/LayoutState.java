@@ -23,7 +23,6 @@ import static android.os.Build.VERSION_CODES.M;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
-import static com.facebook.litho.Component.isMountDrawableSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
@@ -2169,13 +2168,7 @@ class LayoutState {
   }
 
   private static boolean needsToBeWrappedForTransition(InternalNode node) {
-    if (isMountViewSpec(node.getRootComponent()) || TextUtils.isEmpty(node.getTransitionKey())) {
-      return false;
-    }
-    if (!ComponentsConfiguration.doNotForceWrappingInViewForAnimation) {
-      return true;
-    }
-    return !isMountDrawableSpec(node.getRootComponent()) && node.getChildCount() > 0;
+    return !TextUtils.isEmpty(node.getTransitionKey()) && !isMountViewSpec(node.getRootComponent());
   }
 
   /**
