@@ -169,6 +169,9 @@ public class StateHandler {
       for (StateUpdate update : stateUpdatesForKey) {
         update.updateState(component.getStateContainer(), component);
       }
+      if (ComponentsConfiguration.enableStateDidUpdate) {
+        component.setStateDidUpdate();
+      }
       LithoStats.incStateUpdate(stateUpdatesForKey.size());
     }
 

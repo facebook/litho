@@ -256,4 +256,10 @@ public class ComponentsConfiguration {
    * will also disable the associated layout caching.
    */
   public static boolean enableShouldCreateLayoutWithNewSizeSpec = false;
+
+  /**
+   * Whether State Handler should explicitly clear cached layouts which may be built using old or
+   * stale state. See T36730891 for details
+   */
+  public static boolean enableStateDidUpdate = true;
 }
