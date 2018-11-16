@@ -62,7 +62,8 @@ public final class Change {
   private RenderInfo mRenderInfo;
   private List<RenderInfo> mRenderInfos;
 
-  private Change(
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+  public Change(
       @Type int ct,
       int index,
       int toIndex,
@@ -74,8 +75,18 @@ public final class Change {
     mToIndex = toIndex;
     mCount = count;
     mRenderInfo = renderInfo == null ? ComponentRenderInfo.createEmpty() : renderInfo;
-    mRenderInfos =
-        renderInfos == null ? EMPTY : renderInfos;
+
+    if (renderInfos == null) {
+      mRenderInfos = EMPTY;
+    } else {
+      int size = renderInfos.size();
+      mRenderInfos = new ArrayList<>(size);
+      for (int i = 0; i < size; i++) {
+        final RenderInfo renderInfoTemp = renderInfos.get(i);
+        mRenderInfos.add(
+            renderInfoTemp == null ? ComponentRenderInfo.createEmpty() : renderInfoTemp);
+      }
+    }
   }
 
   /**
