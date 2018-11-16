@@ -313,7 +313,7 @@ public class ComponentBodyGeneratorTest {
         .isEqualTo(
             "@java.lang.Override\n"
                 + "public boolean isEquivalentTo(com.facebook.litho.Component other) {\n"
-                + "  if (com.facebook.litho.config.ComponentsConfiguration.useNewIsEquivalentTo) {\n"
+                + "  if (com.facebook.litho.config.ComponentsConfiguration.useNewIsEquivalentToInLayoutSpec) {\n"
                 + "    return super.isEquivalentTo(other);\n"
                 + "  }\n"
                 + "  if (this == other) {\n"

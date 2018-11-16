@@ -31,7 +31,7 @@ public final class SimpleGroupSection extends Section {
 
   @Override
   public boolean isEquivalentTo(Section other) {
-    if (ComponentsConfiguration.useNewIsEquivalentTo) {
+    if (ComponentsConfiguration.useNewIsEquivalentToInSectionSpec) {
       return super.isEquivalentTo(other);
     }
     if (this == other) {

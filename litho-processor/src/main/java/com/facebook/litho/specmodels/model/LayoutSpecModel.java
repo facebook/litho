@@ -332,6 +332,11 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public String getIsEquivalentToExperimentFlagName() {
+    return "useNewIsEquivalentToInLayoutSpec";
+  }
+
+  @Override
   public String toString() {
     return "LayoutSpecModel{"
         + "mSpecModel="

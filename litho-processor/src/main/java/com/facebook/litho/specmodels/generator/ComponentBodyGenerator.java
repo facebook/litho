@@ -433,7 +433,10 @@ public class ComponentBodyGenerator {
             .addAnnotation(Override.class)
             .addModifiers(Modifier.PUBLIC)
             .returns(TypeName.BOOLEAN)
-            .beginControlFlow("if ($T.useNewIsEquivalentTo)", ClassNames.COMPONENTS_CONFIGURATION)
+            .beginControlFlow(
+                "if ($T.$N)",
+                ClassNames.COMPONENTS_CONFIGURATION,
+                specModel.getIsEquivalentToExperimentFlagName())
             .addStatement("return super.isEquivalentTo(other)")
             .endControlFlow()
             .addParameter(specModel.getComponentClass(), "other")

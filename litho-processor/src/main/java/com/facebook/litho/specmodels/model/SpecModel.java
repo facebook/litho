@@ -194,4 +194,10 @@ public interface SpecModel {
 
   /** @return whether this spec requires deep copy and interstage copy methdods to be generated. */
   boolean shouldGenerateCopyMethod();
+
+  /**
+   * @return Depending on the SpecModel type, return the right ComponentsConfiguration flag for
+   * the isEquivalentTo() method.
+   */
+  String getIsEquivalentToExperimentFlagName();
 }

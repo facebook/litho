@@ -163,6 +163,14 @@ public class ComponentsConfiguration {
 
   public static boolean useNewIsEquivalentTo = false;
 
+  public static boolean useNewIsEquivalentToInLayoutSpec = false;
+
+  public static boolean useNewIsEquivalentToInMountSpec = false;
+
+  public static boolean useNewIsEquivalentToInSectionSpec = false;
+
+  public static boolean useNewIsEquivalentToInOtherSpec = false;
+
   /** Whether we should use the PlaceholderComponent instead of Column as MountSpec holder. */
   public static boolean usePlaceholderComponent = false;
 

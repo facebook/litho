@@ -352,6 +352,11 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
+  public String getIsEquivalentToExperimentFlagName() {
+    return "useNewIsEquivalentToInSectionSpec";
+  }
+
+  @Override
   public String toString() {
     return "DiffSectionSpecModel{"
         + "mSpecModel="

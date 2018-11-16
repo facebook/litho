@@ -48,7 +48,7 @@ public final class SimpleMount extends Component {
 
   @Override
   public boolean isEquivalentTo(Component other) {
-    if (ComponentsConfiguration.useNewIsEquivalentTo) {
+    if (ComponentsConfiguration.useNewIsEquivalentToInMountSpec) {
       return super.isEquivalentTo(other);
     }
     if (this == other) {

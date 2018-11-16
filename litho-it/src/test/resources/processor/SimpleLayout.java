@@ -28,7 +28,7 @@ public final class SimpleLayout extends Component {
 
   @Override
   public boolean isEquivalentTo(Component other) {
-    if (ComponentsConfiguration.useNewIsEquivalentTo) {
+    if (ComponentsConfiguration.useNewIsEquivalentToInLayoutSpec) {
       return super.isEquivalentTo(other);
     }
     if (this == other) {

@@ -156,7 +156,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
   @Override
   public boolean isEquivalentTo(Component other) {
-    if (ComponentsConfiguration.useNewIsEquivalentTo) {
+    if (ComponentsConfiguration.useNewIsEquivalentToInLayoutSpec) {
       return super.isEquivalentTo(other);
     }
     if (this == other) {

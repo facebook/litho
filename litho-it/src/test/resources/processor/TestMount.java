@@ -148,7 +148,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   @Override
   public boolean isEquivalentTo(Component other) {
-    if (ComponentsConfiguration.useNewIsEquivalentTo) {
+    if (ComponentsConfiguration.useNewIsEquivalentToInMountSpec) {
       return super.isEquivalentTo(other);
     }
     if (this == other) {

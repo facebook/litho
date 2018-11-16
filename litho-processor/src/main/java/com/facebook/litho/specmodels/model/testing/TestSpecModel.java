@@ -339,4 +339,9 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   public SpecModel getEnclosedSpecModel() {
     return mEnclosedSpecModel;
   }
+
+  @Override
+  public String getIsEquivalentToExperimentFlagName() {
+    return "useNewIsEquivalentTo";
+  }
 }

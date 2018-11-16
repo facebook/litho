@@ -368,6 +368,11 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public String getIsEquivalentToExperimentFlagName() {
+    return "useNewIsEquivalentToInMountSpec";
+  }
+
+  @Override
   public String toString() {
     return "MountSpecModel{"
         + "mSpecModel="

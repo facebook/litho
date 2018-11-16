@@ -352,6 +352,11 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
+  public String getIsEquivalentToExperimentFlagName() {
+    return "useNewIsEquivalentToInSectionSpec";
+  }
+
+  @Override
   public String toString() {
     return "GroupSectionSpecModel{"
         + "mSpecModel="
