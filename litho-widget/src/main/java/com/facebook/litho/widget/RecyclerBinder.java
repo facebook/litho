@@ -2700,7 +2700,8 @@ public class RecyclerBinder
     }
   }
 
-  private class InternalAdapter extends RecyclerView.Adapter<BaseViewHolder> {
+  private class InternalAdapter extends RecyclerView.Adapter<BaseViewHolder>
+      implements RecyclerBinderAdapter {
 
     InternalAdapter() {
       super();
@@ -2796,8 +2797,7 @@ public class RecyclerBinder
     @Override
     @GuardedBy("RecyclerBinder.this")
     public int getItemViewType(int position) {
-      final RenderInfo renderInfo =
-          mComponentTreeHolders.get(getNormalizedPosition(position)).getRenderInfo();
+      final RenderInfo renderInfo = getRenderInfoAt(position);
       if (renderInfo.rendersComponent()) {
         // Special value for LithoViews
         return mRenderInfoViewCreatorController.getComponentViewType();
@@ -2836,6 +2836,21 @@ public class RecyclerBinder
     @Override
     public long getItemId(int position) {
       return mComponentTreeHolders.get(position).getId();
+    }
+
+    @Override
+    public int findFirstVisibleItemPosition() {
+      return mLayoutInfo.findFirstVisibleItemPosition();
+    }
+
+    @Override
+    public int findLastVisibleItemPosition() {
+      return mLayoutInfo.findLastVisibleItemPosition();
+    }
+
+    @Override
+    public RenderInfo getRenderInfoAt(int position) {
+      return mComponentTreeHolders.get(getNormalizedPosition(position)).getRenderInfo();
     }
   }
 
