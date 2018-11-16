@@ -247,6 +247,12 @@ public class ComponentsConfiguration {
   public static boolean boostAffinityLayoutStateFuture;
 
   /**
+   * If true, the {@link #affinityBoosterFactory} will be used to bump all threads that are
+   * calculating a layout to a powerful core.
+   */
+  public static boolean boostAffinityLithoLayouts;
+
+  /**
    * Whether the OnShouldCreateLayoutWithNewSizeSpec is used with Layout Spec with size spec. This
    * will also disable the associated layout caching.
    */

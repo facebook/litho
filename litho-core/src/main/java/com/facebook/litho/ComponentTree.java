@@ -96,6 +96,7 @@ public class ComponentTree {
   private final @Nullable String mSplitLayoutTag;
   private final @Nullable LithoAffinityBoosterFactory mAffinityBoosterFactory;
   private final boolean mBoostAfinityLayoutStateFuture;
+  private final boolean mBoostAffinityLithoLayouts;
   private boolean mReleased;
   private String mReleasedComponent;
 
@@ -278,6 +279,7 @@ public class ComponentTree {
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
     mAffinityBoosterFactory = builder.affinityBoosterFactory;
     mBoostAfinityLayoutStateFuture = builder.boostAffinityLayoutStateFuture;
+    mBoostAffinityLithoLayouts = builder.boostAffinityLithoLayouts;
 
     ensureLayoutThreadHandler();
 
@@ -1643,6 +1645,17 @@ public class ComponentTree {
       layoutEvent.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
     }
 
+    LithoAffinityBooster booster = null;
+
+    if (mBoostAffinityLithoLayouts) {
+      booster =
+          mAffinityBoosterFactory.acquireInstance(
+              Thread.currentThread().getName(), Process.myTid());
+      if (booster != null) {
+        booster.request();
+      }
+    }
+
     LayoutState localLayoutState =
         calculateLayoutState(
             mContext,
@@ -1654,6 +1667,10 @@ public class ComponentTree {
             treeProps,
             source,
             extraAttribution);
+
+    if (booster != null) {
+      booster.release();
+    }
 
     if (output != null) {
       output.width = localLayoutState.getWidth();
@@ -2384,6 +2401,7 @@ public class ComponentTree {
     private boolean useSharedLayoutStateFuture = false;
     private @Nullable LithoAffinityBoosterFactory affinityBoosterFactory;
     private boolean boostAffinityLayoutStateFuture;
+    private boolean boostAffinityLithoLayouts;
 
     protected Builder() {
     }
@@ -2397,8 +2415,12 @@ public class ComponentTree {
       this.root = root;
       /** Right now we don't care about testing this per surface, so we'll use the config value. */
       this.affinityBoosterFactory = ComponentsConfiguration.affinityBoosterFactory;
+      this.boostAffinityLithoLayouts =
+          this.affinityBoosterFactory != null && ComponentsConfiguration.boostAffinityLithoLayouts;
+      // If all Litho threads should be boosted, we don't want to boost only for LayoutStateFuture.
       this.boostAffinityLayoutStateFuture =
-          this.affinityBoosterFactory != null
+          !this.boostAffinityLithoLayouts
+              && this.affinityBoosterFactory != null
               && ComponentsConfiguration.boostAffinityLayoutStateFuture;
     }
 
