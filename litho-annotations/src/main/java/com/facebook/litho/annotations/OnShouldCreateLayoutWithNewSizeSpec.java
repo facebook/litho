@@ -19,6 +19,20 @@ package com.facebook.litho.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** Whether the LayoutSpec component should update layout. */
+/**
+ * This indicates that the annotated method will be called when the component's checks if it can use
+ * the last cached layout returned from the Layout Spec with a new Size Spec. This is used in
+ * conjunction with {@link OnCreateLayoutWithSizeSpec}. The annotated method must have the following
+ * signature: <code><pre>
+ *  static boolean onShouldCreateLayoutWithNewSizeSpec(
+ *    ComponentContext context,
+ *    int newWidthSpec,
+ *    int newHeightSpec, ...)
+ * </pre></code>
+ *
+ * <p>The annotated method should return {@code true} iff the Layout Spec should create a new layout
+ * for this new size spec. If the method returns {@code false} then the Component will use the last
+ * cached layout.
+ */
 @Retention(RetentionPolicy.SOURCE)
 public @interface OnShouldCreateLayoutWithNewSizeSpec {}

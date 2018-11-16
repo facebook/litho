@@ -19,5 +19,9 @@ package com.facebook.litho.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * Indicates that the annotated parameter's value should be equivalent to the named output set in
+ * {@link OnCreateLayoutWithSizeSpec}.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FromCreateLayout {}

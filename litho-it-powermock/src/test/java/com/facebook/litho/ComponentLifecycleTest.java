@@ -26,11 +26,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.litho.ComponentLifecycle.MountType;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureOutput;
@@ -91,7 +93,10 @@ public class ComponentLifecycleTest {
         .thenCallRealMethod();
 
     mockStatic(LayoutState.class);
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+
+    StateHandler stateHandler = mock(StateHandler.class);
+    mContext = new ComponentContext(RuntimeEnvironment.application, stateHandler);
+
     mNestedTreeWidthSpec = SizeSpec.makeSizeSpec(400, SizeSpec.EXACTLY);
     mNestedTreeHeightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
   }
@@ -251,6 +256,149 @@ public class ComponentLifecycleTest {
   }
 
   @Test
+  public void testOnShouldCreateLayoutWithNewSizeSpec_FirstCall() {
+    ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
+
+    Component component;
+
+    component =
+        new SpyComponentBuilder()
+            .setNode(mNode)
+            .canMeasure(true)
+            .isMountSpec(false)
+            .hasState(true)
+            .isLayoutSpecWithSizeSpecCheck(true)
+            .build(mContext);
+
+    component.createLayout(mContext, true);
+
+    // onShouldCreateLayoutWithNewSizeSpec should not be called the first time
+    verify(component, never())
+        .onShouldCreateLayoutWithNewSizeSpec(any(ComponentContext.class), anyInt(), anyInt());
+    verify(component)
+        .onCreateLayoutWithSizeSpec(mContext, mContext.getWidthSpec(), mContext.getHeightSpec());
+
+    ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
+  }
+
+  @Test
+  public void testOnShouldCreateLayoutWithNewSizeSpec_shouldUseCache() {
+    ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
+
+    Component component;
+
+    component =
+        new SpyComponentBuilder()
+            .setNode(mNode)
+            .canMeasure(true)
+            .isMountSpec(false)
+            .isLayoutSpecWithSizeSpecCheck(true)
+            .hasState(true)
+            .build(mContext);
+
+    component.createLayout(mContext, true);
+    when(component.onShouldCreateLayoutWithNewSizeSpec(
+            any(ComponentContext.class), anyInt(), anyInt()))
+        .thenReturn(false);
+    component.createLayout(mContext, true);
+
+    // onShouldCreateLayoutWithNewSizeSpec should be called once
+    verify(component, times(1))
+        .onShouldCreateLayoutWithNewSizeSpec(any(ComponentContext.class), anyInt(), anyInt());
+    // onCreateLayoutWithSizeSpec should be called once
+    verify(component, times(1))
+        .onCreateLayoutWithSizeSpec(mContext, mContext.getWidthSpec(), mContext.getHeightSpec());
+
+    ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
+  }
+
+  @Test
+  public void testOnShouldCreateLayoutWithNewSizeSpec_shouldNotUseCache() {
+    ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
+
+    Component component;
+
+    component =
+        new SpyComponentBuilder()
+            .setNode(mNode)
+            .canMeasure(true)
+            .isMountSpec(false)
+            .hasState(true)
+            .isLayoutSpecWithSizeSpecCheck(true)
+            .build(mContext);
+
+    component.createLayout(mContext, true);
+    when(component.onShouldCreateLayoutWithNewSizeSpec(
+            any(ComponentContext.class), anyInt(), anyInt()))
+        .thenReturn(false);
+    component.createLayout(mContext, true);
+    when(component.onShouldCreateLayoutWithNewSizeSpec(
+            any(ComponentContext.class), anyInt(), anyInt()))
+        .thenReturn(true);
+    component.createLayout(mContext, true);
+
+    // onShouldCreateLayoutWithNewSizeSpec should be called again
+    verify(component, times(2))
+        .onShouldCreateLayoutWithNewSizeSpec(any(ComponentContext.class), anyInt(), anyInt());
+    // onCreateLayoutWithSizeSpec should be called again
+    verify(component, times(2))
+        .onCreateLayoutWithSizeSpec(mContext, mContext.getWidthSpec(), mContext.getHeightSpec());
+
+    ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
+  }
+
+  @Test
+  public void testOnShouldCreateLayoutWithNewSizeSpec_stateUpdateShouldNotUseCache() {
+    ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
+
+    Component component;
+
+    component =
+        new SpyComponentBuilder()
+            .setNode(mNode)
+            .canMeasure(true)
+            .isMountSpec(false)
+            .hasState(true)
+            .isLayoutSpecWithSizeSpecCheck(true)
+            .build(mContext);
+
+    component.createLayout(mContext, true);
+
+    /* State Updated */
+    component.setStateDidUpdate();
+    when(component.onShouldCreateLayoutWithNewSizeSpec(
+            any(ComponentContext.class), anyInt(), anyInt()))
+        .thenReturn(false);
+
+    component.createLayout(mContext, true);
+
+    // onShouldCreateLayoutWithNewSizeSpec should NOT be called because state updated
+    verify(component, times(0))
+        .onShouldCreateLayoutWithNewSizeSpec(any(ComponentContext.class), anyInt(), anyInt());
+
+    // onCreateLayoutWithSizeSpec should be called once
+    verify(component, times(2))
+        .onCreateLayoutWithSizeSpec(mContext, mContext.getWidthSpec(), mContext.getHeightSpec());
+
+    /* No state update */
+    when(component.onShouldCreateLayoutWithNewSizeSpec(
+            any(ComponentContext.class), anyInt(), anyInt()))
+        .thenReturn(false);
+
+    component.createLayout(mContext, true);
+
+    // onShouldCreateLayoutWithNewSizeSpec should be called again
+    verify(component, times(1))
+        .onShouldCreateLayoutWithNewSizeSpec(any(ComponentContext.class), anyInt(), anyInt());
+
+    // onCreateLayoutWithSizeSpec should NOT be called again
+    verify(component, times(2))
+        .onCreateLayoutWithSizeSpec(mContext, mContext.getWidthSpec(), mContext.getHeightSpec());
+
+    ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
+  }
+
+  @Test
   public void testOnMeasureNotOverriden() {
     Component component = setUpSpyComponentForCreateLayout(true, true);
     YogaMeasureFunction measureFunction = getMeasureFunction(component);
@@ -315,18 +463,17 @@ public class ComponentLifecycleTest {
   private Component setUpSpyComponentForCreateLayout(
       boolean isMountSpec,
       boolean canMeasure) {
-    Component component =
-        spy(
-            new TestBaseComponent(
-                canMeasure, isMountSpec ? MountType.DRAWABLE : MountType.NONE, mNode));
 
-    when(component.getScopedContext()).thenReturn(mContext);
-
-    return component;
+    return new SpyComponentBuilder()
+        .isMountSpec(isMountSpec)
+        .setNode(mNode)
+        .canMeasure(canMeasure)
+        .build(mContext);
   }
 
   private Component setUpSpyLayoutSpecWithNullLayout() {
-    Component component = spy(new TestBaseComponent(false, MountType.NONE, null));
+    Component component =
+        spy(new TestBaseComponent(false, MountType.NONE, null, false, mPreviousOnErrorConfig));
 
     when(component.getScopedContext()).thenReturn(mContext);
 
@@ -339,18 +486,34 @@ public class ComponentLifecycleTest {
     return Whitebox.getInternalState(ComponentLifecycle.class, "sMeasureFunction");
   }
 
+  private static Component createSpyComponent(
+      ComponentContext context, TestBaseComponent component) {
+    Component spy = spy(component);
+    when(spy.getScopedContext()).thenReturn(context);
+    return spy;
+  }
+
   @OkToExtend
   private static class TestBaseComponent extends Component {
 
     private final boolean mCanMeasure;
     private final MountType mMountType;
     private final InternalNode mNode;
+    private final boolean mIsLayoutSpecWithSizeSpecCheck;
+    private final boolean mHasState;
 
-    TestBaseComponent(boolean canMeasure, MountType mountType, InternalNode node) {
+    TestBaseComponent(
+        boolean canMeasure,
+        MountType mountType,
+        InternalNode node,
+        boolean isLayoutSpecWithSizeSpecCheck,
+        boolean hasState) {
       super("TestBaseComponent");
       mCanMeasure = canMeasure;
       mMountType = mountType;
       mNode = node;
+      mIsLayoutSpecWithSizeSpecCheck = isLayoutSpecWithSizeSpecCheck;
+      mHasState = hasState;
     }
 
     @Override
@@ -383,12 +546,62 @@ public class ComponentLifecycleTest {
     public MountType getMountType() {
       return mMountType;
     }
+
+    @Override
+    protected boolean hasState() {
+      return mHasState;
+    }
+
+    @Override
+    protected boolean isLayoutSpecWithSizeSpecCheck() {
+      return mIsLayoutSpecWithSizeSpecCheck;
+    }
+  }
+
+  static class SpyComponentBuilder {
+    private boolean mCanMeasure = false;
+    private MountType mMountType = MountType.NONE;
+    private InternalNode mNode = null;
+    private boolean mIsLayoutSpecWithSizeSpecCheck = false;
+    private boolean mHasState = false;
+
+    SpyComponentBuilder canMeasure(boolean canMeasure) {
+      this.mCanMeasure = canMeasure;
+      return this;
+    }
+
+    SpyComponentBuilder isMountSpec(boolean isMountSpec) {
+      this.mMountType = isMountSpec ? MountType.DRAWABLE : MountType.NONE;
+      return this;
+    }
+
+    SpyComponentBuilder setNode(InternalNode node) {
+      this.mNode = node;
+      return this;
+    }
+
+    SpyComponentBuilder isLayoutSpecWithSizeSpecCheck(boolean isLayoutSpecWithSizeSpecCheck) {
+      this.mIsLayoutSpecWithSizeSpecCheck = isLayoutSpecWithSizeSpecCheck;
+      return this;
+    }
+
+    SpyComponentBuilder hasState(boolean hasState) {
+      this.mHasState = hasState;
+      return this;
+    }
+
+    Component build(ComponentContext context) {
+      return createSpyComponent(
+          context,
+          new TestBaseComponent(
+              mCanMeasure, mMountType, mNode, mIsLayoutSpecWithSizeSpecCheck, mHasState));
+    }
   }
 
   private static class TestMountSpecWithEmptyOnMeasure extends TestBaseComponent {
 
     TestMountSpecWithEmptyOnMeasure(InternalNode node) {
-      super(true, MountType.DRAWABLE, node);
+      super(true, MountType.DRAWABLE, node, false, false);
     }
 
     @Override
