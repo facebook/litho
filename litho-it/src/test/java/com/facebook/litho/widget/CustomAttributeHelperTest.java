@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.litho.sections.widget;
+package com.facebook.litho.widget;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.widget.ComponentRenderInfo;
-import com.facebook.litho.widget.ComponentTreeHolder;
-import com.facebook.litho.widget.RenderInfo;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Before;
@@ -33,16 +30,14 @@ import org.junit.runner.RunWith;
 public class CustomAttributeHelperTest {
   private CustomAttributeHelper<String> mAttributeHelper;
   private TestRenderInfoBuilder mRenderInfoBuilder;
-  private ComponentTreeHolder mComponentTreeHolder;
   private RenderInfo mRenderInfo;
 
   @Before
   public void setup() {
     mAttributeHelper = new TestAttributeHelper();
     mRenderInfoBuilder = new TestRenderInfoBuilder();
-    mComponentTreeHolder = mock(ComponentTreeHolder.class);
+
     mRenderInfo = mock(RenderInfo.class);
-    when(mComponentTreeHolder.getRenderInfo()).thenReturn(mRenderInfo);
   }
 
   @Test
@@ -56,7 +51,7 @@ public class CustomAttributeHelperTest {
   public void testAttrGet() {
     String object = "aabc";
     when(mRenderInfo.getCustomAttribute(TestAttributeHelper.TAG)).thenReturn(object);
-    String attribute = mAttributeHelper.getAttribute(mComponentTreeHolder);
+    String attribute = mAttributeHelper.getAttribute(mRenderInfo);
     assertEquals(object, attribute);
   }
 
