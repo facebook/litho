@@ -374,7 +374,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       if (needsPreviousRenderData()) {
         node.addComponentNeedingPreviousRenderData((Component) this);
       } else {
-        final Transition transition = onCreateTransition(context);
+        final Transition transition = createTransition(context);
         if (transition != null) {
           node.addTransition(transition);
         }
@@ -391,6 +391,15 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
 
     return node;
+  }
+
+  final @Nullable Transition createTransition(ComponentContext c) {
+    final Transition transition = onCreateTransition(c);
+    if (transition != null) {
+      final String ownerKey = ((Component) this).getOwnerGlobalKey();
+      TransitionUtils.setOwnerKey(transition, ownerKey);
+    }
+    return transition;
   }
 
   @ThreadSafe(enableChecks = false)

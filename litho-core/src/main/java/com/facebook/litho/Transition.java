@@ -295,6 +295,7 @@ public abstract class Transition {
     private final RuntimeValue mAppearFrom;
     private final RuntimeValue mDisappearTo;
     @Nullable private final String mTraceName;
+    @Nullable private String mOwnerKey;
 
     TransitionUnit(
         AnimationTarget animationTarget,
@@ -338,6 +339,15 @@ public abstract class Transition {
     @Nullable
     String getTraceName() {
       return mTraceName;
+    }
+
+    void setOwnerKey(@Nullable String ownerKey) {
+      mOwnerKey = ownerKey;
+    }
+
+    @Nullable
+    String getOwnerKey() {
+      return mOwnerKey;
     }
 
     boolean targetsKey(String key) {
