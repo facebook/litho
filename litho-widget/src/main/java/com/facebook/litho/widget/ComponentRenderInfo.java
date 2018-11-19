@@ -80,11 +80,6 @@ public class ComponentRenderInfo extends BaseRenderInfo {
     return mComponent.getSimpleName();
   }
 
-  @Nullable
-  public <T> T getCustomAttribute(CustomAttributeHelper<T> helper) {
-    return helper.getAttribute(this);
-  }
-
   public static class Builder extends BaseRenderInfo.Builder<Builder> {
     private Component mComponent;
     private EventHandler<RenderCompleteEvent> mRenderCompleteEventEventHandler;
@@ -99,10 +94,6 @@ public class ComponentRenderInfo extends BaseRenderInfo {
         EventHandler<RenderCompleteEvent> renderCompleteEventHandler) {
       this.mRenderCompleteEventEventHandler = renderCompleteEventHandler;
       return this;
-    }
-
-    public <T> Builder customAttribute(CustomAttributeHelper<T> helper, T value) {
-      return helper.addAttribute(value, this);
     }
 
     public Builder component(Component.Builder builder) {
