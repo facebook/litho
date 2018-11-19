@@ -52,6 +52,7 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -133,21 +134,19 @@ public class ComponentBodyGenerator {
   static TypeSpec generateStateContainer(SpecModel specModel) {
     final TypeSpec.Builder stateContainerClassBuilder =
         TypeSpec.classBuilder(getStateContainerClassName(specModel))
-            .addSuperinterface(specModel.getStateContainerClass());
+            .addSuperinterface(specModel.getStateContainerClass())
+            .addAnnotation(
+                AnnotationSpec.builder(VisibleForTesting.class)
+                    .addMember("otherwise", "$L", VisibleForTesting.PRIVATE)
+                    .build())
+            .addModifiers(Modifier.STATIC)
+            .addTypeVariables(specModel.getTypeVariables());
 
     final boolean hasUpdateStateWithTransition =
         StateGenerator.hasUpdateStateWithTransition(specModel);
 
     if (hasUpdateStateWithTransition) {
       stateContainerClassBuilder.addSuperinterface(specModel.getTransitionContainerClass());
-    }
-
-    if (!specModel.hasInjectedDependencies()) {
-      stateContainerClassBuilder.addAnnotation(
-          AnnotationSpec.builder(VisibleForTesting.class)
-              .addMember("otherwise", "$L", VisibleForTesting.PRIVATE).build());
-      stateContainerClassBuilder.addModifiers(Modifier.STATIC);
-      stateContainerClassBuilder.addTypeVariables(specModel.getTypeVariables());
     }
 
     for (StateParamModel stateValue : specModel.getStateValues()) {
@@ -276,6 +275,31 @@ public class ComponentBodyGenerator {
     } else {
       return specModel.getComponentName() + GeneratorConstants.STATE_CONTAINER_NAME_SUFFIX;
     }
+  }
+
+  static String getStateContainerClassNameWithTypeVars(SpecModel specModel) {
+    if (specModel.getStateValues().isEmpty()) {
+      return specModel.getStateContainerClass().toString();
+    } else {
+      return getStateContainerClassName(specModel) + getTypeVariablesString(specModel);
+    }
+  }
+
+  private static String getTypeVariablesString(SpecModel specModel) {
+    final ImmutableList<TypeVariableName> typeVariables = specModel.getTypeVariables();
+    if (typeVariables.isEmpty()) {
+      return "";
+    }
+
+    final StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append("<");
+    for (int i = 0, size = typeVariables.size(); i < size - 1; i++) {
+      stringBuilder.append(typeVariables.get(i).name).append(", ");
+    }
+
+    stringBuilder.append(typeVariables.get(typeVariables.size() - 1)).append(">");
+
+    return stringBuilder.toString();
   }
 
   static MethodSpec generateStateContainerGetter(TypeName stateContainerClassName) {

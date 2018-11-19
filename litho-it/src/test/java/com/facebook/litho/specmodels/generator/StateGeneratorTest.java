@@ -245,8 +245,8 @@ public class StateGeneratorTest {
             "@java.lang.Override\n"
                 + "protected void transferState(com.facebook.litho.StateContainer _prevStateContainer,\n"
                 + "    com.facebook.litho.StateContainer _nextStateContainer) {\n"
-                + "  TestWithStateStateContainer prevStateContainer = (TestWithStateStateContainer) _prevStateContainer;\n"
-                + "  TestWithStateStateContainer nextStateContainer = (TestWithStateStateContainer) _nextStateContainer;\n"
+                + "  TestWithStateStateContainer<T> prevStateContainer = (TestWithStateStateContainer<T>) _prevStateContainer;\n"
+                + "  TestWithStateStateContainer<T> nextStateContainer = (TestWithStateStateContainer<T>) _nextStateContainer;\n"
                 + "  nextStateContainer.arg1 = prevStateContainer.arg1;\n"
                 + "  nextStateContainer.arg4 = prevStateContainer.arg4;\n"
                 + "}\n");
@@ -264,8 +264,8 @@ public class StateGeneratorTest {
             "@java.lang.Override\n"
                 + "protected void transferState(com.facebook.litho.StateContainer _prevStateContainer,\n"
                 + "    com.facebook.litho.StateContainer _nextStateContainer) {\n"
-                + "  TestWithStateWithTransitionStateContainer prevStateContainer = (TestWithStateWithTransitionStateContainer) _prevStateContainer;\n"
-                + "  TestWithStateWithTransitionStateContainer nextStateContainer = (TestWithStateWithTransitionStateContainer) _nextStateContainer;\n"
+                + "  TestWithStateWithTransitionStateContainer<T> prevStateContainer = (TestWithStateWithTransitionStateContainer<T>) _prevStateContainer;\n"
+                + "  TestWithStateWithTransitionStateContainer<T> nextStateContainer = (TestWithStateWithTransitionStateContainer<T>) _nextStateContainer;\n"
                 + "  nextStateContainer.arg1 = prevStateContainer.arg1;\n"
                 + "  nextStateContainer.arg4 = prevStateContainer.arg4;\n"
                 + "  nextStateContainer._transitions = prevStateContainer._transitions;\n"
@@ -347,14 +347,14 @@ public class StateGeneratorTest {
 
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
-            "private static class UpdateCurrentStateStateUpdate implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
+            "private static class UpdateCurrentStateStateUpdate<T extends java.lang.CharSequence> implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
                 + "  UpdateCurrentStateStateUpdate() {\n"
                 + "  }\n"
                 + "\n"
                 + "  @java.lang.Override\n"
                 + "  public void updateState(com.facebook.litho.StateContainer _stateContainer,\n"
                 + "      com.facebook.litho.Component newComponent) {\n"
-                + "    TestWithStateStateContainer stateContainer = (TestWithStateStateContainer) _stateContainer;\n"
+                + "    TestWithStateStateContainer<T> stateContainer = (TestWithStateStateContainer<T>) _stateContainer;\n"
                 + "    TestWithState newComponentStateUpdate = (TestWithState) newComponent;\n"
                 + "    TestWithStateSpec.updateCurrentState();\n"
                 + "  }\n"
@@ -370,14 +370,14 @@ public class StateGeneratorTest {
 
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
-            "private static class UpdateCurrentStateStateUpdate implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
+            "private static class UpdateCurrentStateStateUpdate<T extends java.lang.CharSequence> implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
                 + "  UpdateCurrentStateStateUpdate() {\n"
                 + "  }\n"
                 + "\n"
                 + "  @java.lang.Override\n"
                 + "  public void updateState(com.facebook.litho.StateContainer _stateContainer,\n"
                 + "      com.facebook.litho.Component newComponent) {\n"
-                + "    TestWithStateWithTransitionStateContainer stateContainer = (TestWithStateWithTransitionStateContainer) _stateContainer;\n"
+                + "    TestWithStateWithTransitionStateContainer<T> stateContainer = (TestWithStateWithTransitionStateContainer<T>) _stateContainer;\n"
                 + "    TestWithStateWithTransition newComponentStateUpdate = (TestWithStateWithTransition) newComponent;\n"
                 + "    com.facebook.litho.Transition transition = TestWithStateWithTransitionSpec.updateCurrentState();\n"
                 + "    if (transition != null) {\n"
@@ -396,14 +396,14 @@ public class StateGeneratorTest {
 
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
-            "private static class UpdateCurrentStateStateUpdate implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
+            "private static class UpdateCurrentStateStateUpdate<T extends java.lang.CharSequence> implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
                 + "  UpdateCurrentStateStateUpdate() {\n"
                 + "  }\n"
                 + "\n"
                 + "  @java.lang.Override\n"
                 + "  public void updateState(com.facebook.litho.StateContainer _stateContainer,\n"
                 + "      com.facebook.litho.Component newComponent) {\n"
-                + "    TestWithBothStatesStateContainer stateContainer = (TestWithBothStatesStateContainer) _stateContainer;\n"
+                + "    TestWithBothStatesStateContainer<T> stateContainer = (TestWithBothStatesStateContainer<T>) _stateContainer;\n"
                 + "    TestWithBothStates newComponentStateUpdate = (TestWithBothStates) newComponent;\n"
                 + "    TestWithBothStatesSpec.updateCurrentState();\n"
                 + "  }\n"
@@ -411,14 +411,14 @@ public class StateGeneratorTest {
 
     assertThat(dataHolder.getTypeSpecs().get(1).toString())
         .isEqualTo(
-            "private static class UpdateCurrentStateWithTransitionStateUpdate implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
+            "private static class UpdateCurrentStateWithTransitionStateUpdate<T extends java.lang.CharSequence> implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
                 + "  UpdateCurrentStateWithTransitionStateUpdate() {\n"
                 + "  }\n"
                 + "\n"
                 + "  @java.lang.Override\n"
                 + "  public void updateState(com.facebook.litho.StateContainer _stateContainer,\n"
                 + "      com.facebook.litho.Component newComponent) {\n"
-                + "    TestWithBothStatesStateContainer stateContainer = (TestWithBothStatesStateContainer) _stateContainer;\n"
+                + "    TestWithBothStatesStateContainer<T> stateContainer = (TestWithBothStatesStateContainer<T>) _stateContainer;\n"
                 + "    TestWithBothStates newComponentStateUpdate = (TestWithBothStates) newComponent;\n"
                 + "    com.facebook.litho.Transition transition = TestWithBothStatesSpec.updateCurrentStateWithTransition();\n"
                 + "    if (transition != null) {\n"

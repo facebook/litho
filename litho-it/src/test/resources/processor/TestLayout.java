@@ -444,8 +444,10 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @Override
   protected void transferState(
       StateContainer _prevStateContainer, StateContainer _nextStateContainer) {
-    TestLayoutStateContainer prevStateContainer = (TestLayoutStateContainer) _prevStateContainer;
-    TestLayoutStateContainer nextStateContainer = (TestLayoutStateContainer) _nextStateContainer;
+    TestLayoutStateContainer<S> prevStateContainer =
+        (TestLayoutStateContainer<S>) _prevStateContainer;
+    TestLayoutStateContainer<S> nextStateContainer =
+        (TestLayoutStateContainer<S>) _nextStateContainer;
     nextStateContainer.state1 = prevStateContainer.state1;
     nextStateContainer.state2 = prevStateContainer.state2;
     nextStateContainer.state3 = prevStateContainer.state3;
@@ -563,7 +565,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
   }
 
-  private static class UpdateCurrentStateStateUpdate implements ComponentLifecycle.StateUpdate {
+  private static class UpdateCurrentStateStateUpdate<S extends View>
+      implements ComponentLifecycle.StateUpdate {
     private int mSomeParam;
 
     UpdateCurrentStateStateUpdate(int someParam) {
@@ -572,7 +575,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
     @Override
     public void updateState(StateContainer _stateContainer, Component newComponent) {
-      TestLayoutStateContainer stateContainer = (TestLayoutStateContainer) _stateContainer;
+      TestLayoutStateContainer<S> stateContainer = (TestLayoutStateContainer<S>) _stateContainer;
       TestLayout newComponentStateUpdate = (TestLayout) newComponent;
       StateValue<Long> state1 = new StateValue<Long>();
       state1.set(stateContainer.state1);

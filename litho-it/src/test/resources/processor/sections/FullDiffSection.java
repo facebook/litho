@@ -145,10 +145,10 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   @Override
   protected void transferState(
       StateContainer _prevStateContainer, StateContainer _nextStateContainer) {
-    FullDiffSectionStateContainer prevStateContainer =
-        (FullDiffSectionStateContainer) _prevStateContainer;
-    FullDiffSectionStateContainer nextStateContainer =
-        (FullDiffSectionStateContainer) _nextStateContainer;
+    FullDiffSectionStateContainer<T> prevStateContainer =
+        (FullDiffSectionStateContainer<T>) _prevStateContainer;
+    FullDiffSectionStateContainer<T> nextStateContainer =
+        (FullDiffSectionStateContainer<T>) _nextStateContainer;
     nextStateContainer.state1 = prevStateContainer.state1;
   }
 
@@ -448,7 +448,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     }
   }
 
-  private static class UpdateStateStateUpdate implements SectionLifecycle.StateUpdate {
+  private static class UpdateStateStateUpdate<T> implements SectionLifecycle.StateUpdate {
     private Object mParam;
 
     UpdateStateStateUpdate(Object param) {
@@ -457,8 +457,8 @@ public final class FullDiffSection<T> extends Section implements TestTag {
 
     @Override
     public void updateState(StateContainer _stateContainer, Section newComponent) {
-      FullDiffSectionStateContainer stateContainer =
-          (FullDiffSectionStateContainer) _stateContainer;
+      FullDiffSectionStateContainer<T> stateContainer =
+          (FullDiffSectionStateContainer<T>) _stateContainer;
       FullDiffSection newComponentStateUpdate = (FullDiffSection) newComponent;
       StateValue<Object> state1 = new StateValue<Object>();
       state1.set(stateContainer.state1);

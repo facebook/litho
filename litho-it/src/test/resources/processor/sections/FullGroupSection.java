@@ -177,10 +177,10 @@ final class FullGroupSection<T> extends Section implements TestTag {
   @Override
   protected void transferState(
       StateContainer _prevStateContainer, StateContainer _nextStateContainer) {
-    FullGroupSectionStateContainer prevStateContainer =
-        (FullGroupSectionStateContainer) _prevStateContainer;
-    FullGroupSectionStateContainer nextStateContainer =
-        (FullGroupSectionStateContainer) _nextStateContainer;
+    FullGroupSectionStateContainer<T> prevStateContainer =
+        (FullGroupSectionStateContainer<T>) _prevStateContainer;
+    FullGroupSectionStateContainer<T> nextStateContainer =
+        (FullGroupSectionStateContainer<T>) _nextStateContainer;
     nextStateContainer.state1 = prevStateContainer.state1;
     nextStateContainer.state2 = prevStateContainer.state2;
   }
@@ -553,7 +553,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
     }
   }
 
-  private static class UpdateStateStateUpdate implements SectionLifecycle.StateUpdate {
+  private static class UpdateStateStateUpdate<T> implements SectionLifecycle.StateUpdate {
     private Object mParam;
 
     UpdateStateStateUpdate(Object param) {
@@ -562,8 +562,8 @@ final class FullGroupSection<T> extends Section implements TestTag {
 
     @Override
     public void updateState(StateContainer _stateContainer, Section newComponent) {
-      FullGroupSectionStateContainer stateContainer =
-          (FullGroupSectionStateContainer) _stateContainer;
+      FullGroupSectionStateContainer<T> stateContainer =
+          (FullGroupSectionStateContainer<T>) _stateContainer;
       FullGroupSection newComponentStateUpdate = (FullGroupSection) newComponent;
       StateValue<Object> state2 = new StateValue<Object>();
       state2.set(stateContainer.state2);

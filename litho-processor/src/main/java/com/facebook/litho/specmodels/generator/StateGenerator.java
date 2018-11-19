@@ -100,12 +100,12 @@ public class StateGenerator {
                     .build())
             .addStatement(
                 "$L prevStateContainer = ($L) _prevStateContainer",
-                ComponentBodyGenerator.getStateContainerClassName(specModel),
-                ComponentBodyGenerator.getStateContainerClassName(specModel))
+                ComponentBodyGenerator.getStateContainerClassNameWithTypeVars(specModel),
+                ComponentBodyGenerator.getStateContainerClassNameWithTypeVars(specModel))
             .addStatement(
                 "$L nextStateContainer = ($L) _nextStateContainer",
-                ComponentBodyGenerator.getStateContainerClassName(specModel),
-                ComponentBodyGenerator.getStateContainerClassName(specModel));
+                ComponentBodyGenerator.getStateContainerClassNameWithTypeVars(specModel),
+                ComponentBodyGenerator.getStateContainerClassNameWithTypeVars(specModel));
 
     for (StateParamModel stateValue : specModel.getStateValues()) {
       methodSpec.addStatement(
@@ -265,12 +265,9 @@ public class StateGenerator {
       boolean withTransition) {
     final TypeSpec.Builder stateUpdateClassBuilder =
         TypeSpec.classBuilder(getStateUpdateClassName(updateStateMethod))
-            .addModifiers(Modifier.PRIVATE)
+            .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
+            .addTypeVariables(specModel.getTypeVariables())
             .addSuperinterface(specModel.getUpdateStateInterface());
-
-    if (!specModel.hasInjectedDependencies()) {
-      stateUpdateClassBuilder.addModifiers(Modifier.STATIC);
-    }
 
     // Generate updateState method.
     final String newComponentImplName =
@@ -284,9 +281,9 @@ public class StateGenerator {
             .addParameter(specModel.getComponentClass(), STATE_UPDATE_NEW_COMPONENT_NAME)
             .addStatement(
                 "$L $L = ($L) $L",
-                ComponentBodyGenerator.getStateContainerClassName(specModel),
+                ComponentBodyGenerator.getStateContainerClassNameWithTypeVars(specModel),
                 STATE_CONTAINER_NAME,
-                ComponentBodyGenerator.getStateContainerClassName(specModel),
+                ComponentBodyGenerator.getStateContainerClassNameWithTypeVars(specModel),
                 STATE_CONTAINER_PARAM_NAME)
             .addStatement(
                 "$L $L = ($L) $L",

@@ -538,8 +538,10 @@ public final class TestMount<S extends View> extends Component implements TestTa
   @Override
   protected void transferState(
       StateContainer _prevStateContainer, StateContainer _nextStateContainer) {
-    TestMountStateContainer prevStateContainer = (TestMountStateContainer) _prevStateContainer;
-    TestMountStateContainer nextStateContainer = (TestMountStateContainer) _nextStateContainer;
+    TestMountStateContainer<S> prevStateContainer =
+        (TestMountStateContainer<S>) _prevStateContainer;
+    TestMountStateContainer<S> nextStateContainer =
+        (TestMountStateContainer<S>) _nextStateContainer;
     nextStateContainer.state1 = prevStateContainer.state1;
     nextStateContainer.state2 = prevStateContainer.state2;
   }
@@ -613,7 +615,8 @@ public final class TestMount<S extends View> extends Component implements TestTa
     S state2;
   }
 
-  private static class UpdateCurrentStateStateUpdate implements ComponentLifecycle.StateUpdate {
+  private static class UpdateCurrentStateStateUpdate<S extends View>
+      implements ComponentLifecycle.StateUpdate {
     private int mSomeParam;
 
     UpdateCurrentStateStateUpdate(int someParam) {
@@ -622,7 +625,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
     @Override
     public void updateState(StateContainer _stateContainer, Component newComponent) {
-      TestMountStateContainer stateContainer = (TestMountStateContainer) _stateContainer;
+      TestMountStateContainer<S> stateContainer = (TestMountStateContainer<S>) _stateContainer;
       TestMount newComponentStateUpdate = (TestMount) newComponent;
       StateValue<Long> state1 = new StateValue<Long>();
       state1.set(stateContainer.state1);
