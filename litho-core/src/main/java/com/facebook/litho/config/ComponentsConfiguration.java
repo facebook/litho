@@ -271,4 +271,6 @@ public class ComponentsConfiguration {
 
   /** Assign transition keys to all LayoutOutputs, this enables Transition.allLayout() */
   public static boolean assignTransitionKeysToAllOutputs = false;
+
+  public static boolean createPhantomLayoutOutputsForTransitions = false;
 }

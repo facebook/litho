@@ -60,6 +60,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.util.SparseArray;
 import android.view.accessibility.AccessibilityManager;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
@@ -2727,6 +2728,41 @@ public class LayoutStateCalculateTest {
 
     assertThat(Component.willRender(c, component)).isTrue();
     assertThat(component.getLayoutCreatedInWillRenderForTesting()).isEqualTo(cachedLayout);
+  }
+
+  @Test
+  public void testPhantomLayoutOutputForTransitionKey() {
+    ComponentsConfiguration.createPhantomLayoutOutputsForTransitions = true;
+
+    final String transitionKey = "column";
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return Column.create(c)
+                .child(
+                    Column.create(c)
+                        .transitionKey(transitionKey)
+                        .child(TestDrawableComponent.create(c)))
+                .build();
+          }
+        };
+
+    final LayoutState layoutState =
+        calculateLayoutState(
+            RuntimeEnvironment.application,
+            component,
+            -1,
+            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
+
+    final LayoutOutput outputWithTransitionKey =
+        layoutState.getLayoutOutputsForTransitionKey(transitionKey).get(OutputUnitType.HOST);
+    assertThat((outputWithTransitionKey.getFlags() & MountItem.LAYOUT_FLAG_PHANTOM) != 0).isTrue();
+
+    ComponentsConfiguration.createPhantomLayoutOutputsForTransitions = false;
   }
 
   private void enableAccessibility() {

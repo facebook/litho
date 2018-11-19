@@ -405,31 +405,31 @@ public abstract class Component extends ComponentLifecycle
 
   }
 
-  static boolean isHostSpec(Component component) {
+  static boolean isHostSpec(@Nullable Component component) {
     return (component instanceof HostComponent);
   }
 
-  static boolean isLayoutSpec(Component component) {
+  static boolean isLayoutSpec(@Nullable Component component) {
     return (component != null && component.getMountType() == MountType.NONE);
   }
 
-  static boolean isMountSpec(Component component) {
+  static boolean isMountSpec(@Nullable Component component) {
     return (component != null && component.getMountType() != MountType.NONE);
   }
 
-  static boolean isMountDrawableSpec(Component component) {
+  static boolean isMountDrawableSpec(@Nullable Component component) {
     return (component != null && component.getMountType() == MountType.DRAWABLE);
   }
 
-  static boolean isMountViewSpec(Component component) {
+  static boolean isMountViewSpec(@Nullable Component component) {
     return (component != null && component.getMountType() == MountType.VIEW);
   }
 
-  static boolean isLayoutSpecWithSizeSpec(Component component) {
+  static boolean isLayoutSpecWithSizeSpec(@Nullable Component component) {
     return (isLayoutSpec(component) && component.canMeasure());
   }
 
-  static boolean isNestedTree(Component component) {
+  static boolean isNestedTree(@Nullable Component component) {
     return (isLayoutSpecWithSizeSpec(component)
         || (component != null && component.hasCachedLayout()));
   }
