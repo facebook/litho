@@ -373,6 +373,31 @@ public class ComponentTreeTest {
   }
 
   @Test
+  public void testSetRootWithTreePropsThenMeasure() {
+    ComponentTree componentTree = create(mContext, mComponent).build();
+    componentTree.setLithoView(new LithoView(mContext));
+    componentTree.attach();
+
+    final TreeProps treeProps = new TreeProps();
+    treeProps.put(Object.class, "hello world");
+
+    componentTree.setRootAndSizeSpecAsync(
+        TestDrawableComponent.create(mContext).build(),
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY),
+        treeProps);
+
+    assertThat(componentTree.getBackgroundLayoutState()).isNull();
+
+    componentTree.measure(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY), new int[2], true);
+
+    final ComponentContext c =
+        getInternalState(componentTree.getMainThreadLayoutState(), "mContext");
+    assertThat(c.getTreeProps()).isNotNull();
+    assertThat(c.getTreeProps().get(Object.class)).isEqualTo(treeProps.get(Object.class));
+  }
+
+  @Test
   public void testSetInput() {
     Component component = TestLayoutComponent.create(mContext)
         .build();
@@ -464,7 +489,7 @@ public class ComponentTreeTest {
   }
 
   @Test
-  public void testsetTreeToTwoViewsBothAttached() {
+  public void testSetTreeToTwoViewsBothAttached() {
     Component component = TestDrawableComponent.create(mContext)
         .build();
 

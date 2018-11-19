@@ -202,6 +202,10 @@ public class ComponentTree {
   @GuardedBy("this")
   private Component mRoot;
 
+  @Nullable
+  @GuardedBy("this")
+  private TreeProps mRootTreeProps;
+
   @GuardedBy("this")
   private int mWidthSpec = SIZE_UNINITIALIZED;
 
@@ -861,6 +865,7 @@ public class ComponentTree {
     assertMainThread();
 
     Component component = null;
+    TreeProps treeProps = null;
     LayoutState toRelease;
     synchronized (this) {
       mIsMeasuring = true;
@@ -882,6 +887,7 @@ public class ComponentTree {
         // Since outputs get set on the same object during the lifecycle calls,
         // we need to copy it in order to use it concurrently.
         component = mRoot.makeShallowCopy();
+        treeProps = TreeProps.copy(mRootTreeProps);
       }
     }
 
@@ -912,7 +918,7 @@ public class ComponentTree {
               heightSpec,
               mIsLayoutDiffingEnabled,
               null,
-              null,
+              treeProps,
               CalculateLayoutSource.MEASURE,
               null);
 
@@ -942,6 +948,7 @@ public class ComponentTree {
 
     int layoutScheduleType = SCHEDULE_NONE;
     Component root = null;
+    TreeProps rootTreeProps = null;
 
     synchronized (this) {
       mIsMeasuring = false;
@@ -950,6 +957,7 @@ public class ComponentTree {
         layoutScheduleType = mScheduleLayoutAfterMeasure;
         mScheduleLayoutAfterMeasure = SCHEDULE_NONE;
         root = mRoot.makeShallowCopy();
+        rootTreeProps = TreeProps.copy(mRootTreeProps);
       }
     }
 
@@ -962,7 +970,7 @@ public class ComponentTree {
           null /*output */,
           CalculateLayoutSource.MEASURE,
           null,
-          null);
+          rootTreeProps);
     }
   }
 
@@ -1133,6 +1141,7 @@ public class ComponentTree {
   void updateStateInternal(boolean isAsync, String attribution) {
 
     final Component root;
+    final @Nullable TreeProps rootTreeProps;
 
     synchronized (this) {
 
@@ -1152,6 +1161,7 @@ public class ComponentTree {
       }
 
       root = mRoot.makeShallowCopy();
+      rootTreeProps = TreeProps.copy(mRootTreeProps);
     }
 
     setRootAndSizeSpecInternal(
@@ -1162,7 +1172,7 @@ public class ComponentTree {
         null /*output */,
         CalculateLayoutSource.UPDATE_STATE,
         attribution,
-        null);
+        rootTreeProps);
   }
 
   void recordEventHandler(Component component, EventHandler eventHandler) {
@@ -1509,6 +1519,7 @@ public class ComponentTree {
       }
 
       final boolean rootInitialized = root != null;
+      final boolean treePropsInitialized = treeProps != null;
       final boolean widthSpecInitialized = widthSpec != SIZE_UNINITIALIZED;
       final boolean heightSpecInitialized = heightSpec != SIZE_UNINITIALIZED;
 
@@ -1561,6 +1572,10 @@ public class ComponentTree {
 
       if (rootInitialized) {
         mRoot = root;
+      }
+
+      if (treePropsInitialized) {
+        mRootTreeProps = treeProps;
       }
     }
 
