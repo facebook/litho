@@ -175,8 +175,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
   }
 
   @Override
-  protected void transferState(
-      SectionContext context, StateContainer _prevStateContainer) {
+  protected void transferState(SectionContext context, StateContainer _prevStateContainer) {
     FullGroupSectionStateContainer prevStateContainer =
         (FullGroupSectionStateContainer) _prevStateContainer;
     mStateContainer.state1 = prevStateContainer.state1;
@@ -221,12 +220,9 @@ final class FullGroupSection<T> extends Section implements TestTag {
     SectionLifecycle.StateUpdate _stateUpdate =
         new SectionLifecycle.StateUpdate() {
           @Override
-          public void updateState(
-              StateContainer _stateContainer, Section newComponent) {
+          public void updateState(StateContainer _stateContainer, Section newComponent) {
             FullGroupSection newComponentStateUpdate = (FullGroupSection) newComponent;
-            StateValue<Object> state2 = new StateValue<Object>();
-            state2.set(lazyUpdateValue);
-            newComponentStateUpdate.mStateContainer.state2 = state2.get();
+            newComponentStateUpdate.mStateContainer.state2 = lazyUpdateValue;
           }
         };
     c.updateStateLazy(_stateUpdate);
@@ -395,12 +391,12 @@ final class FullGroupSection<T> extends Section implements TestTag {
   protected void dataRendered(
       SectionContext c, boolean isDataChanged, boolean isMounted, long uptimeMillis) {
     FullGroupSectionSpec.onDataRendered(
-      (SectionContext) c,
-      (boolean) isDataChanged,
-      (boolean) isMounted,
-      (long) uptimeMillis,
-      (int) prop1,
-      (Object) mStateContainer.state2);
+        (SectionContext) c,
+        (boolean) isDataChanged,
+        (boolean) isMounted,
+        (long) uptimeMillis,
+        (int) prop1,
+        (Object) mStateContainer.state2);
   }
 
   @Override

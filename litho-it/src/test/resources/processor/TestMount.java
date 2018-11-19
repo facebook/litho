@@ -70,45 +70,27 @@ public final class TestMount<S extends View> extends Component implements TestTa
   @Comparable(type = 14)
   private TestMountStateContainer mStateContainer;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
   @Comparable(type = 3)
   int prop1;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = true
-  )
+  @Prop(resType = ResType.NONE, optional = true)
   @Comparable(type = 3)
   boolean prop2 = TestMountSpec.prop2;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
   @Comparable(type = 13)
   Object prop3;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
   @Comparable(type = 2)
   char[] prop4;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
   @Comparable(type = 3)
   char prop5;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
   @Comparable(type = 3)
   long prop6;
 
@@ -117,10 +99,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   @Comparable(type = 13)
   CharSequence prop7;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
   @Comparable(type = 3)
   long prop8;
 
@@ -557,8 +536,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
-  protected void transferState(
-      ComponentContext context, StateContainer _prevStateContainer) {
+  protected void transferState(ComponentContext context, StateContainer _prevStateContainer) {
     TestMountStateContainer prevStateContainer = (TestMountStateContainer) _prevStateContainer;
     mStateContainer.state1 = prevStateContainer.state1;
     mStateContainer.state2 = prevStateContainer.state2;
@@ -600,12 +578,9 @@ public final class TestMount<S extends View> extends Component implements TestTa
     ComponentLifecycle.StateUpdate _stateUpdate =
         new ComponentLifecycle.StateUpdate() {
           @Override
-          public void updateState(
-              StateContainer _stateContainer, Component newComponent) {
+          public void updateState(StateContainer _stateContainer, Component newComponent) {
             TestMount newComponentStateUpdate = (TestMount) newComponent;
-            StateValue<Long> state1 = new StateValue<Long>();
-            state1.set(lazyUpdateValue);
-            newComponentStateUpdate.mStateContainer.state1 = state1.get();
+            newComponentStateUpdate.mStateContainer.state1 = lazyUpdateValue;
           }
         };
     c.updateStateLazy(_stateUpdate);
@@ -644,8 +619,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
     }
 
     @Override
-    public void updateState(
-        StateContainer _stateContainer, Component newComponent) {
+    public void updateState(StateContainer _stateContainer, Component newComponent) {
       TestMountStateContainer stateContainer = (TestMountStateContainer) _stateContainer;
       TestMount newComponentStateUpdate = (TestMount) newComponent;
       StateValue<Long> state1 = new StateValue<Long>();

@@ -31,7 +31,6 @@ import com.facebook.litho.specmodels.model.UpdateStateMethod;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import java.util.Locale;
@@ -429,17 +428,11 @@ public class StateGenerator {
                 compClass,
                 STATE_UPDATE_NEW_COMPONENT_NAME)
             .addStatement(
-                "$T $L = new $T()",
-                ParameterizedTypeName.get(ClassNames.STATE_VALUE, stateValue.getTypeName().box()),
-                stateValue.getName(),
-                ParameterizedTypeName.get(ClassNames.STATE_VALUE, stateValue.getTypeName().box()))
-            .addStatement(stateValue.getName() + ".set(" + LAZY_STATE_UPDATE_VALUE_PARAM + ")")
-            .addStatement(
-                "$L.$L.$L = $L.get()",
+                "$L.$L.$L = $L",
                 newComponentImplName,
                 GeneratorConstants.STATE_CONTAINER_FIELD_NAME,
                 stateValue.getName(),
-                stateValue.getName());
+                LAZY_STATE_UPDATE_VALUE_PARAM);
 
     final TypeSpec.Builder stateBuilderImpl =
         TypeSpec.anonymousClassBuilder("")

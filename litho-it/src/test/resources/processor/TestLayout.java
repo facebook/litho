@@ -77,10 +77,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @Comparable(type = 0)
   float aspectRatio;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
   @Comparable(type = 10)
   Component child;
 
@@ -96,17 +93,11 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @Comparable(type = 5)
   List<String> names = TestLayoutSpec.names;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
   @Comparable(type = 3)
   int prop1;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = true
-  )
+  @Prop(resType = ResType.NONE, optional = true)
   @Comparable(type = 3)
   boolean prop2 = TestLayoutSpec.prop2;
 
@@ -115,24 +106,15 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @Comparable(type = 13)
   Object prop3;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
   @Comparable(type = 2)
   char[] prop4;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
   @Comparable(type = 3)
   char prop5;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
   @Comparable(type = 3)
   long prop6;
 
@@ -460,8 +442,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
   }
 
   @Override
-  protected void transferState(
-      ComponentContext context, StateContainer _prevStateContainer) {
+  protected void transferState(ComponentContext context, StateContainer _prevStateContainer) {
     TestLayoutStateContainer prevStateContainer = (TestLayoutStateContainer) _prevStateContainer;
     mStateContainer.state1 = prevStateContainer.state1;
     mStateContainer.state2 = prevStateContainer.state2;
@@ -504,12 +485,9 @@ public final class TestLayout<S extends View> extends Component implements TestT
     ComponentLifecycle.StateUpdate _stateUpdate =
         new ComponentLifecycle.StateUpdate() {
           @Override
-          public void updateState(
-              StateContainer _stateContainer, Component newComponent) {
+          public void updateState(StateContainer _stateContainer, Component newComponent) {
             TestLayout newComponentStateUpdate = (TestLayout) newComponent;
-            StateValue<Long> state1 = new StateValue<Long>();
-            state1.set(lazyUpdateValue);
-            newComponentStateUpdate.mStateContainer.state1 = state1.get();
+            newComponentStateUpdate.mStateContainer.state1 = lazyUpdateValue;
           }
         };
     c.updateStateLazy(_stateUpdate);
@@ -591,8 +569,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
 
     @Override
-    public void updateState(
-        StateContainer _stateContainer, Component newComponent) {
+    public void updateState(StateContainer _stateContainer, Component newComponent) {
       TestLayoutStateContainer stateContainer = (TestLayoutStateContainer) _stateContainer;
       TestLayout newComponentStateUpdate = (TestLayout) newComponent;
       StateValue<Long> state1 = new StateValue<Long>();
