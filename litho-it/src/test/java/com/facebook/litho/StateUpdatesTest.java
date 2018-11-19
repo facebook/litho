@@ -91,10 +91,10 @@ public class StateUpdatesTest {
 
     @Override
     protected void transferState(
-        ComponentContext c,
-        StateContainer stateContainer) {
-      TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
-      mStateContainer.mCount = stateContainerImpl.mCount;
+        StateContainer prevStateContainer, StateContainer nextStateContainer) {
+      TestStateContainer prevStateContainerImpl = (TestStateContainer) prevStateContainer;
+      TestStateContainer nextStateContainerImpl = (TestStateContainer) nextStateContainer;
+      nextStateContainerImpl.mCount = prevStateContainerImpl.mCount;
     }
 
     int getCount() {

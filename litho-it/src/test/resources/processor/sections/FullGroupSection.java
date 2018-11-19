@@ -175,11 +175,14 @@ final class FullGroupSection<T> extends Section implements TestTag {
   }
 
   @Override
-  protected void transferState(SectionContext context, StateContainer _prevStateContainer) {
+  protected void transferState(
+      StateContainer _prevStateContainer, StateContainer _nextStateContainer) {
     FullGroupSectionStateContainer prevStateContainer =
         (FullGroupSectionStateContainer) _prevStateContainer;
-    mStateContainer.state1 = prevStateContainer.state1;
-    mStateContainer.state2 = prevStateContainer.state2;
+    FullGroupSectionStateContainer nextStateContainer =
+        (FullGroupSectionStateContainer) _nextStateContainer;
+    nextStateContainer.state1 = prevStateContainer.state1;
+    nextStateContainer.state2 = prevStateContainer.state2;
   }
 
   protected static void updateState(SectionContext c, Object param) {

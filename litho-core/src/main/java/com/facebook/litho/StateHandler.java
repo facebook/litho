@@ -149,9 +149,7 @@ public class StateHandler {
     }
 
     if (currentStateContainer != null) {
-      component.transferState(
-          component.getScopedContext(),
-          currentStateContainer);
+      component.transferState(currentStateContainer, component.getStateContainer());
     } else {
       component.createInitialState(component.getScopedContext());
     }

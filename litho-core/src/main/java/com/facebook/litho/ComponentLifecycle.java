@@ -727,13 +727,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /**
-   * Call this to transfer the {@link com.facebook.litho.annotations.State} annotated values
-   * between two {@link Component} with the same global scope.
+   * Call this to transfer the {@link com.facebook.litho.annotations.State} annotated values between
+   * two {@link Component} with the same global scope.
    */
   protected void transferState(
-      ComponentContext c,
-      StateContainer previousStateContainer) {
-  }
+      StateContainer previousStateContainer, StateContainer nextStateContainer) {}
 
   protected void createInitialState(ComponentContext c) {
 

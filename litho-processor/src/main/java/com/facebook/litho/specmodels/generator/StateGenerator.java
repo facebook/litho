@@ -92,27 +92,31 @@ public class StateGenerator {
         MethodSpec.methodBuilder("transferState")
             .addAnnotation(Override.class)
             .addModifiers(Modifier.PROTECTED)
-            .addParameter(ParameterSpec.builder(specModel.getContextClass(), "context").build())
             .addParameter(
                 ParameterSpec.builder(specModel.getStateContainerClass(), "_prevStateContainer")
                     .build())
+            .addParameter(
+                ParameterSpec.builder(specModel.getStateContainerClass(), "_nextStateContainer")
+                    .build())
             .addStatement(
                 "$L prevStateContainer = ($L) _prevStateContainer",
+                ComponentBodyGenerator.getStateContainerClassName(specModel),
+                ComponentBodyGenerator.getStateContainerClassName(specModel))
+            .addStatement(
+                "$L nextStateContainer = ($L) _nextStateContainer",
                 ComponentBodyGenerator.getStateContainerClassName(specModel),
                 ComponentBodyGenerator.getStateContainerClassName(specModel));
 
     for (StateParamModel stateValue : specModel.getStateValues()) {
       methodSpec.addStatement(
-          "$L.$L = prevStateContainer.$L",
-          STATE_CONTAINER_FIELD_NAME,
+          "nextStateContainer.$L = prevStateContainer.$L",
           stateValue.getName(),
           stateValue.getName());
     }
 
     if (hasUpdateStateWithTransition(specModel)) {
       methodSpec.addStatement(
-          "$L.$L = prevStateContainer.$L",
-          STATE_CONTAINER_FIELD_NAME,
+          "nextStateContainer.$L = prevStateContainer.$L",
           GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME,
           GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME);
     }

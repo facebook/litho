@@ -243,11 +243,12 @@ public class StateGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected void transferState(com.facebook.litho.ComponentContext context,\n"
-                + "    com.facebook.litho.StateContainer _prevStateContainer) {\n"
+                + "protected void transferState(com.facebook.litho.StateContainer _prevStateContainer,\n"
+                + "    com.facebook.litho.StateContainer _nextStateContainer) {\n"
                 + "  TestWithStateStateContainer prevStateContainer = (TestWithStateStateContainer) _prevStateContainer;\n"
-                + "  mStateContainer.arg1 = prevStateContainer.arg1;\n"
-                + "  mStateContainer.arg4 = prevStateContainer.arg4;\n"
+                + "  TestWithStateStateContainer nextStateContainer = (TestWithStateStateContainer) _nextStateContainer;\n"
+                + "  nextStateContainer.arg1 = prevStateContainer.arg1;\n"
+                + "  nextStateContainer.arg4 = prevStateContainer.arg4;\n"
                 + "}\n");
   }
 
@@ -261,12 +262,13 @@ public class StateGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected void transferState(com.facebook.litho.ComponentContext context,\n"
-                + "    com.facebook.litho.StateContainer _prevStateContainer) {\n"
+                + "protected void transferState(com.facebook.litho.StateContainer _prevStateContainer,\n"
+                + "    com.facebook.litho.StateContainer _nextStateContainer) {\n"
                 + "  TestWithStateWithTransitionStateContainer prevStateContainer = (TestWithStateWithTransitionStateContainer) _prevStateContainer;\n"
-                + "  mStateContainer.arg1 = prevStateContainer.arg1;\n"
-                + "  mStateContainer.arg4 = prevStateContainer.arg4;\n"
-                + "  mStateContainer._transitions = prevStateContainer._transitions;\n"
+                + "  TestWithStateWithTransitionStateContainer nextStateContainer = (TestWithStateWithTransitionStateContainer) _nextStateContainer;\n"
+                + "  nextStateContainer.arg1 = prevStateContainer.arg1;\n"
+                + "  nextStateContainer.arg4 = prevStateContainer.arg4;\n"
+                + "  nextStateContainer._transitions = prevStateContainer._transitions;\n"
                 + "}\n");
   }
 

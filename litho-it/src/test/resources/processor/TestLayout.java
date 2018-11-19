@@ -442,11 +442,13 @@ public final class TestLayout<S extends View> extends Component implements TestT
   }
 
   @Override
-  protected void transferState(ComponentContext context, StateContainer _prevStateContainer) {
+  protected void transferState(
+      StateContainer _prevStateContainer, StateContainer _nextStateContainer) {
     TestLayoutStateContainer prevStateContainer = (TestLayoutStateContainer) _prevStateContainer;
-    mStateContainer.state1 = prevStateContainer.state1;
-    mStateContainer.state2 = prevStateContainer.state2;
-    mStateContainer.state3 = prevStateContainer.state3;
+    TestLayoutStateContainer nextStateContainer = (TestLayoutStateContainer) _nextStateContainer;
+    nextStateContainer.state1 = prevStateContainer.state1;
+    nextStateContainer.state2 = prevStateContainer.state2;
+    nextStateContainer.state3 = prevStateContainer.state3;
   }
 
   protected static void updateCurrentState(ComponentContext c, int someParam) {

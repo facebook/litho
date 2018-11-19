@@ -536,10 +536,12 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
-  protected void transferState(ComponentContext context, StateContainer _prevStateContainer) {
+  protected void transferState(
+      StateContainer _prevStateContainer, StateContainer _nextStateContainer) {
     TestMountStateContainer prevStateContainer = (TestMountStateContainer) _prevStateContainer;
-    mStateContainer.state1 = prevStateContainer.state1;
-    mStateContainer.state2 = prevStateContainer.state2;
+    TestMountStateContainer nextStateContainer = (TestMountStateContainer) _nextStateContainer;
+    nextStateContainer.state1 = prevStateContainer.state1;
+    nextStateContainer.state2 = prevStateContainer.state2;
   }
 
   protected static void updateCurrentState(ComponentContext c, int someParam) {

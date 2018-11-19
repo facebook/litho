@@ -1413,7 +1413,7 @@ public class SectionTree {
         } else {
           nextRoot.transferService(nextRoot.getScopedContext(), currentRoot, nextRoot);
         }
-        nextRoot.transferState(nextRoot.getScopedContext(), currentRoot.getStateContainer());
+        nextRoot.transferState(currentRoot.getStateContainer(), nextRoot.getStateContainer());
       }
 
       // TODO: t18544409 Make sure this is absolutely the best solution as this is an anti-pattern

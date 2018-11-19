@@ -144,10 +144,12 @@ public final class FullDiffSection<T> extends Section implements TestTag {
 
   @Override
   protected void transferState(
-      SectionContext context, StateContainer _prevStateContainer) {
+      StateContainer _prevStateContainer, StateContainer _nextStateContainer) {
     FullDiffSectionStateContainer prevStateContainer =
         (FullDiffSectionStateContainer) _prevStateContainer;
-    mStateContainer.state1 = prevStateContainer.state1;
+    FullDiffSectionStateContainer nextStateContainer =
+        (FullDiffSectionStateContainer) _nextStateContainer;
+    nextStateContainer.state1 = prevStateContainer.state1;
   }
 
   protected static void updateState(SectionContext c, Object param) {
@@ -349,11 +351,11 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   protected void dataRendered(
       SectionContext c, boolean isDataChanged, boolean isMounted, long uptimeMillis) {
     FullDiffSectionSpec.onDataRendered(
-      (SectionContext) c,
-      (boolean) isDataChanged,
-      (boolean) isMounted,
-      (long) uptimeMillis,
-      (Integer) prop1);
+        (SectionContext) c,
+        (boolean) isDataChanged,
+        (boolean) isMounted,
+        (long) uptimeMillis,
+        (Integer) prop1);
   }
 
   @VisibleForTesting(otherwise = 2)

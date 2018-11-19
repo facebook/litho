@@ -116,13 +116,11 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
   }
 
   /**
-   * Call this to transfer the {@link com.facebook.litho.annotations.State} annotated values
-   * between two {@link Section} with the same global scope.
+   * Call this to transfer the {@link com.facebook.litho.annotations.State} annotated values between
+   * two {@link Section} with the same global scope.
    */
   protected void transferState(
-      SectionContext c,
-      StateContainer stateContainer) {
-  }
+      StateContainer previousStateContainer, StateContainer nextStateContainer) {}
 
   /**
    * Call this to transfer the Services between two
