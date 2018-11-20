@@ -117,6 +117,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private final LongSparseArray<ComponentHost> mHostsByMarker = new LongSparseArray<>();
 
   private static final Rect sTempRect = new Rect();
+  private static final Rect sTempRect2 = new Rect();
 
   private final ComponentContext mContext;
   private final LithoView mLithoView;
@@ -1053,10 +1054,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   /** Prepare the {@link MountState} to mount a new {@link LayoutState}. */
   @SuppressWarnings("unchecked")
   private void prepareMount(LayoutState layoutState, @Nullable PerfEvent perfEvent) {
-    final ComponentTree component = mLithoView.getComponentTree();
-    final ComponentsLogger logger = component.getContext().getLogger();
-    final String logTag = component.getContext().getLogTag();
-
     final List<Integer> disappearingItems = extractDisappearingItems(layoutState);
     final PrepareMountStats stats = unmountOrMoveOldItems(layoutState, disappearingItems);
 
@@ -1076,7 +1073,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     final int outputCount = layoutState.getMountableOutputCount();
     if (mLayoutOutputsIds == null || outputCount != mLayoutOutputsIds.length) {
-      mLayoutOutputsIds = new long[layoutState.getMountableOutputCount()];
+      mLayoutOutputsIds = new long[outputCount];
     }
 
     for (int i = 0; i < outputCount; i++) {
@@ -1479,6 +1476,40 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   private static boolean canMountIncrementally(Component component) {
     return component.hasChildLithoViews();
+  }
+
+  /**
+   * @return an id if a host that should be used for a given LayoutOutput, taking into account that
+   *     some of nodes on LayoutOutput tree may not be mounted (e.g. "phantom" LayoutOutputs)
+   */
+  private static long getActualHostMarker(
+      LayoutOutput layoutOutput, LayoutState layoutState, boolean[] skipMounting) {
+    if (skipMounting[layoutOutput.getIndex()]) {
+      return -1;
+    }
+
+    long hostMarker;
+    do {
+      hostMarker = layoutOutput.getHostMarker();
+      layoutOutput = layoutState.getLayoutOutput(hostMarker);
+    } while (skipMounting[layoutOutput.getIndex()]);
+
+    return hostMarker;
+  }
+
+  /** @return bounds for a given LayoutOutput within its actual host, {@see getActualHostMarker} */
+  private static void getActualBounds(
+      LayoutOutput layoutOutput, LayoutState layoutState, boolean[] skipMounting, Rect outRect) {
+    final long actualHostMarker = getActualHostMarker(layoutOutput, layoutState, skipMounting);
+    layoutOutput.getMountBounds(outRect);
+
+    long hostMarker = layoutOutput.getHostMarker();
+    while (hostMarker != actualHostMarker) {
+      final LayoutOutput ancestor = layoutState.getLayoutOutput(hostMarker);
+      ancestor.getMountBounds(sTempRect2);
+      outRect.offset(sTempRect2.left, sTempRect2.top);
+      hostMarker = ancestor.getHostMarker();
+    }
   }
 
   /**

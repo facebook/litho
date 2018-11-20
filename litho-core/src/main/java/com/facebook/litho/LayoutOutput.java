@@ -138,14 +138,18 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   }
 
   /**
-   * Returns the id of the LayoutOutput that represents the host of this LayoutOutput.
+   * Returns the id of the LayoutOutput that represents the host of this LayoutOutput. This host may
+   * be phantom, meaning that the mount content that represents this LayoutOutput may be hosted
+   * inside one of higher level hosts {@see MountState#getActualComponentHost()}
    */
   long getHostMarker() {
     return mHostMarker;
   }
 
   /**
-   * hostMarker is the id of the LayoutOutput that represents the host of this LayoutOutput.
+   * hostMarker is the id of the LayoutOutput that represents the host of this LayoutOutput. This
+   * host may be phantom, meaning that the mount content that represents this LayoutOutput may be
+   * hosted inside one of higher level hosts {@see MountState#getActualComponentHost()}
    */
   void setHostMarker(long hostMarker) {
     mHostMarker = hostMarker;
