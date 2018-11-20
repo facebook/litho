@@ -406,17 +406,15 @@ public final class ComponentTestHelper {
    * Mounts the component & triggers the visibility event. Requires that the component supports
    * incremental mounting.
    *
-   * {@link com.facebook.litho.VisibleEvent}
+   * <p>{@link com.facebook.litho.VisibleEvent}
    *
    * @param context A components context
    * @param onVisibleHandler SpecificComponent.onVisible(component)
    * @param component The component builder which to get the subcomponent from
    * @return A LithoView with the component mounted in it.
    */
-  public static LithoView dispatchVisibleEvent(
-      ComponentContext context,
-      EventHandler onVisibleHandler,
-      Component component) {
+  public static LithoView dispatchOnVisibleEvent(
+      ComponentContext context, EventHandler onVisibleHandler, Component component) {
     LithoView lithoView = new LithoView(context);
     FrameLayout parent = new FrameLayout(context.getAndroidContext());
 
