@@ -582,9 +582,9 @@ public final class TestMount<S extends View> extends Component implements TestTa
     ComponentLifecycle.StateUpdate _stateUpdate =
         new ComponentLifecycle.StateUpdate() {
           @Override
-          public void updateState(StateContainer _stateContainer, Component newComponent) {
-            TestMount newComponentStateUpdate = (TestMount) newComponent;
-            newComponentStateUpdate.mStateContainer.state1 = lazyUpdateValue;
+          public void updateState(StateContainer _stateContainer) {
+            TestMountStateContainer stateContainer = (TestMountStateContainer) _stateContainer;
+            stateContainer.state1 = lazyUpdateValue;
           }
         };
     c.updateStateLazy(_stateUpdate);
@@ -624,13 +624,12 @@ public final class TestMount<S extends View> extends Component implements TestTa
     }
 
     @Override
-    public void updateState(StateContainer _stateContainer, Component newComponent) {
+    public void updateState(StateContainer _stateContainer) {
       TestMountStateContainer<S> stateContainer = (TestMountStateContainer<S>) _stateContainer;
-      TestMount newComponentStateUpdate = (TestMount) newComponent;
       StateValue<Long> state1 = new StateValue<Long>();
       state1.set(stateContainer.state1);
       TestMountSpec.updateCurrentState(state1,mSomeParam);
-      newComponentStateUpdate.mStateContainer.state1 = state1.get();
+      stateContainer.state1 = state1.get();
     }
   }
 

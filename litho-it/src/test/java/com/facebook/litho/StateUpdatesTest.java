@@ -49,10 +49,9 @@ public class StateUpdatesTest {
   private static class TestStateUpdate implements StateUpdate {
 
     @Override
-    public void updateState(StateContainer stateContainer, Component component) {
+    public void updateState(StateContainer stateContainer) {
       TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
-      TestComponent componentImpl = (TestComponent) component;
-      componentImpl.mStateContainer.mCount = stateContainerImpl.mCount + 1;
+      stateContainerImpl.mCount = stateContainerImpl.mCount + 1;
     }
   }
 

@@ -902,7 +902,7 @@ public class SectionTreeTest {
     private boolean mUpdateStateCalled;
 
     @Override
-    public void updateState(StateContainer stateContainer, Section section) {
+    public void updateState(StateContainer stateContainer) {
       mUpdateStateCalled = true;
     }
   }

@@ -16,7 +16,6 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME;
 
 import com.facebook.litho.annotations.Param;
@@ -43,7 +42,6 @@ public class StateGenerator {
   private static final String STATE_UPDATE_IMPL_NAME_SUFFIX = "StateUpdate";
   private static final String STATE_CONTAINER_PARAM_NAME = "_stateContainer";
   private static final String STATE_CONTAINER_NAME = "stateContainer";
-  private static final String STATE_UPDATE_NEW_COMPONENT_NAME = "newComponent";
   private static final String STATE_UPDATE_METHOD_NAME = "updateState";
   private static final String LAZY_STATE_UPDATE_VALUE_PARAM = "lazyUpdateValue";
 
@@ -269,28 +267,17 @@ public class StateGenerator {
             .addTypeVariables(specModel.getTypeVariables())
             .addSuperinterface(specModel.getUpdateStateInterface());
 
-    // Generate updateState method.
-    final String newComponentImplName =
-        STATE_UPDATE_NEW_COMPONENT_NAME + STATE_UPDATE_IMPL_NAME_SUFFIX;
-
     MethodSpec.Builder updateStateMethodBuilder =
         MethodSpec.methodBuilder(STATE_UPDATE_METHOD_NAME)
             .addAnnotation(Override.class)
             .addModifiers(Modifier.PUBLIC)
             .addParameter(specModel.getStateContainerClass(), STATE_CONTAINER_PARAM_NAME)
-            .addParameter(specModel.getComponentClass(), STATE_UPDATE_NEW_COMPONENT_NAME)
             .addStatement(
                 "$L $L = ($L) $L",
                 ComponentBodyGenerator.getStateContainerClassNameWithTypeVars(specModel),
                 STATE_CONTAINER_NAME,
                 ComponentBodyGenerator.getStateContainerClassNameWithTypeVars(specModel),
-                STATE_CONTAINER_PARAM_NAME)
-            .addStatement(
-                "$L $L = ($L) $L",
-                specModel.getComponentName(),
-                newComponentImplName,
-                specModel.getComponentName(),
-                STATE_UPDATE_NEW_COMPONENT_NAME);
+                STATE_CONTAINER_PARAM_NAME);
 
     // Add constructor and member fields.
     MethodSpec.Builder constructor = MethodSpec.constructorBuilder();
@@ -340,9 +327,8 @@ public class StateGenerator {
           CodeBlock.builder()
               .beginControlFlow("if ($L != null)", transitionLocalVarName)
               .addStatement(
-                  "$N.$N.$N.add($L)",
-                  newComponentImplName,
-                  STATE_CONTAINER_FIELD_NAME,
+                  "$N.$N.add($L)",
+                  STATE_CONTAINER_NAME,
                   STATE_TRANSITIONS_FIELD_NAME,
                   transitionLocalVarName)
               .endControlFlow()
@@ -359,12 +345,11 @@ public class StateGenerator {
     // Set the new value of the state.
     for (MethodParamModel methodParamModel : updateStateMethod.methodParams) {
       if (!MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
-        updateStateMethodBuilder
-            .addStatement(
-                newComponentImplName +
-                    "." + STATE_CONTAINER_FIELD_NAME +
-                    "." + methodParamModel.getName() +
-                    " = " + methodParamModel.getName() + ".get()");
+        updateStateMethodBuilder.addStatement(
+            "$L.$L = $L.get()",
+            STATE_CONTAINER_NAME,
+            methodParamModel.getName(),
+            methodParamModel.getName());
       }
     }
 
@@ -390,9 +375,6 @@ public class StateGenerator {
   static TypeSpecDataHolder generateLazyStateUpdateMethod(
       SpecModel specModel,
       StateParamModel stateValue) {
-    final String newComponentImplName =
-        STATE_UPDATE_NEW_COMPONENT_NAME + STATE_UPDATE_IMPL_NAME_SUFFIX;
-
     final MethodSpec.Builder builder =
         MethodSpec.methodBuilder(
                 "lazyUpdate"
@@ -414,24 +396,20 @@ public class StateGenerator {
                 .endControlFlow()
                 .build());
 
-    final TypeName compClass = specModel.getComponentTypeName();
-
     final MethodSpec.Builder stateUpdate =
         MethodSpec.methodBuilder(STATE_UPDATE_METHOD_NAME)
             .addAnnotation(Override.class)
             .addParameter(specModel.getStateContainerClass(), STATE_CONTAINER_PARAM_NAME)
-            .addParameter(specModel.getComponentClass(), STATE_UPDATE_NEW_COMPONENT_NAME)
             .addModifiers(Modifier.PUBLIC)
             .addStatement(
-                "$T $L = ($T) $L",
-                compClass,
-                newComponentImplName,
-                compClass,
-                STATE_UPDATE_NEW_COMPONENT_NAME)
+                "$L $L = ($L) $L",
+                ComponentBodyGenerator.getStateContainerClassName(specModel),
+                STATE_CONTAINER_NAME,
+                ComponentBodyGenerator.getStateContainerClassName(specModel),
+                STATE_CONTAINER_PARAM_NAME)
             .addStatement(
-                "$L.$L.$L = $L",
-                newComponentImplName,
-                GeneratorConstants.STATE_CONTAINER_FIELD_NAME,
+                "$L.$L = $L",
+                STATE_CONTAINER_NAME,
                 stateValue.getName(),
                 LAZY_STATE_UPDATE_VALUE_PARAM);
 

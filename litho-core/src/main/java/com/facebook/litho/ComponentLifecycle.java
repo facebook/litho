@@ -910,7 +910,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   protected void applyPreviousRenderData(RenderData previousRenderData) {}
 
   public interface StateUpdate {
-    void updateState(StateContainer stateContainer, Component newComponent);
+    void updateState(StateContainer stateContainer);
   }
 
   /**

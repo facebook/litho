@@ -1420,7 +1420,7 @@ public class SectionTree {
       final List<StateUpdate> stateUpdates = pendingStateUpdates.get(nextRoot.getGlobalKey());
       if (stateUpdates != null) {
         for (int i = 0, size = stateUpdates.size(); i < size; i++) {
-          stateUpdates.get(i).updateState(nextRoot.getStateContainer(), nextRoot);
+          stateUpdates.get(i).updateState(nextRoot.getStateContainer());
         }
 
         if (nextRoot.shouldComponentUpdate(currentRoot, nextRoot)) {

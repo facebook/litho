@@ -456,14 +456,13 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     }
 
     @Override
-    public void updateState(StateContainer _stateContainer, Section newComponent) {
+    public void updateState(StateContainer _stateContainer) {
       FullDiffSectionStateContainer<T> stateContainer =
           (FullDiffSectionStateContainer<T>) _stateContainer;
-      FullDiffSection newComponentStateUpdate = (FullDiffSection) newComponent;
       StateValue<Object> state1 = new StateValue<Object>();
       state1.set(stateContainer.state1);
       FullDiffSectionSpec.updateState(state1, mParam);
-      newComponentStateUpdate.mStateContainer.state1 = state1.get();
+      stateContainer.state1 = state1.get();
     }
   }
 }

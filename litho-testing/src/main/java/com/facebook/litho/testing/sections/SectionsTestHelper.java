@@ -100,7 +100,7 @@ public class SectionsTestHelper extends Section {
               public Object answer(InvocationOnMock invocation) throws Throwable {
                 final Section scope = ((SectionContext) invocation.getMock()).getSectionScope();
                 final StateUpdate stateUpdate = (StateUpdate) invocation.getArguments()[0];
-                stateUpdate.updateState(SectionLifecycleTestUtil.getStateContainer(scope), scope);
+                stateUpdate.updateState(SectionLifecycleTestUtil.getStateContainer(scope));
                 return null;
               }
             })
@@ -114,7 +114,7 @@ public class SectionsTestHelper extends Section {
               public Object answer(InvocationOnMock invocation) throws Throwable {
                 final Section scope = ((SectionContext) invocation.getMock()).getSectionScope();
                 final StateUpdate stateUpdate = (StateUpdate) invocation.getArguments()[0];
-                stateUpdate.updateState(SectionLifecycleTestUtil.getStateContainer(scope), scope);
+                stateUpdate.updateState(SectionLifecycleTestUtil.getStateContainer(scope));
                 return null;
               }
             })

@@ -238,7 +238,7 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
   }
 
   protected interface StateUpdate {
-    void updateState(StateContainer stateContainer, Section section);
+    void updateState(StateContainer stateContainer);
   }
 
   /**

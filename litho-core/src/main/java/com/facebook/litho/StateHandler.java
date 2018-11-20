@@ -165,7 +165,7 @@ public class StateHandler {
     // If there are no state updates pending for this component, simply store its current state.
     if (stateUpdatesForKey != null) {
       for (StateUpdate update : stateUpdatesForKey) {
-        update.updateState(component.getStateContainer(), component);
+        update.updateState(component.getStateContainer());
       }
       if (ComponentsConfiguration.enableStateDidUpdate) {
         component.setStateDidUpdate();

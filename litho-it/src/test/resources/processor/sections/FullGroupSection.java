@@ -223,9 +223,10 @@ final class FullGroupSection<T> extends Section implements TestTag {
     SectionLifecycle.StateUpdate _stateUpdate =
         new SectionLifecycle.StateUpdate() {
           @Override
-          public void updateState(StateContainer _stateContainer, Section newComponent) {
-            FullGroupSection newComponentStateUpdate = (FullGroupSection) newComponent;
-            newComponentStateUpdate.mStateContainer.state2 = lazyUpdateValue;
+          public void updateState(StateContainer _stateContainer) {
+            FullGroupSectionStateContainer stateContainer =
+                (FullGroupSectionStateContainer) _stateContainer;
+            stateContainer.state2 = lazyUpdateValue;
           }
         };
     c.updateStateLazy(_stateUpdate);
@@ -561,14 +562,13 @@ final class FullGroupSection<T> extends Section implements TestTag {
     }
 
     @Override
-    public void updateState(StateContainer _stateContainer, Section newComponent) {
+    public void updateState(StateContainer _stateContainer) {
       FullGroupSectionStateContainer<T> stateContainer =
           (FullGroupSectionStateContainer<T>) _stateContainer;
-      FullGroupSection newComponentStateUpdate = (FullGroupSection) newComponent;
       StateValue<Object> state2 = new StateValue<Object>();
       state2.set(stateContainer.state2);
       FullGroupSectionSpec.updateState(state2, mParam);
-      newComponentStateUpdate.mStateContainer.state2 = state2.get();
+      stateContainer.state2 = state2.get();
     }
   }
 }

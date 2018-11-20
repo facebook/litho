@@ -489,9 +489,9 @@ public final class TestLayout<S extends View> extends Component implements TestT
     ComponentLifecycle.StateUpdate _stateUpdate =
         new ComponentLifecycle.StateUpdate() {
           @Override
-          public void updateState(StateContainer _stateContainer, Component newComponent) {
-            TestLayout newComponentStateUpdate = (TestLayout) newComponent;
-            newComponentStateUpdate.mStateContainer.state1 = lazyUpdateValue;
+          public void updateState(StateContainer _stateContainer) {
+            TestLayoutStateContainer stateContainer = (TestLayoutStateContainer) _stateContainer;
+            stateContainer.state1 = lazyUpdateValue;
           }
         };
     c.updateStateLazy(_stateUpdate);
@@ -574,13 +574,12 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
 
     @Override
-    public void updateState(StateContainer _stateContainer, Component newComponent) {
+    public void updateState(StateContainer _stateContainer) {
       TestLayoutStateContainer<S> stateContainer = (TestLayoutStateContainer<S>) _stateContainer;
-      TestLayout newComponentStateUpdate = (TestLayout) newComponent;
       StateValue<Long> state1 = new StateValue<Long>();
       state1.set(stateContainer.state1);
       TestLayoutSpec.updateCurrentState(state1,mSomeParam);
-      newComponentStateUpdate.mStateContainer.state1 = state1.get();
+      stateContainer.state1 = state1.get();
     }
   }
 
