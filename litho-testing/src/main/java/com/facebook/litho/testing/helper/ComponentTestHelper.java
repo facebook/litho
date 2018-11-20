@@ -30,6 +30,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.FocusedVisibleEvent;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.TestComponentTree;
 import com.facebook.litho.TreeProps;
@@ -415,6 +416,31 @@ public final class ComponentTestHelper {
    */
   public static LithoView dispatchOnVisibleEvent(
       ComponentContext context, EventHandler onVisibleHandler, Component component) {
+    return dispatchVisibilityEvent(context, onVisibleHandler, new VisibleEvent(), component);
+  }
+
+  /**
+   * Mounts the component & triggers the focused visibility event. Requires that the component
+   * supports incremental mounting.
+   *
+   * <p>{@link com.facebook.litho.FocusedVisibleEvent}
+   *
+   * @param context A components context
+   * @param onFocusedVisibleHandler SpecificComponent.onFocusedVisible(component)
+   * @param component The component builder which to get the subcomponent from
+   * @return A LithoView with the component mounted in it.
+   */
+  public static LithoView dispatchOnFocusedVisibleEvent(
+      ComponentContext context, EventHandler onFocusedVisibleHandler, Component component) {
+    return dispatchVisibilityEvent(
+        context, onFocusedVisibleHandler, new FocusedVisibleEvent(), component);
+  }
+
+  private static LithoView dispatchVisibilityEvent(
+      ComponentContext context,
+      EventHandler eventHandler,
+      Object eventInstance,
+      Component component) {
     LithoView lithoView = new LithoView(context);
     FrameLayout parent = new FrameLayout(context.getAndroidContext());
 
@@ -432,10 +458,7 @@ public final class ComponentTestHelper {
 
     try {
       Whitebox.invokeMethod(
-          component.getEventDispatcher(),
-          "dispatchOnEvent",
-          onVisibleHandler,
-          new VisibleEvent());
+          component.getEventDispatcher(), "dispatchOnEvent", eventHandler, eventInstance);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
