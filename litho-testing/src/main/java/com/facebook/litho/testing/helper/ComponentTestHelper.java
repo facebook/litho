@@ -31,6 +31,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.FocusedVisibleEvent;
+import com.facebook.litho.InvisibleEvent;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.TestComponentTree;
 import com.facebook.litho.TreeProps;
@@ -434,6 +435,22 @@ public final class ComponentTestHelper {
       ComponentContext context, EventHandler onFocusedVisibleHandler, Component component) {
     return dispatchVisibilityEvent(
         context, onFocusedVisibleHandler, new FocusedVisibleEvent(), component);
+  }
+
+  /**
+   * Mounts the component & triggers the invisible event. Requires that the component supports
+   * incremental mounting.
+   *
+   * <p>{@link com.facebook.litho.InvisibleEvent}
+   *
+   * @param context A components context
+   * @param onInvisibleHandler SpecificComponent.onInvisible(component)
+   * @param component The component builder which to get the subcomponent from
+   * @return A LithoView with the component mounted in it.
+   */
+  public static LithoView dispatchOnInvisibleEvent(
+      ComponentContext context, EventHandler onInvisibleHandler, Component component) {
+    return dispatchVisibilityEvent(context, onInvisibleHandler, new InvisibleEvent(), component);
   }
 
   private static LithoView dispatchVisibilityEvent(
