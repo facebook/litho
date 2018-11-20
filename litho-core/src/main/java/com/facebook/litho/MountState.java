@@ -1129,6 +1129,21 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       if (isItemDisappearing(newLayoutState, index)) {
         final int lastDescendantIndex = findLastDescendantIndex(mLastMountedLayoutState, index);
 
+        final LayoutOutput root = mLastMountedLayoutState.getMountableOutputAt(index);
+        if (mSkipMounting[index]) {
+          // The direct descendants of the root have been mounted to another host, thus here we'll
+          // unmount them from where they are mounted, and will remount to the root at the next step
+          final long rootId = root.getId();
+          for (int j = index + 1; j <= lastDescendantIndex; j++) {
+            if (mLastMountedLayoutState.getMountableOutputAt(j).getHostMarker() == rootId) {
+              unmountItem(j, mHostsByMarker);
+            }
+          }
+
+          // Need to override skip mounting value, otherwise it won't be mounted
+          mSkipMounting[index] = false;
+        }
+
         // Go though disappearing subtree, mount everything that is not mounted yet
         // That's okay to mount here *before* we call unmountOrMoveOldItems() and only passing
         // last mount LayoutState
