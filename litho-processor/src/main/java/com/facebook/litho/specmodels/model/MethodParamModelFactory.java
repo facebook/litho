@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.model;
 
 import static com.facebook.litho.specmodels.model.ClassNames.DIFF;
 
+import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
@@ -94,6 +95,10 @@ public final class MethodParamModelFactory {
 
       if (permittedInterStateInputAnnotations.contains(annotation.annotationType())) {
         return new InterStageInputParamModel(simpleMethodParamModel);
+      }
+
+      if (annotation instanceof CachedValue) {
+        return new CachedValueParamModel(simpleMethodParamModel);
       }
     }
 
