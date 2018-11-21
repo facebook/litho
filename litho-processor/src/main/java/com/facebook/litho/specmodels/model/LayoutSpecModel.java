@@ -187,6 +187,11 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public ImmutableList<CachedValueParamModel> getCachedValues() {
+    return mSpecModel.getCachedValues();
+  }
+
+  @Override
   public ImmutableList<InterStageInputParamModel> getInterStageInputs() {
     return mSpecModel.getInterStageInputs();
   }

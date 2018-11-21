@@ -96,6 +96,9 @@ public interface SpecModel {
   /** @return the set of state values that are defined by the spec. */
   ImmutableList<StateParamModel> getStateValues();
 
+  /** @return the set of cached values that are defined by the spec. */
+  ImmutableList<CachedValueParamModel> getCachedValues();
+
   /** @return the set of inter-stage inputs that are defined by the spec. */
   ImmutableList<InterStageInputParamModel> getInterStageInputs();
 

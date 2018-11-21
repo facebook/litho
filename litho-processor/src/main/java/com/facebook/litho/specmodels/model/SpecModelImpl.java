@@ -60,6 +60,7 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<PropDefaultModel> mPropDefaults;
   private final ImmutableList<TypeVariableName> mTypeVariables;
   private final ImmutableList<StateParamModel> mStateValues;
+  private final ImmutableList<CachedValueParamModel> mCachedValues;
   private final ImmutableList<InterStageInputParamModel> mInterStageInputs;
   private final ImmutableList<TreePropModel> mTreeProps;
   private final ImmutableList<EventDeclarationModel> mEventDeclarations;
@@ -139,6 +140,14 @@ public final class SpecModelImpl implements SpecModel {
     mTypeVariables = typeVariables;
     mStateValues =
         getStateValues(
+            delegateMethods,
+            eventMethods,
+            triggerMethods,
+            workingRangeRegisterMethod,
+            workingRangeMethods,
+            updateStateMethods);
+    mCachedValues =
+        getCachedValues(
             delegateMethods,
             eventMethods,
             triggerMethods,
@@ -272,6 +281,11 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public ImmutableList<StateParamModel> getStateValues() {
     return mStateValues;
+  }
+
+  @Override
+  public ImmutableList<CachedValueParamModel> getCachedValues() {
+    return mCachedValues;
   }
 
   @Override
@@ -784,6 +798,75 @@ public final class SpecModelImpl implements SpecModel {
     }
 
     return ImmutableList.copyOf(new ArrayList<>(stateValues));
+  }
+
+  private static ImmutableList<CachedValueParamModel> getCachedValues(
+      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
+      @Nullable SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
+      ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
+    final Set<CachedValueParamModel> cachedValues =
+        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
+      for (MethodParamModel param : delegateMethod.methodParams) {
+        if (param instanceof CachedValueParamModel) {
+          cachedValues.add((CachedValueParamModel) param);
+        }
+      }
+    }
+
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod : eventMethods) {
+      for (MethodParamModel param : eventMethod.methodParams) {
+        if (param instanceof CachedValueParamModel) {
+          cachedValues.add((CachedValueParamModel) param);
+        }
+      }
+    }
+
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethod : triggerMethods) {
+      for (MethodParamModel param : triggerMethod.methodParams) {
+        if (param instanceof CachedValueParamModel) {
+          cachedValues.add((CachedValueParamModel) param);
+        }
+      }
+    }
+
+    if (workingRangeRegisterMethod != null) {
+      for (MethodParamModel param : workingRangeRegisterMethod.methodParams) {
+        if (param instanceof CachedValueParamModel) {
+          cachedValues.add((CachedValueParamModel) param);
+        }
+      }
+    }
+
+    for (WorkingRangeMethodModel workingRangeMethod : workingRangeMethods) {
+      if (workingRangeMethod.enteredRangeModel != null) {
+        for (MethodParamModel param : workingRangeMethod.enteredRangeModel.methodParams) {
+          if (param instanceof CachedValueParamModel) {
+            cachedValues.add((CachedValueParamModel) param);
+          }
+        }
+      }
+      if (workingRangeMethod.exitedRangeModel != null) {
+        for (MethodParamModel param : workingRangeMethod.exitedRangeModel.methodParams) {
+          if (param instanceof CachedValueParamModel) {
+            cachedValues.add((CachedValueParamModel) param);
+          }
+        }
+      }
+    }
+
+    for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod : updateStateMethods) {
+      for (MethodParamModel param : updateStateMethod.methodParams) {
+        if (param instanceof CachedValueParamModel) {
+          cachedValues.add((CachedValueParamModel) param);
+        }
+      }
+    }
+
+    return ImmutableList.copyOf(new ArrayList<>(cachedValues));
   }
 
   private static boolean hasSameUnderlyingStateParamModel(

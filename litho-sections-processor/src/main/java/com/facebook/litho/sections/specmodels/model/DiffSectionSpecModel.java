@@ -19,6 +19,7 @@ package com.facebook.litho.sections.specmodels.model;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
+import com.facebook.litho.specmodels.model.CachedValueParamModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
@@ -204,6 +205,11 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
   @Override
   public ImmutableList<StateParamModel> getStateValues() {
     return mSpecModel.getStateValues();
+  }
+
+  @Override
+  public ImmutableList<CachedValueParamModel> getCachedValues() {
+    return mSpecModel.getCachedValues();
   }
 
   @Override
