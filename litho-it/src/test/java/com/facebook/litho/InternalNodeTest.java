@@ -29,7 +29,10 @@ import static com.facebook.yoga.YogaDirection.RTL;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.powermock.reflect.Whitebox.getInternalState;
 import static org.robolectric.RuntimeEnvironment.application;
 
@@ -64,6 +67,16 @@ public class InternalNodeTest {
 
   private static InternalNode acquireInternalNode() {
     final ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
+    return createAndMeasureTreeForComponent(
+        context,
+        Column.create(context).build(),
+        makeSizeSpec(0, UNSPECIFIED),
+        makeSizeSpec(0, UNSPECIFIED));
+  }
+
+  private static InternalNode acquireInternalNodeWithLogger(ComponentsLogger logger) {
+    final ComponentContext context =
+        new ComponentContext(RuntimeEnvironment.application, "TEST", logger);
     return createAndMeasureTreeForComponent(
         context,
         Column.create(context).build(),
@@ -358,22 +371,19 @@ public class InternalNodeTest {
 
   @Test
   public void testContextSpecificComponentAssertionFailFormatting() {
-    final Component testComponent = new TestComponent();
-    InternalNode node = acquireInternalNode();
+    final ComponentsLogger componentsLogger = mock(ComponentsLogger.class);
+    final PerfEvent perfEvent = mock(PerfEvent.class);
+    when(componentsLogger.newPerformanceEvent(anyInt())).thenReturn(perfEvent);
+
+    InternalNode node = acquireInternalNodeWithLogger(componentsLogger);
     node.alignSelf(YogaAlign.AUTO);
     node.flex(1f);
-    node.appendComponent(testComponent);
 
-    String error = "";
-    try {
-      InternalNode.assertContextSpecificStyleNotSet(node);
-    } catch (IllegalStateException e) {
-      error = e.getMessage();
-    }
-
-    assertTrue(
-        "The error message contains the attributes set",
-        error.contains("alignSelf, flex"));
+    InternalNode.assertContextSpecificStyleNotSet(node);
+    verify(componentsLogger)
+        .emitMessage(
+            ComponentsLogger.LogLevel.WARNING,
+            "You should not set alignSelf, flex to a root layout in Column");
   }
 
   private static boolean isFlagSet(InternalNode internalNode, String flagName) {

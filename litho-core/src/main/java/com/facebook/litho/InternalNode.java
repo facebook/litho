@@ -21,6 +21,7 @@ import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
+import static com.facebook.litho.ComponentsLogger.LogLevel.WARNING;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.END;
@@ -1935,8 +1936,15 @@ class InternalNode implements ComponentLayout {
 
     if (errorTypes != null) {
       final CharSequence errorStr = TextUtils.join(", ", errorTypes);
-      throw new IllegalStateException(
-          "You should not set " + errorStr + " to a root layout in " + node.getRootComponent());
+      final ComponentsLogger logger = node.getContext().getLogger();
+      if (logger != null) {
+        logger.emitMessage(
+            WARNING,
+            "You should not set "
+                + errorStr
+                + " to a root layout in "
+                + node.getRootComponent().getClass().getSimpleName());
+      }
     }
   }
 
