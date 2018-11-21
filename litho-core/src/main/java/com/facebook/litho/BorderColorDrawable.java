@@ -39,15 +39,16 @@ public class BorderColorDrawable extends ComparableDrawable {
   private static final float CLIP_ANGLE = 45f;
   private static final RectF sClipBounds = new RectF();
   private static final RectF sDrawBounds = new RectF();
-  private final Paint mPaint = new Paint();
-  private final Path mPath = new Path();
-  private State mState;
+
+  private final State mState;
+
+  private Paint mPaint;
+  private Path mPath;
   private boolean mDrawBorderWithPath;
 
   private BorderColorDrawable(State state) {
     super();
     mState = state;
-    init();
   }
 
   private static void drawBorder(
@@ -66,6 +67,8 @@ public class BorderColorDrawable extends ComparableDrawable {
   }
 
   public void init() {
+    mPaint = new Paint();
+    mPath = new Path();
     boolean hasRadius = false;
     float lastRadius = 0f;
     for (int i = 0; i < mState.mBorderRadius.length; ++i) {
@@ -98,6 +101,10 @@ public class BorderColorDrawable extends ComparableDrawable {
 
   @Override
   public void draw(Canvas canvas) {
+    if (mPaint == null || mPath == null) {
+      init();
+    }
+
     final boolean equalBorderColors =
         mState.mBorderLeftColor == mState.mBorderTopColor
             && mState.mBorderTopColor == mState.mBorderRightColor
@@ -300,12 +307,16 @@ public class BorderColorDrawable extends ComparableDrawable {
 
   @Override
   public void setAlpha(int alpha) {
-    mPaint.setAlpha(alpha);
+    if (mPaint != null) {
+      mPaint.setAlpha(alpha);
+    }
   }
 
   @Override
   public void setColorFilter(ColorFilter colorFilter) {
-    mPaint.setColorFilter(colorFilter);
+    if (mPaint != null) {
+      mPaint.setColorFilter(colorFilter);
+    }
   }
 
   @Override
