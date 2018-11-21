@@ -23,6 +23,7 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import android.content.Context;
 import android.os.Build;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.widget.RecyclerView;
 import android.view.ViewTreeObserver;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -262,6 +263,17 @@ public class VerticalScrollSpec {
       if (mScrollPosition != null) {
         mScrollPosition.y = getScrollY();
       }
+    }
+
+    /**
+     * NestedScrollView does not automatically consume the fling event. However, RecyclerView
+     * consumes this event if it's either vertically or horizontally scrolling. {@link
+     * RecyclerView#fling} Since this view is specifically made for vertically scrolling components,
+     * we always consume the nested fling event just like recycler view.
+     */
+    @Override
+    public boolean dispatchNestedFling(float velocityX, float velocityY, boolean consumed) {
+      return super.dispatchNestedFling(velocityX, velocityY, true);
     }
 
     private void mount(
