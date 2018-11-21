@@ -93,7 +93,7 @@ public abstract class Component extends ComponentLifecycle
 
   // If we have a cachedLayout, onPrepare and onMeasure would have been called on it already.
   @ThreadConfined(ThreadConfined.ANY)
-  private InternalNode mLastMeasuredLayout;
+  public @Nullable ThreadLocal<InternalNode> mLastMeasuredLayoutThreadLocal;
 
   @Nullable private CommonPropsHolder mCommonPropsHolder;
 
@@ -326,7 +326,6 @@ public abstract class Component extends ComponentLifecycle
       component.mLayoutVersionGenerator = new AtomicBoolean();
       component.mScopedContext = null;
       component.mChildCounters = null;
-      component.mLastMeasuredLayout = null;
       component.mLastCachedLayout = null; // so that it is not used on state update
 
       return component;
@@ -343,24 +342,26 @@ public abstract class Component extends ComponentLifecycle
   }
 
   boolean hasCachedLayout() {
-    return (mLastMeasuredLayout != null);
+    return mLastMeasuredLayoutThreadLocal != null && mLastMeasuredLayoutThreadLocal.get() != null;
   }
 
+  @Nullable
   InternalNode getCachedLayout() {
-    return mLastMeasuredLayout;
+    return hasCachedLayout() ? mLastMeasuredLayoutThreadLocal.get() : null;
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   protected void releaseCachedLayout() {
-    if (mLastMeasuredLayout != null) {
-      LayoutState.releaseNodeTree(mLastMeasuredLayout, true /* isNestedTree */);
-      mLastMeasuredLayout = null;
+    if (hasCachedLayout()) {
+      LayoutState.releaseNodeTree(mLastMeasuredLayoutThreadLocal.get(), true /* isNestedTree */);
+      clearCachedLayout();
     }
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   protected void clearCachedLayout() {
-    mLastMeasuredLayout = null;
+    mLastMeasuredLayoutThreadLocal.remove();
+    mLastMeasuredLayoutThreadLocal = null;
   }
 
   void reset() {
@@ -376,29 +377,34 @@ public abstract class Component extends ComponentLifecycle
    * @param outputSize Size object that will be set with the measured dimensions.
    */
   public void measure(ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
-    if (mLastMeasuredLayout == null
+    InternalNode lastMeasuredLayout = getCachedLayout();
+    if (lastMeasuredLayout == null
         || !MeasureComparisonUtils.isMeasureSpecCompatible(
-            mLastMeasuredLayout.getLastWidthSpec(), widthSpec, mLastMeasuredLayout.getWidth())
+            lastMeasuredLayout.getLastWidthSpec(), widthSpec, lastMeasuredLayout.getWidth())
         || !MeasureComparisonUtils.isMeasureSpecCompatible(
-            mLastMeasuredLayout.getLastHeightSpec(), heightSpec, mLastMeasuredLayout.getHeight())) {
+            lastMeasuredLayout.getLastHeightSpec(), heightSpec, lastMeasuredLayout.getHeight())) {
       releaseCachedLayout();
 
-      mLastMeasuredLayout =
+      lastMeasuredLayout =
           LayoutState.createAndMeasureTreeForComponent(c, this, widthSpec, heightSpec);
+      if (mLastMeasuredLayoutThreadLocal == null) {
+        mLastMeasuredLayoutThreadLocal = new ThreadLocal<>();
+      }
+      mLastMeasuredLayoutThreadLocal.set(lastMeasuredLayout);
 
       // This component resolution won't be deferred nor onMeasure called if it's a layout spec.
       // In that case it needs to manually save the latest saze specs.
       // The size specs will be checked during the calculation (or collection) of the main tree.
       if (Component.isLayoutSpec(this)) {
-        mLastMeasuredLayout.setLastWidthSpec(widthSpec);
-        mLastMeasuredLayout.setLastHeightSpec(heightSpec);
-        mLastMeasuredLayout.setLastMeasuredWidth(mLastMeasuredLayout.getWidth());
-        mLastMeasuredLayout.setLastMeasuredHeight(mLastMeasuredLayout.getHeight());
+        lastMeasuredLayout.setLastWidthSpec(widthSpec);
+        lastMeasuredLayout.setLastHeightSpec(heightSpec);
+        lastMeasuredLayout.setLastMeasuredWidth(lastMeasuredLayout.getWidth());
+        lastMeasuredLayout.setLastMeasuredHeight(lastMeasuredLayout.getHeight());
       }
     }
 
-    outputSize.width = mLastMeasuredLayout.getWidth();
-    outputSize.height = mLastMeasuredLayout.getHeight();
+    outputSize.width = lastMeasuredLayout.getWidth();
+    outputSize.height = lastMeasuredLayout.getHeight();
   }
 
   protected void copyInterStageImpl(Component component) {
