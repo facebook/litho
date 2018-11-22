@@ -48,6 +48,7 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.annotations.FromTrigger;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
@@ -604,6 +605,8 @@ class TextInputSpec {
       @State AtomicReference<EditTextWithEventHandlers> mountedView,
       @State AtomicReference<CharSequence> savedText,
       @FromTrigger CharSequence text) {
+    ThreadUtils.assertMainThread();
+
     EditTextWithEventHandlers view = mountedView.get();
     if (view != null) {
       // If line count changes state update will be triggered by view
@@ -633,15 +636,16 @@ class TextInputSpec {
 
   static class EditTextWithEventHandlers extends EditText
       implements EditText.OnEditorActionListener {
-    private @Nullable EventHandler<TextChangedEvent> mTextChangedEventHandler;
-    private @Nullable EventHandler<SelectionChangedEvent> mSelectionChangedEventHandler;
-    private @Nullable EventHandler<KeyUpEvent> mKeyUpEventHandler;
-    private @Nullable EventHandler<EditorActionEvent> mEditorActionEventHandler;
-    private @Nullable ComponentContext mComponentContext;
-    private @Nullable AtomicReference<CharSequence> mTextState;
-    private int mLineCount = -1;
-    private boolean mMeasured;
-    private @Nullable TextWatcher mTextWatcher;
+
+    private static final int UNMEASURED_LINE_COUNT = -1;
+    @Nullable private EventHandler<TextChangedEvent> mTextChangedEventHandler;
+    @Nullable private EventHandler<SelectionChangedEvent> mSelectionChangedEventHandler;
+    @Nullable private EventHandler<KeyUpEvent> mKeyUpEventHandler;
+    @Nullable private EventHandler<EditorActionEvent> mEditorActionEventHandler;
+    @Nullable private ComponentContext mComponentContext;
+    @Nullable private AtomicReference<CharSequence> mTextState;
+    private int mLineCount = UNMEASURED_LINE_COUNT;
+    @Nullable private TextWatcher mTextWatcher;
 
     public EditTextWithEventHandlers(Context context) {
       super(context);
@@ -662,7 +666,9 @@ class TextInputSpec {
       }
       // Line count of changed text.
       int lineCount = getLineCount();
-      if (mMeasured && mLineCount != lineCount && mComponentContext != null) {
+      if (mLineCount != UNMEASURED_LINE_COUNT
+          && mLineCount != lineCount
+          && mComponentContext != null) {
         com.facebook.litho.widget.TextInput.remeasureForUpdatedText(mComponentContext);
       }
     }
@@ -670,7 +676,6 @@ class TextInputSpec {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
       super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-      mMeasured = true;
       // Line count of the current text.
       mLineCount = getLineCount();
     }
