@@ -1,11 +1,13 @@
 com.facebook.litho
 com.facebook.litho.animation
 com.facebook.litho.annotations
+com.facebook.litho.boost
 com.facebook.litho.config
 com.facebook.litho.dataflow
 com.facebook.litho.dataflow.springs
 com.facebook.litho.debug
 com.facebook.litho.displaylist
+com.facebook.litho.drawable
 com.facebook.litho.fresco
 com.facebook.litho.internal
 com.facebook.litho.reference
