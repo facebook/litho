@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.litho.drawable;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -28,7 +28,7 @@ import android.graphics.RectF;
 import android.graphics.Region;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Px;
-import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.CommonUtils;
 import java.util.Arrays;
 import javax.annotation.Nullable;
 
@@ -47,7 +47,6 @@ public class BorderColorDrawable extends ComparableDrawable {
   private boolean mDrawBorderWithPath;
 
   private BorderColorDrawable(State state) {
-    super();
     mState = state;
   }
 

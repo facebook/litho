@@ -62,6 +62,7 @@ import android.view.accessibility.AccessibilityManager;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
