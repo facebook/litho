@@ -268,7 +268,9 @@ public class StateGeneratorTest {
                 + "  TestWithStateWithTransitionStateContainer<T> nextStateContainer = (TestWithStateWithTransitionStateContainer<T>) _nextStateContainer;\n"
                 + "  nextStateContainer.arg1 = prevStateContainer.arg1;\n"
                 + "  nextStateContainer.arg4 = prevStateContainer.arg4;\n"
-                + "  nextStateContainer._transitions = prevStateContainer._transitions;\n"
+                + "  synchronized (prevStateContainer._transitions) {\n"
+                + "    nextStateContainer._transitions = new ArrayList<>(prevStateContainer._transitions);\n"
+                + "  }\n"
                 + "}\n");
   }
 

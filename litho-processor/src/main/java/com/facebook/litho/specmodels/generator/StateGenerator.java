@@ -113,10 +113,15 @@ public class StateGenerator {
     }
 
     if (hasUpdateStateWithTransition(specModel)) {
-      methodSpec.addStatement(
-          "nextStateContainer.$L = prevStateContainer.$L",
-          GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME,
-          GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME);
+      methodSpec
+          .beginControlFlow(
+              "synchronized (prevStateContainer.$L)",
+              GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME)
+          .addStatement(
+              "nextStateContainer.$L = new ArrayList<>(prevStateContainer.$L)",
+              GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME,
+              GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME)
+          .endControlFlow();
     }
 
     return TypeSpecDataHolder.newBuilder().addMethod(methodSpec.build()).build();
