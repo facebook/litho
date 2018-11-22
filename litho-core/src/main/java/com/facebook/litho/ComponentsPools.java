@@ -34,7 +34,6 @@ import android.support.v4.util.SparseArrayCompat;
 import android.util.SparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.litho.internal.ArraySet;
 import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaDirection;
@@ -133,9 +132,6 @@ public class ComponentsPools {
 
   static final RecyclePool<ArrayList<LithoView>> sLithoViewArrayListPool =
       new RecyclePool<>("LithoViewArrayList", 4, false);
-
-  // Lazily initialized when acquired first time, as this is not a common use case.
-  static RecyclePool<BorderColorDrawable> sBorderColorDrawablePool = null;
 
   // This Map is used as a set and the values are ignored.
   @GuardedBy("sMountContentLock")
@@ -722,9 +718,6 @@ public class ComponentsPools {
     sRectFPool.clear();
     sEdgesPool.clear();
     sDisplayListDrawablePool.clear();
-    if (sBorderColorDrawablePool != null) {
-      sBorderColorDrawablePool.clear();
-    }
     sArraySetPool.clear();
     sArrayDequePool.clear();
     sRenderStatePool.clear();

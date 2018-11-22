@@ -63,10 +63,6 @@ public final class LithoDebugInfo {
       pools.add(ComponentsPools.sTestItemPool);
     }
 
-    if (ComponentsPools.sBorderColorDrawablePool != null) {
-      pools.add(ComponentsPools.sBorderColorDrawablePool);
-    }
-
     return pools;
   }
 }
