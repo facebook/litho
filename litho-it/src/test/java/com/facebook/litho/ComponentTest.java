@@ -19,6 +19,8 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,8 +53,8 @@ public class ComponentTest {
     Component[] resultCopyComponent = new Component[1];
     InternalNode[] cachedLayouts = new InternalNode[2];
 
-    Object lockWaitMeasure = new Object();
-    Object testFinished = new Object();
+    CountDownLatch lockWaitMeasure = new CountDownLatch(1);
+    CountDownLatch testFinished = new CountDownLatch(1);
 
     Thread thread1 =
         new Thread(
@@ -63,9 +65,7 @@ public class ComponentTest {
 
                 cachedLayouts[0] = component.mLastMeasuredLayoutThreadLocal.get();
 
-                synchronized (lockWaitMeasure) {
-                  lockWaitMeasure.notify();
-                }
+                lockWaitMeasure.countDown();
               }
             });
 
@@ -75,32 +75,26 @@ public class ComponentTest {
               @Override
               public void run() {
                 // Wait for component to have a cached layout, then make copy.
-                synchronized (lockWaitMeasure) {
-                  try {
-                    lockWaitMeasure.wait();
-                  } catch (InterruptedException e) {
-                    throw new IllegalStateException();
-                  }
+                try {
+                  lockWaitMeasure.await(5, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                  throw new IllegalStateException();
                 }
 
                 resultCopyComponent[0] = component.makeShallowCopy();
                 cachedLayouts[1] = resultCopyComponent[0].mLastMeasuredLayoutThreadLocal.get();
 
-                synchronized (testFinished) {
-                  testFinished.notify();
-                }
+                testFinished.countDown();
               }
             });
 
     thread1.start();
     thread2.start();
 
-    synchronized (testFinished) {
-      try {
-        testFinished.wait();
-      } catch (InterruptedException e) {
-        throw new IllegalStateException();
-      }
+    try {
+      testFinished.await(5, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      throw new IllegalStateException();
     }
 
     // On this thread, the cached layout should be null
@@ -125,8 +119,8 @@ public class ComponentTest {
     Component[] resultCopyComponent = new Component[1];
     InternalNode[] cachedLayouts = new InternalNode[2];
 
-    Object lockWaitMeasure = new Object();
-    Object testFinished = new Object();
+    CountDownLatch lockWaitMeasure = new CountDownLatch(1);
+    CountDownLatch testFinished = new CountDownLatch(1);
 
     Thread thread1 =
         new Thread(
@@ -137,9 +131,7 @@ public class ComponentTest {
 
                 cachedLayouts[0] = component.mLastMeasuredLayoutThreadLocal.get();
 
-                synchronized (lockWaitMeasure) {
-                  lockWaitMeasure.notify();
-                }
+                lockWaitMeasure.countDown();
               }
             });
 
@@ -149,33 +141,27 @@ public class ComponentTest {
               @Override
               public void run() {
                 // Wait for component to have a cached layout, then make copy.
-                synchronized (lockWaitMeasure) {
-                  try {
-                    lockWaitMeasure.wait();
-                  } catch (InterruptedException e) {
-                    throw new IllegalStateException();
-                  }
+                try {
+                  lockWaitMeasure.await(5, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                  throw new IllegalStateException();
                 }
 
                 resultCopyComponent[0] = component.makeShallowCopy();
                 resultCopyComponent[0].measure(mContext, 100, 100, new Size());
                 cachedLayouts[1] = resultCopyComponent[0].mLastMeasuredLayoutThreadLocal.get();
 
-                synchronized (testFinished) {
-                  testFinished.notify();
-                }
+                testFinished.countDown();
               }
             });
 
     thread1.start();
     thread2.start();
 
-    synchronized (testFinished) {
-      try {
-        testFinished.wait();
-      } catch (InterruptedException e) {
-        throw new IllegalStateException();
-      }
+    try {
+      testFinished.await(5, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      throw new IllegalStateException();
     }
 
     // On this thread, the cached layout should be null

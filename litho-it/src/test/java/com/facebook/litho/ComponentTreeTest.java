@@ -32,6 +32,8 @@ import android.os.Looper;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -627,7 +629,7 @@ public class ComponentTreeTest {
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
     componentTree.attach();
 
-    final Object unlockWaitingOnCreateLayout = new Object();
+    final CountDownLatch unlockWaitingOnCreateLayout = new CountDownLatch(1);
 
     MyTestComponent root2 = new MyTestComponent("MyTestComponent");
     root2.testId = 2;
@@ -635,12 +637,10 @@ public class ComponentTreeTest {
 
     componentTree.setRootAsync(root2);
 
-    synchronized (unlockWaitingOnCreateLayout) {
-      try {
-        unlockWaitingOnCreateLayout.wait();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+    try {
+      unlockWaitingOnCreateLayout.await(5, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
 
     assertEquals(1, componentTree.getLayoutStateFutures().size());
@@ -677,8 +677,8 @@ public class ComponentTreeTest {
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
     componentTree.attach();
 
-    final Object unlockWaitingOnCreateLayout = new Object();
-    final Object lockOnCreateLayoutFinish = new Object();
+    final CountDownLatch unlockWaitingOnCreateLayout = new CountDownLatch(1);
+    final CountDownLatch lockOnCreateLayoutFinish = new CountDownLatch(1);
 
     MyTestComponent root2 = new MyTestComponent("MyTestComponent");
     root2.testId = 2;
@@ -691,12 +691,10 @@ public class ComponentTreeTest {
     componentTree.setRootAsync(root2);
 
     // Wait for first thread to get into onCreateLayout
-    synchronized (unlockWaitingOnCreateLayout) {
-      try {
-        unlockWaitingOnCreateLayout.wait();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+    try {
+      unlockWaitingOnCreateLayout.await(5, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
 
     assertEquals(1, componentTree.getLayoutStateFutures().size());
@@ -729,9 +727,7 @@ public class ComponentTreeTest {
 
     // Unblock the first thread to continue through onCreateLayout. The second thread will only
     // unblock once the first thread's onCreateLayout finishes
-    synchronized (lockOnCreateLayoutFinish) {
-      lockOnCreateLayoutFinish.notify();
-    }
+    lockOnCreateLayoutFinish.countDown();
   }
 
   @Test
@@ -752,8 +748,8 @@ public class ComponentTreeTest {
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
     componentTree.attach();
 
-    final Object unlockWaitingOnCreateLayout = new Object();
-    final Object lockOnCreateLayoutFinish = new Object();
+    final CountDownLatch unlockWaitingOnCreateLayout = new CountDownLatch(1);
+    final CountDownLatch lockOnCreateLayoutFinish = new CountDownLatch(1);
 
     MyTestComponent root2 = new MyTestComponent("MyTestComponent");
     root2.testId = 2;
@@ -766,12 +762,10 @@ public class ComponentTreeTest {
     componentTree.setRootAsync(root2);
 
     // Wait for first thread to get into onCreateLayout
-    synchronized (unlockWaitingOnCreateLayout) {
-      try {
-        unlockWaitingOnCreateLayout.wait();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+    try {
+      unlockWaitingOnCreateLayout.await(5, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
 
     assertEquals(1, componentTree.getLayoutStateFutures().size());
@@ -804,15 +798,13 @@ public class ComponentTreeTest {
 
     // Unblock the first thread to continue through onCreateLayout. The second thread will only
     // unblock once the first thread's onCreateLayout finishes
-    synchronized (lockOnCreateLayoutFinish) {
-      lockOnCreateLayoutFinish.notify();
-    }
+    lockOnCreateLayoutFinish.countDown();
   }
 
   class MyTestComponent extends Component {
 
-    Object unlockWaitingOnCreateLayout;
-    Object lockOnCreateLayoutFinish;
+    CountDownLatch unlockWaitingOnCreateLayout;
+    CountDownLatch lockOnCreateLayoutFinish;
     int testId;
     boolean hasRunLayout;
 
@@ -823,18 +815,14 @@ public class ComponentTreeTest {
     @Override
     protected Component onCreateLayout(ComponentContext c) {
       if (unlockWaitingOnCreateLayout != null) {
-        synchronized (unlockWaitingOnCreateLayout) {
-          unlockWaitingOnCreateLayout.notify();
-        }
+        unlockWaitingOnCreateLayout.countDown();
       }
 
       if (lockOnCreateLayoutFinish != null) {
-        synchronized (lockOnCreateLayoutFinish) {
-          try {
-            lockOnCreateLayoutFinish.wait();
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
+        try {
+          lockOnCreateLayoutFinish.await(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
         }
       }
 
