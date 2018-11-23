@@ -34,8 +34,7 @@ import javax.annotation.Nullable;
  * wrapping, otherwise internal {@link Drawable.Callback} may be dropped.
  *
  * <p>Using this is not the recommended as semantically equal drawables will not be considered
- * equivalent because they will have different references, which could cause make diffing in
- * efficient.
+ * equivalent because they will have different references, which could make diffing inefficient.
  */
 public class DefaultComparableDrawable extends ComparableDrawable implements Drawable.Callback {
 
@@ -238,6 +237,19 @@ public class DefaultComparableDrawable extends ComparableDrawable implements Dra
     }
   }
 
+  /**
+   * Use to create a wrapper for a drawable which does <em>not</em> extend comparable drawable for
+   * backwards compatibility. Use this method only when the value of the property is going to be
+   * constant (i.e. does not depend on state)
+   *
+   * <p>If used with stateful values litho may not update the property during updates. This is
+   * because every {@link DefaultComparableDrawable} will be considered equivalent to improve mount
+   * performance.
+   *
+   * @see ComparableColorDrawable
+   * @see ComparableResDrawable
+   * @see ComparableDrawable
+   */
   public static DefaultComparableDrawable create(Drawable drawable) {
     return new DefaultComparableDrawable(drawable);
   }
