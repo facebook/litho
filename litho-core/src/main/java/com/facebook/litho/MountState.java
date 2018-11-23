@@ -1280,17 +1280,24 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     final BitSet skipMounting = new BitSet();
     for (int index = layoutState.getMountableOutputCount() - 1; index >= 0; index--) {
-      final LayoutOutput layoutOutput = layoutState.getMountableOutputAt(index);
-
-      final boolean isPhantom = (layoutOutput.getFlags() & MountItem.LAYOUT_FLAG_PHANTOM) != 0;
-      final boolean isAnimating =
-          mAnimatingTransitionKeys.contains(layoutOutput.getTransitionKey());
-
-      if (isPhantom && !isAnimating) {
+      if (shouldSkipMounting(layoutState, index)) {
         skipMounting.set(index);
       }
     }
     return skipMounting;
+  }
+
+  private boolean shouldSkipMounting(LayoutState layoutState, int index) {
+    if (!ComponentsConfiguration.createPhantomLayoutOutputsForTransitions) {
+      return false;
+    }
+
+    final LayoutOutput layoutOutput = layoutState.getMountableOutputAt(index);
+
+    final boolean isPhantom = (layoutOutput.getFlags() & MountItem.LAYOUT_FLAG_PHANTOM) != 0;
+    final boolean isAnimating = mAnimatingTransitionKeys.contains(layoutOutput.getTransitionKey());
+
+    return isPhantom && !isAnimating;
   }
 
   /**
@@ -2751,10 +2758,27 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
       for (int i = 0, size = layoutOutputGroup.size(); i < size; i++) {
         final LayoutOutput layoutOutput = layoutOutputGroup.getAt(i);
-        final int position =
-            mLastMountedLayoutState.getLayoutOutputPositionForId(layoutOutput.getId());
+        final int position = layoutOutput.getIndex();
         updateAnimationLockCount(mLastMountedLayoutState, position, false);
+
+        if (shouldSkipMounting(mLastMountedLayoutState, position)) {
+          // So this item should not be mounted anymore
+          // 1. Update the records
+          mSkipMounting.set(position);
+
+          // 2. Unmount the item
+          unmountItem(position, mHostsByMarker);
+
+          // 3. Re-mount all the children of the item
+          final int lastDescendantIndex =
+              findLastDescendantIndex(mLastMountedLayoutState, position);
+          for (int j = position + 1; j <= lastDescendantIndex; j++) {
+            final LayoutOutput childLayoutOutput = mLastMountedLayoutState.getMountableOutputAt(j);
+            mountLayoutOutput(j, childLayoutOutput, mLastMountedLayoutState);
+          }
+        }
       }
+
       if (ComponentsConfiguration.isDebugModeEnabled && mAnimatingTransitionKeys.isEmpty()) {
         for (int i = 0, size = mAnimationLockedIndices.length; i < size; i++) {
           if (mAnimationLockedIndices[i] != 0) {
