@@ -62,6 +62,7 @@ import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.reference.Reference;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -87,6 +88,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   static final long ROOT_HOST_ID = 0L;
   private static final double NS_IN_MS = 1000000.0;
 
+  private static final BitSet sEmptyBitSet = new BitSet(0);
+
   // Holds the current list of mounted items.
   // Should always be used within a draw lock.
   private final LongSparseArray<MountItem> mIndexToItemMap;
@@ -107,7 +110,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   // Both these arrays are updated in prepareMount(), thus during mounting they hold the information
   // about the LayoutState that is being mounted, not mLastMountedLayoutState
   @Nullable private long[] mLayoutOutputsIds;
-  @Nullable private boolean[] mSkipMounting;
+  @Nullable private BitSet mSkipMounting;
 
   // True if we are receiving a new LayoutState and we need to completely
   // refresh the content of the HostComponent. Always set from the main thread.
@@ -1035,7 +1038,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static void updateBoundsForMountedLayoutOutput(
-      LayoutOutput layoutOutput, LayoutState layoutState, boolean[] skipMounting, MountItem item) {
+      LayoutOutput layoutOutput, LayoutState layoutState, BitSet skipMounting, MountItem item) {
     // MountState should never update the bounds of the top-level host as this
     // should be done by the ViewGroup containing the LithoView.
     if (layoutOutput.getId() == ROOT_HOST_ID) {
@@ -1061,7 +1064,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   @SuppressWarnings("unchecked")
   private void prepareMount(LayoutState layoutState, @Nullable PerfEvent perfEvent) {
     final List<Integer> disappearingItems = extractDisappearingItems(layoutState);
-    final boolean[] skipMounting = calculateSkipMounting(layoutState);
+    final BitSet skipMounting = calculateSkipMounting(layoutState);
     final PrepareMountStats stats =
         unmountOrMoveOldItems(layoutState, skipMounting, disappearingItems);
 
@@ -1130,7 +1133,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         final int lastDescendantIndex = findLastDescendantIndex(mLastMountedLayoutState, index);
 
         final LayoutOutput root = mLastMountedLayoutState.getMountableOutputAt(index);
-        if (mSkipMounting[index]) {
+        if (mSkipMounting.get(index)) {
           // The direct descendants of the root have been mounted to another host, thus here we'll
           // unmount them from where they are mounted, and will remount to the root at the next step
           final long rootId = root.getId();
@@ -1141,7 +1144,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           }
 
           // Need to override skip mounting value, otherwise it won't be mounted
-          mSkipMounting[index] = false;
+          mSkipMounting.clear(index);
         }
 
         // Go though disappearing subtree, mount everything that is not mounted yet
@@ -1270,12 +1273,22 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     host.startUnmountDisappearingItem(index, item);
   }
 
-  private boolean[] calculateSkipMounting(LayoutState layoutState) {
-    final boolean[] skipMounting = new boolean[layoutState.getMountableOutputCount()];
-    for (int index = skipMounting.length - 1; index >= 0; index--) {
+  private BitSet calculateSkipMounting(LayoutState layoutState) {
+    if (!ComponentsConfiguration.createPhantomLayoutOutputsForTransitions) {
+      return sEmptyBitSet;
+    }
+
+    final BitSet skipMounting = new BitSet();
+    for (int index = layoutState.getMountableOutputCount() - 1; index >= 0; index--) {
       final LayoutOutput layoutOutput = layoutState.getMountableOutputAt(index);
+
       final boolean isPhantom = (layoutOutput.getFlags() & MountItem.LAYOUT_FLAG_PHANTOM) != 0;
-      skipMounting[index] = isPhantom;
+      final boolean isAnimating =
+          mAnimatingTransitionKeys.contains(layoutOutput.getTransitionKey());
+
+      if (isPhantom && !isAnimating) {
+        skipMounting.set(index);
+      }
     }
     return skipMounting;
   }
@@ -1288,7 +1301,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
    * LayoutOutputs
    */
   private PrepareMountStats unmountOrMoveOldItems(
-      LayoutState newLayoutState, boolean[] newSkipMounting, List<Integer> disappearingItems) {
+      LayoutState newLayoutState, BitSet newSkipMounting, List<Integer> disappearingItems) {
     mPrepareMountStats.reset();
 
     if (mLayoutOutputsIds == null) {
@@ -1303,7 +1316,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     for (int i = 0; i < mLayoutOutputsIds.length; i++) {
       final LayoutOutput newLayoutOutput = newLayoutState.getLayoutOutput(mLayoutOutputsIds[i]);
       final int newPosition =
-          newLayoutOutput == null || newSkipMounting[newLayoutOutput.getIndex()]
+          newLayoutOutput == null || newSkipMounting.get(newLayoutOutput.getIndex())
               ? -1
               : newLayoutOutput.getIndex();
 
@@ -1371,7 +1384,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   private void mountLayoutOutput(int index, LayoutOutput layoutOutput, LayoutState layoutState) {
     // 0. Make sure we really need to mount this LayoutOutput
-    if (mSkipMounting[index]) {
+    if (mSkipMounting.get(index)) {
       return;
     }
 
@@ -1523,8 +1536,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
    *     some of nodes on LayoutOutput tree may not be mounted (e.g. "phantom" LayoutOutputs)
    */
   private static long getActualHostMarker(
-      LayoutOutput layoutOutput, LayoutState layoutState, boolean[] skipMounting) {
-    if (skipMounting[layoutOutput.getIndex()]) {
+      LayoutOutput layoutOutput, LayoutState layoutState, BitSet skipMounting) {
+    if (skipMounting.get(layoutOutput.getIndex())) {
       return -1;
     }
 
@@ -1532,14 +1545,14 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     do {
       hostMarker = layoutOutput.getHostMarker();
       layoutOutput = layoutState.getLayoutOutput(hostMarker);
-    } while (skipMounting[layoutOutput.getIndex()]);
+    } while (skipMounting.get(layoutOutput.getIndex()));
 
     return hostMarker;
   }
 
   /** @return bounds for a given LayoutOutput within its actual host, {@see getActualHostMarker} */
   private static void getActualBounds(
-      LayoutOutput layoutOutput, LayoutState layoutState, boolean[] skipMounting, Rect outRect) {
+      LayoutOutput layoutOutput, LayoutState layoutState, BitSet skipMounting, Rect outRect) {
     final long actualHostMarker = getActualHostMarker(layoutOutput, layoutState, skipMounting);
     layoutOutput.getMountBounds(outRect);
 
