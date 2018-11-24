@@ -1349,14 +1349,13 @@ public class RecyclerBinder
       closeCurrentBatch(isDataChanged, changeSetCompleteCallback);
       if (ThreadUtils.isMainThread()) {
         applyReadyBatches();
+        if (isDataChanged) {
+          maybeUpdateRangeOrRemeasureForMutation();
+        }
       } else {
         mMainThreadHandler.post(mApplyReadyBatchesRunnable);
       }
       clearThreadForChangeSet();
-
-      if (isDataChanged) {
-        maybeUpdateRangeOrRemeasureForMutation();
-      }
     } finally {
       ComponentsSystrace.endSection();
     }
