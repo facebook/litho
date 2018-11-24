@@ -807,28 +807,38 @@ public class RecyclerBinder
   private void applyReadyBatches() {
     ThreadUtils.assertMainThread();
 
-    boolean appliedBatch = false;
-    while (true) {
-      final AsyncBatch batch;
-      synchronized (this) {
-        if (mAsyncBatches.isEmpty()) {
-          break;
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("applyReadyBatches");
+    }
+    try {
+      boolean appliedBatch = false;
+      while (true) {
+        final AsyncBatch batch;
+        synchronized (this) {
+          if (mAsyncBatches.isEmpty()) {
+            break;
+          }
+
+          batch = mAsyncBatches.peekFirst();
+          if (!isBatchReady(batch)) {
+            break;
+          }
+
+          mAsyncBatches.pollFirst();
         }
 
-        batch = mAsyncBatches.peekFirst();
-        if (!isBatchReady(batch)) {
-          break;
-        }
-
-        mAsyncBatches.pollFirst();
+        applyBatch(batch);
+        appliedBatch |= batch.mIsDataChanged;
       }
 
-      applyBatch(batch);
-      appliedBatch |= batch.mIsDataChanged;
-    }
-
-    if (appliedBatch) {
-      maybeUpdateRangeOrRemeasureForMutation();
+      if (appliedBatch) {
+        maybeUpdateRangeOrRemeasureForMutation();
+      }
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
   }
 
@@ -1327,23 +1337,28 @@ public class RecyclerBinder
    */
   public void notifyChangeSetCompleteAsync(
       boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
-    if (SectionsDebug.ENABLED) {
-      Log.d(SectionsDebug.TAG, "(" + hashCode() + ") notifyChangeSetCompleteAsync");
-    }
+    ComponentsSystrace.beginSection("notifyChangeSetCompleteAsync");
+    try {
+      if (SectionsDebug.ENABLED) {
+        Log.d(SectionsDebug.TAG, "(" + hashCode() + ") notifyChangeSetCompleteAsync");
+      }
 
-    mHasAsyncOperations = true;
+      mHasAsyncOperations = true;
 
-    assertSingleThreadForChangeSet();
-    closeCurrentBatch(isDataChanged, changeSetCompleteCallback);
-    if (ThreadUtils.isMainThread()) {
-      applyReadyBatches();
-    } else {
-      mMainThreadHandler.post(mApplyReadyBatchesRunnable);
-    }
-    clearThreadForChangeSet();
+      assertSingleThreadForChangeSet();
+      closeCurrentBatch(isDataChanged, changeSetCompleteCallback);
+      if (ThreadUtils.isMainThread()) {
+        applyReadyBatches();
+      } else {
+        mMainThreadHandler.post(mApplyReadyBatchesRunnable);
+      }
+      clearThreadForChangeSet();
 
-    if (isDataChanged) {
-      maybeUpdateRangeOrRemeasureForMutation();
+      if (isDataChanged) {
+        maybeUpdateRangeOrRemeasureForMutation();
+      }
+    } finally {
+      ComponentsSystrace.endSection();
     }
   }
 
@@ -1353,23 +1368,28 @@ public class RecyclerBinder
   @UiThread
   public void notifyChangeSetComplete(
       boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
-    if (SectionsDebug.ENABLED) {
-      Log.d(SectionsDebug.TAG, "(" + hashCode() + ") notifyChangeSetComplete");
-    }
+    ComponentsSystrace.beginSection("notifyChangeSetComplete");
+    try {
+      if (SectionsDebug.ENABLED) {
+        Log.d(SectionsDebug.TAG, "(" + hashCode() + ") notifyChangeSetComplete");
+      }
 
-    ThreadUtils.assertMainThread();
+      ThreadUtils.assertMainThread();
 
-    if (mHasAsyncOperations) {
-      throw new RuntimeException(
-          "Trying to do a sync notifyChangeSetComplete when using asynchronous mutations!");
-    }
+      if (mHasAsyncOperations) {
+        throw new RuntimeException(
+            "Trying to do a sync notifyChangeSetComplete when using asynchronous mutations!");
+      }
 
-    changeSetCompleteCallback.onDataBound();
-    mDataRenderedCallbacks.addLast(changeSetCompleteCallback);
-    maybeDispatchDataRendered();
+      changeSetCompleteCallback.onDataBound();
+      mDataRenderedCallbacks.addLast(changeSetCompleteCallback);
+      maybeDispatchDataRendered();
 
-    if (isDataChanged) {
-      maybeUpdateRangeOrRemeasureForMutation();
+      if (isDataChanged) {
+        maybeUpdateRangeOrRemeasureForMutation();
+      }
+    } finally {
+      ComponentsSystrace.endSection();
     }
   }
 
