@@ -244,14 +244,17 @@ public class DefaultComparableDrawable extends ComparableDrawable implements Dra
    * backwards compatibility. Use this method only when the value of the property is going to be
    * constant (i.e. does not depend on state)
    *
-   * <p>If used with stateful values litho may not update the property during updates. This is
-   * because every {@link DefaultComparableDrawable} will be considered equivalent to improve mount
-   * performance.
-   *
+   * @deprecated For internal use only. Consider using {@link ComparableIntIdDrawable}. Extend
+   *     {@link ComparableDrawable} for custom drawables (see {@link BorderColorDrawable}) or extend
+   *     {@link DefaultComparableDrawable} and implement {@link #isEquivalentTo(ComparableDrawable)}
+   *     if drawable cannot extend {@link ComparableDrawable} (see {@link ComparableColorDrawable}
+   *     and {@link ComparableResDrawable}).
+   * @see ComparableIntIdDrawable
    * @see ComparableColorDrawable
    * @see ComparableResDrawable
    * @see ComparableDrawable
    */
+  @Deprecated
   public static DefaultComparableDrawable create(Drawable drawable) {
     return new DefaultComparableDrawable(drawable);
   }
