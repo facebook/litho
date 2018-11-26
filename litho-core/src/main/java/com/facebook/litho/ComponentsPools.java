@@ -405,10 +405,10 @@ public class ComponentsPools {
 
   @ThreadSafe(enableChecks = false)
   static void release(Context context, MountItem item) {
+    item.release(context);
     if (ComponentsConfiguration.disablePools) {
       return;
     }
-    item.release(context);
     sMountItemPool.release(item);
   }
 
