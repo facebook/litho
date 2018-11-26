@@ -38,7 +38,6 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v4.text.TextDirectionHeuristicCompat;
 import android.support.v4.text.TextDirectionHeuristicsCompat;
-import android.support.v4.util.Pools.SynchronizedPool;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.text.Layout;
@@ -180,9 +179,6 @@ class TextSpec {
   private static final Path sTempPath = new Path();
   private static final Rect sTempRect = new Rect();
   private static final RectF sTempRectF = new RectF();
-
-  private static final SynchronizedPool<TextLayoutBuilder> sTextLayoutBuilderPool =
-      new SynchronizedPool<>(2);
 
   @OnLoadStyle
   static void onLoadStyle(
@@ -394,11 +390,8 @@ class TextSpec {
       TextDirectionHeuristicCompat textDirection) {
     Layout newLayout;
 
-    TextLayoutBuilder layoutBuilder = sTextLayoutBuilderPool.acquire();
-    if (layoutBuilder == null) {
-      layoutBuilder = new TextLayoutBuilder();
-      layoutBuilder.setShouldCacheLayout(false);
-    }
+    TextLayoutBuilder layoutBuilder = new TextLayoutBuilder();
+    layoutBuilder.setShouldCacheLayout(false);
 
     @TextLayoutBuilder.MeasureMode final int textMeasureMode;
     switch (SizeSpec.getMode(widthSpec)) {
@@ -470,9 +463,6 @@ class TextSpec {
     }
 
     newLayout = layoutBuilder.build();
-
-    layoutBuilder.setText(null);
-    sTextLayoutBuilderPool.release(layoutBuilder);
 
     if (glyphWarming) {
       // TODO(T34488162): we also don't want this to happen when we are using DL (legacy?)
