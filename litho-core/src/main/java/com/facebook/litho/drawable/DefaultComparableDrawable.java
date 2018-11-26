@@ -24,6 +24,7 @@ import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.View;
+import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.litho.config.ComponentsConfiguration;
 import javax.annotation.Nullable;
 
@@ -36,6 +37,7 @@ import javax.annotation.Nullable;
  * <p>Using this is not the recommended as semantically equal drawables will not be considered
  * equivalent because they will have different references, which could make diffing inefficient.
  */
+@OkToExtend
 public class DefaultComparableDrawable extends ComparableDrawable implements Drawable.Callback {
 
   private Drawable mDrawable;
