@@ -65,6 +65,7 @@ import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.RecyclerEventsController;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * A {@link Component} that renders a {@link Recycler} backed by a {@link Section} tree.
@@ -116,7 +117,7 @@ public class RecyclerCollectionComponentSpec {
   private static final int MIN_SCROLL_FOR_PAGE = 20;
 
   @OnCreateLayout
-  static Component onCreateLayout(
+  static @Nullable Component onCreateLayout(
       final ComponentContext c,
       @Prop Section section,
       @Prop(optional = true) Component loadingComponent,

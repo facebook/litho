@@ -23,6 +23,7 @@ import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
@@ -43,7 +44,7 @@ public class ProcessorUtils {
    *     href="https://area-51.blog/2009/02/13/getting-class-values-from-annotations-in-an-annotationprocessor">this
    *     article</a> for more details.
    */
-  public static <T> T getAnnotationParameter(
+  public static @Nullable <T> T getAnnotationParameter(
       Elements elements,
       Element element,
       Class<?> annotationType,
