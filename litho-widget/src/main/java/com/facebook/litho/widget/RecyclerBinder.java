@@ -2023,9 +2023,7 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private void maybeScheduleAsyncLayoutsDuringInitRange(
-      final ComponentAsyncInitRangeIterator asyncRangeIterator,
-      int childrenWidthSpec,
-      int childrenHeightSpec) {
+      final ComponentAsyncInitRangeIterator asyncRangeIterator) {
     if (!mAsyncInitRange || mComponentTreeHolders == null || mComponentTreeHolders.isEmpty()) {
       // checked null for tests
       return;
@@ -2033,7 +2031,9 @@ public class RecyclerBinder
 
     while (asyncRangeIterator.hasNext()) {
       final ComponentTreeHolder nextHolder = asyncRangeIterator.next();
-      nextHolder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
+      final int childWidthSpec = getActualChildrenWidthSpec(nextHolder);
+      final int childHeightSpec = getActualChildrenHeightSpec(nextHolder);
+      nextHolder.computeLayoutAsync(mComponentContext, childWidthSpec, childHeightSpec);
     }
   }
 
@@ -2047,10 +2047,6 @@ public class RecyclerBinder
   void initRange(
       int width, int height, ComponentTreeHolderRangeInfo holderRangeInfo, int scrollDirection) {
 
-    final ComponentTreeHolder holder = holderRangeInfo.mHolders.get(holderRangeInfo.mPosition);
-    final int childrenWidthSpec = getActualChildrenWidthSpec(holder);
-    final int childrenHeightSpec = getActualChildrenHeightSpec(holder);
-
     final ComponentAsyncInitRangeIterator asyncInitRangeIterator =
         new ComponentAsyncInitRangeIterator(
             holderRangeInfo.mHolders,
@@ -2058,12 +2054,16 @@ public class RecyclerBinder
             mThreadPoolConfig == null ? 1 : mThreadPoolConfig.getCorePoolSize(),
             mTraverseLayoutBackwards);
 
-    maybeScheduleAsyncLayoutsDuringInitRange(
-        asyncInitRangeIterator, childrenWidthSpec, childrenHeightSpec);
+    maybeScheduleAsyncLayoutsDuringInitRange(asyncInitRangeIterator);
+
+    final ComponentTreeHolder holder = holderRangeInfo.mHolders.get(holderRangeInfo.mPosition);
+    final int childWidthSpec = getActualChildrenWidthSpec(holder);
+    final int childHeightSpec = getActualChildrenHeightSpec(holder);
+
     ComponentsSystrace.beginSection("initRange");
     try {
       final Size size = new Size();
-      holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, size);
+      holder.computeLayoutSync(mComponentContext, childWidthSpec, childHeightSpec, size);
 
       final int rangeSize =
           Math.max(mLayoutInfo.approximateRangeSize(size.width, size.height, width, height), 1);
