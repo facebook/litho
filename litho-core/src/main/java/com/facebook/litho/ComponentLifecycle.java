@@ -396,8 +396,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   final @Nullable Transition createTransition(ComponentContext c) {
     final Transition transition = onCreateTransition(c);
     if (transition != null) {
-      final String ownerKey = ((Component) this).getOwnerGlobalKey();
-      TransitionUtils.setOwnerKey(transition, ownerKey);
+      TransitionUtils.setOwnerKey(transition, ((Component) this).getGlobalKey());
     }
     return transition;
   }
