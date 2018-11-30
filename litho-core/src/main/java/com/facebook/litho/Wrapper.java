@@ -99,9 +99,19 @@ public final class Wrapper extends Component {
       mWrapper = wrapper;
     }
 
-    public Builder delegate(Component delegate) {
+    public Builder delegate(@Nullable Component delegate) {
       mRequired.set(0);
       this.mWrapper.delegate = delegate;
+      // The purpose of Wrapper is to add other common props on the delegate component, which means
+      // that we can't reuse the cached layout because it could change.
+      if (delegate != null && delegate.mLastMeasuredLayoutThreadLocal != null) {
+        delegate.mLastMeasuredLayoutThreadLocal = null;
+
+        ComponentsReporter.emitMessage(
+            ComponentsReporter.LogLevel.ERROR,
+            "The purpose of Wrapper is to add other common props on the delegate component. The delegate has already computed a layout but it needs to be discarded because it could change after changing its common props.");
+      }
+
       return this;
     }
 

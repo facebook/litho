@@ -2182,7 +2182,7 @@ public class LayoutStateCalculateTest {
             return create(c)
                 .flexShrink(0)
                 .paddingPx(HORIZONTAL, horizontalPadding)
-                .child(Wrapper.create(c).delegate(sizeDependentComponentSpy).flexShrink(0))
+                .child(sizeDependentComponentSpy)
                 .build();
           }
         };
