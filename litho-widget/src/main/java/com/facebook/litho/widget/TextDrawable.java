@@ -497,7 +497,13 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       return -1;
     }
 
-    return mLayout.getOffsetForHorizontal(line, x);
+    try {
+      return mLayout.getOffsetForHorizontal(line, x);
+    } catch (ArrayIndexOutOfBoundsException e) {
+      // This happens for bidi text on Android 7-8.
+      // See https://android.googlesource.com/platform/frameworks/base/+/821e9bd5cc2be4b3210cb0226e40ba0f42b51aed
+      return -1;
+    }
   }
 
   /**
