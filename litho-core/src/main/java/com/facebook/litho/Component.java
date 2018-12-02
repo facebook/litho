@@ -35,6 +35,7 @@ import android.support.annotation.StyleRes;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.ContextCompat;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -71,6 +72,7 @@ public abstract class Component extends ComponentLifecycle
     implements Cloneable, HasEventDispatcher, HasEventTrigger, Equivalence<Component> {
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
+  private final boolean mTypeIdBasedKeys = ComponentsConfiguration.typeIDBasedKeys;
   private int mId = sIdGenerator.getAndIncrement();
   @Nullable private String mOwnerGlobalKey;
   private String mGlobalKey;
@@ -102,6 +104,8 @@ public abstract class Component extends ComponentLifecycle
    * automatically generating unique global keys for all sibling components of the same type.
    */
   @Nullable private Map<String, Integer> mChildCounters;
+
+  @Nullable private SparseIntArray mTypeIdChildCounters;
 
   /**
    * Holds an event handler with its dispatcher set to the parent component, or - in case that this
@@ -299,21 +303,30 @@ public abstract class Component extends ComponentLifecycle
       }
     }
 
-    final String childType = component.getSimpleName();
-
-    if (mChildCounters == null) {
-      mChildCounters = new HashMap<>();
-    }
-
     /**
      * If the key is a duplicate, we append an index based on the child component's type that would
      * uniquely identify it.
      */
-    int childIndex = mChildCounters.containsKey(childType) ? mChildCounters.get(childType) : 0;
+    final int childIndex;
+    if (mTypeIdBasedKeys) {
+      if (mTypeIdChildCounters == null) {
+        mTypeIdChildCounters = new SparseIntArray();
+      }
+
+      final int typeId = component.getTypeId();
+      childIndex = mTypeIdChildCounters.get(typeId, 0);
+      mTypeIdChildCounters.put(typeId, childIndex + 1);
+    } else {
+      final String childType = component.getSimpleName();
+      if (mChildCounters == null) {
+        mChildCounters = new HashMap<>();
+      }
+
+      childIndex = mChildCounters.containsKey(childType) ? mChildCounters.get(childType) : 0;
+      mChildCounters.put(childType, childIndex + 1);
+    }
 
     String uniqueKey = ComponentKeyUtils.getKeyForChildPosition(childKey, childIndex);
-
-    mChildCounters.put(childType, childIndex + 1);
 
     return uniqueKey;
   }

@@ -273,4 +273,7 @@ public class ComponentsConfiguration {
   public static boolean assignTransitionKeysToAllOutputs = false;
 
   public static boolean createPhantomLayoutOutputsForTransitions = false;
+
+  /** Whether keys are based on type id. Default is based on getSimpleName(). */
+  public static boolean typeIDBasedKeys = false;
 }
