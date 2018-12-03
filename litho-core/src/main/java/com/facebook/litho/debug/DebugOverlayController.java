@@ -18,6 +18,7 @@ package com.facebook.litho.debug;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.DebugOverlayDrawable;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.Wrapper;
 import java.util.ArrayList;

@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.litho.debug;
+package com.facebook.litho;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
-import android.graphics.drawable.Drawable;
+import com.facebook.litho.drawable.ComparableDrawable;
 import java.util.List;
 
-class DebugOverlayDrawable extends Drawable {
+public class DebugOverlayDrawable extends ComparableDrawable {
 
   private static final int COLOR_RED_TRANSPARENT = Color.parseColor("#22FF0000");
   private static final int COLOR_GREEN_TRANSPARENT = Color.parseColor("#2200FF00");
@@ -38,15 +38,15 @@ class DebugOverlayDrawable extends Drawable {
 
   private final List<Boolean> mainThreadCalculations;
 
-  // Drawing params
-  private final String text;
-  private final int overlayColor;
+  // Drawing params. Package-private for testing purpose only.
+  final String text;
+  final int overlayColor;
 
   /**
    * @param mainThreadCalculations will be used to draw on the Canvas. It should be guaranteed by
    *     the caller to not modify this list.
    */
-  DebugOverlayDrawable(List<Boolean> mainThreadCalculations) {
+  public DebugOverlayDrawable(List<Boolean> mainThreadCalculations) {
     textPaint.setColor(Color.BLACK);
     textPaint.setAntiAlias(true);
     textPaint.setStyle(Paint.Style.FILL);
@@ -55,9 +55,14 @@ class DebugOverlayDrawable extends Drawable {
 
     this.mainThreadCalculations = mainThreadCalculations;
     int size = mainThreadCalculations.size();
-    text = size + "x";
-    overlayColor =
-        mainThreadCalculations.get(size - 1) ? COLOR_RED_TRANSPARENT : COLOR_GREEN_TRANSPARENT;
+    if (size > 0) {
+      text = size + "x";
+      overlayColor =
+          mainThreadCalculations.get(size - 1) ? COLOR_RED_TRANSPARENT : COLOR_GREEN_TRANSPARENT;
+    } else {
+      text = "";
+      overlayColor = Color.TRANSPARENT;
+    }
   }
 
   @Override
@@ -95,5 +100,32 @@ class DebugOverlayDrawable extends Drawable {
   @Override
   public int getOpacity() {
     return PixelFormat.TRANSLUCENT;
+  }
+
+  @Override
+  public int hashCode() {
+    return mainThreadCalculations.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+
+    DebugOverlayDrawable other = (DebugOverlayDrawable) obj;
+    // mainThreadCalculations is the only important field here but we want to stop earlier
+    return overlayColor == other.overlayColor
+        && text.equals(other.text)
+        && mainThreadCalculations.equals(other.mainThreadCalculations);
+  }
+
+  @Override
+  public boolean isEquivalentTo(ComparableDrawable other) {
+    return this.equals(other);
   }
 }
