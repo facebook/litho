@@ -1587,7 +1587,8 @@ public class ComponentTree {
         if (mCurrentCalculateLayoutRunnable != null) {
           mLayoutThreadHandler.removeCallbacks(mCurrentCalculateLayoutRunnable);
         }
-        mCurrentCalculateLayoutRunnable = new CalculateLayoutRunnable(source, treeProps);
+        mCurrentCalculateLayoutRunnable =
+            new CalculateLayoutRunnable(source, treeProps, extraAttribution);
         mLayoutThreadHandler.post(mCurrentCalculateLayoutRunnable);
       }
     } else {
@@ -2357,16 +2358,18 @@ public class ComponentTree {
 
     private final @CalculateLayoutSource int mSource;
     @Nullable private final TreeProps mTreeProps;
+    private final String mAttribution;
 
     public CalculateLayoutRunnable(
-        @CalculateLayoutSource int source, @Nullable TreeProps treeProps) {
+        @CalculateLayoutSource int source, @Nullable TreeProps treeProps, String attribution) {
       mSource = source;
       mTreeProps = treeProps;
+      mAttribution = attribution;
     }
 
     @Override
     public void tracedRun(Throwable tracedThrowable) {
-      calculateLayout(null, mSource, null, mTreeProps);
+      calculateLayout(null, mSource, mAttribution, mTreeProps);
     }
   }
 
