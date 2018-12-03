@@ -167,17 +167,7 @@ public class RecyclerBinder
         }
       };
 
-  private final ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory =
-      new ComponentTreeMeasureListenerFactory() {
-        @Override
-        public @Nullable MeasureListener create(final ComponentTreeHolder holder) {
-          if (mHasDynamicItemHeight) {
-            return getMeasureListener(holder);
-          }
-
-          return null;
-        }
-      };
+  private final @Nullable ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
 
   private MeasureListener getMeasureListener(final ComponentTreeHolder holder) {
     return new MeasureListener() {
@@ -697,6 +687,16 @@ public class RecyclerBinder
     mIsCircular = builder.isCircular;
     mHasDynamicItemHeight =
         mLayoutInfo.getScrollDirection() == HORIZONTAL ? builder.hasDynamicItemHeight : false;
+    mComponentTreeMeasureListenerFactory =
+        !mHasDynamicItemHeight
+            ? null
+            : new ComponentTreeMeasureListenerFactory() {
+              @Override
+              public @Nullable MeasureListener create(final ComponentTreeHolder holder) {
+                return getMeasureListener(holder);
+              }
+            };
+
     mWrapContent = builder.wrapContent;
     mCanMeasure = builder.canMeasure;
     mTraverseLayoutBackwards = getStackFromEnd() ^ getReverseLayout();

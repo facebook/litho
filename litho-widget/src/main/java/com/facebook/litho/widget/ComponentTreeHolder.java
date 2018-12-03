@@ -45,7 +45,7 @@ public class ComponentTreeHolder {
 
   private static final Pools.SynchronizedPool<ComponentTreeHolder> sComponentTreeHoldersPool =
       new Pools.SynchronizedPool<>(8);
-  private ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
+  private @Nullable ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
 
   @GuardedBy("this")
   private int mLastMeasuredHeight;
@@ -134,7 +134,7 @@ public class ComponentTreeHolder {
     }
 
     public Builder componentTreeMeasureListenerFactory(
-        ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory) {
+        @Nullable ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory) {
       this.componentTreeMeasureListenerFactory = componentTreeMeasureListenerFactory;
       return this;
     }
