@@ -196,6 +196,9 @@ class LayoutState {
   private List<Transition> mTransitions;
   private int mOrientation;
 
+  private static final Object debugLock = new Object();
+  @Nullable private static Map<Integer, List<Boolean>> layoutCalculationsOnMainThread;
+
   @Nullable WorkingRangeContainer mWorkingRangeContainer;
 
   LayoutState() {
@@ -978,6 +981,40 @@ class LayoutState {
       ComponentsPools.release(rect);
     }
 
+    // 10. If enabled, show a debug foreground layer covering the whole LithoView showing which
+    // thread the LayoutState was calculated into and number of calculations for given node.
+    if (ComponentsConfiguration.enableLithoViewDebugOverlay) {
+      if (layoutState.isLayoutRoot(node)) {
+        ArrayList<Boolean> mainThreadCalculations;
+        int layoutId = layoutState.getComponentTreeId();
+
+        synchronized (debugLock) {
+          if (layoutCalculationsOnMainThread == null) {
+            layoutCalculationsOnMainThread = new HashMap<>();
+          }
+          List<Boolean> calculationsOnMainThread = layoutCalculationsOnMainThread.get(layoutId);
+          if (calculationsOnMainThread == null) {
+            calculationsOnMainThread = new ArrayList<>();
+          }
+          calculationsOnMainThread.add(ThreadUtils.isMainThread());
+          layoutCalculationsOnMainThread.put(layoutId, calculationsOnMainThread);
+          mainThreadCalculations = new ArrayList<>(calculationsOnMainThread);
+        }
+
+        addDrawableComponent(
+            node,
+            layoutState,
+            null,
+            DrawableReference.create(new DebugOverlayDrawable(mainThreadCalculations)),
+            OutputUnitType.FOREGROUND,
+            needsHostView);
+      }
+    } else if (layoutCalculationsOnMainThread != null) {
+      synchronized (debugLock) {
+        layoutCalculationsOnMainThread = null;
+      }
+    }
+
     // All children for the given host have been added, restore the previous
     // host, level, and duplicate parent state value in the recursive queue.
     if (layoutState.mCurrentHostMarker != currentHostMarker) {
@@ -1030,7 +1067,7 @@ class LayoutState {
   private static LayoutOutput addDrawableComponent(
       InternalNode node,
       LayoutState layoutState,
-      LayoutOutput recycle,
+      @Nullable LayoutOutput recycle,
       Reference<? extends Drawable> reference,
       @OutputUnitType int type,
       boolean matchHostBoundsTransitions) {

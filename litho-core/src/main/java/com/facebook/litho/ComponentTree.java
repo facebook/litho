@@ -52,7 +52,6 @@ import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.boost.LithoAffinityBooster;
 import com.facebook.litho.boost.LithoAffinityBoosterFactory;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.debug.DebugOverlayController;
 import com.facebook.litho.stats.LithoStats;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -244,10 +243,6 @@ public class ComponentTree {
   private final EventHandlersController mEventHandlersController = new EventHandlersController();
 
   private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
-
-  @Nullable private DebugOverlayController mDebugController;
-
-  private final Object mDebugLock = new Object();
 
   @GuardedBy("this")
   private final WorkingRangeStatusHandler mWorkingRangeStatusHandler =
@@ -1806,12 +1801,6 @@ public class ComponentTree {
       throw new IllegalStateException("Releasing a ComponentTree that is currently being mounted");
     }
 
-    if (mDebugController != null) {
-      synchronized (mDebugLock) {
-        mDebugController = null;
-      }
-    }
-
     LayoutState mainThreadLayoutState;
     LayoutState backgroundLayoutState;
     synchronized (this) {
@@ -2080,22 +2069,6 @@ public class ComponentTree {
       contextWithStateHandler =
           new ComponentContext(
               context, StateHandler.acquireNewInstance(mStateHandler), keyHandler, treeProps);
-    }
-
-    // If enabled, show a debug foreground layer covering the whole LithoView showing which
-    // thread the LayoutState was calculated into and the number of calculations.
-    if (ComponentsConfiguration.enableLithoViewDebugOverlay) {
-      synchronized (mDebugLock) {
-        if (mDebugController == null) {
-          mDebugController = new DebugOverlayController();
-        }
-        mDebugController.recordCalculationStart();
-        root = mDebugController.decorate(root, context);
-      }
-    } else if (mDebugController != null) {
-      synchronized (mDebugLock) {
-        mDebugController = null;
-      }
     }
 
     return LayoutState.calculate(

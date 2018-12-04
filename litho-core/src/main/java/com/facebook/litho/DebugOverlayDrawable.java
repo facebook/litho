@@ -25,6 +25,11 @@ import android.support.annotation.VisibleForTesting;
 import com.facebook.litho.drawable.ComparableDrawable;
 import java.util.List;
 
+/**
+ * Based on the content of the {@link #mainThreadCalculations} draws a row of columns starting from
+ * the top left corner with text representing the number of columns. Add overlay color within
+ * drawing bounds.
+ */
 public class DebugOverlayDrawable extends ComparableDrawable {
 
   @VisibleForTesting static final int COLOR_RED_SEMITRANSPARENT = Color.parseColor("#22FF0000");
