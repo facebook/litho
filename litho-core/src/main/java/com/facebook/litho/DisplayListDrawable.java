@@ -31,6 +31,8 @@ import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import com.facebook.litho.displaylist.DisplayList;
 import com.facebook.litho.displaylist.DisplayListException;
 
@@ -38,7 +40,7 @@ import com.facebook.litho.displaylist.DisplayListException;
  * Drawable which supports {@link DisplayList} for drawing and delegates all other calls to it's
  * wrapped {@link android.graphics.drawable.Drawable}.
  */
-class DisplayListDrawable extends Drawable implements Drawable.Callback {
+class DisplayListDrawable extends Drawable implements Drawable.Callback, Touchable {
 
   private static final boolean DEBUG = false;
   private static final String LOG_TAG = "DisplayListDrawable";
@@ -366,6 +368,17 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback {
   private void invalidateDL() {
     logDebug("invalidateDL", true);
     mInvalidated = true;
+  }
+
+  @Override
+  public boolean shouldHandleTouchEvent(MotionEvent event) {
+    return (mDrawable instanceof Touchable)
+        && ((Touchable) mDrawable).shouldHandleTouchEvent(event);
+  }
+
+  @Override
+  public boolean onTouchEvent(MotionEvent event, View host) {
+    return (mDrawable instanceof Touchable) && ((Touchable) mDrawable).onTouchEvent(event, host);
   }
 
   public void release() {
