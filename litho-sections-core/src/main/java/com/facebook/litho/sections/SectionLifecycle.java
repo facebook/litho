@@ -188,11 +188,6 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
     return false;
   }
 
-
-  String getLogTag() {
-    return getClass().getSimpleName();
-  }
-
   protected static <E> EventHandler<E> newEventHandler(
       SectionContext c,
       int id,

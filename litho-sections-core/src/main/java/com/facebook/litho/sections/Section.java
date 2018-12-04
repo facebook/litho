@@ -390,4 +390,9 @@ public abstract class Section extends SectionLifecycle
   static void releaseChildrenMap(Map<String, Pair<Section, Integer>> newChildren) {
     //TODO use pools t11953296
   }
+
+  @VisibleForTesting
+  public String getLogTag() {
+    return getSimpleName();
+  }
 }

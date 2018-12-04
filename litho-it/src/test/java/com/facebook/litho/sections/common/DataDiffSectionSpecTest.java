@@ -503,6 +503,17 @@ public class DataDiffSectionSpecTest {
     assertRangeOperation(executedOperations.get(0), TestTarget.INSERT_RANGE, 100, 100);
   }
 
+  @Test
+  public void testLogTag() {
+    ArrayList<String> data = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      data.add(String.valueOf(i));
+    }
+    DataDiffSection section =
+        DataDiffSection.<String>create(mSectionContext).data(data).renderEventHandler(null).build();
+    assertThat(section.getLogTag()).isEqualTo(section.getClass().getSimpleName());
+  }
+
   private void assertRangeOperation(
       Operation operation,
       int opType,

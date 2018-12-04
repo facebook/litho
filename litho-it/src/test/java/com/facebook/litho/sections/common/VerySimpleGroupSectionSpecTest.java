@@ -102,4 +102,12 @@ public class VerySimpleGroupSectionSpecTest {
 
     assertThat(stateContainer.extra).isEqualTo(3);
   }
+
+  @Test
+  public void testLogTag() {
+    Section s =
+        mTester.prepare(
+            VerySimpleGroupSection.create(mTester.getContext()).numberOfDummy(4).build());
+    assertThat(s.getLogTag()).isEqualTo(s.getClass().getSimpleName());
+  }
 }
