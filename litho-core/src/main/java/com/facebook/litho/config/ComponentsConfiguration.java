@@ -222,9 +222,6 @@ public class ComponentsConfiguration {
   public static boolean unsetThenReleaseDrawableBackground = false;
   public static boolean unmountThenReleaseDrawableCmp = false;
 
-  /** Whether eligible content should be wrapped into DisplayListDrawables */
-  public static boolean displayListWrappingEnabled = false;
-
   /** Whether all drawables are eligible for wrapping into DisplayListDrawables */
   public static boolean useDisplayListForAllDrawables = false;
 

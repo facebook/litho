@@ -1464,8 +1464,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   static Object wrapContentIfNeeded(Component component, Object content) {
     // For the time being the only wrapping we may do is of a Drawable into a DisplayListDrawable,
     // but this may be expanded
-    if (ComponentsConfiguration.displayListWrappingEnabled
-        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       // We do not want to wrap RippleDrawables, as it doesn't play along with RenderNodeAnimator
       // well
       if (content instanceof RippleDrawable

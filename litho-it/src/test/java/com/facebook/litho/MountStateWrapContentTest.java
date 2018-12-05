@@ -47,7 +47,6 @@ public class MountStateWrapContentTest {
 
   @Test
   public void testWrapContentPreLollipop() {
-    ComponentsConfiguration.displayListWrappingEnabled = true;
     ComponentsConfiguration.useDisplayListForAllDrawables = true;
 
     Object content = mDLComponent.onCreateMountContent(mContext.getAndroidContext());
@@ -62,23 +61,7 @@ public class MountStateWrapContentTest {
 
   @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
   @Test
-  public void testWrapContentWithDLDisabled() {
-    ComponentsConfiguration.displayListWrappingEnabled = false;
-
-    Object content = mDLComponent.onCreateMountContent(mContext.getAndroidContext());
-    assertThat(MountState.wrapContentIfNeeded(mDLComponent, content)).isNull();
-
-    content = mNoDLComponent.onCreateMountContent(mContext.getAndroidContext());
-    assertThat(MountState.wrapContentIfNeeded(mNoDLComponent, content)).isNull();
-
-    content = mViewComponent.onCreateMountContent(mContext.getAndroidContext());
-    assertThat(MountState.wrapContentIfNeeded(mViewComponent, content)).isNull();
-  }
-
-  @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
-  @Test
   public void testWrapContentWithDLEnabled() {
-    ComponentsConfiguration.displayListWrappingEnabled = true;
     ComponentsConfiguration.useDisplayListForAllDrawables = false;
 
     Object content = mDLComponent.onCreateMountContent(mContext.getAndroidContext());
@@ -95,7 +78,6 @@ public class MountStateWrapContentTest {
   @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
   @Test
   public void testWrapContentWithWrappingAllDrawables() {
-    ComponentsConfiguration.displayListWrappingEnabled = true;
     ComponentsConfiguration.useDisplayListForAllDrawables = true;
 
     Object content = mDLComponent.onCreateMountContent(mContext.getAndroidContext());
