@@ -43,6 +43,7 @@ public class SpecModelValidation {
     validationErrors.addAll(DiffValidation.validate(specModel));
     validationErrors.addAll(TagValidation.validate(specModel));
     validationErrors.addAll(WorkingRangeValidation.validate(specModel));
+    validationErrors.addAll(CachedValueValidation.validate(specModel));
     return validationErrors;
   }
 
