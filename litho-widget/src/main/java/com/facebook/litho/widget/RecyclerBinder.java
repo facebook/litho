@@ -2859,7 +2859,8 @@ public class RecyclerBinder
 
       // If the recycler is circular, we have to simulate having an infinite number of items in the
       // adapter by returning Integer.MAX_VALUE.
-      return mIsCircular ? Integer.MAX_VALUE : mComponentTreeHolders.size();
+      int size = mComponentTreeHolders.size();
+      return (mIsCircular && size > 0) ? Integer.MAX_VALUE : size;
     }
 
     @Override

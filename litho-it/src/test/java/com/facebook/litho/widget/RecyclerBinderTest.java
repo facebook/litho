@@ -1982,6 +1982,12 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void testCircularRecyclerItemCOuntWithZeroItems() {
+    mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    Assert.assertEquals(0, mCircularRecyclerBinder.getItemCount());
+  }
+
+  @Test
   public void testCircularRecyclerItemFirstVisible() {
     RecyclerView recyclerView = mock(RecyclerView.class);
     when(mCircularLayoutInfo.getLayoutManager()).thenReturn(mock(RecyclerView.LayoutManager.class));
