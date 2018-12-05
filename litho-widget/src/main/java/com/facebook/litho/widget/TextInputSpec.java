@@ -525,12 +525,7 @@ class TextInputSpec {
         // 1. After initState: savedText = initText.
         // 2. After onUnmount: savedText preserved from underlying editText.
         savedText.get());
-    editText.setComponentContext(c);
     editText.setTextState(savedText);
-    editText.setTextChangedEventHandler(TextInput.getTextChangedEventHandler(c));
-    editText.setSelectionChangedEventHandler(TextInput.getSelectionChangedEventHandler(c));
-    editText.setKeyUpEventHandler(TextInput.getKeyUpEventHandler(c));
-    editText.setEditorActionEventHandler(TextInput.getEditorActionEventHandler(c));
   }
 
   @OnBind
@@ -539,6 +534,12 @@ class TextInputSpec {
       EditTextWithEventHandlers editText,
       @Prop(optional = true, varArg = "textWatcher") List<TextWatcher> textWatchers) {
     editText.attachWatchers(textWatchers);
+
+    editText.setComponentContext(c);
+    editText.setTextChangedEventHandler(TextInput.getTextChangedEventHandler(c));
+    editText.setSelectionChangedEventHandler(TextInput.getSelectionChangedEventHandler(c));
+    editText.setKeyUpEventHandler(TextInput.getKeyUpEventHandler(c));
+    editText.setEditorActionEventHandler(TextInput.getEditorActionEventHandler(c));
   }
 
   @OnUnmount
@@ -546,18 +547,19 @@ class TextInputSpec {
       ComponentContext c,
       EditTextWithEventHandlers editText,
       @State AtomicReference<EditTextWithEventHandlers> mountedView) {
-    editText.setComponentContext(null);
     editText.setTextState(null);
-    editText.setTextChangedEventHandler(null);
-    editText.setSelectionChangedEventHandler(null);
-    editText.setKeyUpEventHandler(null);
-    editText.setEditorActionEventHandler(null);
     mountedView.set(null);
   }
 
   @OnUnbind
   static void onUnbind(final ComponentContext c, EditTextWithEventHandlers editText) {
     editText.detachWatchers();
+
+    editText.setComponentContext(null);
+    editText.setTextChangedEventHandler(null);
+    editText.setSelectionChangedEventHandler(null);
+    editText.setKeyUpEventHandler(null);
+    editText.setEditorActionEventHandler(null);
   }
 
   @Nullable
