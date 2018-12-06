@@ -493,25 +493,41 @@ public class TransitionManager {
     final ArrayList<AnimationBinding> createdAnimations = new ArrayList<>();
     switch (animationTarget.componentTarget.componentTargetType) {
       case ALL:
-        createAnimationsForTransitionUnitAllKeys(transition, createdAnimations);
-        break;
       case AUTO_LAYOUT:
-        // TODO T25723456. As of now targeting components which have transition keys. Later we'll
-        // move on to remove that constraint (Step 2).
         createAnimationsForTransitionUnitAllKeys(transition, createdAnimations);
         break;
-      case SET:
-        final String[] keys = (String[]) animationTarget.componentTarget.componentTargetExtraData;
+
+      case LOCAL_KEY:
+        String key = (String) animationTarget.componentTarget.componentTargetExtraData;
+        TransitionId transitionId = mAnimationStates.getScopedId(transition.getOwnerKey(), key);
+        createAnimationsForTransitionUnit(transition, transitionId, createdAnimations);
+        break;
+
+      case LOCAL_KEY_SET:
+        String[] keys = (String[]) animationTarget.componentTarget.componentTargetExtraData;
+        final String ownerKey = transition.getOwnerKey();
         for (int j = 0; j < keys.length; j++) {
-          createAnimationsForTransitionUnitTargetingGlobalId(
-              transition, keys[j], createdAnimations);
+          transitionId = mAnimationStates.getScopedId(ownerKey, keys[j]);
+          if (transitionId != null) {
+            createAnimationsForTransitionUnit(transition, transitionId, createdAnimations);
+          }
         }
         break;
-      case SINGLE:
-        createAnimationsForTransitionUnitTargetingGlobalId(
-            transition,
-            (String) animationTarget.componentTarget.componentTargetExtraData,
-            createdAnimations);
+
+      case GLOBAL_KEY:
+        key = (String) animationTarget.componentTarget.componentTargetExtraData;
+        transitionId = mAnimationStates.getGlobalId(key);
+        createAnimationsForTransitionUnit(transition, transitionId, createdAnimations);
+        break;
+
+      case GLOBAL_KEY_SET:
+        keys = (String[]) animationTarget.componentTarget.componentTargetExtraData;
+        for (int j = 0; j < keys.length; j++) {
+          transitionId = mAnimationStates.getGlobalId(keys[j]);
+          if (transitionId != null) {
+            createAnimationsForTransitionUnit(transition, transitionId, createdAnimations);
+          }
+        }
         break;
     }
 
@@ -524,14 +540,6 @@ public class TransitionManager {
     }
 
     return new ParallelBinding(0, createdAnimations);
-  }
-
-  private void createAnimationsForTransitionUnitTargetingGlobalId(
-      TransitionUnit transition, String idReference, ArrayList<AnimationBinding> outList) {
-    final TransitionId transitionId = mAnimationStates.getGlobalId(idReference);
-    if (transitionId != null) {
-      createAnimationsForTransitionUnit(transition, transitionId, outList);
-    }
   }
 
   private void createAnimationsForTransitionUnitAllKeys(

@@ -44,8 +44,7 @@ class TransitionUtils {
       }
     } else if (transition instanceof Transition.TransitionUnit) {
       final Transition.TransitionUnit transitionUnit = (Transition.TransitionUnit) transition;
-      if (transitionUnit.targetsKey(rootTransitionId.mReference)
-          && transitionUnit.targetsProperty(property)) {
+      if (transitionUnit.targets(rootTransitionId) && transitionUnit.targetsProperty(property)) {
         outRootBoundsTransition.hasTransition = true;
         if (transitionUnit.hasAppearAnimation()) {
           outRootBoundsTransition.appearTransition = transitionUnit;

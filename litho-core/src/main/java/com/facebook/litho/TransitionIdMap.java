@@ -15,7 +15,6 @@
  */
 package com.facebook.litho;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -30,8 +29,7 @@ import javax.annotation.Nullable;
  * <p>This is important for {@link TransitionManager} that needs to map {@link TransitionId}s to
  * {@link TransitionManager.AnimationState}s, and quickly find a value when creating transition for
  * the given {@link Transition.TransitionUnit} - {@link
- * TransitionManager#createAnimationsForTransitionUnitTargetingGlobalId(Transition.TransitionUnit,
- * String, ArrayList)}
+ * TransitionManager#createAnimationsForTransitionUnit(Transition.TransitionUnit)}
  */
 class TransitionIdMap<V> {
   private final Map<String, TransitionId> mGlobalIds = new LinkedHashMap<>();
