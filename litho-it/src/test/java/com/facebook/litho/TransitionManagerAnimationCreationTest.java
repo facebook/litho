@@ -368,7 +368,8 @@ public class TransitionManagerAnimationCreationTest {
       String key,
       AnimatedProperty property,
       float endValue) {
-    return new PropertyAnimation(new PropertyHandle(key, property), endValue);
+    final TransitionId transitionId = new TransitionId(TransitionId.Type.GLOBAL, key, null);
+    return new PropertyAnimation(new PropertyHandle(transitionId, property), endValue);
   }
 
   /** @return a mock LayoutState that only has a transition key -> LayoutOutput mapping. */

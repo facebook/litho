@@ -15,6 +15,8 @@
  */
 package com.facebook.litho.animation;
 
+import com.facebook.litho.TransitionId;
+
 /**
  * Represents the animation specification for a single property:
  *  - What transition key it's for
@@ -35,8 +37,8 @@ public class PropertyAnimation {
     return mPropertyHandle;
   }
 
-  public String getTransitionKey() {
-    return mPropertyHandle.getTransitionKey();
+  public TransitionId getTransitionId() {
+    return mPropertyHandle.getTransitionId();
   }
 
   public AnimatedProperty getProperty() {

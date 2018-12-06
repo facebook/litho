@@ -618,7 +618,7 @@ public class TransitionManager {
     }
 
     final PropertyState existingState = animationState.propertyStates.get(property);
-    final PropertyHandle propertyHandle = new PropertyHandle(transitionId.mReference, property);
+    final PropertyHandle propertyHandle = new PropertyHandle(transitionId, property);
     final float startValue;
     if (existingState != null) {
       startValue = existingState.animatedPropertyNode.getValue();
@@ -694,8 +694,7 @@ public class TransitionManager {
   private void restoreInitialStates() {
     for (PropertyHandle propertyHandle : mInitialStatesToRestore.keySet()) {
       final float value = mInitialStatesToRestore.get(propertyHandle);
-      final String key = propertyHandle.getTransitionKey();
-      final TransitionId transitionId = mAnimationStates.getGlobalId(key);
+      final TransitionId transitionId = propertyHandle.getTransitionId();
       final AnimationState animationState = mAnimationStates.get(transitionId);
       if (animationState.mountContentGroup != null) {
         setPropertyValue(propertyHandle.getProperty(), value, animationState.mountContentGroup);
@@ -898,8 +897,7 @@ public class TransitionManager {
       // Make sure that all animating properties will animate to a valid position
       for (int i = 0, size = mTempPropertyAnimations.size(); i < size; i++) {
         final PropertyAnimation propertyAnimation = mTempPropertyAnimations.get(i);
-        final String key = propertyAnimation.getTransitionKey();
-        final TransitionId transitionId = mAnimationStates.getGlobalId(key);
+        final TransitionId transitionId = propertyAnimation.getTransitionId();
         final AnimationState animationState = mAnimationStates.get(transitionId);
         final PropertyState propertyState =
             animationState.propertyStates.get(propertyAnimation.getProperty());
@@ -907,9 +905,13 @@ public class TransitionManager {
         if (AnimationsDebug.ENABLED) {
           Log.d(
               AnimationsDebug.TAG,
-              "Trying to start animation on " + key + "#" +
-                  propertyAnimation.getProperty().getName() + " to " +
-                  propertyAnimation.getTargetValue() + ":");
+              "Trying to start animation on "
+                  + transitionId
+                  + "#"
+                  + propertyAnimation.getProperty().getName()
+                  + " to "
+                  + propertyAnimation.getTargetValue()
+                  + ":");
         }
 
         if (propertyState.lastMountedValue != null &&
@@ -935,8 +937,7 @@ public class TransitionManager {
 
       for (int i = 0, size = mTempPropertyAnimations.size(); i < size; i++) {
         final PropertyAnimation propertyAnimation = mTempPropertyAnimations.get(i);
-        final String key = propertyAnimation.getTransitionKey();
-        final TransitionId transitionId = mAnimationStates.getGlobalId(key);
+        final TransitionId transitionId = propertyAnimation.getTransitionId();
         final AnimationState animationState = mAnimationStates.get(transitionId);
         final PropertyState propertyState =
             animationState.propertyStates.get(propertyAnimation.getProperty());
@@ -959,8 +960,7 @@ public class TransitionManager {
       // animating and we can release the animation state.
       for (int i = 0, size = keys.size(); i < size; i++) {
         final PropertyHandle propertyHandle = keys.get(i);
-        final String key = propertyHandle.getTransitionKey();
-        final TransitionId transitionId = mAnimationStates.getGlobalId(key);
+        final TransitionId transitionId = propertyHandle.getTransitionId();
         final AnimationState animationState = mAnimationStates.get(transitionId);
         final AnimatedProperty property = propertyHandle.getProperty();
         final boolean isDisappearAnimation = animationState.changeType == ChangeType.DISAPPEARED;
@@ -1050,8 +1050,7 @@ public class TransitionManager {
     @Override
     public float getCurrentState(PropertyHandle propertyHandle) {
       final AnimatedProperty animatedProperty = propertyHandle.getProperty();
-      final String key = propertyHandle.getTransitionKey();
-      final TransitionId transitionId = mAnimationStates.getGlobalId(key);
+      final TransitionId transitionId = propertyHandle.getTransitionId();
       final AnimationState animationState = mAnimationStates.get(transitionId);
       final PropertyState propertyState = animationState.propertyStates.get(animatedProperty);
 
@@ -1075,8 +1074,7 @@ public class TransitionManager {
 
     @Override
     public AnimatedPropertyNode getAnimatedPropertyNode(PropertyHandle propertyHandle) {
-      final String key = propertyHandle.getTransitionKey();
-      final TransitionId transitionId = mAnimationStates.getGlobalId(key);
+      final TransitionId transitionId = propertyHandle.getTransitionId();
       final AnimationState state = mAnimationStates.get(transitionId);
       final PropertyState propertyState = state.propertyStates.get(propertyHandle.getProperty());
       return propertyState.animatedPropertyNode;

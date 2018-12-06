@@ -675,10 +675,9 @@ public abstract class Transition {
       TransitionUnit transition, LayoutState layoutState, AnimatedProperty property) {
     final RootItemResolver resolver = new RootItemResolver(layoutState, property);
     final TransitionId rootTransitionId = layoutState.getRootTransitionId();
-    final String rootTransitionKey = rootTransitionId != null ? rootTransitionId.mReference : null;
     return transition
         .getAppearFrom()
-        .resolve(resolver, new PropertyHandle(rootTransitionKey, property));
+        .resolve(resolver, new PropertyHandle(rootTransitionId, property));
   }
 
   /**
