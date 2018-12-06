@@ -92,6 +92,7 @@ public class RecyclerBinder
   private static final String TAG = RecyclerBinder.class.getSimpleName();
   private static final int POST_UPDATE_VIEWPORT_AND_COMPUTE_RANGE_MAX_ATTEMPTS = 3;
   private static final int DATA_RENDERED_CALLBACKS_QUEUE_MAX_SIZE = 20;
+  private static ThreadPoolLayoutHandler sThreadPoolHandler;
 
   private static Field mViewHolderField;
 
@@ -238,8 +239,8 @@ public class RecyclerBinder
   private final boolean mCanPrefetchDisplayLists;
   private final boolean mCanCacheDrawingDisplayLists;
   private final boolean mUseSharedLayoutStateFuture;
-  private final LayoutHandler mThreadPoolHandler;
-  private final LayoutThreadPoolConfiguration mThreadPoolConfig;
+  private final @Nullable LayoutHandler mThreadPoolHandler;
+  private final @Nullable LayoutThreadPoolConfiguration mThreadPoolConfig;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
   private boolean mIsInitMounted = false; // Set to true when the first mount() is called.
@@ -382,11 +383,11 @@ public class RecyclerBinder
     private boolean useSharedLayoutStateFuture = ComponentsConfiguration.useSharedLayoutStateFuture;
     private @Nullable List<ComponentLogParams> invalidStateLogParamsList;
     private RecyclerRangeTraverser recyclerRangeTraverser;
-    private LayoutThreadPoolConfiguration threadPoolConfig =
-        ComponentsConfiguration.threadPoolConfiguration;
+    private LayoutThreadPoolConfiguration threadPoolConfig;
     private boolean asyncInitRange = ComponentsConfiguration.asyncInitRange;
     private boolean canMeasure;
     private boolean hscrollAsyncMode = false;
+    private boolean singleThreadPool = ComponentsConfiguration.useSingleThreadPool;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -537,6 +538,11 @@ public class RecyclerBinder
       return this;
     }
 
+    public Builder singleThreadPool(boolean singleThreadPool) {
+      this.singleThreadPool = singleThreadPool;
+      return this;
+    }
+
     /** Set a custom range traverser */
     public Builder recyclerRangeTraverser(RecyclerRangeTraverser traverser) {
       this.recyclerRangeTraverser = traverser;
@@ -670,12 +676,32 @@ public class RecyclerBinder
     mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
 
-    mThreadPoolConfig = builder.threadPoolConfig;
+    if (mLayoutHandlerFactory == null) {
 
-    mThreadPoolHandler =
-        mThreadPoolConfig != null && mLayoutHandlerFactory == null
-            ? new ThreadPoolLayoutHandler(mThreadPoolConfig)
-            : null;
+      /**
+       * If a config is manually set, use it. If a global configuration is enabled, check if the
+       * configuration enables using a single thread pool for all RecyclerBinders or creates one per
+       * RecyclerBinder.
+       */
+      if (builder.threadPoolConfig != null) {
+        mThreadPoolConfig = builder.threadPoolConfig;
+        mThreadPoolHandler = new ThreadPoolLayoutHandler(mThreadPoolConfig);
+      } else if (ComponentsConfiguration.threadPoolConfiguration != null) {
+        mThreadPoolConfig = ComponentsConfiguration.threadPoolConfiguration;
+
+        if (builder.singleThreadPool) {
+          mThreadPoolHandler = getDefaultThreadPoolLayoutHandler();
+        } else {
+          mThreadPoolHandler = new ThreadPoolLayoutHandler(mThreadPoolConfig);
+        }
+      } else {
+        mThreadPoolConfig = null;
+        mThreadPoolHandler = null;
+      }
+    } else {
+      mThreadPoolConfig = null;
+      mThreadPoolHandler = null;
+    }
 
     mRenderInfoViewCreatorController =
         new RenderInfoViewCreatorController(
@@ -3017,6 +3043,15 @@ public class RecyclerBinder
     }
 
     return holderForRangeInfo;
+  }
+
+  private static synchronized ThreadPoolLayoutHandler getDefaultThreadPoolLayoutHandler() {
+    if (sThreadPoolHandler == null) {
+      sThreadPoolHandler =
+          new ThreadPoolLayoutHandler(ComponentsConfiguration.threadPoolConfiguration);
+    }
+
+    return sThreadPoolHandler;
   }
 
   private static class ComponentTreeHolderRangeInfo {

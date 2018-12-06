@@ -137,6 +137,9 @@ public class ComponentsConfiguration {
    */
   public static LayoutThreadPoolConfiguration threadPoolForBackgroundThreadsConfig = null;
 
+  /** If true, a single thread pool will be used instead of creating one per RecyclerBinder. */
+  public static boolean useSingleThreadPool = false;
+
   /** Configuration for asynchronous state update */
   public static boolean updateStateAsync = false;
 
