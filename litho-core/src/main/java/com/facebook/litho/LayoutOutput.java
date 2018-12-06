@@ -233,12 +233,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return mTransitionId;
   }
 
-  @Deprecated
-  @Nullable
-  String getTransitionKey() {
-    return mTransitionId != null ? mTransitionId.mReference : null;
-  }
-
   void acquire() {
     if (mRefCount.getAndSet(1) != 0) {
       throw new RuntimeException(

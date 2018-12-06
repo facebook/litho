@@ -241,17 +241,6 @@ class MountItem {
     return mTransitionId != null;
   }
 
-  @Deprecated
-  @Nullable
-  String getTransitionKey() {
-    return mTransitionId != null ? mTransitionId.mReference : null;
-  }
-
-  @Deprecated
-  boolean hasTransitionKey() {
-    return getTransitionKey() != null;
-  }
-
   boolean isAccessible() {
     if (mComponent == null) {
       return false;

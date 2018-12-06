@@ -193,7 +193,6 @@ class LayoutState {
   @Nullable private OutputUnitsAffinityGroup<LayoutOutput> mCurrentLayoutOutputAffinityGroup;
   private final Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> mTransitionIdMapping =
       new LinkedHashMap<>();
-  @Nullable private Map<String, OutputUnitsAffinityGroup<LayoutOutput>> mTransitionKeyMapping;
   private final Set<TransitionId> mDuplicatedTransitionIds = new HashSet<>();
   private List<Transition> mTransitions;
   private int mOrientation;
@@ -2123,7 +2122,6 @@ class LayoutState {
 
       mCurrentLayoutOutputAffinityGroup = null;
       mTransitionIdMapping.clear();
-      mTransitionKeyMapping = null;
       mDuplicatedTransitionIds.clear();
 
       mWorkingRangeContainer = null;
@@ -2246,26 +2244,6 @@ class LayoutState {
   @Nullable
   List<Transition> getTransitions() {
     return mTransitions;
-  }
-
-  /** Gets a mapping from transition key to a group of LayoutOutput. */
-  @Deprecated
-  Map<String, OutputUnitsAffinityGroup<LayoutOutput>> getTransitionKeyMapping() {
-    if (mTransitionKeyMapping == null) {
-      mTransitionKeyMapping = new HashMap<>(mTransitionIdMapping.size());
-      for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> entry :
-          mTransitionIdMapping.entrySet()) {
-        mTransitionKeyMapping.put(entry.getKey().mReference, entry.getValue());
-      }
-    }
-    return mTransitionKeyMapping;
-  }
-
-  /** Gets a group of LayoutOutput given transition key */
-  @Deprecated
-  @Nullable
-  OutputUnitsAffinityGroup<LayoutOutput> getLayoutOutputsForTransitionKey(String key) {
-    return getTransitionKeyMapping().get(key);
   }
 
   /** Gets a mapping from transition ids to a group of LayoutOutput. */
