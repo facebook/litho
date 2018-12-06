@@ -135,7 +135,7 @@ import com.facebook.yoga.YogaDirection;
   isPureRender = true,
   shouldUseDisplayList = true,
   poolSize = 30,
-  events = {TextOffsetOnTouchEvent.class, CustomEllipsisTruncationEvent.class}
+  events = {TextOffsetOnTouchEvent.class}
 )
 class TextSpec {
 
@@ -505,7 +505,6 @@ class TextSpec {
       @Prop(optional = true) boolean glyphWarming,
       @Prop(optional = true) TextDirectionHeuristicCompat textDirection,
       @Prop(optional = true, resType = ResType.STRING) CharSequence customEllipsisText,
-      @Prop(optional = true) EventHandler customEllipsisHandler,
       @FromMeasure Layout measureLayout,
       @FromMeasure Integer measuredWidth,
       @FromMeasure Integer measuredHeight,
@@ -586,12 +585,7 @@ class TextSpec {
       final int ellipsizedLineNumber = getEllipsizedLineNumber(textLayout.get());
       if (ellipsizedLineNumber != -1) {
         final CharSequence truncated =
-            truncateText(
-                text,
-                customEllipsisText,
-                textLayout.get(),
-                ellipsizedLineNumber,
-                customEllipsisHandler);
+            truncateText(text, customEllipsisText, textLayout.get(), ellipsizedLineNumber);
 
         Layout newLayout =
             createTextLayout(
@@ -656,8 +650,7 @@ class TextSpec {
       CharSequence text,
       CharSequence customEllipsisText,
       Layout newLayout,
-      int ellipsizedLineNumber,
-      @Nullable EventHandler customEllipsisTruncationEventHandler) {
+      int ellipsizedLineNumber) {
     Rect bounds = new Rect();
     newLayout
         .getPaint()
@@ -668,9 +661,6 @@ class TextSpec {
     final int ellipsisOffset =
         newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
     if (ellipsisOffset > 0) {
-      if (customEllipsisTruncationEventHandler != null) {
-        Text.dispatchCustomEllipsisTruncationEvent(customEllipsisTruncationEventHandler);
-      }
       // getOffsetForHorizontal returns the closest character, but we need to guarantee no
       // truncation, so subtract 1 from the result:
       return TextUtils.concat(text.subSequence(0, ellipsisOffset - 1), customEllipsisText);
@@ -690,19 +680,7 @@ class TextSpec {
         return i;
       }
     }
-
-    // On versions kitkat and lower, there is a bug in layout.getEllipsisCount() where it does not
-    // return the correct value when a layout contains a newline. This double checks that the layout
-    // does not end in an ellipsis character if the os version is kitkat or less.
-    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT && endsWithEllipsis(layout.getText())) {
-      return layout.getLineCount() - 1;
-    }
-
     return -1;
-  }
-
-  private static boolean endsWithEllipsis(CharSequence text) {
-    return text.length() > 0 && text.charAt(text.length() - 1) == '\u2026';
   }
 
   @OnCreateMountContent

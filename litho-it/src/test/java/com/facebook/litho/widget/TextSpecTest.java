@@ -16,9 +16,6 @@
 
 package com.facebook.litho.widget;
 
-import static android.view.View.MeasureSpec.EXACTLY;
-import static android.view.View.MeasureSpec.UNSPECIFIED;
-import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -27,13 +24,11 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.Spannable;
-import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper;
@@ -122,63 +117,6 @@ public class TextSpecTest {
     boolean handled = textDrawable.onTouchEvent(motionEvent, lithoView);
     // We don't consume touch events from TextTouchOffsetChange event
     assertThat(handled).isFalse();
-    assertThat(eventFired[0]).isTrue();
-  }
-
-  @Test
-  public void testCustomEllipsisTruncation() {
-    LithoView lithoView =
-        ComponentTestHelper.mountComponent(
-            new LithoView(mContext),
-            ComponentTree.create(
-                    mContext,
-                    Text.create(mContext)
-                        .text("Line 1\nLine 2\nLine 3")
-                        .ellipsize(TextUtils.TruncateAt.END)
-                        .maxLines(2)
-                        .customEllipsisText(" ...See More")
-                        .build())
-                .incrementalMount(false)
-                .layoutDiffing(false)
-                .build(),
-            makeMeasureSpec(480, EXACTLY),
-            makeMeasureSpec(0, UNSPECIFIED));
-    TextDrawable textDrawable = (TextDrawable) (lithoView.getDrawables().get(0));
-
-    assertThat(textDrawable.getText()).contains(" ...See More");
-  }
-
-  @Test
-  public void testCustomEllipsisTruncationEventHandlerFired() {
-    final boolean[] eventFired = new boolean[] {false};
-    EventHandler<CustomEllipsisTruncationEvent> eventHandler =
-        EventHandlerTestHelper.createMockEventHandler(
-            CustomEllipsisTruncationEvent.class,
-            new EventHandlerTestHelper.MockEventHandler<CustomEllipsisTruncationEvent, Void>() {
-              @Override
-              public Void handleEvent(CustomEllipsisTruncationEvent event) {
-                eventFired[0] = true;
-                return null;
-              }
-            });
-
-    ComponentTestHelper.mountComponent(
-        new LithoView(mContext),
-        ComponentTree.create(
-                mContext,
-                Text.create(mContext)
-                    .text("Line 1\nLine 2\nLine 3")
-                    .ellipsize(TextUtils.TruncateAt.END)
-                    .maxLines(2)
-                    .customEllipsisText(" ...See More")
-                    .customEllipsisHandler(eventHandler)
-                    .build())
-            .incrementalMount(false)
-            .layoutDiffing(false)
-            .build(),
-        makeMeasureSpec(480, EXACTLY),
-        makeMeasureSpec(0, UNSPECIFIED));
-
     assertThat(eventFired[0]).isTrue();
   }
 
