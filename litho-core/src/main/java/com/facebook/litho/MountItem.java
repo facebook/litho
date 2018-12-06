@@ -62,7 +62,7 @@ class MountItem {
   private ComponentHost mHost;
   private boolean mIsBound;
   private int mImportantForAccessibility;
-  private @Nullable String mTransitionKey;
+  private @Nullable TransitionId mTransitionId;
   private int mOrientation;
 
   // ComponentHost flags defined in the LayoutOutput specifying
@@ -87,7 +87,7 @@ class MountItem {
     mLayoutFlags = layoutOutput.getFlags();
     mImportantForAccessibility = layoutOutput.getImportantForAccessibility();
     mOrientation = layoutOutput.getOrientation();
-    mTransitionKey = layoutOutput.getTransitionKey();
+    mTransitionId = layoutOutput.getTransitionId();
 
     releaseNodeInfos();
 
@@ -110,7 +110,7 @@ class MountItem {
         layoutOutput.getFlags(),
         layoutOutput.getImportantForAccessibility(),
         layoutOutput.getOrientation(),
-        layoutOutput.getTransitionKey());
+        layoutOutput.getTransitionId());
   }
 
   void init(
@@ -122,7 +122,7 @@ class MountItem {
       int layoutFlags,
       int importantForAccessibility,
       int orientation,
-      String transitionKey) {
+      TransitionId transitionId) {
     if (mHost != null) {
       throw new RuntimeException("Calling init() on a MountItem that has not been released!");
     }
@@ -136,7 +136,7 @@ class MountItem {
     mLayoutFlags = layoutFlags;
     mImportantForAccessibility = importantForAccessibility;
     mOrientation = orientation;
-    mTransitionKey = transitionKey;
+    mTransitionId = transitionId;
 
     if (nodeInfo != null) {
       mNodeInfo = nodeInfo.acquireRef();
@@ -233,12 +233,23 @@ class MountItem {
   }
 
   @Nullable
-  String getTransitionKey() {
-    return mTransitionKey;
+  TransitionId getTransitionId() {
+    return mTransitionId;
   }
 
+  boolean hasTransitionId() {
+    return mTransitionId != null;
+  }
+
+  @Deprecated
+  @Nullable
+  String getTransitionKey() {
+    return mTransitionId != null ? mTransitionId.mReference : null;
+  }
+
+  @Deprecated
   boolean hasTransitionKey() {
-    return mTransitionKey != null;
+    return getTransitionKey() != null;
   }
 
   boolean isAccessible() {
@@ -271,7 +282,7 @@ class MountItem {
     mMountViewFlags = 0;
     mIsBound = false;
     mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-    mTransitionKey = null;
+    mTransitionId = null;
   }
 
   private void releaseNodeInfos() {
