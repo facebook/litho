@@ -1597,6 +1597,18 @@ public abstract class Component extends ComponentLifecycle
 
     public T transitionKey(@Nullable String key) {
       mComponent.getOrCreateCommonPropsHolder().transitionKey(key);
+      if (mComponent.getOrCreateCommonPropsHolder().getTransitionKeyType() == null) {
+        // If TransitionKeyType isn't set, set to default type
+        transitionKeyType(Transition.DEFAULT_TRANSITION_KEY_TYPE);
+      }
+      return getThis();
+    }
+
+    public T transitionKeyType(Transition.TransitionKeyType type) {
+      if (type == null) {
+        throw new IllegalArgumentException("TransitionKeyType must not be null");
+      }
+      mComponent.getOrCreateCommonPropsHolder().transitionKeyType(type);
       return getThis();
     }
 

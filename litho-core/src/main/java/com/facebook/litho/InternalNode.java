@@ -117,6 +117,7 @@ class InternalNode implements ComponentLayout {
   private static final long PFLAG_STATE_LIST_ANIMATOR_SET = 1L << 29;
   private static final long PFLAG_STATE_LIST_ANIMATOR_RES_SET = 1L << 30;
   private static final long PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET = 1L << 31;
+  private static final long PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1L << 32;
 
   YogaNode mYogaNode;
   private ComponentContext mComponentContext;
@@ -140,6 +141,7 @@ class InternalNode implements ComponentLayout {
   private NodeInfo mNodeInfo;
   private boolean mForceViewWrapping;
   private String mTransitionKey;
+  private @Nullable Transition.TransitionKeyType mTransitionKeyType;
   private float mVisibleHeightRatio;
   private float mVisibleWidthRatio;
   @Nullable private EventHandler<VisibleEvent> mVisibleHandler;
@@ -1234,6 +1236,17 @@ class InternalNode implements ComponentLayout {
     return !TextUtils.isEmpty(mTransitionKey);
   }
 
+  InternalNode transitionKeyType(Transition.TransitionKeyType type) {
+    mPrivateFlags |= PFLAG_TRANSITION_KEY_TYPE_IS_SET;
+    mTransitionKeyType = type;
+    return this;
+  }
+
+  @Nullable
+  Transition.TransitionKeyType getTransitionKeyType() {
+    return mTransitionKeyType;
+  }
+
   @Nullable
   ArrayList<Transition> getTransitions() {
     return mTransitions;
@@ -1628,6 +1641,9 @@ class InternalNode implements ComponentLayout {
     if ((mPrivateFlags & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
       node.mTransitionKey = mTransitionKey;
     }
+    if ((mPrivateFlags & PFLAG_TRANSITION_KEY_TYPE_IS_SET) != 0L) {
+      node.mTransitionKeyType = mTransitionKeyType;
+    }
     if (mVisibleHeightRatio != 0) {
       node.mVisibleHeightRatio = mVisibleHeightRatio;
     }
@@ -1827,6 +1843,7 @@ class InternalNode implements ComponentLayout {
     mInvisibleHandler = null;
     mPrivateFlags = 0L;
     mTransitionKey = null;
+    mTransitionKeyType = null;
     Arrays.fill(mBorderColors, Color.TRANSPARENT);
     Arrays.fill(mBorderRadius, 0f);
     mIsPaddingPercent = null;

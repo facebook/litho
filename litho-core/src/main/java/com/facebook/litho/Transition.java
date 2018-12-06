@@ -70,6 +70,18 @@ public abstract class Transition {
       new SpringTransitionAnimator(SpringConfig.noOvershootConfig);
 
   /**
+   * The default TransitionKeyType, assigned to component and transitions when user does not specify
+   * what TransitionKeyType to use
+   */
+  static final Transition.TransitionKeyType DEFAULT_TRANSITION_KEY_TYPE =
+      Transition.TransitionKeyType.GLOBAL;
+
+  public enum TransitionKeyType {
+    GLOBAL,
+    LOCAL
+  }
+
+  /**
    * The type of a {@link ComponentTarget}.
    */
   enum ComponentTargetType {

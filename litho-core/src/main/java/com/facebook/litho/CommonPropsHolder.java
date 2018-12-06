@@ -454,6 +454,15 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return getOrCreateOtherProps().mTransitionKey;
   }
 
+  void transitionKeyType(@Nullable Transition.TransitionKeyType type) {
+    getOrCreateOtherProps().transitionKeyType(type);
+  }
+
+  @Nullable
+  public Transition.TransitionKeyType getTransitionKeyType() {
+    return getOrCreateOtherProps().mTransitionKeyType;
+  }
+
   private NodeInfo getOrCreateNodeInfo() {
     if (mNodeInfo == null) {
       mNodeInfo = NodeInfo.acquire();
@@ -543,6 +552,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     private static final long PFLAG_STATE_LIST_ANIMATOR_IS_SET = 1L << 38;
     private static final long PFLAG_STATE_LIST_ANIMATOR_RES_IS_SET = 1L << 39;
     private static final long PFLAG_VISIBILITY_CHANGED_HANDLER_IS_SET = 1L << 40;
+    private static final long PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1L << 41;
 
     private long mPrivateFlags;
 
@@ -583,6 +593,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     private float mAspectRatio;
     @Nullable private ComparableDrawable mForeground;
     @Nullable private String mTransitionKey;
+    @Nullable private Transition.TransitionKeyType mTransitionKeyType;
     @Nullable private Border mBorder;
     @Nullable private StateListAnimator mStateListAnimator;
     @DrawableRes private int mStateListAnimatorRes;
@@ -803,6 +814,11 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mTransitionKey = key;
     }
 
+    private void transitionKeyType(Transition.TransitionKeyType type) {
+      mPrivateFlags |= PFLAG_TRANSITION_KEY_TYPE_IS_SET;
+      mTransitionKeyType = type;
+    }
+
     private void stateListAnimator(StateListAnimator stateListAnimator) {
       mPrivateFlags |= PFLAG_STATE_LIST_ANIMATOR_IS_SET;
       mStateListAnimator = stateListAnimator;
@@ -849,6 +865,9 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       }
       if ((mPrivateFlags & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
         node.transitionKey(mTransitionKey);
+      }
+      if ((mPrivateFlags & PFLAG_TRANSITION_KEY_TYPE_IS_SET) != 0L) {
+        node.transitionKeyType(mTransitionKeyType);
       }
       if ((mPrivateFlags & PFLAG_VISIBLE_HEIGHT_RATIO_IS_SET) != 0L) {
         node.visibleHeightRatio(mVisibleHeightRatio);
