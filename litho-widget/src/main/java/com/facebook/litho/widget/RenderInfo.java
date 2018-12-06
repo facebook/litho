@@ -25,8 +25,6 @@ import javax.annotation.Nullable;
 
 public interface RenderInfo {
 
-  String CLIP_CHILDREN = "clip_children";
-
   boolean isSticky();
 
   int getSpanSize();

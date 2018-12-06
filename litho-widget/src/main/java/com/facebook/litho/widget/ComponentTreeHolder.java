@@ -413,8 +413,6 @@ public class ComponentTreeHolder {
   @GuardedBy("this")
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
-      final Object clipChildrenAttr = mRenderInfo.getCustomAttribute(RenderInfo.CLIP_CHILDREN);
-      final boolean clipChildren = clipChildrenAttr == null ? true : (boolean) clipChildrenAttr;
       final Object layoutDiffingEnabledAttr =
           mRenderInfo.getCustomAttribute(ComponentRenderInfo.LAYOUT_DIFFING_ENABLED);
       final ComponentTree.Builder builder =
@@ -427,7 +425,6 @@ public class ComponentTreeHolder {
           builder
               .layoutThreadHandler(mLayoutHandler)
               .stateHandler(mStateHandler)
-              .shouldClipChildren(clipChildren)
               .preAllocateMountContentHandler(mPreallocateMountContentHandler)
               .preallocateOnDefaultHandler(mCanPreallocateOnDefaultHandler)
               .shouldPreallocateMountContentPerMountSpec(mShouldPreallocatePerMountSpec)

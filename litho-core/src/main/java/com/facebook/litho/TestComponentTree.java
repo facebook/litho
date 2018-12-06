@@ -64,7 +64,6 @@ public class TestComponentTree extends ComponentTree {
         heightSpec,
         diffingEnabled,
         previousLayoutState,
-        true /* clipChildren */,
         false /* persistInternalNodeTree */,
         source,
         extraAttribution);

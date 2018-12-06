@@ -357,17 +357,6 @@ class LayoutState {
     // Otherwise, apply the padding to the bounds of the layout output.
     NodeInfo nodeInfo = node.getNodeInfo();
     if (isMountViewSpec) {
-      // LayoutState has non-default (false) value of clipChildren.
-      if (!layoutState.mClipChildren) {
-        // NodeInfo doesn't have clipChildren, so Component wasn't explicitly set with this
-        // property and it can be overridden by value from LayoutState.
-        if (nodeInfo == null) {
-          nodeInfo = NodeInfo.acquire();
-        }
-        if (!nodeInfo.isClipChildrenSet()) {
-          nodeInfo.setClipChildren(false);
-        }
-      }
       layoutOutput.setNodeInfo(nodeInfo);
       // Acquire a ViewNodeInfo, set it up and release it after passing it to the LayoutOutput.
       final ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
@@ -1312,7 +1301,6 @@ class LayoutState {
         heightSpec,
         false /* shouldGenerateDiffTree */,
         null /* previousDiffTreeRoot */,
-        true /* clipChildren */,
         false /* persistInternalNodeTree */,
         source,
         null);
@@ -1326,7 +1314,6 @@ class LayoutState {
       int heightSpec,
       boolean shouldGenerateDiffTree,
       @Nullable LayoutState previousLayoutState,
-      boolean clipChildren,
       boolean persistInternalNodeTree,
       @CalculateLayoutSource int source,
       @Nullable String extraAttribution) {
@@ -1377,7 +1364,6 @@ class LayoutState {
       layoutState.mComponent = component;
       layoutState.mWidthSpec = widthSpec;
       layoutState.mHeightSpec = heightSpec;
-      layoutState.mClipChildren = clipChildren;
       layoutState.mRootComponentName = component.getSimpleName();
 
       final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
@@ -2062,7 +2048,6 @@ class LayoutState {
       mPreviousLayoutStateId = NO_PREVIOUS_LAYOUT_STATE_ID;
 
       mShouldDuplicateParentState = true;
-      mClipChildren = true;
 
       for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
         mMountableOutputs.get(i).release();

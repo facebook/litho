@@ -885,7 +885,6 @@ public class TreeDiffingTest {
         heightSpec,
         false,
         null,
-        true /* clipChildren */,
         false /* persistInternalNodeTree */,
         LayoutState.CalculateLayoutSource.TEST,
         null);
@@ -905,7 +904,6 @@ public class TreeDiffingTest {
         heightSpec,
         true,
         previousLayoutState,
-        true /* clipChildren */,
         false /* persistInternalNodeTree */,
         LayoutState.CalculateLayoutSource.TEST,
         null);

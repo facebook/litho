@@ -146,7 +146,6 @@ public class ComponentTree {
   private @Nullable UpdateStateSyncRunnable mUpdateStateSyncRunnable;
 
   private final ComponentContext mContext;
-  private final boolean mShouldClipChildren;
   private final boolean mPersistInternalNodeTree;
 
   @Nullable private LayoutHandler mPreAllocateMountContentHandler;
@@ -270,7 +269,6 @@ public class ComponentTree {
     mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
 
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
-    mShouldClipChildren = builder.shouldClipChildren;
     mHasMounted = builder.hasMounted;
     mMeasureListener = builder.mMeasureListener;
     mSplitLayoutTag = builder.splitLayoutTag;
@@ -2079,7 +2077,6 @@ public class ComponentTree {
         heightSpec,
         diffingEnabled,
         previousLayoutState,
-        mShouldClipChildren,
         mPersistInternalNodeTree,
         source,
         extraAttribution);
@@ -2382,7 +2379,6 @@ public class ComponentTree {
     private RenderState previousRenderState;
     private boolean asyncStateUpdates = true;
     private int overrideComponentTreeId = -1;
-    private boolean shouldClipChildren = true;
     private boolean hasMounted = false;
     private MeasureListener mMeasureListener;
     private boolean shouldPreallocatePerMountSpec;
@@ -2426,7 +2422,6 @@ public class ComponentTree {
       previousRenderState = null;
       asyncStateUpdates = true;
       overrideComponentTreeId = -1;
-      shouldClipChildren = true;
       hasMounted = false;
       preAllocateMountContentHandler = null;
       splitLayoutTag = null;
@@ -2545,15 +2540,6 @@ public class ComponentTree {
      */
     public Builder overrideComponentTreeId(int overrideComponentTreeId) {
       this.overrideComponentTreeId = overrideComponentTreeId;
-      return this;
-    }
-
-    /**
-     * Specify whether the ComponentHosts created by this tree will clip their children.
-     * Default value is 'true' as in Android views.
-     */
-    public Builder shouldClipChildren(boolean shouldClipChildren) {
-      this.shouldClipChildren = shouldClipChildren;
       return this;
     }
 
