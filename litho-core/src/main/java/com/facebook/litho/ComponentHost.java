@@ -257,9 +257,9 @@ public class ComponentHost extends ViewGroup {
   void unmountDisappearingItem(MountItem disappearingItem) {
     ensureDisappearingItems();
     if (!mDisappearingItems.remove(disappearingItem)) {
-      final String key = disappearingItem.getTransitionKey();
+      final TransitionId transitionId = disappearingItem.getTransitionId();
       throw new RuntimeException(
-          "Tried to remove non-existent disappearing item, transitionKey: " + key);
+          "Tried to remove non-existent disappearing item, transitionId: " + transitionId);
     }
 
     final Object content = disappearingItem.getMountableContent();
@@ -277,16 +277,16 @@ public class ComponentHost extends ViewGroup {
   }
 
   @Nullable
-  List<String> getDisappearingItemKeys() {
+  List<TransitionId> getDisappearingItemTransitionIds() {
     if (!hasDisappearingItems()) {
       return null;
     }
-    final List<String> keys = new ArrayList<>();
+    final List<TransitionId> ids = new ArrayList<>();
     for (int i = 0, size = mDisappearingItems.size(); i < size; i++) {
-      keys.add(mDisappearingItems.get(i).getTransitionKey());
+      ids.add(mDisappearingItems.get(i).getTransitionId());
     }
 
-    return keys;
+    return ids;
   }
 
   private void maybeMoveTouchExpansionIndexes(MountItem item, int oldIndex, int newIndex) {
