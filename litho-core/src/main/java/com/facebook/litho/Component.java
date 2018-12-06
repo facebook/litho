@@ -348,6 +348,17 @@ public abstract class Component extends ComponentLifecycle
     }
   }
 
+  /**
+   * Makes a shallow copy of this component by calling {@link #makeShallowCopy()} but clears the
+   * last measured layout.
+   */
+  public Component makeShallowCopyAndClearLastMeasuredLayout() {
+    final Component component = makeShallowCopy();
+    component.mLastMeasuredLayoutThreadLocal = null;
+
+    return component;
+  }
+
   Component makeShallowCopyWithNewId() {
     final Component component = makeShallowCopy();
     component.mId = sIdGenerator.incrementAndGet();

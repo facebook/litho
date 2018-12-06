@@ -31,6 +31,8 @@ public final class Wrapper extends Component {
 
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<Builder>(2);
+  private static final String MEASURED_DELEGATE_ERROR =
+      "The purpose of Wrapper is to add other common props on the delegate component. The delegate has already computed a layout but it needs to be discarded because it could change after changing its common props. Use Wrapper#delegateAllowRemeasure if you are sure you need to set a delegate that has already been measured.";
 
   private Wrapper() {
     super("Wrapper");
@@ -105,12 +107,36 @@ public final class Wrapper extends Component {
       // The purpose of Wrapper is to add other common props on the delegate component, which means
       // that we can't reuse the cached layout because it could change.
       if (delegate != null && delegate.mLastMeasuredLayoutThreadLocal != null) {
+        ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, MEASURED_DELEGATE_ERROR);
         delegate.mLastMeasuredLayoutThreadLocal = null;
-
-        ComponentsReporter.emitMessage(
-            ComponentsReporter.LogLevel.ERROR,
-            "The purpose of Wrapper is to add other common props on the delegate component. The delegate has already computed a layout but it needs to be discarded because it could change after changing its common props.");
       }
+
+      return this;
+    }
+
+    /**
+     * YOU PROBABLY DON'T WANT TO USE THIS. If delegate has already been measured, delegate will be
+     * remeasured with the new common props. Only use this if you are sure this is what you want:
+     * measuring a component and then passing it to theWrapper as delegate to change its common
+     * props after it's been measured. This will create a new copy of delegate, throw away the
+     * information about previous measurement and measure again. In most cases this is probably not
+     * what you need and you can refactor to avoid double measurement. See {@link
+     * #delegate(Component)} for the more performant version.
+     */
+    @Deprecated
+    public Builder delegateAllowRemeasure(@Nullable Component delegate) {
+      mRequired.set(0);
+
+      if (delegate == null) {
+        return this;
+      }
+
+      if (delegate.mLastMeasuredLayoutThreadLocal == null
+          || delegate.mLastMeasuredLayoutThreadLocal.get() == null) {
+        return delegate(delegate);
+      }
+
+      this.mWrapper.delegate = delegate.makeShallowCopyAndClearLastMeasuredLayout();
 
       return this;
     }

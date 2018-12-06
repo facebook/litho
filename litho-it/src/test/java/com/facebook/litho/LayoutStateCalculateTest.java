@@ -990,7 +990,7 @@ public class LayoutStateCalculateTest {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
-                .child(Wrapper.create(c).delegate(innerComponent).widthPx(100).heightPx(100))
+                .child(Row.create(c).child(innerComponent).widthPx(100).heightPx(100))
                 .build();
           }
         };
@@ -1033,7 +1033,7 @@ public class LayoutStateCalculateTest {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
-                .child(Wrapper.create(c).delegate(innerComponent).widthPx(100).heightPx(100))
+                .child(Row.create(c).child(innerComponent).widthPx(100).heightPx(100))
                 .build();
           }
         };
@@ -1116,9 +1116,7 @@ public class LayoutStateCalculateTest {
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
-            return create(c)
-                .child(Wrapper.create(c).delegate(innerComponent).flexShrink(0))
-                .build();
+            return create(c).child(Row.create(c).child(innerComponent).flexShrink(0)).build();
           }
         };
 
