@@ -3105,23 +3105,23 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     Transition.RootBoundsTransition rootWidthTransition = new Transition.RootBoundsTransition();
     Transition.RootBoundsTransition rootHeightTransition = new Transition.RootBoundsTransition();
 
-    final String rootTransitionKey = layoutState.getRootTransitionKey();
+    final TransitionId rootTransitionId = layoutState.getRootTransitionId();
 
-    if (!TextUtils.isEmpty(rootTransitionKey)) {
+    if (rootTransitionId != null) {
       for (int i = 0, size = allTransitions.size(); i < size; i++) {
         final Transition transition = allTransitions.get(i);
         if (transition == null) {
           throw new IllegalStateException(
               "NULL_TRANSITION when collecting root bounds anim. Root: "
                   + layoutState.mRootComponentName
-                  + ", rootKey: "
-                  + rootTransitionKey);
+                  + ", rootId: "
+                  + rootTransitionId);
         }
         TransitionUtils.collectRootBoundsTransitions(
-            rootTransitionKey, transition, AnimatedProperties.WIDTH, rootWidthTransition);
+            rootTransitionId, transition, AnimatedProperties.WIDTH, rootWidthTransition);
 
         TransitionUtils.collectRootBoundsTransitions(
-            rootTransitionKey, transition, AnimatedProperties.HEIGHT, rootHeightTransition);
+            rootTransitionId, transition, AnimatedProperties.HEIGHT, rootHeightTransition);
       }
     }
 

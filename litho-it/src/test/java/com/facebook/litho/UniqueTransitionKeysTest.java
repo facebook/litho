@@ -67,13 +67,14 @@ public class UniqueTransitionKeysTest {
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             LayoutState.CalculateLayoutSource.TEST);
-    layoutState.getTransitionKeyMapping();
+    layoutState.getTransitionIdMapping();
   }
 
   @Test
   public void testThrowIfSameTransitionKeyAppearsMultipleTimes() {
     mExpectedException.expect(RuntimeException.class);
-    mExpectedException.expectMessage("The transitionKey 'test' is defined multiple times");
+    mExpectedException.expectMessage(
+        "The transitionId 'TransitionId{\"test\", GLOBAL}' is defined multiple times in the same layout.");
 
     ComponentContext c = new ComponentContext(application);
     LayoutState layoutState =
@@ -84,6 +85,6 @@ public class UniqueTransitionKeysTest {
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             LayoutState.CalculateLayoutSource.TEST);
-    assertThat(layoutState.getTransitionKeyMapping()).isNotNull();
+    assertThat(layoutState.getTransitionIdMapping()).isNotNull();
   }
 }

@@ -33,16 +33,18 @@ public class TransitionTest {
   public void testCollectRootBoundsTransitions() {
     Transition transition = Transition.create("rootKey").animate(AnimatedProperties.WIDTH);
 
+    TransitionId rootTransitionId = new TransitionId(TransitionId.Type.GLOBAL, "rootKey", null);
+
     Transition.RootBoundsTransition rootWidthTransition = new Transition.RootBoundsTransition();
     TransitionUtils.collectRootBoundsTransitions(
-        "rootKey", transition, AnimatedProperties.WIDTH, rootWidthTransition);
+        rootTransitionId, transition, AnimatedProperties.WIDTH, rootWidthTransition);
 
     assertThat(rootWidthTransition.hasTransition).isTrue();
     assertThat(rootWidthTransition.appearTransition).isNull();
 
     Transition.RootBoundsTransition rootHeightTransition = new Transition.RootBoundsTransition();
     TransitionUtils.collectRootBoundsTransitions(
-        "rootKey", transition, AnimatedProperties.HEIGHT, rootHeightTransition);
+        rootTransitionId, transition, AnimatedProperties.HEIGHT, rootHeightTransition);
 
     assertThat(rootHeightTransition.hasTransition).isFalse();
   }
@@ -55,9 +57,11 @@ public class TransitionTest {
             Transition.create("rootKey").animate(AnimatedProperties.HEIGHT).appearFrom(10),
             Transition.create("otherkey").animate(AnimatedProperties.ALPHA));
 
+    TransitionId rootTransitionId = new TransitionId(TransitionId.Type.GLOBAL, "rootKey", null);
+
     Transition.RootBoundsTransition rootHeightTransition = new Transition.RootBoundsTransition();
     TransitionUtils.collectRootBoundsTransitions(
-        "rootKey", transition, AnimatedProperties.HEIGHT, rootHeightTransition);
+        rootTransitionId, transition, AnimatedProperties.HEIGHT, rootHeightTransition);
 
     assertThat(rootHeightTransition.hasTransition).isTrue();
     assertThat(rootHeightTransition.appearTransition).isNotNull();
@@ -71,9 +75,11 @@ public class TransitionTest {
             Transition.allLayout(),
             Transition.create("otherkey").animate(AnimatedProperties.ALPHA));
 
+    TransitionId rootTransitionId = new TransitionId(TransitionId.Type.GLOBAL, "rootKey", null);
+
     Transition.RootBoundsTransition rootHeightTransition = new Transition.RootBoundsTransition();
     TransitionUtils.collectRootBoundsTransitions(
-        "rootKey", transition, AnimatedProperties.HEIGHT, rootHeightTransition);
+        rootTransitionId, transition, AnimatedProperties.HEIGHT, rootHeightTransition);
 
     assertThat(rootHeightTransition.hasTransition).isTrue();
     assertThat(rootHeightTransition.appearTransition).isNotNull();
@@ -84,9 +90,11 @@ public class TransitionTest {
     Transition transition =
         Transition.create("rootKey").animate(AnimatedProperties.HEIGHT).appearFrom(10);
 
+    TransitionId rootTransitionId = new TransitionId(TransitionId.Type.GLOBAL, "rootKey", null);
+
     Transition.RootBoundsTransition rootHeightTransition = new Transition.RootBoundsTransition();
     TransitionUtils.collectRootBoundsTransitions(
-        "rootKey", transition, AnimatedProperties.HEIGHT, rootHeightTransition);
+        rootTransitionId, transition, AnimatedProperties.HEIGHT, rootHeightTransition);
 
     assertThat(rootHeightTransition.hasTransition).isTrue();
     assertThat(rootHeightTransition.appearTransition).isNotNull();
@@ -111,9 +119,11 @@ public class TransitionTest {
             .animate(AnimatedProperties.HEIGHT)
             .appearFrom(DimensionValue.heightPercentageOffset(50));
 
+    TransitionId rootTransitionId = new TransitionId(TransitionId.Type.GLOBAL, "rootKey", null);
+
     Transition.RootBoundsTransition rootHeightTransition = new Transition.RootBoundsTransition();
     TransitionUtils.collectRootBoundsTransitions(
-        "rootKey", transition, AnimatedProperties.HEIGHT, rootHeightTransition);
+        rootTransitionId, transition, AnimatedProperties.HEIGHT, rootHeightTransition);
 
     assertThat(rootHeightTransition.hasTransition).isTrue();
     assertThat(rootHeightTransition.appearTransition).isNotNull();

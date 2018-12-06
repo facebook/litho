@@ -32,7 +32,7 @@ class TransitionUtils {
    * defined.
    */
   static void collectRootBoundsTransitions(
-      String rootTransitionKey,
+      TransitionId rootTransitionId,
       Transition transition,
       AnimatedProperty property,
       Transition.RootBoundsTransition outRootBoundsTransition) {
@@ -40,11 +40,11 @@ class TransitionUtils {
       ArrayList<Transition> children = ((TransitionSet) transition).getChildren();
       for (int i = 0, size = children.size(); i < size; i++) {
         collectRootBoundsTransitions(
-            rootTransitionKey, children.get(i), property, outRootBoundsTransition);
+            rootTransitionId, children.get(i), property, outRootBoundsTransition);
       }
     } else if (transition instanceof Transition.TransitionUnit) {
       final Transition.TransitionUnit transitionUnit = (Transition.TransitionUnit) transition;
-      if (transitionUnit.targetsKey(rootTransitionKey)
+      if (transitionUnit.targetsKey(rootTransitionId.mReference)
           && transitionUnit.targetsProperty(property)) {
         outRootBoundsTransition.hasTransition = true;
         if (transitionUnit.hasAppearAnimation()) {
@@ -57,7 +57,7 @@ class TransitionUtils {
       ArrayList<Transition.TransitionUnit> units = builder.getTransitionUnits();
       for (int i = 0, size = units.size(); i < size; i++) {
         collectRootBoundsTransitions(
-            rootTransitionKey, units.get(i), property, outRootBoundsTransition);
+            rootTransitionId, units.get(i), property, outRootBoundsTransition);
       }
     } else {
       throw new RuntimeException("Unhandled transition type: " + transition);

@@ -505,7 +505,7 @@ public class ComponentTree {
     assertMainThread();
 
     final LayoutState layoutState = mMainThreadLayoutState;
-    if (layoutState == null || layoutState.getRootTransitionKey() == null) {
+    if (layoutState == null || layoutState.getRootTransitionId() == null) {
       return;
     }
 

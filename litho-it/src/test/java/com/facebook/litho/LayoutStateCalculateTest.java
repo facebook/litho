@@ -2748,6 +2748,8 @@ public class LayoutStateCalculateTest {
           }
         };
 
+    final TransitionId transitionId =
+        new TransitionId(TransitionId.Type.GLOBAL, transitionKey, null);
     final LayoutState layoutState =
         calculateLayoutState(
             RuntimeEnvironment.application,
@@ -2759,7 +2761,7 @@ public class LayoutStateCalculateTest {
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
     final LayoutOutput outputWithTransitionKey =
-        layoutState.getLayoutOutputsForTransitionKey(transitionKey).get(OutputUnitType.HOST);
+        layoutState.getLayoutOutputsForTransitionId(transitionId).get(OutputUnitType.HOST);
     assertThat((outputWithTransitionKey.getFlags() & MountItem.LAYOUT_FLAG_PHANTOM) != 0).isTrue();
 
     ComponentsConfiguration.createPhantomLayoutOutputsForTransitions = false;
