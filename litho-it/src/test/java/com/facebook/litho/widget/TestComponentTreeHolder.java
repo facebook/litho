@@ -37,20 +37,11 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   int mChildHeight;
   boolean mCheckWorkingRangeCalled;
   LayoutHandler mLayoutHandler;
-  Object mUnlockInComputeLayout;
-  Object mWaitOnLockToFinishLayout;
   private int mLastRequestedWidthSpec;
   private int mLastRequestedHeightSpec;
 
   TestComponentTreeHolder(RenderInfo renderInfo) {
     mRenderInfo = renderInfo;
-  }
-
-  TestComponentTreeHolder(
-      RenderInfo renderInfo, Object waitOnLockToFinishLayout, Object unlockInComputeLayout) {
-    mRenderInfo = renderInfo;
-    mUnlockInComputeLayout = unlockInComputeLayout;
-    mWaitOnLockToFinishLayout = waitOnLockToFinishLayout;
   }
 
   @Override
@@ -77,21 +68,6 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   @Override
   public synchronized void computeLayoutAsync(
       ComponentContext context, int widthSpec, int heightSpec) {
-    if (mUnlockInComputeLayout != null) {
-      synchronized (mUnlockInComputeLayout) {
-        mUnlockInComputeLayout.notify();
-      }
-    }
-
-    if (mWaitOnLockToFinishLayout != null) {
-      synchronized (mWaitOnLockToFinishLayout) {
-        try {
-          mWaitOnLockToFinishLayout.wait();
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
-      }
-    }
 
     mComponentTree = mock(ComponentTree.class);
     mTreeValid = true;
@@ -105,22 +81,6 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   @Override
   public void computeLayoutSync(
       ComponentContext context, int widthSpec, int heightSpec, Size size) {
-    if (mUnlockInComputeLayout != null) {
-      synchronized (mUnlockInComputeLayout) {
-        mUnlockInComputeLayout.notify();
-      }
-    }
-
-    if (mWaitOnLockToFinishLayout != null) {
-      synchronized (mWaitOnLockToFinishLayout) {
-        try {
-          mWaitOnLockToFinishLayout.wait();
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-
     mComponentTree = mock(ComponentTree.class);
     mTreeValid = true;
     mLastRequestedWidthSpec = widthSpec;

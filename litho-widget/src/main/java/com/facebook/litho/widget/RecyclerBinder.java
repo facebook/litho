@@ -235,7 +235,7 @@ public class RecyclerBinder
   @VisibleForTesting int mCurrentLastVisiblePosition = RecyclerView.NO_POSITION;
   private int mCurrentOffset;
   private SmoothScrollAlignmentType mSmoothScrollAlignmentType;
-  private @Nullable RangeCalculationResult mRange;
+  private @Nullable volatile RangeCalculationResult mRange;
   private StickyHeaderController mStickyHeaderController;
   private final boolean mCanPrefetchDisplayLists;
   private final boolean mCanCacheDrawingDisplayLists;
@@ -1664,6 +1664,11 @@ public class RecyclerBinder
     return mComponentTreeHolders.get(position);
   }
 
+  @VisibleForTesting
+  final synchronized List<ComponentTreeHolder> getComponentTreeHolders() {
+    return mComponentTreeHolders;
+  }
+
   private static void assertNotNullRenderInfo(RenderInfo renderInfo) {
     if (renderInfo == null) {
       throw new RuntimeException("Received null RenderInfo to insert/update!");
@@ -2065,17 +2070,58 @@ public class RecyclerBinder
   @GuardedBy("this")
   private void maybeScheduleAsyncLayoutsDuringInitRange(
       final ComponentAsyncInitRangeIterator asyncRangeIterator) {
-    if (!mAsyncInitRange || mComponentTreeHolders == null || mComponentTreeHolders.isEmpty()) {
+    if (!asyncInitRangeEnabled()
+        || mComponentTreeHolders == null
+        || mComponentTreeHolders.isEmpty()) {
       // checked null for tests
       return;
     }
 
-    while (asyncRangeIterator.hasNext()) {
-      final ComponentTreeHolder nextHolder = asyncRangeIterator.next();
-      final int childWidthSpec = getActualChildrenWidthSpec(nextHolder);
-      final int childHeightSpec = getActualChildrenHeightSpec(nextHolder);
+    int numItemsToSchedule = mThreadPoolConfig == null ? 1 : mThreadPoolConfig.getCorePoolSize();
+
+    for (int i = 0; i < numItemsToSchedule; i++) {
+      maybeScheduleOneAsyncLayoutDuringInitRange(asyncRangeIterator);
+    }
+  }
+
+  private void maybeScheduleOneAsyncLayoutDuringInitRange(
+      final ComponentAsyncInitRangeIterator asyncRangeIterator) {
+    final ComponentTreeHolder nextHolder = asyncRangeIterator.next();
+
+    if (!asyncInitRangeEnabled()
+        || mComponentTreeHolders == null
+        || mComponentTreeHolders.isEmpty()
+        || nextHolder == null
+        || mRange != null) {
+      // checked null for tests
+      return;
+    }
+
+    final int childWidthSpec = getActualChildrenWidthSpec(nextHolder);
+    final int childHeightSpec = getActualChildrenHeightSpec(nextHolder);
+    if (nextHolder.isTreeValidForSizeSpecs(childWidthSpec, childHeightSpec)) {
+      return;
+    }
+
+    if (mBgScheduleAllInitRange) {
+      final MeasureListener measureListener =
+          new ComponentTree.MeasureListener() {
+            @Override
+            public void onSetRootAndSizeSpec(int w, int h) {
+              maybeScheduleOneAsyncLayoutDuringInitRange(asyncRangeIterator);
+              nextHolder.updateMeasureListener(null);
+            }
+          };
+
+      nextHolder.computeLayoutAsync(
+          mComponentContext, childWidthSpec, childHeightSpec, measureListener);
+    } else {
       nextHolder.computeLayoutAsync(mComponentContext, childWidthSpec, childHeightSpec);
     }
+  }
+
+  private boolean asyncInitRangeEnabled() {
+    return mAsyncInitRange || mBgScheduleAllInitRange;
   }
 
   @VisibleForTesting
@@ -2088,14 +2134,18 @@ public class RecyclerBinder
   void initRange(
       int width, int height, ComponentTreeHolderRangeInfo holderRangeInfo, int scrollDirection) {
 
-    final ComponentAsyncInitRangeIterator asyncInitRangeIterator =
-        new ComponentAsyncInitRangeIterator(
-            holderRangeInfo.mHolders,
-            holderRangeInfo.mPosition,
-            mThreadPoolConfig == null ? 1 : mThreadPoolConfig.getCorePoolSize(),
-            mTraverseLayoutBackwards);
+    if (asyncInitRangeEnabled()) {
+      // We can schedule a maximum of number of items minus one (which is being calculated
+      // synchronously) to run at the same time as the sync layout.
+      final ComponentAsyncInitRangeIterator asyncInitRangeIterator =
+          new ComponentAsyncInitRangeIterator(
+              holderRangeInfo.mHolders,
+              holderRangeInfo.mPosition,
+              mComponentTreeHolders.size() - 1,
+              mTraverseLayoutBackwards);
 
-    maybeScheduleAsyncLayoutsDuringInitRange(asyncInitRangeIterator);
+      maybeScheduleAsyncLayoutsDuringInitRange(asyncInitRangeIterator);
+    }
 
     final ComponentTreeHolder holder = holderRangeInfo.mHolders.get(holderRangeInfo.mPosition);
     final int childWidthSpec = getActualChildrenWidthSpec(holder);
@@ -3069,11 +3119,13 @@ public class RecyclerBinder
     return sThreadPoolHandler;
   }
 
-  private static class ComponentTreeHolderRangeInfo {
+  @VisibleForTesting
+  static class ComponentTreeHolderRangeInfo {
     private final int mPosition;
     private final List<ComponentTreeHolder> mHolders;
 
-    private ComponentTreeHolderRangeInfo(int position, List<ComponentTreeHolder> holders) {
+    @VisibleForTesting
+    ComponentTreeHolderRangeInfo(int position, List<ComponentTreeHolder> holders) {
       mPosition = position;
       mHolders = holders;
     }
@@ -3118,7 +3170,11 @@ public class RecyclerBinder
     }
 
     @Override
-    public ComponentTreeHolder next() {
+    public synchronized ComponentTreeHolder next() {
+      if (!hasNext()) {
+        return null;
+      }
+
       final ComponentTreeHolder holder = mHolders.get(mCurrentPosition);
       shiftToNextPosition();
       mNumberOfItemsToProcess--;

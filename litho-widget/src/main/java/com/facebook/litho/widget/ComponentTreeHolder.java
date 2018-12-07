@@ -266,6 +266,14 @@ public class ComponentTreeHolder {
   }
 
   public void computeLayoutAsync(ComponentContext context, int widthSpec, int heightSpec) {
+    computeLayoutAsync(context, widthSpec, heightSpec, null);
+  }
+
+  public void computeLayoutAsync(
+      ComponentContext context,
+      int widthSpec,
+      int heightSpec,
+      @Nullable MeasureListener measureListener) {
 
     final ComponentTree componentTree;
     final Component component;
@@ -291,12 +299,22 @@ public class ComponentTreeHolder {
               : null;
     }
 
+    if (measureListener != null) {
+      componentTree.updateMeasureListener(measureListener);
+    }
+
     componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec, treeProps);
 
     synchronized (this) {
       if (mComponentTree == componentTree && component == mRenderInfo.getComponent()) {
         mIsTreeValid = true;
       }
+    }
+  }
+
+  public synchronized void updateMeasureListener(@Nullable MeasureListener measureListener) {
+    if (mComponentTree != null) {
+      mComponentTree.updateMeasureListener(measureListener);
     }
   }
 
@@ -381,12 +399,6 @@ public class ComponentTreeHolder {
 
   public boolean isReleased() {
     return mIsReleased.get();
-  }
-
-  public synchronized void updateMeasureListener(@Nullable MeasureListener measureListener) {
-    if (mComponentTree != null) {
-      mComponentTree.updateMeasureListener(measureListener);
-    }
   }
 
   public synchronized void release() {

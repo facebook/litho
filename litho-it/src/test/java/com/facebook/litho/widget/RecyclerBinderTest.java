@@ -57,6 +57,7 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
+import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -147,6 +148,7 @@ public class RecyclerBinderTest {
     mHoldersForComponents.clear();
 
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponentContext.getAndroidContext().setTheme(0);
 
     final RecyclerBinder.ComponentTreeHolderFactory componentTreeHolderFactory =
         new RecyclerBinder.ComponentTreeHolderFactory() {
@@ -751,28 +753,28 @@ public class RecyclerBinderTest {
     verify(recyclerView).postOnAnimation(mRecyclerBinder.mRemeasureRunnable);
   }
 
-    @Test
-    public void testDoesntRequestRemeasure() {
-      final Size size = new Size();
-      final int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
-      final int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
-      final RecyclerView recyclerView = mock(RecyclerView.class);
+  @Test
+  public void testDoesntRequestRemeasure() {
+    final Size size = new Size();
+    final int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+    final int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+    final RecyclerView recyclerView = mock(RecyclerView.class);
 
-      mRecyclerBinder.mount(recyclerView);
-      mRecyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    mRecyclerBinder.mount(recyclerView);
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
 
     assertThat(200).isEqualTo(size.width);
 
-      final List<ComponentRenderInfo> components = new ArrayList<>();
-      for (int i = 0; i < 100; i++) {
-        components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
-        mRecyclerBinder.insertItemAt(i, components.get(i));
-      }
+    final List<ComponentRenderInfo> components = new ArrayList<>();
+    for (int i = 0; i < 100; i++) {
+      components.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
+      mRecyclerBinder.insertItemAt(i, components.get(i));
+    }
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     verify(recyclerView, never()).removeCallbacks(mRecyclerBinder.mRemeasureRunnable);
     verify(recyclerView, never()).postOnAnimation(mRecyclerBinder.mRemeasureRunnable);
-    }
+  }
 
   @Test
   public void testRangeBiggerThanContent() {
@@ -4045,7 +4047,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.mDataRenderedCallbacks).isEmpty();
   }
 
-  // Async init range tests
+  // Async init range tests.
   @Test
   public void testInitRangeAsync() {
     RecyclerBinder recyclerBinder =
@@ -4099,70 +4101,84 @@ public class RecyclerBinderTest {
 
   @Test
   public void testInitRangeAsyncThreadPool() {
-    final Object lockInitRange = new Object();
-    final Object lockCheckAsync = new Object();
+    final CountDownLatch lockRangeIsNotNull = new CountDownLatch(1);
+    final CountDownLatch lockInitRangeFinishes1 = new CountDownLatch(1);
+    final CountDownLatch lockInitRangeFinishes2 = new CountDownLatch(1);
+    final CountDownLatch lockTest = new CountDownLatch(2);
 
-    final RecyclerBinder.ComponentTreeHolderFactory componentTreeHolderFactory =
-        new RecyclerBinder.ComponentTreeHolderFactory() {
-          @Override
-          public ComponentTreeHolder create(
-              RenderInfo renderInfo,
-              LayoutHandler layoutHandler,
-              boolean canPrefetchDisplayLists,
-              boolean canCacheDrawingDisplayLists,
-              boolean useSharedLayoutStateFuture,
-              ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
-              String splitLayoutTag) {
-            TestComponentTreeHolder holder =
-                (boolean) renderInfo.getCustomAttribute("needsLock")
-                    ? new TestComponentTreeHolder(renderInfo, lockInitRange, lockCheckAsync)
-                    : new TestComponentTreeHolder(renderInfo);
-            if (renderInfo.rendersComponent()) {
-              mHoldersForComponents.put(renderInfo.getComponent(), holder);
-              holder.mLayoutHandler = layoutHandler;
-            }
-
-            return holder;
-          }
-        };
+    when(mLayoutInfo.getChildHeightSpec(anyInt(), any(RenderInfo.class)))
+        .thenReturn(SizeSpec.makeSizeSpec(0, SizeSpec.EXACTLY));
+    when(mLayoutInfo.getChildWidthSpec(anyInt(), any(RenderInfo.class)))
+        .thenReturn(SizeSpec.makeSizeSpec(0, SizeSpec.EXACTLY));
+    when(mLayoutInfo.approximateRangeSize(anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(0);
 
     final RecyclerBinder recyclerBinder =
-        mRecyclerBinderForAsyncInitRangeBuilder
-            .rangeRatio(2)
-            .componentTreeHolderFactory(componentTreeHolderFactory)
-            .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(3, 3, 5))
+        new RecyclerBinder.Builder()
+            .asyncInitRange(true)
+            .rangeRatio(0)
+            .layoutInfo(mLayoutInfo)
+            .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(2, 2, 5))
             .build(mComponentContext);
 
     final List<RenderInfo> components = new ArrayList<>();
+    int NOT_SET = -1;
+    final int SYNC = 1;
+    final int ASYNC = 2;
+    final List<Integer> syncLayouts = new ArrayList<>(30);
+    for (int i = 0; i < 30; i++) {
+      syncLayouts.add(NOT_SET);
+    }
 
     final Component initRangeComponent =
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
-            return TestDrawableComponent.create(c).widthPx(100).heightPx(10).build();
+            syncLayouts.set(0, ThreadUtils.isMainThread() ? SYNC : ASYNC);
+            lockRangeIsNotNull.countDown();
+            return null;
           }
         };
 
     RenderInfo renderInfo =
         ComponentRenderInfo.create()
             .component(initRangeComponent)
-            .customAttribute("needsLock", true)
             .build();
     components.add(renderInfo);
 
     for (int i = 1; i < 30; i++) {
+      final int finalI = i;
       final Component component =
           new InlineLayoutSpec() {
             @Override
             protected Component onCreateLayout(ComponentContext c) {
-              return TestDrawableComponent.create(c).widthPx(100).heightPx(10).build();
+              syncLayouts.set(finalI, ThreadUtils.isMainThread() ? SYNC : ASYNC);
+
+              if (finalI == 1) {
+                try {
+                  lockInitRangeFinishes1.await(5, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                  e.printStackTrace();
+                }
+
+                lockTest.countDown();
+              }
+
+              if (finalI == 2) {
+                try {
+                  lockInitRangeFinishes2.await(5, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                  e.printStackTrace();
+                }
+
+                lockTest.countDown();
+              }
+              return null;
             }
           };
 
       renderInfo =
           ComponentRenderInfo.create()
               .component(component)
-              .customAttribute("needsLock", false)
               .build();
       components.add(renderInfo);
     }
@@ -4172,51 +4188,155 @@ public class RecyclerBinderTest {
     recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     for (int i = 0; i < 30; i++) {
-      assertThat(mHoldersForComponents.get(components.get(i).getComponent())).isNotNull();
+      final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
+      assertThat(holder).isNotNull();
     }
 
-    final Size size = new Size();
     final int widthSpec = makeSizeSpec(100, AT_MOST);
     final int heightSpec = makeSizeSpec(100, EXACTLY);
 
-    Thread thread =
-        new Thread(
-            new Runnable() {
-              @Override
-              public void run() {
-                recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
-                assertThat(
-                        mHoldersForComponents.get(components.get(0).getComponent())
-                            .mLayoutSyncCalled)
-                    .isTrue();
-              }
-            });
+    recyclerBinder.initRange(
+        SizeSpec.getSize(widthSpec),
+        SizeSpec.getSize(heightSpec),
+        new RecyclerBinder.ComponentTreeHolderRangeInfo(
+            0, recyclerBinder.getComponentTreeHolders()),
+        OrientationHelper.VERTICAL);
 
-    thread.start();
-
-    synchronized (lockCheckAsync) {
-      try {
-        lockCheckAsync.wait();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+    try {
+      lockRangeIsNotNull.await(5, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
 
-    assertThat(mHoldersForComponents.get(components.get(0).getComponent()).mLayoutSyncCalled)
-        .isFalse();
-    assertThat(mHoldersForComponents.get(components.get(1).getComponent()).mLayoutAsyncCalled)
-        .isTrue();
-    assertThat(mHoldersForComponents.get(components.get(2).getComponent()).mLayoutAsyncCalled)
-        .isTrue();
-    assertThat(mHoldersForComponents.get(components.get(3).getComponent()).mLayoutAsyncCalled)
-        .isTrue();
-    assertThat(mHoldersForComponents.get(components.get(4).getComponent()).mLayoutAsyncCalled)
-        .isFalse();
+    lockInitRangeFinishes1.countDown();
+    lockInitRangeFinishes2.countDown();
 
-    synchronized (lockInitRange) {
-      lockInitRange.notify();
+    try {
+      lockTest.await(5, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
+
+    assertThat(recyclerBinder.getComponentTreeHolderAt(0).isTreeValid()).isTrue();
+    assertThat(syncLayouts.get(0)).isEqualTo(SYNC);
+
+    assertThat(recyclerBinder.getComponentTreeHolderAt(1).isTreeValid()).isTrue();
+    assertThat(syncLayouts.get(1)).isEqualTo(ASYNC);
+
+    assertThat(recyclerBinder.getComponentTreeHolderAt(2).isTreeValid()).isTrue();
+    assertThat(syncLayouts.get(2)).isEqualTo(ASYNC);
+
+    assertThat(recyclerBinder.getComponentTreeHolderAt(3).isTreeValid()).isFalse();
+    assertThat(syncLayouts.get(3)).isEqualTo(NOT_SET);
   }
+
+  @Test
+  public void testInitRangeAsyncFirstLayoutIsLongSchedMany() {
+    final CountDownLatch lockInitRangeLayout = new CountDownLatch(1);
+    final CountDownLatch lockTest = new CountDownLatch(2);
+
+    when(mLayoutInfo.getChildHeightSpec(anyInt(), any(RenderInfo.class)))
+        .thenReturn(SizeSpec.makeSizeSpec(0, SizeSpec.EXACTLY));
+    when(mLayoutInfo.getChildWidthSpec(anyInt(), any(RenderInfo.class)))
+        .thenReturn(SizeSpec.makeSizeSpec(0, SizeSpec.EXACTLY));
+    when(mLayoutInfo.approximateRangeSize(anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(0);
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .bgScheduleAllInitRange(true)
+            .rangeRatio(0)
+            .layoutInfo(mLayoutInfo)
+            .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(1, 1, 5))
+            .build(mComponentContext);
+
+    final List<RenderInfo> components = new ArrayList<>();
+    int NOT_SET = -1;
+    final int SYNC = 1;
+    final int ASYNC = 2;
+    final List<Integer> syncLayouts = new ArrayList<>(30);
+    for (int i = 0; i < 30; i++) {
+      syncLayouts.add(NOT_SET);
+    }
+
+    final Component initRangeComponent =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            try {
+              lockInitRangeLayout.await(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
+
+            syncLayouts.set(0, ThreadUtils.isMainThread() ? SYNC : ASYNC);
+            lockTest.countDown();
+            return null;
+          }
+        };
+
+    RenderInfo renderInfo = ComponentRenderInfo.create().component(initRangeComponent).build();
+    components.add(renderInfo);
+
+    for (int i = 1; i < 30; i++) {
+      final int finalI = i;
+      final Component component =
+          new InlineLayoutSpec() {
+            @Override
+            protected Component onCreateLayout(ComponentContext c) {
+              syncLayouts.set(finalI, ThreadUtils.isMainThread() ? SYNC : ASYNC);
+
+              if (finalI == 1) {
+                lockInitRangeLayout.countDown();
+              }
+
+              if (finalI == 2) {
+                lockTest.countDown();
+              }
+
+              return null;
+            }
+          };
+
+      renderInfo = ComponentRenderInfo.create().component(component).build();
+      components.add(renderInfo);
+    }
+
+    recyclerBinder.insertRangeAt(0, components);
+
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    for (int i = 0; i < 30; i++) {
+      final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
+      assertThat(holder).isNotNull();
+    }
+
+    final int widthSpec = makeSizeSpec(100, AT_MOST);
+    final int heightSpec = makeSizeSpec(100, EXACTLY);
+
+    recyclerBinder.initRange(
+        SizeSpec.getSize(widthSpec),
+        SizeSpec.getSize(heightSpec),
+        new RecyclerBinder.ComponentTreeHolderRangeInfo(
+            0, recyclerBinder.getComponentTreeHolders()),
+        OrientationHelper.VERTICAL);
+
+    try {
+      lockTest.await(5, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    assertThat(recyclerBinder.getComponentTreeHolderAt(0).isTreeValid()).isTrue();
+    assertThat(syncLayouts.get(0)).isEqualTo(SYNC);
+
+    assertThat(recyclerBinder.getComponentTreeHolderAt(1).isTreeValid()).isTrue();
+    assertThat(syncLayouts.get(1)).isEqualTo(ASYNC);
+
+    assertThat(recyclerBinder.getComponentTreeHolderAt(2).isTreeValid()).isTrue();
+    assertThat(syncLayouts.get(2)).isEqualTo(ASYNC);
+  }
+
+
 
   @Test
   public void testDataRenderedCallbacksAreNotTriggered() {
