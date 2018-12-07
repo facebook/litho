@@ -348,17 +348,6 @@ public abstract class Component extends ComponentLifecycle
     }
   }
 
-  /**
-   * Makes a shallow copy of this component by calling {@link #makeShallowCopy()} but clears the
-   * last measured layout.
-   */
-  public Component makeShallowCopyAndClearLastMeasuredLayout() {
-    final Component component = makeShallowCopy();
-    component.mLastMeasuredLayoutThreadLocal = null;
-
-    return component;
-  }
-
   Component makeShallowCopyWithNewId() {
     final Component component = makeShallowCopy();
     component.mId = sIdGenerator.incrementAndGet();
@@ -374,8 +363,11 @@ public abstract class Component extends ComponentLifecycle
     return hasCachedLayout() ? mLastMeasuredLayoutThreadLocal.get() : null;
   }
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  protected void releaseCachedLayout() {
+  /**
+   * Only use if absolutely needed! This removes the cached layout so this component will be
+   * remeasured even if it has alread been measured with the same size specs.
+   */
+  public void releaseCachedLayout() {
     if (hasCachedLayout()) {
       LayoutState.releaseNodeTree(mLastMeasuredLayoutThreadLocal.get(), true /* isNestedTree */);
       clearCachedLayout();
