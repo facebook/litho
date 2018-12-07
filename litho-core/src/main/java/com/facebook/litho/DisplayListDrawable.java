@@ -47,6 +47,7 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback, Touchab
   private static Paint sDebugBorderPaint;
 
   private Drawable mDrawable;
+  private boolean mTouchable;
   private @Nullable String mName;
   private @Nullable DisplayList mDisplayList;
   private boolean mIgnoreInvalidations;
@@ -354,6 +355,8 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback, Touchab
     mDrawable = drawable;
     mDrawable.setCallback(this);
 
+    mTouchable = mDrawable instanceof Touchable;
+
     // DL needs to be re-created
     invalidateDL();
 
@@ -378,7 +381,7 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback, Touchab
 
   @Override
   public boolean onTouchEvent(MotionEvent event, View host) {
-    return (mDrawable instanceof Touchable) && ((Touchable) mDrawable).onTouchEvent(event, host);
+    return mTouchable && ((Touchable) mDrawable).onTouchEvent(event, host);
   }
 
   public void release() {
@@ -388,6 +391,7 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback, Touchab
     mDoNotAttemptDLDrawing = false;
     mDrawable.setCallback(null);
     mDrawable = null;
+    mTouchable = false;
     mName = null;
     mDisplayList = null;
   }
