@@ -176,8 +176,17 @@ public class ComponentsConfiguration {
   /** Whether we should use the PlaceholderComponent instead of Column as MountSpec holder. */
   public static boolean usePlaceholderComponent = false;
 
-  /** If true, the async range calculation isn't blocked on the first item finishing layout */
+  /**
+   * If true, the async range calculation isn't blocked on the first item finishing layout and it
+   * will schedule one layout per bg thread during init range.
+   */
   public static boolean asyncInitRange = false;
+
+  /**
+   * If true, the async range calculation isn't blocked on the first item finishing layout and it
+   * will schedule as many bg layouts as it can while init range completes.
+   */
+  public static boolean bgScheduleAllInitRange;
 
   /**
    * If true, a layout for the same ComponentTree will be calculated on a single thread at the same

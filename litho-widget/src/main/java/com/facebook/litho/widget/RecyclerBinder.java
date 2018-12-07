@@ -113,6 +113,7 @@ public class RecyclerBinder
   private final AtomicBoolean mIsMeasured = new AtomicBoolean(false);
   private final AtomicBoolean mRequiresRemeasure = new AtomicBoolean(false);
   private final boolean mEnableStableIds;
+  private final boolean mBgScheduleAllInitRange;
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
@@ -385,6 +386,7 @@ public class RecyclerBinder
     private RecyclerRangeTraverser recyclerRangeTraverser;
     private LayoutThreadPoolConfiguration threadPoolConfig;
     private boolean asyncInitRange = ComponentsConfiguration.asyncInitRange;
+    private boolean bgScheduleAllInitRange = ComponentsConfiguration.bgScheduleAllInitRange;
     private boolean canMeasure;
     private boolean hscrollAsyncMode = false;
     private boolean singleThreadPool = ComponentsConfiguration.useSingleThreadPool;
@@ -564,9 +566,21 @@ public class RecyclerBinder
       return this;
     }
 
-    /** If true, the async range calculation isn't blocked on the first item finishing layout */
+    /**
+     * If true, the async range calculation isn't blocked on the first item finishing layout.
+     * Instead it schedules one async layout per bg thread
+     */
     public Builder asyncInitRange(boolean asyncInitRange) {
       this.asyncInitRange = asyncInitRange;
+      return this;
+    }
+
+    /**
+     * If true, the async range calculation isn't blocked on the first item finishing layout.
+     * Instead it schedules async layouts until init range completes.
+     */
+    public Builder bgScheduleAllInitRange(boolean bgScheduleAllInitRange) {
+      this.bgScheduleAllInitRange = bgScheduleAllInitRange;
       return this;
     }
 
@@ -745,6 +759,7 @@ public class RecyclerBinder
     mInvalidStateLogParamsList = builder.invalidStateLogParamsList;
 
     mAsyncInitRange = builder.asyncInitRange;
+    mBgScheduleAllInitRange = builder.bgScheduleAllInitRange;
     mHScrollAsyncMode = builder.hscrollAsyncMode;
   }
 
