@@ -204,6 +204,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
         }
         placeholders.add(i, componentContainer);
       }
+      mPlaceholders = placeholders;
       mOperations = new ArrayList<>();
       mOperations.add(Operation.acquire(Operation.DELETE, 0, mOldDataSize, null));
       mOperations.add(Operation.acquire(Operation.INSERT, 0, -1, placeholders));
