@@ -74,7 +74,7 @@ public abstract class Transition {
    * what TransitionKeyType to use
    */
   static final Transition.TransitionKeyType DEFAULT_TRANSITION_KEY_TYPE =
-      Transition.TransitionKeyType.GLOBAL;
+      TransitionKeyType.LOCAL;
 
   public enum TransitionKeyType {
     GLOBAL,
