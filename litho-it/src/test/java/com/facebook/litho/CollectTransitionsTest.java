@@ -41,7 +41,7 @@ public class CollectTransitionsTest {
 
         @Override
         protected Transition onCreateTransition(ComponentContext c) {
-          return Transition.create("test").animate(AnimatedProperties.Y);
+          return Transition.create(Transition.TransitionKeyType.GLOBAL, "test").animate(AnimatedProperties.Y);
         }
       };
 
@@ -52,13 +52,15 @@ public class CollectTransitionsTest {
         protected Component onCreateLayout(ComponentContext c) {
           return Row.create(c)
               .child(Row.create(c).transitionKey("test"))
+.transitionKeyType(Transition.TransitionKeyType.GLOBAL)
               .child(Row.create(c).transitionKey("test2"))
+.transitionKeyType(Transition.TransitionKeyType.GLOBAL)
               .build();
         }
 
         @Override
         protected Transition onCreateTransition(ComponentContext c) {
-          return Transition.create("test").animate(AnimatedProperties.X);
+          return Transition.create(Transition.TransitionKeyType.GLOBAL, "test").animate(AnimatedProperties.X);
         }
       };
 

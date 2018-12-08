@@ -173,6 +173,7 @@ public class MountStateBoundsTest {
                             .widthPx(20)
                             .heightPx(20)
                             .transitionKey("row")
+                            .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                             .justifyContent(YogaJustify.CENTER)
                             .alignItems(YogaAlign.CENTER)
                             .child(create(c).widthPx(10).heightPx(10)))

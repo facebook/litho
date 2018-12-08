@@ -81,7 +81,7 @@ public class TransitionManagerAnimationCreationTest {
         createMockLayoutOutput("test", 0, 0));
     final LayoutState next = createMockLayoutState(
         Transition.parallel(
-            Transition.create("test")
+            Transition.create(Transition.TransitionKeyType.GLOBAL, "test")
                 .animate(AnimatedProperties.X)
                 .animator(mTestVerificationAnimator)),
         createMockLayoutOutput("test", 10, 10));
@@ -101,7 +101,7 @@ public class TransitionManagerAnimationCreationTest {
     final LayoutState next =
         createMockLayoutState(
             Transition.parallel(
-                Transition.create("test")
+                Transition.create(Transition.TransitionKeyType.GLOBAL, "test")
                     .animate(AnimatedProperties.X, AnimatedProperties.Y)
                     .animator(mTestVerificationAnimator)),
             createMockLayoutOutput("test", 10, 10));
@@ -122,7 +122,7 @@ public class TransitionManagerAnimationCreationTest {
     final LayoutState next =
         createMockLayoutState(
             Transition.parallel(
-                Transition.create("test")
+                Transition.create(Transition.TransitionKeyType.GLOBAL, "test")
                     .animate(AnimatedProperties.X, AnimatedProperties.Y)
                     .animator(mTestVerificationAnimator)),
             createMockLayoutOutput("test", 10, 0));
@@ -143,7 +143,7 @@ public class TransitionManagerAnimationCreationTest {
     final LayoutState next =
         createMockLayoutState(
             Transition.parallel(
-                Transition.create("test1", "test2")
+                Transition.create(Transition.TransitionKeyType.GLOBAL, "test1", "test2")
                     .animate(AnimatedProperties.X)
                     .animator(mTestVerificationAnimator)),
             createMockLayoutOutput("test1", 10, 10),
@@ -165,7 +165,7 @@ public class TransitionManagerAnimationCreationTest {
         createMockLayoutOutput("test2", 0, 0));
     final LayoutState next = createMockLayoutState(
         Transition.parallel(
-            Transition.create("test1", "test2")
+            Transition.create(Transition.TransitionKeyType.GLOBAL, "test1", "test2")
                 .animate(AnimatedProperties.X, AnimatedProperties.Y)
                 .animator(mTestVerificationAnimator)),
         createMockLayoutOutput("test1", 10, 10),
@@ -218,7 +218,7 @@ public class TransitionManagerAnimationCreationTest {
     final LayoutState next =
         createMockLayoutState(
             Transition.parallel(
-                Transition.create("test", "keydoesntexist")
+                Transition.create(Transition.TransitionKeyType.GLOBAL, "test", "keydoesntexist")
                     .animate(AnimatedProperties.X, AnimatedProperties.Y)
                     .animator(mTestVerificationAnimator)),
             createMockLayoutOutput("test", 10, 0));
@@ -235,10 +235,10 @@ public class TransitionManagerAnimationCreationTest {
     final LayoutState next =
         createMockLayoutState(
             Transition.parallel(
-                Transition.create("test", "keydoesntexist")
+                Transition.create(Transition.TransitionKeyType.GLOBAL, "test", "keydoesntexist")
                     .animate(AnimatedProperties.X, AnimatedProperties.Y)
                     .animator(mTestVerificationAnimator),
-                Transition.create("appearing")
+                Transition.create(Transition.TransitionKeyType.GLOBAL, "appearing")
                     .animate(AnimatedProperties.X)
                     .appearFrom(0)
                     .animator(mTestVerificationAnimator)),
@@ -262,14 +262,14 @@ public class TransitionManagerAnimationCreationTest {
     final LayoutState next =
         createMockLayoutState(
             Transition.parallel(
-                Transition.create("test", "keydoesntexist")
+                Transition.create(Transition.TransitionKeyType.GLOBAL, "test", "keydoesntexist")
                     .animate(AnimatedProperties.X, AnimatedProperties.Y)
                     .animator(mTestVerificationAnimator)),
             createMockLayoutOutput("test", 10, 0),
             createMockLayoutOutput("test2", 20, 0));
     final ArrayList<Transition> mountTimeTransitions = new ArrayList<>();
     mountTimeTransitions.add(
-        Transition.create("test2")
+        Transition.create(Transition.TransitionKeyType.GLOBAL, "test2")
             .animate(AnimatedProperties.X)
             .appearFrom(0)
             .animator(mTestVerificationAnimator));
@@ -298,12 +298,12 @@ public class TransitionManagerAnimationCreationTest {
             null, createMockLayoutOutput("test", 10, 0), createMockLayoutOutput("test2", 20, 0));
     final ArrayList<Transition> mountTimeTransitions = new ArrayList<>();
     mountTimeTransitions.add(
-        Transition.create("test2")
+        Transition.create(Transition.TransitionKeyType.GLOBAL, "test2")
             .animate(AnimatedProperties.X)
             .appearFrom(0)
             .animator(mTestVerificationAnimator));
     mountTimeTransitions.add(
-        Transition.create("test", "keydoesntexist")
+        Transition.create(Transition.TransitionKeyType.GLOBAL, "test", "keydoesntexist")
             .animate(AnimatedProperties.X, AnimatedProperties.Y)
             .animator(mTestVerificationAnimator));
 
@@ -336,14 +336,14 @@ public class TransitionManagerAnimationCreationTest {
         };
     final ArrayList<Transition> transitionsFromStateUpdate = new ArrayList<>();
     transitionsFromStateUpdate.add(
-        Transition.create("test1", "test2")
+        Transition.create(Transition.TransitionKeyType.GLOBAL, "test1", "test2")
             .animate(AnimatedProperties.Y)
             .animator(animatorForStateUpdate));
 
     final LayoutState next =
         createMockLayoutState(
             Transition.parallel(
-                Transition.create("test1", "test2")
+                Transition.create(Transition.TransitionKeyType.GLOBAL, "test1", "test2")
                     .animate(AnimatedProperties.X)
                     .animator(mTestVerificationAnimator)),
             createMockLayoutOutput("test1", 10, 20),

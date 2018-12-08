@@ -2741,6 +2741,7 @@ public class LayoutStateCalculateTest {
                 .child(
                     Column.create(c)
                         .transitionKey(transitionKey)
+                        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                         .child(TestDrawableComponent.create(c)))
                 .build();
           }

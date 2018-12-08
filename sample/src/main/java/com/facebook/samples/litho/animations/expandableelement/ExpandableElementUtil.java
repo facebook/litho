@@ -17,6 +17,7 @@ import android.graphics.drawable.shapes.RoundRectShape;
 import android.support.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.Transition;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
@@ -51,6 +52,7 @@ class ExpandableElementUtil {
         .alignSelf(YogaAlign.FLEX_END)
         .paddingDip(YogaEdge.RIGHT, 10)
         .transitionKey(TRANSITION_BOTTOM_DETAIL)
+        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
         .text(seen ? "Seen" : "Sent");
   }
 
@@ -66,6 +68,7 @@ class ExpandableElementUtil {
         .textColor(Color.GRAY)
         .alignSelf(YogaAlign.CENTER)
         .transitionKey(TRANSITION_TOP_DETAIL)
+        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
         .text(timestamp);
   }
 }

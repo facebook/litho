@@ -435,6 +435,7 @@ public class LayoutStateCreateTreeTest {
                 .shadowElevationPx(60)
                 .clipToOutline(false)
                 .transitionKey("transitionKey")
+                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .testKey("testKey")
                 .accessibilityRole(AccessibilityRole.BUTTON)
                 .dispatchPopulateAccessibilityEventHandler(
@@ -544,6 +545,7 @@ public class LayoutStateCreateTreeTest {
 
     verify(node).clipToOutline(false);
     verify(node).transitionKey("transitionKey");
+    verify(node).transitionKeyType(Transition.TransitionKeyType.GLOBAL);
     verify(node).testKey("testKey");
 
     verify(node).accessibilityRole(AccessibilityRole.BUTTON);

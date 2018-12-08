@@ -111,6 +111,6 @@ public class TestLayoutSpec<S extends View> implements TestTag {
       @Prop @Nullable Object prop3,
       @State(canUpdateLazily = true) long state1,
       @State Diff<Integer> state3) {
-    return Transition.parallel(Transition.create("testKey"));
+    return Transition.parallel(Transition.create(Transition.TransitionKeyType.GLOBAL, "testKey"));
   }
 }

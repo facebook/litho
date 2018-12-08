@@ -36,8 +36,8 @@ public class UniqueTransitionKeysTest {
         @Override
         protected Component onCreateLayout(ComponentContext c) {
           return Row.create(c)
-              .child(Row.create(c).transitionKey("test"))
-              .child(Row.create(c).transitionKey("test"))
+              .child(Row.create(c).transitionKey("test").transitionKeyType(Transition.TransitionKeyType.GLOBAL))
+              .child(Row.create(c).transitionKey("test").transitionKeyType(Transition.TransitionKeyType.GLOBAL))
               .build();
         }
       };
@@ -48,8 +48,8 @@ public class UniqueTransitionKeysTest {
         @Override
         protected Component onCreateLayout(ComponentContext c) {
           return Row.create(c)
-              .child(Row.create(c).transitionKey("test"))
-              .child(Row.create(c).transitionKey("test2"))
+              .child(Row.create(c).transitionKey("test").transitionKeyType(Transition.TransitionKeyType.GLOBAL))
+              .child(Row.create(c).transitionKey("test2").transitionKeyType(Transition.TransitionKeyType.GLOBAL))
               .build();
         }
       };

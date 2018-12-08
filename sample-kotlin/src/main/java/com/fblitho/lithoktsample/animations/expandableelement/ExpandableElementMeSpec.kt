@@ -51,11 +51,13 @@ object ExpandableElementMeSpec {
     return Column.create(c)
         .paddingDip(YogaEdge.TOP, 8f)
         .transitionKey(TRANSITION_MSG_PARENT)
+        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
         .clickHandler(ExpandableElementMe.onClick(c))
         .child(ExpandableElementUtil.maybeCreateTopDetailComponent(c, isExpanded, timestamp))
         .child(
             Column.create(c)
                 .transitionKey(ExpandableElementUtil.TRANSITION_TEXT_MESSAGE_WITH_BOTTOM)
+                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .child(
                     Row.create(c)
                         .justifyContent(YogaJustify.FLEX_END)
@@ -87,12 +89,12 @@ object ExpandableElementMeSpec {
   } else {
     Transition.parallel<BaseTransitionUnitsBuilder>(
         Transition.allLayout(),
-        Transition.create(TRANSITION_MSG_PARENT).animate(AnimatedProperties.HEIGHT).appearFrom(0f),
-        Transition.create(ExpandableElementUtil.TRANSITION_TOP_DETAIL)
+        Transition.create(Transition.TransitionKeyType.GLOBAL, TRANSITION_MSG_PARENT).animate(AnimatedProperties.HEIGHT).appearFrom(0f),
+        Transition.create(Transition.TransitionKeyType.GLOBAL, ExpandableElementUtil.TRANSITION_TOP_DETAIL)
             .animate(AnimatedProperties.HEIGHT)
             .appearFrom(0f)
             .disappearTo(0f),
-        Transition.create(ExpandableElementUtil.TRANSITION_BOTTOM_DETAIL)
+        Transition.create(Transition.TransitionKeyType.GLOBAL, ExpandableElementUtil.TRANSITION_BOTTOM_DETAIL)
             .animate(AnimatedProperties.HEIGHT)
             .appearFrom(0f)
             .disappearTo(0f))

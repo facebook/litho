@@ -51,6 +51,7 @@ object ExpandableElementUtil {
         .alignSelf(YogaAlign.FLEX_END)
         .paddingDip(YogaEdge.RIGHT, 10f)
         .transitionKey(TRANSITION_BOTTOM_DETAIL)
+        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
         .text(if (seen) "Seen" else "Sent")
   }
 
@@ -66,6 +67,7 @@ object ExpandableElementUtil {
         .textColor(Color.GRAY)
         .alignSelf(YogaAlign.CENTER)
         .transitionKey(TRANSITION_TOP_DETAIL)
+        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
         .text(timestamp)
   }
 }

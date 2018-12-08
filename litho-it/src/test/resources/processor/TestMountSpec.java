@@ -177,7 +177,7 @@ public class TestMountSpec<S extends View> implements TestTag {
   @OnCreateTransition
   static Transition onCreateTransition(
       ComponentContext c, @Prop Object prop3, @State(canUpdateLazily = true) long state1) {
-    return Transition.parallel(Transition.create("testKey"));
+    return Transition.parallel(Transition.create(Transition.TransitionKeyType.GLOBAL, "testKey"));
   }
 
   @ShouldUpdate(onMount = true)

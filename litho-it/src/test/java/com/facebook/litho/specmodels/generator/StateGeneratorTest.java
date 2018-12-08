@@ -108,7 +108,7 @@ public class StateGeneratorTest {
 
     @OnUpdateStateWithTransition
     Transition updateCurrentStateWithTransition() {
-      return Transition.create("key").animate(AnimatedProperties.X);
+      return Transition.create(Transition.TransitionKeyType.GLOBAL, "key").animate(AnimatedProperties.X);
     }
   }
 

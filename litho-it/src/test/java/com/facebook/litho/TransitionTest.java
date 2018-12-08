@@ -31,7 +31,7 @@ public class TransitionTest {
 
   @Test
   public void testCollectRootBoundsTransitions() {
-    Transition transition = Transition.create("rootKey").animate(AnimatedProperties.WIDTH);
+    Transition transition = Transition.create(Transition.TransitionKeyType.GLOBAL, "rootKey").animate(AnimatedProperties.WIDTH);
 
     TransitionId rootTransitionId = new TransitionId(TransitionId.Type.GLOBAL, "rootKey", null);
 
@@ -54,8 +54,8 @@ public class TransitionTest {
     Transition transition =
         Transition.parallel(
             Transition.allLayout(),
-            Transition.create("rootKey").animate(AnimatedProperties.HEIGHT).appearFrom(10),
-            Transition.create("otherkey").animate(AnimatedProperties.ALPHA));
+            Transition.create(Transition.TransitionKeyType.GLOBAL, "rootKey").animate(AnimatedProperties.HEIGHT).appearFrom(10),
+            Transition.create(Transition.TransitionKeyType.GLOBAL, "otherkey").animate(AnimatedProperties.ALPHA));
 
     TransitionId rootTransitionId = new TransitionId(TransitionId.Type.GLOBAL, "rootKey", null);
 
@@ -71,9 +71,9 @@ public class TransitionTest {
   public void testCollectRootBoundsTransitionsAppearComesBeforeAllLayout() {
     Transition transition =
         Transition.parallel(
-            Transition.create("rootKey").animate(AnimatedProperties.HEIGHT).appearFrom(10),
+            Transition.create(Transition.TransitionKeyType.GLOBAL, "rootKey").animate(AnimatedProperties.HEIGHT).appearFrom(10),
             Transition.allLayout(),
-            Transition.create("otherkey").animate(AnimatedProperties.ALPHA));
+            Transition.create(Transition.TransitionKeyType.GLOBAL, "otherkey").animate(AnimatedProperties.ALPHA));
 
     TransitionId rootTransitionId = new TransitionId(TransitionId.Type.GLOBAL, "rootKey", null);
 
@@ -88,7 +88,7 @@ public class TransitionTest {
   @Test
   public void testCollectRootBoundsTransitionsExtractAppearFrom() {
     Transition transition =
-        Transition.create("rootKey").animate(AnimatedProperties.HEIGHT).appearFrom(10);
+        Transition.create(Transition.TransitionKeyType.GLOBAL, "rootKey").animate(AnimatedProperties.HEIGHT).appearFrom(10);
 
     TransitionId rootTransitionId = new TransitionId(TransitionId.Type.GLOBAL, "rootKey", null);
 
@@ -115,7 +115,7 @@ public class TransitionTest {
   @Test
   public void testCollectRootBoundsTransitionsExtractAppearFromDimensionValue() {
     Transition transition =
-        Transition.create("rootKey")
+        Transition.create(Transition.TransitionKeyType.GLOBAL, "rootKey")
             .animate(AnimatedProperties.HEIGHT)
             .appearFrom(DimensionValue.heightPercentageOffset(50));
 
