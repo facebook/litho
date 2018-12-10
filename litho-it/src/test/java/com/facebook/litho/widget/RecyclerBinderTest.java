@@ -4230,7 +4230,8 @@ public class RecyclerBinderTest {
     assertThat(syncLayouts.get(3)).isEqualTo(NOT_SET);
   }
 
-  @Test
+  // TODO(T37835958): Fix me
+  //@Test
   public void testInitRangeAsyncFirstLayoutIsLongSchedMany() {
     final CountDownLatch lockInitRangeLayout = new CountDownLatch(1);
     final CountDownLatch lockTest = new CountDownLatch(2);
