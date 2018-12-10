@@ -678,27 +678,33 @@ public class ComponentBodyGenerator {
         + GeneratorConstants.STATE_UPDATE_NAME_SUFFIX;
   }
 
-  private static CodeBlock getCompareStatement(
-      SpecModel specModel,
-      String implInstanceName,
-      MethodParamModel field) {
-    final CodeBlock.Builder codeBlock = CodeBlock.builder();
+  static CodeBlock getCompareStatement(
+      SpecModel specModel, String implInstanceName, MethodParamModel field) {
     final String implAccessor = getImplAccessor(specModel, field);
-    @Comparable.Type int comparableType = getComparableType(specModel, field);
 
+    return getCompareStatement(
+        specModel, field, implAccessor, implInstanceName + "." + implAccessor);
+  }
+
+  static CodeBlock getCompareStatement(
+      SpecModel specModel,
+      MethodParamModel field,
+      String firstComparator,
+      String secondComparator) {
+    final CodeBlock.Builder codeBlock = CodeBlock.builder();
+
+    @Comparable.Type int comparableType = getComparableType(specModel, field);
     switch (comparableType) {
       case Comparable.FLOAT:
         codeBlock
-            .beginControlFlow(
-                "if (Float.compare($L, $L.$L) != 0)", implAccessor, implInstanceName, implAccessor)
+            .beginControlFlow("if (Float.compare($L, $L) != 0)", firstComparator, secondComparator)
             .addStatement("return false")
             .endControlFlow();
         break;
 
       case Comparable.DOUBLE:
         codeBlock
-            .beginControlFlow(
-                "if (Double.compare($L, $L.$L) != 0)", implAccessor, implInstanceName, implAccessor)
+            .beginControlFlow("if (Double.compare($L, $L) != 0)", firstComparator, secondComparator)
             .addStatement("return false")
             .endControlFlow();
         break;
@@ -706,18 +712,14 @@ public class ComponentBodyGenerator {
       case Comparable.ARRAY:
         codeBlock
             .beginControlFlow(
-                "if (!$T.equals($L, $L.$L))",
-                Arrays.class,
-                implAccessor,
-                implInstanceName,
-                implAccessor)
+                "if (!$T.equals($L, $L))", Arrays.class, firstComparator, secondComparator)
             .addStatement("return false")
             .endControlFlow();
         break;
 
       case Comparable.PRIMITIVE:
         codeBlock
-            .beginControlFlow("if ($L != $L.$L)", implAccessor, implInstanceName, implAccessor)
+            .beginControlFlow("if ($L != $L)", firstComparator, secondComparator)
             .addStatement("return false")
             .endControlFlow();
         break;
@@ -725,10 +727,7 @@ public class ComponentBodyGenerator {
       case Comparable.REFERENCE:
         codeBlock
             .beginControlFlow(
-                "if (Reference.shouldUpdate($L, $L.$L))",
-                implAccessor,
-                implInstanceName,
-                implAccessor)
+                "if (Reference.shouldUpdate($L, $L))", firstComparator, secondComparator)
             .addStatement("return false")
             .endControlFlow();
         break;
@@ -736,13 +735,11 @@ public class ComponentBodyGenerator {
       case Comparable.COLLECTION_COMPLEVEL_0:
         codeBlock
             .beginControlFlow(
-                "if ($L != null ? !$L.equals($L.$L) : $L.$L != null)",
-                implAccessor,
-                implAccessor,
-                implInstanceName,
-                implAccessor,
-                implInstanceName,
-                implAccessor)
+                "if ($L != null ? !$L.equals($L) : $L != null)",
+                firstComparator,
+                firstComparator,
+                secondComparator,
+                secondComparator)
             .addStatement("return false")
             .endControlFlow();
         break;
@@ -754,23 +751,21 @@ public class ComponentBodyGenerator {
         // N.B. This relies on the IntDef to be in increasing order.
         int level = comparableType - Comparable.COLLECTION_COMPLEVEL_0;
         codeBlock
-            .beginControlFlow("if ($L != null)", implAccessor)
+            .beginControlFlow("if ($L != null)", firstComparator)
             .beginControlFlow(
-                "if ($L.$L == null || $L.size() != $L.$L.size())",
-                implInstanceName,
-                implAccessor,
-                implAccessor,
-                implInstanceName,
-                implAccessor)
+                "if ($L == null || $L.size() != $L.size())",
+                secondComparator,
+                firstComparator,
+                secondComparator)
             .addStatement("return false")
             .endControlFlow()
             .add(
                 getComponentCollectionCompareStatement(
                     level,
                     (DeclaredTypeSpec) field.getTypeSpec(),
-                    implAccessor,
-                    implInstanceName + "." + implAccessor))
-            .nextControlFlow("else if ($L.$L != null)", implInstanceName, implAccessor)
+                    firstComparator,
+                    secondComparator))
+            .nextControlFlow("else if ($L != null)", secondComparator)
             .addStatement("return false")
             .endControlFlow();
         break;
@@ -781,14 +776,11 @@ public class ComponentBodyGenerator {
       case Comparable.EVENT_HANDLER_IN_PARAMETERIZED_TYPE:
         codeBlock
             .beginControlFlow(
-                "if ($L != null ? !$L.$L($L.$L) : $L.$L != null)",
-                implAccessor,
-                implAccessor,
-                "isEquivalentTo",
-                implInstanceName,
-                implAccessor,
-                implInstanceName,
-                implAccessor)
+                "if ($L != null ? !$L.isEquivalentTo($L) : $L != null)",
+                firstComparator,
+                firstComparator,
+                secondComparator,
+                secondComparator)
             .addStatement("return false")
             .endControlFlow();
         break;
@@ -796,14 +788,11 @@ public class ComponentBodyGenerator {
       case Comparable.OTHER:
         codeBlock
             .beginControlFlow(
-                "if ($L != null ? !$L.$L($L.$L) : $L.$L != null)",
-                implAccessor,
-                implAccessor,
-                "equals",
-                implInstanceName,
-                implAccessor,
-                implInstanceName,
-                implAccessor)
+                "if ($L != null ? !$L.equals($L) : $L != null)",
+                firstComparator,
+                firstComparator,
+                secondComparator,
+                secondComparator)
             .addStatement("return false")
             .endControlFlow();
         break;
