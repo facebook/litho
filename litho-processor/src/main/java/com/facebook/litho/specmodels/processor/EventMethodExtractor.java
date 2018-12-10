@@ -20,6 +20,7 @@ import static com.facebook.litho.specmodels.model.SpecModelUtils.generateTypeSpe
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getMethodParams;
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getTypeVariables;
 
+import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.OnEvent;
@@ -61,6 +62,7 @@ public class EventMethodExtractor {
     METHOD_PARAM_ANNOTATIONS.add(State.class);
     METHOD_PARAM_ANNOTATIONS.add(TreeProp.class);
     METHOD_PARAM_ANNOTATIONS.add(InjectProp.class);
+    METHOD_PARAM_ANNOTATIONS.add(CachedValue.class);
   }
 
   /** Get the delegate methods from the given {@link TypeElement}. */

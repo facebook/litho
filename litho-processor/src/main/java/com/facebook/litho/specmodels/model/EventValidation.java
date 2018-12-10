@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.model;
 
 import static com.facebook.litho.specmodels.model.SpecMethodModelValidation.validateMethodIsStatic;
 
+import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.Param;
@@ -138,7 +139,7 @@ public class EventValidation {
                 new SpecModelValidationError(
                     methodParam.getRepresentedObject(),
                     "Param must be annotated with one of @FromEvent, @Prop, @InjectProp, "
-                        + "@TreeProp, @State or @Param."));
+                        + "@TreeProp, @CachedValue, @State or @Param."));
           }
         }
       }
@@ -152,6 +153,7 @@ public class EventValidation {
         || MethodParamModelUtils.isAnnotatedWith(methodParam, Prop.class)
         || MethodParamModelUtils.isAnnotatedWith(methodParam, InjectProp.class)
         || MethodParamModelUtils.isAnnotatedWith(methodParam, TreeProp.class)
+        || MethodParamModelUtils.isAnnotatedWith(methodParam, CachedValue.class)
         || MethodParamModelUtils.isAnnotatedWith(methodParam, State.class)
         || MethodParamModelUtils.isAnnotatedWith(methodParam, Param.class);
   }

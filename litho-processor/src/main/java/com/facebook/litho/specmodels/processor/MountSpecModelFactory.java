@@ -23,6 +23,7 @@ import com.facebook.litho.annotations.FromMeasureBaseline;
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.MountingType;
+import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnEnteredRange;
@@ -75,6 +76,7 @@ public class MountSpecModelFactory implements SpecModelFactory {
     DELEGATE_METHOD_ANNOTATIONS.add(OnEnteredRange.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnExitedRange.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnRegisterRanges.class);
+    DELEGATE_METHOD_ANNOTATIONS.add(OnCalculateCachedValue.class);
   }
 
   private final SpecGenerator<MountSpecModel> mMountSpecGenerator;

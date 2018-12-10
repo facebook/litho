@@ -259,7 +259,7 @@ public class EventValidationTest {
     assertThat(validationErrors.get(1).element).isEqualTo(mRepresentedObject3);
     assertThat(validationErrors.get(1).message)
         .isEqualTo(
-            "Param must be annotated with one of @FromEvent, @Prop, @InjectProp, @TreeProp, @State or @Param.");
+            "Param must be annotated with one of @FromEvent, @Prop, @InjectProp, @TreeProp, @CachedValue, @State or @Param.");
   }
 
   @Test

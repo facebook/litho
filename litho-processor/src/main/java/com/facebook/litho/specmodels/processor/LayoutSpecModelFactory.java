@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.processor;
 
 import com.facebook.litho.annotations.FromCreateLayout;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnEnteredRange;
 import com.facebook.litho.annotations.OnExitedRange;
@@ -56,6 +57,7 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
     DELEGATE_METHOD_ANNOTATIONS.add(OnEnteredRange.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnExitedRange.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnRegisterRanges.class);
+    DELEGATE_METHOD_ANNOTATIONS.add(OnCalculateCachedValue.class);
   }
 
   private final List<Class<? extends Annotation>> mLayoutSpecDelegateMethodAnnotations;

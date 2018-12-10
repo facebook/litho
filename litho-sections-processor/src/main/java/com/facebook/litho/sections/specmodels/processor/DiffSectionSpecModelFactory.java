@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.specmodels.processor;
 
+import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.ShouldUpdate;
@@ -90,6 +91,7 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory {
     DELEGATE_METHOD_ANNOTATIONS.add(OnRefresh.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnViewportChanged.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnCreateTreeProp.class);
+    DELEGATE_METHOD_ANNOTATIONS.add(OnCalculateCachedValue.class);
   }
 
   private final SpecGenerator<DiffSectionSpecModel> mSpecGenerator;
