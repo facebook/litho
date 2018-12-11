@@ -1901,6 +1901,15 @@ public class ComponentTree {
     return mRoot == null ? null : mRoot.getSimpleName();
   }
 
+  @Nullable
+  Object getCachedValue(Object cachedValueInputs) {
+    return mStateHandler.getCachedValue(cachedValueInputs);
+  }
+
+  void putCachedValue(Object cachedValueInputs, Object cachedValue) {
+    mStateHandler.putCachedValue(cachedValueInputs, cachedValue);
+  }
+
   private static synchronized Looper getDefaultLayoutThreadLooper() {
     if (sDefaultLayoutThreadLooper == null) {
       final HandlerThread defaultThread =

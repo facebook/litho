@@ -84,6 +84,11 @@ public class StateHandler {
   @GuardedBy("this")
   public HashSet<String> mNeededStateContainers;
 
+  /** Map of all cached values that are stored for the current ComponentTree. */
+  @GuardedBy("this")
+  @Nullable
+  private Map<Object, Object> mCachedValues;
+
   void init(@Nullable StateHandler stateHandler) {
     if (stateHandler == null) {
       return;
@@ -296,6 +301,23 @@ public class StateHandler {
       }
     }
     mPendingStateUpdateTransitions = null;
+  }
+
+  @Nullable
+  synchronized Object getCachedValue(Object cachedValueInputs) {
+    if (mCachedValues == null) {
+      mCachedValues = new HashMap<>();
+    }
+
+    return mCachedValues.get(cachedValueInputs);
+  }
+
+  synchronized void putCachedValue(Object cachedValueInputs, Object cachedValue) {
+    if (mCachedValues == null) {
+      mCachedValues = new HashMap<>();
+    }
+
+    mCachedValues.put(cachedValueInputs, cachedValue);
   }
 
   /**

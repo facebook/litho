@@ -346,6 +346,15 @@ public class ComponentContext {
     return new EventHandler<>(mComponentScope, id, params);
   }
 
+  @Nullable
+  public Object getCachedValue(Object cachedValueInputs) {
+    return mComponentTree.getCachedValue(cachedValueInputs);
+  }
+
+  public void putCachedValue(Object cachedValueInputs, Object cachedValue) {
+    mComponentTree.putCachedValue(cachedValueInputs, cachedValue);
+  }
+
   /**
    * @return New instance of {@link EventTrigger} that is created by the current mComponentScope.
    */

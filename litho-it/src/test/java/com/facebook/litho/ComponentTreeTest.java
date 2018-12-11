@@ -599,6 +599,15 @@ public class ComponentTreeTest {
     componentTree.setRoot(TestDrawableComponent.create(mContext).build());
   }
 
+  @Test
+  public void testCachedValues() {
+    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    assertThat(componentTree.getCachedValue("key1")).isNull();
+    componentTree.putCachedValue("key1", "value1");
+    assertThat(componentTree.getCachedValue("key1")).isEqualTo("value1");
+    assertThat(componentTree.getCachedValue("key2")).isNull();
+  }
+
   private static LithoView getLithoView(ComponentTree componentTree) {
     return Whitebox.getInternalState(componentTree, "mLithoView");
   }
