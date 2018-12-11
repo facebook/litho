@@ -239,9 +239,6 @@ public class SectionTree {
   @GuardedBy("this")
   private List<ChangeSet> mPendingChangeSets;
 
-  @GuardedBy("this")
-  private Map<String, List<EventHandler>> mEventHandlers = new HashMap<>();
-
   private final EventHandlersController mEventHandlersController = new EventHandlersController();
 
   private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
@@ -772,7 +769,6 @@ public class SectionTree {
       mReleased = true;
       mCurrentSection = null;
       mNextSection = null;
-      mEventHandlers = null;
     }
 
     for (Range range : mLastRanges.values()) {
