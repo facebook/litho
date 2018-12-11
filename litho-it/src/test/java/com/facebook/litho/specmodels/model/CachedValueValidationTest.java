@@ -63,14 +63,19 @@ public class CachedValueValidationTest {
         SpecMethodModel.<DelegateMethod, Void>builder()
             .annotations(
                 ImmutableList.<Annotation>of(
-                    new Annotation() {
+                    new OnCalculateCachedValue() {
+                      @Override
+                      public String name() {
+                        return "name1";
+                      }
+
                       @Override
                       public Class<? extends Annotation> annotationType() {
                         return OnCalculateCachedValue.class;
                       }
                     }))
             .modifiers(ImmutableList.<Modifier>of())
-            .name("name1")
+            .name("onCalculateName1")
             .returnTypeSpec(new TypeSpec(TypeName.INT))
             .typeVariables(ImmutableList.of())
             .methodParams(ImmutableList.<MethodParamModel>of())
@@ -93,14 +98,19 @@ public class CachedValueValidationTest {
         SpecMethodModel.<DelegateMethod, Void>builder()
             .annotations(
                 ImmutableList.<Annotation>of(
-                    new Annotation() {
+                    new OnCalculateCachedValue() {
+                      @Override
+                      public String name() {
+                        return "name1";
+                      }
+
                       @Override
                       public Class<? extends Annotation> annotationType() {
                         return OnCalculateCachedValue.class;
                       }
                     }))
             .modifiers(ImmutableList.<Modifier>of())
-            .name("name1")
+            .name("onCalculateName1")
             .returnTypeSpec(new TypeSpec(TypeName.BOOLEAN))
             .typeVariables(ImmutableList.of())
             .methodParams(

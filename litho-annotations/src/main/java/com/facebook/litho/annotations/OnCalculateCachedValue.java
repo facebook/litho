@@ -24,4 +24,8 @@ import java.lang.annotation.RetentionPolicy;
  * a value that is cached by the component, and may be access in methods using {@link CachedValue}.
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OnCalculateCachedValue {}
+public @interface OnCalculateCachedValue {
+
+  /** @return the name of the {@link CachedValue} that is being calculated. */
+  String name();
+}

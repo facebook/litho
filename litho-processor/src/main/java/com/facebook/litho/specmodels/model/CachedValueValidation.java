@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -89,8 +90,21 @@ public class CachedValueValidation {
       List<SpecMethodModel<DelegateMethod, Void>> onCalculateCachedValueMethods) {
     for (SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod :
         onCalculateCachedValueMethods) {
-      if (onCalculateCachedValueMethod.name.toString().equals(cachedValue.getName())) {
+      final String cachedValueName = getCachedValueName(onCalculateCachedValueMethod);
+      if (cachedValueName != null && cachedValueName.equals(cachedValue.getName())) {
         return onCalculateCachedValueMethod;
+      }
+    }
+
+    return null;
+  }
+
+  @Nullable
+  private static String getCachedValueName(
+      SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod) {
+    for (Annotation annotation : onCalculateCachedValueMethod.annotations) {
+      if (annotation instanceof OnCalculateCachedValue) {
+        return ((OnCalculateCachedValue) annotation).name();
       }
     }
 
