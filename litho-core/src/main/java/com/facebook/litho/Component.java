@@ -613,7 +613,7 @@ public abstract class Component extends ComponentLifecycle
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
       final KeyHandler keyHandler = getScopedContext().getKeyHandler();
       // This is for testing, the keyHandler should never be null here otherwise.
-      if (keyHandler != null && !ComponentsConfiguration.isEndToEndTestRun) {
+      if (keyHandler != null) {
         keyHandler.registerKey(this);
       }
     }
