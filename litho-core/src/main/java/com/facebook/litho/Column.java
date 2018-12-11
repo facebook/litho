@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import android.support.v4.util.Pools;
 import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
@@ -85,11 +84,9 @@ public final class Column extends Component {
 
   @Override
   protected ComponentLayout resolve(ComponentContext c) {
-    InternalNode node = c.newLayoutBuilder(0, 0);
-
-    if (!ComponentsConfiguration.enableSkipYogaPropExperiment || children != null) {
-      node.flexDirection(reverse ? YogaFlexDirection.COLUMN_REVERSE : YogaFlexDirection.COLUMN);
-    }
+    InternalNode node =
+        c.newLayoutBuilder(0, 0)
+            .flexDirection(reverse ? YogaFlexDirection.COLUMN_REVERSE : YogaFlexDirection.COLUMN);
 
     if (alignItems != null) {
       node.alignItems(alignItems);
@@ -248,4 +245,3 @@ public final class Column extends Component {
     }
   }
 }
-

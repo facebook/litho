@@ -227,9 +227,6 @@ public class ComponentsConfiguration {
    */
   public static boolean incrementalMountWhenNotVisible = false;
 
-  /** This flag is to enable the experiment about skipping unnecessary Yoga calls. */
-  public static boolean enableSkipYogaPropExperiment = false;
-
   public static boolean unsetThenReleaseDrawableBackground = false;
   public static boolean unmountThenReleaseDrawableCmp = false;
 
