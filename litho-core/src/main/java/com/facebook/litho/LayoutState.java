@@ -1660,8 +1660,8 @@ class LayoutState {
         nestedTree = null;
       }
 
-      if (component.hasCachedLayout()) {
-        final InternalNode cachedLayout = component.getCachedLayout();
+      final InternalNode cachedLayout = component.getCachedLayout();
+      if (cachedLayout != null) {
         final boolean hasCompatibleLayoutDirection =
             InternalNode.hasValidLayoutDirectionInNestedTree(nestedTreeHolder, cachedLayout);
 

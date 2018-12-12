@@ -2095,7 +2095,7 @@ public class LayoutStateCalculateTest {
     doReturn(componentSpy).when(componentSpy).makeShallowCopy();
 
     // Check the cached measured component tree
-    assertThat(componentSpy.hasCachedLayout()).isTrue();
+    assertThat(componentSpy.getCachedLayout()).isNotNull();
     final InternalNode cachedLayout = componentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(1);
     assertThat(((InternalNode) cachedLayout.getChildAt(0)).getRootComponent())
@@ -2164,7 +2164,7 @@ public class LayoutStateCalculateTest {
     doReturn(sizeDependentComponentSpy).when(sizeDependentComponentSpy).makeShallowCopy();
 
     // Check the cached measured component tree
-    assertThat(sizeDependentComponentSpy.hasCachedLayout()).isTrue();
+    assertThat(sizeDependentComponentSpy.getCachedLayout()).isNotNull();
     final InternalNode cachedLayout = sizeDependentComponentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(2);
     assertThat(((InternalNode) cachedLayout.getChildAt(0)).getRootComponent())
@@ -2244,7 +2244,7 @@ public class LayoutStateCalculateTest {
     doReturn(componentSpy).when(componentSpy).makeShallowCopy();
 
     // Check the cached measured component tree
-    assertThat(componentSpy.hasCachedLayout()).isTrue();
+    assertThat(componentSpy.getCachedLayout()).isNotNull();
     final InternalNode cachedLayout = componentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(0);
     assertThat(cachedLayout.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
@@ -2312,7 +2312,7 @@ public class LayoutStateCalculateTest {
     doReturn(sizeDependentComponentSpy).when(sizeDependentComponentSpy).makeShallowCopy();
 
     // Check the cached measured component tree
-    assertThat(sizeDependentComponentSpy.hasCachedLayout()).isTrue();
+    assertThat(sizeDependentComponentSpy.getCachedLayout()).isNotNull();
     final InternalNode cachedLayout = sizeDependentComponentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(0);
     assertThat(cachedLayout.getRootComponent()).isInstanceOf(TestDrawableComponent.class);

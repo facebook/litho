@@ -354,14 +354,14 @@ public class InternalNodeTest {
         unspecifiedSizeSpec,
         textSize);
 
-    assertThat(textComponent.hasCachedLayout()).isTrue();
+    assertThat(textComponent.getCachedLayout()).isNotNull();
     InternalNode cachedLayout = textComponent.getCachedLayout();
     assertThat(cachedLayout).isNotNull();
     assertThat(cachedLayout.getLastWidthSpec()).isEqualTo(exactSizeSpec);
     assertThat(cachedLayout.getLastHeightSpec()).isEqualTo(unspecifiedSizeSpec);
 
     textComponent.clearCachedLayout();
-    assertThat(textComponent.hasCachedLayout()).isFalse();
+    assertThat(textComponent.getCachedLayout()).isNull();
   }
 
   @Test

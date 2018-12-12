@@ -40,11 +40,11 @@ public class ComponentTest {
   public void testShallowCopyCachedLayoutSameThread() {
     Component component = TestDrawableComponent.create(mContext).build();
     component.measure(mContext, 100, 100, new Size());
-    assertThat(component.mLastMeasuredLayoutThreadLocal).isNotNull();
-    assertThat(component.mLastMeasuredLayoutThreadLocal.get()).isNotNull();
+    assertThat(component.getCachedLayout()).isNotNull();
+    assertThat(component.getCachedLayout()).isNotNull();
 
     Component copyComponent = component.makeShallowCopy();
-    assertThat(copyComponent.mLastMeasuredLayoutThreadLocal).isNotNull();
+    assertThat(copyComponent.getCachedLayout()).isNotNull();
   }
 
   @Test
@@ -63,7 +63,7 @@ public class ComponentTest {
               public void run() {
                 component.measure(mContext, 100, 100, new Size());
 
-                cachedLayouts[0] = component.mLastMeasuredLayoutThreadLocal.get();
+                cachedLayouts[0] = component.getCachedLayout();
 
                 lockWaitMeasure.countDown();
               }
@@ -82,7 +82,7 @@ public class ComponentTest {
                 }
 
                 resultCopyComponent[0] = component.makeShallowCopy();
-                cachedLayouts[1] = resultCopyComponent[0].mLastMeasuredLayoutThreadLocal.get();
+                cachedLayouts[1] = resultCopyComponent[0].getCachedLayout();
 
                 testFinished.countDown();
               }
@@ -98,16 +98,14 @@ public class ComponentTest {
     }
 
     // On this thread, the cached layout should be null
-    assertThat(component.mLastMeasuredLayoutThreadLocal).isNotNull();
-    assertThat(component.mLastMeasuredLayoutThreadLocal.get()).isNull();
+    assertThat(component.getCachedLayout()).isNull();
 
     // The saved internal node should be not null
     assertThat(cachedLayouts[0]).isNotNull();
 
     // makeShallowCopy will create a thread local var for the cached layout but its value will be
     // null
-    assertThat(resultCopyComponent[0].mLastMeasuredLayoutThreadLocal).isNotNull();
-    assertThat(resultCopyComponent[0].mLastMeasuredLayoutThreadLocal.get()).isNull();
+    assertThat(resultCopyComponent[0].getCachedLayout()).isNull();
 
     // The saved internal node should also be null
     assertThat(cachedLayouts[1]).isNull();
@@ -129,7 +127,7 @@ public class ComponentTest {
               public void run() {
                 component.measure(mContext, 100, 100, new Size());
 
-                cachedLayouts[0] = component.mLastMeasuredLayoutThreadLocal.get();
+                cachedLayouts[0] = component.getCachedLayout();
 
                 lockWaitMeasure.countDown();
               }
@@ -149,7 +147,7 @@ public class ComponentTest {
 
                 resultCopyComponent[0] = component.makeShallowCopy();
                 resultCopyComponent[0].measure(mContext, 100, 100, new Size());
-                cachedLayouts[1] = resultCopyComponent[0].mLastMeasuredLayoutThreadLocal.get();
+                cachedLayouts[1] = resultCopyComponent[0].getCachedLayout();
 
                 testFinished.countDown();
               }
@@ -165,15 +163,13 @@ public class ComponentTest {
     }
 
     // On this thread, the cached layout should be null
-    assertThat(component.mLastMeasuredLayoutThreadLocal).isNotNull();
-    assertThat(component.mLastMeasuredLayoutThreadLocal.get()).isNull();
+    assertThat(component.getCachedLayout()).isNull();
 
     // The saved internal node should be not null
     assertThat(cachedLayouts[0]).isNotNull();
 
     // On this thread, the cached layout should be null
-    assertThat(resultCopyComponent[0].mLastMeasuredLayoutThreadLocal).isNotNull();
-    assertThat(resultCopyComponent[0].mLastMeasuredLayoutThreadLocal.get()).isNull();
+    assertThat(resultCopyComponent[0].getCachedLayout()).isNull();
 
     // The saved internal node should be not null
     assertThat(cachedLayouts[1]).isNotNull();

@@ -59,6 +59,7 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
@@ -95,7 +96,8 @@ public abstract class Component extends ComponentLifecycle
 
   // If we have a cachedLayout, onPrepare and onMeasure would have been called on it already.
   @ThreadConfined(ThreadConfined.ANY)
-  public @Nullable ThreadLocal<InternalNode> mLastMeasuredLayoutThreadLocal;
+  @GuardedBy("this")
+  public @Nullable ConcurrentHashMap<Long, InternalNode> mThreadIdToLastMeasuredLayout;
 
   @Nullable private CommonPropsHolder mCommonPropsHolder;
 
@@ -354,13 +356,11 @@ public abstract class Component extends ComponentLifecycle
     return component;
   }
 
-  boolean hasCachedLayout() {
-    return mLastMeasuredLayoutThreadLocal != null && mLastMeasuredLayoutThreadLocal.get() != null;
-  }
-
   @Nullable
   InternalNode getCachedLayout() {
-    return hasCachedLayout() ? mLastMeasuredLayoutThreadLocal.get() : null;
+    return mThreadIdToLastMeasuredLayout == null
+        ? null
+        : mThreadIdToLastMeasuredLayout.get(Thread.currentThread().getId());
   }
 
   /**
@@ -368,16 +368,16 @@ public abstract class Component extends ComponentLifecycle
    * remeasured even if it has alread been measured with the same size specs.
    */
   public void releaseCachedLayout() {
-    if (hasCachedLayout()) {
-      LayoutState.releaseNodeTree(mLastMeasuredLayoutThreadLocal.get(), true /* isNestedTree */);
+    final InternalNode cachedLayout = getCachedLayout();
+    if (cachedLayout != null) {
+      LayoutState.releaseNodeTree(cachedLayout, true /* isNestedTree */);
       clearCachedLayout();
     }
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   protected void clearCachedLayout() {
-    mLastMeasuredLayoutThreadLocal.remove();
-    mLastMeasuredLayoutThreadLocal = null;
+    mThreadIdToLastMeasuredLayout.remove(Thread.currentThread().getId());
   }
 
   void reset() {
@@ -403,10 +403,14 @@ public abstract class Component extends ComponentLifecycle
 
       lastMeasuredLayout =
           LayoutState.createAndMeasureTreeForComponent(c, this, widthSpec, heightSpec);
-      if (mLastMeasuredLayoutThreadLocal == null) {
-        mLastMeasuredLayoutThreadLocal = new ThreadLocal<>();
+
+      // We just want to make sure this isn't initialized on multiple threads
+      synchronized (this) {
+        if (mThreadIdToLastMeasuredLayout == null) {
+          mThreadIdToLastMeasuredLayout = new ConcurrentHashMap<>(2);
+        }
       }
-      mLastMeasuredLayoutThreadLocal.set(lastMeasuredLayout);
+      mThreadIdToLastMeasuredLayout.put(Thread.currentThread().getId(), lastMeasuredLayout);
 
       // This component resolution won't be deferred nor onMeasure called if it's a layout spec.
       // In that case it needs to manually save the latest saze specs.
@@ -453,7 +457,7 @@ public abstract class Component extends ComponentLifecycle
 
   static boolean isNestedTree(@Nullable Component component) {
     return (isLayoutSpecWithSizeSpec(component)
-        || (component != null && component.hasCachedLayout()));
+        || (component != null && component.getCachedLayout() != null));
   }
 
   /**
