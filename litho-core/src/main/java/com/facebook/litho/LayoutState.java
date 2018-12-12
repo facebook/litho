@@ -1833,16 +1833,16 @@ class LayoutState {
    * @return true if the layout node requires updating, false if it can re-use the measurements
    *              from the diff node.
    */
-  static boolean applyDiffNodeToUnchangedNodes(InternalNode layoutNode, DiffNode diffNode) {
+  static void applyDiffNodeToUnchangedNodes(InternalNode layoutNode, DiffNode diffNode) {
     // Root of the main tree or of a nested tree.
     final boolean isTreeRoot = layoutNode.getParent() == null;
     if (isLayoutSpecWithSizeSpec(layoutNode.getRootComponent()) && !isTreeRoot) {
       layoutNode.setDiffNode(diffNode);
-      return true;
+      return;
     }
 
     if (!hostIsCompatible(layoutNode, diffNode)) {
-      return true;
+      return;
     }
 
     layoutNode.setDiffNode(diffNode);
@@ -1850,44 +1850,15 @@ class LayoutState {
     final int layoutCount = layoutNode.getChildCount();
     final int diffCount = diffNode.getChildCount();
 
-    if (ComponentsConfiguration.shouldUpdateMountSpecOnly) {
-
-      if (layoutCount != 0 && diffCount != 0) {
-        for (int i = 0; i < layoutCount && i < diffCount; i++) {
-          applyDiffNodeToUnchangedNodes(layoutNode.getChildAt(i), diffNode.getChildAt(i));
-        }
-
-      // Apply the DiffNode to a leaf node (i.e. MountSpec) only if it should NOT update.
-      } else if (!shouldComponentUpdate(layoutNode, diffNode)) {
-        applyDiffNodeToLayoutNode(layoutNode, diffNode);
+    if (layoutCount != 0 && diffCount != 0) {
+      for (int i = 0; i < layoutCount && i < diffCount; i++) {
+        applyDiffNodeToUnchangedNodes(layoutNode.getChildAt(i), diffNode.getChildAt(i));
       }
 
-      // return value not needed in this experiment.
-      // Should be removed when experiment is cleaned up.
-      return true;
-    }
-
-    // Layout node needs to be updated if:
-    //   - it has a different number of children.
-    //   - one of its children needs updating.
-    //   - the node itself declares that it needs updating.
-    boolean shouldUpdate = layoutCount != diffCount;
-    for (int i = 0; i < layoutCount && i < diffCount; i++) {
-      // ensure that we always run for all children.
-      boolean shouldUpdateChild =
-          applyDiffNodeToUnchangedNodes(
-              layoutNode.getChildAt(i),
-              diffNode.getChildAt(i));
-      shouldUpdate |= shouldUpdateChild;
-    }
-
-    shouldUpdate |= shouldComponentUpdate(layoutNode, diffNode);
-
-    if (!shouldUpdate) {
+    // Apply the DiffNode to a leaf node (i.e. MountSpec) only if it should NOT update.
+    } else if (!shouldComponentUpdate(layoutNode, diffNode)) {
       applyDiffNodeToLayoutNode(layoutNode, diffNode);
     }
-
-    return shouldUpdate;
   }
 
   /**
