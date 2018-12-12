@@ -459,8 +459,8 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   }
 
   @Override
-  public String getIsEquivalentToExperimentFlagName() {
-    return "useNewIsEquivalentToInOtherSpec";
+  public boolean shouldGenerateIsEquivalentTo() {
+    return false;
   }
 
   public static class Builder {

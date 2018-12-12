@@ -126,9 +126,9 @@ public final class SpecModelImpl implements SpecModel {
     mProps = props.isEmpty() ? getProps(mRawProps, cachedPropNames, delegateMethods) : props;
     mRawInjectProps =
         getRawInjectProps(
-            delegateMethods, 
-            eventMethods, 
-            triggerMethods, 
+            delegateMethods,
+            eventMethods,
+            triggerMethods,
             workingRangeRegisterMethod,
             workingRangeMethods,
             updateStateMethods);
@@ -425,7 +425,7 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   @Override
-  public String getIsEquivalentToExperimentFlagName() {
+  public boolean shouldGenerateIsEquivalentTo() {
     throw new RuntimeException("Don't delegate to this method!");
   }
 

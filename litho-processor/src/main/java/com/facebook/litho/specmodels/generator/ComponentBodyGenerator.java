@@ -104,7 +104,9 @@ public class ComponentBodyGenerator {
         .addTypeSpecDataHolder(generateEventHandlers(specModel))
         .addTypeSpecDataHolder(generateEventTriggers(specModel));
 
-    builder.addMethod(generateIsEquivalentMethod(specModel));
+    if (specModel.shouldGenerateIsEquivalentTo()) {
+      builder.addMethod(generateIsEquivalentMethod(specModel));
+    }
 
     builder.addTypeSpecDataHolder(generateCopyInterStageImpl(specModel));
     builder.addTypeSpecDataHolder(generateOnUpdateStateMethods(specModel));
@@ -457,12 +459,6 @@ public class ComponentBodyGenerator {
             .addAnnotation(Override.class)
             .addModifiers(Modifier.PUBLIC)
             .returns(TypeName.BOOLEAN)
-            .beginControlFlow(
-                "if ($T.$N)",
-                ClassNames.COMPONENTS_CONFIGURATION,
-                specModel.getIsEquivalentToExperimentFlagName())
-            .addStatement("return super.isEquivalentTo(other)")
-            .endControlFlow()
             .addParameter(specModel.getComponentClass(), "other")
             .beginControlFlow("if (this == other)")
             .addStatement("return true")

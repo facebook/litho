@@ -18,32 +18,12 @@ package com.facebook.litho.processor.integration.resources;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.config.ComponentsConfiguration;
 
 /** @see com.facebook.litho.processor.integration.resources.SimpleLayoutSpec */
 public final class SimpleLayout extends Component {
   private SimpleLayout() {
     super("SimpleLayout");
   }
-
-  @Override
-  public boolean isEquivalentTo(Component other) {
-    if (ComponentsConfiguration.useNewIsEquivalentToInLayoutSpec) {
-      return super.isEquivalentTo(other);
-    }
-    if (this == other) {
-      return true;
-    }
-    if (other == null || getClass() != other.getClass()) {
-      return false;
-    }
-    SimpleLayout simpleLayoutRef = (SimpleLayout) other;
-    if (this.getId() == simpleLayoutRef.getId()) {
-      return true;
-    }
-    return true;
-  }
-
   @Override
   protected Component onCreateLayout(ComponentContext context) {
     Component _result = (Component) SimpleLayoutSpec.onCreateLayout((ComponentContext) context);

@@ -373,8 +373,8 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public String getIsEquivalentToExperimentFlagName() {
-    return "useNewIsEquivalentToInMountSpec";
+  public boolean shouldGenerateIsEquivalentTo() {
+    return true;
   }
 
   @Override

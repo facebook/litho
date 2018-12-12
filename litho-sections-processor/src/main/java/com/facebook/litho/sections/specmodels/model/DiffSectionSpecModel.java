@@ -358,8 +358,8 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
-  public String getIsEquivalentToExperimentFlagName() {
-    return "useNewIsEquivalentToInSectionSpec";
+  public boolean shouldGenerateIsEquivalentTo() {
+    return true;
   }
 
   @Override

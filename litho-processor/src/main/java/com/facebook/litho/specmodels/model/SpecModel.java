@@ -199,8 +199,9 @@ public interface SpecModel {
   boolean shouldGenerateCopyMethod();
 
   /**
-   * @return Depending on the SpecModel type, return the right ComponentsConfiguration flag for
-   * the isEquivalentTo() method.
+   * @return wether the isEquivalentTo() method should be generated or not. When not generated, the
+   *     method ComponentUtils.hasEquivalentFields() will be used to check for equivalence through
+   *     reflection.
    */
-  String getIsEquivalentToExperimentFlagName();
+  boolean shouldGenerateIsEquivalentTo();
 }

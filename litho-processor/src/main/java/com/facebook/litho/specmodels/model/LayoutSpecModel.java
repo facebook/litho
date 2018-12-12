@@ -337,8 +337,8 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public String getIsEquivalentToExperimentFlagName() {
-    return "useNewIsEquivalentToInLayoutSpec";
+  public boolean shouldGenerateIsEquivalentTo() {
+    return false;
   }
 
   @Override

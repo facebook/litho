@@ -44,9 +44,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
@@ -134,71 +132,6 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @Override
   protected StateContainer getStateContainer() {
     return mStateContainer;
-  }
-
-  @Override
-  public boolean isEquivalentTo(Component other) {
-    if (ComponentsConfiguration.useNewIsEquivalentToInLayoutSpec) {
-      return super.isEquivalentTo(other);
-    }
-    if (this == other) {
-      return true;
-    }
-    if (other == null || getClass() != other.getClass()) {
-      return false;
-    }
-    TestLayout testLayoutRef = (TestLayout) other;
-    if (this.getId() == testLayoutRef.getId()) {
-      return true;
-    }
-    if (Float.compare(aspectRatio, testLayoutRef.aspectRatio) != 0) {
-      return false;
-    }
-    if (child != null ? !child.isEquivalentTo(testLayoutRef.child) : testLayoutRef.child != null) {
-      return false;
-    }
-    if (focusable != testLayoutRef.focusable) {
-      return false;
-    }
-    if (handler != null
-        ? !handler.isEquivalentTo(testLayoutRef.handler)
-        : testLayoutRef.handler != null) {
-      return false;
-    }
-    if (names != null ? !names.equals(testLayoutRef.names) : testLayoutRef.names != null) {
-      return false;
-    }
-    if (prop1 != testLayoutRef.prop1) {
-      return false;
-    }
-    if (prop2 != testLayoutRef.prop2) {
-      return false;
-    }
-    if (prop3 != null ? !prop3.equals(testLayoutRef.prop3) : testLayoutRef.prop3 != null) {
-      return false;
-    }
-    if (!Arrays.equals(prop4, testLayoutRef.prop4)) {
-      return false;
-    }
-    if (prop5 != testLayoutRef.prop5) {
-      return false;
-    }
-    if (prop6 != testLayoutRef.prop6) {
-      return false;
-    }
-    if (mStateContainer.state1 != testLayoutRef.mStateContainer.state1) {
-      return false;
-    }
-    if (mStateContainer.state2 != null ? !mStateContainer.state2.equals(testLayoutRef.mStateContainer.state2) : testLayoutRef.mStateContainer.state2 != null) {
-      return false;
-    }
-    if (mStateContainer.state3 != testLayoutRef.mStateContainer.state3) {
-      return false;
-    }
-    if (treeProp != null ? !treeProp.equals(testLayoutRef.treeProp) : testLayoutRef.treeProp != null) {
-      return false;
-    }
-    return true;
   }
 
   private UpdateCurrentStateStateUpdate createUpdateCurrentStateStateUpdate(int someParam) {
