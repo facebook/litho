@@ -108,7 +108,12 @@ public class ProcessorUtils {
   }
 
   public static String getPackageName(String qualifiedName) {
-    return qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
+    int lastDotIndex = qualifiedName.lastIndexOf('.');
+    if (lastDotIndex == -1) {
+      throw new IllegalArgumentException(
+          "Your class " + qualifiedName + " has no package declaration.");
+    }
+    return qualifiedName.substring(0, lastDotIndex);
   }
 
   public static String getPackageName(TypeName typeName) {
