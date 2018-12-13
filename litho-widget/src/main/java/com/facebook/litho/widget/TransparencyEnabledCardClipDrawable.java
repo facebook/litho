@@ -19,7 +19,10 @@ import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 
 class TransparencyEnabledCardClipDrawable extends Drawable {
 
@@ -48,14 +51,23 @@ class TransparencyEnabledCardClipDrawable extends Drawable {
 
   @Override
   public void draw(Canvas canvas) {
-    canvas.drawRoundRect(
-        getBounds().left,
-        getBounds().top,
-        getBounds().right,
-        getBounds().bottom,
-        mCornerRadius,
-        mCornerRadius,
-        mBackgroundPaint);
+    Rect bounds = getBounds();
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      canvas.drawRoundRect(
+          bounds.left,
+          bounds.top,
+          bounds.right,
+          bounds.bottom,
+          mCornerRadius,
+          mCornerRadius,
+          mBackgroundPaint);
+    } else {
+      canvas.drawRoundRect(
+          new RectF(bounds.left, bounds.top, bounds.right, bounds.bottom),
+          mCornerRadius,
+          mCornerRadius,
+          mBackgroundPaint);
+    }
   }
 
   void setBackgroundColor(int backgroundColor) {
