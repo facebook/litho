@@ -27,6 +27,7 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.CachedValueParamModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
@@ -853,6 +854,11 @@ public class ComponentBodyGenerator {
     if (methodParamModel instanceof StateParamModel ||
         SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName()) != null) {
       return STATE_CONTAINER_FIELD_NAME + "." + methodParamModel.getName();
+    } else if (methodParamModel instanceof CachedValueParamModel) {
+      return "get"
+          + methodParamModel.getName().substring(0, 1).toUpperCase()
+          + methodParamModel.getName().substring(1)
+          + "()";
     }
 
     return methodParamModel.getName();

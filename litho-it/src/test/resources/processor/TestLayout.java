@@ -47,6 +47,7 @@ import com.facebook.litho.annotations.TreeProp;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @prop-required aspectRatio float
@@ -194,16 +195,17 @@ public final class TestLayout<S extends View> extends Component implements TestT
         (Component)
             TestLayoutSpec.onCreateLayout(
                 (ComponentContext) context,
-                (boolean) prop2,
                 (Object) prop3,
                 (char[]) prop4,
                 (EventHandler<ClickEvent>) handler,
+                (Component) child,
+                (boolean) prop2,
                 (List<String>) names,
                 (long) mStateContainer.state1,
                 (S) mStateContainer.state2,
                 (int) mStateContainer.state3,
                 (TestTreeProp) treeProp,
-                (Component) child);
+                (Integer) getCached());
     return _result;
   }
 
@@ -466,6 +468,17 @@ public final class TestLayout<S extends View> extends Component implements TestT
     TestLayout instance = new TestLayout();
     builder.init(context, defStyleAttr, defStyleRes, instance);
     return builder;
+  }
+
+  private int getCached() {
+    ComponentContext c = getScopedContext();
+    final CachedInputs inputs = new CachedInputs(prop3, prop5, mStateContainer.state1);
+    Integer cached = (Integer) c.getCachedValue(inputs);
+    if (cached == null) {
+      cached = TestLayoutSpec.onCalculateCached(prop3, prop5, mStateContainer.state1);
+      c.putCachedValue(inputs, cached);
+    }
+    return cached;
   }
 
   @VisibleForTesting(
@@ -774,6 +787,48 @@ public final class TestLayout<S extends View> extends Component implements TestT
       super.release();
       mTestLayout = null;
       mContext = null;
+    }
+  }
+
+  private static class CachedInputs {
+    private final Object prop3;
+
+    private final char prop5;
+
+    private final long state1;
+
+    CachedInputs(Object prop3, char prop5, long state1) {
+      this.prop3 = prop3;
+      this.prop5 = prop5;
+      this.state1 = state1;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(prop3, prop5, state1);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      if (this == other) {
+        return true;
+      }
+      if (other == null || !(other instanceof CachedInputs)) {
+        return false;
+      }
+      CachedInputs cachedValueInputs = (CachedInputs) other;
+      if (prop3 != null
+          ? !prop3.equals(cachedValueInputs.prop3)
+          : cachedValueInputs.prop3 != null) {
+        return false;
+      }
+      if (prop5 != cachedValueInputs.prop5) {
+        return false;
+      }
+      if (state1 != cachedValueInputs.state1) {
+        return false;
+      }
+      return true;
     }
   }
 }

@@ -17,6 +17,7 @@
 package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.generator.BuilderGenerator;
+import com.facebook.litho.specmodels.generator.CachedValueGenerator;
 import com.facebook.litho.specmodels.generator.ClassAnnotationsGenerator;
 import com.facebook.litho.specmodels.generator.ComponentBodyGenerator;
 import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
@@ -69,6 +70,7 @@ public class DefaultLayoutSpecGenerator implements SpecGenerator<LayoutSpecModel
         .addTypeSpecDataHolder(RenderDataGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(BuilderGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(TagGenerator.generate(layoutSpecModel, new LinkedHashSet<>()))
+        .addTypeSpecDataHolder(CachedValueGenerator.generate(layoutSpecModel))
         .build()
         .addToTypeSpec(typeSpec);
 

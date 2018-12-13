@@ -36,6 +36,7 @@ import com.facebook.litho.Output;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
+import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.FromBoundsDefined;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.FromMeasure;
@@ -44,6 +45,7 @@ import com.facebook.litho.annotations.GetExtraAccessibilityNodeAt;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodesCount;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBoundsDefined;
+import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnCreateMountContentPool;
@@ -147,6 +149,7 @@ public class TestMountSpec<S extends View> implements TestTag {
       int componentBoundsTop,
       @Prop Object prop3,
       @Prop(resType = STRING) @Nullable CharSequence prop7,
+      @CachedValue int cached,
       @FromBoundsDefined Integer boundsDefinedOutput) {}
 
   @GetExtraAccessibilityNodeAt
@@ -162,11 +165,12 @@ public class TestMountSpec<S extends View> implements TestTag {
   @OnEvent(ClickEvent.class)
   static void testLayoutEvent(
       ComponentContext c,
-      @FromEvent View view,
-      @Param int param1,
       @Prop Object prop3,
       @Prop char prop5,
-      @State(canUpdateLazily = true) long state1) {}
+      @FromEvent View view,
+      @Param int param1,
+      @State(canUpdateLazily = true) long state1,
+      @CachedValue int cached) {}
 
   @OnTrigger(ClickEvent.class)
   static void onClickEventTrigger(ComponentContext c, @FromTrigger View view, @Prop Object prop3) {}
@@ -188,5 +192,11 @@ public class TestMountSpec<S extends View> implements TestTag {
   @OnCreateMountContentPool
   static MountContentPool onCreateMountContentPool() {
     return new DefaultMountContentPool("MyCustomPool", 3, true);
+  }
+
+  @OnCalculateCachedValue(name = "cached")
+  static int onCalculateCached(
+      @Prop Object prop3, @Prop char prop5, @State(canUpdateLazily = true) long state1) {
+    return 0;
   }
 }

@@ -17,6 +17,7 @@
 package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.generator.BuilderGenerator;
+import com.facebook.litho.specmodels.generator.CachedValueGenerator;
 import com.facebook.litho.specmodels.generator.ClassAnnotationsGenerator;
 import com.facebook.litho.specmodels.generator.ComponentBodyGenerator;
 import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
@@ -89,6 +90,7 @@ public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> 
         .addTypeSpecDataHolder(RenderDataGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(BuilderGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(TagGenerator.generate(mountSpecModel, mBlacklistedTagInterfaces))
+        .addTypeSpecDataHolder(CachedValueGenerator.generate(mountSpecModel))
         .build()
         .addToTypeSpec(typeSpec);
 

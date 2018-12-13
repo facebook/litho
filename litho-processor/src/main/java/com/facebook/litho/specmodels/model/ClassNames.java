@@ -26,6 +26,7 @@ import java.util.List;
  */
 public interface ClassNames {
   ClassName OBJECT = ClassName.bestGuess("java.lang.Object");
+  ClassName OBJECTS = ClassName.bestGuess("java.util.Objects");
   ClassName STRING = ClassName.bestGuess("java.lang.String");
   ClassName EXCEPTION = ClassName.bestGuess("java.lang.Exception");
 
