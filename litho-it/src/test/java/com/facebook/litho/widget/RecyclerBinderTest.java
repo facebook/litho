@@ -4617,7 +4617,6 @@ public class RecyclerBinderTest {
 
     ShadowLooper.runUiThreadTasks();
 
-    // First one for initRange
     assertThat(recyclerBinder.getComponentTreeHolderAt(1).hasCompletedLatestLayout()).isFalse();
     assertThat(recyclerBinder.getComponentTreeHolderAt(1).hasCompletedLatestLayout()).isFalse();
     assertThat(recyclerBinder.getComponentTreeHolderAt(2).hasCompletedLatestLayout()).isFalse();
@@ -4655,7 +4654,6 @@ public class RecyclerBinderTest {
 
     ShadowLooper.runUiThreadTasks();
 
-    // Measure on background means we **do** pre-compute all the layouts in first changeset
     assertThat(recyclerBinder.getItemCount()).isEqualTo(5);
 
     assertThat(recyclerBinder.getComponentTreeHolderAt(0).hasCompletedLatestLayout()).isTrue();
@@ -4663,6 +4661,42 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getComponentTreeHolderAt(2).hasCompletedLatestLayout()).isFalse();
     assertThat(recyclerBinder.getComponentTreeHolderAt(3).hasCompletedLatestLayout()).isFalse();
     assertThat(recyclerBinder.getComponentTreeHolderAt(4).hasCompletedLatestLayout()).isFalse();
+  }
+
+  @Test
+  public void testAsyncBatchesAppliedAfterMeasureWithEarlyExit() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .layoutInfo(
+                new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
+            .rangeRatio(10)
+            .build(mComponentContext);
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.insertRangeAtAsync(0, renderInfos);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    runOnBackgroundThreadSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            recyclerBinder.measure(
+                new Size(), makeSizeSpec(200, EXACTLY), makeSizeSpec(200, EXACTLY), null);
+
+            // Second measure will early exit
+            recyclerBinder.measure(
+                new Size(), makeSizeSpec(200, EXACTLY), makeSizeSpec(200, EXACTLY), null);
+          }
+        });
+
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(5);
   }
 
   @Test

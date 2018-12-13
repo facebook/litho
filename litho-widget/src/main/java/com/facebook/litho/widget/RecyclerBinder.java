@@ -1715,153 +1715,156 @@ public class RecyclerBinder
     // TODO(t37195892): Do not hold lock throughout measure call in RecyclerBinder
     mIsInMeasure.set(true);
 
-    synchronized (this) {
-      final int scrollDirection = mLayoutInfo.getScrollDirection();
+    try {
+      synchronized (this) {
+        final int scrollDirection = mLayoutInfo.getScrollDirection();
 
-      switch (scrollDirection) {
-        case HORIZONTAL:
-          if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
-            throw new IllegalStateException(
-                "Width mode has to be EXACTLY OR AT MOST for an horizontal scrolling RecyclerView");
-          }
-          break;
-
-        case VERTICAL:
-          if (SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
-            throw new IllegalStateException(
-                "Height mode has to be EXACTLY OR AT MOST for a vertical scrolling RecyclerView");
-          }
-          break;
-
-        default:
-          throw new UnsupportedOperationException(
-              "The orientation defined by LayoutInfo should be"
-                  + " either OrientationHelper.HORIZONTAL or OrientationHelper.VERTICAL");
-      }
-
-      if (mLastWidthSpec != LayoutManagerOverrideParams.UNINITIALIZED
-          && !mRequiresRemeasure.get()) {
         switch (scrollDirection) {
-          case VERTICAL:
-            if (MeasureComparisonUtils.isMeasureSpecCompatible(
-                mLastWidthSpec, widthSpec, mMeasuredSize.width)) {
-              outSize.width = mMeasuredSize.width;
-              outSize.height = mWrapContent ? mMeasuredSize.height : SizeSpec.getSize(heightSpec);
-
-              return;
+          case HORIZONTAL:
+            if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
+              throw new IllegalStateException(
+                  "Width mode has to be EXACTLY OR AT MOST for an horizontal scrolling RecyclerView");
             }
             break;
-          default:
-            if (MeasureComparisonUtils.isMeasureSpecCompatible(
-                mLastHeightSpec, heightSpec, mMeasuredSize.height)) {
-              outSize.width = mWrapContent ? mMeasuredSize.width : SizeSpec.getSize(widthSpec);
-              outSize.height = mMeasuredSize.height;
 
-              return;
+          case VERTICAL:
+            if (SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
+              throw new IllegalStateException(
+                  "Height mode has to be EXACTLY OR AT MOST for a vertical scrolling RecyclerView");
             }
+            break;
+
+          default:
+            throw new UnsupportedOperationException(
+                "The orientation defined by LayoutInfo should be"
+                    + " either OrientationHelper.HORIZONTAL or OrientationHelper.VERTICAL");
         }
 
-        mIsMeasured.set(false);
-        invalidateLayoutData();
-      }
+        if (mLastWidthSpec != LayoutManagerOverrideParams.UNINITIALIZED
+            && !mRequiresRemeasure.get()) {
+          switch (scrollDirection) {
+            case VERTICAL:
+              if (MeasureComparisonUtils.isMeasureSpecCompatible(
+                  mLastWidthSpec, widthSpec, mMeasuredSize.width)) {
+                outSize.width = mMeasuredSize.width;
+                outSize.height = mWrapContent ? mMeasuredSize.height : SizeSpec.getSize(heightSpec);
 
-      // We have never measured before or the measures are not valid so we need to measure now.
-      mLastWidthSpec = widthSpec;
-      mLastHeightSpec = heightSpec;
+                return;
+              }
+              break;
+            default:
+              if (MeasureComparisonUtils.isMeasureSpecCompatible(
+                  mLastHeightSpec, heightSpec, mMeasuredSize.height)) {
+                outSize.width = mWrapContent ? mMeasuredSize.width : SizeSpec.getSize(widthSpec);
+                outSize.height = mMeasuredSize.height;
 
-      if (mRange == null) {
-        final ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
-        if (holderForRangeInfo != null) {
-          initRange(
-              SizeSpec.getSize(widthSpec),
-              SizeSpec.getSize(heightSpec),
-              holderForRangeInfo,
-              scrollDirection);
+                return;
+              }
+          }
+
+          mIsMeasured.set(false);
+          invalidateLayoutData();
         }
-      }
 
-      // At this point we might still not have a range. In this situation we should return the best
-      // size we can detect from the size spec and update it when the first item comes in.
-      final boolean canMeasure = reMeasureEventHandler != null;
-      final int measuredWidth;
-      final int measuredHeight;
+        // We have never measured before or the measures are not valid so we need to measure now.
+        mLastWidthSpec = widthSpec;
+        mLastHeightSpec = heightSpec;
 
-      switch (scrollDirection) {
-        case OrientationHelper.VERTICAL:
-          if (!canMeasure && SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
-            throw new IllegalStateException(
-                "Can't use Unspecified width on a vertical scrolling "
-                    + "Recycler if dynamic measurement is not allowed");
+        if (mRange == null) {
+          final ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
+          if (holderForRangeInfo != null) {
+            initRange(
+                SizeSpec.getSize(widthSpec),
+                SizeSpec.getSize(heightSpec),
+                holderForRangeInfo,
+                scrollDirection);
           }
+        }
 
-          measuredHeight = SizeSpec.getSize(heightSpec);
+        // At this point we might still not have a range. In this situation we should return the
+        // best
+        // size we can detect from the size spec and update it when the first item comes in.
+        final boolean canMeasure = reMeasureEventHandler != null;
+        final int measuredWidth;
+        final int measuredHeight;
 
-          if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY || !canMeasure) {
-            measuredWidth = SizeSpec.getSize(widthSpec);
-            mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
-            mRequiresRemeasure.set(mWrapContent);
-          } else if (mRange != null) {
-            measuredWidth = mRange.measuredSize;
-            mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
-            mRequiresRemeasure.set(mWrapContent);
-          } else {
-            measuredWidth = 0;
-            mRequiresRemeasure.set(true);
-            mReMeasureEventEventHandler = reMeasureEventHandler;
-          }
-          break;
+        switch (scrollDirection) {
+          case OrientationHelper.VERTICAL:
+            if (!canMeasure && SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
+              throw new IllegalStateException(
+                  "Can't use Unspecified width on a vertical scrolling "
+                      + "Recycler if dynamic measurement is not allowed");
+            }
 
-        case OrientationHelper.HORIZONTAL:
-        default:
-          if (!canMeasure && SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
-            throw new IllegalStateException(
-                "Can't use Unspecified height on an horizontal "
-                    + "scrolling Recycler if dynamic measurement is not allowed");
-          }
-
-          measuredWidth = SizeSpec.getSize(widthSpec);
-
-          if (SizeSpec.getMode(heightSpec) == SizeSpec.EXACTLY || !canMeasure) {
             measuredHeight = SizeSpec.getSize(heightSpec);
-            mReMeasureEventEventHandler =
-                (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
-            mRequiresRemeasure.set(mHasDynamicItemHeight || mWrapContent);
-          } else if (mRange != null) {
-            measuredHeight = mRange.measuredSize;
-            mReMeasureEventEventHandler =
-                (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
-            mRequiresRemeasure.set(mHasDynamicItemHeight || mWrapContent);
-          } else {
-            measuredHeight = 0;
-            mRequiresRemeasure.set(true);
-            mReMeasureEventEventHandler = reMeasureEventHandler;
-          }
-          break;
+
+            if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY || !canMeasure) {
+              measuredWidth = SizeSpec.getSize(widthSpec);
+              mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
+              mRequiresRemeasure.set(mWrapContent);
+            } else if (mRange != null) {
+              measuredWidth = mRange.measuredSize;
+              mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
+              mRequiresRemeasure.set(mWrapContent);
+            } else {
+              measuredWidth = 0;
+              mRequiresRemeasure.set(true);
+              mReMeasureEventEventHandler = reMeasureEventHandler;
+            }
+            break;
+
+          case OrientationHelper.HORIZONTAL:
+          default:
+            if (!canMeasure && SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
+              throw new IllegalStateException(
+                  "Can't use Unspecified height on an horizontal "
+                      + "scrolling Recycler if dynamic measurement is not allowed");
+            }
+
+            measuredWidth = SizeSpec.getSize(widthSpec);
+
+            if (SizeSpec.getMode(heightSpec) == SizeSpec.EXACTLY || !canMeasure) {
+              measuredHeight = SizeSpec.getSize(heightSpec);
+              mReMeasureEventEventHandler =
+                  (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
+              mRequiresRemeasure.set(mHasDynamicItemHeight || mWrapContent);
+            } else if (mRange != null) {
+              measuredHeight = mRange.measuredSize;
+              mReMeasureEventEventHandler =
+                  (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
+              mRequiresRemeasure.set(mHasDynamicItemHeight || mWrapContent);
+            } else {
+              measuredHeight = 0;
+              mRequiresRemeasure.set(true);
+              mReMeasureEventEventHandler = reMeasureEventHandler;
+            }
+            break;
+        }
+
+        final Size wrapSize = mWrapContent ? new Size() : null;
+
+        if (mWrapContent) {
+          fillListViewport(measuredWidth, measuredHeight, wrapSize);
+        }
+
+        outSize.width = mWrapContent ? wrapSize.width : measuredWidth;
+        outSize.height = mWrapContent ? wrapSize.height : measuredHeight;
+
+        mMeasuredSize = new Size(outSize.width, outSize.height);
+        mIsMeasured.set(true);
+
+        maybeFillHScrollViewport();
+        updateAsyncInsertOperations();
+
+        if (mRange != null) {
+          computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+        }
       }
-
-      final Size wrapSize = mWrapContent ? new Size() : null;
-
-      if (mWrapContent) {
-        fillListViewport(measuredWidth, measuredHeight, wrapSize);
+    } finally {
+      mIsInMeasure.set(false);
+      if (mHasAsyncOperations) {
+        mMainThreadHandler.post(mApplyReadyBatchesRunnable);
       }
-
-      outSize.width = mWrapContent ? wrapSize.width : measuredWidth;
-      outSize.height = mWrapContent ? wrapSize.height : measuredHeight;
-
-      mMeasuredSize = new Size(outSize.width, outSize.height);
-      mIsMeasured.set(true);
-
-      maybeFillHScrollViewport();
-      updateAsyncInsertOperations();
-
-      if (mRange != null) {
-        computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
-      }
-    }
-
-    mIsInMeasure.set(false);
-    if (mHasAsyncOperations) {
-      mMainThreadHandler.post(mApplyReadyBatchesRunnable);
     }
   }
 
