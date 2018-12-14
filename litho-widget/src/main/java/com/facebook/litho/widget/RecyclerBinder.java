@@ -25,6 +25,7 @@ import static com.facebook.litho.MeasureComparisonUtils.isMeasureSpecCompatible;
 import static com.facebook.litho.widget.ComponentTreeHolder.RENDER_UNINITIALIZED;
 import static com.facebook.litho.widget.RenderInfoViewCreatorController.DEFAULT_COMPONENT_VIEW_TYPE;
 
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -89,6 +90,7 @@ public class RecyclerBinder
     implements Binder<RecyclerView>, LayoutInfo.RenderInfoCollection, HasStickyHeader {
 
   private static final Size sDummySize = new Size();
+  private static final Rect sDummyRect = new Rect();
   private static final String TAG = RecyclerBinder.class.getSimpleName();
   private static final int POST_UPDATE_VIEWPORT_AND_COMPUTE_RANGE_MAX_ATTEMPTS = 3;
   private static final int DATA_RENDERED_CALLBACKS_QUEUE_MAX_SIZE = 20;
@@ -1492,16 +1494,15 @@ public class RecyclerBinder
     }
 
     // Execute onDataRendered callbacks immediately if the view has been unmounted, finishes
-    // dispatchDraw (no pending updates), is detached, or its visibility is GONE.
+    // dispatchDraw (no pending updates), is detached, or is visible.
     if (mMountedView == null
         || !mMountedView.hasPendingAdapterUpdates()
         || !mMountedView.isAttachedToWindow()
-        || mMountedView.getVisibility() == View.GONE) {
+        || !isVisibleToUser(mMountedView)) {
       final boolean isMounted = (mMountedView != null);
       final Deque<ChangeSetCompleteCallback> snapshotCallbacks =
           new ArrayDeque<>(mDataRenderedCallbacks);
       mDataRenderedCallbacks.clear();
-
       mMainThreadHandler.postAtFrontOfQueue(
           new Runnable() {
             @Override
@@ -1515,35 +1516,38 @@ public class RecyclerBinder
     } else {
       if (mDataRenderedCallbacks.size() > DATA_RENDERED_CALLBACKS_QUEUE_MAX_SIZE) {
         mDataRenderedCallbacks.clear();
-//        TODO(t37887289): Re-enable logging for onDataRendered soft error
-//        final ComponentsLogger logger = mComponentContext.getLogger();
-//        if (logger != null) {
-//          final StringBuilder messageBuilder = new StringBuilder();
-//          if (mMountedView == null) {
-//            messageBuilder.append("mMountedView == null");
-//          } else {
-//            messageBuilder
-//                .append("mMountedView: ")
-//                .append(mMountedView)
-//                .append(", hasPendingAdapterUpdates(): ")
-//                .append(mMountedView.hasPendingAdapterUpdates())
-//                .append(", isAttachedToWindow(): ")
-//                .append(mMountedView.isAttachedToWindow())
-//                .append(", getVisibility(): ")
-//                .append(mMountedView.getVisibility())
-//                .append(", isComputingLayout(): ")
-//                .append(mMountedView.isComputingLayout());
-//          }
-//          messageBuilder
-//              .append(", visible range: [")
-//              .append(mCurrentFirstVisiblePosition)
-//              .append(", ")
-//              .append(mCurrentLastVisiblePosition)
-//              .append("]");
-//          logger.emitMessage(
-//              ComponentsLogger.LogLevel.ERROR,
-//              "@OnDataRendered callbacks aren't triggered as expected: " + messageBuilder);
-//        }
+        final ComponentsLogger logger = mComponentContext.getLogger();
+        if (logger != null) {
+          final StringBuilder messageBuilder = new StringBuilder();
+          if (mMountedView == null) {
+            messageBuilder.append("mMountedView == null");
+          } else {
+            messageBuilder
+                .append("mMountedView: ")
+                .append(mMountedView)
+                .append(", hasPendingAdapterUpdates(): ")
+                .append(mMountedView.hasPendingAdapterUpdates())
+                .append(", isAttachedToWindow(): ")
+                .append(mMountedView.isAttachedToWindow())
+                .append(", getWindowVisibility(): ")
+                .append(mMountedView.getWindowVisibility())
+                .append(", vie visible hierarchy: ")
+                .append(getVisibleHierarchy(mMountedView))
+                .append(", getGlobalVisibleRect(): ")
+                .append(mMountedView.getGlobalVisibleRect(sDummyRect))
+                .append(", isComputingLayout(): ")
+                .append(mMountedView.isComputingLayout());
+          }
+          messageBuilder
+              .append(", visible range: [")
+              .append(mCurrentFirstVisiblePosition)
+              .append(", ")
+              .append(mCurrentLastVisiblePosition)
+              .append("]");
+          logger.emitMessage(
+              ComponentsLogger.LogLevel.ERROR,
+              "@OnDataRendered callbacks aren't triggered as expected: " + messageBuilder);
+        }
       }
     }
 
@@ -3120,6 +3124,48 @@ public class RecyclerBinder
     }
 
     return sThreadPoolHandler;
+  }
+
+  /**
+   * @return true if the given view is visible to user, false otherwise. The logic is leveraged from
+   *     {@link View#isVisibleToUser()}.
+   */
+  private static boolean isVisibleToUser(View view) {
+    if (view.getWindowVisibility() != View.VISIBLE) {
+      return false;
+    }
+
+    Object current = view;
+    while (current instanceof View) {
+      final View currentView = (View) current;
+      if (currentView.getAlpha() <= 0 || currentView.getVisibility() != View.VISIBLE) {
+        return false;
+      }
+      current = currentView.getParent();
+    }
+
+    return view.getGlobalVisibleRect(sDummyRect);
+  }
+
+  /** @return a list of view's visibility, iterating from given view to its ancestor views. */
+  private static List<String> getVisibleHierarchy(View view) {
+    final List<String> hierarchy = new ArrayList<>();
+    Object current = view;
+    while (current instanceof View) {
+      final View currentView = (View) current;
+      hierarchy.add(
+          "view="
+              + currentView.getClass().getSimpleName()
+              + ", alpha="
+              + currentView.getAlpha()
+              + ", visibility="
+              + currentView.getVisibility());
+      if (currentView.getAlpha() <= 0 || currentView.getVisibility() != View.VISIBLE) {
+        break;
+      }
+      current = currentView.getParent();
+    }
+    return hierarchy;
   }
 
   @VisibleForTesting

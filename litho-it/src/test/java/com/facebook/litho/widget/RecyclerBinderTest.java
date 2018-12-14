@@ -36,6 +36,7 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -3775,7 +3776,10 @@ public class RecyclerBinderTest {
     final RecyclerView recyclerView = mock(LithoRecylerView.class);
     when(recyclerView.hasPendingAdapterUpdates()).thenReturn(false);
     when(recyclerView.isAttachedToWindow()).thenReturn(true);
+    when(recyclerView.getWindowVisibility()).thenReturn(View.VISIBLE);
+    when(recyclerView.getAlpha()).thenReturn(1f);
     when(recyclerView.getVisibility()).thenReturn(View.VISIBLE);
+    when(recyclerView.getGlobalVisibleRect(any(Rect.class))).thenReturn(true);
     recyclerBinder.mount(recyclerView);
 
     recyclerBinder.insertRangeAt(0, renderInfos);
@@ -3800,7 +3804,10 @@ public class RecyclerBinderTest {
     final RecyclerView recyclerView = mock(LithoRecylerView.class);
     when(recyclerView.hasPendingAdapterUpdates()).thenReturn(true);
     when(recyclerView.isAttachedToWindow()).thenReturn(false);
+    when(recyclerView.getWindowVisibility()).thenReturn(View.VISIBLE);
+    when(recyclerView.getAlpha()).thenReturn(1f);
     when(recyclerView.getVisibility()).thenReturn(View.VISIBLE);
+    when(recyclerView.getGlobalVisibleRect(any(Rect.class))).thenReturn(true);
     recyclerBinder.mount(recyclerView);
 
     recyclerBinder.insertRangeAt(0, renderInfos);
@@ -3825,7 +3832,10 @@ public class RecyclerBinderTest {
     final RecyclerView recyclerView = mock(LithoRecylerView.class);
     when(recyclerView.hasPendingAdapterUpdates()).thenReturn(true);
     when(recyclerView.isAttachedToWindow()).thenReturn(true);
+    when(recyclerView.getWindowVisibility()).thenReturn(View.GONE);
+    when(recyclerView.getAlpha()).thenReturn(1f);
     when(recyclerView.getVisibility()).thenReturn(View.GONE);
+    when(recyclerView.getGlobalVisibleRect(any(Rect.class))).thenReturn(false);
     recyclerBinder.mount(recyclerView);
 
     recyclerBinder.insertRangeAt(0, renderInfos);
@@ -4337,9 +4347,7 @@ public class RecyclerBinderTest {
     assertThat(syncLayouts.get(2)).isEqualTo(ASYNC);
   }
 
-
-  // TODO(t37887289): Fix me
-  //@Test
+  @Test
   public void testDataRenderedCallbacksAreNotTriggered() {
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
@@ -4355,7 +4363,10 @@ public class RecyclerBinderTest {
     final RecyclerView recyclerView = mock(LithoRecylerView.class);
     when(recyclerView.hasPendingAdapterUpdates()).thenReturn(true);
     when(recyclerView.isAttachedToWindow()).thenReturn(true);
+    when(recyclerView.getWindowVisibility()).thenReturn(View.VISIBLE);
+    when(recyclerView.getAlpha()).thenReturn(1f);
     when(recyclerView.getVisibility()).thenReturn(View.VISIBLE);
+    when(recyclerView.getGlobalVisibleRect(any(Rect.class))).thenReturn(true);
     recyclerBinder.mount(recyclerView);
 
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
