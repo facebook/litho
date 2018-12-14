@@ -40,6 +40,7 @@ import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionLifecycle;
 import java.util.BitSet;
+import java.util.Objects;
 
 /**
  * Comment to be copied in generated section
@@ -396,7 +397,8 @@ final class FullGroupSection<T> extends Section implements TestTag {
         (boolean) isMounted,
         (long) uptimeMillis,
         (int) prop1,
-        (Object) mStateContainer.state2);
+        (Object) mStateContainer.state2,
+        (Integer) getCached());
   }
 
   @Override
@@ -418,6 +420,17 @@ final class FullGroupSection<T> extends Section implements TestTag {
             .TreePropWrapper.class,
         FullGroupSectionSpec.onCreateTreeProp((SectionContext) c, treeProp));
     return childTreeProps;
+  }
+
+  private int getCached() {
+    SectionContext c = getScopedContext();
+    final CachedInputs inputs = new CachedInputs(prop1);
+    Integer cached = (Integer) c.getCachedValue(inputs);
+    if (cached == null) {
+      cached = FullGroupSectionSpec.onCalculateCached(prop1);
+      c.putCachedValue(inputs, cached);
+    }
+    return cached;
   }
 
   @VisibleForTesting(otherwise = 2)
@@ -565,6 +578,34 @@ final class FullGroupSection<T> extends Section implements TestTag {
       state2.set(stateContainer.state2);
       FullGroupSectionSpec.updateState(state2, mParam);
       stateContainer.state2 = state2.get();
+    }
+  }
+
+  private static class CachedInputs {
+    private final int prop1;
+
+    CachedInputs(int prop1) {
+      this.prop1 = prop1;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(prop1);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      if (this == other) {
+        return true;
+      }
+      if (other == null || !(other instanceof CachedInputs)) {
+        return false;
+      }
+      CachedInputs cachedValueInputs = (CachedInputs) other;
+      if (prop1 != cachedValueInputs.prop1) {
+        return false;
+      }
+      return true;
     }
   }
 }

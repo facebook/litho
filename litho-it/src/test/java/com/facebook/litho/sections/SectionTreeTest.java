@@ -887,6 +887,17 @@ public class SectionTreeTest {
     }
   }
 
+  @Test
+  public void testCachedValues() {
+    final ThreadCheckingTarget target = new ThreadCheckingTarget(true);
+
+    SectionTree sectionTree = SectionTree.create(mSectionContext, target).build();
+    assertThat(sectionTree.getCachedValue("key1")).isNull();
+    sectionTree.putCachedValue("key1", "value1");
+    assertThat(sectionTree.getCachedValue("key1")).isEqualTo("value1");
+    assertThat(sectionTree.getCachedValue("key2")).isNull();
+  }
+
   private static void assertChangeSetHandled(TestTarget testTarget) {
     assertThat(testTarget.wereChangesHandled()).isTrue();
     assertThat(testTarget.wasNotifyChangeSetCompleteCalledWithChangedData()).isTrue();

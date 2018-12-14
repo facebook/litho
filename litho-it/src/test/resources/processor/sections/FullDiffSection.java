@@ -37,6 +37,7 @@ import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionLifecycle;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @prop-required data java.util.List<T>
@@ -351,7 +352,19 @@ public final class FullDiffSection<T> extends Section implements TestTag {
         (boolean) isDataChanged,
         (boolean) isMounted,
         (long) uptimeMillis,
-        (Integer) prop1);
+        (Integer) prop1,
+        (Integer) getCached());
+  }
+
+  private int getCached() {
+    SectionContext c = getScopedContext();
+    final CachedInputs inputs = new CachedInputs(prop1);
+    Integer cached = (Integer) c.getCachedValue(inputs);
+    if (cached == null) {
+      cached = FullDiffSectionSpec.onCalculateCached(prop1);
+      c.putCachedValue(inputs, cached);
+    }
+    return cached;
   }
 
   @VisibleForTesting(otherwise = 2)
@@ -459,6 +472,36 @@ public final class FullDiffSection<T> extends Section implements TestTag {
       state1.set(stateContainer.state1);
       FullDiffSectionSpec.updateState(state1, mParam);
       stateContainer.state1 = state1.get();
+    }
+  }
+
+  private static class CachedInputs {
+    private final Integer prop1;
+
+    CachedInputs(Integer prop1) {
+      this.prop1 = prop1;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(prop1);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      if (this == other) {
+        return true;
+      }
+      if (other == null || !(other instanceof CachedInputs)) {
+        return false;
+      }
+      CachedInputs cachedValueInputs = (CachedInputs) other;
+      if (prop1 != null
+          ? !prop1.equals(cachedValueInputs.prop1)
+          : cachedValueInputs.prop1 != null) {
+        return false;
+      }
+      return true;
     }
   }
 }

@@ -17,6 +17,7 @@
 package com.facebook.litho.sections.specmodels.model;
 
 import com.facebook.litho.specmodels.generator.BuilderGenerator;
+import com.facebook.litho.specmodels.generator.CachedValueGenerator;
 import com.facebook.litho.specmodels.generator.ComponentBodyGenerator;
 import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
 import com.facebook.litho.specmodels.generator.EventGenerator;
@@ -73,6 +74,7 @@ public class DefaultDiffSectionSpecGenerator implements SpecGenerator<DiffSectio
                 specModel, DelegateMethodDescriptions.getDiffSectionSpecDelegatesMap(specModel)))
         .addTypeSpecDataHolder(TriggerGenerator.generate(specModel))
         .addTypeSpecDataHolder(TagGenerator.generate(specModel, mBlacklistedTagInterfaces))
+        .addTypeSpecDataHolder(CachedValueGenerator.generate(specModel))
         .build()
         .addToTypeSpec(typeSpec);
 

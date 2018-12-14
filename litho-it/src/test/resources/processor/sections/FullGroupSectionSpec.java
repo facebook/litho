@@ -22,7 +22,9 @@ import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.Diff;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.FromEvent;
+import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnEvent;
@@ -134,5 +136,11 @@ public class FullGroupSectionSpec<T> implements TestTag {
       boolean isMounted,
       long uptimeMillis,
       @Prop int prop1,
-      @State(canUpdateLazily = true) Object state2) {}
+      @State(canUpdateLazily = true) Object state2,
+      @CachedValue int cached) {}
+
+  @OnCalculateCachedValue(name = "cached")
+  static int onCalculateCached(@Prop int prop1) {
+    return 0;
+  }
 }

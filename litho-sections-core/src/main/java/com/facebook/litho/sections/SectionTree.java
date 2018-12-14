@@ -239,6 +239,11 @@ public class SectionTree {
   @GuardedBy("this")
   private List<ChangeSet> mPendingChangeSets;
 
+  /** Map of all cached values that are stored for the current ComponentTree. */
+  @GuardedBy("this")
+  @Nullable
+  private Map<Object, Object> mCachedValues;
+
   private final EventHandlersController mEventHandlersController = new EventHandlersController();
 
   private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
@@ -825,6 +830,23 @@ public class SectionTree {
 
   synchronized void updateStateLazy(String key, StateUpdate stateUpdate) {
     addStateUpdateInternal(key, stateUpdate, true);
+  }
+
+  @Nullable
+  synchronized Object getCachedValue(Object cachedValueInputs) {
+    if (mCachedValues == null) {
+      mCachedValues = new HashMap<>();
+    }
+
+    return mCachedValues.get(cachedValueInputs);
+  }
+
+  synchronized void putCachedValue(Object cachedValueInputs, Object cachedValue) {
+    if (mCachedValues == null) {
+      mCachedValues = new HashMap<>();
+    }
+
+    mCachedValues.put(cachedValueInputs, cachedValue);
   }
 
   private static @Nullable Section copy(Section section, boolean deep) {

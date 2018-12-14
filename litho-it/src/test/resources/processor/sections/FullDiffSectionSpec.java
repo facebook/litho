@@ -21,7 +21,9 @@ import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.Diff;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.FromEvent;
+import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
@@ -100,5 +102,11 @@ public class FullDiffSectionSpec<T> implements TestTag {
       boolean isDataChanged,
       boolean isMounted,
       long uptimeMillis,
-      @Prop Integer prop1) {}
+      @Prop Integer prop1,
+      @CachedValue int cached) {}
+
+  @OnCalculateCachedValue(name = "cached")
+  static int onCalculateCached(@Prop Integer prop1) {
+    return 0;
+  }
 }
