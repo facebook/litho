@@ -39,8 +39,9 @@ public class RecyclerEventsController {
       new Runnable() {
         @Override
         public void run() {
-          if (mSectionsRecyclerView != null && mSectionsRecyclerView.isRefreshing()) {
-            mSectionsRecyclerView.setRefreshing(false);
+          SectionsRecyclerView sectionsRecyclerView = mSectionsRecyclerView;
+          if (sectionsRecyclerView != null && sectionsRecyclerView.isRefreshing()) {
+            sectionsRecyclerView.setRefreshing(false);
           }
         }
       };
@@ -60,38 +61,41 @@ public class RecyclerEventsController {
    * @param animated if animated is set to true the scroll will happen with an animation.
    */
   public void requestScrollToPosition(final int position, final boolean animated) {
-    if (mSectionsRecyclerView == null) {
+    SectionsRecyclerView sectionsRecyclerView = mSectionsRecyclerView;
+    if (sectionsRecyclerView == null) {
       return;
     }
 
     if (animated) {
-      mSectionsRecyclerView.getRecyclerView().smoothScrollToPosition(position);
+      sectionsRecyclerView.getRecyclerView().smoothScrollToPosition(position);
       return;
     }
 
-    mSectionsRecyclerView.getRecyclerView().scrollToPosition(position);
+    sectionsRecyclerView.getRecyclerView().scrollToPosition(position);
   }
 
   public void clearRefreshing() {
-    if (mSectionsRecyclerView == null || !mSectionsRecyclerView.isRefreshing()) {
+    SectionsRecyclerView sectionsRecyclerView = mSectionsRecyclerView;
+    if (sectionsRecyclerView == null || !sectionsRecyclerView.isRefreshing()) {
       return;
     }
 
     if (ThreadUtils.isMainThread()) {
-      mSectionsRecyclerView.setRefreshing(false);
+      sectionsRecyclerView.setRefreshing(false);
       return;
     }
 
-    mSectionsRecyclerView.removeCallbacks(mClearRefreshRunnable);
-    mSectionsRecyclerView.post(mClearRefreshRunnable);
+    sectionsRecyclerView.removeCallbacks(mClearRefreshRunnable);
+    sectionsRecyclerView.post(mClearRefreshRunnable);
   }
 
   public void showRefreshing() {
-    if (mSectionsRecyclerView == null || mSectionsRecyclerView.isRefreshing()) {
+    SectionsRecyclerView sectionsRecyclerView = mSectionsRecyclerView;
+    if (sectionsRecyclerView == null || sectionsRecyclerView.isRefreshing()) {
       return;
     }
     ThreadUtils.assertMainThread();
-    mSectionsRecyclerView.setRefreshing(true);
+    sectionsRecyclerView.setRefreshing(true);
   }
 
   void setSectionsRecyclerView(@Nullable SectionsRecyclerView sectionsRecyclerView) {
@@ -104,7 +108,8 @@ public class RecyclerEventsController {
   }
 
   public @Nullable RecyclerView getRecyclerView() {
-    return mSectionsRecyclerView == null ? null : mSectionsRecyclerView.getRecyclerView();
+    SectionsRecyclerView sectionsRecyclerView = mSectionsRecyclerView;
+    return sectionsRecyclerView == null ? null : sectionsRecyclerView.getRecyclerView();
   }
 
   public void setOnRecyclerUpdateListener(
