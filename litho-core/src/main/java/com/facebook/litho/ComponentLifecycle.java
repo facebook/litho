@@ -359,7 +359,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     // delegates its layout creation to another component i.e. the root node belongs to
     // another component.
     if (node.getRootComponent() == null) {
-      node.setBaselineFunction(sBaselineFunction);
+      if (ComponentsConfiguration.shouldSetBaselineFunctionOnYogaNode) {
+        node.setBaselineFunction(sBaselineFunction);
+      }
 
       final boolean isMountSpecWithMeasure = canMeasure()
           && Component.isMountSpec((Component) this);
