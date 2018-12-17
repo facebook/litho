@@ -20,7 +20,6 @@ import static android.support.annotation.Dimension.DP;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.AttrRes;
@@ -33,7 +32,6 @@ import android.support.annotation.Px;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 import android.support.annotation.VisibleForTesting;
-import android.support.v4.content.ContextCompat;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.ViewOutlineProvider;
@@ -1289,19 +1287,11 @@ public abstract class Component extends ComponentLifecycle
         return background((ComparableDrawable) null);
       }
 
-      if (ComponentsConfiguration.enableComparableDrawable) {
-        return background(ComparableResDrawable.create(mContext.getAndroidContext(), resId));
-      } else {
-        return background(ContextCompat.getDrawable(mContext.getAndroidContext(), resId));
-      }
+      return background(ComparableResDrawable.create(mContext.getAndroidContext(), resId));
     }
 
     public T backgroundColor(@ColorInt int backgroundColor) {
-      if (ComponentsConfiguration.enableComparableDrawable) {
-        return background(ComparableColorDrawable.create(backgroundColor));
-      } else {
-        return background(new ColorDrawable(backgroundColor));
-      }
+      return background(ComparableColorDrawable.create(backgroundColor));
     }
 
     /**
@@ -1341,19 +1331,12 @@ public abstract class Component extends ComponentLifecycle
       if (resId == 0) {
         return foreground(null);
       }
-      if (ComponentsConfiguration.enableComparableDrawable) {
-        return foreground(ComparableResDrawable.create(mContext.getAndroidContext(), resId));
-      } else {
-        return foreground(ContextCompat.getDrawable(mContext.getAndroidContext(), resId));
-      }
+
+      return foreground(ComparableResDrawable.create(mContext.getAndroidContext(), resId));
     }
 
     public T foregroundColor(@ColorInt int foregroundColor) {
-      if (ComponentsConfiguration.enableComparableDrawable) {
-        return foreground(ComparableColorDrawable.create(foregroundColor));
-      } else {
-        return foreground(new ColorDrawable(foregroundColor));
-      }
+      return foreground(ComparableColorDrawable.create(foregroundColor));
     }
 
     public T wrapInView() {

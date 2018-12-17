@@ -34,4 +34,15 @@ public abstract class ComparableDrawable extends Drawable {
    * @return {@code true} iff this drawable is equivalent to the {@param other}.
    */
   public abstract boolean isEquivalentTo(ComparableDrawable other);
+
+  /** null safe utility method to check equality of 2 comparable drawables */
+  public static boolean isEquivalentTo(ComparableDrawable x, ComparableDrawable y) {
+    if (x == null) {
+      return y == null;
+    } else if (y == null) {
+      return true;
+    }
+
+    return x.isEquivalentTo(y);
+  }
 }

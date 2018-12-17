@@ -953,10 +953,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private static boolean shouldUpdateViewInfo(
       LayoutOutput layoutOutput, MountItem currentMountItem) {
 
-    if (!ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates) {
-      return false;
-    }
-
     final ViewNodeInfo nextViewNodeInfo = layoutOutput.getViewNodeInfo();
     final ViewNodeInfo currentViewNodeInfo = currentMountItem.getViewNodeInfo();
     if ((currentViewNodeInfo == null && nextViewNodeInfo != null)

@@ -189,26 +189,6 @@ public class ComponentsConfiguration {
    */
   public static LayoutThreadPoolConfiguration threadPoolConfiguration = null;
 
-  /**
-   * Whether we should diff the view info attributes when checking for mount updates. This fixes
-   * issues where updates to MountSpecs are not applied when changes in common view properties do
-   * not change the measure of view.
-   */
-  public static boolean enableViewInfoDiffingForMountStateUpdates = false;
-
-  /** Whether Drawable Reference should get it's lifecycle using a non synchronized getter */
-  public static boolean isDrawableReferenceNonSynchronized = false;
-
-  /** Whether we should use Comparable Drawable for more efficient diffing of drawables */
-  public static boolean enableComparableDrawable = false;
-
-  /**
-   * Whether DefaultComparableDrawables are always equivalent during view info diffing. This is to
-   * test if the current default implementation of DefaultComparableDrawable#isEquivalentTo() is
-   * causing performance dips.
-   */
-  public static boolean areDefaultComparableDrawablesAlwaysEquivalent = false;
-
   public static boolean enableThreadTracingStacktrace = false;
 
   /**

@@ -27,12 +27,10 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v4.util.LongSparseArray;
 import android.view.View;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
-import com.facebook.litho.testing.drawable.TestColorDrawable;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.EditText;
@@ -198,8 +196,6 @@ public class MountStateRemountTest {
 
   @Test
   public void testRemountOnNoLayoutChanges() {
-    ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = true;
-
     final Component oldComponent =
         Column.create(mContext)
             .backgroundColor(Color.WHITE)
@@ -256,17 +252,11 @@ public class MountStateRemountTest {
     // Check that props were not set again
     assertThat(newTag).isSameAs(oldTag);
     assertThat(newContentDescription).isSameAs(oldContentDescription);
-    if (ComponentsConfiguration.enableComparableDrawable) {
-      assertThat(oldBackground).isSameAs(newBackground);
-    }
-
-    ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = false;
+    assertThat(oldBackground).isSameAs(newBackground);
   }
 
   @Test
   public void testRemountOnNodeInfoLayoutChanges() {
-    ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = true;
-
     final Component oldComponent =
         Column.create(mContext)
             .backgroundColor(Color.WHITE)
@@ -320,14 +310,10 @@ public class MountStateRemountTest {
 
     assertThat(newTag).isNotEqualTo(oldTag);
     assertThat(newIsEnabled).isNotEqualTo(oldIsEnabled);
-
-    ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = false;
   }
 
   @Test
   public void testRemountOnViewNodeInfoLayoutChanges() {
-    ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = true;
-
     final Component oldComponent =
         Column.create(mContext)
             .backgroundColor(Color.WHITE)
@@ -336,7 +322,7 @@ public class MountStateRemountTest {
                 EditText.create(mContext)
                     .text("Hello World")
                     .textSizeSp(12)
-                    .background(new TestColorDrawable(Color.RED)))
+                    .backgroundColor(Color.RED))
             .build();
 
     final LithoView lithoView = new LithoView(mContext);
@@ -361,7 +347,7 @@ public class MountStateRemountTest {
                 EditText.create(mContext)
                     .text("Hello World")
                     .textSizeSp(12)
-                    .background(new TestColorDrawable(Color.CYAN)))
+                    .backgroundColor(Color.CYAN))
             .build();
 
     componentTree.setRootAndSizeSpec(
@@ -376,8 +362,6 @@ public class MountStateRemountTest {
     final ComparableDrawable newDrawable = (ComparableDrawable) newView.getBackground();
 
     assertThat(oldDrawable.isEquivalentTo(newDrawable)).isFalse();
-
-    ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = false;
   }
 
   private boolean containsRef(List<?> list, Object object) {
