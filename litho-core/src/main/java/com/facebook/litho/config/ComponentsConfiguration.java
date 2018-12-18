@@ -197,9 +197,6 @@ public class ComponentsConfiguration {
    */
   public static boolean incrementalMountWhenNotVisible = false;
 
-  public static boolean unsetThenReleaseDrawableBackground = false;
-  public static boolean unmountThenReleaseDrawableCmp = false;
-
   /** Whether all drawables are eligible for wrapping into DisplayListDrawables */
   public static boolean useDisplayListForAllDrawables = false;
 
