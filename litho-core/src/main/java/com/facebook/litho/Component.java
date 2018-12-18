@@ -54,9 +54,7 @@ import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -71,7 +69,6 @@ public abstract class Component extends ComponentLifecycle
     implements Cloneable, HasEventDispatcher, HasEventTrigger, Equivalence<Component> {
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
-  private final boolean mTypeIdBasedKeys = ComponentsConfiguration.typeIDBasedKeys;
   private int mId = sIdGenerator.getAndIncrement();
   @Nullable private String mOwnerGlobalKey;
   private String mGlobalKey;
@@ -103,9 +100,7 @@ public abstract class Component extends ComponentLifecycle
    * Holds onto how many direct component children of each type this Component has. Used for
    * automatically generating unique global keys for all sibling components of the same type.
    */
-  @Nullable private Map<String, Integer> mChildCounters;
-
-  @Nullable private SparseIntArray mTypeIdChildCounters;
+  @Nullable private SparseIntArray mChildCounters;
 
   /**
    * Holds an event handler with its dispatcher set to the parent component, or - in case that this
@@ -303,32 +298,18 @@ public abstract class Component extends ComponentLifecycle
       }
     }
 
-    /**
-     * If the key is a duplicate, we append an index based on the child component's type that would
-     * uniquely identify it.
-     */
-    final int childIndex;
-    if (mTypeIdBasedKeys) {
-      if (mTypeIdChildCounters == null) {
-        mTypeIdChildCounters = new SparseIntArray();
-      }
+    // If the key is a duplicate, we append an index based on the child component's type that would
+    // uniquely identify it.
 
-      final int typeId = component.getTypeId();
-      childIndex = mTypeIdChildCounters.get(typeId, 0);
-      mTypeIdChildCounters.put(typeId, childIndex + 1);
-    } else {
-      final String childType = component.getSimpleName();
-      if (mChildCounters == null) {
-        mChildCounters = new HashMap<>();
-      }
-
-      childIndex = mChildCounters.containsKey(childType) ? mChildCounters.get(childType) : 0;
-      mChildCounters.put(childType, childIndex + 1);
+    if (mChildCounters == null) {
+      mChildCounters = new SparseIntArray();
     }
 
-    String uniqueKey = ComponentKeyUtils.getKeyForChildPosition(childKey, childIndex);
+    final int typeId = component.getTypeId();
+    final int childIndex = mChildCounters.get(typeId, 0);
+    mChildCounters.put(typeId, childIndex + 1);
 
-    return uniqueKey;
+    return ComponentKeyUtils.getKeyForChildPosition(childKey, childIndex);
   }
 
   public Component makeShallowCopy() {
