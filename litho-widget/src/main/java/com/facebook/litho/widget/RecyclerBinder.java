@@ -811,6 +811,12 @@ public class RecyclerBinder
 
     assertNoInsertOperationIfCircular();
 
+    if (SectionsDebug.ENABLED) {
+      Log.d(
+          SectionsDebug.TAG,
+          "(" + hashCode() + ") insertItemAtAsync " + position + ", name: " + renderInfo.getName());
+    }
+
     assertNotNullRenderInfo(renderInfo);
     final AsyncInsertOperation operation = createAsyncInsertOperation(position, renderInfo);
 
@@ -833,6 +839,23 @@ public class RecyclerBinder
     assertSingleThreadForChangeSet();
 
     assertNoInsertOperationIfCircular();
+
+    if (SectionsDebug.ENABLED) {
+      final String[] names = new String[renderInfos.size()];
+      for (int i = 0; i < renderInfos.size(); i++) {
+        names[i] = renderInfos.get(i).getName();
+      }
+      Log.d(
+          SectionsDebug.TAG,
+          "("
+              + hashCode()
+              + ") insertRangeAtAsync "
+              + position
+              + ", size: "
+              + renderInfos.size()
+              + ", names: "
+              + Arrays.toString(names));
+    }
 
     synchronized (this) {
       mHasAsyncOperations = true;
