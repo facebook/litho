@@ -94,7 +94,7 @@ public abstract class Section extends SectionLifecycle
       mResourceResolver = new ResourceResolver(context);
     }
 
-    /** Sets the key of this {@link Section} local to his parent. */
+    /** Sets the key of this {@link Section} local to its parent. */
     public T key(String key) {
       mSection.setKey(key);
       return getThis();
