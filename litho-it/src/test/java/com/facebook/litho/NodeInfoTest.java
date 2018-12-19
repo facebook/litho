@@ -307,7 +307,7 @@ public class NodeInfoTest {
   }
 
   @Test
-  public void testSendAccessiblityEventHandlerFlag() {
+  public void testSendAccessibilityEventHandlerFlag() {
     mNodeInfo.setSendAccessibilityEventHandler(
         new EventHandler<SendAccessibilityEventEvent>(null, 1));
     testFlagIsSetThenClear(mNodeInfo, "PFLAG_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET");
