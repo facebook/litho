@@ -23,6 +23,8 @@ import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_STATE;
 
+import android.support.v4.util.Pair;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
@@ -42,7 +44,9 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -162,34 +166,24 @@ public class DelegateMethodGenerator {
       DelegateMethodDescription methodDescription,
       EnumSet<RunMode> runMode) {
     final CodeBlock.Builder acquireStatements = CodeBlock.builder();
-    final CodeBlock.Builder delegation = CodeBlock.builder();
     final CodeBlock.Builder releaseStatements = CodeBlock.builder();
 
-    final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
-    if (methodDescription.returnType.equals(TypeName.VOID)) {
-      delegation.add("$L.$L(\n", sourceDelegateAccessor, delegateMethod.name);
-    } else {
-      delegation.add(
-          "$T _result = ($T) $L.$L(\n",
-          methodDescription.returnType,
-          methodDescription.returnType,
-          sourceDelegateAccessor,
-          delegateMethod.name);
-    }
-
-    delegation.indent();
+    final List<Pair<TypeName, String>> delegationParams =
+        new ArrayList<>(delegateMethod.methodParams.size());
     for (int i = 0, size = delegateMethod.methodParams.size(); i < size; i++) {
       final MethodParamModel methodParamModel = delegateMethod.methodParams.get(i);
       final int definedParameterTypesSize = methodDescription.definedParameterTypes.size();
       if (i < definedParameterTypesSize) {
-        delegation.add("($T) $L", methodParamModel.getTypeName(), methodParamModel.getName());
+        delegationParams.add(
+            Pair.create(methodParamModel.getTypeName(), methodParamModel.getName()));
       } else if (i < definedParameterTypesSize + methodDescription.optionalParameters.size()
           && shouldIncludeOptionalParameter(
               methodParamModel,
               methodDescription.optionalParameters.get(i - definedParameterTypesSize))) {
         final MethodParamModel extraDefinedParam =
             methodDescription.optionalParameters.get(i - definedParameterTypesSize);
-        delegation.add("$L", extraDefinedParam.getName());
+        delegationParams.add(
+            Pair.create(extraDefinedParam.getTypeName(), extraDefinedParam.getName()));
       } else if (methodParamModel instanceof DiffPropModel
           || methodParamModel instanceof DiffStateParamModel) {
         acquireStatements.addStatement(
@@ -200,13 +194,14 @@ public class DelegateMethodGenerator {
             ClassNames.DIFF,
             ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel),
             ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel));
-        delegation.add("$L", methodParamModel.getName());
+        delegationParams.add(
+            Pair.create(methodParamModel.getTypeName(), methodParamModel.getName()));
         releaseStatements.addStatement("releaseDiff($L)", methodParamModel.getName());
       } else if (isOutputType(methodParamModel.getTypeName())) {
         String localOutputName = methodParamModel.getName() + "Tmp";
         acquireStatements.add(
             "$T $L = acquireOutput();\n", methodParamModel.getTypeName(), localOutputName);
-        delegation.add("$L", localOutputName);
+        delegationParams.add(Pair.create(methodParamModel.getTypeName(), localOutputName));
 
         final boolean isPropOutput = SpecModelUtils.isPropOutput(specModel, methodParamModel);
         if (isPropOutput) {
@@ -225,8 +220,8 @@ public class DelegateMethodGenerator {
             "$T $L = new StateValue<>();\n",
             methodParamModel.getTypeName(),
             methodParamModel.getName());
-
-        delegation.add("$L", methodParamModel.getName());
+        delegationParams.add(
+            Pair.create(methodParamModel.getTypeName(), methodParamModel.getName()));
 
         if (delegateMethod.name.toString().equals("createInitialState")) {
           releaseStatements.beginControlFlow("if ($L.get() != null)", methodParamModel.getName());
@@ -257,15 +252,45 @@ public class DelegateMethodGenerator {
                 .build();
         acquireStatements.add(block);
         releaseStatements.addStatement("releaseDiff($L)", diffName);
-        delegation.add("$L", diffName);
+        delegationParams.add(Pair.create(methodParamModel.getTypeName(), diffName));
       } else {
-        delegation.add(
-            "($T) $L",
-            methodParamModel.getTypeName(),
-            getImplAccessor(specModel, methodParamModel));
+        delegationParams.add(
+            Pair.create(
+                methodParamModel.getTypeName(), getImplAccessor(specModel, methodParamModel)));
       }
+    }
 
-      if (i < delegateMethod.methodParams.size() - 1) {
+    return CodeBlock.builder()
+        .add(acquireStatements.build())
+        .add(
+            getDelegationMethod(
+                specModel,
+                delegateMethod.name,
+                methodDescription.returnType,
+                ImmutableList.copyOf(delegationParams)))
+        .add(releaseStatements.build())
+        .build();
+  }
+
+  private static CodeBlock getDelegationMethod(
+      SpecModel specModel,
+      CharSequence methodName,
+      TypeName returnType,
+      ImmutableList<Pair<TypeName, String>> methodParams) {
+    final CodeBlock.Builder delegation = CodeBlock.builder();
+    final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
+    if (returnType.equals(TypeName.VOID)) {
+      delegation.add("$L.$L(\n", sourceDelegateAccessor, methodName);
+    } else {
+      delegation.add(
+          "$T _result = ($T) $L.$L(\n", returnType, returnType, sourceDelegateAccessor, methodName);
+    }
+
+    delegation.indent();
+    for (int i = 0; i < methodParams.size(); i++) {
+      delegation.add("($T) $L", methodParams.get(i).first, methodParams.get(i).second);
+
+      if (i < methodParams.size() - 1) {
         delegation.add(",\n");
       }
     }
@@ -273,11 +298,7 @@ public class DelegateMethodGenerator {
     delegation.add(");\n");
     delegation.unindent();
 
-    return CodeBlock.builder()
-        .add(acquireStatements.build())
-        .add(delegation.build())
-        .add(releaseStatements.build())
-        .build();
+    return delegation.build();
   }
 
   /**

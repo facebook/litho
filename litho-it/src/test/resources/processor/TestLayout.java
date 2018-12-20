@@ -169,7 +169,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
   protected void onLoadStyle(ComponentContext c) {
     Output<Boolean> prop2Tmp = acquireOutput();
     Output<Object> prop3Tmp = acquireOutput();
-    TestLayoutSpec.onLoadStyle((ComponentContext) c, prop2Tmp, prop3Tmp);
+    TestLayoutSpec.onLoadStyle(
+        (ComponentContext) c, (Output<Boolean>) prop2Tmp, (Output<Object>) prop3Tmp);
     if (prop2Tmp.get() != null) {
       prop2 = prop2Tmp.get();
     }
@@ -183,7 +184,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @Override
   protected void createInitialState(ComponentContext c) {
     StateValue<S> state2 = new StateValue<>();
-    TestLayoutSpec.createInitialState((ComponentContext) c, (int) prop1, state2);
+    TestLayoutSpec.createInitialState((ComponentContext) c, (int) prop1, (StateValue<S>) state2);
     if (state2.get() != null) {
       mStateContainer.state2 = state2.get();
     }
@@ -223,7 +224,10 @@ public final class TestLayout<S extends View> extends Component implements TestT
     Transition _result =
         (Transition)
             TestLayoutSpec.onCreateTransition(
-                (ComponentContext) c, (Object) prop3, (long) mStateContainer.state1, _state3Diff);
+                (ComponentContext) c,
+                (Object) prop3,
+                (long) mStateContainer.state1,
+                (Diff<Integer>) _state3Diff);
     releaseDiff(_state3Diff);
     return _result;
   }

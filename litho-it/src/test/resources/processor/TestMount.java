@@ -215,7 +215,8 @@ public final class TestMount<S extends View> extends Component implements TestTa
   protected void onLoadStyle(ComponentContext c) {
     Output<Boolean> prop2Tmp = acquireOutput();
     Output<Object> prop3Tmp = acquireOutput();
-    TestMountSpec.onLoadStyle((ComponentContext) c, prop2Tmp, prop3Tmp);
+    TestMountSpec.onLoadStyle(
+        (ComponentContext) c, (Output<Boolean>) prop2Tmp, (Output<Object>) prop3Tmp);
     if (prop2Tmp.get() != null) {
       prop2 = prop2Tmp.get();
     }
@@ -229,7 +230,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   @Override
   protected void createInitialState(ComponentContext c) {
     StateValue<S> state2 = new StateValue<>();
-    TestMountSpec.createInitialState((ComponentContext) c, (int) prop1, state2);
+    TestMountSpec.createInitialState((ComponentContext) c, (int) prop1, (StateValue<S>) state2);
     if (state2.get() != null) {
       mStateContainer.state2 = state2.get();
     }
@@ -245,7 +246,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
         (int) widthSpec,
         (int) heightSpec,
         (Size) size,
-        measureOutputTmp);
+        (Output<Long>) measureOutputTmp);
     measureOutput = measureOutputTmp.get();
     releaseOutput(measureOutputTmp);
   }
@@ -264,7 +265,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
         (Object) prop3,
         (char[]) prop4,
         (Long) measureOutput,
-        boundsDefinedOutputTmp);
+        (Output<Integer>) boundsDefinedOutputTmp);
     boundsDefinedOutput = boundsDefinedOutputTmp.get();
     releaseOutput(boundsDefinedOutputTmp);
   }
@@ -352,7 +353,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
     TestMount _prevImpl = (TestMount) _prevAbstractImpl;
     TestMount _nextImpl = (TestMount) _nextAbstractImpl;
     Diff<Integer> prop1 = (Diff) acquireDiff(_prevImpl == null ? null : _prevImpl.prop1, _nextImpl == null ? null : _nextImpl.prop1);
-    boolean _result = (boolean) TestMountSpec.shouldUpdate(prop1);
+    boolean _result = (boolean) TestMountSpec.shouldUpdate((Diff<Integer>) prop1);
     releaseDiff(prop1);
     return _result;
   }

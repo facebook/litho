@@ -288,7 +288,8 @@ final class FullGroupSection<T> extends Section implements TestTag {
   protected void createInitialState(SectionContext c) {
     StateValue<T> state1 = new StateValue<>();
     StateValue<Object> state2 = new StateValue<>();
-    FullGroupSectionSpec.onCreateInitialState((SectionContext) c, (int) prop1, state1, state2);
+    FullGroupSectionSpec.onCreateInitialState(
+        (SectionContext) c, (int) prop1, (StateValue<T>) state1, (StateValue<Object>) state2);
     mStateContainer.state1 = state1.get();
     mStateContainer.state2 = state2.get();
   }
@@ -332,18 +333,18 @@ final class FullGroupSection<T> extends Section implements TestTag {
   @Override
   protected void bindService(SectionContext c) {
     FullGroupSectionSpec.bindService(
-        (SectionContext) c, _service, (int) prop1, (Object) mStateContainer.state2);
+        (SectionContext) c, (String) _service, (int) prop1, (Object) mStateContainer.state2);
   }
 
   @Override
   protected void unbindService(SectionContext c) {
     FullGroupSectionSpec.unbindService(
-        (SectionContext) c, _service, (int) prop1, (Object) mStateContainer.state2);
+        (SectionContext) c, (String) _service, (int) prop1, (Object) mStateContainer.state2);
   }
 
   @Override
   protected void refresh(SectionContext c) {
-    FullGroupSectionSpec.onRefresh((SectionContext) c, _service, (String) prop2);
+    FullGroupSectionSpec.onRefresh((SectionContext) c, (String) _service, (String) prop2);
   }
 
   @Override
@@ -361,7 +362,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
             acquireDiff(
                 _prevImpl == null ? null : _prevImpl.prop1,
                 _nextImpl == null ? null : _nextImpl.prop1);
-    boolean _result = (boolean) FullGroupSectionSpec.shouldUpdate(prop1);
+    boolean _result = (boolean) FullGroupSectionSpec.shouldUpdate((Diff<Integer>) prop1);
     releaseDiff(prop1);
     return _result;
   }

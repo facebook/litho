@@ -202,7 +202,7 @@ public class DelegateMethodGeneratorTest {
                 + "protected com.facebook.litho.Component onCreateLayout(com.facebook.litho.ComponentContext c) {\n"
                 + "  com.facebook.litho.Component _result = (com.facebook.litho.Component) TestSpec.onCreateLayout(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
-                + "    optionalParam,\n"
+                + "    (char) optionalParam,\n"
                 + "    (boolean) prop);\n"
                 + "  return _result;\n"
                 + "}\n");

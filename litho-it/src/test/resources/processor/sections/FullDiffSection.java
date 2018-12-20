@@ -235,7 +235,8 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   @Override
   protected void createInitialState(SectionContext c) {
     StateValue<Object> state1 = new StateValue<>();
-    FullDiffSectionSpec.onCreateInitialState((SectionContext) c, (Integer) prop1, state1);
+    FullDiffSectionSpec.onCreateInitialState(
+        (SectionContext) c, (Integer) prop1, (StateValue<Object>) state1);
     mStateContainer.state1 = state1.get();
   }
 
@@ -259,7 +260,12 @@ public final class FullDiffSection<T> extends Section implements TestTag {
             acquireDiff(
                 _prevImpl == null ? null : _prevImpl.mStateContainer.state1,
                 _nextImpl == null ? null : _nextImpl.mStateContainer.state1);
-    FullDiffSectionSpec.onDiff((SectionContext) c, (ChangeSet) changeSet, data, prop3, state1);
+    FullDiffSectionSpec.onDiff(
+        (SectionContext) c,
+        (ChangeSet) changeSet,
+        (Diff<List<T>>) data,
+        (Diff<Component>) prop3,
+        (Diff<Object>) state1);
     releaseDiff(data);
     releaseDiff(prop3);
     releaseDiff(state1);
@@ -295,17 +301,17 @@ public final class FullDiffSection<T> extends Section implements TestTag {
 
   @Override
   protected void bindService(SectionContext c) {
-    FullDiffSectionSpec.bindService((SectionContext) c, _service);
+    FullDiffSectionSpec.bindService((SectionContext) c, (String) _service);
   }
 
   @Override
   protected void unbindService(SectionContext c) {
-    FullDiffSectionSpec.unbindService((SectionContext) c, _service);
+    FullDiffSectionSpec.unbindService((SectionContext) c, (String) _service);
   }
 
   @Override
   protected void refresh(SectionContext c) {
-    FullDiffSectionSpec.onRefresh((SectionContext) c, _service);
+    FullDiffSectionSpec.onRefresh((SectionContext) c, (String) _service);
   }
 
   @Override
@@ -322,7 +328,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
             acquireDiff(
                 _prevImpl == null ? null : _prevImpl.prop1,
                 _nextImpl == null ? null : _nextImpl.prop1);
-    boolean _result = (boolean) FullDiffSectionSpec.shouldUpdate(prop1);
+    boolean _result = (boolean) FullDiffSectionSpec.shouldUpdate((Diff<Integer>) prop1);
     releaseDiff(prop1);
     return _result;
   }
