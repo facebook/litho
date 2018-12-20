@@ -39,10 +39,13 @@ public class SingleComponentSectionSpec {
       @Prop(optional = true) Diff<Boolean> sticky,
       @Prop(optional = true) Diff<Integer> spanSize,
       @Prop(optional = true) Diff<Boolean> isFullSpan,
-      @Prop(optional = true) Diff<Map<String, Object>> customAttributes) {
+      @Prop(optional = true) Diff<Map<String, Object>> customAttributes,
+      @Prop(optional = true) Diff<Object> data) {
+    final Object prevData = data.getPrevious();
+    final Object nextData = data.getNext();
 
     if (component.getNext() == null) {
-      changeSet.delete(0);
+      changeSet.delete(0, prevData);
       return;
     }
 
@@ -70,7 +73,8 @@ public class SingleComponentSectionSpec {
               .spanSize(nextSpanSize)
               .isFullSpan(isNextFullSpan)
               .build(),
-          context.getTreePropsCopy());
+          context.getTreePropsCopy(),
+          nextData);
       return;
     }
 
@@ -106,7 +110,9 @@ public class SingleComponentSectionSpec {
               .spanSize(nextSpanSize)
               .isFullSpan(isNextFullSpan)
               .build(),
-          context.getTreePropsCopy());
+          context.getTreePropsCopy(),
+          prevData,
+          nextData);
     }
   }
 
