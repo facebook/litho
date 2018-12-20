@@ -81,7 +81,11 @@ public class TriggerMethodExtractorTest {
 
     ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> methods =
         TriggerMethodExtractor.getOnTriggerMethods(
-            elements, typeElement, permittedParamAnnotations, mock(Messager.class), RunMode.NORMAL);
+            elements,
+            typeElement,
+            permittedParamAnnotations,
+            mock(Messager.class),
+            RunMode.normal());
 
     assertThat(methods).hasSize(1);
 

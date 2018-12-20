@@ -85,7 +85,7 @@ public class GroupSectionSpecGeneratorTest {
         elements.getTypeElement(TestGroupSectionSpec.class.getCanonicalName());
     mSpecModel =
         mGroupSectionSpecModelFactory.create(
-            elements, types, typeElement, mMessager, RunMode.NORMAL, null, null);
+            elements, types, typeElement, mMessager, RunMode.normal(), null, null);
   }
 
   @Test

@@ -31,6 +31,7 @@ import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.facebook.litho.specmodels.processor.MountSpecModelFactory;
 import com.facebook.litho.specmodels.processor.SpecModelFactory;
 import com.facebook.litho.specmodels.processor.TestTargetExtractor;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -58,7 +59,7 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
 
   /**
    * Extract the relevant Elements to work with from the round environment before they're passed on
-   * to {@link SpecModelFactory#create(Elements, Types, TypeElement, Messager, RunMode,
+   * to {@link SpecModelFactory#create(Elements, Types, TypeElement, Messager, EnumSet,
    * DependencyInjectionHelper, InterStageStore)}.
    */
   @Override
@@ -76,7 +77,7 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
       Types types,
       TypeElement element,
       Messager messager,
-      RunMode runMode,
+      EnumSet<RunMode> runMode,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
 
@@ -177,7 +178,7 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
       Messager messager,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore,
-      RunMode runMode) {
+      EnumSet<RunMode> runMode) {
     final List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
 
     for (AnnotationMirror annotationMirror : annotationMirrors) {

@@ -49,6 +49,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+import java.util.EnumSet;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -332,7 +333,7 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   }
 
   @Override
-  public List<SpecModelValidationError> validate(RunMode runMode) {
+  public List<SpecModelValidationError> validate(EnumSet<RunMode> runMode) {
     return TestSpecModelValidation.validateTestSpecModel(this);
   }
 

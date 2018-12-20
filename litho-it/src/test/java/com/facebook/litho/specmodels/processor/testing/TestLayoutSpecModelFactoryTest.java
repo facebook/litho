@@ -88,7 +88,7 @@ public class TestLayoutSpecModelFactoryTest {
   public void testCreate() {
     final TestSpecModelFactory factory = new TestSpecModelFactory();
     final TestSpecModel layoutSpecModel =
-        factory.create(mElements, mTypes, mTypeElement, mMessager, RunMode.NORMAL, null, null);
+        factory.create(mElements, mTypes, mTypeElement, mMessager, RunMode.normal(), null, null);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestMyLayoutSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("TestMyLayout");
@@ -126,7 +126,7 @@ public class TestLayoutSpecModelFactoryTest {
 
     final TestSpecModel layoutSpecModel =
         factory.create(
-            mElements, mTypes, mTypeElement, mMessager, RunMode.NORMAL, null, interStageStore);
+            mElements, mTypes, mTypeElement, mMessager, RunMode.normal(), null, interStageStore);
 
     assertThat(layoutSpecModel.getSpecName()).isEqualTo("TestMyLayoutSpec");
     assertThat(layoutSpecModel.getComponentName()).isEqualTo("TestMyLayout");
@@ -151,7 +151,7 @@ public class TestLayoutSpecModelFactoryTest {
     final TestSpecModelFactory factory = new TestSpecModelFactory(specGenerator);
 
     final TestSpecModel layoutSpecModel =
-        factory.create(mElements, mTypes, mTypeElement, mMessager, RunMode.NORMAL, null, null);
+        factory.create(mElements, mTypes, mTypeElement, mMessager, RunMode.normal(), null, null);
     layoutSpecModel.generate();
 
     verify(specGenerator).generate(layoutSpecModel);

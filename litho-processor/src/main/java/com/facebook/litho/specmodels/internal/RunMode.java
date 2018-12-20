@@ -15,8 +15,13 @@
  */
 package com.facebook.litho.specmodels.internal;
 
+import java.util.EnumSet;
+
 public enum RunMode {
-  NORMAL,
   ABI,
   ;
+
+  public static EnumSet<RunMode> normal() {
+    return EnumSet.noneOf(RunMode.class);
+  }
 }

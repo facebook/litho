@@ -24,6 +24,7 @@ import com.facebook.litho.specmodels.model.DependencyInjectionHelperFactory;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.JavaFile;
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,7 +45,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
   private final List<SpecModelFactory> mSpecModelFactories;
   private final boolean mShouldSavePropNames;
   private PropNameInterStageStore mPropNameInterStageStore;
-  private RunMode mRunMode;
+  private EnumSet<RunMode> mRunMode;
 
   private final InterStageStore mInterStageStore =
       new InterStageStore() {
@@ -76,7 +77,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     Map<String, String> options = processingEnv.getOptions();
     boolean isGeneratingAbi =
         Boolean.valueOf(options.getOrDefault("com.facebook.buck.java.generating_abi", "false"));
-    mRunMode = isGeneratingAbi ? RunMode.ABI : RunMode.NORMAL;
+    mRunMode = isGeneratingAbi ? EnumSet.of(RunMode.ABI) : RunMode.normal();
   }
 
   @Override

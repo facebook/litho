@@ -176,7 +176,7 @@ public class ComponentBodyGeneratorTest {
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
     mSpecModelDI =
         mLayoutSpecModelFactory.create(
-            elements, types, typeElement, mMessager, RunMode.NORMAL, null, null);
+            elements, types, typeElement, mMessager, RunMode.normal(), null, null);
     // Here we are using the TestSpec that is declared as LayoutSpec but, because using
     // the MountSpecModelFactory, is it going to be used as MountSpec anyway.
     mMountSpecModelDI =
@@ -185,7 +185,7 @@ public class ComponentBodyGeneratorTest {
             types,
             elements.getTypeElement(MountTestSpec.class.getCanonicalName()),
             mMessager,
-            RunMode.NORMAL,
+            RunMode.normal(),
             null,
             null);
 
@@ -193,7 +193,7 @@ public class ComponentBodyGeneratorTest {
         elements.getTypeElement(TestWithTransitionSpec.class.getCanonicalName());
     mSpecModelWithTransitionDI =
         mLayoutSpecModelFactory.create(
-            elements, types, typeElementWithTransition, mMessager, RunMode.NORMAL, null, null);
+            elements, types, typeElementWithTransition, mMessager, RunMode.normal(), null, null);
 
     TypeElement typeElementKotlinVarArgsWildcards =
         elements.getTypeElement(TestKotlinWildcardsSpec.class.getCanonicalName());
@@ -203,7 +203,7 @@ public class ComponentBodyGeneratorTest {
             types,
             typeElementKotlinVarArgsWildcards,
             mMessager,
-            RunMode.NORMAL,
+            RunMode.normal(),
             null,
             null);
   }

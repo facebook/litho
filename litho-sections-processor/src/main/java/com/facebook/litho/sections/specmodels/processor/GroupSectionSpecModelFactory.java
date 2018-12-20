@@ -38,7 +38,6 @@ import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecGenerator;
-import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.AnnotationExtractor;
 import com.facebook.litho.specmodels.processor.DelegateMethodExtractor;
 import com.facebook.litho.specmodels.processor.EventDeclarationsExtractor;
@@ -56,6 +55,7 @@ import com.facebook.litho.specmodels.processor.UpdateStateMethodExtractor;
 import com.squareup.javapoet.ParameterizedTypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -67,7 +67,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 /** Factory for creating {@link GroupSectionSpecModel}s. */
-public class GroupSectionSpecModelFactory implements SpecModelFactory {
+public class GroupSectionSpecModelFactory implements SpecModelFactory<GroupSectionSpecModel> {
 
   private static final List<Class<? extends Annotation>> INTER_STAGE_INPUT_ANNOTATIONS =
       new ArrayList<>();
@@ -110,12 +110,12 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory {
   }
 
   @Override
-  public SpecModel create(
+  public GroupSectionSpecModel create(
       Elements elements,
       Types types,
       TypeElement element,
       Messager messager,
-      RunMode runMode,
+      EnumSet<RunMode> runMode,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
     return createModel(elements, types, element, messager, dependencyInjectionHelper, runMode);
@@ -127,7 +127,7 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory {
       TypeElement element,
       Messager messager,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
-      RunMode runMode) {
+      EnumSet<RunMode> runMode) {
     return new GroupSectionSpecModel(
         element.getQualifiedName().toString(),
         element.getAnnotation(GroupSectionSpec.class).value(),

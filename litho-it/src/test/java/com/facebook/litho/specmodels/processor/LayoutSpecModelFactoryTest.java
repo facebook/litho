@@ -63,7 +63,7 @@ public class LayoutSpecModelFactoryTest {
             mTypes,
             mTypeElement,
             mMessager,
-            RunMode.NORMAL,
+            RunMode.normal(),
             mDependencyInjectionHelper,
             null);
 
@@ -90,7 +90,7 @@ public class LayoutSpecModelFactoryTest {
             mTypes,
             mTypeElement,
             mMessager,
-            RunMode.NORMAL,
+            RunMode.normal(),
             mDependencyInjectionHelper,
             null);
 

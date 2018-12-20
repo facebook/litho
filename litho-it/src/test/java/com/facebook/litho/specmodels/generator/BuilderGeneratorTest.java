@@ -116,13 +116,13 @@ public class BuilderGeneratorTest {
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
     mSpecModel =
         mLayoutSpecModelFactory.create(
-            elements, types, typeElement, mMessager, RunMode.NORMAL, null, null);
+            elements, types, typeElement, mMessager, RunMode.normal(), null, null);
 
     TypeElement resWithVarArgsElement =
         elements.getTypeElement(TestResTypeWithVarArgsSpec.class.getCanonicalName());
     mResTypeVarArgsSpecModel =
         mLayoutSpecModelFactory.create(
-            elements, types, resWithVarArgsElement, mMessager, RunMode.NORMAL, null, null);
+            elements, types, resWithVarArgsElement, mMessager, RunMode.normal(), null, null);
 
     TypeElement dimenResTypeWithBoxFloatArgElement =
         elements.getTypeElement(TestDimenResTypeWithBoxFloatArgSpec.class.getCanonicalName());
@@ -132,7 +132,7 @@ public class BuilderGeneratorTest {
             types,
             dimenResTypeWithBoxFloatArgElement,
             mMessager,
-            RunMode.NORMAL,
+            RunMode.normal(),
             null,
             null);
 
@@ -144,7 +144,7 @@ public class BuilderGeneratorTest {
             types,
             typeElementKotlinVarArgsWildcards,
             mMessager,
-            RunMode.NORMAL,
+            RunMode.normal(),
             null,
             null);
   }

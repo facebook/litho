@@ -141,7 +141,7 @@ public class MountSpecModelFactoryTest {
             types,
             typeElement,
             mock(Messager.class),
-            RunMode.NORMAL,
+            RunMode.normal(),
             mDependencyInjectionHelper,
             null);
 

@@ -25,6 +25,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationValue;
@@ -40,7 +41,7 @@ import javax.lang.model.util.Elements;
 public class EventDeclarationsExtractor {
 
   public static ImmutableList<EventDeclarationModel> getEventDeclarations(
-      Elements elements, TypeElement element, Class<?> annotationType, RunMode runMode) {
+      Elements elements, TypeElement element, Class<?> annotationType, EnumSet<RunMode> runMode) {
     final List<AnnotationValue> eventTypes =
         ProcessorUtils.getAnnotationParameter(
             elements, element, annotationType, "events", List.class);
@@ -51,9 +52,11 @@ public class EventDeclarationsExtractor {
       for (AnnotationValue eventType : eventTypes) {
         final DeclaredType type = (DeclaredType) eventType.getValue();
         final TypeName returnType =
-            runMode == RunMode.ABI ? TypeName.VOID : getReturnType(elements, type.asElement());
+            runMode.contains(RunMode.ABI)
+                ? TypeName.VOID
+                : getReturnType(elements, type.asElement());
         final ImmutableList<FieldModel> fields =
-            runMode == RunMode.ABI
+            runMode.contains(RunMode.ABI)
                 ? ImmutableList.of()
                 : FieldsExtractor.extractFields(type.asElement());
         eventDeclarations.add(

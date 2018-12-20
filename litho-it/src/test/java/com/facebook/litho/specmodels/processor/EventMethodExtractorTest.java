@@ -75,7 +75,11 @@ public class EventMethodExtractorTest {
 
     ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> methods =
         EventMethodExtractor.getOnEventMethods(
-            elements, typeElement, permittedParamAnnotations, mock(Messager.class), RunMode.NORMAL);
+            elements,
+            typeElement,
+            permittedParamAnnotations,
+            mock(Messager.class),
+            RunMode.normal());
 
     assertThat(methods).hasSize(1);
 

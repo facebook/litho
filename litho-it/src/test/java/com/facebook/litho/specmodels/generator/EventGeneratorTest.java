@@ -79,7 +79,7 @@ public class EventGeneratorTest {
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
     mSpecModel =
         mLayoutSpecModelFactory.create(
-            elements, types, typeElement, mock(Messager.class), RunMode.NORMAL, null, null);
+            elements, types, typeElement, mock(Messager.class), RunMode.normal(), null, null);
 
     EventDeclarationModel eventDeclarationModel =
         new EventDeclarationModel(

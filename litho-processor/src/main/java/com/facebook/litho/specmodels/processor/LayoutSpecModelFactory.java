@@ -33,6 +33,7 @@ import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecGenerator;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -44,7 +45,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 /** Factory for creating {@link LayoutSpecModel}s. */
-public class LayoutSpecModelFactory implements SpecModelFactory {
+public class LayoutSpecModelFactory implements SpecModelFactory<LayoutSpecModel> {
   static final List<Class<? extends Annotation>> INTER_STAGE_INPUT_ANNOTATIONS = new ArrayList<>();
   static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS = new ArrayList<>();
 
@@ -90,7 +91,7 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
       Types types,
       TypeElement element,
       Messager messager,
-      RunMode runMode,
+      EnumSet<RunMode> runMode,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
 

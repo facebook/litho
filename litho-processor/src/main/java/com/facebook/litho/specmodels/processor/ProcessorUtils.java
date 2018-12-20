@@ -21,6 +21,7 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -88,7 +89,7 @@ public class ProcessorUtils {
    * processor for the given specmodel and throws a {@link MultiPrintableException} if any such
    * errors are found.
    */
-  public static final void validate(SpecModel specModel, RunMode runMode) {
+  public static final void validate(SpecModel specModel, EnumSet<RunMode> runMode) {
     List<SpecModelValidationError> validationErrors = specModel.validate(runMode);
 
     if (validationErrors == null || validationErrors.isEmpty()) {

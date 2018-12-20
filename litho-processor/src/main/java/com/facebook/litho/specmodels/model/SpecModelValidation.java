@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.internal.RunMode;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 /** Class for validating that a {@link SpecModel} is well-formed. */
@@ -27,7 +28,7 @@ public class SpecModelValidation {
       SpecModel specModel,
       List<String> reservedPropNames,
       List<PropValidation.CommonPropModel> permittedCommonProps,
-      RunMode runMode) {
+      EnumSet<RunMode> runMode) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
     final DependencyInjectionHelper dependencyInjectionHelper =
         specModel.getDependencyInjectionHelper();
@@ -49,7 +50,7 @@ public class SpecModelValidation {
   }
 
   public static List<SpecModelValidationError> validateLayoutSpecModel(
-      LayoutSpecModel specModel, RunMode runMode) {
+      LayoutSpecModel specModel, EnumSet<RunMode> runMode) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(
         validateSpecModel(
@@ -63,7 +64,7 @@ public class SpecModelValidation {
   }
 
   public static List<SpecModelValidationError> validateMountSpecModel(
-      MountSpecModel specModel, RunMode runMode) {
+      MountSpecModel specModel, EnumSet<RunMode> runMode) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(
         validateSpecModel(

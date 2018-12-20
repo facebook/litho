@@ -24,6 +24,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -415,7 +416,7 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   @Override
-  public List<SpecModelValidationError> validate(RunMode runMode) {
+  public List<SpecModelValidationError> validate(EnumSet<RunMode> runMode) {
     throw new RuntimeException("Don't delegate to this method!");
   }
 

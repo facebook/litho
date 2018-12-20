@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.processor;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecModel;
+import java.util.EnumSet;
 import java.util.Set;
 import javax.annotation.Nullable;
 import javax.annotation.processing.Messager;
@@ -31,13 +32,13 @@ import javax.lang.model.util.Types;
  * A factory for a {@link SpecModel}. It first performs an {@link #extract(RoundEnvironment)} step
  * in which it selects the elements it wants to process from the annotation processor's round
  * environment and then creates a {@link SpecModel} for each extracted element in {@link
- * #create(Elements, Types, TypeElement, Messager, RunMode, DependencyInjectionHelper,
+ * #create(Elements, Types, TypeElement, Messager, EnumSet, DependencyInjectionHelper,
  * InterStageStore)}.
  */
 public interface SpecModelFactory<T extends SpecModel> {
   /**
    * Extract the relevant Elements to work with from the round environment before they're passed on
-   * to {@link #create(Elements, Types, TypeElement, Messager, RunMode, DependencyInjectionHelper,
+   * to {@link #create(Elements, Types, TypeElement, Messager, EnumSet, DependencyInjectionHelper,
    * InterStageStore)}.
    */
   Set<Element> extract(RoundEnvironment roundEnvironment);
@@ -52,7 +53,7 @@ public interface SpecModelFactory<T extends SpecModel> {
       Types types,
       TypeElement element,
       Messager messager,
-      RunMode runMode,
+      EnumSet<RunMode> runMode,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore propNameInterStageStore);
 }

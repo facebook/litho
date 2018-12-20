@@ -149,7 +149,7 @@ public class StateGeneratorTest {
             types,
             typeElementWithState,
             mock(Messager.class),
-            RunMode.NORMAL,
+            RunMode.normal(),
             null,
             null);
     TypeElement typeElementWithoutState =
@@ -160,7 +160,7 @@ public class StateGeneratorTest {
             types,
             typeElementWithoutState,
             mock(Messager.class),
-            RunMode.NORMAL,
+            RunMode.normal(),
             null,
             null);
 
@@ -172,7 +172,7 @@ public class StateGeneratorTest {
             types,
             typeElementWithStateWithTransition,
             mock(Messager.class),
-            RunMode.NORMAL,
+            RunMode.normal(),
             null,
             null);
 
@@ -184,7 +184,7 @@ public class StateGeneratorTest {
             types,
             typeElementWithBothStates,
             mock(Messager.class),
-            RunMode.NORMAL,
+            RunMode.normal(),
             null,
             null);
 
@@ -196,7 +196,7 @@ public class StateGeneratorTest {
             types,
             typeElementWithLazyGeneric,
             mock(Messager.class),
-            RunMode.NORMAL,
+            RunMode.normal(),
             null,
             null);
 
@@ -208,7 +208,7 @@ public class StateGeneratorTest {
             types,
             typeElementWithLazyMethodGeneric,
             mock(Messager.class),
-            RunMode.NORMAL,
+            RunMode.normal(),
             null,
             null);
   }
