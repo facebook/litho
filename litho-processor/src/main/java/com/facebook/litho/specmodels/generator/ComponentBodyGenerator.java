@@ -402,7 +402,8 @@ public class ComponentBodyGenerator {
 
     for (InterStageInputParamModel interStageInput : interStageInputs) {
       typeSpecDataHolder.addField(
-          FieldSpec.builder(interStageInput.getTypeName(), interStageInput.getName()).build());
+          FieldSpec.builder(interStageInput.getTypeName().box(), interStageInput.getName())
+              .build());
     }
 
     return typeSpecDataHolder.build();
