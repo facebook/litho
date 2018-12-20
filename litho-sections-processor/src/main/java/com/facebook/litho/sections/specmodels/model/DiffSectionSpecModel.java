@@ -349,8 +349,8 @@ public class DiffSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
-  public TypeSpec generate() {
-    return mSpecGenerator.generate(this);
+  public TypeSpec generate(EnumSet<RunMode> runMode) {
+    return mSpecGenerator.generate(this, runMode);
   }
 
   @Override

@@ -106,7 +106,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
                   mInterStageStore);
 
           validate(specModel, mRunMode);
-          generate(specModel);
+          generate(specModel, mRunMode);
           afterGenerate(specModel);
         } catch (PrintableException e) {
           e.print(processingEnv.getMessager());
@@ -128,9 +128,9 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     return false;
   }
 
-  protected void generate(SpecModel specModel) throws IOException {
+  protected void generate(SpecModel specModel, EnumSet<RunMode> runMode) throws IOException {
     final String packageName = getPackageName(specModel.getComponentTypeName());
-    JavaFile.builder(packageName, specModel.generate())
+    JavaFile.builder(packageName, specModel.generate(runMode))
         .skipJavaLangImports(true)
         .build()
         .writeTo(processingEnv.getFiler());

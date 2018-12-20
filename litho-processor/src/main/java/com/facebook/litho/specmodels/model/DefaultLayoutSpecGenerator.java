@@ -32,14 +32,16 @@ import com.facebook.litho.specmodels.generator.TreePropGenerator;
 import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.generator.WorkingRangeGenerator;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.squareup.javapoet.TypeSpec;
+import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import javax.lang.model.element.Modifier;
 
 public class DefaultLayoutSpecGenerator implements SpecGenerator<LayoutSpecModel> {
 
   @Override
-  public TypeSpec generate(LayoutSpecModel layoutSpecModel) {
+  public TypeSpec generate(LayoutSpecModel layoutSpecModel, EnumSet<RunMode> runMode) {
     final TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(layoutSpecModel.getComponentName())
             .superclass(ClassNames.COMPONENT)
@@ -61,7 +63,9 @@ public class DefaultLayoutSpecGenerator implements SpecGenerator<LayoutSpecModel
         .addTypeSpecDataHolder(TreePropGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(
             DelegateMethodGenerator.generateDelegates(
-                layoutSpecModel, DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP))
+                layoutSpecModel,
+                DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP,
+                runMode))
         .addTypeSpecDataHolder(PureRenderGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(EventGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(TriggerGenerator.generate(layoutSpecModel))

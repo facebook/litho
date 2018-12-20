@@ -441,7 +441,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   }
 
   @Override
-  public TypeSpec generate() {
+  public TypeSpec generate(EnumSet<RunMode> runMode) {
     return mGeneratedTypeSpec;
   }
 

@@ -33,8 +33,10 @@ import com.facebook.litho.specmodels.generator.TreePropGenerator;
 import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.generator.WorkingRangeGenerator;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeSpec;
+import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.lang.model.element.Modifier;
@@ -52,7 +54,7 @@ public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> 
   }
 
   @Override
-  public TypeSpec generate(MountSpecModel mountSpecModel) {
+  public TypeSpec generate(MountSpecModel mountSpecModel, EnumSet<RunMode> runMode) {
     final TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(mountSpecModel.getComponentName())
             .superclass(ClassNames.COMPONENT)
@@ -74,7 +76,9 @@ public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> 
         .addTypeSpecDataHolder(TreePropGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(
             DelegateMethodGenerator.generateDelegates(
-                mountSpecModel, DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP))
+                mountSpecModel,
+                DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP,
+                runMode))
         .addTypeSpecDataHolder(MountSpecGenerator.generateGetMountType(mountSpecModel))
         .addTypeSpecDataHolder(MountSpecGenerator.generatePoolSize(mountSpecModel))
         .addTypeSpecDataHolder(MountSpecGenerator.generateCanPreallocate(mountSpecModel))

@@ -328,8 +328,8 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public TypeSpec generate() {
-    return mLayoutSpecGenerator.generate(this);
+  public TypeSpec generate(EnumSet<RunMode> runMode) {
+    return mLayoutSpecGenerator.generate(this, runMode);
   }
 
   @Override

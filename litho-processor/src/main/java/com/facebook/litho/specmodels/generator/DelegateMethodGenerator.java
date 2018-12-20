@@ -23,6 +23,7 @@ import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_STATE;
 
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DelegateMethodDescription;
@@ -41,6 +42,7 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
+import java.util.EnumSet;
 import java.util.Map;
 
 /**
@@ -50,12 +52,11 @@ public class DelegateMethodGenerator {
   private DelegateMethodGenerator() {
   }
 
-  /**
-   * Generate all delegates defined on this {@link SpecModel}.
-   */
+  /** Generate all delegates defined on this {@link SpecModel}. */
   public static TypeSpecDataHolder generateDelegates(
       SpecModel specModel,
-      Map<Class<? extends Annotation>, DelegateMethodDescription> delegateMethodsMap) {
+      Map<Class<? extends Annotation>, DelegateMethodDescription> delegateMethodsMap,
+      EnumSet<RunMode> runMode) {
     TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
     for (SpecMethodModel<DelegateMethod, Void> delegateMethodModel : specModel.getDelegateMethods()) {
       for (Annotation annotation : delegateMethodModel.annotations) {
@@ -63,10 +64,7 @@ public class DelegateMethodGenerator {
           final DelegateMethodDescription delegateMethodDescription =
               delegateMethodsMap.get(annotation.annotationType());
           typeSpecDataHolder.addMethod(
-              generateDelegate(
-                  specModel,
-                  delegateMethodDescription,
-                  delegateMethodModel));
+              generateDelegate(specModel, delegateMethodDescription, delegateMethodModel, runMode));
           for (MethodSpec methodSpec : delegateMethodDescription.extraMethods) {
             typeSpecDataHolder.addMethod(methodSpec);
           }
@@ -78,13 +76,12 @@ public class DelegateMethodGenerator {
     return typeSpecDataHolder.build();
   }
 
-  /**
-   * Generate a delegate to the Spec that defines this component.
-   */
+  /** Generate a delegate to the Spec that defines this component. */
   private static MethodSpec generateDelegate(
       SpecModel specModel,
       DelegateMethodDescription methodDescription,
-      SpecMethodModel<DelegateMethod, Void> delegateMethod) {
+      SpecMethodModel<DelegateMethod, Void> delegateMethod,
+      EnumSet<RunMode> runMode) {
     final MethodSpec.Builder methodSpec =
         MethodSpec.methodBuilder(methodDescription.name)
             .addModifiers(methodDescription.accessType)
@@ -122,7 +119,7 @@ public class DelegateMethodGenerator {
           componentName);
     }
 
-    methodSpec.addCode(getDelegationCode(specModel, delegateMethod, methodDescription));
+    methodSpec.addCode(getDelegationCode(specModel, delegateMethod, methodDescription, runMode));
 
     if (delegateMethod.name.toString().equals("onCreateLayout")
         || delegateMethod.name.toString().equals("onPrepare")) {
@@ -162,7 +159,8 @@ public class DelegateMethodGenerator {
   public static CodeBlock getDelegationCode(
       SpecModel specModel,
       SpecMethodModel<DelegateMethod, Void> delegateMethod,
-      DelegateMethodDescription methodDescription) {
+      DelegateMethodDescription methodDescription,
+      EnumSet<RunMode> runMode) {
     final CodeBlock.Builder acquireStatements = CodeBlock.builder();
     final CodeBlock.Builder delegation = CodeBlock.builder();
     final CodeBlock.Builder releaseStatements = CodeBlock.builder();

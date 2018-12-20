@@ -94,7 +94,8 @@ public class GroupSectionSpecGeneratorTest {
     final TypeSpecDataHolder dataHolder =
         DelegateMethodGenerator.generateDelegates(
             groupSectionSpecModel,
-            DelegateMethodDescriptions.getGroupSectionSpecDelegatesMap(groupSectionSpecModel));
+            DelegateMethodDescriptions.getGroupSectionSpecDelegatesMap(groupSectionSpecModel),
+            RunMode.normal());
 
     assertThat(dataHolder.getMethodSpecs()).hasSize(2);
     assertThat(dataHolder.getMethodSpecs().get(0).toString())

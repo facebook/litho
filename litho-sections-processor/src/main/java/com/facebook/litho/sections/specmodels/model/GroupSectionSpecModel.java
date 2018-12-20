@@ -349,8 +349,8 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
-  public TypeSpec generate() {
-    return mGroupSectionSpecGenerator.generate(this);
+  public TypeSpec generate(EnumSet<RunMode> runMode) {
+    return mGroupSectionSpecGenerator.generate(this, runMode);
   }
 
   @Override

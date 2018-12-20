@@ -338,7 +338,7 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   }
 
   @Override
-  public TypeSpec generate() {
+  public TypeSpec generate(EnumSet<RunMode> runMode) {
     return mTestSpecGenerator.generate(this);
   }
 

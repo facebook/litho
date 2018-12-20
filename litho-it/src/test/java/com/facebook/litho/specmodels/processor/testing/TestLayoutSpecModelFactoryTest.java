@@ -152,7 +152,7 @@ public class TestLayoutSpecModelFactoryTest {
 
     final TestSpecModel layoutSpecModel =
         factory.create(mElements, mTypes, mTypeElement, mMessager, RunMode.normal(), null, null);
-    layoutSpecModel.generate();
+    layoutSpecModel.generate(RunMode.normal());
 
     verify(specGenerator).generate(layoutSpecModel);
   }

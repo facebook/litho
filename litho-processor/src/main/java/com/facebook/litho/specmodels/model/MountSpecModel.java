@@ -344,8 +344,8 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public TypeSpec generate() {
-    return mMountSpecGenerator.generate(this);
+  public TypeSpec generate(EnumSet<RunMode> runMode) {
+    return mMountSpecGenerator.generate(this, runMode);
   }
 
   @Override
