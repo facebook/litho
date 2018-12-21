@@ -50,13 +50,13 @@ public class MountStateWrapContentTest {
     ComponentsConfiguration.useDisplayListForAllDrawables = true;
 
     Object content = mDLComponent.onCreateMountContent(mContext.getAndroidContext());
-    assertThat(MountState.wrapContentIfNeeded(mDLComponent, content)).isNull();
+    assertThat(MountState.wrapContentIfNeeded(mDLComponent, content, false)).isNull();
 
     content = mNoDLComponent.onCreateMountContent(mContext.getAndroidContext());
-    assertThat(MountState.wrapContentIfNeeded(mNoDLComponent, content)).isNull();
+    assertThat(MountState.wrapContentIfNeeded(mNoDLComponent, content, false)).isNull();
 
     content = mViewComponent.onCreateMountContent(mContext.getAndroidContext());
-    assertThat(MountState.wrapContentIfNeeded(mViewComponent, content)).isNull();
+    assertThat(MountState.wrapContentIfNeeded(mViewComponent, content, false)).isNull();
   }
 
   @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
@@ -65,14 +65,17 @@ public class MountStateWrapContentTest {
     ComponentsConfiguration.useDisplayListForAllDrawables = false;
 
     Object content = mDLComponent.onCreateMountContent(mContext.getAndroidContext());
-    assertThat(MountState.wrapContentIfNeeded(mDLComponent, content))
+    assertThat(MountState.wrapContentIfNeeded(mDLComponent, content, false))
         .isInstanceOf(DisplayListDrawable.class);
 
+    content = mDLComponent.onCreateMountContent(mContext.getAndroidContext());
+    assertThat(MountState.wrapContentIfNeeded(mDLComponent, content, true)).isNull();
+
     content = mNoDLComponent.onCreateMountContent(mContext.getAndroidContext());
-    assertThat(MountState.wrapContentIfNeeded(mNoDLComponent, content)).isNull();
+    assertThat(MountState.wrapContentIfNeeded(mNoDLComponent, content, false)).isNull();
 
     content = mViewComponent.onCreateMountContent(mContext.getAndroidContext());
-    assertThat(MountState.wrapContentIfNeeded(mViewComponent, content)).isNull();
+    assertThat(MountState.wrapContentIfNeeded(mViewComponent, content, false)).isNull();
   }
 
   @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
@@ -81,14 +84,20 @@ public class MountStateWrapContentTest {
     ComponentsConfiguration.useDisplayListForAllDrawables = true;
 
     Object content = mDLComponent.onCreateMountContent(mContext.getAndroidContext());
-    assertThat(MountState.wrapContentIfNeeded(mDLComponent, content))
+    assertThat(MountState.wrapContentIfNeeded(mDLComponent, content, false))
+        .isInstanceOf(DisplayListDrawable.class);
+
+    content = mDLComponent.onCreateMountContent(mContext.getAndroidContext());
+    assertThat(MountState.wrapContentIfNeeded(mDLComponent, content, true)).isNull();
+
+    content = mNoDLComponent.onCreateMountContent(mContext.getAndroidContext());
+    assertThat(MountState.wrapContentIfNeeded(mNoDLComponent, content, false))
         .isInstanceOf(DisplayListDrawable.class);
 
     content = mNoDLComponent.onCreateMountContent(mContext.getAndroidContext());
-    assertThat(MountState.wrapContentIfNeeded(mNoDLComponent, content))
-        .isInstanceOf(DisplayListDrawable.class);
+    assertThat(MountState.wrapContentIfNeeded(mNoDLComponent, content, true)).isNull();
 
     content = mViewComponent.onCreateMountContent(mContext.getAndroidContext());
-    assertThat(MountState.wrapContentIfNeeded(mViewComponent, content)).isNull();
+    assertThat(MountState.wrapContentIfNeeded(mViewComponent, content, false)).isNull();
   }
 }

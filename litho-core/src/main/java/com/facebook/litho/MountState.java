@@ -1434,7 +1434,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     component.bind(context, content);
     item.setIsBound(true);
 
-    item.setWrappedContent(wrapContentIfNeeded(component, content));
+    final boolean doNotWrapIntoDL = mLithoView.getComponentTree().doNotWrapIntoDisplayLists();
+    item.setWrappedContent(wrapContentIfNeeded(component, content, doNotWrapIntoDL));
 
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
@@ -1459,10 +1460,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   @VisibleForTesting
   @Nullable
-  static Object wrapContentIfNeeded(Component component, Object content) {
+  static Object wrapContentIfNeeded(
+      Component component, Object content, boolean doNotWrapIntoDisplayLists) {
     // For the time being the only wrapping we may do is of a Drawable into a DisplayListDrawable,
     // but this may be expanded
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !doNotWrapIntoDisplayLists) {
       // We do not want to wrap RippleDrawables, as it doesn't play along with RenderNodeAnimator
       // well
       if (content instanceof RippleDrawable

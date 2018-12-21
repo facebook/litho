@@ -96,6 +96,7 @@ public class ComponentTree {
   private final @Nullable LithoAffinityBoosterFactory mAffinityBoosterFactory;
   private final boolean mBoostAfinityLayoutStateFuture;
   private final boolean mBoostAffinityLithoLayouts;
+  private final boolean mDoNotWrapIntoDisplayLists;
   private boolean mReleased;
   private String mReleasedComponent;
 
@@ -277,6 +278,7 @@ public class ComponentTree {
     mAffinityBoosterFactory = builder.affinityBoosterFactory;
     mBoostAfinityLayoutStateFuture = builder.boostAffinityLayoutStateFuture;
     mBoostAffinityLithoLayouts = builder.boostAffinityLithoLayouts;
+    mDoNotWrapIntoDisplayLists = builder.doNotWrapIntoDisplayLists;
 
     ensureLayoutThreadHandler();
 
@@ -981,6 +983,13 @@ public class ComponentTree {
    */
   public boolean isIncrementalMountEnabled() {
     return mIncrementalMountEnabled;
+  }
+
+  /**
+   * Returns whether DisplayLists should not be used.
+   */
+  public boolean doNotWrapIntoDisplayLists() {
+    return mDoNotWrapIntoDisplayLists;
   }
 
   synchronized Component getRoot() {
@@ -2398,6 +2407,7 @@ public class ComponentTree {
     private @Nullable LithoAffinityBoosterFactory affinityBoosterFactory;
     private boolean boostAffinityLayoutStateFuture;
     private boolean boostAffinityLithoLayouts;
+    private boolean doNotWrapIntoDisplayLists = false;
 
     protected Builder() {
     }
@@ -2438,6 +2448,7 @@ public class ComponentTree {
       useSharedLayoutStateFuture = false;
       affinityBoosterFactory = null;
       boostAffinityLayoutStateFuture = false;
+      doNotWrapIntoDisplayLists = false;
     }
 
     /**
@@ -2593,6 +2604,14 @@ public class ComponentTree {
      */
     public Builder useSharedLayoutStateFuture(boolean useSharedLayoutStateFuture) {
       this.useSharedLayoutStateFuture = useSharedLayoutStateFuture;
+      return this;
+    }
+
+    /**
+     * Whether DisplayLists should not be used for this ComponentTree
+     */
+    public Builder doNotWrapIntoDisplayLists(boolean doNotWrapIntoDisplayLists) {
+      this.doNotWrapIntoDisplayLists = doNotWrapIntoDisplayLists;
       return this;
     }
 
