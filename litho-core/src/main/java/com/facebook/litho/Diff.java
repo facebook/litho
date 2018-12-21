@@ -41,6 +41,10 @@ public final class Diff<T> {
     return mNext;
   }
 
+  public void setNext(T next) {
+    mNext = next;
+  }
+
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   public void init(T previous, T next) {
     mPrevious = previous;

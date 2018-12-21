@@ -115,7 +115,6 @@ public class DataDiffSectionSpec<T> {
 
     final List<T> previousData = data.getPrevious();
     final List<T> nextData = data.getNext();
-    final int previousDataSize = previousData == null ? 0 : previousData.size();
     final ComponentRenderer componentRenderer =
         new ComponentRenderer(DataDiffSection.getRenderEventHandler(c));
     final DiffSectionOperationExecutor operationExecutor =
@@ -159,7 +158,7 @@ public class DataDiffSectionSpec<T> {
 
     updatesCallback =
         acquire(
-            previousDataSize,
+            previousData,
             nextData,
             componentRenderer,
             operationExecutor,
@@ -194,17 +193,25 @@ public class DataDiffSectionSpec<T> {
       for (int i = 0, size = operations.size(); i < size; i++) {
         final Operation operation = operations.get(i);
         final List<ComponentContainer> components = operation.getComponentContainers();
+        final List<Diff> dataHolders = operation.getDataContainers();
         final int opSize = components == null ? 1 : components.size();
         switch (operation.getType()) {
 
           case Operation.INSERT:
             if (opSize == 1) {
               mChangeSet.insert(
-                  operation.getIndex(), components.get(0).getRenderInfo(), c.getTreePropsCopy());
+                  operation.getIndex(),
+                  components.get(0).getRenderInfo(),
+                  c.getTreePropsCopy(),
+                  dataHolders.get(0).getNext());
             } else {
               final List<RenderInfo> renderInfos = extractComponentInfos(opSize, components);
               mChangeSet.insertRange(
-                  operation.getIndex(), opSize, renderInfos, c.getTreePropsCopy());
+                  operation.getIndex(),
+                  opSize,
+                  renderInfos,
+                  c.getTreePropsCopy(),
+                  extractNextData(dataHolders));
             }
             break;
 
@@ -212,24 +219,34 @@ public class DataDiffSectionSpec<T> {
             // RecyclerBinderUpdateCallback uses the toIndex field of the operation to store count.
             final int count = operation.getToIndex();
             if (count == 1) {
-              mChangeSet.delete(operation.getIndex());
+              mChangeSet.delete(operation.getIndex(), dataHolders.get(0).getPrevious());
             } else {
-              mChangeSet.deleteRange(operation.getIndex(), count);
+              mChangeSet.deleteRange(operation.getIndex(), count, extractPrevData(dataHolders));
             }
             break;
 
           case Operation.MOVE:
-            mChangeSet.move(operation.getIndex(), operation.getToIndex());
+            mChangeSet.move(
+                operation.getIndex(), operation.getToIndex(), dataHolders.get(0).getNext());
             break;
 
           case Operation.UPDATE:
             if (opSize == 1) {
               mChangeSet.update(
-                  operation.getIndex(), components.get(0).getRenderInfo(), c.getTreePropsCopy());
+                  operation.getIndex(),
+                  components.get(0).getRenderInfo(),
+                  c.getTreePropsCopy(),
+                  dataHolders.get(0).getPrevious(),
+                  dataHolders.get(0).getNext());
             } else {
               final List<RenderInfo> renderInfos = extractComponentInfos(opSize, components);
               mChangeSet.updateRange(
-                  operation.getIndex(), opSize, renderInfos, c.getTreePropsCopy());
+                  operation.getIndex(),
+                  opSize,
+                  renderInfos,
+                  c.getTreePropsCopy(),
+                  extractPrevData(dataHolders),
+                  extractNextData(dataHolders));
             }
             break;
         }
@@ -244,6 +261,24 @@ public class DataDiffSectionSpec<T> {
         renderInfos.add(components.get(i).getRenderInfo());
       }
       return renderInfos;
+    }
+
+    private static List<Object> extractPrevData(List<Diff> dataHolders) {
+      final int size = dataHolders.size();
+      final List<Object> data = new ArrayList<>(size);
+      for (int i = 0; i < size; i++) {
+        data.add(dataHolders.get(i).getPrevious());
+      }
+      return data;
+    }
+
+    private static List<Object> extractNextData(List<Diff> dataHolders) {
+      final int size = dataHolders.size();
+      final List<Object> data = new ArrayList<>(size);
+      for (int i = 0; i < size; i++) {
+        data.add(dataHolders.get(i).getNext());
+      }
+      return data;
     }
   }
 

@@ -22,8 +22,10 @@ import android.support.v4.util.Pools.SynchronizedPool;
 import android.support.v7.util.ListUpdateCallback;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
+import com.facebook.litho.Diff;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,29 +52,31 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
   }
 
   private int mOldDataSize;
-  private List<T> mData;
+  private List<T> mPrevData;
+  private List<T> mNextData;
   private List<Operation> mOperations;
   private List<ComponentContainer> mPlaceholders;
+  private List<Diff> mDataHolders;
   private ComponentRenderer mComponentRenderer;
   private OperationExecutor mOperationExecutor;
 
-  public static<T> RecyclerBinderUpdateCallback<T> acquire(
-      int oldDataSize,
-      List<T> data,
+  public static <T> RecyclerBinderUpdateCallback<T> acquire(
+      List<T> prevData,
+      List<T> nextData,
       ComponentRenderer<T> componentRenderer,
       RecyclerBinder recyclerBinder) {
 
     return acquire(
-        oldDataSize,
-        data,
+        prevData,
+        nextData,
         componentRenderer,
         new RecyclerBinderOperationExecutor(recyclerBinder),
         0);
   }
 
   public static <T> RecyclerBinderUpdateCallback<T> acquire(
-      int oldDataSize,
-      List<T> data,
+      List<T> prevData,
+      List<T> nextData,
       ComponentRenderer<T> componentRenderer,
       OperationExecutor operationExecutor,
       int headOffset) {
@@ -82,7 +86,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
       instance = new RecyclerBinderUpdateCallback();
     }
 
-    instance.init(oldDataSize, data, componentRenderer, operationExecutor, headOffset);
+    instance.init(prevData, nextData, componentRenderer, operationExecutor, headOffset);
     return instance;
   }
 
@@ -92,10 +96,13 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
       operations.get(i).release();
     }
     updatesCallback.mOperations = null;
-
-    updatesCallback.mData = null;
+    updatesCallback.mPrevData = null;
+    updatesCallback.mNextData = null;
     for (int i = 0, size = updatesCallback.mPlaceholders.size(); i < size; i++) {
       updatesCallback.mPlaceholders.get(i).release();
+    }
+    for (int i = 0, size = updatesCallback.mDataHolders.size(); i < size; i++) {
+      ComponentsPools.release(updatesCallback.mDataHolders.get(i));
     }
     updatesCallback.mComponentRenderer = null;
     updatesCallback.mOperationExecutor = null;
@@ -108,27 +115,31 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
   }
 
   private void init(
-      int oldDataSize,
-      List<T> data,
+      List<T> prevData,
+      List<T> nextData,
       ComponentRenderer<T> componentRenderer,
       OperationExecutor operationExecutor,
       int headOffset) {
-    mOldDataSize = oldDataSize;
-    mData = data;
+    mPrevData = prevData;
+    mOldDataSize = prevData != null ? prevData.size() : 0;
+    mNextData = nextData;
     mComponentRenderer = componentRenderer;
     mOperationExecutor = operationExecutor;
     mHeadOffset = headOffset;
 
     mOperations = new ArrayList<>();
     mPlaceholders = new ArrayList<>();
-    for (int i = 0; i < oldDataSize; i++) {
+    mDataHolders = new ArrayList<>();
+    for (int i = 0; i < mOldDataSize; i++) {
       mPlaceholders.add(ComponentContainer.acquire());
+      mDataHolders.add(ComponentsPools.acquireDiff(mPrevData.get(i), null));
     }
   }
 
   @Override
   public void onInserted(int position, int count) {
-    final List<ComponentContainer> placeholders = new ArrayList<>();
+    final List<ComponentContainer> placeholders = new ArrayList<>(count);
+    final List<Diff> dataHolders = new ArrayList<>(count);
     position += mHeadOffset;
     for (int i = 0; i < count; i++) {
       final int index = position + i;
@@ -136,34 +147,50 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
       componentContainer.mNeedsComputation = true;
       mPlaceholders.add(index, componentContainer);
       placeholders.add(componentContainer);
+
+      final Diff dataHolder = ComponentsPools.acquireDiff(null, null);
+      mDataHolders.add(index, dataHolder);
+      dataHolders.add(dataHolder);
     }
 
-    mOperations.add(Operation.acquire(Operation.INSERT, position, -1, placeholders));
+    mOperations.add(Operation.acquire(Operation.INSERT, position, -1, placeholders, dataHolders));
   }
 
   @Override
   public void onRemoved(int position, int count) {
+    final List<Diff> dataHolders = new ArrayList<>(count);
     position += mHeadOffset;
     for (int i = 0; i < count; i++) {
       final ComponentContainer componentContainer = mPlaceholders.remove(position);
       componentContainer.release();
+
+      final Diff dataHolder = mDataHolders.remove(position);
+      dataHolders.add(dataHolder);
     }
 
-    mOperations.add(Operation.acquire(Operation.DELETE, position, count, null));
+    mOperations.add(Operation.acquire(Operation.DELETE, position, count, null, dataHolders));
   }
 
   @Override
   public void onMoved(int fromPosition, int toPosition) {
+    final List<Diff> dataHolders = new ArrayList<>(1);
     fromPosition += mHeadOffset;
     toPosition += mHeadOffset;
-    mOperations.add(Operation.acquire(Operation.MOVE, fromPosition, toPosition, null));
-    ComponentContainer placeholder = mPlaceholders.remove(fromPosition);
+
+    final ComponentContainer placeholder = mPlaceholders.remove(fromPosition);
     mPlaceholders.add(toPosition, placeholder);
+
+    final Diff dataHolder = mDataHolders.remove(fromPosition);
+    dataHolders.add(dataHolder);
+    mDataHolders.add(toPosition, dataHolder);
+
+    mOperations.add(Operation.acquire(Operation.MOVE, fromPosition, toPosition, null, dataHolders));
   }
 
   @Override
   public void onChanged(int position, int count, Object payload) {
     final List<ComponentContainer> placeholders = new ArrayList<>();
+    final List<Diff> dataHolders = new ArrayList<>(count);
 
     position += mHeadOffset;
     for (int i = 0; i < count; i++) {
@@ -171,29 +198,42 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
       final ComponentContainer placeholder = mPlaceholders.get(index);
       placeholder.mNeedsComputation = true;
       placeholders.add(placeholder);
+      dataHolders.add(mDataHolders.get(index));
     }
 
-    mOperations.add(Operation.acquire(Operation.UPDATE, position, -1, placeholders));
+    mOperations.add(Operation.acquire(Operation.UPDATE, position, -1, placeholders, dataHolders));
   }
 
   public void applyChangeset(ComponentContext c) {
     final boolean isTracing = ComponentsSystrace.isTracing();
 
-    if (mData != null && mData.size() != mPlaceholders.size()) {
+    if (mNextData != null && mNextData.size() != mPlaceholders.size()) {
       logErrorForInconsistentSize(c);
 
-      // Release mPlaceholders and mOperations since they aren't matching with mData anymore.
+      // Release mPlaceholders and mOperations since they aren't matching with mNextData anymore.
       for (int i = 0, size = mPlaceholders.size(); i < size; i++) {
         mPlaceholders.get(i).release();
       }
       for (int i = 0, size = mOperations.size(); i < size; i++) {
         mOperations.get(i).release();
       }
+      mOperations.clear();
+      for (int i = 0, size = mDataHolders.size(); i < size; i++) {
+        ComponentsPools.release(mDataHolders.get(i));
+      }
 
-      final int dataSize = mData.size();
+      final List<Diff> prevDataHolders = new ArrayList<>();
+      for (int i = 0; i < mOldDataSize; i++) {
+        prevDataHolders.add(ComponentsPools.acquireDiff(mPrevData.get(i), null));
+      }
+      mDataHolders.addAll(prevDataHolders);
+      mOperations.add(Operation.acquire(Operation.DELETE, 0, mOldDataSize, null, prevDataHolders));
+
+      final int dataSize = mNextData.size();
       final List<ComponentContainer> placeholders = new ArrayList<>(dataSize);
+      final List<Diff> dataHolders = new ArrayList<>(dataSize);
       for (int i = 0; i < dataSize; i++) {
-        final Object model = mData.get(i);
+        final Object model = mNextData.get(i);
         final ComponentContainer componentContainer = ComponentContainer.acquire();
         if (isTracing) {
           ComponentsSystrace.beginSection("renderInfo:" + getModelName(model));
@@ -203,15 +243,15 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
           ComponentsSystrace.endSection();
         }
         placeholders.add(i, componentContainer);
+        dataHolders.add(ComponentsPools.acquireDiff(null, model));
       }
       mPlaceholders = placeholders;
-      mOperations = new ArrayList<>();
-      mOperations.add(Operation.acquire(Operation.DELETE, 0, mOldDataSize, null));
-      mOperations.add(Operation.acquire(Operation.INSERT, 0, -1, placeholders));
+      mDataHolders.addAll(dataHolders);
+      mOperations.add(Operation.acquire(Operation.INSERT, 0, -1, placeholders, dataHolders));
     } else {
       for (int i = 0, size = mPlaceholders.size(); i < size; i++) {
         if (mPlaceholders.get(i).mNeedsComputation) {
-          final Object model = mData.get(i);
+          final Object model = mNextData.get(i);
           if (isTracing) {
             ComponentsSystrace.beginSection("renderInfo:" + getModelName(model));
           }
@@ -219,6 +259,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
           if (isTracing) {
             ComponentsSystrace.endSection();
           }
+          mDataHolders.get(i).setNext(model);
         }
       }
     }
@@ -238,14 +279,14 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
         : model.getClass().getSimpleName();
   }
 
-  /** Emit a soft error if the size between mPlaceholders and mData aren't the same. */
+  /** Emit a soft error if the size between mPlaceholders and mNextData aren't the same. */
   private void logErrorForInconsistentSize(ComponentContext c) {
     final StringBuilder message = new StringBuilder();
     message
         .append("Inconsistent size between mPlaceholders(")
         .append(mPlaceholders.size())
-        .append(") and mData(")
-        .append(mData.size())
+        .append(") and mNextData(")
+        .append(mNextData.size())
         .append("); ");
 
     message.append("mOperations: [");
@@ -264,9 +305,9 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
       message.append("], ");
     }
     message.append("]; ");
-    message.append("mData: [");
-    for (int i = 0, size = mData.size(); i < size; i++) {
-      message.append("[").append(mData.get(i)).append("], ");
+    message.append("mNextData: [");
+    for (int i = 0, size = mNextData.size(); i < size; i++) {
+      message.append("[").append(mNextData.get(i)).append("], ");
     }
     message.append("]");
     ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, message.toString());
@@ -291,6 +332,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
     private int mIndex;
     private int mToIndex;
     private List<ComponentContainer> mComponentContainers;
+    private List<Diff> mDataContainers;
 
     private Operation() {
     }
@@ -299,23 +341,26 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
         int type,
         int index,
         int toIndex,
-        List<ComponentContainer> placeholder) {
+        List<ComponentContainer> placeholder,
+        List<Diff> dataHolders) {
       mType = type;
       mIndex = index;
       mToIndex = toIndex;
       mComponentContainers = placeholder;
+      mDataContainers = dataHolders;
     }
 
     private static Operation acquire(
         int type,
         int index,
         int toIndex,
-        List<ComponentContainer> placeholder) {
+        List<ComponentContainer> placeholder,
+        List<Diff> dataHolders) {
       Operation operation = sOperationsPool.acquire();
       if (operation == null) {
         operation = new Operation();
       }
-      operation.init(type, index, toIndex, placeholder);
+      operation.init(type, index, toIndex, placeholder, dataHolders);
 
       return operation;
     }
@@ -343,6 +388,10 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
 
     public List<ComponentContainer> getComponentContainers() {
       return mComponentContainers;
+    }
+
+    public List<Diff> getDataContainers() {
+      return mDataContainers;
     }
   }
 

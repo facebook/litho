@@ -75,6 +75,7 @@ public class TestGroupSectionSpec {
       @FromEvent Object model,
       @Param ComponentContext context) {
     return ComponentRenderInfo.create()
+        .customAttribute("model", model)
         .component(Text.create(context).text(model.toString()).build())
         .build();
   }

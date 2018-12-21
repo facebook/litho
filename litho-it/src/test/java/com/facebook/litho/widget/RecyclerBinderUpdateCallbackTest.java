@@ -17,8 +17,8 @@
 package com.facebook.litho.widget;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -78,7 +78,8 @@ public class RecyclerBinderUpdateCallbackTest {
               }
             })
         .when(mOperationExecutor)
-        .executeOperations(anyObject(), anyListOf(RecyclerBinderUpdateCallback.Operation.class));
+        .executeOperations(
+            any(ComponentContext.class), anyListOf(RecyclerBinderUpdateCallback.Operation.class));
 
     mReporter = mock(ComponentsReporter.Reporter.class);
     doAnswer(
@@ -102,10 +103,10 @@ public class RecyclerBinderUpdateCallbackTest {
   public void testApplyChangeset() {
     RecyclerBinderUpdateCallback callback =
         RecyclerBinderUpdateCallback.acquire(
-            0, mOldData, mComponentRenderer, mOperationExecutor, 0);
+            null, mOldData, mComponentRenderer, mOperationExecutor, 0);
     callback.onInserted(0, OLD_DATA_SIZE);
     callback.applyChangeset(mComponentContext);
-    verify(mReporter, never()).emitMessage(anyObject(), anyString());
+    verify(mReporter, never()).emitMessage(any(ComponentsReporter.LogLevel.class), anyString());
 
     final List<RecyclerBinderUpdateCallback.Operation> operations = callback.getOperations();
     assertThat(operations.size()).isEqualTo(1);
@@ -114,23 +115,84 @@ public class RecyclerBinderUpdateCallbackTest {
     assertThat(firstOperation.getType()).isEqualTo(RecyclerBinderUpdateCallback.Operation.INSERT);
     assertThat(firstOperation.getIndex()).isEqualTo(0);
     assertThat(firstOperation.getComponentContainers().size()).isEqualTo(OLD_DATA_SIZE);
+
+    assertThat(firstOperation.getDataContainers().size()).isEqualTo(OLD_DATA_SIZE);
+    assertThat(firstOperation.getDataContainers().get(0).getPrevious()).isNull();
+    for (int i = 0, size = firstOperation.getDataContainers().size(); i < size; i++) {
+      assertThat(firstOperation.getDataContainers().get(i).getNext()).isEqualTo(mOldData.get(i));
+    }
+  }
+
+  @Test
+  public void testApplyChangesetWithMultiOperations() {
+    List<Object> oldData = new ArrayList<>();
+    for (int i = 0; i < 12; i++) {
+      oldData.add("o" + i);
+    }
+    List<Object> newData = new ArrayList<>();
+    for (int i = 0; i < 20; i++) {
+      newData.add("n" + i);
+    }
+    RecyclerBinderUpdateCallback callback =
+        RecyclerBinderUpdateCallback.acquire(
+            null, oldData, mComponentRenderer, mOperationExecutor, 0);
+    callback.onInserted(0, 12);
+    callback.applyChangeset(mComponentContext);
+    verify(mReporter, never()).emitMessage(any(ComponentsReporter.LogLevel.class), anyString());
+
+    final RecyclerBinderUpdateCallback callback2 =
+        RecyclerBinderUpdateCallback.acquire(
+            oldData, newData, mComponentRenderer, mOperationExecutor, 0);
+
+    callback2.onInserted(0, 5);
+    callback2.onChanged(6, 6, null);
+    callback2.onInserted(17, 3);
+    callback2.applyChangeset(mComponentContext);
+
+    final List<RecyclerBinderUpdateCallback.Operation> operations = callback2.getOperations();
+    assertThat(operations.size()).isEqualTo(3);
+
+    final RecyclerBinderUpdateCallback.Operation firstOperation = operations.get(0);
+    assertThat(firstOperation.getType()).isEqualTo(RecyclerBinderUpdateCallback.Operation.INSERT);
+    assertThat(firstOperation.getIndex()).isEqualTo(0);
+    assertThat(firstOperation.getComponentContainers().size()).isEqualTo(5);
+    for (int i = 0, size = firstOperation.getDataContainers().size(); i < size; i++) {
+      assertThat(firstOperation.getDataContainers().get(i).getNext()).isEqualTo(newData.get(i));
+    }
+
+    final RecyclerBinderUpdateCallback.Operation secondOperation = operations.get(1);
+    assertThat(secondOperation.getType()).isEqualTo(RecyclerBinderUpdateCallback.Operation.UPDATE);
+    assertThat(secondOperation.getIndex()).isEqualTo(6);
+    assertThat(secondOperation.getComponentContainers().size()).isEqualTo(6);
+    for (int i = 0, size = secondOperation.getDataContainers().size(); i < size; i++) {
+      assertThat(secondOperation.getDataContainers().get(i).getNext())
+          .isEqualTo(newData.get(i + 6));
+      assertThat(secondOperation.getDataContainers().get(i).getPrevious())
+          .isEqualTo(oldData.get(i + 1));
+    }
   }
 
   @Test
   public void testApplyChangesetWithInValidOperations() {
     final RecyclerBinderUpdateCallback callback1 =
         RecyclerBinderUpdateCallback.acquire(
-            0, mOldData, mComponentRenderer, mOperationExecutor, 0);
+            null, mOldData, mComponentRenderer, mOperationExecutor, 0);
     callback1.onInserted(0, OLD_DATA_SIZE);
     callback1.applyChangeset(mComponentContext);
-    verify(mReporter, never()).emitMessage(anyObject(), anyString());
+    verify(mReporter, never()).emitMessage(any(ComponentsReporter.LogLevel.class), anyString());
     final RecyclerBinderUpdateCallback.Operation operation =
         (RecyclerBinderUpdateCallback.Operation) callback1.getOperations().get(0);
     assertOperationComponentContainer(operation, mOldData);
 
+    assertThat(operation.getDataContainers().size()).isEqualTo(OLD_DATA_SIZE);
+    for (int i = 0, size = operation.getDataContainers().size(); i < size; i++) {
+      assertThat(operation.getDataContainers().get(i).getPrevious()).isNull();
+      assertThat(operation.getDataContainers().get(i).getNext()).isEqualTo(mOldData.get(i));
+    }
+
     final RecyclerBinderUpdateCallback callback2 =
         RecyclerBinderUpdateCallback.acquire(
-            OLD_DATA_SIZE, mNewData, mComponentRenderer, mOperationExecutor, 0);
+            mOldData, mNewData, mComponentRenderer, mOperationExecutor, 0);
 
     // Apply invalid operations
     callback2.onChanged(7, 5, null);
@@ -152,12 +214,20 @@ public class RecyclerBinderUpdateCallbackTest {
     assertThat(firstOperation.getType()).isEqualTo(RecyclerBinderUpdateCallback.Operation.DELETE);
     assertThat(firstOperation.getIndex()).isEqualTo(0);
     assertThat(firstOperation.getToIndex()).isEqualTo(OLD_DATA_SIZE);
+    for (int i = 0, size = firstOperation.getDataContainers().size(); i < size; i++) {
+      assertThat(firstOperation.getDataContainers().get(i).getPrevious())
+          .isEqualTo(mOldData.get(i));
+    }
 
     final RecyclerBinderUpdateCallback.Operation secondOperation = operations.get(1);
     assertThat(secondOperation.getType()).isEqualTo(RecyclerBinderUpdateCallback.Operation.INSERT);
     assertThat(secondOperation.getIndex()).isEqualTo(0);
     assertThat(secondOperation.getComponentContainers().size()).isEqualTo(NEW_DATA_SIZE);
     assertOperationComponentContainer(secondOperation, mNewData);
+    assertThat(secondOperation.getDataContainers().size()).isEqualTo(NEW_DATA_SIZE);
+    for (int i = 0, size = secondOperation.getDataContainers().size(); i < size; i++) {
+      assertThat(secondOperation.getDataContainers().get(i).getNext()).isEqualTo(mNewData.get(i));
+    }
   }
 
   private static void assertOperationComponentContainer(
