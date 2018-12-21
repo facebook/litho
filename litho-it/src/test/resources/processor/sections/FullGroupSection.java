@@ -34,6 +34,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
+import com.facebook.litho.sections.ChangesInfo;
 import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.LoadingEvent;
 import com.facebook.litho.sections.Section;
@@ -391,12 +392,21 @@ final class FullGroupSection<T> extends Section implements TestTag {
 
   @Override
   protected void dataRendered(
-      SectionContext c, boolean isDataChanged, boolean isMounted, long uptimeMillis) {
+      SectionContext c,
+      boolean isDataChanged,
+      boolean isMounted,
+      long uptimeMillis,
+      int firstVisibleIndex,
+      int lastVisibleIndex,
+      ChangesInfo changesInfo) {
     FullGroupSectionSpec.onDataRendered(
         (SectionContext) c,
         (boolean) isDataChanged,
         (boolean) isMounted,
         (long) uptimeMillis,
+        (int) firstVisibleIndex,
+        (int) lastVisibleIndex,
+        (ChangesInfo) changesInfo,
         (int) prop1,
         (Object) mStateContainer.state2,
         (Integer) getCached());

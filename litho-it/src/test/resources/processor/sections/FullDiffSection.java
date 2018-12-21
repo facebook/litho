@@ -31,6 +31,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.sections.ChangeSet;
+import com.facebook.litho.sections.ChangesInfo;
 import com.facebook.litho.sections.LoadingEvent;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
@@ -352,12 +353,21 @@ public final class FullDiffSection<T> extends Section implements TestTag {
 
   @Override
   protected void dataRendered(
-      SectionContext c, boolean isDataChanged, boolean isMounted, long uptimeMillis) {
+      SectionContext c,
+      boolean isDataChanged,
+      boolean isMounted,
+      long uptimeMillis,
+      int firstVisibleIndex,
+      int lastVisibleIndex,
+      ChangesInfo changesInfo) {
     FullDiffSectionSpec.onDataRendered(
         (SectionContext) c,
         (boolean) isDataChanged,
         (boolean) isMounted,
         (long) uptimeMillis,
+        (int) firstVisibleIndex,
+        (int) lastVisibleIndex,
+        (ChangesInfo) changesInfo,
         (Integer) prop1,
         (Integer) getCached());
   }

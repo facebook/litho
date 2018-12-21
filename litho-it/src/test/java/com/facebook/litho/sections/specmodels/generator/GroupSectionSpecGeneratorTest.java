@@ -20,6 +20,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.sections.ChangesInfo;
 import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
@@ -70,6 +71,9 @@ public class GroupSectionSpecGeneratorTest {
         boolean isDataChanged,
         boolean isMounted,
         long uptimeMillis,
+        int firstVisibleIndex,
+        int lastVisibleIndex,
+        ChangesInfo changesInfo,
         @Prop boolean arg0,
         @State int arg1) {}
   }
@@ -110,12 +114,16 @@ public class GroupSectionSpecGeneratorTest {
         .isEqualTo(
             "@java.lang.Override\n"
                 + "protected void dataRendered(com.facebook.litho.sections.SectionContext c, boolean isDataChanged,\n"
-                + "    boolean isMounted, long uptimeMillis) {\n"
+                + "    boolean isMounted, long uptimeMillis, int firstVisibleIndex, int lastVisibleIndex,\n"
+                + "    com.facebook.litho.sections.ChangesInfo changesInfo) {\n"
                 + "  TestGroupSectionSpec.onDataRendered(\n"
                 + "    (com.facebook.litho.sections.SectionContext) c,\n"
                 + "    (boolean) isDataChanged,\n"
                 + "    (boolean) isMounted,\n"
                 + "    (long) uptimeMillis,\n"
+                + "    (int) firstVisibleIndex,\n"
+                + "    (int) lastVisibleIndex,\n"
+                + "    (com.facebook.litho.sections.ChangesInfo) changesInfo,\n"
                 + "    (boolean) arg0,\n"
                 + "    (int) mStateContainer.arg1);\n"
                 + "}\n");

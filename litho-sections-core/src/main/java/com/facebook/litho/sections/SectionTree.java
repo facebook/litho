@@ -58,6 +58,7 @@ import com.facebook.litho.widget.SectionsDebug;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -445,26 +446,50 @@ public class SectionTree {
 
   @UiThread
   private void dataRendered(
-      Section currentSection, boolean isDataChanged, boolean isMounted, long uptimeMillis) {
+      Section currentSection,
+      boolean isDataChanged,
+      boolean isMounted,
+      long uptimeMillis,
+      ChangesInfo changesInfo) {
     ThreadUtils.assertMainThread();
 
     if (currentSection != null) {
-      dataRenderedRecursive(currentSection, isDataChanged, isMounted, uptimeMillis);
+      dataRenderedRecursive(currentSection, isDataChanged, isMounted, uptimeMillis, changesInfo);
     }
   }
 
   @UiThread
   private void dataRenderedRecursive(
-      Section section, boolean isDataChanged, boolean isMounted, long uptimeMillis) {
-    section.dataRendered(section.getScopedContext(), isDataChanged, isMounted, uptimeMillis);
-
+      Section section,
+      boolean isDataChanged,
+      boolean isMounted,
+      long uptimeMillis,
+      ChangesInfo changesInfo) {
     if (section.isDiffSectionSpec()) {
       return;
     }
 
+    int firstVisibleIndex = -1;
+    int lastVisibleIndex = -1;
+
+    final Range currentRange = mLastRanges.get(section.getGlobalKey());
+    if (currentRange != null) {
+      firstVisibleIndex = currentRange.firstVisibleIndex;
+      lastVisibleIndex = currentRange.lastVisibleIndex;
+    }
+
+    section.dataRendered(
+        section.getScopedContext(),
+        isDataChanged,
+        isMounted,
+        uptimeMillis,
+        firstVisibleIndex,
+        lastVisibleIndex,
+        changesInfo);
+
     final List<Section> children = section.getChildren();
     for (int i = 0, size = children.size(); i < size; i++) {
-      dataRenderedRecursive(children.get(i), isDataChanged, isMounted, uptimeMillis);
+      dataRenderedRecursive(children.get(i), isDataChanged, isMounted, uptimeMillis, changesInfo);
     }
   }
 
@@ -1259,6 +1284,7 @@ public class SectionTree {
       ComponentsSystrace.beginSection("applyChangeSetToTarget");
     }
     boolean appliedChanges = false;
+    ChangeSet mergedChangeSet = null;
     try {
       for (int i = 0, size = changeSets.size(); i < size; i++) {
         final ChangeSet changeSet = changeSets.get(i);
@@ -1298,9 +1324,15 @@ public class SectionTree {
           }
           mTarget.dispatchLastEvent();
         }
+        mergedChangeSet = ChangeSet.merge(mergedChangeSet, changeSet);
       }
 
       final boolean isDataChanged = appliedChanges;
+      final ChangesInfo changesInfo =
+          new ChangesInfo(
+              mergedChangeSet != null
+                  ? mergedChangeSet.getChanges()
+                  : Collections.<Change>emptyList());
       mTarget.notifyChangeSetComplete(
           isDataChanged,
           new ChangeSetCompleteCallback() {
@@ -1324,7 +1356,7 @@ public class SectionTree {
 
             @Override
             public void onDataRendered(boolean isMounted, long uptimeMillis) {
-              dataRendered(currentSection, isDataChanged, isMounted, uptimeMillis);
+              dataRendered(currentSection, isDataChanged, isMounted, uptimeMillis, changesInfo);
             }
           });
     } finally {

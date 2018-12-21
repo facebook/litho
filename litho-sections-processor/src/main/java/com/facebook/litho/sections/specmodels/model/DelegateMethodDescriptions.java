@@ -107,7 +107,10 @@ public class DelegateMethodDescriptions {
                   SectionClassNames.SECTION_CONTEXT,
                   TypeName.BOOLEAN,
                   TypeName.BOOLEAN,
-                  TypeName.LONG))
+                  TypeName.LONG,
+                  TypeName.INT,
+                  TypeName.INT,
+                  SectionClassNames.CHANGE_CHANGES_INFO))
           .optionalParameterTypes(
               ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP, CACHED_VALUE))
           .build();

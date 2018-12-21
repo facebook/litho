@@ -35,6 +35,7 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
+import com.facebook.litho.sections.ChangesInfo;
 import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
@@ -135,6 +136,9 @@ public class FullGroupSectionSpec<T> implements TestTag {
       boolean isDataChanged,
       boolean isMounted,
       long uptimeMillis,
+      int firstVisibleIndex,
+      int lastVisibleIndex,
+      ChangesInfo changesInfo,
       @Prop int prop1,
       @State(canUpdateLazily = true) Object state2,
       @CachedValue int cached) {}

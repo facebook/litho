@@ -69,7 +69,13 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
    * OnDataRendered}.
    */
   protected void dataRendered(
-      SectionContext c, boolean isDataChanged, boolean isMounted, long uptimeMillis) {}
+      SectionContext c,
+      boolean isDataChanged,
+      boolean isMounted,
+      long uptimeMillis,
+      int firstVisibleIndex,
+      int lastVisibleIndex,
+      ChangesInfo changesInfo) {}
 
   protected void bindService(SectionContext c) {
 

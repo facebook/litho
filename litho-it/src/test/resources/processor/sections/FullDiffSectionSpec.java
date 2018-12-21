@@ -32,6 +32,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.sections.ChangeSet;
+import com.facebook.litho.sections.ChangesInfo;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.OnBindService;
@@ -102,6 +103,9 @@ public class FullDiffSectionSpec<T> implements TestTag {
       boolean isDataChanged,
       boolean isMounted,
       long uptimeMillis,
+      int firstVisibleIndex,
+      int lastVisibleIndex,
+      ChangesInfo changesInfo,
       @Prop Integer prop1,
       @CachedValue int cached) {}
 
