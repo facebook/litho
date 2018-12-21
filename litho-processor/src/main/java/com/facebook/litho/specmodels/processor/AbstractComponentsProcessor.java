@@ -45,7 +45,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
   private final List<SpecModelFactory> mSpecModelFactories;
   private final boolean mShouldSavePropNames;
   private PropNameInterStageStore mPropNameInterStageStore;
-  private EnumSet<RunMode> mRunMode;
+  private final EnumSet<RunMode> mRunMode = RunMode.normal();
 
   private final InterStageStore mInterStageStore =
       new InterStageStore() {
@@ -70,6 +70,11 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     mShouldSavePropNames = shouldSavePropNames;
   }
 
+  /** Use this to force hotswap mode to be turned on. */
+  public void forceHotswapMode() {
+    mRunMode.add(RunMode.HOTSWAP);
+  }
+
   @Override
   public void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
@@ -77,7 +82,15 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     Map<String, String> options = processingEnv.getOptions();
     boolean isGeneratingAbi =
         Boolean.valueOf(options.getOrDefault("com.facebook.buck.java.generating_abi", "false"));
-    mRunMode = isGeneratingAbi ? EnumSet.of(RunMode.ABI) : RunMode.normal();
+    if (isGeneratingAbi) {
+      mRunMode.add(RunMode.ABI);
+    }
+
+    boolean generateBuckHotswapCode =
+        Boolean.valueOf(options.getOrDefault("com.facebook.litho.hotswap", "false"));
+    if (generateBuckHotswapCode) {
+      mRunMode.add(RunMode.HOTSWAP);
+    }
   }
 
   @Override

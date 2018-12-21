@@ -25,6 +25,7 @@ import java.util.List;
  * Constants used in {@link SpecModel}s.
  */
 public interface ClassNames {
+  ClassName CLASS = ClassName.bestGuess("java.lang.Class");
   ClassName OBJECT = ClassName.bestGuess("java.lang.Object");
   ClassName OBJECTS = ClassName.bestGuess("java.util.Objects");
   ClassName STRING = ClassName.bestGuess("java.lang.String");
@@ -136,4 +137,8 @@ public interface ClassNames {
   ClassName NON_EXISTENT_CLASS = ClassName.bestGuess("error.NonExistentClass");
 
   ClassName WORKING_RANGE = ClassName.bestGuess("com.facebook.litho.WorkingRange");
+
+  ClassName HOTSWAP_MANAGER = ClassName.bestGuess("com.facebook.litho.HotswapManager");
+  ClassName CLASS_LOADER = ClassName.bestGuess("java.lang.ClassLoader");
+  ClassName JAVA_METHOD = ClassName.bestGuess("java.lang.reflect.Method");
 }

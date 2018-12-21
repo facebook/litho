@@ -23,7 +23,6 @@ import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_STATE;
 
-import android.support.v4.util.Pair;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -168,14 +167,14 @@ public class DelegateMethodGenerator {
     final CodeBlock.Builder acquireStatements = CodeBlock.builder();
     final CodeBlock.Builder releaseStatements = CodeBlock.builder();
 
-    final List<Pair<TypeName, String>> delegationParams =
+    final List<ParamTypeAndName> delegationParams =
         new ArrayList<>(delegateMethod.methodParams.size());
     for (int i = 0, size = delegateMethod.methodParams.size(); i < size; i++) {
       final MethodParamModel methodParamModel = delegateMethod.methodParams.get(i);
       final int definedParameterTypesSize = methodDescription.definedParameterTypes.size();
       if (i < definedParameterTypesSize) {
         delegationParams.add(
-            Pair.create(methodParamModel.getTypeName(), methodParamModel.getName()));
+            ParamTypeAndName.create(methodParamModel.getTypeName(), methodParamModel.getName()));
       } else if (i < definedParameterTypesSize + methodDescription.optionalParameters.size()
           && shouldIncludeOptionalParameter(
               methodParamModel,
@@ -183,7 +182,7 @@ public class DelegateMethodGenerator {
         final MethodParamModel extraDefinedParam =
             methodDescription.optionalParameters.get(i - definedParameterTypesSize);
         delegationParams.add(
-            Pair.create(extraDefinedParam.getTypeName(), extraDefinedParam.getName()));
+            ParamTypeAndName.create(extraDefinedParam.getTypeName(), extraDefinedParam.getName()));
       } else if (methodParamModel instanceof DiffPropModel
           || methodParamModel instanceof DiffStateParamModel) {
         acquireStatements.addStatement(
@@ -195,13 +194,14 @@ public class DelegateMethodGenerator {
             ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel),
             ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel));
         delegationParams.add(
-            Pair.create(methodParamModel.getTypeName(), methodParamModel.getName()));
+            ParamTypeAndName.create(methodParamModel.getTypeName(), methodParamModel.getName()));
         releaseStatements.addStatement("releaseDiff($L)", methodParamModel.getName());
       } else if (isOutputType(methodParamModel.getTypeName())) {
         String localOutputName = methodParamModel.getName() + "Tmp";
         acquireStatements.add(
             "$T $L = acquireOutput();\n", methodParamModel.getTypeName(), localOutputName);
-        delegationParams.add(Pair.create(methodParamModel.getTypeName(), localOutputName));
+        delegationParams.add(
+            ParamTypeAndName.create(methodParamModel.getTypeName(), localOutputName));
 
         final boolean isPropOutput = SpecModelUtils.isPropOutput(specModel, methodParamModel);
         if (isPropOutput) {
@@ -221,7 +221,7 @@ public class DelegateMethodGenerator {
             methodParamModel.getTypeName(),
             methodParamModel.getName());
         delegationParams.add(
-            Pair.create(methodParamModel.getTypeName(), methodParamModel.getName()));
+            ParamTypeAndName.create(methodParamModel.getTypeName(), methodParamModel.getName()));
 
         if (delegateMethod.name.toString().equals("createInitialState")) {
           releaseStatements.beginControlFlow("if ($L.get() != null)", methodParamModel.getName());
@@ -252,31 +252,41 @@ public class DelegateMethodGenerator {
                 .build();
         acquireStatements.add(block);
         releaseStatements.addStatement("releaseDiff($L)", diffName);
-        delegationParams.add(Pair.create(methodParamModel.getTypeName(), diffName));
+        delegationParams.add(ParamTypeAndName.create(methodParamModel.getTypeName(), diffName));
       } else {
         delegationParams.add(
-            Pair.create(
+            ParamTypeAndName.create(
                 methodParamModel.getTypeName(), getImplAccessor(specModel, methodParamModel)));
       }
     }
 
-    return CodeBlock.builder()
-        .add(acquireStatements.build())
-        .add(
-            getDelegationMethod(
-                specModel,
-                delegateMethod.name,
-                methodDescription.returnType,
-                ImmutableList.copyOf(delegationParams)))
-        .add(releaseStatements.build())
-        .build();
+    final CodeBlock.Builder codeBlock = CodeBlock.builder().add(acquireStatements.build());
+
+    if (specModel.getTypeVariables().isEmpty() && runMode.contains(RunMode.HOTSWAP)) {
+      codeBlock
+          .add(HotswapGenerator.generateLoadSpecClass(specModel))
+          .add(
+              HotswapGenerator.generateDelegatingMethod(
+                  delegateMethod.name.toString(),
+                  delegateMethod.returnType,
+                  ImmutableList.copyOf(delegationParams)));
+    } else {
+      codeBlock.add(
+          getDelegationMethod(
+              specModel,
+              delegateMethod.name,
+              methodDescription.returnType,
+              ImmutableList.copyOf(delegationParams)));
+    }
+
+    return codeBlock.add(releaseStatements.build()).build();
   }
 
   private static CodeBlock getDelegationMethod(
       SpecModel specModel,
       CharSequence methodName,
       TypeName returnType,
-      ImmutableList<Pair<TypeName, String>> methodParams) {
+      ImmutableList<ParamTypeAndName> methodParams) {
     final CodeBlock.Builder delegation = CodeBlock.builder();
     final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
     if (returnType.equals(TypeName.VOID)) {
@@ -288,7 +298,7 @@ public class DelegateMethodGenerator {
 
     delegation.indent();
     for (int i = 0; i < methodParams.size(); i++) {
-      delegation.add("($T) $L", methodParams.get(i).first, methodParams.get(i).second);
+      delegation.add("($T) $L", methodParams.get(i).type, methodParams.get(i).name);
 
       if (i < methodParams.size() - 1) {
         delegation.add(",\n");
@@ -323,5 +333,19 @@ public class DelegateMethodGenerator {
     return type.equals(STATE_VALUE) ||
         (type instanceof ParameterizedTypeName &&
             ((ParameterizedTypeName) type).rawType.equals(STATE_VALUE));
+  }
+
+  static final class ParamTypeAndName {
+    final TypeName type;
+    final String name;
+
+    private ParamTypeAndName(TypeName type, String name) {
+      this.type = type;
+      this.name = name;
+    }
+
+    static ParamTypeAndName create(TypeName type, String name) {
+      return new ParamTypeAndName(type, name);
+    }
   }
 }

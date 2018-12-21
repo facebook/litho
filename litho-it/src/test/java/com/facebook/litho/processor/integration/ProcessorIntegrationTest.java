@@ -118,6 +118,34 @@ public class ProcessorIntegrationTest {
   }
 
   @Test
+  public void compilesHotswapLayoutSpecWithoutError() {
+    final ComponentsProcessor processor = new ComponentsProcessor();
+    processor.forceHotswapMode();
+
+    final JavaFileObject javaFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "SimpleLayoutSpec.java"));
+
+    final JavaFileObject expectedOutput =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "SimpleHotswapLayout.java"));
+
+    Truth.assertAbout(JavaSourceSubjectFactory.javaSource())
+        .that(javaFileObject)
+        .processedWith(processor)
+        .compilesWithoutError()
+        .and()
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleLayout.class")
+        .and()
+        .generatesFileNamed(
+            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleLayout$Builder.class")
+        .and()
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleLayoutSpec.class")
+        .and()
+        .generatesSources(expectedOutput);
+  }
+
+  @Test
   public void compilesMountSpec() {
     final JavaFileObject javaFileObject =
         JavaFileObjects.forResource(
