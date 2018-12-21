@@ -139,6 +139,10 @@ public class LithoView extends ComponentHost {
     mMountState = new MountState(this);
     mAccessibilityManager =
         (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
+
+    if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
+      HotswapManager.addLithoView(this);
+    }
   }
 
   private static void performLayoutOnChildrenIfNecessary(ComponentHost host) {
