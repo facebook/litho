@@ -18,11 +18,15 @@ package com.facebook.litho.widget;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.widget.TextView;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import java.lang.reflect.Field;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,6 +64,46 @@ public class TextInputSpecTest {
     component = TextInput.create(mContext).initialText(multiline).multiline(true);
     editText = getEditText(component);
     assertThat(editText.getLineCount()).isEqualTo(3);
+  }
+
+  @Test
+  public void testCursorDrawableResNotSet()
+      throws IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
+    // Obtain default style value with the reflection
+    // https://stackoverflow.com/questions/8683411/the-import-com-android-internal-r-cannot-be-resolved/8683466
+    Class clsStyleable = Class.forName("com.android.internal.R$styleable");
+    Field fldStyleable = clsStyleable.getDeclaredField("TextView");
+    fldStyleable.setAccessible(true);
+    int[] textStyleArr = (int[]) fldStyleable.get(null);
+    int defEditTextStyle = Resources.getSystem().getIdentifier("editTextStyle", "attr", "android");
+    final Resources.Theme theme = mContext.getAndroidContext().getTheme();
+    TypedArray a = theme.obtainStyledAttributes(null, textStyleArr, defEditTextStyle, 0);
+
+    fldStyleable = clsStyleable.getDeclaredField("TextView_textCursorDrawable");
+    fldStyleable.setAccessible(true);
+    int textCursorStyle = (Integer) fldStyleable.get(null);
+
+    int defaultDrawableRes = a.getResourceId(textCursorStyle, 0);
+
+    Component.Builder component = TextInput.create(mContext);
+    final android.widget.EditText editText = getEditText(component);
+    Field f = TextView.class.getDeclaredField("mCursorDrawableRes");
+    f.setAccessible(true);
+    Object actualDrawableRes = f.get(editText);
+
+    assertThat(actualDrawableRes).isEqualTo(defaultDrawableRes);
+  }
+
+  @Test
+  public void testCursorDrawableResSet() throws IllegalAccessException, NoSuchFieldException {
+    int drawableRes = 10;
+    Component.Builder component = TextInput.create(mContext).cursorDrawableRes(drawableRes);
+    final android.widget.EditText editText = getEditText(component);
+    Field f = TextView.class.getDeclaredField("mCursorDrawableRes");
+    f.setAccessible(true);
+    f.get(editText);
+
+    assertThat(f.get(editText)).isEqualTo(drawableRes);
   }
 
   private static android.widget.EditText getEditText(Component.Builder component) {

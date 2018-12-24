@@ -66,6 +66,7 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.utils.MeasureUtils;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
@@ -98,6 +99,7 @@ import javax.annotation.Nullable;
  * @prop shadowDx Horizontal offset of the shadow.
  * @prop shadowDy Vertical offset of the shadow.
  * @prop shadowColor Color for the shadow underneath the text.
+ * @prop cursorDrawableRes Drawable to set as an edit text cursor.
  * @prop textColorStateList ColorStateList of the text.
  * @prop hintTextColorStateList ColorStateList of the hint text.
  * @prop textSize Size of the text.
@@ -145,6 +147,7 @@ class TextInputSpec {
   @PropDefault protected static final boolean editable = true;
   @PropDefault protected static final int inputType = EditorInfo.TYPE_CLASS_TEXT;
   @PropDefault protected static final int imeOptions = EditorInfo.IME_NULL;
+  @PropDefault protected static final int cursorDrawableRes = -1;
   @PropDefault static final boolean multiline = false;
   @PropDefault protected static final int minLines = 1;
   @PropDefault protected static final int maxLines = Integer.MAX_VALUE;
@@ -193,6 +196,7 @@ class TextInputSpec {
       @Prop(optional = true) TextUtils.TruncateAt ellipsize,
       @Prop(optional = true) int minLines,
       @Prop(optional = true) int maxLines,
+      @Prop(optional = true) int cursorDrawableRes,
       @State AtomicReference<CharSequence> savedText,
       @State int measureSeqNumber) {
     // For width we always take all available space, or collapse to 0 if unspecified.
@@ -226,6 +230,7 @@ class TextInputSpec {
         ellipsize,
         minLines,
         maxLines,
+        cursorDrawableRes,
         // onMeasure happens:
         // 1. After initState before onMount: savedText = initText.
         // 2. After onMount before onUnmount: savedText preserved from underlying editText.
@@ -258,6 +263,7 @@ class TextInputSpec {
       @Nullable TextUtils.TruncateAt ellipsize,
       int minLines,
       int maxLines,
+      int cursorDrawableRes,
       @Nullable CharSequence text) {
     if (multiline) {
       editText.setInputType(
@@ -301,11 +307,24 @@ class TextInputSpec {
     editText.setCursorVisible(editable);
     editText.setTextColor(textColorStateList);
     editText.setHintTextColor(hintColorStateList);
+
+    if (cursorDrawableRes != -1) {
+      try {
+        // Uses reflection because there is no public API to change cursor color programmatically.
+        // Based on
+        // http://stackoverflow.com/questions/25996032/how-to-change-programatically-edittext-cursor-color-in-android.
+        Field f = TextView.class.getDeclaredField("mCursorDrawableRes");
+        f.setAccessible(true);
+        f.set(editText, cursorDrawableRes);
+      } catch (Exception exception) {
+        // no-op don't set cursor drawable
+      }
+    }
     editText.setEllipsize(ellipsize);
     if (SDK_INT >= JELLY_BEAN_MR1) {
       editText.setTextAlignment(textAlignment);
     }
-    if (text != null && !TextInputSpec.equals(editText.getText().toString(), text.toString())) {
+    if (text != null && !equals(editText.getText().toString(), text.toString())) {
       editText.setText(text);
     }
   }
@@ -333,6 +352,7 @@ class TextInputSpec {
       @Prop(optional = true) Diff<Boolean> multiline,
       @Prop(optional = true) Diff<Integer> minLines,
       @Prop(optional = true) Diff<Integer> maxLines,
+      @Prop(optional = true) Diff<Integer> cursorDrawableRes,
       @State Diff<Integer> measureSeqNumber) {
     if (!equals(measureSeqNumber.getPrevious(), measureSeqNumber.getNext())) {
       return true;
@@ -399,6 +419,9 @@ class TextInputSpec {
       if (!equals(maxLines.getPrevious(), maxLines.getNext())) {
         return true;
       }
+    }
+    if (!equals(cursorDrawableRes.getPrevious(), cursorDrawableRes.getNext())) {
+      return true;
     }
     // Save the nastiest for last: trying to diff drawables.
     Drawable previousBackground = inputBackground.getPrevious();
@@ -495,6 +518,7 @@ class TextInputSpec {
       @Prop(optional = true) int minLines,
       @Prop(optional = true) int maxLines,
       @Prop(optional = true) TextUtils.TruncateAt ellipsize,
+      @Prop(optional = true) int cursorDrawableRes,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedView) {
     mountedView.set(editText);
@@ -521,6 +545,7 @@ class TextInputSpec {
         ellipsize,
         minLines,
         maxLines,
+        cursorDrawableRes,
         // onMount happens:
         // 1. After initState: savedText = initText.
         // 2. After onUnmount: savedText preserved from underlying editText.
