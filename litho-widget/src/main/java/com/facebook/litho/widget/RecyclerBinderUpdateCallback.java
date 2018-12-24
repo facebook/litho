@@ -221,6 +221,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
       for (int i = 0, size = mDataHolders.size(); i < size; i++) {
         ComponentsPools.release(mDataHolders.get(i));
       }
+      mDataHolders.clear();
 
       final List<Diff> prevDataHolders = new ArrayList<>();
       for (int i = 0; i < mOldDataSize; i++) {
