@@ -211,12 +211,6 @@ class TextInputSpec {
       @Prop(optional = true) int cursorDrawableRes,
       @State AtomicReference<CharSequence> savedText,
       @State int measureSeqNumber) {
-    // For width we always take all available space, or collapse to 0 if unspecified.
-    if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
-      size.width = 0;
-    } else {
-      size.width = SizeSpec.getSize(widthSpec);
-    }
 
     // The height should be the measured height of EditText with relevant params
     final EditText forMeasure = new EditText(c.getAndroidContext());
@@ -251,6 +245,13 @@ class TextInputSpec {
         MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec));
 
     size.height = forMeasure.getMeasuredHeight();
+
+    // For width we always take all available space, or collapse to 0 if unspecified.
+    if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
+      size.width = 0;
+    } else {
+      size.width = Math.min(SizeSpec.getSize(widthSpec), forMeasure.getMeasuredWidth());
+    }
   }
 
   private static void setParams(
