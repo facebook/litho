@@ -72,21 +72,33 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 
 /**
- * Component that renders a single-line text input using an EditText. The field operates as an
- * "uncontrolled" component, meaning there is no prop or state value that tracks the current text of
- * the field. You are responsible for tracking the current value by listening to TextChangedEvent;
- * to change the current value, use the SetTextEvent trigger to imperatively change the current
- * text.
+ * Component that renders a text input using an android EditText.
  *
  * <p>Performance is critical for good user experience. Follow these tips for good performance:
  *
  * <ul>
  *   <li>Ensure you use Litho's setRootAsync to avoid any UI thread component operations.
  *   <li>Avoid changing props at all costs as it forces expensive EditText reconfiguration.
+ *   <li>Same applies to states. Avoid updating state, use Event trigger to update text, request
+ *       view focus or set selection.
  *   <li>If using custom inputFilters, take special care to implement equals correctly or the text
  *       field must be reconfigured on every mount. (Better yet, store your InputFilter in a static
  *       or LruCache so that you're not constantly creating new instances.)
  * </ul>
+ *
+ * <p>Example multiline editable text with custom color and a text length limit:
+ *
+ * <pre>{@code
+ * private static final InputFilter lenFilter = new InputFilter.LengthFilter(maxLength);
+ *
+ * TextInput.create(c)
+ *   .initialText(text)
+ *   .textColorStateList(ColorStateList.valueOf(color))
+ *   .multiline(true)
+ *   .inputFilter(lenFilter)
+ *   .build();
+ *
+ * }</pre>
  *
  * @prop initialText Initial text to display. If set, the value is set on the EditText exactly once:
  *     on initial mount. From then on, the EditText's text property is not modified.
