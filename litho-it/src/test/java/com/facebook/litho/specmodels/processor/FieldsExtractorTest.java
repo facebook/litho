@@ -66,6 +66,7 @@ public class FieldsExtractorTest {
     assertThat(extractedFloatField.hasModifier(Modifier.STATIC));
   }
 
+  @Test
   public void testNoFieldExtraction() {
     final TypeElement element =
         compilationRule.getElements().getTypeElement(NoFieldsClass.class.getCanonicalName());
