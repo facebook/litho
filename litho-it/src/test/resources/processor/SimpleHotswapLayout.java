@@ -28,6 +28,7 @@ public final class SimpleLayout extends Component {
 
   @Override
   protected Component onCreateLayout(ComponentContext context) {
+    Component _result;
     ClassLoader classLoader = HotswapManager.getClassLoader();
     Class specClass;
     try {
@@ -37,7 +38,6 @@ public final class SimpleLayout extends Component {
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(e);
     }
-    Component _result;
     try {
       final Method method = specClass.getDeclaredMethod("onCreateLayout", ComponentContext.class);
       method.setAccessible(true);

@@ -106,7 +106,8 @@ public class GroupSectionSpecGeneratorTest {
         .isEqualTo(
             "@java.lang.Override\n"
                 + "protected com.facebook.litho.sections.Children createChildren(com.facebook.litho.sections.SectionContext c) {\n"
-                + "  com.facebook.litho.sections.Children _result = (com.facebook.litho.sections.Children) TestGroupSectionSpec.onCreateChildren(\n"
+                + "  com.facebook.litho.sections.Children _result;\n"
+                + "  _result = (com.facebook.litho.sections.Children) TestGroupSectionSpec.onCreateChildren(\n"
                 + "    (com.facebook.litho.sections.SectionContext) c);\n"
                 + "  return _result;\n"
                 + "}\n");

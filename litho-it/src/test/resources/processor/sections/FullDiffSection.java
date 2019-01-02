@@ -278,8 +278,8 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   }
 
   private String onCreateService(SectionContext c) {
-    String _result =
-        (String) FullDiffSectionSpec.onCreateService((SectionContext) c, (String) prop2);
+    String _result;
+    _result = (String) FullDiffSectionSpec.onCreateService((SectionContext) c, (String) prop2);
     return _result;
   }
 
@@ -324,12 +324,13 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   protected boolean shouldUpdate(Section _prevAbstractImpl, Section _nextAbstractImpl) {
     FullDiffSection _prevImpl = (FullDiffSection) _prevAbstractImpl;
     FullDiffSection _nextImpl = (FullDiffSection) _nextAbstractImpl;
+    boolean _result;
     Diff<Integer> prop1 =
         (Diff)
             acquireDiff(
                 _prevImpl == null ? null : _prevImpl.prop1,
                 _nextImpl == null ? null : _nextImpl.prop1);
-    boolean _result = (boolean) FullDiffSectionSpec.shouldUpdate((Diff<Integer>) prop1);
+    _result = (boolean) FullDiffSectionSpec.shouldUpdate((Diff<Integer>) prop1);
     releaseDiff(prop1);
     return _result;
   }

@@ -122,6 +122,10 @@ public class DelegateMethodGenerator {
           componentName);
     }
 
+    if (!methodDescription.returnType.equals(TypeName.VOID)) {
+      methodSpec.addStatement("$T _result", methodDescription.returnType);
+    }
+
     methodSpec.addCode(getDelegationCode(specModel, delegateMethod, methodDescription, runMode));
 
     if (delegateMethod.name.toString().equals("onCreateLayout")
@@ -292,8 +296,7 @@ public class DelegateMethodGenerator {
     if (returnType.equals(TypeName.VOID)) {
       delegation.add("$L.$L(\n", sourceDelegateAccessor, methodName);
     } else {
-      delegation.add(
-          "$T _result = ($T) $L.$L(\n", returnType, returnType, sourceDelegateAccessor, methodName);
+      delegation.add("_result = ($T) $L.$L(\n", returnType, sourceDelegateAccessor, methodName);
     }
 
     delegation.indent();

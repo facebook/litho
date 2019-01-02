@@ -296,8 +296,8 @@ final class FullGroupSection<T> extends Section implements TestTag {
   }
 
   private String onCreateService(SectionContext c) {
-    String _result =
-        (String) FullGroupSectionSpec.onCreateService((SectionContext) c, (String) prop2);
+    String _result;
+    _result = (String) FullGroupSectionSpec.onCreateService((SectionContext) c, (String) prop2);
     return _result;
   }
 
@@ -320,7 +320,8 @@ final class FullGroupSection<T> extends Section implements TestTag {
 
   @Override
   protected Children createChildren(SectionContext c) {
-    Children _result =
+    Children _result;
+    _result =
         (Children)
             FullGroupSectionSpec.onCreateChildren(
                 (SectionContext) c,
@@ -358,12 +359,13 @@ final class FullGroupSection<T> extends Section implements TestTag {
   protected boolean shouldUpdate(Section _prevAbstractImpl, Section _nextAbstractImpl) {
     FullGroupSection _prevImpl = (FullGroupSection) _prevAbstractImpl;
     FullGroupSection _nextImpl = (FullGroupSection) _nextAbstractImpl;
+    boolean _result;
     Diff<Integer> prop1 =
         (Diff)
             acquireDiff(
                 _prevImpl == null ? null : _prevImpl.prop1,
                 _nextImpl == null ? null : _nextImpl.prop1);
-    boolean _result = (boolean) FullGroupSectionSpec.shouldUpdate((Diff<Integer>) prop1);
+    _result = (boolean) FullGroupSectionSpec.shouldUpdate((Diff<Integer>) prop1);
     releaseDiff(prop1);
     return _result;
   }

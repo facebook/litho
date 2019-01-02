@@ -192,7 +192,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
   @Override
   protected Component onCreateLayout(ComponentContext context) {
-    Component _result =
+    Component _result;
+    _result =
         (Component)
             TestLayoutSpec.onCreateLayout(
                 (ComponentContext) context,
@@ -217,11 +218,12 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
   @Override
   protected Transition onCreateTransition(ComponentContext c) {
+    Transition _result;
     Diff<Integer> _state3Diff =
         acquireDiff(
             mPreviousRenderData == null ? null : mPreviousRenderData.state3,
             mStateContainer.state3);
-    Transition _result =
+    _result =
         (Transition)
             TestLayoutSpec.onCreateTransition(
                 (ComponentContext) c,

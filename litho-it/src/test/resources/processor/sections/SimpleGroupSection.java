@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright 2018-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.facebook.litho.sections.processor.integration.resources;
 
 import com.facebook.litho.EventHandler;
@@ -49,7 +48,8 @@ public final class SimpleGroupSection extends Section {
 
   @Override
   protected Children createChildren(SectionContext c) {
-    Children _result = (Children) SimpleGroupSectionSpec.onCreateChildren((SectionContext) c);
+    Children _result;
+    _result = (Children) SimpleGroupSectionSpec.onCreateChildren((SectionContext) c);
     return _result;
   }
 

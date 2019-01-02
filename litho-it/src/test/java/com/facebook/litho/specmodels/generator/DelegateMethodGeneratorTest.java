@@ -127,7 +127,8 @@ public class DelegateMethodGeneratorTest {
         .isEqualTo(
             "@java.lang.Override\n"
                 + "protected com.facebook.litho.Component onCreateLayout(com.facebook.litho.ComponentContext c) {\n"
-                + "  com.facebook.litho.Component _result = (com.facebook.litho.Component) TestSpec.onCreateLayout(\n"
+                + "  com.facebook.litho.Component _result;\n"
+                + "  _result = (com.facebook.litho.Component) TestSpec.onCreateLayout(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (boolean) prop,\n"
                 + "    (int) state);\n"
@@ -200,7 +201,8 @@ public class DelegateMethodGeneratorTest {
         .isEqualTo(
             "@java.lang.Override\n"
                 + "protected com.facebook.litho.Component onCreateLayout(com.facebook.litho.ComponentContext c) {\n"
-                + "  com.facebook.litho.Component _result = (com.facebook.litho.Component) TestSpec.onCreateLayout(\n"
+                + "  com.facebook.litho.Component _result;\n"
+                + "  _result = (com.facebook.litho.Component) TestSpec.onCreateLayout(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (char) optionalParam,\n"
                 + "    (boolean) prop);\n"

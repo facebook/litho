@@ -55,15 +55,11 @@ public class HotswapGenerator {
    */
   public static CodeBlock generateDelegatingMethod(
       String methodName, TypeName returnType, ImmutableList<ParamTypeAndName> params) {
-    final CodeBlock.Builder code = CodeBlock.builder();
-
-    if (!returnType.equals(TypeName.VOID)) {
-      code.addStatement("$T _result", returnType);
-    }
-
-    code.beginControlFlow("try")
-        .add("final $T method = specClass.getDeclaredMethod(", ClassNames.JAVA_METHOD)
-        .indent();
+    final CodeBlock.Builder code =
+        CodeBlock.builder()
+            .beginControlFlow("try")
+            .add("final $T method = specClass.getDeclaredMethod(", ClassNames.JAVA_METHOD)
+            .indent();
 
     if (params.isEmpty()) {
       code.add("\"$L\");\n", methodName);

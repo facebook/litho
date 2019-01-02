@@ -272,7 +272,8 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   @Override
   protected Object onCreateMountContent(Context c) {
-    Object _result = (Object) TestMountSpec.onCreateMountContent((Context) c);
+    Object _result;
+    _result = (Object) TestMountSpec.onCreateMountContent((Context) c);
     return _result;
   }
 
@@ -306,7 +307,8 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   @Override
   protected int getExtraAccessibilityNodesCount() {
-    int _result =
+    int _result;
+    _result =
         (int)
             TestMountSpec.getExtraAccessibilityNodesCount(
                 (int) prop1, (CharSequence) prop7, (Integer) boundsDefinedOutput);
@@ -337,7 +339,8 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   @Override
   protected int getExtraAccessibilityNodeAt(int x, int y) {
-    int _result =
+    int _result;
+    _result =
         (int)
             TestMountSpec.getExtraAccessibilityNodeAt(
                 (int) x,
@@ -352,15 +355,17 @@ public final class TestMount<S extends View> extends Component implements TestTa
   protected boolean shouldUpdate(Component _prevAbstractImpl, Component _nextAbstractImpl) {
     TestMount _prevImpl = (TestMount) _prevAbstractImpl;
     TestMount _nextImpl = (TestMount) _nextAbstractImpl;
+    boolean _result;
     Diff<Integer> prop1 = (Diff) acquireDiff(_prevImpl == null ? null : _prevImpl.prop1, _nextImpl == null ? null : _nextImpl.prop1);
-    boolean _result = (boolean) TestMountSpec.shouldUpdate((Diff<Integer>) prop1);
+    _result = (boolean) TestMountSpec.shouldUpdate((Diff<Integer>) prop1);
     releaseDiff(prop1);
     return _result;
   }
 
   @Override
   protected MountContentPool onCreateMountContentPool() {
-    MountContentPool _result = (MountContentPool) TestMountSpec.onCreateMountContentPool();
+    MountContentPool _result;
+    _result = (MountContentPool) TestMountSpec.onCreateMountContentPool();
     return _result;
   }
 
