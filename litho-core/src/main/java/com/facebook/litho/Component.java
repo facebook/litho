@@ -503,7 +503,18 @@ public abstract class Component extends ComponentLifecycle
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   protected void updateInternalChildState(
       ComponentContext parentContext, boolean shouldForwardSplitLayoutStatus) {
-    generateKey(parentContext);
+
+    if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
+      String globalKey = generateKey(parentContext);
+      setGlobalKey(globalKey);
+
+      final KeyHandler keyHandler = parentContext.getKeyHandler();
+      // This is for testing, the keyHandler should never be null here otherwise.
+      if (keyHandler != null) {
+        keyHandler.registerKey(this);
+      }
+    }
+
     applyStateUpdates(parentContext);
     generateErrorEventHandler(parentContext);
     setSplitLayoutOnThreadPoolStatus(parentContext, shouldForwardSplitLayoutStatus);
@@ -533,34 +544,34 @@ public abstract class Component extends ComponentLifecycle
     }
   }
 
-  private void generateKey(ComponentContext parentContext) {
-    if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
-      final Component parentScope = parentContext.getComponentScope();
-      final String key = getKey();
+  private String generateKey(ComponentContext parentContext) {
+    final Component parentScope = parentContext.getComponentScope();
+    final String key = getKey();
+    final String globalKey;
 
-      if (parentScope == null) {
-        setGlobalKey(key);
-      } else {
-        if (parentScope.getGlobalKey() == null) {
-          final ComponentsLogger logger = parentContext.getLogger();
-          if (logger != null) {
-            logger.emitMessage(
-                ComponentsLogger.LogLevel.ERROR,
-                "Trying to generate parent-based key for component "
-                    + getSimpleName()
-                    + " , but parent "
-                    + parentScope.getSimpleName()
-                    + " has a null global key \"."
-                    + " This is most likely a configuration mistake, check the value of ComponentsConfiguration.useGlobalKeys.");
-          }
-
-          setGlobalKey("null" + key);
-        } else {
-          setGlobalKey(
-              parentScope == null ? key : parentScope.generateUniqueGlobalKeyForChild(this, key));
+    if (parentScope == null) {
+      globalKey = key;
+    } else {
+      if (parentScope.getGlobalKey() == null) {
+        final ComponentsLogger logger = parentContext.getLogger();
+        if (logger != null) {
+          logger.emitMessage(
+              ComponentsLogger.LogLevel.ERROR,
+              "Trying to generate parent-based key for component "
+                  + getSimpleName()
+                  + " , but parent "
+                  + parentScope.getSimpleName()
+                  + " has a null global key \"."
+                  + " This is most likely a configuration mistake, check the value of ComponentsConfiguration.useGlobalKeys.");
         }
+
+        globalKey = "null" + key;
+      } else {
+        globalKey = parentScope.generateUniqueGlobalKeyForChild(this, key);
       }
     }
+
+    return globalKey;
   }
 
   private void generateErrorEventHandler(ComponentContext parentContext) {
@@ -590,17 +601,7 @@ public abstract class Component extends ComponentLifecycle
    */
   private void applyStateUpdates(ComponentContext c) {
     setScopedContext(ComponentContext.withComponentScope(c, this));
-
     populateTreeProps(getScopedContext().getTreeProps());
-
-    if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
-      final KeyHandler keyHandler = getScopedContext().getKeyHandler();
-      // This is for testing, the keyHandler should never be null here otherwise.
-      if (keyHandler != null) {
-        keyHandler.registerKey(this);
-      }
-    }
-
     if (hasState()) {
       c.getStateHandler().applyStateUpdatesForComponent(this);
     }
