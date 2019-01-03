@@ -41,7 +41,10 @@ public class ComponentContext {
   private final String mLogTag;
   private final ComponentsLogger mLogger;
   @Nullable private final StateHandler mStateHandler;
+
+  /** TODO: (T38237241) remove the usage of the key handler post the nested tree experiment */
   private final KeyHandler mKeyHandler;
+
   private String mNoStateUpdatesMethod;
 
   // Hold a reference to the component which scope we are currently within.

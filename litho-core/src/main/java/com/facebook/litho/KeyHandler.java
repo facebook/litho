@@ -25,6 +25,8 @@ import java.util.Set;
 /**
  * This class manages the {@link Component}s global keys for a {@link ComponentTree}. It provides
  * methods for detecting duplicate keys and logging duplicate key occurences.
+ *
+ * <p>TODO: (T38237241) remove the usage of the key handler post the nested tree experiment
  */
 public class KeyHandler {
 

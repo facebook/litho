@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import static android.support.annotation.Dimension.DP;
+import static com.facebook.litho.ComponentKeyUtils.getKeyForChildPosition;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
@@ -54,7 +55,9 @@ import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -105,6 +108,8 @@ public abstract class Component extends ComponentLifecycle
    * automatically generating unique global keys for all sibling components of the same type.
    */
   @Nullable private SparseIntArray mChildCounters;
+
+  @Nullable private Set<String> mManualKeys;
 
   /**
    * Holds an event handler with its dispatcher set to the parent component, or - in case that this
@@ -268,52 +273,97 @@ public abstract class Component extends ComponentLifecycle
    * children of the same type. If a manual key has been set on the child component using the .key()
    * method, return the manual key.
    *
+   * <p>TODO: (T38237241) remove the usage of the key handler post the nested tree experiment
+   *
    * @param component the child component for which we're finding a unique global key
    * @param key the key of the child component as determined by its lifecycle id or manual setting
    * @return a unique global key for this component relative to its siblings.
    */
   private String generateUniqueGlobalKeyForChild(Component component, String key) {
-
     final String childKey = ComponentKeyUtils.getKeyWithSeparator(getGlobalKey(), key);
     final KeyHandler keyHandler = mScopedContext.getKeyHandler();
 
-    /** Null check is for testing only, the keyHandler should never be null here otherwise. */
+    /* Null check is for testing only, the keyHandler should never be null here otherwise. */
     if (keyHandler == null) {
       return childKey;
     }
 
-    /** If the key is already unique, return it. */
-    if (!keyHandler.hasKey(childKey)) {
+    if (mIsNestedTreeResolutionExperimentEnabled) {
+      /*
+       Instead of relying on the KeyHandler to hold all registered keys and check for duplicates
+       against it; this implementation checks if the key (read child type) is unique within it's
+       parent. Which will recursively ensure that all global keys are unique.
+
+       This will also calculate the global keys for the descendants of a nested tree correctly if
+       it is resolved again, which causes clashes with the KeyHandler because the keys were
+       already registered during measure pass.
+      */
+
+      if (component.mHasManualKey) { // if the component has a manual key
+        if (mManualKeys == null) {
+          mManualKeys = new HashSet<>();
+        }
+        if (mManualKeys.contains(childKey)) { // if it is a duplicate
+          logDuplicateManualKeyWarning(component, key); // log a warning and generate a unique key
+        } else {
+          mManualKeys.add(childKey);
+          getChildCountAndIncrement(component); // to avoid subsequent clash with a generated key
+          return childKey; // return it
+        }
+      }
+
+      int childCount = getChildCountAndIncrement(component);
+
+      if (childCount == 0) { // if first child of type then return the child key
+        return childKey;
+      } else { // if NOT first child of type append the child count to the child key
+        return getKeyForChildPosition(childKey, childCount);
+      }
+
+    } else if (keyHandler.hasKey(childKey)) { // If the key is duplicate append it with child count
+
+      // The component has a manual key set on it but that key is a duplicate
+      if (component.mHasManualKey) {
+        logDuplicateManualKeyWarning(component, key); // log a warning and generate a key
+      }
+
+      return getKeyForChildPosition(childKey, getChildCountAndIncrement(component));
+    } else { // If the key is unique return it
       return childKey;
     }
+  }
 
-    /** The component has a manual key set on it but that key is a duplicate * */
-    if (component.mHasManualKey) {
-      final ComponentsLogger logger = mScopedContext.getLogger();
-      if (logger != null) {
-        logger.emitMessage(
-            ComponentsLogger.LogLevel.WARNING,
-            "The manual key "
-                + key
-                + " you are setting on this "
-                + component.getSimpleName()
-                + " is a duplicate and will be changed into a unique one. "
-                + "This will result in unexpected behavior if you don't change it.");
-      }
-    }
-
-    // If the key is a duplicate, we append an index based on the child component's type that would
-    // uniquely identify it.
-
+  /**
+   * Returns the number of children of a given type {@code this} component has and then increments
+   * it by 1.
+   *
+   * @param component the child component
+   * @return the number of children of {@param component} type
+   */
+  private int getChildCountAndIncrement(Component component) {
     if (mChildCounters == null) {
       mChildCounters = new SparseIntArray();
     }
 
     final int typeId = component.getTypeId();
-    final int childIndex = mChildCounters.get(typeId, 0);
-    mChildCounters.put(typeId, childIndex + 1);
+    final int count = mChildCounters.get(typeId, 0);
+    mChildCounters.put(typeId, count + 1);
 
-    return ComponentKeyUtils.getKeyForChildPosition(childKey, childIndex);
+    return count;
+  }
+
+  private void logDuplicateManualKeyWarning(Component component, String key) {
+    final ComponentsLogger logger = mScopedContext.getLogger();
+    if (logger != null) {
+      logger.emitMessage(
+          ComponentsLogger.LogLevel.WARNING,
+          "The manual key "
+              + key
+              + " you are setting on this "
+              + component.getSimpleName()
+              + " is a duplicate and will be changed into a unique one. "
+              + "This will result in unexpected behavior if you don't change it.");
+    }
   }
 
   public Component makeShallowCopy() {
@@ -325,6 +375,7 @@ public abstract class Component extends ComponentLifecycle
       component.mScopedContext = null;
       component.mChildCounters = null;
       component.mLastCachedLayout = null; // so that it is not used on state update
+      component.mManualKeys = null;
 
       return component;
     } catch (CloneNotSupportedException e) {
@@ -517,7 +568,7 @@ public abstract class Component extends ComponentLifecycle
 
         final KeyHandler keyHandler = parentContext.getKeyHandler();
         // This is for testing, the keyHandler should never be null here otherwise.
-        if (keyHandler != null) {
+        if (!mIsNestedTreeResolutionExperimentEnabled && keyHandler != null) {
           keyHandler.registerKey(this);
         }
       }
