@@ -163,6 +163,7 @@ public class CachedValueValidationTest {
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(paramObject);
     assertThat(validationErrors.get(0).message)
-        .isEqualTo("@OnCalculateCachedValue methods may only take Props and State as params.");
+        .isEqualTo(
+            "@OnCalculateCachedValue methods may only take Props, @InjectProps and State as params.");
   }
 }
