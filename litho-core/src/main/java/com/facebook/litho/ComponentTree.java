@@ -924,7 +924,7 @@ public class ComponentTree {
         final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
         components = new ArrayList<>(localLayoutState.getComponents());
         if (layoutStateStateHandler != null) {
-          mStateHandler.commit(layoutStateStateHandler);
+          mStateHandler.commit(layoutStateStateHandler, mNestedTreeResolutionExperimentEnabled);
         }
 
         localLayoutState.clearComponents();
@@ -1725,7 +1725,7 @@ public class ComponentTree {
               localLayoutState.consumeStateHandler();
           if (layoutStateStateHandler != null) {
             if (mStateHandler != null) { // we could have been released
-              mStateHandler.commit(layoutStateStateHandler);
+              mStateHandler.commit(layoutStateStateHandler, mNestedTreeResolutionExperimentEnabled);
             }
           }
 
