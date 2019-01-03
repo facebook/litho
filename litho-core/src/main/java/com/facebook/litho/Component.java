@@ -234,12 +234,12 @@ public abstract class Component extends ComponentLifecycle
 
   /**
    * Set a key for this component that is unique within its tree.
-   * @param key
    *
+   * @param key
    */
   // thread-safe because the one write is before all the reads
   @ThreadSafe(enableChecks = false)
-  private void setGlobalKey(String key) {
+  void setGlobalKey(String key) {
     mGlobalKey = key;
   }
 

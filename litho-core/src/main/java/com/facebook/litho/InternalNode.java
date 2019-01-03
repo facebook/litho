@@ -1303,6 +1303,11 @@ class InternalNode implements ComponentLayout {
     return mComponents.size() == 0 ? null : mComponents.get(0);
   }
 
+  void setRootComponent(Component component) {
+    mComponents.clear();
+    mComponents.add(component);
+  }
+
   int[] getBorderColors() {
     return mBorderColors;
   }

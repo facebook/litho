@@ -1681,6 +1681,27 @@ class LayoutState {
       }
 
       if (nestedTree == null) {
+
+        final Component root = nestedTreeHolder.getRootComponent();
+        if (context.isNestedTreeResolutionExperimentEnabled() && root != null) {
+          /*
+           * We create a shallow copy of the component to ensure that component is resolved
+           * without any side effects caused by it's current internal state. In this case the
+           * global key is reset so that a new global key is not generated for the the root
+           * component; which would also change the global keys of it's descendants. This would
+           * break state updates.
+           */
+
+          // create a shallow copy for measure
+          final Component copy = root.makeShallowCopy();
+
+          // set the original global key so that state update work
+          copy.setGlobalKey(root.getGlobalKey());
+
+          // set this component as the root
+          nestedTreeHolder.setRootComponent(copy);
+        }
+
         nestedTree =
             createAndMeasureTreeForComponent(
                 context,

@@ -478,6 +478,7 @@ public class ComponentLifecycleTest {
     when(mContext.isNestedTreeResolutionExperimentEnabled()).thenReturn(true);
     when(mNode.getParent()).thenReturn(mNode);
 
+    when(mNode.getContext()).thenReturn(mContext);
     long output = measureFunction.measure(mNode.mYogaNode, 0, EXACTLY, 0, EXACTLY);
 
     PowerMockito.verifyStatic();
