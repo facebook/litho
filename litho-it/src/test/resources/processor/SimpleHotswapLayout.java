@@ -30,20 +30,24 @@ public final class SimpleLayout extends Component {
   protected Component onCreateLayout(ComponentContext context) {
     Component _result;
     ClassLoader classLoader = HotswapManager.getClassLoader();
-    Class specClass;
-    try {
-      specClass =
-          classLoader.loadClass(
-              "com.facebook.litho.processor.integration.resources.SimpleLayoutSpec");
-    } catch (ClassNotFoundException e) {
-      throw new RuntimeException(e);
-    }
-    try {
-      final Method method = specClass.getDeclaredMethod("onCreateLayout", ComponentContext.class);
-      method.setAccessible(true);
-      _result = (Component) method.invoke(null, (ComponentContext) context);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+    if (classLoader == null) {
+      _result = (Component) SimpleLayoutSpec.onCreateLayout((ComponentContext) context);
+    } else {
+      Class specClass;
+      try {
+        specClass =
+            classLoader.loadClass(
+                "com.facebook.litho.processor.integration.resources.SimpleLayoutSpec");
+      } catch (ClassNotFoundException e) {
+        throw new RuntimeException(e);
+      }
+      try {
+        final Method method = specClass.getDeclaredMethod("onCreateLayout", ComponentContext.class);
+        method.setAccessible(true);
+        _result = (Component) method.invoke(null, (ComponentContext) context);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
     }
     return _result;
   }

@@ -29,34 +29,33 @@ public class HotswapGenerator {
   private HotswapGenerator() {}
 
   /**
-   * Generates code to load the Spec class of the given {@link SpecModel} into a parameter called
-   * "specClass", and throws a {@link RuntimeException} if it is unable to do so.
-   */
-  public static CodeBlock generateLoadSpecClass(SpecModel specModel) {
-    return CodeBlock.builder()
-        .addStatement(
-            "$T classLoader = $T.getClassLoader()",
-            ClassNames.CLASS_LOADER,
-            ClassNames.HOTSWAP_MANAGER)
-        .addStatement("$T specClass", ClassNames.CLASS)
-        .beginControlFlow("try")
-        .addStatement(
-            "specClass = classLoader.loadClass(\"$L\")", specModel.getSpecTypeName().toString())
-        .nextControlFlow("catch (ClassNotFoundException e)")
-        .addStatement("throw new RuntimeException(e)")
-        .endControlFlow()
-        .build();
-  }
-
-  /**
-   * Generates a method that delegates to the Spec class using the "specClass" variable that should
-   * be accessed using {@link HotswapGenerator#generateLoadSpecClass(SpecModel)}. Throws {@link
-   * RuntimeException} if it is unable to do so.
+   * Generates a method that delegates to the Spec class using a ClassLoader specified by the Litho
+   * HotswapManager. Delegates directly to the spec if no ClassLoader is specified. Throws {@link
+   * RuntimeException} if the ClassLoader is unable to load and invoke the delegate method
+   * correctly.
    */
   public static CodeBlock generateDelegatingMethod(
-      String methodName, TypeName returnType, ImmutableList<ParamTypeAndName> params) {
+      SpecModel specModel,
+      String methodName,
+      TypeName returnType,
+      ImmutableList<ParamTypeAndName> params,
+      CodeBlock directDelegation) {
     final CodeBlock.Builder code =
         CodeBlock.builder()
+            .addStatement(
+                "$T classLoader = $T.getClassLoader()",
+                ClassNames.CLASS_LOADER,
+                ClassNames.HOTSWAP_MANAGER)
+            .beginControlFlow("if (classLoader == null)")
+            .add(directDelegation)
+            .nextControlFlow("else")
+            .addStatement("$T specClass", ClassNames.CLASS)
+            .beginControlFlow("try")
+            .addStatement(
+                "specClass = classLoader.loadClass(\"$L\")", specModel.getSpecTypeName().toString())
+            .nextControlFlow("catch (ClassNotFoundException e)")
+            .addStatement("throw new RuntimeException(e)")
+            .endControlFlow()
             .beginControlFlow("try")
             .add("final $T method = specClass.getDeclaredMethod(", ClassNames.JAVA_METHOD)
             .indent();
@@ -100,6 +99,7 @@ public class HotswapGenerator {
     return code.unindent()
         .nextControlFlow("catch (Exception e)")
         .addStatement("throw new RuntimeException(e)")
+        .endControlFlow()
         .endControlFlow()
         .build();
   }

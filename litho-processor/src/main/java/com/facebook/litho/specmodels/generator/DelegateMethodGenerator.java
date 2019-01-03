@@ -265,22 +265,23 @@ public class DelegateMethodGenerator {
     }
 
     final CodeBlock.Builder codeBlock = CodeBlock.builder().add(acquireStatements.build());
+    final CodeBlock directDelegation =
+        getDelegationMethod(
+            specModel,
+            delegateMethod.name,
+            methodDescription.returnType,
+            ImmutableList.copyOf(delegationParams));
 
     if (specModel.getTypeVariables().isEmpty() && runMode.contains(RunMode.HOTSWAP)) {
-      codeBlock
-          .add(HotswapGenerator.generateLoadSpecClass(specModel))
-          .add(
-              HotswapGenerator.generateDelegatingMethod(
-                  delegateMethod.name.toString(),
-                  delegateMethod.returnType,
-                  ImmutableList.copyOf(delegationParams)));
-    } else {
       codeBlock.add(
-          getDelegationMethod(
+          HotswapGenerator.generateDelegatingMethod(
               specModel,
-              delegateMethod.name,
-              methodDescription.returnType,
-              ImmutableList.copyOf(delegationParams)));
+              delegateMethod.name.toString(),
+              delegateMethod.returnType,
+              ImmutableList.copyOf(delegationParams),
+              directDelegation));
+    } else {
+      codeBlock.add(directDelegation);
     }
 
     return codeBlock.add(releaseStatements.build()).build();
