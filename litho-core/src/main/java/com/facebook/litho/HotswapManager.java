@@ -30,8 +30,8 @@ public final class HotswapManager {
   private static ClassLoader sSpecClassLoader;
 
   @GuardedBy("this")
-  private static final Set<LithoView> sLithoViews =
-      Collections.newSetFromMap(new WeakHashMap<LithoView, Boolean>());
+  private static final Set<ComponentTree> sComponentTrees =
+      Collections.newSetFromMap(new WeakHashMap<ComponentTree, Boolean>());
 
   /**
    * This method should be called in the {@link android.app.Application} to ensure that the correct
@@ -48,20 +48,20 @@ public final class HotswapManager {
   }
 
   /**
-   * Adds a {@link LithoView} to the manager. This LithoView will be informed when hotswap has
-   * occurred.
+   * Adds a {@link ComponentTree} to the manager. This ComponentTree will be informed when hotswap
+   * has occurred.
    */
-  static synchronized void addLithoView(LithoView lithoView) {
-    sLithoViews.add(lithoView);
+  static synchronized void addComponentTree(ComponentTree componentTree) {
+    sComponentTrees.add(componentTree);
   }
 
   /**
-   * Call this method when hotswap occurs in order to inform all {@link LithoView}s that they need
-   * to update.
+   * Call this method when hotswap occurs in order to inform all {@link ComponentTree}s that they
+   * need to update.
    */
   public static synchronized void onHotswap() {
-    for (LithoView lithoView : sLithoViews) {
-      lithoView.forceRelayout();
+    for (ComponentTree componentTree : sComponentTrees) {
+      componentTree.forceMainThreadLayout();
     }
   }
 }

@@ -249,6 +249,8 @@ public class ComponentTree {
   private final WorkingRangeStatusHandler mWorkingRangeStatusHandler =
       new WorkingRangeStatusHandler();
 
+  private boolean mForceLayout;
+
   public static Builder create(ComponentContext context, Component.Builder<?> root) {
     return create(context, root.build());
   }
@@ -310,6 +312,10 @@ public class ComponentTree {
         ComponentsConfiguration.USE_INCREMENTAL_MOUNT_HELPER
             ? new IncrementalMountHelper(this)
             : null;
+
+    if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
+      HotswapManager.addComponentTree(this);
+    }
   }
 
   private void ensureLayoutThreadHandler() {
@@ -858,6 +864,19 @@ public class ComponentTree {
     mLithoView = null;
   }
 
+  void forceMainThreadLayout() {
+    assertMainThread();
+
+    LithoView lithoView = mLithoView;
+    if (lithoView != null) {
+      // If we are attached to a LithoView, then force a relayout immediately. Otherwise, we'll
+      // relayout next time we are measured.
+      lithoView.forceRelayout();
+    } else {
+      mForceLayout = true;
+    }
+  }
+
   void measure(int widthSpec, int heightSpec, int[] measureOutput, boolean forceLayout) {
     assertMainThread();
 
@@ -879,12 +898,13 @@ public class ComponentTree {
       final boolean shouldCalculateNewLayout =
           mMainThreadLayoutState == null
               || !isCompatibleSpec(mMainThreadLayoutState, mWidthSpec, mHeightSpec);
-      if (forceLayout || shouldCalculateNewLayout) {
+      if (mForceLayout || forceLayout || shouldCalculateNewLayout) {
         // Neither layout was compatible and we have to perform a layout.
         // Since outputs get set on the same object during the lifecycle calls,
         // we need to copy it in order to use it concurrently.
         component = mRoot.makeShallowCopy();
         treeProps = TreeProps.copy(mRootTreeProps);
+        mForceLayout = false;
       }
     }
 
