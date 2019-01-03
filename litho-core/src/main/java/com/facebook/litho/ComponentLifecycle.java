@@ -147,8 +147,14 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
           int outputHeight = 0;
 
           if (Component.isNestedTree(component) || node.hasNestedTree()) {
+
+            ComponentContext context = node.getContext();
+            if (context.isNestedTreeResolutionExperimentEnabled()) {
+              context = node.getParent().getContext();
+            }
+
             final InternalNode nestedTree =
-                LayoutState.resolveNestedTree(node, widthSpec, heightSpec);
+                LayoutState.resolveNestedTree(context, node, widthSpec, heightSpec);
 
             outputWidth = nestedTree.getWidth();
             outputHeight = nestedTree.getHeight();

@@ -86,8 +86,9 @@ import javax.annotation.CheckReturnValue;
 /**
  * The main role of {@link LayoutState} is to hold the output of layout calculation. This includes
  * mountable outputs and visibility outputs. A centerpiece of the class is {@link
- * #collectResults(InternalNode, LayoutState, DiffNode)} which prepares the before-mentioned outputs
- * based on the provided {@link InternalNode} for later use in {@link MountState}.
+ * #collectResults(ComponentContext, InternalNode, LayoutState, DiffNode)} which prepares the
+ * before-mentioned outputs based on the provided {@link InternalNode} for later use in {@link
+ * MountState}.
  */
 class LayoutState {
 
@@ -548,34 +549,36 @@ class LayoutState {
   /**
    * Collects layout outputs and release the layout tree. The layout outputs hold necessary
    * information to be used by {@link MountState} to mount components into a {@link ComponentHost}.
-   * <p/>
-   * Whenever a component has view content (view tags, click handler, etc), a new host 'marker'
-   * is added for it. The mount pass will use the markers to decide which host should be used
-   * for each layout output. The root node unconditionally generates a layout output corresponding
-   * to the root host.
-   * <p/>
-   * The order of layout outputs follows a depth-first traversal in the tree to ensure the hosts
+   *
+   * <p>Whenever a component has view content (view tags, click handler, etc), a new host 'marker'
+   * is added for it. The mount pass will use the markers to decide which host should be used for
+   * each layout output. The root node unconditionally generates a layout output corresponding to
+   * the root host.
+   *
+   * <p>The order of layout outputs follows a depth-first traversal in the tree to ensure the hosts
    * will be created at the right order when mounting. The host markers will be define which host
    * each mounted artifacts will be attached to.
-   * <p/>
-   * At this stage all the {@link InternalNode} for which we have LayoutOutputs that can be recycled
-   * will have a DiffNode associated. If the CachedMeasures are valid we'll try to recycle both the
-   * host and the contents (including background/foreground). In all other cases instead we'll only
-   * try to re-use the hosts. In some cases the host's structure might change between two updates
-   * even if the component is of the same type. This can happen for example when a click listener is
-   * added. To avoid trying to re-use the wrong host type we explicitly check that after all the
-   * children for a subtree have been added (this is when the actual host type is resolved). If the
-   * host type changed compared to the one in the DiffNode we need to refresh the ids for the whole
-   * subtree in order to ensure that the MountState will unmount the subtree and mount it again on
-   * the correct host.
-   * <p/>
    *
+   * <p>At this stage all the {@link InternalNode} for which we have LayoutOutputs that can be
+   * recycled will have a DiffNode associated. If the CachedMeasures are valid we'll try to recycle
+   * both the host and the contents (including background/foreground). In all other cases instead
+   * we'll only try to re-use the hosts. In some cases the host's structure might change between two
+   * updates even if the component is of the same type. This can happen for example when a click
+   * listener is added. To avoid trying to re-use the wrong host type we explicitly check that after
+   * all the children for a subtree have been added (this is when the actual host type is resolved).
+   * If the host type changed compared to the one in the DiffNode we need to refresh the ids for the
+   * whole subtree in order to ensure that the MountState will unmount the subtree and mount it
+   * again on the correct host.
+   *
+   * <p>
+   *
+   * @param parentContext the parent component context
    * @param node InternalNode to process.
    * @param layoutState the LayoutState currently operating.
    * @param parentDiffNode whether this method also populates the diff tree and assigns the root
-   *                       to mDiffTreeRoot.
    */
   private static void collectResults(
+      ComponentContext parentContext,
       InternalNode node,
       LayoutState layoutState,
       DiffNode parentDiffNode) {
@@ -599,10 +602,14 @@ class LayoutState {
             .arg("rootComponentId", node.getRootComponent().getId())
             .flush();
       }
-      InternalNode nestedTree = resolveNestedTree(
-          node,
-          SizeSpec.makeSizeSpec(node.getWidth(), EXACTLY),
-          SizeSpec.makeSizeSpec(node.getHeight(), EXACTLY));
+      InternalNode nestedTree =
+          resolveNestedTree(
+              parentContext.isNestedTreeResolutionExperimentEnabled()
+                  ? parentContext
+                  : node.getContext(),
+              node,
+              SizeSpec.makeSizeSpec(node.getWidth(), EXACTLY),
+              SizeSpec.makeSizeSpec(node.getHeight(), EXACTLY));
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
@@ -615,7 +622,7 @@ class LayoutState {
       layoutState.mCurrentX += node.getX();
       layoutState.mCurrentY += node.getY();
 
-      collectResults(nestedTree, layoutState, parentDiffNode);
+      collectResults(parentContext, nestedTree, layoutState, parentDiffNode);
 
       layoutState.mCurrentX -= node.getX();
       layoutState.mCurrentY -= node.getY();
@@ -818,10 +825,7 @@ class LayoutState {
 
     // We must process the nodes in order so that the layout state output order is correct.
     for (int i = 0, size = node.getChildCount(); i < size; i++) {
-      collectResults(
-          node.getChildAt(i),
-          layoutState,
-          diffNode);
+      collectResults(node.getContext(), node.getChildAt(i), layoutState, diffNode);
     }
 
     layoutState.mParentEnabledState = parentEnabledState;
@@ -1421,7 +1425,7 @@ class LayoutState {
                   c, logger, logger.newPerformanceEvent(EVENT_COLLECT_RESULTS))
               : null;
 
-      collectResults(root, layoutState, null);
+      collectResults(c, root, layoutState, null);
 
       if (isTracing) {
         ComponentsSystrace.beginSection("sortMountableOutputs");
@@ -1628,14 +1632,9 @@ class LayoutState {
     }
   }
 
-  /**
-   * Create and measure the nested tree or return the cached one for the same size specs.
-   */
+  /** Create and measure the nested tree or return the cached one for the same size specs. */
   static InternalNode resolveNestedTree(
-      InternalNode nestedTreeHolder,
-      int widthSpec,
-      int heightSpec) {
-    final ComponentContext context = nestedTreeHolder.getContext();
+      ComponentContext context, InternalNode nestedTreeHolder, int widthSpec, int heightSpec) {
     final Component component = nestedTreeHolder.getRootComponent();
 
     final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
@@ -1682,13 +1681,15 @@ class LayoutState {
       }
 
       if (nestedTree == null) {
-        nestedTree = createAndMeasureTreeForComponent(
-            context,
-            component,
-            nestedTreeHolder,
-            widthSpec,
-            heightSpec,
-            nestedTreeHolder.getDiffNode()); // Previously set while traversing the holder's tree.
+        nestedTree =
+            createAndMeasureTreeForComponent(
+                context,
+                component,
+                nestedTreeHolder,
+                widthSpec,
+                heightSpec,
+                nestedTreeHolder.getDiffNode()); // was set while traversing the holder's tree.
+
         nestedTree.setLastWidthSpec(widthSpec);
         nestedTree.setLastHeightSpec(heightSpec);
         nestedTree.setLastMeasuredHeight(nestedTree.getHeight());
@@ -1822,16 +1823,15 @@ class LayoutState {
    * Traverses the layoutTree and the diffTree recursively. If a layoutNode has a compatible host
    * type {@link LayoutState#hostIsCompatible} it assigns the DiffNode to the layout node in order
    * to try to re-use the LayoutOutputs that will be generated by {@link
-   * LayoutState#collectResults(InternalNode, LayoutState, DiffNode)}. If a layoutNode
-   * component returns false when shouldComponentUpdate is called with the DiffNode Component it
-   * also tries to re-use the old measurements and therefore marks as valid the cachedMeasures for
-   * the whole component subtree.
+   * LayoutState#collectResults(ComponentContext, InternalNode, LayoutState, DiffNode)}. If a
+   * layoutNode component returns false when shouldComponentUpdate is called with the DiffNode
+   * Component it also tries to re-use the old measurements and therefore marks as valid the
+   * cachedMeasures for the whole component subtree.
    *
    * @param layoutNode the root of the LayoutTree
    * @param diffNode the root of the diffTree
-   *
-   * @return true if the layout node requires updating, false if it can re-use the measurements
-   *              from the diff node.
+   * @return true if the layout node requires updating, false if it can re-use the measurements from
+   *     the diff node.
    */
   static void applyDiffNodeToUnchangedNodes(InternalNode layoutNode, DiffNode diffNode) {
     // Root of the main tree or of a nested tree.

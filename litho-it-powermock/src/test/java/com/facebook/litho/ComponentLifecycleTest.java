@@ -95,7 +95,7 @@ public class ComponentLifecycleTest {
     mockStatic(LayoutState.class);
 
     StateHandler stateHandler = mock(StateHandler.class);
-    mContext = new ComponentContext(RuntimeEnvironment.application, stateHandler);
+    mContext = spy(new ComponentContext(RuntimeEnvironment.application, stateHandler));
 
     mNestedTreeWidthSpec = SizeSpec.makeSizeSpec(400, SizeSpec.EXACTLY);
     mNestedTreeHeightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
@@ -448,13 +448,40 @@ public class ComponentLifecycleTest {
     InternalNode nestedTree = mock(InternalNode.class);
     when(nestedTree.getWidth()).thenReturn(nestedTreeWidth);
     when(nestedTree.getHeight()).thenReturn(nestedTreeHeight);
-
-    when(LayoutState.resolveNestedTree(eq(mNode), anyInt(), anyInt())).thenReturn(nestedTree);
+    when(LayoutState.resolveNestedTree(eq(mContext), eq(mNode), anyInt(), anyInt()))
+        .thenReturn(nestedTree);
+    when(mNode.getContext()).thenReturn(mContext);
 
     long output = measureFunction.measure(mNode.mYogaNode, 0, EXACTLY, 0, EXACTLY);
 
     PowerMockito.verifyStatic();
-    LayoutState.resolveNestedTree(eq(mNode), anyInt(), anyInt());
+    LayoutState.resolveNestedTree(eq(mContext), eq(mNode), anyInt(), anyInt());
+
+    assertThat(YogaMeasureOutput.getWidth(output)).isEqualTo(nestedTreeWidth);
+    assertThat(YogaMeasureOutput.getHeight(output)).isEqualTo(nestedTreeHeight);
+  }
+
+  @Test
+  public void testLayoutSpecMeasureResolveNestedTree_withExperiment() {
+    Component component =
+        setUpSpyComponentForCreateLayout(false /* isMountSpec */, true /* canMeasure */);
+    YogaMeasureFunction measureFunction = getMeasureFunction(component);
+
+    final int nestedTreeWidth = 20;
+    final int nestedTreeHeight = 25;
+    InternalNode nestedTree = mock(InternalNode.class);
+    when(nestedTree.getWidth()).thenReturn(nestedTreeWidth);
+    when(nestedTree.getHeight()).thenReturn(nestedTreeHeight);
+    when(LayoutState.resolveNestedTree(eq(mContext), eq(mNode), anyInt(), anyInt()))
+        .thenReturn(nestedTree);
+    when(mNode.getContext()).thenReturn(mContext);
+    when(mContext.isNestedTreeResolutionExperimentEnabled()).thenReturn(true);
+    when(mNode.getParent()).thenReturn(mNode);
+
+    long output = measureFunction.measure(mNode.mYogaNode, 0, EXACTLY, 0, EXACTLY);
+
+    PowerMockito.verifyStatic();
+    LayoutState.resolveNestedTree(eq(mContext), eq(mNode), anyInt(), anyInt());
 
     assertThat(YogaMeasureOutput.getWidth(output)).isEqualTo(nestedTreeWidth);
     assertThat(YogaMeasureOutput.getHeight(output)).isEqualTo(nestedTreeHeight);
