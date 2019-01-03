@@ -509,13 +509,17 @@ public abstract class Component extends ComponentLifecycle
       ComponentContext parentContext, boolean shouldForwardSplitLayoutStatus) {
 
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
-      String globalKey = generateKey(parentContext);
-      setGlobalKey(globalKey);
 
-      final KeyHandler keyHandler = parentContext.getKeyHandler();
-      // This is for testing, the keyHandler should never be null here otherwise.
-      if (keyHandler != null) {
-        keyHandler.registerKey(this);
+      // allow overriding global key if the NestedTreeResolution Experiment is disabled
+      if (!mIsNestedTreeResolutionExperimentEnabled || getGlobalKey() == null) {
+        String globalKey = generateKey(parentContext);
+        setGlobalKey(globalKey);
+
+        final KeyHandler keyHandler = parentContext.getKeyHandler();
+        // This is for testing, the keyHandler should never be null here otherwise.
+        if (keyHandler != null) {
+          keyHandler.registerKey(this);
+        }
       }
     }
 
