@@ -49,6 +49,13 @@ public class CachedValueValidation {
         SpecModelUtils.getMethodModelsWithAnnotation(specModel, OnCalculateCachedValue.class);
 
     for (CachedValueParamModel cachedValue : cachedValues) {
+      if (cachedValue.getTypeName().equals(ClassNames.COMPONENT)) {
+        validationErrors.add(
+            new SpecModelValidationError(
+                cachedValue.getRepresentedObject(),
+                "Cached values must not be Components, since Components are stateful. Just create the Component as normal."));
+      }
+
       final SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod =
           getCorrespondingOnCalculateCachedValueMethod(cachedValue, onCalculateCachedValueMethods);
       if (onCalculateCachedValueMethod == null) {

@@ -92,6 +92,41 @@ public class CachedValueValidationTest {
   }
 
   @Test
+  public void testCachedValueWithComponentType() {
+    when(mCachedValue1.getTypeName()).thenReturn(ClassNames.COMPONENT);
+    SpecMethodModel<DelegateMethod, Void> delegateMethod =
+        SpecMethodModel.<DelegateMethod, Void>builder()
+            .annotations(
+                ImmutableList.<Annotation>of(
+                    new OnCalculateCachedValue() {
+                      @Override
+                      public String name() {
+                        return "name1";
+                      }
+
+                      @Override
+                      public Class<? extends Annotation> annotationType() {
+                        return OnCalculateCachedValue.class;
+                      }
+                    }))
+            .modifiers(ImmutableList.<Modifier>of())
+            .name("onCalculateName1")
+            .returnTypeSpec(new TypeSpec(ClassNames.COMPONENT))
+            .typeVariables(ImmutableList.of())
+            .methodParams(ImmutableList.<MethodParamModel>of())
+            .representedObject(mDelegateMethodRepresentedObject1)
+            .build();
+    when(mSpecModel.getDelegateMethods()).thenReturn(ImmutableList.of(delegateMethod));
+
+    List<SpecModelValidationError> validationErrors = CachedValueValidation.validate(mSpecModel);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Cached values must not be Components, since Components are stateful. Just create the Component as normal.");
+  }
+
+  @Test
   public void testOnCalculateCachedValueWithBadParams() {
     Object paramObject = new Object();
     SpecMethodModel<DelegateMethod, Void> delegateMethod =
