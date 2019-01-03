@@ -30,6 +30,7 @@ import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.widget.CardClip;
 import com.facebook.litho.widget.EditText;
 import com.facebook.litho.widget.Text;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,6 +50,11 @@ public class ComponentGlobalKeyWithExperimentTest {
     ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = true;
     mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
+  }
+
+  @After
+  public void after() {
+    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = false;
   }
 
   @Test
