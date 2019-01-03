@@ -46,19 +46,24 @@ import javax.lang.model.util.Types;
 
 /** Factory for creating {@link LayoutSpecModel}s. */
 public class LayoutSpecModelFactory implements SpecModelFactory<LayoutSpecModel> {
+  public static final ImmutableList<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS;
+
   static final List<Class<? extends Annotation>> INTER_STAGE_INPUT_ANNOTATIONS = new ArrayList<>();
-  static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS = new ArrayList<>();
 
   static {
     INTER_STAGE_INPUT_ANNOTATIONS.add(FromCreateLayout.class);
-    DELEGATE_METHOD_ANNOTATIONS.addAll(
+
+    List<Class<? extends Annotation>> delegateMethodAnnotations = new ArrayList<>();
+    delegateMethodAnnotations.addAll(
         DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP.keySet());
-    DELEGATE_METHOD_ANNOTATIONS.add(OnCreateTreeProp.class);
-    DELEGATE_METHOD_ANNOTATIONS.add(ShouldUpdate.class);
-    DELEGATE_METHOD_ANNOTATIONS.add(OnEnteredRange.class);
-    DELEGATE_METHOD_ANNOTATIONS.add(OnExitedRange.class);
-    DELEGATE_METHOD_ANNOTATIONS.add(OnRegisterRanges.class);
-    DELEGATE_METHOD_ANNOTATIONS.add(OnCalculateCachedValue.class);
+    delegateMethodAnnotations.add(OnCreateTreeProp.class);
+    delegateMethodAnnotations.add(ShouldUpdate.class);
+    delegateMethodAnnotations.add(OnEnteredRange.class);
+    delegateMethodAnnotations.add(OnExitedRange.class);
+    delegateMethodAnnotations.add(OnRegisterRanges.class);
+    delegateMethodAnnotations.add(OnCalculateCachedValue.class);
+
+    DELEGATE_METHOD_ANNOTATIONS = ImmutableList.copyOf(delegateMethodAnnotations);
   }
 
   private final List<Class<? extends Annotation>> mLayoutSpecDelegateMethodAnnotations;
