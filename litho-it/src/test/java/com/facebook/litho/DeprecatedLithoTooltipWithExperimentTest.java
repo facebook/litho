@@ -25,6 +25,7 @@ import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaEdge;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -86,6 +87,11 @@ public class DeprecatedLithoTooltipWithExperimentTest {
 
     mAnchorGlobalKey =
         ComponentKeyUtils.getKeyWithSeparator(Row.create(mContext).build().getTypeId(), KEY_ANCHOR);
+  }
+
+  @After
+  public void after() {
+    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = false;
   }
 
   @Test
