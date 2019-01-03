@@ -508,11 +508,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     ComponentsPools.release(diff);
   }
 
-  @ThreadSafe(enableChecks = false)
-  final void setStateDidUpdate() {
-    mLastCachedLayout = null;
-  }
-
   /**
    * Retrieves all of the tree props used by this Component from the TreeProps map
    * and sets the tree props as fields on the ComponentImpl.

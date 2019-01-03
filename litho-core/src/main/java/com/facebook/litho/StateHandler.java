@@ -178,10 +178,6 @@ public class StateHandler {
         update.updateState(component.getStateContainer());
       }
 
-      if (ComponentsConfiguration.enableStateDidUpdate) {
-        component.setStateDidUpdate();
-      }
-
       LithoStats.incStateUpdate(stateUpdatesForKey.size());
 
       if (component.getScopedContext().isNestedTreeResolutionExperimentEnabled()) {

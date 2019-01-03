@@ -365,7 +365,9 @@ public class ComponentLifecycleTest {
     component.createLayout(mContext, true);
 
     /* State Updated */
-    component.setStateDidUpdate();
+
+    component = component.makeShallowCopy(); // called when state updates
+
     when(component.onShouldCreateLayoutWithNewSizeSpec(
             any(ComponentContext.class), anyInt(), anyInt()))
         .thenReturn(false);
@@ -377,7 +379,7 @@ public class ComponentLifecycleTest {
         .onShouldCreateLayoutWithNewSizeSpec(any(ComponentContext.class), anyInt(), anyInt());
 
     // onCreateLayoutWithSizeSpec should be called once
-    verify(component, times(2))
+    verify(component, times(1))
         .onCreateLayoutWithSizeSpec(mContext, mContext.getWidthSpec(), mContext.getHeightSpec());
 
     /* No state update */
@@ -392,7 +394,7 @@ public class ComponentLifecycleTest {
         .onShouldCreateLayoutWithNewSizeSpec(any(ComponentContext.class), anyInt(), anyInt());
 
     // onCreateLayoutWithSizeSpec should NOT be called again
-    verify(component, times(2))
+    verify(component, times(1))
         .onCreateLayoutWithSizeSpec(mContext, mContext.getWidthSpec(), mContext.getHeightSpec());
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;

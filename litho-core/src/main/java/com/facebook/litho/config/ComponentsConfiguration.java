@@ -229,12 +229,6 @@ public class ComponentsConfiguration {
   public static boolean enableShouldCreateLayoutWithNewSizeSpec = false;
 
   /**
-   * Whether State Handler should explicitly clear cached layouts which may be built using old or
-   * stale state. See T36730891 for details
-   */
-  public static boolean enableStateDidUpdate = true;
-
-  /**
    * Whether we allow animating drawables' properties (other than bounds)
    */
   public static boolean allowAnimatingDrawables = false;
