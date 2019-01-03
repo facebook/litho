@@ -369,6 +369,11 @@ public abstract class Component extends ComponentLifecycle
   public Component makeShallowCopy() {
     try {
       final Component component = (Component) super.clone();
+
+      if (mIsNestedTreeResolutionExperimentEnabled) {
+        component.mGlobalKey = null;
+      }
+
       component.mIsLayoutStarted = false;
       component.mHasManualKey = false;
       component.mLayoutVersionGenerator = new AtomicBoolean();
