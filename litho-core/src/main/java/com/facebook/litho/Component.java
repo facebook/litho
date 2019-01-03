@@ -69,6 +69,10 @@ public abstract class Component extends ComponentLifecycle
     implements Cloneable, HasEventDispatcher, HasEventTrigger, Equivalence<Component> {
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
+
+  boolean mIsNestedTreeResolutionExperimentEnabled =
+      ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
+
   private int mId = sIdGenerator.getAndIncrement();
   @Nullable private String mOwnerGlobalKey;
   private String mGlobalKey;
@@ -697,6 +701,9 @@ public abstract class Component extends ComponentLifecycle
       mResourceResolver = new ResourceResolver(c);
       mComponent = component;
       mContext = c;
+
+      mComponent.mIsNestedTreeResolutionExperimentEnabled =
+          mContext.isNestedTreeResolutionExperimentEnabled();
 
       final Component owner = getOwner();
       if (owner != null) {
