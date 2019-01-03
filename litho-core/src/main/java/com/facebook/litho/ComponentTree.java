@@ -148,6 +148,7 @@ public class ComponentTree {
 
   private final ComponentContext mContext;
   private final boolean mPersistInternalNodeTree;
+  private final boolean mNestedTreeResolutionExperimentEnabled;
 
   @Nullable private LayoutHandler mPreAllocateMountContentHandler;
 
@@ -274,6 +275,7 @@ public class ComponentTree {
     mMeasureListener = builder.mMeasureListener;
     mSplitLayoutTag = builder.splitLayoutTag;
     mPersistInternalNodeTree = builder.persistInternalNodeTree;
+    mNestedTreeResolutionExperimentEnabled = builder.nestedTreeResolutionExperimentEnabled;
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
     mAffinityBoosterFactory = builder.affinityBoosterFactory;
     mBoostAfinityLayoutStateFuture = builder.boostAffinityLayoutStateFuture;
@@ -990,6 +992,11 @@ public class ComponentTree {
    */
   public boolean doNotWrapIntoDisplayLists() {
     return mDoNotWrapIntoDisplayLists;
+  }
+
+  /** Whether the refactored implementation of nested tree resolution should be used. */
+  public boolean isNestedTreeResolutionExperimentEnabled() {
+    return mNestedTreeResolutionExperimentEnabled;
   }
 
   synchronized Component getRoot() {
@@ -2403,6 +2410,8 @@ public class ComponentTree {
     private boolean canPreallocateOnDefaultHandler;
     private String splitLayoutTag;
     private boolean persistInternalNodeTree = false;
+    private boolean nestedTreeResolutionExperimentEnabled =
+        ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
     private boolean useSharedLayoutStateFuture = false;
     private @Nullable LithoAffinityBoosterFactory affinityBoosterFactory;
     private boolean boostAffinityLayoutStateFuture;
@@ -2445,6 +2454,9 @@ public class ComponentTree {
       preAllocateMountContentHandler = null;
       splitLayoutTag = null;
       persistInternalNodeTree = false;
+      nestedTreeResolutionExperimentEnabled =
+          ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
+
       useSharedLayoutStateFuture = false;
       affinityBoosterFactory = null;
       boostAffinityLayoutStateFuture = false;
@@ -2593,6 +2605,21 @@ public class ComponentTree {
      */
     public Builder persistInternalNodeTree(boolean persistInternalNodeTree) {
       this.persistInternalNodeTree = persistInternalNodeTree;
+      return this;
+    }
+
+    /**
+     * Whether the refactored implementation of nested tree resolution should be used. This
+     * implementation fixes the following issue during nested tree resolution:
+     *
+     * <ul>
+     *   <li>disallows overriding global keys
+     *   <li>fixes incorrect global key generation
+     *   <li>applies state updates only once
+     * </ul>
+     */
+    public Builder enableNestedTreeResolutionExeperiment(boolean isEnabled) {
+      this.nestedTreeResolutionExperimentEnabled = isEnabled;
       return this;
     }
 

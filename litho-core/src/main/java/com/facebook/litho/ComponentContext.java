@@ -466,4 +466,13 @@ public class ComponentContext {
   public static boolean isIncrementalMountEnabled(ComponentContext c) {
     return c.getComponentTree().isIncrementalMountEnabled();
   }
+
+  /** Whether the refactored implementation of nested tree resolution should be used. */
+  public boolean isNestedTreeResolutionExperimentEnabled() {
+    if (getComponentTree() != null) {
+      return getComponentTree().isNestedTreeResolutionExperimentEnabled();
+    } else {
+      return false;
+    }
+  }
 }
