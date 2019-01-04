@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.support.annotation.GuardedBy;
 import android.support.annotation.Nullable;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -44,6 +45,10 @@ public final class HotswapManager {
   /** Gets the class loader that should be used to load Litho spec classes. */
   @Nullable
   public static synchronized ClassLoader getClassLoader() {
+    if (!ComponentsConfiguration.IS_INTERNAL_BUILD) {
+      throw new RuntimeException("Hotswap ClassLoader should only be accessed in debug mode.");
+    }
+
     return sSpecClassLoader;
   }
 
