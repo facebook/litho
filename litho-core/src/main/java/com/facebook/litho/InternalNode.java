@@ -1885,4 +1885,14 @@ class InternalNode implements ComponentLayout {
     drawable.getPadding(outRect);
     return outRect.bottom != 0 || outRect.top != 0 || outRect.left != 0 || outRect.right != 0;
   }
+
+  /** This method marks all resolved layout property values to undefined. */
+  void resetResolvedLayoutProperties() {
+    mResolvedTouchExpansionLeft = YogaConstants.UNDEFINED;
+    mResolvedTouchExpansionRight = YogaConstants.UNDEFINED;
+    mResolvedX = YogaConstants.UNDEFINED;
+    mResolvedY = YogaConstants.UNDEFINED;
+    mResolvedWidth = YogaConstants.UNDEFINED;
+    mResolvedHeight = YogaConstants.UNDEFINED;
+  }
 }

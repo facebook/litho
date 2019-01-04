@@ -1634,14 +1634,15 @@ class LayoutState {
 
   /** Create and measure the nested tree or return the cached one for the same size specs. */
   static InternalNode resolveNestedTree(
-      ComponentContext context, InternalNode nestedTreeHolder, int widthSpec, int heightSpec) {
-    final Component component = nestedTreeHolder.getRootComponent();
+      ComponentContext context, InternalNode holder, int widthSpec, int heightSpec) {
 
-    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
-    InternalNode nestedTree =
-        layoutCreatedInWillRender == null
-            ? nestedTreeHolder.getNestedTree()
-            : layoutCreatedInWillRender;
+    final Component component = holder.getRootComponent();
+    final InternalNode layoutFromWillRender = component.consumeLayoutCreatedInWillRender();
+    final InternalNode nestedTree =
+        layoutFromWillRender == null ? holder.getNestedTree() : layoutFromWillRender;
+
+    // The resolved layout to return.
+    final InternalNode resolvedLayout;
 
     if (nestedTree == null
         || !hasCompatibleSizeSpec(
@@ -1651,38 +1652,18 @@ class LayoutState {
             heightSpec,
             nestedTree.getLastMeasuredWidth(),
             nestedTree.getLastMeasuredHeight())) {
-      if (nestedTree != null) {
-        if (nestedTree != NULL_LAYOUT) {
-          releaseNodeTree(nestedTree, true /* isNestedTree */);
-        }
 
-        nestedTree = null;
-      }
+      // Check if cached layout can be used.
+      final InternalNode cachedLayout =
+          consumeCachedLayout(component, holder, widthSpec, heightSpec);
 
-      final InternalNode cachedLayout = component.getCachedLayout();
       if (cachedLayout != null) {
-        final boolean hasCompatibleLayoutDirection =
-            InternalNode.hasValidLayoutDirectionInNestedTree(nestedTreeHolder, cachedLayout);
 
-        // Transfer the cached layout to the node without releasing it if it's compatible.
-        if (hasCompatibleLayoutDirection &&
-            hasCompatibleSizeSpec(
-                cachedLayout.getLastWidthSpec(),
-                cachedLayout.getLastHeightSpec(),
-                widthSpec,
-                heightSpec,
-                cachedLayout.getLastMeasuredWidth(),
-                cachedLayout.getLastMeasuredHeight())) {
-          nestedTree = cachedLayout;
-          component.clearCachedLayout();
-        } else {
-          component.releaseCachedLayout();
-        }
-      }
+        // Use the cached layout.
+        resolvedLayout = cachedLayout;
+      } else {
 
-      if (nestedTree == null) {
-
-        final Component root = nestedTreeHolder.getRootComponent();
+        final Component root = holder.getRootComponent();
         if (context.isNestedTreeResolutionExperimentEnabled() && root != null) {
           /*
            * We create a shallow copy of the component to ensure that component is resolved
@@ -1692,38 +1673,65 @@ class LayoutState {
            * break state updates.
            */
 
-          // create a shallow copy for measure
+          // Create a shallow copy for measure.
           final Component copy = root.makeShallowCopy();
 
-          // set the original global key so that state update work
+          // Set the original global key so that state update work.
           copy.setGlobalKey(root.getGlobalKey());
 
-          // set this component as the root
-          nestedTreeHolder.setRootComponent(copy);
+          // Set this component as the root.
+          holder.setRootComponent(copy);
         }
 
-        nestedTree =
-            createAndMeasureTreeForComponent(
-                context,
-                component,
-                nestedTreeHolder,
-                widthSpec,
-                heightSpec,
-                nestedTreeHolder.getDiffNode()); // was set while traversing the holder's tree.
+        // Check if previous layout can be remeasured and used.
+        if (nestedTree != null && component.canUsePreviousLayout(context)) {
+          remeasureTree(nestedTree, widthSpec, heightSpec);
+          resolvedLayout = nestedTree;
+        } else {
 
-        nestedTree.setLastWidthSpec(widthSpec);
-        nestedTree.setLastHeightSpec(heightSpec);
-        nestedTree.setLastMeasuredHeight(nestedTree.getHeight());
-        nestedTree.setLastMeasuredWidth(nestedTree.getWidth());
+          // Release the previous layout.
+          if (nestedTree != null && nestedTree != NULL_LAYOUT) {
+            releaseNodeTree(nestedTree, true /* isNestedTree */);
+          }
+
+          // Create a new layout.
+          resolvedLayout =
+              createAndMeasureTreeForComponent(
+                  context,
+                  component,
+                  holder,
+                  widthSpec,
+                  heightSpec,
+                  holder.getDiffNode()); // Was set while traversing the holder's tree.
+        }
+
+        resolvedLayout.setLastWidthSpec(widthSpec);
+        resolvedLayout.setLastHeightSpec(heightSpec);
+        resolvedLayout.setLastMeasuredHeight(resolvedLayout.getHeight());
+        resolvedLayout.setLastMeasuredWidth(resolvedLayout.getWidth());
       }
 
-      nestedTreeHolder.setNestedTree(nestedTree);
+      holder.setNestedTree(resolvedLayout);
+    } else {
+
+      // Use the previous layout.
+      resolvedLayout = nestedTree;
     }
 
     // This is checking only nested tree roots however it will be moved to check all the tree roots.
-    InternalNode.assertContextSpecificStyleNotSet(nestedTree);
+    InternalNode.assertContextSpecificStyleNotSet(resolvedLayout);
 
-    return nestedTree;
+    return resolvedLayout;
+  }
+
+  @VisibleForTesting
+  static void remeasureTree(InternalNode layout, int widthSpec, int heightSpec) {
+    if (layout == NULL_LAYOUT) { // If NULL LAYOUT return immediately.
+      return;
+    }
+
+    layout.resetResolvedLayoutProperties(); // Reset all resolved props to force-remeasure.
+    measureTree(layout, widthSpec, heightSpec, layout.getDiffNode());
   }
 
   /**
@@ -1737,7 +1745,8 @@ class LayoutState {
     return createAndMeasureTreeForComponent(c, component, null, widthSpec, heightSpec, null);
   }
 
-  private static InternalNode createAndMeasureTreeForComponent(
+  @VisibleForTesting
+  static InternalNode createAndMeasureTreeForComponent(
       ComponentContext c,
       Component component,
       InternalNode nestedTreeHolder, // This will be set only if we are resolving a nested tree.
@@ -1802,6 +1811,35 @@ class LayoutState {
         diffTreeRoot);
 
     return root;
+  }
+
+  @Nullable
+  static InternalNode consumeCachedLayout(
+      Component component, InternalNode holder, int widthSpec, int heightSpec) {
+    final InternalNode cachedLayout = component.getCachedLayout();
+    if (cachedLayout != null) {
+      final boolean hasValidDirection =
+          InternalNode.hasValidLayoutDirectionInNestedTree(holder, cachedLayout);
+      final boolean hasCompatibleSizeSpec =
+          hasCompatibleSizeSpec(
+              cachedLayout.getLastWidthSpec(),
+              cachedLayout.getLastHeightSpec(),
+              widthSpec,
+              heightSpec,
+              cachedLayout.getLastMeasuredWidth(),
+              cachedLayout.getLastMeasuredHeight());
+
+      // Transfer the cached layout to the node without releasing it if it's compatible.
+      if (hasValidDirection && hasCompatibleSizeSpec) {
+        component.clearCachedLayout();
+        return cachedLayout;
+      } else {
+        component.releaseCachedLayout();
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
 
   static DiffNode createDiffNode(InternalNode node, DiffNode parent) {

@@ -205,8 +205,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   private final int mTypeId;
 
-  @Nullable Component mLastCachedLayout;
-
   ComponentLifecycle() {
     this(null);
   }
@@ -414,20 +412,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     Component layoutComponent = null;
     if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
       try {
-        if (ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec
-            && isLayoutSpecWithSizeSpecCheck()) {
-          if (shouldUseCachedLayout(context)) {
-            layoutComponent = mLastCachedLayout;
-          } else {
-            layoutComponent =
-                onCreateLayoutWithSizeSpec(
-                    context, context.getWidthSpec(), context.getHeightSpec());
-            mLastCachedLayout = layoutComponent;
-          }
-        } else {
-          layoutComponent =
-              onCreateLayoutWithSizeSpec(context, context.getWidthSpec(), context.getHeightSpec());
-        }
+        layoutComponent =
+            onCreateLayoutWithSizeSpec(context, context.getWidthSpec(), context.getHeightSpec());
       } catch (Exception e) {
         dispatchErrorEvent(context, e);
       }
@@ -837,8 +823,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return !previous.isEquivalentTo(next);
   }
 
-  private boolean shouldUseCachedLayout(ComponentContext context) {
-    return mLastCachedLayout != null
+  boolean canUsePreviousLayout(ComponentContext context) {
+    return ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec
         && !onShouldCreateLayoutWithNewSizeSpec(
             context, context.getWidthSpec(), context.getHeightSpec());
   }

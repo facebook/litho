@@ -27,6 +27,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
+import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
@@ -257,6 +258,7 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testOnShouldCreateLayoutWithNewSizeSpec_FirstCall() {
+    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     Component component;
@@ -279,13 +281,17 @@ public class ComponentLifecycleTest {
         .onCreateLayoutWithSizeSpec(mContext, mContext.getWidthSpec(), mContext.getHeightSpec());
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
+    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = false;
   }
 
   @Test
   public void testOnShouldCreateLayoutWithNewSizeSpec_shouldUseCache() {
+    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     Component component;
+    InternalNode holder = mock(InternalNode.class);
+    InternalNode resolved = mock(InternalNode.class);
 
     component =
         new SpyComponentBuilder()
@@ -296,108 +302,88 @@ public class ComponentLifecycleTest {
             .hasState(true)
             .build(mContext);
 
-    component.createLayout(mContext, true);
-    when(component.onShouldCreateLayoutWithNewSizeSpec(
-            any(ComponentContext.class), anyInt(), anyInt()))
-        .thenReturn(false);
-    component.createLayout(mContext, true);
+    when(holder.getRootComponent()).thenReturn(component);
 
-    // onShouldCreateLayoutWithNewSizeSpec should be called once
-    verify(component, times(1))
-        .onShouldCreateLayoutWithNewSizeSpec(any(ComponentContext.class), anyInt(), anyInt());
-    // onCreateLayoutWithSizeSpec should be called once
-    verify(component, times(1))
-        .onCreateLayoutWithSizeSpec(mContext, mContext.getWidthSpec(), mContext.getHeightSpec());
+    when(LayoutState.resolveNestedTree(mContext, holder, 100, 100)).thenCallRealMethod();
+    when(LayoutState.createAndMeasureTreeForComponent(mContext, component, holder, 100, 100, null))
+        .thenReturn(resolved);
+
+    // call resolve nested tree 1st time
+    InternalNode result = LayoutState.resolveNestedTree(mContext, holder, 100, 100);
+
+    PowerMockito.verifyStatic();
+
+    // it should call create and measure
+    LayoutState.createAndMeasureTreeForComponent(mContext, component, holder, 100, 100, null);
+
+    // should return nested tree next time
+    when(holder.getNestedTree()).thenReturn(result);
+
+    // should use previous layout in next call
+    doReturn(true).when(component).canUsePreviousLayout(any(ComponentContext.class));
+
+    // call resolve nested tree 1st time
+    LayoutState.resolveNestedTree(mContext, holder, 100, 100);
+
+    // no new invocation of create
+    PowerMockito.verifyStatic(times(1));
+    LayoutState.createAndMeasureTreeForComponent(mContext, component, holder, 100, 100, null);
+
+    // should only measure
+    PowerMockito.verifyStatic(times(1));
+    LayoutState.remeasureTree(resolved, 100, 100);
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
+    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = false;
   }
 
   @Test
   public void testOnShouldCreateLayoutWithNewSizeSpec_shouldNotUseCache() {
+    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     Component component;
+    InternalNode holder = mock(InternalNode.class);
+    InternalNode resolved = mock(InternalNode.class);
 
     component =
         new SpyComponentBuilder()
             .setNode(mNode)
             .canMeasure(true)
             .isMountSpec(false)
-            .hasState(true)
             .isLayoutSpecWithSizeSpecCheck(true)
+            .hasState(true)
             .build(mContext);
 
-    component.createLayout(mContext, true);
-    when(component.onShouldCreateLayoutWithNewSizeSpec(
-            any(ComponentContext.class), anyInt(), anyInt()))
-        .thenReturn(false);
-    component.createLayout(mContext, true);
-    when(component.onShouldCreateLayoutWithNewSizeSpec(
-            any(ComponentContext.class), anyInt(), anyInt()))
-        .thenReturn(true);
-    component.createLayout(mContext, true);
+    when(holder.getRootComponent()).thenReturn(component);
 
-    // onShouldCreateLayoutWithNewSizeSpec should be called again
-    verify(component, times(2))
-        .onShouldCreateLayoutWithNewSizeSpec(any(ComponentContext.class), anyInt(), anyInt());
-    // onCreateLayoutWithSizeSpec should be called again
-    verify(component, times(2))
-        .onCreateLayoutWithSizeSpec(mContext, mContext.getWidthSpec(), mContext.getHeightSpec());
+    when(LayoutState.resolveNestedTree(mContext, holder, 100, 100)).thenCallRealMethod();
+    when(LayoutState.createAndMeasureTreeForComponent(mContext, component, holder, 100, 100, null))
+        .thenReturn(resolved);
 
-    ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-  }
+    // call resolve nested tree 1st time
+    InternalNode result = LayoutState.resolveNestedTree(mContext, holder, 100, 100);
 
-  @Test
-  public void testOnShouldCreateLayoutWithNewSizeSpec_stateUpdateShouldNotUseCache() {
-    ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
+    PowerMockito.verifyStatic();
 
-    Component component;
+    // it should call create and measure
+    LayoutState.createAndMeasureTreeForComponent(mContext, component, holder, 100, 100, null);
 
-    component =
-        new SpyComponentBuilder()
-            .setNode(mNode)
-            .canMeasure(true)
-            .isMountSpec(false)
-            .hasState(true)
-            .isLayoutSpecWithSizeSpecCheck(true)
-            .build(mContext);
+    // should return nested tree next time
+    when(holder.getNestedTree()).thenReturn(result);
 
-    component.createLayout(mContext, true);
+    // should use previous layout in next call
+    doReturn(false).when(component).canUsePreviousLayout(any(ComponentContext.class));
 
-    /* State Updated */
+    // call resolve nested tree 1st time
+    LayoutState.resolveNestedTree(mContext, holder, 100, 100);
 
-    component = component.makeShallowCopy(); // called when state updates
-
-    when(component.onShouldCreateLayoutWithNewSizeSpec(
-            any(ComponentContext.class), anyInt(), anyInt()))
-        .thenReturn(false);
-
-    component.createLayout(mContext, true);
-
-    // onShouldCreateLayoutWithNewSizeSpec should NOT be called because state updated
-    verify(component, times(0))
-        .onShouldCreateLayoutWithNewSizeSpec(any(ComponentContext.class), anyInt(), anyInt());
-
-    // onCreateLayoutWithSizeSpec should be called once
-    verify(component, times(1))
-        .onCreateLayoutWithSizeSpec(mContext, mContext.getWidthSpec(), mContext.getHeightSpec());
-
-    /* No state update */
-    when(component.onShouldCreateLayoutWithNewSizeSpec(
-            any(ComponentContext.class), anyInt(), anyInt()))
-        .thenReturn(false);
-
-    component.createLayout(mContext, true);
-
-    // onShouldCreateLayoutWithNewSizeSpec should be called again
-    verify(component, times(1))
-        .onShouldCreateLayoutWithNewSizeSpec(any(ComponentContext.class), anyInt(), anyInt());
-
-    // onCreateLayoutWithSizeSpec should NOT be called again
-    verify(component, times(1))
-        .onCreateLayoutWithSizeSpec(mContext, mContext.getWidthSpec(), mContext.getHeightSpec());
+    // a new invocation of create
+    PowerMockito.verifyStatic(times(2));
+    LayoutState.createAndMeasureTreeForComponent(mContext, component, holder, 100, 100, null);
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
+    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = false;
   }
 
   @Test
@@ -585,6 +571,11 @@ public class ComponentLifecycleTest {
     @Override
     protected boolean isLayoutSpecWithSizeSpecCheck() {
       return mIsLayoutSpecWithSizeSpecCheck;
+    }
+
+    @Override
+    protected boolean canUsePreviousLayout(ComponentContext context) {
+      return super.canUsePreviousLayout(context);
     }
   }
 
