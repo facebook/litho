@@ -39,12 +39,12 @@ aliases:
   # Repo Cache aliases
   - &restore-repo-cache
     keys:
-      - v3-jars-{{ checksum "workspace/repo/build.gradle" }}-{{ checksum  "workspace/repo/gradle.properties" }}
+      - v4-jars-{{ checksum "workspace/repo/build.gradle" }}-{{ checksum  "workspace/repo/gradle.properties" }}
   - &save-repo-cache
     paths:
       - ~/.gradle/caches
       - ~/.gradle/wrapper
-    key: v3-jars-{{ checksum "workspace/repo/build.gradle" }}-{{ checksum  "workspace/repo/gradle.properties" }}
+    key: v4-jars-{{ checksum "workspace/repo/build.gradle" }}-{{ checksum  "workspace/repo/gradle.properties" }}
 
   # Install Android NDK packages needed
   - &install-ndk
