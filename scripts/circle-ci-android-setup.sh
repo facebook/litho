@@ -56,5 +56,5 @@ function installAndroidSDK {
   echo > "$ANDROID_HOME/licenses/android-sdk-license"
   echo -n d56f5187479451eabf01fb78af6dfcb131a6481e > "$ANDROID_HOME/licenses/android-sdk-license"
 
-  installsdk 'platforms;android-28'
+  installsdk 'platforms;android-28' 'cmake;3.6.4111459'
 }
