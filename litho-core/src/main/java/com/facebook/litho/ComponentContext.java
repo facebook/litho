@@ -40,10 +40,10 @@ public class ComponentContext {
   private final Context mContext;
   private final String mLogTag;
   private final ComponentsLogger mLogger;
-  @Nullable private final StateHandler mStateHandler;
+  private final @Nullable StateHandler mStateHandler;
 
   /** TODO: (T38237241) remove the usage of the key handler post the nested tree experiment */
-  private final KeyHandler mKeyHandler;
+  private final @Nullable KeyHandler mKeyHandler;
 
   private String mNoStateUpdatesMethod;
 
@@ -56,8 +56,9 @@ public class ComponentContext {
   private int mWidthSpec;
   @ThreadConfined(ThreadConfined.ANY)
   private int mHeightSpec;
+
   @ThreadConfined(ThreadConfined.ANY)
-  protected TreeProps mTreeProps;
+  private @Nullable TreeProps mTreeProps;
 
   @ThreadConfined(ThreadConfined.ANY)
   private ComponentTree mComponentTree;
@@ -70,26 +71,39 @@ public class ComponentContext {
   @ThreadConfined(ThreadConfined.ANY)
   private int mDefStyleAttr = 0;
 
-  public ComponentContext(ComponentContext context) {
-    this(context, context.mStateHandler, context.mKeyHandler, context.mTreeProps);
+  public ComponentContext(
+      Context context,
+      String logTag,
+      ComponentsLogger logger,
+      @Nullable StateHandler stateHandler,
+      @Nullable KeyHandler keyHandler,
+      @Nullable TreeProps treeProps) {
+
+    if (logger != null && logTag == null) {
+      throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
+    }
+
+    mContext = context;
+    mResourceCache = ResourceCache.getLatest(context.getResources().getConfiguration());
+    mTreeProps = treeProps;
+    mLogger = logger;
+    mLogTag = logTag;
+    mStateHandler = stateHandler;
+    mKeyHandler = keyHandler;
   }
 
-  public ComponentContext(ComponentContext context, StateHandler stateHandler) {
-    this(context, stateHandler, context.mKeyHandler, context.mTreeProps);
-  }
-
-  protected ComponentContext(
+  public ComponentContext(
       ComponentContext context,
-      StateHandler stateHandler,
-      KeyHandler keyHandler,
-      TreeProps treeProps) {
+      @Nullable StateHandler stateHandler,
+      @Nullable KeyHandler keyHandler,
+      @Nullable TreeProps treeProps) {
+
     mContext = context.getAndroidContext();
     mResourceCache = context.mResourceCache;
     mWidthSpec = context.mWidthSpec;
     mHeightSpec = context.mHeightSpec;
     mComponentScope = context.mComponentScope;
     mComponentTree = context.mComponentTree;
-
     mLogger = context.mLogger;
     mLogTag = context.mLogTag;
 
@@ -98,29 +112,14 @@ public class ComponentContext {
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
   }
 
-  public ComponentContext(Context context) {
-    this(context, null, null, null, null, null);
-  }
-
-  public ComponentContext(Context context, StateHandler stateHandler) {
-    this(context, stateHandler, null);
-  }
-
-  public ComponentContext(Context context, StateHandler stateHandler, KeyHandler keyHandler) {
-    this(context, null, null, stateHandler, keyHandler, null);
-  }
-
-  ComponentContext(
-      Context context,
-      StateHandler stateHandler,
-      KeyHandler keyHandler,
-      @Nullable TreeProps treeProps) {
-    this(context, null, null, stateHandler, keyHandler, treeProps);
+  public ComponentContext(
+      Context context, String logTag, ComponentsLogger logger, @Nullable TreeProps treeProps) {
+    this(context, logTag, logger, null, null, treeProps);
   }
 
   /**
-   *  Constructor that can be used to receive log data from components.
-   *  Check {@link ComponentsLogger} for the type of events you can listen for.
+   * Constructor that can be used to receive log data from components. Check {@link
+   * ComponentsLogger} for the type of events you can listen for.
    *
    * @param context Android context.
    * @param logTag Specify a log tag, to be used with the logger.
@@ -130,61 +129,16 @@ public class ComponentContext {
     this(context, logTag, logger, null, null, null);
   }
 
-  public ComponentContext(
-      Context context, String logTag, ComponentsLogger logger, TreeProps treeProps) {
-    this(context, logTag, logger, null, null, treeProps);
+  public ComponentContext(Context context, StateHandler stateHandler) {
+    this(context, null, null, stateHandler, null, null);
   }
 
-  public ComponentContext(
-      Context context, StateHandler stateHandler, String logTag, ComponentsLogger logger) {
-    this(context, logTag, logger, stateHandler, null, null);
+  public ComponentContext(ComponentContext context) {
+    this(context, context.mStateHandler, context.mKeyHandler, context.mTreeProps);
   }
 
-  private ComponentContext(
-      Context context,
-      String logTag,
-      ComponentsLogger logger,
-      StateHandler stateHandler,
-      KeyHandler keyHandler,
-      @Nullable TreeProps treeProps) {
-    mContext = context;
-
-    if (logger != null && logTag == null) {
-      throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
-    }
-
-    mResourceCache = ResourceCache.getLatest(context.getResources().getConfiguration());
-    mTreeProps = treeProps;
-    mLogger = logger;
-    mLogTag = logTag;
-    mStateHandler = stateHandler;
-    mKeyHandler = keyHandler;
-  }
-
-  static ComponentContext withComponentTree(
-      ComponentContext context,
-      ComponentTree componentTree) {
-    ComponentContext componentContext =
-        new ComponentContext(context, ComponentsPools.acquireStateHandler());
-    componentContext.mComponentTree = componentTree;
-
-    return componentContext;
-  }
-
-  /**
-   * Creates a new ComponentContext instance scoped to the given component and sets it on the
-   *  component.
-   * @param context context scoped to the parent component
-   * @param scope component associated with the newly created scoped context
-   * @return a new ComponentContext instance scoped to the given component
-   */
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public static ComponentContext withComponentScope(ComponentContext context, Component scope) {
-    ComponentContext componentContext = context.makeNewCopy();
-    componentContext.mComponentScope = scope;
-    componentContext.mComponentTree = context.mComponentTree;
-
-    return componentContext;
+  public ComponentContext(Context context) {
+    this(context, null, null, null, null, null);
   }
 
   ComponentContext makeNewCopy() {
@@ -285,9 +239,9 @@ public class ComponentContext {
   private void checkIfNoStateUpdatesMethod() {
     if (mNoStateUpdatesMethod != null) {
       throw new IllegalStateException(
-          "Updating the state of a component during " +
-              mNoStateUpdatesMethod +
-              " leads to unexpected behaviour, consider using lazy state updates.");
+          "Updating the state of a component during "
+              + mNoStateUpdatesMethod
+              + " leads to unexpected behaviour, consider using lazy state updates.");
     }
   }
 
@@ -322,7 +276,7 @@ public class ComponentContext {
     return mComponentTree;
   }
 
-  protected void setTreeProps(TreeProps treeProps) {
+  protected void setTreeProps(@Nullable TreeProps treeProps) {
     mTreeProps = treeProps;
   }
 
@@ -366,9 +320,7 @@ public class ComponentContext {
     return new EventTrigger<>(parentKey, id, childKey);
   }
 
-  InternalNode newLayoutBuilder(
-      @AttrRes int defStyleAttr,
-      @StyleRes int defStyleRes) {
+  InternalNode newLayoutBuilder(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     final InternalNode node = ComponentsPools.acquireInternalNode(this);
     applyStyle(node, defStyleAttr, defStyleRes);
     return node;
@@ -439,10 +391,12 @@ public class ComponentContext {
     mHeightSpec = heightSpec;
   }
 
+  @Nullable
   StateHandler getStateHandler() {
     return mStateHandler;
   }
 
+  @Nullable
   KeyHandler getKeyHandler() {
     return mKeyHandler;
   }
@@ -459,6 +413,31 @@ public class ComponentContext {
 
       setDefStyle(0, 0);
     }
+  }
+
+  static ComponentContext withComponentTree(ComponentContext context, ComponentTree componentTree) {
+    ComponentContext componentContext =
+        new ComponentContext(context, ComponentsPools.acquireStateHandler(), null, null);
+    componentContext.mComponentTree = componentTree;
+
+    return componentContext;
+  }
+
+  /**
+   * Creates a new ComponentContext instance scoped to the given component and sets it on the
+   * component.
+   *
+   * @param context context scoped to the parent component
+   * @param scope component associated with the newly created scoped context
+   * @return a new ComponentContext instance scoped to the given component
+   */
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public static ComponentContext withComponentScope(ComponentContext context, Component scope) {
+    ComponentContext componentContext = context.makeNewCopy();
+    componentContext.mComponentScope = scope;
+    componentContext.mComponentTree = context.mComponentTree;
+
+    return componentContext;
   }
 
   /**
