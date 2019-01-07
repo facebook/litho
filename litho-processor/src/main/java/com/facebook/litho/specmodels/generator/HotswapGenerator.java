@@ -53,8 +53,8 @@ public class HotswapGenerator {
             .beginControlFlow("try")
             .addStatement(
                 "specClass = classLoader.loadClass(\"$L\")", specModel.getSpecTypeName().toString())
-            .nextControlFlow("catch (ClassNotFoundException e)")
-            .addStatement("throw new RuntimeException(e)")
+            .nextControlFlow("catch (ClassNotFoundException _e)")
+            .addStatement("throw new RuntimeException(_e)")
             .endControlFlow()
             .beginControlFlow("try")
             .add("final $T method = specClass.getDeclaredMethod(", ClassNames.JAVA_METHOD)
@@ -97,8 +97,8 @@ public class HotswapGenerator {
     }
 
     return code.unindent()
-        .nextControlFlow("catch (Exception e)")
-        .addStatement("throw new RuntimeException(e)")
+        .nextControlFlow("catch (Exception _e)")
+        .addStatement("throw new RuntimeException(_e)")
         .endControlFlow()
         .endControlFlow()
         .build();

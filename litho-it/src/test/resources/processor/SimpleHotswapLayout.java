@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-present Facebook, Inc.
+ * Copyright 2019-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,15 +38,15 @@ public final class SimpleLayout extends Component {
         specClass =
             classLoader.loadClass(
                 "com.facebook.litho.processor.integration.resources.SimpleLayoutSpec");
-      } catch (ClassNotFoundException e) {
-        throw new RuntimeException(e);
+      } catch (ClassNotFoundException _e) {
+        throw new RuntimeException(_e);
       }
       try {
         final Method method = specClass.getDeclaredMethod("onCreateLayout", ComponentContext.class);
         method.setAccessible(true);
         _result = (Component) method.invoke(null, (ComponentContext) context);
-      } catch (Exception e) {
-        throw new RuntimeException(e);
+      } catch (Exception _e) {
+        throw new RuntimeException(_e);
       }
     }
     return _result;
