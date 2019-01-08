@@ -2121,7 +2121,8 @@ public class ComponentTree {
         diffingEnabled,
         previousLayoutState,
         source,
-        extraAttribution);
+        extraAttribution,
+        LayoutState.NodeTreePersistenceMode.NONE);
   }
 
   @VisibleForTesting

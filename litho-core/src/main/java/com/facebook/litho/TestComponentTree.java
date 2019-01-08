@@ -65,7 +65,8 @@ public class TestComponentTree extends ComponentTree {
         diffingEnabled,
         previousLayoutState,
         source,
-        extraAttribution);
+        extraAttribution,
+        LayoutState.NodeTreePersistenceMode.NONE);
   }
 
   @VisibleForTesting
