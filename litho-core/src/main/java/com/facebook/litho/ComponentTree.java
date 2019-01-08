@@ -250,6 +250,8 @@ public class ComponentTree {
 
   private boolean mForceLayout;
 
+  private final @LayoutState.NodeTreePersistenceMode int mPersistenceMode;
+
   public static Builder create(ComponentContext context, Component.Builder<?> root) {
     return create(context, root.build());
   }
@@ -281,6 +283,7 @@ public class ComponentTree {
     mBoostAfinityLayoutStateFuture = builder.boostAffinityLayoutStateFuture;
     mBoostAffinityLithoLayouts = builder.boostAffinityLithoLayouts;
     mDoNotWrapIntoDisplayLists = builder.doNotWrapIntoDisplayLists;
+    mPersistenceMode = builder.persistenceMode;
 
     ensureLayoutThreadHandler();
 
@@ -2122,7 +2125,7 @@ public class ComponentTree {
         previousLayoutState,
         source,
         extraAttribution,
-        LayoutState.NodeTreePersistenceMode.NONE);
+        mPersistenceMode);
   }
 
   @VisibleForTesting
@@ -2434,6 +2437,7 @@ public class ComponentTree {
     private boolean boostAffinityLayoutStateFuture;
     private boolean boostAffinityLithoLayouts;
     private boolean doNotWrapIntoDisplayLists = false;
+    private @LayoutState.NodeTreePersistenceMode int persistenceMode = initializePersistenceMode();
 
     protected Builder() {
     }
@@ -2649,6 +2653,16 @@ public class ComponentTree {
       return this;
     }
 
+    /**
+     * Sets the node tree persistence mode to hold the internal nodes in memory. i.e. do not release
+     * them immediately. The default is {@link LayoutState.NodeTreePersistenceMode#NONE}.
+     *
+     * @param persistenceMode must be in {@link LayoutState.NodeTreePersistenceMode}
+     */
+    public void setPersistenceMode(@LayoutState.NodeTreePersistenceMode int persistenceMode) {
+      this.persistenceMode = persistenceMode;
+    }
+
     /** Builds a {@link ComponentTree} using the parameters specified in this builder. */
     public ComponentTree build() {
       final ComponentTree componentTree = new ComponentTree(this);
@@ -2656,6 +2670,19 @@ public class ComponentTree {
       ComponentsPools.release(this);
 
       return componentTree;
+    }
+
+    private static @LayoutState.NodeTreePersistenceMode int initializePersistenceMode() {
+      switch (ComponentsConfiguration.nodeTreePersistenceMode) {
+        case 0:
+          return LayoutState.NodeTreePersistenceMode.NONE;
+        case 1:
+          return LayoutState.NodeTreePersistenceMode.RELEASE_BEFORE_CALCULATE;
+        case 2:
+          return LayoutState.NodeTreePersistenceMode.RELEASE_AFTER_CALCULATE;
+        default:
+          return LayoutState.NodeTreePersistenceMode.NONE;
+      }
     }
   }
 }
