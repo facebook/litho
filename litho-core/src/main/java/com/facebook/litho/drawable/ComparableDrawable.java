@@ -23,7 +23,7 @@ import android.graphics.drawable.Drawable;
  * way, instead of using {@link Drawable#equals(Object)} which only checks if the references are
  * equal.
  *
- * @see DefaultComparableDrawable
+ * @see ComparableDrawableWrapper
  * @see ComparableColorDrawable
  * @see ComparableResDrawable
  */

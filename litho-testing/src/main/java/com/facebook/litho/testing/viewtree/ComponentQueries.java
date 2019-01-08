@@ -20,7 +20,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import com.facebook.litho.ComponentHost;
 import com.facebook.litho.MatrixDrawable;
-import com.facebook.litho.drawable.DefaultComparableDrawable;
+import com.facebook.litho.drawable.ComparableDrawableWrapper;
 import com.google.common.base.Predicate;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -84,13 +84,13 @@ class ComponentQueries {
 
   private static boolean hasDrawable(Drawable containingDrawable, Drawable drawable) {
     while (containingDrawable instanceof MatrixDrawable
-        || containingDrawable instanceof DefaultComparableDrawable) {
+        || containingDrawable instanceof ComparableDrawableWrapper) {
       if (containingDrawable instanceof MatrixDrawable) {
         containingDrawable = ((MatrixDrawable) containingDrawable).getMountedDrawable();
       }
 
-      if (containingDrawable instanceof DefaultComparableDrawable) {
-        containingDrawable = ((DefaultComparableDrawable) containingDrawable).getWrappedDrawable();
+      if (containingDrawable instanceof ComparableDrawableWrapper) {
+        containingDrawable = ((ComparableDrawableWrapper) containingDrawable).getWrappedDrawable();
       }
     }
 

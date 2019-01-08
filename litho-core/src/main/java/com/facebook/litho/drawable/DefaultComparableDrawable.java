@@ -15,193 +15,18 @@
  */
 package com.facebook.litho.drawable;
 
-import android.content.res.ColorStateList;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
-import android.graphics.PorterDuff;
-import android.graphics.Rect;
-import android.graphics.Region;
 import android.graphics.drawable.Drawable;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.view.View;
-import com.facebook.infer.annotation.OkToExtend;
 
 /**
- * Default Comparable Drawable delegates all calls to its wrapped {@link Drawable}.
- *
- * <p>The wrapped {@link Drawable} <em>must</em> be fully released from any {@link View} before
- * wrapping, otherwise internal {@link Drawable.Callback} may be dropped.
+ * Default Comparable Drawable uses object equals to check equivalence.
  *
  * <p>Using this is not the recommended as semantically equal drawables will not be considered
  * equivalent because they will have different references, which could make diffing inefficient.
  */
-@OkToExtend
-public class DefaultComparableDrawable extends ComparableDrawable implements Drawable.Callback {
+public final class DefaultComparableDrawable extends ComparableDrawableWrapper {
 
-  private Drawable mDrawable;
-
-  protected DefaultComparableDrawable(Drawable drawable) {
-    setWrappedDrawable(drawable);
-  }
-
-  @Override
-  protected void onBoundsChange(Rect bounds) {
-    mDrawable.setBounds(bounds);
-  }
-
-  @Override
-  public int getChangingConfigurations() {
-    return mDrawable.getChangingConfigurations();
-  }
-
-  @Override
-  public void setChangingConfigurations(int configs) {
-    mDrawable.setChangingConfigurations(configs);
-  }
-
-  @Override
-  public void setDither(boolean dither) {
-    mDrawable.setDither(dither);
-  }
-
-  @Override
-  public void setFilterBitmap(boolean filter) {
-    mDrawable.setFilterBitmap(filter);
-  }
-
-  @Override
-  public boolean isStateful() {
-    return mDrawable.isStateful();
-  }
-
-  @Override
-  public boolean setState(final int[] state) {
-    return mDrawable.setState(state);
-  }
-
-  @Override
-  public int[] getState() {
-    return mDrawable.getState();
-  }
-
-  @Override
-  public void jumpToCurrentState() {
-    mDrawable.jumpToCurrentState();
-  }
-
-  @Override
-  public Drawable getCurrent() {
-    return mDrawable.getCurrent();
-  }
-
-  @Override
-  public boolean setVisible(boolean visible, boolean restart) {
-    return super.setVisible(visible, restart) || mDrawable.setVisible(visible, restart);
-  }
-
-  @Override
-  public Region getTransparentRegion() {
-    return mDrawable.getTransparentRegion();
-  }
-
-  @Override
-  public int getIntrinsicWidth() {
-    return mDrawable.getIntrinsicWidth();
-  }
-
-  @Override
-  public int getIntrinsicHeight() {
-    return mDrawable.getIntrinsicHeight();
-  }
-
-  @Override
-  public int getMinimumWidth() {
-    return mDrawable.getMinimumWidth();
-  }
-
-  @Override
-  public int getMinimumHeight() {
-    return mDrawable.getMinimumHeight();
-  }
-
-  @Override
-  public boolean getPadding(Rect padding) {
-    return mDrawable.getPadding(padding);
-  }
-
-  @Override
-  protected boolean onLevelChange(int level) {
-    return mDrawable.setLevel(level);
-  }
-
-  @Override
-  public boolean isAutoMirrored() {
-    return DrawableCompat.isAutoMirrored(mDrawable);
-  }
-
-  @Override
-  public void setAutoMirrored(boolean mirrored) {
-    DrawableCompat.setAutoMirrored(mDrawable, mirrored);
-  }
-
-  @Override
-  public void setTint(int tint) {
-    DrawableCompat.setTint(mDrawable, tint);
-  }
-
-  @Override
-  public void setTintList(ColorStateList tint) {
-    DrawableCompat.setTintList(mDrawable, tint);
-  }
-
-  @Override
-  public void setTintMode(PorterDuff.Mode mode) {
-    DrawableCompat.setTintMode(mDrawable, mode);
-  }
-
-  @Override
-  public void setHotspot(float x, float y) {
-    DrawableCompat.setHotspot(mDrawable, x, y);
-  }
-
-  @Override
-  public void setHotspotBounds(int left, int top, int right, int bottom) {
-    DrawableCompat.setHotspotBounds(mDrawable, left, top, right, bottom);
-  }
-
-  @Override
-  public void draw(Canvas canvas) {
-    mDrawable.draw(canvas);
-  }
-
-  @Override
-  public void setAlpha(int alpha) {
-    mDrawable.setAlpha(alpha);
-  }
-
-  @Override
-  public void setColorFilter(ColorFilter filter) {
-    mDrawable.setColorFilter(filter);
-  }
-
-  @Override
-  public int getOpacity() {
-    return mDrawable.getOpacity();
-  }
-
-  @Override
-  public void invalidateDrawable(Drawable drawable) {
-    invalidateSelf();
-  }
-
-  @Override
-  public void scheduleDrawable(Drawable drawable, Runnable runnable, long l) {
-    scheduleSelf(runnable, l);
-  }
-
-  @Override
-  public void unscheduleDrawable(Drawable drawable, Runnable runnable) {
-    unscheduleSelf(runnable);
+  private DefaultComparableDrawable(Drawable drawable) {
+    super(drawable);
   }
 
   @Override
@@ -214,27 +39,7 @@ public class DefaultComparableDrawable extends ComparableDrawable implements Dra
       return false;
     }
 
-    return mDrawable.equals(((DefaultComparableDrawable) other).mDrawable);
-  }
-
-  public Drawable getWrappedDrawable() {
-    return mDrawable;
-  }
-
-  public void setWrappedDrawable(Drawable drawable) {
-    if (drawable instanceof ComparableDrawable) {
-      throw new IllegalArgumentException("drawable is already a ComparableDrawable");
-    }
-
-    if (mDrawable != null) {
-      mDrawable.setCallback(null);
-    }
-
-    mDrawable = drawable;
-
-    if (drawable != null) {
-      drawable.setCallback(this);
-    }
+    return getWrappedDrawable().equals(((DefaultComparableDrawable) other).getWrappedDrawable());
   }
 
   /**
@@ -242,15 +47,15 @@ public class DefaultComparableDrawable extends ComparableDrawable implements Dra
    * backwards compatibility. Use this method only when the value of the property is going to be
    * constant (i.e. does not depend on state)
    *
-   * @deprecated For internal use only. Consider using {@link ComparableIntIdDrawable}. Extend
-   *     {@link ComparableDrawable} for custom drawables (see {@link BorderColorDrawable}) or extend
-   *     {@link DefaultComparableDrawable} and implement {@link #isEquivalentTo(ComparableDrawable)}
-   *     if drawable cannot extend {@link ComparableDrawable} (see {@link ComparableColorDrawable}
-   *     and {@link ComparableResDrawable}).
    * @see ComparableIntIdDrawable
    * @see ComparableColorDrawable
    * @see ComparableResDrawable
    * @see ComparableDrawable
+   * @deprecated For internal use only. Consider using {@link ComparableIntIdDrawable}. Extend
+   *     {@link ComparableDrawable} for custom drawables (see {@link BorderColorDrawable}) or extend
+   *     {@link ComparableDrawableWrapper} and implement {@link #isEquivalentTo(ComparableDrawable)}
+   *     if drawable cannot extend {@link ComparableDrawable} (see {@link ComparableColorDrawable}
+   *     and {@link ComparableResDrawable}).
    */
   @Deprecated
   public static DefaultComparableDrawable create(Drawable drawable) {

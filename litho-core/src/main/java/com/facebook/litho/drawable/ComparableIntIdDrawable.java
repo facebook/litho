@@ -37,7 +37,7 @@ import android.graphics.drawable.Drawable;
  *  }
  * </code></pre>
  */
-public class ComparableIntIdDrawable extends DefaultComparableDrawable {
+public class ComparableIntIdDrawable extends ComparableDrawableWrapper {
 
   public final int mId;
 

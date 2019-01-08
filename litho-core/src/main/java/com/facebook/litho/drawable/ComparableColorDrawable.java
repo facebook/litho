@@ -19,7 +19,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.ColorInt;
 
 /** A comparable color drawable. */
-public class ComparableColorDrawable extends DefaultComparableDrawable {
+public class ComparableColorDrawable extends ComparableDrawableWrapper {
 
   @ColorInt private final int mColor;
 

@@ -22,7 +22,7 @@ import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
 
 /** A comparable implementation of drawables sourced from android resources. */
-public class ComparableResDrawable extends DefaultComparableDrawable {
+public class ComparableResDrawable extends ComparableDrawableWrapper {
 
   @DrawableRes private final int mResId;
   private final Configuration mConfig;
