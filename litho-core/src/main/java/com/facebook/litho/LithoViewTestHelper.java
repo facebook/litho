@@ -16,11 +16,9 @@
 
 package com.facebook.litho;
 
-import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.view.View;
 import android.view.ViewParent;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -143,48 +141,7 @@ public class LithoViewTestHelper {
       return;
     }
 
-    sb.append("litho.");
-    sb.append(debugComponent.getComponent().getSimpleName());
-
-    sb.append('{');
-    sb.append(Integer.toHexString(debugComponent.hashCode()));
-    sb.append(' ');
-
-    final LithoView lithoView = debugComponent.getLithoView();
-    final DebugLayoutNode layout = debugComponent.getLayoutNode();
-    sb.append(lithoView != null && lithoView.getVisibility() == View.VISIBLE ? "V" : ".");
-    sb.append(layout != null && layout.getFocusable() ? "F" : ".");
-    sb.append(lithoView != null && lithoView.isEnabled() ? "E" : ".");
-    sb.append(".");
-    sb.append(lithoView != null && lithoView.isHorizontalScrollBarEnabled() ? "H" : ".");
-    sb.append(lithoView != null && lithoView.isVerticalScrollBarEnabled() ? "V" : ".");
-    sb.append(layout != null && layout.getClickHandler() != null ? "C" : ".");
-    sb.append(". .. ");
-
-    final Rect bounds = debugComponent.getBounds();
-    sb.append(left + bounds.left);
-    sb.append(",");
-    sb.append(top + bounds.top);
-    sb.append("-");
-    sb.append(left + bounds.right);
-    sb.append(",");
-    sb.append(top + bounds.bottom);
-
-    final String testKey = debugComponent.getTestKey();
-    if (testKey != null && !TextUtils.isEmpty(testKey)) {
-      sb.append(String.format(" litho:id/%s", testKey.replace(' ', '_')));
-    }
-
-    final String textContent = debugComponent.getTextContent();
-    if (textContent != null && !TextUtils.isEmpty(textContent)) {
-      sb.append(String.format(" text=\"%s\"", textContent.replace("\n", "").replace("\"", "")));
-    }
-
-    if (!embedded && layout != null && layout.getClickHandler() != null) {
-      sb.append(" [clickable]");
-    }
-
-    sb.append('}');
+    DebugComponentDescriptionHelper.addViewDescription(left, top, debugComponent, sb, embedded);
 
     for (DebugComponent child : debugComponent.getChildComponents()) {
       sb.append("\n");
