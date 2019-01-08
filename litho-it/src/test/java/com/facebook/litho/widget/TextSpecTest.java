@@ -17,12 +17,16 @@
 package com.facebook.litho.widget;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.text.Layout;
 import android.text.Spannable;
 import android.text.style.ClickableSpan;
 import android.util.SparseArray;
@@ -46,6 +50,9 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class TextSpecTest {
   private ComponentContext mContext;
+
+  private static final int FULL_TEXT_WIDTH = 100;
+  private static final int MINIMAL_TEXT_WIDTH = 95;
 
   @Before
   public void setup() {
@@ -276,5 +283,59 @@ public class TextSpecTest {
     assertThat(gotSparseArray)
         .isInstanceOf(SynchronizedTypefaceHelper.SynchronizedTypefaceSparseArray.class);
     assertThat(gotSparseArray.get(1)).isSameAs(Typeface.DEFAULT);
+  }
+
+  @Test
+  public void testFullWidthText() {
+    final Layout layout = setupWidthTestTextLayout();
+
+    final int resolvedWidth =
+        TextSpec.resolveWidth(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            layout,
+            false /* minimallyWide */,
+            0 /* minimallyWideThreshold */);
+
+    assertEquals(resolvedWidth, FULL_TEXT_WIDTH);
+  }
+
+  @Test
+  public void testMinimallyWideText() {
+    final Layout layout = setupWidthTestTextLayout();
+
+    final int resolvedWidth =
+        TextSpec.resolveWidth(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            layout,
+            true /* minimallyWide */,
+            FULL_TEXT_WIDTH - MINIMAL_TEXT_WIDTH - 1 /* minimallyWideThreshold */);
+
+    assertEquals(resolvedWidth, MINIMAL_TEXT_WIDTH);
+  }
+
+  @Test
+  public void testMinimallyWideThresholdText() {
+    final Layout layout = setupWidthTestTextLayout();
+
+    final int resolvedWidth =
+        TextSpec.resolveWidth(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            layout,
+            true /* minimallyWide */,
+            FULL_TEXT_WIDTH - MINIMAL_TEXT_WIDTH /* minimallyWideThreshold */);
+
+    assertEquals(resolvedWidth, FULL_TEXT_WIDTH);
+  }
+
+  private static Layout setupWidthTestTextLayout() {
+    final Layout layout = mock(Layout.class);
+    final int fullWidth = FULL_TEXT_WIDTH;
+    final int minimalWidth = MINIMAL_TEXT_WIDTH;
+
+    when(layout.getLineCount()).thenReturn(2);
+    when(layout.getWidth()).thenReturn(fullWidth);
+    when(layout.getLineRight(anyInt())).thenReturn((float) minimalWidth);
+
+    return layout;
   }
 }

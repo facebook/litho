@@ -36,6 +36,7 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.text.TextDirectionHeuristicCompat;
 import android.support.v4.text.TextDirectionHeuristicsCompat;
 import android.support.v4.view.ViewCompat;
@@ -130,6 +131,11 @@ import com.facebook.yoga.YogaDirection;
  *     offset into the text. Will only fire on ACTION_DOWN events that occur at an index within the
  *     text.
  * @prop accessibleClickableSpans Whether the text can contain accessible clickable spans.
+ * @prop minimallyWide If set, multi-line text width is determined by the widest line, rather than
+ *     the overall layout width. This can eliminate empty space in word-wrapped text with line
+ *     breaks preceding lengthy words or spans.
+ * @prop minimallyWideThreshold If set, {@code minimallyWide} logic will not run for text whose
+ *     minimal width is smaller than its normal width by less than the threshold.
  */
 @MountSpec(
   isPureRender = true,
@@ -278,6 +284,8 @@ class TextSpec {
       @Prop(optional = true) int justificationMode,
       @Prop(optional = true) boolean glyphWarming,
       @Prop(optional = true) TextDirectionHeuristicCompat textDirection,
+      @Prop(optional = true) boolean minimallyWide,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) int minimallyWideThreshold,
       Output<Layout> measureLayout,
       Output<Integer> measuredWidth,
       Output<Integer> measuredHeight) {
@@ -325,7 +333,7 @@ class TextSpec {
 
     measureLayout.set(newLayout);
 
-    size.width = SizeSpec.resolveSize(widthSpec, newLayout.getWidth());
+    size.width = resolveWidth(widthSpec, newLayout, minimallyWide, minimallyWideThreshold);
 
     // Adjust height according to the minimum number of lines.
     int preferredHeight = LayoutMeasureUtil.getHeight(newLayout);
@@ -354,6 +362,22 @@ class TextSpec {
 
     measuredWidth.set(size.width);
     measuredHeight.set(size.height);
+  }
+
+  @VisibleForTesting
+  public static int resolveWidth(
+      int widthSpec, Layout layout, boolean minimallyWide, int minimallyWideThreshold) {
+    final int fullWidth = SizeSpec.resolveSize(widthSpec, layout.getWidth());
+
+    if (minimallyWide && layout.getLineCount() > 1) {
+      final int minimalWidth = SizeSpec.resolveSize(widthSpec, LayoutMeasureUtil.getWidth(layout));
+
+      if (fullWidth - minimalWidth > minimallyWideThreshold) {
+        return minimalWidth;
+      }
+    }
+
+    return fullWidth;
   }
 
   private static Layout createTextLayout(
