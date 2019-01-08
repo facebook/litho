@@ -1305,7 +1305,6 @@ class LayoutState {
         heightSpec,
         false /* shouldGenerateDiffTree */,
         null /* previousDiffTreeRoot */,
-        false /* persistInternalNodeTree */,
         source,
         null);
   }
@@ -1318,7 +1317,6 @@ class LayoutState {
       int heightSpec,
       boolean shouldGenerateDiffTree,
       @Nullable LayoutState previousLayoutState,
-      boolean persistInternalNodeTree,
       @CalculateLayoutSource int source,
       @Nullable String extraAttribution) {
 
@@ -1442,8 +1440,7 @@ class LayoutState {
         logger.logPerfEvent(collectResultsEvent);
       }
 
-      if (!persistInternalNodeTree
-          && !ComponentsConfiguration.isDebugModeEnabled
+      if (!ComponentsConfiguration.isDebugModeEnabled
           && !ComponentsConfiguration.isEndToEndTestRun
           && layoutState.mLayoutRoot != null) {
         releaseNodeTree(layoutState.mLayoutRoot, false /* isNestedTree */);

@@ -272,7 +272,6 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         heightSpec,
         false /* shouldGenerateDiffTree */,
         null /* previousDiffTreeRoot */,
-        false,
         LayoutState.CalculateLayoutSource.TEST,
         null);
   }

@@ -64,7 +64,6 @@ public class TestComponentTree extends ComponentTree {
         heightSpec,
         diffingEnabled,
         previousLayoutState,
-        false /* persistInternalNodeTree */,
         source,
         extraAttribution);
   }

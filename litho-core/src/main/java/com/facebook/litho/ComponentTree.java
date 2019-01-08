@@ -147,7 +147,6 @@ public class ComponentTree {
   private @Nullable UpdateStateSyncRunnable mUpdateStateSyncRunnable;
 
   private final ComponentContext mContext;
-  private final boolean mPersistInternalNodeTree;
   private final boolean mNestedTreeResolutionExperimentEnabled;
 
   @Nullable private LayoutHandler mPreAllocateMountContentHandler;
@@ -276,7 +275,6 @@ public class ComponentTree {
     mHasMounted = builder.hasMounted;
     mMeasureListener = builder.mMeasureListener;
     mSplitLayoutTag = builder.splitLayoutTag;
-    mPersistInternalNodeTree = builder.persistInternalNodeTree;
     mNestedTreeResolutionExperimentEnabled = builder.nestedTreeResolutionExperimentEnabled;
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
     mAffinityBoosterFactory = builder.affinityBoosterFactory;
@@ -2122,7 +2120,6 @@ public class ComponentTree {
         heightSpec,
         diffingEnabled,
         previousLayoutState,
-        mPersistInternalNodeTree,
         source,
         extraAttribution);
   }
@@ -2429,7 +2426,6 @@ public class ComponentTree {
     private boolean shouldPreallocatePerMountSpec;
     private boolean canPreallocateOnDefaultHandler;
     private String splitLayoutTag;
-    private boolean persistInternalNodeTree = false;
     private boolean nestedTreeResolutionExperimentEnabled =
         ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
     private boolean useSharedLayoutStateFuture = false;
@@ -2473,7 +2469,6 @@ public class ComponentTree {
       hasMounted = false;
       preAllocateMountContentHandler = null;
       splitLayoutTag = null;
-      persistInternalNodeTree = false;
       nestedTreeResolutionExperimentEnabled =
           ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
 
@@ -2616,15 +2611,6 @@ public class ComponentTree {
      */
     public Builder splitLayoutTag(String splitTag) {
       this.splitLayoutTag = splitTag;
-      return this;
-    }
-
-    /**
-     * Whether to persist the InternalNode tree after calculating layout. This is only used for
-     * testing performance impact right now and should not be used.
-     */
-    public Builder persistInternalNodeTree(boolean persistInternalNodeTree) {
-      this.persistInternalNodeTree = persistInternalNodeTree;
       return this;
     }
 
