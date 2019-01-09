@@ -57,7 +57,7 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecModel {
   private final String mSpecName;
-  private final TypeName mSpecTypeName;
+  private final ClassName mSpecTypeName;
   private final String mComponentName;
   private final TypeName mComponentTypeName;
   private final ClassName mComponentClass;
@@ -107,7 +107,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
 
   private MockSpecModel(
       String specName,
-      TypeName specTypeName,
+      ClassName specTypeName,
       String componentName,
       TypeName componentTypeName,
       ClassName componentClass,
@@ -208,7 +208,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   }
 
   @Override
-  public TypeName getSpecTypeName() {
+  public ClassName getSpecTypeName() {
     return mSpecTypeName;
   }
 
@@ -466,7 +466,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
 
   public static class Builder {
     private String mSpecName;
-    private TypeName mSpecTypeName;
+    private ClassName mSpecTypeName;
     private String mComponentName;
     private TypeName mComponentTypeName;
     private ClassName mComponentClass;
@@ -523,7 +523,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       return this;
     }
 
-    public Builder specTypeName(TypeName specTypeName) {
+    public Builder specTypeName(ClassName specTypeName) {
       mSpecTypeName = specTypeName;
       return this;
     }

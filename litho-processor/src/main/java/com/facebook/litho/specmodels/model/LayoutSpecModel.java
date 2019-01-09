@@ -96,7 +96,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public TypeName getSpecTypeName() {
+  public ClassName getSpecTypeName() {
     return mSpecModel.getSpecTypeName();
   }
 

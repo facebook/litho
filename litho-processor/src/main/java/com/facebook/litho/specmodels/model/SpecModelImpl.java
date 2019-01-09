@@ -41,7 +41,7 @@ public final class SpecModelImpl implements SpecModel {
   private static final String SPEC_SUFFIX = "Spec";
 
   private final String mSpecName;
-  private final TypeName mSpecTypeName;
+  private final ClassName mSpecTypeName;
   private final String mComponentName;
   private final TypeName mComponentTypeName;
   private final ClassName mComponentClass;
@@ -192,7 +192,7 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   @Override
-  public TypeName getSpecTypeName() {
+  public ClassName getSpecTypeName() {
     return mSpecTypeName;
   }
 

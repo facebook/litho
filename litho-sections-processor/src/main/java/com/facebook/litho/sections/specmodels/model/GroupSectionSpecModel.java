@@ -117,7 +117,7 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
-  public TypeName getSpecTypeName() {
+  public ClassName getSpecTypeName() {
     return mSpecModel.getSpecTypeName();
   }
 

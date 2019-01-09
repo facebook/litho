@@ -109,7 +109,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public TypeName getSpecTypeName() {
+  public ClassName getSpecTypeName() {
     return mSpecModel.getSpecTypeName();
   }
 

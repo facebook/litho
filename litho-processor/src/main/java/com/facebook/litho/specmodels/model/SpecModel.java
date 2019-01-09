@@ -34,7 +34,7 @@ public interface SpecModel {
   String getSpecName();
 
   /** @return the {@link TypeName} representing the name of the Spec. */
-  TypeName getSpecTypeName();
+  ClassName getSpecTypeName();
 
   /** @return the name of the component that will be generated from this model. */
   String getComponentName();

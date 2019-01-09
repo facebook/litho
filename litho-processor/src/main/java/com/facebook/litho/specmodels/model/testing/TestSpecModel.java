@@ -105,7 +105,7 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   }
 
   @Override
-  public TypeName getSpecTypeName() {
+  public ClassName getSpecTypeName() {
     return mSpecModel.getSpecTypeName();
   }
 
