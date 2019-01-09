@@ -19,6 +19,7 @@ import com.facebook.litho.specmodels.generator.DelegateMethodGenerator.ParamType
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.SpecModel;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
@@ -52,7 +53,8 @@ public class HotswapGenerator {
             .addStatement("$T specClass", ClassNames.CLASS)
             .beginControlFlow("try")
             .addStatement(
-                "specClass = classLoader.loadClass(\"$L\")", specModel.getSpecTypeName().toString())
+                "specClass = classLoader.loadClass(\"$L\")",
+                getTypeNameString(specModel.getSpecTypeName()))
             .nextControlFlow("catch (ClassNotFoundException _e)")
             .addStatement("throw new RuntimeException(_e)")
             .endControlFlow()
@@ -110,5 +112,14 @@ public class HotswapGenerator {
     }
 
     return typeName;
+  }
+
+  private static String getTypeNameString(ClassName className) {
+    ClassName enclosingClass = className.enclosingClassName();
+    if (enclosingClass == null) {
+      return className.toString();
+    }
+
+    return enclosingClass.toString() + "$" + className.simpleName();
   }
 }
