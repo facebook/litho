@@ -89,3 +89,52 @@ class MyComponentSpec {
   }
 }
 ```
+
+## Optimizing OnCreateLayoutWithSizeSpec
+
+`@CreateLayoutWithSizeSpec` can be called more than once in cases where Yoga calls measure.  If the previous layout can be used for the new size spec this call can be avoided. Implementing the `OnShouldCreateLayoutWithNewSizeSpec` allows the spec to specify when the previous layout can be reused.
+
+`@OnShouldCreateLayoutWithNewSizeSpec` indicates that the annotated method will be called when the component checks` if it can use the previous layout with a new size spec. This is used in conjunction with `@OnCreateLayoutWithSizeSpec`. The annotated method must have the following signature:
+
+```
+@OnShouldCreateLayoutWithNewSizeSpec
+static boolean onShouldCreateLayoutWithNewSizeSpec(
+    ComponentContext context,
+    int newWidthSpec,
+    int newHeightSpec, ...)
+```
+
+The annotated method should return `true` if and only if the Layout Spec should create a new layout for the new size spec. If the method returns `false` then the Component will use the previous layout. In addition,  outputs can be set in `onCreateLayoutWithSizeSpec` which can be referenced in `onShouldCreateLayoutWithNewSizeSpec` method as follows:
+
+```
+@OnCreateLayoutWithSizeSpec
+static Component onCreateLayout(
+    ComponentContext c,
+    int widthSpec,
+    int heightSpec,
+    Output<Integer> textWidth, // outputs
+    Output<Boolean> isVertical // params
+) {
+
+...
+
+textWidth.set(aWidth);  // set the values 
+isVertical.set(aBoolean); // of the outputs
+... 
+
+return component;
+}
+
+@OnShouldCreateLayoutWithNewSizeSpec
+static boolean onShouldCreateLayoutWithNewSizeSpec(
+    ComponentContext context,
+    int newWidthSpec,
+    int newHeightSpec, 
+    @FromCreateLayout int textWidth,
+    @FromCreateLayout boolean isVertical) {
+    
+    // logic 
+    
+    return aBoolean;
+}
+```
