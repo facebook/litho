@@ -95,7 +95,7 @@ class MyComponentSpec {
 
 `@CreateLayoutWithSizeSpec` can be called more than once in cases where Yoga calls measure.  If the previous layout can be used for the new size spec this call can be avoided. Implementing the `OnShouldCreateLayoutWithNewSizeSpec` allows the spec to specify when the previous layout can be reused.
 
-[`@OnShouldCreateLayoutWithNewSizeSpec`](/javadoc/com/facebook/litho/annotations/OnShouldCreateLayoutWithNewSizeSpec) indicates that the annotated method will be called when the component checks` if it can use the previous layout with a new size spec. This is used in conjunction with `@OnCreateLayoutWithSizeSpec`. The annotated method must have the following signature:
+[`@OnShouldCreateLayoutWithNewSizeSpec`](/javadoc/com/facebook/litho/annotations/OnShouldCreateLayoutWithNewSizeSpec) indicates that the annotated method will be called when the component checks if it can use the previous layout with a new size spec. This is used in conjunction with `@OnCreateLayoutWithSizeSpec`. The annotated method must have the following signature:
 
 ```java
 @OnShouldCreateLayoutWithNewSizeSpec
