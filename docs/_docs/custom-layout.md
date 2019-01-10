@@ -99,34 +99,57 @@ static boolean onShouldCreateLayoutWithNewSizeSpec(
 The annotated method should return `true` if and only if the Layout Spec should create a new layout for the new size spec. If the method returns `false` then the Component will use the previous layout. In addition,  outputs can be set in `onCreateLayoutWithSizeSpec` which can be referenced in `onShouldCreateLayoutWithNewSizeSpec` method as follows:
 
 ```java
-@OnCreateLayoutWithSizeSpec
-static Component onCreateLayout(
-    ComponentContext c,
-    int widthSpec,
-    int heightSpec,
-    Output<Integer> textWidth, // outputs
-    Output<Boolean> isVertical // params
-) {
+@LayoutSpec
+class MyComponentSpec {
 
-  ...
+  @OnCreateLayoutWithSizeSpec
+  static Component onCreateLayoutWithSizeSpec(
+      ComponentContext c,
+      int widthSpec,
+      int heightSpec,
+      Output<Integer> textWidth,
+      Output<Boolean> didItFit) {
 
-  textWidth.set(aWidth);  // set the values 
-  isVertical.set(aBoolean); // of the outputs
-  ... 
+    final Component textComponent =
+        Text.create(c).textSizeSp(16).text("Some text to measure.").build();
 
-  return component;
-}
+    // UNSPECIFIED sizeSpecs will measure the text as being one line only,
+    // having unlimited width.
+    final Size textOutputSize = new Size();
+    textComponent.measure(
+        c,
+        SizeSpec.makeSizeSpec(0, UNSPECIFIED),
+        SizeSpec.makeSizeSpec(0, UNSPECIFIED),
+        textOutputSize);
 
-@OnShouldCreateLayoutWithNewSizeSpec
-static boolean onShouldCreateLayoutWithNewSizeSpec(
-    ComponentContext context,
-    int newWidthSpec,
-    int newHeightSpec, 
-    @FromCreateLayout int textWidth,
-    @FromCreateLayout boolean isVertical) {
-    
-  ...
+    // Small component to use in case textComponent doesn’t fit within
+    // the current layout.
+    final Component imageComponent = Image.create(c).drawableRes(R.drawable.ic_launcher).build();
 
-  return aBoolean;
+    // Assuming SizeSpec.getMode(widthSpec) == EXACTLY or AT_MOST.
+    final int layoutWidth = SizeSpec.getSize(widthSpec);
+    final boolean textFits = (textOutputSize.width <= layoutWidth);
+
+    // set the outputs
+    textWidth.set(textOutputSize.width);
+    didItFit.set(textFits);
+
+    return textFits ? textComponent : imageComponent;
+  }
+
+  @OnShouldCreateLayoutWithNewSizeSpec
+  static boolean onShouldCreateLayoutWithNewSizeSpec(
+      ComponentContext context,
+      int newWidthSpec,
+      int newHeightSpec,
+      @FromCreateLayout int textWidth,
+      @FromCreateLayout boolean didItFit) {
+
+    final int newLayoutWidth = SizeSpec.getSize(newWidthSpec);
+    final boolean doesItStillFit = (textWidth <= newLayoutWidth);
+
+    // false if it still fits or if still doesn't fit
+    return doesItStillFit ^ didItFit;
+  }
 }
 ```
