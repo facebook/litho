@@ -117,13 +117,13 @@ static Component onCreateLayout(
     Output<Boolean> isVertical // params
 ) {
 
-...
+  ...
 
-textWidth.set(aWidth);  // set the values 
-isVertical.set(aBoolean); // of the outputs
-... 
+  textWidth.set(aWidth);  // set the values 
+  isVertical.set(aBoolean); // of the outputs
+  ... 
 
-return component;
+  return component;
 }
 
 @OnShouldCreateLayoutWithNewSizeSpec
@@ -134,8 +134,8 @@ static boolean onShouldCreateLayoutWithNewSizeSpec(
     @FromCreateLayout int textWidth,
     @FromCreateLayout boolean isVertical) {
     
-    // logic 
-    
-    return aBoolean;
+  ...
+
+  return aBoolean;
 }
 ```
