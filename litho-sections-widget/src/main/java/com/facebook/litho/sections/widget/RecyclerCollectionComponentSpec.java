@@ -21,6 +21,7 @@ import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 
 import android.support.annotation.IdRes;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.OrientationHelper;
@@ -65,7 +66,6 @@ import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.RecyclerEventsController;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * A {@link Component} that renders a {@link Recycler} backed by a {@link Section} tree.
@@ -141,6 +141,8 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) boolean horizontalFadingEdgeEnabled,
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
+      @Prop(optional = true, resType = ResType.COLOR) @Nullable
+          Integer refreshProgressBarBackgroundColor,
       @Prop(optional = true, resType = ResType.COLOR) int refreshProgressBarColor,
       @Prop(optional = true) LithoRecylerView.TouchInterceptor touchInterceptor,
       @Prop(optional = true) boolean setRootAsync,
@@ -199,6 +201,7 @@ public class RecyclerCollectionComponentSpec {
             .fadingEdgeLengthDip(fadingEdgeLength)
             .onScrollListener(new RecyclerCollectionOnScrollListener(internalEventsController))
             .onScrollListeners(onScrollListeners)
+            .refreshProgressBarBackgroundColor(refreshProgressBarBackgroundColor)
             .refreshProgressBarColor(refreshProgressBarColor)
             .snapHelper(snapHelper)
             .touchInterceptor(touchInterceptor)

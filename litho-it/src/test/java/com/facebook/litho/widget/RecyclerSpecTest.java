@@ -41,9 +41,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-/**
- * Tests for {@link RecyclerSpec}
- */
+/** Tests for {@link RecyclerSpec} */
 @RunWith(ComponentsTestRunner.class)
 public class RecyclerSpecTest {
 
@@ -82,8 +80,8 @@ public class RecyclerSpecTest {
     RecyclerSpec.onBind(
         mComponentContext,
         mSectionsRecyclerView,
-        mAnimator,
         binder,
+        mAnimator,
         null,
         scrollListeners,
         snapHelper,
@@ -115,12 +113,7 @@ public class RecyclerSpecTest {
     List<RecyclerView.OnScrollListener> scrollListeners = createListOfScrollListeners(size);
 
     RecyclerSpec.onUnbind(
-        mComponentContext,
-        mSectionsRecyclerView,
-        binder,
-        null,
-        scrollListeners,
-        mAnimator);
+        mComponentContext, mSectionsRecyclerView, binder, null, scrollListeners, mAnimator);
 
     verify(mRecyclerView).setItemAnimator(mAnimator);
     verify(binder).unbind(mRecyclerView);
