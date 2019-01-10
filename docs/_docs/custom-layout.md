@@ -28,7 +28,7 @@ A component can be measured in isolation for a given `SizeSpec`. A `Size` object
 In the following example, a `Text` component is measured with unspecified `SizeSpec` implying a single line of text indefinitely long.
 
 ```java
-final Component<Text> textComponent = Text.create(c)
+final Component textComponent = Text.create(c)
     .textSizeSp(16)
     .text(“Some text to measure.”)
     .build();
