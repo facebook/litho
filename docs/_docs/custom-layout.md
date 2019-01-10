@@ -55,38 +55,29 @@ In the following example, a `Text` component is measured to check if the given t
 class MyComponentSpec {
 
   @OnCreateLayoutWithSizeSpec
-  static ComponentLayout onCreateLayoutWithSizeSpec(
-      ComponentContext c,
-      int widthSpec,
-      int heightSpec,
-      @Prop SomeObject someProp) {
+  static Component onCreateLayoutWithSizeSpec(ComponentContext c, int widthSpec, int heightSpec) {
 
-    final Component<Text> textComponent = Text.create(c)
-        .textSizeSp(16)
-        .text(“Some text to measure.”)
-        .build();
+    final Component textComponent =
+        Text.create(c).textSizeSp(16).text("Some text to measure.").build();
 
     // UNSPECIFIED sizeSpecs will measure the text as being one line only,
     // having unlimited width.
     final Size textOutputSize = new Size();
     textComponent.measure(
-        c, 
+        c,
         SizeSpec.makeSizeSpec(0, UNSPECIFIED),
         SizeSpec.makeSizeSpec(0, UNSPECIFIED),
         textOutputSize);
 
     // Small component to use in case textComponent doesn’t fit within
     // the current layout.
-    final Component<Image> imageComponent = Image.create(c)
-        .srcRes(R.drawable.some_icon)
-        .build();
+    final Component imageComponent = Image.create(c).drawableRes(R.drawable.ic_launcher).build();
 
     // Assuming SizeSpec.getMode(widthSpec) == EXACTLY or AT_MOST.
     final int layoutWidth = SizeSpec.getSize(widthSpec);
     final boolean textFits = (textOutputSize.width <= layoutWidth);
-    
-    return Layout.create(c, textFits ? textComponent : imageComponent)
-        .build();
+
+    return textFits ? textComponent : imageComponent;
   }
 }
 ```
