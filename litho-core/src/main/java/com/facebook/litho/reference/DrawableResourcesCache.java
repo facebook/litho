@@ -1,15 +1,23 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.reference;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.HONEYCOMB;
 
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -18,9 +26,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.util.LruCache;
 import android.support.v4.util.Pools;
 import android.util.StateSet;
-
-import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.HONEYCOMB;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A cache that holds Drawables retreived from Android {@link android.content.res.Resources} for
@@ -47,12 +53,14 @@ class DrawableResourcesCache {
   /**
    * @deprecated use {@link #get(int, Resources, Resources.Theme)}
    */
+  @Nullable
   @Deprecated
-  public @Nullable Drawable get(int resId, Resources resources) {
+  public Drawable get(int resId, Resources resources) {
     return get(resId, resources, null);
   }
 
-  public @Nullable Drawable get(int resId, Resources resources, @Nullable Resources.Theme theme) {
+  @Nullable
+  public Drawable get(int resId, Resources resources, @Nullable Resources.Theme theme) {
     SimplePoolWithCount<Drawable> drawablesPool = mDrawableCache.get(resId);
 
     if (drawablesPool == null) {
@@ -97,7 +105,7 @@ class DrawableResourcesCache {
 
   private static class SimplePoolWithCount<T> extends Pools.SynchronizedPool<T> {
 
-    private AtomicInteger mPoolSize;
+    private final AtomicInteger mPoolSize;
 
     public SimplePoolWithCount(int maxPoolSize) {
       super(maxPoolSize);

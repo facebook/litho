@@ -1,27 +1,29 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
-import com.facebook.yoga.YogaAlign;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.yoga.YogaFlexDirection;
-
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.TestLayoutComponent;
-
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-
-import static junit.framework.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateAddChildWithInputTest {
@@ -34,13 +36,16 @@ public class LayoutStateAddChildWithInputTest {
 
   @Test
   public void testNewEmptyLayout() {
-    InternalNode node = (InternalNode) Column.create(mContext).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-        .child(TestLayoutComponent.create(mContext))
-        .child(TestLayoutComponent.create(mContext))
-        .build();
+    Column component =
+        Column.create(mContext)
+            .child(TestLayoutComponent.create(mContext))
+            .child(TestLayoutComponent.create(mContext))
+            .build();
 
-    assertEquals(2, node.getChildCount());
-    assertEquals(0, node.getChildAt(0).getChildCount());
-    assertEquals(0, node.getChildAt(1).getChildCount());
+    InternalNode node = (InternalNode) component.resolve(mContext);
+
+    assertThat(node.getChildCount()).isEqualTo(2);
+    assertThat(node.getChildAt(0).getChildCount()).isEqualTo(0);
+    assertThat(node.getChildAt(1).getChildCount()).isEqualTo(0);
   }
 }

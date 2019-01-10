@@ -1,46 +1,62 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-
 package com.facebook.litho;
 
+import com.facebook.litho.animation.AnimationBinding;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import android.animation.Animator;
-import android.view.View;
-
 /**
- * Container for a list of {@link Transition}.
+ * A set of {@link Transition}s.
  */
-public class TransitionSet extends Transition {
+public abstract class TransitionSet extends Transition {
 
-  final private List<Transition> mTransitions;
+  private final ArrayList<Transition> mChildren = new ArrayList<>();
 
-  TransitionSet(Transition... transitions) {
-    super(null, TransitionType.UNDEFINED);
-    mTransitions = Arrays.asList(transitions);
-  }
-
-  TransitionSet(Transition.Builder... transitionBuilders) {
-    super(null, TransitionType.UNDEFINED);
-    mTransitions = new ArrayList<>();
-    for (int i = 0, size = transitionBuilders.length; i < size; i++) {
-      mTransitions.add(transitionBuilders[i].build());
+  <T extends Transition> TransitionSet(T... children) {
+    for (int i = 0; i < children.length; i++) {
+      addChild(children[i]);
     }
   }
 
-  int size() {
-    return mTransitions.size();
+  <T extends Transition> TransitionSet(List<T> children) {
+    for (int i = 0; i < children.size(); i++) {
+      addChild(children.get(i));
+    }
   }
 
-  Transition get(int location) {
-    return mTransitions.get(location);
+  private void addChild(Transition child) {
+    if (child instanceof Transition.BaseTransitionUnitsBuilder) {
+      final ArrayList<? extends Transition> transitions =
+          ((Transition.BaseTransitionUnitsBuilder) child).getTransitionUnits();
+      if (transitions.size() > 1) {
+        mChildren.add(new ParallelTransitionSet(transitions));
+      } else {
+        mChildren.add(transitions.get(0));
+      }
+    } else if (child != null) {
+      mChildren.add(child);
+    } else {
+      throw new IllegalStateException("Null element is not allowed in transition set");
+    }
   }
+
+  ArrayList<Transition> getChildren() {
+    return mChildren;
+  }
+
+  abstract AnimationBinding createAnimation(List<AnimationBinding> children);
 }

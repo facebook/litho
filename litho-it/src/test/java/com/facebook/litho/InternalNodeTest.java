@@ -1,326 +1,349 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
-import android.graphics.Color;
-import android.support.v4.view.ViewCompat;
+import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import static com.facebook.litho.LayoutState.createAndMeasureTreeForComponent;
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static com.facebook.litho.it.R.drawable.background_with_padding;
+import static com.facebook.litho.it.R.drawable.background_without_padding;
+import static com.facebook.yoga.YogaAlign.STRETCH;
+import static com.facebook.yoga.YogaDirection.INHERIT;
+import static com.facebook.yoga.YogaDirection.RTL;
+import static com.facebook.yoga.YogaEdge.ALL;
+import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.powermock.reflect.Whitebox.getInternalState;
+import static org.robolectric.RuntimeEnvironment.application;
 
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
-import com.facebook.yoga.YogaDirection;
-import com.facebook.yoga.YogaEdge;
-import com.facebook.yoga.YogaPositionType;
-
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 @RunWith(ComponentsTestRunner.class)
 public class InternalNodeTest {
   private static final int LIFECYCLE_TEST_ID = 1;
 
-  private final ComponentLifecycle mLifecycle = new ComponentLifecycle() {
+  private static class TestComponent extends Component {
+
+    protected TestComponent() {
+      super("TestComponent");
+    }
+
     @Override
-    int getId() {
+    public boolean isEquivalentTo(Component other) {
+      return this == other;
+    }
+
+    @Override
+    int getTypeId() {
       return LIFECYCLE_TEST_ID;
-    }
-  };
-
-  private static class TestComponent<L extends ComponentLifecycle> extends Component<L> {
-    public TestComponent(L component) {
-      super(component);
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "TestComponent";
     }
   }
 
-  private InternalNode mNode;
+  private static InternalNode acquireInternalNode() {
+    final ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
+    return createAndMeasureTreeForComponent(
+        context,
+        Column.create(context).build(),
+        makeSizeSpec(0, UNSPECIFIED),
+        makeSizeSpec(0, UNSPECIFIED));
+  }
 
-  @Before
-  public void setup() {
-    mNode = ComponentsPools.acquireInternalNode(
-        new ComponentContext(RuntimeEnvironment.application),
-        RuntimeEnvironment.application.getResources());
+  private static InternalNode acquireInternalNodeWithLogger(ComponentsLogger logger) {
+    final ComponentContext context =
+        new ComponentContext(RuntimeEnvironment.application, "TEST", logger);
+    return createAndMeasureTreeForComponent(
+        context,
+        Column.create(context).build(),
+        makeSizeSpec(0, UNSPECIFIED),
+        makeSizeSpec(0, UNSPECIFIED));
   }
 
   @Test
   public void testLayoutDirectionFlag() {
-    mNode.layoutDirection(YogaDirection.INHERIT);
-    assertTrue(isFlagSet(mNode, "PFLAG_LAYOUT_DIRECTION_IS_SET"));
-    clearFlag(mNode, "PFLAG_LAYOUT_DIRECTION_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.layoutDirection(INHERIT);
+    assertThat(isFlagSet(node, "PFLAG_LAYOUT_DIRECTION_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_LAYOUT_DIRECTION_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testAlignSelfFlag() {
-    mNode.alignSelf(YogaAlign.STRETCH);
-    assertTrue(isFlagSet(mNode, "PFLAG_ALIGN_SELF_IS_SET"));
-    clearFlag(mNode, "PFLAG_ALIGN_SELF_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.alignSelf(STRETCH);
+    assertThat(isFlagSet(node, "PFLAG_ALIGN_SELF_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_ALIGN_SELF_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testPositionTypeFlag() {
-    mNode.positionType(YogaPositionType.ABSOLUTE);
-    assertTrue(isFlagSet(mNode, "PFLAG_POSITION_TYPE_IS_SET"));
-    clearFlag(mNode, "PFLAG_POSITION_TYPE_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.positionType(ABSOLUTE);
+    assertThat(isFlagSet(node, "PFLAG_POSITION_TYPE_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_POSITION_TYPE_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testFlexFlag() {
-    mNode.flex(1.5f);
-    assertTrue(isFlagSet(mNode, "PFLAG_FLEX_IS_SET"));
-    clearFlag(mNode, "PFLAG_FLEX_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.flex(1.5f);
+    assertThat(isFlagSet(node, "PFLAG_FLEX_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_FLEX_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testFlexGrowFlag() {
-    mNode.flexGrow(1.5f);
-    assertTrue(isFlagSet(mNode, "PFLAG_FLEX_GROW_IS_SET"));
-    clearFlag(mNode, "PFLAG_FLEX_GROW_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.flexGrow(1.5f);
+    assertThat(isFlagSet(node, "PFLAG_FLEX_GROW_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_FLEX_GROW_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testFlexShrinkFlag() {
-    mNode.flexShrink(1.5f);
-    assertTrue(isFlagSet(mNode, "PFLAG_FLEX_SHRINK_IS_SET"));
-    clearFlag(mNode, "PFLAG_FLEX_SHRINK_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.flexShrink(1.5f);
+    assertThat(isFlagSet(node, "PFLAG_FLEX_SHRINK_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_FLEX_SHRINK_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testFlexBasisFlag() {
-    mNode.flexBasisPx(1);
-    assertTrue(isFlagSet(mNode, "PFLAG_FLEX_BASIS_IS_SET"));
-    clearFlag(mNode, "PFLAG_FLEX_BASIS_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.flexBasisPx(1);
+    assertThat(isFlagSet(node, "PFLAG_FLEX_BASIS_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_FLEX_BASIS_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testImportantForAccessibilityFlag() {
-    mNode.importantForAccessibility(ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
-    assertTrue(isFlagSet(mNode, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET"));
-    clearFlag(mNode, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.importantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+    assertThat(isFlagSet(node, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testDuplicateParentStateFlag() {
-    mNode.duplicateParentState(false);
-    assertTrue(isFlagSet(mNode, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET"));
-    clearFlag(mNode, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.duplicateParentState(false);
+    assertThat(isFlagSet(node, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testMarginFlag() {
-    mNode.marginPx(YogaEdge.ALL, 3);
-    assertTrue(isFlagSet(mNode, "PFLAG_MARGIN_IS_SET"));
-    clearFlag(mNode, "PFLAG_MARGIN_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.marginPx(ALL, 3);
+    assertThat(isFlagSet(node, "PFLAG_MARGIN_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_MARGIN_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testPaddingFlag() {
-    mNode.paddingPx(YogaEdge.ALL, 3);
-    assertTrue(isFlagSet(mNode, "PFLAG_PADDING_IS_SET"));
-    clearFlag(mNode, "PFLAG_PADDING_IS_SET");
-    assertEmptyFlags(mNode);
-  }
-
-  @Test
-  public void testBorderWidthFlag() {
-    mNode.borderWidthPx(YogaEdge.ALL, 3);
-    assertTrue(isFlagSet(mNode, "PFLAG_BORDER_WIDTH_IS_SET"));
-    clearFlag(mNode, "PFLAG_BORDER_WIDTH_IS_SET");
-    assertEmptyFlags(mNode);
-  }
-
-  @Test
-  public void testBorderColorFlag() {
-    mNode.borderColor(Color.GREEN);
-    assertTrue(isFlagSet(mNode, "PFLAG_BORDER_COLOR_IS_SET"));
-    clearFlag(mNode, "PFLAG_BORDER_COLOR_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.paddingPx(ALL, 3);
+    assertThat(isFlagSet(node, "PFLAG_PADDING_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_PADDING_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testPositionFlag() {
-    mNode.positionPx(YogaEdge.ALL, 3);
-    assertTrue(isFlagSet(mNode, "PFLAG_POSITION_IS_SET"));
-    clearFlag(mNode, "PFLAG_POSITION_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.positionPx(ALL, 3);
+    assertThat(isFlagSet(node, "PFLAG_POSITION_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_POSITION_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testWidthFlag() {
-    mNode.widthPx(4);
-    assertTrue(isFlagSet(mNode, "PFLAG_WIDTH_IS_SET"));
-    clearFlag(mNode, "PFLAG_WIDTH_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.widthPx(4);
+    assertThat(isFlagSet(node, "PFLAG_WIDTH_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_WIDTH_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testMinWidthFlag() {
-    mNode.minWidthPx(4);
-    assertTrue(isFlagSet(mNode, "PFLAG_MIN_WIDTH_IS_SET"));
-    clearFlag(mNode, "PFLAG_MIN_WIDTH_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.minWidthPx(4);
+    assertThat(isFlagSet(node, "PFLAG_MIN_WIDTH_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_MIN_WIDTH_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testMaxWidthFlag() {
-    mNode.maxWidthPx(4);
-    assertTrue(isFlagSet(mNode, "PFLAG_MAX_WIDTH_IS_SET"));
-    clearFlag(mNode, "PFLAG_MAX_WIDTH_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.maxWidthPx(4);
+    assertThat(isFlagSet(node, "PFLAG_MAX_WIDTH_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_MAX_WIDTH_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testHeightFlag() {
-    mNode.heightPx(4);
-    assertTrue(isFlagSet(mNode, "PFLAG_HEIGHT_IS_SET"));
-    clearFlag(mNode, "PFLAG_HEIGHT_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.heightPx(4);
+    assertThat(isFlagSet(node, "PFLAG_HEIGHT_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_HEIGHT_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testMinHeightFlag() {
-    mNode.minHeightPx(4);
-    assertTrue(isFlagSet(mNode, "PFLAG_MIN_HEIGHT_IS_SET"));
-    clearFlag(mNode, "PFLAG_MIN_HEIGHT_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.minHeightPx(4);
+    assertThat(isFlagSet(node, "PFLAG_MIN_HEIGHT_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_MIN_HEIGHT_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testMaxHeightFlag() {
-    mNode.maxHeightPx(4);
-    assertTrue(isFlagSet(mNode, "PFLAG_MAX_HEIGHT_IS_SET"));
-    clearFlag(mNode, "PFLAG_MAX_HEIGHT_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.maxHeightPx(4);
+    assertThat(isFlagSet(node, "PFLAG_MAX_HEIGHT_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_MAX_HEIGHT_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testBackgroundFlag() {
-    mNode.backgroundColor(0xFFFF0000);
-    assertTrue(isFlagSet(mNode, "PFLAG_BACKGROUND_IS_SET"));
-    clearFlag(mNode, "PFLAG_BACKGROUND_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.backgroundColor(0xFFFF0000);
+    assertThat(isFlagSet(node, "PFLAG_BACKGROUND_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_BACKGROUND_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testForegroundFlag() {
-    mNode.foregroundColor(0xFFFF0000);
-    assertTrue(isFlagSet(mNode, "PFLAG_FOREGROUND_IS_SET"));
-    clearFlag(mNode, "PFLAG_FOREGROUND_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.foregroundColor(0xFFFF0000);
+    assertThat(isFlagSet(node, "PFLAG_FOREGROUND_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_FOREGROUND_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void testAspectRatioFlag() {
-    mNode.aspectRatio(1);
-    assertTrue(isFlagSet(mNode, "PFLAG_ASPECT_RATIO_IS_SET"));
-    clearFlag(mNode, "PFLAG_ASPECT_RATIO_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.aspectRatio(1);
+    assertThat(isFlagSet(node, "PFLAG_ASPECT_RATIO_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_ASPECT_RATIO_IS_SET");
+    assertEmptyFlags(node);
   }
 
+  @Test
   public void testTransitionKeyFlag() {
-    mNode.transitionKey("key");
-    assertTrue(isFlagSet(mNode, "PFLAG_TRANSITION_KEY_IS_SET"));
-    assertTrue(mNode.isForceViewWrapping());
-    clearFlag(mNode, "PFLAG_TRANSITION_KEY_IS_SET");
-    assertEmptyFlags(mNode);
+    final InternalNode node = acquireInternalNode();
+    node.transitionKey("key");
+    assertThat(isFlagSet(node, "PFLAG_TRANSITION_KEY_IS_SET")).isTrue();
+    clearFlag(node, "PFLAG_TRANSITION_KEY_IS_SET");
+    assertEmptyFlags(node);
   }
 
   @Test
   public void setNestedTreeDoesntTransferLayoutDirectionIfExplicitlySetOnNestedNode() {
-    InternalNode holderNode =
-        ComponentsPools.acquireInternalNode(
-            new ComponentContext(RuntimeEnvironment.application),
-            RuntimeEnvironment.application.getResources());
-    InternalNode nestedTree =
-        ComponentsPools.acquireInternalNode(
-            new ComponentContext(RuntimeEnvironment.application),
-            RuntimeEnvironment.application.getResources());
+    InternalNode holderNode = acquireInternalNode();
+    InternalNode nestedTree = acquireInternalNode();
 
-    nestedTree.layoutDirection(YogaDirection.RTL);
+    nestedTree.layoutDirection(RTL);
     holderNode.calculateLayout();
     holderNode.setNestedTree(nestedTree);
 
-    assertFalse(isFlagSet(holderNode, "PFLAG_LAYOUT_DIRECTION_IS_SET"));
-    assertEquals(
-        YogaDirection.INHERIT,
-        holderNode.getStyleDirection());
-    assertEquals(
-        YogaDirection.RTL,
-        nestedTree.getStyleDirection());
+    assertThat(isFlagSet(holderNode, "PFLAG_LAYOUT_DIRECTION_IS_SET")).isFalse();
+    assertThat(holderNode.getStyleDirection()).isEqualTo(INHERIT);
+    assertThat(nestedTree.getStyleDirection()).isEqualTo(RTL);
   }
 
   @Test
   public void testCopyIntoTrasferLayoutDirectionIfNotSetOnTheHolderOrOnTheNestedTree() {
-    InternalNode holderNode =
-        ComponentsPools.acquireInternalNode(
-            new ComponentContext(RuntimeEnvironment.application),
-            RuntimeEnvironment.application.getResources());
-    InternalNode nestedTree =
-        ComponentsPools.acquireInternalNode(
-            new ComponentContext(RuntimeEnvironment.application),
-            RuntimeEnvironment.application.getResources());
+    InternalNode holderNode = acquireInternalNode();
+    InternalNode nestedTree = acquireInternalNode();
 
     holderNode.calculateLayout();
     holderNode.copyInto(nestedTree);
 
-    assertFalse(isFlagSet(holderNode, "PFLAG_LAYOUT_DIRECTION_IS_SET"));
-    assertTrue(isFlagSet(nestedTree, "PFLAG_LAYOUT_DIRECTION_IS_SET"));
+    assertThat(isFlagSet(holderNode, "PFLAG_LAYOUT_DIRECTION_IS_SET")).isFalse();
+    assertThat(isFlagSet(nestedTree, "PFLAG_LAYOUT_DIRECTION_IS_SET")).isTrue();
   }
 
   @Test
   public void testCopyIntoNestedTreeTransferLayoutDirectionIfExplicitlySetOnHolderNode() {
-    InternalNode holderNode =
-        ComponentsPools.acquireInternalNode(
-            new ComponentContext(RuntimeEnvironment.application),
-            RuntimeEnvironment.application.getResources());
-    InternalNode nestedTree =
-        ComponentsPools.acquireInternalNode(
-            new ComponentContext(RuntimeEnvironment.application),
-            RuntimeEnvironment.application.getResources());
+    InternalNode holderNode = acquireInternalNode();
+    InternalNode nestedTree = acquireInternalNode();
 
-    holderNode.layoutDirection(YogaDirection.RTL);
+    holderNode.layoutDirection(RTL);
     holderNode.calculateLayout();
     holderNode.copyInto(nestedTree);
 
-    assertEquals(
-        YogaDirection.RTL,
-        nestedTree.getStyleDirection());
+    assertThat(nestedTree.getStyleDirection()).isEqualTo(RTL);
+  }
+
+  @Test
+  public void testPaddingIsSetFromDrawable() {
+    InternalNode node = acquireInternalNode();
+
+    node.backgroundRes(background_with_padding);
+
+    assertThat(isFlagSet(node, "PFLAG_PADDING_IS_SET")).isTrue();
+  }
+
+  @Test
+  public void testPaddingIsNotSetFromDrawable() {
+    InternalNode node = acquireInternalNode();
+
+    node.backgroundRes(background_without_padding);
+
+    assertThat(isFlagSet(node, "PFLAG_PADDING_IS_SET")).isFalse();
   }
 
   @Test
   public void testComponentCreateAndRetrieveCachedLayout() {
-    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
-    final int unspecifiedSizeSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
-    final int exactSizeSpec = SizeSpec.makeSizeSpec(50, SizeSpec.EXACTLY);
-    final Component<Text> textComponent = Text.create(c)
+    final ComponentContext c = new ComponentContext(application);
+    final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
+    final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
+    final Component textComponent = Text.create(c)
         .textSizePx(16)
         .text("test")
         .build();
@@ -331,38 +354,36 @@ public class InternalNodeTest {
         unspecifiedSizeSpec,
         textSize);
 
-    assertTrue(textComponent.hasCachedLayout());
+    assertThat(textComponent.getCachedLayout()).isNotNull();
     InternalNode cachedLayout = textComponent.getCachedLayout();
-    assertNotNull(cachedLayout);
-    assertEquals(exactSizeSpec, cachedLayout.getLastWidthSpec());
-    assertEquals(unspecifiedSizeSpec, cachedLayout.getLastHeightSpec());
+    assertThat(cachedLayout).isNotNull();
+    assertThat(cachedLayout.getLastWidthSpec()).isEqualTo(exactSizeSpec);
+    assertThat(cachedLayout.getLastHeightSpec()).isEqualTo(unspecifiedSizeSpec);
 
     textComponent.clearCachedLayout();
-    assertFalse(textComponent.hasCachedLayout());
+    assertThat(textComponent.getCachedLayout()).isNull();
   }
 
   @Test
   public void testContextSpecificComponentAssertionPasses() {
-    InternalNode.assertContextSpecificStyleNotSet(mNode);
+    InternalNode.assertContextSpecificStyleNotSet(acquireInternalNode());
   }
 
   @Test
   public void testContextSpecificComponentAssertionFailFormatting() {
-    final Component testComponent = new TestComponent<>(mLifecycle);
-    mNode.alignSelf(YogaAlign.AUTO);
-    mNode.flex(1f);
-    mNode.appendComponent(testComponent);
+    final ComponentsLogger componentsLogger = mock(ComponentsLogger.class);
+    final PerfEvent perfEvent = mock(PerfEvent.class);
+    when(componentsLogger.newPerformanceEvent(anyInt())).thenReturn(perfEvent);
 
-    String error = "";
-    try {
-      InternalNode.assertContextSpecificStyleNotSet(mNode);
-    } catch (IllegalStateException e) {
-      error = e.getMessage();
-    }
+    InternalNode node = acquireInternalNodeWithLogger(componentsLogger);
+    node.alignSelf(YogaAlign.AUTO);
+    node.flex(1f);
 
-    assertTrue(
-        "The error message contains the attributes set",
-        error.contains("alignSelf, flex"));
+    InternalNode.assertContextSpecificStyleNotSet(node);
+    verify(componentsLogger)
+        .emitMessage(
+            ComponentsLogger.LogLevel.WARNING,
+            "You should not set alignSelf, flex to a root layout in Column");
   }
 
   private static boolean isFlagSet(InternalNode internalNode, String flagName) {
@@ -380,6 +401,6 @@ public class InternalNodeTest {
   }
 
   private static void assertEmptyFlags(InternalNode internalNode) {
-    assertTrue(((long) Whitebox.getInternalState(internalNode, "mPrivateFlags")) == 0);
+    assertThat(((long) getInternalState(internalNode, "mPrivateFlags")) == 0).isTrue();
   }
 }

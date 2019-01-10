@@ -1,24 +1,38 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
+import static com.facebook.litho.LayoutState.createAndMeasureTreeForComponent;
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static com.facebook.yoga.YogaDirection.LTR;
+import static com.facebook.yoga.YogaDirection.RTL;
+import static com.facebook.yoga.YogaEdge.END;
+import static com.facebook.yoga.YogaEdge.LEFT;
+import static com.facebook.yoga.YogaEdge.RIGHT;
+import static com.facebook.yoga.YogaEdge.START;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaDirection;
-import com.facebook.yoga.YogaEdge;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-
-import static junit.framework.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)
 public class InternalNodeResolvedPaddingTest {
@@ -26,10 +40,13 @@ public class InternalNodeResolvedPaddingTest {
 
   @Before
   public void setup() {
+    final ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
     mInternalNode =
-        ComponentsPools.acquireInternalNode(
-            new ComponentContext(RuntimeEnvironment.application),
-            RuntimeEnvironment.application.getResources());
+        createAndMeasureTreeForComponent(
+            context,
+            Column.create(context).build(),
+            makeSizeSpec(0, UNSPECIFIED),
+            makeSizeSpec(0, UNSPECIFIED));
   }
 
   private static void setDirection(InternalNode node, YogaDirection direction) {
@@ -40,79 +57,79 @@ public class InternalNodeResolvedPaddingTest {
 
   @Test
   public void testPaddingLeftWithUndefinedStartEnd() {
-    mInternalNode.paddingPx(YogaEdge.LEFT, 10);
-    setDirection(mInternalNode, YogaDirection.LTR);
-    assertEquals(10, mInternalNode.getPaddingLeft());
+    mInternalNode.paddingPx(LEFT, 10);
+    setDirection(mInternalNode, LTR);
+    assertThat(mInternalNode.getPaddingLeft()).isEqualTo(10);
   }
 
   @Test
   public void testPaddingLeftWithDefinedStart() {
-    mInternalNode.paddingPx(YogaEdge.START, 5);
-    mInternalNode.paddingPx(YogaEdge.LEFT, 10);
-    setDirection(mInternalNode, YogaDirection.LTR);
-    assertEquals(5, mInternalNode.getPaddingLeft());
+    mInternalNode.paddingPx(START, 5);
+    mInternalNode.paddingPx(LEFT, 10);
+    setDirection(mInternalNode, LTR);
+    assertThat(mInternalNode.getPaddingLeft()).isEqualTo(5);
   }
 
   @Test
   public void testPaddingLeftWithDefinedEnd() {
-    mInternalNode.paddingPx(YogaEdge.END, 5);
-    mInternalNode.paddingPx(YogaEdge.LEFT, 10);
-    setDirection(mInternalNode, YogaDirection.LTR);
-    assertEquals(10, mInternalNode.getPaddingLeft());
+    mInternalNode.paddingPx(END, 5);
+    mInternalNode.paddingPx(LEFT, 10);
+    setDirection(mInternalNode, LTR);
+    assertThat(mInternalNode.getPaddingLeft()).isEqualTo(10);
   }
 
   @Test
   public void testPaddingLeftWithDefinedStartInRtl() {
-    mInternalNode.paddingPx(YogaEdge.START, 5);
-    mInternalNode.paddingPx(YogaEdge.LEFT, 10);
-    setDirection(mInternalNode, YogaDirection.RTL);
-    assertEquals(10, mInternalNode.getPaddingLeft());
+    mInternalNode.paddingPx(START, 5);
+    mInternalNode.paddingPx(LEFT, 10);
+    setDirection(mInternalNode, RTL);
+    assertThat(mInternalNode.getPaddingLeft()).isEqualTo(10);
   }
 
   @Test
   public void testPaddingLeftWithDefinedEndInRtl() {
-    mInternalNode.paddingPx(YogaEdge.END, 5);
-    mInternalNode.paddingPx(YogaEdge.LEFT, 10);
-    setDirection(mInternalNode, YogaDirection.RTL);
-    assertEquals(5, mInternalNode.getPaddingLeft());
+    mInternalNode.paddingPx(END, 5);
+    mInternalNode.paddingPx(LEFT, 10);
+    setDirection(mInternalNode, RTL);
+    assertThat(mInternalNode.getPaddingLeft()).isEqualTo(5);
   }
 
   @Test
   public void testPaddingRightWithUndefinedStartEnd() {
-    mInternalNode.paddingPx(YogaEdge.RIGHT, 10);
-    setDirection(mInternalNode, YogaDirection.LTR);
-    assertEquals(10, mInternalNode.getPaddingRight());
+    mInternalNode.paddingPx(RIGHT, 10);
+    setDirection(mInternalNode, LTR);
+    assertThat(mInternalNode.getPaddingRight()).isEqualTo(10);
   }
 
   @Test
   public void testPaddingRightWithDefinedStart() {
-    mInternalNode.paddingPx(YogaEdge.START, 5);
-    mInternalNode.paddingPx(YogaEdge.RIGHT, 10);
-    setDirection(mInternalNode, YogaDirection.LTR);
-    assertEquals(10, mInternalNode.getPaddingRight());
+    mInternalNode.paddingPx(START, 5);
+    mInternalNode.paddingPx(RIGHT, 10);
+    setDirection(mInternalNode, LTR);
+    assertThat(mInternalNode.getPaddingRight()).isEqualTo(10);
   }
 
   @Test
   public void testPaddingRightWithDefinedEnd() {
-    mInternalNode.paddingPx(YogaEdge.END, 5);
-    mInternalNode.paddingPx(YogaEdge.RIGHT, 10);
-    setDirection(mInternalNode, YogaDirection.LTR);
-    assertEquals(5, mInternalNode.getPaddingRight());
+    mInternalNode.paddingPx(END, 5);
+    mInternalNode.paddingPx(RIGHT, 10);
+    setDirection(mInternalNode, LTR);
+    assertThat(mInternalNode.getPaddingRight()).isEqualTo(5);
   }
 
   @Test
   public void testPaddingRightWithDefinedStartInRtl() {
-    mInternalNode.paddingPx(YogaEdge.START, 5);
-    mInternalNode.paddingPx(YogaEdge.RIGHT, 10);
-    setDirection(mInternalNode, YogaDirection.RTL);
-    assertEquals(5, mInternalNode.getPaddingRight());
+    mInternalNode.paddingPx(START, 5);
+    mInternalNode.paddingPx(RIGHT, 10);
+    setDirection(mInternalNode, RTL);
+    assertThat(mInternalNode.getPaddingRight()).isEqualTo(5);
   }
 
   @Test
   public void testPaddingRightWithDefinedEndInRtl() {
-    mInternalNode.paddingPx(YogaEdge.END, 5);
-    mInternalNode.paddingPx(YogaEdge.RIGHT, 10);
-    setDirection(mInternalNode, YogaDirection.RTL);
-    assertEquals(10, mInternalNode.getPaddingRight());
+    mInternalNode.paddingPx(END, 5);
+    mInternalNode.paddingPx(RIGHT, 10);
+    setDirection(mInternalNode, RTL);
+    assertThat(mInternalNode.getPaddingRight()).isEqualTo(10);
   }
 }

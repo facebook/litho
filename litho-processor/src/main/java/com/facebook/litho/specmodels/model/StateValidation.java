@@ -1,30 +1,38 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.specmodels.model;
 
-import javax.lang.model.element.Modifier;
+import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
-
+import com.facebook.litho.annotations.TreeProp;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.WildcardTypeName;
-
-import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Class for validating that the state models within a  {@link SpecModel} are well-formed.
@@ -49,7 +57,7 @@ public class StateValidation {
         final StateParamModel thatStateValue = stateValues.get(j);
 
         if (thisStateValue.getName().equals(thatStateValue.getName())) {
-          if (!thisStateValue.getType().equals(thatStateValue.getType())) {
+          if (!thisStateValue.getTypeName().box().equals(thatStateValue.getTypeName().box())) {
             validationErrors.add(new SpecModelValidationError(
                 thatStateValue.getRepresentedObject(),
                 "State values with the same name must have the same type."));
@@ -65,12 +73,19 @@ public class StateValidation {
       }
     }
 
+    final Set<String> stateNameSet =
+        stateValues.stream().map(StateParamModel::getName).collect(Collectors.toSet());
+    validateDuplicateName(stateNameSet, specModel.getProps(), validationErrors);
+    validateDuplicateName(stateNameSet, specModel.getInjectProps(), validationErrors);
+    validateDuplicateName(stateNameSet, specModel.getTreeProps(), validationErrors);
+
     return validationErrors;
   }
 
   static List<SpecModelValidationError> validateOnUpdateStateMethods(SpecModel specModel) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
-    for (UpdateStateMethodModel updateStateMethodModel : specModel.getUpdateStateMethods()) {
+    for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel :
+        specModel.getUpdateStateMethods()) {
       validationErrors.addAll(validateOnUpdateStateMethod(specModel, updateStateMethodModel));
     }
 
@@ -79,29 +94,24 @@ public class StateValidation {
 
   /**
    * Validate that the declaration of a method annotated with {@link OnUpdateState} is correct:
+   *
    * <ul>
    *   <li>1. Method parameters annotated with {@link Param} don't have the same name as parameters
-   *    annotated with {@link State} or {@link Prop}.</li>
+   *       annotated with {@link State} or {@link Prop}.
    *   <li>2. Method parameters not annotated with {@link Param} must be of type
-   *    com.facebook.litho.StateValue.</li>
+   *       com.facebook.litho.StateValue.
    *   <li>3. Names of method parameters not annotated with {@link Param} must match the name and
-   *     type of a parameter annotated with {@link State}.</li>
+   *       type of a parameter annotated with {@link State}.
    * </ul>
    *
    * @return a list of validation errors. If the list is empty, the method is well-formed.
    */
   static List<SpecModelValidationError> validateOnUpdateStateMethod(
-      SpecModel specModel,
-      UpdateStateMethodModel updateStateMethodModel) {
+      SpecModel specModel, SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
-    if (!specModel.hasInjectedDependencies() &&
-        !updateStateMethodModel.modifiers.contains(Modifier.STATIC)) {
-      validationErrors.add(
-          new SpecModelValidationError(
-              updateStateMethodModel.representedObject,
-              "Methods in a spec that doesn't have dependency injection must be static."));
-    }
+    validationErrors.addAll(
+        SpecMethodModelValidation.validateMethodIsStatic(specModel, updateStateMethodModel));
 
     for (MethodParamModel methodParam : updateStateMethodModel.methodParams) {
       if (MethodParamModelUtils.isAnnotatedWith(methodParam, Param.class)) {
@@ -126,17 +136,17 @@ public class StateValidation {
         }
       } else {
         // Check #2
-        if (!(methodParam.getType() instanceof ParameterizedTypeName) ||
-            !(((ParameterizedTypeName) methodParam.getType()).rawType.equals(STATE_VALUE))) {
+        if (!(methodParam.getTypeName() instanceof ParameterizedTypeName) ||
+            !(((ParameterizedTypeName) methodParam.getTypeName()).rawType.equals(STATE_VALUE))) {
           validationErrors.add(
               new SpecModelValidationError(
                   methodParam.getRepresentedObject(),
                   "Only state parameters and parameters annotated with @Param are permitted in " +
                       "@OnUpdateState method, and all state parameters must be of type " +
                       "com.facebook.litho.StateValue, but " + methodParam.getName() +
-                      " is of type " + methodParam.getType() + "."));
-        } else if (((ParameterizedTypeName) methodParam.getType()).typeArguments.size() != 1 ||
-            ((ParameterizedTypeName) methodParam.getType()).typeArguments.get(0)
+                      " is of type " + methodParam.getTypeName() + "."));
+        } else if (((ParameterizedTypeName) methodParam.getTypeName()).typeArguments.size() != 1 ||
+            ((ParameterizedTypeName) methodParam.getTypeName()).typeArguments.get(0)
                 instanceof WildcardTypeName) {
           validationErrors.add(
               new SpecModelValidationError(
@@ -147,7 +157,7 @@ public class StateValidation {
         } else if (!definesStateValue(
             specModel,
             methodParam.getName(),
-            ((ParameterizedTypeName) methodParam.getType()).typeArguments.get(0))) {
+            ((ParameterizedTypeName) methodParam.getTypeName()).typeArguments.get(0))) {
           // Check #3
           validationErrors.add(
               new SpecModelValidationError(
@@ -164,11 +174,41 @@ public class StateValidation {
   private static boolean definesStateValue(SpecModel specModel, String name, TypeName type) {
     for (StateParamModel stateValue : specModel.getStateValues()) {
       if (stateValue.getName().equals(name) &&
-          stateValue.getType().box().equals(type.box())) {
+          stateValue.getTypeName().box().equals(type.box())) {
         return true;
       }
     }
 
     return false;
+  }
+
+  private static void validateDuplicateName(
+      Set<String> stateNameSet,
+      List<? extends MethodParamModel> propModelList,
+      List<SpecModelValidationError> validationErrors) {
+    for (int i = 0, size = propModelList.size(); i < size; i++) {
+      final MethodParamModel model = propModelList.get(i);
+      if (stateNameSet.contains(model.getName())) {
+        final Annotation paramAnnotation =
+            model
+                .getAnnotations()
+                .stream()
+                .filter(
+                    it -> it instanceof Prop || it instanceof InjectProp || it instanceof TreeProp)
+                .findFirst()
+                .get();
+
+        validationErrors.add(
+            new SpecModelValidationError(
+                model.getRepresentedObject(),
+                "The parameter name of @"
+                    + paramAnnotation.annotationType().getSimpleName()
+                    + " \""
+                    + model.getName()
+                    + "\" and @State \""
+                    + model.getName()
+                    + "\" collide!"));
+      }
+    }
   }
 }

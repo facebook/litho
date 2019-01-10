@@ -1,52 +1,65 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.widget;
 
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v4.util.Pools.SynchronizedPool;
+import android.view.ViewTreeObserver;
 import android.widget.HorizontalScrollView;
-
-import com.facebook.litho.R;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentTree;
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
+import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Output;
+import com.facebook.litho.R;
+import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.annotations.OnCreateMountContent;
-import com.facebook.litho.annotations.OnLoadStyle;
-import com.facebook.litho.annotations.PropDefault;
+import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.FromBoundsDefined;
-import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.FromMeasure;
-import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBoundsDefined;
+import com.facebook.litho.annotations.OnCreateInitialState;
+import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
-import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnmount;
+import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
-import com.facebook.litho.Size;
-
-import static com.facebook.litho.SizeSpec.EXACTLY;
-import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+import com.facebook.litho.annotations.State;
+import com.facebook.yoga.YogaDirection;
 
 /**
  * A component that wraps another component and allow it to be horizontally scrollable. It's
  * analogous to a {@link android.widget.HorizontalScrollView}.
+ *
+ * @uidocs https://fburl.com/HorizontalScroll:e378
  */
-@MountSpec(canMountIncrementally = true)
+@MountSpec
 class HorizontalScrollSpec {
+
+  private static final int LAST_SCROLL_POSITION_UNSET = -1;
 
   @PropDefault static final boolean scrollbarEnabled = true;
 
@@ -73,15 +86,6 @@ class HorizontalScrollSpec {
     a.recycle();
   }
 
-  @OnPrepare
-  static void onPrepare(
-      ComponentContext context,
-      @Prop Component<?> contentProps,
-      Output<ComponentTree> contentComponent) {
-    contentComponent.set(
-        ComponentTree.create(context, contentProps).build());
-  }
-
   @OnMeasure
   static void onMeasure(
       ComponentContext context,
@@ -89,27 +93,23 @@ class HorizontalScrollSpec {
       int widthSpec,
       int heightSpec,
       Size size,
-      @FromPrepare ComponentTree contentComponent,
+      @Prop Component contentProps,
       Output<Integer> measuredComponentWidth,
       Output<Integer> measuredComponentHeight) {
 
     final int measuredWidth;
     final int measuredHeight;
 
-    Size contentSize = acquireSize();
+    final Size contentSize = acquireSize();
 
     // Measure the component with undefined width spec, as the contents of the
     // hscroll have unlimited horizontal space.
-    contentComponent.setSizeSpec(
-        SizeSpec.makeSizeSpec(0, UNSPECIFIED),
-        heightSpec,
-        contentSize);
+    contentProps.measure(context, SizeSpec.makeSizeSpec(0, UNSPECIFIED), heightSpec, contentSize);
 
     measuredWidth = contentSize.width;
     measuredHeight = contentSize.height;
 
     releaseSize(contentSize);
-    contentSize = null;
 
     measuredComponentWidth.set(measuredWidth);
     measuredComponentHeight.set(measuredHeight);
@@ -126,11 +126,12 @@ class HorizontalScrollSpec {
   static void onBoundsDefined(
       ComponentContext context,
       ComponentLayout layout,
-      @FromPrepare ComponentTree contentComponent,
+      @Prop Component contentProps,
       @FromMeasure Integer measuredComponentWidth,
       @FromMeasure Integer measuredComponentHeight,
       Output<Integer> componentWidth,
-      Output<Integer> componentHeight) {
+      Output<Integer> componentHeight,
+      Output<YogaDirection> layoutDirection) {
 
     // If onMeasure() has been called, this means the content component already
     // has a defined size, no need to calculate it again.
@@ -142,7 +143,8 @@ class HorizontalScrollSpec {
       final int measuredHeight;
 
       Size contentSize = acquireSize();
-      contentComponent.setSizeSpec(
+      contentProps.measure(
+          context,
           SizeSpec.makeSizeSpec(0, UNSPECIFIED),
           SizeSpec.makeSizeSpec(layout.getHeight(), EXACTLY),
           contentSize);
@@ -151,36 +153,87 @@ class HorizontalScrollSpec {
       measuredHeight = contentSize.height;
 
       releaseSize(contentSize);
-      contentSize = null;
 
       componentWidth.set(measuredWidth);
       componentHeight.set(measuredHeight);
     }
+
+    layoutDirection.set(layout.getResolvedLayoutDirection());
   }
 
   @OnCreateMountContent
-  static HorizontalScrollLithoView onCreateMountContent(ComponentContext c) {
+  static HorizontalScrollLithoView onCreateMountContent(Context c) {
     return new HorizontalScrollLithoView(c);
   }
 
   @OnMount
   static void onMount(
-      ComponentContext context,
-      HorizontalScrollLithoView horizontalScrollLithoView,
+      final ComponentContext context,
+      final HorizontalScrollLithoView horizontalScrollLithoView,
+      @Prop Component contentProps,
       @Prop(optional = true, resType = ResType.BOOL) boolean scrollbarEnabled,
-      @FromPrepare ComponentTree contentComponent,
+      @Prop(optional = true) HorizontalScrollEventsController eventsController,
+      @State final ScrollPosition lastScrollPosition,
       @FromBoundsDefined int componentWidth,
-      @FromBoundsDefined int componentHeight) {
+      @FromBoundsDefined int componentHeight,
+      @FromBoundsDefined final YogaDirection layoutDirection) {
 
     horizontalScrollLithoView.setHorizontalScrollBarEnabled(scrollbarEnabled);
-    horizontalScrollLithoView.mount(contentComponent, componentWidth, componentHeight);
+    horizontalScrollLithoView.mount(contentProps, componentWidth, componentHeight);
+    final ViewTreeObserver viewTreeObserver = horizontalScrollLithoView.getViewTreeObserver();
+    viewTreeObserver.addOnPreDrawListener(
+        new ViewTreeObserver.OnPreDrawListener() {
+          @Override
+          public boolean onPreDraw() {
+            horizontalScrollLithoView.getViewTreeObserver().removeOnPreDrawListener(this);
+
+            if (lastScrollPosition.x == LAST_SCROLL_POSITION_UNSET) {
+              if (layoutDirection == YogaDirection.RTL) {
+                horizontalScrollLithoView.fullScroll(HorizontalScrollView.FOCUS_RIGHT);
+              }
+              lastScrollPosition.x = horizontalScrollLithoView.getScrollX();
+            } else {
+              horizontalScrollLithoView.setScrollX(lastScrollPosition.x);
+            }
+
+            return true;
+          }
+        });
+    viewTreeObserver.addOnScrollChangedListener(
+        new ViewTreeObserver.OnScrollChangedListener() {
+          @Override
+          public void onScrollChanged() {
+            lastScrollPosition.x = horizontalScrollLithoView.getScrollX();
+          }
+        });
+
+    if (eventsController != null) {
+      eventsController.setScrollableView(horizontalScrollLithoView);
+    }
   }
 
   @OnUnmount
   static void onUnmount(
       ComponentContext context,
-      HorizontalScrollLithoView mountedView) {
+      HorizontalScrollLithoView mountedView,
+      @Prop(optional = true) HorizontalScrollEventsController eventsController) {
+
     mountedView.unmount();
+
+    if (eventsController != null) {
+      eventsController.setScrollableView(null);
+    }
+  }
+
+  @OnCreateInitialState
+  static void onCreateInitialState(
+      ComponentContext c,
+      StateValue<ScrollPosition> lastScrollPosition,
+      @Prop(optional = true) Integer initialScrollPosition) {
+
+    lastScrollPosition.set(
+        new ScrollPosition(
+            initialScrollPosition == null ? LAST_SCROLL_POSITION_UNSET : initialScrollPosition));
   }
 
   static class HorizontalScrollLithoView extends HorizontalScrollView {
@@ -193,14 +246,6 @@ class HorizontalScrollSpec {
       super(context);
       mLithoView = new LithoView(context);
       addView(mLithoView);
-    }
-
-    @Override
-    protected void onScrollChanged(int left, int top, int oldLeft, int oldTop) {
-      super.onScrollChanged(left, top, oldLeft, oldTop);
-
-      // Visible area changed, perform incremental mount.
-      incrementalMount();
     }
 
     @Override
@@ -219,19 +264,22 @@ class HorizontalScrollSpec {
           MeasureSpec.getSize(heightMeasureSpec));
     }
 
-    void mount(ComponentTree component, int width, int height) {
-      mLithoView.setComponentTree(component);
+    void mount(Component component, int width, int height) {
+      if (mLithoView.getComponentTree() == null) {
+        mLithoView.setComponentTree(
+            ComponentTree.create(mLithoView.getComponentContext(), component)
+                .incrementalMount(false)
+                .build());
+      } else {
+        mLithoView.setComponent(component);
+      }
       mComponentWidth = width;
       mComponentHeight = height;
     }
 
-    void incrementalMount() {
-      mLithoView.performIncrementalMount();
-    }
-
     void unmount() {
       // Clear all component-related state from the view.
-      mLithoView.setComponentTree(null);
+      mLithoView.unbind();
       mComponentWidth = 0;
       mComponentHeight = 0;
     }
@@ -248,5 +296,13 @@ class HorizontalScrollSpec {
 
   private static void releaseSize(Size size) {
     sSizePool.release(size);
+  }
+
+  static class ScrollPosition {
+    int x;
+
+    ScrollPosition(int initialX) {
+      this.x = initialX;
+    }
   }
 }

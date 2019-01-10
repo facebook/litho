@@ -1,18 +1,29 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.facebook.litho.widget;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.facebook.litho.ComponentInfo;
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.ComponentContainer;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.Operation;
 import com.facebook.litho.widget.RecyclerBinderUpdateCallback.OperationExecutor;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * An implementation of {@link OperationExecutor} that uses {@link RecyclerBinder}.
- */
+/** An implementation of {@link OperationExecutor} that uses {@link RecyclerBinder}. */
 public class RecyclerBinderOperationExecutor implements OperationExecutor {
 
   private final RecyclerBinder mRecyclerBinder;
@@ -22,27 +33,25 @@ public class RecyclerBinderOperationExecutor implements OperationExecutor {
   }
 
   @Override
-  public void executeOperations(List<Operation> operations) {
+  public void executeOperations(ComponentContext c, List<Operation> operations) {
     for (int i = 0, size = operations.size(); i < size; i++) {
       final Operation operation = operations.get(i);
       final List<ComponentContainer> components = operation.getComponentContainers();
-      List<ComponentInfo> componentInfos = null;
-      if (components != null && components.size() > 1 ) {
-        componentInfos = new ArrayList<>();
+      List<RenderInfo> renderInfos = null;
+      if (components != null && components.size() > 1) {
+        renderInfos = new ArrayList<>();
         for (int j = 0, componentsSize = components.size(); j < componentsSize; j++) {
-          componentInfos.add(components.get(j).getComponentInfo());
+          renderInfos.add(components.get(j).getRenderInfo());
         }
       }
 
       switch (operation.getType()) {
-
         case Operation.INSERT:
-          if (componentInfos != null) {
-            mRecyclerBinder.insertRangeAt(operation.getIndex(), componentInfos);
+          if (renderInfos != null) {
+            mRecyclerBinder.insertRangeAt(operation.getIndex(), renderInfos);
           } else {
             mRecyclerBinder.insertItemAt(
-                operation.getIndex(),
-                operation.getComponentContainers().get(0).getComponentInfo());
+                operation.getIndex(), operation.getComponentContainers().get(0).getRenderInfo());
           }
           break;
 
@@ -55,15 +64,28 @@ public class RecyclerBinderOperationExecutor implements OperationExecutor {
           break;
 
         case Operation.UPDATE:
-          if (componentInfos != null) {
-            mRecyclerBinder.updateRangeAt(operation.getIndex(), componentInfos);
+          if (renderInfos != null) {
+            mRecyclerBinder.updateRangeAt(operation.getIndex(), renderInfos);
           } else {
             mRecyclerBinder.updateItemAt(
-                operation.getIndex(),
-                operation.getComponentContainers().get(0).getComponentInfo());
+                operation.getIndex(), operation.getComponentContainers().get(0).getRenderInfo());
           }
           break;
       }
     }
+
+    mRecyclerBinder.notifyChangeSetComplete(
+        true,
+        new ChangeSetCompleteCallback() {
+          @Override
+          public void onDataBound() {
+            // Do nothing.
+          }
+
+          @Override
+          public void onDataRendered(boolean isMounted, long uptimeMillis) {
+            // Do nothing.
+          }
+        });
   }
 }

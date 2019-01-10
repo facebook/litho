@@ -1,23 +1,30 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.testing;
 
 import android.app.Activity;
-
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.R;
+import com.facebook.litho.testing.assertj.LithoRepresentation;
+import org.assertj.core.api.Assertions;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.robolectric.Robolectric;
-
-import com.facebook.litho.R;
-import com.facebook.litho.ComponentContext;
 
 public class ComponentsRule implements TestRule {
 
@@ -28,13 +35,17 @@ public class ComponentsRule implements TestRule {
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
-        final Activity activity = Robolectric.buildActivity(Activity.class)
-            .create()
-            .get();
+        final Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         mContext = new ComponentContext(activity);
         setComponentStyleableAttributes();
 
-        base.evaluate();
+        Assertions.useRepresentation(new LithoRepresentation(mContext));
+
+        try {
+          base.evaluate();
+        } finally {
+          Assertions.useDefaultRepresentation();
+        }
       }
     };
   }
@@ -50,7 +61,7 @@ public class ComponentsRule implements TestRule {
    * TODO natthu: this is just a hack around a BUCK issue whereby BUCK only generates random array
    * values. Component tests require the correct values for the ComponentLayout styleable array in
    * order to bind props to the layout. The array that we define here needs to be kept up-to-date
-   * with the array defined in //android_res/com/facebook/components/res/values/attrs.xml.
+   * with the attrs defined in litho-core/src/main/res/*attrs.xml files.
    */
   static void setComponentStyleableAttributes() {
 
@@ -87,6 +98,8 @@ public class ComponentsRule implements TestRule {
         android.R.attr.contentDescription,
         android.R.attr.background,
         android.R.attr.foreground,
+        android.R.attr.minHeight,
+        android.R.attr.minWidth,
         android.R.attr.importantForAccessibility,
         android.R.attr.duplicateParentState,
       },
@@ -96,35 +109,41 @@ public class ComponentsRule implements TestRule {
       R.styleable.ComponentLayout.length);
 
     System.arraycopy(
-      new int[]{
-        android.R.attr.minLines,
-        android.R.attr.maxLines,
-        android.R.attr.textColor,
-        android.R.attr.textColorLink,
-        android.R.attr.textColorHighlight,
-        android.R.attr.textSize,
-        android.R.attr.lineSpacingMultiplier,
-        android.R.attr.ellipsize,
-        android.R.attr.textAlignment,
-        android.R.attr.textStyle,
-        android.R.attr.text,
-        android.R.attr.textDirection,
-        android.R.attr.includeFontPadding,
-        android.R.attr.singleLine,
-        android.R.attr.shadowColor,
-        android.R.attr.shadowDx,
-        android.R.attr.shadowDy,
-        android.R.attr.shadowRadius,
-        android.R.attr.gravity,
-        android.R.attr.minEms,
-        android.R.attr.minWidth,
-        android.R.attr.maxEms,
-        android.R.attr.maxWidth,
-      },
-      /* srcPos */ 0,
-      R.styleable.Text,
-      /* destPos */ 0,
-      R.styleable.Text.length);
+        new int[] {
+          android.R.attr.minLines,
+          android.R.attr.maxLines,
+          android.R.attr.textColor,
+          android.R.attr.textColorLink,
+          android.R.attr.textColorHighlight,
+          android.R.attr.textSize,
+          android.R.attr.lineSpacingExtra,
+          android.R.attr.lineSpacingMultiplier,
+          android.R.attr.ellipsize,
+          android.R.attr.textAlignment,
+          android.R.attr.textStyle,
+          android.R.attr.text,
+          android.R.attr.includeFontPadding,
+          android.R.attr.singleLine,
+          android.R.attr.shadowColor,
+          android.R.attr.shadowDx,
+          android.R.attr.shadowDy,
+          android.R.attr.shadowRadius,
+          android.R.attr.gravity,
+          android.R.attr.minEms,
+          android.R.attr.maxEms,
+          android.R.attr.minWidth,
+          android.R.attr.maxWidth,
+          android.R.attr.inputType,
+          android.R.attr.fontFamily,
+          android.R.attr.imeOptions,
+          android.R.attr.breakStrategy,
+          android.R.attr.hyphenationFrequency,
+          android.R.attr.justificationMode,
+        },
+        /* srcPos */ 0,
+        R.styleable.Text,
+        /* destPos */ 0,
+        R.styleable.Text.length);
 
     System.arraycopy(
       new int[]{

@@ -8,7 +8,14 @@ docs/_site/
 /.buckd
 /gentest/test.html
 .buckversion
-/lib/yoga/.externalNativeBuild/
+.externalNativeBuild
+.gradle
 
 # Output files
 build/
+docs/.bundle/
+
+# Android Studio/IntelliJ
+.idea
+*.iml
+local.properties

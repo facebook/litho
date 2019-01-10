@@ -1,25 +1,24 @@
-/**
- * Copyright 2014-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * This file provided by Facebook is for non-commercial testing and evaluation
+ * purposes only.  Facebook reserves all rights not expressly granted.
  *
- * This source code is licensed under the license found in the
- * LICENSE-examples file in the root directory of this source tree.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 package com.facebook.samples.lithobarebones;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.widget.OrientationHelper;
-
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentInfo;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.widget.LinearLayoutInfo;
-import com.facebook.litho.widget.Recycler;
-import com.facebook.litho.widget.RecyclerBinder;
+import com.facebook.litho.sections.SectionContext;
+import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 
 public class SampleActivity extends Activity {
   @Override
@@ -28,31 +27,13 @@ public class SampleActivity extends Activity {
 
     final ComponentContext context = new ComponentContext(this);
 
-    final RecyclerBinder recyclerBinder = new RecyclerBinder(
-        context,
-        new LinearLayoutInfo(this, OrientationHelper.VERTICAL, false));
 
-    final Component component = Recycler.create(context)
-            .binder(recyclerBinder)
+    final Component component =
+        RecyclerCollectionComponent.create(context)
+            .disablePTR(true)
+            .section(ListSection.create(new SectionContext(context)).build())
             .build();
 
-    addContent(recyclerBinder, context);
-
     setContentView(LithoView.create(context, component));
-  }
-
-  private static void addContent(RecyclerBinder recyclerBinder, ComponentContext context) {
-    for (int i = 0; i < 32; i++) {
-      recyclerBinder.insertItemAt(
-          i,
-          ComponentInfo.create()
-              .component(
-                  ListItem.create(context)
-                      .color(i % 2 == 0 ? Color.WHITE : Color.LTGRAY)
-                      .title("Hello, world!")
-                      .subtitle("Litho tutorial")
-                      .build())
-              .build());
-    }
   }
 }

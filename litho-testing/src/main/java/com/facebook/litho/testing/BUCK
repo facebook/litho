@@ -1,29 +1,44 @@
 # Copyright (c) 2017-present, Facebook, Inc.
-# All rights reserved.
 #
-# This source code is licensed under the BSD-style license found in the
-# LICENSE file in the root directory of this source tree. An additional grant
-# of patent rights can be found in the PATENTS file in the same directory.
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
 
-include_defs("//COMPONENTS_DEFS")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANDROIDSUPPORT_TESTING_TARGET", "LITHO_ASSERTJ_TARGET", "LITHO_FRESCO_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_POWERMOCK_REFLECT_TARGET", "LITHO_PROCESSOR_TARGET", "LITHO_RES_TARGET", "LITHO_ROBOLECTRIC_TARGET", "LITHO_TESTING_ASSERTJ_TARGET", "LITHO_TESTING_HELPER_TARGET", "LITHO_TESTING_SUBCOMPONENTS_TARGET", "LITHO_WIDGET_TARGET", "LITHO_YOGA_TARGET", "litho_android_library", "make_dep_path")
 
 litho_android_library(
     name = "testing",
     srcs = glob(["*.java"]),
+    plugins = [
+        LITHO_PROCESSOR_TARGET,
+    ],
     provided_deps = [
-        COMPONENTS_ROBOLECTRIC_TARGET,
+        LITHO_ROBOLECTRIC_TARGET,
+    ],
+    tests = [
+        make_dep_path("litho-it/src/test/java/com/facebook/litho/testing:testing"),
+        make_dep_path("litho-it/src/test/java/com/facebook/litho/testing/viewtree:viewtree"),
+        make_dep_path("litho-it-powermock/src/test/java/com/facebook/litho/testing/viewtree:viewtree"),
     ],
     visibility = [
         "PUBLIC",
     ],
     deps = [
-        COMPONENTS_ANDROIDSUPPORT_TARGET,
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_RES_TARGET,
-        COMPONENTS_JSR_TARGET,
-        COMPONENTS_FRESCO_TARGET,
-        COMPONENTS_POWERMOCK_REFLECT_TARGET,
-        COMPONENTS_YOGA_TARGET,
-        COMPONENTS_WIDGET_TARGET,
+        LITHO_TESTING_ASSERTJ_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_RES_TARGET,
+        LITHO_JSR_TARGET,
+        LITHO_FRESCO_TARGET,
+        LITHO_POWERMOCK_REFLECT_TARGET,
+        LITHO_YOGA_TARGET,
+        LITHO_WIDGET_TARGET,
+        LITHO_ASSERTJ_TARGET,
+        LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+        LITHO_ANDROIDSUPPORT_TESTING_TARGET,
+    ],
+    exported_deps = [
+        LITHO_TESTING_SUBCOMPONENTS_TARGET,
+        LITHO_TESTING_HELPER_TARGET,
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/state:state"),
     ],
 )

@@ -1,15 +1,36 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.specmodels.processor;
 
+import static com.facebook.litho.specmodels.processor.ProcessorUtils.getPackageName;
+import static com.facebook.litho.specmodels.processor.ProcessorUtils.validate;
+
+import com.facebook.litho.specmodels.internal.RunMode;
+import com.facebook.litho.specmodels.model.DependencyInjectionHelperFactory;
+import com.facebook.litho.specmodels.model.SpecModel;
+import com.squareup.javapoet.JavaFile;
+import java.io.IOException;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.Nullable;
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
@@ -17,103 +38,120 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.MountSpec;
-import com.facebook.litho.specmodels.model.ClassNames;
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
-import com.facebook.litho.specmodels.model.SpecModel;
-import com.facebook.litho.specmodels.model.SpecModelValidationError;
-
-import com.squareup.javapoet.JavaFile;
-
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public abstract class AbstractComponentsProcessor extends AbstractProcessor {
+
+  @Nullable private final DependencyInjectionHelperFactory mDependencyInjectionHelperFactory;
+  private final List<SpecModelFactory> mSpecModelFactories;
+  private final boolean mShouldSavePropNames;
+  private PropNameInterStageStore mPropNameInterStageStore;
+  private final EnumSet<RunMode> mRunMode = RunMode.normal();
+
+  private final InterStageStore mInterStageStore =
+      new InterStageStore() {
+        @Override
+        public PropNameInterStageStore getPropNameInterStageStore() {
+          return mPropNameInterStageStore;
+        }
+      };
+
+  protected AbstractComponentsProcessor(
+      List<SpecModelFactory> specModelFactories,
+      DependencyInjectionHelperFactory dependencyInjectionHelperFactory) {
+    this(specModelFactories, dependencyInjectionHelperFactory, true);
+  }
+
+  protected AbstractComponentsProcessor(
+      List<SpecModelFactory> specModelFactories,
+      DependencyInjectionHelperFactory dependencyInjectionHelperFactory,
+      boolean shouldSavePropNames) {
+    mSpecModelFactories = specModelFactories;
+    mDependencyInjectionHelperFactory = dependencyInjectionHelperFactory;
+    mShouldSavePropNames = shouldSavePropNames;
+  }
+
+  /** Use this to force hotswap mode to be turned on. */
+  public void forceHotswapMode() {
+    mRunMode.add(RunMode.HOTSWAP);
+  }
+
+  @Override
+  public void init(ProcessingEnvironment processingEnv) {
+    super.init(processingEnv);
+
+    Map<String, String> options = processingEnv.getOptions();
+    boolean isGeneratingAbi =
+        Boolean.valueOf(options.getOrDefault("com.facebook.buck.java.generating_abi", "false"));
+    if (isGeneratingAbi) {
+      mRunMode.add(RunMode.ABI);
+    }
+
+    boolean generateBuckHotswapCode =
+        Boolean.valueOf(options.getOrDefault("com.facebook.litho.hotswap", "false"));
+    if (generateBuckHotswapCode) {
+      mRunMode.add(RunMode.HOTSWAP);
+    }
+  }
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     if (roundEnv.processingOver()) {
       return false;
     }
+    // processingEnv is not available at construction time. :(
+    mPropNameInterStageStore = new PropNameInterStageStore(processingEnv.getFiler());
 
-    for (Element element : roundEnv.getRootElements()) {
-      try {
-        SpecModel specModel = null;
-        final TypeElement typeElement = (TypeElement) element;
-        if (element.getAnnotation(LayoutSpec.class) != null) {
-          specModel = getLayoutSpecModel(typeElement);
-        } else if (element.getAnnotation(MountSpec.class) != null) {
-           specModel =
-              MountSpecModelFactory.create(
+    for (SpecModelFactory specModelFactory : mSpecModelFactories) {
+      final Set<Element> elements = specModelFactory.extract(roundEnv);
+
+      for (Element element : elements) {
+        try {
+          final SpecModel specModel =
+              specModelFactory.create(
                   processingEnv.getElementUtils(),
+                  processingEnv.getTypeUtils(),
                   (TypeElement) element,
-                  getDependencyInjectionGenerator((TypeElement) element));
-        }
+                  processingEnv.getMessager(),
+                  mRunMode,
+                  mDependencyInjectionHelperFactory == null
+                      ? null
+                      : mDependencyInjectionHelperFactory.create((TypeElement) element, mRunMode),
+                  mInterStageStore);
 
-        if (specModel != null) {
-          validate(specModel);
-          generate(specModel);
+          validate(specModel, mRunMode);
+          generate(specModel, mRunMode);
+          afterGenerate(specModel);
+        } catch (PrintableException e) {
+          e.print(processingEnv.getMessager());
+        } catch (Exception e) {
+          processingEnv
+              .getMessager()
+              .printMessage(
+                  Diagnostic.Kind.ERROR,
+                  String.format(
+                      "Unexpected error thrown when generating this component spec. "
+                          + "Please report stack trace to the components team.\n%s",
+                      e),
+                  element);
+          e.printStackTrace();
         }
-      } catch (PrintableException e) {
-        e.print(processingEnv.getMessager());
-      } catch (Exception e) {
-        processingEnv.getMessager().printMessage(
-            Diagnostic.Kind.ERROR,
-            "Unexpected error thrown when generating this component spec. " +
-                "Please report stack trace to the components team.",
-            element);
-        e.printStackTrace();
       }
     }
 
     return false;
   }
 
-  @Override
-  public Set<String> getSupportedAnnotationTypes() {
-    return new HashSet<>(Arrays.asList(
-        ClassNames.LAYOUT_SPEC.toString(),
-        ClassNames.MOUNT_SPEC.toString()));
+  protected void generate(SpecModel specModel, EnumSet<RunMode> runMode) throws IOException {
+    final String packageName = getPackageName(specModel.getComponentTypeName());
+    JavaFile.builder(packageName, specModel.generate(runMode))
+        .skipJavaLangImports(true)
+        .build()
+        .writeTo(processingEnv.getFiler());
   }
 
-  abstract protected DependencyInjectionHelper getDependencyInjectionGenerator(
-      TypeElement typeElement);
-
-  abstract protected SpecModel getLayoutSpecModel(TypeElement typeElement);
-
-  void validate(SpecModel specModel) {
-    List<SpecModelValidationError> validationErrors = specModel.validate();
-
-    if (validationErrors.isEmpty()) {
-      return;
+  private void afterGenerate(SpecModel specModel) throws IOException {
+    if (mShouldSavePropNames) {
+      mInterStageStore.getPropNameInterStageStore().saveNames(specModel);
     }
-
-    final List<PrintableException> printableExceptions = new ArrayList<>();
-    for (SpecModelValidationError validationError : validationErrors) {
-      printableExceptions.add(
-          new ComponentsProcessingException(
-              (Element) validationError.element,
-              validationError.message));
-    }
-
-    throw new MultiPrintableException(printableExceptions);
-  }
-
-  protected void generate(SpecModel specModel) throws IOException {
-    JavaFile.builder(
-        getPackageName(specModel.getComponentTypeName().toString()), specModel.generate())
-            .skipJavaLangImports(true)
-            .build()
-            .writeTo(processingEnv.getFiler());
-  }
-
-  protected static String getPackageName(String qualifiedName) {
-    return qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
   }
 }

@@ -1,24 +1,34 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.facebook.litho.animation;
 
-import java.util.HashSet;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import android.support.v4.util.SimpleArrayMap;
-
 import com.facebook.litho.dataflow.ChoreographerCompat;
-import com.facebook.litho.internal.ArraySet;
+import com.facebook.litho.dataflow.ChoreographerCompatImpl;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * An {@link AnimationBinding} that's composed of other {@link AnimationBinding}s running in
  * parallel, possibly starting on a stagger.
  */
-public class ParallelBinding implements AnimationBinding {
+public class ParallelBinding extends BaseAnimationBinding {
 
-  private final CopyOnWriteArrayList<AnimationBindingListener> mListeners =
-      new CopyOnWriteArrayList<>();
-  private final AnimationBinding[] mBindings;
+  private final List<AnimationBinding> mBindings;
   private final AnimationBindingListener mChildListener;
   private final HashSet<AnimationBinding> mBindingsFinished = new HashSet<>();
   private final ChoreographerCompat.FrameCallback mStaggerCallback;
@@ -29,24 +39,37 @@ public class ParallelBinding implements AnimationBinding {
   private boolean mIsActive = false;
   private Resolver mResolver;
 
-  public ParallelBinding(int staggerMs, AnimationBinding... bindings) {
+  public ParallelBinding(int staggerMs, List<AnimationBinding> bindings) {
     mStaggerMs = staggerMs;
     mBindings = bindings;
 
-    if (mBindings.length == 0) {
+    if (mBindings.isEmpty()) {
       throw new IllegalArgumentException("Empty binding parallel");
     }
 
-    mChildListener = new AnimationBindingListener() {
-      @Override
-      public void onStart(AnimationBinding binding) {
-      }
+    mChildListener =
+        new AnimationBindingListener() {
+          @Override
+          public void onScheduledToStartLater(AnimationBinding binding) {}
 
-      @Override
-      public void onFinish(AnimationBinding binding) {
-        ParallelBinding.this.onBindingFinished(binding);
-      }
-    };
+          @Override
+          public void onWillStart(AnimationBinding binding) {}
+
+          @Override
+          public void onFinish(AnimationBinding binding) {
+            ParallelBinding.this.onBindingFinished(binding);
+          }
+
+          @Override
+          public void onCanceledBeforeStart(AnimationBinding binding) {
+            ParallelBinding.this.onBindingFinished(binding);
+          }
+
+          @Override
+          public boolean shouldStart(AnimationBinding binding) {
+            return true;
+          }
+        };
 
     if (mStaggerMs == 0) {
       mStaggerCallback = null;
@@ -71,16 +94,14 @@ public class ParallelBinding implements AnimationBinding {
     mChildrenFinished++;
     binding.removeListener(mChildListener);
 
-    if (mChildrenFinished >= mBindings.length) {
+    if (mChildrenFinished >= mBindings.size()) {
       finish();
     }
   }
 
   private void finish() {
     mIsActive = false;
-    for (AnimationBindingListener listener : mListeners) {
-      listener.onFinish(this);
-    }
+    notifyFinished();
   }
 
   @Override
@@ -89,33 +110,42 @@ public class ParallelBinding implements AnimationBinding {
       throw new RuntimeException("Starting binding multiple times");
     }
     mHasStarted = true;
-    mIsActive = true;
     mResolver = resolver;
 
-    for (AnimationBindingListener listener : mListeners) {
-      listener.onStart(this);
+    if (!shouldStart()) {
+      notifyCanceledBeforeStart();
+      return;
     }
+    notifyWillStart();
+
+    mIsActive = true;
 
     for (AnimationBinding binding : mBindings) {
       binding.addListener(mChildListener);
     }
     if (mStaggerMs == 0) {
-      for (int i = 0; i < mBindings.length; i++) {
-        final AnimationBinding binding = mBindings[i];
+      for (int i = 0, size = mBindings.size(); i < size; i++) {
+        final AnimationBinding binding = mBindings.get(i);
         binding.start(mResolver);
       }
-      mNextIndexToStart = mBindings.length;
+      mNextIndexToStart = mBindings.size();
     } else {
+      // Notify all children except the first one that will start later
+      for (int i = 1, size = mBindings.size(); i < size; i++) {
+        final AnimationBinding binding = mBindings.get(i);
+        binding.prepareToStartLater();
+      }
+      // Now start the first one
       startNextBindingForStagger();
     }
   }
 
   private void startNextBindingForStagger() {
-    mBindings[mNextIndexToStart].start(mResolver);
+    mBindings.get(mNextIndexToStart).start(mResolver);
     mNextIndexToStart++;
 
-    if (mNextIndexToStart < mBindings.length) {
-      ChoreographerCompat.getInstance().postFrameCallbackDelayed(mStaggerCallback, mStaggerMs);
+    if (mNextIndexToStart < mBindings.size()) {
+      ChoreographerCompatImpl.getInstance().postFrameCallbackDelayed(mStaggerCallback, mStaggerMs);
     }
   }
 
@@ -126,8 +156,8 @@ public class ParallelBinding implements AnimationBinding {
     }
     mIsActive = false;
     mResolver = null;
-    for (int i = 0; i < mBindings.length; i++) {
-      final AnimationBinding childBinding = mBindings[i];
+    for (int i = 0, size = mBindings.size(); i < size; i++) {
+      final AnimationBinding childBinding = mBindings.get(i);
       if (childBinding.isActive()) {
         childBinding.stop();
       }
@@ -140,33 +170,18 @@ public class ParallelBinding implements AnimationBinding {
   }
 
   @Override
-  public void collectTransitioningProperties(ArraySet<ComponentProperty> outSet) {
-    for (int i = 0; i < mBindings.length; i++) {
-      mBindings[i].collectTransitioningProperties(outSet);
+  public void collectTransitioningProperties(ArrayList<PropertyAnimation> outList) {
+    for (int i = 0, size = mBindings.size(); i < size; i++) {
+      mBindings.get(i).collectTransitioningProperties(outList);
     }
   }
 
   @Override
-  public void collectAppearFromValues(SimpleArrayMap<ComponentProperty, LazyValue> outMap) {
-    for (int i = 0; i < mBindings.length; i++) {
-      mBindings[i].collectAppearFromValues(outMap);
+  public void prepareToStartLater() {
+    notifyScheduledToStartLater();
+    for (int i = 0, size = mBindings.size(); i < size; i++) {
+      final AnimationBinding binding = mBindings.get(i);
+      binding.prepareToStartLater();
     }
-  }
-
-  @Override
-  public void collectDisappearToValues(SimpleArrayMap<ComponentProperty, LazyValue> outMap) {
-    for (int i = 0; i < mBindings.length; i++) {
-      mBindings[i].collectDisappearToValues(outMap);
-    }
-  }
-
-  @Override
-  public void addListener(AnimationBindingListener animationBindingListener) {
-    mListeners.add(animationBindingListener);
-  }
-
-  @Override
-  public void removeListener(AnimationBindingListener animationBindingListener) {
-    mListeners.remove(animationBindingListener);
   }
 }

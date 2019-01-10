@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014-present Facebook, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 apply plugin: 'com.android.library'
 
 android {
@@ -25,26 +41,21 @@ android {
     }
 }
 
-afterEvaluate {
-    tasks.withType(Test) {
-        it.dependsOn rootProject.copyYogaLibs
-        systemProperty 'java.library.path', "${rootDir}/build/jniLibs"
-        environment 'LD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
-        environment 'DYLD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
-    }
-}
-
-
 dependencies {
-    compile project(':litho-core')
-    testCompile project(':litho-stubs')
-    testCompile project(':litho-testing')
-    testCompile project(':litho-widget')
+    implementation project(':litho-core')
+    // We are reusing some of the testing resources
+    implementation project(':litho-it')
+    testImplementation project(':litho-testing')
+    testImplementation project(':litho-widget')
 
     // Testing
-    testCompile deps.robolectric
-    testCompile deps.soloader
-    testCompile deps.powermockMockito
-    testCompile deps.powermockJunit
-    testCompile deps.powermockXstream
+    testImplementation deps.assertjCore
+    testImplementation deps.guava
+    testImplementation deps.inferAnnotations
+    testImplementation deps.powermockJunit
+    testImplementation deps.powermockMockito
+    testImplementation deps.powermockXstream
+    testImplementation deps.robolectric
+    testImplementation deps.soloader
+    testImplementation deps.supportRecyclerView
 }

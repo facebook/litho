@@ -1,16 +1,23 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.displaylist;
 
-import android.app.Activity;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.Nullable;
 
@@ -23,39 +30,43 @@ import android.support.annotation.Nullable;
  * onDraw/draw methods avoids translating the {@link Canvas} commands into OpenGL calls.
  */
 public class DisplayList {
-  private PlatformDisplayList mDisplayListImpl;
+  private final PlatformDisplayList mDisplayListImpl;
   private boolean mStarted;
+  private int mLeft;
+  private int mTop;
+  private int mRight;
+  private int mBottom;
 
   private DisplayList(PlatformDisplayList displayListImpl) {
     mDisplayListImpl = displayListImpl;
   }
 
-  /**
-   * Creates a new DisplayList for a specific Context with a Debug name.
-   */
+  /** Creates a new DisplayList for a specific Context with a Debug name. */
   @Nullable
-  public static DisplayList createDisplayList(String name) {
-    final PlatformDisplayList platformDisplayList;
-
-    if (Build.VERSION.SDK_INT >= 24) {
-      platformDisplayList = DisplayListNougat.createDisplayList(name);
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      platformDisplayList = DisplayListMarshmallow.createDisplayList(name);
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      platformDisplayList = DisplayListLollipop.createDisplayList(name);
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      platformDisplayList = DisplayListJBMR2.createDisplayList(name);
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      platformDisplayList = DisplayListJB.createDisplayList(name);
-    } else {
-      platformDisplayList = null;
-    }
-
+  public static DisplayList createDisplayList(@Nullable String name) {
+    final PlatformDisplayList platformDisplayList = createPlatformDisplayList(name);
     if (platformDisplayList == null) {
       return null;
     }
-
     return new DisplayList(platformDisplayList);
+  }
+
+  @Nullable
+  private static PlatformDisplayList createPlatformDisplayList(@Nullable String name) {
+    final int sdkVersion = Build.VERSION.SDK_INT;
+    if (sdkVersion >= Build.VERSION_CODES.N) {
+      return DisplayListPostMarshmallow.createDisplayList(name);
+    } else if (sdkVersion >= Build.VERSION_CODES.M) {
+      return DisplayListMarshmallow.createDisplayList(name);
+    } else if (sdkVersion >= Build.VERSION_CODES.LOLLIPOP) {
+      return DisplayListLollipop.createDisplayList(name);
+    } else if (sdkVersion >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      return DisplayListJBMR2.createDisplayList(name);
+    } else if (sdkVersion >= Build.VERSION_CODES.JELLY_BEAN) {
+      return DisplayListJB.createDisplayList(name);
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -113,7 +124,28 @@ public class DisplayList {
    * @throws DisplayListException if setting the bouds failed
    */
   public void setBounds(int left, int top, int right, int bottom) throws DisplayListException {
+    mLeft = left;
+    mTop = top;
+    mRight = right;
+    mBottom = bottom;
     mDisplayListImpl.setBounds(left, top, right, bottom);
+  }
+
+  /**
+   * @returns the bounds set to this DisplayList. This does *NOT* take into account X/Y translations
+   */
+  public Rect getBounds() {
+    return new Rect(mLeft, mTop, mRight, mBottom);
+  }
+
+  /** Set X translation to this DisplayList */
+  public void setTranslationX(float translationX) throws DisplayListException {
+    mDisplayListImpl.setTranslationX(translationX);
+  }
+
+  /** Set Y translation to this DisplayList */
+  public void setTranslationY(float translationY) throws DisplayListException {
+    mDisplayListImpl.setTranslationY(translationY);
   }
 
   public boolean isValid() {

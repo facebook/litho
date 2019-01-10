@@ -4,26 +4,36 @@
 # This source code is licensed under the license found in the
 # LICENSE-examples file in the root directory of this source tree.
 
-include_defs("//COMPONENTS_DEFS")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_PROCESSOR_LIB_TARGET", "LITHO_ROOT_TARGET", "LITHO_SAMPLE_BAREBONES_RES", "LITHO_SECTIONS_ANNOTATIONS_TARGET", "LITHO_SECTIONS_COMMON_TARGET", "LITHO_SECTIONS_PROCESSOR_LIB_TARGET", "LITHO_SECTIONS_TARGET", "LITHO_SECTIONS_WIDGET_TARGET", "LITHO_SOLOADER_TARGET", "LITHO_UTILS_TARGET", "LITHO_VIEWCOMPAT_TARGET", "LITHO_WIDGET_TARGET", "LITHO_YOGAJNI_TARGET", "LITHO_YOGA_TARGET", "fb_core_android_library")
 
-litho_android_library(
+fb_core_android_library(
     name = "lithobarebones",
     srcs = glob(["**/*.java"]),
     annotation_processor_deps = [
-        COMPONENTS_PROCESSOR_LIB_TARGET,
+        LITHO_PROCESSOR_LIB_TARGET,
+        LITHO_SECTIONS_PROCESSOR_LIB_TARGET,
     ],
     annotation_processors = [
         "com.facebook.litho.specmodels.processor.ComponentsProcessor",
+        "com.facebook.litho.sections.specmodels.processor.SectionsComponentProcessor",
     ],
     visibility = [
         "PUBLIC",
     ],
     deps = [
-        COMPONENTS_ROOT_TARGET,
-        COMPONENTS_WIDGET_TARGET,
-        COMPONENTS_UTILS_TARGET,
-        COMPONENTS_SOLOADER_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+        LITHO_ROOT_TARGET,
+        LITHO_WIDGET_TARGET,
+        LITHO_UTILS_TARGET,
+        LITHO_SECTIONS_TARGET,
+        LITHO_VIEWCOMPAT_TARGET,
+        LITHO_SAMPLE_BAREBONES_RES,
+        LITHO_SECTIONS_ANNOTATIONS_TARGET,
+        LITHO_SECTIONS_COMMON_TARGET,
+        LITHO_SECTIONS_WIDGET_TARGET,
+        LITHO_SOLOADER_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+        LITHO_YOGA_TARGET,
+        LITHO_YOGAJNI_TARGET,
     ],
 )

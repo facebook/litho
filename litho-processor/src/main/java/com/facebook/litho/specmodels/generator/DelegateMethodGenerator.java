@@ -1,62 +1,73 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.specmodels.generator;
 
-import java.lang.annotation.Annotation;
-import java.util.Map;
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getImplAccessor;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
+import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
+import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
+import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_STATE;
 
+import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
+import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DelegateMethodDescription;
-import com.facebook.litho.specmodels.model.DelegateMethodModel;
+import com.facebook.litho.specmodels.model.DiffPropModel;
+import com.facebook.litho.specmodels.model.DiffStateParamModel;
+import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
+import com.facebook.litho.specmodels.model.RenderDataDiffModel;
+import com.facebook.litho.specmodels.model.SimpleMethodParamModel;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
-
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
-
-import static com.facebook.litho.specmodels.generator.ComponentImplGenerator.getImplAccessor;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_IMPL_PARAM_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_VARIABLE_NAME;
-import static com.facebook.litho.specmodels.model.ClassNames.COMPONENT;
-import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
-import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class that generates delegate methods for a component.
  */
 public class DelegateMethodGenerator {
-
   private DelegateMethodGenerator() {
   }
 
-  /**
-   * Generate all delegates defined on this {@link SpecModel}.
-   */
+  /** Generate all delegates defined on this {@link SpecModel}. */
   public static TypeSpecDataHolder generateDelegates(
       SpecModel specModel,
-      Map<Class<? extends Annotation>, DelegateMethodDescription> delegateMethodsMap) {
+      Map<Class<? extends Annotation>, DelegateMethodDescription> delegateMethodsMap,
+      EnumSet<RunMode> runMode) {
     TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
-    for (DelegateMethodModel delegateMethodModel : specModel.getDelegateMethods()) {
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethodModel : specModel.getDelegateMethods()) {
       for (Annotation annotation : delegateMethodModel.annotations) {
         if (delegateMethodsMap.containsKey(annotation.annotationType())) {
           final DelegateMethodDescription delegateMethodDescription =
               delegateMethodsMap.get(annotation.annotationType());
           typeSpecDataHolder.addMethod(
-              generateDelegate(
-                  specModel,
-                  delegateMethodDescription,
-                  delegateMethodModel));
+              generateDelegate(specModel, delegateMethodDescription, delegateMethodModel, runMode));
           for (MethodSpec methodSpec : delegateMethodDescription.extraMethods) {
             typeSpecDataHolder.addMethod(methodSpec);
           }
@@ -68,16 +79,16 @@ public class DelegateMethodGenerator {
     return typeSpecDataHolder.build();
   }
 
-  /**
-   * Generate a delegate to the Spec that defines this component.
-   */
+  /** Generate a delegate to the Spec that defines this component. */
   private static MethodSpec generateDelegate(
       SpecModel specModel,
       DelegateMethodDescription methodDescription,
-      DelegateMethodModel delegateMethod) {
-    final MethodSpec.Builder methodSpec = MethodSpec.methodBuilder(methodDescription.name)
-        .addModifiers(methodDescription.accessType)
-        .returns(methodDescription.returnType);
+      SpecMethodModel<DelegateMethod, Void> delegateMethod,
+      EnumSet<RunMode> runMode) {
+    final MethodSpec.Builder methodSpec =
+        MethodSpec.methodBuilder(methodDescription.name)
+            .addModifiers(methodDescription.accessType)
+            .returns(methodDescription.returnType);
 
     for (AnnotationSpec annotation : methodDescription.annotations) {
       methodSpec.addAnnotation(annotation);
@@ -89,102 +100,231 @@ public class DelegateMethodGenerator {
           delegateMethod.methodParams.get(i).getName());
     }
 
-    if (!methodDescription.optionalParameterTypes.isEmpty()) {
-      methodSpec.addParameter(COMPONENT, ABSTRACT_IMPL_PARAM_NAME);
-    }
+    final boolean methodUsesDiffs =
+        methodDescription.optionalParameterTypes.contains(DIFF_PROP)
+            || methodDescription.optionalParameterTypes.contains(DIFF_STATE);
+    final String componentName = specModel.getComponentName();
 
     for (TypeName exception : methodDescription.exceptions) {
       methodSpec.addException(exception);
     }
 
-    if (!methodDescription.optionalParameterTypes.isEmpty()) {
-      final String implName = specModel.getComponentName() + "Impl";
+    if (methodUsesDiffs) {
+      methodSpec.addParameter(specModel.getComponentClass(), "_prevAbstractImpl");
+      methodSpec.addParameter(specModel.getComponentClass(), "_nextAbstractImpl");
       methodSpec.addStatement(
-          implName + " " + IMPL_VARIABLE_NAME + " = (" + implName + ") " +
-              ABSTRACT_IMPL_PARAM_NAME);
+          "$L _prevImpl = ($L) _prevAbstractImpl",
+          componentName,
+          componentName);
+      methodSpec.addStatement(
+          "$L _nextImpl = ($L) _nextAbstractImpl",
+          componentName,
+          componentName);
     }
 
-    final CodeBlock.Builder acquireOutputs = CodeBlock.builder();
-    final CodeBlock.Builder delegation = CodeBlock.builder();
-    final CodeBlock.Builder releaseOutputs = CodeBlock.builder();
-
-    final String sourceDelegateAccessor = DELEGATE_FIELD_NAME +
-        (!specModel.hasInjectedDependencies() ?
-            "" :
-            specModel.getDependencyInjectionHelper().getSourceDelegateAccessorMethod(specModel));
-    if (methodDescription.returnType.equals(TypeName.VOID)) {
-      delegation.add("$L.$L(\n", sourceDelegateAccessor, delegateMethod.name);
-    } else {
-      delegation.add(
-          "$T _result = ($T) $L.$L(\n",
-          methodDescription.returnType,
-          methodDescription.returnType,
-          sourceDelegateAccessor,
-          delegateMethod.name);
+    if (!methodDescription.returnType.equals(TypeName.VOID)) {
+      methodSpec.addStatement("$T _result", methodDescription.returnType);
     }
 
-    delegation.indent();
-    for (int i = 0, size = delegateMethod.methodParams.size(); i < size; i++) {
-      final MethodParamModel methodParamModel = delegateMethod.methodParams.get(i);
+    methodSpec.addCode(getDelegationCode(specModel, delegateMethod, methodDescription, runMode));
 
-      if (i < methodDescription.definedParameterTypes.size()) {
-        delegation.add("($T) $L", methodParamModel.getType(), methodParamModel.getName());
-      } else if (isOutputType(methodParamModel.getType())) {
-        acquireOutputs.add(
-            "$T $L = acquireOutput();\n", methodParamModel.getType(), methodParamModel.getName());
-        delegation.add("$L", methodParamModel.getName());
+    if (delegateMethod.name.toString().equals("onCreateLayout")
+        || delegateMethod.name.toString().equals("onPrepare")) {
+      SpecMethodModel<EventMethod, Void> registerRangesModel =
+          specModel.getWorkingRangeRegisterMethod();
 
-        final boolean isPropOutput = SpecModelUtils.isPropOutput(specModel, methodParamModel);
-        if (isPropOutput) {
-          releaseOutputs.beginControlFlow("if ($L.get() != null)", methodParamModel.getName());
+      if (registerRangesModel != null) {
+        CodeBlock.Builder registerDelegation =
+            CodeBlock.builder()
+                .add(
+                    "$L.$L(\n",
+                    SpecModelUtils.getSpecAccessor(specModel),
+                    registerRangesModel.name);
+
+        registerDelegation.indent();
+        for (int i = 0, size = registerRangesModel.methodParams.size(); i < size; i++) {
+          final MethodParamModel methodParamModel = registerRangesModel.methodParams.get(i);
+          registerDelegation.add(
+              "($T) $L",
+              methodParamModel.getTypeName(),
+              getImplAccessor(specModel, methodParamModel));
+          registerDelegation.add(
+              (i < registerRangesModel.methodParams.size() - 1) ? ",\n" : ");\n");
         }
-        releaseOutputs.addStatement(
-            "$L.$L = $L.get()",
-            IMPL_VARIABLE_NAME,
-            getImplAccessor(specModel, methodParamModel),
-            methodParamModel.getName());
-        if (isPropOutput) {
-          releaseOutputs.endControlFlow();
-        }
-        releaseOutputs.addStatement("releaseOutput($L)", methodParamModel.getName());
-      } else if (isStateValueType(methodParamModel.getType())) {
-        acquireOutputs.add(
-            "$T $L = new StateValue<>();\n",
-            methodParamModel.getType(),
-            methodParamModel.getName());
-        delegation.add("$L", methodParamModel.getName());
-
-        releaseOutputs.addStatement(
-            "$L.$L = $L.get()",
-            IMPL_VARIABLE_NAME,
-            getImplAccessor(specModel, methodParamModel),
-            methodParamModel.getName());
-      } else {
-        delegation.add(
-            "($T) $L.$L",
-            methodParamModel.getType(),
-            IMPL_VARIABLE_NAME,
-            getImplAccessor(specModel, methodParamModel));
-      }
-
-      if (i < delegateMethod.methodParams.size() - 1) {
-        delegation.add(",\n");
-      } else {
-        delegation.add(");\n");
+        registerDelegation.unindent();
+        methodSpec.addCode(registerDelegation.build());
       }
     }
-
-    delegation.unindent();
-
-    methodSpec.addCode(acquireOutputs.build());
-    methodSpec.addCode(delegation.build());
-    methodSpec.addCode(releaseOutputs.build());
 
     if (!methodDescription.returnType.equals(TypeName.VOID)) {
       methodSpec.addStatement("return _result");
     }
 
     return methodSpec.build();
+  }
+
+  public static CodeBlock getDelegationCode(
+      SpecModel specModel,
+      SpecMethodModel<DelegateMethod, Void> delegateMethod,
+      DelegateMethodDescription methodDescription,
+      EnumSet<RunMode> runMode) {
+    final CodeBlock.Builder acquireStatements = CodeBlock.builder();
+    final CodeBlock.Builder releaseStatements = CodeBlock.builder();
+
+    final List<ParamTypeAndName> delegationParams =
+        new ArrayList<>(delegateMethod.methodParams.size());
+    for (int i = 0, size = delegateMethod.methodParams.size(); i < size; i++) {
+      final MethodParamModel methodParamModel = delegateMethod.methodParams.get(i);
+      final int definedParameterTypesSize = methodDescription.definedParameterTypes.size();
+      if (i < definedParameterTypesSize) {
+        delegationParams.add(
+            ParamTypeAndName.create(methodParamModel.getTypeName(), methodParamModel.getName()));
+      } else if (i < definedParameterTypesSize + methodDescription.optionalParameters.size()
+          && shouldIncludeOptionalParameter(
+              methodParamModel,
+              methodDescription.optionalParameters.get(i - definedParameterTypesSize))) {
+        final MethodParamModel extraDefinedParam =
+            methodDescription.optionalParameters.get(i - definedParameterTypesSize);
+        delegationParams.add(
+            ParamTypeAndName.create(extraDefinedParam.getTypeName(), extraDefinedParam.getName()));
+      } else if (methodParamModel instanceof DiffPropModel
+          || methodParamModel instanceof DiffStateParamModel) {
+        acquireStatements.addStatement(
+            "$T $L = ($T) acquireDiff(_prevImpl == null ? null : _prevImpl.$L, "
+                + "_nextImpl == null ? null : _nextImpl.$L)",
+            methodParamModel.getTypeName(),
+            methodParamModel.getName(),
+            ClassNames.DIFF,
+            ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel),
+            ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel));
+        delegationParams.add(
+            ParamTypeAndName.create(methodParamModel.getTypeName(), methodParamModel.getName()));
+        releaseStatements.addStatement("releaseDiff($L)", methodParamModel.getName());
+      } else if (isOutputType(methodParamModel.getTypeName())) {
+        String localOutputName = methodParamModel.getName() + "Tmp";
+        acquireStatements.add(
+            "$T $L = acquireOutput();\n", methodParamModel.getTypeName(), localOutputName);
+        delegationParams.add(
+            ParamTypeAndName.create(methodParamModel.getTypeName(), localOutputName));
+
+        final boolean isPropOutput = SpecModelUtils.isPropOutput(specModel, methodParamModel);
+        if (isPropOutput) {
+          releaseStatements.beginControlFlow("if ($L.get() != null)", localOutputName);
+        }
+        releaseStatements.addStatement(
+            "$L = $L.get()",
+            getImplAccessor(specModel, methodParamModel),
+            localOutputName);
+        if (isPropOutput) {
+          releaseStatements.endControlFlow();
+        }
+        releaseStatements.addStatement("releaseOutput($L)", localOutputName);
+      } else if (isStateValueType(methodParamModel.getTypeName())) {
+        acquireStatements.add(
+            "$T $L = new StateValue<>();\n",
+            methodParamModel.getTypeName(),
+            methodParamModel.getName());
+        delegationParams.add(
+            ParamTypeAndName.create(methodParamModel.getTypeName(), methodParamModel.getName()));
+
+        if (delegateMethod.name.toString().equals("createInitialState")) {
+          releaseStatements.beginControlFlow("if ($L.get() != null)", methodParamModel.getName());
+        }
+
+        releaseStatements.addStatement(
+            "$L = $L.get()",
+            getImplAccessor(specModel, methodParamModel),
+            methodParamModel.getName());
+
+        if (delegateMethod.name.toString().equals("createInitialState")) {
+          releaseStatements.endControlFlow();
+        }
+
+      } else if (methodParamModel instanceof RenderDataDiffModel) {
+        final String diffName = "_" + methodParamModel.getName() + "Diff";
+        CodeBlock block =
+            CodeBlock.builder()
+                .add("$T $L = acquireDiff(\n", methodParamModel.getTypeName(), diffName)
+                .indent()
+                .add(
+                    "$L == null ? null : $L.$L,\n",
+                    PREVIOUS_RENDER_DATA_FIELD_NAME,
+                    PREVIOUS_RENDER_DATA_FIELD_NAME,
+                    methodParamModel.getName())
+                .add("$L);\n", getImplAccessor(specModel, methodParamModel))
+                .unindent()
+                .build();
+        acquireStatements.add(block);
+        releaseStatements.addStatement("releaseDiff($L)", diffName);
+        delegationParams.add(ParamTypeAndName.create(methodParamModel.getTypeName(), diffName));
+      } else {
+        delegationParams.add(
+            ParamTypeAndName.create(
+                methodParamModel.getTypeName(), getImplAccessor(specModel, methodParamModel)));
+      }
+    }
+
+    final CodeBlock.Builder codeBlock = CodeBlock.builder().add(acquireStatements.build());
+    final CodeBlock directDelegation =
+        getDelegationMethod(
+            specModel,
+            delegateMethod.name,
+            methodDescription.returnType,
+            ImmutableList.copyOf(delegationParams));
+
+    if (specModel.getTypeVariables().isEmpty() && runMode.contains(RunMode.HOTSWAP)) {
+      codeBlock.add(
+          HotswapGenerator.generateDelegatingMethod(
+              specModel,
+              delegateMethod.name.toString(),
+              delegateMethod.returnType,
+              ImmutableList.copyOf(delegationParams),
+              directDelegation));
+    } else {
+      codeBlock.add(directDelegation);
+    }
+
+    return codeBlock.add(releaseStatements.build()).build();
+  }
+
+  private static CodeBlock getDelegationMethod(
+      SpecModel specModel,
+      CharSequence methodName,
+      TypeName returnType,
+      ImmutableList<ParamTypeAndName> methodParams) {
+    final CodeBlock.Builder delegation = CodeBlock.builder();
+    final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
+    if (returnType.equals(TypeName.VOID)) {
+      delegation.add("$L.$L(\n", sourceDelegateAccessor, methodName);
+    } else {
+      delegation.add("_result = ($T) $L.$L(\n", returnType, sourceDelegateAccessor, methodName);
+    }
+
+    delegation.indent();
+    for (int i = 0; i < methodParams.size(); i++) {
+      delegation.add("($T) $L", methodParams.get(i).type, methodParams.get(i).name);
+
+      if (i < methodParams.size() - 1) {
+        delegation.add(",\n");
+      }
+    }
+
+    delegation.add(");\n");
+    delegation.unindent();
+
+    return delegation.build();
+  }
+
+  /**
+   * We consider an optional parameter as something that comes immediately after defined parameters
+   * and is not a special litho parameter (like a prop, state, etc...). This method verifies that
+   * optional parameters are the right type and have no additional annotations.
+   */
+  private static boolean shouldIncludeOptionalParameter(
+      MethodParamModel methodParamModel, MethodParamModel extraOptionalParameter) {
+    return methodParamModel instanceof SimpleMethodParamModel
+        && methodParamModel.getTypeName().equals(extraOptionalParameter.getTypeName())
+        && methodParamModel.getAnnotations().isEmpty();
   }
 
   private static boolean isOutputType(TypeName type) {
@@ -197,5 +337,19 @@ public class DelegateMethodGenerator {
     return type.equals(STATE_VALUE) ||
         (type instanceof ParameterizedTypeName &&
             ((ParameterizedTypeName) type).rawType.equals(STATE_VALUE));
+  }
+
+  static final class ParamTypeAndName {
+    final TypeName type;
+    final String name;
+
+    private ParamTypeAndName(TypeName type, String name) {
+      this.type = type;
+      this.name = name;
+    }
+
+    static ParamTypeAndName create(TypeName type, String name) {
+      return new ParamTypeAndName(type, name);
+    }
   }
 }

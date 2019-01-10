@@ -1,38 +1,46 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.specmodels.generator;
 
-import javax.lang.model.element.Modifier;
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getImplAccessor;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_PARAM_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.REF_VARIABLE_NAME;
+import static com.facebook.litho.specmodels.model.ClassNames.EVENT_HANDLER;
+import static com.facebook.litho.specmodels.model.ClassNames.OBJECT;
 
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.Param;
+import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
-import com.facebook.litho.specmodels.model.EventMethodModel;
+import com.facebook.litho.specmodels.model.EventMethod;
+import com.facebook.litho.specmodels.model.FieldModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelUtils;
-import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
-
+import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
-
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_IMPL_PARAM_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
-import static com.facebook.litho.specmodels.model.ClassNames.EVENT_HANDLER;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.IMPL_VARIABLE_NAME;
-import static com.facebook.litho.specmodels.model.ClassNames.OBJECT;
-import static com.facebook.litho.specmodels.generator.ComponentImplGenerator.getImplAccessor;
+import javax.lang.model.element.Modifier;
 
 /**
  * Class that generates the event methods for a Component.
@@ -69,7 +77,7 @@ public class EventGenerator {
   static TypeSpecDataHolder generateGetEventHandlerMethod(
       SpecModel specModel,
       EventDeclarationModel eventDeclaration) {
-    final String scopeMethodName = "getComponentScope";
+    final String scopeMethodName = specModel.getScopeMethodName();
     return TypeSpecDataHolder.newBuilder()
         .addMethod(
             MethodSpec.methodBuilder("get" + eventDeclaration.name.simpleName() + "Handler")
@@ -83,11 +91,10 @@ public class EventGenerator {
                         .endControlFlow()
                         .build())
                 .addStatement(
-                    "return (($L.$L) context.$L()).$L",
+                    "return (($L) context.$L()).$L",
                     specModel.getComponentName(),
-                    ComponentImplGenerator.getImplClassName(specModel),
                     scopeMethodName,
-                    ComponentImplGenerator.getEventHandlerInstanceName(eventDeclaration.name))
+                    ComponentBodyGenerator.getEventHandlerInstanceName(eventDeclaration.name))
                 .build())
         .build();
   }
@@ -103,69 +110,95 @@ public class EventGenerator {
   }
 
   static TypeSpecDataHolder generateEventDispatcher(EventDeclarationModel eventDeclaration) {
+    final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
+    final String poolName = "s" + eventDeclaration.name.simpleName() + "Pool";
+    final TypeName poolType =
+        ParameterizedTypeName.get(ClassNames.SYNCHRONIZED_POOL, eventDeclaration.name);
+    typeSpecDataHolder.addField(
+        FieldSpec.builder(poolType, poolName, Modifier.STATIC, Modifier.FINAL)
+            .initializer("new $T(2)", poolType)
+            .build());
+
     MethodSpec.Builder eventDispatcherMethod =
         MethodSpec.methodBuilder("dispatch" + eventDeclaration.name.simpleName())
             .addModifiers(Modifier.STATIC)
             .addParameter(ClassNames.EVENT_HANDLER, "_eventHandler");
 
-    eventDispatcherMethod.addStatement(
-        "$T _eventState = new $T()",
-        eventDeclaration.name,  // need to make these into types
-        eventDeclaration.name);
+    eventDispatcherMethod
+        .addStatement("$T _eventState = $L.acquire()", eventDeclaration.name, poolName)
+        .beginControlFlow("if (_eventState == null)")
+        .addStatement("_eventState = new $T()", eventDeclaration.name)
+        .endControlFlow();
 
-    for (EventDeclarationModel.FieldModel fieldModel : eventDeclaration.fields) {
+    final CodeBlock.Builder resetCode = CodeBlock.builder();
+    for (FieldModel fieldModel : eventDeclaration.fields) {
+      if (fieldModel.field.modifiers.contains(Modifier.FINAL)) {
+        continue;
+      }
       eventDispatcherMethod
           .addParameter(fieldModel.field.type, fieldModel.field.name)
           .addStatement("_eventState.$L = $L", fieldModel.field.name, fieldModel.field.name);
+      if (!fieldModel.field.type.isPrimitive()) {
+        resetCode.addStatement("_eventState.$L = null", fieldModel.field.name);
+      }
     }
 
     eventDispatcherMethod.addStatement(
         "$T _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher()",
         ClassNames.EVENT_DISPATCHER);
 
+    resetCode.addStatement("$L.release(_eventState)", poolName);
     if (eventDeclaration.returnType.equals(TypeName.VOID)) {
       eventDispatcherMethod.addStatement("_lifecycle.dispatchOnEvent(_eventHandler, _eventState)");
+      eventDispatcherMethod.addCode(resetCode.build());
     } else {
       eventDispatcherMethod
           .addStatement(
-              "return ($L) _lifecycle.dispatchOnEvent(_eventHandler, _eventState)",
+              "$T result = ($T) _lifecycle.dispatchOnEvent(_eventHandler, _eventState)",
+              eventDeclaration.returnType,
               eventDeclaration.returnType)
           .returns(eventDeclaration.returnType);
+      eventDispatcherMethod.addCode(resetCode.build());
+      eventDispatcherMethod.addStatement("return result");
     }
 
-    return TypeSpecDataHolder.newBuilder().addMethod(eventDispatcherMethod.build()).build();
+    return typeSpecDataHolder.addMethod(eventDispatcherMethod.build()).build();
   }
 
   static TypeSpecDataHolder generateEventMethods(SpecModel specModel) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
-    for (EventMethodModel eventMethod : specModel.getEventMethods()) {
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod :
+        specModel.getEventMethods()) {
       typeSpecDataHolder.addMethod(generateEventMethod(specModel, eventMethod));
     }
 
     return typeSpecDataHolder.build();
   }
 
-  /**
-   * Generate a delegate to the Spec that defines this event method.
-   */
+  /** Generate a delegate to the Spec that defines this event method. */
   static MethodSpec generateEventMethod(
-      SpecModel specModel,
-      EventMethodModel eventMethodModel) {
-    final String implName = specModel.getComponentName() + "Impl";
+      SpecModel specModel, SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
+    final String componentName = specModel.getComponentName();
     final MethodSpec.Builder methodSpec = MethodSpec.methodBuilder(eventMethodModel.name.toString())
         .addModifiers(Modifier.PRIVATE)
         .returns(eventMethodModel.returnType)
-        .addParameter(ClassNames.HAS_EVENT_DISPATCHER_CLASSNAME, ABSTRACT_IMPL_PARAM_NAME)
+        .addParameter(ClassNames.HAS_EVENT_DISPATCHER_CLASSNAME, ABSTRACT_PARAM_NAME)
         .addStatement(
-            "$L $L = ($L) $L", implName, IMPL_VARIABLE_NAME, implName, ABSTRACT_IMPL_PARAM_NAME);
+            "$L $L = ($L) $L",
+            componentName,
+            REF_VARIABLE_NAME,
+            componentName,
+            ABSTRACT_PARAM_NAME);
 
     final CodeBlock.Builder delegation = CodeBlock.builder();
 
-    final String sourceDelegateAccessor = DELEGATE_FIELD_NAME +
-        (specModel.hasInjectedDependencies() ?
-            specModel.getDependencyInjectionHelper().getSourceDelegateAccessorMethod(specModel) :
-            "");
-    if (eventMethodModel.returnType.equals(TypeName.VOID)) {
+    final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
+    final boolean isErrorDelegation =
+        eventMethodModel.name.toString().equals(EventCaseGenerator.INTERNAL_ON_ERROR_HANDLER_NAME);
+
+    if (isErrorDelegation) {
+      delegation.add("$L(\n", "onError");
+    } else if (eventMethodModel.returnType.equals(TypeName.VOID)) {
       delegation.add("$L.$L(\n", sourceDelegateAccessor, eventMethodModel.name);
     } else {
       delegation.add(
@@ -182,14 +215,14 @@ public class EventGenerator {
 
       if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromEvent.class) ||
           MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class) ||
-          methodParamModel.getType().equals(specModel.getContextClass())) {
-        methodSpec.addParameter(methodParamModel.getType(), methodParamModel.getName());
+          methodParamModel.getTypeName().equals(specModel.getContextClass())) {
+        methodSpec.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
         delegation.add(methodParamModel.getName());
       } else {
         delegation.add(
             "($T) $L.$L",
-            methodParamModel.getType(),
-            IMPL_VARIABLE_NAME,
+            methodParamModel.getTypeName(),
+            REF_VARIABLE_NAME,
             getImplAccessor(specModel, methodParamModel));
       }
 
@@ -226,52 +259,14 @@ public class EventGenerator {
             ParameterSpec.builder(OBJECT, "eventState", Modifier.FINAL).build());
 
     methodBuilder.addStatement("int id = eventHandler.id");
-    methodBuilder.beginControlFlow("switch($L)", "id");
+    methodBuilder.beginControlFlow("switch ($L)", "id");
 
-    for (EventMethodModel eventMethodModel : specModel.getEventMethods()) {
-      methodBuilder.beginControlFlow("case $L:", eventMethodModel.name.toString().hashCode());
-
-      final String eventVariableName = "_event";
-
-      methodBuilder.addStatement(
-          "$T $L = ($T) $L",
-          eventMethodModel.eventType.name,
-          eventVariableName,
-          eventMethodModel.eventType.name,
-          "eventState");
-
-      final CodeBlock.Builder eventHandlerParams = CodeBlock.builder()
-          .indent()
-          .add("\n$L", "eventHandler.mHasEventDispatcher");
-
-      int paramIndex = 0;
-      for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
-        if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromEvent.class)) {
-          eventHandlerParams.add(",\n$L.$L", eventVariableName, methodParamModel.getName());
-        } else if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class) ||
-            methodParamModel.getType().equals(specModel.getContextClass())) {
-          eventHandlerParams.add(
-              ",\n($T) eventHandler.params[$L]", methodParamModel.getType(), paramIndex++);
-        }
-      }
-
-      eventHandlerParams.unindent();
-
-      if (!eventMethodModel.returnType.equals(TypeName.VOID)) {
-        methodBuilder.addStatement(
-            "return $L($L)",
-            eventMethodModel.name,
-            eventHandlerParams.build());
-      } else {
-        methodBuilder.addStatement(
-            "$L($L)",
-            eventMethodModel.name,
-            eventHandlerParams.build());
-        methodBuilder.addStatement("return null");
-      }
-
-      methodBuilder.endControlFlow();
-    }
+    EventCaseGenerator.builder()
+        .contextClass(specModel.getContextClass())
+        .eventMethodModels(specModel.getEventMethods())
+        // For now, Sections are not supported for error propagation
+        .withErrorPropagation(specModel.getComponentClass().equals(ClassNames.COMPONENT))
+        .writeTo(methodBuilder);
 
     return methodBuilder.addStatement("default:\nreturn null")
         .endControlFlow()
@@ -280,25 +275,25 @@ public class EventGenerator {
 
   static TypeSpecDataHolder generateEventHandlerFactories(SpecModel specModel) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
-    for (EventMethodModel eventMethodModel : specModel.getEventMethods()) {
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel :
+        specModel.getEventMethods()) {
       typeSpecDataHolder.addMethod(
           generateEventHandlerFactory(eventMethodModel, specModel.getContextClass()));
-      typeSpecDataHolder.addMethod(
-          generateEventHandlerFactory(eventMethodModel, specModel.getComponentClass()));
     }
 
     return typeSpecDataHolder.build();
   }
 
   static MethodSpec generateEventHandlerFactory(
-      EventMethodModel eventMethodModel,
-      TypeName paramClass) {
-    final MethodSpec.Builder builder = MethodSpec.methodBuilder(eventMethodModel.name.toString())
-        .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-        .addParameter(paramClass, "c")
-        .returns(ParameterizedTypeName.get(
-            ClassNames.EVENT_HANDLER,
-            eventMethodModel.eventType.name));
+      SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel, TypeName paramClass) {
+    final MethodSpec.Builder builder =
+        MethodSpec.methodBuilder(eventMethodModel.name.toString())
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+            .addTypeVariables(eventMethodModel.typeVariables)
+            .addParameter(paramClass, "c")
+            .returns(
+                ParameterizedTypeName.get(
+                    ClassNames.EVENT_HANDLER, eventMethodModel.typeModel.name));
 
     final CodeBlock.Builder paramsBlock = CodeBlock.builder();
 
@@ -308,11 +303,11 @@ public class EventGenerator {
 
     for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
       if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
-        builder.addParameter(methodParamModel.getType(), methodParamModel.getName());
+        builder.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
         paramsBlock.add("$L,\n", methodParamModel.getName());
 
-        if (methodParamModel.getType() instanceof TypeVariableName) {
-          builder.addTypeVariable((TypeVariableName) methodParamModel.getType());
+        if (methodParamModel.getTypeName() instanceof TypeVariableName) {
+          builder.addTypeVariable((TypeVariableName) methodParamModel.getTypeName());
         }
       }
     }
@@ -327,4 +322,5 @@ public class EventGenerator {
 
     return builder.build();
   }
+
 }

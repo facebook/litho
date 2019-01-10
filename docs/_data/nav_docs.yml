@@ -16,12 +16,31 @@
   - id: props
   - id: state
   - id: layout
-  - id: recycler-component
+  - id: error-boundaries
+  - id: border
+  - id: recycler-collection-component
+  - id: cached-values
+  - id: transition-animations
+  - id: tooltips
+  - id: glossary
 - title: Handling Events
   items:
   - id: events-overview
   - id: events-touch-handling
   - id: visibility-handling
+- title: Sections
+  items:
+  - id: sections-intro
+  - id: sections-tutorial
+  - id: group-sections
+  - id: diff-sections
+  - id: sections-building-blocks
+  - id: communicating-with-the-ui
+  - id: sections-testing
+  - id: sections-view-support
+  - id: services
+  - id: sections-architecture
+  - id: sections-working-ranges
 - title: Compatibility
   items:
   - id: styles
@@ -29,9 +48,18 @@
   - id: rtl
 - title: Testing
   items:
+  - id: testing-overview
   - id: unit-testing
+  - id: subcomponent-testing
+  - id: prop-matching
+  - id: injectprop-matching
+  - id: event-handler-testing
+  - id: espresso-testing
+  - id: tests-in-android-studio
 - title: Advanced Guides
   items:
+  - id: architecture-overview
+  - id: recycler-component
   - id: custom-layout
   - id: tree-props
   - id: inc-mount
@@ -43,9 +71,10 @@
   - id: inc-mount-architecture
   - id: view-flattening
   - id: recycling
-- title: Best Practices
+- title: Additional Resources
   items:
   - id: best-practices
+  - id: faq
 - title: Tools
   items:
   - id: debugging
@@ -53,4 +82,5 @@
 - title: Contributing
   items:
   - id: contributing
+  - id: community-showcase
   - id: repo-structure

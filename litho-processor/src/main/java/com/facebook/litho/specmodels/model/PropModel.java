@@ -1,24 +1,29 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.specmodels.model;
 
-import javax.annotation.concurrent.Immutable;
-
-import java.lang.annotation.Annotation;
-import java.util.List;
-
-import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.annotations.ResType;
-
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
+import java.lang.annotation.Annotation;
+import java.util.List;
+import java.util.Objects;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Model that is an abstract representation of a {@link com.facebook.litho.annotations.Prop}.
@@ -27,20 +32,34 @@ import com.squareup.javapoet.TypeName;
 public class PropModel implements MethodParamModel {
   private final MethodParamModel mParamModel;
   private final boolean mIsOptional;
+  private final boolean mIsCommonProp;
+  private final boolean mOverrideCommonPropBehavior;
   private final ResType mResType;
+  private final String mVarArgSingleArgName;
 
-  PropModel(
+  public PropModel(
       MethodParamModel paramModel,
       boolean isOptional,
-      ResType resType) {
+      boolean isCommonProp,
+      boolean overrideCommonPropBehavior,
+      ResType resType,
+      String varArg) {
     mParamModel = paramModel;
     mIsOptional = isOptional;
+    mIsCommonProp = isCommonProp;
+    mOverrideCommonPropBehavior = overrideCommonPropBehavior;
     mResType = resType;
+    mVarArgSingleArgName = varArg;
   }
 
   @Override
-  public TypeName getType() {
-    return mParamModel.getType();
+  public TypeSpec getTypeSpec() {
+    return mParamModel.getTypeSpec();
+  }
+
+  @Override
+  public TypeName getTypeName() {
+    return mParamModel.getTypeName();
   }
 
   @Override
@@ -67,8 +86,24 @@ public class PropModel implements MethodParamModel {
     return mIsOptional;
   }
 
+  public boolean isCommonProp() {
+    return mIsCommonProp;
+  }
+
+  public boolean overrideCommonPropBehavior() {
+    return mOverrideCommonPropBehavior;
+  }
+
   public ResType getResType() {
     return mResType;
+  }
+
+  public boolean hasVarArgs() {
+    return !mVarArgSingleArgName.isEmpty();
+  }
+
+  public String getVarArgsSingleName() {
+    return mVarArgSingleArgName;
   }
 
   /**
@@ -77,7 +112,7 @@ public class PropModel implements MethodParamModel {
    */
   public boolean hasDefault(ImmutableList<PropDefaultModel> propDefaults) {
     for (PropDefaultModel propDefault : propDefaults) {
-      if (propDefault.mType.equals(mParamModel.getType())
+      if (propDefault.mType.equals(mParamModel.getTypeName())
           && propDefault.mName.equals(mParamModel.getName())) {
         return true;
       }
@@ -86,13 +121,26 @@ public class PropModel implements MethodParamModel {
     return false;
   }
 
+  /** @return a new {@link PropModel} instance with the given name overridden. */
+  public PropModel withName(String name) {
+    return new PropModel(
+        mParamModel, mIsOptional, mIsCommonProp, false, mResType, mVarArgSingleArgName) {
+      @Override
+      public String getName() {
+        return name;
+      }
+    };
+  }
+
   @Override
   public boolean equals(Object o) {
     if (o instanceof PropModel) {
       final PropModel p = (PropModel) o;
       return mParamModel.equals(p.mParamModel)
           && mIsOptional == p.mIsOptional
-          && mResType.equals(p.mResType);
+          && mIsCommonProp == p.mIsCommonProp
+          && mResType == p.mResType
+          && mVarArgSingleArgName.equals(p.getVarArgsSingleName());
     }
 
     return false;
@@ -100,9 +148,6 @@ public class PropModel implements MethodParamModel {
 
   @Override
   public int hashCode() {
-    int result = mParamModel.hashCode();
-    result = 17 * result + (mIsOptional ? 1 : 0);
-    result = 31 * result + mResType.hashCode();
-    return result;
+    return Objects.hash(mParamModel, mIsOptional, mIsCommonProp, mResType, mVarArgSingleArgName);
   }
 }

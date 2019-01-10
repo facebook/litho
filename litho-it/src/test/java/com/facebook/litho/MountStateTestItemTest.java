@@ -1,32 +1,37 @@
 /*
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
+import static com.facebook.litho.testing.assertj.LithoViewAssert.times;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.assertj.LithoViewAssert;
+import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.widget.Text;
-import com.facebook.yoga.YogaAlign;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-
-import static com.facebook.litho.testing.assertj.LithoViewAssert.times;
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 @RunWith(ComponentsTestRunner.class)
 public class MountStateTestItemTest {
@@ -52,25 +57,23 @@ public class MountStateTestItemTest {
 
   @Test
   public void testInnerComponentHostViewTags() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .child(
-                    Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                        .child(TestDrawableComponent.create(c))
-                        .child(TestDrawableComponent.create(c))
-                        .testKey(TEST_ID_1))
-                .child(TestDrawableComponent.create(c))
-                .child(
-                    TestDrawableComponent.create(c)
-                        .withLayout().flexShrink(0)
-                        .testKey(TEST_ID_2))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        ComponentTestHelper.mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .child(
+                        Column.create(c)
+                            .child(TestDrawableComponent.create(c))
+                            .child(TestDrawableComponent.create(c))
+                            .testKey(TEST_ID_1))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c).testKey(TEST_ID_2))
+                    .build();
+              }
+            });
 
     LithoViewAssert.assertThat(lithoView)
         .containsTestKey(TEST_ID_1)
@@ -80,25 +83,23 @@ public class MountStateTestItemTest {
 
   @Test
   public void testMultipleIdenticalInnerComponentHostViewTags() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .child(
-                    Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                        .child(TestDrawableComponent.create(c))
-                        .child(TestDrawableComponent.create(c))
-                        .testKey(TEST_ID_1))
-                .child(TestDrawableComponent.create(c))
-                .child(
-                    TestDrawableComponent.create(c)
-                        .withLayout().flexShrink(0)
-                        .testKey(TEST_ID_1))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        ComponentTestHelper.mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .child(
+                        Column.create(c)
+                            .child(TestDrawableComponent.create(c))
+                            .child(TestDrawableComponent.create(c))
+                            .testKey(TEST_ID_1))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c).testKey(TEST_ID_1))
+                    .build();
+              }
+            });
 
     LithoViewAssert.assertThat(lithoView)
         .containsTestKey(TEST_ID_1, times(2))
@@ -107,29 +108,24 @@ public class MountStateTestItemTest {
 
   @Test
   public void testSkipInvalidTestKeys() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .child(
-                    Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                        .child(TestDrawableComponent.create(c))
-                        .child(TestDrawableComponent.create(c))
-                        .testKey(""))
-                .child(TestDrawableComponent.create(c))
-                .child(
-                    TestDrawableComponent.create(c)
-                        .withLayout().flexShrink(0)
-                        .testKey(null))
-                .child(
-                    TestDrawableComponent.create(c)
-                        .withLayout().flexShrink(0)
-                        .testKey(TEST_ID_1))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        ComponentTestHelper.mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .child(
+                        Column.create(c)
+                            .child(TestDrawableComponent.create(c))
+                            .child(TestDrawableComponent.create(c))
+                            .testKey(""))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c).testKey(null))
+                    .child(TestDrawableComponent.create(c).testKey(TEST_ID_1))
+                    .build();
+              }
+            });
 
     LithoViewAssert.assertThat(lithoView)
         .doesNotContainTestKey("")
@@ -139,20 +135,17 @@ public class MountStateTestItemTest {
 
   @Test
   public void testTextItemTextContent() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .child(
-                    Text.create(c)
-                        .text(MY_TEST_STRING_1)
-                        .withLayout().flexShrink(0)
-                        .testKey(TEST_ID_1))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        ComponentTestHelper.mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .child(Text.create(c).text(MY_TEST_STRING_1).testKey(TEST_ID_1))
+                    .build();
+              }
+            });
 
     LithoViewAssert.assertThat(lithoView).containsTestKey(TEST_ID_1);
     final TestItem item1 = LithoViewTestHelper.findTestItem(lithoView, TEST_ID_1);
@@ -161,25 +154,18 @@ public class MountStateTestItemTest {
 
   @Test
   public void testMultipleTextItemsTextContents() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .child(
-                    Text.create(c)
-                        .text(MY_TEST_STRING_1)
-                        .withLayout().flexShrink(0)
-                        .testKey(TEST_ID_1))
-                .child(
-                    Text.create(c)
-                        .text(MY_TEST_STRING_2)
-                        .withLayout().flexShrink(0)
-                        .testKey(TEST_ID_2))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        ComponentTestHelper.mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .child(Text.create(c).text(MY_TEST_STRING_1).testKey(TEST_ID_1))
+                    .child(Text.create(c).text(MY_TEST_STRING_2).testKey(TEST_ID_2))
+                    .build();
+              }
+            });
 
     LithoViewAssert.assertThat(lithoView).containsTestKey(TEST_ID_1);
     final TestItem item1 = LithoViewTestHelper.findTestItem(lithoView, TEST_ID_1);
@@ -190,26 +176,22 @@ public class MountStateTestItemTest {
 
   @Test
   public void testTextItemsWithClickHandler() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .child(
-                    Text.create(c)
-                        .text(MY_TEST_STRING_1)
-                        .withLayout().flexShrink(0)
-                        .clickHandler(mock(EventHandler.class))
-                        .testKey(TEST_ID_1))
-                .child(
-                    Text.create(c)
-                        .text(MY_TEST_STRING_2)
-                        .withLayout().flexShrink(0)
-                        .testKey(TEST_ID_2))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        ComponentTestHelper.mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return Column.create(c)
+                    .child(
+                        Text.create(c)
+                            .text(MY_TEST_STRING_1)
+                            .clickHandler(mock(EventHandler.class))
+                            .testKey(TEST_ID_1))
+                    .child(Text.create(c).text(MY_TEST_STRING_2).testKey(TEST_ID_2))
+                    .build();
+              }
+            });
 
     LithoViewAssert.assertThat(lithoView).containsTestKey(TEST_ID_1);
     final TestItem item1 = LithoViewTestHelper.findTestItem(lithoView, TEST_ID_1);

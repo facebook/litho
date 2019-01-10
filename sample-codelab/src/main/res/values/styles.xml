@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- hello world -->
+  <style name="hello_world" parent="@android:style/TextAppearance.Medium">
+    <item name="android:textColor">#00FF00</item>
+    <item name="android:typeface">monospace</item>
+  </style>
+
+  <!-- end state -->
+  <style name="header_title">
+    <item name="android:textSize">18sp</item>
+    <item name="android:textStyle">bold</item>
+  </style>
+  <style name="header_subtitle">
+    <item name="android:textSize">8sp</item>
+    <item name="android:textColor">#888888</item>
+  </style>
+  <style name="message_text">
+    <item name="android:textSize">22sp</item>
+    <item name="android:typeface">serif</item>
+  </style>
+  <style name="save_text">
+    <item name="android:textSize">14sp</item>
+  </style>
+</resources>

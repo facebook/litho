@@ -1,3 +1,15 @@
+/*
+ * This file provided by Facebook is for non-commercial testing and evaluation
+ * purposes only.  Facebook reserves all rights not expressly granted.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 apply plugin: 'com.android.application'
 
 android {
@@ -18,11 +30,15 @@ android {
 }
 
 dependencies {
-    compile project(':litho-core')
-    compile project(':litho-widget')
-    provided project(':litho-annotations')
+    implementation project(':litho-core')
+    implementation project(':litho-widget')
+    implementation project(':litho-sections-core')
+    implementation project(':litho-sections-widget')
+    compileOnly project(':litho-annotations')
+    compileOnly project(':litho-sections-annotations')
     annotationProcessor project(':litho-processor')
+    annotationProcessor project(':litho-sections-processor')
 
-    compile deps.soloader
-    compile deps.supportRecyclerView
+    implementation deps.soloader
+    implementation deps.supportRecyclerView
 }

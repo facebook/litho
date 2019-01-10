@@ -1,0 +1,33 @@
+# Copyright 2014-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE-examples file in the root directory of this source tree.
+
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_SAMPLE_CODELAB_JAVA", "fb_android_resource")
+
+fb_native.android_binary(
+    name = "sample-codelab",
+    includes_vector_drawables = True,
+    keystore = ":debug_keystore",
+    manifest = "src/main/AndroidManifest.xml",
+    deps = [
+        LITHO_SAMPLE_CODELAB_JAVA,
+    ],
+)
+
+fb_android_resource(
+    name = "res",
+    package = "com.facebook.samples.lithocodelab",
+    res = "src/main/res",
+    visibility = [
+        "PUBLIC",
+    ],
+)
+
+fb_native.keystore(
+    name = "debug_keystore",
+    properties = "debug.keystore.properties",
+    store = "debug.keystore",
+)

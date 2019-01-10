@@ -1,20 +1,20 @@
-/**
- * Copyright 2014-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * This file provided by Facebook is for non-commercial testing and evaluation
+ * purposes only.  Facebook reserves all rights not expressly granted.
  *
- * This source code is licensed under the license found in the
- * LICENSE-examples file in the root directory of this source tree.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 package com.facebook.samples.litho.lithography;
 
-import android.support.v7.widget.OrientationHelper;
-
-import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentInfo;
-import com.facebook.litho.widget.LinearLayoutInfo;
-import com.facebook.litho.widget.RecyclerBinder;
+import com.facebook.litho.widget.ComponentRenderInfo;
+import com.facebook.litho.widget.RenderInfo;
 
 public class Artist implements Datum {
 
@@ -31,26 +31,9 @@ public class Artist implements Datum {
   }
 
   @Override
-  public Component createComponent(ComponentContext c) {
-    final RecyclerBinder imageRecyclerBinder = new RecyclerBinder(
-        c,
-        4.0f,
-        new LinearLayoutInfo(c, OrientationHelper.HORIZONTAL, false));
-
-    for (String image : images) {
-      ComponentInfo.Builder imageComponentInfoBuilder = ComponentInfo.create();
-      imageComponentInfoBuilder.component(
-          SingleImageComponent.create(c)
-              .image(image)
-              .aspectRatio(2f)
-              .build());
-      imageRecyclerBinder.insertItemAt(
-          imageRecyclerBinder.getItemCount(),
-          imageComponentInfoBuilder.build());
-    }
-    return FeedItemCard.create(c)
-        .artist(this)
-        .binder(imageRecyclerBinder)
+  public RenderInfo createComponent(ComponentContext c) {
+    return ComponentRenderInfo.create()
+        .component(FeedItemCard.create(c).artist(this).build())
         .build();
   }
 }

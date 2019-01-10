@@ -1,18 +1,23 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.dataflow;
 
-import java.util.ArrayList;
-
 import android.support.annotation.VisibleForTesting;
-import com.facebook.litho.internal.ArraySet;
+import java.util.ArrayList;
 
 /**
  * Defines the relationship of a set of input values to a set of output values where the values from
@@ -26,7 +31,7 @@ public final class GraphBinding {
 
   private final DataFlowGraph mDataFlowGraph;
   private final Bindings mBindings = new Bindings();
-  private final ArraySet<ValueNode> mAllNodes = new ArraySet<>();
+  private final ArrayList<ValueNode> mAllNodes = new ArrayList<>();
   private BindingListener mListener;
   private boolean mIsActive = false;
   private boolean mHasBeenActivated = false;
@@ -65,10 +70,8 @@ public final class GraphBinding {
     addBinding(fromNode, toNode, ValueNode.DEFAULT_INPUT);
   }
 
-  /**
-   * @return all nodes that have a binding defined in this {@link GraphBinding}.
-   */
-  ArraySet<ValueNode> getAllNodes() {
+  /** @return all nodes that have a binding defined in this {@link GraphBinding}. */
+  ArrayList<ValueNode> getAllNodes() {
     return mAllNodes;
   }
 
@@ -92,6 +95,10 @@ public final class GraphBinding {
    * developer.
    */
   public void deactivate() {
+    if (!mIsActive) {
+      return;
+    }
+
     mIsActive = false;
     mDataFlowGraph.unregister(this);
     mBindings.removeBindings();
@@ -108,6 +115,7 @@ public final class GraphBinding {
     if (mListener != null) {
       mListener.onAllNodesFinished(this);
     }
+    deactivate();
   }
 
   /**

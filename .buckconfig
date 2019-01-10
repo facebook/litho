@@ -1,12 +1,15 @@
-[download]
-  maven_repo = https://jcenter.bintray.com/
+[maven_repositories]
+  jcenter = https://jcenter.bintray.com/
+  nuiton = http://maven.nuiton.org/release/
+  central = https://repo1.maven.org/maven2/
+  google = https://maven.google.com/
 
 [ndk]
-  ndk_version = 13.1.3345770
+  ndk_version = 15.2.4203891
   compiler = clang
-  app_platform = android-21
+  app_platform = android-24
   cpu_abis = arm64, armv7, x86, x86_64
 
 [android]
-  target = android-25
-  build_tools_version = 23.0.2
+  target = android-28
+  build_tools_version = 27.0.3

@@ -1,133 +1,180 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
 import android.content.Context;
-import android.content.ContextWrapper;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.os.Looper;
 import android.support.annotation.AttrRes;
+import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
-
-import com.facebook.litho.R;
+import android.support.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
  * A Context subclass for use within the Components framework. Contains extra bookkeeping
  * information used internally in the library.
  */
-public class ComponentContext extends ContextWrapper {
+public class ComponentContext {
 
   static final InternalNode NULL_LAYOUT = new NoOpInternalNode();
 
+  private final Context mContext;
   private final String mLogTag;
   private final ComponentsLogger mLogger;
-  private final StateHandler mStateHandler;
+  private final @Nullable StateHandler mStateHandler;
+
+  /** TODO: (T38237241) remove the usage of the key handler post the nested tree experiment */
+  private final @Nullable KeyHandler mKeyHandler;
+
   private String mNoStateUpdatesMethod;
 
   // Hold a reference to the component which scope we are currently within.
-  private @ThreadConfined(ThreadConfined.ANY) Component<?> mComponentScope;
-  private @ThreadConfined(ThreadConfined.ANY) ResourceCache mResourceCache;
-  private @ThreadConfined(ThreadConfined.ANY) int mWidthSpec;
-  private @ThreadConfined(ThreadConfined.ANY) int mHeightSpec;
-  protected @ThreadConfined(ThreadConfined.ANY) TreeProps mTreeProps;
+  @ThreadConfined(ThreadConfined.ANY)
+  private Component mComponentScope;
+  @ThreadConfined(ThreadConfined.ANY)
+  private final ResourceCache mResourceCache;
+  @ThreadConfined(ThreadConfined.ANY)
+  private int mWidthSpec;
+  @ThreadConfined(ThreadConfined.ANY)
+  private int mHeightSpec;
 
-  private @ThreadConfined(ThreadConfined.ANY) ComponentTree mComponentTree;
+  @ThreadConfined(ThreadConfined.ANY)
+  private @Nullable TreeProps mTreeProps;
+
+  @ThreadConfined(ThreadConfined.ANY)
+  private ComponentTree mComponentTree;
 
   // Used to hold styling information applied to components
-  private @ThreadConfined(ThreadConfined.ANY) @StyleRes int mDefStyleRes = 0;
-  private @ThreadConfined(ThreadConfined.ANY) @AttrRes int mDefStyleAttr = 0;
+  @StyleRes
+  @ThreadConfined(ThreadConfined.ANY)
+  private int mDefStyleRes = 0;
+  @AttrRes
+  @ThreadConfined(ThreadConfined.ANY)
+  private int mDefStyleAttr = 0;
 
-  public ComponentContext(Context context) {
-    this(context, null, null, null);
+  public ComponentContext(
+      Context context,
+      String logTag,
+      ComponentsLogger logger,
+      @Nullable StateHandler stateHandler,
+      @Nullable KeyHandler keyHandler,
+      @Nullable TreeProps treeProps) {
+
+    if (logger != null && logTag == null) {
+      throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
+    }
+
+    mContext = context;
+    mResourceCache = ResourceCache.getLatest(context.getResources().getConfiguration());
+    mTreeProps = treeProps;
+    mLogger = logger;
+    mLogTag = logTag;
+    mStateHandler = stateHandler;
+    mKeyHandler = keyHandler;
   }
 
-  public ComponentContext(Context context, StateHandler stateHandler) {
-    this(context, null, null, stateHandler);
+  public ComponentContext(
+      ComponentContext context,
+      @Nullable StateHandler stateHandler,
+      @Nullable KeyHandler keyHandler,
+      @Nullable TreeProps treeProps) {
+
+    mContext = context.getAndroidContext();
+    mResourceCache = context.mResourceCache;
+    mWidthSpec = context.mWidthSpec;
+    mHeightSpec = context.mHeightSpec;
+    mComponentScope = context.mComponentScope;
+    mComponentTree = context.mComponentTree;
+    mLogger = context.mLogger;
+    mLogTag = context.mLogTag;
+
+    mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
+    mKeyHandler = keyHandler != null ? keyHandler : context.mKeyHandler;
+    mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
+  }
+
+  public ComponentContext(
+      Context context, String logTag, ComponentsLogger logger, @Nullable TreeProps treeProps) {
+    this(context, logTag, logger, null, null, treeProps);
   }
 
   /**
-   *  Constructor that can be used to receive log data from components.
-   *  Check {@link ComponentsLogger} for the type of events you can listen for.
+   * Constructor that can be used to receive log data from components. Check {@link
+   * ComponentsLogger} for the type of events you can listen for.
    *
    * @param context Android context.
    * @param logTag Specify a log tag, to be used with the logger.
    * @param logger Specify the lifecycle logger to be used.
    */
   public ComponentContext(Context context, String logTag, ComponentsLogger logger) {
-   this(context, logTag, logger, null);
+    this(context, logTag, logger, null, null, null);
   }
 
-  private ComponentContext(
-      Context context,
-      String logTag,
-      ComponentsLogger logger,
-      StateHandler stateHandler) {
-    super((context instanceof ComponentContext)
-        ? ((ComponentContext) context).getBaseContext()
-        : context);
-
-    if (logger != null && logTag == null) {
-      throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
-    }
-
-    final ComponentContext componentContext = (context instanceof ComponentContext)
-        ? (ComponentContext) context
-        : null;
-    final boolean transferLogging = (componentContext != null && logTag == null && logger == null);
-    final boolean transferStateHandler = (componentContext != null && stateHandler == null);
-
-    if (componentContext != null) {
-      mTreeProps = componentContext.mTreeProps;
-      mResourceCache = componentContext.mResourceCache;
-      mWidthSpec = componentContext.mWidthSpec;
-      mHeightSpec = componentContext.mHeightSpec;
-      mComponentScope = componentContext.mComponentScope;
-      mComponentTree = componentContext.mComponentTree;
-    } else {
-      mResourceCache = ResourceCache.getLatest(context.getResources().getConfiguration());
-    }
-
-    mLogger = transferLogging ? componentContext.mLogger : logger;
-    mLogTag = transferLogging ? componentContext.mLogTag : logTag;
-    mStateHandler = transferStateHandler ? componentContext.mStateHandler : stateHandler;
+  public ComponentContext(Context context, StateHandler stateHandler) {
+    this(context, null, null, stateHandler, null, null);
   }
 
-  static ComponentContext withComponentTree(
-      ComponentContext context,
-      ComponentTree componentTree) {
-    ComponentContext componentContext = new ComponentContext(
-        context,
-        ComponentsPools.acquireStateHandler());
-    componentContext.mComponentTree = componentTree;
-
-    return componentContext;
+  public ComponentContext(ComponentContext context) {
+    this(context, context.mStateHandler, context.mKeyHandler, context.mTreeProps);
   }
 
-  /**
-   * Creates a new ComponentContext instance scoped to the given component and sets it on the
-   *  component.
-   * @param context context scoped to the parent component
-   * @param scope component associated with the newly created scoped context
-   * @return a new ComponentContext instance scoped to the given component
-   */
-  static ComponentContext withComponentScope(ComponentContext context, Component scope) {
-    ComponentContext componentContext = context.makeNewCopy();
-    componentContext.mComponentScope = scope;
-    componentContext.mComponentTree = context.mComponentTree;
-
-    return componentContext;
+  public ComponentContext(Context context) {
+    this(context, null, null, null, null, null);
   }
 
   ComponentContext makeNewCopy() {
     return new ComponentContext(this);
+  }
+
+  public final Context getAndroidContext() {
+    return mContext;
+  }
+
+  public final Context getApplicationContext() {
+    return mContext.getApplicationContext();
+  }
+
+  public Resources getResources() {
+    return mContext.getResources();
+  }
+
+  public final Looper getMainLooper() {
+    return mContext.getMainLooper();
+  }
+
+  public CharSequence getText(@StringRes int resId) {
+    return mContext.getResources().getText(resId);
+  }
+
+  public String getString(@StringRes int resId) {
+    return mContext.getResources().getString(resId);
+  }
+
+  public String getString(@StringRes int resId, Object... formatArgs) {
+    return mContext.getResources().getString(resId, formatArgs);
+  }
+
+  public int getColor(@ColorRes int id) {
+    return mContext.getResources().getColor(id);
   }
 
   public Component getComponentScope() {
@@ -136,30 +183,41 @@ public class ComponentContext extends ContextWrapper {
 
   /**
    * Notify the Component Tree that it needs to synchronously perform a state update.
+   *
    * @param stateUpdate state update to perform
    */
-  public void updateState(ComponentLifecycle.StateUpdate stateUpdate) {
+  public void updateStateSync(ComponentLifecycle.StateUpdate stateUpdate, String attribution) {
     checkIfNoStateUpdatesMethod();
 
     if (mComponentTree == null) {
       return;
     }
 
-    mComponentTree.updateState(mComponentScope.getGlobalKey(), stateUpdate);
+    if (ComponentsConfiguration.updateStateAsync) {
+      mComponentTree.updateStateAsync(mComponentScope.getGlobalKey(), stateUpdate, attribution);
+    } else {
+      mComponentTree.updateStateSync(mComponentScope.getGlobalKey(), stateUpdate, attribution);
+    }
   }
 
   /**
    * Notify the Component Tree that it needs to asynchronously perform a state update.
+   *
    * @param stateUpdate state update to perform
    */
-  public void updateStateAsync(ComponentLifecycle.StateUpdate stateUpdate) {
+  public void updateStateAsync(ComponentLifecycle.StateUpdate stateUpdate, String attribution) {
     checkIfNoStateUpdatesMethod();
 
     if (mComponentTree == null) {
       return;
     }
 
-    mComponentTree.updateStateAsync(mComponentScope.getGlobalKey(), stateUpdate);
+    mComponentTree.updateStateAsync(mComponentScope.getGlobalKey(), stateUpdate, attribution);
+  }
+
+  public void updateStateWithTransition(
+      ComponentLifecycle.StateUpdate stateUpdate, String attribution) {
+    updateStateAsync(stateUpdate, attribution);
   }
 
   public void updateStateLazy(ComponentLifecycle.StateUpdate stateUpdate) {
@@ -170,20 +228,20 @@ public class ComponentContext extends ContextWrapper {
     mComponentTree.updateStateLazy(mComponentScope.getGlobalKey(), stateUpdate);
   }
 
-  public void enterNoStateUpdatesMethod(String noStateUpdatesMethod) {
+  void enterNoStateUpdatesMethod(String noStateUpdatesMethod) {
     mNoStateUpdatesMethod = noStateUpdatesMethod;
   }
 
-  public void exitNoStateUpdatesMethod() {
+  void exitNoStateUpdatesMethod() {
     mNoStateUpdatesMethod = null;
   }
 
   private void checkIfNoStateUpdatesMethod() {
     if (mNoStateUpdatesMethod != null) {
       throw new IllegalStateException(
-          "Updating the state of a component during " +
-              mNoStateUpdatesMethod +
-              " leads to unexpected behaviour, consider using lazy state updates.");
+          "Updating the state of a component during "
+              + mNoStateUpdatesMethod
+              + " leads to unexpected behaviour, consider using lazy state updates.");
     }
   }
 
@@ -193,18 +251,24 @@ public class ComponentContext extends ContextWrapper {
   }
 
   public TypedArray obtainStyledAttributes(int[] attrs, @AttrRes int defStyleAttr) {
-    return obtainStyledAttributes(
-        null,
-        attrs,
-        defStyleAttr != 0 ? defStyleAttr : mDefStyleAttr,
-        mDefStyleRes);
+    return mContext.obtainStyledAttributes(
+        null, attrs, defStyleAttr != 0 ? defStyleAttr : mDefStyleAttr, mDefStyleRes);
   }
 
   public String getLogTag() {
     return mLogTag;
   }
 
-  public @Nullable ComponentsLogger getLogger() {
+  public @Nullable String getSplitLayoutTag() {
+    if (mComponentTree == null) {
+      return null;
+    }
+
+    return mComponentTree.getSplitLayoutTag();
+  }
+
+  @Nullable
+  public ComponentsLogger getLogger() {
     return mLogger;
   }
 
@@ -212,12 +276,19 @@ public class ComponentContext extends ContextWrapper {
     return mComponentTree;
   }
 
-  protected void setTreeProps(TreeProps treeProps) {
+  protected void setTreeProps(@Nullable TreeProps treeProps) {
     mTreeProps = treeProps;
   }
 
-  protected @Nullable TreeProps getTreeProps() {
+  @Nullable
+  protected TreeProps getTreeProps() {
     return mTreeProps;
+  }
+
+  /** Obtain a copy of the tree props currently held by this context. */
+  @Nullable
+  public TreeProps getTreePropsCopy() {
+    return TreeProps.copy(mTreeProps);
   }
 
   public ResourceCache getResourceCache() {
@@ -228,41 +299,49 @@ public class ComponentContext extends ContextWrapper {
     return new EventHandler(mComponentScope, id);
   }
 
-  <E> EventHandler<E> newEventHandler(int id, Object[] params) {
-    return new EventHandler<E>(mComponentScope, id, params);
+  public <E> EventHandler<E> newEventHandler(int id, Object[] params) {
+    return new EventHandler<>(mComponentScope, id, params);
   }
 
-  InternalNode newLayoutBuilder(ComponentContext c) {
-    return newLayoutBuilder(0, 0);
+  @Nullable
+  public Object getCachedValue(Object cachedValueInputs) {
+    return mComponentTree.getCachedValue(cachedValueInputs);
   }
 
-  ComponentLayout.Builder newLayoutBuilder(Component<?> component) {
-    return newLayoutBuilder(component, 0, 0);
+  public void putCachedValue(Object cachedValueInputs, Object cachedValue) {
+    mComponentTree.putCachedValue(cachedValueInputs, cachedValue);
   }
 
-  ComponentLayout.Builder newLayoutBuilder(Component.Builder componentBuilder) {
-    return newLayoutBuilder(componentBuilder.build(), 0, 0);
+  /**
+   * @return New instance of {@link EventTrigger} that is created by the current mComponentScope.
+   */
+  <E> EventTrigger<E> newEventTrigger(String childKey, int id) {
+    String parentKey = mComponentScope == null ? "" : mComponentScope.getGlobalKey();
+    return new EventTrigger<>(parentKey, id, childKey);
   }
 
-  InternalNode newLayoutBuilder(
-      @AttrRes int defStyleAttr,
-      @StyleRes int defStyleRes) {
-    final InternalNode node = ComponentsPools.acquireInternalNode(this, getResources());
+  InternalNode newLayoutBuilder(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+    final InternalNode node = ComponentsPools.acquireInternalNode(this);
     applyStyle(node, defStyleAttr, defStyleRes);
     return node;
   }
 
-  ComponentLayout.Builder newLayoutBuilder(
-      Component<?> component,
-      @AttrRes int defStyleAttr,
-      @StyleRes int defStyleRes) {
-    component.applyStateUpdates(this);
+  InternalNode newLayoutBuilder(
+      Component component, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
+    if (layoutCreatedInWillRender != null) {
+      return layoutCreatedInWillRender;
+    }
 
-    final InternalNode node = (InternalNode) component.getLifecycle().createLayout(
-        component.getScopedContext(),
-        component,
-        false);
-    component.getScopedContext().setTreeProps(null);
+    component = component.getThreadSafeInstance();
+
+    component.updateInternalChildState(this);
+
+    if (ComponentsConfiguration.isDebugModeEnabled) {
+      DebugComponent.applyOverrides(this, component);
+    }
+
+    final InternalNode node = component.createLayout(component.getScopedContext(), false);
 
     if (node != NULL_LAYOUT) {
       applyStyle(node, defStyleAttr, defStyleRes);
@@ -271,11 +350,29 @@ public class ComponentContext extends ContextWrapper {
     return node;
   }
 
-  ComponentLayout.Builder newLayoutBuilder(
-      Component.Builder componentBuilder,
-      @AttrRes int defStyleAttr,
-      @StyleRes int defStyleRes) {
-    return newLayoutBuilder(componentBuilder.build(), defStyleAttr, defStyleRes);
+  InternalNode resolveLayout(Component component) {
+    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
+    if (layoutCreatedInWillRender != null) {
+      return layoutCreatedInWillRender;
+    }
+
+    component = component.getThreadSafeInstance();
+
+    component.updateInternalChildState(this, true);
+
+    if (ComponentsConfiguration.isDebugModeEnabled) {
+      DebugComponent.applyOverrides(this, component);
+    }
+
+    final InternalNode node = (InternalNode) component.resolve(component.getScopedContext());
+    if (component.canResolve()) {
+      final CommonPropsCopyable props = component.getCommonPropsCopyable();
+      if (props != null) {
+        props.copyInto(component.getScopedContext(), node);
+      }
+    }
+
+    return node;
   }
 
   int getWidthSpec() {
@@ -294,23 +391,70 @@ public class ComponentContext extends ContextWrapper {
     mHeightSpec = heightSpec;
   }
 
+  @Nullable
   StateHandler getStateHandler() {
     return mStateHandler;
   }
 
-  private void applyStyle(InternalNode node, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+  @Nullable
+  KeyHandler getKeyHandler() {
+    return mKeyHandler;
+  }
+
+  void applyStyle(InternalNode node, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     if (defStyleAttr != 0 || defStyleRes != 0) {
       setDefStyle(defStyleAttr, defStyleRes);
 
-      final TypedArray typedArray = obtainStyledAttributes(
-          null,
-          R.styleable.ComponentLayout,
-          defStyleAttr,
-          defStyleRes);
+      final TypedArray typedArray =
+          mContext.obtainStyledAttributes(
+              null, R.styleable.ComponentLayout, defStyleAttr, defStyleRes);
       node.applyAttributes(typedArray);
       typedArray.recycle();
 
       setDefStyle(0, 0);
+    }
+  }
+
+  static ComponentContext withComponentTree(ComponentContext context, ComponentTree componentTree) {
+    ComponentContext componentContext =
+        new ComponentContext(context, ComponentsPools.acquireStateHandler(), null, null);
+    componentContext.mComponentTree = componentTree;
+
+    return componentContext;
+  }
+
+  /**
+   * Creates a new ComponentContext instance scoped to the given component and sets it on the
+   * component.
+   *
+   * @param context context scoped to the parent component
+   * @param scope component associated with the newly created scoped context
+   * @return a new ComponentContext instance scoped to the given component
+   */
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public static ComponentContext withComponentScope(ComponentContext context, Component scope) {
+    ComponentContext componentContext = context.makeNewCopy();
+    componentContext.mComponentScope = scope;
+    componentContext.mComponentTree = context.mComponentTree;
+
+    return componentContext;
+  }
+
+  /**
+   * Checks if incremental mount is enabled given a ComponentContext, so you can throw an error if
+   * you require that incremental mount is enabled (e.g. you use visibility callbacks). This is
+   * static to avoid polluting the ComponentContext API.
+   */
+  public static boolean isIncrementalMountEnabled(ComponentContext c) {
+    return c.getComponentTree().isIncrementalMountEnabled();
+  }
+
+  /** Whether the refactored implementation of nested tree resolution should be used. */
+  public boolean isNestedTreeResolutionExperimentEnabled() {
+    if (getComponentTree() != null) {
+      return getComponentTree().isNestedTreeResolutionExperimentEnabled();
+    } else {
+      return false;
     }
   }
 }

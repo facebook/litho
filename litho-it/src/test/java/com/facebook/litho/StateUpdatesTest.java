@@ -1,26 +1,35 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
+import static com.facebook.litho.ComponentLifecycle.StateUpdate;
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
+import android.os.Looper;
+import com.facebook.litho.stats.LithoStats;
+import com.facebook.litho.testing.helper.ComponentTestHelper;
+import com.facebook.litho.testing.logging.TestComponentsLogger;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import android.os.Looper;
-
-import com.facebook.litho.ComponentLifecycle.StateContainer;
-import com.facebook.litho.testing.ComponentTestHelper;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.util.InlineLayoutSpec;
-import com.facebook.yoga.YogaAlign;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,13 +37,6 @@ import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
-
-import static com.facebook.litho.ComponentLifecycle.StateUpdate;
-import static com.facebook.litho.SizeSpec.EXACTLY;
-import static com.facebook.litho.SizeSpec.makeSizeSpec;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 
 @RunWith(ComponentsTestRunner.class)
 public class StateUpdatesTest {
@@ -44,9 +46,35 @@ public class StateUpdatesTest {
   private int mWidthSpec;
   private int mHeightSpec;
 
-  private final ComponentLifecycle mLifecycle = new ComponentLifecycle() {
+  private static class TestStateUpdate implements StateUpdate {
+
     @Override
-    int getId() {
+    public void updateState(StateContainer stateContainer) {
+      TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
+      stateContainerImpl.mCount = stateContainerImpl.mCount + 1;
+    }
+  }
+
+  static class TestComponent extends Component {
+
+    private final TestStateContainer mStateContainer;
+    private TestComponent shallowCopy;
+    private int mId;
+    private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
+
+    public TestComponent() {
+      super("TestComponent");
+      mStateContainer = new TestStateContainer();
+      mId = sIdGenerator.getAndIncrement();
+    }
+
+    @Override
+    public boolean isEquivalentTo(Component other) {
+      return this == other;
+    }
+
+    @Override
+    int getTypeId() {
       return LIFECYCLE_TEST_ID;
     }
 
@@ -56,55 +84,25 @@ public class StateUpdatesTest {
     }
 
     @Override
-    protected void createInitialState(ComponentContext c, Component component) {
-      TestComponent testComponent = (TestComponent) component;
-      testComponent.mStateContainer.mCount = INITIAL_COUNT_STATE_VALUE;
+    protected void createInitialState(ComponentContext c) {
+      mStateContainer.mCount = INITIAL_COUNT_STATE_VALUE;
     }
 
     @Override
     protected void transferState(
-        ComponentContext c,
-        StateContainer stateContainer,
-        Component component) {
-      TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
-      TestComponent newTestComponent = (TestComponent) component;
-      newTestComponent.mStateContainer.mCount = stateContainerImpl.mCount;
-    }
-  };
-
-  private static class TestStateUpdate implements StateUpdate {
-
-    @Override
-    public void updateState(StateContainer stateContainer, Component component) {
-      TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
-      TestComponent componentImpl = (TestComponent) component;
-      System.out.println("1 " + componentImpl.mStateContainer);
-      System.out.println("2 " + stateContainerImpl);
-      componentImpl.mStateContainer.mCount = stateContainerImpl.mCount + 1;
-    }
-  }
-
-  static class TestComponent<L extends ComponentLifecycle>
-      extends Component<L> implements Cloneable {
-
-    private TestStateContainer mStateContainer;
-    private TestComponent shallowCopy;
-    private int mId;
-    private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
-
-    public TestComponent(L component) {
-      super(component);
-      mStateContainer = new TestStateContainer();
-      mId = sIdGenerator.getAndIncrement();
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "TestComponent";
+        StateContainer prevStateContainer, StateContainer nextStateContainer) {
+      TestStateContainer prevStateContainerImpl = (TestStateContainer) prevStateContainer;
+      TestStateContainer nextStateContainerImpl = (TestStateContainer) nextStateContainer;
+      nextStateContainerImpl.mCount = prevStateContainerImpl.mCount;
     }
 
     int getCount() {
       return mStateContainer.mCount;
+    }
+
+    @Override
+    synchronized void markLayoutStarted() {
+      // No-op because we override makeShallowCopy below :(
     }
 
     @Override
@@ -116,6 +114,9 @@ public class StateUpdatesTest {
     Component makeShallowCopyWithNewId() {
       shallowCopy = (TestComponent) super.makeShallowCopy();
       shallowCopy.mId = sIdGenerator.getAndIncrement();
+      if (getScopedContext().isNestedTreeResolutionExperimentEnabled()) {
+        shallowCopy.setGlobalKey(getGlobalKey());
+      }
       return shallowCopy;
     }
 
@@ -141,14 +142,23 @@ public class StateUpdatesTest {
     protected int mCount;
   }
 
+  private static final String mLogTag = "logTag";
+
   private ShadowLooper mLayoutThreadShadowLooper;
   private ComponentContext mContext;
   private TestComponent mTestComponent;
   private ComponentTree mComponentTree;
+  private ComponentsLogger mComponentsLogger;
+  private LithoView mLithoView;
 
   @Before
   public void setup() throws Exception {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    setup(false);
+  }
+
+  public void setup(boolean enableNestedTreeResolutionExeperiment) throws Exception {
+    mComponentsLogger = new TestComponentsLogger();
+    mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
     mWidthSpec = makeSizeSpec(39, EXACTLY);
     mHeightSpec = makeSizeSpec(41, EXACTLY);
 
@@ -156,63 +166,55 @@ public class StateUpdatesTest {
         (Looper) Whitebox.invokeMethod(
             ComponentTree.class,
             "getDefaultLayoutThreadLooper"));
-    mTestComponent = new TestComponent(mLifecycle);
+    mTestComponent = new TestComponent();
 
-    mComponentTree = ComponentTree.create(mContext, mTestComponent)
-        .incrementalMount(false)
-        .layoutDiffing(false)
-        .build();
+    mComponentTree =
+        ComponentTree.create(mContext, mTestComponent)
+            .enableNestedTreeResolutionExeperiment(enableNestedTreeResolutionExeperiment)
+            .build();
+    mLithoView = new LithoView(mContext);
+    mLithoView.setComponentTree(mComponentTree);
+    mLithoView.onAttachedToWindow();
+    ComponentTestHelper.measureAndLayout(mLithoView);
+  }
+
+  @Test
+  public void testNoCrashOnSameComponentKey() {
+    final Component child1 = new TestComponent();
+    child1.setKey("key");
+    final Component child2 = new TestComponent();
+    child2.setKey("key");
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return Column.create(c).child(child1).child(child2).build();
+          }
+        };
     final LithoView lithoView = new LithoView(mContext);
-    lithoView.setComponentTree(mComponentTree);
+    lithoView.setComponent(component);
     lithoView.onAttachedToWindow();
     ComponentTestHelper.measureAndLayout(lithoView);
   }
 
-  @Test(expected = RuntimeException.class)
-  public void testCrashOnSameComponentKey() {
-    final Component child1 = new TestComponent(mLifecycle);
-    final Component child2 = new TestComponent(mLifecycle);
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-            .child(child1)
-            .child(child2)
-            .build();
-      }
-    };
-    final ComponentTree componentTree = ComponentTree.create(mContext, component)
-        .incrementalMount(false)
-        .layoutDiffing(false)
-        .build();
+  @Test
+  public void testNoCrashOnSameComponentKeyNestedContainers() {
+    final Component child1 = new TestComponent();
+    child1.setKey("key");
+    final Component child2 = new TestComponent();
+    child2.setKey("key");
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return Column.create(c)
+                .child(Column.create(c).child(child1))
+                .child(Column.create(c).child(child2))
+                .build();
+          }
+        };
     final LithoView lithoView = new LithoView(mContext);
-    lithoView.setComponentTree(componentTree);
-    lithoView.onAttachedToWindow();
-    ComponentTestHelper.measureAndLayout(lithoView);
-  }
-
-  @Test(expected = RuntimeException.class)
-  public void testCrashOnSameComponentKeyNestedContainers() {
-    final Component child1 = new TestComponent(mLifecycle);
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-            .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                    .child(child1))
-            .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                    .child(child1))
-            .build();
-      }
-    };
-    final ComponentTree componentTree = ComponentTree.create(mContext, component)
-        .incrementalMount(false)
-        .layoutDiffing(false)
-        .build();
-    final LithoView lithoView = new LithoView(mContext);
-    lithoView.setComponentTree(componentTree);
+    lithoView.setComponent(component);
     lithoView.onAttachedToWindow();
     ComponentTestHelper.measureAndLayout(lithoView);
   }
@@ -221,76 +223,151 @@ public class StateUpdatesTest {
   public void testKeepInitialStateValues() {
     TestStateContainer previousStateContainer =
         (TestStateContainer) getStateContainersMap().get(mTestComponent.getGlobalKey());
-    assertNotNull(previousStateContainer);
-    assertEquals(INITIAL_COUNT_STATE_VALUE, previousStateContainer.mCount);
+    assertThat(previousStateContainer).isNotNull();
+    assertThat(previousStateContainer.mCount).isEqualTo(INITIAL_COUNT_STATE_VALUE);
   }
 
   @Test
   public void testKeepUpdatedStateValue() {
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
-    mLayoutThreadShadowLooper.runOneTask();
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mLayoutThreadShadowLooper.runToEndOfTasks();
     TestStateContainer previousStateContainer =
         (TestStateContainer) getStateContainersMap().get(mTestComponent.getGlobalKey());
-    assertNotNull(previousStateContainer);
-    assertEquals(INITIAL_COUNT_STATE_VALUE + 1, previousStateContainer.mCount);
+    assertThat(previousStateContainer).isNotNull();
+    assertThat(previousStateContainer.mCount).isEqualTo(INITIAL_COUNT_STATE_VALUE + 1);
+  }
+
+  @Test
+  public void testClearUnusedStateContainers() {
+    mComponentTree.updateStateSync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+
+    assertThat(getStateContainersMap().keySet().size()).isEqualTo(1);
+    assertThat(getStateContainersMap().keySet().contains(mTestComponent.getGlobalKey())).isTrue();
+
+    final Component child1 = new TestComponent();
+    child1.setKey("key");
+
+    mLithoView.setComponent(child1);
+    mLithoView.onAttachedToWindow();
+    ComponentTestHelper.measureAndLayout(mLithoView);
+    mComponentTree.updateStateSync(child1.getGlobalKey(), new TestStateUpdate(), "test");
+
+    assertThat(getStateContainersMap().keySet().size()).isEqualTo(1);
+    assertThat(getStateContainersMap().keySet().contains("key")).isTrue();
   }
 
   @Test
   public void testClearAppliedStateUpdates() {
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
-    assertEquals(1, getPendingStateUpdatesForComponent(mTestComponent).size());
-    mLayoutThreadShadowLooper.runOneTask();
-    assertNull(getPendingStateUpdatesForComponent(mTestComponent.getComponentForStateUpdate()));
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    assertThat(getPendingStateUpdatesForComponent(mTestComponent)).hasSize(1);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    assertThat(getPendingStateUpdatesForComponent(mTestComponent.getComponentForStateUpdate())).isNull();
   }
 
   @Test
   public void testEnqueueStateUpdate() {
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
-    assertEquals(1, getPendingStateUpdatesForComponent(mTestComponent).size());
-    mLayoutThreadShadowLooper.runOneTask();
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
-    assertEquals(
-        INITIAL_COUNT_STATE_VALUE + 1,
-        ((TestStateContainer) getStateContainersMap().get(mTestComponent.getGlobalKey())).mCount);
-    assertEquals(
-        1,
-        getPendingStateUpdatesForComponent(mTestComponent.getComponentForStateUpdate()).size());
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    assertThat(getPendingStateUpdatesForComponent(mTestComponent)).hasSize(1);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    assertThat(((TestStateContainer) getStateContainersMap().get(mTestComponent.getGlobalKey())).mCount).isEqualTo(INITIAL_COUNT_STATE_VALUE + 1);
+    assertThat(getPendingStateUpdatesForComponent(mTestComponent.getComponentForStateUpdate())).hasSize(1);
+  }
+
+  @Test
+  public void testEnqueueStateUpdate_withExperiment() throws Exception {
+    setup(true);
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    assertThat(getPendingStateUpdatesForComponent(mTestComponent)).hasSize(1);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    assertThat(
+            ((TestStateContainer) getStateContainersMap().get(mTestComponent.getGlobalKey()))
+                .mCount)
+        .isEqualTo(INITIAL_COUNT_STATE_VALUE + 1);
+    assertThat(getPendingStateUpdatesForComponent(mTestComponent.getComponentForStateUpdate()))
+        .hasSize(1);
+  }
+
+  @Test
+  public void testEnqueueStateUpdate_withExperiment_checkAppliedStateUpdate() throws Exception {
+    setup(true);
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    assertThat(getPendingStateUpdatesForComponent(mTestComponent)).hasSize(1);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    assertThat(
+            mTestComponent
+                .getComponentForStateUpdate()
+                .getScopedContext()
+                .getStateHandler()
+                .getAppliedStateUpdates())
+        .hasSize(1);
   }
 
   @Test
   public void testSetInitialStateValue() {
-    assertEquals(INITIAL_COUNT_STATE_VALUE, mTestComponent.getCount());
+    assertThat(mTestComponent.getCount()).isEqualTo(INITIAL_COUNT_STATE_VALUE);
   }
 
   @Test
   public void testUpdateState() {
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
-    mLayoutThreadShadowLooper.runOneTask();
-    assertEquals(
-        INITIAL_COUNT_STATE_VALUE + 1,
-        mTestComponent.getComponentForStateUpdate().getCount());
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    assertThat(mTestComponent.getComponentForStateUpdate().getCount()).isEqualTo(INITIAL_COUNT_STATE_VALUE + 1);
   }
 
   @Test
   public void testTransferState() {
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
-    mLayoutThreadShadowLooper.runOneTask();
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mLayoutThreadShadowLooper.runToEndOfTasks();
     mComponentTree.setSizeSpec(mWidthSpec, mHeightSpec);
-    assertEquals(
-        INITIAL_COUNT_STATE_VALUE + 1,
-        mTestComponent.getComponentForStateUpdate().getCount());
+    assertThat(mTestComponent.getComponentForStateUpdate().getCount()).isEqualTo(INITIAL_COUNT_STATE_VALUE + 1);
   }
 
   @Test
   public void testTransferAndUpdateState() {
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
-    mLayoutThreadShadowLooper.runOneTask();
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mLayoutThreadShadowLooper.runToEndOfTasks();
 
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate());
-    mLayoutThreadShadowLooper.runOneTask();
-    assertEquals(
-        INITIAL_COUNT_STATE_VALUE + 2,
-        mTestComponent.getComponentForStateUpdate().getCount());
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    assertThat(mTestComponent.getComponentForStateUpdate().getCount()).isEqualTo(INITIAL_COUNT_STATE_VALUE + 2);
+  }
+
+  @Test
+  public void testStateStatsTest() {
+    final long before = LithoStats.getStateUpdates();
+
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    final long after = LithoStats.getStateUpdates();
+
+    assertThat(after - before).isEqualTo(1);
+  }
+
+  @Test
+  public void testSyncStateStatsWhenAsyncTest() {
+    final long before = LithoStats.getStateUpdatesSync();
+
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    final long after = LithoStats.getStateUpdatesSync();
+
+    assertThat(after - before).isEqualTo(0);
+  }
+
+  @Test
+  public void testSyncStateStatsWhenSyncTest() {
+    final long before = LithoStats.getStateUpdatesSync();
+
+    mComponentTree.updateStateSync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    final long after = LithoStats.getStateUpdatesSync();
+
+    assertThat(after - before).isEqualTo(1);
   }
 
   private StateHandler getStateHandler() {
@@ -307,5 +384,9 @@ public class StateUpdatesTest {
 
   private List<StateUpdate> getPendingStateUpdatesForComponent(Component component) {
     return getPendingStateUpdates().get(component.getGlobalKey());
+  }
+
+  private Map<String, List<StateUpdate>> getAppliedStateUpdates() {
+    return getStateHandler().getAppliedStateUpdates();
   }
 }

@@ -1,40 +1,46 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.specmodels.model;
 
-import javax.annotation.concurrent.Immutable;
-
-import java.lang.annotation.Annotation;
-import java.util.List;
-
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
+import java.lang.annotation.Annotation;
+import java.util.List;
+import java.util.Objects;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Model that is a simple base representation of a method param.
  */
 @Immutable
 public class SimpleMethodParamModel implements MethodParamModel {
-  private final TypeName mType;
+  private final TypeSpec mTypeSpec;
   private final String mName;
   private final List<Annotation> mAnnotations;
   private final List<AnnotationSpec> mExternalAnnotations;
   private final Object mRepresentedObject;
 
   SimpleMethodParamModel(
-      TypeName type,
+      TypeSpec typeSpec,
       String name,
       List<Annotation> annotations,
       List<AnnotationSpec> externalAnnotations,
       Object representedObject) {
-    mType = type;
+    mTypeSpec = typeSpec;
     mName = name;
     mAnnotations = annotations;
     mExternalAnnotations = externalAnnotations;
@@ -42,8 +48,13 @@ public class SimpleMethodParamModel implements MethodParamModel {
   }
 
   @Override
-  public TypeName getType() {
-    return mType;
+  public TypeSpec getTypeSpec() {
+    return mTypeSpec;
+  }
+
+  @Override
+  public TypeName getTypeName() {
+    return mTypeSpec.getTypeName();
   }
 
   @Override
@@ -68,19 +79,18 @@ public class SimpleMethodParamModel implements MethodParamModel {
 
   @Override
   public boolean equals(Object o) {
-    if (o instanceof SimpleMethodParamModel) {
-      final SimpleMethodParamModel p = (SimpleMethodParamModel) o;
-      return mType.equals(p.mType) && mName.equals(p.mName) && mAnnotations.equals(p.mAnnotations);
-    }
-
-    return false;
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    final SimpleMethodParamModel that = (SimpleMethodParamModel) o;
+    return Objects.equals(mTypeSpec, that.mTypeSpec)
+        && Objects.equals(mName, that.mName)
+        && Objects.equals(mAnnotations, that.mAnnotations)
+        && Objects.equals(mExternalAnnotations, that.mExternalAnnotations)
+        && Objects.equals(mRepresentedObject, that.mRepresentedObject);
   }
 
   @Override
   public int hashCode() {
-    int result = mType.hashCode();
-    result = 17 * result + mName.hashCode();
-    result = 31 * result + mAnnotations.hashCode();
-    return result;
+    return Objects.hash(mTypeSpec, mName, mAnnotations, mExternalAnnotations, mRepresentedObject);
   }
 }

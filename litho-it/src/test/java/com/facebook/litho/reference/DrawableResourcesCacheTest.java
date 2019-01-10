@@ -1,30 +1,34 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.reference;
+
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.junit.Assert.assertNotEquals;
+import static org.robolectric.RuntimeEnvironment.application;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
 
 @RunWith(ComponentsTestRunner.class)
 public class DrawableResourcesCacheTest {
@@ -39,7 +43,7 @@ public class DrawableResourcesCacheTest {
   @Test
   public void testPoolIsNeverEmpty() {
 
-    Resources resources = RuntimeEnvironment.application.getResources();
+    Resources resources = application.getResources();
     // This being null is ok since we are only using this drawable to test the cache.
     // We still need to declare the variable though otherewise the call to the constructor would be
     // ambiguous.
@@ -53,17 +57,17 @@ public class DrawableResourcesCacheTest {
     Drawable second = mCache.get(1, resources, null);
     Drawable third = mCache.get(2, resources, null);
 
-    assertNotNull(first);
-    assertNotNull(second);
-    assertNotNull(third);
+    assertThat(first).isNotNull();
+    assertThat(second).isNotNull();
+    assertThat(third).isNotNull();
 
-    assertEquals(first.getConstantState(), second.getConstantState());
+    assertThat(second.getConstantState()).isEqualTo(first.getConstantState());
     assertNotEquals(first.getConstantState(), third.getConstantState());
   }
 
   @Test
   public void testReleaseAndGet() {
-    Resources resources = RuntimeEnvironment.application.getResources();
+    Resources resources = application.getResources();
 
     ColorDrawable drawable = new ColorDrawable();
     ColorDrawable drawable2 = new ColorDrawable();
@@ -72,9 +76,9 @@ public class DrawableResourcesCacheTest {
     mCache.release(drawable2, 1);
     mCache.release(drawable3, 1);
 
-    assertEquals(drawable, mCache.get(1, resources));
-    assertEquals(drawable2, mCache.get(1, resources));
-    assertEquals(drawable3, mCache.get(1, resources));
+    assertThat(mCache.get(1, resources)).isEqualTo(drawable);
+    assertThat(mCache.get(1, resources)).isEqualTo(drawable2);
+    assertThat(mCache.get(1, resources)).isEqualTo(drawable3);
   }
 
 }

@@ -1,29 +1,36 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
-import com.facebook.litho.testing.ComponentTestHelper;
+import static com.facebook.litho.Column.create;
+import static com.facebook.litho.MountState.getComponentClickListener;
+import static com.facebook.litho.MountState.getComponentFocusChangeListener;
+import static com.facebook.litho.MountState.getComponentLongClickListener;
+import static com.facebook.litho.MountState.getComponentTouchListener;
+import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
-import com.facebook.yoga.YogaAlign;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
 public class MountStateRemountEventHandlerTest {
@@ -37,291 +44,436 @@ public class MountStateRemountEventHandlerTest {
 
   @Test
   public void testReuseClickListenerOnSameView() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .clickHandler(c.newEventHandler(1))
-                .child(TestDrawableComponent.create(c))
-                .child(TestDrawableComponent.create(c))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .clickHandler(c.newEventHandler(1))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
     final ComponentClickListener clickListener =
-        MountState.getComponentClickListener(lithoView);
-    assertNotNull(clickListener);
+        getComponentClickListener(lithoView);
+    assertThat(clickListener).isNotNull();
 
-    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-            .clickHandler(c.newEventHandler(1))
-            .child(TestDrawableComponent.create(c))
-            .child(TestDrawableComponent.create(c))
-            .build();
-      }
-    });
+    lithoView
+        .getComponentTree()
+        .setRoot(
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .clickHandler(c.newEventHandler(1))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
-    assertTrue(clickListener == MountState.getComponentClickListener(lithoView));
+    assertThat(clickListener == getComponentClickListener(lithoView)).isTrue();
   }
 
   @Test
   public void testReuseLongClickListenerOnSameView() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .longClickHandler(c.newEventHandler(1))
-                .child(TestDrawableComponent.create(c))
-                .child(TestDrawableComponent.create(c))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .longClickHandler(c.newEventHandler(1))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
     final ComponentLongClickListener longClickListener =
-        MountState.getComponentLongClickListener(lithoView);
-    assertNotNull(longClickListener);
+        getComponentLongClickListener(lithoView);
+    assertThat(longClickListener).isNotNull();
 
-    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-            .longClickHandler(c.newEventHandler(1))
-            .child(TestDrawableComponent.create(c))
-            .child(TestDrawableComponent.create(c))
-            .build();
-      }
-    });
+    lithoView
+        .getComponentTree()
+        .setRoot(
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .longClickHandler(c.newEventHandler(1))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
-    assertTrue(longClickListener == MountState.getComponentLongClickListener(lithoView));
+    assertThat(longClickListener == getComponentLongClickListener(lithoView)).isTrue();
+  }
+
+  @Test
+  public void testReuseFocusChangeListenerListenerOnSameView() {
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .focusChangeHandler(c.newEventHandler(1))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
+
+    ComponentFocusChangeListener focusChangeListener =
+        getComponentFocusChangeListener(lithoView);
+    assertThat(focusChangeListener).isNotNull();
+
+    lithoView
+        .getComponentTree()
+        .setRoot(
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .focusChangeHandler(c.newEventHandler(1))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
+
+    assertThat(focusChangeListener == getComponentFocusChangeListener(lithoView)).isTrue();
   }
 
   @Test
   public void testReuseTouchListenerOnSameView() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .touchHandler(c.newEventHandler(1))
-                .child(TestDrawableComponent.create(c))
-                .child(TestDrawableComponent.create(c))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .touchHandler(c.newEventHandler(1))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
     final ComponentTouchListener touchListener =
-        MountState.getComponentTouchListener(lithoView);
-    assertNotNull(touchListener);
+        getComponentTouchListener(lithoView);
+    assertThat(touchListener).isNotNull();
 
-    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-            .touchHandler(c.newEventHandler(2))
-            .child(TestDrawableComponent.create(c))
-            .child(TestDrawableComponent.create(c))
-            .build();
-      }
-    });
+    lithoView
+        .getComponentTree()
+        .setRoot(
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .touchHandler(c.newEventHandler(2))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
-    assertEquals(touchListener, MountState.getComponentTouchListener(lithoView));
+    assertThat(getComponentTouchListener(lithoView)).isEqualTo(touchListener);
   }
 
   @Test
   public void testUnsetClickHandler() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .clickHandler(c.newEventHandler(1))
-                .child(TestDrawableComponent.create(c))
-                .child(TestDrawableComponent.create(c))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .clickHandler(c.newEventHandler(1))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
-    assertNotNull(MountState.getComponentClickListener(lithoView));
+    assertThat(getComponentClickListener(lithoView)).isNotNull();
 
-    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-            .child(TestDrawableComponent.create(c))
-            .child(TestDrawableComponent.create(c))
-            .build();
-      }
-    });
+    lithoView
+        .getComponentTree()
+        .setRoot(
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
-    final ComponentClickListener listener = MountState.getComponentClickListener(lithoView);
-    assertNotNull(listener);
-    assertNull(listener.getEventHandler());
+    final ComponentClickListener listener = getComponentClickListener(lithoView);
+    assertThat(listener).isNotNull();
+    assertThat(listener.getEventHandler()).isNull();
   }
 
   @Test
   public void testUnsetLongClickHandler() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .longClickHandler(c.newEventHandler(1))
-                .child(TestDrawableComponent.create(c))
-                .child(TestDrawableComponent.create(c))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .longClickHandler(c.newEventHandler(1))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
-    assertNotNull(MountState.getComponentLongClickListener(lithoView));
+    assertThat(getComponentLongClickListener(lithoView)).isNotNull();
 
-    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-            .child(TestDrawableComponent.create(c))
-            .child(TestDrawableComponent.create(c))
-            .build();
-      }
-    });
+    lithoView
+        .getComponentTree()
+        .setRoot(
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
     final ComponentLongClickListener listener =
-        MountState.getComponentLongClickListener(lithoView);
-    assertNotNull(listener);
-    assertNull(listener.getEventHandler());
+        getComponentLongClickListener(lithoView);
+    assertThat(listener).isNotNull();
+    assertThat(listener.getEventHandler()).isNull();
+  }
+
+  @Test
+  public void testUnsetFocusChangeHandler() {
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .focusChangeHandler(c.newEventHandler(1))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
+
+    assertThat(getComponentFocusChangeListener(lithoView)).isNotNull();
+
+    lithoView
+        .getComponentTree()
+        .setRoot(
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
+
+    final ComponentFocusChangeListener listener = getComponentFocusChangeListener(lithoView);
+    assertThat(listener).isNotNull();
+    assertThat(listener.getEventHandler()).isNull();
   }
 
   @Test
   public void testUnsetTouchHandler() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .touchHandler(c.newEventHandler(1))
-                .child(TestDrawableComponent.create(c))
-                .child(TestDrawableComponent.create(c))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .touchHandler(c.newEventHandler(1))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
-    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-            .child(TestDrawableComponent.create(c))
-            .child(TestDrawableComponent.create(c))
-            .build();
-      }
-    });
+    lithoView
+        .getComponentTree()
+        .setRoot(
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
-    final ComponentTouchListener listener = MountState.getComponentTouchListener(lithoView);
-    assertNull(listener.getEventHandler());
+    final ComponentTouchListener listener = getComponentTouchListener(lithoView);
+    assertThat(listener.getEventHandler()).isNull();
   }
 
   @Test
   public void testSetClickHandler() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .child(TestDrawableComponent.create(c))
-                .child(TestDrawableComponent.create(c))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
-    assertNull(MountState.getComponentClickListener(lithoView));
+    assertThat(getComponentClickListener(lithoView)).isNull();
 
-    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-            .clickHandler(c.newEventHandler(1))
-            .child(TestDrawableComponent.create(c))
-            .child(TestDrawableComponent.create(c))
-            .build();
-      }
-    });
+    lithoView
+        .getComponentTree()
+        .setRoot(
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .clickHandler(c.newEventHandler(1))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
-    final ComponentClickListener listener = MountState.getComponentClickListener(lithoView);
-    assertNotNull(listener);
-    assertNotNull(listener.getEventHandler());
+    final ComponentClickListener listener = getComponentClickListener(lithoView);
+    assertThat(listener).isNotNull();
+    assertThat(listener.getEventHandler()).isNotNull();
   }
 
   @Test
   public void testSetLongClickHandler() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .child(TestDrawableComponent.create(c))
-                .child(TestDrawableComponent.create(c))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
-    assertNull(MountState.getComponentLongClickListener(lithoView));
+    assertThat(getComponentLongClickListener(lithoView)).isNull();
 
-    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-            .longClickHandler(c.newEventHandler(1))
-            .child(TestDrawableComponent.create(c))
-            .child(TestDrawableComponent.create(c))
-            .build();
-      }
-    });
+    lithoView
+        .getComponentTree()
+        .setRoot(
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .longClickHandler(c.newEventHandler(1))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
     final ComponentLongClickListener listener =
-        MountState.getComponentLongClickListener(lithoView);
-    assertNotNull(listener);
-    assertNotNull(listener.getEventHandler());
+        getComponentLongClickListener(lithoView);
+    assertThat(listener).isNotNull();
+    assertThat(listener.getEventHandler()).isNotNull();
+  }
+
+  @Test
+  public void testSetFocusChangeHandler() {
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
+
+    assertThat(getComponentFocusChangeListener(lithoView)).isNull();
+
+    lithoView
+        .getComponentTree()
+        .setRoot(
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .focusChangeHandler(c.newEventHandler(1))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
+
+    final ComponentFocusChangeListener listener = getComponentFocusChangeListener(lithoView);
+    assertThat(listener).isNotNull();
+    assertThat(listener.getEventHandler()).isNotNull();
   }
 
   @Test
   public void testSetTouchHandler() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .child(TestDrawableComponent.create(c))
-                .child(TestDrawableComponent.create(c))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
-    assertNull(MountState.getComponentClickListener(lithoView));
+    assertThat(getComponentTouchListener(lithoView)).isNull();
 
-    lithoView.getComponentTree().setRoot(new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-            .touchHandler(c.newEventHandler(1))
-            .child(TestDrawableComponent.create(c))
-            .child(TestDrawableComponent.create(c))
-            .build();
-      }
-    });
+    lithoView
+        .getComponentTree()
+        .setRoot(
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .touchHandler(c.newEventHandler(1))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
-    final ComponentTouchListener listener = MountState.getComponentTouchListener(lithoView);
-    assertNotNull(listener);
-    assertNotNull(listener.getEventHandler());
+    final ComponentTouchListener listener = getComponentTouchListener(lithoView);
+    assertThat(listener).isNotNull();
+    assertThat(listener.getEventHandler()).isNotNull();
   }
 }

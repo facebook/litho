@@ -1,65 +1,83 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.facebook.litho.animation;
 
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.ArrayList;
+import java.util.List;
 
-import android.support.v4.util.SimpleArrayMap;
+/** An {@link AnimationBinding} that's a sequence of other {@link AnimationBinding}s. */
+public class SequenceBinding extends BaseAnimationBinding {
 
-import com.facebook.litho.internal.ArraySet;
-
-/**
- * An {@link AnimationBinding} that's a sequence of other {@link AnimationBinding}s.
- */
-public class SequenceBinding implements AnimationBinding {
-
-  private final CopyOnWriteArrayList<AnimationBindingListener> mListeners =
-      new CopyOnWriteArrayList<>();
-  private final AnimationBinding[] mBindings;
+  private final List<AnimationBinding> mBindings;
   private final AnimationBindingListener mChildListener;
   private Resolver mResolver;
   private int mCurrentIndex = 0;
   private boolean mIsActive = false;
 
-  public SequenceBinding(AnimationBinding... bindings) {
+  public SequenceBinding(List<AnimationBinding> bindings) {
     mBindings = bindings;
 
-    if (mBindings.length == 0) {
+    if (mBindings.isEmpty()) {
       throw new IllegalArgumentException("Empty binding sequence");
     }
 
-    mChildListener = new AnimationBindingListener() {
-      @Override
-      public void onStart(AnimationBinding binding) {
-      }
+    mChildListener =
+        new AnimationBindingListener() {
+          @Override
+          public void onScheduledToStartLater(AnimationBinding binding) {}
 
-      @Override
-      public void onFinish(AnimationBinding binding) {
-        SequenceBinding.this.onBindingFinished(binding);
-      }
-    };
+          @Override
+          public void onWillStart(AnimationBinding binding) {}
+
+          @Override
+          public void onFinish(AnimationBinding binding) {
+            SequenceBinding.this.onBindingFinished(binding);
+          }
+
+          @Override
+          public void onCanceledBeforeStart(AnimationBinding binding) {
+            SequenceBinding.this.onBindingFinished(binding);
+          }
+
+          @Override
+          public boolean shouldStart(AnimationBinding binding) {
+            return true;
+          }
+        };
   }
 
   private void onBindingFinished(AnimationBinding binding) {
-    if (binding != mBindings[mCurrentIndex]) {
+    if (binding != mBindings.get(mCurrentIndex)) {
       throw new RuntimeException("Unexpected Binding completed");
     }
     binding.removeListener(mChildListener);
     mCurrentIndex++;
 
-    if (mCurrentIndex >= mBindings.length) {
+    if (mCurrentIndex >= mBindings.size()) {
       finish();
     } else {
-      AnimationBinding next = mBindings[mCurrentIndex];
+      AnimationBinding next = mBindings.get(mCurrentIndex);
       next.addListener(mChildListener);
       next.start(mResolver);
     }
   }
 
   private void finish() {
-    for (AnimationBindingListener listener : mListeners) {
-      listener.onFinish(this);
-    }
+    notifyFinished();
     mIsActive = false;
     mResolver = null;
   }
@@ -69,13 +87,23 @@ public class SequenceBinding implements AnimationBinding {
     if (mIsActive) {
       throw new RuntimeException("Already started");
     }
-    mIsActive = true;
-    for (AnimationBindingListener listener : mListeners) {
-      listener.onStart(this);
+
+    if (!shouldStart()) {
+      notifyCanceledBeforeStart();
+      return;
     }
+    notifyWillStart();
+    // Notify all children except the first one that will start later
+    for (int i = 1, size = mBindings.size(); i < size; i++) {
+      final AnimationBinding binding = mBindings.get(i);
+      binding.prepareToStartLater();
+    }
+    // Now start the first one
+    mIsActive = true;
     mResolver = resolver;
-    mBindings[0].addListener(mChildListener);
-    mBindings[0].start(mResolver);
+    final AnimationBinding first = mBindings.get(0);
+    first.addListener(mChildListener);
+    first.start(mResolver);
   }
 
   @Override
@@ -84,7 +112,7 @@ public class SequenceBinding implements AnimationBinding {
       return;
     }
     mIsActive = false;
-    mBindings[mCurrentIndex].stop();
+    mBindings.get(mCurrentIndex).stop();
   }
 
   @Override
@@ -93,33 +121,18 @@ public class SequenceBinding implements AnimationBinding {
   }
 
   @Override
-  public void collectTransitioningProperties(ArraySet<ComponentProperty> outSet) {
-    for (int i = 0; i < mBindings.length; i++) {
-      mBindings[i].collectTransitioningProperties(outSet);
+  public void collectTransitioningProperties(ArrayList<PropertyAnimation> outList) {
+    for (int i = 0, size = mBindings.size(); i < size; i++) {
+      mBindings.get(i).collectTransitioningProperties(outList);
     }
   }
 
   @Override
-  public void collectAppearFromValues(SimpleArrayMap<ComponentProperty, LazyValue> outMap) {
-    for (int i = 0; i < mBindings.length; i++) {
-      mBindings[i].collectAppearFromValues(outMap);
+  public void prepareToStartLater() {
+    notifyScheduledToStartLater();
+    for (int i = 0, size = mBindings.size(); i < size; i++) {
+      final AnimationBinding binding = mBindings.get(i);
+      binding.prepareToStartLater();
     }
-  }
-
-  @Override
-  public void collectDisappearToValues(SimpleArrayMap<ComponentProperty, LazyValue> outMap) {
-    for (int i = 0; i < mBindings.length; i++) {
-      mBindings[i].collectDisappearToValues(outMap);
-    }
-  }
-
-  @Override
-  public void addListener(AnimationBindingListener animationBindingListener) {
-    mListeners.add(animationBindingListener);
-  }
-
-  @Override
-  public void removeListener(AnimationBindingListener animationBindingListener) {
-    mListeners.remove(animationBindingListener);
   }
 }

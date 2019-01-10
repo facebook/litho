@@ -1,31 +1,8 @@
-# Copyright (c) 2014-present, Facebook, Inc.
-# All rights reserved.
+# Copyright (c) 2017-present, Facebook, Inc.
 #
-# This source code is licensed under the BSD-style license found in the
-# LICENSE file in the root directory of this source tree. An additional grant
-# of patent rights can be found in the PATENTS file in the same directory.
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
 
-include_defs("//COMPONENTS_DEFS")
+load("//tools/build_defs/oss:litho_defs.bzl", "define_yogajni_targets")
 
-# This target is only used in open source and will break the monobuild
-# because we cannot define `soname` multiple times.
-if COMPONENTS_IS_OSS_BUILD:
-  cxx_library(
-    name = 'jni',
-    soname = 'libyoga.$(ext)',
-    srcs = glob(['src/main/cpp/jni/*.cpp']),
-    header_namespace = '',
-    compiler_flags = [
-      '-fno-omit-frame-pointer',
-      '-fexceptions',
-      '-Wall',
-      '-Werror',
-      '-O3',
-      '-std=c++11',
-    ],
-    deps = [
-      make_dep_path("lib/yoga/src/main/cpp:yoga"),
-      COMPONENTS_FBJNI_TARGET,
-    ],
-    visibility = [COMPONENTS_VISIBILITY],
-  )
+define_yogajni_targets()

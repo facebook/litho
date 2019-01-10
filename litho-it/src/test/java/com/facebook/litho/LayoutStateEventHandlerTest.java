@@ -1,24 +1,30 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-
-import static junit.framework.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateEventHandlerTest {
@@ -30,36 +36,36 @@ public class LayoutStateEventHandlerTest {
   private static void assertCorrectEventHandler(
       EventHandler eventHandler,
       int expectedId,
-      Component<?> expectedInput) {
-    assertEquals(expectedInput, eventHandler.mHasEventDispatcher);
-    assertEquals(expectedId, eventHandler.id);
+      Component expectedInput) {
+    assertThat(eventHandler.mHasEventDispatcher).isEqualTo(expectedInput);
+    assertThat(eventHandler.id).isEqualTo(expectedId);
   }
 
   @Before
   public void setup() {
     mUnspecifiedSizeSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
-    mRootComponent = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        assertCorrectEventHandler(c.newEventHandler(1), 1, mRootComponent);
-        Layout.create(c, mNestedComponent).flexShrink(0).build();
-        assertCorrectEventHandler(c.newEventHandler(2), 2, mRootComponent);
-        Layout.create(c, mNestedComponent).flexShrink(0).build();
-        assertCorrectEventHandler(c.newEventHandler(3), 3, mRootComponent);
+    mRootComponent =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            assertCorrectEventHandler(c.newEventHandler(1), 1, mRootComponent);
+            Wrapper.create(c).delegate(mNestedComponent).build();
+            assertCorrectEventHandler(c.newEventHandler(2), 2, mRootComponent);
+            Wrapper.create(c).delegate(mNestedComponent).build();
+            assertCorrectEventHandler(c.newEventHandler(3), 3, mRootComponent);
 
-        return TestLayoutComponent.create(c)
-            .buildWithLayout();
-      }
-    };
-    mNestedComponent = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        assertCorrectEventHandler(c.newEventHandler(1), 1, mNestedComponent);
+            return TestLayoutComponent.create(c).build();
+          }
+        };
+    mNestedComponent =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            assertCorrectEventHandler(c.newEventHandler(1), 1, mNestedComponent);
 
-        return TestLayoutComponent.create(c)
-            .buildWithLayout();
-      }
-    };
+            return TestLayoutComponent.create(c).build();
+          }
+        };
   }
 
   @Test
@@ -70,8 +76,6 @@ public class LayoutStateEventHandlerTest {
         -1,
         mUnspecifiedSizeSpec,
         mUnspecifiedSizeSpec,
-        false,
-        false,
-        null);
+        LayoutState.CalculateLayoutSource.TEST);
   }
 }

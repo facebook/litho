@@ -5,7 +5,7 @@ layout: docs
 permalink: /docs/layout
 ---
 
-Litho uses [Yoga](https://facebook.github.io/yoga/) which is an implementation of [Flexbox](https://www.w3.org/TR/css-flexbox-1/) to measure and layout components on screen. If you have used Flexbox on the web before this should be very familiar. If you are more familiar with how Android normally performs Layout then Flexbox will remind you a lot of `LinearLayout`.
+Litho uses [Yoga](https://yogalayout.com/) which is an implementation of [Flexbox](https://www.w3.org/TR/css-flexbox-1/) to measure and layout components on screen. If you have used Flexbox on the web before this should be very familiar. If you are more familiar with how Android normally performs Layout then Flexbox will remind you a lot of `LinearLayout`.
 
 In Litho you can use a `Row` to achieve a similar layout to a horizontal `LinearLayout`.
 
@@ -32,32 +32,28 @@ Row.create(c)
     .child(
         SolidColor.create(c)
             .color(RED)
-            .withLayout()
             .flexGrow(1))
     .child(
         SolidColor.create(c)
             .color(BLUE)
-            .withLayout()
             .flexGrow(1))
     .build();
 ```
 
-If you would like to similar a `FrameLayout` to overlay one view on top of the other Flexbox can do that with `positionType(ABSOLUTE)`.
+If you would like to overlay one view on top of the other -- similar to a `FrameLayout` -- Flexbox can do that with `positionType(ABSOLUTE)`.
 
 ```java
 Column.create(c)
     .child(
         Image.create(c)
-            .srcRes(R.drawable.some_big_image)
-            .withLayout()
+            .drawableRes(R.drawable.some_big_image)
             .widthDip(100)
             .heightDip(100))
     .child(
         Text.create(c)
             .text("Overlaid text")
-            .withLayout()
             .positionType(ABSOLUTE))
     .build();
 ```
 
-For more documentation of specific Flexbox properties check out the [Yoga documentation](https://facebook.github.io/yoga/docs/getting-started/) or explore any web resources on how Flexbox works.
+For more documentation of specific Flexbox properties check out the [Yoga documentation](https://yogalayout.com/docs/) or explore any web resources on how Flexbox works.

@@ -1,36 +1,66 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.widget;
+
+import static android.support.v7.widget.OrientationHelper.VERTICAL;
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
-
-import com.facebook.litho.ComponentInfo;
+import android.view.ViewGroup;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.SizeSpec;
-
-import static com.facebook.litho.SizeSpec.EXACTLY;
-import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+import com.facebook.litho.widget.RecyclerBinder.RecyclerViewLayoutManagerOverrideParams;
+import java.util.List;
 
 public class GridLayoutInfo implements LayoutInfo {
 
+  // A CUSTOM LAYOUTINFO param to override the size of an item in the grid. Since GridLayoutInfo
+  // does not support item decorations offsets on the non scrolling side natively,
+  // this can be useful to manually compute the size of an item after such decorations are taken
+  // into account.
+  public static final String OVERRIDE_SIZE = "OVERRIDE_SIZE";
+
   private final GridLayoutManager mGridLayoutManager;
   private final GridSpanSizeLookup mGridSpanSizeLookup;
+  private final boolean mAllowGridMeasureOverride;
 
-  private ComponentInfoCollection mComponentInfoCollection;
+  private RenderInfoCollection mRenderInfoCollection;
 
-  public GridLayoutInfo(Context context, int spanCount, int orientation, boolean reverseLayout) {
-    mGridLayoutManager = new GridLayoutManager(context, spanCount, orientation, reverseLayout);
+  public GridLayoutInfo(
+      Context context,
+      int spanCount,
+      int orientation,
+      boolean reverseLayout,
+      boolean allowGridMeasuresOverride) {
+    mAllowGridMeasureOverride = allowGridMeasuresOverride;
+    mGridLayoutManager =
+        mAllowGridMeasureOverride
+            ? new GridLayoutManager(context, spanCount, orientation, reverseLayout)
+            : new LithoGridLayoutManager(context, spanCount, orientation, reverseLayout);
     mGridSpanSizeLookup = new GridSpanSizeLookup();
     mGridLayoutManager.setSpanSizeLookup(mGridSpanSizeLookup);
+  }
+
+  public GridLayoutInfo(Context context, int spanCount, int orientation, boolean reverseLayout) {
+    this(context, spanCount, orientation, reverseLayout, false);
   }
 
   public GridLayoutInfo(Context context, int spanCount) {
@@ -43,13 +73,28 @@ public class GridLayoutInfo implements LayoutInfo {
   }
 
   @Override
-  public int findFirstVisiblePosition() {
+  public int findFirstVisibleItemPosition() {
     return mGridLayoutManager.findFirstVisibleItemPosition();
   }
 
   @Override
-  public int findLastVisiblePosition() {
+  public int findLastVisibleItemPosition() {
     return mGridLayoutManager.findLastVisibleItemPosition();
+  }
+
+  @Override
+  public int findFirstFullyVisibleItemPosition() {
+    return mGridLayoutManager.findFirstCompletelyVisibleItemPosition();
+  }
+
+  @Override
+  public int findLastFullyVisibleItemPosition() {
+    return mGridLayoutManager.findLastCompletelyVisibleItemPosition();
+  }
+
+  @Override
+  public int getItemCount() {
+    return mGridLayoutManager.getItemCount();
   }
 
   @Override
@@ -58,8 +103,8 @@ public class GridLayoutInfo implements LayoutInfo {
   }
 
   @Override
-  public void setComponentInfoCollection(ComponentInfoCollection componentInfoCollection) {
-    mComponentInfoCollection = componentInfoCollection;
+  public void setRenderInfoCollection(RenderInfoCollection renderInfoCollection) {
+    mRenderInfoCollection = renderInfoCollection;
   }
 
   @Override
@@ -88,15 +133,27 @@ public class GridLayoutInfo implements LayoutInfo {
    * @return widthSpec of a child that is of span size 1
    */
   @Override
-  public int getChildWidthSpec(int widthSpec, ComponentInfo componentInfo) {
+  public int getChildWidthSpec(int widthSpec, RenderInfo renderInfo) {
+
     switch (mGridLayoutManager.getOrientation()) {
       case GridLayoutManager.HORIZONTAL:
         return SizeSpec.makeSizeSpec(0, UNSPECIFIED);
       default:
-        final int spanCount = mGridLayoutManager.getSpanCount();
-        final int spanSize = componentInfo.getSpanSize();
+        Integer overrideWidth =
+            (Integer) renderInfo.getCustomAttribute(GridLayoutInfo.OVERRIDE_SIZE);
+        if (overrideWidth != null) {
+          return SizeSpec.makeSizeSpec(overrideWidth, EXACTLY);
+        }
 
-        return spanSize * SizeSpec.makeSizeSpec(SizeSpec.getSize(widthSpec) / spanCount, EXACTLY);
+        if (renderInfo.isFullSpan()) {
+          return SizeSpec.makeSizeSpec(SizeSpec.getSize(widthSpec), EXACTLY);
+        }
+
+        final int spanCount = mGridLayoutManager.getSpanCount();
+        final int spanSize = renderInfo.getSpanSize();
+
+        return SizeSpec.makeSizeSpec(
+            spanSize * ((SizeSpec.getSize(widthSpec)) / spanCount), EXACTLY);
     }
   }
 
@@ -105,15 +162,63 @@ public class GridLayoutInfo implements LayoutInfo {
    * @return heightSpec of a child that is of span size 1
    */
   @Override
-  public int getChildHeightSpec(int heightSpec, ComponentInfo componentInfo) {
+  public int getChildHeightSpec(int heightSpec, RenderInfo renderInfo) {
     switch (mGridLayoutManager.getOrientation()) {
       case GridLayoutManager.HORIZONTAL:
-        final int spanCount = mGridLayoutManager.getSpanCount();
-        final int spanSize = componentInfo.getSpanSize();
+        Integer overrideHeight =
+            (Integer) renderInfo.getCustomAttribute(GridLayoutInfo.OVERRIDE_SIZE);
+        if (overrideHeight != null) {
+          return SizeSpec.makeSizeSpec(overrideHeight, EXACTLY);
+        }
 
-        return spanSize * SizeSpec.makeSizeSpec(SizeSpec.getSize(heightSpec) / spanCount, EXACTLY);
+        if (renderInfo.isFullSpan()) {
+          return SizeSpec.makeSizeSpec(SizeSpec.getSize(heightSpec), EXACTLY);
+        }
+
+        final int spanCount = mGridLayoutManager.getSpanCount();
+        final int spanSize = renderInfo.getSpanSize();
+
+        return SizeSpec.makeSizeSpec(
+            spanSize * (SizeSpec.getSize(heightSpec) / spanCount), EXACTLY);
       default:
         return SizeSpec.makeSizeSpec(0, UNSPECIFIED);
+    }
+  }
+
+  @Override
+  public ViewportFiller createViewportFiller(int measuredWidth, int measuredHeight) {
+    return new ViewportFiller(
+        measuredWidth, measuredHeight, getScrollDirection(), mGridLayoutManager.getSpanCount());
+  }
+
+  @Override
+  public int computeWrappedHeight(int maxHeight, List<ComponentTreeHolder> componentTreeHolders) {
+    final int itemCount = componentTreeHolders.size();
+    final int spanCount = mGridLayoutManager.getSpanCount();
+
+    int measuredHeight = 0;
+
+    switch (mGridLayoutManager.getOrientation()) {
+      case GridLayoutManager.VERTICAL:
+        for (int i = 0; i < itemCount; i += spanCount) {
+          final ComponentTreeHolder holder = componentTreeHolders.get(i);
+          int firstRowItemHeight = holder.getMeasuredHeight();
+
+          measuredHeight += firstRowItemHeight;
+          measuredHeight += LayoutInfoUtils.getTopDecorationHeight(mGridLayoutManager, i);
+          measuredHeight += LayoutInfoUtils.getBottomDecorationHeight(mGridLayoutManager, i);
+
+          if (measuredHeight > maxHeight) {
+            measuredHeight = maxHeight;
+            break;
+          }
+        }
+        return measuredHeight;
+
+      case GridLayoutManager.HORIZONTAL:
+      default:
+        throw new IllegalStateException(
+            "This method should only be called when orientation is vertical");
     }
   }
 
@@ -121,11 +226,107 @@ public class GridLayoutInfo implements LayoutInfo {
 
     @Override
     public int getSpanSize(int position) {
-      if (mComponentInfoCollection == null) {
+      if (mRenderInfoCollection == null) {
         return 1;
       }
 
-      return mComponentInfoCollection.getComponentInfoAt(position).getSpanSize();
+      final RenderInfo renderInfo = mRenderInfoCollection.getRenderInfoAt(position);
+      if (renderInfo.isFullSpan()) {
+        return mGridLayoutManager.getSpanCount();
+      }
+
+      return renderInfo.getSpanSize();
+    }
+  }
+
+  private static class LithoGridLayoutManager extends GridLayoutManager {
+
+    public LithoGridLayoutManager(
+        Context context, int spanCount, int orientation, boolean reverseLayout) {
+      super(context, spanCount, orientation, reverseLayout);
+    }
+
+    @Override
+    public RecyclerView.LayoutParams generateLayoutParams(ViewGroup.LayoutParams lp) {
+      if (lp instanceof RecyclerViewLayoutManagerOverrideParams) {
+        return new LayoutParams((RecyclerViewLayoutManagerOverrideParams) lp);
+      } else {
+        return super.generateLayoutParams(lp);
+      }
+    }
+
+    public static class LayoutParams extends GridLayoutManager.LayoutParams
+        implements LithoView.LayoutManagerOverrideParams {
+
+      private final int mOverrideWidthMeasureSpec;
+      private final int mOverrideHeightMeasureSpec;
+
+      public LayoutParams(RecyclerViewLayoutManagerOverrideParams source) {
+        super(source);
+        mOverrideWidthMeasureSpec = source.getWidthMeasureSpec();
+        mOverrideHeightMeasureSpec = source.getHeightMeasureSpec();
+      }
+
+      @Override
+      public int getWidthMeasureSpec() {
+        return mOverrideWidthMeasureSpec;
+      }
+
+      @Override
+      public int getHeightMeasureSpec() {
+        return mOverrideHeightMeasureSpec;
+      }
+
+      @Override
+      public boolean hasValidAdapterPosition() {
+        return false;
+      }
+    }
+  }
+
+  static class ViewportFiller implements LayoutInfo.ViewportFiller {
+
+    private final int mWidth;
+    private final int mHeight;
+    private final int mOrientation;
+    private final int mSpanCount;
+    private int mFill;
+    private int mIndexOfSpan;
+
+    public ViewportFiller(int width, int height, int orientation, int spanCount) {
+      mWidth = width;
+      mHeight = height;
+      mOrientation = orientation;
+      mSpanCount = spanCount;
+    }
+
+    @Override
+    public boolean wantsMore() {
+      final int target = mOrientation == VERTICAL ? mHeight : mWidth;
+      return mFill < target;
+    }
+
+    @Override
+    public void add(RenderInfo renderInfo, int width, int height) {
+      if (mIndexOfSpan == 0) {
+        mFill += mOrientation == VERTICAL ? height : width;
+      }
+
+      if (renderInfo.isFullSpan()) {
+        mIndexOfSpan = 0;
+      } else {
+        mIndexOfSpan += renderInfo.getSpanSize();
+
+        if (mIndexOfSpan == mSpanCount) {
+          // Reset the index after exceeding the span.
+          mIndexOfSpan = 0;
+        }
+      }
+    }
+
+    @Override
+    public int getFill() {
+      return mFill;
     }
   }
 }

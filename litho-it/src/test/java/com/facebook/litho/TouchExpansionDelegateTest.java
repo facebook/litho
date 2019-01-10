@@ -1,33 +1,42 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
-import android.graphics.Rect;
-import android.os.SystemClock;
-import android.view.MotionEvent;
-import android.view.View;
-
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
-
-import static junit.framework.Assert.assertEquals;
+import static android.os.SystemClock.uptimeMillis;
+import static android.view.MotionEvent.ACTION_DOWN;
+import static android.view.MotionEvent.obtain;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.RuntimeEnvironment.application;
+
+import android.graphics.Rect;
+import android.os.SystemClock;
+import android.view.MotionEvent;
+import android.view.View;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class TouchExpansionDelegateTest {
@@ -53,16 +62,16 @@ public class TouchExpansionDelegateTest {
   @Test
   public void testTouchWithinBounds() {
     final View view = mock(View.class);
-    when(view.getContext()).thenReturn(RuntimeEnvironment.application);
+    when(view.getContext()).thenReturn(application);
     when(view.getWidth()).thenReturn(4);
     when(view.getHeight()).thenReturn(6);
 
     mTouchDelegate.registerTouchExpansion(0, view, new Rect(0, 0, 10, 10));
 
-    MotionEvent event = MotionEvent.obtain(
-        SystemClock.uptimeMillis(),
-        SystemClock.uptimeMillis(),
-        MotionEvent.ACTION_DOWN,
+    MotionEvent event = obtain(
+        uptimeMillis(),
+        uptimeMillis(),
+        ACTION_DOWN,
         5,
         5,
         0);
@@ -70,8 +79,8 @@ public class TouchExpansionDelegateTest {
     mTouchDelegate.onTouchEvent(event);
 
     verify(view, times(1)).dispatchTouchEvent(event);
-    assertEquals(2f, event.getX());
-    assertEquals(3f, event.getY());
+    assertThat(event.getX()).isEqualTo(2f);
+    assertThat(event.getY()).isEqualTo(3f);
   }
 
   @Test

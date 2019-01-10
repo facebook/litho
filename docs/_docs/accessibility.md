@@ -14,7 +14,6 @@ Setting a content description on any component is as simple as:
 ```java
 Image.create(c)
     .imageRes(R.drawable.some_image)
-    .withLayout()
     .contentDescription("This is an image")
     .build())
 ```
@@ -75,13 +74,14 @@ For example, here are the steps for overriding `onInitializeAccessibilityNodeInf
 1. Implementing an event handler
 
 ```java
-@OnEvent(OnInitializeAccessiblityNodeInfoEvent.class)
+@OnEvent(OnInitializeAccessibilityNodeInfoEvent.class)
 static void onInitializeAccessibilityNodeInfoEvent(
+    ComponentContext c,
     @FromEvent AccessibilityDelegateCompat superDelegate,
-    @FromEvent View view,
-    @FromEvent AccessibilityNodeInfoCompat node) {
+    @FromEvent View host,
+    @FromEvent AccessibilityNodeInfoCompat info) {
   // Equivalent to calling super on a regular AccessibilityDelegate, not required
-  superDelegate.onInitializeAccessibilityNodeInfo(view, node);
+  superDelegate.onInitializeAccessibilityNodeInfo(view, info);
   // My implementation
 }
 ``` 
@@ -92,7 +92,6 @@ static void onInitializeAccessibilityNodeInfoEvent(
 ```java
 Text.create(c)
     .text(title)
-    .withLayout()
     .onInitializeAccessiblityNodeInfoHandler(MyComponent.onInitializeAccessibilityNodeInfoEvent(c))
 ```  
 
@@ -103,11 +102,12 @@ One of the best features of `AccessibilityDelegate`s in general is their reusabi
 class PoliteComponentWrapper {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext c,
-      @Prop Component<?> content) {
+      @Prop Component content) {
       
-    return Layout.create(c, content)
+    return Wrapper.create(c)
+        .delegate(content)
         .onPopulateAccessibilityEventHandler(
             PoliteComponentWrapper.onPopulateAccessibilityEvent(c))
         .build();
@@ -129,7 +129,7 @@ Now you can replace any usages of your component with `PoliteComponentWrapper`
 
 ```java
 @OnCreateLayout
-static ComponentLayout onCreateLayout(
+static Component onCreateLayout(
     ComponentContext c,
     @Prop CharSequence text) {
     

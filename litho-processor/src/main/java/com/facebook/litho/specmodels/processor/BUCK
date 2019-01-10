@@ -1,13 +1,11 @@
 # Copyright (c) 2017-present, Facebook, Inc.
-# All rights reserved.
 #
-# This source code is licensed under the BSD-style license found in the
-# LICENSE file in the root directory of this source tree. An additional grant
-# of patent rights can be found in the PATENTS file in the same directory.
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANNOTATIONS_TARGET", "LITHO_JAVAC_TOOLS_TARGET", "LITHO_JAVAPOET_TARGET", "LITHO_JSR_TARGET", "fb_java_library", "make_dep_path")
 
-include_defs("//COMPONENTS_DEFS")
-
-java_annotation_processor(
+fb_native.java_annotation_processor(
     name = "processor",
     processor_class = "com.facebook.litho.specmodels.processor.ComponentsProcessor",
     visibility = [
@@ -18,33 +16,52 @@ java_annotation_processor(
     ],
 )
 
-java_library(
-    name = "processor-lib",
-    exported_deps = [
-        ":processor-lib-bare",
-        COMPONENTS_JSR_TARGET,
-        COMPONENTS_JAVAPOET_TARGET,
-    ],
-    tests = [
-        "//javatests/com/facebook/litho/specmodels/processor:processor",
-    ],
-    visibility = [
-        "PUBLIC",
-    ],
-)
-
-java_library(
-    name = "processor-lib-bare",
-    srcs = glob(["*.java"]),
-    provided_deps = [
-        COMPONENTS_JSR_TARGET,
-        COMPONENTS_JAVAPOET_TARGET,
-    ],
+fb_native.java_annotation_processor(
+    name = "testing-processor",
+    processor_class = "com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor",
     visibility = [
         "PUBLIC",
     ],
     deps = [
+        ":processor-lib",
+    ],
+)
+
+fb_java_library(
+    name = "processor-lib",
+    tests = [
+        make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels/processor:processor"),
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    exported_deps = [
+        ":processor-lib-bare",
+        LITHO_JAVAPOET_TARGET,
+        LITHO_JSR_TARGET,
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/generator/testing:testing"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor/testing:testing"),
+    ],
+)
+
+fb_java_library(
+    name = "processor-lib-bare",
+    srcs = glob(["*.java"]),
+    provided_deps = [
+        LITHO_JAVAC_TOOLS_TARGET,
+        LITHO_JAVAPOET_TARGET,
+        LITHO_JSR_TARGET,
+    ],
+    source = "8",
+    target = "8",
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        LITHO_ANNOTATIONS_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare"),
-        COMPONENTS_ANNOTATIONS_TARGET,
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/generator/testing:testing"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/model/testing:testing"),
     ],
 )

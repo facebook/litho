@@ -1,18 +1,27 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.widget;
 
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+
+import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView.ScaleType;
-
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
@@ -34,14 +43,15 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
-import com.facebook.litho.reference.DrawableUtils;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.utils.MeasureUtils;
 
-import static com.facebook.litho.SizeSpec.UNSPECIFIED;
-
 /**
- * A component that is able to display drawable resources. It takes a drawable
- * resource ID as prop.
+ * A component that is able to display drawable resources. It takes a drawable resource ID as prop.
+ *
+ * @uidocs https://fburl.com/Image:9b31
+ * @prop drawable Drawable to display.
+ * @prop scaleType Scale type for the drawable within the container.
  */
 @MountSpec(isPureRender = true, poolSize = 30)
 class ImageSpec {
@@ -60,7 +70,7 @@ class ImageSpec {
       final int attr = a.getIndex(i);
 
       if (attr == R.styleable.Image_android_src) {
-        drawable.set(c.getResources().getDrawable(a.getResourceId(attr, 0)));
+        drawable.set(c.getAndroidContext().getResources().getDrawable(a.getResourceId(attr, 0)));
       } else if (attr == R.styleable.Image_android_scaleType) {
         scaleType.set(SCALE_TYPE[a.getInteger(attr, -1)]);
       }
@@ -103,6 +113,14 @@ class ImageSpec {
         intrinsicHeight,
         aspectRatio,
         size);
+
+    if (ComponentsConfiguration.prewarmImageTexture) {
+      TextureWarmer.WarmDrawable warmDrawable = new TextureWarmer.WarmDrawable(
+          drawable,
+          size.width,
+          size.height);
+      TextureWarmer.getInstance().warmDrawable(warmDrawable);
+    }
   }
 
   @OnBoundsDefined
@@ -119,6 +137,7 @@ class ImageSpec {
     final int verticalPadding = layout.getPaddingTop() + layout.getPaddingBottom();
 
     if (ScaleType.FIT_XY == scaleType
+        || drawable == null
         || drawable.getIntrinsicWidth() <= 0
         || drawable.getIntrinsicHeight() <= 0) {
       drawableMatrix.set(null);
@@ -138,7 +157,7 @@ class ImageSpec {
   }
 
   @OnCreateMountContent
-  static MatrixDrawable onCreateMountContent(ComponentContext c) {
+  static MatrixDrawable onCreateMountContent(Context c) {
     return new MatrixDrawable();
   }
 
@@ -170,9 +189,9 @@ class ImageSpec {
 
   @ShouldUpdate(onMount = true)
   static boolean shouldUpdate(
-      Diff<ScaleType> scaleType,
-      Diff<Drawable> drawable) {
+      @Prop(optional = true) Diff<ScaleType> scaleType,
+      @Prop(resType = ResType.DRAWABLE) Diff<Drawable> drawable) {
     return (scaleType.getNext() != scaleType.getPrevious()) ||
-        !DrawableUtils.areDrawablesEqual(drawable.getNext(), drawable.getPrevious());
+        drawable.getNext() != drawable.getPrevious();
   }
 }

@@ -6,7 +6,6 @@ input[type="search"] {
 .navSearchWrapper {
   align-self: center;
   position: relative;
-  margin-bottom: -8px;
 
   &::before {
     border: 3px solid $primary-overlay-special;

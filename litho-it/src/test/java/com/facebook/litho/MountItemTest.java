@@ -1,30 +1,36 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
-import android.util.SparseArray;
-import android.view.View;
-
-import com.facebook.litho.testing.TestDrawableComponent;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.util.InlineLayoutSpec;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
-
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+
+import android.util.SparseArray;
+import android.view.View;
+import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 
 /**
  * Tests {@link MountItem}
@@ -33,7 +39,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 @RunWith(ComponentsTestRunner.class)
 public class MountItemTest {
   private MountItem mMountItem;
-  private Component<?> mComponent;
+  private Component mComponent;
   private ComponentHost mComponentHost;
   private Object mContent;
   private CharSequence mContentDescription;
@@ -41,6 +47,7 @@ public class MountItemTest {
   private SparseArray<Object> mViewTags;
   private EventHandler mClickHandler;
   private EventHandler mLongClickHandler;
+  private EventHandler mFocusChangeHandler;
   private EventHandler mTouchHandler;
   private EventHandler mDispatchPopulateAccessibilityEventHandler;
   private int mFlags;
@@ -52,12 +59,13 @@ public class MountItemTest {
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mMountItem = new MountItem();
 
-    mComponent = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return TestDrawableComponent.create(c).buildWithLayout();
-      }
-    };
+    mComponent =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).build();
+          }
+        };
     mComponentHost = new ComponentHost(RuntimeEnvironment.application);
     mContent = new View(RuntimeEnvironment.application);
     mContentDescription = "contentDescription";
@@ -65,6 +73,7 @@ public class MountItemTest {
     mViewTags = new SparseArray<>();
     mClickHandler = new EventHandler(mComponent, 5);
     mLongClickHandler = new EventHandler(mComponent, 3);
+    mFocusChangeHandler = new EventHandler(mComponent, 9);
     mTouchHandler = new EventHandler(mComponent, 1);
     mDispatchPopulateAccessibilityEventHandler = new EventHandler(mComponent, 7);
     mFlags = 114;
@@ -73,6 +82,7 @@ public class MountItemTest {
     mNodeInfo.setContentDescription(mContentDescription);
     mNodeInfo.setClickHandler(mClickHandler);
     mNodeInfo.setLongClickHandler(mLongClickHandler);
+    mNodeInfo.setFocusChangeHandler(mFocusChangeHandler);
     mNodeInfo.setTouchHandler(mTouchHandler);
     mNodeInfo.setViewTag(mViewTag);
     mNodeInfo.setViewTags(mViewTags);
@@ -83,9 +93,10 @@ public class MountItemTest {
         mContent,
         mNodeInfo,
         null,
-        null,
         mFlags,
-        IMPORTANT_FOR_ACCESSIBILITY_YES);
+        IMPORTANT_FOR_ACCESSIBILITY_YES,
+        ORIENTATION_PORTRAIT,
+        null);
   }
 
   @Test
@@ -101,34 +112,118 @@ public class MountItemTest {
   public void testGetters() {
     assertThat(mMountItem.getComponent()).isSameAs((Component) mComponent);
     assertThat(mMountItem.getHost()).isSameAs(mComponentHost);
-    assertThat(mMountItem.getContent()).isSameAs(mContent);
+    assertThat(mMountItem.getBaseContent()).isSameAs(mContent);
+    assertThat(mMountItem.getMountableContent()).isSameAs(mContent);
     assertThat(mMountItem.getNodeInfo().getContentDescription()).isSameAs(mContentDescription);
     assertThat(mMountItem.getNodeInfo().getClickHandler()).isSameAs(mClickHandler);
+    assertThat(mMountItem.getNodeInfo().getFocusChangeHandler()).isSameAs(mFocusChangeHandler);
     assertThat(mMountItem.getNodeInfo().getTouchHandler()).isSameAs(mTouchHandler);
-    assertThat(mMountItem.getFlags()).isEqualTo(mFlags);
+    assertThat(mMountItem.getLayoutFlags()).isEqualTo(mFlags);
     assertThat(mMountItem.getImportantForAccessibility())
         .isEqualTo(IMPORTANT_FOR_ACCESSIBILITY_YES);
   }
 
   @Test
   public void testFlags() {
-    mFlags =
-        MountItem.FLAG_DUPLICATE_PARENT_STATE;
-    assertThat(MountItem.isDuplicateParentState(mFlags)).isTrue();
+    mFlags = MountItem.LAYOUT_FLAG_DUPLICATE_PARENT_STATE | MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE;
+
+    mMountItem = new MountItem();
+    mMountItem.init(
+        mComponent,
+        mComponentHost,
+        mContent,
+        mNodeInfo,
+        null,
+        mFlags,
+        IMPORTANT_FOR_ACCESSIBILITY_YES,
+        ORIENTATION_PORTRAIT,
+        null);
+
+    assertThat(MountItem.isDuplicateParentState(mMountItem.getLayoutFlags())).isTrue();
+    assertThat(MountItem.isTouchableDisabled(mMountItem.getLayoutFlags())).isTrue();
+
+    mFlags = 0;
+    mMountItem = new MountItem();
+    mMountItem.init(
+        mComponent,
+        mComponentHost,
+        mContent,
+        mNodeInfo,
+        null,
+        mFlags,
+        IMPORTANT_FOR_ACCESSIBILITY_YES,
+        ORIENTATION_PORTRAIT,
+        null);
+
+    assertThat(MountItem.isDuplicateParentState(mMountItem.getLayoutFlags())).isFalse();
+    assertThat(MountItem.isTouchableDisabled(mMountItem.getLayoutFlags())).isFalse();
+  }
+
+  @Test
+  public void testViewFlags() {
+    View view = new View(RuntimeEnvironment.application);
+    view.setClickable(true);
+    view.setEnabled(true);
+    view.setLongClickable(true);
+    view.setFocusable(false);
+    view.setSelected(false);
+
+    mMountItem = new MountItem();
+    mMountItem.init(
+        mComponent,
+        mComponentHost,
+        view,
+        mNodeInfo,
+        null,
+        mFlags,
+        IMPORTANT_FOR_ACCESSIBILITY_YES,
+        ORIENTATION_PORTRAIT,
+        null);
+
+    assertThat(mMountItem.isViewClickable()).isTrue();
+    assertThat(mMountItem.isViewEnabled()).isTrue();
+    assertThat(mMountItem.isViewLongClickable()).isTrue();
+    assertThat(mMountItem.isViewFocusable()).isFalse();
+    assertThat(mMountItem.isViewSelected()).isFalse();
+
+    view.setClickable(false);
+    view.setEnabled(false);
+    view.setLongClickable(false);
+    view.setFocusable(true);
+    view.setSelected(true);
+
+    mMountItem = new MountItem();
+    mMountItem.init(
+        mComponent,
+        mComponentHost,
+        view,
+        mNodeInfo,
+        null,
+        mFlags,
+        IMPORTANT_FOR_ACCESSIBILITY_YES,
+        ORIENTATION_PORTRAIT,
+        null);
+
+    assertThat(mMountItem.isViewClickable()).isFalse();
+    assertThat(mMountItem.isViewEnabled()).isFalse();
+    assertThat(mMountItem.isViewLongClickable()).isFalse();
+    assertThat(mMountItem.isViewFocusable()).isTrue();
+    assertThat(mMountItem.isViewSelected()).isTrue();
   }
 
   @Test
   public void testIsAccessibleWithNullComponent() {
     final MountItem mountItem = new MountItem();
     mountItem.init(
-        null,
+        mComponent,
         mComponentHost,
         mContent,
         mNodeInfo,
         null,
-        null,
         mFlags,
-        IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        ORIENTATION_PORTRAIT,
+        null);
 
     assertThat(mountItem.isAccessible()).isFalse();
   }
@@ -139,19 +234,16 @@ public class MountItemTest {
 
     mountItem.init(
         TestDrawableComponent.create(
-            mContext,
-            true,
-            true,
-            true,
-            true, /* implementsAccessibility */
-            false).build(),
+                mContext, true, true, true, true, /* implementsAccessibility */ false)
+            .build(),
         mComponentHost,
         mContent,
         mNodeInfo,
         null,
-        null,
         mFlags,
-        IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        ORIENTATION_PORTRAIT,
+        null);
 
     assertThat(mountItem.isAccessible()).isTrue();
   }
@@ -161,19 +253,16 @@ public class MountItemTest {
     final MountItem mountItem = new MountItem();
     mountItem.init(
         TestDrawableComponent.create(
-            mContext,
-            true,
-            true,
-            true,
-            true, /* implementsAccessibility */
-            false).build(),
+                mContext, true, true, true, true, /* implementsAccessibility */ false)
+            .build(),
         mComponentHost,
         mContent,
         mNodeInfo,
         null,
-        null,
         mFlags,
-        IMPORTANT_FOR_ACCESSIBILITY_NO);
+        IMPORTANT_FOR_ACCESSIBILITY_NO,
+        ORIENTATION_PORTRAIT,
+        null);
 
     assertThat(mountItem.isAccessible()).isFalse();
   }
@@ -183,19 +272,16 @@ public class MountItemTest {
     final MountItem mountItem = new MountItem();
     mountItem.init(
         TestDrawableComponent.create(
-            mContext,
-            true,
-            true,
-            true,
-            true, /* implementsAccessibility */
-            false).build(),
+                mContext, true, true, true, true, /* implementsAccessibility */ false)
+            .build(),
         mComponentHost,
         mContent,
         mNodeInfo,
         null,
-        null,
         mFlags,
-        IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        ORIENTATION_PORTRAIT,
+        null);
 
     assertThat(mountItem.isAccessible()).isTrue();
   }
@@ -206,13 +292,55 @@ public class MountItemTest {
   }
 
   @Test
+  public void testUpdateDoesntChangeFlags() {
+    LayoutOutput layoutOutput = new LayoutOutput();
+    layoutOutput.setNodeInfo(mNodeInfo);
+    layoutOutput.setComponent(mComponent);
+    final MountItem mountItem = new MountItem();
+    View view = new View(RuntimeEnvironment.application);
+
+    mountItem.init(mComponent, mComponentHost, view, layoutOutput);
+
+    assertThat(mountItem.isViewClickable()).isFalse();
+
+    view.setClickable(true);
+
+    mountItem.update(layoutOutput);
+    assertThat(mountItem.isViewClickable()).isFalse();
+  }
+
+  @Test
+  public void testWrappedContent() {
+    // Wrapped content isn't set
+    assertThat(mMountItem.getBaseContent()).isSameAs(mContent);
+    assertThat(mMountItem.getMountableContent()).isSameAs(mContent);
+
+    final Object wrappedContent = new View(RuntimeEnvironment.application);
+    mMountItem.setWrappedContent(wrappedContent);
+
+    // Wrapped content is set, which should not affect just content
+    assertThat(mMountItem.getBaseContent()).isSameAs(mContent);
+    assertThat(mMountItem.getMountableContent()).isSameAs(wrappedContent);
+
+    mMountItem.setWrappedContent(null);
+
+    // No wrapped content again
+    assertThat(mMountItem.getBaseContent()).isSameAs(mContent);
+    assertThat(mMountItem.getMountableContent()).isSameAs(mContent);
+  }
+
+  @Test
   public void testRelease() {
+    final Object wrappedContent = new View(RuntimeEnvironment.application);
+    mMountItem.setWrappedContent(wrappedContent);
+
     mMountItem.release(RuntimeEnvironment.application);
     assertThat(mMountItem.getComponent()).isNull();
     assertThat(mMountItem.getHost()).isNull();
-    assertThat(mMountItem.getContent()).isNull();
+    assertThat(mMountItem.getBaseContent()).isNull();
+    assertThat(mMountItem.getMountableContent()).isNull();
     assertThat(mMountItem.getNodeInfo()).isNull();
-    assertThat(mMountItem.getFlags()).isEqualTo(0);
+    assertThat(mMountItem.getLayoutFlags()).isEqualTo(0);
     assertThat(mMountItem.getImportantForAccessibility())
         .isEqualTo(IMPORTANT_FOR_ACCESSIBILITY_AUTO);
   }

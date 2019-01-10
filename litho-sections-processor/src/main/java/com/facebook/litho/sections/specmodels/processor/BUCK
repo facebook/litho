@@ -1,0 +1,41 @@
+# Copyright (c) 2017-present, Facebook, Inc.
+#
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
+
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANNOTATIONS_TARGET", "LITHO_PROCESSOR_LIB_TARGET", "LITHO_SECTIONS_ANNOTATIONS_TARGET", "fb_java_library", "make_dep_path")
+
+fb_native.java_annotation_processor(
+    name = "processor",
+    processor_class = "com.facebook.litho.sections.specmodels.processor.SectionsComponentProcessor",
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        ":processor-lib",
+    ],
+)
+
+fb_java_library(
+    name = "processor-lib",
+    srcs = glob([
+        "*.java",
+        "**/*.java",
+    ]),
+    source = "8",
+    target = "8",
+    visibility = ["PUBLIC"],
+    deps = [
+        LITHO_SECTIONS_ANNOTATIONS_TARGET,
+        LITHO_ANNOTATIONS_TARGET,
+        LITHO_PROCESSOR_LIB_TARGET,
+        make_dep_path("litho-sections-processor/src/main/java/com/facebook/litho/sections/specmodels/model:model"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
+    ],
+    exported_deps = [
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor-lib"),
+        make_dep_path("litho-sections-processor/src/main/java/com/facebook/litho/sections/specmodels/model:model"),
+    ],
+)

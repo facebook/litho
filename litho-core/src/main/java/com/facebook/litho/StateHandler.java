@@ -1,27 +1,35 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
+import static com.facebook.litho.ComponentLifecycle.StateUpdate;
+
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.v4.util.Pools;
+import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.stats.LithoStats;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import android.support.v4.util.Pools;
-
-import com.facebook.litho.ComponentLifecycle.StateContainer;
-import com.facebook.infer.annotation.ThreadSafe;
-
-import static com.facebook.litho.ComponentLifecycle.StateUpdate;
+import javax.annotation.concurrent.GuardedBy;
 
 /**
  * Holds information about the current State of the components in a Component Tree.
@@ -32,42 +40,79 @@ public class StateHandler {
   private static final int INITIAL_MAP_CAPACITY = 4;
   private static final int POOL_CAPACITY = 10;
 
-  private static final Pools.SynchronizedPool<List<StateUpdate>> sStateUpdatesListPool =
-      new Pools.SynchronizedPool<>(POOL_CAPACITY);
-  private static final
-  Pools.SynchronizedPool<Map<String, List<StateUpdate>>> sPendingStateUpdatesMapPool =
-      new Pools.SynchronizedPool<>(POOL_CAPACITY);
-  private static final
-  Pools.SynchronizedPool<Map<String, StateContainer>> sStateContainersMapPool =
-      new Pools.SynchronizedPool<>(POOL_CAPACITY);
-  private static final Pools.SynchronizedPool<Set<String>> sKnownGlobalKeysSetPool =
-      new Pools.SynchronizedPool<>(POOL_CAPACITY);
+  @Nullable private static final Pools.SynchronizedPool<List<StateUpdate>> sStateUpdatesListPool;
+
+  @Nullable
+  private static final Pools.SynchronizedPool<Map<String, List<StateUpdate>>> sStateUpdatesMapPool;
+
+  @Nullable
+  private static final Pools.SynchronizedPool<Map<String, StateContainer>> sStateContainersMapPool;
+
+  static {
+    if (ComponentsConfiguration.useStateHandlers) {
+      sStateUpdatesListPool = new Pools.SynchronizedPool<>(POOL_CAPACITY);
+      sStateUpdatesMapPool = new Pools.SynchronizedPool<>(POOL_CAPACITY);
+      sStateContainersMapPool = new Pools.SynchronizedPool<>(POOL_CAPACITY);
+    } else {
+      sStateUpdatesListPool = null;
+      sStateUpdatesMapPool = null;
+      sStateContainersMapPool = null;
+    }
+  }
 
   /**
    * List of state updates that will be applied during the next layout pass.
    */
+  @GuardedBy("this")
   private Map<String, List<StateUpdate>> mPendingStateUpdates;
+
+  /** List of transitions from state update that will be applied on next mount. */
+  @GuardedBy("this")
+  @Nullable
+  private Map<String, List<Transition>> mPendingStateUpdateTransitions;
+
+  /** List of transitions from state update that have been applied on next mount. */
+  @GuardedBy("this")
+  private Map<String, List<StateUpdate>> mAppliedStateUpdates;
 
   /**
    * Maps a component key to a component object that retains the current state values for that key.
    */
+  @GuardedBy("this")
   public Map<String, StateContainer> mStateContainers;
 
-  private Set<String> mKnownGlobalKeys;
+  /**
+   * Contains all keys of components that were present in the current ComponentTree and therefore
+   * their StateContainer needs to be kept around.
+   */
+  @GuardedBy("this")
+  public HashSet<String> mNeededStateContainers;
 
-  void init(StateHandler stateHandler) {
+  /** Map of all cached values that are stored for the current ComponentTree. */
+  @GuardedBy("this")
+  @Nullable
+  private Map<Object, Object> mCachedValues;
+
+  void init(@Nullable StateHandler stateHandler) {
     if (stateHandler == null) {
       return;
     }
-    copyPendingStateUpdatesMap(stateHandler.getPendingStateUpdates());
-    copyCurrentStateContainers(stateHandler.getStateContainers());
+
+    synchronized (this) {
+      copyStateUpdatesMap(
+          stateHandler.getPendingStateUpdates(), stateHandler.getAppliedStateUpdates());
+      copyCurrentStateContainers(stateHandler.getStateContainers());
+      copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
+    }
   }
 
-  public static StateHandler acquireNewInstance(StateHandler stateHandler) {
-    return ComponentsPools.acquireStateHandler(stateHandler);
+  public static @Nullable StateHandler acquireNewInstance(@Nullable StateHandler stateHandler) {
+    return ComponentsConfiguration.useStateHandlers
+        ? ComponentsPools.acquireStateHandler(stateHandler)
+        : null;
   }
 
-  public boolean isEmpty() {
+  public synchronized boolean isEmpty() {
     return mStateContainers == null || mStateContainers.isEmpty();
   }
 
@@ -77,8 +122,8 @@ public class StateHandler {
    * @param key the global key of the component
    * @param stateUpdate the state update to apply to the component
    */
-  void queueStateUpdate(String key, StateUpdate stateUpdate) {
-    maybeInitPendingUpdates();
+  synchronized void queueStateUpdate(String key, StateUpdate stateUpdate) {
+    maybeInitStateUpdatesMap();
 
     List<StateUpdate> pendingStateUpdatesForKey = mPendingStateUpdates.get(key);
 
@@ -99,78 +144,105 @@ public class StateHandler {
   @ThreadSafe(enableChecks = false)
   void applyStateUpdatesForComponent(Component component) {
     maybeInitStateContainers();
-    maybeInitKnownGlobalKeys();
+    maybeInitNeededStateContainers();
 
-    final ComponentLifecycle lifecycle = component.getLifecycle();
-    if (!lifecycle.hasState()) {
+    if (!component.hasState()) {
       return;
     }
 
-    final StateContainer previousStateContainer;
     final String key = component.getGlobalKey();
-    final StateContainer currentStateContainer =
-        mStateContainers.get(key);
+    final StateContainer currentStateContainer;
 
-    if (mKnownGlobalKeys.contains(key)) {
-      // We found two components with the same global key.
-      throw new RuntimeException(
-          "Cannot set State for " +
-              component.getSimpleName() +
-              ", found another Component with the same key");
+    synchronized (this) {
+      currentStateContainer = mStateContainers.get(key);
+      mNeededStateContainers.add(key);
     }
-    mKnownGlobalKeys.add(key);
 
     if (currentStateContainer != null) {
-      lifecycle.transferState(
-          component.getScopedContext(),
-          currentStateContainer,
-          component);
-      previousStateContainer = currentStateContainer;
+      component.transferState(currentStateContainer, component.getStateContainer());
     } else {
-      lifecycle.createInitialState(component.getScopedContext(), component);
-      previousStateContainer = component.getStateContainer();
+      component.createInitialState(component.getScopedContext());
     }
 
-    final List<StateUpdate> stateUpdatesForKey = mPendingStateUpdates == null
-        ? null
-        : mPendingStateUpdates.get(key);
+    final List<StateUpdate> stateUpdatesForKey;
+
+    synchronized (this) {
+      stateUpdatesForKey = mPendingStateUpdates == null
+          ? null
+          : mPendingStateUpdates.get(key);
+    }
 
     // If there are no state updates pending for this component, simply store its current state.
     if (stateUpdatesForKey != null) {
       for (StateUpdate update : stateUpdatesForKey) {
-        update.updateState(previousStateContainer, component);
+        update.updateState(component.getStateContainer());
+      }
+
+      LithoStats.incStateUpdate(stateUpdatesForKey.size());
+
+      if (component.getScopedContext().isNestedTreeResolutionExperimentEnabled()) {
+        synchronized (this) {
+          mPendingStateUpdates.remove(key); // remove to pending
+          mAppliedStateUpdates.put(key, stateUpdatesForKey); // add to applied
+        }
       }
     }
 
-    mStateContainers.put(key, component.getStateContainer());
+    synchronized (this) {
+      final StateContainer stateContainer = component.getStateContainer();
+      mStateContainers.put(key, stateContainer);
+      if (stateContainer instanceof ComponentLifecycle.TransitionContainer) {
+        final List<Transition> transitions =
+            ((ComponentLifecycle.TransitionContainer) stateContainer).consumeTransitions();
+        if (!transitions.isEmpty()) {
+          maybeInitPendingStateUpdateTransitions();
+          mPendingStateUpdateTransitions.put(key, transitions);
+        }
+      }
+    }
   }
 
   /**
    * Removes a list of state updates that have been applied from the pending state updates list and
-   *  updates the map of current components with the given components.
+   * updates the map of current components with the given components.
+   *
    * @param stateHandler state handler that was used to apply state updates in a layout pass
+   * @param isNestedTreeResolutionExperimentEnabled is the NestedTree resolution experiment enabled
    */
-  void commit(StateHandler stateHandler) {
-    clearStateUpdates(stateHandler.getPendingStateUpdates());
-    updateCurrentComponentsWithState(stateHandler.getStateContainers());
+  void commit(StateHandler stateHandler, boolean isNestedTreeResolutionExperimentEnabled) {
+    clearStateUpdates(
+        isNestedTreeResolutionExperimentEnabled
+            ? stateHandler.getAppliedStateUpdates()
+            : stateHandler.getPendingStateUpdates());
+    clearUnusedStateContainers(stateHandler);
+    copyCurrentStateContainers(stateHandler.getStateContainers());
+    copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
   }
 
   private void clearStateUpdates(Map<String, List<StateUpdate>> appliedStateUpdates) {
-    if (appliedStateUpdates == null ||
-        mPendingStateUpdates == null ||
-        mPendingStateUpdates.isEmpty()) {
-      return;
+    synchronized (this) {
+      if (appliedStateUpdates == null ||
+          mPendingStateUpdates == null ||
+          mPendingStateUpdates.isEmpty()) {
+        return;
+      }
     }
 
     for (String key : appliedStateUpdates.keySet()) {
-      final List<StateUpdate> pendingStateUpdatesForKey = mPendingStateUpdates.get(key);
+      final List<StateUpdate> pendingStateUpdatesForKey;
+      synchronized (this) {
+        pendingStateUpdatesForKey = mPendingStateUpdates.get(key);
+      }
+
       if (pendingStateUpdatesForKey == null) {
         continue;
       }
 
       final List<StateUpdate> appliedStateUpdatesForKey = appliedStateUpdates.get(key);
       if (pendingStateUpdatesForKey.size() == appliedStateUpdatesForKey.size()) {
-        mPendingStateUpdates.remove(key);
+        synchronized (this) {
+          mPendingStateUpdates.remove(key);
+        }
         releaseStateUpdatesList(pendingStateUpdatesForKey);
       } else {
         pendingStateUpdatesForKey.removeAll(appliedStateUpdatesForKey);
@@ -178,22 +250,20 @@ public class StateHandler {
     }
   }
 
-  private void updateCurrentComponentsWithState(
-      Map<String, StateContainer> updatedStateContainers) {
-    if (updatedStateContainers == null || updatedStateContainers.isEmpty()) {
-      return;
-    }
-
-    maybeInitStateContainers();
-    mStateContainers.putAll(updatedStateContainers);
-  }
-
-  void release() {
+  synchronized void release() {
     if (mPendingStateUpdates != null) {
       mPendingStateUpdates.clear();
-      sPendingStateUpdatesMapPool.release(mPendingStateUpdates);
+      sStateUpdatesMapPool.release(mPendingStateUpdates);
       mPendingStateUpdates = null;
     }
+
+    if (mAppliedStateUpdates != null) {
+      mAppliedStateUpdates.clear();
+      sStateUpdatesMapPool.release(mAppliedStateUpdates);
+      mAppliedStateUpdates = null;
+    }
+
+    mPendingStateUpdateTransitions = null;
 
     if (mStateContainers != null) {
       mStateContainers.clear();
@@ -201,11 +271,7 @@ public class StateHandler {
       mStateContainers = null;
     }
 
-    if (mKnownGlobalKeys != null) {
-      mKnownGlobalKeys.clear();
-      sKnownGlobalKeysSetPool.release(mKnownGlobalKeys);
-      mKnownGlobalKeys = null;
-    }
+    mNeededStateContainers = null;
   }
 
   private static List<StateUpdate> acquireStateUpdatesList() {
@@ -230,27 +296,81 @@ public class StateHandler {
     sStateUpdatesListPool.release(list);
   }
 
-  Map<String, StateContainer> getStateContainers() {
+  synchronized Map<String, StateContainer> getStateContainers() {
     return mStateContainers;
   }
 
-  Map<String, List<StateUpdate>> getPendingStateUpdates() {
+  synchronized Map<String, List<StateUpdate>> getPendingStateUpdates() {
     return mPendingStateUpdates;
+  }
+
+  @Nullable
+  synchronized Map<String, List<Transition>> getPendingStateUpdateTransitions() {
+    return mPendingStateUpdateTransitions;
+  }
+
+  @VisibleForTesting
+  synchronized Map<String, List<StateUpdate>> getAppliedStateUpdates() {
+    return mAppliedStateUpdates;
+  }
+
+  @Nullable
+  synchronized void consumePendingStateUpdateTransitions(
+      List<Transition> outList, @Nullable String logContext) {
+    if (mPendingStateUpdateTransitions == null) {
+      return;
+    }
+
+    for (List<Transition> pendingTransitions : mPendingStateUpdateTransitions.values()) {
+      for (int i = 0, size = pendingTransitions.size(); i < size; i++) {
+        TransitionUtils.addTransitions(pendingTransitions.get(i), outList, logContext);
+      }
+    }
+    mPendingStateUpdateTransitions = null;
+  }
+
+  @Nullable
+  synchronized Object getCachedValue(Object cachedValueInputs) {
+    if (mCachedValues == null) {
+      mCachedValues = new HashMap<>();
+    }
+
+    return mCachedValues.get(cachedValueInputs);
+  }
+
+  synchronized void putCachedValue(Object cachedValueInputs, Object cachedValue) {
+    if (mCachedValues == null) {
+      mCachedValues = new HashMap<>();
+    }
+
+    mCachedValues.put(cachedValueInputs, cachedValue);
   }
 
   /**
    * @return copy the information from the given map of state updates into the map of pending state
-   * updates.
+   *     updates.
    */
-  private void copyPendingStateUpdatesMap(
-      Map<String, List<StateUpdate>> pendingStateUpdates) {
-    if (pendingStateUpdates == null || pendingStateUpdates.isEmpty()) {
+  private void copyStateUpdatesMap(
+      Map<String, List<StateUpdate>> pendingStateUpdates,
+      Map<String, List<StateUpdate>> appliedStateUpdates) {
+
+    if ((pendingStateUpdates == null || pendingStateUpdates.isEmpty())
+        && (appliedStateUpdates == null || appliedStateUpdates.isEmpty())) {
       return;
     }
 
-    maybeInitPendingUpdates();
-    for (String key : pendingStateUpdates.keySet()) {
-      mPendingStateUpdates.put(key, acquireStateUpdatesList(pendingStateUpdates.get(key)));
+    maybeInitStateUpdatesMap();
+    synchronized (this) {
+      if (pendingStateUpdates != null) {
+        for (String key : pendingStateUpdates.keySet()) {
+          mPendingStateUpdates.put(key, acquireStateUpdatesList(pendingStateUpdates.get(key)));
+        }
+      }
+      if (appliedStateUpdates != null) {
+        for (String key : appliedStateUpdates.keySet()) {
+          mAppliedStateUpdates.put(key, acquireStateUpdatesList(appliedStateUpdates.get(key)));
+        }
+      }
     }
   }
 
@@ -263,13 +383,42 @@ public class StateHandler {
       return;
     }
 
-    maybeInitStateContainers();
-    for (String key : stateContainers.keySet()) {
-      mStateContainers.put(key, stateContainers.get(key));
+    synchronized (this) {
+      maybeInitStateContainers();
+      mStateContainers.clear();
+      mStateContainers.putAll(stateContainers);
     }
   }
 
-  private void maybeInitStateContainers() {
+  private static void clearUnusedStateContainers(StateHandler currentStateHandler) {
+    final HashSet<String> neededStateContainers = currentStateHandler.mNeededStateContainers;
+    final List<String> stateContainerKeys = new ArrayList<>();
+    if (neededStateContainers == null || currentStateHandler.mStateContainers == null) {
+      return;
+    }
+
+    stateContainerKeys.addAll(currentStateHandler.mStateContainers.keySet());
+
+    for (String key : stateContainerKeys) {
+      if (!neededStateContainers.contains(key)) {
+        currentStateHandler.mStateContainers.remove(key);
+      }
+    }
+  }
+
+  private void copyPendingStateTransitions(
+      @Nullable Map<String, List<Transition>> pendingStateUpdateTransitions) {
+    if (pendingStateUpdateTransitions == null || pendingStateUpdateTransitions.isEmpty()) {
+      return;
+    }
+
+    synchronized (this) {
+      maybeInitPendingStateUpdateTransitions();
+      mPendingStateUpdateTransitions.putAll(pendingStateUpdateTransitions);
+    }
+  }
+
+  private synchronized void maybeInitStateContainers() {
     if (mStateContainers == null) {
       mStateContainers = sStateContainersMapPool.acquire();
       if (mStateContainers == null) {
@@ -278,21 +427,32 @@ public class StateHandler {
     }
   }
 
-  private void maybeInitPendingUpdates() {
+  private synchronized void maybeInitNeededStateContainers() {
+    if (mNeededStateContainers == null) {
+      mNeededStateContainers = new HashSet<>();
+    }
+  }
+
+  private synchronized void maybeInitPendingStateUpdateTransitions() {
+    if (mPendingStateUpdateTransitions == null) {
+      mPendingStateUpdateTransitions = new HashMap<>();
+    }
+  }
+
+  private synchronized void maybeInitStateUpdatesMap() {
     if (mPendingStateUpdates == null) {
-      mPendingStateUpdates = sPendingStateUpdatesMapPool.acquire();
+      mPendingStateUpdates = sStateUpdatesMapPool.acquire();
       if (mPendingStateUpdates == null) {
         mPendingStateUpdates = new HashMap<>(INITIAL_MAP_CAPACITY);
       }
     }
-  }
 
-  private void maybeInitKnownGlobalKeys() {
-    if (mKnownGlobalKeys == null) {
-      mKnownGlobalKeys = sKnownGlobalKeysSetPool.acquire();
-      if (mKnownGlobalKeys == null) {
-        mKnownGlobalKeys = new HashSet<>(INITIAL_MAP_CAPACITY);
+    if (mAppliedStateUpdates == null) {
+      mAppliedStateUpdates = sStateUpdatesMapPool.acquire();
+      if (mAppliedStateUpdates == null) {
+        mAppliedStateUpdates = new HashMap<>(INITIAL_MAP_CAPACITY);
       }
     }
   }
+
 }

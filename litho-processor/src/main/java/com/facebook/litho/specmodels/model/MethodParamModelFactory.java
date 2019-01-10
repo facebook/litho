@@ -1,24 +1,32 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.specmodels.model;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
+import static com.facebook.litho.specmodels.model.ClassNames.DIFF;
 
+import com.facebook.litho.annotations.CachedValue;
+import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
-
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.TypeName;
+import java.lang.annotation.Annotation;
+import java.util.List;
 
 /**
  * Factory for creating {@link MethodParamModel}s.
@@ -26,24 +34,59 @@ import com.squareup.javapoet.TypeName;
 public final class MethodParamModelFactory {
 
   public static MethodParamModel create(
-      TypeName type,
+      TypeSpec typeSpec,
       String name,
       List<Annotation> annotations,
       List<AnnotationSpec> externalAnnotations,
       List<Class<? extends Annotation>> permittedInterStateInputAnnotations,
+      boolean canCreateDiffModels,
       Object representedObject) {
+
+    if (canCreateDiffModels && typeSpec.isSameDeclaredType(DIFF)) {
+      return new RenderDataDiffModel(
+          new SimpleMethodParamModel(
+              typeSpec, name, annotations, externalAnnotations, representedObject));
+    }
+
     final SimpleMethodParamModel simpleMethodParamModel =
-        new SimpleMethodParamModel(type, name, annotations, externalAnnotations, representedObject);
+        new SimpleMethodParamModel(
+            extractDiffTypeIfNecessary(typeSpec),
+            name,
+            annotations,
+            externalAnnotations,
+            representedObject);
+
     for (Annotation annotation : annotations) {
       if (annotation instanceof Prop) {
-        return new PropModel(
-            simpleMethodParamModel,
-            ((Prop) annotation).optional(),
-            ((Prop) annotation).resType());
+        final PropModel propModel =
+            new PropModel(
+                simpleMethodParamModel,
+                ((Prop) annotation).optional(),
+                ((Prop) annotation).isCommonProp(),
+                ((Prop) annotation).overrideCommonPropBehavior(),
+                ((Prop) annotation).resType(),
+                ((Prop) annotation).varArg());
+
+        if (typeSpec.isSameDeclaredType(DIFF)) {
+          return new DiffPropModel(propModel);
+        } else {
+          return propModel;
+        }
+      }
+
+      if (annotation instanceof InjectProp) {
+        return new InjectPropModel(simpleMethodParamModel, ((InjectProp) annotation).isLazy());
       }
 
       if (annotation instanceof State) {
-        return new StateParamModel(simpleMethodParamModel, ((State) annotation).canUpdateLazily());
+        StateParamModel stateParamModel =
+            new StateParamModel(simpleMethodParamModel, ((State) annotation).canUpdateLazily());
+
+        if (typeSpec.isSameDeclaredType(DIFF)) {
+          return new DiffStateParamModel(stateParamModel);
+        } else {
+          return stateParamModel;
+        }
       }
 
       if (annotation instanceof TreeProp) {
@@ -53,8 +96,30 @@ public final class MethodParamModelFactory {
       if (permittedInterStateInputAnnotations.contains(annotation.annotationType())) {
         return new InterStageInputParamModel(simpleMethodParamModel);
       }
+
+      if (annotation instanceof CachedValue) {
+        return new CachedValueParamModel(simpleMethodParamModel);
+      }
     }
 
     return simpleMethodParamModel;
+  }
+
+  static TypeSpec extractDiffTypeIfNecessary(TypeSpec typeSpec) {
+    if (typeSpec.isSameDeclaredType(DIFF)) {
+      return ((TypeSpec.DeclaredTypeSpec) typeSpec).getTypeArguments().get(0);
+    }
+
+    return typeSpec;
+  }
+
+  public static SimpleMethodParamModel createSimpleMethodParamModel(
+      TypeSpec typeSpec, String name, Object representedObject) {
+    return new SimpleMethodParamModel(
+        typeSpec,
+        name,
+        ImmutableList.<Annotation>of(),
+        ImmutableList.<AnnotationSpec>of(),
+        representedObject);
   }
 }

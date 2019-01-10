@@ -1,25 +1,45 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.widget;
 
+import static android.support.v4.widget.ExploreByTouchHelper.INVALID_ID;
+import static com.facebook.litho.SizeSpec.AT_MOST;
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_BREAK_STRATEGY;
+import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_EMS;
+import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_HYPHENATION_FREQUENCY;
+import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_JUSTIFICATION_MODE;
+import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_MAX_WIDTH;
+import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_MIN_WIDTH;
+
+import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.text.TextDirectionHeuristicCompat;
 import android.support.v4.text.TextDirectionHeuristicsCompat;
-import android.support.v4.util.Pools.SynchronizedPool;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.text.Layout;
 import android.text.Layout.Alignment;
@@ -28,15 +48,15 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
 import android.text.style.ClickableSpan;
-import android.util.Log;
-
+import android.text.style.ImageSpan;
+import android.view.View;
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentsLogger;
+import com.facebook.litho.EventHandler;
 import com.facebook.litho.Output;
-import com.facebook.litho.R;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.annotations.FromBoundsDefined;
@@ -55,42 +75,89 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
 import com.facebook.yoga.YogaDirection;
 
-import static android.support.v4.widget.ExploreByTouchHelper.INVALID_ID;
-import static android.text.Layout.Alignment.ALIGN_NORMAL;
-import static com.facebook.litho.SizeSpec.AT_MOST;
-import static com.facebook.litho.SizeSpec.EXACTLY;
-import static com.facebook.litho.SizeSpec.UNSPECIFIED;
-import static com.facebook.litho.annotations.ResType.BOOL;
-import static com.facebook.litho.annotations.ResType.STRING;
-
-@MountSpec(isPureRender = true, shouldUseDisplayList = true, poolSize = 30)
+/**
+ * Component to render text.
+ *
+ * @uidocs https://fburl.com/Text:b8f5
+ * @prop text Text to display.
+ * @prop ellipsize If set, specifies the position of the text to be ellipsized.
+ * @prop minLines Minimum number of lines to show.
+ * @prop maxLines Maximum number of lines to show.
+ * @prop minEms Makes the text to be mim ems wide.
+ * @prop maxEms Makes the text to be max ems wide.
+ * @prop minTextWidth Makes the text to be min pixels wide.
+ * @prop maxTextWidth Makes the text to be max pixels wide.
+ * @prop shadowRadius Blur radius of the shadow.
+ * @prop shadowDx Horizontal offset of the shadow.
+ * @prop shadowDy Vertical offset of the shadow.
+ * @prop shadowColor Color for the shadow underneath the text.
+ * @prop isSingleLine If set, makes the text to be rendered in a single line.
+ * @prop textColor Color of the text.
+ * @prop textColorStateList ColorStateList of the text.
+ * @prop linkColor Color for links in the text.
+ * @prop highlightColor Color for an optional highlight of the text.
+ * @prop highlightStartOffset Start offset for an optional highlight of the text.
+ * @prop highlightEndOffset End offset for an optional highlight of the text.
+ * @prop textSize Size of the text.
+ * @prop extraSpacing Extra spacing between the lines of text.
+ * @prop spacingMultiplier Extra spacing between the lines of text, as a multiplier.
+ * @prop letterSpacing Text letter-spacing. Typical values for slight expansion will be around 0.05
+ *     ems. Negative values tighten text.
+ * @prop textStyle Style (bold, italic, bolditalic) for the text.
+ * @prop typeface Typeface for the text.
+ * @prop textAlignment Alignment of the text within its container.
+ * @prop breakStrategy Break strategy to use for multi-line text.
+ * @prop hyphenationFrequency How frequently to hyphenate text.
+ * @prop justificationMode How to justify the text. See {@link android.text.Layout}
+ * @prop glyphWarming If set, pre-renders the text to an off-screen Canvas to boost performance.
+ * @prop textDirection Heuristic to use to determine the direction of the text.
+ * @prop shouldIncludeFontPadding If set, uses extra padding for ascenders and descenders.
+ * @prop verticalGravity Vertical gravity for the text within its container.
+ * @prop clickableSpanExpandedOffset Click offset amount to determine how far off the ClickableSpan
+ *     bounds user can click to be able to trigger ClickableSpan's click action. This could be
+ *     useful in a densely lined text with links like 'Continue reading ...' in NewsFeed to be able
+ *     to click that easily.
+ * @prop spanListener Listener to override click and/or longclick actions of spannables extracted
+ *     from text. This can be used to avoid memory leaks if the click/long click actions require a
+ *     context, since spannables are stored statically in memory.
+ * @prop clipToBounds If the text should be clipped inside component bounds. Default: {@code true}
+ * @prop customEllipsisText Text used to replace the standard Android ... ellipsis at the end of
+ *     truncated lines. Warning: specifying this prop causes measurement to run twice. This can have
+ *     a serious performance cost, especially on older devices!
+ * @prop textOffsetOnTouchHandler A handler for touch events that need to know their character
+ *     offset into the text. Will only fire on ACTION_DOWN events that occur at an index within the
+ *     text.
+ * @prop accessibleClickableSpans Whether the text can contain accessible clickable spans.
+ * @prop minimallyWide If set, multi-line text width is determined by the widest line, rather than
+ *     the overall layout width. This can eliminate empty space in word-wrapped text with line
+ *     breaks preceding lengthy words or spans.
+ * @prop minimallyWideThreshold If set, {@code minimallyWide} logic will not run for text whose
+ *     minimal width is smaller than its normal width by less than the threshold.
+ */
+@MountSpec(
+  isPureRender = true,
+  shouldUseDisplayList = true,
+  poolSize = 30,
+  events = {TextOffsetOnTouchEvent.class}
+)
 class TextSpec {
-
-  private static final Alignment[] ALIGNMENT = Alignment.values();
-  private static final TruncateAt[] TRUNCATE_AT = TruncateAt.values();
 
   private static final Typeface DEFAULT_TYPEFACE = Typeface.DEFAULT;
   private static final int DEFAULT_COLOR = 0;
-  private static final int DEFAULT_EMS = -1;
-  private static final int DEFAULT_MIN_WIDTH = 0;
-  private static final int DEFAULT_MAX_WIDTH = Integer.MAX_VALUE;
+  private static final String TAG = "TextSpec";
 
   private static final int[][] DEFAULT_TEXT_COLOR_STATE_LIST_STATES = {{0}};
   private static final int[] DEFAULT_TEXT_COLOR_STATE_LIST_COLORS = {Color.BLACK};
-  private static final int[] DEFAULT_TEXT_DRAWABLE_STATE = {android.R.attr.state_enabled};
-
-  private static final String TAG = "TextSpec";
 
   @PropDefault protected static final int minLines = Integer.MIN_VALUE;
   @PropDefault protected static final int maxLines = Integer.MAX_VALUE;
   @PropDefault protected static final int minEms = DEFAULT_EMS;
   @PropDefault protected static final int maxEms = DEFAULT_EMS;
-  @PropDefault protected static final int minWidth = DEFAULT_MIN_WIDTH;
-  @PropDefault protected static final int maxWidth = DEFAULT_MAX_WIDTH;
+  @PropDefault protected static final int minTextWidth = DEFAULT_MIN_WIDTH;
+  @PropDefault protected static final int maxTextWidth = DEFAULT_MAX_WIDTH;
   @PropDefault protected static final int shadowColor = Color.GRAY;
   @PropDefault protected static final int textColor = DEFAULT_COLOR;
   @PropDefault protected static final int linkColor = DEFAULT_COLOR;
@@ -104,27 +171,34 @@ class TextSpec {
   @PropDefault protected static final VerticalGravity verticalGravity = VerticalGravity.TOP;
   @PropDefault protected static final boolean glyphWarming = false;
   @PropDefault protected static final boolean shouldIncludeFontPadding = true;
-  @PropDefault protected static final Alignment textAlignment = ALIGN_NORMAL;
+
+  @PropDefault
+  protected static final Alignment textAlignment = TextStylesHelper.textAlignmentDefault;
+
+  @PropDefault protected static final int breakStrategy = DEFAULT_BREAK_STRATEGY;
+  @PropDefault protected static final int hyphenationFrequency = DEFAULT_HYPHENATION_FREQUENCY;
+  @PropDefault protected static final int justificationMode = DEFAULT_JUSTIFICATION_MODE;
+  @PropDefault protected static final int highlightStartOffset = -1;
+  @PropDefault protected static final int highlightEndOffset = -1;
+  @PropDefault protected static final boolean clipToBounds = true;
 
   private static final Path sTempPath = new Path();
   private static final Rect sTempRect = new Rect();
   private static final RectF sTempRectF = new RectF();
 
-  private static final SynchronizedPool<TextLayoutBuilder> sTextLayoutBuilderPool =
-      new SynchronizedPool<>(2);
-
   @OnLoadStyle
   static void onLoadStyle(
       ComponentContext c,
       Output<TruncateAt> ellipsize,
+      Output<Float> extraSpacing,
       Output<Boolean> shouldIncludeFontPadding,
       Output<Float> spacingMultiplier,
       Output<Integer> minLines,
       Output<Integer> maxLines,
       Output<Integer> minEms,
       Output<Integer> maxEms,
-      Output<Integer> minWidth,
-      Output<Integer> maxWidth,
+      Output<Integer> minTextWidth,
+      Output<Integer> maxTextWidth,
       Output<Boolean> isSingleLine,
       Output<CharSequence> text,
       Output<ColorStateList> textColorStateList,
@@ -132,67 +206,29 @@ class TextSpec {
       Output<Integer> highlightColor,
       Output<Integer> textSize,
       Output<Alignment> textAlignment,
+      Output<Integer> breakStrategy,
+      Output<Integer> hyphenationFrequency,
+      Output<Integer> justificationMode,
       Output<Integer> textStyle,
       Output<Float> shadowRadius,
       Output<Float> shadowDx,
       Output<Float> shadowDy,
-      Output<Integer> shadowColor) {
+      Output<Integer> shadowColor,
+      Output<VerticalGravity> verticalGravity,
+      Output<Typeface> typeface) {
 
-    //check first if provided attributes contain textAppearance. As an analogy to TextView behavior,
-    //we will parse textAppearance attributes first and then will override leftovers from main style
-    TypedArray a = c.obtainStyledAttributes(
-        R.styleable.TextAppearance,
-        0);
-
-    int textAppearanceResId = a.getResourceId(
-        R.styleable.TextAppearance_android_textAppearance,
-        -1);
-    a.recycle();
-    if (textAppearanceResId != -1) {
-      a = c.getTheme().obtainStyledAttributes(
-          textAppearanceResId,
-          R.styleable.Text);
-      resolveStyleAttrsForTypedArray(
-          a,
-          ellipsize,
-          shouldIncludeFontPadding,
-          spacingMultiplier,
-          minLines,
-          maxLines,
-          minEms,
-          maxEms,
-          minWidth,
-          maxWidth,
-          isSingleLine,
-          text,
-          textColorStateList,
-          linkColor,
-          highlightColor,
-          textSize,
-          textAlignment,
-          textStyle,
-          shadowRadius,
-          shadowDx,
-          shadowDy,
-          shadowColor);
-      a.recycle();
-    }
-
-    //now (after we parsed textAppearance) we can move on to main style attributes
-    a = c.obtainStyledAttributes(
-        R.styleable.Text,
-        0);
-    resolveStyleAttrsForTypedArray(
-        a,
+    TextStylesHelper.onLoadStyle(
+        c,
         ellipsize,
+        extraSpacing,
         shouldIncludeFontPadding,
         spacingMultiplier,
         minLines,
         maxLines,
         minEms,
         maxEms,
-        minWidth,
-        maxWidth,
+        minTextWidth,
+        maxTextWidth,
         isSingleLine,
         text,
         textColorStateList,
@@ -200,90 +236,16 @@ class TextSpec {
         highlightColor,
         textSize,
         textAlignment,
+        breakStrategy,
+        hyphenationFrequency,
+        justificationMode,
         textStyle,
         shadowRadius,
         shadowDx,
         shadowDy,
-        shadowColor);
-
-    a.recycle();
-  }
-
-  private static void resolveStyleAttrsForTypedArray(
-      TypedArray a,
-      Output<TruncateAt> ellipsize,
-      Output<Boolean> shouldIncludeFontPadding,
-      Output<Float> spacingMultiplier,
-      Output<Integer> minLines,
-      Output<Integer> maxLines,
-      Output<Integer> minEms,
-      Output<Integer> maxEms,
-      Output<Integer> minWidth,
-      Output<Integer> maxWidth,
-      Output<Boolean> isSingleLine,
-      Output<CharSequence> text,
-      Output<ColorStateList> textColorStateList,
-      Output<Integer> linkColor,
-      Output<Integer> highlightColor,
-      Output<Integer> textSize,
-      Output<Alignment> textAlignment,
-      Output<Integer> textStyle,
-      Output<Float> shadowRadius,
-      Output<Float> shadowDx,
-      Output<Float> shadowDy,
-      Output<Integer> shadowColor
-  ) {
-    for (int i = 0, size = a.getIndexCount(); i < size; i++) {
-      final int attr = a.getIndex(i);
-
-      if (attr == R.styleable.Text_android_text) {
-        text.set(a.getString(attr));
-      } else if (attr == R.styleable.Text_android_textColor) {
-        textColorStateList.set(a.getColorStateList(attr));
-      } else if (attr == R.styleable.Text_android_textSize) {
-        textSize.set(a.getDimensionPixelSize(attr, 0));
-      } else if (attr == R.styleable.Text_android_ellipsize) {
-        final int index = a.getInteger(attr, 0);
-        if (index > 0) {
-          ellipsize.set(TRUNCATE_AT[index - 1]);
-        }
-      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 &&
-          attr == R.styleable.Text_android_textAlignment) {
-        textAlignment.set(ALIGNMENT[a.getInteger(attr, 0)]);
-      } else if (attr == R.styleable.Text_android_includeFontPadding) {
-        shouldIncludeFontPadding.set(a.getBoolean(attr, false));
-      } else if (attr == R.styleable.Text_android_minLines) {
-        minLines.set(a.getInteger(attr, -1));
-      } else if (attr == R.styleable.Text_android_maxLines) {
-        maxLines.set(a.getInteger(attr, -1));
-      } else if (attr == R.styleable.Text_android_singleLine) {
-        isSingleLine.set(a.getBoolean(attr, false));
-      } else if (attr == R.styleable.Text_android_textColorLink) {
-        linkColor.set(a.getColor(attr, 0));
-      } else if (attr == R.styleable.Text_android_textColorHighlight) {
-        highlightColor.set(a.getColor(attr, 0));
-      } else if (attr == R.styleable.Text_android_textStyle) {
-        textStyle.set(a.getInteger(attr, 0));
-      } else if (attr == R.styleable.Text_android_lineSpacingMultiplier) {
-        spacingMultiplier.set(a.getFloat(attr, 0));
-      } else if (attr == R.styleable.Text_android_shadowDx) {
-        shadowDx.set(a.getFloat(attr, 0));
-      } else if (attr == R.styleable.Text_android_shadowDy) {
-        shadowDy.set(a.getFloat(attr, 0));
-      } else if (attr == R.styleable.Text_android_shadowRadius) {
-        shadowRadius.set(a.getFloat(attr, 0));
-      } else if (attr == R.styleable.Text_android_shadowColor) {
-        shadowColor.set(a.getColor(attr, 0));
-      } else if (attr == R.styleable.Text_android_minEms) {
-        minEms.set(a.getInteger(attr, DEFAULT_EMS));
-      } else if (attr == R.styleable.Text_android_maxEms) {
-        maxEms.set(a.getInteger(attr, DEFAULT_EMS));
-      } else if (attr == R.styleable.Text_android_minWidth) {
-        minWidth.set(a.getInteger(attr, DEFAULT_MIN_WIDTH));
-      } else if (attr == R.styleable.Text_android_maxWidth) {
-        maxWidth.set(a.getInteger(attr, DEFAULT_MAX_WIDTH));
-      }
-    }
+        shadowColor,
+        verticalGravity,
+        typeface);
   }
 
   @OnMeasure
@@ -293,15 +255,15 @@ class TextSpec {
       int widthSpec,
       int heightSpec,
       Size size,
-      @Prop(resType = ResType.STRING) CharSequence text,
+      @Prop(resType = ResType.STRING) @Nullable CharSequence text,
       @Prop(optional = true) TruncateAt ellipsize,
       @Prop(optional = true, resType = ResType.BOOL) boolean shouldIncludeFontPadding,
       @Prop(optional = true, resType = ResType.INT) int minLines,
       @Prop(optional = true, resType = ResType.INT) int maxLines,
       @Prop(optional = true, resType = ResType.INT) int minEms,
       @Prop(optional = true, resType = ResType.INT) int maxEms,
-      @Prop(optional = true, resType = ResType.INT) int minWidth,
-      @Prop(optional = true, resType = ResType.INT) int maxWidth,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) int minTextWidth,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) int maxTextWidth,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowRadius,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowDx,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowDy,
@@ -313,11 +275,17 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float extraSpacing,
       @Prop(optional = true, resType = ResType.FLOAT) float spacingMultiplier,
+      @Prop(optional = true, resType = ResType.FLOAT) float letterSpacing,
       @Prop(optional = true) int textStyle,
-      @Prop(optional = true) Typeface typeface,
+      @Prop(optional = true) @Nullable Typeface typeface,
       @Prop(optional = true) Alignment textAlignment,
+      @Prop(optional = true) int breakStrategy,
+      @Prop(optional = true) int hyphenationFrequency,
+      @Prop(optional = true) int justificationMode,
       @Prop(optional = true) boolean glyphWarming,
       @Prop(optional = true) TextDirectionHeuristicCompat textDirection,
+      @Prop(optional = true) boolean minimallyWide,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) int minimallyWideThreshold,
       Output<Layout> measureLayout,
       Output<Integer> measuredWidth,
       Output<Integer> measuredHeight) {
@@ -329,37 +297,43 @@ class TextSpec {
       return;
     }
 
-    Layout newLayout = createTextLayout(
-        widthSpec,
-        ellipsize,
-        shouldIncludeFontPadding,
-        maxLines,
-        shadowRadius,
-        shadowDx,
-        shadowDy,
-        shadowColor,
-        isSingleLine,
-        text,
-        textColor,
-        textColorStateList,
-        linkColor,
-        textSize,
-        extraSpacing,
-        spacingMultiplier,
-        textStyle,
-        typeface,
-        textAlignment,
-        glyphWarming,
-        layout.getResolvedLayoutDirection(),
-        minEms,
-        maxEms,
-        minWidth,
-        maxWidth,
-        textDirection);
+    Layout newLayout =
+        createTextLayout(
+            widthSpec,
+            ellipsize,
+            shouldIncludeFontPadding,
+            maxLines,
+            shadowRadius,
+            shadowDx,
+            shadowDy,
+            shadowColor,
+            isSingleLine,
+            text,
+            textColor,
+            textColorStateList,
+            linkColor,
+            textSize,
+            extraSpacing,
+            spacingMultiplier,
+            letterSpacing,
+            textStyle,
+            typeface,
+            textAlignment,
+            glyphWarming,
+            layout.getResolvedLayoutDirection(),
+            minEms,
+            maxEms,
+            minTextWidth,
+            maxTextWidth,
+            context.getAndroidContext().getResources().getDisplayMetrics().density,
+            breakStrategy,
+            hyphenationFrequency,
+            justificationMode,
+            textDirection);
 
     measureLayout.set(newLayout);
 
-    size.width = SizeSpec.resolveSize(widthSpec, newLayout.getWidth());
+    size.width = resolveWidth(widthSpec, newLayout, minimallyWide, minimallyWideThreshold);
 
     // Adjust height according to the minimum number of lines.
     int preferredHeight = LayoutMeasureUtil.getHeight(newLayout);
@@ -381,12 +355,29 @@ class TextSpec {
 
       final ComponentsLogger logger = context.getLogger();
       if (logger != null) {
-        logger.softError("Text layout measured to less than 0 pixels");
+        logger.emitMessage(
+            ComponentsLogger.LogLevel.ERROR, "Text layout measured to less than 0 pixels");
       }
     }
 
     measuredWidth.set(size.width);
     measuredHeight.set(size.height);
+  }
+
+  @VisibleForTesting
+  public static int resolveWidth(
+      int widthSpec, Layout layout, boolean minimallyWide, int minimallyWideThreshold) {
+    final int fullWidth = SizeSpec.resolveSize(widthSpec, layout.getWidth());
+
+    if (minimallyWide && layout.getLineCount() > 1) {
+      final int minimalWidth = SizeSpec.resolveSize(widthSpec, LayoutMeasureUtil.getWidth(layout));
+
+      if (fullWidth - minimalWidth > minimallyWideThreshold) {
+        return minimalWidth;
+      }
+    }
+
+    return fullWidth;
   }
 
   private static Layout createTextLayout(
@@ -406,6 +397,7 @@ class TextSpec {
       int textSize,
       float extraSpacing,
       float spacingMultiplier,
+      float letterSpacing,
       int textStyle,
       Typeface typeface,
       Alignment textAlignment,
@@ -413,18 +405,19 @@ class TextSpec {
       YogaDirection layoutDirection,
       int minEms,
       int maxEms,
-      int minWidth,
-      int maxWidth,
+      int minTextWidth,
+      int maxTextWidth,
+      float density,
+      int breakStrategy,
+      int hyphenationFrequency,
+      int justificationMode,
       TextDirectionHeuristicCompat textDirection) {
     Layout newLayout;
 
-    TextLayoutBuilder layoutBuilder = sTextLayoutBuilderPool.acquire();
-    if (layoutBuilder == null) {
-      layoutBuilder = new TextLayoutBuilder();
-      layoutBuilder.setShouldCacheLayout(false);
-    }
+    TextLayoutBuilder layoutBuilder = new TextLayoutBuilder();
+    layoutBuilder.setShouldCacheLayout(false);
 
-    final @TextLayoutBuilder.MeasureMode int textMeasureMode;
+    @TextLayoutBuilder.MeasureMode final int textMeasureMode;
     switch (SizeSpec.getMode(widthSpec)) {
       case UNSPECIFIED:
         textMeasureMode = TextLayoutBuilder.MEASURE_MODE_UNSPECIFIED;
@@ -440,26 +433,37 @@ class TextSpec {
     }
 
     layoutBuilder
+        .setDensity(density)
         .setEllipsize(ellipsize)
         .setMaxLines(maxLines)
         .setShadowLayer(shadowRadius, shadowDx, shadowDy, shadowColor)
         .setSingleLine(isSingleLine)
         .setText(text)
         .setTextSize(textSize)
-        .setWidth(
-            SizeSpec.getSize(widthSpec),
-            textMeasureMode);
+        .setWidth(SizeSpec.getSize(widthSpec), textMeasureMode)
+        .setIncludeFontPadding(shouldIncludeFontPadding)
+        .setTextSpacingExtra(extraSpacing)
+        .setTextSpacingMultiplier(spacingMultiplier)
+        .setAlignment(textAlignment)
+        .setLinkColor(linkColor)
+        .setJustificationMode(justificationMode)
+        .setBreakStrategy(breakStrategy)
+        .setHyphenationFrequency(hyphenationFrequency);
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      layoutBuilder.setLetterSpacing(letterSpacing);
+    }
 
     if (minEms != DEFAULT_EMS) {
       layoutBuilder.setMinEms(minEms);
     } else {
-      layoutBuilder.setMinWidth(minWidth);
+      layoutBuilder.setMinWidth(minTextWidth);
     }
 
     if (maxEms != DEFAULT_EMS) {
       layoutBuilder.setMaxEms(maxEms);
     } else {
-      layoutBuilder.setMaxWidth(maxWidth);
+      layoutBuilder.setMaxWidth(maxTextWidth);
     }
 
     if (textColor != 0) {
@@ -468,7 +472,7 @@ class TextSpec {
       layoutBuilder.setTextColor(textColorStateList);
     }
 
-    if (typeface != DEFAULT_TYPEFACE) {
+    if (!DEFAULT_TYPEFACE.equals(typeface)) {
       layoutBuilder.setTypeface(typeface);
     } else {
       layoutBuilder.setTextStyle(textStyle);
@@ -482,19 +486,11 @@ class TextSpec {
           : TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR);
     }
 
-    layoutBuilder.setIncludeFontPadding(shouldIncludeFontPadding);
-    layoutBuilder.setTextSpacingExtra(extraSpacing);
-    layoutBuilder.setTextSpacingMultiplier(spacingMultiplier);
-    layoutBuilder.setAlignment(textAlignment);
-    layoutBuilder.setLinkColor(linkColor);
-
     newLayout = layoutBuilder.build();
 
-    layoutBuilder.setText(null);
-    sTextLayoutBuilderPool.release(layoutBuilder);
-
-    if (glyphWarming && !ComponentsConfiguration.shouldGenerateDisplayLists) {
-      GlyphWarmer.getInstance().warmLayout(newLayout);
+    if (glyphWarming) {
+      // TODO(T34488162): we also don't want this to happen when we are using DL (legacy?)
+      TextureWarmer.getInstance().warmLayout(newLayout);
     }
 
     return newLayout;
@@ -510,8 +506,8 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.INT) int maxLines,
       @Prop(optional = true, resType = ResType.INT) int minEms,
       @Prop(optional = true, resType = ResType.INT) int maxEms,
-      @Prop(optional = true, resType = ResType.INT) int minWidth,
-      @Prop(optional = true, resType = ResType.INT) int maxWidth,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) int minTextWidth,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) int maxTextWidth,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowRadius,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowDx,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowDy,
@@ -523,19 +519,26 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float extraSpacing,
       @Prop(optional = true, resType = ResType.FLOAT) float spacingMultiplier,
+      @Prop(optional = true, resType = ResType.FLOAT) float letterSpacing,
       @Prop(optional = true) VerticalGravity verticalGravity,
       @Prop(optional = true) int textStyle,
       @Prop(optional = true) Typeface typeface,
       @Prop(optional = true) Alignment textAlignment,
+      @Prop(optional = true) int breakStrategy,
+      @Prop(optional = true) int hyphenationFrequency,
       @Prop(optional = true) boolean glyphWarming,
       @Prop(optional = true) TextDirectionHeuristicCompat textDirection,
+      @Prop(optional = true, resType = ResType.STRING) CharSequence customEllipsisText,
       @FromMeasure Layout measureLayout,
       @FromMeasure Integer measuredWidth,
       @FromMeasure Integer measuredHeight,
+      Output<CharSequence> processedText,
       Output<Layout> textLayout,
       Output<Float> textLayoutTranslationY,
-      Output<ClickableSpan[]> clickableSpans) {
+      Output<ClickableSpan[]> clickableSpans,
+      Output<ImageSpan[]> imageSpans) {
 
+    processedText.set(text);
     if (TextUtils.isEmpty(text)) {
       return;
     }
@@ -550,13 +553,6 @@ class TextSpec {
         measuredHeight == layoutHeight) {
       textLayout.set(measureLayout);
     } else {
-      if (measureLayout != null) {
-        Log.w(
-            TAG,
-            "Remeasuring Text component.  This is expensive: consider changing parent layout " +
-                "so that double measurement is not necessary.");
-      }
-
       textLayout.set(
           createTextLayout(
               SizeSpec.makeSizeSpec((int) layoutWidth, EXACTLY),
@@ -575,6 +571,7 @@ class TextSpec {
               textSize,
               extraSpacing,
               spacingMultiplier,
+              letterSpacing,
               textStyle,
               typeface,
               textAlignment,
@@ -582,8 +579,12 @@ class TextSpec {
               layout.getResolvedLayoutDirection(),
               minEms,
               maxEms,
-              minWidth,
-              maxWidth,
+              minTextWidth,
+              maxTextWidth,
+              c.getAndroidContext().getResources().getDisplayMetrics().density,
+              breakStrategy,
+              hyphenationFrequency,
+              justificationMode,
               textDirection));
     }
 
@@ -603,16 +604,111 @@ class TextSpec {
         break;
     }
 
-    if (text instanceof Spanned) {
-      clickableSpans.set(((Spanned) text).getSpans(
-          0,
-          text.length() - 1,
-          ClickableSpan.class));
+    // Handle custom text truncation:
+    if (customEllipsisText != null && !customEllipsisText.equals("")) {
+      final int ellipsizedLineNumber = getEllipsizedLineNumber(textLayout.get());
+      if (ellipsizedLineNumber != -1) {
+        final CharSequence truncated =
+            truncateText(text, customEllipsisText, textLayout.get(), ellipsizedLineNumber);
+
+        Layout newLayout =
+            createTextLayout(
+                SizeSpec.makeSizeSpec((int) layoutWidth, EXACTLY),
+                ellipsize,
+                shouldIncludeFontPadding,
+                maxLines,
+                shadowRadius,
+                shadowDx,
+                shadowDy,
+                shadowColor,
+                isSingleLine,
+                truncated,
+                textColor,
+                textColorStateList,
+                linkColor,
+                textSize,
+                extraSpacing,
+                spacingMultiplier,
+                letterSpacing,
+                textStyle,
+                typeface,
+                textAlignment,
+                glyphWarming,
+                layout.getResolvedLayoutDirection(),
+                minEms,
+                maxEms,
+                minTextWidth,
+                maxTextWidth,
+                c.getAndroidContext().getResources().getDisplayMetrics().density,
+                breakStrategy,
+                hyphenationFrequency,
+                justificationMode,
+                textDirection);
+
+        processedText.set(truncated);
+        textLayout.set(newLayout);
+      }
+    }
+
+    final CharSequence resultText = processedText.get();
+    if (resultText instanceof Spanned) {
+      Spanned spanned = (Spanned) resultText;
+      clickableSpans.set(spanned.getSpans(0, resultText.length(), ClickableSpan.class));
+      imageSpans.set(spanned.getSpans(0, resultText.length(), ImageSpan.class));
     }
   }
 
+  /**
+   * Truncates text which is too long and appends the given custom ellipsis CharSequence to the end
+   * of the visible text.
+   *
+   * @param text Text to truncate
+   * @param customEllipsisText Text to append to the end to indicate truncation happened
+   * @param newLayout A Layout object populated with measurement information for this text
+   * @param ellipsizedLineNumber The line number within the text at which truncation occurs (i.e.
+   *     the last visible line).
+   * @return The provided text truncated in such a way that the 'customEllipsisText' can appear at
+   *     the end.
+   */
+  private static CharSequence truncateText(
+      CharSequence text,
+      CharSequence customEllipsisText,
+      Layout newLayout,
+      int ellipsizedLineNumber) {
+    Rect bounds = new Rect();
+    newLayout
+        .getPaint()
+        .getTextBounds(customEllipsisText.toString(), 0, customEllipsisText.length(), bounds);
+    // Identify the X position at which to truncate the final line:
+    final float ellipsisTarget = newLayout.getLineMax(ellipsizedLineNumber) - bounds.width();
+    // Get character offset number corresponding to that X position:
+    final int ellipsisOffset =
+        newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
+    if (ellipsisOffset > 0) {
+      // getOffsetForHorizontal returns the closest character, but we need to guarantee no
+      // truncation, so subtract 1 from the result:
+      return TextUtils.concat(text.subSequence(0, ellipsisOffset - 1), customEllipsisText);
+    } else {
+      return text;
+    }
+  }
+
+  /**
+   * @param layout A prepared text layout object
+   * @return The (zero-indexed) line number at which the text in this layout will be ellipsized, or
+   *     -1 if no line will be ellipsized.
+   */
+  private static int getEllipsizedLineNumber(Layout layout) {
+    for (int i = 0; i < layout.getLineCount(); ++i) {
+      if (layout.getEllipsisCount(i) > 0) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
   @OnCreateMountContent
-  static TextDrawable onCreateMountContent(ComponentContext c) {
+  static TextDrawable onCreateMountContent(Context c) {
     return new TextDrawable();
   }
 
@@ -620,28 +716,51 @@ class TextSpec {
   static void onMount(
       ComponentContext c,
       TextDrawable textDrawable,
-      @Prop(resType = ResType.STRING) CharSequence text,
       @Prop(optional = true, resType = ResType.COLOR) int textColor,
       @Prop(optional = true, resType = ResType.COLOR) int highlightColor,
       @Prop(optional = true) ColorStateList textColorStateList,
+      @Prop(optional = true) final EventHandler textOffsetOnTouchHandler,
+      @Prop(optional = true) int highlightStartOffset,
+      @Prop(optional = true) int highlightEndOffset,
+      @Prop(optional = true, resType = ResType.DIMEN_TEXT) float clickableSpanExpandedOffset,
+      @Prop(optional = true) boolean clipToBounds,
+      @Prop(optional = true) ClickableSpanListener spanListener,
+      final @FromBoundsDefined CharSequence processedText,
       @FromBoundsDefined Layout textLayout,
       @FromBoundsDefined Float textLayoutTranslationY,
-      @FromBoundsDefined ClickableSpan[] clickableSpans) {
+      @FromBoundsDefined ClickableSpan[] clickableSpans,
+      @FromBoundsDefined ImageSpan[] imageSpans) {
 
-    //make sure we set default state to drawable because default dummy state set in Drawable
-    //matches anything which can cause wrong text color to be selected by default
-    textDrawable.setState(DEFAULT_TEXT_DRAWABLE_STATE);
+    TextDrawable.TextOffsetOnTouchListener textOffsetOnTouchListener = null;
+
+    if (textOffsetOnTouchHandler != null) {
+      textOffsetOnTouchListener =
+          new TextDrawable.TextOffsetOnTouchListener() {
+            @Override
+            public void textOffsetOnTouch(int textOffset) {
+              Text.dispatchTextOffsetOnTouchEvent(
+                  textOffsetOnTouchHandler, processedText, textOffset);
+            }
+          };
+    }
     textDrawable.mount(
-        text,
+        processedText,
         textLayout,
         textLayoutTranslationY == null ? 0 : textLayoutTranslationY,
+        clipToBounds,
         textColorStateList,
         textColor,
         highlightColor,
-        clickableSpans);
+        clickableSpans,
+        imageSpans,
+        spanListener,
+        textOffsetOnTouchListener,
+        highlightStartOffset,
+        highlightEndOffset,
+        clickableSpanExpandedOffset);
 
-    if (text instanceof MountableCharSequence) {
-      ((MountableCharSequence) text).onMount(textDrawable);
+    if (processedText instanceof MountableCharSequence) {
+      ((MountableCharSequence) processedText).onMount(textDrawable);
     }
   }
 
@@ -659,14 +778,33 @@ class TextSpec {
 
   @OnPopulateAccessibilityNode
   static void onPopulateAccessibilityNode(
+      View host,
       AccessibilityNodeInfoCompat node,
-      @Prop(resType = STRING) CharSequence text) {
-    node.setText(text);
+      @Prop(resType = ResType.STRING) CharSequence text,
+      @Prop(optional = true, resType = ResType.BOOL) boolean isSingleLine) {
+    if (ViewCompat.getImportantForAccessibility(host)
+        == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+      ViewCompat.setImportantForAccessibility(host, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES);
+    }
+    CharSequence contentDescription = node.getContentDescription();
+    node.setText(contentDescription != null ? contentDescription : text);
+    node.setContentDescription(contentDescription != null ? contentDescription : text);
+
+    node.addAction(AccessibilityNodeInfoCompat.ACTION_NEXT_AT_MOVEMENT_GRANULARITY);
+    node.addAction(AccessibilityNodeInfoCompat.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY);
+    node.setMovementGranularities(
+        AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_CHARACTER
+            | AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_WORD
+            | AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_PARAGRAPH);
+
+    if (!isSingleLine) {
+      node.setMultiLine(true);
+    }
   }
 
   @GetExtraAccessibilityNodesCount
   static int getExtraAccessibilityNodesCount(
-      @Prop(optional = true, resType = BOOL) boolean accessibleClickableSpans,
+      @Prop(optional = true, resType = ResType.BOOL) boolean accessibleClickableSpans,
       @FromBoundsDefined ClickableSpan[] clickableSpans) {
     return (accessibleClickableSpans && clickableSpans != null) ? clickableSpans.length : 0;
   }
@@ -677,7 +815,7 @@ class TextSpec {
       int extraNodeIndex,
       int componentBoundsLeft,
       int componentBoundsTop,
-      @Prop(resType = STRING) CharSequence text,
+      @Prop(resType = ResType.STRING) CharSequence text,
       @FromBoundsDefined Layout textLayout,
       @FromBoundsDefined ClickableSpan[] clickableSpans) {
     final Spanned spanned = (Spanned) text;
@@ -731,7 +869,7 @@ class TextSpec {
   static int getExtraAccessibilityNodeAt(
       int x,
       int y,
-      @Prop(resType = STRING) CharSequence text,
+      @Prop(resType = ResType.STRING) CharSequence text,
       @FromBoundsDefined Layout textLayout,
       @FromBoundsDefined ClickableSpan[] clickableSpans) {
     final Spanned spanned = (Spanned) text;

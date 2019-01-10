@@ -1,20 +1,28 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
 import android.graphics.Rect;
+import android.support.annotation.Nullable;
 
 /**
  * Holds information about a VisibilityOutput (that is, about a component for which a visibility
- * event handler has been set). This class is justified by the fact that VisibilityOuput should
- * be immutable.
+ * event handler has been set). This class is justified by the fact that VisibilityOutput should be
+ * immutable.
  */
 class VisibilityItem {
 
@@ -24,37 +32,76 @@ class VisibilityItem {
   private static final int FLAG_BOTTOM_EDGE_VISIBLE = 1 << 4;
   private static final int FLAG_FOCUSED_RANGE = 1 << 5;
 
+  private String mGlobalKey;
   private int mFlags;
-  private boolean mFocusedFlag;
-  // The invisible event handler is required to make it possible to dispatch the InvisibleEvent when
-  // on unbind is called or when the MountState is reset.
-  private EventHandler mInvisibleHandler;
+  // The invisible event and unfocused event handlers are required to make it possible to dispatch
+  // the corresponding event when unbind is called or when the MountState is reset.
+  @Nullable private EventHandler<InvisibleEvent> mInvisibleHandler;
+  @Nullable private EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
+  private @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
+  private boolean mDoNotClearInThisPass;
 
   public VisibilityItem() {
     mFlags = 0;
     mInvisibleHandler = null;
+    mUnfocusedHandler = null;
+    mVisibilityChangedHandler = null;
+  }
+
+  String getGlobalKey() {
+    return mGlobalKey;
+  }
+
+  void setGlobalKey(String globalKey) {
+    mGlobalKey = globalKey;
   }
 
   /**
    * Sets the invisible event handler.
    */
-  void setInvisibleHandler(EventHandler invisibleHandler) {
+  void setInvisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
     mInvisibleHandler = invisibleHandler;
   }
 
-  /**
-   * Returns the invisible event handler.
-   */
-  EventHandler getInvisibleHandler() {
+  /** Returns the invisible event handler. */
+  @Nullable
+  EventHandler<InvisibleEvent> getInvisibleHandler() {
     return mInvisibleHandler;
   }
 
-  boolean isInFocusedRange() {
-    return mFocusedFlag;
+  /**
+   * Sets the unfocused event handler.
+   */
+  void setUnfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
+    mUnfocusedHandler = unfocusedHandler;
   }
 
-  void setFocusedRange(boolean flag) {
-    mFocusedFlag = flag;
+  /** Returns the unfocused event handler. */
+  @Nullable
+  EventHandler<UnfocusedVisibleEvent> getUnfocusedHandler() {
+    return mUnfocusedHandler;
+  }
+
+  void setVisibilityChangedHandler(
+      @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
+    mVisibilityChangedHandler = visibilityChangedHandler;
+  }
+
+  @Nullable
+  EventHandler<VisibilityChangedEvent> getVisibilityChangedHandler() {
+    return mVisibilityChangedHandler;
+  }
+
+  boolean isInFocusedRange() {
+    return (mFlags & FLAG_FOCUSED_RANGE) != 0;
+  }
+
+  void setFocusedRange(boolean isFocused) {
+    if (isFocused) {
+      mFlags |= FLAG_FOCUSED_RANGE;
+    } else {
+      mFlags &= ~FLAG_FOCUSED_RANGE;
+    }
   }
 
   /**
@@ -90,8 +137,19 @@ class VisibilityItem {
     }
   }
 
+  boolean doNotClearInThisPass() {
+    return mDoNotClearInThisPass;
+  }
+
+  void setDoNotClearInThisPass(boolean doNotClearInThisPass) {
+    mDoNotClearInThisPass = doNotClearInThisPass;
+  }
+
   void release() {
     mFlags = 0;
     mInvisibleHandler = null;
+    mUnfocusedHandler = null;
+    mVisibilityChangedHandler = null;
+    mDoNotClearInThisPass = false;
   }
 }

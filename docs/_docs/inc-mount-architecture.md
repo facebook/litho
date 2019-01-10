@@ -5,7 +5,7 @@ layout: docs
 permalink: /docs/inc-mount-architecture
 ---
 
-Even though components provide flatter view hierarchies and perform [layout off the main thread](/docs/architecture#asynchronous-layout), the mount operation (creating, recycling and attaching views and drawables) can still have a cost in the UI thread for very complex components, especially for the ones containing many views.
+Even though components provide flatter view hierarchies and perform [layout off the main thread](/docs/asynchronous-layout), the mount operation (creating, recycling and attaching views and drawables) can still have a cost in the UI thread for very complex components, especially for the ones containing many views.
 
 Litho can transparently spread the cost of mounting components across UI frames to avoid jank.
 

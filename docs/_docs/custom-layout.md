@@ -4,7 +4,7 @@ title: Custom Layout
 layout: docs
 permalink: /docs/custom-layout.html
 ---
-Litho relies on [Yoga](https://facebook.github.io/yoga/), a powerful layout engine that is able to create very complex UIs, for layout calculations.  However, there are few exceptions where Yoga is not enough and you may need to implement your own measuring and layout. 
+Litho relies on [Yoga](https://yogalayout.com/docs/), a powerful layout engine that is able to create very complex UIs, for layout calculations.  However, there are few exceptions where Yoga is not enough and you may need to implement your own measuring and layout. 
 
 Litho provides a custom layout API for accessing size information while the [`ComponentTree`](/javadoc/com/facebook/litho/ComponentTree) is being created and measured, as well as the possibility to measure a component in isolation.
 
@@ -28,7 +28,7 @@ A component can be measured in isolation for a given `SizeSpec`. A `Size` object
 In the following example, a `Text` component is measured with unspecified `SizeSpec` implying a single line of text indefinitely long.
 
 ```java
-final Component textComponent = Text.create(c)
+final Component<Text> textComponent = Text.create(c)
     .textSizeSp(16)
     .text(“Some text to measure.”)
     .build();
@@ -44,9 +44,8 @@ final int textComponentWidth = outputSize.width;
 final int textComponentHeight = outputSize.height;
 ```
 
-## `SizeSpec` information during layout
-
-During layout creation, the API can provide information about the `SizeSpecs` a component is going to be measured with. To access this information, a new [`@OnCreateLayoutWithSizeSpec`](/javadoc/com/facebook/litho/annotations/OnCreateLayoutWithSizeSpec) annotation needs to be used instead of `@OnCreateLayout`. The arguments of the annotated method, besides the standard ComponentContext, are two more integers representing the width spec and the height spec.
+## SizeSpec information during layout
+During layout creation, the API can provide information about the `SizeSpecs` a component is going to be measured with. To access this information, the [`@OnCreateLayoutWithSizeSpec`](/javadoc/com/facebook/litho/annotations/OnCreateLayoutWithSizeSpec) annotation needs to be used instead of `@OnCreateLayout`. The arguments of the annotated method, besides the standard ComponentContext, are two more integers representing the width spec and the height spec.
 
 In the following example, a `Text` component is measured to check if the given text fits in the available space. An `Image` component is otherwise used.
 

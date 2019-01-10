@@ -1,25 +1,29 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+
 import android.graphics.Rect;
-
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 @RunWith(ComponentsTestRunner.class)
 public class TestItemTest {
@@ -34,20 +38,20 @@ public class TestItemTest {
   public void testPositionAndSizeSet() {
     mTestItem.setBounds(0, 1, 3, 4);
 
-    assertEquals(0, mTestItem.getBounds().left);
-    assertEquals(1, mTestItem.getBounds().top);
-    assertEquals(3, mTestItem.getBounds().right);
-    assertEquals(4, mTestItem.getBounds().bottom);
+    assertThat(mTestItem.getBounds().left).isEqualTo(0);
+    assertThat(mTestItem.getBounds().top).isEqualTo(1);
+    assertThat(mTestItem.getBounds().right).isEqualTo(3);
+    assertThat(mTestItem.getBounds().bottom).isEqualTo(4);
   }
 
   @Test
   public void testRectBoundsSet() {
     final Rect bounds = new Rect(0, 1, 3, 4);
     mTestItem.setBounds(bounds);
-    assertEquals(0, mTestItem.getBounds().left);
-    assertEquals(1, mTestItem.getBounds().top);
-    assertEquals(3, mTestItem.getBounds().right);
-    assertEquals(4, mTestItem.getBounds().bottom);
+    assertThat(mTestItem.getBounds().left).isEqualTo(0);
+    assertThat(mTestItem.getBounds().top).isEqualTo(1);
+    assertThat(mTestItem.getBounds().right).isEqualTo(3);
+    assertThat(mTestItem.getBounds().bottom).isEqualTo(4);
   }
 
   @Test

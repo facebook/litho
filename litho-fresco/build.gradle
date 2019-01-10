@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014-present Facebook, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
@@ -16,23 +32,22 @@ android {
 }
 
 dependencies {
-    compile project(':litho-core')
-    provided project(':litho-annotations')
+    implementation project(':litho-core')
+    compileOnly project(':litho-annotations')
     annotationProcessor project(':litho-processor')
 
     // Annotations
-    provided deps.jsr305
-    provided deps.inferAnnotations
+    compileOnly deps.jsr305
+    compileOnly deps.inferAnnotations
 
     // First-party
-    compile deps.fresco
+    implementation deps.fresco
 
     // Android Support Library
-    compile deps.supportCompat
-    compile deps.supportCoreUi
+    implementation deps.supportCoreUi
 }
 
-apply from: rootProject.file('release.gradle')
+apply from: rootProject.file('gradle/release.gradle')
 
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs

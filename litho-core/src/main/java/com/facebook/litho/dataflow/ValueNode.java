@@ -1,17 +1,28 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.dataflow;
 
 import java.util.ArrayList;
-
-import android.support.v4.util.SimpleArrayMap;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * A single node in a {@link DataFlowGraph}. Nodes are added to a {@link DataFlowGraph} using
@@ -27,20 +38,27 @@ import android.support.v4.util.SimpleArrayMap;
  * the new value for this frame based on the node's parents (i.e. nodes it depends on) and the
  * current frame time.
  */
-public abstract class ValueNode<T> {
+public abstract class ValueNode {
 
   public static final String DEFAULT_INPUT = "default_input";
 
-  private SimpleArrayMap<String, ValueNode> mInputs = null;
+  private Map<String, ValueNode> mInputs = null;
   private ArrayList<ValueNode> mOutputs = null;
-  private T mValue;
+  private float mValue;
   private long mTimeNs = 0;
 
   /**
    * @return the most recently calculated value from {@link #calculateValue}.
    */
-  public T getValue() {
+  public float getValue() {
     return mValue;
+  }
+
+  /**
+   * Manually sets the current value.
+   */
+  public void setValue(float value) {
+    mValue = value;
   }
 
   /**
@@ -48,13 +66,13 @@ public abstract class ValueNode<T> {
    * it depends on). When this is called, it's guaranteed that the parent nodes have already been
    * updated for this frame.
    */
-  protected abstract T calculateValue(long frameTimeNanos);
+  protected abstract float calculateValue(long frameTimeNanos);
 
   /**
    * @return the input node for the given input name
    */
-  protected <T> ValueNode<T> getInput(String name) {
-    final ValueNode<T> input = getInputUnsafe(name);
+  protected ValueNode getInput(String name) {
+    final ValueNode input = getInputUnsafe(name);
     if (input == null) {
       throw new RuntimeException(
           "Tried to get non-existent input '" + name + "'. Node only has these inputs: " +
@@ -66,7 +84,7 @@ public abstract class ValueNode<T> {
   /**
    * @return the default input node. This should only be used for nodes that expect a single input.
    */
-  protected <T> ValueNode<T> getInput() {
+  protected ValueNode getInput() {
     if (getInputCount() > 1) {
       throw new RuntimeException("Trying to get single input of node with multiple inputs!");
     }
@@ -99,16 +117,18 @@ public abstract class ValueNode<T> {
       return "[]";
     }
     String inputNames = "";
-    for (int i = 0; i < mInputs.size(); i++) {
-      inputNames += "'" + mInputs.keyAt(i) + "'";
-      if (i != mInputs.size() - 1) {
+    final Iterator<String> inputIterator = mInputs.keySet().iterator();
+    while (inputIterator.hasNext()) {
+      inputNames += "'" + inputIterator.next() + "'";
+      if (!inputIterator.hasNext()) {
         inputNames += ", ";
       }
     }
     return "[" + inputNames + "]";
   }
 
-  <T> ValueNode<T> getInputUnsafe(String name) {
+  @Nullable
+  ValueNode getInputUnsafe(String name) {
     if (mInputs == null) {
       return null;
     }
@@ -116,7 +136,7 @@ public abstract class ValueNode<T> {
   }
 
   final void doCalculateValue(long frameTimeNanos) {
-    final T value = calculateValue(frameTimeNanos);
+    final float value = calculateValue(frameTimeNanos);
     if (frameTimeNanos == mTimeNs) {
       throw new RuntimeException(
           "Got a calculate value call multiple times in the same frame. This isn't expected.");
@@ -148,13 +168,6 @@ public abstract class ValueNode<T> {
     return getOutputAt(0);
   }
 
-  void removeOutputAt(int i) {
-    if (i >= getOutputCount()) {
-      throw new RuntimeException("Bad index: " + i + " >= " + getOutputCount());
-    }
-    mOutputs.remove(i);
-  }
-
   void removeOutput(ValueNode output) {
     if (!mOutputs.remove(output)) {
       throw new RuntimeException("Tried to remove non-existent input!");
@@ -165,16 +178,17 @@ public abstract class ValueNode<T> {
     return mInputs == null ? 0 : mInputs.size();
   }
 
-  ValueNode getInputAt(int i) {
-    if (getInputCount() <= i) {
-      throw new RuntimeException("Bad index: " + i + " > " + getInputCount());
+  Collection<ValueNode> getAllInputs() {
+    if (mInputs == null) {
+      return Collections.emptySet();
     }
-    return mInputs.valueAt(i);
+
+    return mInputs.values();
   }
 
   void setInput(String name, ValueNode input) {
     if (mInputs == null) {
-      mInputs = new SimpleArrayMap<>();
+      mInputs = new LinkedHashMap<>();
     }
     mInputs.put(name, input);
   }

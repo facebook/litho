@@ -1,86 +1,106 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.specmodels.model;
 
-import javax.lang.model.element.Modifier;
-
-import java.util.List;
-
-import com.facebook.litho.specmodels.generator.BuilderGenerator;
-import com.facebook.litho.specmodels.generator.ComponentImplGenerator;
-import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
-import com.facebook.litho.specmodels.generator.EventGenerator;
-import com.facebook.litho.specmodels.generator.JavadocGenerator;
-import com.facebook.litho.specmodels.generator.MountSpecGenerator;
-import com.facebook.litho.specmodels.generator.PreambleGenerator;
-import com.facebook.litho.specmodels.generator.PureRenderGenerator;
-import com.facebook.litho.specmodels.generator.StateGenerator;
-import com.facebook.litho.specmodels.generator.TreePropGenerator;
-import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-
+import com.facebook.litho.specmodels.internal.RunMode;
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+import java.util.EnumSet;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
- * Model that is an abstract representation of a
- * {@link com.facebook.litho.annotations.MountSpec}.
+ * Model that is an abstract representation of a {@link com.facebook.litho.annotations.MountSpec}.
  */
 public class MountSpecModel implements SpecModel, HasPureRender {
   private final SpecModelImpl mSpecModel;
   private final boolean mIsPureRender;
-  private final boolean mCanMountIncrementally;
+  private final boolean mHasChildLithosViews;
   private final boolean mShouldUseDisplayList;
   private final int mPoolSize;
+  private final boolean mCanPreallocate;
   private final TypeName mMountType;
+  private final SpecGenerator<MountSpecModel> mMountSpecGenerator;
 
   public MountSpecModel(
       String qualifiedSpecClassName,
-      ImmutableList<DelegateMethodModel> delegateMethods,
-      ImmutableList<EventMethodModel> eventMethods,
-      ImmutableList<UpdateStateMethodModel> updateStateMethods,
+      String componentClassName,
+      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
+      SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
+      ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
+      ImmutableList<String> cachedPropNames,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<EventDeclarationModel> eventDeclarations,
       String classJavadoc,
+      ImmutableList<AnnotationSpec> classAnnotations,
+      ImmutableList<TagModel> tags,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
       DependencyInjectionHelper dependencyInjectionHelper,
       boolean isPureRender,
-      boolean canMountIncrementally,
+      boolean hasChildLithosViews,
       boolean shouldUseDisplayList,
       int poolSize,
+      boolean canPreallocate,
       TypeName mountType,
-      Object representedObject) {
+      SpecElementType specElementType,
+      Object representedObject,
+      SpecGenerator<MountSpecModel> mountSpecGenerator,
+      ImmutableList<FieldModel> fields) {
     mSpecModel =
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(qualifiedSpecClassName)
+            .componentClassName(componentClassName)
+            .componentClass(ClassNames.COMPONENT)
             .delegateMethods(delegateMethods)
             .eventMethods(eventMethods)
+            .triggerMethods(triggerMethods)
+            .workingRangeRegisterMethod(workingRangeRegisterMethod)
+            .workingRangeMethods(workingRangeMethods)
             .updateStateMethods(updateStateMethods)
+            .cachedPropNames(cachedPropNames)
             .typeVariables(typeVariables)
             .propDefaults(propDefaults)
             .eventDeclarations(eventDeclarations)
+            .classAnnotations(classAnnotations)
+            .tags(tags)
             .classJavadoc(classJavadoc)
             .propJavadocs(propJavadocs)
             .isPublic(isPublic)
-            .dependencyInjectionGenerator(dependencyInjectionHelper)
+            .dependencyInjectionHelper(dependencyInjectionHelper)
+            .specElementType(specElementType)
             .representedObject(representedObject)
+            .fields(fields)
             .build();
     mIsPureRender = isPureRender;
-    mCanMountIncrementally = canMountIncrementally;
+    mHasChildLithosViews = hasChildLithosViews;
     mShouldUseDisplayList = shouldUseDisplayList;
     mPoolSize = poolSize;
+    mCanPreallocate = canPreallocate;
     mMountType = mountType;
+    mMountSpecGenerator = mountSpecGenerator;
   }
 
   @Override
@@ -89,7 +109,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public TypeName getSpecTypeName() {
+  public ClassName getSpecTypeName() {
     return mSpecModel.getSpecTypeName();
   }
 
@@ -104,23 +124,68 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public ImmutableList<DelegateMethodModel> getDelegateMethods() {
+  public ImmutableList<FieldModel> getFields() {
+    return mSpecModel.getFields();
+  }
+
+  @Override
+  public ImmutableList<SpecMethodModel<DelegateMethod, Void>> getDelegateMethods() {
     return mSpecModel.getDelegateMethods();
   }
 
   @Override
-  public ImmutableList<EventMethodModel> getEventMethods() {
+  public ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> getEventMethods() {
     return mSpecModel.getEventMethods();
   }
 
   @Override
-  public ImmutableList<UpdateStateMethodModel> getUpdateStateMethods() {
+  public ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> getTriggerMethods() {
+    return mSpecModel.getTriggerMethods();
+  }
+
+  @Override
+  @Nullable
+  public SpecMethodModel<EventMethod, Void> getWorkingRangeRegisterMethod() {
+    return mSpecModel.getWorkingRangeRegisterMethod();
+  }
+
+  @Override
+  public ImmutableList<WorkingRangeMethodModel> getWorkingRangeMethods() {
+    return mSpecModel.getWorkingRangeMethods();
+  }
+
+  @Override
+  public ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> getUpdateStateMethods() {
     return mSpecModel.getUpdateStateMethods();
+  }
+
+  @Override
+  public ImmutableList<SpecMethodModel<UpdateStateMethod, Void>>
+      getUpdateStateWithTransitionMethods() {
+    return mSpecModel.getUpdateStateWithTransitionMethods();
+  }
+
+  /**
+   * @return the list of props without taking deduplication or name cache adjustments into account.
+   */
+  @Override
+  public ImmutableList<PropModel> getRawProps() {
+    return mSpecModel.getRawProps();
   }
 
   @Override
   public ImmutableList<PropModel> getProps() {
     return mSpecModel.getProps();
+  }
+
+  @Override
+  public ImmutableList<InjectPropModel> getRawInjectProps() {
+    return mSpecModel.getRawInjectProps();
+  }
+
+  @Override
+  public ImmutableList<InjectPropModel> getInjectProps() {
+    return mSpecModel.getInjectProps();
   }
 
   @Override
@@ -139,6 +204,11 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
+  public ImmutableList<CachedValueParamModel> getCachedValues() {
+    return mSpecModel.getCachedValues();
+  }
+
+  @Override
   public ImmutableList<InterStageInputParamModel> getInterStageInputs() {
     return mSpecModel.getInterStageInputs();
   }
@@ -151,6 +221,26 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   @Override
   public ImmutableList<EventDeclarationModel> getEventDeclarations() {
     return mSpecModel.getEventDeclarations();
+  }
+
+  @Override
+  public ImmutableList<BuilderMethodModel> getExtraBuilderMethods() {
+    return mSpecModel.getExtraBuilderMethods();
+  }
+
+  @Override
+  public ImmutableList<RenderDataDiffModel> getRenderDataDiffs() {
+    return mSpecModel.getRenderDataDiffs();
+  }
+
+  @Override
+  public ImmutableList<AnnotationSpec> getClassAnnotations() {
+    return mSpecModel.getClassAnnotations();
+  }
+
+  @Override
+  public ImmutableList<TagModel> getTags() {
+    return mSpecModel.getTags();
   }
 
   @Override
@@ -175,17 +265,32 @@ public class MountSpecModel implements SpecModel, HasPureRender {
 
   @Override
   public ClassName getComponentClass() {
-    return ClassNames.COMPONENT;
+    return mSpecModel.getComponentClass();
   }
 
   @Override
   public ClassName getStateContainerClass() {
-    return ClassNames.STATE_CONTAINER_COMPONENT;
+    return ClassNames.STATE_CONTAINER;
+  }
+
+  @Override
+  public ClassName getTransitionClass() {
+    return ClassNames.TRANSITION;
+  }
+
+  @Override
+  public ClassName getTransitionContainerClass() {
+    return ClassNames.TRANSITION_CONTAINER;
   }
 
   @Override
   public TypeName getUpdateStateInterface() {
     return ClassNames.COMPONENT_STATE_UPDATE;
+  }
+
+  @Override
+  public String getScopeMethodName() {
+    return "getComponentScope";
   }
 
   @Override
@@ -198,8 +303,34 @@ public class MountSpecModel implements SpecModel, HasPureRender {
     return mSpecModel.hasInjectedDependencies();
   }
 
+  @Override
+  public boolean hasDeepCopy() {
+    return false;
+  }
+
+  @Override
+  public boolean shouldGenerateHasState() {
+    return true;
+  }
+
+  @Override
+  public boolean shouldCheckIdInIsEquivalentToMethod() {
+    return true;
+  }
+
+  @Override
+  public boolean shouldGenerateCopyMethod() {
+    return true;
+  }
+
+  @Override
   public DependencyInjectionHelper getDependencyInjectionHelper() {
     return mSpecModel.getDependencyInjectionHelper();
+  }
+
+  @Override
+  public SpecElementType getSpecElementType() {
+    return mSpecModel.getSpecElementType();
   }
 
   @Override
@@ -208,47 +339,13 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public List<SpecModelValidationError> validate() {
-    return SpecModelValidation.validateMountSpecModel(this);
+  public List<SpecModelValidationError> validate(EnumSet<RunMode> runMode) {
+    return SpecModelValidation.validateMountSpecModel(this, runMode);
   }
 
   @Override
-  public TypeSpec generate() {
-    final TypeSpec.Builder typeSpec =
-        TypeSpec.classBuilder(getComponentName())
-            .superclass(ClassNames.COMPONENT_LIFECYCLE)
-            .addTypeVariables(getTypeVariables());
-
-    if (isPublic()) {
-      typeSpec.addModifiers(Modifier.PUBLIC);
-    }
-
-    if (hasInjectedDependencies()) {
-      getDependencyInjectionHelper().generate(this).addToTypeSpec(typeSpec);
-    } else {
-      typeSpec.addModifiers(Modifier.FINAL);
-    }
-
-    TypeSpecDataHolder.newBuilder()
-        .addTypeSpecDataHolder(JavadocGenerator.generate(this))
-        .addTypeSpecDataHolder(PreambleGenerator.generate(this))
-        .addTypeSpecDataHolder(ComponentImplGenerator.generate(this))
-        .addTypeSpecDataHolder(TreePropGenerator.generate(this))
-        .addTypeSpecDataHolder(DelegateMethodGenerator.generateDelegates(
-            this,
-            DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP))
-        .addTypeSpecDataHolder(MountSpecGenerator.generateGetMountType(this))
-        .addTypeSpecDataHolder(MountSpecGenerator.generatePoolSize(this))
-        .addTypeSpecDataHolder(MountSpecGenerator.generateCanMountIncrementally(this))
-        .addTypeSpecDataHolder(MountSpecGenerator.generateShouldUseDisplayList(this))
-        .addTypeSpecDataHolder(PureRenderGenerator.generate(this))
-        .addTypeSpecDataHolder(EventGenerator.generate(this))
-        .addTypeSpecDataHolder(StateGenerator.generate(this))
-        .addTypeSpecDataHolder(BuilderGenerator.generate(this))
-        .build()
-        .addToTypeSpec(typeSpec);
-
-    return typeSpec.build();
+  public TypeSpec generate(EnumSet<RunMode> runMode) {
+    return mMountSpecGenerator.generate(this, runMode);
   }
 
   @Override
@@ -257,7 +354,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   public boolean canMountIncrementally() {
-    return mCanMountIncrementally;
+    return mHasChildLithosViews;
   }
 
   public boolean shouldUseDisplayList() {
@@ -268,7 +365,36 @@ public class MountSpecModel implements SpecModel, HasPureRender {
     return mPoolSize;
   }
 
+  public boolean canPreallocate() {
+    return mCanPreallocate;
+  }
+
   public TypeName getMountType() {
     return mMountType;
+  }
+
+  @Override
+  public boolean shouldGenerateIsEquivalentTo() {
+    return true;
+  }
+
+  @Override
+  public String toString() {
+    return "MountSpecModel{"
+        + "mSpecModel="
+        + mSpecModel
+        + ", mIsPureRender="
+        + mIsPureRender
+        + ", mHasChildLithosViews="
+        + mHasChildLithosViews
+        + ", mShouldUseDisplayList="
+        + mShouldUseDisplayList
+        + ", mPoolSize="
+        + mPoolSize
+        + ", mCanPreallocate="
+        + mCanPreallocate
+        + ", mMountType="
+        + mMountType
+        + '}';
   }
 }

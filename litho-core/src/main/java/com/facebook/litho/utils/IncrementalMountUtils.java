@@ -1,23 +1,28 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.utils;
 
+import static com.facebook.litho.ThreadUtils.assertMainThread;
+
 import android.graphics.Rect;
 import android.support.v4.util.Pools;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.facebook.litho.LithoView;
-
-import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 /**
  * Provides methods for enabling incremental mount.
@@ -38,12 +43,25 @@ public class IncrementalMountUtils {
   private static final Pools.SynchronizedPool<Rect> sRectPool =
       new Pools.SynchronizedPool<>(10);
 
+  /** Performs incremental mount on all {@link LithoView}s within the given View. */
+  public static void incrementallyMountLithoViews(View view) {
+    if (view instanceof LithoView && ((LithoView) view).isIncrementalMountEnabled()) {
+      ((LithoView) view).performIncrementalMount();
+    } else if (view instanceof ViewGroup) {
+      for (int i = 0, size = ((ViewGroup) view).getChildCount(); i < size; i++) {
+        final View child = ((ViewGroup) view).getChildAt(i);
+        incrementallyMountLithoViews(child);
+      }
+    }
+  }
+
   /**
    * Performs incremental mount on the children views of the given ViewGroup.
    * @param scrollingViewParent ViewGroup container of views that will be incrementally mounted.
    */
   public static void performIncrementalMount(ViewGroup scrollingViewParent) {
     assertMainThread();
+
     final int viewGroupWidth = scrollingViewParent.getWidth();
     final int viewGroupHeight = scrollingViewParent.getHeight();
     for (int i = 0; i < scrollingViewParent.getChildCount(); i++) {
@@ -52,19 +70,6 @@ public class IncrementalMountUtils {
           viewGroupHeight,
           scrollingViewParent.getChildAt(i));
     }
-  }
-  /**
-   * Returns a scroll listener that performs incremental mount.  This is needed
-   * for feeds that do not use a ScrollingViewProxy, but rather directly use a
-   * RecyclerView.
-  */
-  public static RecyclerView.OnScrollListener createRecyclerViewListener() {
-    return new RecyclerView.OnScrollListener() {
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-          performIncrementalMount(recyclerView);
-        }
-    };
   }
 
   private static void maybePerformIncrementalMountOnView(
@@ -119,7 +124,7 @@ public class IncrementalMountUtils {
       return;
     }
 
-    lithoView.performIncrementalMount(rect);
+    lithoView.performIncrementalMount(rect, true);
 
     release(rect);
   }

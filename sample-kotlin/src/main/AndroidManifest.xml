@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ This file provided by Facebook is for non-commercial testing and evaluation
+  ~ purposes only.  Facebook reserves all rights not expressly granted.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+  ~ FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ~ ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  ~ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  -->
+
+<manifest package="com.fblitho.lithoktsample"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application
+        android:name=".LithoApplication"
+        android:allowBackup="true"
+        android:label="Litho Sample"
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        <activity android:name=".demo.DemoListActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".lithography.LithographyActivity"/>
+        <activity android:name=".errors.ErrorHandlingActivity" />
+        <activity android:name=".bordereffects.BorderEffectsActivity" />
+        <activity android:name=".animations.animatedbadge.AnimatedBadgeActivity" />
+        <activity android:name=".animations.animationcomposition.ComposedAnimationsActivity" />
+        <activity android:name=".animations.expandableelement.ExpandableElementActivity" />
+        <activity android:name=".animations.bounds.BoundsAnimationActivity" />
+        <activity android:name=".logging.LoggingActivity" />
+    </application>
+</manifest>

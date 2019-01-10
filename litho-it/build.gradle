@@ -1,3 +1,21 @@
+/*
+ * Copyright 2014-present Facebook, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import org.gradle.internal.jvm.Jvm
+
 apply plugin: 'com.android.library'
 
 android {
@@ -8,6 +26,15 @@ android {
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                // We transitively depend on auto-value which we don't want to
+                // use as annotation processor at this time, so we can safely
+                // disable this warning.
+                includeCompileClasspath false
+            }
+        }
     }
 
     testOptions {
@@ -18,29 +45,74 @@ android {
             }
         }
     }
-}
 
-afterEvaluate {
-    tasks.withType(Test) {
-        it.dependsOn rootProject.copyYogaLibs
-        systemProperty 'java.library.path', "${rootDir}/build/jniLibs"
-        environment 'LD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
-        environment 'DYLD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
-
 dependencies {
-    compile project(':litho-core')
-    provided project(':litho-annotations')
-    testCompile project(':litho-stubs')
-    testCompile project(':litho-testing')
-    testCompile project(':litho-widget')
+    // For main targets
+    implementation project(':litho-core')
+    implementation project(':litho-widget')
+    implementation project(':litho-sections-core')
+    implementation deps.supportAppCompat
 
-    // Testing
-    testCompile deps.robolectric
-    testCompile deps.soloader
-    testCompile deps.powermockMockito
-    testCompile deps.powermockJunit
-    testCompile deps.powermockXstream
+    compileOnly project(':litho-annotations')
+    compileOnly project(':litho-sections-annotations')
+    annotationProcessor project(':litho-sections-processor')
+
+    // Test project dependencies
+    testCompileOnly project(':litho-annotations')
+    testCompileOnly project(':litho-sections-annotations')
+    testImplementation project(':litho-testing')
+    testImplementation project(':litho-widget')
+    testImplementation project(':litho-processor')
+    testImplementation project(':litho-sections-core')
+    testImplementation project(':litho-sections-processor')
+    testImplementation project(':litho-sections-widget')
+    testImplementation project(':test-specs')
+
+    // Testing deps
+    testCompileOnly deps.jsr305
+    testImplementation deps.assertjCore
+    testImplementation deps.compileTesting
+    testImplementation deps.junit
+    testImplementation deps.mockitoCore
+    testImplementation deps.javapoet
+    testImplementation deps.robolectric
+    testImplementation deps.soloader
+    testImplementation deps.supportAppCompat
+    testImplementation deps.supportCoreUi
+    testImplementation deps.supportRecyclerView
+    testImplementation deps.powermockReflect
+    testImplementation deps.khronos
+    testImplementation files(Jvm.current().getToolsJar())
+    testImplementation files(org.gradle.internal.jvm.Jvm.current().getJre().homeDir.getAbsolutePath() + '/lib/rt.jar')
+}
+
+// Source - https://github.com/nenick/AndroidStudioAndRobolectric/blob/master/app/build.workaround-missing-resource.gradle
+// Workaround for missing test resources when running unit tests within android studio.
+// This copies the test resources next to the test classes for each variant.
+// Tracked at https://github.com/nenick/AndroidStudioAndRobolectric/issues/7
+// Original solution comes from https://code.google.com/p/android/issues/detail?id=136013#c10
+// See also https://code.google.com/p/android/issues/detail?id=64887
+
+gradle.projectsEvaluated {
+  // Base path which is recognized by android studio.
+  def testClassesPath = "${buildDir}/intermediates/classes/test/"
+  // Copy must be done for each variant.
+  def variants = android.libraryVariants.collect()
+
+  variants.each { variant ->
+    def variationName = variant.name.capitalize()
+    def variationPath = variant.buildType.name
+
+    // Specific copy task for each variant
+    def copyTestResourcesTask = project.tasks.create("copyTest${variationName}Resources", Copy)
+    copyTestResourcesTask.from("${projectDir}/src/test/resources")
+    copyTestResourcesTask.into("${testClassesPath}/${variationPath}")
+    copyTestResourcesTask.execute()
+  }
 }

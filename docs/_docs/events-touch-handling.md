@@ -1,6 +1,6 @@
 ---
 docid: events-touch-handling
-title: Touch handling
+title: Touch Handling
 layout: docs
 permalink: /docs/events-touch-handling
 ---
@@ -16,15 +16,14 @@ For example, setting a click handler on any component is as simple as:
 class MyComponentSpec {
 
 	@OnCreateLayout
-	static ComponentLayout onCreateLayout(
+	static Component onCreateLayout(
 	    ComponentContext c,
 	    @Prop String title) {
 	    
 	  return Text.create(c)
 	      .text(title)
-	      .withLayout()
 	      .clickHandler(MyComponent.onClick(c))
-	      .buildWithLayout();
+	      .build();
     }
 }
 ```
@@ -51,7 +50,6 @@ You can expand the interactive bounds of a component by using the touch expansio
 ```java
 Text.create(c)
     .text(title)
-    .withLayout()
     .clickHandler(MyComponent.onClick(c))
     .touchExpansionDip(ALL, 10);
 ```

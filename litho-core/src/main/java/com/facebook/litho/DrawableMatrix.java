@@ -1,10 +1,17 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
@@ -13,6 +20,7 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView.ScaleType;
+import javax.annotation.Nullable;
 
 /**
  * Static class containing a factory method for creating a matrix to apply to a drawable.
@@ -32,8 +40,8 @@ public final class DrawableMatrix extends Matrix {
   }
 
   /**
-   * Create a matrix to be applied to a drawable which scales the drawable according to its
-   * scale type.
+   * Create a matrix to be applied to a drawable which scales the drawable according to its scale
+   * type.
    *
    * @param d The drawable to create a matrix for
    * @param scaleType A scale type describing how to scale the drawable.
@@ -41,11 +49,8 @@ public final class DrawableMatrix extends Matrix {
    * @param height The height of the drawable's container.
    * @return The scale matrix or null if the drawable does not need to be scaled.
    */
-  public static DrawableMatrix create(
-      final Drawable d,
-      ScaleType scaleType,
-      final int width,
-      final int height) {
+  public static @Nullable DrawableMatrix create(
+      final Drawable d, ScaleType scaleType, final int width, final int height) {
 
     if (scaleType == null) {
       scaleType = ScaleType.FIT_CENTER;

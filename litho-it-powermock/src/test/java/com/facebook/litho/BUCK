@@ -1,11 +1,9 @@
 # Copyright (c) 2017-present, Facebook, Inc.
-# All rights reserved.
 #
-# This source code is licensed under the BSD-style license found in the
-# LICENSE file in the root directory of this source tree. An additional grant
-# of patent rights can be found in the PATENTS file in the same directory.
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
 
-include_defs("//COMPONENTS_DEFS")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ASSERTJ_TARGET", "LITHO_BUILD_CONFIG_TARGET", "LITHO_INFERANNOTATIONS_TARGET", "LITHO_JAVA_TARGET", "LITHO_JUNIT_TARGET", "LITHO_MOCKITO_TARGET", "LITHO_POWERMOCK_MOCKITO_TARGET", "LITHO_POWERMOCK_REFLECT_TARGET", "LITHO_ROBOLECTRIC_TARGET", "LITHO_SOLOADER_TARGET", "LITHO_TESTING_TARGET", "LITHO_TEST_RES", "LITHO_VIEWCOMPAT_TARGET", "LITHO_WIDGET_TARGET", "LITHO_YOGA_TARGET", "components_robolectric_powermock_test", "make_dep_path")
 
 components_robolectric_powermock_test(
     name = "litho",
@@ -17,24 +15,25 @@ components_robolectric_powermock_test(
     # This is our secret sauce for PowerMock.
     fork_mode = "per_test",
     provided_deps = [
-        COMPONENTS_ROBOLECTRIC_TARGET,
+        LITHO_ROBOLECTRIC_TARGET,
     ],
     deps = [
-        COMPONENTS_TEST_RES,
-        COMPONENTS_ANDROIDSUPPORT_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
-        COMPONENTS_ASSERTJ_TARGET,
-        COMPONENTS_BUILD_CONFIG_TARGET,
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_JUNIT_TARGET,
-        COMPONENTS_MOCKITO_TARGET,
-        COMPONENTS_POWERMOCK_MOCKITO_TARGET,
-        COMPONENTS_POWERMOCK_REFLECT_TARGET,
-        COMPONENTS_SOLOADER_TARGET,
-        COMPONENTS_WIDGET_TARGET,
-        COMPONENTS_YOGA_TARGET,
-        make_dep_path("litho-core/src/main/java/com/facebook/litho/viewcompatcreator:viewcompatcreator"),
-        COMPONENTS_TESTING_TARGET,
+        LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_ASSERTJ_TARGET,
+        LITHO_BUILD_CONFIG_TARGET,
+        LITHO_INFERANNOTATIONS_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_JUNIT_TARGET,
+        LITHO_MOCKITO_TARGET,
+        LITHO_POWERMOCK_MOCKITO_TARGET,
+        LITHO_POWERMOCK_REFLECT_TARGET,
+        LITHO_SOLOADER_TARGET,
+        LITHO_TESTING_TARGET,
+        LITHO_TEST_RES,
+        LITHO_VIEWCOMPAT_TARGET,
+        LITHO_WIDGET_TARGET,
+        LITHO_YOGA_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/shadows:shadows"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),

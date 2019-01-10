@@ -1,6 +1,6 @@
 ---
 docid: codegen
-title: Code generation
+title: Code Generation
 layout: docs
 permalink: /docs/codegen
 ---

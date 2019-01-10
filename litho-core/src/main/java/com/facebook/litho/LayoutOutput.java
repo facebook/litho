@@ -1,38 +1,36 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
+import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+
 import android.graphics.Rect;
 import android.support.annotation.IntDef;
-import com.facebook.litho.displaylist.DisplayList;
-
+import android.support.annotation.Nullable;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The output of a layout pass for a given {@link Component}. It's used by
  * {@link MountState} to mount a component.
  */
-class LayoutOutput implements Cloneable {
-  public static final int TYPE_CONTENT = 0;
-  public static final int TYPE_BACKGROUND = 1;
-  public static final int TYPE_FOREGROUND = 2;
-  public static final int TYPE_HOST = 3;
-  public static final int TYPE_BORDER = 4;
-
-  @IntDef({TYPE_CONTENT, TYPE_BACKGROUND, TYPE_FOREGROUND, TYPE_HOST, TYPE_BORDER})
-  @Retention(RetentionPolicy.SOURCE)
-  @interface LayoutOutputType {}
-
+class LayoutOutput implements Cloneable, AnimatableItem {
   public static final int STATE_UNKNOWN = 0;
   public static final int STATE_UPDATED = 1;
   public static final int STATE_DIRTY = 2;
@@ -41,19 +39,23 @@ class LayoutOutput implements Cloneable {
   @Retention(RetentionPolicy.SOURCE)
   public @interface UpdateState {}
 
-  private NodeInfo mNodeInfo;
+  private @Nullable NodeInfo mNodeInfo;
   private ViewNodeInfo mViewNodeInfo;
   private long mId;
-  private Component<?> mComponent;
+  private Component mComponent;
   private final Rect mBounds = new Rect();
   private int mHostTranslationX;
   private int mHostTranslationY;
   private int mFlags;
   private long mHostMarker;
+  private AtomicInteger mRefCount = new AtomicInteger(0);
+  private int mIndex;
 
   private int mUpdateState;
   private int mImportantForAccessibility;
-  private DisplayList mDisplayList;
+  private int mOrientation;
+
+  private @Nullable TransitionId mTransitionId;
 
   public LayoutOutput() {
     mUpdateState = STATE_UNKNOWN;
@@ -61,11 +63,15 @@ class LayoutOutput implements Cloneable {
     mHostMarker = -1L;
   }
 
-  Component<?> getComponent() {
+  Component getComponent() {
     return mComponent;
   }
 
-  void setComponent(Component<?> component) {
+  void setComponent(Component component) {
+    if (component == null) {
+      throw new RuntimeException("Trying to set a null Component on a LayoutOutput!");
+    }
+
     mComponent = component;
   }
 
@@ -76,8 +82,39 @@ class LayoutOutput implements Cloneable {
     outRect.bottom = mBounds.bottom - mHostTranslationY;
   }
 
-  Rect getBounds() {
+  @Override
+  public Rect getBounds() {
     return mBounds;
+  }
+
+  @Override
+  public float getScale() {
+    return mNodeInfo != null ? mNodeInfo.getScale() : 1;
+  }
+
+  @Override
+  public float getAlpha() {
+    return mNodeInfo != null ? mNodeInfo.getAlpha() : 1;
+  }
+
+  @Override
+  public float getRotation() {
+    return mNodeInfo != null ? mNodeInfo.getRotation() : 0;
+  }
+
+  @Override
+  public boolean isScaleSet() {
+    return mNodeInfo != null && mNodeInfo.isScaleSet();
+  }
+
+  @Override
+  public boolean isAlphaSet() {
+    return mNodeInfo != null && mNodeInfo.isAlphaSet();
+  }
+
+  @Override
+  public boolean isRotationSet() {
+    return mNodeInfo != null && mNodeInfo.isRotationSet();
   }
 
   void setBounds(int l, int t, int r, int b) {
@@ -101,14 +138,18 @@ class LayoutOutput implements Cloneable {
   }
 
   /**
-   * Returns the id of the LayoutOutput that represents the host of this LayoutOutput.
+   * Returns the id of the LayoutOutput that represents the host of this LayoutOutput. This host may
+   * be phantom, meaning that the mount content that represents this LayoutOutput may be hosted
+   * inside one of higher level hosts {@see MountState#getActualComponentHost()}
    */
   long getHostMarker() {
     return mHostMarker;
   }
 
   /**
-   * hostMarker is the id of the LayoutOutput that represents the host of this LayoutOutput.
+   * hostMarker is the id of the LayoutOutput that represents the host of this LayoutOutput. This
+   * host may be phantom, meaning that the mount content that represents this LayoutOutput may be
+   * hosted inside one of higher level hosts {@see MountState#getActualComponentHost()}
    */
   void setHostMarker(long hostMarker) {
     mHostMarker = hostMarker;
@@ -120,6 +161,14 @@ class LayoutOutput implements Cloneable {
 
   void setId(long id) {
     mId = id;
+  }
+
+  int getIndex() {
+    return mIndex;
+  }
+
+  void setIndex(int index) {
+    mIndex = index;
   }
 
   void setNodeInfo(NodeInfo nodeInfo) {
@@ -138,7 +187,8 @@ class LayoutOutput implements Cloneable {
     mUpdateState = state;
   }
 
-  public @UpdateState int getUpdateState() {
+  @UpdateState
+  public int getUpdateState() {
     return mUpdateState;
   }
 
@@ -150,12 +200,12 @@ class LayoutOutput implements Cloneable {
     mImportantForAccessibility = importantForAccessibility;
   }
 
-  public DisplayList getDisplayList() {
-    return mDisplayList;
+  int getOrientation() {
+    return mOrientation;
   }
 
-  public void setDisplayList(DisplayList displayList) {
-    mDisplayList = displayList;
+  void setOrientation(int orientation) {
+    mOrientation = orientation;
   }
 
   void setViewNodeInfo(ViewNodeInfo viewNodeInfo) {
@@ -174,11 +224,47 @@ class LayoutOutput implements Cloneable {
     return mViewNodeInfo;
   }
 
+  public void setTransitionId(@Nullable TransitionId transitionId) {
+    this.mTransitionId = transitionId;
+  }
+
+  @Nullable
+  public TransitionId getTransitionId() {
+    return mTransitionId;
+  }
+
+  void acquire() {
+    if (mRefCount.getAndSet(1) != 0) {
+      throw new RuntimeException(
+          "Tried to acquire a LayoutOutput that already had a non-zero ref count!");
+    }
+  }
+
+  public LayoutOutput acquireRef() {
+    if (mRefCount.getAndIncrement() < 1) {
+      throw new RuntimeException("Tried to acquire a reference to a released LayoutOutput!");
+    }
+
+    return this;
+  }
+
   void release() {
+    final int count = mRefCount.decrementAndGet();
+    if (count < 0) {
+      throw new IllegalStateException("Trying to release a recycled LayoutOutput.");
+    } else if (count > 0) {
+      return;
+    }
+
     if (mComponent != null) {
-      mComponent.release();
+      mComponent.reset();
       mComponent = null;
     }
+
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
+
     if (mNodeInfo != null) {
       mNodeInfo.release();
       mNodeInfo = null;
@@ -187,7 +273,6 @@ class LayoutOutput implements Cloneable {
       mViewNodeInfo.release();
       mViewNodeInfo = null;
     }
-    mDisplayList = null;
     mBounds.setEmpty();
     mHostTranslationX = 0;
     mHostTranslationY = 0;
@@ -195,5 +280,8 @@ class LayoutOutput implements Cloneable {
     mHostMarker = -1L;
     mUpdateState = STATE_UNKNOWN;
     mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+    mTransitionId = null;
+
+    ComponentsPools.release(this);
   }
 }

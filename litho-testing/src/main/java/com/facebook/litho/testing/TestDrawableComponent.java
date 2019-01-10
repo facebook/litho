@@ -1,88 +1,55 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.testing;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 import android.support.v4.util.Pools;
-
 import com.facebook.litho.Component;
-import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 
-public class TestDrawableComponent extends ComponentLifecycle {
-  private static final List<TestDrawableComponent> sInstances = new ArrayList<>();
-  private static final Pools.SynchronizedPool<Builder> mBuilderPool =
+public class TestDrawableComponent extends TestComponent {
+
+  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
-  private final boolean mCallsShouldUpdateOnMount;
-  private final boolean mIsPureRender;
-  private final boolean mCanMeasure;
-  private final boolean mUsesDisplayList;
-  private final boolean mImplementsAccessibility;
-  private final boolean mIsMountSizeDependent;
+  private static final long CALLS_SHOULD_UPDATE_ON_MOUNT = 1L << 0;
+  private static final long IS_PURE_RENDER = 1L << 1;
+  private static final long CAN_MEASURE = 1L << 2;
+  private static final long USES_DISPLAY_LIST = 1L << 3;
+  private static final long IMPLEMENTS_ACCESSIBILITY = 1L << 4;
+  private static final long IS_MOUNT_SIZE_DEPENDENT = 1L << 5;
 
-  private synchronized static TestDrawableComponent get(
-      boolean callsShouldUpdateOnMount,
-      boolean isPureRender,
-      boolean canMeasure,
-      boolean implementsAccessibility,
-      boolean usesDisplayList,
-      boolean isMountSizeDependent) {
-    for (TestDrawableComponent lifecycle : sInstances) {
-      if (lifecycle.mCallsShouldUpdateOnMount == callsShouldUpdateOnMount &&
-          lifecycle.mIsPureRender == isPureRender &&
-          lifecycle.mCanMeasure == canMeasure &&
-          lifecycle.mImplementsAccessibility == implementsAccessibility &&
-          lifecycle.mUsesDisplayList == usesDisplayList &&
-          lifecycle.mIsMountSizeDependent == isMountSizeDependent) {
-        return lifecycle;
-      }
-    }
+  private final long mProperties;
 
-    final TestDrawableComponent lifecycle = new TestDrawableComponent(
-        callsShouldUpdateOnMount,
-        isPureRender,
-        canMeasure,
-        implementsAccessibility,
-        usesDisplayList,
-        isMountSizeDependent);
+  private int color = Color.BLACK;
+  private int measuredWidth = -1;
+  private int measuredHeight = -1;
+  private boolean mReturnSelfInMakeShallowCopy;
 
-    sInstances.add(lifecycle);
-
-    return lifecycle;
-  }
-
-  private TestDrawableComponent(
-      boolean callsShouldUpdateOnMount,
-      boolean isPureRender,
-      boolean canMeasure,
-      boolean implementsAccessibility,
-      boolean usesDisplayList,
-      boolean isMountSizeDependent) {
-    super();
-
-    mCallsShouldUpdateOnMount = callsShouldUpdateOnMount;
-    mIsPureRender = isPureRender;
-    mCanMeasure = canMeasure;
-    mImplementsAccessibility = implementsAccessibility;
-    mUsesDisplayList = usesDisplayList;
-    mIsMountSizeDependent = isMountSizeDependent;
+  private TestDrawableComponent(long properties) {
+    super("TestDrawableComponent");
+    mProperties = properties;
   }
 
   @Override
@@ -92,98 +59,93 @@ public class TestDrawableComponent extends ComponentLifecycle {
 
   @Override
   protected boolean callsShouldUpdateOnMount() {
-    return mCallsShouldUpdateOnMount;
+    return (mProperties & CALLS_SHOULD_UPDATE_ON_MOUNT) != 0;
   }
 
   @Override
   protected boolean isPureRender() {
-    return mIsPureRender;
+    return (mProperties & IS_PURE_RENDER) != 0;
   }
 
   @Override
   protected boolean implementsAccessibility() {
-    return mImplementsAccessibility;
+    return (mProperties & IMPLEMENTS_ACCESSIBILITY) != 0;
   }
 
   @Override
   protected boolean shouldUseDisplayList() {
-    return mUsesDisplayList;
+    return (mProperties & USES_DISPLAY_LIST) != 0;
   }
 
   @Override
   public boolean isMountSizeDependent() {
-    return mIsMountSizeDependent;
+    return (mProperties & IS_MOUNT_SIZE_DEPENDENT) != 0;
   }
 
   @Override
-  protected Object onCreateMountContent(ComponentContext c) {
+  protected Object onCreateMountContent(Context c) {
     return new ColorDrawable();
   }
 
   @Override
-  protected void onMount(ComponentContext c, Object convertDrawable, Component _stateObject) {
-    State state = (State) _stateObject;
-    ((ColorDrawable) convertDrawable).setColor(state.color);
+  protected void onMount(ComponentContext c, Object convertDrawable) {
+    ((ColorDrawable) convertDrawable).setColor(color);
 
-    state.onMountCalled();
+    onMountCalled();
   }
 
   @Override
-  protected void onUnmount(ComponentContext c, Object mountedContent, Component<?> component) {
-    State state = (State) component;
-    state.onUnmountCalled();
+  protected void onUnmount(ComponentContext c, Object mountedContent) {
+    onUnmountCalled();
   }
 
   @Override
   protected boolean canMeasure() {
-    return mCanMeasure;
+    return (mProperties & CAN_MEASURE) != 0;
   }
 
   @Override
   protected void onMeasure(
-      ComponentContext c,
-      ComponentLayout layout,
-      int widthSpec,
-      int heightSpec,
-      Size size,
-      Component<?> component) {
+      ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
     int width = SizeSpec.getSize(widthSpec);
     int height = SizeSpec.getSize(heightSpec);
-    State state = (State) component;
-    state.onMeasureCalled();
+    onMeasureCalled();
 
-    size.width = (state.measuredWidth != -1)
-        ? SizeSpec.resolveSize(widthSpec, state.measuredWidth)
+    size.width = (measuredWidth != -1)
+        ? SizeSpec.resolveSize(widthSpec, measuredWidth)
         : width;
-    size.height = (state.measuredHeight != -1)
-        ? SizeSpec.resolveSize(heightSpec, state.measuredHeight)
+    size.height = (measuredHeight != -1)
+        ? SizeSpec.resolveSize(heightSpec, measuredHeight)
         : height;
   }
 
   @Override
-  protected void onBoundsDefined(
-      ComponentContext c,
-      ComponentLayout layout,
-      Component<?> component) {
-    State state = (State) component;
-    state.onDefineBoundsCalled();
+  protected void onBoundsDefined(ComponentContext c, ComponentLayout layout) {
+    onDefineBoundsCalled();
   }
 
   @Override
-  protected void onBind(ComponentContext c, Object mountedContent, Component<?> component) {
-    State state = (State) component;
-    state.onBindCalled();
+  protected void onBind(ComponentContext c, Object mountedContent) {
+    onBindCalled();
   }
 
   @Override
-  protected void onUnbind(ComponentContext c, Object mountedContent, Component<?> component) {
-    State state = (State) component;
-    state.onUnbindCalled();
+  protected void onUnbind(ComponentContext c, Object mountedContent) {
+    onUnbindCalled();
   }
 
   @Override
   public MountType getMountType() {
     return MountType.DRAWABLE;
+  }
+
+  @Override
+  public Component makeShallowCopy() {
+    if (mReturnSelfInMakeShallowCopy) {
+      return this;
+    }
+
+    return super.makeShallowCopy();
   }
 
   public static Builder create(
@@ -224,17 +186,29 @@ public class TestDrawableComponent extends ComponentLifecycle {
       boolean implementsAccessibility,
       boolean usesDisplayList,
       boolean isMountSizeDependent) {
-    return newBuilder(
-        context,
-        defStyleAttr,
-        defStyleRes,
-        new State(
-            callsShouldUpdateOnMount,
-            isPureRender,
-            canMeasure,
-            implementsAccessibility,
-            usesDisplayList,
-            isMountSizeDependent));
+
+    long properties = 0;
+    
+    if (callsShouldUpdateOnMount) { 
+      properties |= CALLS_SHOULD_UPDATE_ON_MOUNT;
+    }
+    if (isPureRender) {
+      properties |= IS_PURE_RENDER;
+    }
+    if (canMeasure) {
+      properties |= CAN_MEASURE;
+    }
+    if (implementsAccessibility) {
+      properties |= IMPLEMENTS_ACCESSIBILITY;
+    }
+    if (usesDisplayList) {
+      properties |= USES_DISPLAY_LIST;
+    }
+    if (isMountSizeDependent) {
+      properties |= IS_MOUNT_SIZE_DEPENDENT;
+    }
+
+    return newBuilder(context, defStyleAttr, defStyleRes, new TestDrawableComponent(properties));
   }
 
   public static Builder create(ComponentContext context) {
@@ -263,8 +237,8 @@ public class TestDrawableComponent extends ComponentLifecycle {
       ComponentContext context,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
-      State state) {
-    Builder builder = mBuilderPool.acquire();
+      TestDrawableComponent state) {
+    Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
     }
@@ -272,97 +246,79 @@ public class TestDrawableComponent extends ComponentLifecycle {
     return builder;
   }
 
-  public static class State extends TestComponent<TestDrawableComponent> implements Cloneable {
-    int color = Color.BLACK;
-    int measuredWidth = -1;
-    int measuredHeight = -1;
-
-    private State(
-        boolean callsShouldUpdateOnMount,
-        boolean isPureRender,
-        boolean canMeasure,
-        boolean implementsAccessibility,
-        boolean usesDisplayList,
-        boolean isMountSizeDependent) {
-      super(get(
-          callsShouldUpdateOnMount,
-          isPureRender,
-          canMeasure,
-          implementsAccessibility,
-          usesDisplayList,
-          isMountSizeDependent));
-    }
-
-    @Override
-    public int hashCode() {
-      return super.hashCode() + color;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (o == null) {
-        return false;
-      }
-      if (!super.equals(o)) {
-        return false;
-      }
-      if (o instanceof State) {
-        State s = (State) o;
-        return color == s.color;
-      }
-      return false;
-    }
+  @Override
+  public int hashCode() {
+    return super.hashCode() + color;
   }
 
-  public static class Builder
-      extends com.facebook.litho.Component.Builder<TestDrawableComponent> {
-    State mState;
+  @Override
+  public boolean equals(Object o) {
+    if (o == null) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    if (o instanceof TestDrawableComponent) {
+      TestDrawableComponent s = (TestDrawableComponent) o;
+      return color == s.color;
+    }
+    return false;
+  }
+
+  public static class Builder extends com.facebook.litho.Component.Builder<Builder> {
+    TestDrawableComponent mComponent;
 
     private void init(
         ComponentContext context,
         @AttrRes int defStyleAttr,
         @StyleRes int defStyleRes,
-        State state) {
-      super.init(context, defStyleAttr, defStyleRes, state);
-      mState = state;
+        TestDrawableComponent component) {
+      super.init(context, defStyleAttr, defStyleRes, component);
+      mComponent = component;
     }
 
     public Builder measuredWidth(int width) {
-      mState.measuredWidth = width;
+      mComponent.measuredWidth = width;
       return this;
     }
 
     public Builder measuredHeight(int height) {
-      mState.measuredHeight = height;
+      mComponent.measuredHeight = height;
       return this;
     }
 
     public Builder color(int color) {
-      mState.color = color;
+      mComponent.color = color;
       return this;
     }
 
     public Builder unique() {
-      mState.mIsUnique = true;
+      mComponent.mIsUnique = true;
+      return this;
+    }
+
+    public Builder returnSelfInMakeShallowCopy() {
+      mComponent.mReturnSelfInMakeShallowCopy = true;
       return this;
     }
 
     @Override
-    public TestComponent<TestDrawableComponent> build() {
-      State state = mState;
+    public TestDrawableComponent build() {
+      TestDrawableComponent component = mComponent;
       release();
-      return state;
+      return component;
     }
 
     @Override
     protected void release() {
       super.release();
-      mState = null;
-      mBuilderPool.release(this);
+      mComponent = null;
+      sBuilderPool.release(this);
     }
 
-    public Builder key(String key) {
-      super.setKey(key);
+    @Override
+    public Builder getThis() {
       return this;
     }
   }

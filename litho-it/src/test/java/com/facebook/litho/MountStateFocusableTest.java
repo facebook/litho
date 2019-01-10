@@ -1,28 +1,33 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
-import com.facebook.litho.testing.ComponentTestHelper;
+import static com.facebook.litho.Column.create;
+import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
-import com.facebook.yoga.YogaAlign;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
 public class MountStateFocusableTest {
@@ -38,45 +43,41 @@ public class MountStateFocusableTest {
 
   @Test
   public void testInnerComponentHostFocusable() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .child(
-                    Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                        .focusable(true)
-                        .child(TestViewComponent.create(c)))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .child(create(c).focusable(true).child(TestViewComponent.create(c)))
+                    .build();
+              }
+            });
 
-    assertEquals(1, lithoView.getChildCount());
+    assertThat(lithoView.getChildCount()).isEqualTo(1);
     // TODO(T16959291): The default varies between internal and external test runs, which indicates
     // that our Robolectric setup is not actually identical. Until we can figure out why,
     // we will compare against the dynamic default instead of asserting false.
-    assertEquals(mFocusableDefault, lithoView.isFocusable());
+    assertThat(lithoView.isFocusable()).isEqualTo(mFocusableDefault);
 
     ComponentHost innerHost = (ComponentHost) lithoView.getChildAt(0);
-    assertTrue(innerHost.isFocusable());
+    assertThat(innerHost.isFocusable()).isTrue();
   }
 
   @Test
   public void testRootHostFocusable() {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .focusable(true)
-                .child(TestDrawableComponent.create(c))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c).focusable(true).child(TestDrawableComponent.create(c)).build();
+              }
+            });
 
-    assertEquals(0, lithoView.getChildCount());
-    assertTrue(lithoView.isFocusable());
+    assertThat(lithoView.getChildCount()).isEqualTo(0);
+    assertThat(lithoView.isFocusable()).isTrue();
   }
 }

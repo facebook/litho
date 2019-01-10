@@ -1,37 +1,49 @@
 /*
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.testing.assertj;
 
-import java.util.List;
-
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
-
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.testing.ComponentTestHelper;
-import com.facebook.litho.testing.SubComponent;
-
+import com.facebook.litho.testing.helper.ComponentTestHelper;
+import com.facebook.litho.testing.state.StateUpdatesTestHelper;
+import com.facebook.litho.testing.subcomponents.InspectableComponent;
+import com.facebook.litho.testing.subcomponents.SubComponent;
+import java.util.List;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Java6Assertions;
+import org.assertj.core.api.ListAssert;
+import org.assertj.core.api.iterable.Extractor;
+import org.assertj.core.util.CheckReturnValue;
 import org.powermock.reflect.Whitebox;
 
 /**
  * Assertion methods for {@link Component}s.
  *
- * <p> To create an instance of this class, invoke
- * <code>{@link ComponentAssert#assertThat(ComponentContext, Component)}</code>.
+ * <p>
+*  To create an instance of this class, invoke
+ * <code>{@link ComponentAssert#assertThat(ComponentContext, Component)}</code>
  * or
  * <code>{@link ComponentAssert#assertThat(Component.Builder)}</code>.
+ *
+ * Alternatively, use {@link LithoAssertions} which provides entry points to
+ * all Litho AssertJ helpers.
  */
 public final class ComponentAssert extends AbstractAssert<ComponentAssert, Component> {
 
@@ -41,12 +53,23 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return new ComponentAssert(componentContext, component);
   }
 
-  public static <L extends ComponentLifecycle> ComponentAssert assertThat(
-      Component.Builder<L> builder) {
+  public static ComponentAssert assertThat(Component.Builder<?> builder) {
     // mContext is freed up during build() so we need to get a reference to it before.
     final ComponentContext context =
         Whitebox.getInternalState(builder, "mContext");
     return new ComponentAssert(context, builder.build());
+  }
+
+  /** Performs a state update and returns the new view. */
+  public LithoViewAssert afterStateUpdate() throws Exception {
+    return LithoViewAssert.assertThat(
+        StateUpdatesTestHelper.getViewAfterStateUpdate(mComponentContext, actual));
+  }
+
+  public LithoViewAssert withStateUpdate(final StateUpdatesTestHelper.StateUpdater updater)
+      throws Exception {
+    return LithoViewAssert.assertThat(
+        StateUpdatesTestHelper.getViewAfterStateUpdate(mComponentContext, actual, updater));
   }
 
   private ComponentAssert(ComponentContext c, Component actual) {
@@ -172,8 +195,16 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return this;
   }
 
+  /** Assert that the given component contains the provided pattern. */
+  public ComponentAssert hasVisibleTextMatching(String pattern) {
+    assertThatLithoView().hasVisibleTextMatching(pattern);
+
+    return this;
+  }
+
   /**
    * Assert that the view tag is present for the given index.
+   *
    * @param tagId Index of the view tag.
    * @param tagValue View tag value.
    */
@@ -192,7 +223,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
         actual);
 
     Java6Assertions.assertThat(mountedSubComponents)
-        .isEqualTo(subComponents);
+        .containsExactly(subComponents);
 
     return this;
   }
@@ -210,5 +241,63 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
         .containsOnly(subComponents);
 
     return this;
+  }
+
+  /**
+   * Extract values from the underlying component based on the {@link Extractor} provided.
+   * @param extractor The extractor applied to the Component.
+   * @param <A> Type of the value extracted.
+   * @return ListAssert for the extracted values.
+   */
+  @CheckReturnValue
+  public <A> ListAssert<A> extracting(Extractor<Component, List<A>> extractor) {
+    final List<A> value = extractor.extract(actual);
+    return new ListAssert<>(value);
+  }
+
+  /**
+   * Extract the sub components from the underlying Component, returning a ListAssert over it.
+   */
+  @CheckReturnValue
+  public ListAssert<InspectableComponent> extractingSubComponents(ComponentContext c) {
+    return extracting(SubComponentExtractor.subComponents(c));
+  }
+
+  /**
+   * Extract the sub components recursively from the underlying Component,
+   * returning a ListAssert over it.
+   */
+  @CheckReturnValue
+  public ListAssert<InspectableComponent> extractingSubComponentsDeeply(ComponentContext c) {
+    return extracting(SubComponentDeepExtractor.subComponentsDeeply(c));
+  }
+
+  /**
+   * Assert that a given {@link Component} renders to null, i.e. its <code>onCreateLayout
+   * </code> method resolves to a {@link ComponentContext#NULL_LAYOUT}.
+   */
+  public ComponentAssert wontRender() {
+    Java6Assertions.assertThat(Component.willRender(mComponentContext, actual))
+        .overridingErrorMessage("Expected Component to render to null, but it did not.")
+        .isFalse();
+
+    return this;
+  }
+
+  /**
+   * Assert that a given {@link Component} produces a layout that's not equivalent to {@link
+   * ComponentContext#NULL_LAYOUT}.
+   */
+  public ComponentAssert willRender() {
+    Java6Assertions.assertThat(Component.willRender(mComponentContext, actual))
+        .overridingErrorMessage("Expected Component to not render to null, but it did.")
+        .isTrue();
+
+    return this;
+  }
+
+  /** @see #wontRender() */
+  public ComponentAssert willNotRender() {
+    return wontRender();
   }
 }

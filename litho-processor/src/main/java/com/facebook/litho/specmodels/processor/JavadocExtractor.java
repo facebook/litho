@@ -1,24 +1,29 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.specmodels.processor;
 
-import javax.annotation.Nullable;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
-
+import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.PropJavadocModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.specmodels.model.PropJavadocModel;
+import javax.annotation.Nullable;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 
 /**
  * Extracts javadocs from the given input.
@@ -30,7 +35,7 @@ public class JavadocExtractor {
    * Get the class javadoc from the given {@link TypeElement}.
    */
   @Nullable
-  static String getClassJavadoc(Elements elements, TypeElement typeElement) {
+  public static String getClassJavadoc(Elements elements, TypeElement typeElement) {
     final String unsanitizedJavadoc = elements.getDocComment(typeElement);
 
     if (unsanitizedJavadoc == null || unsanitizedJavadoc.isEmpty()) {
@@ -43,7 +48,7 @@ public class JavadocExtractor {
     return firstPropJavadocIndex < 0 ? javadoc : javadoc.substring(0, firstPropJavadocIndex);
   }
 
-  static ImmutableList<PropJavadocModel> getPropJavadocs(
+  public static ImmutableList<PropJavadocModel> getPropJavadocs(
       Elements elements,
       TypeElement typeElement) {
     final String unsanitizedJavadoc = elements.getDocComment(typeElement);

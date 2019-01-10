@@ -1,26 +1,30 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
+import static junit.framework.Assert.fail;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 import android.graphics.Rect;
-import android.support.v4.util.Pools;
-
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.reflect.Whitebox;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
 
 /**
  * Tests {@link ViewNodeInfo}
@@ -29,12 +33,10 @@ import static junit.framework.Assert.fail;
 public class ViewNodeInfoTest {
 
   private ViewNodeInfo mViewNodeInfo;
-  private LayoutOutput mLayoutOutput;
 
   @Before
   public void setup() {
     mViewNodeInfo = ViewNodeInfo.acquire();
-    mLayoutOutput = new LayoutOutput();
   }
 
   @Test
@@ -43,7 +45,7 @@ public class ViewNodeInfoTest {
 
     mViewNodeInfo.setExpandedTouchBounds(node, 10, 10, 20, 20);
 
-    assertEquals(new Rect(9, 8, 23, 24), mViewNodeInfo.getExpandedTouchBounds());
+    assertThat(mViewNodeInfo.getExpandedTouchBounds()).isEqualTo(new Rect(9, 8, 23, 24));
   }
 
   @Test
@@ -85,7 +87,7 @@ public class ViewNodeInfoTest {
   }
 
   private static void clearViewNodeInfoPool() {
-    final Pools.SynchronizedPool<NodeInfo> viewNodeInfoPool =
+    final RecyclePool<NodeInfo> viewNodeInfoPool =
         Whitebox.getInternalState(ComponentsPools.class, "sViewNodeInfoPool");
 
     while (viewNodeInfoPool.acquire() != null) {

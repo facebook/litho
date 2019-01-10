@@ -8,6 +8,31 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for details on how to add or modify con
 
 ### Run the Site Locally
 
+You can run the site either using our custom Docker container or by setting up
+the necessary Ruby gems on your machine. The Docker setup is way faster and
+doesn't require littering your machine with Ruby artifacts, but the choice is
+yours.
+
+### Using Docker
+
+Install Docker via your system's package manager or, if your operating system
+comes out of Cupertino, use [Docker for Mac](https://docs.docker.com/docker-for-mac/).
+
+In the `docs/` folder, run this:
+
+```
+docker run -t --rm -v "$PWD":/usr/src/app -p "4000:4000" passy/github-pages:193
+```
+
+This will launch a web server on http://localhost:4000/ that monitors the docs
+directory for changes and regenerates on the fly.
+
+NOTE: If you see a error from bundler like `Could not find i18n-0.9.1 in any of
+the sources`, try removing your local `Gemfile.lock` and rerun the command.
+But please don't commit that result.
+
+### Using Local Ruby
+
 The requirements for running a GitHub pages site locally is described in [GitHub help](https://help.github.com/articles/setting-up-your-github-pages-site-locally-with-jekyll/#requirements). The steps below summarize these steps.
 
 > If you have run the site before, you can start with step 1 and then move on to step 5.

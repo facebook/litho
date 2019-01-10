@@ -1,63 +1,27 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
-
-import javax.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import android.content.res.Resources;
-import android.content.res.TypedArray;
-import android.graphics.Color;
-import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.AttrRes;
-import android.support.annotation.ColorInt;
-import android.support.annotation.DimenRes;
-import android.support.annotation.Dimension;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.Px;
-import android.support.annotation.StringRes;
-import android.support.v4.view.ViewCompat;
-import android.text.TextUtils;
-import android.util.SparseArray;
-
-import com.facebook.infer.annotation.ReturnsOwnership;
-import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.reference.ColorDrawableReference;
-import com.facebook.litho.reference.DrawableReference;
-import com.facebook.litho.reference.Reference;
-import com.facebook.litho.reference.ResourceDrawableReference;
-import com.facebook.yoga.YogaAlign;
-import com.facebook.yoga.YogaBaselineFunction;
-import com.facebook.yoga.YogaConstants;
-import com.facebook.yoga.YogaDirection;
-import com.facebook.yoga.YogaEdge;
-import com.facebook.yoga.YogaFlexDirection;
-import com.facebook.yoga.YogaJustify;
-import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaOverflow;
-import com.facebook.yoga.YogaPositionType;
-import com.facebook.yoga.YogaWrap;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
-import static android.support.annotation.Dimension.DP;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
+import static com.facebook.litho.ComponentsLogger.LogLevel.WARNING;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.END;
@@ -68,85 +32,94 @@ import static com.facebook.yoga.YogaEdge.START;
 import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaEdge.VERTICAL;
 
-/**
- * Internal class representing both a {@link ComponentLayout} and a
- * {@link com.facebook.litho.ComponentLayout.ContainerBuilder}.
- */
+import android.animation.StateListAnimator;
+import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.PathEffect;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.Px;
+import android.support.v4.view.ViewCompat;
+import android.text.TextUtils;
+import android.util.SparseArray;
+import android.view.ViewOutlineProvider;
+import com.facebook.infer.annotation.ReturnsOwnership;
+import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.drawable.ComparableColorDrawable;
+import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.drawable.ComparableResDrawable;
+import com.facebook.litho.drawable.DefaultComparableDrawable;
+import com.facebook.litho.reference.DrawableReference;
+import com.facebook.litho.reference.Reference;
+import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaBaselineFunction;
+import com.facebook.yoga.YogaConstants;
+import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaFlexDirection;
+import com.facebook.yoga.YogaJustify;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaNode;
+import com.facebook.yoga.YogaPositionType;
+import com.facebook.yoga.YogaWrap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
+
+/** Internal class representing a {@link ComponentLayout}. */
 @ThreadConfined(ThreadConfined.ANY)
-class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder {
+class InternalNode implements ComponentLayout {
 
   // Used to check whether or not the framework can use style IDs for
   // paddingStart/paddingEnd due to a bug in some Android devices.
   private static final boolean SUPPORTS_RTL = (SDK_INT >= JELLY_BEAN_MR1);
 
-  // When this flag is set, layoutDirection style was explicitly set on this node.
+  // Flags used to indicate that a certain attribute was explicitly set on the node.
   private static final long PFLAG_LAYOUT_DIRECTION_IS_SET = 1L << 0;
-  // When this flag is set, alignSelf was explicitly set on this node.
   private static final long PFLAG_ALIGN_SELF_IS_SET = 1L << 1;
-  // When this flag is set, position type was explicitly set on this node.
   private static final long PFLAG_POSITION_TYPE_IS_SET = 1L << 2;
-  // When this flag is set, flex was explicitly set on this node.
   private static final long PFLAG_FLEX_IS_SET = 1L << 3;
-  // When this flag is set, flex grow was explicitly set on this node.
   private static final long PFLAG_FLEX_GROW_IS_SET = 1L << 4;
-  // When this flag is set, flex shrink was explicitly set on this node.
   private static final long PFLAG_FLEX_SHRINK_IS_SET = 1L << 5;
-  // When this flag is set, flex basis was explicitly set on this node.
   private static final long PFLAG_FLEX_BASIS_IS_SET = 1L << 6;
-  // When this flag is set, importantForAccessibility was explicitly set on this node.
   private static final long PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET = 1L << 7;
-  // When this flag is set, duplicateParentState was explicitly set on this node.
   private static final long PFLAG_DUPLICATE_PARENT_STATE_IS_SET = 1L << 8;
-  // When this flag is set, margin was explicitly set on this node.
   private static final long PFLAG_MARGIN_IS_SET = 1L << 9;
-  // When this flag is set, padding was explicitly set on this node.
   private static final long PFLAG_PADDING_IS_SET = 1L << 10;
-  // When this flag is set, position was explicitly set on this node.
   private static final long PFLAG_POSITION_IS_SET = 1L << 11;
-  // When this flag is set, width was explicitly set on this node.
   private static final long PFLAG_WIDTH_IS_SET = 1L << 12;
-  // When this flag is set, minWidth was explicitly set on this node.
   private static final long PFLAG_MIN_WIDTH_IS_SET = 1L << 13;
-  // When this flag is set, maxWidth was explicitly set on this node.
   private static final long PFLAG_MAX_WIDTH_IS_SET = 1L << 14;
-  // When this flag is set, height was explicitly set on this node.
   private static final long PFLAG_HEIGHT_IS_SET = 1L << 15;
-  // When this flag is set, minHeight was explicitly set on this node.
   private static final long PFLAG_MIN_HEIGHT_IS_SET = 1L << 16;
-  // When this flag is set, maxHeight was explicitly set on this node.
   private static final long PFLAG_MAX_HEIGHT_IS_SET = 1L << 17;
-  // When this flag is set, background was explicitly set on this node.
   private static final long PFLAG_BACKGROUND_IS_SET = 1L << 18;
-  // When this flag is set, foreground was explicitly set on this node.
   private static final long PFLAG_FOREGROUND_IS_SET = 1L << 19;
-  // When this flag is set, visibleHandler was explicitly set on this node.
   private static final long PFLAG_VISIBLE_HANDLER_IS_SET = 1L << 20;
-  // When this flag is set, focusedHandler was explicitly set on this node.
   private static final long PFLAG_FOCUSED_HANDLER_IS_SET = 1L << 21;
-  // When this flag is set, fullImpressionHandler was explicitly set on this node.
   private static final long PFLAG_FULL_IMPRESSION_HANDLER_IS_SET = 1L << 22;
-  // When this flag is set, invisibleHandler was explicitly set on this node.
   private static final long PFLAG_INVISIBLE_HANDLER_IS_SET = 1L << 23;
-  // When this flag is set, unfocusedHandler was explicitly set on this node.
   private static final long PFLAG_UNFOCUSED_HANDLER_IS_SET = 1L << 24;
-  // When this flag is set, touch expansion was explicitly set on this node.
   private static final long PFLAG_TOUCH_EXPANSION_IS_SET = 1L << 25;
-  // When this flag is set, border width was explicitly set on this node.
-  private static final long PFLAG_BORDER_WIDTH_IS_SET = 1L << 26;
-  // When this flag is set, aspectRatio was explicitly set on this node.
-  private static final long PFLAG_ASPECT_RATIO_IS_SET = 1L << 27;
-  // When this flag is set, transitionKey was explicitly set on this node.
-  private static final long PFLAG_TRANSITION_KEY_IS_SET = 1L << 28;
-  // When this flag is set, border color was explicitly set on this node.
-  private static final long PFLAG_BORDER_COLOR_IS_SET = 1L << 29;
-
-  private final ResourceResolver mResourceResolver = new ResourceResolver();
+  private static final long PFLAG_ASPECT_RATIO_IS_SET = 1L << 26;
+  private static final long PFLAG_TRANSITION_KEY_IS_SET = 1L << 27;
+  private static final long PFLAG_BORDER_IS_SET = 1L << 28;
+  private static final long PFLAG_STATE_LIST_ANIMATOR_SET = 1L << 29;
+  private static final long PFLAG_STATE_LIST_ANIMATOR_RES_SET = 1L << 30;
+  private static final long PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET = 1L << 31;
+  private static final long PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1L << 32;
 
   YogaNode mYogaNode;
   private ComponentContext mComponentContext;
-  private Resources mResources;
   @ThreadConfined(ThreadConfined.ANY)
-  private List<Component> mComponents = new ArrayList(1);
+  private final List<Component> mComponents = new ArrayList<>(1);
   private int mImportantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
   private boolean mDuplicateParentState;
   private boolean mIsNestedTreeHolder;
@@ -154,18 +127,26 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private InternalNode mNestedTreeHolder;
   private long mPrivateFlags;
 
-  private Reference<? extends Drawable> mBackground;
-  private Drawable mForeground;
-  private int mBorderColor = Color.TRANSPARENT;
+  private @Nullable Reference<? extends Drawable> mBackground;
+  private @Nullable ComparableDrawable mForeground;
+  private final int[] mBorderColors = new int[Border.EDGE_COUNT];
+  private final float[] mBorderRadius = new float[Border.RADIUS_COUNT];
+  private @Nullable PathEffect mBorderPathEffect;
+  private @Nullable StateListAnimator mStateListAnimator;
+  private @DrawableRes int mStateListAnimatorRes;
 
   private NodeInfo mNodeInfo;
   private boolean mForceViewWrapping;
   private String mTransitionKey;
-  private EventHandler mVisibleHandler;
-  private EventHandler mFocusedHandler;
-  private EventHandler mUnfocusedHandler;
-  private EventHandler mFullImpressionHandler;
-  private EventHandler mInvisibleHandler;
+  private @Nullable Transition.TransitionKeyType mTransitionKeyType;
+  private float mVisibleHeightRatio;
+  private float mVisibleWidthRatio;
+  @Nullable private EventHandler<VisibleEvent> mVisibleHandler;
+  @Nullable private EventHandler<FocusedVisibleEvent> mFocusedHandler;
+  @Nullable private EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
+  @Nullable private EventHandler<FullImpressionVisibleEvent> mFullImpressionHandler;
+  @Nullable private EventHandler<InvisibleEvent> mInvisibleHandler;
+  private @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
   private String mTestKey;
   private Edges mTouchExpansion;
   private Edges mNestedTreePadding;
@@ -184,27 +165,33 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   private float mLastMeasuredWidth = DiffNode.UNSPECIFIED;
   private float mLastMeasuredHeight = DiffNode.UNSPECIFIED;
   private DiffNode mDiffNode;
+  private @Nullable ArrayList<Transition> mTransitions;
+  private @Nullable ArrayList<Component> mComponentsNeedingPreviousRenderData;
+  private @Nullable ArrayList<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
 
   private boolean mCachedMeasuresValid;
   private TreeProps mPendingTreeProps;
 
-  void init(YogaNode yogaNode, ComponentContext componentContext, Resources resources) {
-    yogaNode.setData(this);
-    yogaNode.setOverflow(YogaOverflow.HIDDEN);
-    yogaNode.setMeasureFunction(null);
+  // Hold onto DebugComponents which reference InternalNode to tie there Vm lifecycles together.
+  // DebugComponents are supposed to be help onto as weak references and have we want to ensure they
+  // live exactly as long as InternalNodes.
+  private Set<DebugComponent> mDebugComponents = new HashSet<>();
 
-    // YogaNode is the only version of YogaNode with this support;
-    if (yogaNode instanceof YogaNode) {
-      yogaNode.setBaselineFunction(null);
+  void init(YogaNode yogaNode, ComponentContext componentContext) {
+    if (yogaNode != null) {
+      yogaNode.setData(this);
     }
-
     mYogaNode = yogaNode;
 
     mComponentContext = componentContext;
-    mResources = resources;
-    mResourceResolver.init(
-        mComponentContext,
-        componentContext.getResourceCache());
+  }
+
+  /**
+   * For testing and debugging purposes only where initialization may have not occurred. For
+   * any production use, this should never be necessary.
+   */
+  boolean isInitialized() {
+    return mYogaNode != null && mComponentContext != null;
   }
 
   @Px
@@ -271,11 +258,17 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return FastMath.round(mYogaNode.getLayoutPadding(BOTTOM));
   }
 
-  public Reference<? extends Drawable> getBackground() {
+  @Override
+  public boolean isPaddingSet() {
+    return (mPrivateFlags & PFLAG_PADDING_IS_SET) != 0L;
+  }
+
+  @Override
+  public @Nullable Reference<? extends Drawable> getBackground() {
     return mBackground;
   }
 
-  public Drawable getForeground() {
+  public @Nullable ComparableDrawable getForeground() {
     return mForeground;
   }
 
@@ -304,13 +297,14 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
         || mFocusedHandler != null
         || mUnfocusedHandler != null
         || mFullImpressionHandler != null
-        || mInvisibleHandler != null;
+        || mInvisibleHandler != null
+        || mVisibilityChangedHandler != null;
   }
 
   /**
-   * The last value the measure funcion associated with this node {@link Component} returned
-   * for the width. This is used together with {@link InternalNode#getLastWidthSpec()}
-   * to implement measure caching.
+   * The last value the measure funcion associated with this node {@link Component} returned for the
+   * width. This is used together with {@link InternalNode#getLastWidthSpec()} to implement measure
+   * caching.
    */
   float getLastMeasuredWidth() {
     return mLastMeasuredWidth;
@@ -325,9 +319,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   /**
-   * The last value the measure funcion associated with this node {@link Component} returned
-   * for the height. This is used together with {@link InternalNode#getLastHeightSpec()}
-   * to implement measure caching.
+   * The last value the measure funcion associated with this node {@link Component} returned for the
+   * height. This is used together with {@link InternalNode#getLastHeightSpec()} to implement
+   * measure caching.
    */
   float getLastMeasuredHeight() {
     return mLastMeasuredHeight;
@@ -362,8 +356,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   /**
-   * @return Whether this node is holding a nested tree or not. The decision was made during
-   * tree creation {@link ComponentLifecycle#createLayout(ComponentContext, Component, boolean)}.
+   * @return Whether this node is holding a nested tree or not. The decision was made during tree
+   *     creation {@link ComponentLifecycle#createLayout(ComponentContext, boolean)}.
    */
   boolean isNestedTreeHolder() {
     return mIsNestedTreeHolder;
@@ -374,8 +368,16 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mYogaNode.getLayoutDirection();
   }
 
-  @Override
-  public InternalNode layoutDirection(YogaDirection direction) {
+  /** Continually walks the node hierarchy until a node returns a non inherited layout direction */
+  YogaDirection recursivelyResolveLayoutDirection() {
+    YogaNode yogaNode = mYogaNode;
+    while (yogaNode != null && yogaNode.getLayoutDirection() == YogaDirection.INHERIT) {
+      yogaNode = yogaNode.getOwner();
+    }
+    return yogaNode == null ? YogaDirection.INHERIT : yogaNode.getLayoutDirection();
+  }
+
+  InternalNode layoutDirection(YogaDirection direction) {
     mPrivateFlags |= PFLAG_LAYOUT_DIRECTION_IS_SET;
     mYogaNode.setDirection(direction);
     return this;
@@ -386,67 +388,57 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode wrap(YogaWrap wrap) {
+  InternalNode wrap(YogaWrap wrap) {
     mYogaNode.setWrap(wrap);
     return this;
   }
 
-  @Override
-  public InternalNode justifyContent(YogaJustify justifyContent) {
+  InternalNode justifyContent(YogaJustify justifyContent) {
     mYogaNode.setJustifyContent(justifyContent);
     return this;
   }
 
-  @Override
-  public InternalNode alignItems(YogaAlign alignItems) {
+  InternalNode alignItems(YogaAlign alignItems) {
     mYogaNode.setAlignItems(alignItems);
     return this;
   }
 
-  @Override
-  public InternalNode alignContent(YogaAlign alignContent) {
+  InternalNode alignContent(YogaAlign alignContent) {
     mYogaNode.setAlignContent(alignContent);
     return this;
   }
 
-  @Override
-  public InternalNode alignSelf(YogaAlign alignSelf) {
+  InternalNode alignSelf(YogaAlign alignSelf) {
     mPrivateFlags |= PFLAG_ALIGN_SELF_IS_SET;
     mYogaNode.setAlignSelf(alignSelf);
     return this;
   }
 
-  @Override
-  public InternalNode positionType(YogaPositionType positionType) {
+  InternalNode positionType(YogaPositionType positionType) {
     mPrivateFlags |= PFLAG_POSITION_TYPE_IS_SET;
     mYogaNode.setPositionType(positionType);
     return this;
   }
 
-  @Override
-  public InternalNode flex(float flex) {
+  InternalNode flex(float flex) {
     mPrivateFlags |= PFLAG_FLEX_IS_SET;
     mYogaNode.setFlex(flex);
     return this;
   }
 
-  @Override
-  public InternalNode flexGrow(float flexGrow) {
+  InternalNode flexGrow(float flexGrow) {
     mPrivateFlags |= PFLAG_FLEX_GROW_IS_SET;
     mYogaNode.setFlexGrow(flexGrow);
     return this;
   }
 
-  @Override
-  public InternalNode flexShrink(float flexShrink) {
+  InternalNode flexShrink(float flexShrink) {
     mPrivateFlags |= PFLAG_FLEX_SHRINK_IS_SET;
     mYogaNode.setFlexShrink(flexShrink);
     return this;
   }
 
-  @Override
-  public InternalNode flexBasisPx(@Px int flexBasis) {
+  InternalNode flexBasisPx(@Px int flexBasis) {
     mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
     mYogaNode.setFlexBasis(flexBasis);
     return this;
@@ -458,91 +450,40 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode flexBasisPercent(float percent) {
+  InternalNode flexBasisPercent(float percent) {
     mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
     mYogaNode.setFlexBasisPercent(percent);
     return this;
   }
 
-  @Override
-  public InternalNode flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return flexBasisPx(mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
-  }
-
-  @Override
-  public InternalNode flexBasisAttr(@AttrRes int resId) {
-    return flexBasisAttr(resId, 0);
-  }
-
-  @Override
-  public InternalNode flexBasisRes(@DimenRes int resId) {
-    return flexBasisPx(mResourceResolver.resolveDimenOffsetRes(resId));
-  }
-
-  @Override
-  public InternalNode flexBasisDip(@Dimension(unit = DP) int flexBasis) {
-    return flexBasisPx(mResourceResolver.dipsToPixels(flexBasis));
-  }
-
-  @Override
-  public InternalNode importantForAccessibility(int importantForAccessibility) {
+  InternalNode importantForAccessibility(int importantForAccessibility) {
     mPrivateFlags |= PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET;
     mImportantForAccessibility = importantForAccessibility;
     return this;
   }
 
-  @Override
-  public InternalNode duplicateParentState(boolean duplicateParentState) {
+  InternalNode duplicateParentState(boolean duplicateParentState) {
     mPrivateFlags |= PFLAG_DUPLICATE_PARENT_STATE_IS_SET;
     mDuplicateParentState = duplicateParentState;
     return this;
   }
 
-  @Override
-  public InternalNode marginPx(YogaEdge edge, @Px int margin) {
+  InternalNode marginPx(YogaEdge edge, @Px int margin) {
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMargin(edge, margin);
     return this;
   }
 
-  @Override
-  public InternalNode marginPercent(YogaEdge edge, float percent) {
+  InternalNode marginPercent(YogaEdge edge, float percent) {
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMarginPercent(edge, percent);
     return this;
   }
 
-  @Override
-  public InternalNode marginAuto(YogaEdge edge) {
+  InternalNode marginAuto(YogaEdge edge) {
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMarginAuto(edge);
     return this;
-  }
-
-  @Override
-  public InternalNode marginAttr(
-      YogaEdge edge,
-      @AttrRes int resId,
-      @DimenRes int defaultResId) {
-    return marginPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
-  }
-
-  @Override
-  public InternalNode marginAttr(
-      YogaEdge edge,
-      @AttrRes int resId) {
-    return marginAttr(edge, resId, 0);
-  }
-
-  @Override
-  public InternalNode marginRes(YogaEdge edge, @DimenRes int resId) {
-    return marginPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
-  }
-
-  @Override
-  public InternalNode marginDip(YogaEdge edge, @Dimension(unit = DP) int margin) {
-    return marginPx(edge, mResourceResolver.dipsToPixels(margin));
   }
 
   @ReturnsOwnership
@@ -553,8 +494,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mNestedTreePadding;
   }
 
-  @Override
-  public InternalNode paddingPx(YogaEdge edge, @Px int padding) {
+  InternalNode paddingPx(YogaEdge edge, @Px int padding) {
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
 
     if (mIsNestedTreeHolder) {
@@ -567,8 +507,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode paddingPercent(YogaEdge edge, float percent) {
+  InternalNode paddingPercent(YogaEdge edge, float percent) {
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
 
     if (mIsNestedTreeHolder) {
@@ -581,35 +520,18 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode paddingAttr(
-      YogaEdge edge,
-      @AttrRes int resId,
-      @DimenRes int defaultResId) {
-    return paddingPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+  InternalNode border(Border border) {
+    mPrivateFlags |= PFLAG_BORDER_IS_SET;
+    for (int i = 0, length = border.mEdgeWidths.length; i < length; ++i) {
+      setBorderWidth(Border.edgeFromIndex(i), border.mEdgeWidths[i]);
+    }
+    System.arraycopy(border.mEdgeColors, 0, mBorderColors, 0, mBorderColors.length);
+    System.arraycopy(border.mRadius, 0, mBorderRadius, 0, mBorderRadius.length);
+    mBorderPathEffect = border.mPathEffect;
+    return this;
   }
 
-  @Override
-  public InternalNode paddingAttr(
-      YogaEdge edge,
-      @AttrRes int resId) {
-    return paddingAttr(edge, resId, 0);
-  }
-
-  @Override
-  public InternalNode paddingRes(YogaEdge edge, @DimenRes int resId) {
-    return paddingPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
-  }
-
-  @Override
-  public InternalNode paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding) {
-    return paddingPx(edge, mResourceResolver.dipsToPixels(padding));
-  }
-
-  @Override
-  public InternalNode borderWidthPx(YogaEdge edge, @Px int borderWidth) {
-    mPrivateFlags |= PFLAG_BORDER_WIDTH_IS_SET;
-
+  void setBorderWidth(YogaEdge edge, @Px int borderWidth) {
     if (mIsNestedTreeHolder) {
       if (mNestedTreeBorderWidth == null) {
         mNestedTreeBorderWidth = ComponentsPools.acquireEdges();
@@ -619,85 +541,53 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     } else {
       mYogaNode.setBorder(edge, borderWidth);
     }
+  }
 
+  int getLayoutBorder(YogaEdge edge) {
+    return FastMath.round(mYogaNode.getLayoutBorder(edge));
+  }
+
+  InternalNode stateListAnimator(StateListAnimator stateListAnimator) {
+    mPrivateFlags |= PFLAG_STATE_LIST_ANIMATOR_SET;
+    mStateListAnimator = stateListAnimator;
+    wrapInView();
     return this;
   }
 
-  @Override
-  public InternalNode borderWidthAttr(
-      YogaEdge edge,
-      @AttrRes int resId,
-      @DimenRes int defaultResId) {
-    return borderWidthPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
+  @Nullable
+  StateListAnimator getStateListAnimator() {
+    return mStateListAnimator;
   }
 
-  @Override
-  public InternalNode borderWidthAttr(
-      YogaEdge edge,
-      @AttrRes int resId) {
-    return borderWidthAttr(edge, resId, 0);
-  }
-
-  @Override
-  public InternalNode borderWidthRes(YogaEdge edge, @DimenRes int resId) {
-    return borderWidthPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
-  }
-
-  @Override
-  public InternalNode borderWidthDip(
-      YogaEdge edge,
-      @Dimension(unit = DP) int borderWidth) {
-    return borderWidthPx(edge, mResourceResolver.dipsToPixels(borderWidth));
-  }
-
-  @Override
-  public Builder borderColor(@ColorInt int borderColor) {
-    mPrivateFlags |= PFLAG_BORDER_COLOR_IS_SET;
-    mBorderColor = borderColor;
+  InternalNode stateListAnimatorRes(@DrawableRes int resId) {
+    mPrivateFlags |= PFLAG_STATE_LIST_ANIMATOR_RES_SET;
+    mStateListAnimatorRes = resId;
+    wrapInView();
     return this;
   }
 
-  @Override
-  public InternalNode positionPx(YogaEdge edge, @Px int position) {
+  boolean hasStateListAnimatorResSet() {
+    return (mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_RES_SET) != 0;
+  }
+
+  @DrawableRes
+  int getStateListAnimatorRes() {
+    return mStateListAnimatorRes;
+  }
+
+  InternalNode positionPx(YogaEdge edge, @Px int position) {
     mPrivateFlags |= PFLAG_POSITION_IS_SET;
     mYogaNode.setPosition(edge, position);
     return this;
   }
 
-  @Override
-  public InternalNode positionPercent(YogaEdge edge, float percent) {
+  InternalNode positionPercent(YogaEdge edge, float percent) {
     mPrivateFlags |= PFLAG_POSITION_IS_SET;
     mYogaNode.setPositionPercent(edge, percent);
     return this;
   }
 
-  @Override
-  public InternalNode positionAttr(
-      YogaEdge edge,
-      @AttrRes int resId,
-      @DimenRes int defaultResId) {
-    return positionPx(edge, mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
-  }
-
-  @Override
-  public InternalNode positionAttr(YogaEdge edge, @AttrRes int resId) {
-    return positionAttr(edge, resId, 0);
-  }
-
-  @Override
-  public InternalNode positionRes(YogaEdge edge, @DimenRes int resId) {
-    return positionPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
-  }
-
-  @Override
-  public InternalNode positionDip(
-      YogaEdge edge,
-      @Dimension(unit = DP) int position) {
-    return positionPx(edge, mResourceResolver.dipsToPixels(position));
-  }
-
-  @Override
-  public InternalNode widthPx(@Px int width) {
+  InternalNode widthPx(@Px int width) {
     mPrivateFlags |= PFLAG_WIDTH_IS_SET;
     mYogaNode.setWidth(width);
     return this;
@@ -709,103 +599,37 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode widthPercent(float percent) {
+  InternalNode widthPercent(float percent) {
     mPrivateFlags |= PFLAG_WIDTH_IS_SET;
     mYogaNode.setWidthPercent(percent);
     return this;
   }
 
-  @Override
-  public InternalNode widthRes(@DimenRes int resId) {
-    return widthPx(mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  @Override
-  public InternalNode widthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return widthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  @Override
-  public InternalNode widthAttr(@AttrRes int resId) {
-    return widthAttr(resId, 0);
-  }
-
-  @Override
-  public InternalNode widthDip(@Dimension(unit = DP) int width) {
-    return widthPx(mResourceResolver.dipsToPixels(width));
-  }
-
-  @Override
-  public InternalNode minWidthPx(@Px int minWidth) {
+  InternalNode minWidthPx(@Px int minWidth) {
     mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
     mYogaNode.setMinWidth(minWidth);
     return this;
   }
 
-  @Override
-  public InternalNode minWidthPercent(float percent) {
+  InternalNode minWidthPercent(float percent) {
     mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
     mYogaNode.setMinWidthPercent(percent);
     return this;
   }
 
-  @Override
-  public InternalNode minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return minWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  @Override
-  public InternalNode minWidthAttr(@AttrRes int resId) {
-    return minWidthAttr(resId, 0);
-  }
-
-  @Override
-  public InternalNode minWidthRes(@DimenRes int resId) {
-    return minWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  @Override
-  public InternalNode minWidthDip(@Dimension(unit = DP) int minWidth) {
-    return minWidthPx(mResourceResolver.dipsToPixels(minWidth));
-  }
-
-  @Override
-  public InternalNode maxWidthPx(@Px int maxWidth) {
+  InternalNode maxWidthPx(@Px int maxWidth) {
     mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
     mYogaNode.setMaxWidth(maxWidth);
     return this;
   }
 
-  @Override
-  public InternalNode maxWidthPercent(float percent) {
+  InternalNode maxWidthPercent(float percent) {
     mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
     mYogaNode.setMaxWidthPercent(percent);
     return this;
   }
 
-  @Override
-  public InternalNode maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return maxWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  @Override
-  public InternalNode maxWidthAttr(@AttrRes int resId) {
-    return maxWidthAttr(resId, 0);
-  }
-
-  @Override
-  public InternalNode maxWidthRes(@DimenRes int resId) {
-    return maxWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  @Override
-  public InternalNode maxWidthDip(@Dimension(unit = DP) int maxWidth) {
-    return maxWidthPx(mResourceResolver.dipsToPixels(maxWidth));
-  }
-
-  @Override
-  public InternalNode heightPx(@Px int height) {
+  InternalNode heightPx(@Px int height) {
     mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
     mYogaNode.setHeight(height);
     return this;
@@ -817,110 +641,40 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode heightPercent(float percent) {
+  InternalNode heightPercent(float percent) {
     mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
     mYogaNode.setHeightPercent(percent);
     return this;
   }
 
-  @Override
-  public InternalNode heightRes(@DimenRes int resId) {
-    return heightPx(mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  @Override
-  public InternalNode heightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return heightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  @Override
-  public InternalNode heightAttr(@AttrRes int resId) {
-    return heightAttr(resId, 0);
-  }
-
-  @Override
-  public InternalNode heightDip(@Dimension(unit = DP) int height) {
-    return heightPx(mResourceResolver.dipsToPixels(height));
-  }
-
-  @Override
-  public InternalNode minHeightPx(@Px int minHeight) {
+  InternalNode minHeightPx(@Px int minHeight) {
     mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
     mYogaNode.setMinHeight(minHeight);
     return this;
   }
 
-  @Override
-  public InternalNode minHeightPercent(float percent) {
+  InternalNode minHeightPercent(float percent) {
     mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
     mYogaNode.setMinHeightPercent(percent);
     return this;
   }
 
-  @Override
-  public InternalNode minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return minHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  @Override
-  public InternalNode minHeightAttr(@AttrRes int resId) {
-    return minHeightAttr(resId, 0);
-  }
-
-  @Override
-  public InternalNode minHeightRes(@DimenRes int resId) {
-    return minHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  @Override
-  public InternalNode minHeightDip(@Dimension(unit = DP) int minHeight) {
-    return minHeightPx(mResourceResolver.dipsToPixels(minHeight));
-  }
-
-  @Override
-  public InternalNode maxHeightPx(@Px int maxHeight) {
+  InternalNode maxHeightPx(@Px int maxHeight) {
     mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
     mYogaNode.setMaxHeight(maxHeight);
     return this;
   }
 
-  @Override
-  public InternalNode maxHeightPercent(float percent) {
+  InternalNode maxHeightPercent(float percent) {
     mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
     mYogaNode.setMaxHeightPercent(percent);
     return this;
   }
 
-  @Override
-  public InternalNode maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return maxHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-  }
-
-  @Override
-  public InternalNode maxHeightAttr(@AttrRes int resId) {
-    return maxHeightAttr(resId, 0);
-  }
-
-  @Override
-  public InternalNode maxHeightRes(@DimenRes int resId) {
-    return maxHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
-  }
-
-  @Override
-  public InternalNode maxHeightDip(@Dimension(unit = DP) int maxHeight) {
-    return maxHeightPx(mResourceResolver.dipsToPixels(maxHeight));
-  }
-
-  @Override
-  public InternalNode aspectRatio(float aspectRatio) {
+  InternalNode aspectRatio(float aspectRatio) {
     mPrivateFlags |= PFLAG_ASPECT_RATIO_IS_SET;
-    if (mYogaNode instanceof YogaNode) {
-      mYogaNode.setAspectRatio(aspectRatio);
-      return this;
-    } else {
-      throw new IllegalStateException("Aspect ration requires using YogaNode not YogaNodeDEPRECATED");
-    }
+    mYogaNode.setAspectRatio(aspectRatio);
+    return this;
   }
 
   private boolean shouldApplyTouchExpansion() {
@@ -975,8 +729,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return FastMath.round(mTouchExpansion.get(YogaEdge.BOTTOM));
   }
 
-  @Override
-  public InternalNode touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
+  InternalNode touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
     if (mTouchExpansion == null) {
       mTouchExpansion = ComponentsPools.acquireEdges();
     }
@@ -987,148 +740,94 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode touchExpansionAttr(
-      YogaEdge edge,
-      @AttrRes int resId,
-      @DimenRes int defaultResId) {
-    return touchExpansionPx(
-        edge,
-        mResourceResolver.resolveDimenOffsetAttr(resId, defaultResId));
-  }
-
-  @Override
-  public InternalNode touchExpansionAttr(
-      YogaEdge edge,
-      @AttrRes int resId) {
-    return touchExpansionAttr(edge, resId, 0);
-  }
-
-  @Override
-  public InternalNode touchExpansionRes(YogaEdge edge, @DimenRes int resId) {
-    return touchExpansionPx(edge, mResourceResolver.resolveDimenOffsetRes(resId));
-  }
-
-  @Override
-  public InternalNode touchExpansionDip(
-      YogaEdge edge,
-      @Dimension(unit = DP) int touchExpansion) {
-    return touchExpansionPx(edge, mResourceResolver.dipsToPixels(touchExpansion));
-  }
-
-  @Override
-  public InternalNode child(ComponentLayout child) {
-    if (child != null && child != NULL_LAYOUT) {
-      addChildAt((InternalNode) child, mYogaNode.getChildCount());
-    }
-    return this;
-  }
-
-  @Override
-  public InternalNode child(ComponentLayout.Builder child) {
-    if (child != null && child != NULL_LAYOUT) {
-      child(child.build());
-    }
-    return this;
-  }
-
-  @Override
-  public InternalNode child(Component<?> child) {
+  InternalNode child(Component child) {
     if (child != null) {
-      child(Layout.create(mComponentContext, child).flexShrink(0));
+      return child(Layout.create(mComponentContext, child));
     }
+
     return this;
   }
 
-  @Override
-  public InternalNode child(Component.Builder<?> child) {
+  InternalNode child(Component.Builder<?> child) {
     if (child != null) {
       child(child.build());
     }
     return this;
   }
 
-  @Override
-  public InternalNode background(Reference<? extends Drawable> background) {
+  InternalNode child(InternalNode child) {
+    if (child != null && child != NULL_LAYOUT) {
+      addChildAt(child, mYogaNode.getChildCount());
+    }
+
+    return this;
+  }
+
+  /**
+   * @deprecated use {@link #background(ComparableDrawable)} more efficient diffing of drawables.
+   */
+  @Deprecated
+  InternalNode background(@Nullable Reference<? extends Drawable> background) {
     mPrivateFlags |= PFLAG_BACKGROUND_IS_SET;
     mBackground = background;
     setPaddingFromDrawableReference(background);
     return this;
   }
 
-  @Override
-  public InternalNode background(Reference.Builder<? extends Drawable> builder) {
-    return background(builder.build());
+  InternalNode background(@Nullable ComparableDrawable background) {
+    return background(background != null ? DrawableReference.create(background) : null);
   }
 
-  @Override
-  public InternalNode background(Drawable background) {
-    return background(DrawableReference.create().drawable(background));
+  /**
+   * @deprecated use {@link #background(ComparableDrawable)} more efficient diffing of drawables.
+   */
+  @Deprecated
+  InternalNode background(@Nullable Drawable background) {
+    if (background instanceof ComparableDrawable) {
+      return background((ComparableDrawable) background);
+    }
+    return background(background != null ? DefaultComparableDrawable.create(background) : null);
   }
 
-  @Override
-  public InternalNode backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
-    return backgroundRes(mResourceResolver.resolveResIdAttr(resId, defaultResId));
-  }
-
-  @Override
-  public InternalNode backgroundAttr(@AttrRes int resId) {
-    return backgroundAttr(resId, 0);
-  }
-
-  @Override
-  public InternalNode backgroundRes(@DrawableRes int resId) {
+  InternalNode backgroundRes(@DrawableRes int resId) {
     if (resId == 0) {
-      return background((Reference<Drawable>) null);
+      return background((ComparableDrawable) null);
     }
 
-    return background(
-        ResourceDrawableReference.create(mComponentContext)
-            .resId(resId)
-            .build());
+    return background(ComparableResDrawable.create(mComponentContext.getAndroidContext(), resId));
   }
 
-  @Override
-  public InternalNode backgroundColor(@ColorInt int backgroundColor) {
-    return background(
-        ColorDrawableReference.create(mComponentContext)
-            .color(backgroundColor)
-            .build());
+  InternalNode backgroundColor(@ColorInt int backgroundColor) {
+    return background(ComparableColorDrawable.create(backgroundColor));
   }
 
-  @Override
-  public InternalNode foreground(Drawable foreground) {
+  /**
+   * @deprecated use {@link #foreground(ComparableDrawable)} more efficient diffing of drawables.
+   */
+  @Deprecated
+  InternalNode foreground(@Nullable Drawable foreground) {
+    return foreground(foreground != null ? DefaultComparableDrawable.create(foreground) : null);
+  }
+
+  InternalNode foreground(@Nullable ComparableDrawable foreground) {
     mPrivateFlags |= PFLAG_FOREGROUND_IS_SET;
     mForeground = foreground;
     return this;
   }
 
-  @Override
-  public InternalNode foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
-    return foregroundRes(mResourceResolver.resolveResIdAttr(resId, defaultResId));
-  }
-
-  @Override
-  public InternalNode foregroundAttr(@AttrRes int resId) {
-    return foregroundAttr(resId, 0);
-  }
-
-  @Override
-  public InternalNode foregroundRes(@DrawableRes int resId) {
+  InternalNode foregroundRes(@DrawableRes int resId) {
     if (resId == 0) {
       return foreground(null);
     }
 
-    return foreground(mResources.getDrawable(resId));
+    return foreground(ComparableResDrawable.create(mComponentContext.getAndroidContext(), resId));
   }
 
-  @Override
-  public InternalNode foregroundColor(@ColorInt int foregroundColor) {
-    return foreground(new ColorDrawable(foregroundColor));
+  InternalNode foregroundColor(@ColorInt int foregroundColor) {
+    return foreground(ComparableColorDrawable.create(foregroundColor));
   }
 
-  @Override
-  public InternalNode wrapInView() {
+  InternalNode wrapInView() {
     mForceViewWrapping = true;
     return this;
   }
@@ -1137,121 +836,216 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mForceViewWrapping;
   }
 
-  @Override
-  public InternalNode clickHandler(EventHandler clickHandler) {
+  EventHandler<ClickEvent> getClickHandler() {
+    return getOrCreateNodeInfo().getClickHandler();
+  }
+
+  InternalNode clickHandler(EventHandler<ClickEvent> clickHandler) {
     getOrCreateNodeInfo().setClickHandler(clickHandler);
     return this;
   }
 
-  @Override
-  public InternalNode longClickHandler(EventHandler longClickHandler) {
+  InternalNode longClickHandler(EventHandler<LongClickEvent> longClickHandler) {
     getOrCreateNodeInfo().setLongClickHandler(longClickHandler);
     return this;
   }
 
-  @Override
-  public InternalNode touchHandler(EventHandler touchHandler) {
+  InternalNode focusChangeHandler(EventHandler<FocusChangedEvent> focusChangeHandler) {
+    getOrCreateNodeInfo().setFocusChangeHandler(focusChangeHandler);
+    return this;
+  }
+
+  InternalNode touchHandler(EventHandler<TouchEvent> touchHandler) {
     getOrCreateNodeInfo().setTouchHandler(touchHandler);
     return this;
   }
 
-  @Override
-  public ContainerBuilder focusable(boolean isFocusable) {
+  InternalNode interceptTouchHandler(EventHandler interceptTouchHandler) {
+    getOrCreateNodeInfo().setInterceptTouchHandler(interceptTouchHandler);
+    return this;
+  }
+
+  InternalNode focusable(boolean isFocusable) {
     getOrCreateNodeInfo().setFocusable(isFocusable);
     return this;
   }
 
-  @Override
-  public InternalNode visibleHandler(EventHandler visibleHandler) {
-    mPrivateFlags |= PFLAG_VISIBLE_HANDLER_IS_SET;
-    mVisibleHandler = visibleHandler;
+  InternalNode enabled(boolean isEnabled) {
+    getOrCreateNodeInfo().setEnabled(isEnabled);
     return this;
   }
 
-  EventHandler getVisibleHandler() {
+  InternalNode selected(boolean isSelected) {
+    getOrCreateNodeInfo().setSelected(isSelected);
+    return this;
+  }
+
+  InternalNode visibleHeightRatio(float visibleHeightRatio) {
+    mVisibleHeightRatio = visibleHeightRatio;
+    return this;
+  }
+
+  float getVisibleHeightRatio() {
+    return mVisibleHeightRatio;
+  }
+
+  InternalNode visibleWidthRatio(float visibleWidthRatio) {
+    mVisibleWidthRatio = visibleWidthRatio;
+    return this;
+  }
+
+  float getVisibleWidthRatio() {
+    return mVisibleWidthRatio;
+  }
+
+  InternalNode visibleHandler(@Nullable EventHandler<VisibleEvent> visibleHandler) {
+    mPrivateFlags |= PFLAG_VISIBLE_HANDLER_IS_SET;
+    mVisibleHandler = addVisibilityHandler(mVisibleHandler, visibleHandler);
+    return this;
+  }
+
+  @Nullable
+  EventHandler<VisibleEvent> getVisibleHandler() {
     return mVisibleHandler;
   }
 
-  @Override
-  public InternalNode focusedHandler(EventHandler focusedHandler) {
+  InternalNode focusedHandler(@Nullable EventHandler<FocusedVisibleEvent> focusedHandler) {
     mPrivateFlags |= PFLAG_FOCUSED_HANDLER_IS_SET;
-    mFocusedHandler = focusedHandler;
+    mFocusedHandler = addVisibilityHandler(mFocusedHandler, focusedHandler);
     return this;
   }
 
-  EventHandler getFocusedHandler() {
+  @Nullable
+  EventHandler<FocusedVisibleEvent> getFocusedHandler() {
     return mFocusedHandler;
   }
 
-  @Override
-  public InternalNode unfocusedHandler(EventHandler unfocusedHandler) {
+  InternalNode unfocusedHandler(@Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
     mPrivateFlags |= PFLAG_UNFOCUSED_HANDLER_IS_SET;
-    mUnfocusedHandler = unfocusedHandler;
+    mUnfocusedHandler = addVisibilityHandler(mUnfocusedHandler, unfocusedHandler);
     return this;
   }
 
-  EventHandler getUnfocusedHandler() {
+  @Nullable
+  EventHandler<UnfocusedVisibleEvent> getUnfocusedHandler() {
     return mUnfocusedHandler;
   }
 
-  @Override
-  public InternalNode fullImpressionHandler(EventHandler fullImpressionHandler) {
+  InternalNode fullImpressionHandler(
+      @Nullable EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
     mPrivateFlags |= PFLAG_FULL_IMPRESSION_HANDLER_IS_SET;
-    mFullImpressionHandler = fullImpressionHandler;
+    mFullImpressionHandler = addVisibilityHandler(mFullImpressionHandler, fullImpressionHandler);
     return this;
   }
 
-  EventHandler getFullImpressionHandler() {
+  @Nullable
+  EventHandler<FullImpressionVisibleEvent> getFullImpressionHandler() {
     return mFullImpressionHandler;
   }
 
-  @Override
-  public InternalNode invisibleHandler(EventHandler invisibleHandler) {
+  InternalNode invisibleHandler(@Nullable EventHandler<InvisibleEvent> invisibleHandler) {
     mPrivateFlags |= PFLAG_INVISIBLE_HANDLER_IS_SET;
-    mInvisibleHandler = invisibleHandler;
+    mInvisibleHandler = addVisibilityHandler(mInvisibleHandler, invisibleHandler);
     return this;
   }
 
-  EventHandler getInvisibleHandler() {
+  @Nullable
+  EventHandler<InvisibleEvent> getInvisibleHandler() {
     return mInvisibleHandler;
   }
 
-  @Override
-  public InternalNode contentDescription(CharSequence contentDescription) {
+  InternalNode visibilityChangedHandler(
+      @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
+    mPrivateFlags |= PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET;
+    mVisibilityChangedHandler =
+        addVisibilityHandler(mVisibilityChangedHandler, visibilityChangedHandler);
+    return this;
+  }
+
+  @Nullable
+  EventHandler<VisibilityChangedEvent> getVisibilityChangedHandler() {
+    return mVisibilityChangedHandler;
+  }
+
+  @Nullable
+  private static <T> EventHandler<T> addVisibilityHandler(
+      @Nullable EventHandler<T> existingEventHandler, @Nullable EventHandler<T> newEventHandler) {
+    if (existingEventHandler == null) {
+      return newEventHandler;
+    }
+    if (newEventHandler == null) {
+      return existingEventHandler;
+    }
+    return new DelegatingEventHandler<>(existingEventHandler, newEventHandler);
+  }
+
+  InternalNode contentDescription(CharSequence contentDescription) {
     getOrCreateNodeInfo().setContentDescription(contentDescription);
     return this;
   }
 
-  @Override
-  public InternalNode contentDescription(@StringRes int stringId) {
-    return contentDescription(mResources.getString(stringId));
-  }
-
-  @Override
-  public InternalNode contentDescription(@StringRes int stringId, Object... formatArgs) {
-    return contentDescription(mResources.getString(stringId, formatArgs));
-  }
-
-  @Override
-  public InternalNode viewTag(Object viewTag) {
+  InternalNode viewTag(Object viewTag) {
     getOrCreateNodeInfo().setViewTag(viewTag);
     return this;
   }
 
-  @Override
-  public InternalNode viewTags(SparseArray<Object> viewTags) {
+  InternalNode viewTags(SparseArray<Object> viewTags) {
     getOrCreateNodeInfo().setViewTags(viewTags);
     return this;
   }
 
-  @Override
-  public InternalNode testKey(String testKey) {
+  InternalNode shadowElevationPx(float shadowElevation) {
+    getOrCreateNodeInfo().setShadowElevation(shadowElevation);
+    return this;
+  }
+
+  InternalNode outlineProvider(ViewOutlineProvider outlineProvider) {
+    getOrCreateNodeInfo().setOutlineProvider(outlineProvider);
+    return this;
+  }
+
+  InternalNode clipToOutline(boolean clipToOutline) {
+    getOrCreateNodeInfo().setClipToOutline(clipToOutline);
+    return this;
+  }
+
+  InternalNode clipChildren(boolean clipChildren) {
+    getOrCreateNodeInfo().setClipChildren(clipChildren);
+    return this;
+  }
+
+  InternalNode testKey(String testKey) {
     mTestKey = testKey;
     return this;
   }
 
-  @Override
-  public InternalNode dispatchPopulateAccessibilityEventHandler(
+  InternalNode scale(float scale) {
+    wrapInView();
+
+    getOrCreateNodeInfo().setScale(scale);
+    return this;
+  }
+
+  InternalNode alpha(float alpha) {
+    wrapInView();
+
+    getOrCreateNodeInfo().setAlpha(alpha);
+    return this;
+  }
+
+  InternalNode rotation(float rotation) {
+    wrapInView();
+
+    getOrCreateNodeInfo().setRotation(rotation);
+    return this;
+  }
+
+  InternalNode accessibilityRole(@AccessibilityRole.AccessibilityRoleType String role) {
+    getOrCreateNodeInfo().setAccessibilityRole(role);
+    return this;
+  }
+
+  InternalNode dispatchPopulateAccessibilityEventHandler(
       EventHandler<DispatchPopulateAccessibilityEventEvent>
           dispatchPopulateAccessibilityEventHandler) {
     getOrCreateNodeInfo().setDispatchPopulateAccessibilityEventHandler(
@@ -1259,16 +1053,14 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode onInitializeAccessibilityEventHandler(
+  InternalNode onInitializeAccessibilityEventHandler(
       EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler) {
     getOrCreateNodeInfo().setOnInitializeAccessibilityEventHandler(
         onInitializeAccessibilityEventHandler);
     return this;
   }
 
-  @Override
-  public InternalNode onInitializeAccessibilityNodeInfoHandler(
+  InternalNode onInitializeAccessibilityNodeInfoHandler(
       EventHandler<OnInitializeAccessibilityNodeInfoEvent>
           onInitializeAccessibilityNodeInfoHandler) {
     getOrCreateNodeInfo().setOnInitializeAccessibilityNodeInfoHandler(
@@ -1276,50 +1068,43 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return this;
   }
 
-  @Override
-  public InternalNode onPopulateAccessibilityEventHandler(
+  InternalNode onPopulateAccessibilityEventHandler(
       EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler) {
     getOrCreateNodeInfo().setOnPopulateAccessibilityEventHandler(
         onPopulateAccessibilityEventHandler);
     return this;
   }
 
-  @Override
-  public InternalNode onRequestSendAccessibilityEventHandler(
+  InternalNode onRequestSendAccessibilityEventHandler(
       EventHandler<OnRequestSendAccessibilityEventEvent> onRequestSendAccessibilityEventHandler) {
     getOrCreateNodeInfo().setOnRequestSendAccessibilityEventHandler(
         onRequestSendAccessibilityEventHandler);
     return this;
   }
 
-  @Override
-  public InternalNode performAccessibilityActionHandler(
+  InternalNode performAccessibilityActionHandler(
       EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler) {
     getOrCreateNodeInfo().setPerformAccessibilityActionHandler(performAccessibilityActionHandler);
     return this;
   }
 
-  @Override
-  public InternalNode sendAccessibilityEventHandler(
+  InternalNode sendAccessibilityEventHandler(
       EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler) {
     getOrCreateNodeInfo().setSendAccessibilityEventHandler(sendAccessibilityEventHandler);
     return this;
   }
 
-  @Override
-  public InternalNode sendAccessibilityEventUncheckedHandler(
+  InternalNode sendAccessibilityEventUncheckedHandler(
       EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler) {
     getOrCreateNodeInfo().setSendAccessibilityEventUncheckedHandler(
         sendAccessibilityEventUncheckedHandler);
     return this;
   }
 
-  @Override
-  public ContainerBuilder transitionKey(String key) {
-    if (SDK_INT >= ICE_CREAM_SANDWICH) {
+  InternalNode transitionKey(String key) {
+    if (SDK_INT >= ICE_CREAM_SANDWICH && !TextUtils.isEmpty(key)) {
       mPrivateFlags |= PFLAG_TRANSITION_KEY_IS_SET;
       mTransitionKey = key;
-      wrapInView();
     }
 
     return this;
@@ -1327,6 +1112,36 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   String getTransitionKey() {
     return mTransitionKey;
+  }
+
+  boolean hasTransitionKey() {
+    return !TextUtils.isEmpty(mTransitionKey);
+  }
+
+  InternalNode transitionKeyType(Transition.TransitionKeyType type) {
+    mPrivateFlags |= PFLAG_TRANSITION_KEY_TYPE_IS_SET;
+    mTransitionKeyType = type;
+    return this;
+  }
+
+  @Nullable
+  Transition.TransitionKeyType getTransitionKeyType() {
+    return mTransitionKeyType;
+  }
+
+  @Nullable
+  ArrayList<Transition> getTransitions() {
+    return mTransitions;
+  }
+
+  @Nullable
+  ArrayList<Component> getComponentsNeedingPreviousRenderData() {
+    return mComponentsNeedingPreviousRenderData;
+  }
+
+  @Nullable
+  ArrayList<WorkingRangeContainer.Registration> getWorkingRangeRegistrations() {
+    return mWorkingRangeRegistrations;
   }
 
   /**
@@ -1341,10 +1156,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   void setBaselineFunction(YogaBaselineFunction baselineFunction) {
-    // YogaNode is the only version of YogaNode with this support;
-    if (mYogaNode instanceof YogaNode) {
-      mYogaNode.setBaselineFunction(baselineFunction);
-    }
+    mYogaNode.setBaselineFunction(baselineFunction);
   }
 
   boolean hasNewLayout() {
@@ -1380,41 +1192,41 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   void calculateLayout(float width, float height) {
-    final ComponentTree tree = mComponentContext == null
-        ? null
-        : mComponentContext.getComponentTree();
-    final ComponentsStethoManager stethoManager = tree == null ? null : tree.getStethoManager();
-    if (stethoManager != null) {
-      applyOverridesRecursive(stethoManager, this);
-    }
-
+    applyOverridesRecursive(this);
     mYogaNode.calculateLayout(width, height);
-  }
-
-  private static void applyOverridesRecursive(
-      ComponentsStethoManager stethoManager,
-      InternalNode node) {
-    stethoManager.applyOverrides(node);
-    for (int i = 0, count = node.getChildCount(); i < count; i++) {
-      applyOverridesRecursive(stethoManager, node.getChildAt(i));
-    }
-    if (node.hasNestedTree()) {
-      applyOverridesRecursive(stethoManager, node.getNestedTree());
-    }
   }
 
   void calculateLayout() {
     calculateLayout(YogaConstants.UNDEFINED, YogaConstants.UNDEFINED);
   }
 
+  private void applyOverridesRecursive(InternalNode node) {
+    if (ComponentsConfiguration.isDebugModeEnabled) {
+      DebugComponent.applyOverrides(mComponentContext, node);
+
+      for (int i = 0, count = node.getChildCount(); i < count; i++) {
+        applyOverridesRecursive(node.getChildAt(i));
+      }
+
+      if (node.hasNestedTree()) {
+        applyOverridesRecursive(node.getNestedTree());
+      }
+    }
+  }
+
   int getChildCount() {
     return mYogaNode.getChildCount();
+  }
+
+  void registerDebugComponent(DebugComponent debugComponent) {
+    mDebugComponents.add(debugComponent);
   }
 
   com.facebook.yoga.YogaDirection getStyleDirection() {
     return mYogaNode.getStyleDirection();
   }
 
+  @Nullable
   InternalNode getChildAt(int index) {
     if (mYogaNode.getChildAt(index) == null) {
       return null;
@@ -1431,11 +1243,12 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return -1;
   }
 
+  @Nullable
   InternalNode getParent() {
-    if (mYogaNode == null || mYogaNode.getParent() == null) {
+    if (mYogaNode == null || mYogaNode.getOwner() == null) {
       return null;
     }
-    return (InternalNode) mYogaNode.getParent().getData();
+    return (InternalNode) mYogaNode.getOwner().getData();
   }
 
   void addChildAt(InternalNode child, int index) {
@@ -1444,11 +1257,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
   InternalNode removeChildAt(int index) {
     return (InternalNode) mYogaNode.removeChildAt(index).getData();
-  }
-
-  @Override
-  public ComponentLayout build() {
-    return this;
   }
 
   private float resolveHorizontalEdges(Edges spacing, YogaEdge edge) {
@@ -1482,47 +1290,86 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   /**
-   * Return the list of components contributing to this InternalNode. We have no need for this
-   * in production but it is useful information to have while debugging. Therefor this list
-   * will only container the root component if running in production mode.
+   * Return the list of components contributing to this InternalNode. We have no need for this in
+   * production but it is useful information to have while debugging. Therefor this list will only
+   * contain the root component if running in production mode.
    */
   List<Component> getComponents() {
     return mComponents;
   }
 
+  @Nullable
   Component getRootComponent() {
-   return mComponents.size() == 0 ? null : mComponents.get(0);
+    return mComponents.size() == 0 ? null : mComponents.get(0);
   }
 
-  int getBorderColor() {
-    return mBorderColor;
+  void setRootComponent(Component component) {
+    mComponents.clear();
+    mComponents.add(component);
+  }
+
+  int[] getBorderColors() {
+    return mBorderColors;
+  }
+
+  float[] getBorderRadius() {
+    return mBorderRadius;
+  }
+
+  @Nullable
+  PathEffect getBorderPathEffect() {
+    return mBorderPathEffect;
+  }
+
+  protected boolean hasBorderColor() {
+    for (int color : mBorderColors) {
+      if (color != Color.TRANSPARENT) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   boolean shouldDrawBorders() {
-    return mBorderColor != Color.TRANSPARENT
+    return hasBorderColor()
         && (mYogaNode.getLayoutBorder(LEFT) != 0
             || mYogaNode.getLayoutBorder(TOP) != 0
             || mYogaNode.getLayoutBorder(RIGHT) != 0
             || mYogaNode.getLayoutBorder(BOTTOM) != 0);
   }
 
-  /**
-   * Set the root component associated with this internal node. This is the component which created
-   * this internal node. If we are in debug mode we also keep track of any delegate components
-   * which may have altered anything about this internal node. This is useful when understanding
-   * the hierarchy of components in the debugger as well as in stetho.
-   */
   void appendComponent(Component component) {
-    if (mComponents.size() == 0 || ComponentsConfiguration.IS_INTERNAL_BUILD) {
-      mComponents.add(component);
+    mComponents.add(component);
+  }
+
+  void addTransition(Transition transition) {
+    if (mTransitions == null) {
+      mTransitions = new ArrayList<>(1);
     }
+    mTransitions.add(transition);
+  }
+
+  void addComponentNeedingPreviousRenderData(Component component) {
+    if (mComponentsNeedingPreviousRenderData == null) {
+      mComponentsNeedingPreviousRenderData = new ArrayList<>(1);
+    }
+    mComponentsNeedingPreviousRenderData.add(component);
+  }
+
+  void addWorkingRanges(List<WorkingRangeContainer.Registration> registrations) {
+    if (mWorkingRangeRegistrations == null) {
+      mWorkingRangeRegistrations = new ArrayList<>(registrations.size());
+    }
+    mWorkingRangeRegistrations.addAll(registrations);
   }
 
   boolean hasNestedTree() {
     return mNestedTree != null;
   }
 
-  @Nullable InternalNode getNestedTree() {
+  @Nullable
+  InternalNode getNestedTree() {
     return mNestedTree;
   }
 
@@ -1531,8 +1378,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   /**
-   * Set the nested tree before measuring it in order to transfer over important information
-   * such as layout direction needed during measurement.
+   * Set the nested tree before measuring it in order to transfer over important information such as
+   * layout direction needed during measurement.
    */
   void setNestedTree(InternalNode nestedTree) {
     nestedTree.mNestedTreeHolder = this;
@@ -1585,6 +1432,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     }
     if ((mPrivateFlags & PFLAG_UNFOCUSED_HANDLER_IS_SET) != 0L) {
       node.mUnfocusedHandler = mUnfocusedHandler;
+    }
+    if ((mPrivateFlags & PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET) != 0L) {
+      node.mVisibilityChangedHandler = mVisibilityChangedHandler;
     }
     if (mTestKey != null) {
       node.mTestKey = mTestKey;
@@ -1653,7 +1503,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       }
     }
 
-    if ((mPrivateFlags & PFLAG_BORDER_WIDTH_IS_SET) != 0L) {
+    if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
       if (mNestedTreeBorderWidth == null) {
         throw new IllegalStateException("copyInto() must be used when resolving a nestedTree. " +
             "If border width was set on the holder node, we must have a mNestedTreeBorderWidth " +
@@ -1662,7 +1512,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
       final YogaNode yogaNode = node.mYogaNode;
 
-      node.mPrivateFlags |= PFLAG_BORDER_WIDTH_IS_SET;
+      node.mPrivateFlags |= PFLAG_BORDER_IS_SET;
       yogaNode.setBorder(LEFT, mNestedTreeBorderWidth.getRaw(YogaEdge.LEFT));
       yogaNode.setBorder(TOP, mNestedTreeBorderWidth.getRaw(YogaEdge.TOP));
       yogaNode.setBorder(RIGHT, mNestedTreeBorderWidth.getRaw(YogaEdge.RIGHT));
@@ -1672,12 +1522,26 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
       yogaNode.setBorder(START, mNestedTreeBorderWidth.getRaw(YogaEdge.START));
       yogaNode.setBorder(END, mNestedTreeBorderWidth.getRaw(YogaEdge.END));
       yogaNode.setBorder(ALL, mNestedTreeBorderWidth.getRaw(YogaEdge.ALL));
+      System.arraycopy(mBorderColors, 0, node.mBorderColors, 0, mBorderColors.length);
+      System.arraycopy(mBorderRadius, 0, node.mBorderRadius, 0, mBorderRadius.length);
     }
     if ((mPrivateFlags & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
       node.mTransitionKey = mTransitionKey;
     }
-    if ((mPrivateFlags & PFLAG_BORDER_COLOR_IS_SET) != 0L) {
-      node.mBorderColor = mBorderColor;
+    if ((mPrivateFlags & PFLAG_TRANSITION_KEY_TYPE_IS_SET) != 0L) {
+      node.mTransitionKeyType = mTransitionKeyType;
+    }
+    if (mVisibleHeightRatio != 0) {
+      node.mVisibleHeightRatio = mVisibleHeightRatio;
+    }
+    if (mVisibleWidthRatio != 0) {
+      node.mVisibleWidthRatio = mVisibleWidthRatio;
+    }
+    if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_SET) != 0L) {
+      node.mStateListAnimator = mStateListAnimator;
+    }
+    if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_RES_SET) != 0L) {
+      node.mStateListAnimatorRes = mStateListAnimatorRes;
     }
   }
 
@@ -1733,6 +1597,10 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
         if (height >= 0) {
           heightPx(height);
         }
+      } else if (attr == R.styleable.ComponentLayout_android_minHeight) {
+        minHeightPx(a.getDimensionPixelSize(attr, 0));
+      } else if (attr == R.styleable.ComponentLayout_android_minWidth) {
+        minWidthPx(a.getDimensionPixelSize(attr, 0));
       } else if (attr == R.styleable.ComponentLayout_android_paddingLeft) {
         paddingPx(LEFT, a.getDimensionPixelOffset(attr, 0));
       } else if (attr == R.styleable.ComponentLayout_android_paddingTop) {
@@ -1813,17 +1681,24 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   /**
-   * Reset all attributes to default values. Intended to facilitate recycling.
+   * Reset all attributes to default values and release the YogaNode if present. Intended to
+   * facilitate recycling.
    */
   void release() {
-    if (mYogaNode.getParent() != null || mYogaNode.getChildCount() > 0) {
-      throw new IllegalStateException("You should not free an attached Internalnode");
+    if (ComponentsConfiguration.disablePools) {
+      return;
     }
 
-    ComponentsPools.release(mYogaNode);
-    mYogaNode = null;
+    if (mYogaNode != null) {
+      if (mYogaNode.getOwner() != null || mYogaNode.getChildCount() > 0) {
+        throw new IllegalStateException("You should not free an attached Internalnode");
+      }
 
-    mResourceResolver.internalRelease();
+      ComponentsPools.release(mYogaNode);
+      mYogaNode = null;
+    }
+
+    mDebugComponents.clear();
 
     mResolvedTouchExpansionLeft = YogaConstants.UNDEFINED;
     mResolvedTouchExpansionRight = YogaConstants.UNDEFINED;
@@ -1833,7 +1708,6 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mResolvedHeight = YogaConstants.UNDEFINED;
 
     mComponentContext = null;
-    mResources = null;
     mComponents.clear();
     mNestedTree = null;
     mNestedTreeHolder = null;
@@ -1847,6 +1721,8 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mBackground = null;
     mForeground = null;
     mForceViewWrapping = false;
+    mVisibleHeightRatio = 0;
+    mVisibleWidthRatio = 0;
     mVisibleHandler = null;
     mFocusedHandler = null;
     mUnfocusedHandler = null;
@@ -1854,7 +1730,9 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mInvisibleHandler = null;
     mPrivateFlags = 0L;
     mTransitionKey = null;
-    mBorderColor = Color.TRANSPARENT;
+    mTransitionKeyType = null;
+    Arrays.fill(mBorderColors, Color.TRANSPARENT);
+    Arrays.fill(mBorderRadius, 0f);
     mIsPaddingPercent = null;
 
     if (mTouchExpansion != null) {
@@ -1878,12 +1756,16 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     mCachedMeasuresValid = false;
     mIsNestedTreeHolder = false;
     mTestKey = null;
+    mPendingTreeProps = null;
 
-    if (mPendingTreeProps != null) {
-      mPendingTreeProps.reset();
-      ComponentsPools.release(mPendingTreeProps);
-      mPendingTreeProps = null;
-    }
+    mTransitions = null;
+    mComponentsNeedingPreviousRenderData = null;
+    mWorkingRangeRegistrations = null;
+
+    mStateListAnimator = null;
+    mStateListAnimatorRes = 0;
+
+    ComponentsPools.release(this);
   }
 
   private NodeInfo getOrCreateNodeInfo() {
@@ -1895,12 +1777,11 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   /**
-   * Check that the root of the nested tree we are going to use, has valid layout directions
-   * with its main tree holder node.
+   * Check that the root of the nested tree we are going to use, has valid layout directions with
+   * its main tree holder node.
    */
   static boolean hasValidLayoutDirectionInNestedTree(
-      InternalNode nestedTreeHolder,
-      InternalNode nestedTree) {
+      InternalNode nestedTreeHolder, InternalNode nestedTree) {
     final boolean nestedTreeHasExplicitDirection =
         ((nestedTree.mPrivateFlags & PFLAG_LAYOUT_DIRECTION_IS_SET) != 0L);
     final boolean hasSameLayoutDirection =
@@ -1932,7 +1813,7 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
   }
 
   private boolean isPaddingPercent(YogaEdge edge) {
-    return (mIsPaddingPercent == null) ? false : mIsPaddingPercent[edge.intValue()];
+    return mIsPaddingPercent != null && mIsPaddingPercent[edge.intValue()];
   }
 
   /**
@@ -1959,8 +1840,15 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
 
     if (errorTypes != null) {
       final CharSequence errorStr = TextUtils.join(", ", errorTypes);
-      throw new IllegalStateException("You should not set " + errorStr + " to a root layout in "
-          + node.getRootComponent().getLifecycle());
+      final ComponentsLogger logger = node.getContext().getLogger();
+      if (logger != null) {
+        logger.emitMessage(
+            WARNING,
+            "You should not set "
+                + errorStr
+                + " to a root layout in "
+                + node.getRootComponent().getClass().getSimpleName());
+      }
     }
   }
 
@@ -1968,22 +1856,43 @@ class InternalNode implements ComponentLayout, ComponentLayout.ContainerBuilder 
     return mPendingTreeProps;
   }
 
-  private <T extends Drawable> void setPaddingFromDrawableReference(Reference<T> ref) {
+  private <T extends Drawable> void setPaddingFromDrawableReference(@Nullable Reference<T> ref) {
     if (ref == null) {
       return;
     }
-    final T drawable = Reference.acquire(mComponentContext,ref);
+    final T drawable = Reference.acquire(mComponentContext.getAndroidContext(), ref);
     if (drawable != null) {
       final Rect backgroundPadding = ComponentsPools.acquireRect();
-      if (drawable.getPadding(backgroundPadding)) {
+      if (getDrawablePadding(drawable, backgroundPadding)) {
         paddingPx(LEFT, backgroundPadding.left);
         paddingPx(TOP, backgroundPadding.top);
         paddingPx(RIGHT, backgroundPadding.right);
         paddingPx(BOTTOM, backgroundPadding.bottom);
       }
 
-      Reference.release(mComponentContext, drawable, ref);
+      Reference.release(mComponentContext.getAndroidContext(), drawable, ref);
       ComponentsPools.release(backgroundPadding);
     }
+  }
+
+  /**
+   * This is a wrapper on top of built in {@link Drawable#getPadding(Rect)} which overrides
+   * default return value. The reason why we need this - is because on pre-L devices LayerDrawable
+   * always returns "true" even if drawable doesn't have padding (see https://goo.gl/gExcMQ).
+   * Since we heavily rely on correctness of this information, we need to check padding manually
+   */
+  private static boolean getDrawablePadding(Drawable drawable, Rect outRect) {
+    drawable.getPadding(outRect);
+    return outRect.bottom != 0 || outRect.top != 0 || outRect.left != 0 || outRect.right != 0;
+  }
+
+  /** This method marks all resolved layout property values to undefined. */
+  void resetResolvedLayoutProperties() {
+    mResolvedTouchExpansionLeft = YogaConstants.UNDEFINED;
+    mResolvedTouchExpansionRight = YogaConstants.UNDEFINED;
+    mResolvedX = YogaConstants.UNDEFINED;
+    mResolvedY = YogaConstants.UNDEFINED;
+    mResolvedWidth = YogaConstants.UNDEFINED;
+    mResolvedHeight = YogaConstants.UNDEFINED;
   }
 }

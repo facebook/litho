@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+>
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal"
+                  android:gravity="center_vertical"
+    >
+
+        <CheckBox android:id="@+id/checkRT"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="RT Animator"
+        />
+
+        <View android:layout_width="0dp"
+              android:layout_height="match_parent"
+              android:layout_weight="1"
+        />
+
+        <Button android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity=""
+                android:text="Pause UI"
+                android:onClick="pauseUI"
+        />
+
+        <ProgressBar
+                style="?android:attr/progressBarStyle"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:id="@+id/progressBar"
+        />
+
+    </LinearLayout>
+
+    <com.facebook.litho.LithoView
+            android:id="@+id/lithoView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+    />
+
+</LinearLayout>

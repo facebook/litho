@@ -1,78 +1,74 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
-
 import com.facebook.litho.reference.Reference;
 
-class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
+class DrawableComponent<T extends Drawable> extends Component {
 
-  static DrawableComponent sInstance;
+  Reference<T> mDrawable;
+  int mDrawableWidth;
+  int mDrawableHeight;
 
-  static synchronized DrawableComponent get() {
-    if (sInstance == null) {
-      sInstance = new DrawableComponent();
-    }
-
-    return sInstance;
+  private DrawableComponent(Reference drawable) {
+    super("DrawableComponent");
+    mDrawable = drawable;
   }
 
   @Override
-  protected void onBoundsDefined(
-      ComponentContext c,
-      ComponentLayout layout,
-      Component<?> component) {
-    final State state = (State) component;
-
-    state.setDrawableWidth(layout.getWidth());
-    state.setDrawableHeight(layout.getHeight());
+  protected void onBoundsDefined(ComponentContext c, ComponentLayout layout) {
+    setDrawableWidth(layout.getWidth());
+    setDrawableHeight(layout.getHeight());
   }
 
   @Override
-  protected Object onCreateMountContent(ComponentContext c) {
+  protected Object onCreateMountContent(Context c) {
     return new MatrixDrawable();
   }
 
   @Override
   protected void onMount(
       ComponentContext context,
-      Object content,
-      Component component) {
+      Object content) {
     MatrixDrawable drawable = (MatrixDrawable) content;
-    final State<T> state = (State) component;
 
-    drawable.mount(Reference.acquire(context, state.getDrawable()));
+    drawable.mount(Reference.acquire(context.getAndroidContext(), getDrawable()));
   }
 
   @Override
   protected void onBind(
       ComponentContext c,
-      Object mountedContent,
-      Component<?> component) {
+      Object mountedContent) {
     final MatrixDrawable mountedDrawable = (MatrixDrawable) mountedContent;
-    final State state = (State) component;
 
-    mountedDrawable.bind(state.getDrawableWidth(), state.getDrawableHeight());
+    mountedDrawable.bind(getDrawableWidth(), getDrawableHeight());
   }
 
   @Override
   protected void onUnmount(
       ComponentContext context,
-      Object mountedContent,
-      Component<?> component) {
-    final State state = (State) component;
+      Object mountedContent) {
+    final MatrixDrawable<T> matrixDrawable = (MatrixDrawable<T>) mountedContent;
+    final T innerMountedDrawable = matrixDrawable.getMountedDrawable();
 
-    final MatrixDrawable matrixDrawable = (MatrixDrawable) mountedContent;
-    Reference.release(context, matrixDrawable.getMountedDrawable(), state.getDrawable());
     matrixDrawable.unmount();
+    Reference.release(context.getAndroidContext(), innerMountedDrawable, getDrawable());
   }
 
   @Override
@@ -85,73 +81,50 @@ class DrawableComponent<T extends Drawable> extends ComponentLifecycle {
     return MountType.DRAWABLE;
   }
 
-  public static Component create(Reference<? extends Drawable> drawable) {
-    return new State<>(drawable);
+  public static DrawableComponent create(Reference<? extends Drawable> drawable) {
+    return new DrawableComponent<>(drawable);
   }
 
   @Override
   protected boolean shouldUpdate(Component previous, Component next) {
-    final Reference previousReference = ((State) previous).getDrawable();
-    final Reference nextReference = ((State) next).getDrawable();
+    final Reference previousReference = ((DrawableComponent) previous).getDrawable();
+    final Reference nextReference = ((DrawableComponent) next).getDrawable();
 
     return Reference.shouldUpdate(previousReference, nextReference);
   }
 
-private static class State<T extends Drawable> extends Component<DrawableComponent>
-    implements Cloneable {
+  private Reference<T> getDrawable() {
+    return mDrawable;
+  }
 
-    Reference<T> mDrawable;
-    int mDrawableWidth;
-    int mDrawableHeight;
-
-    protected State(Reference<T> drawable) {
-      super(get());
-      mDrawable = drawable;
+  @Override
+  public boolean isEquivalentTo(Component o) {
+    if (this == o) {
+      return true;
     }
 
-    @Override
-    public String getSimpleName() {
-      return mDrawable.getSimpleName();
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
 
-    private Reference<T> getDrawable() {
-      return mDrawable;
-    }
+    DrawableComponent drawableComponent = (DrawableComponent) o;
 
-    @Override
-    public int hashCode() {
-      return mDrawable.hashCode();
-    }
+    return mDrawable.equals(drawableComponent.mDrawable);
+  }
 
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
+  private void setDrawableWidth(int drawableWidth) {
+    mDrawableWidth = drawableWidth;
+  }
 
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
+  private int getDrawableWidth() {
+    return mDrawableWidth;
+  }
 
-      State state = (State) o;
+  private void setDrawableHeight(int drawableHeight) {
+    mDrawableHeight = drawableHeight;
+  }
 
-      return mDrawable.equals(state.mDrawable);
-    }
-
-    private void setDrawableWidth(int drawableWidth) {
-      mDrawableWidth = drawableWidth;
-    }
-
-    private int getDrawableWidth() {
-      return mDrawableWidth;
-    }
-
-    private void setDrawableHeight(int drawableHeight) {
-      mDrawableHeight = drawableHeight;
-    }
-
-    private int getDrawableHeight() {
-      return mDrawableHeight;
-    }
+  private int getDrawableHeight() {
+    return mDrawableHeight;
   }
 }

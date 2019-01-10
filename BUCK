@@ -1,61 +1,63 @@
 # Copyright (c) 2017-present, Facebook, Inc.
-# All rights reserved.
 #
-# This source code is licensed under the BSD-style license found in the
-# LICENSE file in the root directory of this source tree. An additional grant
-# of patent rights can be found in the PATENTS file in the same directory.
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
 
-include_defs("//COMPONENTS_DEFS")
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_BUILD_CONFIG_TARGET", "LITHO_JAVA_TARGET", "LITHO_SECTIONS_ANNOTATIONS_TARGET", "LITHO_SECTIONS_COMMON_TARGET", "LITHO_SECTIONS_TARGET", "LITHO_SECTIONS_WIDGET_TARGET", "LITHO_VISIBILITY", "LITHO_WIDGET_TARGET", "LITHO_YOGA_TARGET", "fb_core_android_library", "litho_android_library")
 
 litho_android_library(
     name = "components",
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        LITHO_BUILD_CONFIG_TARGET,
+    ],
     exported_deps = [
-        COMPONENTS_STETHO_JAVA_TARGET,
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_YOGAPREBUILT_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_TARGET,
-    ],
-    visibility = [
-        "PUBLIC",
-    ],
-    deps = [
-        ":build_config",
+        LITHO_JAVA_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_YOGA_TARGET,
     ],
 )
 
-android_aar(
-    name = "release-litho-core",
-    include_build_config_class = True,
-    manifest_skeleton = "litho-core/src/main/AndroidManifest.xml",
+litho_android_library(
+    name = "sections_core",
     visibility = [
         "PUBLIC",
     ],
-    deps = [
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_CONFIG_TARGET,
-        ":build_config",
-        ":res",
+    exported_deps = [
+        ":components",
+        LITHO_SECTIONS_TARGET,
+        LITHO_SECTIONS_ANNOTATIONS_TARGET,
     ],
 )
 
-android_resource(
-    name = "res",
-    package = "com.facebook.litho",
-    res = "litho-core/src/main/res",
+fb_core_android_library(
+    name = "sections",
     visibility = [
         "PUBLIC",
     ],
-    deps = [
+    exported_deps = [
+        ":sections_core",
+        LITHO_SECTIONS_COMMON_TARGET,
+        LITHO_SECTIONS_WIDGET_TARGET,
+        LITHO_WIDGET_TARGET,
     ],
 )
 
-android_build_config(
+fb_native.android_build_config(
     name = "build_config",
     package = "com.facebook.litho",
-    values = [
-        "boolean IS_INTERNAL_BUILD = true",
+    values_file = ":build_config_values",
+    visibility = LITHO_VISIBILITY,
+)
+
+fb_native.genrule(
+    name = "build_config_values",
+    srcs = [
+        "config/build_config_values",
     ],
-    visibility = [
-        COMPONENTS_VISIBILITY,
-    ],
+    out = "extra_build_config_values",
+    cmd = "SRCARR=($SRCS); cat ${SRCARR[0]} | sed 's/{{IS_DEBUG}}/%s/' > $OUT" % (read_config("litho", "is_debug", "true")),
 )

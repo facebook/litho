@@ -1,14 +1,22 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
+import android.support.annotation.VisibleForTesting;
 import com.facebook.litho.annotations.ShouldUpdate;
 
 /**
@@ -16,7 +24,7 @@ import com.facebook.litho.annotations.ShouldUpdate;
  * {@link ShouldUpdate} callback in a ComponentSpec. a Diff
  * holds the previous and next value for a specific Prop for a ComponentSpec
  */
-public class Diff<T> {
+public final class Diff<T> {
 
   T mPrevious;
   T mNext;
@@ -33,7 +41,12 @@ public class Diff<T> {
     return mNext;
   }
 
-  void init(T previous, T next) {
+  public void setNext(T next) {
+    mNext = next;
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public void init(T previous, T next) {
     mPrevious = previous;
     mNext = next;
   }
@@ -41,5 +54,10 @@ public class Diff<T> {
   void release() {
     mPrevious = null;
     mNext = null;
+  }
+
+  @Override
+  public String toString() {
+    return "Diff{" + "mPrevious=" + mPrevious + ", mNext=" + mNext + '}';
   }
 }

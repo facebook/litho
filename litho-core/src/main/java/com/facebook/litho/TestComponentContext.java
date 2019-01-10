@@ -1,22 +1,23 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
-import android.content.Context;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
-
-import com.facebook.yoga.YogaMeasureMode;
-import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaMeasureOutput;
 
 /**
  * {@link ComponentContext} for use within a test environment that is compatible with mock
@@ -24,35 +25,23 @@ import com.facebook.yoga.YogaMeasureOutput;
  */
 class TestComponentContext extends ComponentContext {
 
-  private static final YogaMeasureFunction FAKE_MEASURE_FUNCTION = new YogaMeasureFunction() {
-    @Override
-    public long measure(
-        YogaNode cssNode,
-        float width,
-        YogaMeasureMode widthMode,
-        float height,
-        YogaMeasureMode heightMode) {
-      return YogaMeasureOutput.make(1, 1);
-    }
-  };
-
-  TestComponentContext(Context c) {
+  TestComponentContext(ComponentContext c) {
     super(c);
   }
 
-  TestComponentContext(Context c, StateHandler stateHandler) {
-    super(c, stateHandler);
+  TestComponentContext(ComponentContext c, StateHandler stateHandler) {
+    super(c, stateHandler, null, null);
   }
 
-  /**
-   * Uses the provided component to create a layout. Only the root node is created using
-   * {@link ComponentLifecycle#onCreateLayout(ComponentContext, Component)} - below that, we just
-   * create a dummy internal node and set the lifecycle to it.
-   */
   @Override
-  public ComponentLayout.Builder newLayoutBuilder(Component<?> component) {
-    final InternalNode node = ComponentsPools.acquireInternalNode(this, getResources());
-    component.applyStateUpdates(this);
+  public InternalNode newLayoutBuilder(
+      Component component, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+    if (component.canResolve()) {
+      return super.newLayoutBuilder(component, defStyleAttr, defStyleRes);
+    }
+
+    final InternalNode node = ComponentsPools.acquireInternalNode(this);
+    component.updateInternalChildState(this);
 
     node.appendComponent(new TestComponent(component));
 
@@ -60,11 +49,14 @@ class TestComponentContext extends ComponentContext {
   }
 
   @Override
-  public ComponentLayout.Builder newLayoutBuilder(
-      Component<?> component,
-      @AttrRes int defStyleAttr,
-      @StyleRes int defStyleRes) {
-    return newLayoutBuilder(component);
+  InternalNode resolveLayout(Component component) {
+    if (component.canResolve()) {
+      return super.resolveLayout(component);
+    }
+
+    InternalNode node = ComponentsPools.acquireInternalNode(this);
+    node.appendComponent(new TestComponent(component));
+    return node;
   }
 
   @Override

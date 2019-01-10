@@ -15,8 +15,8 @@ Android solves this problem this with [RecyclerView](https://developer.android.c
 </video>
 
 
-RecyclerView supports the idea of displaying heterogeneous content. To do so it keeps views in different pools depending on their type.
-While this concept works pretty well in simple cases, for UIs with many different view types this approach can prove to be problematic.
+RecyclerView supports the idea of displaying heterogeneous content. To do so, it keeps views in different pools depending on their type.
+While this concept works pretty well in simple cases, it can prove to be problematic for UIs with many different view types.
 In a scenario with many view types, there is a bigger chance that the view coming in the viewport following a scrolling event is a view that the RecyclerView is displaying for the first time.
 If that happens, RecyclerView has to allocate a new view. The allocation will happen in the same 16ms slot in which RecyclerView also has to bind, measure and layout the newly visible view.
 
@@ -40,4 +40,4 @@ This is not possible with traditional Android Views since the layout computation
 </video>
 
 Being able to recycle individual primitive items as `Text` increases greatly the memory efficiency of an App as now you can recycle any piece of text in your list for any other piece of text.  
-On top of that, since we compute the layout ahead of time, we know exactly at which point a new items needs to become visible, this means that rather then binding and drawing a big view tree in one frame, we can use each frame to introduce a much lower number of primitive items on screen.
+On top of that, since we compute the layout ahead of time, we know exactly at which point a new items needs to become visible, this means that rather than binding and drawing a big view tree in one frame, we can use each frame to introduce a much lower number of primitive items on screen.
