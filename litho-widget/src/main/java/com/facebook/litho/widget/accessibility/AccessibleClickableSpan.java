@@ -17,8 +17,6 @@
 package com.facebook.widget.accessibility.delegates;
 
 import android.text.style.ClickableSpan;
-import com.facebook.litho.AccessibilityRole;
-import javax.annotation.Nullable;
 
 /**
  * Extends the ClickableSpan class to include a dedicated field for the
@@ -29,7 +27,6 @@ import javax.annotation.Nullable;
  */
 public abstract class AccessibleClickableSpan extends ClickableSpan {
   private String mAccessibilityDescription;
-  @AccessibilityRole.AccessibilityRoleType @Nullable private String mAccessibilityRole;
 
   public String getAccessibilityDescription() {
     return mAccessibilityDescription;
@@ -39,25 +36,8 @@ public abstract class AccessibleClickableSpan extends ClickableSpan {
     mAccessibilityDescription = accessibilityDescription;
   }
 
-  @AccessibilityRole.AccessibilityRoleType
-  public @Nullable String getAccessibilityRole() {
-    return mAccessibilityRole;
-  }
-
-  public void setAccessibilityRole(
-      @AccessibilityRole.AccessibilityRoleType String accessibilityRole) {
-    mAccessibilityRole = accessibilityRole;
-  }
-
   public AccessibleClickableSpan(String accessibilityDescription) {
-    this(accessibilityDescription, null);
-  }
-
-  public AccessibleClickableSpan(
-      String accessibilityDescription,
-      @Nullable @AccessibilityRole.AccessibilityRoleType String accessibilityRole) {
     super();
     mAccessibilityDescription = accessibilityDescription;
-    mAccessibilityRole = accessibilityRole;
   }
 }
