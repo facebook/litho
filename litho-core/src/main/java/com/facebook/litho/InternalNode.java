@@ -175,7 +175,17 @@ class InternalNode implements ComponentLayout {
   // Hold onto DebugComponents which reference InternalNode to tie there Vm lifecycles together.
   // DebugComponents are supposed to be help onto as weak references and have we want to ensure they
   // live exactly as long as InternalNodes.
-  private Set<DebugComponent> mDebugComponents = new HashSet<>();
+  @Nullable private Set<DebugComponent> mDebugComponents = null;
+
+  public InternalNode() {
+    this(true);
+  }
+
+  protected InternalNode(boolean createDebugComponentsInCtor) {
+    if (createDebugComponentsInCtor) {
+      mDebugComponents = new HashSet<>();
+    }
+  }
 
   void init(YogaNode yogaNode, ComponentContext componentContext) {
     if (yogaNode != null) {
@@ -1219,6 +1229,9 @@ class InternalNode implements ComponentLayout {
   }
 
   void registerDebugComponent(DebugComponent debugComponent) {
+    if (mDebugComponents == null) {
+      mDebugComponents = new HashSet<>();
+    }
     mDebugComponents.add(debugComponent);
   }
 
@@ -1698,7 +1711,9 @@ class InternalNode implements ComponentLayout {
       mYogaNode = null;
     }
 
-    mDebugComponents.clear();
+    if (mDebugComponents != null) {
+      mDebugComponents.clear();
+    }
 
     mResolvedTouchExpansionLeft = YogaConstants.UNDEFINED;
     mResolvedTouchExpansionRight = YogaConstants.UNDEFINED;
