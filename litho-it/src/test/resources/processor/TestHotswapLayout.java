@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-present Facebook, Inc.
+ * Copyright 2019-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggerTarget;
 import com.facebook.litho.EventTriggersContainer;
 import com.facebook.litho.HasEventDispatcher;
+import com.facebook.litho.HotswapManager;
 import com.facebook.litho.Output;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
@@ -44,6 +45,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -169,8 +171,30 @@ public final class TestLayout<S extends View> extends Component implements TestT
   protected void onLoadStyle(ComponentContext c) {
     Output<Boolean> prop2Tmp = acquireOutput();
     Output<Object> prop3Tmp = acquireOutput();
-    TestLayoutSpec.onLoadStyle(
-        (ComponentContext) c, (Output<Boolean>) prop2Tmp, (Output<Object>) prop3Tmp);
+    ClassLoader classLoader = HotswapManager.getClassLoader();
+    if (classLoader == null) {
+      TestLayoutSpec.onLoadStyle(
+          (ComponentContext) c, (Output<Boolean>) prop2Tmp, (Output<Object>) prop3Tmp);
+    } else {
+      Class specClass;
+      try {
+        specClass =
+            classLoader.loadClass(
+                "com.facebook.litho.processor.integration.resources.TestLayoutSpec");
+      } catch (ClassNotFoundException _e) {
+        throw new RuntimeException(_e);
+      }
+      try {
+        final Method method =
+            specClass.getDeclaredMethod(
+                "onLoadStyle", ComponentContext.class, Output.class, Output.class);
+        method.setAccessible(true);
+        method.invoke(
+            null, (ComponentContext) c, (Output<Boolean>) prop2Tmp, (Output<Object>) prop3Tmp);
+      } catch (Exception _e) {
+        throw new RuntimeException(_e);
+      }
+    }
     if (prop2Tmp.get() != null) {
       prop2 = prop2Tmp.get();
     }
@@ -184,7 +208,28 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @Override
   protected void createInitialState(ComponentContext c) {
     StateValue<S> state2 = new StateValue<>();
-    TestLayoutSpec.createInitialState((ComponentContext) c, (int) prop1, (StateValue<S>) state2);
+    ClassLoader classLoader = HotswapManager.getClassLoader();
+    if (classLoader == null) {
+      TestLayoutSpec.createInitialState((ComponentContext) c, (int) prop1, (StateValue<S>) state2);
+    } else {
+      Class specClass;
+      try {
+        specClass =
+            classLoader.loadClass(
+                "com.facebook.litho.processor.integration.resources.TestLayoutSpec");
+      } catch (ClassNotFoundException _e) {
+        throw new RuntimeException(_e);
+      }
+      try {
+        final Method method =
+            specClass.getDeclaredMethod(
+                "createInitialState", ComponentContext.class, int.class, StateValue.class);
+        method.setAccessible(true);
+        method.invoke(null, (ComponentContext) c, (int) prop1, (StateValue<S>) state2);
+      } catch (Exception _e) {
+        throw new RuntimeException(_e);
+      }
+    }
     if (state2.get() != null) {
       mStateContainer.state2 = state2.get();
     }
@@ -193,27 +238,95 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @Override
   protected Component onCreateLayout(ComponentContext context) {
     Component _result;
-    _result =
-        (Component)
-            TestLayoutSpec.onCreateLayout(
-                (ComponentContext) context,
-                (Object) prop3,
-                (char[]) prop4,
-                (EventHandler<ClickEvent>) handler,
-                (Component) child,
-                (boolean) prop2,
-                (List<String>) names,
-                (long) mStateContainer.state1,
-                (S) mStateContainer.state2,
-                (int) mStateContainer.state3,
-                (TestTreeProp) treeProp,
-                (Integer) getCached());
+    ClassLoader classLoader = HotswapManager.getClassLoader();
+    if (classLoader == null) {
+      _result =
+          (Component)
+              TestLayoutSpec.onCreateLayout(
+                  (ComponentContext) context,
+                  (Object) prop3,
+                  (char[]) prop4,
+                  (EventHandler<ClickEvent>) handler,
+                  (Component) child,
+                  (boolean) prop2,
+                  (List<String>) names,
+                  (long) mStateContainer.state1,
+                  (S) mStateContainer.state2,
+                  (int) mStateContainer.state3,
+                  (TestTreeProp) treeProp,
+                  (Integer) getCached());
+    } else {
+      Class specClass;
+      try {
+        specClass =
+            classLoader.loadClass(
+                "com.facebook.litho.processor.integration.resources.TestLayoutSpec");
+      } catch (ClassNotFoundException _e) {
+        throw new RuntimeException(_e);
+      }
+      try {
+        final Method method =
+            specClass.getDeclaredMethod(
+                "onCreateLayout",
+                ComponentContext.class,
+                Object.class,
+                char[].class,
+                EventHandler.class,
+                Component.class,
+                boolean.class,
+                List.class,
+                long.class,
+                View.class,
+                int.class,
+                TestTreeProp.class,
+                Integer.class);
+        method.setAccessible(true);
+        _result =
+            (Component)
+                method.invoke(
+                    null,
+                    (ComponentContext) context,
+                    (Object) prop3,
+                    (char[]) prop4,
+                    (EventHandler<ClickEvent>) handler,
+                    (Component) child,
+                    (boolean) prop2,
+                    (List<String>) names,
+                    (long) mStateContainer.state1,
+                    (S) mStateContainer.state2,
+                    (int) mStateContainer.state3,
+                    (TestTreeProp) treeProp,
+                    (Integer) getCached());
+      } catch (Exception _e) {
+        throw new RuntimeException(_e);
+      }
+    }
     return _result;
   }
 
   @Override
   protected void onError(ComponentContext c, Exception e) {
-    TestLayoutSpec.onError((ComponentContext) c, (Exception) e);
+    ClassLoader classLoader = HotswapManager.getClassLoader();
+    if (classLoader == null) {
+      TestLayoutSpec.onError((ComponentContext) c, (Exception) e);
+    } else {
+      Class specClass;
+      try {
+        specClass =
+            classLoader.loadClass(
+                "com.facebook.litho.processor.integration.resources.TestLayoutSpec");
+      } catch (ClassNotFoundException _e) {
+        throw new RuntimeException(_e);
+      }
+      try {
+        final Method method =
+            specClass.getDeclaredMethod("onError", ComponentContext.class, Exception.class);
+        method.setAccessible(true);
+        method.invoke(null, (ComponentContext) c, (Exception) e);
+      } catch (Exception _e) {
+        throw new RuntimeException(_e);
+      }
+    }
   }
 
   @Override
@@ -223,13 +336,41 @@ public final class TestLayout<S extends View> extends Component implements TestT
         acquireDiff(
             mPreviousRenderData == null ? null : mPreviousRenderData.state3,
             mStateContainer.state3);
-    _result =
-        (Transition)
-            TestLayoutSpec.onCreateTransition(
-                (ComponentContext) c,
-                (Object) prop3,
-                (long) mStateContainer.state1,
-                (Diff<Integer>) _state3Diff);
+    ClassLoader classLoader = HotswapManager.getClassLoader();
+    if (classLoader == null) {
+      _result =
+          (Transition)
+              TestLayoutSpec.onCreateTransition(
+                  (ComponentContext) c,
+                  (Object) prop3,
+                  (long) mStateContainer.state1,
+                  (Diff<Integer>) _state3Diff);
+    } else {
+      Class specClass;
+      try {
+        specClass =
+            classLoader.loadClass(
+                "com.facebook.litho.processor.integration.resources.TestLayoutSpec");
+      } catch (ClassNotFoundException _e) {
+        throw new RuntimeException(_e);
+      }
+      try {
+        final Method method =
+            specClass.getDeclaredMethod(
+                "onCreateTransition", ComponentContext.class, Object.class, long.class, Diff.class);
+        method.setAccessible(true);
+        _result =
+            (Transition)
+                method.invoke(
+                    null,
+                    (ComponentContext) c,
+                    (Object) prop3,
+                    (long) mStateContainer.state1,
+                    (Diff<Integer>) _state3Diff);
+      } catch (Exception _e) {
+        throw new RuntimeException(_e);
+      }
+    }
     releaseDiff(_state3Diff);
     return _result;
   }

@@ -23,6 +23,8 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeVariableName;
+import java.util.List;
 
 /** Generator for code relating to hotswap functionality. */
 public class HotswapGenerator {
@@ -68,9 +70,9 @@ public class HotswapGenerator {
       code.add("\"$L\",\n", methodName);
       for (int i = 0, size = params.size(); i < size; i++) {
         if (i < size - 1) {
-          code.add("$T.class,\n", getBaseType(params.get(i).type));
+          code.add("$T.class,\n", getTypeUsedInDeclaredMethod(params.get(i).type));
         } else {
-          code.add("$T.class);\n", getBaseType(params.get(i).type));
+          code.add("$T.class);\n", getTypeUsedInDeclaredMethod(params.get(i).type));
         }
       }
     }
@@ -106,6 +108,19 @@ public class HotswapGenerator {
         .build();
   }
 
+  private static TypeName getTypeUsedInDeclaredMethod(TypeName typeName) {
+    if (typeName instanceof TypeVariableName) {
+      final List<TypeName> bounds = ((TypeVariableName) typeName).bounds;
+      if (bounds.isEmpty()) {
+        return TypeName.OBJECT;
+      } else {
+        return getBaseType(bounds.get(0));
+      }
+    }
+
+    return getBaseType(typeName);
+  }
+
   private static TypeName getBaseType(TypeName typeName) {
     if (typeName instanceof ParameterizedTypeName) {
       return ((ParameterizedTypeName) typeName).rawType;
@@ -123,3 +138,4 @@ public class HotswapGenerator {
     return enclosingClass.toString() + "$" + className.simpleName();
   }
 }
+

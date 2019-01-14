@@ -272,7 +272,7 @@ public class DelegateMethodGenerator {
             methodDescription.returnType,
             ImmutableList.copyOf(delegationParams));
 
-    if (specModel.getTypeVariables().isEmpty() && runMode.contains(RunMode.HOTSWAP)) {
+    if (runMode.contains(RunMode.HOTSWAP)) {
       codeBlock.add(
           HotswapGenerator.generateDelegatingMethod(
               specModel,
