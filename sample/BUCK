@@ -13,6 +13,7 @@ fb_native.android_binary(
     keystore = ":debug_keystore",
     manifest = "src/main/AndroidManifest.xml",
     use_split_dex = True,
+    aapt_mode = "aapt2",
     deps = [
         LITHO_SAMPLE_JAVA,
     ],
