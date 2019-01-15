@@ -53,31 +53,6 @@ public class ProcessorIntegrationTest {
   }
 
   @Test
-  public void compilesWithoutError() {
-    final JavaFileObject javaFileObject =
-        JavaFileObjects.forResource(
-            Resources.getResource(getClass(), RES_PREFIX + "SimpleLayoutSpec.java"));
-
-    final JavaFileObject expectedOutput =
-        JavaFileObjects.forResource(
-            Resources.getResource(getClass(), RES_PREFIX + "SimpleLayout.java"));
-
-    Truth.assertAbout(JavaSourceSubjectFactory.javaSource())
-        .that(javaFileObject)
-        .processedWith(new ComponentsProcessor())
-        .compilesWithoutError()
-        .and()
-        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleLayout.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleLayout$Builder.class")
-        .and()
-        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleLayoutSpec.class")
-        .and()
-        .generatesSources(expectedOutput);
-  }
-
-  @Test
   public void compilesTestLayoutSpecWithoutError() {
     final JavaFileObject javaFileObject =
         JavaFileObjects.forResource(
@@ -161,58 +136,6 @@ public class ProcessorIntegrationTest {
   }
 
   @Test
-  public void compilesHotswapLayoutSpecWithoutError() {
-    final ComponentsProcessor processor = new ComponentsProcessor();
-    processor.forceHotswapMode();
-
-    final JavaFileObject javaFileObject =
-        JavaFileObjects.forResource(
-            Resources.getResource(getClass(), RES_PREFIX + "SimpleLayoutSpec.java"));
-
-    final JavaFileObject expectedOutput =
-        JavaFileObjects.forResource(
-            Resources.getResource(getClass(), RES_PREFIX + "SimpleHotswapLayout.java"));
-
-    Truth.assertAbout(JavaSourceSubjectFactory.javaSource())
-        .that(javaFileObject)
-        .processedWith(processor)
-        .compilesWithoutError()
-        .and()
-        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleLayout.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleLayout$Builder.class")
-        .and()
-        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleLayoutSpec.class")
-        .and()
-        .generatesSources(expectedOutput);
-  }
-
-  @Test
-  public void compilesMountSpec() {
-    final JavaFileObject javaFileObject =
-        JavaFileObjects.forResource(
-            Resources.getResource(getClass(), RES_PREFIX + "SimpleMountSpec.java"));
-
-    final JavaFileObject expectedOutput =
-        JavaFileObjects.forResource(
-            Resources.getResource(getClass(), RES_PREFIX + "SimpleMount.java"));
-
-    Truth.assertAbout(JavaSourceSubjectFactory.javaSource())
-        .that(javaFileObject)
-        .processedWith(new ComponentsProcessor())
-        .compilesWithoutError()
-        .and()
-        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleMount.class")
-        .and()
-        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleMount$Builder.class")
-        .and()
-        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleMountSpec.class")
-        .and()
-        .generatesSources(expectedOutput);
-  }
-
-  @Test
   public void compilesTestMountSpec() {
     final JavaFileObject javaFileObject =
         JavaFileObjects.forResource(
@@ -250,37 +173,6 @@ public class ProcessorIntegrationTest {
         .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "TestMount$Builder.class")
         .and()
         .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "TestMountSpec.class")
-        .and()
-        .generatesSources(expectedOutput);
-  }
-
-  @Test
-  public void compilesSimpleTestSampleSpec() {
-    final JavaFileObject testSpecObject =
-        JavaFileObjects.forResource(
-            Resources.getResource(getClass(), RES_PREFIX + "SimpleTestSampleSpec.java"));
-    final JavaFileObject layoutSpecObject =
-        JavaFileObjects.forResource(
-            Resources.getResource(getClass(), RES_PREFIX + "SimpleLayoutSpec.java"));
-    final JavaFileObject expectedOutput =
-        JavaFileObjects.forResource(
-            Resources.getResource(getClass(), RES_PREFIX + "SimpleTestSample.java"));
-
-    Truth.assertAbout(JavaSourcesSubjectFactory.javaSources())
-        .that(ImmutableList.of(testSpecObject, layoutSpecObject))
-        .processedWith(new ComponentsTestingProcessor(), new ComponentsProcessor())
-        .compilesWithoutError()
-        .and()
-        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleTestSample.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleTestSample$Matcher.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleTestSample$Matcher$1.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleTestSampleSpec.class")
         .and()
         .generatesSources(expectedOutput);
   }
