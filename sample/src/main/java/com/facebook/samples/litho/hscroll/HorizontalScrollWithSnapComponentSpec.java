@@ -155,7 +155,7 @@ public class HorizontalScrollWithSnapComponentSpec {
 
   @OnEvent(ItemSelectedEvent.class)
   static void onSnapModeSelected(ComponentContext c, @FromEvent String newSelection) {
-    HorizontalScrollWithSnapComponent.updateSnapMode(c, getSnapModeInt(newSelection));
+    HorizontalScrollWithSnapComponent.updateSnapModeSync(c, getSnapModeInt(newSelection));
   }
 
   @OnUpdateState

@@ -97,7 +97,7 @@ public class ExpandableElementRootComponentSpec {
   @OnEvent(ClickEvent.class)
   static void onClick(
       ComponentContext c, @Prop List<Message> initialMessages, @Param boolean adding) {
-    ExpandableElementRootComponent.onUpdateList(c, adding, initialMessages.size());
+    ExpandableElementRootComponent.onUpdateListSync(c, adding, initialMessages.size());
   }
 
   @OnUpdateState

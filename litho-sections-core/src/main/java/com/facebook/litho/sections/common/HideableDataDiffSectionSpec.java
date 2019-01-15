@@ -135,6 +135,6 @@ public class HideableDataDiffSectionSpec<T> {
       SectionContext c,
       @FromEvent Object model,
       @Prop EventHandler<GetUniqueIdentifierEvent> getUniqueIdentifierHandler) {
-    HideableDataDiffSection.onBlacklistUpdate(c, model, getUniqueIdentifierHandler);
+    HideableDataDiffSection.onBlacklistUpdateSync(c, model, getUniqueIdentifierHandler);
   }
 }

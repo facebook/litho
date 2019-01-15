@@ -150,7 +150,7 @@ public class AnimatedBadgeSpec {
 
   @OnEvent(ClickEvent.class)
   static void onClick(ComponentContext c) {
-    AnimatedBadge.updateState(c);
+    AnimatedBadge.updateStateSync(c);
   }
 
   @OnUpdateState

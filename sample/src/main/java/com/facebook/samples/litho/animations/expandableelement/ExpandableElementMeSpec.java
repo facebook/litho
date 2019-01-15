@@ -69,7 +69,7 @@ public class ExpandableElementMeSpec {
   @OnEvent(ClickEvent.class)
   static void onClick(ComponentContext c, @State Boolean expanded) {
     final boolean isExpanded = expanded == null ? false : expanded;
-    ExpandableElementMe.updateExpandedState(c, !isExpanded);
+    ExpandableElementMe.updateExpandedStateSync(c, !isExpanded);
   }
 
   @OnUpdateState

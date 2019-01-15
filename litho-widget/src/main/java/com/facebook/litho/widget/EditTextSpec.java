@@ -760,7 +760,7 @@ class EditTextSpec {
         }
         if ((mStateUpdatePolicy == UPDATE_ON_LINE_COUNT_CHANGE && mPrevLineCount != getLineCount())
             || mStateUpdatePolicy == UPDATE_ON_TEXT_CHANGE) {
-          com.facebook.litho.widget.EditText.updateInput(mComponentContext, s.toString());
+          com.facebook.litho.widget.EditText.updateInputSync(mComponentContext, s.toString());
         } else if (mStateUpdatePolicy != NO_UPDATES) {
           com.facebook.litho.widget.EditText.lazyUpdateInput(mComponentContext, s.toString());
         }

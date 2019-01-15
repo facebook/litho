@@ -65,7 +65,7 @@ public class RTAnimationComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onClick(ComponentContext c) {
-    RTAnimationComponent.updateState(c);
+    RTAnimationComponent.updateStateSync(c);
   }
 
   @OnUpdateState

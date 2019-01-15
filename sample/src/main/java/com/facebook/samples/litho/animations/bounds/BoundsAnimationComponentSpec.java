@@ -86,7 +86,7 @@ public class BoundsAnimationComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onABTClick(ComponentContext c) {
-    BoundsAnimationComponent.toggleABT(c);
+    BoundsAnimationComponent.toggleABTSync(c);
   }
 
   @OnUpdateState
@@ -127,7 +127,7 @@ public class BoundsAnimationComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onFirstComponentClick(ComponentContext c) {
-    BoundsAnimationComponent.toggleFlag1(c);
+    BoundsAnimationComponent.toggleFlag1Sync(c);
   }
 
   @OnUpdateState
@@ -162,7 +162,7 @@ public class BoundsAnimationComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onSecondComponentClick(ComponentContext c) {
-    BoundsAnimationComponent.toggleFlag2(c);
+    BoundsAnimationComponent.toggleFlag2Sync(c);
   }
 
   @OnUpdateState
@@ -192,7 +192,7 @@ public class BoundsAnimationComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onThirdComponentClick(ComponentContext c) {
-    BoundsAnimationComponent.toggleFlag3(c);
+    BoundsAnimationComponent.toggleFlag3Sync(c);
   }
 
   @OnUpdateState
@@ -255,7 +255,7 @@ public class BoundsAnimationComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onFourthComponentClick(ComponentContext c) {
-    BoundsAnimationComponent.toggleFlag4(c);
+    BoundsAnimationComponent.toggleFlag4Sync(c);
   }
 
   @OnUpdateState

@@ -174,18 +174,18 @@ public class SpinnerSpec {
               Spinner.dispatchItemSelectedEvent(eventHandler, newSelection);
             }
             popup.dismiss();
-            Spinner.updateSelection(c, newSelection);
+            Spinner.updateSelectionSync(c, newSelection);
           }
         });
     popup.setOnDismissListener(
         new PopupWindow.OnDismissListener() {
           @Override
           public void onDismiss() {
-            Spinner.updateIsShowingDropDown(c, false);
+            Spinner.updateIsShowingDropDownSync(c, false);
           }
         });
     popup.show();
-    Spinner.updateIsShowingDropDown(c, true);
+    Spinner.updateIsShowingDropDownSync(c, true);
   }
 
   @OnUpdateState

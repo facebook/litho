@@ -76,7 +76,7 @@ public class LeftRightBlocksComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onClick(ComponentContext c) {
-    LeftRightBlocksComponent.updateState(c);
+    LeftRightBlocksComponent.updateStateSync(c);
   }
 
   @OnUpdateState

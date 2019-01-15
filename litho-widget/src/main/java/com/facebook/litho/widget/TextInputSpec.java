@@ -653,7 +653,7 @@ class TextInputSpec {
       view.setText(text);
     } else {
       savedText.set(text);
-      com.facebook.litho.widget.TextInput.remeasureForUpdatedText(c);
+      com.facebook.litho.widget.TextInput.remeasureForUpdatedTextSync(c);
     }
   }
 
@@ -709,7 +709,7 @@ class TextInputSpec {
       if (mLineCount != UNMEASURED_LINE_COUNT
           && mLineCount != lineCount
           && mComponentContext != null) {
-        com.facebook.litho.widget.TextInput.remeasureForUpdatedText(mComponentContext);
+        com.facebook.litho.widget.TextInput.remeasureForUpdatedTextSync(mComponentContext);
       }
     }
 
