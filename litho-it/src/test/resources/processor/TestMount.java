@@ -558,7 +558,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
     }
     TestMount.UpdateCurrentStateStateUpdate _stateUpdate =
         ((TestMount) _component).createUpdateCurrentStateStateUpdate(someParam);
-    c.updateStateSync(_stateUpdate, "TestMount.updateCurrentState");
+    c.updateStateAsync(_stateUpdate, "TestMount.updateCurrentState");
   }
 
   protected static void updateCurrentStateAsync(ComponentContext c, int someParam) {

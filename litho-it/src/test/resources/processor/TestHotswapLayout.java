@@ -542,7 +542,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
     TestLayout.UpdateCurrentStateStateUpdate _stateUpdate =
         ((TestLayout) _component).createUpdateCurrentStateStateUpdate(someParam);
-    c.updateStateSync(_stateUpdate, "TestLayout.updateCurrentState");
+    c.updateStateAsync(_stateUpdate, "TestLayout.updateCurrentState");
   }
 
   protected static void updateCurrentStateAsync(ComponentContext c, int someParam) {

@@ -69,7 +69,7 @@ public class VerySimpleGroupSectionSpecTest {
 
     assertThat(mTester.getChildren(s).size()).isEqualTo(4);
 
-    VerySimpleGroupSection.onUpdateState(mTester.getScopedContext(s), 5);
+    VerySimpleGroupSection.onUpdateStateSync(mTester.getScopedContext(s), 5);
 
     assertThat(mTester.getChildren(s).size()).isGreaterThan(4);
   }

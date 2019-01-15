@@ -157,7 +157,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     }
     FullDiffSection.UpdateStateStateUpdate _stateUpdate =
         ((FullDiffSection) _component).createUpdateStateStateUpdate(param);
-    c.updateStateSync(_stateUpdate, "FullDiffSection.updateState");
+    c.updateStateAsync(_stateUpdate, "FullDiffSection.updateState");
   }
 
   protected static void updateStateAsync(SectionContext c, Object param) {

@@ -190,7 +190,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
     }
     FullGroupSection.UpdateStateStateUpdate _stateUpdate =
         ((FullGroupSection) _component).createUpdateStateStateUpdate(param);
-    c.updateStateSync(_stateUpdate, "FullGroupSection.updateState");
+    c.updateStateAsync(_stateUpdate, "FullGroupSection.updateState");
   }
 
   protected static void updateStateAsync(SectionContext c, Object param) {

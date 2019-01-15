@@ -243,10 +243,10 @@ public class StateGenerator {
         '"' + specModel.getComponentName() + "." + updateStateMethod.name.toString() + '"';
     final String stateUpdateMethod;
     switch (stateUpdateType) {
-      case DEFAULT:
       case SYNC:
         stateUpdateMethod = "updateStateSync";
         break;
+      case DEFAULT:
       case ASYNC:
         stateUpdateMethod = "updateStateAsync";
         break;

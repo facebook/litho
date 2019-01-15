@@ -296,7 +296,7 @@ public class StateGeneratorTest {
                 + "    return;\n"
                 + "  }\n"
                 + "  TestWithState.UpdateCurrentStateStateUpdate _stateUpdate = ((TestWithState) _component).createUpdateCurrentStateStateUpdate();\n"
-                + "  c.updateStateSync(_stateUpdate, \"TestWithState.updateCurrentState\");\n"
+                + "  c.updateStateAsync(_stateUpdate, \"TestWithState.updateCurrentState\");\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
