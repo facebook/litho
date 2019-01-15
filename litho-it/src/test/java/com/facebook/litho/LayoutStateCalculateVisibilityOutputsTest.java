@@ -38,6 +38,8 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
   @Before
   public void setup() throws Exception {
+    ComponentsPools.clearInternalUtilPools();
+    ComponentsPools.clearMountContentPools();
   }
 
   @Test
