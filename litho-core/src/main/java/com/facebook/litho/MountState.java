@@ -1551,6 +1551,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     do {
       hostMarker = layoutOutput.getHostMarker();
       layoutOutput = layoutState.getLayoutOutput(hostMarker);
+      if (layoutOutput == null) {
+        // We got to the root LayoutOutput without finding a host that should be used
+        return -1;
+      }
     } while (skipMounting.get(layoutOutput.getIndex()));
 
     return hostMarker;
