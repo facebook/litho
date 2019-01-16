@@ -397,7 +397,7 @@ public abstract class Transition {
           return true;
 
         case LOCAL_KEY:
-          if (!mOwnerKey.equals(transitionId.mExtraData)) {
+          if (!CommonUtils.equals(mOwnerKey, transitionId.mExtraData)) {
             return false;
           }
         case GLOBAL_KEY:
@@ -405,7 +405,7 @@ public abstract class Transition {
               mAnimationTarget.componentTarget.componentTargetExtraData);
 
         case LOCAL_KEY_SET:
-          if (!mOwnerKey.equals(transitionId.mExtraData)) {
+          if (!CommonUtils.equals(mOwnerKey, transitionId.mExtraData)) {
             return false;
           }
         case GLOBAL_KEY_SET:
