@@ -54,7 +54,6 @@ public class OneByOneLeftRightBlocksComponentSpec {
                         .widthDip(40)
                         .backgroundColor(Color.parseColor("#ee1111"))
                         .transitionKey(TRANSITION_KEY_RED)
-                        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                         .build()))
         .child(
             Column.create(c)
@@ -65,7 +64,6 @@ public class OneByOneLeftRightBlocksComponentSpec {
                         .widthDip(40)
                         .backgroundColor(Color.parseColor("#1111ee"))
                         .transitionKey(TRANSITION_KEY_BLUE)
-                        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                         .build()))
         .child(
             Column.create(c)
@@ -76,7 +74,6 @@ public class OneByOneLeftRightBlocksComponentSpec {
                         .widthDip(40)
                         .backgroundColor(Color.parseColor("#11ee11"))
                         .transitionKey(TRANSITION_KEY_GREEN)
-                        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                         .build()))
         .clickHandler(OneByOneLeftRightBlocksComponent.onClick(c))
         .build();
@@ -94,7 +91,7 @@ public class OneByOneLeftRightBlocksComponentSpec {
 
   @OnCreateTransition
   static Transition onCreateTransition(ComponentContext c) {
-    return Transition.create(Transition.TransitionKeyType.GLOBAL, ALL_TRANSITION_KEYS)
+    return Transition.create(ALL_TRANSITION_KEYS)
         .animate(AnimatedProperties.X, AnimatedProperties.Y, AnimatedProperties.ALPHA);
   }
 }

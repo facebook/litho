@@ -42,7 +42,6 @@ public class LeftRightBlocksSequenceComponentSpec {
                 .widthDip(40)
                 .backgroundColor(Color.parseColor("#ee1111"))
                 .transitionKey("red")
-                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .build())
         .child(
             Row.create(c)
@@ -50,7 +49,6 @@ public class LeftRightBlocksSequenceComponentSpec {
                 .widthDip(40)
                 .backgroundColor(Color.parseColor("#1111ee"))
                 .transitionKey("blue")
-                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .build())
         .child(
             Row.create(c)
@@ -58,7 +56,6 @@ public class LeftRightBlocksSequenceComponentSpec {
                 .widthDip(40)
                 .backgroundColor(Color.parseColor("#11ee11"))
                 .transitionKey("green")
-                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .build())
         .clickHandler(LeftRightBlocksSequenceComponent.onClick(c))
         .build();
@@ -77,8 +74,8 @@ public class LeftRightBlocksSequenceComponentSpec {
   @OnCreateTransition
   static Transition onCreateTransition(ComponentContext c) {
     return Transition.sequence(
-        Transition.create(Transition.TransitionKeyType.GLOBAL, "red").animate(AnimatedProperties.X),
-        Transition.create(Transition.TransitionKeyType.GLOBAL, "blue").animate(AnimatedProperties.X),
-        Transition.create(Transition.TransitionKeyType.GLOBAL, "green").animate(AnimatedProperties.X));
+        Transition.create("red").animate(AnimatedProperties.X),
+        Transition.create("blue").animate(AnimatedProperties.X),
+        Transition.create("green").animate(AnimatedProperties.X));
   }
 }

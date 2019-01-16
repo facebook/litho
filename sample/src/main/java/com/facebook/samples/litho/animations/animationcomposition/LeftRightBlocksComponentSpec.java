@@ -44,7 +44,6 @@ public class LeftRightBlocksComponentSpec {
                 .widthDip(40)
                 .backgroundColor(Color.parseColor("#ee1111"))
                 .transitionKey("red")
-                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .build())
         .child(
             Row.create(c)
@@ -52,7 +51,6 @@ public class LeftRightBlocksComponentSpec {
                 .widthDip(40)
                 .backgroundColor(Color.parseColor("#1111ee"))
                 .transitionKey("blue")
-                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .build())
         .child(
             Row.create(c)
@@ -60,7 +58,6 @@ public class LeftRightBlocksComponentSpec {
                 .widthDip(40)
                 .backgroundColor(Color.parseColor("#11ee11"))
                 .transitionKey("green")
-                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .build())
         .child(
             Row.create(c)
@@ -68,7 +65,6 @@ public class LeftRightBlocksComponentSpec {
                 .widthDip(40)
                 .backgroundColor(Color.BLACK)
                 .transitionKey("black")
-                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .build())
         .clickHandler(LeftRightBlocksComponent.onClick(c))
         .build();
@@ -87,20 +83,20 @@ public class LeftRightBlocksComponentSpec {
   @OnCreateTransition
   static Transition onCreateTransition(ComponentContext c) {
     return Transition.parallel(
-        Transition.create(Transition.TransitionKeyType.GLOBAL, "red")
+        Transition.create("red")
             .animate(AnimatedProperties.X)
             .animator(Transition.timing(1000, new LinearInterpolator())),
-        Transition.create(Transition.TransitionKeyType.GLOBAL, "blue")
+        Transition.create("blue")
             .animate(AnimatedProperties.X)
             .animator(
                 Transition.timing(
                     1000)), // uses default interpolator AccelerateDecelerateInterpolator
-        Transition.create(Transition.TransitionKeyType.GLOBAL, "green")
+        Transition.create("green")
             .animate(AnimatedProperties.X)
             .animator(Transition.timing(1000, new BounceInterpolator())),
         Transition.delay(
             1000,
-            Transition.create(Transition.TransitionKeyType.GLOBAL, "black")
+            Transition.create("black")
                 .animate(AnimatedProperties.X)
                 .animator(Transition.timing(1000))));
   }
