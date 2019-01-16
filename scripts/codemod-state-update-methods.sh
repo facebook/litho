@@ -12,7 +12,7 @@ all_specs=$1
 
 if [[ -z $all_specs ]]; then
   # to generate this, you can run something like
-  # egrep -lir --include=*Spec.java --exclude=./buck* "@OnUpdateState\b" [directory_to_search] > all_specs_with_update_state.txt
+  # egrep -lir --include=*Spec.{java,kt} --exclude=./buck* "@OnUpdateState\b" [directory_to_search] > all_specs_with_update_state.txt
   echo "Usage: $0 <all_specs_with_update_state.txt>"
   exit 1
 fi
