@@ -18,7 +18,6 @@ package com.facebook.litho.drawable;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Test;
@@ -50,7 +49,6 @@ public class ComparableGradientDrawableTest {
     comparable1.setOrientation(GradientDrawable.Orientation.BOTTOM_TOP);
     comparable1.setColors(new int[] {0, 0});
     comparable1.setCornerRadii(new float[] {0, 1, 2, 4});
-    comparable1.setBounds(new Rect(1, 2, 3, 4));
     comparable1.setSize(1, 2);
     comparable1.setShape(GradientDrawable.OVAL);
     comparable1.setGradientRadius(2);
@@ -60,7 +58,6 @@ public class ComparableGradientDrawableTest {
     comparable2.setOrientation(GradientDrawable.Orientation.BOTTOM_TOP);
     comparable2.setColors(new int[] {0, 0});
     comparable2.setCornerRadii(new float[] {0, 1, 2, 4});
-    comparable2.setBounds(new Rect(1, 2, 3, 4));
     comparable2.setSize(1, 2);
     comparable2.setShape(GradientDrawable.OVAL);
     comparable2.setGradientRadius(2);
@@ -89,7 +86,7 @@ public class ComparableGradientDrawableTest {
   }
 
   @Test
-  public void ComparableDrawable_not_equal_detailed_simple() {
+  public void ComparableDrawable_not_equal_simple() {
     ComparableGradientDrawable comparable1 = new ComparableGradientDrawable();
     ComparableDrawable comparable2 = ComparableColorDrawable.create(Color.BLACK);
 
@@ -102,7 +99,6 @@ public class ComparableGradientDrawableTest {
     comparable1.setOrientation(GradientDrawable.Orientation.BOTTOM_TOP);
     comparable1.setColors(new int[] {0, 0});
     comparable1.setCornerRadii(new float[] {0, 1, 2, 4});
-    comparable1.setBounds(new Rect(1, 2, 3, 4));
     comparable1.setSize(1, 2);
     comparable1.setShape(GradientDrawable.OVAL);
     comparable1.setGradientRadius(2);
@@ -112,7 +108,6 @@ public class ComparableGradientDrawableTest {
     comparable2.setOrientation(GradientDrawable.Orientation.BOTTOM_TOP);
     comparable2.setColors(new int[] {1, 1});
     comparable2.setCornerRadii(new float[] {4, 3, 2, 1});
-    comparable2.setBounds(new Rect(4, 3, 2, 1));
     comparable2.setSize(2, 1);
     comparable2.setShape(GradientDrawable.RECTANGLE);
     comparable2.setGradientRadius(1);
@@ -127,7 +122,6 @@ public class ComparableGradientDrawableTest {
     comparable1.setOrientation(GradientDrawable.Orientation.BOTTOM_TOP);
     comparable1.setColors(new int[] {0, 0});
     comparable1.setCornerRadii(new float[] {0, 1, 2, 4});
-    comparable1.setBounds(new Rect(1, 2, 3, 4));
 
     ComparableGradientDrawable comparable2 = new ComparableGradientDrawable();
     comparable2.setOrientation(null);

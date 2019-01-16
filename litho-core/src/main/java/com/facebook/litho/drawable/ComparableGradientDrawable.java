@@ -16,7 +16,6 @@
 package com.facebook.litho.drawable;
 
 import android.content.res.ColorStateList;
-import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.support.annotation.ColorInt;
@@ -31,16 +30,15 @@ public class ComparableGradientDrawable extends ComparableDrawableWrapper {
 
   protected GradientDrawable.Orientation orientation;
   protected int color;
+  protected ColorStateList colorStateList;
   protected int[] colors;
   protected float cornerRadius;
   protected float[] cornerRadii;
   protected int gradientType = GradientDrawable.LINEAR_GRADIENT;
   protected int gradientRadius;
-  protected Rect bounds;
   protected int shape = GradientDrawable.RECTANGLE;
   protected int width = -1;
   protected int height = -1;
-  protected int alpha = 0xFF;
   protected int strokeWidth = -1;
   protected float strokeDashWidth = 0.0f;
   protected float strokeDashGap = 0.0f;
@@ -64,21 +62,20 @@ public class ComparableGradientDrawable extends ComparableDrawableWrapper {
     ComparableGradientDrawable that = (ComparableGradientDrawable) o;
 
     return color == that.color
-        && Float.compare(that.cornerRadius, cornerRadius) == 0
+        && CommonUtils.equals(colorStateList, that.colorStateList)
+        && cornerRadius == that.cornerRadius
         && gradientType == that.gradientType
         && gradientRadius == that.gradientRadius
         && shape == that.shape
         && width == that.width
         && height == that.height
-        && alpha == that.alpha
         && strokeWidth == that.strokeWidth
-        && Float.compare(that.strokeDashWidth, strokeDashWidth) == 0
-        && Float.compare(that.strokeDashGap, strokeDashGap) == 0
+        && strokeDashWidth == that.strokeDashWidth
+        && strokeDashGap == that.strokeDashGap
         && strokeColor == that.strokeColor
         && orientation == that.orientation
         && Arrays.equals(colors, that.colors)
         && Arrays.equals(cornerRadii, that.cornerRadii)
-        && CommonUtils.equals(bounds, that.bounds)
         && CommonUtils.equals(strokeColorStateList, that.strokeColorStateList);
   }
 
@@ -90,14 +87,13 @@ public class ComparableGradientDrawable extends ComparableDrawableWrapper {
             new Object[] {
               orientation,
               color,
+              colorStateList,
               cornerRadius,
               gradientType,
               gradientRadius,
-              bounds,
               shape,
               width,
               height,
-              alpha,
               strokeWidth,
               strokeDashWidth,
               strokeDashGap,
@@ -129,6 +125,12 @@ public class ComparableGradientDrawable extends ComparableDrawableWrapper {
     getGradientDrawable().setColor(color);
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+  public void setColor(ColorStateList color) {
+    this.colorStateList = color;
+    getGradientDrawable().setColor(color);
+  }
+
   public void setColors(int[] colors) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
       this.colors = colors;
@@ -156,21 +158,9 @@ public class ComparableGradientDrawable extends ComparableDrawableWrapper {
     getGradientDrawable().setGradientRadius(gradientRadius);
   }
 
-  @Override
-  public void setBounds(Rect bounds) {
-    this.bounds = bounds;
-    getGradientDrawable().setBounds(bounds);
-  }
-
   public void setShape(int shape) {
     this.shape = shape;
     getGradientDrawable().setShape(shape);
-  }
-
-  @Override
-  public void setAlpha(int alpha) {
-    this.alpha = alpha;
-    getGradientDrawable().setAlpha(alpha);
   }
 
   public void setSize(int width, int height) {
