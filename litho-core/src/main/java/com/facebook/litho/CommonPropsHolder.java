@@ -463,6 +463,11 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return getOrCreateOtherProps().mTransitionKeyType;
   }
 
+  @Nullable
+  NodeInfo getNullableNodeInfo() {
+    return mNodeInfo;
+  }
+
   private NodeInfo getOrCreateNodeInfo() {
     if (mNodeInfo == null) {
       mNodeInfo = NodeInfo.acquire();

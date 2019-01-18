@@ -742,6 +742,16 @@ public abstract class Component extends ComponentLifecycle
         new WorkingRangeContainer.Registration(name, workingRange, component));
   }
 
+  public boolean hasBackgroundSet() {
+    return mCommonPropsHolder != null && mCommonPropsHolder.getBackground() != null;
+  }
+
+  public boolean hasClickHandlerSet() {
+    return mCommonPropsHolder != null
+        && mCommonPropsHolder.getNullableNodeInfo() != null
+        && mCommonPropsHolder.getNullableNodeInfo().getClickHandler() != null;
+  }
+
   /**
    * @param <T> the type of this builder. Required to ensure methods defined here in the abstract
    *     class correctly return the type of the concrete subclass.
