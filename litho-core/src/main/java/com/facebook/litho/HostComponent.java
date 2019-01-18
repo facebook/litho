@@ -42,6 +42,20 @@ class HostComponent extends Component {
   }
 
   @Override
+  protected void onUnmount(ComponentContext c, Object mountedContent) {
+    final ComponentHost host = (ComponentHost) mountedContent;
+
+    // Some hosts might be duplicating parent state which could be 'pressed' and under certain
+    // conditions that state might not be cleared from this host and carried to next reuse,
+    // therefore applying wrong drawable state. Particular case where this might happen is when
+    // host is unmounted as soon as click event is triggered, and host is unmounted before it has
+    // chance to reset its internal pressed state.
+    if (host.isPressed()) {
+      host.setPressed(false);
+    }
+  }
+
+  @Override
   public MountType getMountType() {
     return MountType.VIEW;
   }
