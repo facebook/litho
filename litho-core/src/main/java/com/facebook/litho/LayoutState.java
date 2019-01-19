@@ -110,23 +110,6 @@ class LayoutState {
     int MEASURE = 3;
   }
 
-  @IntDef({
-    NodeTreePersistenceMode.NONE,
-    NodeTreePersistenceMode.RELEASE_BEFORE_CALCULATE,
-    NodeTreePersistenceMode.RELEASE_AFTER_CALCULATE
-  })
-  @Retention(RetentionPolicy.SOURCE)
-  public @interface NodeTreePersistenceMode {
-    /** Immediately releases the internal node tree */
-    int NONE = 0;
-
-    /** Releases the old internal node tree tree right before calculating a new one. */
-    int RELEASE_BEFORE_CALCULATE = 1;
-
-    /** Release the old internal node tree right after calculating a new one. */
-    int RELEASE_AFTER_CALCULATE = 2;
-  }
-
   static final Comparator<LayoutOutput> sTopsComparator =
       new Comparator<LayoutOutput>() {
         @Override
@@ -1228,15 +1211,6 @@ class LayoutState {
     return drawableLayoutOutput;
   }
 
-  static void maybeReleaseNodeTree(@Nullable LayoutState layoutState) {
-    if (layoutState != null
-        && layoutState.mLayoutRoot != null
-        && layoutState.mLayoutRoot != NULL_LAYOUT) {
-      releaseNodeTree(layoutState.mLayoutRoot, false /* isNestedTree */);
-      layoutState.mLayoutRoot = null;
-    }
-  }
-
   static void releaseNodeTree(InternalNode node, boolean isNestedTree) {
     if (node == NULL_LAYOUT) {
       throw new IllegalArgumentException("Cannot release a null node tree");
@@ -1333,7 +1307,7 @@ class LayoutState {
         null /* previousDiffTreeRoot */,
         source,
         null,
-        NodeTreePersistenceMode.NONE);
+        false /* isPersistenceEnabled */);
   }
 
   static LayoutState calculate(
@@ -1346,7 +1320,7 @@ class LayoutState {
       @Nullable LayoutState previousLayoutState,
       @CalculateLayoutSource int source,
       @Nullable String extraAttribution,
-      @NodeTreePersistenceMode int persistenceMode) {
+      boolean isPersistenceEnabled) {
 
     final ComponentsLogger logger = c.getLogger();
 
@@ -1395,11 +1369,6 @@ class LayoutState {
       layoutState.mWidthSpec = widthSpec;
       layoutState.mHeightSpec = heightSpec;
       layoutState.mRootComponentName = component.getSimpleName();
-
-      // maybe release the previous node tree before calculation
-      if (persistenceMode == NodeTreePersistenceMode.RELEASE_BEFORE_CALCULATE) {
-        maybeReleaseNodeTree(previousLayoutState);
-      }
 
       final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
       final InternalNode root =
@@ -1473,17 +1442,13 @@ class LayoutState {
         logger.logPerfEvent(collectResultsEvent);
       }
 
-      // maybe release the previous node tree after calculation
-      if (persistenceMode == NodeTreePersistenceMode.RELEASE_AFTER_CALCULATE) {
-        maybeReleaseNodeTree(previousLayoutState);
-      }
-
-      if (persistenceMode == NodeTreePersistenceMode.NONE
+      if (!isPersistenceEnabled
           && !ComponentsConfiguration.isDebugModeEnabled
           && !ComponentsConfiguration.isEndToEndTestRun
           && layoutState.mLayoutRoot != null) {
-        releaseNodeTree(layoutState.mLayoutRoot, false /* isNestedTree */);
+        InternalNode node = layoutState.mLayoutRoot;
         layoutState.mLayoutRoot = null;
+        releaseNodeTree(node, false /* isNestedTree */);
       }
 
       if (logLayoutState != null) {

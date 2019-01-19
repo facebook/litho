@@ -253,10 +253,6 @@ public class ComponentsConfiguration {
 
   public static boolean shouldIncreaseThreadPriorityToUrgentDisplay = false;
 
-  /**
-   * Sets the node tree persistence mode to hold the internal nodes in memory. i.e. do not release
-   * them immediately. <code>0</code> is disabled, <code>1</code> is release before calculating a
-   * new layout and <code>2</code> is release after calculating new layout.
-   */
-  public static int nodeTreePersistenceMode = 0;
+  /** Sets the if the internal node should be persisted */
+  public static boolean isPersistenceEnabled;
 }

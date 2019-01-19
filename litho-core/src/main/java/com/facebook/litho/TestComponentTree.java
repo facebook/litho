@@ -66,7 +66,7 @@ public class TestComponentTree extends ComponentTree {
         previousLayoutState,
         source,
         extraAttribution,
-        LayoutState.NodeTreePersistenceMode.NONE);
+        false);
   }
 
   @VisibleForTesting
