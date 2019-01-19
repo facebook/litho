@@ -251,6 +251,7 @@ public class ComponentTree {
   private boolean mForceLayout;
 
   private final boolean mIsPersistenceEnabled;
+  private final int mExtraMemorySize;
 
   public static Builder create(ComponentContext context, Component.Builder<?> root) {
     return create(context, root.build());
@@ -284,6 +285,7 @@ public class ComponentTree {
     mBoostAffinityLithoLayouts = builder.boostAffinityLithoLayouts;
     mDoNotWrapIntoDisplayLists = builder.doNotWrapIntoDisplayLists;
     mIsPersistenceEnabled = builder.isPersistenceEnabled;
+    mExtraMemorySize = builder.extraMemorySize;
 
     ensureLayoutThreadHandler();
 
@@ -1018,6 +1020,10 @@ public class ComponentTree {
   /** Whether the refactored implementation of nested tree resolution should be used. */
   public boolean isNestedTreeResolutionExperimentEnabled() {
     return mNestedTreeResolutionExperimentEnabled;
+  }
+
+  public int getExtraMemorySize() {
+    return mExtraMemorySize;
   }
 
   synchronized Component getRoot() {
@@ -2438,6 +2444,7 @@ public class ComponentTree {
     private boolean boostAffinityLithoLayouts;
     private boolean doNotWrapIntoDisplayLists = false;
     private boolean isPersistenceEnabled = ComponentsConfiguration.isPersistenceEnabled;
+    private int extraMemorySize = ComponentsConfiguration.extraMemorySize;
 
     protected Builder() {
     }
@@ -2481,6 +2488,8 @@ public class ComponentTree {
       affinityBoosterFactory = null;
       boostAffinityLayoutStateFuture = false;
       doNotWrapIntoDisplayLists = false;
+      isPersistenceEnabled = ComponentsConfiguration.isPersistenceEnabled;
+      extraMemorySize = ComponentsConfiguration.extraMemorySize;
     }
 
     /**
@@ -2654,8 +2663,15 @@ public class ComponentTree {
     }
 
     /** Sets the if the internal node should be persisted */
-    public void isPersistenceEnabled(boolean isPersistenceEnabled) {
+    public Builder isPersistenceEnabled(boolean isPersistenceEnabled) {
       this.isPersistenceEnabled = isPersistenceEnabled;
+      return this;
+    }
+
+    /** set the size of the extra memory internal node tree should take */
+    public Builder setExtraMemorySize(int size) {
+      this.extraMemorySize = size;
+      return this;
     }
 
     /** Builds a {@link ComponentTree} using the parameters specified in this builder. */

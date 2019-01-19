@@ -255,4 +255,7 @@ public class ComponentsConfiguration {
 
   /** Sets the if the internal node should be persisted */
   public static boolean isPersistenceEnabled;
+
+  /** set the size of the extra memory internal node tree should take */
+  public static int extraMemorySize = 0;
 }

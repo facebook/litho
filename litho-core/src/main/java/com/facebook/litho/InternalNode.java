@@ -177,6 +177,8 @@ class InternalNode implements ComponentLayout {
   // live exactly as long as InternalNodes.
   @Nullable private Set<DebugComponent> mDebugComponents = null;
 
+  @Nullable private int[] mExtraMemory;
+
   public InternalNode() {
     this(true);
   }
@@ -192,8 +194,10 @@ class InternalNode implements ComponentLayout {
       yogaNode.setData(this);
     }
     mYogaNode = yogaNode;
-
     mComponentContext = componentContext;
+    if (mComponentContext.getExtraMemorySize() > 0) {
+      mExtraMemory = new int[mComponentContext.getExtraMemorySize()];
+    }
   }
 
   /**
@@ -1779,6 +1783,10 @@ class InternalNode implements ComponentLayout {
 
     mStateListAnimator = null;
     mStateListAnimatorRes = 0;
+
+    if (mExtraMemory != null && mExtraMemory.length > 0 && mExtraMemory[0] == 0) {
+      mExtraMemory = null;
+    }
 
     ComponentsPools.release(this);
   }
