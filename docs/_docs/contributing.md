@@ -1,6 +1,6 @@
 ---
 docid: contributing
-title: How to contribute
+title: How to Contribute
 layout: docs
 permalink: /docs/contributing
 ---

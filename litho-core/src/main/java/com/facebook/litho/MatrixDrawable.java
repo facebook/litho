@@ -1,13 +1,23 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
+
+import static android.os.Build.VERSION_CODES.HONEYCOMB;
+import static android.os.Build.VERSION_CODES.LOLLIPOP;
 
 import android.annotation.TargetApi;
 import android.graphics.Canvas;
@@ -21,9 +31,7 @@ import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
-
-import static android.os.Build.VERSION_CODES.HONEYCOMB;
-import static android.os.Build.VERSION_CODES.LOLLIPOP;
+import javax.annotation.Nullable;
 
 /**
  * A Drawable that wraps another drawable.
@@ -44,18 +52,19 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
   }
 
   public void mount(T drawable, DrawableMatrix matrix) {
-
     if (mDrawable == drawable) {
       return;
     }
 
     if (mDrawable != null) {
+      setDrawableVisibilitySafe(false, false);
       mDrawable.setCallback(null);
     }
 
     mDrawable = drawable;
 
     if (mDrawable != null) {
+      setDrawableVisibilitySafe(isVisible(), false);
       mDrawable.setCallback(this);
     }
 
@@ -91,38 +100,30 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
   public void bind(int width, int height) {
     mWidth = width;
     mHeight = height;
-    setInnerDrawableBounds(getBounds().left, getBounds().top);
+    setInnerDrawableBounds(mWidth, mHeight);
   }
 
   @Override
   public void setBounds(int left, int top, int right, int bottom) {
     super.setBounds(left, top, right, bottom);
-    setInnerDrawableBounds(left, top);
   }
 
   @Override
   public void setBounds(Rect bounds) {
     super.setBounds(bounds);
-    setInnerDrawableBounds(bounds.left, bounds.top);
   }
 
-  private void setInnerDrawableBounds(int left, int top) {
+  private void setInnerDrawableBounds(int width, int height) {
     if (mDrawable == null) {
       return;
     }
 
-    final int innerDrawableLeft = (mMatrix != null ? 0 : left);
-    final int innerDrawableTop = (mMatrix != null ? 0 : top);
-
-    mDrawable.setBounds(
-        innerDrawableLeft,
-        innerDrawableTop,
-        innerDrawableLeft + mWidth,
-        innerDrawableTop + mHeight);
+    mDrawable.setBounds(0, 0, width, height);
   }
 
   public void unmount() {
     if (mDrawable != null) {
+      setDrawableVisibilitySafe(false, false);
       mDrawable.setCallback(null);
     }
 
@@ -136,6 +137,17 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
     return mDrawable;
   }
 
+  private void setDrawableVisibilitySafe(boolean visible, boolean restart) {
+    if (mDrawable != null && mDrawable.isVisible() != visible) {
+      try {
+        mDrawable.setVisible(visible, restart);
+      } catch (NullPointerException e) {
+        // Swallow. LayerDrawable on KitKat sometimes causes this, if some of its children are null.
+        // This should not cause any rendering bugs, since visibility is anyway a "hint".
+      }
+    }
+  }
+
   @Override
   public void draw(Canvas canvas) {
     if (mDrawable == null) {
@@ -144,31 +156,19 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
 
     final Rect bounds = getBounds();
 
-    if (mMatrix != null) {
-      final int saveCount = canvas.save();
+    final int saveCount = canvas.save();
+    canvas.translate(bounds.left, bounds.top);
 
-      if (mShouldClipRect) {
-        canvas.clipRect(bounds);
-      }
-
-      canvas.translate(bounds.left, bounds.top);
-      canvas.concat(mMatrix);
-
-      mDrawable.draw(canvas);
-
-      canvas.restoreToCount(saveCount);
-    } else {
-      if (mShouldClipRect) {
-        canvas.save();
-        canvas.clipRect(bounds);
-      }
-
-      mDrawable.draw(canvas);
-
-      if (mShouldClipRect) {
-        canvas.restore();
-      }
+    if (mShouldClipRect) {
+      canvas.clipRect(0, 0, bounds.width(), bounds.height());
     }
+
+    if (mMatrix != null) {
+      canvas.concat(mMatrix);
+    }
+
+    mDrawable.draw(canvas);
+    canvas.restoreToCount(saveCount);
   }
 
   @Override
@@ -227,19 +227,20 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
   }
 
   @Override
-  public int[] getState() {
+  public @Nullable int[] getState() {
     return mDrawable == null ? null : mDrawable.getState();
   }
 
   @Override
-  public Drawable getCurrent() {
+  public @Nullable Drawable getCurrent() {
     return mDrawable == null ? null : mDrawable.getCurrent();
   }
 
   @Override
   public boolean setVisible(boolean visible, boolean restart) {
-    return super.setVisible(visible, restart) ||
-        (mDrawable != null && mDrawable.setVisible(visible, restart));
+    final boolean changed = super.setVisible(visible, restart);
+    setDrawableVisibilitySafe(visible, restart);
+    return changed;
   }
 
   @Override
@@ -248,7 +249,7 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
   }
 
   @Override
-  public Region getTransparentRegion() {
+  public @Nullable Region getTransparentRegion() {
     return mDrawable == null ? null : mDrawable.getTransparentRegion();
   }
 

@@ -1,30 +1,31 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.specmodels.model;
 
+import com.facebook.litho.annotations.ShouldUpdate;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facebook.litho.annotations.ShouldUpdate;
-
-import com.squareup.javapoet.ParameterizedTypeName;
-
-/**
- * Class for validating that the pure render methods within a {@link SpecModel} are well-formed.
- */
 public class PureRenderValidation {
 
   static <S extends SpecModel & HasPureRender> List<SpecModelValidationError> validate(
       S specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
-    final DelegateMethodModel shouldUpdateMethod =
+    final SpecMethodModel<DelegateMethod, Void> shouldUpdateMethod =
         SpecModelUtils.getMethodModelWithAnnotation(specModel, ShouldUpdate.class);
 
     if (shouldUpdateMethod != null) {
@@ -34,31 +35,6 @@ public class PureRenderValidation {
                 shouldUpdateMethod.representedObject,
                 "Specs defining a method annotated with @ShouldUpdate should also set " +
                     "isPureRender = true in the top-level spec annotation."));
-      }
-
-      for (MethodParamModel methodParam : shouldUpdateMethod.methodParams) {
-        final PropModel prop = SpecModelUtils.getPropWithName(specModel, methodParam.getName());
-
-        if (prop == null) {
-          validationErrors.add(
-              new SpecModelValidationError(
-                  methodParam.getRepresentedObject(),
-                  "Names of parameters for a method annotated with @ShouldUpdate should match a " +
-                      "declared Prop of the same name."));
-          continue;
-        }
-
-        if (!(methodParam.getType() instanceof ParameterizedTypeName) ||
-            !((ParameterizedTypeName) methodParam.getType()).rawType.equals(ClassNames.DIFF) ||
-            ((ParameterizedTypeName) methodParam.getType()).typeArguments.size() != 1 ||
-            !((ParameterizedTypeName) methodParam.getType()).typeArguments.get(0)
-                .equals(prop.getType().box())) {
-          validationErrors.add(
-              new SpecModelValidationError(
-                  methodParam.getRepresentedObject(),
-                  "Types of parameters for a method annotated with @ShouldUpdate should be " +
-                      "Diff<T>, where T is the type of the declared Prop of the same name."));
-        }
       }
     }
 

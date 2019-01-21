@@ -1,20 +1,27 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.specmodels.model;
 
-import java.util.List;
-
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
-
+import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
+import java.util.List;
 
 /**
  * An interface for generating certain methods that are required in order for Dependency
@@ -28,24 +35,28 @@ public interface DependencyInjectionHelper {
   List<SpecModelValidationError> validate(SpecModel specModel);
 
   /**
-   * Generate code required to make the Dependency Injection work.
+   * Whether a Spec annotation should be moved to the generated Component.
    */
-  TypeSpecDataHolder generate(SpecModel specModel);
+  boolean isValidGeneratedComponentAnnotation(AnnotationSpec annotation);
 
-  /**
-   * Generate the source delegate that should be used for the given {@link SpecModel}
-   */
-  TypeName getSourceDelegateTypeName(SpecModel specModel);
-
-  /**
-   * Generate the method (if any) required to access the source delegate. Return an empty string
-   * if the source delegate can be accessed directly. Otherwise, provide the given method,
-   * preceded by a dot.
-   */
-  String getSourceDelegateAccessorMethod(SpecModel specModel);
-
-  /**
-   * Generate the constructor that should be used for the given {@link SpecModel}.
-   */
+  /** Generate the constructor required for Dependency Injection. */
   MethodSpec generateConstructor(SpecModel specModel);
+
+  /** Generate the code needed to inject a new instance of the given SpecModel called 'instance' */
+  CodeBlock generateFactoryMethodsComponentInstance(SpecModel specModel);
+
+  /**
+   * Generate the necessary code to handle the {@link com.facebook.litho.annotations.InjectProp}
+   * annotation. Field with the same name of the parameter should be returned to be usable.
+   *
+   * @param injectPropParams
+   */
+  TypeSpecDataHolder generateInjectedFields(ImmutableList<InjectPropModel> injectPropParams);
+
+  /**
+   * Generate an accessor for each injected field. This is used to generate matchers for TestSpecs
+   * and can be necessary for DI mechanisms which do not allow direct access to the generated
+   * fields. For instance, when field values are wrapped in a lazy wrapper.
+   */
+  MethodSpec generateTestingFieldAccessor(InjectPropModel injectPropModel);
 }

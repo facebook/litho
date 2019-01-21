@@ -1,22 +1,28 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.v4.util.SparseArrayCompat;
 import android.view.View;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 class ComponentHostUtils {
 
@@ -57,6 +63,9 @@ class ComponentHostUtils {
       int index,
       SparseArrayCompat<T> items,
       SparseArrayCompat<T> scrapItems) {
+    if (items == null || scrapItems == null) {
+      return;
+    }
     final T value = items.get(index);
     if (value != null) {
       scrapItems.put(index, value);
@@ -120,28 +129,31 @@ class ComponentHostUtils {
   }
 
   static List<?> extractContent(SparseArrayCompat<MountItem> items) {
-    if (items.size() == 1) {
-      return Collections.singletonList(items.valueAt(0).getContent());
+    final int size = items.size();
+    if (size == 1) {
+      return Collections.singletonList(items.valueAt(0).getBaseContent());
     }
 
-    final List<Object> content = new ArrayList<>();
+    final List<Object> content = new ArrayList<>(size);
 
-    for (int i = 0; i < items.size(); i++) {
-      content.add(items.valueAt(i).getContent());
+    for (int i = 0; i < size; i++) {
+      content.add(items.valueAt(i).getBaseContent());
     }
 
     return content;
   }
 
   static TextContent extractTextContent(List<?> items) {
-    if (items.size() == 1) {
+    final int size = items.size();
+    if (size == 1) {
       Object item = items.get(0);
       return item instanceof TextContent ? (TextContent) item : TextContent.EMPTY;
     }
 
     final List<CharSequence> textContent = new ArrayList<>();
 
-    for (Object item : items) {
+    for (int i = 0; i < size; ++i) {
+      final Object item = items.get(i);
       if (item instanceof TextContent) {
         textContent.addAll(((TextContent) item).getTextItems());
       }
@@ -156,14 +168,16 @@ class ComponentHostUtils {
   }
 
   static ImageContent extractImageContent(List<?> items) {
-    if (items.size() == 1) {
+    final int size = items.size();
+    if (size == 1) {
       Object item = items.get(0);
       return item instanceof ImageContent ? (ImageContent) item : ImageContent.EMPTY;
     }
 
     final List<Drawable> imageContent = new ArrayList<>();
 
-    for (Object item : items) {
+    for (int i = 0; i < size; ++i) {
+      final Object item = items.get(i);
       if (item instanceof ImageContent) {
         imageContent.addAll(((ImageContent) item).getImageItems());
       }
@@ -181,21 +195,5 @@ class ComponentHostUtils {
     if (mountItem.isAccessible()) {
       mountItem.getHost().invalidateAccessibilityState();
     }
-  }
-
-  /**
-   * Check whether {@param targetHost} is an ancestor of given {@param host} in the layout tree
-   */
-  static boolean hasAncestorHost(ComponentHost host, ComponentHost targetHost) {
-    if (host == null) {
-      return false;
-    }
-    if (host == targetHost) {
-      return true;
-    }
-    if (!(host.getParent() instanceof ComponentHost)) {
-      return false;
-    }
-    return hasAncestorHost((ComponentHost) host.getParent(), targetHost);
   }
 }

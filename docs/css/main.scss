@@ -184,5 +184,25 @@ h6:hover .header-link {
 .video {
   width: 100%;
   height: 500px;
-  align-self: center;
+  display: block;
+  margin: auto;
+  padding: 10px;
+}
+
+.mainContainer h3 {
+  font-size: larger;
+  font-weight: bold;
+  text-decoration: underline;
+  border-bottom: none !important;
+}
+
+.mainContainer code {
+  background-color: $code-background;
+  font-size: small;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.mainContainer strong code {
+  font-weight: bold;
 }

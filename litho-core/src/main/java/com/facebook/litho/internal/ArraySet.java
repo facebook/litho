@@ -1,30 +1,43 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.internal;
 
-import javax.annotation.Nullable;
-
+import android.support.v4.util.SimpleArrayMap;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.RandomAccess;
 import java.util.Set;
-
-import android.support.v4.util.SimpleArrayMap;
+import javax.annotation.Nullable;
 
 /**
  * A simple Set implementation backed by an array. Currently implemented as a wrapper around
  * ArrayMap because Google's ArraySet is API23+ and not yet available from a support library.
  * Google's ArraySet should be a drop-in replacement for this class, and will be a little more
  * efficient and complete.
+ *
+ * @deprecated This collection uses SimpleArrayMap as backing array which static cache can be
+ *     corrupted when used in multi-threaded environment. When static cache gets corrupted, next
+ *     time instance is used it can crash with ClassCastException even if that instance is thread
+ *     confined.
  */
+@Deprecated
 public class ArraySet<E> implements Set<E> {
 
   // This could be any value other than null.
@@ -66,6 +79,11 @@ public class ArraySet<E> implements Set<E> {
       int oldSize = size();
       mMap.putAll(arraySet.mMap);
       added = size() != oldSize;
+    } else if (collection instanceof List && collection instanceof RandomAccess) {
+      List<? extends E> list = (List) collection;
+      for (int i = 0, size = list.size(); i < size; ++i) {
+        added |= add(list.get(i));
+      }
     } else {
       for (E value : collection) {
         added |= add(value);
@@ -97,10 +115,19 @@ public class ArraySet<E> implements Set<E> {
 
   @Override
   public boolean containsAll(Collection<?> collection) {
-    Iterator<?> it = collection.iterator();
-    while (it.hasNext()) {
-      if (!contains(it.next())) {
-        return false;
+    if (collection instanceof List && collection instanceof RandomAccess) {
+      List<?> list = (List) collection;
+      for (int i = 0, size = list.size(); i < size; ++i) {
+        if (!contains(list.get(i))) {
+          return false;
+        }
+      }
+    } else {
+      Iterator<?> it = collection.iterator();
+      while (it.hasNext()) {
+        if (!contains(it.next())) {
+          return false;
+        }
       }
     }
     return true;
@@ -184,8 +211,16 @@ public class ArraySet<E> implements Set<E> {
   @Override
   public boolean removeAll(Collection<?> collection) {
     boolean removed = false;
-    for (Object value : collection) {
-      removed |= remove(value);
+    if (collection instanceof List && collection instanceof RandomAccess) {
+      // If possible, avoid the iterator allocation inherent in for-each
+      final List<?> list = (List) collection;
+      for (int i = 0, size = list.size(); i < size; ++i) {
+        removed |= remove(list.get(i));
+      }
+    } else {
+      for (Object value : collection) {
+        removed |= remove(value);
+      }
     }
     return removed;
   }

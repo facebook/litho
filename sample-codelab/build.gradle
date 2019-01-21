@@ -1,0 +1,76 @@
+/*
+ * This file provided by Facebook is for non-commercial testing and evaluation
+ * purposes only.  Facebook reserves all rights not expressly granted.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    useLibrary 'org.apache.http.legacy'
+
+    targetCompatibility = targetCompatibilityVersion
+    sourceCompatibility = sourceCompatibilityVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+    }
+
+    // TODO(#62): Re-enable abort on error.
+    lintOptions {
+        abortOnError false
+    }
+
+    sourceSets {
+        main {
+            java {
+                srcDirs 'src/main'
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation project(':litho-core')
+    implementation project(':litho-widget')
+    implementation project(':litho-fresco')
+    implementation project(':litho-sections-core')
+    implementation project(':litho-sections-widget')
+    implementation project(':litho-sections-annotations')
+    compileOnly project(':litho-annotations')
+    annotationProcessor project(':litho-processor')
+    annotationProcessor project(':litho-sections-processor')
+
+    // First-party
+    implementation deps.soloader
+    implementation deps.fresco
+
+    // Annotations
+    compileOnly deps.jsr305
+    compileOnly deps.inferAnnotations
+
+    // Support Library
+    implementation deps.supportAppCompat
+    implementation deps.supportRecyclerView
+
+    // Unit test only
+    testImplementation project(':litho-testing')
+    testImplementation project(':litho-annotations')
+    testCompileOnly deps.jsr305
+    testAnnotationProcessor project(':litho-processor')
+    testImplementation deps.junit
+    testImplementation deps.hamcrestLibrary
+    testImplementation deps.robolectric
+    testImplementation deps.assertjCore
+    testImplementation deps.mockitoCore
+}

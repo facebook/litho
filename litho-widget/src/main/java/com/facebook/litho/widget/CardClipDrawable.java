@@ -1,10 +1,17 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.widget;
@@ -22,6 +29,14 @@ class CardClipDrawable extends Drawable {
 
   private final Paint mCornerPaint;
   private final Path mCornerPath = new Path();
+
+  static final int NONE = 0;
+  static final int TOP_LEFT = 1 << 0;
+  static final int TOP_RIGHT = 1 << 1;
+  static final int BOTTOM_LEFT = 1 << 2;
+  static final int BOTTOM_RIGHT = 1 << 3;
+
+  private int mDisableClipCorners = NONE;
 
   private float mCornerRadius;
   private boolean mDirty = true;
@@ -45,6 +60,15 @@ class CardClipDrawable extends Drawable {
     return PixelFormat.TRANSLUCENT;
   }
 
+  void setDisableClip(int edge) {
+    if ((mDisableClipCorners & edge) != 0) {
+      return;
+    }
+    mDisableClipCorners = edge;
+    mDirty = true;
+    invalidateSelf();
+  }
+
   @Override
   public void draw(Canvas canvas) {
     if (mDirty) {
@@ -54,32 +78,36 @@ class CardClipDrawable extends Drawable {
 
     final Rect bounds = getBounds();
 
-    // left-top
-    int saved = canvas.save();
-    canvas.translate(bounds.left, bounds.top);
-    canvas.drawPath(mCornerPath, mCornerPaint);
-    canvas.restoreToCount(saved);
+    if ((mDisableClipCorners & TOP_LEFT) == 0) {
+      int saved = canvas.save();
+      canvas.translate(bounds.left, bounds.top);
+      canvas.drawPath(mCornerPath, mCornerPaint);
+      canvas.restoreToCount(saved);
+    }
 
-    // right-bottom
-    saved = canvas.save();
-    canvas.translate(bounds.right, bounds.bottom);
-    canvas.rotate(180f);
-    canvas.drawPath(mCornerPath, mCornerPaint);
-    canvas.restoreToCount(saved);
+    if ((mDisableClipCorners & BOTTOM_RIGHT) == 0) {
+      int saved = canvas.save();
+      canvas.translate(bounds.right, bounds.bottom);
+      canvas.rotate(180f);
+      canvas.drawPath(mCornerPath, mCornerPaint);
+      canvas.restoreToCount(saved);
+    }
 
-    // left-bottom
-    saved = canvas.save();
-    canvas.translate(bounds.left, bounds.bottom);
-    canvas.rotate(270f);
-    canvas.drawPath(mCornerPath, mCornerPaint);
-    canvas.restoreToCount(saved);
+    if ((mDisableClipCorners & BOTTOM_LEFT) == 0) {
+      int saved = canvas.save();
+      canvas.translate(bounds.left, bounds.bottom);
+      canvas.rotate(270f);
+      canvas.drawPath(mCornerPath, mCornerPaint);
+      canvas.restoreToCount(saved);
+    }
 
-    // right-top
-    saved = canvas.save();
-    canvas.translate(bounds.right, bounds.top);
-    canvas.rotate(90f);
-    canvas.drawPath(mCornerPath, mCornerPaint);
-    canvas.restoreToCount(saved);
+    if ((mDisableClipCorners & TOP_RIGHT) == 0) {
+      int saved = canvas.save();
+      canvas.translate(bounds.right, bounds.top);
+      canvas.rotate(90f);
+      canvas.drawPath(mCornerPath, mCornerPaint);
+      canvas.restoreToCount(saved);
+    }
   }
 
   void setClippingColor(int clippingColor) {
@@ -88,6 +116,7 @@ class CardClipDrawable extends Drawable {
     }
 
     mCornerPaint.setColor(clippingColor);
+    mDirty = true;
     invalidateSelf();
   }
 
@@ -98,7 +127,6 @@ class CardClipDrawable extends Drawable {
     }
 
     mCornerRadius = radius;
-
     mDirty = true;
     invalidateSelf();
   }

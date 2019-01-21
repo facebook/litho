@@ -7,20 +7,21 @@ permalink: /docs/mount-specs
 
 A *mount spec* defines a component that can render views or drawables.
 
-Mount specs should only be created when you need to integrate your own views/drawables with the Components framework. *Mount* here refers to the operation performed by all components in a layout tree to extract their rendered state (a `View` or a `Drawable`) to be displayed.
+Mount specs should only be created when you need to integrate your own views/drawables with Litho. *Mount* here refers to the operation performed by all components in a layout tree to extract their rendered state (a `View` or a `Drawable`) to be displayed.
 
 Mount spec classes should be annotated with `@MountSpec` and implement at least an `@OnCreateMountContent` method. The other methods listed below are optional.
 
-The life cycle of mount spec components is as follows:
+The lifecycle of mount spec components is as follows:
+[`BG` = occurs on BG thread when possible -- do not modify the view hierarchy, `UI` = can occur on UI thread, `PC` = Performance critical -- put as little work in it as possible, use `BG` methods instead]
 
-- Run `@OnPrepare` once, before layout calculation.
-- Run `@OnMeasure` optionally during layout calculation.
-- Run `@OnBoundsDefined` once, after layout calculation.
-- Run `@OnCreateMountContent` before the component is attached to a hosting view.
-- Run `@OnMount` before the component is attached to a hosting view.
-- Run `@OnBind` after the component is attached to a hosting view.
-- Run `@OnUnbind` before the component is detached from a hosting view.
-- Run `@OnUnmount` optionally after the component is detached from a hosting view.
+- Run `@OnPrepare` once, before layout calculation. `BG`/`UI`
+- Run `@OnMeasure` optionally during layout calculation. This will **not** be called if Yoga has already determined your component's bounds (e.g. a static width/height was set on the component). `BG`/`UI`
+- Run `@OnBoundsDefined` once, after layout calculation. This will be called whether or not `@OnMeasure` was called. `BG`/`UI`
+- Run `@OnCreateMountContent` before the component is attached to a hosting view. This content may be reused for other instances of this component. `UI`
+- Run `@OnMount` before the component is attached to a hosting view. This will happen when the component is about to become visible when incremental mount is enabled (it is enabled by default). `UI`/`PC`
+- Run `@OnBind` after the component is attached to a hosting view. `UI`/`PC`
+- Run `@OnUnbind` before the component is detached from a hosting view. `UI`/`PC`
+- Run `@OnUnmount` optionally after the component is detached from a hosting view. See incremental mount notes on `@OnMount`: they apply in reverse here. `UI`/`PC`
 
 ## Mounting
 
@@ -31,7 +32,7 @@ Let's start with a simple `ColorComponent` that takes a color name as a prop and
 public class ColorComponentSpec {
 
   @OnCreateMountContent
-  static ColorDrawable onCreateMountContent(ComponentContext c) {
+  static ColorDrawable onCreateMountContent(Context c) {
     return new ColorDrawable();
   }
 
@@ -55,7 +56,7 @@ public class ColorComponentSpec {
 
 You can move heavy operations off the UI thread by performing them in the `@OnPrepare` method, which runs only once before the layout calculation is performed and can be executed in a background thread.
 
-Let's say we want to perform the color name parsing off the UI thread in the `ColorComponent` above. In order to do this, we need a way to pass values generated in the `@OnPrepare` method to the `@OnMount` implementation. The Components framework provides *inter-stage inputs and outputs* to allow you to do exactly that.
+Let's say we want to perform the color name parsing off the UI thread in the `ColorComponent` above. In order to do this, we need a way to pass values generated in the `@OnPrepare` method to the `@OnMount` implementation. Litho provides *inter-stage inputs and outputs* to allow you to do exactly that.
 
 Let's have a look at `ColorComponent` with the described `@OnPrepare` method.
 
@@ -72,7 +73,7 @@ public class ColorComponentSpec {
   }
 
   @OnCreateMountContent
-  static ColorDrawable onCreateMountContent(ComponentContext c) {
+  static ColorDrawable onCreateMountContent(Context c) {
     return new ColorDrawable();
   }
 
@@ -81,7 +82,7 @@ public class ColorComponentSpec {
       ComponentContext context,
       ColorDrawable colorDrawable,
       @FromPrepare int color) {
-    convertDrawable.setColor(color);
+    colorDrawable.setColor(color);
   }
 }
 ```
@@ -114,7 +115,7 @@ static void onMeasure(
 
   // If height is undefined, use 1.5 aspect ratio.
   if (SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
-    size.height = width * 1.5;
+    size.height = size.width * 1.5;
   } else {
     size.height = SizeSpec.getSize(heightSpec);
   }
@@ -134,14 +135,28 @@ Only pure render Components can assume that when props do not change remounting 
 
 ``` java
 @ShouldUpdate(onMount = true)
-public boolean shouldUpdate(Diff<String> someStringProp) {
+static boolean shouldUpdate(@Prop Diff<String> someStringProp) {
   return !someStringProp.getPrevious().equals(someStringProp.getNext());
 }
 ```
-The parameters taken from `shouldUpdate` are [Diffs](/javadoc/com/facebook/litho/Diff) of Props or State. A Diff is an object containing the value of a `@Prop` or a `@State` in the old components hierarchy and the value of the same `@Prop`or `@State` in the new components hierarchy.  
+The parameters taken from `shouldUpdate` are [Diffs](/javadoc/com/facebook/litho/Diff) of Props or State. A Diff is an object containing the value of a `@Prop` or a `@State` in the old components hierarchy and the value of the same `@Prop` or `@State` in the new components hierarchy.
 In this example this component was defining **someStringProp** as a String `@Prop`. `shouldUpdate` will receive a `Diff<String>` to be able to compare the old and new value of this `@Prop`.  
-`shouldUpdate` has to take into consideration any prop and any states that are used at `@OnMount` time. It can safely ignore props and states that are only used at '@OnMount/@OnUnbind` time as these two methods will be executed regardless.
+`shouldUpdate` has to take into consideration any prop and any states that are used at `@OnMount` time. It can safely ignore props and states that are only used at `@OnBind`/`@OnUnbind` time as these two methods will be executed regardless.
 
 The `onMount` attribute on the `@ShouldUpdate` annotation controls whether this `shouldUpdate` check can happen at mount time. By default, Litho will try to do this reconciliation at layout time, but if layout diffing is turned off it might be useful to set onMount to true in order to execute this check at mount time instead. The `onMount` attribute is set to false by default as the equality check might be heavy itself and make mount performances worse.
 
 `@ShouldUpdate` annotated methods are currently only supported in `@MountSpec`. We have plans to expand the support to complex layouts in the future but at the moment a `@ShouldUpdate` annotated method in a `@LayoutSpec` would have no effect.
+
+## Pre-allocation
+
+When a MountSpec component is being mounted, its `View`/`Drawable` content needs to be either initialized or reused from the recycling pool. If the pool is empty, a new instance will be created at that time, which might keep the UI thread too busy and drop one or more frames. To mitigate that, Litho can pre-allocate a few instances and put in the recycling pool.
+
+``` java
+@MountSpec(poolSize = 3, canPreallocate = true)
+public class ColorComponentSpec {
+  ...
+}
+```
+
+`canPreallocate` enables pre-allocation for this MountSpec and `poolSize` defines the amount of instances to pre-allocate. For this `ColorComponent` example, three instances of `ColorDrawable` will be created and put in the recycling pool. This option is recommended for MountSpec components that inflate a complex `View`.
+

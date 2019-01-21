@@ -1,6 +1,6 @@
 ---
 docid: unit-testing
-title: Unit Testing
+title: Unit Testing Basics
 layout: docs
 permalink: /docs/unit-testing.html
 ---
@@ -12,9 +12,22 @@ AssertJ methods. They are available as:
   or Components.
 - [LithoViewAssert](/javadoc/com/facebook/litho/testing/assertj/LithoViewAssert) for assertions against mounted Components.
 
+As a convenience, a [LithoAssertions.assertThat](/javadoc/com/facebook/litho/testing/assertj/LithoAssertions) method is provided that
+can be statically imported. It provides access to all matchers provided by `ComponentAssert`, `LithoViewAssert` as well as the
+regular core AssertJ matchers:
+
+```java
+import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
+```
+
 In order to use any of the testing capabilities, you need include the optional
 `litho-testing` package in your build. It is available as
-`com.facebook.litho:litho-testing:+`.
+`com.facebook.litho:litho-testing`. To include it in your gradle build, add this
+line to your `dependencies` block:
+
+```groovy
+testImplementation 'com.facebook.litho:litho-testing:{{site.litho-version}}'
+```
 
 To demonstrate the usage of these classes, below is an example of a component
 that displays a like icon and a short description.
@@ -30,15 +43,15 @@ that displays a like icon and a short description.
 class LikersComponentSpec {
 
   @OnCreateLayout
-  protected static ComponentLayout onCreateLayout(
+  protected static Component onCreateLayout(
       ComponentContext c,
       @Prop List<User> likers) {
-      
+
     return Row.create(c)
         .alignItems(FLEX_START)
         .child(
             Image.create(c)
-                 .srcRes(R.drawable.like))
+                 .drawableRes(R.drawable.like))
         .child(
             Text.create(c)
                 .text(formatLikers(likers))
@@ -57,7 +70,7 @@ For our test, we want to verify the rendering of the text and the icon.
 
 ## Setup
 
-The Components testing framework provides a JUnit
+The Litho testing framework provides a JUnit
 [`@Rule`](https://github.com/junit-team/junit4/wiki/Rules) which
 sets up overrides for
 [Styleables](https://developer.android.com/reference/android/R.styleable.html)
@@ -74,7 +87,7 @@ public class LikersComponentTest {
 ```
 
 ## Testing Component Rendering
-The Components framework includes a set of AssertJ-style helpers for verifying
+The Litho framework includes a set of AssertJ-style helpers for verifying
 properties of your Components. Behind the scenes, this will mount the
 Component for you.
 
@@ -114,54 +127,10 @@ or on the `ComponentBuilder` before it is consumed by `build()`.
   }
 ```
 
-
-## Testing Sub-Component Rendering
-
-Instead of performing assertions on the content rendered by your Component, it
-might be useful to test for the rendering of sub-components instead.
-[SubComponent](/javadoc/com/facebook/litho/testing/SubComponent) is a convenience class that allows for easier comparison of Component
-types. You can, again, use AssertJ to verify the presence or absence of
-the subcomponents.
-
-```java
-public class StoryTest {
-  ...
-
-  @Test
-  public void testStoryLayout() {
-    ComponentContext c = mComponentsRule.getContext();
-    Story story = ...
-
-    Component<StoryComponent> component =
-        StoryComponent.create(c)
-            .story(story);
-
-    assertThat(subComponents).hasSubComponents(
-        SubComponent.of(HeaderComponent.class),
-        SubComponent.of(MessageComponent.class),
-        SubComponent.of(LikersComponent.class),
-        SubComponent.of(FeedbackComponent.class));
-  }
-
-  @Test
-  public void testStoryWithZeroLikes() {
-    ComponentContext c = mComponentsRule.getContext();
-    Story storyWithZeroLikes = ...;
-
-    Component<StoryComponent> component = StoryComponent.create(c)
-        .story(storyWithZeroLikes)
-        .build();
-
-    assertThat(component)
-        .doesNotContainSubComponent(SubComponent.of(LikersComponent.class));
-  }
-}
-```
-
 ## Additional Asserts
 
 There are several more assertions available for `Component`s and
-`LithoView`s. They all operate on the tree created by your `Component`.
+`LithoView`s. They all operate on the tree created by your mounted `Component`.
 So asserting the presence of a `Drawable` in your `Component` will traverse
 the view hierarchy from the provided starting point.
 
@@ -174,12 +143,12 @@ Robolectric, for instance, you may run into issues as Robolectric spins up new
 for every test suite with a different configuration. The same goes for PowerMock, which
 prepares the ClassLoaders on a per-suite basis and leaves them in a non-reusable state.
 
-The JVM has two important limitations that are relevant to this: 
+The JVM has two important limitations that are relevant to this:
 
 1. A shared library can only ever be loaded once per process.
 2. `ClassLoader`s do not share information about the libraries loaded.
 
-Because of that, using multiple ClassLoaders for test runs, is highly problematic
+Because of that, using multiple ClassLoaders for test runs is highly problematic
 as every instance will attempt to load Yoga and every but the first will fail with
 a `libyoga.so already loaded in another classloader` exception.
 
@@ -211,3 +180,8 @@ Ultimately, depending on your build system and the existing constraints of your
 project, you may need to adjust the way in which your test runner utilizes
 ClassLoaders. This is, however, not a problem unique to Litho but an unfortunate
 consequence of mixing native and Java code in Android projects.
+
+## Next
+
+Either head back to the [testing overview](/docs/testing-overview.html) or
+continue with the next section, [Sub-Component Testing](/docs/subcomponent-testing).

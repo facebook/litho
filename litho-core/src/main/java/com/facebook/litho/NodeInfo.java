@@ -1,22 +1,30 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
+import android.support.annotation.IntDef;
+import android.support.annotation.Nullable;
+import android.util.SparseArray;
+import android.view.ViewOutlineProvider;
+import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import android.support.annotation.IntDef;
-import android.util.SparseArray;
-
-import com.facebook.infer.annotation.ThreadConfined;
 
 /**
  * NodeInfo holds information that are set to the {@link InternalNode} and needs to be used
@@ -25,13 +33,29 @@ import com.facebook.infer.annotation.ThreadConfined;
 @ThreadConfined(ThreadConfined.ANY)
 class NodeInfo {
 
-  static final short FOCUS_UNSET = 0;
-  static final short FOCUS_SET_TRUE = 1;
-  static final short FOCUS_SET_FALSE = 2;
+  static final int FOCUS_UNSET = 0;
+  static final int FOCUS_SET_TRUE = 1;
+  static final int FOCUS_SET_FALSE = 2;
 
   @IntDef({FOCUS_UNSET, FOCUS_SET_TRUE, FOCUS_SET_FALSE})
   @Retention(RetentionPolicy.SOURCE)
   @interface FocusState {}
+
+  static final int ENABLED_UNSET = 0;
+  static final int ENABLED_SET_TRUE = 1;
+  static final int ENABLED_SET_FALSE = 2;
+
+  @IntDef({ENABLED_UNSET, ENABLED_SET_TRUE, ENABLED_SET_FALSE})
+  @Retention(RetentionPolicy.SOURCE)
+  @interface EnabledState {}
+
+  static final int SELECTED_UNSET = 0;
+  static final int SELECTED_SET_TRUE = 1;
+  static final int SELECTED_SET_FALSE = 2;
+
+  @IntDef({SELECTED_UNSET, SELECTED_SET_TRUE, SELECTED_SET_FALSE})
+  @Retention(RetentionPolicy.SOURCE)
+  @interface SelectedState {}
 
   // When this flag is set, contentDescription was explicitly set on this node.
   private static final int PFLAG_CONTENT_DESCRIPTION_IS_SET = 1 << 0;
@@ -62,15 +86,42 @@ class NodeInfo {
   private static final int PFLAG_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET = 1 << 12;
   // When this flag is set, sendAccessibilityEventUncheckedHandler was explicitly set on this node.
   private static final int PFLAG_SEND_ACCESSIBILITY_EVENT_UNCHECKED_HANDLER_IS_SET = 1 << 13;
+  // When this flag is set, shadowElevation was explicitly set on this node.
+  private static final int PFLAG_SHADOW_ELEVATION_IS_SET = 1 << 14;
+  // When this flag is set, outlineProvider was explicitly set on this node.
+  private static final int PFLAG_OUTINE_PROVIDER_IS_SET = 1 << 15;
+  // When this flag is set, clipToOutline was explicitly set on this node.
+  private static final int PFLAG_CLIP_TO_OUTLINE_IS_SET = 1 << 16;
+  // When this flag is set, focusChangeHandler was explicitly set on this code.
+  private static final int PFLAG_FOCUS_CHANGE_HANDLER_IS_SET = 1 << 17;
+  // When this flag is set, interceptTouchHandler was explicitly set on this node.
+  private static final int PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET = 1 << 18;
+  private static final int PFLAG_SCALE_IS_SET = 1 << 19;
+  private static final int PFLAG_ALPHA_IS_SET = 1 << 20;
+  private static final int PFLAG_ROTATION_IS_SET = 1 << 21;
+  private static final int PFLAG_ACCESSIBILITY_ROLE_IS_SET = 1 << 22;
+  // When this flag is set, clipChildren was explicitly set on this node.
+  private static final int PFLAG_CLIP_CHILDREN_IS_SET = 1 << 23;
 
   private final AtomicInteger mReferenceCount = new AtomicInteger(0);
 
   private CharSequence mContentDescription;
   private Object mViewTag;
-  private SparseArray<Object> mViewTags;
-  private EventHandler mClickHandler;
-  private EventHandler mLongClickHandler;
-  private EventHandler mTouchHandler;
+  @Nullable private SparseArray<Object> mViewTags;
+  private float mShadowElevation;
+  private ViewOutlineProvider mOutlineProvider;
+  private boolean mClipToOutline;
+  // Default value for ViewGroup
+  private boolean mClipChildren = true;
+  private float mScale = 1;
+  private float mAlpha = 1;
+  private float mRotation = 0;
+  private EventHandler<ClickEvent> mClickHandler;
+  private EventHandler<FocusChangedEvent> mFocusChangeHandler;
+  private EventHandler<LongClickEvent> mLongClickHandler;
+  private EventHandler<TouchEvent> mTouchHandler;
+  private EventHandler<InterceptTouchEvent> mInterceptTouchHandler;
+  @AccessibilityRole.AccessibilityRoleType private String mAccessibilityRole;
   private EventHandler<DispatchPopulateAccessibilityEventEvent>
       mDispatchPopulateAccessibilityEventHandler;
   private EventHandler<OnInitializeAccessibilityEventEvent>
@@ -84,7 +135,9 @@ class NodeInfo {
   private EventHandler<SendAccessibilityEventEvent> mSendAccessibilityEventHandler;
   private EventHandler<SendAccessibilityEventUncheckedEvent>
       mSendAccessibilityEventUncheckedHandler;
-  private @NodeInfo.FocusState short mFocusState = FOCUS_UNSET;
+  @FocusState private int mFocusState = FOCUS_UNSET;
+  @EnabledState private int mEnabledState = ENABLED_UNSET;
+  @SelectedState private int mSelectedState = SELECTED_UNSET;
 
   private int mPrivateFlags;
 
@@ -111,53 +164,115 @@ class NodeInfo {
     mViewTags = viewTags;
   }
 
+  float getShadowElevation() {
+    return mShadowElevation;
+  }
+
+  public void setShadowElevation(float shadowElevation) {
+    mPrivateFlags |= PFLAG_SHADOW_ELEVATION_IS_SET;
+    mShadowElevation = shadowElevation;
+  }
+
+  ViewOutlineProvider getOutlineProvider() {
+    return mOutlineProvider;
+  }
+
+  public void setOutlineProvider(ViewOutlineProvider outlineProvider) {
+    mPrivateFlags |= PFLAG_OUTINE_PROVIDER_IS_SET;
+    mOutlineProvider = outlineProvider;
+  }
+
+  public boolean getClipToOutline() {
+    return mClipToOutline;
+  }
+
+  public void setClipToOutline(boolean clipToOutline) {
+    mPrivateFlags |= PFLAG_CLIP_TO_OUTLINE_IS_SET;
+    mClipToOutline = clipToOutline;
+  }
+
+  public void setClipChildren(boolean clipChildren) {
+    mPrivateFlags |= PFLAG_CLIP_CHILDREN_IS_SET;
+    mClipChildren = clipChildren;
+  }
+
+  public boolean getClipChildren() {
+    return mClipChildren;
+  }
+
+  public boolean isClipChildrenSet() {
+    return (mPrivateFlags & PFLAG_CLIP_CHILDREN_IS_SET) != 0;
+  }
+
+  @Nullable
   SparseArray<Object> getViewTags() {
     return mViewTags;
   }
 
-  void setClickHandler(EventHandler clickHandler) {
+  void setClickHandler(EventHandler<ClickEvent> clickHandler) {
     mPrivateFlags |= PFLAG_CLICK_HANDLER_IS_SET;
     mClickHandler = clickHandler;
   }
 
-  EventHandler getClickHandler() {
+  EventHandler<ClickEvent> getClickHandler() {
     return mClickHandler;
   }
 
-  boolean isClickable() {
-    return (mClickHandler != null);
-  }
-
-  void setLongClickHandler(EventHandler longClickHandler) {
+  void setLongClickHandler(EventHandler<LongClickEvent> longClickHandler) {
     mPrivateFlags |= PFLAG_LONG_CLICK_HANDLER_IS_SET;
     mLongClickHandler = longClickHandler;
   }
 
-  EventHandler getLongClickHandler() {
-    mPrivateFlags |= PFLAG_TOUCH_HANDLER_IS_SET;
+  EventHandler<LongClickEvent> getLongClickHandler() {
     return mLongClickHandler;
   }
 
-  boolean isLongClickable() {
-    return (mLongClickHandler != null);
+  void setFocusChangeHandler(EventHandler<FocusChangedEvent> focusChangedHandler) {
+    mPrivateFlags |= PFLAG_FOCUS_CHANGE_HANDLER_IS_SET;
+    mFocusChangeHandler = focusChangedHandler;
   }
 
-  void setTouchHandler(EventHandler touchHandler) {
+  EventHandler<FocusChangedEvent> getFocusChangeHandler() {
+    return mFocusChangeHandler;
+  }
+
+  boolean hasFocusChangeHandler() {
+    return mFocusChangeHandler != null;
+  }
+
+  void setTouchHandler(EventHandler<TouchEvent> touchHandler) {
+    mPrivateFlags |= PFLAG_TOUCH_HANDLER_IS_SET;
     mTouchHandler = touchHandler;
   }
 
-  EventHandler getTouchHandler() {
+  EventHandler<TouchEvent> getTouchHandler() {
     return mTouchHandler;
   }
 
-  boolean isTouchable() {
-    return (mTouchHandler != null);
+  void setInterceptTouchHandler(EventHandler<InterceptTouchEvent> interceptTouchHandler) {
+    mPrivateFlags |= PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET;
+    mInterceptTouchHandler = interceptTouchHandler;
+  }
+
+  EventHandler<InterceptTouchEvent> getInterceptTouchHandler() {
+    return mInterceptTouchHandler;
   }
 
   boolean hasTouchEventHandlers() {
     return mClickHandler != null
         || mLongClickHandler != null
-        || mTouchHandler != null;
+        || mTouchHandler != null
+        || mInterceptTouchHandler != null;
+  }
+
+  void setAccessibilityRole(@AccessibilityRole.AccessibilityRoleType String role) {
+    mPrivateFlags |= PFLAG_ACCESSIBILITY_ROLE_IS_SET;
+    mAccessibilityRole = role;
+  }
+
+  @AccessibilityRole.AccessibilityRoleType
+  String getAccessibilityRole() {
+    return mAccessibilityRole;
   }
 
   void setDispatchPopulateAccessibilityEventHandler(
@@ -246,7 +361,7 @@ class NodeInfo {
     return mSendAccessibilityEventUncheckedHandler;
   }
 
-  boolean hasAccessibilityHandlers() {
+  boolean needsAccessibilityDelegate() {
     return mOnInitializeAccessibilityEventHandler != null
         || mOnInitializeAccessibilityNodeInfoHandler != null
         || mOnPopulateAccessibilityEventHandler != null
@@ -254,7 +369,8 @@ class NodeInfo {
         || mPerformAccessibilityActionHandler != null
         || mDispatchPopulateAccessibilityEventHandler != null
         || mSendAccessibilityEventHandler != null
-        || mSendAccessibilityEventUncheckedHandler != null;
+        || mSendAccessibilityEventUncheckedHandler != null
+        || mAccessibilityRole != null;
   }
 
   void setFocusable(boolean isFocusable) {
@@ -266,8 +382,208 @@ class NodeInfo {
   }
 
   @NodeInfo.FocusState
-  short getFocusState() {
+  int getFocusState() {
     return mFocusState;
+  }
+
+  void setEnabled(boolean isEnabled) {
+    if (isEnabled) {
+      mEnabledState = ENABLED_SET_TRUE;
+    } else {
+      mEnabledState = ENABLED_SET_FALSE;
+    }
+  }
+
+  @EnabledState
+  int getEnabledState() {
+    return mEnabledState;
+  }
+
+  void setSelected(boolean isSelected) {
+    if (isSelected) {
+      mSelectedState = SELECTED_SET_TRUE;
+    } else {
+      mSelectedState = SELECTED_SET_FALSE;
+    }
+  }
+
+  @SelectedState
+  int getSelectedState() {
+    return mSelectedState;
+  }
+
+  float getScale() {
+    return mScale;
+  }
+
+  void setScale(float scale) {
+    mScale = scale;
+    mPrivateFlags |= PFLAG_SCALE_IS_SET;
+  }
+
+  boolean isScaleSet() {
+    return (mPrivateFlags & PFLAG_SCALE_IS_SET) != 0;
+  }
+
+  float getAlpha() {
+    return mAlpha;
+  }
+
+  void setAlpha(float alpha) {
+    mAlpha = alpha;
+    mPrivateFlags |= PFLAG_ALPHA_IS_SET;
+  }
+
+  boolean isAlphaSet() {
+    return (mPrivateFlags & PFLAG_ALPHA_IS_SET) != 0;
+  }
+
+  float getRotation() {
+    return mRotation;
+  }
+
+  void setRotation(float rotation) {
+    mRotation = rotation;
+    mPrivateFlags |= PFLAG_ROTATION_IS_SET;
+  }
+
+  boolean isRotationSet() {
+    return (mPrivateFlags & PFLAG_ROTATION_IS_SET) != 0;
+  }
+
+  /**
+   * Checks if this NodeInfo is equal to the {@param other}
+   *
+   * @param other the other NodeInfo
+   * @return {@code true} iff this NodeInfo is equal to the {@param other}.
+   */
+  public boolean isEquivalentTo(NodeInfo other) {
+    if (this == other) {
+      return true;
+    }
+
+    if (other == null) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mAccessibilityRole, other.mAccessibilityRole)) {
+      return false;
+    }
+
+    if (mAlpha != other.mAlpha) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mClickHandler, other.mClickHandler)) {
+      return false;
+    }
+
+    if (mClipToOutline != other.mClipToOutline) {
+      return false;
+    }
+
+    if (mClipChildren != other.mClipChildren) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mContentDescription, other.mContentDescription)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(
+        mDispatchPopulateAccessibilityEventHandler,
+        other.mDispatchPopulateAccessibilityEventHandler)) {
+      return false;
+    }
+
+    if (mEnabledState != other.mEnabledState) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mFocusChangeHandler, other.mFocusChangeHandler)) {
+      return false;
+    }
+
+    if (mFocusState != other.mFocusState) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mInterceptTouchHandler, other.mInterceptTouchHandler)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mLongClickHandler, other.mLongClickHandler)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(
+        mOnInitializeAccessibilityEventHandler, other.mOnInitializeAccessibilityEventHandler)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(
+        mOnInitializeAccessibilityNodeInfoHandler,
+        other.mOnInitializeAccessibilityNodeInfoHandler)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(
+        mOnPopulateAccessibilityEventHandler, other.mOnPopulateAccessibilityEventHandler)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(
+        mOnRequestSendAccessibilityEventHandler, other.mOnRequestSendAccessibilityEventHandler)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mOutlineProvider, other.mOutlineProvider)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(
+        mPerformAccessibilityActionHandler, other.mPerformAccessibilityActionHandler)) {
+      return false;
+    }
+
+    if (mRotation != other.mRotation) {
+      return false;
+    }
+
+    if (mScale != other.mScale) {
+      return false;
+    }
+
+    if (mSelectedState != other.mSelectedState) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mSendAccessibilityEventHandler, other.mSendAccessibilityEventHandler)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(
+        mSendAccessibilityEventUncheckedHandler, other.mSendAccessibilityEventUncheckedHandler)) {
+      return false;
+    }
+
+    if (mShadowElevation != other.mShadowElevation) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mTouchHandler, other.mTouchHandler)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mViewTag, other.mViewTag)) {
+      return false;
+    }
+
+    if (!CommonUtils.equals(mViewTags, other.mViewTags)) {
+      return false;
+    }
+
+    return true;
   }
 
   void updateWith(NodeInfo newInfo) {
@@ -277,8 +593,17 @@ class NodeInfo {
     if ((newInfo.mPrivateFlags & PFLAG_LONG_CLICK_HANDLER_IS_SET) != 0) {
       mLongClickHandler = newInfo.mLongClickHandler;
     }
+    if ((newInfo.mPrivateFlags & PFLAG_FOCUS_CHANGE_HANDLER_IS_SET) != 0) {
+      mFocusChangeHandler = newInfo.mFocusChangeHandler;
+    }
     if ((newInfo.mPrivateFlags & PFLAG_TOUCH_HANDLER_IS_SET) != 0) {
       mTouchHandler = newInfo.mTouchHandler;
+    }
+    if ((newInfo.mPrivateFlags & PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET) != 0) {
+      mInterceptTouchHandler = newInfo.mInterceptTouchHandler;
+    }
+    if ((newInfo.mPrivateFlags & PFLAG_ACCESSIBILITY_ROLE_IS_SET) != 0) {
+      mAccessibilityRole = newInfo.mAccessibilityRole;
     }
     if ((newInfo.mPrivateFlags & PFLAG_DISPATCH_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
       mDispatchPopulateAccessibilityEventHandler =
@@ -308,6 +633,19 @@ class NodeInfo {
     if ((newInfo.mPrivateFlags & PFLAG_CONTENT_DESCRIPTION_IS_SET) != 0) {
       mContentDescription = newInfo.mContentDescription;
     }
+    if ((newInfo.mPrivateFlags & PFLAG_SHADOW_ELEVATION_IS_SET) != 0) {
+      mShadowElevation = newInfo.mShadowElevation;
+    }
+    if ((newInfo.mPrivateFlags & PFLAG_OUTINE_PROVIDER_IS_SET) != 0) {
+      mOutlineProvider = newInfo.mOutlineProvider;
+    }
+    if ((newInfo.mPrivateFlags & PFLAG_CLIP_TO_OUTLINE_IS_SET) != 0) {
+      mClipToOutline = newInfo.mClipToOutline;
+    }
+    if (newInfo.isClipChildrenSet()) {
+      // Update field value and a flag
+      setClipChildren(newInfo.mClipChildren);
+    }
     if (newInfo.mViewTag != null) {
       mViewTag = newInfo.mViewTag;
     }
@@ -316,6 +654,105 @@ class NodeInfo {
     }
     if (newInfo.getFocusState() != FOCUS_UNSET) {
       mFocusState = newInfo.getFocusState();
+    }
+    if (newInfo.getEnabledState() != ENABLED_UNSET) {
+      mEnabledState = newInfo.getEnabledState();
+    }
+    if (newInfo.getSelectedState() != SELECTED_UNSET) {
+      mSelectedState = newInfo.getSelectedState();
+    }
+    if ((newInfo.mPrivateFlags & PFLAG_SCALE_IS_SET) != 0) {
+      mScale = newInfo.mScale;
+    }
+    if ((newInfo.mPrivateFlags & PFLAG_ALPHA_IS_SET) != 0) {
+      mAlpha = newInfo.mAlpha;
+    }
+    if ((newInfo.mPrivateFlags & PFLAG_ROTATION_IS_SET) != 0) {
+      mRotation = newInfo.mRotation;
+    }
+  }
+
+  void copyInto(InternalNode layout) {
+    if ((mPrivateFlags & PFLAG_CLICK_HANDLER_IS_SET) != 0) {
+      layout.clickHandler(mClickHandler);
+    }
+    if ((mPrivateFlags & PFLAG_LONG_CLICK_HANDLER_IS_SET) != 0) {
+      layout.longClickHandler(mLongClickHandler);
+    }
+    if ((mPrivateFlags & PFLAG_FOCUS_CHANGE_HANDLER_IS_SET) != 0) {
+      layout.focusChangeHandler(mFocusChangeHandler);
+    }
+    if ((mPrivateFlags & PFLAG_TOUCH_HANDLER_IS_SET) != 0) {
+      layout.touchHandler(mTouchHandler);
+    }
+    if ((mPrivateFlags & PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET) != 0) {
+      layout.interceptTouchHandler(mInterceptTouchHandler);
+    }
+    if ((mPrivateFlags & PFLAG_ACCESSIBILITY_ROLE_IS_SET) != 0) {
+      layout.accessibilityRole(mAccessibilityRole);
+    }
+    if ((mPrivateFlags & PFLAG_DISPATCH_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
+      layout.dispatchPopulateAccessibilityEventHandler(mDispatchPopulateAccessibilityEventHandler);
+    }
+    if ((mPrivateFlags & PFLAG_ON_INITIALIZE_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
+      layout.onInitializeAccessibilityEventHandler(mOnInitializeAccessibilityEventHandler);
+    }
+    if ((mPrivateFlags & PFLAG_ON_INITIALIZE_ACCESSIBILITY_NODE_INFO_HANDLER_IS_SET) != 0) {
+      layout.onInitializeAccessibilityNodeInfoHandler(mOnInitializeAccessibilityNodeInfoHandler);
+    }
+    if ((mPrivateFlags & PFLAG_ON_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
+      layout.onPopulateAccessibilityEventHandler(mOnPopulateAccessibilityEventHandler);
+    }
+    if ((mPrivateFlags & PFLAG_ON_REQUEST_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
+      layout.onRequestSendAccessibilityEventHandler(mOnRequestSendAccessibilityEventHandler);
+    }
+    if ((mPrivateFlags & PFLAG_PERFORM_ACCESSIBILITY_ACTION_HANDLER_IS_SET) != 0) {
+      layout.performAccessibilityActionHandler(mPerformAccessibilityActionHandler);
+    }
+    if ((mPrivateFlags & PFLAG_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
+      layout.sendAccessibilityEventHandler(mSendAccessibilityEventHandler);
+    }
+    if ((mPrivateFlags & PFLAG_SEND_ACCESSIBILITY_EVENT_UNCHECKED_HANDLER_IS_SET) != 0) {
+      layout.sendAccessibilityEventUncheckedHandler(mSendAccessibilityEventUncheckedHandler);
+    }
+    if ((mPrivateFlags & PFLAG_CONTENT_DESCRIPTION_IS_SET) != 0) {
+      layout.contentDescription(mContentDescription);
+    }
+    if ((mPrivateFlags & PFLAG_SHADOW_ELEVATION_IS_SET) != 0) {
+      layout.shadowElevationPx(mShadowElevation);
+    }
+    if ((mPrivateFlags & PFLAG_OUTINE_PROVIDER_IS_SET) != 0) {
+      layout.outlineProvider(mOutlineProvider);
+    }
+    if ((mPrivateFlags & PFLAG_CLIP_TO_OUTLINE_IS_SET) != 0) {
+      layout.clipToOutline(mClipToOutline);
+    }
+    if ((mPrivateFlags & PFLAG_CLIP_CHILDREN_IS_SET) != 0) {
+      layout.clipChildren(mClipChildren);
+    }
+    if (mViewTag != null) {
+      layout.viewTag(mViewTag);
+    }
+    if (mViewTags != null) {
+      layout.viewTags(mViewTags);
+    }
+    if (getFocusState() != FOCUS_UNSET) {
+      layout.focusable(getFocusState() == FOCUS_SET_TRUE);
+    }
+    if (getEnabledState() != ENABLED_UNSET) {
+      layout.enabled(getEnabledState() == ENABLED_SET_TRUE);
+    }
+    if (getSelectedState() != SELECTED_UNSET) {
+      layout.selected(getSelectedState() == SELECTED_SET_TRUE);
+    }
+    if ((mPrivateFlags & PFLAG_SCALE_IS_SET) != 0) {
+      layout.scale(mScale);
+    }
+    if ((mPrivateFlags & PFLAG_ALPHA_IS_SET) != 0) {
+      layout.alpha(mAlpha);
+    }
+    if ((mPrivateFlags & PFLAG_ROTATION_IS_SET) != 0) {
+      layout.rotation(mRotation);
     }
   }
 
@@ -346,12 +783,19 @@ class NodeInfo {
       return;
     }
 
+    if (ComponentsConfiguration.disablePools) {
+      return;
+    }
+
     mContentDescription = null;
     mViewTag = null;
     mViewTags = null;
     mClickHandler = null;
     mLongClickHandler = null;
+    mFocusChangeHandler = null;
     mTouchHandler = null;
+    mInterceptTouchHandler = null;
+    mAccessibilityRole = null;
     mDispatchPopulateAccessibilityEventHandler = null;
     mOnInitializeAccessibilityEventHandler = null;
     mOnPopulateAccessibilityEventHandler = null;
@@ -361,7 +805,16 @@ class NodeInfo {
     mSendAccessibilityEventHandler = null;
     mSendAccessibilityEventUncheckedHandler = null;
     mFocusState = FOCUS_UNSET;
+    mEnabledState = ENABLED_UNSET;
+    mSelectedState = SELECTED_UNSET;
     mPrivateFlags = 0;
+    mShadowElevation = 0;
+    mOutlineProvider = null;
+    mClipToOutline = false;
+    mClipChildren = true;
+    mScale = 1;
+    mAlpha = 1;
+    mRotation = 0;
 
     ComponentsPools.release(this);
   }

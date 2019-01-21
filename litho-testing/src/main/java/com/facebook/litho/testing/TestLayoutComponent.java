@@ -1,68 +1,37 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.testing;
 
-import com.facebook.litho.Column;
-
-import com.facebook.yoga.YogaAlign;
-
-import com.facebook.yoga.YogaFlexDirection;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 import android.support.v4.util.Pools;
-
+import com.facebook.litho.Column;
 import com.facebook.litho.Component;
-import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.ComponentLifecycle;
-
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.Layout;
+import com.facebook.litho.Wrapper;
 
-public class TestLayoutComponent extends ComponentLifecycle {
-  private static final List<TestLayoutComponent> sInstances = new ArrayList<>();
-  private static final Pools.SynchronizedPool<Builder> mBuilderPool =
+public class TestLayoutComponent extends TestComponent {
+  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
   private final boolean mCallsShouldUpdateOnMount;
   private final boolean mIsPureRender;
   private final boolean mHasMountSpecChild;
   private final boolean mIsDelegate;
-
-  private synchronized static TestLayoutComponent get(
-      boolean callsShouldUpdateOnMount,
-      boolean isPureRender,
-      boolean hasMountSpecChild,
-      boolean isDelegate) {
-    for (TestLayoutComponent lifecycle : sInstances) {
-      if (lifecycle.mCallsShouldUpdateOnMount == callsShouldUpdateOnMount
-          && lifecycle.mIsPureRender == isPureRender
-          && lifecycle.mHasMountSpecChild == hasMountSpecChild
-          && lifecycle.mIsDelegate == isDelegate) {
-        return lifecycle;
-      }
-    }
-
-    final TestLayoutComponent lifecycle = new TestLayoutComponent(
-        callsShouldUpdateOnMount,
-        isPureRender,
-        hasMountSpecChild,
-        isDelegate);
-
-    sInstances.add(lifecycle);
-
-    return lifecycle;
-  }
 
   private TestLayoutComponent(
       boolean callsShouldUpdateOnMount,
@@ -93,16 +62,16 @@ public class TestLayoutComponent extends ComponentLifecycle {
   }
 
   @Override
-  protected ComponentLayout onCreateLayout(ComponentContext c, Component _stateObject) {
-    super.onCreateLayout(c, _stateObject);
-    final Component<?> mountSpecComponent =
+  protected Component onCreateLayout(ComponentContext c) {
+    super.onCreateLayout(c);
+    final Component mountSpecComponent =
         TestDrawableComponent.create(c, false, true, true, false, false).build();
 
     if (mIsDelegate) {
-      return Layout.create(c, mountSpecComponent).flexShrink(0).build();
+      return Wrapper.create(c).delegate(mountSpecComponent).build();
     }
 
-    ComponentLayout.ContainerBuilder containerBuilder = Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START);
+    Component.ContainerBuilder<?> containerBuilder = Column.create(c);
 
     if (mHasMountSpecChild) {
       containerBuilder.child(mountSpecComponent);
@@ -135,7 +104,8 @@ public class TestLayoutComponent extends ComponentLifecycle {
         context,
         defStyleAttr,
         defStyleRes,
-        new State(callsShouldUpdateOnMount, isPureRender, hasMountSpecChild, isDelegate));
+        new TestLayoutComponent(
+            callsShouldUpdateOnMount, isPureRender, hasMountSpecChild, isDelegate));
   }
 
   public static Builder create(ComponentContext context) {
@@ -153,8 +123,8 @@ public class TestLayoutComponent extends ComponentLifecycle {
       ComponentContext context,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
-      State state) {
-    Builder builder = mBuilderPool.acquire();
+      TestLayoutComponent state) {
+    Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
     }
@@ -162,45 +132,33 @@ public class TestLayoutComponent extends ComponentLifecycle {
     return builder;
   }
 
-  public static class State extends TestComponent<TestLayoutComponent> implements Cloneable {
-
-    private State(
-        boolean callsShouldUpdateOnMount,
-        boolean isPureRender,
-        boolean hasMountSpecChild,
-        boolean isDelegate) {
-      super(get(callsShouldUpdateOnMount, isPureRender, hasMountSpecChild, isDelegate));
-    }
-
-    @Override
-    public int hashCode() {
-      return super.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (o == null) {
-        return false;
-      }
-      if (!super.equals(o)) {
-        return false;
-      }
-      if (o instanceof State) {
-        return true;
-      }
-      return false;
-    }
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 
-  public static class Builder
-      extends com.facebook.litho.Component.Builder<TestLayoutComponent> {
-    State mState;
+  @Override
+  public boolean equals(Object o) {
+    if (o == null) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    if (o instanceof TestLayoutComponent) {
+      return true;
+    }
+    return false;
+  }
+
+  public static class Builder extends com.facebook.litho.Component.Builder<Builder> {
+    TestLayoutComponent mState;
 
     private void init(
         ComponentContext context,
         @AttrRes int defStyleAttr,
         @StyleRes int defStyleRes,
-        State state) {
+        TestLayoutComponent state) {
       super.init(context, defStyleAttr, defStyleRes, state);
       mState = state;
     }
@@ -211,14 +169,13 @@ public class TestLayoutComponent extends ComponentLifecycle {
     }
 
     @Override
-    public Builder key(String key) {
-      super.setKey(key);
+    public Builder getThis() {
       return this;
     }
 
     @Override
-    public TestComponent<TestLayoutComponent> build() {
-      State state = mState;
+    public TestComponent build() {
+      TestLayoutComponent state = mState;
       release();
       return state;
     }
@@ -227,7 +184,7 @@ public class TestLayoutComponent extends ComponentLifecycle {
     protected void release() {
       super.release();
       mState = null;
-      mBuilderPool.release(this);
+      sBuilderPool.release(this);
     }
   }
 }

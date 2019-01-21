@@ -1,75 +1,54 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.testing;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import android.content.Context;
 import android.support.annotation.AttrRes;
 import android.support.annotation.StyleRes;
 import android.support.v4.util.Pools;
 import android.view.View;
-
 import com.facebook.litho.Component;
-import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
+import javax.annotation.Nullable;
 
-public class TestViewComponent extends ComponentLifecycle {
-  private static final List<TestViewComponent> sInstances = new ArrayList<>();
-  private static final Pools.SynchronizedPool<Builder> mBuilderPool =
+public class TestViewComponent extends TestComponent {
+  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
   private final boolean mCallsShouldUpdateOnMount;
   private final boolean mIsPureRender;
   private final boolean mCanMeasure;
-  private final boolean mCanMountIncrementally;
-
-  private synchronized static TestViewComponent get(
-      boolean callsShouldUpdateOnMount,
-      boolean isPureRender,
-      boolean canMeasure,
-      boolean canMountIncrementally) {
-    for (TestViewComponent lifecycle : sInstances) {
-      if (lifecycle.mCallsShouldUpdateOnMount == callsShouldUpdateOnMount &&
-          lifecycle.mIsPureRender == isPureRender &&
-          lifecycle.mCanMeasure == canMeasure &&
-          lifecycle.mCanMountIncrementally == canMountIncrementally) {
-        return lifecycle;
-      }
-    }
-
-    final TestViewComponent lifecycle = new TestViewComponent(
-        callsShouldUpdateOnMount,
-        isPureRender,
-        canMeasure,
-        canMountIncrementally);
-
-    sInstances.add(lifecycle);
-
-    return lifecycle;
-  }
+  private final boolean mHasChildLithoViews;
+  @Nullable private View mTestView;
 
   private TestViewComponent(
       boolean callsShouldUpdateOnMount,
       boolean isPureRender,
       boolean canMeasure,
-      boolean canMountIncrementally) {
-    super();
+      boolean hasChildLithoViews) {
+    super("TestViewComponent");
 
     mCallsShouldUpdateOnMount = callsShouldUpdateOnMount;
     mIsPureRender = isPureRender;
     mCanMeasure = canMeasure;
-    mCanMountIncrementally = canMountIncrementally;
+    mHasChildLithoViews = hasChildLithoViews;
   }
 
   @Override
@@ -88,28 +67,23 @@ public class TestViewComponent extends ComponentLifecycle {
   }
 
   @Override
-  protected boolean canMountIncrementally() {
-    return mCanMountIncrementally;
+  protected boolean hasChildLithoViews() {
+    return mHasChildLithoViews;
   }
 
   @Override
-  protected Object onCreateMountContent(ComponentContext c) {
-    if (c instanceof TestComponentContextWithView) {
-      return ((TestComponentContextWithView) c).getTestView();
-    }
-    return new View(c);
+  protected Object onCreateMountContent(Context c) {
+    return mTestView != null ? mTestView : new View(c);
   }
 
   @Override
-  protected void onMount(ComponentContext c, Object convertView, Component _stateObject) {
-    State state = (State) _stateObject;
-    state.onMountCalled();
+  protected void onMount(ComponentContext c, Object convertView) {
+    onMountCalled();
   }
 
   @Override
-  protected void onUnmount(ComponentContext c, Object mountedContent, Component<?> component) {
-    State state = (State) component;
-    state.onUnmountCalled();
+  protected void onUnmount(ComponentContext c, Object mountedContent) {
+    onUnmountCalled();
   }
 
   @Override
@@ -119,41 +93,29 @@ public class TestViewComponent extends ComponentLifecycle {
 
   @Override
   protected void onMeasure(
-      ComponentContext c,
-      ComponentLayout layout,
-      int widthSpec,
-      int heightSpec,
-      Size size,
-      Component<?> component) {
+      ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
     int width = SizeSpec.getSize(widthSpec);
     int height = SizeSpec.getSize(heightSpec);
 
     size.height = height;
     size.width = width;
 
-    State state = (State) component;
-    state.onMeasureCalled();
+    onMeasureCalled();
   }
 
   @Override
-  protected void onBoundsDefined(
-      ComponentContext c,
-      ComponentLayout layout,
-      Component<?> component) {
-    State state = (State) component;
-    state.onDefineBoundsCalled();
+  protected void onBoundsDefined(ComponentContext c, ComponentLayout layout) {
+    onDefineBoundsCalled();
   }
 
   @Override
-  protected void onBind(ComponentContext c, Object mountedContent, Component<?> component) {
-    State state = (State) component;
-    state.onBindCalled();
+  protected void onBind(ComponentContext c, Object mountedContent) {
+    onBindCalled();
   }
 
   @Override
-  protected void onUnbind(ComponentContext c, Object mountedContent, Component<?> component) {
-    State state = (State) component;
-    state.onUnbindCalled();
+  protected void onUnbind(ComponentContext c, Object mountedContent) {
+    onUnbindCalled();
   }
 
   @Override
@@ -180,7 +142,8 @@ public class TestViewComponent extends ComponentLifecycle {
         context,
         defStyleAttr,
         defStyleRes,
-        new State(callsShouldUpdateOnMount, isPureRender, canMeasure, canMountIncrementally));
+        new TestViewComponent(
+            callsShouldUpdateOnMount, isPureRender, canMeasure, canMountIncrementally));
   }
 
   public static Builder create(ComponentContext context) {
@@ -207,8 +170,8 @@ public class TestViewComponent extends ComponentLifecycle {
       ComponentContext context,
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
-      State state) {
-    Builder builder = mBuilderPool.acquire();
+      TestViewComponent state) {
+    Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
     }
@@ -216,45 +179,33 @@ public class TestViewComponent extends ComponentLifecycle {
     return builder;
   }
 
-  private static class State extends TestComponent<TestViewComponent> implements Cloneable {
-
-    private State(
-        boolean callsShouldUpdateOnMount,
-        boolean isPureRender,
-        boolean canMeasure,
-        boolean canMountIncrementally) {
-      super(get(callsShouldUpdateOnMount, isPureRender, canMeasure, canMountIncrementally));
-    }
-
-    @Override
-    public int hashCode() {
-      return super.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (o == null) {
-        return false;
-      }
-      if (!super.equals(o)) {
-        return false;
-      }
-      if (o instanceof State) {
-        return true;
-      }
-      return false;
-    }
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 
-  public static class Builder
-      extends com.facebook.litho.Component.Builder<TestViewComponent> {
-    State mState;
+  @Override
+  public boolean equals(Object o) {
+    if (o == null) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    if (o instanceof TestViewComponent) {
+      return true;
+    }
+    return false;
+  }
+
+  public static class Builder extends com.facebook.litho.Component.Builder<Builder> {
+    TestViewComponent mState;
 
     private void init(
         ComponentContext context,
         @AttrRes int defStyleAttr,
         @StyleRes int defStyleRes,
-        State state) {
+        TestViewComponent state) {
       super.init(context, defStyleAttr, defStyleRes, state);
       mState = state;
     }
@@ -264,9 +215,14 @@ public class TestViewComponent extends ComponentLifecycle {
       return this;
     }
 
+    public Builder testView(View testView) {
+      mState.mTestView = testView;
+      return this;
+    }
+
     @Override
-    public TestComponent<TestViewComponent> build() {
-      State state = mState;
+    public TestViewComponent build() {
+      TestViewComponent state = mState;
       release();
       return state;
     }
@@ -275,11 +231,11 @@ public class TestViewComponent extends ComponentLifecycle {
     protected void release() {
       super.release();
       mState = null;
-      mBuilderPool.release(this);
+      sBuilderPool.release(this);
     }
 
-    public Builder key(String key) {
-      super.setKey(key);
+    @Override
+    public Builder getThis() {
       return this;
     }
   }

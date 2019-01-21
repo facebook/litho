@@ -1,78 +1,109 @@
 buildscript {
+
     repositories {
+        google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.1'
+        classpath 'com.android.tools.build:gradle:3.1.4'
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${GRADLE_BINTRAY_PLUGIN_VERSION}"
         classpath "com.github.dcendents:android-maven-gradle-plugin:${ANDROID_MAVEN_GRADLE_PLUGIN_VERSION}"
+        classpath "com.github.ben-manes:gradle-versions-plugin:${GRADLE_VERSIONS_PLUGIN_VERSION}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${KOTLIN_VERSION}"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
 
+apply plugin: 'com.github.ben-manes.versions'
+
 subprojects {
     repositories {
+        google()
         jcenter()
+        mavenCentral()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    }
+    afterEvaluate {
+        tasks.withType(Test) {
+            it.dependsOn copyYogaLibs
+            systemProperty 'java.library.path', "${rootDir}/build/jniLibs"
+            environment 'LD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
+            environment 'DYLD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
+        }
     }
 }
-
 
 ext {
     minSdkVersion = 15
     targetSdkVersion = 25
-    compileSdkVersion = 25
-    buildToolsVersion = '25.0.2'
+    compileSdkVersion = 26
+    buildToolsVersion = '27.0.3'
     sourceCompatibilityVersion = JavaVersion.VERSION_1_7
     targetCompatibilityVersion = JavaVersion.VERSION_1_7
 }
 
+ext.isRelease = { ['uploadArchives', 'bintrayUpload'].any { gradle.startParameter.taskNames.contains(it) } }
+ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
+
 ext.deps = [
         // Android support
-        supportAnnotations : 'com.android.support:support-annotations:25.3.1',
-        supportCompat      : 'com.android.support:support-compat:25.3.1',
-        supportAppCompat   : 'com.android.support:appcompat-v7:25.3.1',
-        supportCoreUi      : 'com.android.support:support-core-ui:25.3.1',
-        supportRecyclerView: 'com.android.support:recyclerview-v7:25.3.1',
+        supportAnnotations : 'com.android.support:support-annotations:27.1.1',
+        supportAppCompat   : 'com.android.support:appcompat-v7:27.1.1',
+        supportCoreUi      : 'com.android.support:support-core-ui:27.1.1',
+        supportRecyclerView: 'com.android.support:recyclerview-v7:27.1.1',
+        supportEspresso    : 'com.android.support.test.espresso:espresso-core:3.0.2',
+        supportEspressoIntents : 'com.android.support.test.espresso:espresso-intents:3.0.2',
+        supportTestRunner  : 'com.android.support.test:runner:1.0.2',
+        supportTestRules   : 'com.android.support.test:rules:1.0.2',
+        supportMultidex    : 'com.android.support:multidex:1.0.1',
+        // Arch
+        archLifecycle      : 'android.arch.lifecycle:extensions:1.1.1',
         // First-party
-        yoga               : 'com.facebook.yoga:yoga:1.4.2',
-        fresco             : 'com.facebook.fresco:fresco:1.2.0',
-        soloader           : 'com.facebook.soloader:soloader:0.2.0',
-        textlayoutbuilder  : 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.1.0',
-        stetho             : 'com.facebook.stetho:stetho:1.5.0',
+        fresco             : 'com.facebook.fresco:fresco:1.10.0',
+        soloader           : 'com.facebook.soloader:soloader:0.5.1',
+        textlayoutbuilder  : 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.4.0',
+        screenshot         : 'com.facebook.testing.screenshot:core:0.5.0',
+        flipper            : 'com.facebook.flipper:flipper:0.12.0',
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.1',
-        inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.10.0.2',
+        inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.11.2',
         // Debugging and testing
         guava              : 'com.google.guava:guava:20.0',
         robolectric        : 'org.robolectric:robolectric:3.0',
         junit              : 'junit:junit:4.12',
+        hamcrestLibrary    : 'org.hamcrest:hamcrest-library:1.3',
         powermockReflect   : 'org.powermock:powermock-reflect:1.5.6',
         powermockMockito   : 'org.powermock:powermock-api-mockito:1.5.6',
         powermockJunit     : 'org.powermock:powermock-module-junit4-rule:1.5.6',
         powermockXstream   : 'org.powermock:powermock-classloading-xstream:1.5.6',
         mockitoCore        : 'org.mockito:mockito-core:1.9.5',
-        assertjCore        : 'org.assertj:assertj-core:2.6.0',
+        assertjCore        : 'org.assertj:assertj-core:2.9.0',
+        compileTesting     : 'com.google.testing.compile:compile-testing:0.14',
         // Processor
-        javapoet           : 'com.squareup:javapoet:1.8.0',
+        javapoet           : 'com.squareup:javapoet:1.9.0',
+        // Misc
+        khronos            : 'org.khronos:opengl-api:gl1.1-android-2.1_r1',
+        // Kotlin
+        kotlinStandardLib  : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${KOTLIN_VERSION}"
 ]
+
+// For releases, we want to depend on a stable version of Yoga.
+ext.deps.yoga =
+    isSnapshot()
+        ? 'com.facebook.yoga:yoga:1.10.1-SNAPSHOT'
+        : 'com.facebook.yoga:yoga:1.10.0'
 
 // This should hopefully only serve as a temporary measure until
 // we have a proper Gradle setup for Yoga and JNI.
 task copyYogaLibs(type: Copy, dependsOn: ':yoga:buckBuild') {
-    from 'buck-out/gen/lib/fb/jni#default,shared/'
+    from 'buck-out/gen/lib/fbjni/jni#default,shared/'
     from 'buck-out/gen/lib/yogajni/jni#default,shared/'
     include '*.so'
     include '*.dylib'
     include '*.dll'
     into "$buildDir/jniLibs"
-}
-
-afterEvaluate {
-    tasks.withType(Test) {
-        dependsOn copyYogaLibs
-    }
 }
 
 task clean(type: Delete) {

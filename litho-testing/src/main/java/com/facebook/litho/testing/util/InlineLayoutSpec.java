@@ -1,45 +1,45 @@
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.testing.util;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.Transition;
 
-public abstract class InlineLayoutSpec extends Component implements Cloneable {
+public abstract class InlineLayoutSpec extends Component {
 
-  private static class Lifecycle extends ComponentLifecycle {
-
-    @Override
-    protected ComponentLayout onCreateLayout(ComponentContext c, Component<?> component) {
-      return ((InlineLayoutSpec) component).onCreateLayout(c);
-    }
-
-    @Override
-    public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-      // no-op
-      return null;
-    }
-  }
-
-  public InlineLayoutSpec() {
-    super(new Lifecycle());
+  protected InlineLayoutSpec() {
+    super("InlineLayout");
   }
 
   @Override
-  public String getSimpleName() {
-    // You may want to override this in your inline spec, but it's not required.
-    return "InlineLayout";
+  public boolean isEquivalentTo(Component other) {
+    return this == other;
   }
 
-  protected abstract ComponentLayout onCreateLayout(ComponentContext c);
+  @Override
+  public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+    // no-op
+    return null;
+  }
+
+  @Override
+  protected Transition onCreateTransition(ComponentContext c) {
+    return null;
+  }
 }

@@ -1,25 +1,20 @@
 /*
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.widget;
-
-import com.facebook.litho.ThreadUtils;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -29,56 +24,100 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.support.v7.widget.RecyclerView;
+import com.facebook.litho.ThreadUtils;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 @RunWith(ComponentsTestRunner.class)
-@PrepareForTest(ThreadUtils.class)
-@PowerMockIgnore({ "org.mockito.*", "org.robolectric.*", "android.*" })
 public class RecyclerEventsControllerTest {
 
-  @Rule
-  public PowerMockRule rule = new PowerMockRule();
-
-  private RecyclerViewWrapper mRecyclerViewWrapper;
+  private SectionsRecyclerView mSectionsRecyclerView;
+  private RecyclerView mRecyclerView;
   private RecyclerEventsController mRecyclerEventsController;
+  private RecyclerEventsController.OnRecyclerUpdateListener mOnRecyclerUpdateListener;
 
   @Before
   public void setup() {
+    mSectionsRecyclerView = mock(SectionsRecyclerView.class);
+    mRecyclerView = mock(RecyclerView.class);
+    mOnRecyclerUpdateListener = mock(RecyclerEventsController.OnRecyclerUpdateListener.class);
+
+    when(mSectionsRecyclerView.getRecyclerView()).thenReturn(mRecyclerView);
+
     mRecyclerEventsController = new RecyclerEventsController();
-    mRecyclerViewWrapper = mock(RecyclerViewWrapper.class);
-    mRecyclerEventsController.setRecyclerViewWrapper(mRecyclerViewWrapper);
-    PowerMockito.mockStatic(ThreadUtils.class);
+    mRecyclerEventsController.setSectionsRecyclerView(mSectionsRecyclerView);
+  }
+
+  @After
+  public void teardown() {
+    ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_DISABLED);
+  }
+
+  @Test
+  public void testOnRecyclerListener() {
+    verify(mOnRecyclerUpdateListener, never()).onUpdate(any(RecyclerView.class));
+
+    mRecyclerEventsController.setOnRecyclerUpdateListener(mOnRecyclerUpdateListener);
+    mRecyclerEventsController.setSectionsRecyclerView(null);
+
+    mRecyclerEventsController.setSectionsRecyclerView(mSectionsRecyclerView);
+
+    verify(mOnRecyclerUpdateListener, times(1)).onUpdate(null);
+    verify(mOnRecyclerUpdateListener, times(1)).onUpdate(mRecyclerView);
   }
 
   @Test
   public void testClearRefreshingOnNotRefreshingView() {
-    when(mRecyclerViewWrapper.isRefreshing()).thenReturn(false);
+    when(mSectionsRecyclerView.isRefreshing()).thenReturn(false);
 
     mRecyclerEventsController.clearRefreshing();
 
-    verify(mRecyclerViewWrapper, never()).setRefreshing(anyBoolean());
-    verify(mRecyclerViewWrapper, never()).removeCallbacks(any(Runnable.class));
-    verify(mRecyclerViewWrapper, never()).post(any(Runnable.class));
+    verify(mSectionsRecyclerView, never()).setRefreshing(anyBoolean());
+    verify(mSectionsRecyclerView, never()).removeCallbacks(any(Runnable.class));
+    verify(mSectionsRecyclerView, never()).post(any(Runnable.class));
   }
 
   @Test
   public void testClearRefreshingFromUIThread() {
-    when(mRecyclerViewWrapper.isRefreshing()).thenReturn(true);
-    PowerMockito.when(ThreadUtils.isMainThread()).thenReturn(true);
+    when(mSectionsRecyclerView.isRefreshing()).thenReturn(true);
+    ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_MAIN_THREAD_TRUE);
 
     mRecyclerEventsController.clearRefreshing();
 
-    verify(mRecyclerViewWrapper).setRefreshing(false);
-    verify(mRecyclerViewWrapper, never()).removeCallbacks(any(Runnable.class));
-    verify(mRecyclerViewWrapper, never()).post(any(Runnable.class));
+    verify(mSectionsRecyclerView).setRefreshing(false);
+    verify(mSectionsRecyclerView, never()).removeCallbacks(any(Runnable.class));
+    verify(mSectionsRecyclerView, never()).post(any(Runnable.class));
   }
 
   @Test
   public void testClearRefreshingFromNonUIThread() {
-    when(mRecyclerViewWrapper.isRefreshing()).thenReturn(true);
-    PowerMockito.when(ThreadUtils.isMainThread()).thenReturn(false);
+    when(mSectionsRecyclerView.isRefreshing()).thenReturn(true);
+    ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_MAIN_THREAD_FALSE);
 
     mRecyclerEventsController.clearRefreshing();
 
-    verify(mRecyclerViewWrapper, times(1)).removeCallbacks(any(Runnable.class));
-    verify(mRecyclerViewWrapper, times(1)).post(any(Runnable.class));
+    verify(mSectionsRecyclerView, times(1)).removeCallbacks(any(Runnable.class));
+    verify(mSectionsRecyclerView, times(1)).post(any(Runnable.class));
+  }
+
+  @Test
+  public void testShowRefreshingFromUIThread() {
+    when(mSectionsRecyclerView.isRefreshing()).thenReturn(false);
+    ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_MAIN_THREAD_TRUE);
+
+    mRecyclerEventsController.showRefreshing();
+    verify(mSectionsRecyclerView).setRefreshing(true);
+  }
+
+  @Test
+  public void testShowRefreshingAlreadyRefreshing() {
+    when(mSectionsRecyclerView.isRefreshing()).thenReturn(true);
+
+    mRecyclerEventsController.showRefreshing();
+    verify(mSectionsRecyclerView, never()).setRefreshing(anyBoolean());
   }
 }

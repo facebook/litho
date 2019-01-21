@@ -1,4 +1,4 @@
-# Litho [![CircleCI](https://circleci.com/gh/facebook/litho/tree/master.svg?style=svg)](https://circleci.com/gh/facebook/litho/tree/master)
+# Litho [![CircleCI](https://circleci.com/gh/facebook/litho/tree/master.svg?style=svg)](https://circleci.com/gh/facebook/litho/tree/master) [![Join the chat at https://gitter.im/facebook/litho](https://badges.gitter.im/facebook/litho.svg)](https://gitter.im/facebook/litho?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 <img src="docs/static/logo.png" width=150 align=right>
 
@@ -58,12 +58,27 @@ or, if you prefer Gradle,
     $ ./gradlew :sample:installDebug
 
 ## Contributing
+
+Before contributing to Litho, please first read the the [Code of
+Conduct](https://code.facebook.com/codeofconduct) that we expect
+project participants to adhere to.
+
 For pull requests, please see our [CONTRIBUTING](CONTRIBUTING.md) guide.
 
-See our [issues](https://github.com/litho/issues/) page for ideas on how to contribute or to let us know of any problems.
+See our [issues](https://github.com/facebook/litho/issues/) page for ideas on how to contribute or to let us know of any problems.
 
-Please also read our [Coding Style](http://fblitho.com/best-practices#guidelines/) and [Code of Conduct](https://code.facebook.com/codeofconduct) before you contribute.
+Please also read our [Coding Style](http://fblitho.com/docs/best-practices#coding-style) and [Code of Conduct](https://code.facebook.com/codeofconduct) before you contribute.
+
+## Getting Help
+
+- Post on [StackOverflow](https://stackoverflow.com/questions/tagged/litho)
+  using the `#litho` tag.
+- Chat with us on [Gitter](https://gitter.im/facebook/litho).
+- Join our [Facebook Group](https://www.facebook.com/groups/litho.android/) to
+  stay up-to-date with announcements.
+- Please open GitHub issues only if you suspect a bug in the framework or have a
+  feature request and not for general questions.
 
 ## License
 
-Litho is BSD-licensed. We also provide an additional patent grant.
+Litho is licensed under the [Apache 2.0 License](LICENSE).

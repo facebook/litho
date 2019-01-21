@@ -1,24 +1,28 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 import android.graphics.Rect;
-
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 @RunWith(ComponentsTestRunner.class)
 public class TestOutputTest {
@@ -33,20 +37,20 @@ public class TestOutputTest {
   public void testPositionAndSizeSet() {
     mTestOutput.setBounds(0, 1, 3, 4);
 
-    assertEquals(0, mTestOutput.getBounds().left);
-    assertEquals(1, mTestOutput.getBounds().top);
-    assertEquals(3, mTestOutput.getBounds().right);
-    assertEquals(4, mTestOutput.getBounds().bottom);
+    assertThat(mTestOutput.getBounds().left).isEqualTo(0);
+    assertThat(mTestOutput.getBounds().top).isEqualTo(1);
+    assertThat(mTestOutput.getBounds().right).isEqualTo(3);
+    assertThat(mTestOutput.getBounds().bottom).isEqualTo(4);
   }
 
   @Test
   public void testRectBoundsSet() {
     final Rect bounds = new Rect(0, 1, 3, 4);
     mTestOutput.setBounds(bounds);
-    assertEquals(0, mTestOutput.getBounds().left);
-    assertEquals(1, mTestOutput.getBounds().top);
-    assertEquals(3, mTestOutput.getBounds().right);
-    assertEquals(4, mTestOutput.getBounds().bottom);
+    assertThat(mTestOutput.getBounds().left).isEqualTo(0);
+    assertThat(mTestOutput.getBounds().top).isEqualTo(1);
+    assertThat(mTestOutput.getBounds().right).isEqualTo(3);
+    assertThat(mTestOutput.getBounds().bottom).isEqualTo(4);
   }
 
   @Test
@@ -74,9 +78,9 @@ public class TestOutputTest {
   }
 
   private static void assertDefaultValues(TestOutput testOutput) {
-    assertEquals(new Rect(), testOutput.getBounds());
-    assertNull(testOutput.getTestKey());
-    assertEquals(-1, testOutput.getHostMarker());
-    assertEquals(-1, testOutput.getLayoutOutputId());
+    assertThat(testOutput.getBounds()).isEqualTo(new Rect());
+    assertThat(testOutput.getTestKey()).isNull();
+    assertThat(testOutput.getHostMarker()).isEqualTo(-1);
+    assertThat(testOutput.getLayoutOutputId()).isEqualTo(-1);
   }
 }

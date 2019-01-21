@@ -1,19 +1,14 @@
-# Copyright (c) 2014-present, Facebook, Inc.
-# All rights reserved.
+# Copyright (c) 2017-present, Facebook, Inc.
 #
-# This source code is licensed under the BSD-style license found in the
-# LICENSE file in the root directory of this source tree. An additional grant
-# of patent rights can be found in the PATENTS file in the same directory.
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_JAVA_TARGET", "LITHO_TESTING_UTIL_VISIBILITY", "fb_core_android_library")
 
-include_defs("//COMPONENTS_DEFS")
-
-android_library(
+fb_core_android_library(
     name = "util",
     srcs = glob(["*.java"]),
-    visibility = [
-        "PUBLIC",
-    ],
+    visibility = LITHO_TESTING_UTIL_VISIBILITY,
     deps = [
-        COMPONENTS_JAVA_TARGET,
+        LITHO_JAVA_TARGET,
     ],
 )

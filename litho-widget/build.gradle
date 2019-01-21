@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014-present Facebook, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
@@ -15,56 +31,27 @@ android {
     lintOptions {
         abortOnError false
     }
-
-    testOptions {
-        unitTests.all {
-            // We use PowerMock now, so we need to limit the classloader reuse.
-            forkEvery = 1
-            maxParallelForks = 2
-            jvmArgs '-Dcom.facebook.litho.is_oss=true'
-            testLogging {
-                events "passed", "skipped", "failed", "standardOut", "standardError"
-            }
-        }
-    }
-}
-
-afterEvaluate {
-    tasks.withType(Test) {
-        it.dependsOn rootProject.copyYogaLibs
-        systemProperty 'java.library.path', "${rootDir}/build/jniLibs"
-        environment 'LD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
-        environment 'DYLD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
-    }
 }
 
 dependencies {
-    compile project(':litho-core')
-    provided project(':litho-annotations')
+    implementation project(':litho-core')
+    implementation deps.supportRecyclerView
+    compileOnly project(':litho-annotations')
     annotationProcessor project(':litho-processor')
 
     // Annotations
-    provided deps.jsr305
-    provided deps.inferAnnotations
+    compileOnly deps.jsr305
+    compileOnly deps.inferAnnotations
 
     // First-party
-    compile deps.fresco
-    compile deps.textlayoutbuilder
+    implementation deps.textlayoutbuilder
 
     // Android Support Library
-    compile deps.supportCompat
-    compile deps.supportCoreUi
+    implementation deps.supportCoreUi
 
-    // Testing
-    testCompile project(':litho-testing')
-    testCompile deps.robolectric
-    testCompile deps.soloader
-    testCompile deps.powermockMockito
-    testCompile deps.powermockJunit
-    testCompile deps.powermockXstream
 }
 
-apply from: rootProject.file('release.gradle')
+apply from: rootProject.file('gradle/release.gradle')
 
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs

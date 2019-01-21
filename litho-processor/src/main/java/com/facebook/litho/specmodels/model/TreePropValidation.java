@@ -1,29 +1,34 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.specmodels.model;
 
+import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.facebook.litho.annotations.OnCreateTreeProp;
-
-import com.squareup.javapoet.TypeName;
 
 class TreePropValidation {
 
   static List<SpecModelValidationError> validate(SpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
-    final List<DelegateMethodModel> onCreateTreePropMethods =
+    final List<SpecMethodModel<DelegateMethod, Void>> onCreateTreePropMethods =
         SpecModelUtils.getMethodModelsWithAnnotation(specModel, OnCreateTreeProp.class);
-    for (DelegateMethodModel onCreateTreePropMethod : onCreateTreePropMethods) {
+    for (SpecMethodModel<DelegateMethod, Void> onCreateTreePropMethod : onCreateTreePropMethods) {
       if (onCreateTreePropMethod.returnType.equals(TypeName.VOID)) {
         validationErrors.add(
             new SpecModelValidationError(
@@ -43,7 +48,7 @@ class TreePropValidation {
       }
 
       if (onCreateTreePropMethod.methodParams.isEmpty() ||
-          !onCreateTreePropMethod.methodParams.get(0).getType()
+          !onCreateTreePropMethod.methodParams.get(0).getTypeName()
               .equals(specModel.getContextClass())) {
         validationErrors.add(
             new SpecModelValidationError(

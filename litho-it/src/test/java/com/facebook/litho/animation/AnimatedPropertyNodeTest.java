@@ -1,110 +1,132 @@
 /*
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.animation;
 
-import android.view.View;
+import static com.facebook.litho.animation.AnimatedProperties.SCALE;
+import static com.facebook.litho.dataflow.GraphBinding.create;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.robolectric.RuntimeEnvironment.application;
 
-import com.facebook.litho.animation.AnimatedProperties;
-import com.facebook.litho.animation.AnimatedPropertyNode;
+import android.view.View;
+import com.facebook.litho.OutputUnitType;
+import com.facebook.litho.OutputUnitsAffinityGroup;
 import com.facebook.litho.dataflow.DataFlowGraph;
 import com.facebook.litho.dataflow.GraphBinding;
+import com.facebook.litho.dataflow.MockTimingSource;
 import com.facebook.litho.dataflow.OutputOnlyNode;
 import com.facebook.litho.dataflow.SettableNode;
 import com.facebook.litho.dataflow.SimpleNode;
-import com.facebook.litho.dataflow.UnitTestTimingSource;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
-
-import static junit.framework.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)
 public class AnimatedPropertyNodeTest {
 
-  private UnitTestTimingSource mTestTimingSource;
+  private MockTimingSource mTestTimingSource;
   private DataFlowGraph mDataFlowGraph;
 
   @Before
   public void setUp() throws Exception {
-    mTestTimingSource = new UnitTestTimingSource();
+    mTestTimingSource = new MockTimingSource();
     mDataFlowGraph = DataFlowGraph.create(mTestTimingSource);
   }
 
   @Test
   public void testViewPropertyNodeWithInput() {
-    View view = new View(RuntimeEnvironment.application);
+    View view = new View(application);
+    OutputUnitsAffinityGroup<Object> group = new OutputUnitsAffinityGroup<>();
+    group.add(OutputUnitType.HOST, view);
     SettableNode source = new SettableNode();
     SimpleNode middle = new SimpleNode();
-    AnimatedPropertyNode destination = new AnimatedPropertyNode(view, AnimatedProperties.X);
+    AnimatedPropertyNode destination = new AnimatedPropertyNode(group, SCALE);
 
-    GraphBinding binding = GraphBinding.create(mDataFlowGraph);
+    GraphBinding binding = create(mDataFlowGraph);
     binding.addBinding(source, middle);
     binding.addBinding(middle, destination);
     binding.activate();
 
     mTestTimingSource.step(1);
 
-    assertEquals(0f, view.getX());
+    assertThat(view.getScaleX()).isEqualTo(0f);
 
     source.setValue(37);
     mTestTimingSource.step(1);
 
-    assertEquals(37f, view.getX());
-  }
-
-  @Test
-  public void testViewPropertyNodeWithOutput() {
-    View view = new View(RuntimeEnvironment.application);
-    AnimatedPropertyNode source = new AnimatedPropertyNode(view, AnimatedProperties.X);
-    SimpleNode middle = new SimpleNode();
-    OutputOnlyNode destination = new OutputOnlyNode();
-
-    GraphBinding binding = GraphBinding.create(mDataFlowGraph);
-    binding.addBinding(source, middle);
-    binding.addBinding(middle, destination);
-    binding.activate();
-
-    mTestTimingSource.step(1);
-
-    assertEquals(0f, destination.getValue());
-
-    view.setX(101);
-    mTestTimingSource.step(1);
-
-    assertEquals(101f, destination.getValue());
+    assertThat(view.getScaleX()).isEqualTo(37f);
   }
 
   @Test
   public void testViewPropertyNodeWithInputAndOutput() {
-    View view = new View(RuntimeEnvironment.application);
+    View view = new View(application);
+    OutputUnitsAffinityGroup<Object> group = new OutputUnitsAffinityGroup<>();
+    group.add(OutputUnitType.HOST, view);
     SettableNode source = new SettableNode();
-    AnimatedPropertyNode viewNode = new AnimatedPropertyNode(view, AnimatedProperties.X);
+    AnimatedPropertyNode animatedNode = new AnimatedPropertyNode(group, SCALE);
     OutputOnlyNode destination = new OutputOnlyNode();
 
-    GraphBinding binding = GraphBinding.create(mDataFlowGraph);
-    binding.addBinding(source, viewNode);
-    binding.addBinding(viewNode, destination);
+    GraphBinding binding = create(mDataFlowGraph);
+    binding.addBinding(source, animatedNode);
+    binding.addBinding(animatedNode, destination);
     binding.activate();
 
     mTestTimingSource.step(1);
 
-    assertEquals(0f, view.getX());
-    assertEquals(0f, destination.getValue());
+    assertThat(view.getScaleX()).isEqualTo(0f);
+    assertThat(destination.getValue()).isEqualTo(0f);
 
     source.setValue(123);
     mTestTimingSource.step(1);
 
-    assertEquals(123f, view.getX());
-    assertEquals(123f, destination.getValue());
+    assertThat(view.getScaleX()).isEqualTo(123f);
+    assertThat(destination.getValue()).isEqualTo(123f);
+  }
+
+  @Test
+  public void testSettingMountContentOnNodeWithValue() {
+    View view1 = new View(application);
+    OutputUnitsAffinityGroup<Object> group1 = new OutputUnitsAffinityGroup<>();
+    group1.add(OutputUnitType.HOST, view1);
+
+    View view2 = new View(application);
+    OutputUnitsAffinityGroup<Object> group2 = new OutputUnitsAffinityGroup<>();
+    group2.add(OutputUnitType.HOST, view2);
+
+    SettableNode source = new SettableNode();
+    AnimatedPropertyNode animatedNode = new AnimatedPropertyNode(group1, SCALE);
+
+    GraphBinding binding = create(mDataFlowGraph);
+    binding.addBinding(source, animatedNode);
+    binding.activate();
+
+    mTestTimingSource.step(1);
+
+    assertThat(view1.getScaleX()).isEqualTo(0f);
+
+    source.setValue(123);
+    mTestTimingSource.step(1);
+
+    assertThat(view1.getScaleX()).isEqualTo(123f);
+
+    assertThat(view2.getScaleX()).isEqualTo(1f);
+
+    animatedNode.setMountContentGroup(group2);
+
+    assertThat(view2.getScaleX()).isEqualTo(123f);
   }
 }

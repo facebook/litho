@@ -1,47 +1,42 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
 import android.content.res.Configuration;
-import android.support.v4.util.LruCache;
+import javax.annotation.Nullable;
 
-class ResourceCache {
+public abstract class ResourceCache {
   private static ResourceCache latest;
 
   static synchronized ResourceCache getLatest(Configuration configuration) {
     if (latest == null || !latest.mConfiguration.equals(configuration)) {
-      latest = new ResourceCache(configuration);
+      latest = new LruResourceCache(new Configuration(configuration));
     }
     return latest;
   }
 
-  private Configuration mConfiguration;
-  private final LruCache<Integer, Object> mCache = new LruCache<Integer, Object>(500) {
-    @Override
-    protected int sizeOf(Integer key, Object value) {
-      if (value instanceof String) {
-        return ((String) value).length();
-      }
-      return 1;
-    }
-  };
+  private final Configuration mConfiguration;
 
-  private ResourceCache(Configuration configuration) {
+  protected ResourceCache(Configuration configuration) {
     mConfiguration = configuration;
   }
 
-  void put(int key, Object object) {
-    mCache.put(key, object);
-  }
+  @Nullable
+  abstract <T> T get(int key);
 
-  <T> T get(int key) {
-    return (T) mCache.get(key);
-  }
+  abstract void put(int key, Object object);
 }

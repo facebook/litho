@@ -18,7 +18,7 @@ For now, let's just have a look at the overall structure of a *layout spec*:
 class MyComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext c,
       @Prop String title,
       @Prop Uri imageUri) {
@@ -32,7 +32,7 @@ A few things to note:
  - A component spec is just a plain java class with some special annotations.
  - A component spec is completely stateless and doesn't have any class members.
  - The arguments annotated with `@Prop` will automatically become part of the component's builder.
- - For components to be created from your component specs, you need to add the Litho annotation processor to your BUCK or Gradle file. See the [Getting Started](docs/getting-started) guide on how to do that. You can make the generated class package-private by adding `isPublic = false` to the class annotation.
+ - For components to be created from your component specs, you need to add the Litho annotation processor to your BUCK or Gradle file. See the [Getting Started](/docs/getting-started) guide on how to do that. You can make the generated class package-private by adding `isPublic = false` to the class annotation.
 
 ## Spec, Lifecycle, and Component classes
 

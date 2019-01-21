@@ -1,15 +1,24 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
+import android.support.annotation.Nullable;
 import android.support.v4.util.LongSparseArray;
+import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
  * Utility class used to calculate the id of a {@link LayoutOutput} in the context of a
@@ -18,26 +27,36 @@ import android.support.v4.util.LongSparseArray;
  */
 class LayoutStateOutputIdCalculator {
 
-  private final LongSparseArray<Integer> mLayoutCurrentSequenceForBaseId = new LongSparseArray<>(8);
-  private final LongSparseArray<Integer> mVisibilityCurrentSequenceForBaseId =
-      new LongSparseArray<>(8);
+  @Nullable private LongSparseArray<Integer> mLayoutCurrentSequenceForBaseId;
+  @Nullable private LongSparseArray<Integer> mVisibilityCurrentSequenceForBaseId;
 
   private static final int MAX_SEQUENCE = 65535; // (2^16 - 1)
   private static final int MAX_LEVEL = 255; // (2^8 - 1)
 
   // 16 bits are for sequence, 2 for type and 8 for level.
-  private static final short COMPONENT_ID_SHIFT = 26;
+  private static final int COMPONENT_ID_SHIFT = 26;
   // 16 bits are sequence and then 2 for type.
-  private static final short LEVEL_SHIFT = 18;
+  private static final int LEVEL_SHIFT = 18;
   // Last 16 bits are for sequence.
-  private static final short TYPE_SHIFT = 16;
+  private static final int TYPE_SHIFT = 16;
+
+  public LayoutStateOutputIdCalculator() {
+    if (!ComponentsConfiguration.lazilyInitializeLayoutStateOutputIdCalculator) {
+      mLayoutCurrentSequenceForBaseId = new LongSparseArray<>(8);
+      mVisibilityCurrentSequenceForBaseId = new LongSparseArray<>(8);
+    }
+  }
 
   void calculateAndSetLayoutOutputIdAndUpdateState(
       LayoutOutput layoutOutput,
       int level,
-      @LayoutOutput.LayoutOutputType int type,
+      @OutputUnitType int type,
       long previousId,
       boolean isCachedOutputUpdated) {
+
+    if (mLayoutCurrentSequenceForBaseId == null) {
+      mLayoutCurrentSequenceForBaseId = new LongSparseArray<>(2);
+    }
 
     // We need to assign an id to this LayoutOutput. We want the ids to be as consistent as possible
     // between different layout calculations. For this reason the id generation is a function based
@@ -84,6 +103,10 @@ class LayoutStateOutputIdCalculator {
       int level,
       long previousId) {
 
+    if (mVisibilityCurrentSequenceForBaseId == null) {
+      mVisibilityCurrentSequenceForBaseId = new LongSparseArray<>(2);
+    }
+
     // We need to assign an id to this VisibilityOutput. We want the ids to be as consistent as
     // possible between different layout calculations. For this reason the id generation is a
     // function based on the component of the VisibilityOutput, the depth of this output in the view
@@ -113,10 +136,14 @@ class LayoutStateOutputIdCalculator {
   }
 
   void clear() {
-    mLayoutCurrentSequenceForBaseId.clear();
-    mVisibilityCurrentSequenceForBaseId.clear();
+    if (mLayoutCurrentSequenceForBaseId != null) {
+      mLayoutCurrentSequenceForBaseId.clear();
+    }
+    if (mVisibilityCurrentSequenceForBaseId != null) {
+      mVisibilityCurrentSequenceForBaseId.clear();
+    }
   }
-  
+
   /**
    * Calculates the final id for a LayoutOutput based on the baseId see
    * {@link LayoutStateOutputIdCalculator#calculateLayoutOutputBaseId(LayoutOutput, int, int)} and
@@ -133,15 +160,12 @@ class LayoutStateOutputIdCalculator {
   }
 
   /**
-   * Calculates an id for a {@link LayoutOutput}. See
-   * {@link LayoutStateOutputIdCalculator#calculateLayoutOutputBaseId(LayoutOutput, int, int)} and
-   * {@link LayoutStateOutputIdCalculator#calculateId(long, int)}.
+   * Calculates an id for a {@link LayoutOutput}. See {@link
+   * LayoutStateOutputIdCalculator#calculateLayoutOutputBaseId(LayoutOutput, int, int)} and {@link
+   * LayoutStateOutputIdCalculator#calculateId(long, int)}.
    */
   static long calculateLayoutOutputId(
-      LayoutOutput layoutOutput,
-      int level,
-      @LayoutOutput.LayoutOutputType int type,
-      int sequence) {
+      LayoutOutput layoutOutput, int level, @OutputUnitType int type, int sequence) {
     long baseId = calculateLayoutOutputBaseId(layoutOutput, level, type);
     return calculateId(baseId, sequence);
   }
@@ -173,22 +197,28 @@ class LayoutStateOutputIdCalculator {
     return (int) ((id >> LEVEL_SHIFT) & 0xFF);
   }
 
+  /** @return the type part of an id. */
+  static @OutputUnitType int getTypeFromId(long id) {
+    if (id == MountState.ROOT_HOST_ID) {
+      // special case
+      return OutputUnitType.HOST;
+    }
+    return (int) ((id >> TYPE_SHIFT) & 0x3);
+  }
+
   /**
-   * Calculates a base id for an {@link LayoutOutput} based on the {@link Component}, the depth
-   * in the View hierarchy, and the type of output see {@link LayoutOutput.LayoutOutputType}.
+   * Calculates a base id for an {@link LayoutOutput} based on the {@link Component}, the depth in
+   * the View hierarchy, and the type of output see {@link OutputUnitType}.
    */
   private static long calculateLayoutOutputBaseId(
-      LayoutOutput layoutOutput,
-      int level,
-      @LayoutOutput.LayoutOutputType int type) {
+      LayoutOutput layoutOutput, int level, @OutputUnitType int type) {
     if (level < 0 || level > MAX_LEVEL) {
       throw new IllegalArgumentException(
           "Level must be non-negative and no greater than " + MAX_LEVEL + " actual level " + level);
     }
 
-    long componentId = layoutOutput.getComponent() != null ?
-        layoutOutput.getComponent().getLifecycle().getId() :
-        0L;
+    long componentId =
+        layoutOutput.getComponent() != null ? layoutOutput.getComponent().getTypeId() : 0L;
 
     long componentShifted = componentId << COMPONENT_ID_SHIFT;
     long levelShifted = ((long) level) << LEVEL_SHIFT;
@@ -209,9 +239,8 @@ class LayoutStateOutputIdCalculator {
           "Level must be non-negative and no greater than " + MAX_LEVEL + " actual level " + level);
     }
 
-    final long componentId = visibilityOutput.getComponent() != null ?
-        visibilityOutput.getComponent().getLifecycle().getId() :
-        0L;
+    final long componentId =
+        visibilityOutput.getComponent() != null ? visibilityOutput.getComponent().getTypeId() : 0L;
 
     final long componentShifted = componentId << COMPONENT_ID_SHIFT;
     final long levelShifted = ((long) level) << LEVEL_SHIFT;

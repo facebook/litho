@@ -1,25 +1,34 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
+import javax.annotation.Nullable;
+
 public class EventHandler<E> {
 
-  public final HasEventDispatcher mHasEventDispatcher;
+  public HasEventDispatcher mHasEventDispatcher;
   public final int id;
-  public final Object[] params;
+  public final @Nullable Object[] params;
 
   protected EventHandler(HasEventDispatcher hasEventDispatcher, int id) {
     this(hasEventDispatcher, id, null);
   }
 
-  public EventHandler(HasEventDispatcher hasEventDispatcher, int id, Object[] params) {
+  public EventHandler(HasEventDispatcher hasEventDispatcher, int id, @Nullable Object[] params) {
     this.mHasEventDispatcher = hasEventDispatcher;
     this.id = id;
     this.params = params;
@@ -27,5 +36,48 @@ public class EventHandler<E> {
 
   public void dispatchEvent(E event) {
     mHasEventDispatcher.getEventDispatcher().dispatchOnEvent(this, event);
+  }
+
+  public boolean isEquivalentTo(@Nullable EventHandler other) {
+    if (this == other) {
+      return true;
+    }
+
+    if (other == null) {
+      return false;
+    }
+
+    if (other.getClass() != getClass()) {
+      return false;
+    }
+
+    if (id != other.id) {
+      return false;
+    }
+
+    if (params == other.params) {
+      return true;
+    }
+
+    if (params == null || other.params == null) {
+      return false;
+    }
+
+    if (params.length != other.params.length) {
+      return false;
+    }
+
+    // Deliberately skip the first param as it is a ComponentContext which will change between
+    // EventHandlers.
+    for (int i = 1; i < params.length; i++) {
+      final Object object1 = params[i];
+      final Object object2 = other.params[i];
+
+      if (!(object1 == null ? object2 == null : object1.equals(object2))) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

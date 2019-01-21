@@ -1,56 +1,37 @@
-/**
- * Copyright 2014-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * This file provided by Facebook is for non-commercial testing and evaluation
+ * purposes only.  Facebook reserves all rights not expressly granted.
  *
- * This source code is licensed under the license found in the
- * LICENSE-examples file in the root directory of this source tree.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 package com.facebook.samples.litho.lithography;
 
 import com.facebook.litho.Column;
-
-import com.facebook.yoga.YogaAlign;
-
-import com.facebook.yoga.YogaFlexDirection;
-
-import com.facebook.litho.ComponentLayout;
-
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.widget.Recycler;
-import com.facebook.litho.widget.RecyclerBinder;
 
 @LayoutSpec
 public class FeedItemComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
-      ComponentContext c,
-      @Prop final Artist artist,
-      @Prop final RecyclerBinder binder) {
+  static Component onCreateLayout(ComponentContext c, @Prop final Artist artist) {
     return Column.create(c)
         .child(
             Column.create(c)
-                .child(artist.images.length == 1 ?
-                    SingleImageComponent.create(c)
-                        .image(artist.images[0])
-                        .aspectRatio(2)
-                        .withLayout() :
-                    Recycler.create(c)
-                        .binder(binder)
-                        .withLayout().flexShrink(0)
-                        .aspectRatio(2))
-                .child(
-                    TitleComponent.create(c)
-                        .title(artist.name))
-                .child(
-                    ActionsComponent.create(c)))
-        .child(
-            FooterComponent.create(c)
-                .text(artist.biography))
+                .child(FeedImageComponent.create(c)
+                       .images(artist.images))
+                .child(TitleComponent.create(c).title(artist.name))
+                .child(ActionsComponent.create(c)))
+        .child(FooterComponent.create(c).text(artist.biography))
         .build();
   }
 }

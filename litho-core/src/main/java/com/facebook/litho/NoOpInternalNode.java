@@ -1,48 +1,46 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.AttrRes;
-import android.support.annotation.ColorInt;
-import android.support.annotation.DimenRes;
-import android.support.annotation.Dimension;
-import android.support.annotation.DrawableRes;
+import android.support.annotation.Nullable;
 import android.support.annotation.Px;
-import android.support.annotation.StringRes;
 import android.util.SparseArray;
-
+import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
+import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
-import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
-import com.facebook.yoga.YogaEdge;
-
-import com.facebook.litho.reference.Reference;
-import com.facebook.yoga.YogaNode;
-
-import static android.support.annotation.Dimension.DP;
 
 /**
- * Class representing an empty InternalNode with a null ComponentLayout. All methods
- * have been overridden so no actions are performed, and no exceptions are thrown.
+ * Class representing an empty InternalNode with a null ComponentLayout. All methods have been
+ * overridden so no actions are performed, and no exceptions are thrown.
  */
 class NoOpInternalNode extends InternalNode {
 
   @Override
-  void init(YogaNode cssNode, ComponentContext componentContext, Resources resources) {}
+  void init(YogaNode cssNode, ComponentContext componentContext) {}
 
   @Override
   void appendComponent(Component component) {
@@ -185,26 +183,6 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode flexBasisAttr(@AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode flexBasisRes(@DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode flexBasisDip(@Dimension(unit = DP) int flexBasis) {
-    return this;
-  }
-
-  @Override
   public InternalNode flexBasisPercent(float percent) {
     return this;
   }
@@ -225,29 +203,6 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode marginAttr(
-      YogaEdge edge,
-      @AttrRes int resId,
-      @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode marginAttr(YogaEdge edge, @AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode marginRes(YogaEdge edge, @DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode marginDip(YogaEdge edge, @Dimension(unit = DP) int margin) {
-    return this;
-  }
-
-  @Override
   public InternalNode marginPercent(YogaEdge edge, float percent) {
     return this;
   }
@@ -258,30 +213,12 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  public InternalNode border(Border border) {
+    return this;
+  }
+
+  @Override
   public InternalNode paddingPx(YogaEdge edge, @Px int padding) {
-    return this;
-  }
-
-  @Override
-  public InternalNode paddingAttr(
-      YogaEdge edge,
-      @AttrRes int resId,
-      @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode paddingAttr(YogaEdge edge, @AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode paddingRes(YogaEdge edge,@DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode paddingDip(YogaEdge edge, @Dimension(unit = DP) int padding) {
     return this;
   }
 
@@ -291,57 +228,7 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode borderWidthPx(YogaEdge edge, @Px int borderWidth) {
-    return this;
-  }
-
-  @Override
-  public InternalNode borderWidthAttr(
-      YogaEdge edge,
-      @AttrRes int resId,
-      @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode borderWidthAttr(YogaEdge edge, @AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode borderWidthRes(YogaEdge edge,@DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode borderWidthDip(
-      YogaEdge edge,
-      @Dimension(unit = DP) int borderWidth) {
-    return this;
-  }
-
-  @Override
   public InternalNode positionPx(YogaEdge edge, @Px int position) {
-    return this;
-  }
-
-  @Override
-  public InternalNode positionAttr(
-      YogaEdge edge,
-      @AttrRes int resId,
-      @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode positionRes(YogaEdge edge, @DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode positionDip(
-      YogaEdge edge,
-      @Dimension(unit = DP) int position) {
     return this;
   }
 
@@ -356,52 +243,12 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode widthRes(@DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode widthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode widthAttr(@AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode widthDip(@Dimension(unit = DP) int width) {
-    return this;
-  }
-
-  @Override
   public InternalNode widthPercent(float percent) {
     return this;
   }
 
   @Override
   public InternalNode minWidthPx(@Px int minWidth) {
-    return this;
-  }
-
-  @Override
-  public InternalNode minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode minWidthAttr(@AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode minWidthRes(@DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode minWidthDip(@Dimension(unit = DP) int minWidth) {
     return this;
   }
 
@@ -416,52 +263,12 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode maxWidthAttr(@AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode maxWidthRes(@DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode maxWidthDip(@Dimension(unit = DP) int maxWidth) {
-    return this;
-  }
-
-  @Override
   public InternalNode maxWidthPercent(float percent) {
     return this;
   }
 
   @Override
   public InternalNode heightPx(@Px int height) {
-    return this;
-  }
-
-  @Override
-  public InternalNode heightRes(@DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode heightAttr(@DimenRes int resId, @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode heightAttr(@AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode heightDip(@Dimension(unit = DP) int height) {
     return this;
   }
 
@@ -476,26 +283,6 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode minHeightAttr(@AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode minHeightRes(@DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode minHeightDip(@Dimension(unit = DP) int minHeight) {
-    return this;
-  }
-
-  @Override
   public InternalNode minHeightPercent(float percent) {
     return this;
   }
@@ -506,42 +293,12 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode maxHeightAttr(@AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode maxHeightRes(@DimenRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode maxHeightDip(@Dimension(unit = DP) int maxHeight) {
-    return this;
-  }
-
-  @Override
   public InternalNode maxHeightPercent(float percent) {
     return this;
   }
 
   @Override
-  public InternalNode child(ComponentLayout child) {
-    return this;
-  }
-
-  @Override
-  public InternalNode child(ComponentLayout.Builder child) {
-    return this;
-  }
-
-  @Override
-  public InternalNode child(Component<?> child) {
+  public InternalNode child(Component child) {
     return this;
   }
 
@@ -556,57 +313,17 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode background(Reference.Builder<? extends Drawable> builder) {
+  InternalNode background(@Nullable ComparableDrawable background) {
     return this;
   }
 
   @Override
-  public InternalNode background(Drawable background) {
+  public InternalNode foreground(@Nullable ComparableDrawable foreground) {
     return this;
   }
 
   @Override
-  public InternalNode backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode backgroundAttr(@AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode backgroundRes(@DrawableRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode backgroundColor(@ColorInt int backgroundColor) {
-    return this;
-  }
-
-  @Override
-  public InternalNode foreground(Drawable foreground) {
-    return this;
-  }
-
-  @Override
-  public InternalNode foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode foregroundAttr(@AttrRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode foregroundRes(@DrawableRes int resId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode foregroundColor(@ColorInt int foregroundColor) {
+  public InternalNode foreground(@Nullable Drawable foreground) {
     return this;
   }
 
@@ -616,52 +333,48 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode clickHandler(EventHandler clickHandler) {
+  public InternalNode clickHandler(EventHandler<ClickEvent> clickHandler) {
     return this;
   }
 
   @Override
-  public InternalNode touchHandler(EventHandler touchHandler) {
+  public InternalNode focusChangeHandler(EventHandler<FocusChangedEvent> focusChangeHandler) {
     return this;
   }
 
   @Override
-  public InternalNode visibleHandler(EventHandler visibleHandler) {
+  public InternalNode touchHandler(EventHandler<TouchEvent> touchHandler) {
     return this;
   }
 
   @Override
-  public InternalNode focusedHandler(EventHandler focusedHandler) {
+  public InternalNode visibleHandler(EventHandler<VisibleEvent> visibleHandler) {
     return this;
   }
 
   @Override
-  public InternalNode fullImpressionHandler(EventHandler fullImpressionHandler) {
+  public InternalNode focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler) {
     return this;
   }
 
   @Override
-  public InternalNode invisibleHandler(EventHandler invisibleHandler) {
+  public InternalNode fullImpressionHandler(
+      EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
     return this;
   }
 
   @Override
-  public InternalNode unfocusedHandler(EventHandler unfocusedHandler) {
+  public InternalNode invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
+    return this;
+  }
+
+  @Override
+  public InternalNode unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
     return this;
   }
 
   @Override
   public InternalNode contentDescription(CharSequence contentDescription) {
-    return this;
-  }
-
-  @Override
-  public InternalNode contentDescription(@StringRes int stringId) {
-    return this;
-  }
-
-  @Override
-  public InternalNode contentDescription(@StringRes int stringId, Object... formatArgs) {
     return this;
   }
 

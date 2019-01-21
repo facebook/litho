@@ -1,10 +1,17 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.annotations;
@@ -12,12 +19,14 @@ package com.facebook.litho.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface ShouldUpdate {
 
   /**
-   * This should only be set in the context of MountSpec. Will be ignored for LayoutSpec types.
-   * If this is true and this MountSpec is pureRender the mount process will check
+   * <b>Note:</b> This should only be set in the context of {@link MountSpec}. Will be ignored for
+   * {@link LayoutSpec} types.
+   *
+   * @return If this is true and this MountSpec is pureRender the mount process will check
    * shouldComponentUpdate before unmounting/mounting in place and only update the content if
    * necessary. If this is false instead, the mount process will only rely on the information
    * provided by the layout process.

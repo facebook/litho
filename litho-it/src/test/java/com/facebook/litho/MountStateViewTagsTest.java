@@ -1,29 +1,34 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
+import static com.facebook.litho.Column.create;
+import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 import android.util.SparseArray;
 import android.view.View;
-
-import com.facebook.litho.testing.ComponentTestHelper;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
-import com.facebook.yoga.YogaAlign;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-
-import static org.junit.Assert.assertEquals;
 
 @RunWith(ComponentsTestRunner.class)
 public class MountStateViewTagsTest {
@@ -46,31 +51,29 @@ public class MountStateViewTagsTest {
     final SparseArray<Object> tags2 = new SparseArray<>(1);
     tags2.put(DUMMY_ID, tag2);
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .child(
-                    Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                        .viewTags(tags1)
-                        .child(TestDrawableComponent.create(c))
-                        .child(TestDrawableComponent.create(c)))
-                .child(TestDrawableComponent.create(c))
-                .child(
-                    TestDrawableComponent.create(c)
-                        .withLayout().flexShrink(0)
-                        .viewTags(tags2))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .child(
+                        create(c)
+                            .viewTags(tags1)
+                            .child(TestDrawableComponent.create(c))
+                            .child(TestDrawableComponent.create(c)))
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c).viewTags(tags2))
+                    .build();
+              }
+            });
 
     final View innerHost1 = lithoView.getChildAt(0);
     final View innerHost2 = lithoView.getChildAt(1);
 
-    assertEquals(tag1, innerHost1.getTag(DUMMY_ID));
-    assertEquals(tag2, innerHost2.getTag(DUMMY_ID));
+    assertThat(innerHost1.getTag(DUMMY_ID)).isEqualTo(tag1);
+    assertThat(innerHost2.getTag(DUMMY_ID)).isEqualTo(tag2);
   }
 
   @Test
@@ -79,19 +82,20 @@ public class MountStateViewTagsTest {
     final SparseArray<Object> tags = new SparseArray<>(1);
     tags.put(DUMMY_ID, tag);
 
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        mContext,
-        new InlineLayoutSpec() {
-          @Override
-          protected ComponentLayout onCreateLayout(ComponentContext c) {
-            return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                .viewTags(tags)
-                .child(TestDrawableComponent.create(c))
-                .child(TestDrawableComponent.create(c))
-                .build();
-          }
-        });
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .viewTags(tags)
+                    .child(TestDrawableComponent.create(c))
+                    .child(TestDrawableComponent.create(c))
+                    .build();
+              }
+            });
 
-    assertEquals(tag, lithoView.getTag(DUMMY_ID));
+    assertThat(lithoView.getTag(DUMMY_ID)).isEqualTo(tag);
   }
 }

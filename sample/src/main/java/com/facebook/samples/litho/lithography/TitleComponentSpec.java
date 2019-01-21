@@ -1,19 +1,22 @@
-/**
- * Copyright 2014-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * This file provided by Facebook is for non-commercial testing and evaluation
+ * purposes only.  Facebook reserves all rights not expressly granted.
  *
- * This source code is licensed under the license found in the
- * LICENSE-examples file in the root directory of this source tree.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 package com.facebook.samples.litho.lithography;
 
-import com.facebook.yoga.YogaAlign;
+import static android.graphics.Typeface.BOLD;
+import static com.facebook.litho.annotations.ResType.STRING;
 
-import com.facebook.yoga.YogaFlexDirection;
-
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -21,21 +24,15 @@ import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaPositionType;
 
-import static android.graphics.Typeface.BOLD;
-import static com.facebook.litho.annotations.ResType.STRING;
-
 @LayoutSpec
 public class TitleComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
-      ComponentContext c,
-      @Prop(resType = STRING) String title) {
+  static Component onCreateLayout(ComponentContext c, @Prop(resType = STRING) String title) {
     return Text.create(c)
         .text(title)
         .textStyle(BOLD)
         .textSizeDip(24)
-        .withLayout().flexShrink(0)
         .backgroundColor(0xDDFFFFFF)
         .positionType(YogaPositionType.ABSOLUTE)
         .positionDip(YogaEdge.BOTTOM, 4)

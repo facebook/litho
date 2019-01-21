@@ -1,13 +1,23 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
+
+import static com.facebook.litho.Component.isHostSpec;
+import static com.facebook.litho.Component.isMountViewSpec;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -16,11 +26,7 @@ import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
-
 import com.facebook.litho.config.ComponentsConfiguration;
-
-import static com.facebook.litho.Component.isHostSpec;
-import static com.facebook.litho.Component.isMountViewSpec;
 
 /**
  * Draw operations used in developer options.
@@ -72,12 +78,12 @@ class DebugDraw {
     for (int i = host.getMountItemCount() - 1; i >= 0; i--) {
       final MountItem item = host.getMountItemAt(i);
 
-      final Component<?> component = item.getComponent();
+      final Component component = item.getComponent();
       if (!isMountViewSpec(component) || isHostSpec(component)) {
         continue;
       }
 
-      final View view = (View) item.getContent();
+      final View view = (View) item.getMountableContent();
       if (!isInteractive(view)) {
         continue;
       }
@@ -119,8 +125,8 @@ class DebugDraw {
     for (int i = host.getMountItemCount() - 1; i >= 0; i--) {
       final MountItem item = host.getMountItemAt(i);
 
-      final Component<?> component = item.getComponent();
-      final Object content = item.getContent();
+      final Component component = item.getComponent();
+      final Object content = item.getMountableContent();
 
       if (!shouldHighlight(component)) {
         continue;
@@ -206,9 +212,9 @@ class DebugDraw {
         cornerWidth);
   }
 
-  private static boolean shouldHighlight(Component<?> component) {
+  private static boolean shouldHighlight(Component component) {
     // Don't highlight bounds of background/foreground components.
-    return !(component.getLifecycle() instanceof DrawableComponent);
+    return !(component instanceof DrawableComponent);
   }
 
   private static int dipToPixels(Resources res, int dips) {
@@ -216,11 +222,11 @@ class DebugDraw {
     return (int) (dips * scale + 0.5f);
   }
 
-  private static int getBorderColor(Component<?> component) {
+  private static int getBorderColor(Component component) {
     return isHostSpec(component) ? MOUNT_BORDER_COLOR_HOST : MOUNT_BORDER_COLOR;
   }
 
-  private static int getCornerColor(Component<?> component) {
+  private static int getCornerColor(Component component) {
     return isHostSpec(component) ? MOUNT_CORNER_COLOR_HOST : MOUNT_CORNER_COLOR;
   }
 

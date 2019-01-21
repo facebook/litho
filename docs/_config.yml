@@ -32,6 +32,12 @@ url: "http://fblitho.com"
 
 # The GitHub repo for your project
 ghrepo: "facebook/litho"
+repository: "facebook/litho"
+
+# These can be used in documentation with e.g. {{site.litho-version}}
+litho-version: 0.23.0
+litho-snapshot-version: 0.23.1-SNAPSHOT
+soloader-version: 0.5.1
 
 # Use these color settings to determine your colour scheme for the site.
 color:
@@ -87,15 +93,7 @@ redcarpet:
   extensions: [with_toc_data]
 
 # Gems
-gems:
+plugins:
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
-
-# Set default open graph image for all pages
-defaults:
-  -
-    scope:
-      path: ""
-    values:
-      image: /static/og_image.png

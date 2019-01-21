@@ -65,7 +65,7 @@ Our method is now completely thread safe as it never modifies any internal state
 
 In Litho we try to apply exactly the same concepts to layout computation. A `Component` is an immutable object that contains all the inputs for the layout function in form of `@Prop` and `@State` values. This also explains why we need `@Prop` and `@State` to be immutable. If they weren't, we would lose the property of having layout as a 'pure function'.
 
-Immutability in Java usually comes at the cost of having to do many more allocations. Even in our simple example we are now allocating a `Result` object for every invocation of our function. Litho uses pooling and [code generation](/docs/code-generation) to minimize object allocations for you automatically.
+Immutability in Java usually comes at the cost of having to do many more allocations. Even in our simple example we are now allocating a `Result` object for every invocation of our function. Litho uses pooling and [code generation](/docs/codegen) to minimize object allocations for you automatically.
 
 ## Sync and Async operations
 

@@ -1,20 +1,18 @@
 # Copyright (c) 2017-present, Facebook, Inc.
-# All rights reserved.
 #
-# This source code is licensed under the BSD-style license found in the
-# LICENSE file in the root directory of this source tree. An additional grant
-# of patent rights can be found in the PATENTS file in the same directory.
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
 
-include_defs("//COMPONENTS_DEFS")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_INFERANNOTATIONS_TARGET", "LITHO_JSR_TARGET", "LITHO_OSS_TARGET", "LITHO_PROCESSOR_TARGET", "LITHO_RES_TARGET", "LITHO_TEXTLAYOUTBUILDER_TARGET", "LITHO_TEXTLAYOUTBUILDER_UTILS_TARGET", "LITHO_UTILS_TARGET", "LITHO_VIEWCOMPAT_TARGET", "LITHO_WIDGET_ACCESSIBILITIES_TARGET", "LITHO_YOGA_TARGET", "litho_android_library", "make_dep_path")
 
 litho_android_library(
     name = "widget",
-    exported_deps = [
-        COMPONENTS_TEXTLAYOUTBUILDER_TARGET,
-        ":widget-bare",
-    ],
     visibility = [
         "PUBLIC",
+    ],
+    exported_deps = [
+        LITHO_TEXTLAYOUTBUILDER_TARGET,
+        ":widget-bare",
     ],
 )
 
@@ -22,18 +20,20 @@ litho_android_library(
     name = "widget-bare",
     srcs = glob(["*.java"]),
     plugins = [
-        COMPONENTS_PROCESSOR_TARGET,
+        LITHO_PROCESSOR_TARGET,
     ],
     provided_deps = [
-        COMPONENTS_ANDROIDSUPPORT_TARGET,
-        COMPONENTS_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
-        COMPONENTS_YOGA_TARGET,
-        COMPONENTS_OSS_TARGET,
-        COMPONENTS_UTILS_TARGET,
-        COMPONENTS_INFERANNOTATIONS_TARGET,
-        COMPONENTS_JSR_TARGET,
-        COMPONENTS_TEXTLAYOUTBUILDER_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+        LITHO_YOGA_TARGET,
+        LITHO_OSS_TARGET,
+        LITHO_UTILS_TARGET,
+        LITHO_INFERANNOTATIONS_TARGET,
+        LITHO_JSR_TARGET,
+        LITHO_VIEWCOMPAT_TARGET,
+        LITHO_TEXTLAYOUTBUILDER_TARGET,
     ],
+    required_for_source_only_abi = True,
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/widget:widget"),
     ],
@@ -41,8 +41,8 @@ litho_android_library(
         "PUBLIC",
     ],
     deps =
-        COMPONENTS_TEXTLAYOUTBUILDER_UTILS_TARGET + [
-            COMPONENTS_WIDGET_ACCESSIBILITIES_TARGET,
-            COMPONENTS_RES_TARGET,
+        LITHO_TEXTLAYOUTBUILDER_UTILS_TARGET + [
+            LITHO_WIDGET_ACCESSIBILITIES_TARGET,
+            LITHO_RES_TARGET,
         ],
 )

@@ -1,0 +1,50 @@
+/*
+ * This file provided by Facebook is for non-commercial testing and evaluation
+ * purposes only.  Facebook reserves all rights not expressly granted.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    targetCompatibility = targetCompatibilityVersion
+    sourceCompatibility = sourceCompatibilityVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+    }
+
+    // TODO(#62): Re-enable abort on error.
+    lintOptions {
+        abortOnError false
+    }
+}
+
+kapt {
+    mapDiagnosticLocations = true
+}
+
+dependencies {
+    implementation project(':litho-core')
+    implementation project(':litho-widget')
+    compileOnly project(':litho-annotations')
+    kapt project(':litho-processor')
+
+    implementation deps.soloader
+    implementation deps.supportRecyclerView
+    implementation deps.kotlinStandardLib
+}
+repositories {
+    mavenCentral()
+}

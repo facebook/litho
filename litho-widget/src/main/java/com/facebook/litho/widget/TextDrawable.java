@@ -1,18 +1,25 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.widget;
 
-import javax.annotation.Nullable;
-
-import java.util.Collections;
-import java.util.List;
+import static android.view.MotionEvent.ACTION_CANCEL;
+import static android.view.MotionEvent.ACTION_DOWN;
+import static android.view.MotionEvent.ACTION_MOVE;
+import static android.view.MotionEvent.ACTION_UP;
 
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
@@ -23,20 +30,20 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.text.Layout;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
-import android.util.TypedValue;
+import android.text.style.ImageSpan;
 import android.view.MotionEvent;
 import android.view.View;
-
+import android.view.ViewConfiguration;
+import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.TextContent;
 import com.facebook.litho.Touchable;
-import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
-
-import static android.view.MotionEvent.ACTION_CANCEL;
-import static android.view.MotionEvent.ACTION_DOWN;
-import static android.view.MotionEvent.ACTION_UP;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * A {@link Drawable} for mounting text content from a
@@ -45,18 +52,18 @@ import static android.view.MotionEvent.ACTION_UP;
  * @see Component
  * @see TextSpec
  */
-public class TextDrawable extends Drawable implements Touchable, TextContent {
-
-  private static final float DEFAULT_TOUCH_RADIUS_IN_SP = 18f;
+public class TextDrawable extends Drawable implements Touchable, TextContent, Drawable.Callback {
 
   private Layout mLayout;
   private float mLayoutTranslationY;
+  private boolean mClipToBounds;
   private boolean mShouldHandleTouch;
   private CharSequence mText;
   private ColorStateList mColorStateList;
   private int mUserColor;
   private int mHighlightColor;
   private ClickableSpan[] mClickableSpans;
+  private ImageSpan[] mImageSpans;
 
   private int mSelectionStart;
   private int mSelectionEnd;
@@ -64,6 +71,12 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
   private Path mTouchAreaPath;
   private boolean mSelectionPathNeedsUpdate;
   private Paint mHighlightPaint;
+  private TextOffsetOnTouchListener mTextOffsetOnTouchListener;
+  private float mClickableSpanExpandedOffset;
+  private boolean mLongClickActivated;
+  private @Nullable Handler mLongClickHandler;
+  private @Nullable LongClickRunnable mLongClickRunnable;
+  private @Nullable ClickableSpanListener mSpanListener;
 
   @Override
   public void draw(Canvas canvas) {
@@ -71,11 +84,16 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
       return;
     }
 
-    final Rect bounds = getBounds();
+    final int saveCount = canvas.save();
 
+    final Rect bounds = getBounds();
+    if (mClipToBounds) {
+      canvas.clipRect(bounds);
+    }
     canvas.translate(bounds.left, bounds.top + mLayoutTranslationY);
     mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
-    canvas.translate(-bounds.left, -bounds.top - mLayoutTranslationY);
+
+    canvas.restoreToCount(saveCount);
   }
 
   @Override
@@ -100,49 +118,137 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
 
   @Override
   public boolean onTouchEvent(MotionEvent event, View view) {
+    if ((shouldHandleTouchForClickableSpan(event) || shouldHandleTouchForLongClickableSpan(event))
+        && handleTouchForSpans(event, view)) {
+      return true;
+    }
+
+    if (shouldHandleTextOffsetOnTouch(event)) {
+      handleTextOffsetChange(event);
+      // We will not consume touch events at this point because TextOffsetOnTouch event has
+      // lower priority than click/longclick events.
+    }
+
+    return false;
+  }
+
+  private boolean handleTouchForSpans(MotionEvent event, View view) {
     final int action = event.getActionMasked();
     if (action == ACTION_CANCEL) {
+      clearSelection();
+      resetLongClick();
+      return false;
+    }
+
+    if (action == ACTION_MOVE && !mLongClickActivated && mLongClickRunnable != null) {
+      trackLongClickBoundaryOnMove(event);
+    }
+
+    final boolean clickActivationAllowed = !mLongClickActivated;
+    if (action == ACTION_UP) {
+      resetLongClick();
+    }
+
+    final Rect bounds = getBounds();
+    if (!isWithinBounds(bounds, event)) {
+      return false;
+    }
+
+    final int x = (int) event.getX() - bounds.left;
+    final int y = (int) event.getY() - bounds.top;
+
+    ClickableSpan clickedSpan = getClickableSpanInCoords(x, y);
+
+    if (clickedSpan == null && mClickableSpanExpandedOffset > 0) {
+      clickedSpan = getClickableSpanInProximityToClick(x, y, mClickableSpanExpandedOffset);
+    }
+
+    if (clickedSpan == null) {
       clearSelection();
       return false;
     }
 
+    if (action == ACTION_UP) {
+      clearSelection();
+      if (clickActivationAllowed
+          && (mSpanListener == null || !mSpanListener.onClick(clickedSpan, view))) {
+        clickedSpan.onClick(view);
+      }
+    } else if (action == ACTION_DOWN) {
+      if (clickedSpan instanceof LongClickableSpan) {
+        registerForLongClick((LongClickableSpan) clickedSpan, view);
+      }
+      setSelection(clickedSpan);
+    }
+
+    return true;
+  }
+
+  private void resetLongClick() {
+    if (mLongClickHandler != null) {
+      mLongClickHandler.removeCallbacks(mLongClickRunnable);
+      mLongClickRunnable = null;
+    }
+    mLongClickActivated = false;
+  }
+
+  private void registerForLongClick(LongClickableSpan longClickableSpan, View view) {
+    mLongClickRunnable = new LongClickRunnable(longClickableSpan, view);
+    mLongClickHandler.postDelayed(mLongClickRunnable, ViewConfiguration.getLongPressTimeout());
+  }
+
+  private void handleTextOffsetChange(MotionEvent event) {
     final Rect bounds = getBounds();
     final int x = (int) event.getX() - bounds.left;
     final int y = (int) event.getY() - bounds.top;
 
-    float touchRadius = TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_SP,
-        DEFAULT_TOUCH_RADIUS_IN_SP,
-        view.getResources().getDisplayMetrics());
-
-    ClickableSpan clickedSpan = getClickableSpanInCoords(x, y);
-
-    if (clickedSpan == null) {
-      clickedSpan = getClickableSpanInProximityToClick(x, y, touchRadius);
+    final int offset = getTextOffsetAt(x, y);
+    if (offset >= 0 && offset <= mText.length()) {
+      mTextOffsetOnTouchListener.textOffsetOnTouch(offset);
     }
-
-    if (clickedSpan != null) {
-      if (action == ACTION_UP) {
-        clearSelection();
-        clickedSpan.onClick(view);
-      } else if (action == ACTION_DOWN) {
-        setSelection(clickedSpan);
-      }
-
-      return true;
-    }
-
-    clearSelection();
-    return false;
   }
 
   @Override
   public boolean shouldHandleTouchEvent(MotionEvent event) {
-    final int action = event.getActionMasked();
+    return shouldHandleTouchForClickableSpan(event)
+        || shouldHandleTouchForLongClickableSpan(event)
+        || shouldHandleTextOffsetOnTouch(event);
+  }
 
-    boolean isWithinBounds = getBounds().contains((int) event.getX(), (int) event.getY());
-    boolean isUpOrDown = action == ACTION_UP || action == ACTION_DOWN;
-    return (mShouldHandleTouch && isWithinBounds && isUpOrDown) || action == ACTION_CANCEL;
+  private boolean shouldHandleTouchForClickableSpan(MotionEvent event) {
+    final int action = event.getActionMasked();
+    final boolean isUpOrDown = action == ACTION_UP || action == ACTION_DOWN;
+    return (mShouldHandleTouch && isWithinBounds(getBounds(), event) && isUpOrDown)
+        || action == ACTION_CANCEL;
+  }
+
+  private boolean shouldHandleTouchForLongClickableSpan(MotionEvent event) {
+    return mShouldHandleTouch && mLongClickHandler != null && event.getAction() != ACTION_DOWN;
+  }
+
+  private static boolean isWithinBounds(Rect bounds, MotionEvent event) {
+    return bounds.contains((int) event.getX(), (int) event.getY());
+  }
+
+  private void trackLongClickBoundaryOnMove(MotionEvent event) {
+    final Rect bounds = getBounds();
+    if (!isWithinBounds(bounds, event)) {
+      resetLongClick();
+      return;
+    }
+
+    final ClickableSpan clickableSpan =
+        getClickableSpanInCoords((int) event.getX() - bounds.left, (int) event.getY() - bounds.top);
+    if (mLongClickRunnable.longClickableSpan != clickableSpan) {
+      // we are out of span area, reset longpress
+      resetLongClick();
+    }
+  }
+
+  private boolean shouldHandleTextOffsetOnTouch(MotionEvent event) {
+    return mTextOffsetOnTouchListener != null
+        && event.getActionMasked() == ACTION_DOWN
+        && getBounds().contains((int) event.getX(), (int) event.getY());
   }
 
   public void mount(
@@ -150,11 +256,25 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
       Layout layout,
       int userColor,
       ClickableSpan[] clickableSpans) {
-    mount(text, layout, 0, null, userColor, 0, clickableSpans);
+    mount(text, layout, 0, false, null, userColor, 0, clickableSpans, null, null, null, -1, -1, 0f);
   }
 
   public void mount(CharSequence text, Layout layout, int userColor, int highlightColor) {
-    mount(text, layout, 0, null, userColor, highlightColor, null);
+    mount(
+        text,
+        layout,
+        0,
+        false,
+        null,
+        userColor,
+        highlightColor,
+        null,
+        null,
+        null,
+        null,
+        -1,
+        -1,
+        0f);
   }
 
   public void mount(
@@ -165,12 +285,51 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
       int userColor,
       int highlightColor,
       ClickableSpan[] clickableSpans) {
+    mount(
+        text,
+        layout,
+        0,
+        false,
+        null,
+        userColor,
+        highlightColor,
+        clickableSpans,
+        null,
+        null,
+        null,
+        -1,
+        -1,
+        0f);
+  }
+
+  public void mount(
+      CharSequence text,
+      Layout layout,
+      float layoutTranslationY,
+      boolean clipToBounds,
+      ColorStateList colorStateList,
+      int userColor,
+      int highlightColor,
+      ClickableSpan[] clickableSpans,
+      ImageSpan[] imageSpans,
+      ClickableSpanListener spanListener,
+      TextOffsetOnTouchListener textOffsetOnTouchListener,
+      int highlightStartOffset,
+      int highlightEndOffset,
+      float clickableSpanExpandedOffset) {
     mLayout = layout;
     mLayoutTranslationY = layoutTranslationY;
+    mClipToBounds = clipToBounds;
     mText = text;
     mClickableSpans = clickableSpans;
+    if (mLongClickHandler == null && containsLongClickableSpan(clickableSpans)) {
+      mLongClickHandler = new Handler();
+    }
+    mSpanListener = spanListener;
+    mTextOffsetOnTouchListener = textOffsetOnTouchListener;
     mShouldHandleTouch = (clickableSpans != null && clickableSpans.length > 0);
     mHighlightColor = highlightColor;
+    mClickableSpanExpandedOffset = clickableSpanExpandedOffset;
     if (userColor != 0) {
       mColorStateList = null;
       mUserColor = userColor;
@@ -182,7 +341,40 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
       }
     }
 
+    if (highlightOffsetsValid(text, highlightStartOffset, highlightEndOffset)) {
+      setSelection(highlightStartOffset, highlightEndOffset);
+    } else {
+      clearSelection();
+    }
+
+    if (imageSpans != null) {
+      for (int i = 0, size = imageSpans.length; i < size; i++) {
+        Drawable drawable = imageSpans[i].getDrawable();
+        drawable.setCallback(this);
+        drawable.setVisible(true, false);
+      }
+    }
+    mImageSpans = imageSpans;
+
     invalidateSelf();
+  }
+
+  private static boolean containsLongClickableSpan(@Nullable ClickableSpan[] clickableSpans) {
+    if (clickableSpans == null) {
+      return false;
+    }
+
+    for (ClickableSpan span : clickableSpans) {
+      if (span instanceof LongClickableSpan) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private boolean highlightOffsetsValid(CharSequence text, int highlightStart, int highlightEnd) {
+    return highlightStart >= 0 && highlightEnd <= text.length() && highlightStart < highlightEnd;
   }
 
   public void unmount() {
@@ -192,8 +384,18 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     mClickableSpans = null;
     mShouldHandleTouch = false;
     mHighlightColor = 0;
+    mSpanListener = null;
+    mTextOffsetOnTouchListener = null;
     mColorStateList = null;
     mUserColor = 0;
+    if (mImageSpans != null) {
+      for (int i = 0, size = mImageSpans.length; i < size; i++) {
+        Drawable drawable = mImageSpans[i].getDrawable();
+        drawable.setCallback(null);
+        drawable.setVisible(false, false);
+      }
+      mImageSpans = null;
+    }
   }
 
   public ClickableSpan[] getClickableSpans() {
@@ -235,9 +437,55 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
    */
   @Nullable
   private ClickableSpan getClickableSpanInCoords(int x, int y) {
+    final int offset = getTextOffsetAt(x, y);
+    if (offset < 0) {
+      return null;
+    }
+    final ClickableSpan[] clickableSpans = ((Spanned) mText).getSpans(
+        offset,
+        offset,
+        ClickableSpan.class);
+
+    if (clickableSpans != null && clickableSpans.length > 0) {
+      return clickableSpans[0];
+    }
+
+    return null;
+  }
+
+  private int getTextOffsetAt(int x, int y) {
     final int line = mLayout.getLineForVertical(y);
-    float start = mLayout.getPrimaryHorizontal(mLayout.getLineStart(line));
-    float end = mLayout.getPrimaryHorizontal(mLayout.getLineVisibleEnd(line));
+
+    /**
+     * We use {@link Layout#getPrimaryHorizontal} on specific characters here because the functions
+     * of {@link Layout} that return line bounds or width have problems when used with indented
+     * lines. For instance, {@link Layout#getLineLeft} ignores indentation for left-aligned text,
+     * {@link Layout#getLineMax} includes leading margin and offers no way to subtract it, and
+     * {@link Layout#getParagraphLeft} is naturally only accurate at the paragraph level.
+     */
+    float start = getHorizontal(mLayout.getLineStart(line), line);
+
+    float end;
+    /**
+     * {@link Layout#getLineVisibleEnd} finds either the first trailing whitespace character of the
+     * line or the first character of the next line. To handle both cases, we locate the end of the
+     * line at the edge of the previous character opposite its primary horizontal position.
+     */
+    final int endOffset = mLayout.getLineVisibleEnd(line) - 1;
+    /**
+     * {@link Layout#getLineVisibleEnd} can also return 0 for a string's first line if that line is
+     * composed entirely of non-newline whitespace. The following fallback prevents an {@link
+     * IndexOutOfBoundsException} under these conditions.
+     */
+    if (endOffset < 0) {
+      end = mLayout.getPrimaryHorizontal(0);
+    } else {
+      final float[] endWidth = new float[1];
+      mLayout.getPaint().getTextWidths(mText, endOffset, endOffset + 1, endWidth);
+      end =
+          getHorizontal(endOffset, line) + (mLayout.isRtlCharAt(endOffset) ? -1 : 1) * endWidth[0];
+    }
+
     if (start > end) {
       // In RTL scenario
       float temp = start;
@@ -245,20 +493,28 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
       end = temp;
     }
 
-    if (x >= start && x <= end) {
-      final int offset = mLayout.getOffsetForHorizontal(line, x);
-
-      final ClickableSpan[] clickableSpans = ((Spanned) mText).getSpans(
-          offset,
-          offset,
-          ClickableSpan.class);
-
-      if (clickableSpans != null && clickableSpans.length > 0) {
-        return clickableSpans[0];
-      }
+    if (x < start || x > end) {
+      return -1;
     }
 
-    return null;
+    try {
+      return mLayout.getOffsetForHorizontal(line, x);
+    } catch (ArrayIndexOutOfBoundsException e) {
+      // This happens for bidi text on Android 7-8.
+      // See https://android.googlesource.com/platform/frameworks/base/+/821e9bd5cc2be4b3210cb0226e40ba0f42b51aed
+      return -1;
+    }
+  }
+
+  /**
+   * {@link Layout#getPrimaryHorizontal} uses the paragraph direction, which is incorrect for
+   * characters that oppose the direction of the paragraph.
+   */
+  private float getHorizontal(int offset, int line) {
+    final boolean isRtlLine = mLayout.getParagraphDirection(line) == Layout.DIR_RIGHT_TO_LEFT;
+    return isRtlLine == mLayout.isRtlCharAt(offset)
+        ? mLayout.getPrimaryHorizontal(offset)
+        : mLayout.getSecondaryHorizontal(offset);
   }
 
   /**
@@ -275,7 +531,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
       float x,
       float y,
       float tapRadius) {
-    final Region touchAreaRegion= new Region();
+    final Region touchAreaRegion = new Region();
     final Region clipBoundsRegion = new Region();
 
     if (mTouchAreaPath == null) {
@@ -308,7 +564,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     return result;
   }
 
-  private Path getSelectionPath() {
+  private @Nullable Path getSelectionPath() {
     if (mSelectionStart == mSelectionEnd) {
       return null;
     }
@@ -379,5 +635,42 @@ public class TextDrawable extends Drawable implements Touchable, TextContent {
     clickableSpanAreaRegion.setPath(clickableSpanAreaPath, clipBoundsRegion);
 
     return clickableSpanAreaRegion.op(touchAreaRegion, Region.Op.INTERSECT);
+  }
+
+  @Override
+  public void invalidateDrawable(Drawable drawable) {
+    invalidateSelf();
+  }
+
+  @Override
+  public void scheduleDrawable(Drawable drawable, Runnable runnable, long l) {
+    scheduleSelf(runnable, l);
+  }
+
+  @Override
+  public void unscheduleDrawable(Drawable drawable, Runnable runnable) {
+    unscheduleSelf(runnable);
+  }
+
+  interface TextOffsetOnTouchListener {
+    void textOffsetOnTouch(int textOffset);
+  }
+
+  private class LongClickRunnable implements Runnable {
+    private LongClickableSpan longClickableSpan;
+    private View longClickableSpanView;
+
+    LongClickRunnable(LongClickableSpan span, View view) {
+      longClickableSpan = span;
+      longClickableSpanView = view;
+    }
+
+    @Override
+    public void run() {
+      mLongClickActivated =
+          (mSpanListener != null
+                  && mSpanListener.onLongClick(longClickableSpan, longClickableSpanView))
+              || longClickableSpan.onLongClick(longClickableSpanView);
+    }
   }
 }

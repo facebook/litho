@@ -1,25 +1,29 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
-import com.facebook.yoga.YogaAlign;
-
-import com.facebook.yoga.YogaFlexDirection;
-
-import java.util.Deque;
-
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
+import android.text.TextUtils;
+import android.view.ViewParent;
+import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
+import java.util.Deque;
 
 /**
  * Helper class to access metadata from {@link LithoView} that is relevant during end to end
@@ -30,11 +34,21 @@ import com.facebook.proguard.annotations.DoNotStrip;
 public class LithoViewTestHelper {
 
   /**
+   * Holds an opaque reference to an {@link InternalNode} without giving the holder any access to
+   * it.
+   */
+  public static final class InternalNodeRef {
+    private final InternalNode mInternalNodeRef;
+
+    private InternalNodeRef(InternalNode node) {
+      this.mInternalNodeRef = node;
+    }
+  }
+
+  /**
    * @see #findTestItems(LithoView, String)
-   *
-   * <strong>Note:</strong> If there is more than one element mounted under the given key,
-   * the last one to render will be returned.
-   *
+   *     <p><strong>Note:</strong> If there is more than one element mounted under the given key,
+   *     the last one to render will be returned.
    * @param lithoView The component view the component is mounted to.
    * @param testKey The unique identifier the component was constructed with.
    * @return Test item if found, null otherwise.
@@ -49,28 +63,29 @@ public class LithoViewTestHelper {
   }
 
   /**
-   * Finds a {@link TestItem} given a {@link LithoView} based on the test key it was
-   * assigned during construction.
+   * Finds a {@link TestItem} given a {@link LithoView} based on the test key it was assigned during
+   * construction.
    *
-   * <strong>Example use:</strong>
+   * <p><strong>Example use:</strong>
+   *
    * <pre>{@code
-   *  final LithoView lithoView = ComponentTestHelper.mountComponent(
-   *      mContext,
-   *      new InlineLayoutSpec() {
-   *        @Override
-   *        protected ComponentLayout onCreateLayout(ComponentContext c) {
-   *          return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-   *              .child(
-   *                  Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-   *                      .child(TestDrawableComponent.create(c))
-   *                      .child(TestDrawableComponent.create(c))
-   *                      .testKey("mytestkey"))
-   *              .build();
-   *        }
-   *      });
-   *  final TestItem testItem = LithoViewTestHelper.findTestItem(lithoView, "mytestkey");
-   *  }
-   * </pre>
+   * final LithoView lithoView = ComponentTestHelper.mountComponent(
+   *     mContext,
+   *     new InlineLayoutSpec() {
+   *       @Override
+   *       protected ComponentLayout onCreateLayout(ComponentContext c) {
+   *         return Column.create(c)
+   *             .child(
+   *                 Column.create(c)
+   *                     .child(TestDrawableComponent.create(c))
+   *                     .child(TestDrawableComponent.create(c))
+   *                     .testKey("mytestkey"))
+   *             .build();
+   *       }
+   *     });
+   * final TestItem testItem = LithoViewTestHelper.findTestItem(lithoView, "mytestkey");
+   *
+   * }</pre>
    *
    * @param lithoView The component view the component is mounted to.
    * @param testKey The unique identifier the component was constructed with.
@@ -81,5 +96,114 @@ public class LithoViewTestHelper {
   @NonNull
   public static Deque<TestItem> findTestItems(LithoView lithoView, String testKey) {
     return lithoView.findTestItems(testKey);
+  }
+
+  @DoNotStrip
+  public static String viewToString(LithoView view) {
+    return viewToString(view, false);
+  }
+
+  /**
+   * Provide a nested string representation of a LithoView and its nested components for debugging
+   * purposes.
+   *
+   * @param view A Litho view with mounted components.
+   * @param embedded if the call is embedded in "adb dumpsys activity"
+   */
+  @DoNotStrip
+  public static String viewToString(LithoView view, boolean embedded) {
+    int left = 0;
+    int top = 0;
+    int depth = 0;
+    if (embedded) {
+      left = view.getLeft();
+      top = view.getTop();
+      depth = 2;
+      ViewParent parent = view.getParent();
+      while (parent != null) {
+        depth++;
+        parent = parent.getParent();
+      }
+    }
+    final StringBuilder sb = new StringBuilder();
+    viewToString(left, top, DebugComponent.getRootInstance(view), sb, embedded, depth);
+    return sb.toString();
+  }
+
+  private static void viewToString(
+      int left,
+      int top,
+      @Nullable DebugComponent debugComponent,
+      StringBuilder sb,
+      boolean embedded,
+      int depth) {
+    if (debugComponent == null) {
+      return;
+    }
+
+    DebugComponentDescriptionHelper.addViewDescription(left, top, debugComponent, sb, embedded);
+
+    for (DebugComponent child : debugComponent.getChildComponents()) {
+      sb.append("\n");
+      for (int i = 0; i <= depth; i++) {
+        sb.append("  ");
+      }
+      viewToString(0, 0, child, sb, embedded, depth + 1);
+    }
+  }
+
+  public static String toDebugString(@Nullable LithoView lithoView) {
+    if (lithoView == null) {
+      return "";
+    }
+
+    final String debugString = viewToString(lithoView, true);
+    return TextUtils.isEmpty(debugString) ? viewBoundsToString(lithoView) : debugString;
+  }
+
+  private static String viewBoundsToString(LithoView lithoView) {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("(");
+    sb.append(lithoView.getLeft());
+    sb.append(",");
+    sb.append(lithoView.getTop());
+    sb.append("-");
+    sb.append(lithoView.getRight());
+    sb.append(",");
+    sb.append(lithoView.getBottom());
+    sb.append(")");
+    return sb.toString();
+  }
+
+  /**
+   * Obtain a reference to a LithoView's internal layout root, if present. This is used to restore a
+   * view's root after it has been freed for testing purposes.
+   *
+   * @see #setRootLayoutRef(LithoView, InternalNodeRef)
+   */
+  @ThreadConfined(ThreadConfined.UI)
+  @Nullable
+  public static InternalNodeRef getRootLayoutRef(final LithoView view) {
+    final ComponentTree componentTree = view.getComponentTree();
+    final LayoutState mainThreadLayoutState =
+        componentTree != null ? componentTree.getMainThreadLayoutState() : null;
+    return mainThreadLayoutState != null
+        ? new InternalNodeRef(mainThreadLayoutState.getLayoutRoot())
+        : null;
+  }
+
+  /**
+   * Restore a previously saved root layout reference.
+   *
+   * @see #getRootLayoutRef(LithoView)
+   */
+  @ThreadConfined(ThreadConfined.UI)
+  public static void setRootLayoutRef(final LithoView view, final InternalNodeRef rootLayoutNode) {
+    final ComponentTree componentTree = view.getComponentTree();
+    final LayoutState mainThreadLayoutState =
+        componentTree != null ? componentTree.getMainThreadLayoutState() : null;
+    if (mainThreadLayoutState != null) {
+      mainThreadLayoutState.mLayoutRoot = rootLayoutNode.mInternalNodeRef;
+    }
   }
 }

@@ -1,139 +1,144 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.Transition.TransitionType;
-import com.facebook.litho.TransitionProperties.PropertyType;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import org.junit.Before;
+import com.facebook.litho.animation.AnimatedProperties;
+import com.facebook.litho.animation.DimensionValue;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
 public class TransitionTest {
 
-  private static final String KEY = "key";
-  private static final float START_ALPHA = 0.5f;
-  private static final float START_TRANSLATION_X = 30f;
-  private static final float END_TRANSLATION_X = 50f;
+  @Test
+  public void testCollectRootBoundsTransitions() {
+    Transition transition = Transition.create(Transition.TransitionKeyType.GLOBAL, "rootKey").animate(AnimatedProperties.WIDTH);
 
-  private TransitionInterpolatorAnimator mAnimator;
-  private TransitionInterpolatorAnimator mAppearAnimator;
-  private TransitionInterpolatorAnimator mDisappearAnimator;
+    TransitionId rootTransitionId = new TransitionId(TransitionId.Type.GLOBAL, "rootKey", null);
 
-  @Before
-  public void setUp() {
-    mAnimator = (TransitionInterpolatorAnimator) TransitionInterpolatorAnimator.create().build();
-    mAppearAnimator = (TransitionInterpolatorAnimator) mAnimator.clone();
-    mDisappearAnimator = (TransitionInterpolatorAnimator) mAnimator.clone();
+    Transition.RootBoundsTransition rootWidthTransition = new Transition.RootBoundsTransition();
+    TransitionUtils.collectRootBoundsTransitions(
+        rootTransitionId, transition, AnimatedProperties.WIDTH, rootWidthTransition);
+
+    assertThat(rootWidthTransition.hasTransition).isTrue();
+    assertThat(rootWidthTransition.appearTransition).isNull();
+
+    Transition.RootBoundsTransition rootHeightTransition = new Transition.RootBoundsTransition();
+    TransitionUtils.collectRootBoundsTransitions(
+        rootTransitionId, transition, AnimatedProperties.HEIGHT, rootHeightTransition);
+
+    assertThat(rootHeightTransition.hasTransition).isFalse();
   }
 
   @Test
-  public void testTransitionBuilderWithSimpleChangeTransition() {
-    final Transition t = new Transition.Builder(KEY, mAnimator)
-        .alpha()
-        .build();
+  public void testCollectRootBoundsTransitionsAppearComesAfterAllLayout() {
+    Transition transition =
+        Transition.parallel(
+            Transition.allLayout(),
+            Transition.create(Transition.TransitionKeyType.GLOBAL, "rootKey").animate(AnimatedProperties.HEIGHT).appearFrom(10),
+            Transition.create(Transition.TransitionKeyType.GLOBAL, "otherkey").animate(AnimatedProperties.ALPHA));
 
-    assertFalse(t instanceof TransitionSet);
-    assertEquals(KEY, t.getKey());
-    assertEquals(TransitionType.CHANGE, t.getTransitionType());
-    assertNull(t.getLocalValues());
-    assertEquals(PropertyType.ALPHA, t.getValuesFlag());
+    TransitionId rootTransitionId = new TransitionId(TransitionId.Type.GLOBAL, "rootKey", null);
+
+    Transition.RootBoundsTransition rootHeightTransition = new Transition.RootBoundsTransition();
+    TransitionUtils.collectRootBoundsTransitions(
+        rootTransitionId, transition, AnimatedProperties.HEIGHT, rootHeightTransition);
+
+    assertThat(rootHeightTransition.hasTransition).isTrue();
+    assertThat(rootHeightTransition.appearTransition).isNotNull();
   }
 
   @Test
-  public void testTransitionBuilderWithAppearTransitionOneValue() {
-    Transition t = new Transition.Builder(KEY, mAnimator)
-        .alpha()
-        .withStartValue(START_ALPHA, mAppearAnimator)
-        .build();
+  public void testCollectRootBoundsTransitionsAppearComesBeforeAllLayout() {
+    Transition transition =
+        Transition.parallel(
+            Transition.create(Transition.TransitionKeyType.GLOBAL, "rootKey").animate(AnimatedProperties.HEIGHT).appearFrom(10),
+            Transition.allLayout(),
+            Transition.create(Transition.TransitionKeyType.GLOBAL, "otherkey").animate(AnimatedProperties.ALPHA));
 
-    assertTrue(t instanceof TransitionSet);
-    final TransitionSet ts = (TransitionSet) t;
-    assertEquals(2, ts.size());
+    TransitionId rootTransitionId = new TransitionId(TransitionId.Type.GLOBAL, "rootKey", null);
 
-    // Assert first on the change Transition.
-    t = ts.get(0);
+    Transition.RootBoundsTransition rootHeightTransition = new Transition.RootBoundsTransition();
+    TransitionUtils.collectRootBoundsTransitions(
+        rootTransitionId, transition, AnimatedProperties.HEIGHT, rootHeightTransition);
 
-    assertFalse(t instanceof TransitionSet);
-    assertEquals(KEY, t.getKey());
-    assertEquals(TransitionType.CHANGE, t.getTransitionType());
-    assertNull(t.getLocalValues());
-    assertEquals(TransitionProperties.PropertyType.ALPHA, t.getValuesFlag());
-
-    // Assert now on the appearing Transition.
-    t = ts.get(1);
-
-    assertFalse(t instanceof TransitionSet);
-    assertEquals(KEY, t.getKey());
-    assertEquals(TransitionType.APPEAR, t.getTransitionType());
-    assertEquals(PropertyType.ALPHA, t.getValuesFlag());
-    assertNotNull(t.getLocalValues());
-    assertEquals(TransitionProperties.PropertyType.ALPHA, t.getLocalValues().getPropertyFlags());
+    assertThat(rootHeightTransition.hasTransition).isTrue();
+    assertThat(rootHeightTransition.appearTransition).isNotNull();
   }
 
   @Test
-  public void testTransitionBuilderWithAppearDisappearTransitionsTwoValue() {
-    Transition t = new Transition.Builder(KEY, mAnimator)
-        .alpha()
-        .withStartValue(START_ALPHA, mAppearAnimator)
-        .translationX()
-        .withStartValue(START_TRANSLATION_X, mAppearAnimator)
-        .withEndValue(END_TRANSLATION_X, mDisappearAnimator)
-        .build();
+  public void testCollectRootBoundsTransitionsExtractAppearFrom() {
+    Transition transition =
+        Transition.create(Transition.TransitionKeyType.GLOBAL, "rootKey").animate(AnimatedProperties.HEIGHT).appearFrom(10);
 
-    assertTrue(t instanceof TransitionSet);
-    final TransitionSet ts = (TransitionSet) t;
-    assertEquals(3, ts.size());
-    assertEquals(TransitionType.UNDEFINED, ts.getTransitionType());
+    TransitionId rootTransitionId = new TransitionId(TransitionId.Type.GLOBAL, "rootKey", null);
 
-    // Assert first on the change Transition.
-    t = ts.get(0);
+    Transition.RootBoundsTransition rootHeightTransition = new Transition.RootBoundsTransition();
+    TransitionUtils.collectRootBoundsTransitions(
+        rootTransitionId, transition, AnimatedProperties.HEIGHT, rootHeightTransition);
 
-    assertFalse(t instanceof TransitionSet);
-    assertEquals(KEY, t.getKey());
-    assertEquals(TransitionType.CHANGE, t.getTransitionType());
-    assertNull(t.getLocalValues());
-    assertEquals(
-        PropertyType.ALPHA | TransitionProperties.PropertyType.TRANSLATION_X,
-        t.getValuesFlag());
+    assertThat(rootHeightTransition.hasTransition).isTrue();
+    assertThat(rootHeightTransition.appearTransition).isNotNull();
 
-    // Assert now on the appearing Transition.
-    t = ts.get(1);
+    LayoutState layoutState = mock(LayoutState.class);
+    LayoutOutput rootLayout = new LayoutOutput();
+    rootLayout.setBounds(0, 0, 300, 100);
+    when(layoutState.getMountableOutputAt(0)).thenReturn(rootLayout);
 
-    assertFalse(t instanceof TransitionSet);
-    assertEquals(KEY, t.getKey());
-    assertEquals(TransitionType.APPEAR, t.getTransitionType());
-    assertEquals(
-        TransitionProperties.PropertyType.ALPHA | TransitionProperties.PropertyType.TRANSLATION_X,
-        t.getValuesFlag());
-    assertNotNull(t.getLocalValues());
-    assertEquals(
-        TransitionProperties.PropertyType.ALPHA | TransitionProperties.PropertyType.TRANSLATION_X,
-        t.getLocalValues().getPropertyFlags());
+    int animateFrom =
+        (int)
+            Transition.getRootAppearFromValue(
+                rootHeightTransition.appearTransition, layoutState, AnimatedProperties.HEIGHT);
 
-    // Assert now on the disappear Transition.
-    t = ts.get(2);
+    assertThat(animateFrom).isEqualTo(10);
+  }
 
-    assertFalse(t instanceof TransitionSet);
-    assertEquals(KEY, t.getKey());
-    assertEquals(TransitionType.DISAPPEAR, t.getTransitionType());
-    assertEquals(TransitionProperties.PropertyType.TRANSLATION_X, t.getValuesFlag());
-    assertNotNull(t.getLocalValues());
-    assertEquals(PropertyType.TRANSLATION_X, t.getLocalValues().getPropertyFlags());
+  @Test
+  public void testCollectRootBoundsTransitionsExtractAppearFromDimensionValue() {
+    Transition transition =
+        Transition.create(Transition.TransitionKeyType.GLOBAL, "rootKey")
+            .animate(AnimatedProperties.HEIGHT)
+            .appearFrom(DimensionValue.heightPercentageOffset(50));
+
+    TransitionId rootTransitionId = new TransitionId(TransitionId.Type.GLOBAL, "rootKey", null);
+
+    Transition.RootBoundsTransition rootHeightTransition = new Transition.RootBoundsTransition();
+    TransitionUtils.collectRootBoundsTransitions(
+        rootTransitionId, transition, AnimatedProperties.HEIGHT, rootHeightTransition);
+
+    assertThat(rootHeightTransition.hasTransition).isTrue();
+    assertThat(rootHeightTransition.appearTransition).isNotNull();
+
+    LayoutState layoutState = mock(LayoutState.class);
+    LayoutOutput rootLayout = new LayoutOutput();
+    rootLayout.setBounds(0, 0, 300, 100);
+    when(layoutState.getMountableOutputAt(0)).thenReturn(rootLayout);
+
+    int animateFrom =
+        (int)
+            Transition.getRootAppearFromValue(
+                rootHeightTransition.appearTransition, layoutState, AnimatedProperties.HEIGHT);
+
+    float expectedAppearFrom = rootLayout.getBounds().height() * 1.5f;
+    assertThat(animateFrom).isEqualTo((int) expectedAppearFrom);
   }
 }

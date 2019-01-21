@@ -1,11 +1,11 @@
-# Copyright (c) 2014-present, Facebook, Inc.
-# All rights reserved.
+# Copyright (c) 2017-present, Facebook, Inc.
 #
-# This source code is licensed under the BSD-style license found in the
-# LICENSE file in the root directory of this source tree. An additional grant
-# of patent rights can be found in the PATENTS file in the same directory.
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
 
-prebuilt_jar(
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
+
+fb_native.prebuilt_jar(
     name = "infer-annotations",
     binary_jar = ":infer-annotations.jar",
     visibility = [
@@ -13,8 +13,8 @@ prebuilt_jar(
     ],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "infer-annotations.jar",
-    sha1 = "3932ca6a3e1aa16df91ef994d6ecfba0ddd3a90e",
-    url = "mvn:com.facebook.infer.annotation:infer-annotation:jar:0.10.0.2",
+    sha1 = "f514ff4ca022a579d9cf7524846988b646ae4491",
+    url = "mvn:com.facebook.infer.annotation:infer-annotation:jar:0.11.2",
 )

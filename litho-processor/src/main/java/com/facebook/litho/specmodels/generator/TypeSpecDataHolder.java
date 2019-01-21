@@ -1,35 +1,39 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.specmodels.generator;
 
-import javax.annotation.concurrent.Immutable;
-import javax.lang.model.element.Modifier;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.facebook.litho.specmodels.internal.ImmutableList;
-
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.concurrent.Immutable;
+import javax.lang.model.element.Modifier;
 
 /**
- * An object that holds data that can be used in the construction of a
- * {@link com.squareup.javapoet.TypeSpec}.
+ * An object that holds data that can be used in the construction of a {@link
+ * com.squareup.javapoet.TypeSpec}.
  *
- * This is a wrapper that is used to allow TypeSpecs to be composed. It is a dumb wrapper - any
+ * <p>This is a wrapper that is used to allow TypeSpecs to be composed. It is a dumb wrapper - any
  * checking of the semantics will be done in the TypeSpec itself.
  */
 @Immutable
@@ -39,6 +43,7 @@ public class TypeSpecDataHolder {
   private final ImmutableList<FieldSpec> fieldSpecs;
   private final ImmutableList<MethodSpec> methodSpecs;
   private final ImmutableList<TypeSpec> typeSpecs;
+  private final ImmutableList<TypeName> superInterfaces;
 
   private TypeSpecDataHolder(TypeSpecDataHolder.Builder builder) {
     this.javadocSpecs = ImmutableList.copyOf(builder.javadocSpecs);
@@ -46,6 +51,7 @@ public class TypeSpecDataHolder {
     this.fieldSpecs = ImmutableList.copyOf(builder.fieldSpecs);
     this.methodSpecs = ImmutableList.copyOf(builder.methodSpecs);
     this.typeSpecs = ImmutableList.copyOf(builder.typeSpecs);
+    this.superInterfaces = ImmutableList.copyOf(builder.superInterfaces);
   }
 
   public ImmutableList<JavadocSpec> getJavadocSpecs() {
@@ -68,6 +74,10 @@ public class TypeSpecDataHolder {
     return typeSpecs;
   }
 
+  public ImmutableList<TypeName> getSuperInterfaces() {
+    return superInterfaces;
+  }
+
   public static TypeSpecDataHolder.Builder newBuilder() {
     return new TypeSpecDataHolder.Builder();
   }
@@ -80,6 +90,7 @@ public class TypeSpecDataHolder {
     typeSpec.addFields(fieldSpecs);
     typeSpec.addMethods(methodSpecs);
     typeSpec.addTypes(typeSpecs);
+    typeSpec.addSuperinterfaces(superInterfaces);
   }
 
   public static final class Builder {
@@ -88,9 +99,9 @@ public class TypeSpecDataHolder {
     private final List<FieldSpec> fieldSpecs = new ArrayList<>();
     private final List<MethodSpec> methodSpecs = new ArrayList<>();
     private final List<TypeSpec> typeSpecs = new ArrayList<>();
+    private final List<TypeName> superInterfaces = new ArrayList<>();
 
-    private Builder() {
-    }
+    private Builder() {}
 
     public TypeSpecDataHolder.Builder addJavadoc(JavadocSpec javadocSpec) {
       javadocSpecs.add(javadocSpec);
@@ -160,12 +171,25 @@ public class TypeSpecDataHolder {
       return this;
     }
 
+    public TypeSpecDataHolder.Builder addSuperInterfaces(Iterable<TypeName> superInterfaces) {
+      for (TypeName superInterface : superInterfaces) {
+        addSuperInterface(superInterface);
+      }
+      return this;
+    }
+
+    public TypeSpecDataHolder.Builder addSuperInterface(TypeName superInterface) {
+      superInterfaces.add(superInterface);
+      return this;
+    }
+
     public TypeSpecDataHolder.Builder addTypeSpecDataHolder(TypeSpecDataHolder typeSpecDataHolder) {
       addJavadocs(typeSpecDataHolder.javadocSpecs);
       addAnnotations(typeSpecDataHolder.annotationSpecs);
       addFields(typeSpecDataHolder.fieldSpecs);
       addMethods(typeSpecDataHolder.methodSpecs);
       addTypes(typeSpecDataHolder.typeSpecs);
+      addSuperInterfaces(typeSpecDataHolder.superInterfaces);
       return this;
     }
 
@@ -185,10 +209,7 @@ public class TypeSpecDataHolder {
 
     @Override
     public String toString() {
-      return CodeBlock.builder()
-          .add(format, args)
-          .build()
-          .toString();
+      return CodeBlock.builder().add(format, args).build().toString();
     }
   }
 }

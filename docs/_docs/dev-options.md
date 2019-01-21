@@ -1,10 +1,10 @@
 ---
 docid: dev-options
-title: Developer options
+title: Developer Options
 layout: docs
 permalink: /docs/developer-options
 ---
-In addition to Stetho we also provide two compile time flags for visualizing the component hierarchy of your application. These are similar to Android's show view bounds internal setting but because Litho does not always use Android Views we have implemented our own to make it more helpful.
+We provide two compile time flags for visualizing the component hierarchy of your application. These are similar to Android's show view bounds internal setting but because Litho does not always use Android Views we have implemented our own to make it more helpful.
 
 Within the [ComponentsConfiguration](/javadoc/com/facebook/litho/config/ComponentsConfiguration) class there are two fields which control this.
 

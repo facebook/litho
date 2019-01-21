@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  Copyright 2014-present, Facebook, Inc.
-  All rights reserved.
-
-  This source code is licensed under the license found in the
-  LICENSE-examples file in the root directory of this source tree.
--->
+  ~ This file provided by Facebook is for non-commercial testing and evaluation
+  ~ purposes only.  Facebook reserves all rights not expressly granted.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+  ~ FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ~ ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  ~ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.facebook.samples.lithobarebones">
 
-  <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="19"/>
+  <uses-sdk android:targetSdkVersion="23"/>
 
   <application
       android:name="com.facebook.samples.lithobarebones.SampleApplication"
-      android:label="Litho Barebones">
+      android:label="Litho Barebones"
+      android:allowBackup="true">
     <activity android:name="com.facebook.samples.lithobarebones.SampleActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>

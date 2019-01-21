@@ -1,24 +1,29 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaEdge;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
 
 @RunWith(ComponentsTestRunner.class)
 public class InternalNodeReleaseTest {
@@ -26,17 +31,16 @@ public class InternalNodeReleaseTest {
 
   @Before
   public void setup() {
-    mInternalNode = ComponentsPools.acquireInternalNode(
-        new ComponentContext(RuntimeEnvironment.application),
-        RuntimeEnvironment.application.getResources());
+    mInternalNode =
+        ComponentsPools.acquireInternalNode(new ComponentContext(RuntimeEnvironment.application));
   }
 
   private static void assertDefaultValues(InternalNode node) {
-    assertEquals(false, node.isForceViewWrapping());
+    assertThat(node.isForceViewWrapping()).isEqualTo(false);
 
-    assertNull(node.getNodeInfo());
-    assertNull(node.getTouchExpansion());
-    assertNull(node.getTestKey());
+    assertThat(node.getNodeInfo()).isNull();
+    assertThat(node.getTouchExpansion()).isNull();
+    assertThat(node.getTestKey()).isNull();
   }
 
   @Test
@@ -54,6 +58,7 @@ public class InternalNodeReleaseTest {
     mInternalNode.wrapInView();
     mInternalNode.clickHandler(new EventHandler(null, 1));
     mInternalNode.longClickHandler(new EventHandler(null, 1));
+    mInternalNode.focusChangeHandler(new EventHandler(null, 1));
     mInternalNode.touchHandler(new EventHandler(null, 1));
     mInternalNode.dispatchPopulateAccessibilityEventHandler(
         new EventHandler<DispatchPopulateAccessibilityEventEvent>(null, 1));
@@ -83,9 +88,7 @@ public class InternalNodeReleaseTest {
   public void testAttachedNode() {
     assertDefaultValues(mInternalNode);
     InternalNode parent =
-        ComponentsPools.acquireInternalNode(
-            new ComponentContext(RuntimeEnvironment.application),
-            RuntimeEnvironment.application.getResources());
+        ComponentsPools.acquireInternalNode(new ComponentContext(RuntimeEnvironment.application));
     parent.addChildAt(mInternalNode, 0);
     mInternalNode.release();
   }
@@ -94,9 +97,7 @@ public class InternalNodeReleaseTest {
   public void testNodeWithChildren() {
     assertDefaultValues(mInternalNode);
     mInternalNode.addChildAt(
-        ComponentsPools.acquireInternalNode(
-            new ComponentContext(RuntimeEnvironment.application),
-            RuntimeEnvironment.application.getResources()),
+        ComponentsPools.acquireInternalNode(new ComponentContext(RuntimeEnvironment.application)),
         0);
     mInternalNode.release();
   }

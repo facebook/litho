@@ -11,7 +11,14 @@ cmake_minimum_required(VERSION 3.4.1)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-file(GLOB yoga_SRC yoga/*.c)
-add_library(yoga SHARED ${yoga_SRC})
+add_compile_options(
+    -fno-omit-frame-pointer
+    -fexceptions
+    -Wall
+    -std=c++11
+    -O3)
 
-target_link_libraries(yoga android log)
+file(GLOB yogacore_SRC yoga/*.cpp)
+add_library(yogacore STATIC ${yogacore_SRC})
+
+target_link_libraries(yogacore android log)

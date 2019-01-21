@@ -1,41 +1,48 @@
 # Copyright (c) 2017-present, Facebook, Inc.
-# All rights reserved.
 #
-# This source code is licensed under the BSD-style license found in the
-# LICENSE file in the root directory of this source tree. An additional grant
-# of patent rights can be found in the PATENTS file in the same directory.
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANNOTATIONS_TARGET", "LITHO_JAVAPOET_TARGET", "LITHO_JSR_TARGET", "fb_java_library", "make_dep_path")
 
-include_defs("//COMPONENTS_DEFS")
-
-java_library(
+fb_java_library(
     name = "specmodels",
-    exported_deps = [
-        ":specmodels-bare",
-        COMPONENTS_JAVAPOET_TARGET,
-        COMPONENTS_JSR_TARGET,
-    ],
     tests = [
-        "//javatests/com/facebook/litho/specmodels:specmodels",
+        make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels:specmodels"),
     ],
     visibility = [
         "PUBLIC",
+    ],
+    exported_deps = [
+        ":specmodels-bare",
+        LITHO_JAVAPOET_TARGET,
+        LITHO_JSR_TARGET,
     ],
 )
 
-java_library(
+fb_java_library(
     name = "specmodels-bare",
     srcs = glob(
         ["**/*.java"],
-        excludes = glob(["processor/*.java"]),
+        exclude = glob([
+            "processor/**/*.java",
+            "internal/*.java",
+            "*/testing/*.java",
+        ]),
     ),
-    exported_deps = [
-        COMPONENTS_ANNOTATIONS_TARGET,
-    ],
     provided_deps = [
-        COMPONENTS_JAVAPOET_TARGET,
-        COMPONENTS_JSR_TARGET,
+        LITHO_JAVAPOET_TARGET,
+        LITHO_JSR_TARGET,
     ],
+    source = "8",
+    target = "8",
     visibility = [
         "PUBLIC",
+    ],
+    deps = [
+        LITHO_ANDROIDSUPPORT_TARGET,
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
+    ],
+    exported_deps = [
+        LITHO_ANNOTATIONS_TARGET,
     ],
 )

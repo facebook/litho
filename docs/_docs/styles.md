@@ -14,7 +14,7 @@ Style support can be implemented using the `@OnLoadStyle` method in your compone
 class MyComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext c,
       @Prop String prop1,
       @Prop int prop2) {

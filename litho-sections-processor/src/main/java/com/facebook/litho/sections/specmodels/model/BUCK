@@ -1,0 +1,25 @@
+# Copyright (c) 2017-present, Facebook, Inc.
+#
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANNOTATIONS_TARGET", "LITHO_PROCESSOR_LIB_TARGET", "LITHO_SECTIONS_ANNOTATIONS_TARGET", "fb_java_library", "make_dep_path")
+
+fb_java_library(
+    name = "model",
+    srcs = glob([
+        "*.java",
+        "**/*.java",
+    ]),
+    source = "8",
+    target = "8",
+    visibility = [
+        make_dep_path("litho-sections-processor/src/main/java/com/facebook/litho/sections/specmodels/processor:processor-lib"),
+    ],
+    deps = [
+        LITHO_SECTIONS_ANNOTATIONS_TARGET,
+        LITHO_ANNOTATIONS_TARGET,
+        LITHO_PROCESSOR_LIB_TARGET,
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
+    ],
+)

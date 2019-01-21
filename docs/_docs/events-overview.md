@@ -14,21 +14,23 @@ public class ColorChangedEvent {
 }
 ```
 
-In this example we will assume we have a component called `ColorComponent`. To indicate that a `ColorComponent` can dispatch a `ColorChangedEvent` our 'ColorComponentSpec' must be annotated with that information. This is done with the `events` parameter of the `@MountSpec` and `@LayoutSpec` annotations. A component may be annotated to dispatch multiple events.
+In this example we will assume we have a component called `ColorComponent`. To indicate that a `ColorComponent` can dispatch a `ColorChangedEvent` our `ColorComponentSpec` must be annotated with that information. This is done with the `events` parameter of the `@MountSpec` and `@LayoutSpec` annotations. A component may be annotated to dispatch multiple events.
 
 ```java
 @LayoutSpec(events = { ColorChangedEvent.class })
 class ColorComponentSpec {
   ...
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       Context c,
-      @Prop EventHandler colorChangedHandler,
-      @FromPrepare int color) {
+      @Prop int color) {
     ...
-    ColorComponent.dispatchColorChangedEvent(
-        colorChangedHandler,
-        color);
+    EventHandler handler = ColorComponent.getColorChangedEventHandler(c);
+    if (handler != null) {
+      ColorComponent.dispatchColorChangedEvent(
+          colorChangedHandler,
+          color);
+    }
     ...
   }
 }
@@ -55,7 +57,7 @@ For example, here's how a component would define a handler for the `ColorChanged
 class MyComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       LayoutContext c,
       @Prop String someColor) {
 
@@ -89,18 +91,17 @@ As you can see, `@OnEvent` callbacks have access to all component props just lik
 class FacePileComponentSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       LayoutContext c,
       @Prop Uri[] faces) {
-    ComponentLayout.Builder builder = Column.create(c);
+    Component.Builder builder = Column.create(c);
     for (Uri face : avatarUrls) {
       builder.child(
           FrescoImage.create(c)
               .uri(face)
-              .withLayout()
               .clickHandler(FacePileComponent.onFaceClicked(c, face));
     }
-    
+
     return builder.build();
   }
 

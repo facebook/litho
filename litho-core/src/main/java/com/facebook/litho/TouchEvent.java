@@ -1,17 +1,23 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
 import android.view.MotionEvent;
 import android.view.View;
-
 import com.facebook.litho.annotations.Event;
 
 /**
@@ -21,20 +27,18 @@ import com.facebook.litho.annotations.Event;
  * events, and false otherwise. An example of the correct usage is:
  *
  * <pre>
- * {@code
+ * {@literal @}OnEvent(TouchEvent.class)
+ *  static boolean onTouch(
+ *     {@literal @}FromEvent View view,
+ *     {@literal @}FromEvent MotionEvent motionEvent,
+ *     {@literal @}Param Param someParam,
+ *     {@literal @}Prop Prop someProp) {
+ *    if (shouldHandleEvent(someParam, someProp)) {
+ *      handleEvent(view, motionEvent);
+ *      return true;
+ *    }
  *
- * @OnEvent(TouchEvent.class)
- * static boolean onTouch(
- *     @FromEvent View view,
- *     @FromEvent MotionEvent motionEvent,
- *     @Param Param someParam
- *     @Prop Prop someProp) {
- *   if (shouldHandleEvent(someParam, someProp)) {
- *     handleEvent(view, motionEvent);
- *     return true;
- *   }
- *
- *   return false;
+ *    return false;
  * }
  * </pre>
  */

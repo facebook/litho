@@ -1,20 +1,20 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.utils;
-
-import android.view.View.MeasureSpec;
-import android.util.Log;
-
-import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.Size;
-import com.facebook.litho.SizeSpec;
 
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
@@ -22,7 +22,15 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.getMode;
 import static com.facebook.litho.SizeSpec.getSize;
 
+import android.util.Log;
+import android.view.View.MeasureSpec;
+import com.facebook.litho.Size;
+import com.facebook.litho.SizeSpec;
+import com.facebook.litho.config.ComponentsConfiguration;
+
 public final class MeasureUtils {
+
+  private static final String TAG = "MeasureUtils";
 
   public static int getViewMeasureSpec(int sizeSpec) {
     switch (getMode(sizeSpec)) {
@@ -81,9 +89,7 @@ public final class MeasureUtils {
       outputSize.height = 0;
 
       if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
-        Log.d(
-            "com.facebook.litho.utils.MeasureUtils",
-            "Default to size {0, 0} because both width and height are UNSPECIFIED");
+        Log.d(TAG, "Default to size {0, 0} because both width and height are UNSPECIFIED");
       }
       return;
     }
@@ -184,9 +190,7 @@ public final class MeasureUtils {
       outputSize.height = 0;
 
       if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
-        Log.d(
-            "com.facebook.litho.utils.MeasureUtils",
-            "Default to size {0, 0} because both width and height are UNSPECIFIED");
+        Log.d(TAG, "Default to size {0, 0} because both width and height are UNSPECIFIED");
       }
       return;
     }
@@ -212,7 +216,7 @@ public final class MeasureUtils {
         outputSize.height = heightSize;
         if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
           Log.d(
-              "com.facebook.litho.utils.MeasureUtils",
+              TAG,
               String.format(
                   "Ratio makes height larger than allowed. w:%s h:%s aspectRatio:%f",
                   SizeSpec.toString(widthSpec),
@@ -232,7 +236,7 @@ public final class MeasureUtils {
         outputSize.width = widthSize;
         if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
           Log.d(
-              "com.facebook.litho.utils.MeasureUtils",
+              TAG,
               String.format(
                   "Ratio makes width larger than allowed. w:%s h:%s aspectRatio:%f",
                   SizeSpec.toString(widthSpec),

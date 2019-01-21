@@ -11,11 +11,11 @@ android {
 }
 
 dependencies {
-    compile deps.soloader
-    compile deps.jsr305
-    compile deps.inferAnnotations
+    implementation deps.soloader
+    implementation deps.jsr305
+    implementation deps.inferAnnotations
 
-    provided project(':litho-annotations')
+    compileOnly project(':litho-annotations')
 }
 
 // Our current NDK setup only gets us half-way there to a way to run Yoga

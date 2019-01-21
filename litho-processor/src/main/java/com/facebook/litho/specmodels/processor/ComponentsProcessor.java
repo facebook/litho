@@ -1,34 +1,39 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.specmodels.processor;
 
+import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.ClassNames;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.TypeElement;
-
-import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
-import com.facebook.litho.specmodels.model.SpecModel;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ComponentsProcessor extends AbstractComponentsProcessor {
 
-  @Override
-  protected DependencyInjectionHelper getDependencyInjectionGenerator(TypeElement typeElement) {
-    return null;
+  public ComponentsProcessor() {
+    super(ImmutableList.of(new LayoutSpecModelFactory(), new MountSpecModelFactory()), null);
   }
 
   @Override
-  protected SpecModel getLayoutSpecModel(TypeElement typeElement) {
-    return LayoutSpecModelFactory.create(
-        processingEnv.getElementUtils(),
-        typeElement,
-        getDependencyInjectionGenerator(typeElement));
+  public Set<String> getSupportedAnnotationTypes() {
+    return new LinkedHashSet<>(
+        Arrays.asList(ClassNames.LAYOUT_SPEC.toString(), ClassNames.MOUNT_SPEC.toString()));
   }
 }

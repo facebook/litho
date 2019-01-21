@@ -1,32 +1,43 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.widget;
 
 import android.content.Context;
-
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.annotations.OnCreateMountContent;
-import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.MountSpec;
+import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnMount;
+import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 
 /**
- * A component that is able to render the card's shadow. Used in the
- * implementation of {@link CardSpec}.
+ * A component that is able to render the card's shadow. Used in the implementation of {@link
+ * CardSpec}.
+ *
+ * @prop shadowStartColor Start color for the shadow.
+ * @prop shadowEndColor End color for the shadow.
+ * @prop cornerRadius Corner radius for the card that shows the shadow.
+ * @prop shadowSize Size of the shadow.
  */
-@MountSpec(isPublic = false, isPureRender = true)
+@MountSpec(isPureRender = true)
 class CardShadowSpec {
 
   @OnCreateMountContent
-  static CardShadowDrawable onCreateMountContent(ComponentContext c) {
+  static CardShadowDrawable onCreateMountContent(Context c) {
     return new CardShadowDrawable();
   }
 
@@ -37,11 +48,15 @@ class CardShadowSpec {
       @Prop(optional = true, resType = ResType.COLOR) int shadowStartColor,
       @Prop(optional = true, resType = ResType.COLOR) int shadowEndColor,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float cornerRadius,
-      @Prop(optional = true, resType = ResType.DIMEN_SIZE) float shadowSize) {
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) float shadowSize,
+      @Prop(optional = true) boolean hideTopShadow,
+      @Prop(optional = true) boolean hideBottomShadow) {
 
     cardShadowDrawable.setShadowStartColor(shadowStartColor);
     cardShadowDrawable.setShadowEndColor(shadowEndColor);
     cardShadowDrawable.setCornerRadius(cornerRadius);
     cardShadowDrawable.setShadowSize(shadowSize);
+    cardShadowDrawable.setHideTopShadow(hideTopShadow);
+    cardShadowDrawable.setHideBottomShadow(hideBottomShadow);
   }
 }

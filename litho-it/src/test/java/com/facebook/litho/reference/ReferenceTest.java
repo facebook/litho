@@ -1,26 +1,34 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.reference;
 
+import static com.facebook.litho.reference.Reference.acquire;
+import static com.facebook.litho.reference.Reference.release;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
+import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-
-import static org.junit.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
 public class ReferenceTest {
@@ -36,11 +44,11 @@ public class ReferenceTest {
     TestReferenceLifecycle referenceLifecycle = new TestReferenceLifecycle();
     TestReference reference = new TestReference(referenceLifecycle);
 
-    Drawable acquiredDrawable = Reference.acquire(mContext, reference);
-    assertTrue(referenceLifecycle.mAcquired);
+    Drawable acquiredDrawable = acquire(mContext.getAndroidContext(), reference);
+    assertThat(referenceLifecycle.mAcquired).isTrue();
 
-    Reference.release(mContext, acquiredDrawable, reference);
-    assertTrue(referenceLifecycle.mReleased);
+    release(mContext.getAndroidContext(), acquiredDrawable, reference);
+    assertThat(referenceLifecycle.mReleased).isTrue();
   }
 
   private static class TestReference extends Reference<Drawable> {
@@ -59,13 +67,13 @@ public class ReferenceTest {
     private boolean mReleased;
 
     @Override
-    protected Drawable onAcquire(ComponentContext c, Reference<Drawable> reference) {
+    protected Drawable onAcquire(Context c, Reference<Drawable> reference) {
       mAcquired = true;
       return new ColorDrawable(0);
     }
 
     @Override
-    protected void onRelease(ComponentContext c, Drawable value, Reference<Drawable> reference) {
+    protected void onRelease(Context c, Drawable value, Reference<Drawable> reference) {
       mReleased = true;
     }
   }

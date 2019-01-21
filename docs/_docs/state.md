@@ -5,12 +5,12 @@ layout: docs
 permalink: /docs/state
 ---
 
-A Litho component can also contain two types of data:
+A Litho component can contain two types of data:
 
 *  **props**: passed down from parent and cannot change during a component's lifecycle.
 *  **state**: encapsulates implementation details that are managed by the component and is transparent to the parent.
 
-A common example for when State is needed is rendering a checkbox. The component renders different drawables for the checked and unchecked states, but this is an internal detail of the checkbox component that the parent doesn't need to be aware of.
+A common example of when State is needed is rendering a checkbox. The component renders different drawables for the checked and unchecked states, but this is an internal detail of the checkbox component that the parent doesn't need to be aware of.
 
 ## Declaring a Component State
 You can define a State on a Component by using the @State annotation in the spec lifecycle methods, similarly to how you would define a Prop.
@@ -18,30 +18,30 @@ You can define a State on a Component by using the @State annotation in the spec
 Defining state elements is enabled on the lifecycle methods of Layout Specs and Mount Specs.
 
 ```java
-@LayoutSpec		
-public class CheckboxSpec {		
+@LayoutSpec
+public class CheckboxSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext c,
       @State boolean isChecked) {
-      
+
     return Column.create(c)
         .child(Image.create(c)
-            .srcRes(isChecked
+            .drawableRes(isChecked
                 ? R.drawable.is_checked
                 : R.drawable.is_unchecked))
         .child(Text.create(c)
             .text("Submit")
             .clickHandler(Checkbox.onClickedText(c))
-	    .build;
+        .build;
   }
 
   @OnEvent(ClickEvent.class)
   static void onClickedText(
-  	ComponentContext c,
-  	@State boolean isChecked) {
-  		...
+      ComponentContext c,
+      @State boolean isChecked) {
+    ...
   }
 }
 ```
@@ -51,35 +51,36 @@ To set an initial value for a state, you have to write a method annotated with `
 
 This is what you need to know when writing an `@OnCreateInitialState` method:
 
-* First parameter must be of type `ComponentContext`.
+* The first parameter must be of type `ComponentContext`.
 * `@Prop` parameters are allowed.
 * All other parameters must have a corresponding parameter annotated with `@State` in the other lifecycle methods, and their type must be a [StateValue](/javadoc/com/facebook/litho/StateValue) that is parameterized with the type of the matching `@State` element.
 * `@OnCreateInitialState` methods are not mandatory. If you do not define one or if you only initialize some states, the uninitialized ones will take Java defaults.
 * `@OnCreateInitialState` is called only once for each component, when it first gets added to the `ComponentTree`. Following layout recalculations of the same `ComponentTree` will not call this again if the key of the component doesn't change.
-* You should never need to call `@OnCreateInitialState` yourself.
+* You should never need to call the `@OnCreateInitialState` method yourself.
 
 Here's how you would initialize the checkbox state with a value passed down from the parent:
 
 ```java
-@LayoutSpec		
+@LayoutSpec
 public class CheckboxSpec {
 
-	@OnCreateInitialState
-	static void createInitialState(
-		ComponentContext c,
-		StateValue<Boolean> isChecked,
-		@Prop boolean initChecked) {
-	  isChecked(initChecked);
-	}
+  @OnCreateInitialState
+  static void createInitialState(
+      ComponentContext c,
+      StateValue<Boolean> isChecked,
+      @Prop boolean initChecked) {
+
+    isChecked.set(initChecked);
+  }
 }
 ```
 
 ## Defining State Updates
-You can define how a component's state or states should updated by declaring methods annotated with `@OnUpdateState` in the specs.
+You can define how a component's state or states should be updated by declaring methods annotated with `@OnUpdateState` in the specs.
 
 You can have as many `@OnUpdateState` methods as you need, according to what states you want to update or what parameters your states depend on.
 
-Each call to an `@OnUpdateState` method will trigger a new layout calculation for its ComponentTree. For better performance, if there are situations that can trigger an update for multiple states, you should define an `@OnUpdateMethod` that updates the value for all those states. Bundling them in the same update call reduces the number of new layout calculations and improves performance.
+Each call to an `@OnUpdateState` method will trigger a new layout calculation for its ComponentTree. For better performance, if there are situations that can trigger an update for multiple states, you should define an `@OnUpdateState` method that updates the value for all those states. Bundling them in the same update call reduces the number of new layout calculations and improves performance.
 
 This is what you need to know when writing an `@OnUpdateState`  method:
 
@@ -90,14 +91,13 @@ This is what you need to know when writing an `@OnUpdateState`  method:
 Here's how you would define a state update method for the checkbox:
 
 ```java
-@LayoutSpec		
-public class CheckboxSpec {		
+@LayoutSpec
+public class CheckboxSpec {
 
-   @OnUpdateState
-	static void updateCheckboxState(
-	    StateValue<Boolean> isChecked) {
-	    isChecked.set(!isChecked.get());
-	}
+  @OnUpdateState
+  static void updateCheckboxState(StateValue<Boolean> isChecked) {
+    isChecked.set(!isChecked.get());
+  }
 }
 ```
 
@@ -107,8 +107,9 @@ If you want to bundle multiple state updates in a single method, you would just 
 @OnUpdateState
 static void updateMultipleStates(
     StateValue<Boolean> stateOne,
-	 StateValue<String> stateTwo,
-	 @Param int someParam) {
+    StateValue<String> stateTwo,
+    @Param int someParam) {
+
   final boolean thresholdReached = someParam > 100;
   stateOne.set(thresholdReached);
   stateTwo.set(thresholdReached ? "reached" : "not reached");
@@ -117,51 +118,54 @@ static void updateMultipleStates(
 ```
 
 ## Calling state updates
+
 For each `@OnUpdateState` method in your spec, the generated component will have two methods that will delegate to the `@OnUpdateState` method under the hood:
 * a static method with the same name, which will synchronously apply the state updates.
 * a static method with the same name and an *Async* suffix, which will asynchronously trigger the state updates.
-Both methods take as first parameter a `ComponentContext` followed by all the parameters declared with `@Param` in your `@OnUpdateState` method.
+Both methods take a `ComponentContext` as first parameter, followed by all the parameters declared with `@Param` in your `@OnUpdateState` method.
 
 Here's how you would call the state update method to update your checkbox when a user clicks it:
 
 ```java
-@LayoutSpec		
-public class CheckboxSpec {		
+@LayoutSpec
+public class CheckboxSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext c,
       @State boolean isChecked) {
-      
+
     return Column.create(c)
-    	.child(Image.create(c)
-	 	    .srcRes(isChecked
-	 	        ? R.drawable.is_checked 
-	 	        : R.drawable.is_unchecked))
-		    .clickHandler(Checkbox.onCheckboxClicked(c)))
-		.build;
+        .child(Image.create(c)
+        .drawableRes(isChecked
+            ? R.drawable.is_checked
+            : R.drawable.is_unchecked))
+        .clickHandler(Checkbox.onCheckboxClicked(c)))
+    .build;
   }
 
   @OnUpdateState
-  void updateCheckbox(
-  	   StateValue<Boolean> isChecked) {
-  	   isChecked.set(!isChecked.get());
+  static void updateCheckbox(StateValue<Boolean> isChecked) {
+    isChecked.set(!isChecked.get());
   }
 
   @OnEvent(ClickEvent.class)
   static void onCheckboxClicked(ComponentContext c) {
-  	 Checkbox.updateCheckboxAsync(c);
-  	 // Checkbox.updateCheckbox(c); for a sync update
+    Checkbox.updateCheckboxAsync(c);
+    // Checkbox.updateCheckbox(c); for a sync update
   }
 }
 ```
 
 This is what you need to keep in mind when calling state update methods:
 
-* When calling a state update method, the `ComponentContext` instance passed as first parameter must always be the one that is passed down as parameter in the lifecycle method in which the update state is triggered. This context contains important information about the currently known state values and it's important for transfering these values from the old components to the new ones during new layout calculations.
-* In `LayoutSpecs`, You should avoid calling state update methods in `onCreateLayout`, unless you are absolutely certain they will happen only a deterministic, small number of times.
+* When calling a state update method, the `ComponentContext` instance passed as first parameter must always be the one that is passed down as parameter in the lifecycle method in which the update state is triggered. This context contains important information about the currently known state values and it's important for transferring these values from the old components to the new ones during new layout calculations.
+* In `LayoutSpecs`, you should avoid calling state update methods in `onCreateLayout`, unless you are absolutely certain they will happen only a deterministic, small number of times.
 Every call to a state update method will trigger a new layout calculation on the ComponentTree, which in turn will call `onCreateLayout` on all its components, so it's rather easy to go into an infinite loop. You should consider whether a lazy state update (described below) wouldn't be more appropriate for your use case.
 * In `MountSpecs`, you should never call update state methods from `bind` and `mount` methods. If you need to update a state value in those methods, you should instead use a lazy state update, described below.
+* State is a concept local to components. You cannot call a state update method
+  from outside a component. [Props](/docs/props) are the mechanism to update a
+  component based on outside changes. You can read more about that [here](https://fblitho.com/docs/best-practices#props-vs-state).
 
 ## Keys and identifying components
 The framework sets a key on each component, based on its type and the key of its parent. This key is used to determine which component we want to update when calling a state update and finding this component when traversing the tree.
@@ -170,25 +174,31 @@ Components of the same type that have the same parent will be assigned the same 
 
 Moreover, when a Component's state or props are updated and the `ComponentTree` is recreated, there are situations when components are removed, added or rearranged inside the tree. Because components can be dynamic we need a way of keeping track of the components so we know, even after the `ComponentTree` changes, for which component to apply a state update.
 
+Whenever a key collision is detected in a ComponentTree, which can happen when a parent component created multiple children components of the same type, we assign a unique key on those siblings which depends on the order in which they added to the parent.
+However, with the current implementation, there's no easy way for us to detect that a component is the same when the order of the components in your hierarchy changes. This means that the keys that are autogenerated are not stable through component moves. If you expect your components to move around, you have to assign manual keys.
+
 The `Component.Builder` class exposes a .key() method that you can call when creating a component to assign a unique key to it that will be used to identify this component.
 
 You should set this key whenever you have multiple children of the same component with the same type or you expect the content of your layout to be dynamic.
+The manual key you set on a component using the `key` prop will always take precedence over the autogenerated one.
 
 The most common case when you must manually define keys for your components is creating and adding them as children in a loop:
 
 ```java
- @OnCreateLayout
- static ComponentLayout onCreateLayout(
- 	  ComponentContext c,
-     @State boolean isChecked) {
-   final ComponentLayout.Builder parent = Column.create(c);
-   for (int i = 0; i < 10; i++) {
-      parent.child(Text.create(c).key("key" +i));
-   }
+@OnCreateLayout
+static Component onCreateLayout(
+    ComponentContext c,
+    @State boolean isChecked) {
 
-   return parent.build();
+  final Component.Builder parent = Column.create(c);
+  for (int i = 0; i < 10; i++) {
+    parent.child(Text.create(c).key("key" +i));
   }
+  return parent.build();
+}
 ```
+
+If a component with key `A` updates its state, and later it is removed from the hierarchy and added back again with the same key `A`, its state will be reset to the initial value. That means that an updated state value will only persist as long as the component it belongs to is part of the ComponentTree hierarchy.
 
 
 ## Lazy State Updates
@@ -196,7 +206,7 @@ For situations where you want to update the value of a `State` but don't need to
 
 To use lazy state updates, you need to set the `canUpdateLazily` parameter on the `@State` annotation to true.
 
-For a state parameter `foo` marked with `canUpdateLazily`, the framework will generate a static state update method named `lazyUpdateFoo` which takes as parameter a new value that will be set as the new value for foo.
+For a state parameter `foo` marked with `canUpdateLazily`, the framework will generate a static state update method named `lazyUpdateFoo` which takes a new value as parameter that will be set as the new value for foo.
 
 States marked as `canUpdateLazily` can still be used for regular state updates.
 
@@ -204,9 +214,10 @@ Let's look at an example:
 
 ```java
 @OnCreateLayout
-static ComponentLayout onCreateLayout(
+static Component onCreateLayout(
     final ComponentContext c,
     @State(canUpdateLazily = true) String foo) {
+
   FooComponent.lazyUpdateFoo(context, "updated foo");
   return Column.create(c)
       .child(
@@ -216,7 +227,9 @@ static ComponentLayout onCreateLayout(
 }
 
 @OnCreateInitialState
-static void onCreateInitialState(StateValue<String> foo) {
+static void onCreateInitialState(
+    ComponentContext c,
+    StateValue<String> foo) {
   foo.set("first foo");
 }
 ```

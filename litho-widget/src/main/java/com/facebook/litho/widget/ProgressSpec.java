@@ -1,10 +1,17 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.widget;
@@ -14,8 +21,8 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.widget.ProgressBar;
-
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Output;
@@ -33,12 +40,15 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
-import com.facebook.litho.reference.Reference;
-import com.facebook.litho.reference.ResourceDrawableReference;
 import com.facebook.litho.utils.MeasureUtils;
+import javax.annotation.Nullable;
 
 /**
  * Renders an infinitely spinning progress bar.
+ *
+ * @uidocs https://fburl.com/Progress:3805
+ * @prop indeterminateDrawable Drawable to be shown to show progress.
+ * @prop color Tint color for the drawable.
  */
 @MountSpec(isPureRender = true)
 class ProgressSpec {
@@ -70,11 +80,7 @@ class ProgressSpec {
 
   @OnMeasure
   static void onMeasure(
-      ComponentContext c,
-      ComponentLayout layout,
-      int widthSpec,
-      int heightSpec,
-      Size size) {
+      ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
     if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED &&
         SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
       size.width = DEFAULT_SIZE;
@@ -118,11 +124,11 @@ class ProgressSpec {
   }
 
   @OnCreateMountContent
-  static ProgressBar onCreateMountContent(ComponentContext c) {
+  static ProgressBar onCreateMountContent(Context c) {
     return new ProgressView(c);
   }
 
-  static Drawable getStyledIndeterminateDrawable(ComponentContext c, int defStyle) {
+  static @Nullable Drawable getStyledIndeterminateDrawable(ComponentContext c, int defStyle) {
     Drawable indeterminateDrawable = null;
 
     final TypedArray styledAttributes = c.obtainStyledAttributes(R.styleable.Progress, defStyle);
@@ -132,7 +138,8 @@ class ProgressSpec {
 
       if (attr == R.styleable.Progress_android_indeterminateDrawable) {
         indeterminateDrawable =
-            c.getResources().getDrawable(styledAttributes.getResourceId(attr, 0));
+            ContextCompat.getDrawable(
+                c.getAndroidContext(), styledAttributes.getResourceId(attr, 0));
       }
     }
 

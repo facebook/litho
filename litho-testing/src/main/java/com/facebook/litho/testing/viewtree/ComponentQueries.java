@@ -1,24 +1,29 @@
 /*
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.testing.viewtree;
 
-import java.util.List;
-import java.util.regex.Pattern;
-
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-
 import com.facebook.litho.ComponentHost;
 import com.facebook.litho.MatrixDrawable;
-
+import com.facebook.litho.drawable.ComparableDrawableWrapper;
 import com.google.common.base.Predicate;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Utility APIs to query the state of components.
@@ -78,8 +83,15 @@ class ComponentQueries {
   }
 
   private static boolean hasDrawable(Drawable containingDrawable, Drawable drawable) {
-    while (containingDrawable instanceof MatrixDrawable) {
-      containingDrawable = ((MatrixDrawable) containingDrawable).getMountedDrawable();
+    while (containingDrawable instanceof MatrixDrawable
+        || containingDrawable instanceof ComparableDrawableWrapper) {
+      if (containingDrawable instanceof MatrixDrawable) {
+        containingDrawable = ((MatrixDrawable) containingDrawable).getMountedDrawable();
+      }
+
+      if (containingDrawable instanceof ComparableDrawableWrapper) {
+        containingDrawable = ((ComparableDrawableWrapper) containingDrawable).getWrappedDrawable();
+      }
     }
 
     // Workaround a bug in Robolectric's BitmapDrawable implementation.

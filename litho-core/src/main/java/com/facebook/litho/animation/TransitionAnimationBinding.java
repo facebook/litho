@@ -1,30 +1,34 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.facebook.litho.animation;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.SimpleArrayMap;
-
 import com.facebook.litho.dataflow.BindingListener;
 import com.facebook.litho.dataflow.GraphBinding;
 import com.facebook.litho.dataflow.ValueNode;
 
 /**
  * Base class for defining animations for transitions between states of the component hierarchy.
- * Subclasses should define their animation by creating a {@link GraphBinding} in
- * {@link #setupBinding}.
+ * Subclasses should define their animation by creating a {@link GraphBinding} in {@link
+ * #setupBinding}.
  */
-public abstract class TransitionAnimationBinding implements AnimationBinding {
+public abstract class TransitionAnimationBinding extends BaseAnimationBinding {
 
   private final GraphBinding mGraphBinding;
-  private final CopyOnWriteArrayList<AnimationBindingListener> mListeners =
-      new CopyOnWriteArrayList<>();
-  private final SimpleArrayMap<ComponentProperty, LazyValue> mAppearFromValues =
-      new SimpleArrayMap<>();
-  private final SimpleArrayMap<ComponentProperty, LazyValue> mDisappearToValues =
-      new SimpleArrayMap<>();
 
   public TransitionAnimationBinding() {
     this(GraphBinding.create());
@@ -55,24 +59,14 @@ public abstract class TransitionAnimationBinding implements AnimationBinding {
     mGraphBinding.addBinding(fromNode, toNode);
   }
 
-  /**
-   * For appear animations, sets the value that the property should have before the animation
-   * starts. See {@link LazyValue} for more info.
-   */
-  public void addAppearFromValue(ComponentProperty property, LazyValue value) {
-    mAppearFromValues.put(property, value);
-  }
-
-  /**
-   * For disappear animations, sets the value that the property should end at by the time the
-   * animation ends and before the item is unmounted. See {@link LazyValue} for more info.
-   */
-  public void addDisappearToValue(ComponentProperty property, LazyValue value) {
-    mDisappearToValues.put(property, value);
-  }
-
   @Override
   public void start(Resolver resolver) {
+    if (!shouldStart()) {
+      notifyCanceledBeforeStart();
+      return;
+    }
+    notifyWillStart();
+
     setupBinding(resolver);
     mGraphBinding.activate();
   }
@@ -85,6 +79,9 @@ public abstract class TransitionAnimationBinding implements AnimationBinding {
 
   @Override
   public void stop() {
+    if (!isActive()) {
+      return;
+    }
     mGraphBinding.deactivate();
   }
 
@@ -93,30 +90,13 @@ public abstract class TransitionAnimationBinding implements AnimationBinding {
     return mGraphBinding.isActive();
   }
 
+  @Override
+  public void prepareToStartLater() {
+    notifyScheduledToStartLater();
+  }
+
   private void onAllNodesFinished() {
-    for (AnimationBindingListener listener : mListeners) {
-      listener.onFinish(this);
-    }
+    notifyFinished();
     stop();
-  }
-
-  @Override
-  public void collectAppearFromValues(SimpleArrayMap<ComponentProperty, LazyValue> outMap) {
-    outMap.putAll(mAppearFromValues);
-  }
-
-  @Override
-  public void collectDisappearToValues(SimpleArrayMap<ComponentProperty, LazyValue> outMap) {
-    outMap.putAll(mDisappearToValues);
-  }
-
-  @Override
-  public void addListener(AnimationBindingListener bindingListener) {
-    mListeners.add(bindingListener);
-  }
-
-  @Override
-  public void removeListener(AnimationBindingListener animationBindingListener) {
-    mListeners.remove(animationBindingListener);
   }
 }

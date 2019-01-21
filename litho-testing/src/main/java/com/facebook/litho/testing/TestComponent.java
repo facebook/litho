@@ -1,24 +1,36 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.testing;
 
+import android.support.annotation.Nullable;
 import com.facebook.litho.Component;
-import com.facebook.litho.ComponentLifecycle;
+import com.facebook.litho.EventHandler;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Base class for test components which expose lifecycle information.
  *
  * @param <L>
  */
-public abstract class TestComponent<L extends ComponentLifecycle> extends Component<L> {
+public abstract class TestComponent extends Component {
 
+  private final Map<EventHandler<?>, Object> mDispatchedEventHandlers = new HashMap<>();
   private boolean mOnMountCalled;
   private boolean mMounted;
   private boolean mOnUnmountCalled;
@@ -29,13 +41,12 @@ public abstract class TestComponent<L extends ComponentLifecycle> extends Compon
   protected boolean mIsUnique;
   private boolean mOnMeasureCalled;
 
-  protected TestComponent(L lifecycle) {
-    super(lifecycle);
+  protected TestComponent(String simpleName) {
+    super(simpleName);
   }
 
-  @Override
-  public String getSimpleName() {
-    return "TestComponent";
+  protected TestComponent() {
+    super("TestComponent");
   }
 
   void onMountCalled() {
@@ -136,6 +147,11 @@ public abstract class TestComponent<L extends ComponentLifecycle> extends Compon
     return false;
   }
 
+  @Override
+  public boolean isEquivalentTo(Component other) {
+    return this == other;
+  }
+
   /**
    * Reset the tracking of which methods have been called on this component.
    */
@@ -146,5 +162,19 @@ public abstract class TestComponent<L extends ComponentLifecycle> extends Compon
     mOnMountCalled = false;
     mOnUnbindCalled = false;
     mOnUnmountCalled = false;
+  }
+
+  @Override
+  public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+    mDispatchedEventHandlers.put(eventHandler, eventState);
+    return null;
+  }
+
+  public Set<EventHandler<?>> getDispatchedEventHandlers() {
+    return mDispatchedEventHandlers.keySet();
+  }
+
+  public @Nullable Object getEventState(EventHandler eventHandler) {
+    return mDispatchedEventHandlers.get(eventHandler);
   }
 }

@@ -1,24 +1,28 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho.specmodels.generator;
 
-import javax.lang.model.element.Modifier;
+import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getStateContainerClassName;
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
 
 import com.facebook.litho.specmodels.model.SpecModel;
-
-import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
-
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.DELEGATE_FIELD_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.SPEC_INSTANCE_NAME;
+import javax.lang.model.element.Modifier;
 
 /**
  * Class that generates the preamble for a Component.
@@ -30,30 +34,8 @@ public class PreambleGenerator {
 
   public static TypeSpecDataHolder generate(SpecModel specModel) {
     return TypeSpecDataHolder.newBuilder()
-        .addTypeSpecDataHolder(generateSourceDelegate(specModel))
         .addTypeSpecDataHolder(generateConstructor(specModel))
-        .addTypeSpecDataHolder(generateGetter(specModel))
         .build();
-  }
-
-  /**
-   * Generate a delegate to the Spec that defines this component.
-   */
-  static TypeSpecDataHolder generateSourceDelegate(SpecModel specModel) {
-    final TypeName delegateTypeName =
-        specModel.hasInjectedDependencies() ?
-            specModel.getDependencyInjectionHelper().getSourceDelegateTypeName(specModel) :
-            specModel.getSpecTypeName();
-
-    final FieldSpec.Builder builder =
-        FieldSpec.builder(delegateTypeName, DELEGATE_FIELD_NAME)
-            .addModifiers(Modifier.PRIVATE);
-
-    if (!specModel.hasInjectedDependencies()) {
-      builder.initializer("new $T()", specModel.getSpecTypeName());
-    }
-
-    return TypeSpecDataHolder.newBuilder().addField(builder.build()).build();
   }
 
   /**
@@ -61,57 +43,30 @@ public class PreambleGenerator {
    * private constructor to enforce singleton-ity.
    */
   static TypeSpecDataHolder generateConstructor(SpecModel specModel) {
-    final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
+    final MethodSpec.Builder constructorBuilder =
+        MethodSpec.constructorBuilder().addStatement("super($S)", specModel.getComponentName());
+
     if (specModel.hasInjectedDependencies()) {
-      typeSpecDataHolder.addMethod(
-          specModel.getDependencyInjectionHelper().generateConstructor(specModel));
+      final MethodSpec diConstructor =
+          specModel.getDependencyInjectionHelper().generateConstructor(specModel);
+
+      constructorBuilder
+          .addAnnotations(diConstructor.annotations)
+          .addCode(diConstructor.code)
+          .addModifiers(diConstructor.modifiers)
+          .addParameters(diConstructor.parameters);
     } else {
-      typeSpecDataHolder.addMethod(
-          MethodSpec.constructorBuilder()
-              .addModifiers(Modifier.PRIVATE)
-              .build());
+      constructorBuilder.addModifiers(Modifier.PRIVATE);
     }
 
-    return typeSpecDataHolder.build();
-  }
-
-  /**
-   * Generate a method for this component which either lazily instantiates a singleton reference or
-   * returns this depending upon whether this spec injects dependencies or not.
-   */
-  static TypeSpecDataHolder generateGetter(SpecModel specModel) {
-    final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
-    if (!specModel.hasInjectedDependencies()) {
-      typeSpecDataHolder.addField(
-          FieldSpec
-              .builder(
-                  specModel.getComponentTypeName(),
-                  SPEC_INSTANCE_NAME,
-                  Modifier.PRIVATE,
-                  Modifier.STATIC)
-              .initializer("null")
-              .build());
-
-      typeSpecDataHolder.addMethod(
-          MethodSpec.methodBuilder("get")
-              .addModifiers(Modifier.PUBLIC)
-              .addModifiers(Modifier.STATIC)
-              .addModifiers(Modifier.SYNCHRONIZED)
-              .returns(specModel.getComponentTypeName())
-              .beginControlFlow("if ($L == null)", SPEC_INSTANCE_NAME)
-              .addStatement("$L = new $T()", SPEC_INSTANCE_NAME, specModel.getComponentTypeName())
-              .endControlFlow()
-              .addStatement("return $L", SPEC_INSTANCE_NAME)
-              .build());
-    } else {
-      typeSpecDataHolder.addMethod(
-          MethodSpec.methodBuilder("get")
-              .addModifiers(Modifier.PUBLIC)
-              .returns(specModel.getComponentTypeName())
-              .addStatement("return this")
-              .build());
+    final boolean hasState = !specModel.getStateValues().isEmpty();
+    if (hasState) {
+      final ClassName stateContainerClass =
+          ClassName.bestGuess(getStateContainerClassName(specModel));
+      constructorBuilder.addStatement(
+          STATE_CONTAINER_FIELD_NAME + " = new $T()", stateContainerClass);
     }
 
-    return typeSpecDataHolder.build();
+    return TypeSpecDataHolder.newBuilder().addMethod(constructorBuilder.build()).build();
   }
 }

@@ -1,73 +1,89 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
+import android.support.annotation.Nullable;
+import java.util.Map;
+import java.util.Set;
+
 /**
- * An interface for logging life-cycle events in components.
+ * An interface for logging events and performance events in litho as well as in user defined
+ * components. The ComponentsLogger is set on the {@link ComponentContext}. See {@link
+ * FrameworkLogEvents} for a list of events and parameters logged internally by Litho.
  */
 public interface ComponentsLogger {
 
-  int EVENT_CREATE_LAYOUT = 0;
-  int EVENT_CSS_LAYOUT = 1;
-  int EVENT_COLLECT_RESULTS = 2;
-  int EVENT_LAYOUT_CALCULATE = 3;
-  int EVENT_PREPARE_PART_DEFINITION = 4;
-  int EVENT_PREPARE_MOUNT = 5;
-  int EVENT_MOUNT = 6;
-  int EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH = 8;
-  int EVENT_PRE_ALLOCATE_MOUNT_CONTENT = 9;
-  int EVENT_STETHO_UPDATE_COMPONENT = 10;
-  int EVENT_STETHO_INSPECT_COMPONENT = 11;
-
-  int ACTION_SUCCESS = 1 << 4;
-
-  String PARAM_LOG_TAG = "log_tag";
-  String PARAM_TREE_DIFF_ENABLED = "tree_diff_enabled";
-  String PARAM_IS_ASYNC_PREPARE = "is_async_prepare";
-  String PARAM_IS_BACKGROUND_LAYOUT = "is_background_layout";
-  String PARAM_IS_BACKGROUND_LAYOUT_ENABLED = "is_background_layout_enabled";
-  String PARAM_UNMOUNTED_COUNT = "unmounted_count";
-  String PARAM_MOVED_COUNT = "moved_count";
-  String PARAM_UNCHANGED_COUNT = "unchanged_count";
-  String PARAM_MOUNTED_COUNT = "mounted_count";
-  String PARAM_UPDATED_COUNT = "updated_count";
-  String PARAM_NO_OP_COUNT = "no_op_count";
-  String PARAM_IS_DIRTY = "is_dirty";
-
-  void eventStart(int eventId, Object object);
-  void eventStart(int eventId, Object object, String key, String value);
-  void eventEnd(int eventId, Object object, int actionId);
-  void eventCancel(int eventId, Object object);
-  void eventAddParam(int eventId, Object object, String key, String value);
-  void eventAddTag(int eventId, Object object, String tag);
-  void softError(String message);
-
-  class LayoutOutputLog {
-
-    long currentId = -1;
-    String currentLifecycle;
-    int currentIndex = -1;
-    int currentLastDuplicatedIdIndex = -1;
-
-    long nextId = -1;
-    String nextLifecycle;
-    int nextIndex = -1;
-    int nextLastDuplicatedIdIndex = -1;
-
-    @Override
-    public String toString() {
-      return "id: [" + currentId + " - " + nextId + "], "
-          + "lifecycle: [" + currentLifecycle + " - " + nextLifecycle + "], "
-          + "index: [" + currentIndex + " - " + nextIndex + "], "
-          + "lastDuplicatedIdIndex: [" + currentLastDuplicatedIdIndex +
-          " - " + nextLastDuplicatedIdIndex + "]";
-    }
+  enum LogLevel {
+    WARNING,
+    ERROR,
+    FATAL
   }
+
+  /** Create a new performance event with the given event id and start counting the time. */
+  PerfEvent newPerformanceEvent(@FrameworkLogEvents.LogEventId int eventId);
+
+  /** Write a {@link PerfEvent} to storage. This also marks the end of the event. */
+  void logPerfEvent(PerfEvent event);
+
+  /** Release a previously obtained {@link PerfEvent} without logging it. */
+  void cancelPerfEvent(PerfEvent event);
+
+  /**
+   * Emit a message that can be logged or escalated by the logger implementation.
+   *
+   * @param level
+   * @param message Message to log
+   */
+  void emitMessage(LogLevel level, String message);
+
+  /**
+   * Emit a message that can be logged or escalated by the logger implementation.
+   *
+   * @param level
+   * @param message Message to log
+   * @param samplingFrequency sampling frequency to override default one
+   */
+  void emitMessage(LogLevel level, String message, int samplingFrequency);
+
+  /**
+   * When a component key collision occurs, filenames that contain keywords contained in the
+   * returned set will be added to the error stack trace.
+   */
+  Set<String> getKeyCollisionStackTraceKeywords();
+
+  /**
+   * When a component key collision occurs, filenames that match the names contained in the returned
+   * set will be added to the error stack trace even if they match keywords in the whitelist.
+   *
+   * @see #getKeyCollisionStackTraceKeywords()
+   */
+  Set<String> getKeyCollisionStackTraceBlacklist();
+
+  /**
+   * Provide additional log metadata based on the tree props of the component hierarchy currently
+   * being logged. This can be useful if information about the component hierarchy is needed.
+   *
+   * @param treeProps The treeprops available in the hierarchy.
+   * @return Null for efficiency purposes when no data needs to be logged, associative map
+   *     otherwise.
+   */
+  @Nullable
+  Map<String, String> getExtraAnnotations(TreeProps treeProps);
+
+  /** @return whether this event is being traced and getting logged. */
+  boolean isTracing(PerfEvent logEvent);
 }

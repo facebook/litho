@@ -1,29 +1,37 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
-import android.graphics.Color;
+import static android.graphics.Color.BLUE;
+import static android.graphics.Color.RED;
+import static com.facebook.litho.Column.create;
+import static com.facebook.litho.LayoutState.calculate;
+import static com.facebook.litho.MountItem.isDuplicateParentState;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.robolectric.RuntimeEnvironment.application;
 
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
-import com.facebook.yoga.YogaAlign;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
 
 @RunWith(ComponentsTestRunner.class)
 public class DuplicateParentStateTest {
@@ -37,97 +45,82 @@ public class DuplicateParentStateTest {
 
   @Test
   public void testDuplicateParentStateAvoidedIfRedundant() {
-    final Component component = new InlineLayoutSpec() {
-      @Override
-      protected ComponentLayout onCreateLayout(ComponentContext c) {
-        return Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-            .duplicateParentState(true)
-            .clickHandler(c.newEventHandler(1))
-            .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                    .duplicateParentState(false)
-                    .child(
-                        TestDrawableComponent.create(c)
-                            .withLayout().flexShrink(0)
-                            .duplicateParentState(true)))
-            .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                    .duplicateParentState(true)
-                    .child(
-                        TestDrawableComponent.create(c)
-                            .withLayout().flexShrink(0)
-                            .duplicateParentState(true)))
-            .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                    .clickHandler(c.newEventHandler(2))
-                    .child(
-                        TestDrawableComponent.create(c)
-                            .withLayout().flexShrink(0)
-                            .duplicateParentState(true)))
-            .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                    .clickHandler(c.newEventHandler(3))
-                    .child(
-                        TestDrawableComponent.create(c)
-                            .withLayout().flexShrink(0)
-                            .duplicateParentState(false)))
-            .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                    .clickHandler(c.newEventHandler(3))
-                    .backgroundColor(Color.RED)
-                    .foregroundColor(Color.RED))
-            .child(
-                Column.create(c).flexShrink(0).alignContent(YogaAlign.FLEX_START)
-                    .backgroundColor(Color.BLUE)
-                    .foregroundColor(Color.BLUE))
-            .build();
-      }
-    };
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return create(c)
+                .duplicateParentState(true)
+                .clickHandler(c.newEventHandler(1))
+                .child(
+                    create(c)
+                        .duplicateParentState(false)
+                        .child(TestDrawableComponent.create(c).duplicateParentState(true)))
+                .child(
+                    create(c)
+                        .duplicateParentState(true)
+                        .child(TestDrawableComponent.create(c).duplicateParentState(true)))
+                .child(
+                    create(c)
+                        .clickHandler(c.newEventHandler(2))
+                        .child(TestDrawableComponent.create(c).duplicateParentState(true)))
+                .child(
+                    create(c)
+                        .clickHandler(c.newEventHandler(3))
+                        .child(TestDrawableComponent.create(c).duplicateParentState(false)))
+                .child(
+                    create(c)
+                        .clickHandler(c.newEventHandler(3))
+                        .backgroundColor(RED)
+                        .foregroundColor(RED))
+                .child(create(c).backgroundColor(BLUE).foregroundColor(BLUE))
+                .build();
+          }
+        };
 
-    LayoutState layoutState = LayoutState.calculate(
-        new ComponentContext(RuntimeEnvironment.application),
-        component,
-        -1,
-        mUnspecifiedSizeSpec,
-        mUnspecifiedSizeSpec,
-        false,
-        false,
-        null);
+    LayoutState layoutState =
+        calculate(
+            new ComponentContext(application),
+            component,
+            -1,
+            mUnspecifiedSizeSpec,
+            mUnspecifiedSizeSpec,
+            LayoutState.CalculateLayoutSource.TEST);
 
-    assertEquals(12, layoutState.getMountableOutputCount());
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(12);
 
     assertTrue(
         "Clickable root output has duplicate state",
-        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(0).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(0).getFlags()));
 
     assertFalse(
         "Parent doesn't duplicate host state",
-        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(1).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(1).getFlags()));
 
     assertTrue(
         "Parent does duplicate host state",
-        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(2).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(2).getFlags()));
 
     assertTrue(
         "Drawable duplicates clickable parent state",
-        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(4).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(4).getFlags()));
 
     assertFalse(
         "Drawable doesn't duplicate clickable parent state",
-        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(6).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(6).getFlags()));
 
     assertTrue(
         "Background should duplicate clickable node state",
-        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(8).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(8).getFlags()));
     assertTrue(
         "Foreground should duplicate clickable node state",
-        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(9).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(9).getFlags()));
 
     assertFalse(
         "Background should duplicate non-clickable node state",
-        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(10).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(10).getFlags()));
     assertFalse(
         "Foreground should duplicate non-clickable node state",
-        MountItem.isDuplicateParentState(layoutState.getMountableOutputAt(11).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(11).getFlags()));
   }
 }

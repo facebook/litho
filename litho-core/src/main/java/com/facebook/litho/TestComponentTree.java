@@ -1,19 +1,29 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import android.graphics.Rect;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A {@link ComponentTree} for testing purposes. Leverages test classes to create component layouts
@@ -21,7 +31,7 @@ import android.support.annotation.Nullable;
  */
 public class TestComponentTree extends ComponentTree {
 
-  public static Builder create(ComponentContext context, Component<?> root) {
+  public static Builder create(ComponentContext context, Component root) {
     return new Builder(context, root);
   }
 
@@ -30,22 +40,20 @@ public class TestComponentTree extends ComponentTree {
   }
 
   public List<Component> getSubComponents() {
-    final List<Component> subComponents = new ArrayList<>();
-    extractSubComponents(getMainThreadLayoutState().getDiffTree(), subComponents);
-
-    return subComponents;
+    return extractSubComponents(getMainThreadLayoutState().getDiffTree());
   }
 
   @Override
   protected LayoutState calculateLayoutState(
-      @Nullable Object lock,
       ComponentContext context,
-      Component<?> root,
+      Component root,
       int widthSpec,
       int heightSpec,
       boolean diffingEnabled,
-      boolean shouldAnimateTransitions,
-      @Nullable DiffNode diffNode) {
+      @Nullable LayoutState previousLayoutState,
+      TreeProps treeProps,
+      @LayoutState.CalculateLayoutSource int source,
+      String extraAttribution) {
     return LayoutState.calculate(
         new TestComponentContext(
             ComponentContext.withComponentTree(new TestComponentContext(context), this),
@@ -55,14 +63,42 @@ public class TestComponentTree extends ComponentTree {
         widthSpec,
         heightSpec,
         diffingEnabled,
-        shouldAnimateTransitions,
-        diffNode);
+        previousLayoutState,
+        source,
+        extraAttribution,
+        false);
   }
 
-  private static void extractSubComponents(DiffNode root, List<Component> output) {
+  @VisibleForTesting
+  @Override
+  public void setLithoView(@NonNull LithoView view) {
+    super.setLithoView(view);
+  }
+
+  @VisibleForTesting
+  @Override
+  public void mountComponent(Rect currentVisibleArea, boolean processVisibilityOutputs) {
+    super.mountComponent(currentVisibleArea, processVisibilityOutputs);
+  }
+
+  @VisibleForTesting
+  @Override
+  public void measure(int widthSpec, int heightSpec, int[] measureOutput, boolean forceLayout) {
+    super.measure(widthSpec, heightSpec, measureOutput, forceLayout);
+  }
+
+  @VisibleForTesting
+  @Override
+  public void attach() {
+    super.attach();
+  }
+
+  private static List<Component> extractSubComponents(DiffNode root) {
     if (root == null) {
-      return;
+      return Collections.emptyList();
     }
+
+    final List<Component> output = new ArrayList<>();
 
     if (root.getChildCount() == 0) {
       if (root.getComponent() != null && root.getComponent() instanceof TestComponent) {
@@ -70,17 +106,19 @@ public class TestComponentTree extends ComponentTree {
         output.add(testSubcomponent.getWrappedComponent());
       }
 
-      return;
+      return output;
     }
 
     for (DiffNode child : root.getChildren()) {
-      extractSubComponents(child, output);
+      output.addAll(extractSubComponents(child));
     }
+
+    return output;
   }
 
   public static class Builder extends ComponentTree.Builder {
 
-    private Builder(ComponentContext context, Component<?> root) {
+    private Builder(ComponentContext context, Component root) {
       super(context, root);
     }
 
@@ -97,11 +135,6 @@ public class TestComponentTree extends ComponentTree {
     @Override
     public Builder layoutThreadLooper(Looper looper) {
       return (Builder) super.layoutThreadLooper(looper);
-    }
-
-    @Override
-    public Builder layoutLock(Object layoutLock) {
-      return (Builder) super.layoutLock(layoutLock);
     }
 
     @Override

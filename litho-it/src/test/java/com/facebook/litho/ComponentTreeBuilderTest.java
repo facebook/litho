@@ -1,31 +1,33 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.powermock.reflect.Whitebox.getInternalState;
+
 import android.os.Handler;
 import android.os.Looper;
-
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.TestLayoutComponent;
-
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ComponentTree.Builder}
@@ -65,26 +67,23 @@ public class ComponentTreeBuilderTest {
   public void testCreationWithInputs() {
     ComponentTree componentTree =
         mComponentTreeBuilder
-            .layoutLock(mLayoutLock)
             .layoutThreadLooper(mLooper)
             .build();
 
     assertSameAsInternalState(componentTree, mRoot, "mRoot");
     assertEqualToInternalState(componentTree, true, "mIsLayoutDiffingEnabled");
-    assertSameAsInternalState(componentTree, mLayoutLock, "mLayoutLock");
 
-    assertTrue(componentTree.isIncrementalMountEnabled());
-    assertEquals(mComponentsLogger, mContext.getLogger());
-    assertEquals(mLogTag, mContext.getLogTag());
+    assertThat(componentTree.isIncrementalMountEnabled()).isTrue();
+    assertThat(mContext.getLogger()).isEqualTo(mComponentsLogger);
+    assertThat(mContext.getLogTag()).isEqualTo(mLogTag);
 
-    Handler handler = Whitebox.getInternalState(componentTree, "mLayoutThreadHandler");
-    assertSame(mLooper, handler.getLooper());
+    Handler handler = getInternalState(componentTree, "mLayoutThreadHandler");
+    assertThat(mLooper).isSameAs(handler.getLooper());
   }
 
   @Test
   public void testReleaseAndInit() {
     mComponentTreeBuilder
-        .layoutLock(mLayoutLock)
         .layoutThreadLooper(mLooper);
 
     mComponentTreeBuilder.release();
@@ -104,20 +103,19 @@ public class ComponentTreeBuilderTest {
       ComponentTree componentTree,
       Object object,
       String internalName) {
-    assertSame(object, Whitebox.getInternalState(componentTree, internalName));
+    assertThat(object).isSameAs(getInternalState(componentTree, internalName));
   }
 
   private static void assertEqualToInternalState(
       ComponentTree componentTree,
       Object object,
       String internalName) {
-    assertEquals(object, Whitebox.getInternalState(componentTree, internalName));
+    assertThat((Object) getInternalState(componentTree, internalName)).isEqualTo(object);
   }
 
   private static void assertDefaults(ComponentTree componentTree) {
     assertEqualToInternalState(componentTree, true, "mIsLayoutDiffingEnabled");
-    assertSameAsInternalState(componentTree, null, "mLayoutLock");
 
-    assertTrue(componentTree.isIncrementalMountEnabled());
+    assertThat(componentTree.isIncrementalMountEnabled()).isTrue();
   }
 }

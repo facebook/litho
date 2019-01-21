@@ -32,15 +32,15 @@
   color: $litho-dark;
 }
 
-.display-configuration-gradle .toggler .button-gradle,
-.display-configuration-buck .toggler .button-buck {
+.toggler a.active {
   background: darken($litho-dark, 10%) !important;
   color: #fff !important;
 }
-block {
+
+.code-block {
   display: none;
 }
-.display-configuration-gradle .gradle,
-.display-configuration-buck .buck {
+
+.code-block.active {
   display: block;
 }

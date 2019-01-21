@@ -1,16 +1,25 @@
-/**
- * Copyright (c) 2017-present, Facebook, Inc.
- * All rights reserved.
+/*
+ * Copyright 2014-present Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.litho;
 
-import java.util.ArrayList;
-import java.util.List;
+import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
+import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
+import static com.facebook.litho.MountItem.isTouchableDisabled;
+import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -18,41 +27,46 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.util.SparseArrayCompat;
 import android.support.v4.view.ViewCompat;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-
-import com.facebook.litho.R;
-
-import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
-import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
+import android.view.accessibility.AccessibilityNodeInfo;
+import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.proguard.annotations.DoNotStrip;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A {@link ViewGroup} that can host the mounted state of a {@link Component}. This is used
  * by {@link MountState} to wrap mounted drawables to handle click events and update drawable
  * states accordingly.
  */
+@DoNotStrip
 public class ComponentHost extends ViewGroup {
 
-  private final SparseArrayCompat<MountItem> mMountItems = new SparseArrayCompat<>();
+  private static final double NS_IN_MS = 1000000.0;
+
+  private SparseArrayCompat<MountItem> mMountItems;
   private SparseArrayCompat<MountItem> mScrapMountItemsArray;
 
-  private final SparseArrayCompat<MountItem> mViewMountItems = new SparseArrayCompat<>();
+  private SparseArrayCompat<MountItem> mViewMountItems;
   private SparseArrayCompat<MountItem> mScrapViewMountItemsArray;
 
-  private final SparseArrayCompat<MountItem> mDrawableMountItems = new SparseArrayCompat<>();
+  private SparseArrayCompat<MountItem> mDrawableMountItems;
   private SparseArrayCompat<MountItem> mScrapDrawableMountItems;
 
-  private final SparseArrayCompat<Touchable> mTouchables = new SparseArrayCompat<>();
-  private SparseArrayCompat<Touchable> mScrapTouchables;
-
-  private final SparseArrayCompat<MountItem> mDisappearingItems = new SparseArrayCompat<>();
+  private ArrayList<MountItem> mDisappearingItems;
 
   private CharSequence mContentDescription;
   private Object mViewTag;
@@ -63,9 +77,9 @@ public class ComponentHost extends ViewGroup {
   private boolean mSuppressInvalidations;
 
   private final InterleavedDispatchDraw mDispatchDraw = new InterleavedDispatchDraw();
+  private final DrawStats mDrawStats = new DrawStats();
 
-  private final List<ComponentHost> mScrapHosts = new ArrayList<>(3);
-  private final ComponentsLogger mLogger;
+  @Nullable private PerfEvent mPerfEvent;
 
   private int[] mChildDrawingOrder = new int[0];
   private boolean mIsChildDrawingOrderDirty;
@@ -73,14 +87,25 @@ public class ComponentHost extends ViewGroup {
   private long mParentHostMarker;
   private boolean mInLayout;
 
-  private ComponentAccessibilityDelegate mComponentAccessibilityDelegate;
+  @Nullable private ComponentAccessibilityDelegate mComponentAccessibilityDelegate;
   private boolean mIsComponentAccessibilityDelegateSet = false;
 
   private ComponentClickListener mOnClickListener;
   private ComponentLongClickListener mOnLongClickListener;
+  private ComponentFocusChangeListener mOnFocusChangeListener;
   private ComponentTouchListener mOnTouchListener;
+  private EventHandler<InterceptTouchEvent> mOnInterceptTouchEventHandler;
 
   private TouchExpansionDelegate mTouchExpansionDelegate;
+
+  /**
+   * {@link ViewGroup#getClipChildren()} was only added in API 18, will need to keep track of this
+   * flag ourselves on the lower versions
+   */
+  private boolean mClipChildren = true;
+
+  private boolean mClippingTemporaryDisabled = false;
+  private boolean mClippingToRestore = false;
 
   public ComponentHost(Context context) {
     this(context, null);
@@ -95,13 +120,15 @@ public class ComponentHost extends ViewGroup {
   }
 
   public ComponentHost(ComponentContext context, AttributeSet attrs) {
-    super(context, attrs);
+    super(context.getAndroidContext(), attrs);
     setWillNotDraw(false);
     setChildrenDrawingOrderEnabled(true);
+    refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context.getAndroidContext()));
 
-    mLogger = context.getLogger();
-    mComponentAccessibilityDelegate = new ComponentAccessibilityDelegate(this);
-    refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(context));
+    mMountItems = new SparseArrayCompat<>();
+    mViewMountItems = new SparseArrayCompat<>();
+    mDrawableMountItems = new SparseArrayCompat<>();
+    mDisappearingItems = new ArrayList<>();
   }
 
   /**
@@ -119,6 +146,12 @@ public class ComponentHost extends ViewGroup {
     return mParentHostMarker;
   }
 
+  /** Set a perf event to log additional draw stats for <b>the next draw call only</b>. */
+  void setPerfEvent(PerfEvent perfEvent) {
+    mPerfEvent = perfEvent;
+    mDrawStats.enableLogging();
+  }
+
   /**
    * Mounts the given {@link MountItem} with unique index.
    * @param index index of the {@link MountItem}. Guaranteed to be the same index as is passed for
@@ -127,21 +160,48 @@ public class ComponentHost extends ViewGroup {
    * @param bounds the bounds of the item that is to be mounted into the host
    */
   public void mount(int index, MountItem mountItem, Rect bounds) {
-    final Object content = mountItem.getContent();
+    final Object content = mountItem.getMountableContent();
     if (content instanceof Drawable) {
       mountDrawable(index, mountItem, bounds);
     } else if (content instanceof View) {
+      ensureViewMountItems();
       mViewMountItems.put(index, mountItem);
-      mountView((View) content, mountItem.getFlags());
+      mountView((View) content, mountItem.getLayoutFlags());
       maybeRegisterTouchExpansion(index, mountItem);
     }
 
+    ensureMountItems();
     mMountItems.put(index, mountItem);
 
     maybeInvalidateAccessibilityState(mountItem);
   }
 
+  private void ensureMountItems() {
+    if (mMountItems == null) {
+      mMountItems = new SparseArrayCompat<>();
+    }
+  }
+
+  private void ensureViewMountItems() {
+    if (mViewMountItems == null) {
+      mViewMountItems = new SparseArrayCompat<>();
+    }
+  }
+
+  private void ensureDrawableMountItems() {
+    if (mDrawableMountItems == null) {
+      mDrawableMountItems = new SparseArrayCompat<>();
+    }
+  }
+
+  private void ensureDisappearingItems() {
+    if (mDisappearingItems == null) {
+      mDisappearingItems = new ArrayList<>();
+    }
+  }
+
   void unmount(MountItem item) {
+    ensureMountItems();
     final int index = mMountItems.keyAt(mMountItems.indexOfValue(item));
     unmount(index, item);
   }
@@ -153,59 +213,80 @@ public class ComponentHost extends ViewGroup {
    * @param mountItem item to be unmounted from the host.
    */
   public void unmount(int index, MountItem mountItem) {
-    final Object content = mountItem.getContent();
+    final Object content = mountItem.getMountableContent();
     if (content instanceof Drawable) {
-      unmountDrawable(index, mountItem);
+      ensureDrawableMountItems();
+
+      unmountDrawable(mountItem);
+      ComponentHostUtils.removeItem(index, mDrawableMountItems, mScrapDrawableMountItems);
     } else if (content instanceof View) {
       unmountView((View) content);
+
+      ensureViewMountItems();
       ComponentHostUtils.removeItem(index, mViewMountItems, mScrapViewMountItemsArray);
+      mIsChildDrawingOrderDirty = true;
       maybeUnregisterTouchExpansion(index, mountItem);
     }
 
+    ensureMountItems();
     ComponentHostUtils.removeItem(index, mMountItems, mScrapMountItemsArray);
     releaseScrapDataStructuresIfNeeded();
     maybeInvalidateAccessibilityState(mountItem);
   }
 
   void startUnmountDisappearingItem(int index, MountItem mountItem) {
-    final Object content = mountItem.getContent();
-    if (!(content instanceof View)) {
-      throw new RuntimeException("Cannot unmount non-view item");
-    }
-    mIsChildDrawingOrderDirty = true;
+    final Object content = mountItem.getMountableContent();
 
-    ComponentHostUtils.removeItem(index, mViewMountItems, mScrapViewMountItemsArray);
+    if (content instanceof Drawable) {
+      ensureDrawableMountItems();
+
+      ComponentHostUtils.removeItem(index, mDrawableMountItems, mScrapDrawableMountItems);
+    } else if (content instanceof View) {
+      ensureViewMountItems();
+      ComponentHostUtils.removeItem(index, mViewMountItems, mScrapViewMountItemsArray);
+      mIsChildDrawingOrderDirty = true;
+      maybeUnregisterTouchExpansion(index, mountItem);
+    }
+    ensureMountItems();
     ComponentHostUtils.removeItem(index, mMountItems, mScrapMountItemsArray);
     releaseScrapDataStructuresIfNeeded();
-    mDisappearingItems.put(index, mountItem);
+    ensureDisappearingItems();
+    mDisappearingItems.add(mountItem);
   }
 
   void unmountDisappearingItem(MountItem disappearingItem) {
-    final int indexOfValue = mDisappearingItems.indexOfValue(disappearingItem);
-    final int key = mDisappearingItems.keyAt(indexOfValue);
-    mDisappearingItems.removeAt(indexOfValue);
+    ensureDisappearingItems();
+    if (!mDisappearingItems.remove(disappearingItem)) {
+      final TransitionId transitionId = disappearingItem.getTransitionId();
+      throw new RuntimeException(
+          "Tried to remove non-existent disappearing item, transitionId: " + transitionId);
+    }
 
-    final View content = (View) disappearingItem.getContent();
+    final Object content = disappearingItem.getMountableContent();
+    if (content instanceof Drawable) {
+      unmountDrawable(disappearingItem);
+    } else if (content instanceof View) {
+      unmountView((View) content);
+    }
 
-    unmountView(content);
-    maybeUnregisterTouchExpansion(key, disappearingItem);
     maybeInvalidateAccessibilityState(disappearingItem);
   }
 
   boolean hasDisappearingItems() {
-    return mDisappearingItems.size() > 0;
+    return mDisappearingItems != null && !mDisappearingItems.isEmpty();
   }
 
-  List<String> getDisappearingItemKeys() {
+  @Nullable
+  List<TransitionId> getDisappearingItemTransitionIds() {
     if (!hasDisappearingItems()) {
       return null;
     }
-    final List<String> keys = new ArrayList<>();
+    final List<TransitionId> ids = new ArrayList<>();
     for (int i = 0, size = mDisappearingItems.size(); i < size; i++) {
-      keys.add(mDisappearingItems.valueAt(i).getViewNodeInfo().getTransitionKey());
+      ids.add(mDisappearingItems.get(i).getTransitionId());
     }
 
-    return keys;
+    return ids;
   }
 
   private void maybeMoveTouchExpansionIndexes(MountItem item, int oldIndex, int newIndex) {
@@ -224,7 +305,7 @@ public class ComponentHost extends ViewGroup {
         newIndex);
   }
 
-  private void maybeRegisterTouchExpansion(int index, MountItem mountItem) {
+  void maybeRegisterTouchExpansion(int index, MountItem mountItem) {
     final ViewNodeInfo viewNodeInfo = mountItem.getViewNodeInfo();
     if (viewNodeInfo == null) {
       return;
@@ -235,18 +316,21 @@ public class ComponentHost extends ViewGroup {
       return;
     }
 
+    if (this.equals(mountItem.getMountableContent())) {
+      // Don't delegate to ourselves or we'll cause a StackOverflowError
+      return;
+    }
+
     if (mTouchExpansionDelegate == null) {
       mTouchExpansionDelegate = new TouchExpansionDelegate(this);
       setTouchDelegate(mTouchExpansionDelegate);
     }
 
     mTouchExpansionDelegate.registerTouchExpansion(
-        index,
-        (View) mountItem.getContent(),
-        expandedTouchBounds);
+        index, (View) mountItem.getMountableContent(), expandedTouchBounds);
   }
 
-  private void maybeUnregisterTouchExpansion(int index, MountItem mountItem) {
+  void maybeUnregisterTouchExpansion(int index, MountItem mountItem) {
     final ViewNodeInfo viewNodeInfo = mountItem.getViewNodeInfo();
     if (viewNodeInfo == null) {
       return;
@@ -256,39 +340,19 @@ public class ComponentHost extends ViewGroup {
       return;
     }
 
-    mTouchExpansionDelegate.unregisterTouchExpansion(index);
-  }
-
-  /**
-   * Tries to recycle a scrap host attached to this host.
-   * @return The host view to be recycled.
-   */
-  ComponentHost recycleHost() {
-    if (mScrapHosts.size() > 0) {
-      final ComponentHost host = mScrapHosts.remove(0);
-
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        // We are bringing the re-used host to the front because before API 17, Android doesn't
-        // take into account the children drawing order when dispatching ViewGroup touch events,
-        // but it just traverses its children list backwards.
-        bringChildToFront(host);
-      }
-
-      // The recycled host is immediately re-mounted in mountView(), therefore setting
-      // the flag here is redundant, but future proof.
-      mIsChildDrawingOrderDirty = true;
-
-      return host;
+    if (this.equals(mountItem.getMountableContent())) {
+      // Recursive delegation is never registered
+      return;
     }
 
-    return null;
+    mTouchExpansionDelegate.unregisterTouchExpansion(index);
   }
 
   /**
    * @return number of {@link MountItem}s that are currently mounted in the host.
    */
   int getMountItemCount() {
-    return mMountItems.size();
+    return mMountItems == null ? 0 : mMountItems.size();
   }
 
   /**
@@ -299,12 +363,12 @@ public class ComponentHost extends ViewGroup {
   }
 
   /**
-   * Hosts are guaranteed to have only one accessible component
-   * in them due to the way the view hierarchy is constructed in {@link LayoutState}.
-   * There might be other non-accessible components in the same hosts such as
-   * a background/foreground component though. This is why this method iterates over
-   * all mount items in order to find the accessible one.
+   * Hosts are guaranteed to have only one accessible component in them due to the way the view
+   * hierarchy is constructed in {@link LayoutState}. There might be other non-accessible components
+   * in the same hosts such as a background/foreground component though. This is why this method
+   * iterates over all mount items in order to find the accessible one.
    */
+  @Nullable
   MountItem getAccessibleMountItem() {
     for (int i = 0; i < getMountItemCount(); i++) {
       MountItem item = getMountItemAt(i);
@@ -320,9 +384,13 @@ public class ComponentHost extends ViewGroup {
    * @return list of drawables that are mounted on this host.
    */
   public List<Drawable> getDrawables() {
+    if (mDrawableMountItems == null || mDrawableMountItems.size() == 0) {
+      return Collections.emptyList();
+    }
+
     final List<Drawable> drawables = new ArrayList<>(mDrawableMountItems.size());
     for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
-      Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getContent();
+      Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getMountableContent();
       drawables.add(drawable);
     }
 
@@ -332,7 +400,9 @@ public class ComponentHost extends ViewGroup {
   /**
    * @return the text content that is mounted on this host.
    */
+  @DoNotStrip
   public TextContent getTextContent() {
+    ensureMountItems();
     return ComponentHostUtils.extractTextContent(
         ComponentHostUtils.extractContent(mMountItems));
   }
@@ -341,6 +411,7 @@ public class ComponentHost extends ViewGroup {
    * @return the image content that is mounted on this host.
    */
   public ImageContent getImageContent() {
+    ensureMountItems();
     return ComponentHostUtils.extractImageContent(
         ComponentHostUtils.extractContent(mMountItems));
   }
@@ -364,22 +435,25 @@ public class ComponentHost extends ViewGroup {
   @Override
   public void setContentDescription(CharSequence contentDescription) {
     mContentDescription = contentDescription;
-    invalidateAccessibilityState();
-  }
 
-  @Override
-  public void setImportantForAccessibility(int mode) {
-    if (mode != ViewCompat.getImportantForAccessibility(this)) {
-      super.setImportantForAccessibility(mode);
+    if (!TextUtils.isEmpty(contentDescription)
+        && ViewCompat.getImportantForAccessibility(this)
+            == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
+      ViewCompat.setImportantForAccessibility(this, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES);
     }
+
+    invalidateAccessibilityState();
   }
 
   @Override
   public void setTag(int key, Object tag) {
     super.setTag(key, tag);
     if (key == R.id.component_node_info && tag != null) {
-      mComponentAccessibilityDelegate.setNodeInfo((NodeInfo) tag);
       refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(getContext()));
+
+      if (mComponentAccessibilityDelegate != null) {
+        mComponentAccessibilityDelegate.setNodeInfo((NodeInfo) tag);
+      }
     }
   }
 
@@ -404,7 +478,10 @@ public class ComponentHost extends ViewGroup {
     }
     maybeMoveTouchExpansionIndexes(item, oldIndex, newIndex);
 
-    final Object content = item.getContent();
+    final Object content = item.getMountableContent();
+
+    ensureViewMountItems();
+
     if (content instanceof Drawable) {
       moveDrawableItem(item, oldIndex, newIndex);
     } else if (content instanceof View) {
@@ -421,6 +498,7 @@ public class ComponentHost extends ViewGroup {
       ComponentHostUtils.moveItem(oldIndex, newIndex, mViewMountItems, mScrapViewMountItemsArray);
     }
 
+    ensureMountItems();
     if (mMountItems.get(newIndex) != null) {
       ensureScrapMountItemsArray();
 
@@ -485,12 +563,46 @@ public class ComponentHost extends ViewGroup {
   }
 
   /**
+   * Sets a focus change listener on this host.
+   * @param listener The listener to set on this host.
+   */
+  void setComponentFocusChangeListener(ComponentFocusChangeListener listener) {
+    mOnFocusChangeListener = listener;
+    this.setOnFocusChangeListener(listener);
+  }
+
+  /**
+   * @return The previously set focus change listener
+   */
+  ComponentFocusChangeListener getComponentFocusChangeListener() {
+    return mOnFocusChangeListener;
+  }
+
+  /**
    * Sets a touch listener on this host.
    * @param listener The listener to set on this host.
    */
   void setComponentTouchListener(ComponentTouchListener listener) {
     mOnTouchListener = listener;
     setOnTouchListener(listener);
+  }
+
+  /**
+   * Sets an {@link EventHandler} that will be invoked when
+   * {@link ComponentHost#onInterceptTouchEvent} is called.
+   * @param interceptTouchEventHandler the handler to be set on this host.
+   */
+  void setInterceptTouchEventHandler(EventHandler<InterceptTouchEvent> interceptTouchEventHandler) {
+    mOnInterceptTouchEventHandler = interceptTouchEventHandler;
+  }
+
+  @Override
+  public boolean onInterceptTouchEvent(MotionEvent ev) {
+    if (mOnInterceptTouchEventHandler != null) {
+      return EventDispatcherUtils.dispatchOnInterceptTouch(mOnInterceptTouchEventHandler, this, ev);
+    }
+
+    return super.onInterceptTouchEvent(ev);
   }
 
   /**
@@ -554,13 +666,14 @@ public class ComponentHost extends ViewGroup {
 
   private boolean implementsVirtualViews() {
     MountItem item = getAccessibleMountItem();
-    return item != null
-      && item.getComponent().getLifecycle().implementsExtraAccessibilityNodes();
+    return item != null && item.getComponent().implementsExtraAccessibilityNodes();
   }
 
   public List<CharSequence> getContentDescriptions() {
     final List<CharSequence> contentDescriptions = new ArrayList<>();
-    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
+    for (int i = 0, size = mDrawableMountItems == null ? 0 : mDrawableMountItems.size();
+        i < size;
+        i++) {
       final NodeInfo nodeInfo = mDrawableMountItems.valueAt(i).getNodeInfo();
       if (nodeInfo == null) {
         continue;
@@ -598,31 +711,19 @@ public class ComponentHost extends ViewGroup {
     }
 
     if (mInLayout) {
-      addViewInLayout(view, -1, view.getLayoutParams(), true);
+      super.addViewInLayout(view, -1, view.getLayoutParams(), true);
     } else {
-      addView(view, -1, view.getLayoutParams());
+      super.addView(view, -1, view.getLayoutParams());
     }
   }
 
   private void unmountView(View view) {
     mIsChildDrawingOrderDirty = true;
 
-    if (view instanceof ComponentHost) {
-      final ComponentHost componentHost = (ComponentHost) view;
-
-      view.setVisibility(GONE);
-
-      // In Gingerbread the View system doesn't invalidate
-      // the parent if a child become invisible.
-      invalidate();
-
-      startTemporaryDetach(componentHost);
-
-      mScrapHosts.add(componentHost);
-    } else if (mInLayout) {
-      removeViewInLayout(view);
+    if (mInLayout) {
+      super.removeViewInLayout(view);
     } else {
-      removeView(view);
+      super.removeView(view);
     }
   }
 
@@ -646,6 +747,18 @@ public class ComponentHost extends ViewGroup {
 
     mDispatchDraw.end();
 
+    // Everything from mMountItems was drawn at this point. Then ViewGroup took care of drawing
+    // disappearing views, as they still added as children. Thus the only thing left to draw is
+    // disappearing drawables
+    for (int index = 0, size = mDisappearingItems == null ? 0 : mDisappearingItems.size();
+        index < size;
+        ++index) {
+      final Object content = mDisappearingItems.get(index).getMountableContent();
+      if (content instanceof Drawable) {
+        ((Drawable) content).draw(canvas);
+      }
+    }
+
     DebugDraw.draw(this, canvas);
   }
 
@@ -664,15 +777,31 @@ public class ComponentHost extends ViewGroup {
   }
 
   @Override
+  public boolean shouldDelayChildPressedState() {
+    return false;
+  }
+
+  @Override
   public boolean onTouchEvent(MotionEvent event) {
+    assertMainThread();
+
     boolean handled = false;
 
-    // Iterate drawable from last to first to respect drawing order.
-    for (int size = mTouchables.size(), i = size - 1; i >= 0; i--) {
-      final Touchable t = mTouchables.valueAt(i);
-      if (t.shouldHandleTouchEvent(event) && t.onTouchEvent(event, this)) {
-        handled = true;
-        break;
+    if (isEnabled()) {
+      // Iterate drawable from last to first to respect drawing order.
+      for (int i = ((mDrawableMountItems == null) ? 0 : mDrawableMountItems.size()) - 1;
+          i >= 0;
+          i--) {
+        final MountItem item = mDrawableMountItems.valueAt(i);
+
+        if (item.getMountableContent() instanceof Touchable
+            && !isTouchableDisabled(item.getLayoutFlags())) {
+          final Touchable t = (Touchable) item.getMountableContent();
+          if (t.shouldHandleTouchEvent(event) && t.onTouchEvent(event, this)) {
+            handled = true;
+            break;
+          }
+        }
       }
     }
 
@@ -728,12 +857,14 @@ public class ComponentHost extends ViewGroup {
   protected void drawableStateChanged() {
     super.drawableStateChanged();
 
-    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
+    for (int i = 0, size = (mDrawableMountItems == null) ? 0 : mDrawableMountItems.size();
+        i < size;
+        i++) {
       final MountItem mountItem = mDrawableMountItems.valueAt(i);
       ComponentHostUtils.maybeSetDrawableState(
           this,
-          (Drawable) mountItem.getContent(),
-          mountItem.getFlags(),
+          (Drawable) mountItem.getMountableContent(),
+          mountItem.getLayoutFlags(),
           mountItem.getNodeInfo());
     }
   }
@@ -741,8 +872,11 @@ public class ComponentHost extends ViewGroup {
   @Override
   public void jumpDrawablesToCurrentState() {
     super.jumpDrawablesToCurrentState();
-    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
-      final Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getContent();
+
+    for (int i = 0, size = (mDrawableMountItems == null) ? 0 : mDrawableMountItems.size();
+        i < size;
+        i++) {
+      final Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getMountableContent();
       DrawableCompat.jumpToCurrentState(drawable);
     }
   }
@@ -751,12 +885,15 @@ public class ComponentHost extends ViewGroup {
   public void setVisibility(int visibility) {
     super.setVisibility(visibility);
 
-    for (int i = 0, size = mDrawableMountItems.size(); i < size; i++) {
-      final Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getContent();
+    for (int i = 0, size = (mDrawableMountItems == null) ? 0 : mDrawableMountItems.size();
+        i < size;
+        i++) {
+      final Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getMountableContent();
       drawable.setVisible(visibility == View.VISIBLE, false);
     }
   }
 
+  @DoNotStrip
   @Override
   public Object getTag() {
     if (mViewTag != null) {
@@ -813,35 +950,300 @@ public class ComponentHost extends ViewGroup {
       return;
     }
 
+    if (isAccessibilityEnabled && mComponentAccessibilityDelegate == null) {
+      mComponentAccessibilityDelegate =
+          new ComponentAccessibilityDelegate(
+              this, this.isFocusable(), ViewCompat.getImportantForAccessibility(this));
+    }
+
     ViewCompat.setAccessibilityDelegate(
         this,
         isAccessibilityEnabled ? mComponentAccessibilityDelegate : null);
     mIsComponentAccessibilityDelegateSet = isAccessibilityEnabled;
 
+    if (!isAccessibilityEnabled) {
+      return;
+    }
+
     for (int i = 0, size = getChildCount(); i < size; i++) {
       final View child = getChildAt(i);
       if (child instanceof ComponentHost) {
-        ((ComponentHost) child).refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled);
+        ((ComponentHost) child).refreshAccessibilityDelegatesIfNeeded(true);
       } else {
         final NodeInfo nodeInfo =
             (NodeInfo) child.getTag(R.id.component_node_info);
         if (nodeInfo != null) {
           ViewCompat.setAccessibilityDelegate(
               child,
-              isAccessibilityEnabled ? new ComponentAccessibilityDelegate(child, nodeInfo) : null);
+              new ComponentAccessibilityDelegate(
+                  child,
+                  nodeInfo,
+                  child.isFocusable(),
+                  ViewCompat.getImportantForAccessibility(child)));
         }
       }
     }
   }
 
   @Override
-  public void setAccessibilityDelegate(AccessibilityDelegate accessibilityDelegate) {
+  public void setAccessibilityDelegate(View.AccessibilityDelegate accessibilityDelegate) {
     super.setAccessibilityDelegate(accessibilityDelegate);
 
     // We cannot compare against mComponentAccessibilityDelegate directly, since it is not the
     // delegate that we receive here. Instead, we'll set this to true at the point that we set that
     // delegate explicitly.
     mIsComponentAccessibilityDelegateSet = false;
+  }
+
+  @Override
+  public boolean hasOverlappingRendering() {
+    return ComponentsConfiguration.hostHasOverlappingRendering;
+  }
+
+  @Override
+  public void setClipChildren(boolean clipChildren) {
+    if (mClippingTemporaryDisabled) {
+      mClippingToRestore = clipChildren;
+      return;
+    }
+
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      // There is no ViewGroup.getClipChildren() method on API < 18, will keep track this way
+      mClipChildren = clipChildren;
+    }
+    super.setClipChildren(clipChildren);
+  }
+
+  @Override
+  public boolean getClipChildren() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      // There is no ViewGroup.getClipChildren() method on API < 18
+      return mClipChildren;
+    } else {
+      return super.getClipChildren();
+    }
+  }
+
+  /**
+   * Temporary disables child clipping, the previous state could be restored by calling {@link
+   * #restoreChildClipping()}. While clipping is disabled calling {@link #setClipChildren(boolean)}
+   * would have no immediate effect, but the restored state would reflect the last set value
+   */
+  void temporaryDisableChildClipping() {
+    if (mClippingTemporaryDisabled) {
+      return;
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      mClippingToRestore = getClipChildren();
+    } else {
+      mClippingToRestore = mClipChildren;
+    }
+
+    // The order here is crucial, we first need to set clipping then update
+    // mClippingTemporaryDisabled flag
+    setClipChildren(false);
+
+    mClippingTemporaryDisabled = true;
+  }
+
+  /**
+   * Restores child clipping to the state it was in when {@link #temporaryDisableChildClipping()}
+   * was called, unless there were attempts to set a new value, while the clipping was disabled,
+   * then would be restored to the last set value
+   */
+  void restoreChildClipping() {
+    if (!mClippingTemporaryDisabled) {
+      return;
+    }
+
+    // The order here is crucial, we first need to update mClippingTemporaryDisabled flag then set
+    // clipping
+    mClippingTemporaryDisabled = false;
+
+    setClipChildren(mClippingToRestore);
+  }
+  
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  public void addView(View child) {
+    throw new UnsupportedOperationException(
+        "Adding Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  public void addView(View child, int index) {
+    throw new UnsupportedOperationException(
+        "Adding Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  public void addView(View child, int index, ViewGroup.LayoutParams params) {
+    throw new UnsupportedOperationException(
+        "Adding Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  protected boolean addViewInLayout(
+      View child, int index, ViewGroup.LayoutParams params, boolean preventRequestLayout) {
+    throw new UnsupportedOperationException(
+        "Adding Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  protected void attachViewToParent(View child, int index, ViewGroup.LayoutParams params) {
+    throw new UnsupportedOperationException(
+        "Adding Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  public void removeView(View view) {
+    throw new UnsupportedOperationException(
+        "Removing Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  public void removeViewInLayout(View view) {
+    throw new UnsupportedOperationException(
+        "Removing Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  public void removeViewsInLayout(int start, int count) {
+    throw new UnsupportedOperationException(
+        "Removing Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  public void removeViewAt(int index) {
+    throw new UnsupportedOperationException(
+        "Removing Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  public void removeViews(int start, int count) {
+    throw new UnsupportedOperationException(
+        "Removing Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  public void removeAllViewsInLayout() {
+    throw new UnsupportedOperationException(
+        "Removing Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
+   * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
+   * line.
+   */
+  @Deprecated
+  @Override
+  protected void removeDetachedView(View child, boolean animate) {
+    throw new UnsupportedOperationException(
+        "Removing Views manually within LithoViews is not supported");
+  }
+
+  /**
+   * Manually adds a View as a child of this ComponentHost for the purposes of testing. **This
+   * should only be used for tests as this is not safe and will likely cause weird crashes if used
+   * in a production environment**.
+   */
+  @VisibleForTesting
+  public void addViewForTest(View view) {
+    final LayoutParams params =
+        view.getLayoutParams() == null ? generateDefaultLayoutParams() : view.getLayoutParams();
+    super.addView(view, -1, params);
+  }
+
+  /**
+   * Returns the Drawables associated with this ComponentHost for animations, for example the
+   * background Drawable and/or the drawable that otherwise has a transitionKey on it that has
+   * caused it to be hosted in this ComponentHost.
+   *
+   * <p>The core purpose of exposing these drawables is so that when animating the bounds of this
+   * ComponentHost, we also properly animate the bounds of its contained Drawables at the same time.
+   */
+  public @Nullable List<Drawable> getLinkedDrawablesForAnimation() {
+    List<Drawable> drawables = null;
+
+    for (int i = 0, size = (mDrawableMountItems == null) ? 0 : mDrawableMountItems.size();
+        i < size;
+        i++) {
+      final MountItem mountItem = mDrawableMountItems.valueAt(i);
+      if ((mountItem.getLayoutFlags() & MountItem.LAYOUT_FLAG_MATCH_HOST_BOUNDS) != 0) {
+        if (drawables == null) {
+          drawables = new ArrayList<>();
+        }
+        drawables.add((Drawable) mountItem.getMountableContent());
+      }
+    }
+    return drawables;
   }
 
   private void updateChildDrawingOrderIfNeeded() {
@@ -855,21 +1257,20 @@ public class ComponentHost extends ViewGroup {
     }
 
     int index = 0;
-    final int viewMountItemCount = mViewMountItems.size();
-    for (int i = 0, size = viewMountItemCount; i < size; i++) {
-      final View child = (View) mViewMountItems.valueAt(i).getContent();
+    final int viewMountItemCount = mViewMountItems == null ? 0 : mViewMountItems.size();
+    for (int i = 0; i < viewMountItemCount; i++) {
+      final View child = (View) mViewMountItems.valueAt(i).getMountableContent();
       mChildDrawingOrder[index++] = indexOfChild(child);
     }
 
     // Draw disappearing items on top of mounted views.
-    for (int i = 0, size = mDisappearingItems.size(); i < size; i++) {
-      final View child = (View) mDisappearingItems.valueAt(i).getContent();
-      mChildDrawingOrder[index++] = indexOfChild(child);
-    }
-
-    for (int i = 0, size = mScrapHosts.size(); i < size; i++) {
-      final View child = mScrapHosts.get(i);
-      mChildDrawingOrder[index++] = indexOfChild(child);
+    for (int i = 0, size = mDisappearingItems == null ? 0 : mDisappearingItems.size();
+        i < size;
+        i++) {
+      final Object child = mDisappearingItems.get(i).getMountableContent();
+      if (child instanceof View) {
+        mChildDrawingOrder[index++] = indexOfChild((View) child);
+      }
     }
 
     mIsChildDrawingOrderDirty = false;
@@ -900,69 +1301,40 @@ public class ComponentHost extends ViewGroup {
   }
 
   private void mountDrawable(int index, MountItem mountItem, Rect bounds) {
+    assertMainThread();
+
+    ensureDrawableMountItems();
     mDrawableMountItems.put(index, mountItem);
-    final Drawable drawable = (Drawable) mountItem.getContent();
-    final DisplayListDrawable displayListDrawable = mountItem.getDisplayListDrawable();
+    final Drawable drawable = (Drawable) mountItem.getMountableContent();
 
     ComponentHostUtils.mountDrawable(
-        this,
-        displayListDrawable != null ? displayListDrawable : drawable,
-        bounds,
-        mountItem.getFlags(),
-        mountItem.getNodeInfo());
-
-    if (drawable instanceof Touchable) {
-      mTouchables.put(index, (Touchable) drawable);
-    }
+        this, drawable, bounds, mountItem.getLayoutFlags(), mountItem.getNodeInfo());
   }
 
-  private void unmountDrawable(int index, MountItem mountItem) {
-    final Drawable contentDrawable = (Drawable) mountItem.getContent();
-    final Drawable drawable = mountItem.getDisplayListDrawable() == null
-        ? contentDrawable
-        : mountItem.getDisplayListDrawable();
+  private void unmountDrawable(MountItem mountItem) {
+    assertMainThread();
 
-    if (ComponentHostUtils.existsScrapItemAt(index, mScrapDrawableMountItems)) {
-      mScrapDrawableMountItems.remove(index);
-    } else {
-      mDrawableMountItems.remove(index);
-    }
-
+    final Drawable drawable = (Drawable) mountItem.getMountableContent();
     drawable.setCallback(null);
-
-    if (contentDrawable instanceof Touchable) {
-      if (ComponentHostUtils.existsScrapItemAt(index, mScrapTouchables)) {
-        mScrapTouchables.remove(index);
-      } else {
-        mTouchables.remove(index);
-      }
-    }
-
-    this.invalidate(drawable.getBounds());
+    invalidate(drawable.getBounds());
 
     releaseScrapDataStructuresIfNeeded();
   }
 
   private void moveDrawableItem(MountItem item, int oldIndex, int newIndex) {
+    assertMainThread();
+
     // When something is already present in newIndex position we need to keep track of it.
+    ensureDrawableMountItems();
+
     if (mDrawableMountItems.get(newIndex) != null) {
       ensureScrapDrawableMountItemsArray();
 
       ComponentHostUtils.scrapItemAt(newIndex, mDrawableMountItems, mScrapDrawableMountItems);
     }
 
-    if (mTouchables.get(newIndex) != null) {
-      ensureScrapTouchablesArray();
-
-      ComponentHostUtils.scrapItemAt(newIndex, mTouchables, mScrapTouchables);
-    }
-
-    // Move the MountItem in the new position. If the mount item was a Touchable we need to reflect
-    // this change also in the Touchables SparseArray.
+    // Move the MountItem in the new position.
     ComponentHostUtils.moveItem(oldIndex, newIndex, mDrawableMountItems, mScrapDrawableMountItems);
-    if (item.getContent() instanceof Touchable) {
-      ComponentHostUtils.moveItem(oldIndex, newIndex, mTouchables, mScrapTouchables);
-    }
 
     // Drawing order changed, invalidate the whole view.
     this.invalidate();
@@ -976,17 +1348,12 @@ public class ComponentHost extends ViewGroup {
     }
   }
 
-  private void ensureScrapTouchablesArray() {
-    if (mScrapTouchables == null) {
-      mScrapTouchables = ComponentsPools.acquireScrapTouchablesArray();
-    }
-  }
-
   private static void startTemporaryDetach(View view) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
       // Cancel any pending clicks.
       view.cancelPendingInputEvents();
     }
+
     // The ComponentHost's parent will send an ACTION_CANCEL if it's going to receive
     // other motion events for the recycled child.
     ViewCompat.dispatchStartTemporaryDetach(view);
@@ -1013,7 +1380,7 @@ public class ComponentHost extends ViewGroup {
     private void start(Canvas canvas) {
       mCanvas = canvas;
       mDrawIndex = 0;
-      mItemsToDraw = mMountItems.size();
+      mItemsToDraw = mMountItems == null ? 0 : mMountItems.size();
     }
 
     private boolean isRunning() {
@@ -1025,12 +1392,12 @@ public class ComponentHost extends ViewGroup {
         return;
       }
 
-      for (int i = mDrawIndex, size = mMountItems.size(); i < size; i++) {
+      for (int i = mDrawIndex, size = (mMountItems == null) ? 0 : mMountItems.size();
+          i < size;
+          i++) {
+        final long startDrawNs = System.nanoTime();
         final MountItem mountItem = mMountItems.valueAt(i);
-
-        final Object content = mountItem.getDisplayListDrawable() != null ?
-            mountItem.getDisplayListDrawable() :
-            mountItem.getContent();
+        final Object content = mountItem.getMountableContent();
 
         // During a ViewGroup's dispatchDraw() call with children drawing order enabled,
         // getChildDrawingOrder() will be called before each child view is drawn. This
@@ -1041,16 +1408,105 @@ public class ComponentHost extends ViewGroup {
           return;
         }
 
-        ComponentsSystrace.beginSection(mountItem.getComponent().getSimpleName());
+        if (!mountItem.isBound()) {
+          continue;
+        }
+
+        final boolean isTracing = ComponentsSystrace.isTracing();
+        final String mountItemName =
+            isTracing || mDrawStats.mIsLoggingEnabled ? getMountItemName(mountItem) : null;
+
+        if (isTracing) {
+          ComponentsSystrace.beginSection("draw: " + mountItemName);
+        }
         ((Drawable) content).draw(mCanvas);
-        ComponentsSystrace.endSection();
+        if (isTracing) {
+          ComponentsSystrace.endSection();
+        }
+
+        final long endDrawNs = System.nanoTime();
+        if (mDrawStats.mIsLoggingEnabled) {
+          mDrawStats.mMountItemTimes.add((endDrawNs - startDrawNs) / NS_IN_MS);
+          mDrawStats.mMountItemNames.add(mountItemName);
+        }
       }
 
       mDrawIndex = mItemsToDraw;
     }
 
     private void end() {
+      if (mDrawStats.mIsLoggingEnabled) {
+        mDrawStats.annotatePerfEvent(mPerfEvent);
+        mPerfEvent = null;
+      }
       mCanvas = null;
+    }
+  }
+
+  private static String getMountItemName(MountItem mountItem) {
+    String traceName = mountItem.getComponent().getSimpleName();
+    if (mountItem.getMountableContent() instanceof DisplayListDrawable) {
+      traceName += "DL";
+    }
+    return traceName;
+  }
+
+  @Override
+  public boolean performAccessibilityAction(int action, Bundle arguments) {
+    // The view framework requires that a contentDescription be set for the
+    // getIterableTextForAccessibility method to work.  If one isn't set, all text granularity
+    // actions will be ignored.
+    if (action == AccessibilityNodeInfo.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY
+        || action == AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY) {
+      CharSequence contentDesc = null;
+      if (!TextUtils.isEmpty(getContentDescription())) {
+        contentDesc = getContentDescription();
+      } else if (!getContentDescriptions().isEmpty()) {
+        contentDesc = TextUtils.join(", ", getContentDescriptions());
+      } else if (!getTextContent().getTextItems().isEmpty()) {
+        contentDesc = TextUtils.join(", ", getTextContent().getTextItems());
+      }
+
+      if (contentDesc == null) {
+        return false;
+      }
+
+      mContentDescription = contentDesc;
+      super.setContentDescription(mContentDescription);
+    }
+
+    return super.performAccessibilityAction(action, arguments);
+  }
+
+  private static class DrawStats {
+    List<String> mMountItemNames;
+    List<Double> mMountItemTimes;
+
+    boolean mIsLoggingEnabled = false;
+    private boolean mIsInitialized = false;
+
+    void enableLogging() {
+      if (!mIsInitialized) {
+        mMountItemNames = new ArrayList<>(4);
+        mMountItemTimes = new ArrayList<>(4);
+      }
+
+      mIsLoggingEnabled = true;
+      mIsInitialized = true;
+    }
+
+    private void reset() {
+      mIsLoggingEnabled = false;
+      mMountItemNames.clear();
+      mMountItemTimes.clear();
+    }
+
+    void annotatePerfEvent(PerfEvent perfEvent) {
+      perfEvent.markerAnnotate(
+          FrameworkLogEvents.PARAM_DRAWN_CONTENT, mMountItemNames.toArray(new String[0]));
+      perfEvent.markerAnnotate(
+          FrameworkLogEvents.PARAM_DRAWN_TIME, mMountItemTimes.toArray(new Double[0]));
+      reset();
     }
   }
 }

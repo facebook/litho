@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014-present Facebook, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
@@ -11,27 +27,22 @@ android {
     // We're on an old version of Robolectric which requires this, sadly.
     useLibrary 'org.apache.http.legacy'
 
-    // See http://tools.android.com/tech-docs/new-build-system/user-guide.
-    // We want to enable Stetho by default for builds from this repo.
-    defaultPublishConfig 'internalBuild'
-
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
     }
 
     buildTypes {
         def internalBuildField = 'IS_INTERNAL_BUILD'
+        def useIncrementalMountHelper = 'USE_INCREMENTAL_MOUNT_HELPER'
 
         debug {
-            buildConfigField 'boolean', internalBuildField, 'true';
-        }
-
-        internalBuild {
-            buildConfigField 'boolean', internalBuildField, 'true';
+            buildConfigField 'boolean', internalBuildField, 'true'
+            buildConfigField 'boolean', useIncrementalMountHelper, 'true'
         }
 
         release {
             buildConfigField 'boolean', internalBuildField, 'false';
+            buildConfigField 'boolean', useIncrementalMountHelper, 'true'
         }
     }
 
@@ -43,29 +54,26 @@ android {
 
 dependencies {
     // Project dependencies
-    provided project(':litho-annotations')
-    provided project(':litho-stubs')
+    compileOnly project(':litho-annotations')
+    compileOnly project(':litho-stubs')
 
-    // Provided dependencies
-    provided deps.jsr305
-    provided deps.inferAnnotations
+    // Annotations
+    compileOnly deps.jsr305
+    // Infer annotations is partially class-retained and need to be part
+    // of the POM.
+    implementation deps.inferAnnotations
 
     // Android Support Library
-    provided deps.supportAnnotations
-    compile deps.supportCompat
-    compile deps.supportCoreUi
-    compile deps.supportRecyclerView
+    compileOnly deps.supportAnnotations
+    implementation deps.supportCoreUi
+    implementation deps.supportRecyclerView
 
     // First-party dependencies
-    compile deps.yoga
-
-    // Debugging dependencies
-    debugCompile deps.guava
-    debugCompile deps.robolectric
-    debugCompile deps.junit
-    debugCompile deps.powermockReflect
-    debugCompile deps.mockitoCore
-    debugCompile deps.assertjCore
+    if (project.isRelease()) {
+        api deps.yoga
+    } else {
+        api project(':yogajni')
+    }
 }
 
 apply from: rootProject.file('gradle/release.gradle')

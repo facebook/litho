@@ -1,13 +1,15 @@
-include_defs("//COMPONENTS_DEFS")
+# Copyright (c) 2017-present, Facebook, Inc.
+#
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
+
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ASSERTJ_TARGET", "LITHO_DIFFUTILS_TARGET", "LITHO_GUAVA_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_JUNIT_TARGET", "LITHO_ROBOLECTRIC_TARGET", "litho_android_library", "make_dep_path")
 
 litho_android_library(
     name = "viewtree",
     srcs = glob(["*.java"]),
-    exported_deps = [
-        COMPONENTS_ASSERTJ_TARGET,
-    ],
     provided_deps = [
-        COMPONENTS_ROBOLECTRIC_TARGET,
+        LITHO_ROBOLECTRIC_TARGET,
     ],
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/testing/viewtree:viewtree"),
@@ -16,11 +18,13 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
-        COMPONENTS_DIFFUTILS_TARGET,
-        COMPONENTS_GUAVA_TARGET,
-        COMPONENTS_JAVA_TARGET,
-        COMPONENTS_JSR_TARGET,
-        COMPONENTS_JUNIT_TARGET,
-        COMPONENTS_TESTING_TARGET,
+        LITHO_DIFFUTILS_TARGET,
+        LITHO_GUAVA_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_JSR_TARGET,
+        LITHO_JUNIT_TARGET,
+    ],
+    exported_deps = [
+        LITHO_ASSERTJ_TARGET,
     ],
 )

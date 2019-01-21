@@ -1,18 +1,18 @@
-# Copyright (c) 2014-present, Facebook, Inc.
-# All rights reserved.
+# Copyright (c) 2017-present, Facebook, Inc.
 #
-# This source code is licensed under the BSD-style license found in the
-# LICENSE file in the root directory of this source tree. An additional grant
-# of patent rights can be found in the PATENTS file in the same directory.
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
 
-android_prebuilt_aar(
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
+
+fb_native.android_prebuilt_aar(
     name = "fbcore",
     aar = ":fbcore-aar",
     visibility = ["PUBLIC"],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "fbcore-aar",
-    sha1 = "d9ea35752271fcc7674f4e1dd399600dfeca075b",
-    url = "mvn:com.facebook.fresco:fbcore:aar:1.1.0",
+    sha1 = "8b8deec16a978e97aacad85012797661efe69a61",
+    url = "mvn:com.facebook.fresco:fbcore:aar:1.5.0",
 )
