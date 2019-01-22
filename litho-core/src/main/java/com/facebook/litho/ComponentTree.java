@@ -2432,7 +2432,7 @@ public class ComponentTree {
     private boolean asyncStateUpdates = true;
     private int overrideComponentTreeId = -1;
     private boolean hasMounted = false;
-    private MeasureListener mMeasureListener;
+    private @Nullable MeasureListener mMeasureListener;
     private boolean shouldPreallocatePerMountSpec;
     private boolean canPreallocateOnDefaultHandler;
     private String splitLayoutTag;
@@ -2490,6 +2490,7 @@ public class ComponentTree {
       doNotWrapIntoDisplayLists = false;
       isPersistenceEnabled = ComponentsConfiguration.isPersistenceEnabled;
       extraMemorySize = ComponentsConfiguration.extraMemorySize;
+      mMeasureListener = null;
     }
 
     /**
