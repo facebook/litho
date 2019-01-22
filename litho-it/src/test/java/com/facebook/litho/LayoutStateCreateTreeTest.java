@@ -438,6 +438,7 @@ public class LayoutStateCreateTreeTest {
                 .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .testKey("testKey")
                 .accessibilityRole(AccessibilityRole.BUTTON)
+                .accessibilityRoleDescription("Test Role Description")
                 .dispatchPopulateAccessibilityEventHandler(
                     dispatchPopulateAccessibilityEventHandler)
                 .onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler)
@@ -549,6 +550,7 @@ public class LayoutStateCreateTreeTest {
     verify(node).testKey("testKey");
 
     verify(node).accessibilityRole(AccessibilityRole.BUTTON);
+    verify(node).accessibilityRoleDescription("Test Role Description");
     verify(node)
         .dispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
     verify(node).onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);

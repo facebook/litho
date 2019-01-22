@@ -105,6 +105,16 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     if (mNodeInfo != null && mNodeInfo.getAccessibilityRole() != null) {
       node.setClassName(mNodeInfo.getAccessibilityRole());
     }
+
+    if (mNodeInfo != null && mNodeInfo.getAccessibilityRoleDescription() != null) {
+      node.setRoleDescription(mNodeInfo.getAccessibilityRoleDescription());
+
+      // if no role was explicitly specified, set a role of "NONE".  This allows the role
+      // description to still be announced without changing any other behavior.
+      if (mNodeInfo.getAccessibilityRole() == null) {
+        node.setClassName(AccessibilityRole.NONE);
+      }
+    }
   }
 
   @Override

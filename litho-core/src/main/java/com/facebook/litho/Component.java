@@ -1568,6 +1568,19 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    public T accessibilityRoleDescription(CharSequence roleDescription) {
+      mComponent.getOrCreateCommonPropsHolder().accessibilityRoleDescription(roleDescription);
+      return getThis();
+    }
+
+    public T accessibilityRoleDescription(@StringRes int stringId) {
+      return accessibilityRoleDescription(mContext.getResources().getString(stringId));
+    }
+
+    public T accessibilityRoleDescription(@StringRes int stringId, Object... formatArgs) {
+      return accessibilityRoleDescription(mContext.getResources().getString(stringId, formatArgs));
+    }
+
     public T dispatchPopulateAccessibilityEventHandler(
         @Nullable
             EventHandler<DispatchPopulateAccessibilityEventEvent>
