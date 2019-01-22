@@ -52,6 +52,7 @@ import android.text.style.ImageSpan;
 import android.view.View;
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
+import com.facebook.litho.AccessibilityRole;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentsLogger;
@@ -859,9 +860,16 @@ class TextSpec {
     node.setEnabled(true);
     node.setVisibleToUser(true);
     if (span instanceof AccessibleClickableSpan) {
-      node.setText(((AccessibleClickableSpan) span).getAccessibilityDescription());
+      AccessibleClickableSpan accessibleClickableSpan = (AccessibleClickableSpan) span;
+      node.setText(accessibleClickableSpan.getAccessibilityDescription());
+      if (accessibleClickableSpan.getAccessibilityRole() != null) {
+        node.setClassName(accessibleClickableSpan.getAccessibilityRole());
+      } else {
+        node.setClassName(AccessibilityRole.BUTTON);
+      }
     } else {
       node.setText(spanned.subSequence(start, end));
+      node.setClassName(AccessibilityRole.BUTTON);
     }
   }
 
