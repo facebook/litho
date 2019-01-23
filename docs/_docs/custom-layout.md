@@ -152,3 +152,5 @@ class MyComponentSpec {
   }
 }
 ```
+
+![Layout Spec lifecycle flowchart](/static/images/flow-chart-v0.22.1-layout-with-size-spec.svg)
