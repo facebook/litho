@@ -1976,7 +1976,7 @@ public class ComponentTree {
   }
 
   @Nullable
-  synchronized String getSimpleName() {
+  public synchronized String getSimpleName() {
     return mRoot == null ? null : mRoot.getSimpleName();
   }
 
