@@ -211,6 +211,12 @@ public class ComponentTree {
   @GuardedBy("this")
   private int mHeightSpec = SIZE_UNINITIALIZED;
 
+  @GuardedBy("this")
+  private int mPendingLayoutWidthSpec = SIZE_UNINITIALIZED;
+
+  @GuardedBy("this")
+  private int mPendingLayoutHeightSpec = SIZE_UNINITIALIZED;
+
   // This is written to only by the main thread with the lock held, read from the main thread with
   // no lock held, or read from any other thread with the lock held.
   @Nullable
@@ -880,6 +886,28 @@ public class ComponentTree {
     }
   }
 
+  @GuardedBy("this")
+  private boolean isPendingLayoutCompatible() {
+    synchronized (mCurrentCalculateLayoutRunnableLock) {
+      if (mCurrentCalculateLayoutRunnable != null) {
+        // if we have a pending runnable, then it will capture the correct root and size specs when
+        // it runs, so it is inherently compatible.
+        return true;
+      }
+    }
+
+    if (mPendingLayoutWidthSpec == SIZE_UNINITIALIZED
+        || mPendingLayoutHeightSpec == SIZE_UNINITIALIZED) {
+      // In this case, there's no pending layout at all
+      return false;
+    }
+
+    // Otherwise, we need to check for whether the pending (async) layout that is using the correct
+    // size specs
+    return MeasureComparisonUtils.areMeasureSpecsEquivalent(mWidthSpec, mPendingLayoutWidthSpec)
+        && MeasureComparisonUtils.areMeasureSpecsEquivalent(mHeightSpec, mPendingLayoutHeightSpec);
+  }
+
   void measure(int widthSpec, int heightSpec, int[] measureOutput, boolean forceLayout) {
     assertMainThread();
 
@@ -897,10 +925,13 @@ public class ComponentTree {
 
       // We don't check if mRoot is compatible here since if it doesn't match mMainThreadLayout,
       // that means we're computing an async layout with a new root which can just be applied when
-      // it finishes.
+      // it finishes, assuming it has compatible width/height specs
       final boolean shouldCalculateNewLayout =
           mMainThreadLayoutState == null
-              || !isCompatibleSpec(mMainThreadLayoutState, mWidthSpec, mHeightSpec);
+              || !isCompatibleSpec(mMainThreadLayoutState, mWidthSpec, mHeightSpec)
+              || (!mMainThreadLayoutState.isForComponentId(mRoot.getId())
+                  && !isPendingLayoutCompatible());
+
       if (mForceLayout || forceLayout || shouldCalculateNewLayout) {
         // Neither layout was compatible and we have to perform a layout.
         // Since outputs get set on the same object during the lifecycle calls,
@@ -1676,6 +1707,8 @@ public class ComponentTree {
 
       widthSpec = mWidthSpec;
       heightSpec = mHeightSpec;
+      mPendingLayoutWidthSpec = widthSpec;
+      mPendingLayoutHeightSpec = heightSpec;
       root = mRoot.makeShallowCopy();
 
       if (mMainThreadLayoutState != null) {
@@ -1741,6 +1774,9 @@ public class ComponentTree {
     int rootHeight = 0;
     boolean layoutStateUpdated = false;
     synchronized (this) {
+      mPendingLayoutWidthSpec = SIZE_UNINITIALIZED;
+      mPendingLayoutHeightSpec = SIZE_UNINITIALIZED;
+
       // Make sure some other thread hasn't computed a compatible layout in the meantime.
       noCompatibleComponent =
           !hasCompatibleComponentAndSpec()

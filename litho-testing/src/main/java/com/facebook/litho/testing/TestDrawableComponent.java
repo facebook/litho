@@ -30,6 +30,10 @@ import com.facebook.litho.SizeSpec;
 
 public class TestDrawableComponent extends TestComponent {
 
+  public interface TestComponentListener {
+    void onPrepare();
+  }
+
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
@@ -46,6 +50,7 @@ public class TestDrawableComponent extends TestComponent {
   private int measuredWidth = -1;
   private int measuredHeight = -1;
   private boolean mReturnSelfInMakeShallowCopy;
+  private TestComponentListener mTestComponentListener;
 
   private TestDrawableComponent(long properties) {
     super("TestDrawableComponent");
@@ -146,6 +151,19 @@ public class TestDrawableComponent extends TestComponent {
     }
 
     return super.makeShallowCopy();
+  }
+
+  @Override
+  protected void onPrepare(ComponentContext c) {
+    if (mTestComponentListener != null) {
+      mTestComponentListener.onPrepare();
+    }
+
+    super.onPrepare(c);
+  }
+
+  public void setTestComponentListener(TestComponentListener listener) {
+    mTestComponentListener = listener;
   }
 
   public static Builder create(
