@@ -53,6 +53,7 @@ Text.create(c)
     .textSizeRes(R.dimen.my_text_size)
     .grow(1f)
 ```
-You can check the full [Yoga](https://yogalayout.com/docs/) documentation to see all the layout features that the framework exposes.
 
-<img src="/static/images/flow-chart-v0.22.1-layout-spec.svg" style="width: 480px;">
+![Layout Spec lifecycle flowchart](/static/images/flow-chart-v0.22.1-layout-spec.svg)
+
+You can check the full [Yoga](https://yogalayout.com/docs/) documentation to see all the layout features that the framework exposes.
