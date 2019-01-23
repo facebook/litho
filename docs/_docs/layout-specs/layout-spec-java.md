@@ -54,3 +54,5 @@ Text.create(c)
     .grow(1f)
 ```
 You can check the full [Yoga](https://yogalayout.com/docs/) documentation to see all the layout features that the framework exposes.
+
+<img src="/static/images/flow-chart-v0.22.1-layout-spec.svg" style="width: 480px;">
