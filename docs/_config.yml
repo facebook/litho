@@ -97,5 +97,10 @@ plugins:
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
-
-theme: jekyll-theme-cayman
+  - jekyll-github-metadata
+  - jekyll-mentions
+  - jekyll-redirect-from
+  - jekyll-sitemap
+  - jemoji
+  - github-pages
+  
