@@ -184,6 +184,7 @@ public class CommonPropsTest {
     final EventHandler<SendAccessibilityEventUncheckedEvent>
         sendAccessibilityEventUncheckedHandler = mock(EventHandler.class);
     mCommonProps.accessibilityRole(AccessibilityRole.BUTTON);
+    mCommonProps.accessibilityRoleDescription("Test Role Description");
     mCommonProps.dispatchPopulateAccessibilityEventHandler(
         dispatchPopulateAccessibilityEventHandler);
     mCommonProps.onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
@@ -295,6 +296,7 @@ public class CommonPropsTest {
     verify(mNode).testKey("testKey");
 
     verify(mNode).accessibilityRole(AccessibilityRole.BUTTON);
+    verify(mNode).accessibilityRoleDescription("Test Role Description");
     verify(mNode)
         .dispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
     verify(mNode).onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);

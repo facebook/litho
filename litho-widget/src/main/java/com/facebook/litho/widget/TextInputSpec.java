@@ -80,7 +80,8 @@ import javax.annotation.Nullable;
  *   <li>Ensure you use Litho's setRootAsync to avoid any UI thread component operations.
  *   <li>Avoid changing props at all costs as it forces expensive EditText reconfiguration.
  *   <li>Same applies to states. Avoid updating state, use Event trigger to update text, request
- *       view focus or set selection.
+ *       view focus or set selection. {@link TextInput#setText(ComponentContext, String,
+ *       CharSequence)}
  *   <li>If using custom inputFilters, take special care to implement equals correctly or the text
  *       field must be reconfigured on every mount. (Better yet, store your InputFilter in a static
  *       or LruCache so that you're not constantly creating new instances.)
@@ -279,14 +280,14 @@ class TextInputSpec {
       int cursorDrawableRes,
       @Nullable CharSequence text) {
     if (multiline) {
-      editText.setInputType(
-          inputType | EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
+      inputType |= EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
       editText.setMinLines(minLines);
       editText.setMaxLines(maxLines);
     } else {
-      editText.setInputType(inputType & ~EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
+      inputType &= ~EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
       editText.setLines(1);
     }
+    setInputTypeIfChanged(editText, inputType);
 
     // Needs to be set before the text so it would apply to the current text
     if (inputFilters != null) {
@@ -339,6 +340,13 @@ class TextInputSpec {
     }
     if (text != null && !equals(editText.getText().toString(), text.toString())) {
       editText.setText(text);
+    }
+  }
+
+  private static void setInputTypeIfChanged(EditText editText, int inputType) {
+    // Avoid redundant call to InputMethodManager#restartInput.
+    if (inputType != editText.getInputType()) {
+      editText.setInputType(inputType);
     }
   }
 

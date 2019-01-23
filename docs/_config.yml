@@ -97,3 +97,5 @@ plugins:
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
+
+theme: jekyll-theme-cayman

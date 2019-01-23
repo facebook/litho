@@ -33,6 +33,7 @@ public class AccessibilityRole {
 
   @Retention(RetentionPolicy.SOURCE)
   @StringDef({
+    NONE,
     BUTTON,
     CHECK_BOX,
     DROP_DOWN_LIST,
@@ -67,6 +68,7 @@ public class AccessibilityRole {
   })
   public @interface AccessibilityRoleType {}
 
+  public static final String NONE = "";
   public static final String BUTTON = "android.widget.Button";
   public static final String CHECK_BOX = "android.widget.CompoundButton";
   public static final String DROP_DOWN_LIST = "android.widget.Spinner";
