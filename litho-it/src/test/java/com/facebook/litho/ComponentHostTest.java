@@ -48,6 +48,7 @@ import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -610,6 +611,24 @@ public class ComponentHostTest {
   }
 
   @Test
+  public void testSuppressRequestFocus() {
+    ComponentsConfiguration.suppressFocusRequestWhileMounting = true;
+
+    mHost.requestFocus();
+    assertThat(mHost.getFocusRequestCount()).isEqualTo(1);
+
+    mHost.suppressInvalidations(true);
+    mHost.requestFocus();
+    assertThat(mHost.getFocusRequestCount()).isEqualTo(1);
+
+    mHost.suppressInvalidations(false);
+
+    assertThat(mHost.getFocusRequestCount()).isEqualTo(2);
+
+    ComponentsConfiguration.suppressFocusRequestWhileMounting = false;
+  }
+
+  @Test
   public void testGetContentDescriptions() {
     CharSequence hostContentDescription = "hostContentDescription";
     mHost.setContentDescription(hostContentDescription);
@@ -992,6 +1011,7 @@ public class ComponentHostTest {
 
     private int mInvalidationCount = 0;
     private Rect mInvalidationRect = null;
+    private int mFocusRequestCount = 0;
 
     public TestableComponentHost(ComponentContext context) {
       super(context);
@@ -1046,6 +1066,16 @@ public class ComponentHostTest {
           child.getTop(),
           child.getRight(),
           child.getBottom());
+    }
+
+    @Override
+    public int getDescendantFocusability() {
+      mFocusRequestCount++;
+      return super.getDescendantFocusability();
+    }
+
+    int getFocusRequestCount() {
+      return mFocusRequestCount;
     }
 
     int getInvalidationCount() {

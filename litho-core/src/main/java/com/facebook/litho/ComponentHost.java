@@ -74,6 +74,7 @@ public class ComponentHost extends ViewGroup {
 
   private boolean mWasInvalidatedWhileSuppressed;
   private boolean mWasInvalidatedForAccessibilityWhileSuppressed;
+  private boolean mWasRequestedFocusWhileSuppressed;
   private boolean mSuppressInvalidations;
 
   private final InterleavedDispatchDraw mDispatchDraw = new InterleavedDispatchDraw();
@@ -635,6 +636,14 @@ public class ComponentHost extends ViewGroup {
         this.invalidateAccessibilityState();
         mWasInvalidatedForAccessibilityWhileSuppressed = false;
       }
+
+      if (mWasRequestedFocusWhileSuppressed) {
+        final View root = getRootView();
+        if (root != null) {
+          root.requestFocus();
+        }
+        mWasRequestedFocusWhileSuppressed = false;
+      }
     }
   }
 
@@ -945,6 +954,23 @@ public class ComponentHost extends ViewGroup {
     super.invalidate();
   }
 
+  @Override
+  public boolean requestFocus(int direction, Rect previouslyFocusedRect) {
+    if (!ComponentsConfiguration.suppressFocusRequestWhileMounting) {
+      return super.requestFocus(direction, previouslyFocusedRect);
+    }
+
+    // Arguments for equivalent call to View.requestFocus().
+    final boolean nullArgumentsRequestFocusCall =
+        (direction == View.FOCUS_DOWN && previouslyFocusedRect == null);
+    if (nullArgumentsRequestFocusCall && mSuppressInvalidations) {
+      mWasRequestedFocusWhileSuppressed = true;
+      return false;
+    }
+
+    return super.requestFocus(direction, previouslyFocusedRect);
+  }
+
   protected void refreshAccessibilityDelegatesIfNeeded(boolean isAccessibilityEnabled) {
     if (isAccessibilityEnabled == mIsComponentAccessibilityDelegateSet) {
       return;
@@ -1063,7 +1089,7 @@ public class ComponentHost extends ViewGroup {
 
     setClipChildren(mClippingToRestore);
   }
-  
+
   /**
    * Litho handles adding/removing views automatically using mount/unmount calls. Manually adding/
    * removing views will mess up Litho's bookkeeping of added views and cause weird crashes down the
