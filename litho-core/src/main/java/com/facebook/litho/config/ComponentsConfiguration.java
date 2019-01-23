@@ -261,4 +261,10 @@ public class ComponentsConfiguration {
 
   /** If true, it's going to suppress getRootView().requestFocus() calls during mounting. */
   public static boolean suppressFocusRequestWhileMounting = false;
+
+  /**
+   * Controls if DisplayList wrapping should be disabled by default. Would have no effect if
+   * ComponentTree explicitly set up to enable wrapping
+   */
+  public static boolean disableDisplayListWrapping = false;
 }

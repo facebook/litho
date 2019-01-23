@@ -2478,7 +2478,7 @@ public class ComponentTree {
     private @Nullable LithoAffinityBoosterFactory affinityBoosterFactory;
     private boolean boostAffinityLayoutStateFuture;
     private boolean boostAffinityLithoLayouts;
-    private boolean doNotWrapIntoDisplayLists = false;
+    private boolean doNotWrapIntoDisplayLists = ComponentsConfiguration.disableDisplayListWrapping;
     private boolean isPersistenceEnabled = ComponentsConfiguration.isPersistenceEnabled;
     private int extraMemorySize = ComponentsConfiguration.extraMemorySize;
 
@@ -2523,7 +2523,7 @@ public class ComponentTree {
       useSharedLayoutStateFuture = false;
       affinityBoosterFactory = null;
       boostAffinityLayoutStateFuture = false;
-      doNotWrapIntoDisplayLists = false;
+      doNotWrapIntoDisplayLists = ComponentsConfiguration.disableDisplayListWrapping;
       isPersistenceEnabled = ComponentsConfiguration.isPersistenceEnabled;
       extraMemorySize = ComponentsConfiguration.extraMemorySize;
       mMeasureListener = null;
