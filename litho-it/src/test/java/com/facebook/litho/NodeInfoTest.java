@@ -119,6 +119,20 @@ public class NodeInfoTest {
   }
 
   @Test
+  public void testAccessibilityRoleDescription() {
+    final CharSequence roleDescription = "Test Role Description";
+
+    mNodeInfo.setAccessibilityRoleDescription(roleDescription);
+    assertThat(roleDescription).isSameAs(mNodeInfo.getAccessibilityRoleDescription());
+
+    mUpdatedNodeInfo.updateWith(mNodeInfo);
+    assertThat(roleDescription).isSameAs(mUpdatedNodeInfo.getAccessibilityRoleDescription());
+
+    mNodeInfo.release();
+    assertThat(mNodeInfo.getAccessibilityRoleDescription()).isNull();
+  }
+
+  @Test
   public void testDispatchPopulateAccessibilityEventHandler() {
     EventHandler<DispatchPopulateAccessibilityEventEvent> handler =
         new EventHandler<>(null, 1);
@@ -262,6 +276,12 @@ public class NodeInfoTest {
   public void testAccessibilityRoleFlag() {
     mNodeInfo.setAccessibilityRole(AccessibilityRole.BUTTON);
     testFlagIsSetThenClear(mNodeInfo, "PFLAG_ACCESSIBILITY_ROLE_IS_SET");
+  }
+
+  @Test
+  public void testAccessibilityRoleDescriptionFlag() {
+    mNodeInfo.setAccessibilityRoleDescription("Test Role Description");
+    testFlagIsSetThenClear(mNodeInfo, "PFLAG_ACCESSIBILITY_ROLE_DESCRIPTION_IS_SET");
   }
 
   @Test

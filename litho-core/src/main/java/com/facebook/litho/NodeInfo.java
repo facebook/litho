@@ -102,6 +102,7 @@ class NodeInfo {
   private static final int PFLAG_ACCESSIBILITY_ROLE_IS_SET = 1 << 22;
   // When this flag is set, clipChildren was explicitly set on this node.
   private static final int PFLAG_CLIP_CHILDREN_IS_SET = 1 << 23;
+  private static final int PFLAG_ACCESSIBILITY_ROLE_DESCRIPTION_IS_SET = 1 << 24;
 
   private final AtomicInteger mReferenceCount = new AtomicInteger(0);
 
@@ -122,6 +123,7 @@ class NodeInfo {
   private EventHandler<TouchEvent> mTouchHandler;
   private EventHandler<InterceptTouchEvent> mInterceptTouchHandler;
   @AccessibilityRole.AccessibilityRoleType private String mAccessibilityRole;
+  private CharSequence mAccessibilityRoleDescription;
   private EventHandler<DispatchPopulateAccessibilityEventEvent>
       mDispatchPopulateAccessibilityEventHandler;
   private EventHandler<OnInitializeAccessibilityEventEvent>
@@ -275,6 +277,15 @@ class NodeInfo {
     return mAccessibilityRole;
   }
 
+  void setAccessibilityRoleDescription(CharSequence roleDescription) {
+    mPrivateFlags |= PFLAG_ACCESSIBILITY_ROLE_DESCRIPTION_IS_SET;
+    mAccessibilityRoleDescription = roleDescription;
+  }
+
+  CharSequence getAccessibilityRoleDescription() {
+    return mAccessibilityRoleDescription;
+  }
+
   void setDispatchPopulateAccessibilityEventHandler(
       EventHandler<DispatchPopulateAccessibilityEventEvent>
           dispatchPopulateAccessibilityEventHandler) {
@@ -370,7 +381,8 @@ class NodeInfo {
         || mDispatchPopulateAccessibilityEventHandler != null
         || mSendAccessibilityEventHandler != null
         || mSendAccessibilityEventUncheckedHandler != null
-        || mAccessibilityRole != null;
+        || mAccessibilityRole != null
+        || mAccessibilityRoleDescription != null;
   }
 
   void setFocusable(boolean isFocusable) {
@@ -605,6 +617,9 @@ class NodeInfo {
     if ((newInfo.mPrivateFlags & PFLAG_ACCESSIBILITY_ROLE_IS_SET) != 0) {
       mAccessibilityRole = newInfo.mAccessibilityRole;
     }
+    if ((newInfo.mPrivateFlags & PFLAG_ACCESSIBILITY_ROLE_DESCRIPTION_IS_SET) != 0) {
+      mAccessibilityRoleDescription = newInfo.mAccessibilityRoleDescription;
+    }
     if ((newInfo.mPrivateFlags & PFLAG_DISPATCH_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
       mDispatchPopulateAccessibilityEventHandler =
           newInfo.mDispatchPopulateAccessibilityEventHandler;
@@ -690,6 +705,9 @@ class NodeInfo {
     }
     if ((mPrivateFlags & PFLAG_ACCESSIBILITY_ROLE_IS_SET) != 0) {
       layout.accessibilityRole(mAccessibilityRole);
+    }
+    if ((mPrivateFlags & PFLAG_ACCESSIBILITY_ROLE_DESCRIPTION_IS_SET) != 0) {
+      layout.accessibilityRoleDescription(mAccessibilityRoleDescription);
     }
     if ((mPrivateFlags & PFLAG_DISPATCH_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
       layout.dispatchPopulateAccessibilityEventHandler(mDispatchPopulateAccessibilityEventHandler);
@@ -796,6 +814,7 @@ class NodeInfo {
     mTouchHandler = null;
     mInterceptTouchHandler = null;
     mAccessibilityRole = null;
+    mAccessibilityRoleDescription = null;
     mDispatchPopulateAccessibilityEventHandler = null;
     mOnInitializeAccessibilityEventHandler = null;
     mOnPopulateAccessibilityEventHandler = null;

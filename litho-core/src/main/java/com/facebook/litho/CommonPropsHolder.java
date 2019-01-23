@@ -376,6 +376,10 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     getOrCreateNodeInfo().setAccessibilityRole(role);
   }
 
+  void accessibilityRoleDescription(@Nullable CharSequence roleDescription) {
+    getOrCreateNodeInfo().setAccessibilityRoleDescription(roleDescription);
+  }
+
   void dispatchPopulateAccessibilityEventHandler(
       @Nullable
           EventHandler<DispatchPopulateAccessibilityEventEvent>
