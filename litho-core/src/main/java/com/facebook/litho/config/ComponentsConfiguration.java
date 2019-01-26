@@ -267,4 +267,7 @@ public class ComponentsConfiguration {
    * ComponentTree explicitly set up to enable wrapping
    */
   public static boolean disableDisplayListWrapping = false;
+
+  /** specifies if the ComparableAnimatedColorDrawable should be initialized in a lazy way */
+  public static boolean lazyComparableAnimatedColorDrawable = false;
 }
