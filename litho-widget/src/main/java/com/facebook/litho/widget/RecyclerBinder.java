@@ -104,6 +104,7 @@ public class RecyclerBinder
   @GuardedBy("this")
   private final List<ComponentTreeHolder> mAsyncComponentTreeHolders = new ArrayList<>();
 
+  @Nullable private final AdapterProxy mAdapterProxy;
   private final LayoutInfo mLayoutInfo;
   private final RecyclerView.Adapter mInternalAdapter;
   private final ComponentContext mComponentContext;
@@ -392,6 +393,15 @@ public class RecyclerBinder
     private boolean canMeasure;
     private boolean hscrollAsyncMode = false;
     private boolean singleThreadPool = ComponentsConfiguration.useSingleThreadPool;
+    private AdapterProxy<?> adapterProxy;
+
+    /**
+     * Set an {@link AdapterProxy} to use with this RecyclerBinder.
+     */
+    public Builder adapterProxy(AdapterProxy<?> adapterProxy) {
+      this.adapterProxy = adapterProxy;
+      return this;
+    }
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -679,6 +689,7 @@ public class RecyclerBinder
   private RecyclerBinder(Builder builder) {
     mComponentContext = builder.componentContext;
     mComponentTreeHolderFactory = builder.componentTreeHolderFactory;
+    mAdapterProxy = builder.adapterProxy;
     mInternalAdapter =
         builder.overrideInternalAdapter != null
             ? builder.overrideInternalAdapter
@@ -2866,7 +2877,7 @@ public class RecyclerBinder
     }
   }
 
-  private class InternalAdapter extends RecyclerView.Adapter<BaseViewHolder>
+  private class InternalAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
       implements RecyclerBinderAdapter {
 
     InternalAdapter() {
@@ -2875,7 +2886,7 @@ public class RecyclerBinder
     }
 
     @Override
-    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
       final ViewCreator viewCreator = mRenderInfoViewCreatorController.getViewCreator(viewType);
 
       if (viewCreator != null) {
@@ -2893,7 +2904,7 @@ public class RecyclerBinder
 
     @Override
     @GuardedBy("RecyclerBinder.this")
-    public void onBindViewHolder(BaseViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
       final int normalizedPosition = getNormalizedPosition(position);
 
       // We can ignore the synchronization here. We'll only add to this from the UiThread.
@@ -2953,10 +2964,13 @@ public class RecyclerBinder
                 }
               });
         }
+      } else if(mAdapterProxy != null) {
+        mAdapterProxy.onBindViewHolder(holder, position);
       } else {
+        BaseViewHolder baseViewHolder = (BaseViewHolder) holder;
         final ViewBinder viewBinder = renderInfo.getViewBinder();
-        holder.viewBinder = viewBinder;
-        viewBinder.bind(holder.itemView);
+        baseViewHolder.viewBinder = viewBinder;
+        viewBinder.bind(baseViewHolder.itemView);
       }
     }
 
@@ -2967,6 +2981,8 @@ public class RecyclerBinder
       if (renderInfo.rendersComponent()) {
         // Special value for LithoViews
         return mRenderInfoViewCreatorController.getComponentViewType();
+      } else if (mAdapterProxy != null) {
+        return mAdapterProxy.getItemViewType(position);
       } else {
         return renderInfo.getViewType();
       }
@@ -2985,18 +3001,23 @@ public class RecyclerBinder
     }
 
     @Override
-    public void onViewRecycled(BaseViewHolder holder) {
-      if (holder.isLithoViewType) {
-        final LithoView lithoView = (LithoView) holder.itemView;
-        lithoView.unmountAllItems();
-        lithoView.setComponentTree(null);
-        lithoView.setInvalidStateLogParamsList(null);
-      } else {
-        final ViewBinder viewBinder = holder.viewBinder;
-        if (viewBinder != null) {
-          viewBinder.unbind(holder.itemView);
-          holder.viewBinder = null;
+    public void onViewRecycled(RecyclerView.ViewHolder holder) {
+      if (holder instanceof BaseViewHolder) {
+        BaseViewHolder baseViewHolder = (BaseViewHolder) holder;
+        if (baseViewHolder.isLithoViewType) {
+          final LithoView lithoView = (LithoView) baseViewHolder.itemView;
+          lithoView.unmountAllItems();
+          lithoView.setComponentTree(null);
+          lithoView.setInvalidStateLogParamsList(null);
+        } else {
+          final ViewBinder viewBinder = baseViewHolder.viewBinder;
+          if (viewBinder != null) {
+            viewBinder.unbind(holder.itemView);
+            baseViewHolder.viewBinder = null;
+          }
         }
+      } else {
+        mAdapterProxy.onViewRecycled(holder);
       }
     }
 
