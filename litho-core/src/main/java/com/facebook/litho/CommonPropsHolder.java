@@ -26,7 +26,6 @@ import android.support.annotation.StyleRes;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
@@ -1002,11 +1001,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     }
 
     private static int[] createArray(int size) {
-      if (ComponentsConfiguration.variableArrayBatchAllocatorEnabled && size == 2) {
-        return ArrayBatchAllocator.newArrayOfSize2(); // = new int[2];
-      } else {
-        return new int[size];
-      }
+      return new int[size];
     }
 
     private int addEdge(YogaEdge yogaEdge) {

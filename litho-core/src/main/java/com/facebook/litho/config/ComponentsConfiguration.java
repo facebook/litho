@@ -116,9 +116,6 @@ public class ComponentsConfiguration {
 
   public static int defaultChangeSetThreadPriority = 0;
 
-  /** If true then we'll allocate YogaEdgesWithIntsImplOptimized arrays in batches */
-  public static boolean useBatchArrayAllocator = false;
-
   /** If true then we'll lazily initialize the LayoutStateOutputIdCalculator */
   public static boolean lazilyInitializeLayoutStateOutputIdCalculator = false;
 
@@ -151,15 +148,6 @@ public class ComponentsConfiguration {
 
   /** Default for ComponentHost#hasOverlappingRendering. */
   public static boolean hostHasOverlappingRendering = true;
-
-  /** Enable variable BatchSize for ArrayBatchAllocator */
-  public static boolean variableArrayBatchAllocatorEnabled = false;
-
-  /** Startup Size for ArrayBatchAllocator Batch Size */
-  public static int arrayBatchAllocatorStartupSize = 200;
-
-  /** Runtime Size for ArrayBatchAllocation Batch Size */
-  public static int arrayBatchAllocationRuntimeSize = 200;
 
   public static boolean prewarmImageTexture = false;
 
