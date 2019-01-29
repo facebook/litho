@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import javax.lang.model.element.TypeElement;
 
 /** An implementation of SpecModel + Builder for testing purposes only. */
 @Immutable
@@ -200,6 +201,11 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     mSpecElementType = specElementType;
     mIsPureRender = isPureRender;
     mEnclosedSpecModel = enclosedSpecModel;
+  }
+
+  @Override
+  public TypeElement getOriginatingElement() {
+    return null;
   }
 
   @Override
