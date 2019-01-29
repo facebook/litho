@@ -2048,6 +2048,11 @@ class LayoutState {
     return mPreviousLayoutStateId;
   }
 
+  @VisibleForTesting
+  int getReferenceCount() {
+    return mReferenceCount.get();
+  }
+
   /**
    * See {@link LayoutState#acquireRef} Call this when you are done using the reference to the
    * LayoutState.

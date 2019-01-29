@@ -287,6 +287,31 @@ public class LithoViewTest {
     assertThat(mLithoView.getComponentTree().getMainThreadLayoutState()).isNotNull();
   }
 
+  @Test
+  public void testLayoutStateRefReleasedAfterUnmountAll() {
+    ComponentTree componentTree = mLithoView.getComponentTree();
+    LayoutState nullLayoutState = componentTree.getMainThreadLayoutState();
+    assertThat(nullLayoutState).isNull();
+
+    mLithoView.measure(
+        makeMeasureSpec(0, UNSPECIFIED),
+        makeMeasureSpec(0, UNSPECIFIED));
+    mLithoView.layout(
+        0,
+        0,
+        mLithoView.getMeasuredWidth(),
+        mLithoView.getMeasuredHeight());
+
+    final LayoutState layoutState = componentTree.getMainThreadLayoutState();
+    assertThat(layoutState).isNotNull();
+    assertThat(layoutState.getReferenceCount()).isGreaterThan(0);
+
+    mLithoView.release();
+    mLithoView.unmountAllItems();
+
+    assertThat(layoutState.getReferenceCount()).isEqualTo(0);
+  }
+
   private LithoView setupLithoViewForDoubleMeasureTest(
       int screenWidthDp, float density, int screenWidthPx) {
     final Context context = spy(new ContextWrapper(RuntimeEnvironment.application));

@@ -2364,6 +2364,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
     mPreviousLocalVisibleRect.setEmpty();
     mNeedsRemount = true;
+    releaseLastMountedLayoutState();
   }
 
   private void unmountItem(
