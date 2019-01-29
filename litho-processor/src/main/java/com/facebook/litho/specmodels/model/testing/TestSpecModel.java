@@ -76,6 +76,7 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
       @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
     mSpecModel =
         SpecModelImpl.newBuilder()
+            .originatingElement(new NoOpTypeElement())
             .qualifiedSpecClassName(qualifiedSpecClassName)
             .componentClassName(componentClassName)
             .componentClass(ClassNames.COMPONENT)

@@ -35,7 +35,6 @@ public interface SpecModel {
    * Used for Gradle incremental annotation processing.
    *
    * @return the originating Element of the Spec. */
-  @Nullable
   TypeElement getOriginatingElement();
 
   /** @return the name of the spec. */

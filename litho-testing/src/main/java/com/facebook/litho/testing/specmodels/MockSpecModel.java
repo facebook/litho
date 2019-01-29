@@ -57,6 +57,7 @@ import javax.lang.model.element.TypeElement;
 /** An implementation of SpecModel + Builder for testing purposes only. */
 @Immutable
 public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecModel {
+  private final TypeElement mElement;
   private final String mSpecName;
   private final ClassName mSpecTypeName;
   private final String mComponentName;
@@ -107,6 +108,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   private final SpecModel mEnclosedSpecModel;
 
   private MockSpecModel(
+      TypeElement element,
       String specName,
       ClassName specTypeName,
       String componentName,
@@ -154,6 +156,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       SpecElementType specElementType,
       boolean isPureRender,
       SpecModel enclosedSpecModel) {
+    mElement = element;
     mSpecName = specName;
     mSpecTypeName = specTypeName;
     mComponentName = componentName;
@@ -205,7 +208,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
 
   @Override
   public TypeElement getOriginatingElement() {
-    return null;
+    return mElement;
   }
 
   @Override
@@ -770,6 +773,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
 
     public MockSpecModel build() {
       return new MockSpecModel(
+          new NoOpTypeElement(),
           mSpecName,
           mSpecTypeName,
           mComponentName,
