@@ -237,6 +237,7 @@ class ViewNodeInfo {
     mForeground = null;
     mLayoutDirection = YogaDirection.INHERIT;
     mStateListAnimator = null;
+    mStateListAnimatorRes = 0;
 
     if (mPadding != null) {
       ComponentsPools.release(mPadding);
