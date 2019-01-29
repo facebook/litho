@@ -34,12 +34,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import javax.lang.model.element.TypeElement;
 
 /** Simple implementation of {@link SpecModel}. */
 @Immutable
 public final class SpecModelImpl implements SpecModel {
   private static final String SPEC_SUFFIX = "Spec";
 
+  private final TypeElement mOriginatingElement;
   private final String mSpecName;
   private final ClassName mSpecTypeName;
   private final String mComponentName;
@@ -78,6 +80,7 @@ public final class SpecModelImpl implements SpecModel {
   private final Object mRepresentedObject;
 
   private SpecModelImpl(
+      TypeElement originatingElement,
       String qualifiedSpecClassName,
       String componentClassName,
       ClassName componentClass,
@@ -104,6 +107,7 @@ public final class SpecModelImpl implements SpecModel {
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       SpecElementType specElementType,
       Object representedObject) {
+    mOriginatingElement = originatingElement;
     mSpecName = getSpecName(qualifiedSpecClassName);
     mSpecTypeName = ClassName.bestGuess(qualifiedSpecClassName);
     mComponentClass = componentClass;
@@ -184,6 +188,11 @@ public final class SpecModelImpl implements SpecModel {
     mDependencyInjectionHelper = dependencyInjectionHelper;
     mSpecElementType = specElementType;
     mRepresentedObject = representedObject;
+  }
+
+  @Override
+  public TypeElement getOriginatingElement() {
+    return mOriginatingElement;
   }
 
   @Override
@@ -1047,6 +1056,7 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   public static class Builder {
+    private TypeElement mOriginatingElement;
     private String mQualifiedSpecClassName;
     private String mComponentClassName;
     private ClassName mComponentClass;
@@ -1076,6 +1086,11 @@ public final class SpecModelImpl implements SpecModel {
     private ImmutableList<InjectPropModel> mInjectProps;
 
     private Builder() {}
+
+    public Builder originatingElement(TypeElement originatingElement) {
+      mOriginatingElement = originatingElement;
+      return this;
+    }
 
     public Builder qualifiedSpecClassName(String qualifiedSpecClassName) {
       mQualifiedSpecClassName = qualifiedSpecClassName;
@@ -1225,6 +1240,7 @@ public final class SpecModelImpl implements SpecModel {
       initFieldsIfNecessary();
 
       return new SpecModelImpl(
+          mOriginatingElement,
           mQualifiedSpecClassName,
           mComponentClassName,
           mComponentClass,
