@@ -129,6 +129,7 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory<DiffSection
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       EnumSet<RunMode> runMode) {
     return new DiffSectionSpecModel(
+        element,
         element.getQualifiedName().toString(),
         element.getAnnotation(DiffSectionSpec.class).value(),
         DelegateMethodExtractor.getDelegateMethods(

@@ -109,6 +109,7 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
     return new MountSpecModel(
+        element,
         element.getQualifiedName().toString(),
         element.getAnnotation(MountSpec.class).value(),
         DelegateMethodExtractor.getDelegateMethods(

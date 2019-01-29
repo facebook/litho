@@ -26,6 +26,7 @@ import com.squareup.javapoet.TypeVariableName;
 import java.util.EnumSet;
 import java.util.List;
 import javax.annotation.Nullable;
+import javax.lang.model.element.TypeElement;
 
 /**
  * Model that is an abstract representation of a {@link com.facebook.litho.annotations.MountSpec}.
@@ -41,6 +42,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   private final SpecGenerator<MountSpecModel> mMountSpecGenerator;
 
   public MountSpecModel(
+      TypeElement originatingElement,
       String qualifiedSpecClassName,
       String componentClassName,
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
@@ -71,6 +73,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       ImmutableList<FieldModel> fields) {
     mSpecModel =
         SpecModelImpl.newBuilder()
+            .originatingElement(originatingElement)
             .qualifiedSpecClassName(qualifiedSpecClassName)
             .componentClassName(componentClassName)
             .componentClass(ClassNames.COMPONENT)
@@ -101,6 +104,11 @@ public class MountSpecModel implements SpecModel, HasPureRender {
     mCanPreallocate = canPreallocate;
     mMountType = mountType;
     mMountSpecGenerator = mountSpecGenerator;
+  }
+
+  @Override
+  public TypeElement getOriginatingElement() {
+    return mSpecModel.getOriginatingElement();
   }
 
   @Override

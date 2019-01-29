@@ -46,6 +46,7 @@ public class DefaultLayoutSpecGenerator implements SpecGenerator<LayoutSpecModel
     final TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(layoutSpecModel.getComponentName())
             .superclass(ClassNames.COMPONENT)
+            .addOriginatingElement(layoutSpecModel.getOriginatingElement())
             .addTypeVariables(layoutSpecModel.getTypeVariables());
 
     if (layoutSpecModel.isPublic()) {

@@ -52,6 +52,7 @@ import com.squareup.javapoet.TypeVariableName;
 import java.util.EnumSet;
 import java.util.List;
 import javax.annotation.Nullable;
+import javax.lang.model.element.TypeElement;
 
 /**
  * Model that is an abstract representation of a {@link com.facebook.litho.annotations.TestSpec}.
@@ -97,6 +98,11 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
     mSpecModel = specModel;
     mTestSpecGenerator = generator;
     mEnclosedSpecModel = enclosedSpecModel;
+  }
+
+  @Override
+  public TypeElement getOriginatingElement() {
+    return mSpecModel.getOriginatingElement();
   }
 
   @Override

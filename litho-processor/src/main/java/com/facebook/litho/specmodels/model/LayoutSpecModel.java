@@ -26,6 +26,7 @@ import com.squareup.javapoet.TypeVariableName;
 import java.util.EnumSet;
 import java.util.List;
 import javax.annotation.Nullable;
+import javax.lang.model.element.TypeElement;
 
 /**
  * Model that is an abstract representation of a {@link com.facebook.litho.annotations.LayoutSpec}.
@@ -37,6 +38,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   private final SpecGenerator<LayoutSpecModel> mLayoutSpecGenerator;
 
   public LayoutSpecModel(
+      TypeElement element, // Required for Gradle incremental annotation processing
       String qualifiedSpecClassName,
       String componentClassName,
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
@@ -64,6 +66,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       String simpleNameDelegate) {
     mSpecModel =
         SpecModelImpl.newBuilder()
+            .originatingElement(element)
             .qualifiedSpecClassName(qualifiedSpecClassName)
             .componentClassName(componentClassName)
             .componentClass(ClassNames.COMPONENT)
@@ -91,6 +94,11 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
     mIsPureRender = isPureRender;
     mLayoutSpecGenerator = layoutSpecGenerator;
     mSimpleNameDelegate = simpleNameDelegate;
+  }
+
+  @Override
+  public TypeElement getOriginatingElement() {
+    return mSpecModel.getOriginatingElement();
   }
 
   @Override
