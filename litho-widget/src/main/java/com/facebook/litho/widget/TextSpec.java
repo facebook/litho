@@ -137,6 +137,8 @@ import com.facebook.yoga.YogaDirection;
  *     breaks preceding lengthy words or spans.
  * @prop minimallyWideThreshold If set, {@code minimallyWide} logic will not run for text whose
  *     minimal width is smaller than its normal width by less than the threshold.
+ * @prop lineHeight Controls the line height of text (the amount of vertical space reserved for each
+ *     line of text).
  */
 @MountSpec(
   isPureRender = true,
@@ -182,6 +184,7 @@ class TextSpec {
   @PropDefault protected static final int highlightStartOffset = -1;
   @PropDefault protected static final int highlightEndOffset = -1;
   @PropDefault protected static final boolean clipToBounds = true;
+  @PropDefault protected static final float lineHeight = Float.MAX_VALUE;
 
   private static final Path sTempPath = new Path();
   private static final Rect sTempRect = new Rect();
@@ -287,6 +290,7 @@ class TextSpec {
       @Prop(optional = true) TextDirectionHeuristicCompat textDirection,
       @Prop(optional = true) boolean minimallyWide,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int minimallyWideThreshold,
+      @Prop(optional = true, resType = ResType.DIMEN_TEXT) float lineHeight,
       Output<Layout> measureLayout,
       Output<Integer> measuredWidth,
       Output<Integer> measuredHeight) {
@@ -330,7 +334,8 @@ class TextSpec {
             breakStrategy,
             hyphenationFrequency,
             justificationMode,
-            textDirection);
+            textDirection,
+            lineHeight);
 
     measureLayout.set(newLayout);
 
@@ -342,9 +347,9 @@ class TextSpec {
     if (lineCount < minLines) {
       final TextPaint paint = newLayout.getPaint();
 
-      final int lineHeight =
+      final int layoutLineHeight =
           Math.round(paint.getFontMetricsInt(null) * spacingMultiplier + extraSpacing);
-      preferredHeight += lineHeight * (minLines - lineCount);
+      preferredHeight += layoutLineHeight * (minLines - lineCount);
     }
 
     size.height = SizeSpec.resolveSize(heightSpec, preferredHeight);
@@ -412,7 +417,8 @@ class TextSpec {
       int breakStrategy,
       int hyphenationFrequency,
       int justificationMode,
-      TextDirectionHeuristicCompat textDirection) {
+      TextDirectionHeuristicCompat textDirection,
+      float lineHeight) {
     Layout newLayout;
 
     TextLayoutBuilder layoutBuilder = new TextLayoutBuilder();
@@ -450,6 +456,10 @@ class TextSpec {
         .setJustificationMode(justificationMode)
         .setBreakStrategy(breakStrategy)
         .setHyphenationFrequency(hyphenationFrequency);
+
+    if (lineHeight != Float.MAX_VALUE) {
+      layoutBuilder.setLineHeight(lineHeight);
+    }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       layoutBuilder.setLetterSpacing(letterSpacing);
@@ -530,6 +540,7 @@ class TextSpec {
       @Prop(optional = true) boolean glyphWarming,
       @Prop(optional = true) TextDirectionHeuristicCompat textDirection,
       @Prop(optional = true, resType = ResType.STRING) CharSequence customEllipsisText,
+      @Prop(optional = true, resType = ResType.DIMEN_TEXT) float lineHeight,
       @FromMeasure Layout measureLayout,
       @FromMeasure Integer measuredWidth,
       @FromMeasure Integer measuredHeight,
@@ -586,7 +597,8 @@ class TextSpec {
               breakStrategy,
               hyphenationFrequency,
               justificationMode,
-              textDirection));
+              textDirection,
+              lineHeight));
     }
 
     final float textHeight = LayoutMeasureUtil.getHeight(textLayout.get());
@@ -644,7 +656,8 @@ class TextSpec {
                 breakStrategy,
                 hyphenationFrequency,
                 justificationMode,
-                textDirection);
+                textDirection,
+                lineHeight);
 
         processedText.set(truncated);
         textLayout.set(newLayout);
