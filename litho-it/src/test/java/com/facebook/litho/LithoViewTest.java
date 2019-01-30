@@ -288,7 +288,7 @@ public class LithoViewTest {
   }
 
   @Test
-  public void testLayoutStateRefReleasedAfterUnmountAll() {
+  public void testLayoutStateRefReleasedAfterLithoViewReleased() {
     ComponentTree componentTree = mLithoView.getComponentTree();
     LayoutState nullLayoutState = componentTree.getMainThreadLayoutState();
     assertThat(nullLayoutState).isNull();
@@ -307,7 +307,6 @@ public class LithoViewTest {
     assertThat(layoutState.getReferenceCount()).isGreaterThan(0);
 
     mLithoView.release();
-    mLithoView.unmountAllItems();
 
     assertThat(layoutState.getReferenceCount()).isEqualTo(0);
   }

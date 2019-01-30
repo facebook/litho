@@ -787,6 +787,9 @@ public class LithoView extends ComponentHost {
       mComponentTree = null;
       mNullComponentCause = "release_CT";
     }
+
+    mMountState.unmountAllItems();
+    mMountState.releaseLastMountedLayoutState();
   }
 
   void mount(LayoutState layoutState, Rect currentVisibleArea, boolean processVisibilityOutputs) {

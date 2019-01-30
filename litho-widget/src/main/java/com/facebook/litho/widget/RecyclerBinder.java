@@ -2991,6 +2991,7 @@ public class RecyclerBinder
         lithoView.unmountAllItems();
         lithoView.setComponentTree(null);
         lithoView.setInvalidStateLogParamsList(null);
+        lithoView.release();
       } else {
         final ViewBinder viewBinder = holder.viewBinder;
         if (viewBinder != null) {
