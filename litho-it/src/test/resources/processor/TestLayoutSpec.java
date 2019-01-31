@@ -51,7 +51,7 @@ import com.facebook.litho.annotations.TreeProp;
 import java.util.ArrayList;
 import java.util.List;
 
-@LayoutSpec(events = TestEvent.class)
+@LayoutSpec(events = TestEvent.class, simpleNameDelegate = "child")
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 public class TestLayoutSpec<S extends View> implements TestTag {
   @PropDefault protected static final boolean prop2 = true;

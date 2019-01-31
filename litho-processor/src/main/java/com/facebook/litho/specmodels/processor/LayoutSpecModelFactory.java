@@ -139,6 +139,7 @@ public class LayoutSpecModelFactory implements SpecModelFactory<LayoutSpecModel>
         element,
         mLayoutSpecGenerator,
         ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
-        FieldsExtractor.extractFields(element));
+        FieldsExtractor.extractFields(element),
+        element.getAnnotation(LayoutSpec.class).simpleNameDelegate());
   }
 }

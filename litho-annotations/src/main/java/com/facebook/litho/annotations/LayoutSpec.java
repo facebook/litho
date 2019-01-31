@@ -49,6 +49,7 @@ import java.lang.annotation.RetentionPolicy;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LayoutSpec {
+
   /**
    * Class name of the generated component. When not provided defaults to name of the annotated
    * class sans the "Spec" suffix. E.g. "MyComponentSpec" to "MyComponent".
@@ -82,4 +83,12 @@ public @interface LayoutSpec {
    * methods.
    */
   Class<?>[] triggers() default {};
+
+  /**
+   * @return the prop name of the Component this component will delegate getSimpleName calls to.
+   *     This will cause getSimpleName to include the name of that component in its return. This is
+   *     useful for seeing better debug information when using generic wrapping components (like
+   *     error boundary wrappers).
+   */
+  String simpleNameDelegate() default "";
 }

@@ -60,6 +60,7 @@ public class SpecModelValidation {
             runMode));
     validationErrors.addAll(PureRenderValidation.validate(specModel));
     validationErrors.addAll(DelegateMethodValidation.validateLayoutSpecModel(specModel));
+    validationErrors.addAll(SimpleNameDelegateValidation.validate(specModel));
     return validationErrors;
   }
 

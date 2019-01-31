@@ -33,6 +33,7 @@ import javax.annotation.Nullable;
 public class LayoutSpecModel implements SpecModel, HasPureRender {
   private final SpecModelImpl mSpecModel;
   private final boolean mIsPureRender;
+  private final String mSimpleNameDelegate;
   private final SpecGenerator<LayoutSpecModel> mLayoutSpecGenerator;
 
   public LayoutSpecModel(
@@ -59,7 +60,8 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       Object representedObject,
       SpecGenerator<LayoutSpecModel> layoutSpecGenerator,
       ImmutableList<TypeVariableName> typeVariables,
-      ImmutableList<FieldModel> fields) {
+      ImmutableList<FieldModel> fields,
+      String simpleNameDelegate) {
     mSpecModel =
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(qualifiedSpecClassName)
@@ -88,6 +90,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
             .build();
     mIsPureRender = isPureRender;
     mLayoutSpecGenerator = layoutSpecGenerator;
+    mSimpleNameDelegate = simpleNameDelegate;
   }
 
   @Override
@@ -340,6 +343,10 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   @Override
   public boolean shouldGenerateIsEquivalentTo() {
     return false;
+  }
+
+  public String getSimpleNameDelegate() {
+    return mSimpleNameDelegate;
   }
 
   @Override

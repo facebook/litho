@@ -39,6 +39,7 @@ import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
@@ -144,9 +145,22 @@ public abstract class Component extends ComponentLifecycle
     mSimpleName = simpleName;
   }
 
-  /** Mostly used by logging to provide more readable messages. */
+  /** Should only be used by logging to provide more readable messages. */
   public final String getSimpleName() {
-    return mSimpleName;
+    final Component delegate = getSimpleNameDelegate();
+    if (delegate == null) {
+      return mSimpleName;
+    }
+
+    return mSimpleName + "(" + getFirstNonSimpleNameDelegate(delegate).getSimpleName() + ")";
+  }
+
+  /**
+   * @return the Component this Component should delegate its getSimpleName calls to. See {@link
+   *     LayoutSpec#simpleNameDelegate()}
+   */
+  protected @Nullable Component getSimpleNameDelegate() {
+    return null;
   }
 
   /**
@@ -496,6 +510,14 @@ public abstract class Component extends ComponentLifecycle
   static boolean isNestedTree(@Nullable Component component) {
     return (isLayoutSpecWithSizeSpec(component)
         || (component != null && component.getCachedLayout() != null));
+  }
+
+  private static Component getFirstNonSimpleNameDelegate(Component component) {
+    Component current = component;
+    while (current.getSimpleNameDelegate() != null) {
+      current = current.getSimpleNameDelegate();
+    }
+    return current;
   }
 
   /**

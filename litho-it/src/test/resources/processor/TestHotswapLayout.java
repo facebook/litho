@@ -628,6 +628,11 @@ public final class TestLayout<S extends View> extends Component implements TestT
     return cached;
   }
 
+  @Override
+  protected Component getSimpleNameDelegate() {
+    return child;
+  }
+
   @VisibleForTesting(
       otherwise = 2
   )
