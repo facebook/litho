@@ -88,12 +88,9 @@ class MountItem {
     mImportantForAccessibility = layoutOutput.getImportantForAccessibility();
     mOrientation = layoutOutput.getOrientation();
     mTransitionId = layoutOutput.getTransitionId();
+    mNodeInfo = layoutOutput.getNodeInfo();
 
     releaseNodeInfos();
-
-    if (layoutOutput.getNodeInfo() != null) {
-      mNodeInfo = layoutOutput.getNodeInfo().acquireRef();
-    }
 
     if (layoutOutput.getViewNodeInfo() != null) {
       mViewNodeInfo = layoutOutput.getViewNodeInfo().acquireRef();
@@ -139,7 +136,7 @@ class MountItem {
     mTransitionId = transitionId;
 
     if (nodeInfo != null) {
-      mNodeInfo = nodeInfo.acquireRef();
+      mNodeInfo = nodeInfo;
     }
 
     if (viewNodeInfo != null) {
@@ -275,11 +272,6 @@ class MountItem {
   }
 
   private void releaseNodeInfos() {
-    if (mNodeInfo != null) {
-      mNodeInfo.release();
-      mNodeInfo = null;
-    }
-
     if (mViewNodeInfo != null) {
       mViewNodeInfo.release();
       mViewNodeInfo = null;

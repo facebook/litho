@@ -166,7 +166,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     if (mNodeInfo != null) {
       throw new IllegalStateException("NodeInfo set more than once on the same LayoutOutput.");
     } else if (nodeInfo != null) {
-      mNodeInfo = nodeInfo.acquireRef();
+      mNodeInfo = nodeInfo;
     }
   }
 

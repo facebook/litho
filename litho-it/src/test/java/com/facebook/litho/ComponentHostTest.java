@@ -953,7 +953,7 @@ public class ComponentHostTest {
 
   private MountItem mount(int index, Object content, int flags, CharSequence contentDescription) {
     MountItem mountItem = new MountItem();
-    NodeInfo nodeInfo = NodeInfo.acquire();
+    NodeInfo nodeInfo = new NodeInfo();
     nodeInfo.setContentDescription(contentDescription);
 
     mountItem.init(

@@ -1415,7 +1415,7 @@ class InternalNode implements ComponentLayout {
   void copyInto(InternalNode node) {
     if (mNodeInfo != null) {
       if (node.mNodeInfo == null) {
-        node.mNodeInfo = mNodeInfo.acquireRef();
+        node.mNodeInfo = mNodeInfo;
       } else {
         node.mNodeInfo.updateWith(mNodeInfo);
       }
@@ -1737,7 +1737,6 @@ class InternalNode implements ComponentLayout {
     mNestedTreeHolder = null;
 
     if (mNodeInfo != null) {
-      mNodeInfo.release();
       mNodeInfo = null;
     }
     mImportantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
@@ -1787,7 +1786,7 @@ class InternalNode implements ComponentLayout {
 
   private NodeInfo getOrCreateNodeInfo() {
     if (mNodeInfo == null) {
-      mNodeInfo = NodeInfo.acquire();
+      mNodeInfo = new NodeInfo();
     }
 
     return mNodeInfo;

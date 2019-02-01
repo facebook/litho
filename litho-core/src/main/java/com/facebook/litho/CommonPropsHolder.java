@@ -473,7 +473,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
 
   private NodeInfo getOrCreateNodeInfo() {
     if (mNodeInfo == null) {
-      mNodeInfo = NodeInfo.acquire();
+      mNodeInfo = new NodeInfo();
     }
 
     return mNodeInfo;

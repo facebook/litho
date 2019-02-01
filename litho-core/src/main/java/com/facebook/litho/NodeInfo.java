@@ -21,10 +21,8 @@ import android.support.annotation.Nullable;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * NodeInfo holds information that are set to the {@link InternalNode} and needs to be used
@@ -103,8 +101,6 @@ class NodeInfo {
   // When this flag is set, clipChildren was explicitly set on this node.
   private static final int PFLAG_CLIP_CHILDREN_IS_SET = 1 << 23;
   private static final int PFLAG_ACCESSIBILITY_ROLE_DESCRIPTION_IS_SET = 1 << 24;
-
-  private final AtomicInteger mReferenceCount = new AtomicInteger(0);
 
   private CharSequence mContentDescription;
   private Object mViewTag;
@@ -772,69 +768,5 @@ class NodeInfo {
     if ((mPrivateFlags & PFLAG_ROTATION_IS_SET) != 0) {
       layout.rotation(mRotation);
     }
-  }
-
-  static NodeInfo acquire() {
-    final NodeInfo nodeInfo = ComponentsPools.acquireNodeInfo();
-
-    if (nodeInfo.mReferenceCount.getAndSet(1) != 0) {
-      throw new IllegalStateException("The NodeInfo reference acquired from the pool " +
-          " wasn't correctly released.");
-    }
-
-    return nodeInfo;
-  }
-
-  NodeInfo acquireRef() {
-    if (mReferenceCount.getAndIncrement() < 1) {
-      throw new IllegalStateException("The NodeInfo being acquired wasn't correctly initialized.");
-    }
-
-    return this;
-  }
-
-  void release() {
-    final int count = mReferenceCount.decrementAndGet();
-    if (count < 0) {
-      throw new IllegalStateException("Trying to release a recycled NodeInfo.");
-    } else if (count > 0) {
-      return;
-    }
-
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-
-    mContentDescription = null;
-    mViewTag = null;
-    mViewTags = null;
-    mClickHandler = null;
-    mLongClickHandler = null;
-    mFocusChangeHandler = null;
-    mTouchHandler = null;
-    mInterceptTouchHandler = null;
-    mAccessibilityRole = null;
-    mAccessibilityRoleDescription = null;
-    mDispatchPopulateAccessibilityEventHandler = null;
-    mOnInitializeAccessibilityEventHandler = null;
-    mOnPopulateAccessibilityEventHandler = null;
-    mOnInitializeAccessibilityNodeInfoHandler = null;
-    mOnRequestSendAccessibilityEventHandler = null;
-    mPerformAccessibilityActionHandler = null;
-    mSendAccessibilityEventHandler = null;
-    mSendAccessibilityEventUncheckedHandler = null;
-    mFocusState = FOCUS_UNSET;
-    mEnabledState = ENABLED_UNSET;
-    mSelectedState = SELECTED_UNSET;
-    mPrivateFlags = 0;
-    mShadowElevation = 0;
-    mOutlineProvider = null;
-    mClipToOutline = false;
-    mClipChildren = true;
-    mScale = 1;
-    mAlpha = 1;
-    mRotation = 0;
-
-    ComponentsPools.release(this);
   }
 }

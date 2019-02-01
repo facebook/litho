@@ -66,9 +66,6 @@ public class ComponentsPools {
   static final RecyclePool<InternalNode> sInternalNodePool =
       new RecyclePool<>("InternalNode", PoolsConfig.sInternalNodeSize, true);
 
-  static final RecyclePool<NodeInfo> sNodeInfoPool =
-      new RecyclePool<>("NodeInfo", PoolsConfig.sNodeInfoSize, true);
-
   static final RecyclePool<ViewNodeInfo> sViewNodeInfoPool =
       new RecyclePool<>("ViewNodeInfo", 64, true);
 
@@ -131,15 +128,6 @@ public class ComponentsPools {
     return node;
   }
 
-  static NodeInfo acquireNodeInfo() {
-    NodeInfo nodeInfo = ComponentsConfiguration.disablePools ? null : sNodeInfoPool.acquire();
-    if (nodeInfo == null) {
-      nodeInfo = new NodeInfo();
-    }
-
-    return nodeInfo;
-  }
-
   static ViewNodeInfo acquireViewNodeInfo() {
     ViewNodeInfo viewNodeInfo =
         ComponentsConfiguration.disablePools ? null : sViewNodeInfoPool.acquire();
@@ -200,11 +188,6 @@ public class ComponentsPools {
   @ThreadSafe(enableChecks = false)
   static void release(InternalNode node) {
     sInternalNodePool.release(node);
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void release(NodeInfo nodeInfo) {
-    sNodeInfoPool.release(nodeInfo);
   }
 
   @ThreadSafe(enableChecks = false)
@@ -370,7 +353,6 @@ public class ComponentsPools {
     sLayoutStatePool.clear();
     sYogaNodePool.clear();
     sInternalNodePool.clear();
-    sNodeInfoPool.clear();
     sViewNodeInfoPool.clear();
     sMountItemPool.clear();
   }

@@ -78,7 +78,7 @@ public class MountItemTest {
     mDispatchPopulateAccessibilityEventHandler = new EventHandler(mComponent, 7);
     mFlags = 114;
 
-    mNodeInfo = NodeInfo.acquire();
+    mNodeInfo = new NodeInfo();
     mNodeInfo.setContentDescription(mContentDescription);
     mNodeInfo.setClickHandler(mClickHandler);
     mNodeInfo.setLongClickHandler(mLongClickHandler);
@@ -327,21 +327,5 @@ public class MountItemTest {
     // No wrapped content again
     assertThat(mMountItem.getBaseContent()).isSameAs(mContent);
     assertThat(mMountItem.getMountableContent()).isSameAs(mContent);
-  }
-
-  @Test
-  public void testRelease() {
-    final Object wrappedContent = new View(RuntimeEnvironment.application);
-    mMountItem.setWrappedContent(wrappedContent);
-
-    mMountItem.release(RuntimeEnvironment.application);
-    assertThat(mMountItem.getComponent()).isNull();
-    assertThat(mMountItem.getHost()).isNull();
-    assertThat(mMountItem.getBaseContent()).isNull();
-    assertThat(mMountItem.getMountableContent()).isNull();
-    assertThat(mMountItem.getNodeInfo()).isNull();
-    assertThat(mMountItem.getLayoutFlags()).isEqualTo(0);
-    assertThat(mMountItem.getImportantForAccessibility())
-        .isEqualTo(IMPORTANT_FOR_ACCESSIBILITY_AUTO);
   }
 }
