@@ -48,7 +48,6 @@ import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -2119,8 +2118,7 @@ public class LayoutStateCalculateTest {
 
     verify(componentSpy, times(1)).makeShallowCopy();
 
-    // Make sure we reused the cached layout and it wasn't released.
-    verify(componentSpy, never()).releaseCachedLayout();
+    // Make sure we reused the cached layout.
     verify(componentSpy, times(1)).clearCachedLayout();
 
     // Check total layout outputs.
@@ -2194,8 +2192,7 @@ public class LayoutStateCalculateTest {
 
     verify(sizeDependentComponentSpy, times(1)).makeShallowCopy();
 
-    // Make sure we reused the cached layout and it wasn't released.
-    verify(sizeDependentComponentSpy, never()).releaseCachedLayout();
+    // Make sure we reused the cached layout.
     verify(sizeDependentComponentSpy, times(1)).clearCachedLayout();
 
     // Check total layout outputs.
@@ -2267,8 +2264,7 @@ public class LayoutStateCalculateTest {
 
     verify(componentSpy, times(1)).makeShallowCopy();
 
-    // Make sure we reused the cached layout and it wasn't released.
-    verify(componentSpy, never()).releaseCachedLayout();
+    // Make sure we reused the cached layout.
     verify(componentSpy, times(1)).clearCachedLayout();
 
     // Check total layout outputs.
@@ -2338,8 +2334,7 @@ public class LayoutStateCalculateTest {
 
     verify(sizeDependentComponentSpy, times(1)).makeShallowCopy();
 
-    // Make sure we reused the cached layout and it wasn't released.
-    verify(sizeDependentComponentSpy, never()).releaseCachedLayout();
+    // Make sure we reused the cached layout.
     verify(sizeDependentComponentSpy, times(1)).clearCachedLayout();
 
     // Check total layout outputs.

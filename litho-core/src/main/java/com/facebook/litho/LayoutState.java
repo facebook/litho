@@ -1204,32 +1204,6 @@ class LayoutState {
     return drawableLayoutOutput;
   }
 
-  static void releaseNodeTree(InternalNode node, boolean isNestedTree) {
-    if (node == NULL_LAYOUT) {
-      throw new IllegalArgumentException("Cannot release a null node tree");
-    }
-
-    for (int i = node.getChildCount() - 1; i >= 0; i--) {
-      final InternalNode child = node.getChildAt(i);
-
-      if (isNestedTree && node.hasNewLayout()) {
-        node.markLayoutSeen();
-      }
-
-      // A node must be detached from its parent *before* being released (otherwise the parent would
-      // retain a reference to a node that may get re-used by another thread)
-      node.removeChildAt(i);
-
-      releaseNodeTree(child, isNestedTree);
-    }
-
-    if (node.hasNestedTree() && node.getNestedTree() != NULL_LAYOUT) {
-      releaseNodeTree(node.getNestedTree(), true);
-    }
-
-    node.release();
-  }
-
   /**
    * If we have an interactive LayoutSpec or a MountSpec Drawable, we need to insert an
    * HostComponent in the Outputs such as it will be used as a HostView at Mount time. View
@@ -1439,9 +1413,7 @@ class LayoutState {
           && !ComponentsConfiguration.isDebugModeEnabled
           && !ComponentsConfiguration.isEndToEndTestRun
           && layoutState.mLayoutRoot != null) {
-        InternalNode node = layoutState.mLayoutRoot;
         layoutState.mLayoutRoot = null;
-        releaseNodeTree(node, false /* isNestedTree */);
       }
 
       if (logLayoutState != null) {
@@ -1682,12 +1654,6 @@ class LayoutState {
           remeasureTree(nestedTree, widthSpec, heightSpec);
           resolvedLayout = nestedTree;
         } else {
-
-          // Release the previous layout.
-          if (nestedTree != null && nestedTree != NULL_LAYOUT) {
-            releaseNodeTree(nestedTree, true /* isNestedTree */);
-          }
-
           // Create a new layout.
           resolvedLayout =
               createAndMeasureTreeForComponent(
@@ -1812,6 +1778,8 @@ class LayoutState {
       Component component, InternalNode holder, int widthSpec, int heightSpec) {
     final InternalNode cachedLayout = component.getCachedLayout();
     if (cachedLayout != null) {
+      component.clearCachedLayout();
+
       final boolean hasValidDirection =
           InternalNode.hasValidLayoutDirectionInNestedTree(holder, cachedLayout);
       final boolean hasCompatibleSizeSpec =
@@ -1823,17 +1791,13 @@ class LayoutState {
               cachedLayout.getLastMeasuredWidth(),
               cachedLayout.getLastMeasuredHeight());
 
-      // Transfer the cached layout to the node without releasing it if it's compatible.
+      // Transfer the cached layout to the node it if it's compatible.
       if (hasValidDirection && hasCompatibleSizeSpec) {
-        component.clearCachedLayout();
         return cachedLayout;
-      } else {
-        component.releaseCachedLayout();
-        return null;
       }
-    } else {
-      return null;
     }
+
+    return null;
   }
 
   static DiffNode createDiffNode(InternalNode node, DiffNode parent) {

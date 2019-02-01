@@ -23,6 +23,7 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 
 /**
  * Tests {@link ViewNodeInfo}
@@ -39,7 +40,8 @@ public class ViewNodeInfoTest {
 
   @Test
   public void testTouchBoundsNoHostTranslation() {
-    final InternalNode node = new TouchExpansionTestInternalNode();
+    final InternalNode node =
+        new TouchExpansionTestInternalNode(new ComponentContext(RuntimeEnvironment.application));
 
     mViewNodeInfo.setExpandedTouchBounds(node, 10, 10, 20, 20);
 

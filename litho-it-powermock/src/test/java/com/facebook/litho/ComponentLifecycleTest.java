@@ -49,14 +49,8 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
-/**
- * Tests {@link ComponentLifecycle}
- */
-@PrepareForTest({
-    InternalNode.class,
-    DiffNode.class,
-    LayoutState.class,
-    ComponentsPools.class})
+/** Tests {@link ComponentLifecycle} */
+@PrepareForTest({InternalNode.class, DiffNode.class, LayoutState.class})
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 @RunWith(ComponentsTestRunner.class)
 public class ComponentLifecycleTest {
@@ -70,27 +64,26 @@ public class ComponentLifecycleTest {
   private int mNestedTreeHeightSpec;
 
   private InternalNode mNode;
+  private YogaNode mYogaNode;
   private DiffNode mDiffNode;
   private ComponentContext mContext;
   private boolean mPreviousOnErrorConfig;
 
   @Before
   public void setUp() {
+    mockStatic(LayoutState.class);
+    mockStatic(InternalNode.class);
+
     mDiffNode = mock(DiffNode.class);
     mNode = mock(InternalNode.class);
-    final YogaNode cssNode = new YogaNode();
-    cssNode.setData(mNode);
-    mNode.mYogaNode = cssNode;
-
-    mockStatic(ComponentsPools.class);
+    mYogaNode = new YogaNode();
+    mYogaNode.setData(mNode);
 
     when(mNode.getLastWidthSpec()).thenReturn(-1);
     when(mNode.getDiffNode()).thenReturn(mDiffNode);
     when(mDiffNode.getLastMeasuredWidth()).thenReturn(-1f);
     when(mDiffNode.getLastMeasuredHeight()).thenReturn(-1f);
-    when(ComponentsPools.acquireInternalNode(any(ComponentContext.class))).thenReturn(mNode);
-
-    mockStatic(LayoutState.class);
+    when(InternalNode.createInternalNode(any(ComponentContext.class))).thenReturn(mNode);
 
     StateHandler stateHandler = mock(StateHandler.class);
     mContext = spy(new ComponentContext(RuntimeEnvironment.application, stateHandler));
@@ -240,7 +233,7 @@ public class ComponentLifecycleTest {
 
     PowerMockito.verifyStatic();
     // Calling here to verify static call.
-    ComponentsPools.acquireInternalNode(mContext);
+    InternalNode.createInternalNode(mContext);
     verify(component, never()).onCreateLayout(
         any(ComponentContext.class));
     verify(component, never()).onCreateLayoutWithSizeSpec(
@@ -389,7 +382,7 @@ public class ComponentLifecycleTest {
     YogaMeasureFunction measureFunction = getMeasureFunction(component);
 
     try {
-      measureFunction.measure(mNode.mYogaNode, 0, EXACTLY, 0, EXACTLY);
+      measureFunction.measure(mYogaNode, 0, EXACTLY, 0, EXACTLY);
       fail();
     } catch (Exception e) {
       assertThat(e).isExactlyInstanceOf(IllegalStateException.class);
@@ -403,7 +396,7 @@ public class ComponentLifecycleTest {
     YogaMeasureFunction measureFunction = getMeasureFunction(component);
 
     try {
-      measureFunction.measure(mNode.mYogaNode, 0, EXACTLY, 0, EXACTLY);
+      measureFunction.measure(mYogaNode, 0, EXACTLY, 0, EXACTLY);
       fail();
     } catch (Exception e) {
       assertThat(e).isExactlyInstanceOf(IllegalStateException.class);
@@ -416,7 +409,7 @@ public class ComponentLifecycleTest {
     Component component = new TestMountSpecSettingSizesInOnMeasure(mNode);
     YogaMeasureFunction measureFunction = getMeasureFunction(component);
 
-    long output = measureFunction.measure(mNode.mYogaNode, 0, EXACTLY, 0, EXACTLY);
+    long output = measureFunction.measure(mYogaNode, 0, EXACTLY, 0, EXACTLY);
 
     assertThat(YogaMeasureOutput.getWidth(output)).isEqualTo(A_WIDTH);
     assertThat(YogaMeasureOutput.getHeight(output)).isEqualTo(A_HEIGHT);
@@ -437,7 +430,7 @@ public class ComponentLifecycleTest {
         .thenReturn(nestedTree);
     when(mNode.getContext()).thenReturn(mContext);
 
-    long output = measureFunction.measure(mNode.mYogaNode, 0, EXACTLY, 0, EXACTLY);
+    long output = measureFunction.measure(mYogaNode, 0, EXACTLY, 0, EXACTLY);
 
     PowerMockito.verifyStatic();
     LayoutState.resolveNestedTree(eq(mContext), eq(mNode), anyInt(), anyInt());
@@ -464,7 +457,7 @@ public class ComponentLifecycleTest {
     when(mNode.getParent()).thenReturn(mNode);
 
     when(mNode.getContext()).thenReturn(mContext);
-    long output = measureFunction.measure(mNode.mYogaNode, 0, EXACTLY, 0, EXACTLY);
+    long output = measureFunction.measure(mYogaNode, 0, EXACTLY, 0, EXACTLY);
 
     PowerMockito.verifyStatic();
     LayoutState.resolveNestedTree(eq(mContext), eq(mNode), anyInt(), anyInt());

@@ -29,7 +29,6 @@ import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
-import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
 
@@ -39,8 +38,9 @@ import com.facebook.yoga.YogaWrap;
  */
 class NoOpInternalNode extends InternalNode {
 
-  @Override
-  void init(YogaNode cssNode, ComponentContext componentContext) {}
+  protected NoOpInternalNode() {
+    super(null, null);
+  }
 
   @Override
   void appendComponent(Component component) {

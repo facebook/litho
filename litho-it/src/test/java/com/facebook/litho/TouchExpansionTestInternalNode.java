@@ -20,6 +20,11 @@ package com.facebook.litho;
  * Used by the {@link com.facebook.litho.ViewNodeInfoTest}.
  */
 public class TouchExpansionTestInternalNode extends InternalNode {
+
+  protected TouchExpansionTestInternalNode(ComponentContext c) {
+    super(c);
+  }
+
   @Override
   public int getX() {
     return 10;

@@ -33,7 +33,6 @@ public final class LithoDebugInfo {
     List<PoolWithDebugInfo> pools = new ArrayList<>();
 
     pools.addAll(ComponentsPools.getMountContentPools());
-    pools.add(ComponentsPools.sInternalNodePool);
 
     return pools;
   }

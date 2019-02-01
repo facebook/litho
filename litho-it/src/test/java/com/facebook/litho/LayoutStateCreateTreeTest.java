@@ -624,9 +624,7 @@ public class LayoutStateCreateTreeTest {
     }
 
     InternalNode newLayoutBuilder(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-      TestInternalNode node = new TestInternalNode();
-      node.init(NodeConfig.createYogaNode(), this);
-      return node;
+      return new TestInternalNode(this);
     }
 
     @Override
@@ -637,6 +635,10 @@ public class LayoutStateCreateTreeTest {
 
   private class TestInternalNode extends InternalNode {
     private int mFlexGrowCounter;
+
+    protected TestInternalNode(ComponentContext componentContext) {
+      super(componentContext);
+    }
 
     @Override
     TestInternalNode flexGrow(float flex) {

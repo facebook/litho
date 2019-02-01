@@ -66,7 +66,6 @@ import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -116,8 +115,10 @@ class InternalNode implements ComponentLayout {
   private static final long PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET = 1L << 31;
   private static final long PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1L << 32;
 
-  @Nullable YogaNode mYogaNode;
-  private ComponentContext mComponentContext;
+  // NoOpInternalNode will have both YogaNode and ComponentContext null.
+  protected final @Nullable YogaNode mYogaNode;
+  private final @Nullable ComponentContext mComponentContext;
+
   @ThreadConfined(ThreadConfined.ANY)
   private final List<Component> mComponents = new ArrayList<>(1);
   private int mImportantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
@@ -179,23 +180,45 @@ class InternalNode implements ComponentLayout {
 
   @Nullable private int[] mExtraMemory;
 
-  public InternalNode() {
-    this(true);
+  static InternalNode createInternalNode(ComponentContext componentContext) {
+    final InternalNode node =
+        NodeConfig.sInternalNodeFactory != null
+            ? NodeConfig.sInternalNodeFactory.create(componentContext)
+            : new InternalNode(componentContext);
+    return node;
   }
 
-  protected InternalNode(boolean createDebugComponentsInCtor) {
+  protected InternalNode() {
+    mYogaNode = null;
+    mComponentContext = null;
+  }
+
+  protected InternalNode(ComponentContext componentContext) {
+    this(componentContext, NodeConfig.createYogaNode(), true);
+  }
+
+  protected InternalNode(ComponentContext componentContext, YogaNode yogaNode) {
+    this(componentContext, yogaNode, true);
+  }
+
+  protected InternalNode(ComponentContext componentContext, boolean createDebugComponentsInCtor) {
+    this(componentContext, NodeConfig.createYogaNode());
+  }
+
+  private InternalNode(
+      ComponentContext componentContext,
+      @Nullable YogaNode yogaNode,
+      boolean createDebugComponentsInCtor) {
     if (createDebugComponentsInCtor) {
       mDebugComponents = new HashSet<>();
     }
-  }
 
-  void init(YogaNode yogaNode, ComponentContext componentContext) {
     if (yogaNode != null) {
       yogaNode.setData(this);
     }
     mYogaNode = yogaNode;
     mComponentContext = componentContext;
-    if (mComponentContext.getExtraMemorySize() > 0) {
+    if (mComponentContext != null && mComponentContext.getExtraMemorySize() > 0) {
       mExtraMemory = new int[mComponentContext.getExtraMemorySize()];
     }
   }
@@ -1700,87 +1723,6 @@ class InternalNode implements ComponentLayout {
         layoutDirection(YogaDirection.fromInt(layoutDirection));
       }
     }
-  }
-
-  /**
-   * Reset all attributes to default values and release the YogaNode if present. Intended to
-   * facilitate recycling.
-   */
-  void release() {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-
-    if (mYogaNode != null) {
-      if (mYogaNode.getOwner() != null || mYogaNode.getChildCount() > 0) {
-        throw new IllegalStateException("You should not free an attached Internalnode");
-      }
-
-      mYogaNode = null;
-    }
-
-    if (mDebugComponents != null) {
-      mDebugComponents.clear();
-    }
-
-    mResolvedTouchExpansionLeft = YogaConstants.UNDEFINED;
-    mResolvedTouchExpansionRight = YogaConstants.UNDEFINED;
-    mResolvedX = YogaConstants.UNDEFINED;
-    mResolvedY = YogaConstants.UNDEFINED;
-    mResolvedWidth = YogaConstants.UNDEFINED;
-    mResolvedHeight = YogaConstants.UNDEFINED;
-
-    mComponentContext = null;
-    mComponents.clear();
-    mNestedTree = null;
-    mNestedTreeHolder = null;
-
-    if (mNodeInfo != null) {
-      mNodeInfo = null;
-    }
-    mImportantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-    mDuplicateParentState = false;
-    mBackground = null;
-    mForeground = null;
-    mForceViewWrapping = false;
-    mVisibleHeightRatio = 0;
-    mVisibleWidthRatio = 0;
-    mVisibleHandler = null;
-    mFocusedHandler = null;
-    mUnfocusedHandler = null;
-    mFullImpressionHandler = null;
-    mInvisibleHandler = null;
-    mPrivateFlags = 0L;
-    mTransitionKey = null;
-    mTransitionKeyType = null;
-    Arrays.fill(mBorderColors, Color.TRANSPARENT);
-    Arrays.fill(mBorderRadius, 0f);
-    mIsPaddingPercent = null;
-    mTouchExpansion = null;
-    mNestedTreePadding = null;
-    mNestedTreeBorderWidth = null;
-    mLastWidthSpec = DiffNode.UNSPECIFIED;
-    mLastHeightSpec = DiffNode.UNSPECIFIED;
-    mLastMeasuredHeight = DiffNode.UNSPECIFIED;
-    mLastMeasuredWidth = DiffNode.UNSPECIFIED;
-    mDiffNode = null;
-    mCachedMeasuresValid = false;
-    mIsNestedTreeHolder = false;
-    mTestKey = null;
-    mPendingTreeProps = null;
-
-    mTransitions = null;
-    mComponentsNeedingPreviousRenderData = null;
-    mWorkingRangeRegistrations = null;
-
-    mStateListAnimator = null;
-    mStateListAnimatorRes = 0;
-
-    if (mExtraMemory != null && mExtraMemory.length > 0 && mExtraMemory[0] == 0) {
-      mExtraMemory = null;
-    }
-
-    ComponentsPools.release(this);
   }
 
   private NodeInfo getOrCreateNodeInfo() {

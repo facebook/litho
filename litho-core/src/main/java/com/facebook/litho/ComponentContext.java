@@ -321,7 +321,7 @@ public class ComponentContext {
   }
 
   InternalNode newLayoutBuilder(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-    final InternalNode node = ComponentsPools.acquireInternalNode(this);
+    final InternalNode node = InternalNode.createInternalNode(this);
     applyStyle(node, defStyleAttr, defStyleRes);
     return node;
   }

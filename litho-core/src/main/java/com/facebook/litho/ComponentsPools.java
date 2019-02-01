@@ -26,8 +26,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.util.SparseArray;
-import com.facebook.infer.annotation.ThreadSafe;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -48,9 +46,6 @@ public class ComponentsPools {
 
   private static final Object sMountContentLock = new Object();
 
-  static final RecyclePool<InternalNode> sInternalNodePool =
-      new RecyclePool<>("InternalNode", NodeConfig.sInternalNodeSize, true);
-
   @GuardedBy("sMountContentLock")
   private static final Map<Context, SparseArray<MountContentPool>> sMountContentPoolsByContext =
       new HashMap<>(4);
@@ -68,24 +63,6 @@ public class ComponentsPools {
    * passed a context for which we have no record.
    */
   static boolean sIsManualCallbacks;
-
-  static InternalNode acquireInternalNode(ComponentContext componentContext) {
-    InternalNode node = ComponentsConfiguration.disablePools ? null : sInternalNodePool.acquire();
-    if (node == null) {
-      node =
-          NodeConfig.sInternalNodeFactory != null
-              ? NodeConfig.sInternalNodeFactory.create()
-              : new InternalNode();
-    }
-
-    node.init(NodeConfig.createYogaNode(), componentContext);
-    return node;
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void release(InternalNode node) {
-    sInternalNodePool.release(node);
-  }
 
   static Object acquireMountContent(Context context, ComponentLifecycle lifecycle) {
     final MountContentPool pool = getMountContentPool(context, lifecycle);
@@ -229,11 +206,6 @@ public class ComponentsPools {
     synchronized (sMountContentLock) {
       sMountContentPoolsByContext.clear();
     }
-  }
-
-  /** Clear pools for all the internal util objects, excluding mount content. */
-  public static void clearInternalUtilPools() {
-    sInternalNodePool.clear();
   }
 
   /** Check whether contextWrapper is a wrapper of baseContext */

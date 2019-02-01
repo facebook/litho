@@ -848,8 +848,7 @@ public class TreeDiffingTest {
         calculateLayoutStateWithDiffing(
             mContext, rootContainer1, widthSpecContainer, heightSpec, null);
 
-    // Make sure we reused the cached layout and it wasn't released.
-    verify(sizeDependentComponentSpy1, never()).releaseCachedLayout();
+    // Make sure we reused the cached layout.
     verify(sizeDependentComponentSpy1, times(1)).clearCachedLayout();
 
     LayoutState layoutState =
@@ -858,8 +857,7 @@ public class TreeDiffingTest {
 
     verify(sizeDependentComponentSpy1).makeShallowCopy();
 
-    // Make sure we reused the cached layout and it wasn't released.
-    verify(sizeDependentComponentSpy2, never()).releaseCachedLayout();
+    // Make sure we reused the cached layout.
     verify(sizeDependentComponentSpy2, never()).clearCachedLayout();
 
     // The nested root measure() was called in the first layout calculation.

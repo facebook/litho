@@ -21,7 +21,6 @@ import javax.annotation.Nullable;
 
 /** A helper class that defines a configurable sizes for ComponentsPools. */
 public class NodeConfig {
-  public static int sInternalNodeSize = 256;
 
   public interface YogaNodeFactory {
     @Nullable
@@ -32,7 +31,7 @@ public class NodeConfig {
   }
 
   public interface InternalNodeFactory {
-    InternalNode create();
+    InternalNode create(ComponentContext componentContext);
   }
 
   /**
