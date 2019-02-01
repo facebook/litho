@@ -81,24 +81,6 @@ public class ComponentTreeBuilderTest {
     assertThat(mLooper).isSameAs(handler.getLooper());
   }
 
-  @Test
-  public void testReleaseAndInit() {
-    mComponentTreeBuilder
-        .layoutThreadLooper(mLooper);
-
-    mComponentTreeBuilder.release();
-
-    Component root = TestLayoutComponent.create(mContext)
-        .build();
-
-    mComponentTreeBuilder.init(mContext, root);
-
-    ComponentTree componentTree = mComponentTreeBuilder.build();
-
-    assertSameAsInternalState(componentTree, root, "mRoot");
-    assertDefaults(componentTree);
-  }
-
   private static void assertSameAsInternalState(
       ComponentTree componentTree,
       Object object,

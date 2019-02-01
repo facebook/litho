@@ -423,7 +423,6 @@ public class TransitionManagerAnimationCreationTest {
         new TransitionId(TransitionId.Type.GLOBAL, transitionKey, null);
     when(layoutOutput.getTransitionId()).thenReturn(transitionId);
     when(layoutOutput.getBounds()).thenReturn(new Rect(x, y, x + width, y + height));
-    when(layoutOutput.acquireRef()).thenReturn(layoutOutput);
     return layoutOutput;
   }
 }

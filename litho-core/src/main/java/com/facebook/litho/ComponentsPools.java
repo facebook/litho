@@ -77,18 +77,9 @@ public class ComponentsPools {
 
   static final RecyclePool<MountItem> sMountItemPool = new RecyclePool<>("MountItem", 256, true);
 
-  static final RecyclePool<LayoutOutput> sLayoutOutputPool =
-      new RecyclePool<>("LayoutOutput", PoolsConfig.sLayoutOutputSize, true);
-
   @GuardedBy("sMountContentLock")
   private static final Map<Context, SparseArray<MountContentPool>> sMountContentPoolsByContext =
       new HashMap<>(4);
-
-  static final RecyclePool<ComponentTree.Builder> sComponentTreeBuilderPool =
-      new RecyclePool<>("ComponentTree.Builder", 2, true);
-
-  static final RecyclePool<ArrayList<LithoView>> sLithoViewArrayListPool =
-      new RecyclePool<>("LithoViewArrayList", 4, false);
 
   // This Map is used as a set and the values are ignored.
   @GuardedBy("sMountContentLock")
@@ -192,37 +183,6 @@ public class ComponentsPools {
     return item;
   }
 
-  static LayoutOutput acquireLayoutOutput() {
-    LayoutOutput output = ComponentsConfiguration.disablePools ? null : sLayoutOutputPool.acquire();
-    if (output == null) {
-      output = new LayoutOutput();
-    }
-    output.acquire();
-
-    return output;
-  }
-
-  static ComponentTree.Builder acquireComponentTreeBuilder(ComponentContext c, Component root) {
-    ComponentTree.Builder componentTreeBuilder =
-        ComponentsConfiguration.disablePools ? null : sComponentTreeBuilderPool.acquire();
-    if (componentTreeBuilder == null) {
-      componentTreeBuilder = new ComponentTree.Builder();
-    }
-
-    componentTreeBuilder.init(c, root);
-
-    return componentTreeBuilder;
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void release(ComponentTree.Builder componentTreeBuilder) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    componentTreeBuilder.release();
-    sComponentTreeBuilderPool.release(componentTreeBuilder);
-  }
-
   @ThreadSafe(enableChecks = false)
   static void release(LayoutState state) {
     sLayoutStatePool.release(state);
@@ -259,11 +219,6 @@ public class ComponentsPools {
       return;
     }
     sMountItemPool.release(item);
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void release(LayoutOutput output) {
-    sLayoutOutputPool.release(output);
   }
 
   static Object acquireMountContent(Context context, ComponentLifecycle lifecycle) {
@@ -418,9 +373,6 @@ public class ComponentsPools {
     sNodeInfoPool.clear();
     sViewNodeInfoPool.clear();
     sMountItemPool.clear();
-    sLayoutOutputPool.clear();
-    sComponentTreeBuilderPool.clear();
-    sLithoViewArrayListPool.clear();
   }
 
   /** Check whether contextWrapper is a wrapper of baseContext */
@@ -435,25 +387,6 @@ public class ComponentsPools {
     }
 
     return false;
-  }
-
-  public static ArrayList<LithoView> acquireLithoViewArrayList() {
-    ArrayList<LithoView> arrayList =
-        ComponentsConfiguration.disablePools ? null : sLithoViewArrayListPool.acquire();
-    if (arrayList == null) {
-      arrayList = new ArrayList<>(5);
-    }
-
-    return arrayList;
-  }
-
-  @ThreadSafe(enableChecks = false)
-  public static void release(ArrayList<LithoView> arrayList) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    arrayList.clear();
-    sLithoViewArrayListPool.release(arrayList);
   }
 
   static List<MountContentPool> getMountContentPools() {

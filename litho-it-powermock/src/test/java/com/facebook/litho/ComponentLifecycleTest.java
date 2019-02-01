@@ -89,9 +89,6 @@ public class ComponentLifecycleTest {
     when(mDiffNode.getLastMeasuredWidth()).thenReturn(-1f);
     when(mDiffNode.getLastMeasuredHeight()).thenReturn(-1f);
     when(ComponentsPools.acquireInternalNode(any(ComponentContext.class))).thenReturn(mNode);
-    when(ComponentsPools.acquireComponentTreeBuilder(
-            any(ComponentContext.class), any(Component.class)))
-        .thenCallRealMethod();
 
     mockStatic(LayoutState.class);
 

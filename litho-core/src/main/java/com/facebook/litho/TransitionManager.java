@@ -424,14 +424,7 @@ public class TransitionManager {
       animationState.changeType = ChangeType.DISAPPEARED;
     }
 
-    if (currentLayoutOutputsGroup != null) {
-      acquireRef(currentLayoutOutputsGroup);
-    }
     animationState.currentLayoutOutputsGroup = currentLayoutOutputsGroup;
-
-    if (nextLayoutOutputsGroup != null) {
-      acquireRef(nextLayoutOutputsGroup);
-    }
     animationState.nextLayoutOutputsGroup = nextLayoutOutputsGroup;
 
     recordLastMountedValues(animationState);
@@ -445,12 +438,6 @@ public class TransitionManager {
               + transitionId
               + " which is "
               + changeTypeToString(animationState.changeType));
-    }
-  }
-
-  private static void acquireRef(OutputUnitsAffinityGroup<LayoutOutput> group) {
-    for (int i = 0, size = group.size(); i < size; i++) {
-      group.getAt(i).acquireRef();
     }
   }
 
@@ -860,18 +847,10 @@ public class TransitionManager {
 
   private static void clearLayoutOutputs(AnimationState animationState) {
     if (animationState.currentLayoutOutputsGroup != null) {
-      release(animationState.currentLayoutOutputsGroup);
       animationState.currentLayoutOutputsGroup = null;
     }
     if (animationState.nextLayoutOutputsGroup != null) {
-      release(animationState.nextLayoutOutputsGroup);
       animationState.nextLayoutOutputsGroup = null;
-    }
-  }
-
-  private static void release(OutputUnitsAffinityGroup<LayoutOutput> group) {
-    for (int i = 0, size = group.size(); i < size; i++) {
-      group.getAt(i).release();
     }
   }
 

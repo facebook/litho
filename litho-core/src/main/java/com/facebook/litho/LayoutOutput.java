@@ -21,10 +21,8 @@ import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUT
 import android.graphics.Rect;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The output of a layout pass for a given {@link Component}. It's used by
@@ -47,21 +45,14 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private int mHostTranslationX;
   private int mHostTranslationY;
   private int mFlags;
-  private long mHostMarker;
-  private AtomicInteger mRefCount = new AtomicInteger(0);
+  private long mHostMarker = -1L;
   private int mIndex;
 
-  private int mUpdateState;
-  private int mImportantForAccessibility;
+  private int mUpdateState = STATE_UNKNOWN;
+  private int mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
   private int mOrientation;
 
   private @Nullable TransitionId mTransitionId;
-
-  public LayoutOutput() {
-    mUpdateState = STATE_UNKNOWN;
-    mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-    mHostMarker = -1L;
-  }
 
   Component getComponent() {
     return mComponent;
@@ -231,57 +222,5 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   @Nullable
   public TransitionId getTransitionId() {
     return mTransitionId;
-  }
-
-  void acquire() {
-    if (mRefCount.getAndSet(1) != 0) {
-      throw new RuntimeException(
-          "Tried to acquire a LayoutOutput that already had a non-zero ref count!");
-    }
-  }
-
-  public LayoutOutput acquireRef() {
-    if (mRefCount.getAndIncrement() < 1) {
-      throw new RuntimeException("Tried to acquire a reference to a released LayoutOutput!");
-    }
-
-    return this;
-  }
-
-  void release() {
-    final int count = mRefCount.decrementAndGet();
-    if (count < 0) {
-      throw new IllegalStateException("Trying to release a recycled LayoutOutput.");
-    } else if (count > 0) {
-      return;
-    }
-
-    if (mComponent != null) {
-      mComponent.reset();
-      mComponent = null;
-    }
-
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-
-    if (mNodeInfo != null) {
-      mNodeInfo.release();
-      mNodeInfo = null;
-    }
-    if (mViewNodeInfo != null) {
-      mViewNodeInfo.release();
-      mViewNodeInfo = null;
-    }
-    mBounds.setEmpty();
-    mHostTranslationX = 0;
-    mHostTranslationY = 0;
-    mFlags = 0;
-    mHostMarker = -1L;
-    mUpdateState = STATE_UNKNOWN;
-    mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-    mTransitionId = null;
-
-    ComponentsPools.release(this);
   }
 }

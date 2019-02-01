@@ -314,7 +314,7 @@ class LayoutState {
     }
     final boolean isMountViewSpec = isMountViewSpec(component);
 
-    final LayoutOutput layoutOutput = ComponentsPools.acquireLayoutOutput();
+    final LayoutOutput layoutOutput = new LayoutOutput();
     layoutOutput.setComponent(component);
     layoutOutput.setImportantForAccessibility(importantForAccessibility);
     layoutOutput.setOrientation(layoutState.mOrientation);
@@ -2080,7 +2080,7 @@ class LayoutState {
       mShouldDuplicateParentState = true;
 
       for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
-        mMountableOutputs.get(i).release();
+        mMountableOutputs.get(i).getComponent().reset();
       }
       mMountableOutputs.clear();
       mMountableOutputTops.clear();

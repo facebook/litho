@@ -267,7 +267,7 @@ public class ComponentTree {
     if (root == null) {
       throw new NullPointerException("Creating a ComponentTree with a null root is not allowed!");
     }
-    return ComponentsPools.acquireComponentTreeBuilder(context, root);
+    return new ComponentTree.Builder(context, root);
   }
 
   protected ComponentTree(Builder builder) {
@@ -2446,8 +2446,8 @@ public class ComponentTree {
   public static class Builder {
 
     // required
-    private ComponentContext context;
-    private Component root;
+    private final ComponentContext context;
+    private final Component root;
 
     // optional
     private boolean incrementalMountEnabled = true;
@@ -2466,21 +2466,14 @@ public class ComponentTree {
     private boolean nestedTreeResolutionExperimentEnabled =
         ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
     private boolean useSharedLayoutStateFuture = false;
-    private @Nullable LithoAffinityBoosterFactory affinityBoosterFactory;
-    private boolean boostAffinityLayoutStateFuture;
-    private boolean boostAffinityLithoLayouts;
+    private @Nullable final LithoAffinityBoosterFactory affinityBoosterFactory;
+    private final boolean boostAffinityLayoutStateFuture;
+    private final boolean boostAffinityLithoLayouts;
     private boolean doNotWrapIntoDisplayLists = ComponentsConfiguration.disableDisplayListWrapping;
     private boolean isPersistenceEnabled = ComponentsConfiguration.isPersistenceEnabled;
     private int extraMemorySize = ComponentsConfiguration.extraMemorySize;
 
-    protected Builder() {
-    }
-
     protected Builder(ComponentContext context, Component root) {
-      init(context, root);
-    }
-
-    protected void init(ComponentContext context, Component root) {
       this.context = context;
       this.root = root;
       /** Right now we don't care about testing this per surface, so we'll use the config value. */
@@ -2492,32 +2485,6 @@ public class ComponentTree {
           !this.boostAffinityLithoLayouts
               && this.affinityBoosterFactory != null
               && ComponentsConfiguration.boostAffinityLayoutStateFuture;
-    }
-
-    protected void release() {
-      context = null;
-      root = null;
-
-      incrementalMountEnabled = true;
-      isLayoutDiffingEnabled = true;
-      layoutThreadHandler = null;
-      stateHandler = null;
-      previousRenderState = null;
-      asyncStateUpdates = true;
-      overrideComponentTreeId = -1;
-      hasMounted = false;
-      preAllocateMountContentHandler = null;
-      splitLayoutTag = null;
-      nestedTreeResolutionExperimentEnabled =
-          ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
-
-      useSharedLayoutStateFuture = false;
-      affinityBoosterFactory = null;
-      boostAffinityLayoutStateFuture = false;
-      doNotWrapIntoDisplayLists = ComponentsConfiguration.disableDisplayListWrapping;
-      isPersistenceEnabled = ComponentsConfiguration.isPersistenceEnabled;
-      extraMemorySize = ComponentsConfiguration.extraMemorySize;
-      mMeasureListener = null;
     }
 
     /**
@@ -2704,11 +2671,7 @@ public class ComponentTree {
 
     /** Builds a {@link ComponentTree} using the parameters specified in this builder. */
     public ComponentTree build() {
-      final ComponentTree componentTree = new ComponentTree(this);
-
-      ComponentsPools.release(this);
-
-      return componentTree;
+      return new ComponentTree(this);
     }
   }
 }

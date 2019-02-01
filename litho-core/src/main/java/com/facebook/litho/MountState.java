@@ -2408,14 +2408,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
      * so that their contents are recycled and reused next time.
      */
     if (content instanceof HasLithoViewChildren) {
-      final ArrayList<LithoView> lithoViews = ComponentsPools.acquireLithoViewArrayList();
+      final ArrayList<LithoView> lithoViews = new ArrayList<>();
       ((HasLithoViewChildren) content).obtainLithoViewChildren(lithoViews);
 
       for (int i = lithoViews.size() - 1; i >= 0; i--) {
         final LithoView lithoView = lithoViews.get(i);
         lithoView.unmountAllItems();
       }
-      ComponentsPools.release(lithoViews);
     }
 
     final ComponentHost host = item.getHost();
