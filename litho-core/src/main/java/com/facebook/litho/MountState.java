@@ -3178,6 +3178,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (mLastMountedLayoutState != null) {
       mLastMountedLayoutState.releaseRef();
       mLastMountedLayoutState = null;
+      mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
     }
   }
 }
