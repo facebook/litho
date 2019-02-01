@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaEdge;
-import java.util.Arrays;
 
 public class Edges {
 
@@ -100,12 +99,6 @@ public class Edges {
 
   public float getRaw(YogaEdge edge) {
     return mEdges[edge.intValue()];
-  }
-
-  public void reset() {
-    Arrays.fill(mEdges, YogaConstants.UNDEFINED);
-    mHasAliasesSet = false;
-    mValueFlags = 0;
   }
 
   private static boolean floatsEqual(float f1, float f2) {

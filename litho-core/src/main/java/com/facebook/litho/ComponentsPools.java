@@ -53,8 +53,6 @@ import javax.annotation.concurrent.GuardedBy;
  */
 public class ComponentsPools {
 
-  private static final int SCRAP_ARRAY_INITIAL_SIZE = 4;
-
   private static volatile YogaConfig sYogaConfig;
 
   private ComponentsPools() {}
@@ -95,17 +93,8 @@ public class ComponentsPools {
   static final RecyclePool<StateHandler> sStateHandlerPool =
       new RecyclePool<>("StateHandler", 10, true);
 
-  static final RecyclePool<SparseArrayCompat<MountItem>> sMountItemScrapArrayPool =
-      new RecyclePool<>("MountItemScrapArray", 8, false);
-
-  static final RecyclePool<Edges> sEdgesPool = new RecyclePool<>("Edges", 30, true);
-
   static final RecyclePool<DisplayListDrawable> sDisplayListDrawablePool =
       new RecyclePool<>("DisplayListDrawable", 10, false);
-
-  static final RecyclePool<ArraySet> sArraySetPool = new RecyclePool<>("ArraySet", 10, true);
-
-  static final RecyclePool<ArrayDeque> sArrayDequePool = new RecyclePool<>("ArrayDeque", 10, true);
 
   static final RecyclePool<RenderState> sRenderStatePool =
       new RecyclePool<>("RenderState", 4, true);
@@ -412,38 +401,6 @@ public class ComponentsPools {
     }
   }
 
-  static SparseArrayCompat<MountItem> acquireScrapMountItemsArray() {
-    SparseArrayCompat<MountItem> sparseArray = sMountItemScrapArrayPool.acquire();
-    if (sparseArray == null) {
-      sparseArray = new SparseArrayCompat<>(SCRAP_ARRAY_INITIAL_SIZE);
-    }
-
-    return sparseArray;
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void releaseScrapMountItemsArray(SparseArrayCompat<MountItem> sparseArray) {
-    sMountItemScrapArrayPool.release(sparseArray);
-  }
-
-  static Edges acquireEdges() {
-    Edges spacing = ComponentsConfiguration.disablePools ? null : sEdgesPool.acquire();
-    if (spacing == null) {
-      spacing = new Edges();
-    }
-
-    return spacing;
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void release(Edges edges) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    edges.reset();
-    sEdgesPool.release(edges);
-  }
-
   /** Empty implementation of the {@link Application.ActivityLifecycleCallbacks} interface */
   @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
   private static class PoolsActivityCallback implements Application.ActivityLifecycleCallbacks {
@@ -531,11 +488,7 @@ public class ComponentsPools {
     sVisibilityItemPool.clear();
     sComponentTreeBuilderPool.clear();
     sStateHandlerPool.clear();
-    sMountItemScrapArrayPool.clear();
-    sEdgesPool.clear();
     sDisplayListDrawablePool.clear();
-    sArraySetPool.clear();
-    sArrayDequePool.clear();
     sRenderStatePool.clear();
     sLithoViewArrayListPool.clear();
   }
@@ -579,40 +532,6 @@ public class ComponentsPools {
     }
     displayListDrawable.release();
     sDisplayListDrawablePool.release(displayListDrawable);
-  }
-
-  public static <E> ArraySet<E> acquireArraySet() {
-    ArraySet<E> set = ComponentsConfiguration.disablePools ? null : sArraySetPool.acquire();
-    if (set == null) {
-      set = new ArraySet<>();
-    }
-    return set;
-  }
-
-  @ThreadSafe(enableChecks = false)
-  public static void release(ArraySet set) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    set.clear();
-    sArraySetPool.release(set);
-  }
-
-  public static <E> ArrayDeque<E> acquireArrayDeque() {
-    ArrayDeque<E> deque = ComponentsConfiguration.disablePools ? null : sArrayDequePool.acquire();
-    if (deque == null) {
-      deque = new ArrayDeque<>();
-    }
-    return deque;
-  }
-
-  @ThreadSafe(enableChecks = false)
-  public static void release(ArrayDeque deque) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    deque.clear();
-    sArrayDequePool.release(deque);
   }
 
   public static RenderState acquireRenderState() {

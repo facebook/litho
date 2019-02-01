@@ -19,7 +19,6 @@ package com.facebook.litho.dataflow;
 import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.Pools;
 import android.support.v4.util.SimpleArrayMap;
-import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.internal.ArraySet;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -158,7 +157,7 @@ public class DataFlowGraph {
       return;
     }
 
-    final ArraySet<ValueNode> leafNodes = ComponentsPools.acquireArraySet();
+    final ArraySet<ValueNode> leafNodes = new ArraySet<>();
     final SimpleArrayMap<ValueNode, Integer> nodesToOutputsLeft = new SimpleArrayMap<>();
 
     for (int i = 0, bindingsSize = mBindings.size(); i < bindingsSize; i++) {
@@ -179,7 +178,7 @@ public class DataFlowGraph {
           "Graph has nodes, but they represent a cycle with no leaf nodes!");
     }
 
-    final ArrayDeque<ValueNode> nodesToProcess = ComponentsPools.acquireArrayDeque();
+    final ArrayDeque<ValueNode> nodesToProcess = new ArrayDeque<>();
     nodesToProcess.addAll(leafNodes);
 
     while (!nodesToProcess.isEmpty()) {
@@ -204,9 +203,6 @@ public class DataFlowGraph {
 
     Collections.reverse(mSortedNodes);
     mIsDirty = false;
-
-    ComponentsPools.release(nodesToProcess);
-    ComponentsPools.release(leafNodes);
   }
 
   @GuardedBy("this")

@@ -56,6 +56,7 @@ import java.util.List;
 public class ComponentHost extends ViewGroup {
 
   private static final double NS_IN_MS = 1000000.0;
+  private static final int SCRAP_ARRAY_INITIAL_SIZE = 4;
 
   private SparseArrayCompat<MountItem> mMountItems;
   private SparseArrayCompat<MountItem> mScrapMountItemsArray;
@@ -1319,24 +1320,22 @@ public class ComponentHost extends ViewGroup {
 
   private void ensureScrapViewMountItemsArray() {
     if (mScrapViewMountItemsArray == null) {
-      mScrapViewMountItemsArray = ComponentsPools.acquireScrapMountItemsArray();
+      mScrapViewMountItemsArray = new SparseArrayCompat<>(SCRAP_ARRAY_INITIAL_SIZE);
     }
   }
 
   private void ensureScrapMountItemsArray() {
     if (mScrapMountItemsArray == null) {
-      mScrapMountItemsArray = ComponentsPools.acquireScrapMountItemsArray();
+      mScrapMountItemsArray = new SparseArrayCompat<>(SCRAP_ARRAY_INITIAL_SIZE);
     }
   }
 
   private void releaseScrapDataStructuresIfNeeded() {
     if (mScrapMountItemsArray != null && mScrapMountItemsArray.size() == 0) {
-      ComponentsPools.releaseScrapMountItemsArray(mScrapMountItemsArray);
       mScrapMountItemsArray = null;
     }
 
     if (mScrapViewMountItemsArray != null && mScrapViewMountItemsArray.size() == 0) {
-      ComponentsPools.releaseScrapMountItemsArray(mScrapViewMountItemsArray);
       mScrapViewMountItemsArray = null;
     }
   }
@@ -1385,7 +1384,7 @@ public class ComponentHost extends ViewGroup {
 
   private void ensureScrapDrawableMountItemsArray() {
     if (mScrapDrawableMountItems == null) {
-      mScrapDrawableMountItems = ComponentsPools.acquireScrapMountItemsArray();
+      mScrapDrawableMountItems = new SparseArrayCompat<>(SCRAP_ARRAY_INITIAL_SIZE);
     }
   }
 

@@ -503,7 +503,7 @@ class InternalNode implements ComponentLayout {
   @ReturnsOwnership
   private Edges getNestedTreePadding() {
     if (mNestedTreePadding == null) {
-      mNestedTreePadding = ComponentsPools.acquireEdges();
+      mNestedTreePadding = new Edges();
     }
     return mNestedTreePadding;
   }
@@ -548,7 +548,7 @@ class InternalNode implements ComponentLayout {
   void setBorderWidth(YogaEdge edge, @Px int borderWidth) {
     if (mIsNestedTreeHolder) {
       if (mNestedTreeBorderWidth == null) {
-        mNestedTreeBorderWidth = ComponentsPools.acquireEdges();
+        mNestedTreeBorderWidth = new Edges();
       }
 
       mNestedTreeBorderWidth.set(edge, borderWidth);
@@ -745,7 +745,7 @@ class InternalNode implements ComponentLayout {
 
   InternalNode touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
     if (mTouchExpansion == null) {
-      mTouchExpansion = ComponentsPools.acquireEdges();
+      mTouchExpansion = new Edges();
     }
 
     mPrivateFlags |= PFLAG_TOUCH_EXPANSION_IS_SET;
@@ -1758,20 +1758,9 @@ class InternalNode implements ComponentLayout {
     Arrays.fill(mBorderColors, Color.TRANSPARENT);
     Arrays.fill(mBorderRadius, 0f);
     mIsPaddingPercent = null;
-
-    if (mTouchExpansion != null) {
-      ComponentsPools.release(mTouchExpansion);
-      mTouchExpansion = null;
-    }
-    if (mNestedTreePadding != null) {
-      ComponentsPools.release(mNestedTreePadding);
-      mNestedTreePadding = null;
-    }
-    if (mNestedTreeBorderWidth != null) {
-      ComponentsPools.release(mNestedTreeBorderWidth);
-      mNestedTreeBorderWidth = null;
-    }
-
+    mTouchExpansion = null;
+    mNestedTreePadding = null;
+    mNestedTreeBorderWidth = null;
     mLastWidthSpec = DiffNode.UNSPECIFIED;
     mLastHeightSpec = DiffNode.UNSPECIFIED;
     mLastMeasuredHeight = DiffNode.UNSPECIFIED;
