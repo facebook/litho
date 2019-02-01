@@ -23,7 +23,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.view.View;
-import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.yoga.YogaDirection;
 
 /**
  * Represents a mounted UI element in a {@link MountState}. It holds a
@@ -61,7 +61,7 @@ class MountItem {
 
   private ComponentHost mHost;
   private boolean mIsBound;
-  private int mImportantForAccessibility;
+  private int mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
   private @Nullable TransitionId mTransitionId;
   private int mOrientation;
 
@@ -72,28 +72,26 @@ class MountItem {
   // Flags that track view-related behaviour of mounted view content.
   private int mMountViewFlags;
 
-  /**
-   * Call this method when assigning a new {@link LayoutOutput} to an existing MountItem. In this
-   * case we don't want to update mMountViewFlags since those flags are only used to determine the
-   * initial state of the view content, which we will have already done in init(). If it is done
-   * again now some of the values may be wrong (e.g. the Litho framework may add a click listener to
-   * a view that was not originally clickable.
-   */
-  void update(LayoutOutput layoutOutput) {
-    mComponent = layoutOutput.getComponent();
-    if (mComponent == null) {
-      throw new RuntimeException("Trying to update a MountItem with a null Component!");
-    }
-    mLayoutFlags = layoutOutput.getFlags();
-    mImportantForAccessibility = layoutOutput.getImportantForAccessibility();
-    mOrientation = layoutOutput.getOrientation();
-    mTransitionId = layoutOutput.getTransitionId();
-    mNodeInfo = layoutOutput.getNodeInfo();
-    mViewNodeInfo = layoutOutput.getViewNodeInfo();
+  /** This mountItem represents the top-level root host (LithoView) which is always mounted. */
+  static MountItem createRootHostMountItem(LithoView lithoView) {
+    final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
+    viewNodeInfo.setLayoutDirection(YogaDirection.INHERIT);
+    MountItem item =
+        new MountItem(
+            HostComponent.create(),
+            lithoView,
+            lithoView,
+            null,
+            viewNodeInfo,
+            0,
+            IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+            lithoView.getContext().getResources().getConfiguration().orientation,
+            null);
+    return item;
   }
 
-  void init(Component component, ComponentHost host, Object content, LayoutOutput layoutOutput) {
-    init(
+  MountItem(Component component, ComponentHost host, Object content, LayoutOutput layoutOutput) {
+    this(
         component,
         host,
         content,
@@ -105,7 +103,7 @@ class MountItem {
         layoutOutput.getTransitionId());
   }
 
-  void init(
+  MountItem(
       Component component,
       ComponentHost host,
       Object content,
@@ -160,6 +158,34 @@ class MountItem {
       if (view.isSelected()) {
         mMountViewFlags |= FLAG_VIEW_SELECTED;
       }
+    }
+  }
+
+  /**
+   * Call this method when assigning a new {@link LayoutOutput} to an existing MountItem. In this
+   * case we don't want to update mMountViewFlags since those flags are only used to determine the
+   * initial state of the view content, which we will have already done in init(). If it is done
+   * again now some of the values may be wrong (e.g. the Litho framework may add a click listener to
+   * a view that was not originally clickable.
+   */
+  void update(LayoutOutput layoutOutput) {
+    mComponent = layoutOutput.getComponent();
+    if (mComponent == null) {
+      throw new RuntimeException("Trying to update a MountItem with a null Component!");
+    }
+    mLayoutFlags = layoutOutput.getFlags();
+    mImportantForAccessibility = layoutOutput.getImportantForAccessibility();
+    mOrientation = layoutOutput.getOrientation();
+    mTransitionId = layoutOutput.getTransitionId();
+    mNodeInfo = null;
+    mViewNodeInfo = null;
+
+    if (layoutOutput.getNodeInfo() != null) {
+      mNodeInfo = layoutOutput.getNodeInfo();
+    }
+
+    if (layoutOutput.getViewNodeInfo() != null) {
+      mViewNodeInfo = layoutOutput.getViewNodeInfo();
     }
   }
 
@@ -246,22 +272,8 @@ class MountItem {
         || mComponent.implementsAccessibility();
   }
 
-  void release(Context context) {
+  void releaseMountContent(Context context) {
     ComponentsPools.release(context, mComponent, mBaseContent);
-
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-
-    mComponent = null;
-    mHost = null;
-    mBaseContent = null;
-    mWrappedContent = null;
-    mLayoutFlags = 0;
-    mMountViewFlags = 0;
-    mIsBound = false;
-    mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-    mTransitionId = null;
   }
 
   static boolean isDuplicateParentState(int flags) {

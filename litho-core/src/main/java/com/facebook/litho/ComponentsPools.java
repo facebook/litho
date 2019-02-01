@@ -16,8 +16,6 @@
 
 package com.facebook.litho;
 
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
@@ -31,7 +29,6 @@ import android.util.SparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaConfig;
-import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaNode;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,8 +61,6 @@ public class ComponentsPools {
 
   static final RecyclePool<YogaNode> sYogaNodePool =
       new RecyclePool<>("YogaNode", PoolsConfig.sYogaNodeSize, true);
-
-  static final RecyclePool<MountItem> sMountItemPool = new RecyclePool<>("MountItem", 256, true);
 
   @GuardedBy("sMountContentLock")
   private static final Map<Context, SparseArray<MountContentPool>> sMountContentPoolsByContext =
@@ -121,39 +116,6 @@ public class ComponentsPools {
     return node;
   }
 
-  static MountItem acquireRootHostMountItem(
-      Component component, ComponentHost host, Object content) {
-    MountItem item = ComponentsConfiguration.disablePools ? null : sMountItemPool.acquire();
-    if (item == null) {
-      item = new MountItem();
-    }
-
-    final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
-    viewNodeInfo.setLayoutDirection(YogaDirection.INHERIT);
-    item.init(
-        component,
-        host,
-        content,
-        null,
-        viewNodeInfo,
-        0,
-        IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-        host.getContext().getResources().getConfiguration().orientation,
-        null);
-    return item;
-  }
-
-  static MountItem acquireMountItem(
-      Component component, ComponentHost host, Object content, LayoutOutput layoutOutput) {
-    MountItem item = ComponentsConfiguration.disablePools ? null : sMountItemPool.acquire();
-    if (item == null) {
-      item = new MountItem();
-    }
-
-    item.init(component, host, content, layoutOutput);
-    return item;
-  }
-
   @ThreadSafe(enableChecks = false)
   static void release(LayoutState state) {
     sLayoutStatePool.release(state);
@@ -171,15 +133,6 @@ public class ComponentsPools {
   @ThreadSafe(enableChecks = false)
   static void release(InternalNode node) {
     sInternalNodePool.release(node);
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void release(Context context, MountItem item) {
-    item.release(context);
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    sMountItemPool.release(item);
   }
 
   static Object acquireMountContent(Context context, ComponentLifecycle lifecycle) {
@@ -331,7 +284,6 @@ public class ComponentsPools {
     sLayoutStatePool.clear();
     sYogaNodePool.clear();
     sInternalNodePool.clear();
-    sMountItemPool.clear();
   }
 
   /** Check whether contextWrapper is a wrapper of baseContext */

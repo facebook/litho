@@ -158,12 +158,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         ? new HashMap<String, Deque<TestItem>>()
         : null;
 
-    // The mount item representing the top-level LithoView which
+    // The mount item representing the top-level root host (LithoView) which
     // is always automatically mounted.
-    mRootHostMountItem = ComponentsPools.acquireRootHostMountItem(
-        HostComponent.create(),
-        mLithoView,
-        mLithoView);
+    mRootHostMountItem = MountItem.createRootHostMountItem(mLithoView);
   }
 
   /**
@@ -1484,11 +1481,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       ComponentHost host,
       LayoutOutput layoutOutput) {
 
-    final MountItem item = ComponentsPools.acquireMountItem(
-        component,
-        host,
-        content,
-        layoutOutput);
+    final MountItem item = new MountItem(component, host, content, layoutOutput);
 
     // Create and keep a MountItem even for the layoutSpec with null content
     // that sets the root host interactions.
@@ -2341,7 +2334,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         mCanMountIncrementallyMountItems.removeAt(index);
       }
     }
-    ComponentsPools.release(context.getAndroidContext(), item);
+    item.releaseMountContent(context.getAndroidContext());
   }
 
   void unmountAllItems() {
@@ -2443,7 +2436,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       mCanMountIncrementallyMountItems.delete(mLayoutOutputsIds[index]);
     }
 
-    ComponentsPools.release(mContext.getAndroidContext(), item);
+    item.releaseMountContent(mContext.getAndroidContext());
 
     if (mMountStats.isLoggingEnabled) {
       mMountStats.unmountedTimes.add((System.nanoTime() - startTime) / NS_IN_MS);
@@ -2503,7 +2496,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           mCanMountIncrementallyMountItems.removeAt(index);
         }
       }
-      ComponentsPools.release(mContext.getAndroidContext(), item);
+      item.releaseMountContent(mContext.getAndroidContext());
     }
   }
 

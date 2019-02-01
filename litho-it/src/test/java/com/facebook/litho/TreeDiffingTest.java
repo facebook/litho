@@ -39,6 +39,7 @@ import static com.facebook.yoga.YogaMeasureOutput.getWidth;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -408,9 +409,9 @@ public class TreeDiffingTest {
   @Test
   public void testComponentHostMoveItem() {
     ComponentHost hostHolder = new ComponentHost(mContext);
-    MountItem mountItem = new MountItem();
-    MountItem mountItem1 = new MountItem();
-    MountItem mountItem2 = new MountItem();
+    MountItem mountItem = mock(MountItem.class);
+    MountItem mountItem1 = mock(MountItem.class);
+    MountItem mountItem2 = mock(MountItem.class);
     hostHolder.mount(0, mountItem, new Rect());
     hostHolder.mount(1, mountItem1, new Rect());
     hostHolder.mount(2, mountItem2, new Rect());
@@ -427,9 +428,9 @@ public class TreeDiffingTest {
   @Test
   public void testComponentHostMoveItemPartial() {
     ComponentHost hostHolder = new ComponentHost(mContext);
-    MountItem mountItem = new MountItem();
-    MountItem mountItem1 = new MountItem();
-    MountItem mountItem2 = new MountItem();
+    MountItem mountItem = mock(MountItem.class);
+    MountItem mountItem1 = mock(MountItem.class);
+    MountItem mountItem2 = mock(MountItem.class);
     hostHolder.mount(0, mountItem, new Rect());
     hostHolder.mount(1, mountItem1, new Rect());
     hostHolder.mount(2, mountItem2, new Rect());

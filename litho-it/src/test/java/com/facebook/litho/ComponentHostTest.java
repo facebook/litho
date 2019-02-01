@@ -952,20 +952,20 @@ public class ComponentHostTest {
   }
 
   private MountItem mount(int index, Object content, int flags, CharSequence contentDescription) {
-    MountItem mountItem = new MountItem();
     NodeInfo nodeInfo = new NodeInfo();
     nodeInfo.setContentDescription(contentDescription);
 
-    mountItem.init(
-        content instanceof Drawable ? mDrawableComponent : mViewComponent,
-        null,
-        content,
-        nodeInfo,
-        null,
-        flags,
-        IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-        ORIENTATION_PORTRAIT,
-        null);
+    MountItem mountItem =
+        new MountItem(
+            content instanceof Drawable ? mDrawableComponent : mViewComponent,
+            null,
+            content,
+            nodeInfo,
+            null,
+            flags,
+            IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+            ORIENTATION_PORTRAIT,
+            null);
 
     mHost.mount(
         index,
@@ -975,7 +975,6 @@ public class ComponentHostTest {
   }
 
   private MountItem mountTouchExpansionItem(int index, Object content) {
-    final MountItem viewMountItem = new MountItem();
     final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
     viewNodeInfo.setLayoutDirection(YogaDirection.LTR);
 
@@ -988,16 +987,17 @@ public class ComponentHostTest {
 
     viewNodeInfo.setExpandedTouchBounds(node, 1, 1, 1, 1);
 
-    viewMountItem.init(
-        mViewComponent,
-        null,
-        content,
-        null,
-        viewNodeInfo,
-        0,
-        IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-        ORIENTATION_PORTRAIT,
-        null);
+    MountItem viewMountItem =
+        new MountItem(
+            mViewComponent,
+            null,
+            content,
+            null,
+            viewNodeInfo,
+            0,
+            IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+            ORIENTATION_PORTRAIT,
+            null);
     mHost.mount(index, viewMountItem, new Rect());
 
     return viewMountItem;
