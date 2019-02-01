@@ -86,6 +86,11 @@ public final class Wrapper extends Component {
     return true;
   }
 
+  @Override
+  protected Component getSimpleNameDelegate() {
+    return delegate;
+  }
+
   public static class Builder extends Component.Builder<Builder> {
     private static final String[] REQUIRED_PROPS_NAMES = new String[] {"delegate"};
     private static final int REQUIRED_PROPS_COUNT = 1;
