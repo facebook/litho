@@ -84,20 +84,8 @@ public class ComponentsPools {
   private static final Map<Context, SparseArray<MountContentPool>> sMountContentPoolsByContext =
       new HashMap<>(4);
 
-  static final RecyclePool<VisibilityItem> sVisibilityItemPool =
-      new RecyclePool<>("VisibilityItem", 64, true);
-
   static final RecyclePool<ComponentTree.Builder> sComponentTreeBuilderPool =
       new RecyclePool<>("ComponentTree.Builder", 2, true);
-
-  static final RecyclePool<StateHandler> sStateHandlerPool =
-      new RecyclePool<>("StateHandler", 10, true);
-
-  static final RecyclePool<DisplayListDrawable> sDisplayListDrawablePool =
-      new RecyclePool<>("DisplayListDrawable", 10, false);
-
-  static final RecyclePool<RenderState> sRenderStatePool =
-      new RecyclePool<>("RenderState", 4, true);
 
   static final RecyclePool<ArrayList<LithoView>> sLithoViewArrayListPool =
       new RecyclePool<>("LithoViewArrayList", 4, false);
@@ -214,25 +202,6 @@ public class ComponentsPools {
     return output;
   }
 
-  static VisibilityItem acquireVisibilityItem(
-      String globalKey,
-      EventHandler<InvisibleEvent> invisibleHandler,
-      EventHandler<UnfocusedVisibleEvent> unfocusedHandler,
-      @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
-    VisibilityItem item =
-        ComponentsConfiguration.disablePools ? null : sVisibilityItemPool.acquire();
-    if (item == null) {
-      item = new VisibilityItem();
-    }
-
-    item.setGlobalKey(globalKey);
-    item.setInvisibleHandler(invisibleHandler);
-    item.setUnfocusedHandler(unfocusedHandler);
-    item.setVisibilityChangedHandler(visibilityChangedHandler);
-
-    return item;
-  }
-
   static ComponentTree.Builder acquireComponentTreeBuilder(ComponentContext c, Component root) {
     ComponentTree.Builder componentTreeBuilder =
         ComponentsConfiguration.disablePools ? null : sComponentTreeBuilderPool.acquire();
@@ -245,23 +214,6 @@ public class ComponentsPools {
     return componentTreeBuilder;
   }
 
-  static StateHandler acquireStateHandler(@Nullable StateHandler fromStateHandler) {
-    StateHandler stateHandler =
-        ComponentsConfiguration.disablePools ? null : sStateHandlerPool.acquire();
-    if (stateHandler == null) {
-      stateHandler = new StateHandler();
-    }
-
-    stateHandler.init(fromStateHandler);
-
-    return stateHandler;
-  }
-
-  @Nullable
-  static StateHandler acquireStateHandler() {
-    return acquireStateHandler(null);
-  }
-
   @ThreadSafe(enableChecks = false)
   static void release(ComponentTree.Builder componentTreeBuilder) {
     if (ComponentsConfiguration.disablePools) {
@@ -269,15 +221,6 @@ public class ComponentsPools {
     }
     componentTreeBuilder.release();
     sComponentTreeBuilderPool.release(componentTreeBuilder);
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void release(StateHandler stateHandler) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    stateHandler.release();
-    sStateHandlerPool.release(stateHandler);
   }
 
   @ThreadSafe(enableChecks = false)
@@ -321,15 +264,6 @@ public class ComponentsPools {
   @ThreadSafe(enableChecks = false)
   static void release(LayoutOutput output) {
     sLayoutOutputPool.release(output);
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void release(VisibilityItem item) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    item.release();
-    sVisibilityItemPool.release(item);
   }
 
   static Object acquireMountContent(Context context, ComponentLifecycle lifecycle) {
@@ -485,11 +419,7 @@ public class ComponentsPools {
     sViewNodeInfoPool.clear();
     sMountItemPool.clear();
     sLayoutOutputPool.clear();
-    sVisibilityItemPool.clear();
     sComponentTreeBuilderPool.clear();
-    sStateHandlerPool.clear();
-    sDisplayListDrawablePool.clear();
-    sRenderStatePool.clear();
     sLithoViewArrayListPool.clear();
   }
 
@@ -505,51 +435,6 @@ public class ComponentsPools {
     }
 
     return false;
-  }
-
-  public static DisplayListDrawable acquireDisplayListDrawable(Drawable content) {
-    // When we are wrapping drawable with DisplayListDrawable we need to make sure that
-    // wrapped DisplayListDrawable has the same view callback as original one had for correct
-    // view invalidations.
-    final Drawable.Callback callback = content.getCallback();
-
-    DisplayListDrawable displayListDrawable =
-        ComponentsConfiguration.disablePools ? null : sDisplayListDrawablePool.acquire();
-    if (displayListDrawable == null) {
-      displayListDrawable = new DisplayListDrawable(content);
-    } else {
-      displayListDrawable.setWrappedDrawable(content);
-    }
-    displayListDrawable.setCallback(callback);
-
-    return displayListDrawable;
-  }
-
-  @ThreadSafe(enableChecks = false)
-  public static void release(DisplayListDrawable displayListDrawable) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    displayListDrawable.release();
-    sDisplayListDrawablePool.release(displayListDrawable);
-  }
-
-  public static RenderState acquireRenderState() {
-    RenderState renderState =
-        ComponentsConfiguration.disablePools ? null : sRenderStatePool.acquire();
-    if (renderState == null) {
-      renderState = new RenderState();
-    }
-    return renderState;
-  }
-
-  @ThreadSafe(enableChecks = false)
-  public static void release(RenderState renderState) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    renderState.reset();
-    sRenderStatePool.release(renderState);
   }
 
   public static ArrayList<LithoView> acquireLithoViewArrayList() {

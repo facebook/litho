@@ -40,10 +40,7 @@ public final class LithoDebugInfo {
     pools.add(ComponentsPools.sYogaNodePool);
     pools.add(ComponentsPools.sMountItemPool);
     pools.add(ComponentsPools.sLayoutOutputPool);
-    pools.add(ComponentsPools.sVisibilityItemPool);
     pools.add(ComponentsPools.sComponentTreeBuilderPool);
-    pools.add(ComponentsPools.sStateHandlerPool);
-    pools.add(ComponentsPools.sDisplayListDrawablePool);
 
     return pools;
   }

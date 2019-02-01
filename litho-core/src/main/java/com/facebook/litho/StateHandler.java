@@ -20,7 +20,6 @@ import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pools;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
@@ -38,27 +37,6 @@ public class StateHandler {
 
   private static final int INITIAL_STATE_UPDATE_LIST_CAPACITY = 4;
   private static final int INITIAL_MAP_CAPACITY = 4;
-  private static final int POOL_CAPACITY = 10;
-
-  @Nullable private static final Pools.SynchronizedPool<List<StateUpdate>> sStateUpdatesListPool;
-
-  @Nullable
-  private static final Pools.SynchronizedPool<Map<String, List<StateUpdate>>> sStateUpdatesMapPool;
-
-  @Nullable
-  private static final Pools.SynchronizedPool<Map<String, StateContainer>> sStateContainersMapPool;
-
-  static {
-    if (ComponentsConfiguration.useStateHandlers) {
-      sStateUpdatesListPool = new Pools.SynchronizedPool<>(POOL_CAPACITY);
-      sStateUpdatesMapPool = new Pools.SynchronizedPool<>(POOL_CAPACITY);
-      sStateContainersMapPool = new Pools.SynchronizedPool<>(POOL_CAPACITY);
-    } else {
-      sStateUpdatesListPool = null;
-      sStateUpdatesMapPool = null;
-      sStateContainersMapPool = null;
-    }
-  }
 
   /**
    * List of state updates that will be applied during the next layout pass.
@@ -93,7 +71,11 @@ public class StateHandler {
   @Nullable
   private Map<Object, Object> mCachedValues;
 
-  void init(@Nullable StateHandler stateHandler) {
+  public StateHandler() {
+    this(null);
+  }
+
+  public StateHandler(@Nullable StateHandler stateHandler) {
     if (stateHandler == null) {
       return;
     }
@@ -106,10 +88,8 @@ public class StateHandler {
     }
   }
 
-  public static @Nullable StateHandler acquireNewInstance(@Nullable StateHandler stateHandler) {
-    return ComponentsConfiguration.useStateHandlers
-        ? ComponentsPools.acquireStateHandler(stateHandler)
-        : null;
+  public static @Nullable StateHandler createNewInstance(@Nullable StateHandler stateHandler) {
+    return ComponentsConfiguration.useStateHandlers ? new StateHandler(stateHandler) : null;
   }
 
   public synchronized boolean isEmpty() {
@@ -128,7 +108,7 @@ public class StateHandler {
     List<StateUpdate> pendingStateUpdatesForKey = mPendingStateUpdates.get(key);
 
     if (pendingStateUpdatesForKey == null) {
-      pendingStateUpdatesForKey = StateHandler.acquireStateUpdatesList();
+      pendingStateUpdatesForKey = StateHandler.createStateUpdatesList();
       mPendingStateUpdates.put(key, pendingStateUpdatesForKey);
     }
 
@@ -243,57 +223,24 @@ public class StateHandler {
         synchronized (this) {
           mPendingStateUpdates.remove(key);
         }
-        releaseStateUpdatesList(pendingStateUpdatesForKey);
       } else {
         pendingStateUpdatesForKey.removeAll(appliedStateUpdatesForKey);
       }
     }
   }
 
-  synchronized void release() {
-    if (mPendingStateUpdates != null) {
-      mPendingStateUpdates.clear();
-      sStateUpdatesMapPool.release(mPendingStateUpdates);
-      mPendingStateUpdates = null;
-    }
-
-    if (mAppliedStateUpdates != null) {
-      mAppliedStateUpdates.clear();
-      sStateUpdatesMapPool.release(mAppliedStateUpdates);
-      mAppliedStateUpdates = null;
-    }
-
-    mPendingStateUpdateTransitions = null;
-
-    if (mStateContainers != null) {
-      mStateContainers.clear();
-      sStateContainersMapPool.release(mStateContainers);
-      mStateContainers = null;
-    }
-
-    mNeededStateContainers = null;
+  private static List<StateUpdate> createStateUpdatesList() {
+    return createStateUpdatesList(null);
   }
 
-  private static List<StateUpdate> acquireStateUpdatesList() {
-    return acquireStateUpdatesList(null);
-  }
-
-  private static List<StateUpdate> acquireStateUpdatesList(List<StateUpdate> copyFrom) {
-    List<StateUpdate> list = sStateUpdatesListPool.acquire();
-    if (list == null) {
-      list = new ArrayList<>(
-          copyFrom == null ? INITIAL_STATE_UPDATE_LIST_CAPACITY : copyFrom.size());
-    }
+  private static List<StateUpdate> createStateUpdatesList(List<StateUpdate> copyFrom) {
+    List<StateUpdate> list =
+        new ArrayList<>(copyFrom == null ? INITIAL_STATE_UPDATE_LIST_CAPACITY : copyFrom.size());
     if (copyFrom != null) {
       list.addAll(copyFrom);
     }
 
     return list;
-  }
-
-  private static void releaseStateUpdatesList(List<StateUpdate> list) {
-    list.clear();
-    sStateUpdatesListPool.release(list);
   }
 
   synchronized Map<String, StateContainer> getStateContainers() {
@@ -363,12 +310,12 @@ public class StateHandler {
     synchronized (this) {
       if (pendingStateUpdates != null) {
         for (String key : pendingStateUpdates.keySet()) {
-          mPendingStateUpdates.put(key, acquireStateUpdatesList(pendingStateUpdates.get(key)));
+          mPendingStateUpdates.put(key, createStateUpdatesList(pendingStateUpdates.get(key)));
         }
       }
       if (appliedStateUpdates != null) {
         for (String key : appliedStateUpdates.keySet()) {
-          mAppliedStateUpdates.put(key, acquireStateUpdatesList(appliedStateUpdates.get(key)));
+          mAppliedStateUpdates.put(key, createStateUpdatesList(appliedStateUpdates.get(key)));
         }
       }
     }
@@ -420,10 +367,7 @@ public class StateHandler {
 
   private synchronized void maybeInitStateContainers() {
     if (mStateContainers == null) {
-      mStateContainers = sStateContainersMapPool.acquire();
-      if (mStateContainers == null) {
-        mStateContainers = new HashMap<>(INITIAL_MAP_CAPACITY);
-      }
+      mStateContainers = new HashMap<>(INITIAL_MAP_CAPACITY);
     }
   }
 
@@ -441,18 +385,11 @@ public class StateHandler {
 
   private synchronized void maybeInitStateUpdatesMap() {
     if (mPendingStateUpdates == null) {
-      mPendingStateUpdates = sStateUpdatesMapPool.acquire();
-      if (mPendingStateUpdates == null) {
-        mPendingStateUpdates = new HashMap<>(INITIAL_MAP_CAPACITY);
-      }
+      mPendingStateUpdates = new HashMap<>(INITIAL_MAP_CAPACITY);
     }
 
     if (mAppliedStateUpdates == null) {
-      mAppliedStateUpdates = sStateUpdatesMapPool.acquire();
-      if (mAppliedStateUpdates == null) {
-        mAppliedStateUpdates = new HashMap<>(INITIAL_MAP_CAPACITY);
-      }
+      mAppliedStateUpdates = new HashMap<>(INITIAL_MAP_CAPACITY);
     }
   }
-
 }

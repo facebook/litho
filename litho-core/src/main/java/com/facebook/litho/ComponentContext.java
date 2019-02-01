@@ -417,7 +417,7 @@ public class ComponentContext {
 
   static ComponentContext withComponentTree(ComponentContext context, ComponentTree componentTree) {
     ComponentContext componentContext =
-        new ComponentContext(context, ComponentsPools.acquireStateHandler(), null, null);
+        new ComponentContext(context, new StateHandler(), null, null);
     componentContext.mComponentTree = componentTree;
 
     return componentContext;

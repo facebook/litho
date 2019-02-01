@@ -55,6 +55,11 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback, Touchab
   private boolean mDoNotAttemptDLDrawing = false;
 
   DisplayListDrawable(Drawable drawable) {
+    // When we are wrapping drawable with DisplayListDrawable we need to make sure that
+    // wrapped DisplayListDrawable has the same view callback as original one had for correct
+    // view invalidations.
+    setCallback(drawable.getCallback());
+
     setWrappedDrawable(drawable);
   }
 
@@ -382,18 +387,6 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback, Touchab
   @Override
   public boolean onTouchEvent(MotionEvent event, View host) {
     return mTouchable && ((Touchable) mDrawable).onTouchEvent(event, host);
-  }
-
-  public void release() {
-    setCallback(null);
-    mIgnoreInvalidations = false;
-    mInvalidated = false;
-    mDoNotAttemptDLDrawing = false;
-    mDrawable.setCallback(null);
-    mDrawable = null;
-    mTouchable = false;
-    mName = null;
-    mDisplayList = null;
   }
 
   @Override

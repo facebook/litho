@@ -587,7 +587,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           }
 
           mVisibilityIdToItemMap.remove(visibilityOutputId);
-          ComponentsPools.release(visibilityItem);
           visibilityItem = null;
         } else {
           // Processed, do not clear.
@@ -603,7 +602,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
                   ? visibilityOutput.getComponent().getGlobalKey()
                   : null;
           visibilityItem =
-              ComponentsPools.acquireVisibilityItem(
+              new VisibilityItem(
                   globalKey, invisibleHandler, unfocusedHandler, visibilityChangedHandler);
           visibilityItem.setDoNotClearInThisPass(mIsDirty);
           mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
@@ -783,7 +782,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         }
 
         mVisibilityIdToItemMap.removeAt(i);
-        ComponentsPools.release(visibilityItem);
       }
     }
 
@@ -1471,7 +1469,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       if (component.shouldUseDisplayList()
           || ((content instanceof Drawable)
               && ComponentsConfiguration.useDisplayListForAllDrawables)) {
-        return ComponentsPools.acquireDisplayListDrawable((Drawable) content);
+        return new DisplayListDrawable((Drawable) content);
       }
     }
     return null;

@@ -302,9 +302,8 @@ public class ComponentTree {
     }
 
     final StateHandler builderStateHandler = builder.stateHandler;
-    mStateHandler = builderStateHandler == null
-        ? StateHandler.acquireNewInstance(null)
-        : builderStateHandler;
+    mStateHandler =
+        builderStateHandler == null ? StateHandler.createNewInstance(null) : builderStateHandler;
 
     if (builder.previousRenderState != null) {
       mPreviousRenderState = builder.previousRenderState;
@@ -808,7 +807,7 @@ public class ComponentTree {
     }
 
     if (mPreviousRenderState == null) {
-      mPreviousRenderState = ComponentsPools.acquireRenderState();
+      mPreviousRenderState = new RenderState();
     }
 
     mPreviousRenderState.recordRenderData(components);
@@ -1445,7 +1444,7 @@ public class ComponentTree {
    * @return a copy of the state handler instance held by ComponentTree.
    */
   public synchronized StateHandler acquireStateHandler() {
-    return StateHandler.acquireNewInstance(mStateHandler);
+    return StateHandler.createNewInstance(mStateHandler);
   }
 
   synchronized @Nullable void consumeStateUpdateTransitions(
@@ -1922,12 +1921,7 @@ public class ComponentTree {
       backgroundLayoutState = mBackgroundLayoutState;
       mBackgroundLayoutState = null;
 
-      // TODO t15532529
       mStateHandler = null;
-
-      if (mPreviousRenderState != null && !mPreviousRenderStateSetFromBuilder) {
-        ComponentsPools.release(mPreviousRenderState);
-      }
       mPreviousRenderState = null;
       mPreviousRenderStateSetFromBuilder = false;
     }
@@ -2151,7 +2145,7 @@ public class ComponentTree {
 
       contextWithStateHandler =
           new ComponentContext(
-              context, StateHandler.acquireNewInstance(mStateHandler), keyHandler, treeProps);
+              context, StateHandler.createNewInstance(mStateHandler), keyHandler, treeProps);
     }
 
     return LayoutState.calculate(

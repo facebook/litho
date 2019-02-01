@@ -88,9 +88,4 @@ public class RenderState {
     final ComponentLifecycle.RenderData previousRenderData = mRenderData.get(key);
     component.applyPreviousRenderData(previousRenderData);
   }
-
-  void reset() {
-    mRenderData.clear();
-    mSeenGlobalKeys.clear();
-  }
 }
