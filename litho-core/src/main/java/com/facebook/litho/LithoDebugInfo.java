@@ -34,7 +34,6 @@ public final class LithoDebugInfo {
 
     pools.addAll(ComponentsPools.getMountContentPools());
     pools.add(ComponentsPools.sInternalNodePool);
-    pools.add(ComponentsPools.sYogaNodePool);
 
     return pools;
   }

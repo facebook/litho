@@ -116,7 +116,7 @@ class InternalNode implements ComponentLayout {
   private static final long PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET = 1L << 31;
   private static final long PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1L << 32;
 
-  YogaNode mYogaNode;
+  @Nullable YogaNode mYogaNode;
   private ComponentContext mComponentContext;
   @ThreadConfined(ThreadConfined.ANY)
   private final List<Component> mComponents = new ArrayList<>(1);
@@ -1716,7 +1716,6 @@ class InternalNode implements ComponentLayout {
         throw new IllegalStateException("You should not free an attached Internalnode");
       }
 
-      ComponentsPools.release(mYogaNode);
       mYogaNode = null;
     }
 

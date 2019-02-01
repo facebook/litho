@@ -20,18 +20,14 @@ import com.facebook.yoga.YogaNode;
 import javax.annotation.Nullable;
 
 /** A helper class that defines a configurable sizes for ComponentsPools. */
-public class PoolsConfig {
-  public static int sLayoutStateSize = 64;
+public class NodeConfig {
   public static int sInternalNodeSize = 256;
-  public static int sNodeInfoSize = 256;
-  public static int sDiffNodeSize = 256;
-  public static int sLayoutOutputSize = 256;
-  public static int sYogaNodeSize = 256;
-  public static int sDisplayListContainerSize = 64;
 
   public interface YogaNodeFactory {
+    @Nullable
     YogaNode create();
 
+    @Nullable
     YogaNode create(YogaConfig config);
   }
 
@@ -47,4 +43,38 @@ public class PoolsConfig {
 
   /** Factory to create custom InternalNodes for Components. */
   @Nullable public static volatile InternalNodeFactory sInternalNodeFactory = null;
+
+  private static volatile YogaConfig sYogaConfig;
+  private static final Object sYogaConfigLock = new Object();
+
+  @Nullable
+  static YogaNode createYogaNode() {
+    initYogaConfigIfNecessary();
+    return NodeConfig.sYogaNodeFactory != null
+        ? NodeConfig.sYogaNodeFactory.create(sYogaConfig)
+        : new YogaNode(sYogaConfig);
+  }
+
+  /**
+   * Toggles a Yoga setting on whether to print debug logs to adb.
+   *
+   * @param enable whether to print logs or not
+   */
+  public static void setPrintYogaDebugLogs(boolean enable) {
+    initYogaConfigIfNecessary();
+    synchronized (sYogaConfigLock) {
+      sYogaConfig.setPrintTreeFlag(enable);
+    }
+  }
+
+  private static void initYogaConfigIfNecessary() {
+    if (sYogaConfig == null) {
+      synchronized (sYogaConfigLock) {
+        if (sYogaConfig == null) {
+          sYogaConfig = new YogaConfig();
+          sYogaConfig.setUseWebDefaults(true);
+        }
+      }
+    }
+  }
 }

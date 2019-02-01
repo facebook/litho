@@ -28,8 +28,6 @@ import android.support.annotation.VisibleForTesting;
 import android.util.SparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.yoga.YogaConfig;
-import com.facebook.yoga.YogaNode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,18 +44,12 @@ import javax.annotation.concurrent.GuardedBy;
  */
 public class ComponentsPools {
 
-  private static volatile YogaConfig sYogaConfig;
-
   private ComponentsPools() {}
 
   private static final Object sMountContentLock = new Object();
-  private static final Object sYogaConfigLock = new Object();
 
   static final RecyclePool<InternalNode> sInternalNodePool =
-      new RecyclePool<>("InternalNode", PoolsConfig.sInternalNodeSize, true);
-
-  static final RecyclePool<YogaNode> sYogaNodePool =
-      new RecyclePool<>("YogaNode", PoolsConfig.sYogaNodeSize, true);
+      new RecyclePool<>("InternalNode", NodeConfig.sInternalNodeSize, true);
 
   @GuardedBy("sMountContentLock")
   private static final Map<Context, SparseArray<MountContentPool>> sMountContentPoolsByContext =
@@ -77,39 +69,17 @@ public class ComponentsPools {
    */
   static boolean sIsManualCallbacks;
 
-  static YogaNode acquireYogaNode() {
-    initYogaConfigIfNecessary();
-    YogaNode node = ComponentsConfiguration.disablePools ? null : sYogaNodePool.acquire();
-    if (node == null) {
-      node =
-          PoolsConfig.sYogaNodeFactory != null
-              ? PoolsConfig.sYogaNodeFactory.create(sYogaConfig)
-              : new YogaNode(sYogaConfig);
-    }
-
-    return node;
-  }
-
   static InternalNode acquireInternalNode(ComponentContext componentContext) {
     InternalNode node = ComponentsConfiguration.disablePools ? null : sInternalNodePool.acquire();
     if (node == null) {
       node =
-          PoolsConfig.sInternalNodeFactory != null
-              ? PoolsConfig.sInternalNodeFactory.create()
+          NodeConfig.sInternalNodeFactory != null
+              ? NodeConfig.sInternalNodeFactory.create()
               : new InternalNode();
     }
 
-    node.init(acquireYogaNode(), componentContext);
+    node.init(NodeConfig.createYogaNode(), componentContext);
     return node;
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void release(YogaNode node) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    node.reset();
-    sYogaNodePool.release(node);
   }
 
   @ThreadSafe(enableChecks = false)
@@ -263,7 +233,6 @@ public class ComponentsPools {
 
   /** Clear pools for all the internal util objects, excluding mount content. */
   public static void clearInternalUtilPools() {
-    sYogaNodePool.clear();
     sInternalNodePool.clear();
   }
 
@@ -292,29 +261,6 @@ public class ComponentsPools {
       }
     }
     return pools;
-  }
-
-  /**
-   * Toggles a Yoga setting on whether to print debug logs to adb.
-   *
-   * @param enable whether to print logs or not
-   */
-  public static void setPrintYogaDebugLogs(boolean enable) {
-    initYogaConfigIfNecessary();
-    synchronized (sYogaConfigLock) {
-      sYogaConfig.setPrintTreeFlag(enable);
-    }
-  }
-
-  private static void initYogaConfigIfNecessary() {
-    if (sYogaConfig == null) {
-      synchronized (sYogaConfigLock) {
-        if (sYogaConfig == null) {
-          sYogaConfig = new YogaConfig();
-          sYogaConfig.setUseWebDefaults(true);
-        }
-      }
-    }
   }
 
   @VisibleForTesting

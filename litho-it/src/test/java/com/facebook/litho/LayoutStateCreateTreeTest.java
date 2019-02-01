@@ -625,7 +625,7 @@ public class LayoutStateCreateTreeTest {
 
     InternalNode newLayoutBuilder(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
       TestInternalNode node = new TestInternalNode();
-      node.init(ComponentsPools.acquireYogaNode(), this);
+      node.init(NodeConfig.createYogaNode(), this);
       return node;
     }
 
