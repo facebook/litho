@@ -35,7 +35,6 @@ public final class LithoDebugInfo {
     pools.addAll(ComponentsPools.getMountContentPools());
     pools.add(ComponentsPools.sLayoutStatePool);
     pools.add(ComponentsPools.sInternalNodePool);
-    pools.add(ComponentsPools.sViewNodeInfoPool);
     pools.add(ComponentsPools.sYogaNodePool);
     pools.add(ComponentsPools.sMountItemPool);
 

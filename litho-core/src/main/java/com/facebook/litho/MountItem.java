@@ -89,12 +89,7 @@ class MountItem {
     mOrientation = layoutOutput.getOrientation();
     mTransitionId = layoutOutput.getTransitionId();
     mNodeInfo = layoutOutput.getNodeInfo();
-
-    releaseNodeInfos();
-
-    if (layoutOutput.getViewNodeInfo() != null) {
-      mViewNodeInfo = layoutOutput.getViewNodeInfo().acquireRef();
-    }
+    mViewNodeInfo = layoutOutput.getViewNodeInfo();
   }
 
   void init(Component component, ComponentHost host, Object content, LayoutOutput layoutOutput) {
@@ -140,7 +135,7 @@ class MountItem {
     }
 
     if (viewNodeInfo != null) {
-      mViewNodeInfo = viewNodeInfo.acquireRef();
+      mViewNodeInfo = viewNodeInfo;
     }
 
     if (mBaseContent instanceof View) {
@@ -258,8 +253,6 @@ class MountItem {
       return;
     }
 
-    releaseNodeInfos();
-
     mComponent = null;
     mHost = null;
     mBaseContent = null;
@@ -269,13 +262,6 @@ class MountItem {
     mIsBound = false;
     mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
     mTransitionId = null;
-  }
-
-  private void releaseNodeInfos() {
-    if (mViewNodeInfo != null) {
-      mViewNodeInfo.release();
-      mViewNodeInfo = null;
-    }
   }
 
   static boolean isDuplicateParentState(int flags) {

@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Rect;
@@ -24,7 +23,6 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 
 /**
  * Tests {@link ViewNodeInfo}
@@ -36,7 +34,7 @@ public class ViewNodeInfoTest {
 
   @Before
   public void setup() {
-    mViewNodeInfo = ViewNodeInfo.acquire();
+    mViewNodeInfo = new ViewNodeInfo();
   }
 
   @Test
@@ -46,52 +44,5 @@ public class ViewNodeInfoTest {
     mViewNodeInfo.setExpandedTouchBounds(node, 10, 10, 20, 20);
 
     assertThat(mViewNodeInfo.getExpandedTouchBounds()).isEqualTo(new Rect(9, 8, 23, 24));
-  }
-
-  @Test
-  public void testRefCountAcquiringReleasedNode() {
-    ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
-
-    viewNodeInfo.acquireRef();
-    viewNodeInfo.release();
-    viewNodeInfo.release(); // Now it should be back in the pool.
-
-    try {
-      viewNodeInfo.acquireRef();
-      fail("Acquiring ref of a ViewNodeInfo already released to the pool.");
-    } catch (Exception e) {
-      // Expected exception.
-    }
-
-    // Drain pool of bad ViewNodeInfo instances for subsequent tests.
-    clearViewNodeInfoPool();
-  }
-
-  @Test
-  public void testRefCountDoubleReleasingToPool() {
-    ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
-
-    viewNodeInfo.acquireRef();
-    viewNodeInfo.release();
-    viewNodeInfo.release(); // Now it should be back in the pool.
-
-    try {
-      viewNodeInfo.release();
-      fail("Releasing a ViewNodeInfo that is already in the pool.");
-    } catch (Exception e) {
-      // Expected exception.
-    }
-
-    // Drain pool of bad ViewNodeInfo instances for subsequent tests.
-    clearViewNodeInfoPool();
-  }
-
-  private static void clearViewNodeInfoPool() {
-    final RecyclePool<NodeInfo> viewNodeInfoPool =
-        Whitebox.getInternalState(ComponentsPools.class, "sViewNodeInfoPool");
-
-    while (viewNodeInfoPool.acquire() != null) {
-      // Run.
-    }
   }
 }

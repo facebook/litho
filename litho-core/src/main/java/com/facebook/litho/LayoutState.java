@@ -360,7 +360,7 @@ class LayoutState {
     if (isMountViewSpec) {
       layoutOutput.setNodeInfo(nodeInfo);
       // Acquire a ViewNodeInfo, set it up and release it after passing it to the LayoutOutput.
-      final ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
+      final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
       if (useNodePadding && node.isPaddingSet()) {
         viewNodeInfo.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
       }
@@ -372,7 +372,6 @@ class LayoutState {
           r - hostTranslationX,
           b - hostTranslationY);
       layoutOutput.setViewNodeInfo(viewNodeInfo);
-      viewNodeInfo.release();
     } else {
       l += paddingLeft;
       t += paddingTop;

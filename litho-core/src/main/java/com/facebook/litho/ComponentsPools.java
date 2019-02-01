@@ -23,20 +23,16 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.SparseArrayCompat;
 import android.util.SparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.internal.ArraySet;
 import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaNode;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -65,9 +61,6 @@ public class ComponentsPools {
 
   static final RecyclePool<InternalNode> sInternalNodePool =
       new RecyclePool<>("InternalNode", PoolsConfig.sInternalNodeSize, true);
-
-  static final RecyclePool<ViewNodeInfo> sViewNodeInfoPool =
-      new RecyclePool<>("ViewNodeInfo", 64, true);
 
   static final RecyclePool<YogaNode> sYogaNodePool =
       new RecyclePool<>("YogaNode", PoolsConfig.sYogaNodeSize, true);
@@ -128,16 +121,6 @@ public class ComponentsPools {
     return node;
   }
 
-  static ViewNodeInfo acquireViewNodeInfo() {
-    ViewNodeInfo viewNodeInfo =
-        ComponentsConfiguration.disablePools ? null : sViewNodeInfoPool.acquire();
-    if (viewNodeInfo == null) {
-      viewNodeInfo = new ViewNodeInfo();
-    }
-
-    return viewNodeInfo;
-  }
-
   static MountItem acquireRootHostMountItem(
       Component component, ComponentHost host, Object content) {
     MountItem item = ComponentsConfiguration.disablePools ? null : sMountItemPool.acquire();
@@ -145,7 +128,7 @@ public class ComponentsPools {
       item = new MountItem();
     }
 
-    final ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
+    final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
     viewNodeInfo.setLayoutDirection(YogaDirection.INHERIT);
     item.init(
         component,
@@ -188,11 +171,6 @@ public class ComponentsPools {
   @ThreadSafe(enableChecks = false)
   static void release(InternalNode node) {
     sInternalNodePool.release(node);
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void release(ViewNodeInfo viewNodeInfo) {
-    sViewNodeInfoPool.release(viewNodeInfo);
   }
 
   @ThreadSafe(enableChecks = false)
@@ -353,7 +331,6 @@ public class ComponentsPools {
     sLayoutStatePool.clear();
     sYogaNodePool.clear();
     sInternalNodePool.clear();
-    sViewNodeInfoPool.clear();
     sMountItemPool.clear();
   }
 

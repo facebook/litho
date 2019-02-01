@@ -100,8 +100,6 @@ public class MountStateRemountTest {
    */
   @Test
   public void testRemountDifferentMountType() throws IllegalAccessException, NoSuchFieldException {
-    clearPool("sViewNodeInfoPool");
-
     final LithoView lithoView =
         ComponentTestHelper.mountComponent(mContext, TestViewComponent.create(mContext).build());
 

@@ -204,7 +204,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
       throw new IllegalStateException("Try to set a new ViewNodeInfo in a LayoutOutput that" +
           " is already initialized with one.");
     }
-    mViewNodeInfo = viewNodeInfo.acquireRef();
+    mViewNodeInfo = viewNodeInfo;
   }
 
   boolean hasViewNodeInfo() {

@@ -21,11 +21,9 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.view.View;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaDirection;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 
 /**
@@ -33,8 +31,6 @@ import javax.annotation.Nullable;
  * used on a {@link View}.
  */
 class ViewNodeInfo {
-
-  private final AtomicInteger mReferenceCount = new AtomicInteger(0);
 
   private Reference<? extends Drawable> mBackground;
   private ComparableDrawable mForeground;
@@ -199,54 +195,5 @@ class ViewNodeInfo {
     }
 
     return true;
-  }
-
-  static ViewNodeInfo acquire() {
-    final ViewNodeInfo viewNodeInfo = ComponentsPools.acquireViewNodeInfo();
-
-    if (viewNodeInfo.mReferenceCount.getAndSet(1) != 0) {
-      throw new IllegalStateException("The ViewNodeInfo reference acquired from the pool " +
-          " wasn't correctly released.");
-    }
-
-    return viewNodeInfo;
-  }
-
-  ViewNodeInfo acquireRef() {
-    if (mReferenceCount.getAndIncrement() < 1) {
-      throw new IllegalStateException("The ViewNodeInfo being acquired" +
-          " wasn't correctly initialized.");
-    }
-
-    return this;
-  }
-
-  void release() {
-    final int count = mReferenceCount.decrementAndGet();
-    if (count < 0) {
-      throw new IllegalStateException("Trying to release a recycled ViewNodeInfo.");
-    } else if (count > 0) {
-      return;
-    }
-
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-
-    mBackground = null;
-    mForeground = null;
-    mLayoutDirection = YogaDirection.INHERIT;
-    mStateListAnimator = null;
-    mStateListAnimatorRes = 0;
-
-    if (mPadding != null) {
-      mPadding = null;
-    }
-
-    if (mExpandedTouchBounds != null) {
-      mExpandedTouchBounds = null;
-    }
-
-    ComponentsPools.release(this);
   }
 }

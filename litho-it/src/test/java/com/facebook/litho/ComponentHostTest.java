@@ -976,7 +976,7 @@ public class ComponentHostTest {
 
   private MountItem mountTouchExpansionItem(int index, Object content) {
     final MountItem viewMountItem = new MountItem();
-    final ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
+    final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
     viewNodeInfo.setLayoutDirection(YogaDirection.LTR);
 
     InternalNode node = mock(InternalNode.class);
