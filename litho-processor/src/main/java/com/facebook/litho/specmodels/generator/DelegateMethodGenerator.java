@@ -25,7 +25,6 @@ import static com.facebook.litho.specmodels.model.DelegateMethodDescription.Opti
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
-import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DelegateMethodDescription;
 import com.facebook.litho.specmodels.model.DiffPropModel;
@@ -190,11 +189,12 @@ public class DelegateMethodGenerator {
       } else if (methodParamModel instanceof DiffPropModel
           || methodParamModel instanceof DiffStateParamModel) {
         acquireStatements.addStatement(
-            "$T $L = ($T) new Diff(_prevImpl == null ? null : _prevImpl.$L, "
+            // Diff<type> name = new Diff<type>(...)
+            "$T $L = new $T(_prevImpl == null ? null : _prevImpl.$L, "
                 + "_nextImpl == null ? null : _nextImpl.$L)",
             methodParamModel.getTypeName(),
             methodParamModel.getName(),
-            ClassNames.DIFF,
+            methodParamModel.getTypeName(),
             ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel),
             ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel));
         delegationParams.add(
@@ -242,7 +242,12 @@ public class DelegateMethodGenerator {
         final String diffName = "_" + methodParamModel.getName() + "Diff";
         CodeBlock block =
             CodeBlock.builder()
-                .add("$T $L = new Diff(\n", methodParamModel.getTypeName(), diffName)
+                // Diff<type> name = new Diff<type>(...)
+                .add(
+                    "$T $L = new $T(\n",
+                    methodParamModel.getTypeName(),
+                    diffName,
+                    methodParamModel.getTypeName())
                 .indent()
                 .add(
                     "$L == null ? null : $L.$L,\n",

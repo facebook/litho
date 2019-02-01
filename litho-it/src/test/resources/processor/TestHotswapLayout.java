@@ -331,7 +331,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
   protected Transition onCreateTransition(ComponentContext c) {
     Transition _result;
     Diff<Integer> _state3Diff =
-        new Diff(
+        new Diff<Integer>(
             mPreviousRenderData == null ? null : mPreviousRenderData.state3,
             mStateContainer.state3);
     ClassLoader classLoader = HotswapManager.getClassLoader();

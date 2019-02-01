@@ -352,7 +352,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
     TestMount _prevImpl = (TestMount) _prevAbstractImpl;
     TestMount _nextImpl = (TestMount) _nextAbstractImpl;
     boolean _result;
-    Diff<Integer> prop1 = (Diff) new Diff(_prevImpl == null ? null : _prevImpl.prop1, _nextImpl == null ? null : _nextImpl.prop1);
+    Diff<Integer> prop1 = new Diff<Integer>(_prevImpl == null ? null : _prevImpl.prop1, _nextImpl == null ? null : _nextImpl.prop1);
     _result = (boolean) TestMountSpec.shouldUpdate((Diff<Integer>) prop1);
     return _result;
   }
